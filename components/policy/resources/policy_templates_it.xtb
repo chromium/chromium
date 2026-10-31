@@ -1780,6 +1780,19 @@ In genere, questa policy è disattivata per difendere gli utenti da tentativi di
 <translation id="2086505225896497574">La configurazione della policy consente di specificare gli ID RP WebAuthn per i quali non viene visualizzata alcuna richiesta quando vengono richiesti certificati di attestazione dei token di sicurezza nella schermata di accesso. Viene inoltre inviato un segnale al token di sicurezza per indicare che potrebbe essere utilizzata l'attestazione aziendale. Senza questo segnale, gli utenti ricevono un messaggio quando i siti richiedono l'attestazione dei token di sicurezza.
 
 Questa policy del dispositivo è equivalente alla policy per gli utenti esistente <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, ma si applica al profilo di accesso nella schermata di accesso.</translation>
+<translation id="2088835253645709768">Questa policy è deprecata nella versione M157, in quanto la Ricerca nella cronologia con l'AI è stata rimossa.
+
+La Ricerca nella cronologia con l'AI è una funzionalità che permette agli utenti di cercare nella propria cronologia di navigazione e ricevere risposte generate in base ai contenuti delle pagine, anziché limitarsi al titolo e all'URL.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, contenuti originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, contenuti originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2089541797660774692">Attiva reporting su cloud tramite browser gestito</translation>
 <translation id="2090280024671359587">Consenti l'acquisizione di testo e migliora i modelli di AI</translation>
 <translation id="2090712407517297305">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/grouped.</translation>

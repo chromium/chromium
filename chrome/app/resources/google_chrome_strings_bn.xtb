@@ -20,6 +20,7 @@
 <translation id="1125124144982679672">Chrome কে ব্যবহার করছেন?</translation>
 <translation id="1142745911746664600">Chrome আপডেট করা যাচ্ছে না</translation>
 <translation id="1148360048981192980">পরেরবার আপনার <ph name="DEVICE_TYPE" /> ডিভাইসে Chrome খোলার সময়, Google Password Manager ব্যবহার করার জন্য আপনাকে প্রম্পট দেখানো হবে।</translation>
+<translation id="1150418667633096194">টুলবারে "Google Search সাইড প্যানেল" বোতামটির নতুন আইকন হয়েছে। Google Search সাইড প্যানেলের সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
 <translation id="1152920704813762236">ChromeOS সম্পর্কে</translation>
 <translation id="1154147086299354128">&amp;Chrome এ খুলুন</translation>
 <translation id="1157952955648710254">Google Search সাইড প্যানেল বন্ধ করুন</translation>
@@ -50,11 +51,13 @@
 <translation id="1439793550875056299">Chrome পিন করুন</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{আপডেট প্রয়োগ করার জন্য অ্যাডমিনিস্ট্রেটরের প্রয়োজন মতো আপনাকে Chrome আবার চালু করতে হবে। আপনার আইসোলেটেড উইন্ডো আবার খুলবে না।}one{আপডেট প্রয়োগ করার জন্য অ্যাডমিনিস্ট্রেটরের প্রয়োজন মতো আপনাকে Chrome আবার চালু করতে হবে। আপনার #টি আইসোলেটেড উইন্ডো আবার খুলবে না।}other{আপডেট প্রয়োগ করার জন্য অ্যাডমিনিস্ট্রেটরের প্রয়োজন মতো আপনাকে Chrome আবার চালু করতে হবে। আপনার #টি আইসোলেটেড উইন্ডো আবার খুলবে না।}}</translation>
 <translation id="146866447420868597">Chrome-এ সাইন-ইন করবেন?</translation>
+<translation id="1470136641087909499">ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Chrome-এ Google Search আবার খুলতে পারবেন</translation>
 <translation id="1476347941828409626">&amp;Chrome প্রোফাইল ম্যানেজ করুন</translation>
 <translation id="1492280395845991349">Chrome আপডেট শেষ করতে আবার লঞ্চ করুন</translation>
 <translation id="1497802159252041924">ইনস্টলেশন সংক্রান্ত সমস্যা: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">আপনার নতুন Chrome প্রোফাইল কাস্টমাইজ করুন</translation>
 <translation id="1518627427551567882">এই পৃষ্ঠাটি সুরক্ষিত</translation>
+<translation id="15408169957028265">Chrome-এ Google Search আবার খুলুন</translation>
 <translation id="1547295885616600893">অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="1547469039832541117">হাইলাইট করা টাস্ক শেষ করে।</translation>
 <translation id="1553358976309200471">Chrome আপডেট করুন</translation>
@@ -87,6 +90,7 @@
 <translation id="1713301662689114961">{0,plural, =1{Chrome ১ ঘণ্টার মধ্যে আবার লঞ্চ হবে}one{Chrome # ঘণ্টার মধ্যে আবার লঞ্চ হবে}other{Chrome # ঘণ্টার মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="1722488837206509557">এর ফলে আপনি উপলভ্য ডিভাইসগুলি থেকে বেছে নিতে পারবেন এবং সেগুলিতে কন্টেন্ট দেখাতে পারবেন।</translation>
 <translation id="1724094881572874997">Chrome-এ আপনার কাজ সুরক্ষিত রাখতে, আপনি যখন Chrome-এ সাইন-ইন করবেন, তখন আপনার সংস্থা নির্দিষ্ট কিছু তথ্য দেখতে বা ম্যানেজ করতে পারবে।</translation>
+<translation id="1769661297620183092">ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search প্যানেল আবার খুলতে পারবেন</translation>
 <translation id="177180974022074201">Chrome-এ Gemini-র মাধ্যমে ব্যবহার করে দেখুন</translation>
 <translation id="1786003790898721085">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chrome-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
 <translation id="1786044937610313874">Chrome-এ শর্টকাট খুলবে</translation>
@@ -105,6 +109,7 @@
 <translation id="1880677175115548835">টেক্সট বেছে নিন</translation>
 <translation id="1896602904211344018">Chrome অ্যাপ ডাউনলোড করুন</translation>
 <translation id="1919130412786645364">Chrome-এ সাইন-ইন করতে দিন</translation>
+<translation id="1925069572871307609">ভবিষ্যতে Google Chrome-এর আপডেট পেতে হলে, আপনার কম্পিউটারে Windows 10 ভার্সন 1809 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে Windows 10-এর পুরনো ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="1953553007165777902">ডাউনলোড হচ্ছে... <ph name="MINUTE" /> মিনিট বাকি আছে</translation>
 <translation id="1975400514743766362">আপনার <ph name="DEVICE_TYPE" />-এ Chromium অ্যাপের মাধ্যমে যেকোনও সময় ও জায়গায় Google-এর নিরাপত্তা পান</translation>
 <translation id="1979600810166324878">iOS-এর জন্য Chrome-এ উন্নত Safe Browsing সুবিধার সাহায্যে যেতে যেতে সুরক্ষিত থাকুন</translation>
@@ -118,6 +123,7 @@
 <translation id="2040220733769034247">ফোনে QR কোড স্ক্যান করে Chrome ডাউনলোড করুন ও আপনার Google অ্যাকাউন্টে সাইন-ইন করুন।</translation>
 <translation id="2044908892530830113">Mac মেনু বারে Chrome-এর মাধ্যমে সার্চ করুন ফিচার দেখান এবং কীবোর্ড শর্টকাট চালু করুন</translation>
 <translation id="2050189601866423230">ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search AI মোড পিন করে রাখতে পারেন</translation>
+<translation id="2060311596979880693">হয়ে গেছে! Chrome-এ Google Search-এর সাহায্যে ব্রাউজ করার সময় আপনি এখন সহজেই প্রশ্ন জিজ্ঞাসা করতে পারবেন</translation>
 <translation id="2091012649849228750">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে Windows 10 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে Windows 8 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="2094648590148273905">ChromeOS Flex-এর শর্তাবলী</translation>
 <translation id="2094919256425865063">তা স্বত্তেও Chrome বন্ধ করবেন?</translation>
@@ -143,6 +149,7 @@
 <translation id="2216543877350048334">Chrome থেকে আপনার Google অ্যাকাউন্ট সরিয়ে দিতে, সাইন-আউট করুন</translation>
 <translation id="2236949375853147973">আমার অ্যাক্টিভিটি</translation>
 <translation id="22791603784558743">Chrome Dev-এ Gemini বন্ধ করুন</translation>
+<translation id="2283228908180457226">নতুন আইকন, একই শর্টকাট: Google Search সাইড প্যানেলের সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
 <translation id="2290014774651636340">Google এপিআই কীগুলি অনুপস্থিত৷ Google Chrome-এর কিছু বৈশিষ্ট্য নিষ্ক্রিয় হয়ে যাবে৷</translation>
 <translation id="2290095356545025170">আপনি কি Google Chrome আনইনস্টল করার ব্যাপারে নিষ্চিত ?</translation>
 <translation id="2295218613066132598">Chrome সাইটের শর্টকাট দেখান</translation>
@@ -205,6 +212,7 @@
 <translation id="2861074815332034794">Chrome আপডেট হচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="2875053229394024379">আপনার Google অ্যাকাউন্ট দিয়ে Chrome-এ সাইন-ইন করলে, Gemini-র সাথে Chrome প্রোফাইল ব্যবহার করতে পারবেন। <ph name="BEGIN_LINK" />Chrome-এ কীভাবে সাইন-ইন করতে হয় তা জানুন<ph name="END_LINK" /></translation>
+<translation id="2876152561415416331">Google Search প্যানেল আবার খুলুন</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome কীভাবে আপনার ডেটা ব্যক্তিগত রাখে<ph name="END_LINK" /> সেই সম্পর্কে আরও জানুন</translation>
 <translation id="2885378588091291677">কার্য পরিচালক</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
@@ -220,6 +228,8 @@
 <translation id="3003694935412297923">সব টাস্ক</translation>
 <translation id="3018957014024118866">এছাড়া, Chrome থেকেও ডেটা মুছে দিন (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex আপডেট করার জন্য আবার চালু করুন</translation>
+<translation id="3034219227076811559">Chrome-এ Google Search</translation>
+<translation id="3037190258341683404">ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Chrome-এ Google Search পিন করে রাখতে পারেন</translation>
 <translation id="3037517125981011456">Chrome-এ সাইন-ইন করার প্রম্পট দেখাবে</translation>
 <translation id="3037838751736561277">Google Chrome পটভূমি মোডে রয়েছে।</translation>
 <translation id="3038232873781883849">ইনস্টল করার জন্য অপেক্ষা করা হচ্ছে...</translation>
@@ -326,6 +336,7 @@
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
 <translation id="3968962723676998462">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ Chrome ডেটা ব্যবহার এবং সেভ করার জন্য পাসফ্রেজ লিখুন</translation>
 <translation id="3973161977468201858">Google Chrome আপনার Google Password Manager সম্পর্কিত ডেটা মুছতে চায়। এটি করার অনুমতি দিতে, আপনার Windows-এর পাসওয়ার্ড টাইপ করুন।</translation>
+<translation id="3984557288004650913">টুলবারে থাকা "Chrome-এ Google Search" বোতামটি ব্যবহার করে, ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Chrome-এ Google Search আবার খুলতে পারবেন</translation>
 <translation id="400161754580828648">আপনার স্ক্রিন শেয়ার করতে, সিস্টেম সেটিংস থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিং চালু করুন।</translation>
 <translation id="4012899077942246412">আপনি সাইন-ইন করার সময়, Chrome-এ আপনার Google অ্যাকাউন্ট থেকে পাসওয়ার্ড এবং আরও অনেক কিছু ব্যবহার করতে পারবেন। এটি পরিবর্তন করতে, “Chrome-এ আপনার অ্যাকাউন্ট” বিকল্পে যান।</translation>
 <translation id="4022972681110646219">স্ক্রিনে থাকা সব কন্টেন্ট অনুবাদ করুন</translation>
@@ -400,6 +411,7 @@
 <translation id="4768676935374695498">Google Lens ব্যবহার করে এই ভিডিওটি সার্চ করুন</translation>
 <translation id="479167709087336770">এটি Google সার্চ-এ যে বানান পরীক্ষা করার টুল ব্যবহার করা হয় সেটিই ব্যবহার করে। আপনি ব্রাউজারে যে টেক্সট লেখেন, সেটি Google-এ পাঠানো হয়। সেটিংস থেকে আপনি এটি পরিবর্তন করতে পারেন।</translation>
 <translation id="4793679854893018356">Chrome কীভাবে আপনাকে নিরাপদে রাখে তা জানুন</translation>
+<translation id="4803313124144656665">Chrome-এ Google Search বন্ধ করুন</translation>
 <translation id="4828579605166583682">Google Chrome, বর্তমানে থাকা পাসওয়ার্ড পরিবর্তনের চেষ্টা করছে। এটি করার অনুমতি দিতে, আপনার Windows-এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="4836321460899997044">Chrome প্রোফাইল</translation>
 <translation id="4839733921943823254">শর্টকাট পিন করুন</translation>
@@ -450,6 +462,7 @@
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5239627039202700673">যেকোনও সময় মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্কে ক্লিক করতে Chrome ব্যবহার করুন</translation>
 <translation id="524751727772074981">Chrome-এ Gemini দিয়ে যেখানে আছেন সেখান থেকেই প্রশ্ন করুন</translation>
+<translation id="5247617065091903691">ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search সাইড প্যানেল পিন করে রাখতে পারেন</translation>
 <translation id="5251420635869119124">অতিথিগণ কোনো কিছুর জন্য অভাব বোধ না করেই Chrome ব্যবহার করতে পারবেন৷</translation>
 <translation id="5271833978500241046">Chrome-এ অন্যান্য Gemini ফিচারের পাশাপাশি সেগুলি ব্যবহার করুন</translation>
 <translation id="5286907366254680517">শনাক্ত করা হয়েছে</translation>
@@ -469,6 +482,7 @@
 <translation id="5430073640787465221">আপনার পছন্দের ফাইল ক্ষতিকর অথবা ভুল৷\n\nGoogle Chrome আপনার সেটিংস পুনরুদ্ধার করতে পারছে না৷</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-র সাথে ব্যবহার করার জন্য Chrome প্রোফাইল বেছে নিন</translation>
 <translation id="547202872422499512">Windows চালু হওয়ার সাথে সাথে Chrome চালু হয়, যাতে আপনি ইনস্ট্যান্ট ব্রাউজ করা শুরু করতে পারেন। আপনি সেটিংস থেকে এটি বন্ধ করতে পারবেন।</translation>
+<translation id="5482575505313585759">Google Search প্যানেল বন্ধ করুন</translation>
 <translation id="5486346529181556467">কোনও সাইটকে ক্ষতিকর মনে হলে তা রিপোর্ট করে সকলের জন্য অনলাইন নিরাপত্তাকে উন্নত করুন। <ph name="BEGIN_LINK" />Google-এর অসুরক্ষিত সাইট সংক্রান্ত নীতি<ph name="END_LINK" /> সম্পর্কে আরও জানুন।</translation>
 <translation id="5503069778428381665">ডেস্কটপে Google Lens ব্যবহারের সময়, পৃষ্ঠার শীর্ষক, URL এবং PDF সহ কন্টেন্ট Google-কে পাঠানো হয়</translation>
 <translation id="5524890928877629608">সার্চে উপরের বাঁদিকের কোণা: বাঁদিক থেকে <ph name="LEFT" />%, উপরের দিকে <ph name="TOP" />%</translation>
@@ -486,6 +500,7 @@
 <translation id="566568153320186256">স্মুথ স্ক্রলিং ও ভিডিও ফ্রেম রেটের মতো ব্যাকগ্রাউন্ড অ্যাক্টিভিটি ও ভিজ্যুয়াল এফেক্টকে সীমিত করার মাধ্যমে Chrome ব্যাটারির চার্জ সাশ্রয় করে। <ph name="BEGIN_LINK" />পাওয়ার সেভার সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">আপনার অ্যাকাউন্টের Chrome ডেটা মুছে ফেলুন</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{এই আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন}=1{এই আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{এই আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{এই আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
+<translation id="568656514202614970">হয়ে গেছে! এখন আপনি ব্রাউজ করার সময় Google Search সাইড প্যানেলের সাহায্যে সহজেই প্রশ্ন জিজ্ঞাসা করতে পারবেন</translation>
 <translation id="5686916850681061684">Google Chrome কাস্টমাইজ ও নিয়ন্ত্রণ করুন। একটি বিষয়ে আপনার নজর দেওয়া দরকার - বিস্তারিত বিবরণের জন্য ক্লিক করুন।</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। প্রক্সি সার্ভার যাচাই করতে হবে।</translation>
@@ -513,6 +528,7 @@
 <translation id="5940385492829620908">আপনার ওয়েব, বুকমার্ক এবং Chrome-এর অন্যান্য জিনিস এখানে রয়েছে৷</translation>
 <translation id="5941711191222866238">ছোট করুন</translation>
 <translation id="5941830788786076944">Google Chrome-কে ডিফল্ট ব্রাউজার করুন</translation>
+<translation id="5944731887996253728">আপনার স্ক্রিন ব্যবহার না করা হলে Chrome আপডেট হবে</translation>
 <translation id="5947104538377036631">Chrome-এর শর্টকার্ট</translation>
 <translation id="5960071705175224773">অজানা কোনও অ্যাপ আপনার সেটিংস পরিবর্তন করেছে</translation>
 <translation id="5980111191913430208">অজানা সোর্স থেকে এক্সটেনশন, অ্যাপ এবং থিম আপনার ডিভাইসের ক্ষতি করতে পারে। Chrome শুধুমাত্র <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> থেকে সেগুলি ইনস্টল করার সাজেশন দেয়</translation>
@@ -561,11 +577,14 @@
 <translation id="6288580400488258237">Google Chrome আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করুন এবং আপনার টাস্কবারে এটি পিন করুন</translation>
 <translation id="6291089322031436445">Chrome ডেভেলপার অ্যাপ</translation>
 <translation id="6291549208091401781">Google Chrome ইতোমধ্যে আপনার কম্পিউটারের সকল ব্যবহারকারীর জন্য ইনস্টল করা হয়েছে।</translation>
+<translation id="6294638840436017818">টুলবারে থাকা "Google Search সাইড প্যানেল" বোতামটি ব্যবহার করে, ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search সাইড প্যানেল আবার খুলতে পারবেন</translation>
+<translation id="6308106880471005841">টুলবারে "Google Search প্যানেল" বোতামটির নতুন আইকন হয়েছে। Google Search প্যানেলের সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
 <translation id="6311220991371174222">আপনার প্রোফাইল খোলার সময় কোনো সমস্যা হওয়ার কারণে Chrome চালু করা যাচ্ছে না। Chrome আবার চালু করার চেষ্টা করুন।</translation>
 <translation id="6319856120645568262">আপনার আশপাশ সম্পর্কে জানতে ও হাত ট্র্যাক করতে Chrome-এর অনুমতি প্রয়োজন</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" এক্সটেনশন ব্যবহার করতে Chrome-এ সাইন-ইন করতে হবে</translation>
 <translation id="6326175484149238433">Chrome থেকে সরান</translation>
 <translation id="6334815226785304306">Google Chrome-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করে টাস্কবারে পিন করুন</translation>
+<translation id="6339888439788291743">নতুন আইকন, একই শর্টকাট: Google Search AI মোডের সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
 <translation id="63540178978900677">Chrome আর আপনার ডিফল্ট ব্রাউজার নেই। Chrome-কে ডিফল্ট ব্রাউজার হিসেবে সেট করবেন?</translation>
 <translation id="6357670763064300993">Chrome-এ Gemini Enterprise</translation>
 <translation id="6360449101159168105">Chrome যাতে দ্রুত কাজ করে সেই জন্য এই ট্যাব বন্ধ থাকাকালীন মেমরি খালি করা হয়েছে। এই সাইটটি অ্যাক্টিভ রাখার বিকল্প সব সময় বেছে নিতে পারবেন।</translation>
@@ -615,6 +634,7 @@
 <translation id="6723445727540769832">ফোনে Chrome অ্যাপের মাধ্যমে Google-এর সেরা সব সুবিধা পান</translation>
 <translation id="6734827584173583205">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> এবং আরও <ph name="COUNT" />টি অনুমতি সরিয়ে দিয়েছে।</translation>
 <translation id="6735387454586646204">ChromeOS Flex সিস্টেম</translation>
+<translation id="674891594898436429">এই ট্যাবে অ্যাক্টিভ সার্চ বাতিল করুন</translation>
 <translation id="6750954913813541382">বানান ভুল ঠিক করতে, আপনি ব্রাউজারে যে টেক্সট লেখেন Chrome সেটি Google-এ পাঠায়</translation>
 <translation id="6760235774835597023">Chrome-এর ভি৮ ইঞ্জিন সাইটের স্পিড বাড়িয়ে দেয় কিন্তু Chrome-এর অ্যাটাক আটকানোর ক্ষমতা সামান্য কমে যায়। এই সেটিংসটি চালু করা আছে।</translation>
 <translation id="677276454032249905">তা স্বত্তেও Chrome বন্ধ করতে চান?</translation>
@@ -633,6 +653,7 @@
 <translation id="689368324615299626">আপনার <ph name="DEVICE_TYPE" />-এ Chrome অ্যাপের মাধ্যমে Google-এর সেরা সুবিধা পান</translation>
 <translation id="6896758677409633944">কপি</translation>
 <translation id="6908182077349113099">আপনার সব ডিভাইস জুড়ে পাসওয়ার্ড, বুকমার্ক ও ইতিহাস সিঙ্ক করে রাখুন। আপনার ডিফল্ট ব্রাউজার Chrome-এ আপডেট করে, আপনার পরিচিত ও পছন্দের ফিচারগুলি সহজেই অ্যাক্সেস করুন।</translation>
+<translation id="6926772305569367352">টুলবারে "Chrome-এ Google Search" বোতামটির নতুন আইকন হয়েছে। Chrome-এ Google Search-এর সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
 <translation id="6930294499209825">আপনার Google সফ্টওয়্যারকে আপ-টু-ডেট রাখে। এই পরিষেবা যদি অ্যাক্টিভ না থাকে বা বন্ধ থাকে তাহলে Google সফ্টওয়্যার আপ-টু-ডেট থাকবে না যার মানে নিরাপত্তার ঝুঁকি থাকতে পারে যা সমাধান করা যাবে না এবং ফিচার কাজ নাও করতে পারে। কোনও Google সফ্টওয়্যার এই পরিষেবাকে ব্যবহার না করলে এটি নিজে থেকেই আনইনস্টল হয়।</translation>
 <translation id="6933858244219479645">ChromeOS সিস্টেম</translation>
 <translation id="6938166777909186039">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে Windows 10 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে Windows 8.1 ভার্সন ব্যবহার করা হচ্ছে।</translation>
@@ -669,6 +690,7 @@
 <translation id="7285616922384953075"><ph name="MANAGER" /> Chrome ম্যানেজ করে</translation>
 <translation id="7285990705317078173">আপনার ফোনে Chrome ডাউনলোড করুন যাতে দাম ট্র্যাক করতে পারেন এবং কোনও সাইটে দাম কমলে সেই সম্পর্কিত সতর্কতা পান</translation>
 <translation id="7288567540154601580">ট্যাব ও এক্সটেনশন</translation>
+<translation id="7290997427370476749">টুলবারে থাকা "Google Search প্যানেল" বোতামটি ব্যবহার করে, ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search প্যানেল আবার খুলতে পারবেন</translation>
 <translation id="7296210096911315575">ব্যবহার ও নিরাপত্তা সম্পর্কে গুরুত্বপূর্ণ তথ্য</translation>
 <translation id="7299899569525778554">ডেস্কটপ থেকে সার্চ করুন</translation>
 <translation id="7302361266603927550">আপনার Chrome ডেটার কিছুটা এখনও Google অ্যাকাউন্টে সেভ হয়নি। সাইন-আউট করার আগে কয়েক মিনিট অপেক্ষা করে দেখুন। আপনি এখনই সাইন-আউট করলে, এই ডেটা মুছে যাবে।</translation>
@@ -676,6 +698,7 @@
 <translation id="7308322188646931570">ফাইল ডাউনলোড করতে Chrome-এর স্টোরেজের অ্যাক্সেস প্রয়োজন</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
 <translation id="7371412052245999753">আপনার কম্পিউটারে অন্যান্য অ্যাপ্লিকেশন থেকে Chrome-এর মেমরি সুরক্ষিত রাখে।</translation>
+<translation id="7374061268215476070">ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search সাইড প্যানেল আবার খুলতে পারবেন</translation>
 <translation id="73786666777299047">Chrome ওয়েব স্টোর খুলুন</translation>
 <translation id="7386878009611068389">তোমার অভিভাবকের পছন্দ মেনে অনলাইনে আরও নিরাপদ থাকতে, <ph name="USER_EMAIL_ADDRESS" /> হিসেবে আগে থেকেই সাইন-ইন করে আছো এমন Chrome প্রোফাইলে পরিবর্তন করো</translation>
 <translation id="7398801000654795464">আপনি <ph name="USER_EMAIL_ADDRESS" /> হিসাবে Chrome-এ প্রবেশ করেছেন৷ আবার সাইন-ইন করতে একই অ্যাকাউন্ট ব্যবহার করুন৷</translation>
@@ -729,6 +752,7 @@
 <translation id="778331955594035129">এই সাইটের জন্য Chrome-এর লোকেশন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="7787950393032327779">অন্য একটি কম্পিউটারে (<ph name="HOST_NAME" />) প্রোফাইলটি অন্য Google Chrome প্রক্রিয়া (<ph name="PROCESS_ID" />) দ্বারা ব্যবহৃত হচ্ছে বলে মনে হচ্ছে৷ Chrome প্রোফাইলটিকে লক করেছে যাতে এটি বিকৃত না হয়ে যায়৷ যদি আপনি নিশ্চিত হন যে আর কোনো প্রক্রিয়া এই প্রোফাইলটিকে ব্যবহার করছে না, তবে আপনি প্রোফাইলটিকে আনলক করতে পারেন এবং Chrome কে পুনরায় লঞ্চ করতে পারেন৷</translation>
 <translation id="7800043020703832708">সাইড প্যানেলে Google Search বন্ধ করুন</translation>
+<translation id="7801317262080715012">নতুন আইকন, একই শর্টকাট: Google Search প্যানেলের সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে ক্লিক এটিতে করুন।</translation>
 <translation id="7801699035218095297">Google Chrome পাসওয়ার্ড কপি করার চেষ্টা করছে। এর অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="7804364787702057554">Chrome-এ আপনার অ্যাকাউন্ট</translation>
 <translation id="7804947029129221742">Chrome-এর বাইরে থেকে আপনার সার্চ ইঞ্জিন পরিবর্তন করা হয়েছে। আপনাকে সুরক্ষিত রাখতে, Chrome এটি আসল ডিফল্টে রিসেট করেছে। <ph name="LEARN_MORE_LINK" /></translation>
@@ -782,7 +806,9 @@
 <translation id="8162006532256575008">কোনও অ্যাকাউন্ট ছাড়াই Chrome ব্যবহার করুন</translation>
 <translation id="8172231188687329735">যে কোনও সময় পাসওয়ার্ড সেভ করার জন্য Chrome অ্যাপ ডাউনলোড করুন</translation>
 <translation id="8177472873527554730">পৃষ্ঠায় কন্টেন্ট খুঁজে পাওয়া যাচ্ছে না</translation>
+<translation id="818985547157682832">টুলবারে থাকা "Google Search AI মোড" বোতামটির নতুন আইকন হয়েছে। Google Search AI মোডের সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
 <translation id="8196526165798579689">Chrome Dev-এর সাহায্যে সার্চ করুন</translation>
+<translation id="8203105157044679380">Google Search প্যানেল</translation>
 <translation id="8221491193165283816">আপনি সাধারণত বিজ্ঞপ্তি ব্লক করেন। এই সাইট থেকে বিজ্ঞপ্তি পেতে, এখানে ক্লিক করুন।</translation>
 <translation id="8227493674161801700">Chrome Beta-র সাহায্যে সার্চ করুন</translation>
 <translation id="8233224921566021881">আশেপাশের ডিভাইস খুঁজে পেতে ও ব্যবহার করতে Chrome-কে আপনার লোকাল নেটওয়ার্ক অ্যাক্সেস করার অনুমতি দিতে হবে</translation>
@@ -794,6 +820,7 @@
 <translation id="8291415872436043161">Chrome ডাউনলোড করুন</translation>
 <translation id="829923460755755423">Google Password Manager-এ শর্টকাট যোগ করুন</translation>
 <translation id="8313851650939857356">স্টার্টআপ সম্পর্কিত এরর: <ph name="STARTUP_ERROR" />।</translation>
+<translation id="8321058241987390452">হয়ে গেছে! এখন আপনি ব্রাউজ করার সময় Google Search প্যানেলের সাহায্যে সহজেই প্রশ্ন জিজ্ঞাসা করতে পারবেন</translation>
 <translation id="8321888067342493336">ছবি হিসেবে সেভ করুন</translation>
 <translation id="8336463659890584292">কোনও সাইট সেটির পৃষ্ঠার লিঙ্কগুলি ব্যক্তিগতভাবে প্রিলোড করা হোক বলে নির্দেশ দিলে, Chrome Google সার্ভার ব্যবহার করে। এর ফলে আপনার পরিচয় প্রিলোড করা সাইটের থেকে লুকানো থাকে, কিন্তু Google জানতে পারে কোন সাইটগুলি প্রিলোড করা হয়।</translation>
 <translation id="8342675569599923794">এই ফাইলটি বিপজ্জনক, তাই Chrome এটিকে অবরুদ্ধ করেছে।</translation>
@@ -804,6 +831,7 @@
 <translation id="8367950957770994118">প্রয়োজন হলেই, দ্রুত Chrome-এ Gemini খুলুন</translation>
 <translation id="8370517070665726704">কপিরাইট <ph name="YEAR" /> Google LLC সব স্বত্ব সংরক্ষিত আছে।</translation>
 <translation id="8370748943308169953"><ph name="USER_NAME" /> হিসেবে Chrome-এ সাইন-ইন করার QR কোড</translation>
+<translation id="8374507495134902558">একটি <ph name="IMPORTANT_UPDATE" /> রেডি আছে। আপনি এখন আবার চালু করতে পারেন অথবা পরের বার আপনার স্ক্রিন চালু থাকলে এবং <ph name="IDLE_DURATION" />-এর জন্য ব্যবহার না করা হলে আপডেট করার জন্য Chrome সেট করতে পারেন।</translation>
 <translation id="8376752431516546391">Google Search সাইড প্যানেল</translation>
 <translation id="8377158135256176353">Chrome ক্যানারি-তে Gemini টগল করুন</translation>
 <translation id="8380754585531979907">Chrome-এ Gemini ও আপনার খোলা ট্যাবের মধ্যে নেভিগেট করতে কীবোর্ড ব্যবহার করুন।</translation>
@@ -819,10 +847,12 @@
 
 আপনি কিছু বুকমার্ক না মোছা পর্যন্ত আপনার অ্যাকাউন্টে নতুন বুকমার্ক সেভ করা যাবে না। আপনি এখন সাইন-আউট করলে, সেভ না করা বুকমার্ক মুছে যাবে।</translation>
 <translation id="8458117863387545390">আপনার ফোনে Chrome ডাউনলোড করুন</translation>
+<translation id="8467931559764188481">অ্যাক্টিভ Google Search বাতিল করুন</translation>
 <translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google মেম্বারশিপ হিসেবে সাইন-ইন করেছেন। অ্যাকাউন্ট মেনু খুলুন</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chrome-এর জন্য একটি বিশেষ নিরাপত্তা আপডেট এইমাত্র প্রয়োগ করা হয়েছে। এখনই রিস্টার্ট করুন এবং আপনার ট্যাব আমরা রিস্টোর করব।</translation>
 <translation id="8502181052659370">Google Lens ব্যবহার করে এই ট্যাবে সার্চ করুন</translation>
+<translation id="8520489851087523435">Google Search সাইড প্যানেল আবার খুলুন</translation>
 <translation id="8521348052903287641">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome ডেভেলপারের জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="852529348814672339">Chrome এই ভাষায় দেখতে চাই</translation>
 <translation id="8525579356836940628">ইনস্টল করার কাজ বন্ধ করা হয়েছে</translation>
@@ -831,6 +861,7 @@
 <translation id="8555465886620020932">পরিষেবায় সমস্যা হয়েছে: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8564408666201523086">হয়ে গেছে! সাইড প্যানেলে Google Search-এর সাহায্যে ব্রাউজ করার সময় আপনি এখন সহজেই প্রশ্ন জিজ্ঞাসা করতে পারবেন</translation>
 <translation id="856656450041460113">ভাষার তালিকা সার্চ করুন</translation>
+<translation id="8568499811906962479">ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search প্যানেল পিন করে রাখতে পারেন</translation>
 <translation id="8575047640889685742">আপনার Google অ্যাকাউন্টের সব Chrome ডেটা এনক্রিপ্ট করতে <ph name="BEGIN_LINK" />নিজের পাসফ্রেজ<ph name="END_LINK" /> ব্যবহার করুন। Google Pay থেকে পাওয়া পেমেন্ট পদ্ধতি ও ঠিকানা এনক্রিপ্ট করা হবে না। Chrome থেকে ব্রাউজিং ইতিহাস সিঙ্ক হবে না।</translation>
 <translation id="8590782867495422699">Google Search AI মোড আবার খুলুন</translation>
 <translation id="8598779894319572882">টুলবারে থাকা "Google Search AI মোড" বোতাম থেকে, ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি Google Search AI মোড আবার খুলতে পারবেন</translation>
@@ -843,6 +874,8 @@
 <translation id="8656634243791296665">Chrome Dev-এ Gemini খুলুন</translation>
 <translation id="8669527147644353129">Google Chrome সহায়তাকারী</translation>
 <translation id="8679801911857917785">আপনি Chrome শুরু করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
+<translation id="8689408573494410517">টুলবারে "সাইড প্যানেলে Google Search" বোতামটির নতুন আইকন হয়েছে। সাইড প্যানেলে Google Search-এর সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
+<translation id="8699232386626916686">সুরক্ষিত থাকতে Chrome আপডেট করুন</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8712767363896337380">প্রায় আপডেট হয়ে গেছে! আপডেট প্রসেস সম্পূর্ণ করতে, Chrome আবার চালু করুন।</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনার ব্রাউজিংয়ের ডেটা আলাদা রাখতে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও আপনি <ph name="DEVICE" /> থেকে নিজের পড়ার তালিকা ও আরও অনেক কিছু পাবেন।</translation>
@@ -862,8 +895,10 @@
 <translation id="8834965163890861871">Google Chrome আপনার পাসওয়ার্ড এডিট করার অনুমতি চাইছে। অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="8841151363570555833">Mac মেনু বারে Chrome-এ Gemini দেখুন</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome আপনাকে এটি সরিয়ে দেওয়ার সাজেশন দেয়}one{Chrome আপনাকে এগুলি সরিয়ে দেওয়ার সাজেশন দেয়}other{Chrome আপনাকে এগুলি সরিয়ে দেওয়ার সাজেশন দেয়}}</translation>
+<translation id="8861692536395317751">Google Chrome-এর Windows 10 ভার্সন 1809 বা তার পরবর্তী যেকোনও ভার্সন প্রয়োজন।</translation>
 <translation id="8862326446509486874">সিস্টেম-স্তরীয় ইনস্টলের জন্য আপনার কাছে যথাযথ অধিকারগুলি নেই৷ অ্যাডমিনিস্ট্রেটর হিসেবে আবার ইনস্টলারটি চালানোর চেষ্টা করুন৷</translation>
 <translation id="8865415417596392024">আপনার অ্যাকাউন্টের Chrome ডেটা</translation>
+<translation id="8897637834206928776">নতুন আইকন, একই শর্টকাট: সাইড প্যানেলে Google Search-এর সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
 <translation id="8914504000324227558">Chrome আবার লঞ্চ করুন</translation>
 <translation id="8920304659326707347">iOS-এ Chrome-এ ঠিক আগের জায়গা থেকেই আবার শুরু করুন।</translation>
 <translation id="8922998289262614701">Chrome থেকে এই অ্যাপের ডেটা সরিয়ে দিন</translation>
@@ -889,6 +924,7 @@
 <translation id="9018218886431812662">ইনস্টল হয়ে গেছে</translation>
 <translation id="9066987883552592250">Chrome Canary-তে Gemini বন্ধ করুন</translation>
 <translation id="9074041031320636790">হয়ে গেছে! Google Search AI মোডের সাহায্যে ব্রাউজ করার সময় আপনি এখন সহজেই প্রশ্ন জিজ্ঞাসা করতে পারবেন</translation>
+<translation id="9074163480955555019">নতুন আইকন, একই শর্টকাট: Chrome-এ Google Search-এর সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
 <translation id="9090566250983691233">Chrome কিছু ফাইল কেন ব্লক করে সেই সম্পর্কে জানুন</translation>
 <translation id="9106236359747881194">সার্চ করার জন্য টেক্সট বেছে নিন</translation>
 <translation id="911206726377975832">আপনার ব্রাউজিং ডেটাও মুছে দেবেন?</translation>

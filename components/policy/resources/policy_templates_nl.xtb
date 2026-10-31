@@ -1731,6 +1731,19 @@ Dit beleid wordt meestal niet toegepast als beveiliging tegen phishing.</transla
 <translation id="2086505225896497574">Als je het beleid instelt, geef je WebAuthn RP-ID's aan waarvoor geen prompt wordt getoond als er bevestigingscertificaten van beveiligingssleutels worden aangevraagd op het inlogscherm. Er wordt ook een signaal naar de beveiligingssleutel gestuurd om aan te geven dat zakelijke bevestiging kan worden gebruikt. Zonder dit signaal krijgen gebruikers een prompt als sites bevestiging van beveiligingssleutels aanvragen.
 
 Dit apparaatbeleid is vergelijkbaar met het bestaande gebruikersbeleid <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, maar wordt in plaats daarvan toegepast op het inlogprofiel op het inlogscherm.</translation>
+<translation id="2088835253645709768">Dit beleid is beëindigd in M157 omdat de functie AI-gestuurd zoeken in geschiedenis is verwijderd.
+
+AI-gestuurd zoeken in geschiedenis is een functie waarmee gebruikers in hun browsegeschiedenis kunnen zoeken en gegenereerde antwoorden kunnen krijgen op basis van paginacontent, niet alleen op basis van de paginatitel en -URL.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="2089541797660774692">Cloudrapportage voor beheerde browsers aanzetten</translation>
 <translation id="2090280024671359587">Tekst vastleggen toestaan en AI-modellen verbeteren.</translation>
 <translation id="2090712407517297305">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is zichtbaar op chrome://history/grouped.</translation>
@@ -4287,7 +4300,7 @@ Gegevensoverdracht met Takeout moet ook aanstaan voor een goede werking van de a
 <translation id="370314752761795411"><ph name="PRODUCT_NAME" /> starten met <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Onderbreken</translation>
 <translation id="3712861436661566358">Profielscheiding afdwingen</translation>
-<translation id="3715589988915487768">Hiermee wordt een lijst met Provisioning Domains (PvD's) ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om proxyconfiguraties dynamisch op te halen.
+<translation id="3715589988915487768">Hiermee wordt een lijst met inrichtingsdomeinen (PvD's) ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om proxyconfiguraties dynamisch op te halen.
 
 Met dit beleid kun je een lijst met domeinnamen of resource-URI's instellen die inrichtingsdomeinen vertegenwoordigen, zoals gedefinieerd in RFC 8801 ('Discovering Provisioning Domain Names and Data'). Voor elke PvD lost de browser de bijbehorende json-configuratie op door een HTTPS-verzoek te doen naar het bekende eindpuntpad: https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd.
 

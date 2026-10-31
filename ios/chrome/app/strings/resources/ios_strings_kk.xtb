@@ -40,6 +40,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> ашылмады</translation>
 <translation id="1086486568852410168">Google Lens арқылы іздеу</translation>
 <translation id="1095093219235104018">Gemini-мен табу және толтыру</translation>
+<translation id="1096245844813536669">Сөйлеуді тоқтатқан кезде, іздеу сұрауын автоматты түрде жібереді.</translation>
 <translation id="1096992026380844478">Синхрондау параметрлері соңғы cақтық көшірме деректері негізінде қалпына келтіріледі. <ph name="BEGIN_LINK" />Нені синхрондай алатыныңызды көріңіз<ph name="END_LINK" />.</translation>
 <translation id="1103523840287552314">Әрқашан <ph name="LANGUAGE" /> тіліне аудару</translation>
 <translation id="1110772719190051587">Face ID арқылы ашу</translation>
@@ -366,7 +367,7 @@
 <translation id="20485545164632846">жаңа элемент</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> аккаунт бірдей құпия сөз пайдаланып жүр</translation>
 <translation id="205013082884273671">Экрандағы кез келген нәрсені іздеңіз</translation>
-<translation id="2053311407685904414">Мекенжай таңдаңыз</translation>
+<translation id="2053311407685904414">Мекенжайды таңдаңыз</translation>
 <translation id="2054044186557130763"><ph name="NAME" /> <ph name="EMAIL" /> ретінде кіру, ұйымыңыз басқарады.</translation>
 <translation id="2059166748188874810">Қала әкімшілігі</translation>
 <translation id="2060638295449304809">Бұл мекенжай тек осы құрылғыға сақталады. Оны басқа құрылғыларыңызда пайдалану үшін Google аккаунтына (<ph name="USER_EMAIL" />) сақтаңыз.</translation>
@@ -392,7 +393,6 @@
 <translation id="2139867232736819575">Көшірілген мәтінді іздеу</translation>
 <translation id="2140913838150159519">Қойындыны бекіту</translation>
 <translation id="2147127444698817042">Тек iPhone-да бар</translation>
-<translation id="2148326276832455306">Чаттар тексеріліп, Google AI жұмысын жақсарту үшін пайдаланылады. <ph name="BEGIN_LINK" />Әрекеттеріңізді<ph name="END_LINK" />, соның ішінде локацияңыз туралы ақпаратты басқара аласыз. <ph name="BEGIN_LINK" />Таңдауларыңыз туралы толық ақпарат алыңыз<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Сайттар мен қолданбаларға сақталған құпия сөздермен жылдам кіріңіз.</translation>
 <translation id="2149968176347646218">Байланыс қауіпсіз емес</translation>
 <translation id="2149973817440762519">Бетбелгіні өзгерту</translation>
@@ -458,7 +458,6 @@
 <translation id="2327445548174191329">Жіберген: <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Қорғалмаған</translation>
 <translation id="233375395665273385">Жою және шығу</translation>
-<translation id="2340966584724330791">Google чаттарыңызды және Gemini-мен ортақ қолданатын мәліметтеріңізді (мысалы, файлдарды, бейнелерді, скриншоттарды және фотосуреттерді) жинайды. Сондай-ақ пікірлеріңіз, Gemini арқылы кіретін веб-сайттардан алынған ақпарат, өнімді пайдалануға қатысты ақпарат және геодерек (соның ішінде құрылғыңыздың жалпылама локациясы, IP мекенжайы немесе Google аккаунтыңыздағы үй не жұмыс мекенжайлары) сақталады.</translation>
 <translation id="2350463587705616331">Сепиа фон түсі</translation>
 <translation id="2351097562818989364">Аудару параметрлеріңіз қалпына келтірілді.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} құпия сөзін Google аккаунтыңызға ({EMAIL}) сақтай аласыз.}=2{{DOMAIN_ONE} және {DOMAIN_TWO} құпия сөздерін Google аккаунтыңызға ({EMAIL}) сақтай аласыз.}=3{{DOMAIN_ONE}, {DOMAIN_TWO} және тағы {OTHER_DOMAINS_COUNT} домен құпия сөздерін Google аккаунтыңызға ({EMAIL}) сақтай аласыз.}other{{DOMAIN_ONE}, {DOMAIN_TWO} және тағы {OTHER_DOMAINS_COUNT} домен құпия сөздерін Google аккаунтыңызға ({EMAIL}) сақтай аласыз.}}</translation>
@@ -467,7 +466,7 @@
 <translation id="2359043044084662842">Аудару</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2360196772093551345">Сайттың мобильдік нұсқасын сұрау</translation>
-<translation id="2360272811987888433">Аккаунтқа қолмен кіру</translation>
+<translation id="2360272811987888433">Қолмен кіру</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> аккаунтымен кірдіңіз. <ph name="USER_EMAIL" />. Параметрлерді ашады.</translation>
 <translation id="2367025302166767427">Ақпаратыңызды толтыру кезінде қате шықты</translation>
 <translation id="2371084566192454134">Қойындылар мен қойындылар топтары</translation>
@@ -720,6 +719,7 @@
 <translation id="3186796054637504691">Тарих пен веб-сайт деректерін өшіру</translation>
 <translation id="3190558889382726167">Құпия сөз сақталды</translation>
 <translation id="3190736958609431397">Бақылауды тоқтату</translation>
+<translation id="3192820089569442694">Деректерді пайдаланудан бас тарту туралы сұрауыңызды өңдеу кезінде бірдеңе дұрыс болмады.</translation>
 <translation id="3208260410153224535">Ұйымыңыз аккаунтқа кіруді өшірді. Жаңа бетбелгілер, құпия сөздер және т.б. тек осы құрылғыда сақталады.</translation>
 <translation id="3211969308836412674">Сайтты босату</translation>
 <translation id="3213807041830307252">Камера мен фотосуреттер галереясындағы нәрселерді сатып алуға, аударуға және анықтауға болады.</translation>
@@ -741,7 +741,6 @@
 <translation id="3265736395246760288">Синхрондалған құрылғылардың кез келгенінен аккаунтқа жылдам кіріңіз.</translation>
 <translation id="3268166994745151153">Қазіргі орындалу барысы жоғалады.</translation>
 <translation id="3272527697863656322">Жабу</translation>
-<translation id="3272955648592358996">Деректеріңіз Google AI-ды жақсартады</translation>
 <translation id="3273510436356991673">Негізгі экранды бейімдеңіз.</translation>
 <translation id="327455571215090823">Смарт автотолтыру қызметі деректерді құпия сақтайды</translation>
 <translation id="3277021493514034324">Сайт мекенжайы көшірілді</translation>
@@ -787,6 +786,7 @@
 <translation id="344589138074534176">Google Lens туралы толық ақпарат</translation>
 <translation id="3449029510150690417">Жаңа қойындылар тобын жасап, атауын және түсін көрсетіңіз.</translation>
 <translation id="345348365500626747">Мекенжай табылды</translation>
+<translation id="3453878468834191501">Жаңа чат бастаған кезде, қазіргі қойынды Gemini-ға жіберіледі. <ph name="BEGIN_LINK" />Жасанды интеллект және құпиялық туралы толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Бет туралы сұрақ қою, идеяларды талқыға салу және еркін әңгімелесу үшін Gemini-мен Live чатына өтіңіз.</translation>
 <translation id="3462768334899086950">Бұл жағдайда сақталмаған файл мен ашық қойындылар жоғалады.</translation>
 <translation id="3464194322481586217">Бағаны бақылау мүмкін болмады.</translation>
@@ -850,6 +850,7 @@
 <translation id="3641456520301071208">Сайттар локацияңызды сұрай алады.</translation>
 <translation id="3642060527569456384">Қойындылар топтары барлық құрылғыңызда автоматты түрде сақталып, жаңарады.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} құпия сөз тек осы құрылғыға сақталады. Оны басқа құрылғыларыңызда пайдалану үшін Google аккаунтына ({email}) сақтаңыз.}other{{count} құпия сөз тек осы құрылғыға сақталады. Оларды басқа құрылғыларыңызда пайдалану үшін Google аккаунтына ({email}) сақтаңыз.}}</translation>
+<translation id="3657176844107584515"><ph name="EMAIL" />, Google мүшелігі.</translation>
 <translation id="3659297405161482746">Төлеу әдістері табылмады.</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 элемент таңдалды}other{# элемент таңдалды}}</translation>
 <translation id="3668035568083954765">Құпиялығыңызды қорғап, қауіпсіздікті сақтаңыз.</translation>
@@ -917,7 +918,6 @@
 <translation id="3888863481921783344">Оқиғаңызға шақыруға болатын адамдарды көрсету үшін пайдаланылады.</translation>
 <translation id="3891414008432200754">Баға</translation>
 <translation id="3892144330757387737">Тарихты осы жерден табасыз</translation>
-<translation id="3892695492576181257">Осы параметр қосулы кезде, пайдалану тарихыңыз 18 ай бойы Gemini қолданбаларын пайдалану тарихында сақталады. Бұл мәнді 3 немесе 36 айға өзгерте аласыз. Google пайдалану тарихыңызды өз қызметтерін (соның ішінде Gemini модельдерін) дамыту және жақсарту үшін, сондай-ақ тексерушілер көмегімен Google-ды, пайдаланушылар мен қоғамды қорғау үшін пайдаланады. Қызмет көрсетушілер тексерген деректер аккаунтыңызбен байланыстырылмайды және 3 жылға дейін сақталады.</translation>
 <translation id="3893858854379998374">Бетбелгілерді аккаунтыңызға сақтау үшін пайдаланылмайтын бетбелгілерді жойыңыз.</translation>
 <translation id="3897092660631435901">Мәзір</translation>
 <translation id="3904270275864974753">Карусельді өзгерту</translation>
@@ -947,6 +947,7 @@
 <translation id="3955740319737378355">Дайын</translation>
 <translation id="3955822496205734389">Оңай құпия сөздеріңіз бар.</translation>
 <translation id="3957016963627617921">Chrome-дағы Gemini-мен көбірек іс тындырыңыз</translation>
+<translation id="3957737662589242353"><ph name="NAME" />, <ph name="EMAIL" />, Google мүшелігі.</translation>
 <translation id="3958312024468322930">Оны негізгі экранның төменгі жағындағы бекіту аймағына сүйреп апарыңыз</translation>
 <translation id="3962326069546168954">Сақтау</translation>
 <translation id="3967327056943561740">Бетбелгілер</translation>
@@ -1391,7 +1392,7 @@
 <translation id="5315029634103634221">Gemini — жасанды интеллект және ол қателесуі мүмкін. <ph name="BEGIN_LINK" />Google-ға жіберілетін тиісті деректер туралы қосымша ақпарат алыңыз.<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Импортталатын ешнәрсе жоқ</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> аккаунтына кіру</translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> сайтына кіріңіз</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5318298563956633672">Бұл өнімді бұрыннан бақылап жатырсыз.</translation>
 <translation id="5327248766486351172">Аты</translation>
@@ -1428,7 +1429,6 @@
 <translation id="5447973833955560753">Қалпына келтіру құпия сөзі</translation>
 <translation id="5448623529214315261">Сақталған фотосурет: <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Күрделі құпия сөзді пайдалану:</translation>
-<translation id="5453088693079603292">Қандай әрекет жиналады?</translation>
 <translation id="5454211924362324495">Басқалардың құпия сөзіңізді пайдалануын тоқтату үшін оны <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> веб-сайтында<ph name="END_LINK" /> өзгертіңіз.</translation>
 <translation id="5457082343331641453">Іздеу өрісіне қосу</translation>
 <translation id="5457226814769348910">Офлайн нұсқасын ашу</translation>
@@ -1542,7 +1542,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="5801568494490449797">Параметрлер</translation>
 <translation id="5803566855766646066">Осы жаңа картаны шынымен де жабу керек пе?</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
-<translation id="58081802114142635">Әрекеттеріңіз Google AI-ды жақсартады</translation>
 <translation id="5817176759448082654">Құпия сөздерді тексеру</translation>
 <translation id="5818161931099046557">Google аккаунтында өзгерту</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> басқарады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
@@ -1591,7 +1590,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="5971459446352190251">QR кодын іздеу</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 бетбелгі жойылды}other{{count} бетбелгі жойылды}}</translation>
 <translation id="5972844218283131174">Барлық таңдаудан бас тарту</translation>
-<translation id="597482816780655631">Gemini – жасанды интеллект және ол қателесуі мүмкін (мысалы, адамдар туралы қате жауап беруі мүмкін). Кейбір контент барлығына жарамауы мүмкін. Чаттар тексеріліп, Google AI жұмысын жақсарту үшін пайдаланылады. <ph name="BEGIN_LINK" />Таңдауларыңыз туралы ақпарат алыңыз.<ph name="END_LINK" /> Біздің <ph name="BEGIN_LINK" />Шарттарымыз<ph name="END_LINK" /> бен <ph name="BEGIN_LINK" />Құпиялық мәлімдемеміз<ph name="END_LINK" /> қолданылады.</translation>
 <translation id="5976160379964388480">Басқалар</translation>
 <translation id="5977976211062815271">Осы құрылғыда</translation>
 <translation id="5986043348928676121">Келесі</translation>
@@ -1609,7 +1607,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="6027945736510816438"><ph name="WEBSITE" /> сайтын меңзедіңіз бе?</translation>
 <translation id="6032845897905314562">жаңа функция</translation>
 <translation id="6038823991892265570">Google жадын реттеу</translation>
-<translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6042308850641462728">Жаю</translation>
 <translation id="6045460247888249350">Атауын енгізіңіз</translation>
@@ -1626,6 +1623,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="6078236141387574983">Парақ биіктігін қайта реттеңіз.</translation>
 <translation id="6084848228346514841">Қойындыларды таңдау</translation>
 <translation id="6089212833343035912">Google Password Manager PIN коды</translation>
+<translation id="6090690847556987004">Бұл параметрде бірдеңе дұрыс болмады. Chrome мен iOS-ті жаңартып, құрылғыны өшіріп қосыңыз да, әрекетті қайталаңыз. Бұл қате қайталана берсе, iPhone құрылғыңыз бұл параметрге қолдау көрсетпеуі мүмкін.</translation>
 <translation id="6090760257419195752">Жабылған ескертулер</translation>
 <translation id="6094325891006032858">Күшейтілген Safe Browsing қосыңыз</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> табылды</translation>
@@ -1817,7 +1815,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> және <ph name="THIRD_WEBSITE" /> құпия сөздері жойылады. Аккаунттарыңыз жойылмайды.</translation>
 <translation id="661266467055912436">Интернеттегі сіздің және басқалардың қауіпсіздігін күшейтеді.</translation>
 <translation id="6612912757320004438">Қойындылар хабарландыруларына рұқсат беру…</translation>
-<translation id="6613372200395638275">Жекелендірілген көмек көрсету үшін Gemini деректеріңіздің кейбір бөлігін (мысалы, чаттардың бөліктерін, локацияңызды және басқа да қатысты ақпаратты) Maps және Flights сияқты басқа Google қызметтерімен ортақ қолданады. Gemini қолданбаларын пайдалану тарихын кейінірек өшірсеңіз де, бұл қызметтер осы ақпаратты өз жұмысын жақсарту үшін пайдалануы мүмкін. Толық ақпаратты <ph name="BEGIN_LINK" />Gemini қолданбаларының құпиялық орталығынан<ph name="END_LINK" /> алыңыз.</translation>
 <translation id="6617761071025228250">Мәтінді тазалау</translation>
 <translation id="6619015782482868078">Теңіз түсті тақырып</translation>
 <translation id="6620279676667515405">Бас тарту</translation>
@@ -1977,7 +1974,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="7091023926159231962">{count,plural, =1{{count} құпия сөз импортталмады}other{{count} құпия сөз импортталмады}}</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> аккаунтына арналған Google Құпия сөз менеджеріне</translation>
 <translation id="7097046145876891318">Бағаның уақыт өте келе қалай өзгергенін көру үшін мекенжай жолағындағы баға тарихын түртіңіз.</translation>
-<translation id="7098554251807199977">Gemini-мен арадағы әңгімелеріңіз де, <ph name="BEGIN_LINK" />Google Workspace-тегі деректеріңіз<ph name="END_LINK" /> де тексерілмейді немесе жасампаз жасанды интеллект модельдерін жақсарту үшін пайдаланылмайды.</translation>
 <translation id="7102005569666697658">Жүктеп алынуда…<ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Мәзір → Параметрлер → Төлеу әдістері</translation>
 <translation id="7108338896283013870">Жасыру</translation>
@@ -2122,6 +2118,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="7557508262441527045">Аккаунттан шыққансыз.</translation>
 <translation id="7561196759112975576">Әрқашан</translation>
 <translation id="7561982940498449837">Мәзірді жабу</translation>
+<translation id="7562347727679121642">Іздеу сұрауына сурет қосу</translation>
 <translation id="7566349809380613217">Ашық <ph name="GROUP_TITLE" />, <ph name="NUMBER_OF_TABS" /> ортақ тобы, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Бетбелгілер жасырылған.</translation>
 <translation id="7575664680938145959">Бір рет түртіп, ашыңыз</translation>
@@ -2417,7 +2414,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8439758443371991593">"Оқу тізіміне қосу" опциясын жасыру</translation>
 <translation id="8443986842926457191">URL мекенжайының ұзындығы 2048 таңба шегінен асып кеткен.</translation>
 <translation id="8449869326050867919">Құпия сөз жіберілді</translation>
-<translation id="8461708300275916315">18 жасқа толмаған болсаңыз</translation>
 <translation id="8473815223723723001">Суретті Gemini көмегімен өзгерту</translation>
 <translation id="8473863474539038330">Мекенжайлар және басқа ақпарат</translation>
 <translation id="8474378002946546633">Хабарландыруларға рұқсат беру</translation>
@@ -2497,7 +2493,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8672733398999596205">Барлығын қосу</translation>
 <translation id="8674716540979958118">Құпия сөздеріңіз ұрланған.</translation>
 <translation id="8679900250380464358">Оқу тізіміне қосу</translation>
-<translation id="8680643216091361291"><ph name="BEGIN_LINK" />Пайдалану тарихын сақтау<ph name="END_LINK" /> параметрі әдепкісінше өшірулі болады. Бұл параметр өшірулі кезде, Google чаттарыңызды 3 күн сақтайды. Олар Gemini қолданбаларының дұрыс істеуіне, қауіпсіздікті қамтамасыз етуге және мәселелерді шешу үшін пікірлеріңізді пайдалануға көмектеседі. Google AI-ды барлық пайдаланушы үшін жақсартуға көмектескіңіз келсе, "Пайдалану тарихын сақтау" параметрін қоса аласыз.</translation>
 <translation id="8680787084697685621">Аккаунттың кіру мәліметтері ескірген.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" микрофоныңызды пайдалана алмайды.</translation>
 <translation id="8690752723634292147">Жоюды растаңыз</translation>
@@ -2555,7 +2550,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="882557203579758546">Беттен табу…</translation>
 <translation id="8829809207373502270">Бұл кіру кілті енді істемейді. Өйткені ол <ph name="WEBSITE" /> веб-сайтынан жойылған. Жақында осы жерден де жойылады. <ph name="BEGIN_LINK" />Кіру кілттері туралы ақпарат<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Белсенді емес қойындының барлығын жабу</translation>
-<translation id="8831871601813227635"><ph name="BEGIN_LINK" />Шарттарымыз<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Корея тұтынушыларының геодерегін пайдалану шарттары<ph name="END_LINK" /> және <ph name="BEGIN_LINK" />Құпиялық мәлімдемесі<ph name="END_LINK" /> қолданылады. Чаттар тексеріліп, Google AI жұмысын жақсарту үшін пайдаланылады. Gemini – жасанды интеллект және ол қателесуі мүмкін (мысалы, адамдар туралы қате жауап беруі мүмкін). Кейбір контент барлығына жарамауы мүмкін. <ph name="BEGIN_LINK" />Әрекеттеріңізді<ph name="END_LINK" />, соның ішінде локацияңыз туралы ақпаратты басқара аласыз. <ph name="BEGIN_LINK" />Таңдауларыңыз туралы толық ақпарат алыңыз.<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Жариялаушы бойынша сұрыптау</translation>
 <translation id="884351711508006491">Ақпаратыңыз құрылғыңызға сақталды.</translation>
 <translation id="8844136307393039959">Бақыланатын тауардың бағасы төмендеді</translation>
@@ -2636,6 +2630,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="9090979472668095374">Жауаптарды дыбыстау</translation>
 <translation id="9094033019050270033">Құпия сөзді жаңарту</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> құпия сөзді жою керек пе?</translation>
+<translation id="909874878420399003">Автоматты түрде жіберу</translation>
 <translation id="9099233023029360602">Қандай аккаунтты пайдалану қажеттігін әр жолы сұрау</translation>
 <translation id="9099821309562615674">Аударатын мәтіннің анық екенін және кадрға сыйып тұрғанын тексеріңіз.</translation>
 <translation id="9100610230175265781">Құпия фраза қажет</translation>
@@ -2669,6 +2664,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="9203951165704618409">Шолу тәжірибесін бейімдеу үшін мекенжай жолағын жоғарыдан төменге ауыстыруға болады.</translation>
 <translation id="9205189991633470489">Инкогнито құлпы</translation>
 <translation id="9206887540681440657">Жылдамдық</translation>
+<translation id="9218088788182688902">Бұл параметрде бірдеңе дұрыс болмады. Chrome мен iPadOS-ті жаңартыңыз, содан кейін құрылғыны өшіріп қосып, әрекетті қайталаңыз. Бұл қате қайталана берсе, iPad құрылғыңыз бұл параметрге қолдау көрсетпеуі мүмкін.</translation>
 <translation id="9218430445555521422">Әдепкі ретінде орнату</translation>
 <translation id="9219103736887031265">Кескіндер</translation>
 <translation id="9219154867334666734">Қойындыларды іздеу…</translation>

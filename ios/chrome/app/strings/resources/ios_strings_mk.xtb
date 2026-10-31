@@ -40,6 +40,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> не можеше да се отвори</translation>
 <translation id="1086486568852410168">Пребарај со Google Lens</translation>
 <translation id="1095093219235104018">Наоѓајте и пополнувајте со Gemini</translation>
+<translation id="1096245844813536669">Автоматски го поднесува вашето пребарување кога ќе престанете да зборувате</translation>
 <translation id="1096992026380844478">Поставките за синхронизација ќе се вратат согласно со последниот бекап. <ph name="BEGIN_LINK" />Погледнете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Отклучете со ID на лик</translation>
@@ -392,7 +393,6 @@
 <translation id="2139867232736819575">Пребарувајте го текстот што го копиравте</translation>
 <translation id="2140913838150159519">Закачете картичка</translation>
 <translation id="2147127444698817042">Достапно само на iPhone</translation>
-<translation id="2148326276832455306">Разговорите се прегледуваат и се користат за подобрување на Google AI. Може <ph name="BEGIN_LINK" />да управувате со вашата активност<ph name="END_LINK" />, вклучително и со податоците за вашата локација. <ph name="BEGIN_LINK" />Дознајте повеќе за вашите избори<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Брзо најавувајте се на сајтови и апликации со зачуваните лозинки.</translation>
 <translation id="2149968176347646218">Врската не е безбедна</translation>
 <translation id="2149973817440762519">Измени Обележувач</translation>
@@ -458,7 +458,6 @@
 <translation id="2327445548174191329">Од <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Без заштита</translation>
 <translation id="233375395665273385">Избриши и одјави се</translation>
-<translation id="2340966584724330791">Google ги прибира вашите разговори и нештата што ги споделувате со Gemini (како датотеки, видеа, екрани и фотографии). Прибира и повратни информации, податоци од вебсајтовите што ги посетувате со Gemini, податоци за локацијата и за користењето на производот (вклучително и општата локација на вашиот уред, IP-адресата или домашната или адресата на работа во вашата сметка на Google).</translation>
 <translation id="2350463587705616331">Боја на заднината – сепија</translation>
 <translation id="2351097562818989364">Вашите поставки за превод се ресетирани.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Лозинката за {DOMAIN_ONE} може да ја зачувате во вашата сметка на Google, {EMAIL}.}=2{Лозинките за {DOMAIN_ONE} и {DOMAIN_TWO} може да ги зачувате во вашата сметка на Google, {EMAIL}.}=3{Лозинките за {DOMAIN_ONE}, {DOMAIN_TWO} и уште {OTHER_DOMAINS_COUNT} може да ги зачувате во вашата сметка на Google, {EMAIL}.}one{Лозинките за {DOMAIN_ONE}, {DOMAIN_TWO} и уште {OTHER_DOMAINS_COUNT} може да ги зачувате во вашата сметка на Google, {EMAIL}.}other{Лозинките за {DOMAIN_ONE}, {DOMAIN_TWO} и уште {OTHER_DOMAINS_COUNT} може да ги зачувате во вашата сметка на Google, {EMAIL}.}}</translation>
@@ -720,6 +719,7 @@
 <translation id="3186796054637504691">Clear History and Website Data</translation>
 <translation id="3190558889382726167">Лозинката е зачувана</translation>
 <translation id="3190736958609431397">Отследи</translation>
+<translation id="3192820089569442694">Нешто тргна наопаку со вашето барање за откажување од користењето на податоците</translation>
 <translation id="3208260410153224535">Вашата организација го исклучи најавувањето. Новите обележувачи, лозинки и друго ќе се зачувуваат само на овој уред.</translation>
 <translation id="3211969308836412674">Откачи го сајтот</translation>
 <translation id="3213807041830307252">Купувајте, преведувајте и идентификувајте ги работите што ги гледате со камерата и фотогалеријата.</translation>
@@ -741,7 +741,6 @@
 <translation id="3265736395246760288">Најавувајте се побрзо од кој било од синхронизираните уреди.</translation>
 <translation id="3268166994745151153">Ова значи дека ќе го изгубите тековниот напредок</translation>
 <translation id="3272527697863656322">Откажи</translation>
-<translation id="3272955648592358996">Вашите податоци ја подобруваат Google AI</translation>
 <translation id="3273510436356991673">Приспособете го почетниот екран</translation>
 <translation id="327455571215090823">Попаметно автоматско пополнување што се чува приватно</translation>
 <translation id="3277021493514034324">Адресата на сајтот е копирана</translation>
@@ -787,6 +786,7 @@
 <translation id="344589138074534176">Дознајте повеќе за Google Lens</translation>
 <translation id="3449029510150690417">Создајте ја новата група картички доделувајќи ѝ име и боја</translation>
 <translation id="345348365500626747">Адресата е најдена</translation>
+<translation id="3453878468834191501">Тековната картичка се споделува со Gemini кога ќе започнете нов разговор. <ph name="BEGIN_LINK" />Дознајте повеќе за AI и приватноста<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Користете ја Live со Gemini за да прашувате за некоја страница, да смислувате идеи наглас и да разговарате.</translation>
 <translation id="3462768334899086950">Ова значи дека ќе ги изгубите незачуваната датотека и тековните картички</translation>
 <translation id="3464194322481586217">Цената не можеше да се следи.</translation>
@@ -850,6 +850,7 @@
 <translation id="3641456520301071208">Сајтовите може да прашуваат за вашата локација</translation>
 <translation id="3642060527569456384">Групите картички автоматски се зачувуваат и ажурираат на сите ваши уреди.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} лозинка е зачувана само на овој уред. За да ја користите на другите ваши уреди, зачувајте ја во вашата сметка на Google, {email}.}one{{count} лозинка се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google, {email}.}other{{count} лозинки се зачувани само на овој уред. За да ги користите на другите ваши уреди, зачувајте ги во вашата сметка на Google, {email}.}}</translation>
+<translation id="3657176844107584515"><ph name="EMAIL" />, членство на Google.</translation>
 <translation id="3659297405161482746">Не се најдени начини на плаќање</translation>
 <translation id="3662966164093827811">{count,plural, =1{Избрани: 1}one{Избрани: #}other{Избрани: #}}</translation>
 <translation id="3668035568083954765">Заштитете ја вашата приватност и останете безбедни</translation>
@@ -917,7 +918,6 @@
 <translation id="3888863481921783344">Ова ќе се користи за да ви ги покаже лицата што може да ги поканите на настанот.</translation>
 <translation id="3891414008432200754">Цена</translation>
 <translation id="3892144330757387737">Вашата историја ќе ја најдете тука</translation>
-<translation id="3892695492576181257">Кога е вклучена, вашата активност се чува во „Активноста во апликациите Gemini“ 18 месеци, а овој период може да го промените на 3 или на 36 месеци. Google ја користи вашата активност за да ги развива и да ги подобрува своите услуги (вклучително и моделите на Gemini), како и за да ги штити Google, неговите корисници и јавноста со помош на човечки прегледувачи. Податоците што ги прегледуваат давателите на услуги не се поврзани со вашата сметка и се чуваат 3 години.</translation>
 <translation id="3893858854379998374">За да зачувувате обележувачи во вашата сметка, избришете ги некористените обележувачи</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3904270275864974753">Изменете ја вртелешката</translation>
@@ -947,6 +947,7 @@
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">Имате слаби лозинки.</translation>
 <translation id="3957016963627617921">Завршувајте повеќе работи со Gemini во Chrome</translation>
+<translation id="3957737662589242353"><ph name="NAME" />, <ph name="EMAIL" />, членство на Google.</translation>
 <translation id="3958312024468322930">Повлечете ја до докот најдолу на почетниот екран</translation>
 <translation id="3962326069546168954">Зачувај</translation>
 <translation id="3967327056943561740">Обележувачи</translation>
@@ -1428,7 +1429,6 @@
 <translation id="5447973833955560753">Лозинка за враќање</translation>
 <translation id="5448623529214315261">Зачувана фотографија <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Користете силна лозинка:</translation>
-<translation id="5453088693079603292">Која активност се прибира</translation>
 <translation id="5454211924362324495">За да сопрете други да ја користат вашата лозинка, <ph name="BEGIN_LINK" />променете ја на <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Проширете го пребарувањето</translation>
 <translation id="5457226814769348910">Отвори офлајн верзија</translation>
@@ -1542,7 +1542,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5801568494490449797">Претпочитани вредности</translation>
 <translation id="5803566855766646066">Дали сигурно сакате да ја отфрлите новава картичка?</translation>
 <translation id="5804241973901381774">Дозволи</translation>
-<translation id="58081802114142635">Вашата активност ја подобрува Google AI</translation>
 <translation id="5817176759448082654">Password Checkup</translation>
 <translation id="5818161931099046557">Изменете во сметката на Google</translation>
 <translation id="5819208479324046259">Управувано од <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -1591,7 +1590,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5971459446352190251">Пребарување QR-кодови</translation>
 <translation id="5971872012779224351">{count,plural, =1{Избришан е 1 обележувач}one{Избришани се {count} обележувач}other{Избришани се {count} обележувачи}}</translation>
 <translation id="5972844218283131174">Поништи го изборот на сите</translation>
-<translation id="597482816780655631">Gemini е AI и може да прави грешки, вклучително и грешки за луѓе. Некои содржини може да не се соодветни за сите. Разговорите се прегледуваат и се користат за подобрување на Google AI. <ph name="BEGIN_LINK" />Дознајте повеќе за вашите избори.<ph name="END_LINK" /> Важат нашите <ph name="BEGIN_LINK" />Услови<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Известување за приватност<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Други</translation>
 <translation id="5977976211062815271">На уредов</translation>
 <translation id="5986043348928676121">Следно</translation>
@@ -1609,7 +1607,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6027945736510816438">Дали мислевте на <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">нова функција</translation>
 <translation id="6038823991892265570">Управувајте со просторот на Google</translation>
-<translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6042308850641462728">Повеќе</translation>
 <translation id="6045460247888249350">Додајте наслов</translation>
@@ -1626,6 +1623,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6078236141387574983">Приспособете ја висината на листот повторно</translation>
 <translation id="6084848228346514841">Изберете картички</translation>
 <translation id="6089212833343035912">PIN за Google Password Manager</translation>
+<translation id="6090690847556987004">Нешто тргна наопаку со поставкава. Ажурирајте ги Chrome и iOS, па рестартирајте го уредот за да се обидете повторно. Ако не се реши ова, вашиот iPhone можеби не ја поддржува поставкава.</translation>
 <translation id="6090760257419195752">Отфрлени опомени</translation>
 <translation id="6094325891006032858">Вклучете „Подобрено безбедно прелистување“</translation>
 <translation id="6096965253650248286">Најдени: <ph name="COUNT" /></translation>
@@ -1817,7 +1815,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6609890790934458793">Лозинките за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и <ph name="THIRD_WEBSITE" /> ќе се избришат. Сметките нема да се избришат.</translation>
 <translation id="661266467055912436">Ја подобрува безбедноста за вас и сите останати на интернет.</translation>
 <translation id="6612912757320004438">Дозволете известувања во картичките…</translation>
-<translation id="6613372200395638275">За да обезбеди приспособена помош, Gemini споделува некои од вашите податоци (како делови од разговорите, локацијата и други релевантни податоци) со други услуги на Google, како „Карти“ и „Летови“. Тие услуги може да ги користат податоците за подобрување, дури и ако подоцна ја избришете вашата „Активност во апликациите Gemini“. Дознајте повеќе во <ph name="BEGIN_LINK" />Местото за приватност за апликациите Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Избриши го текстот</translation>
 <translation id="6619015782482868078">Тема во боја на аквамарин</translation>
 <translation id="6620279676667515405">Откажи</translation>
@@ -1977,7 +1974,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7091023926159231962">{count,plural, =1{Не можеше да се увезе {count} лозинка}one{Не можеше да се увезат {count} лозинка}other{Не можеше да се увезат {count} лозинки}}</translation>
 <translation id="7095110968493193530">До Google Password Manager за <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Во лентата за адреса, допрете ја историјата на цени за да ги видите промените на цените со текот на времето</translation>
-<translation id="7098554251807199977">Разговорите со Gemini и <ph name="BEGIN_LINK" />податоците од Google Workspace<ph name="END_LINK" /> нема ниту да се прегледуваат ниту да се користат за подобрување на моделите на генеративната AI.</translation>
 <translation id="7102005569666697658">Се презема… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Мени → Поставки → Начини на плаќање</translation>
 <translation id="7108338896283013870">Скриј</translation>
@@ -2099,6 +2095,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7486006552035434095">Уредите нека ви бидат синхронизирани</translation>
 <translation id="7491131399623468277">Отворете „Поставки“…</translation>
 <translation id="7491161827858509164">За да ги видите датотеките што сте ги презеле претходно, отворете <ph name="BEGIN_LINK" />Датотеки<ph name="END_LINK" /></translation>
+<translation id="7496554840683586365">Овој сајт се обидува да ја отвори App Store. Ова ќе го сопре режимот „Инкогнито“.</translation>
 <translation id="7498234416455752244">Продолжете да изменувате</translation>
 <translation id="7500244509706269886">Пополни го формуларот автоматски</translation>
 <translation id="750493650310597496">0 избрани</translation>
@@ -2122,6 +2119,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7557508262441527045">Одјавени сте</translation>
 <translation id="7561196759112975576">Секогаш</translation>
 <translation id="7561982940498449837">Затвори го менито</translation>
+<translation id="7562347727679121642">Додајте слика во пребарувањето</translation>
 <translation id="7566349809380613217">Отворете ја споделената група <ph name="GROUP_TITLE" /> со <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Дестинацијата „Обележувачи“ е скриена</translation>
 <translation id="7575664680938145959">Отворање со еден допир</translation>
@@ -2417,7 +2415,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8439758443371991593">Скриј „Додај во список за читање“</translation>
 <translation id="8443986842926457191">URL-адресата има повеќе од 2.048 знаци.</translation>
 <translation id="8449869326050867919">Лозинката е споделена</translation>
-<translation id="8461708300275916315">Ако сте на возраст под 18 години</translation>
 <translation id="8473815223723723001">Изменете ја сликата со Gemini</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="8474378002946546633">Дозволете известувања</translation>
@@ -2497,7 +2494,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8672733398999596205">Овозможи ги сите</translation>
 <translation id="8674716540979958118">Имате компромитирани лозинки.</translation>
 <translation id="8679900250380464358">Додај во „Список за читање“</translation>
-<translation id="8680643216091361291">Стандардно, вашата поставка <ph name="BEGIN_LINK" />Чувај ја активноста<ph name="END_LINK" /> е исклучена. Кога е исклучена, Google ги зачувува вашите разговори 3 дена. Ги користи за да овозможи правилно функционирање на апликациите Gemini и за да ги заштити, а вашите повратни информации ги користи за решавање проблеми. Може да ја вклучите поставката „Чувај ја активноста“ за да помогнете да се подобри Google AI за сите.</translation>
 <translation id="8680787084697685621">Деталите за најавување на сметка се застарени.</translation>
 <translation id="868648444055742370">„<ph name="SITE_DOMAIN" />“ нема дозвола да пристапува до микрофонот</translation>
 <translation id="8690752723634292147">Потврдете го бришењето</translation>
@@ -2555,7 +2551,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="882557203579758546">Најди на страницата…</translation>
 <translation id="8829809207373502270">Овој криптографски клуч веќе не функционира. Избришан е од <ph name="WEBSITE" />, а ќе се избрише и одовде наскоро. <ph name="BEGIN_LINK" />Информации за криптографските клучеви<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Затвори ги сите неактивни картички</translation>
-<translation id="8831871601813227635">Важат нашите <ph name="BEGIN_LINK" />Услови<ph name="END_LINK" />, <ph name="BEGIN_LINK" />„Услови за локација“ за Кореја<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Известување за приватност<ph name="END_LINK" />. Разговорите се прегледуваат и се користат за подобрување на Google AI. Gemini е AI и може да прави грешки, вклучително и грешки за луѓе. Некои содржини може да не се соодветни за сите. Може <ph name="BEGIN_LINK" />да управувате со вашата активност<ph name="END_LINK" />, вклучително и со податоците за вашата локација. <ph name="BEGIN_LINK" />Дознајте повеќе за вашите избори<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Подредете според издавач</translation>
 <translation id="884351711508006491">Вашите податоци ќе се зачуваат на вашиот уред.</translation>
 <translation id="8844136307393039959">Намалување на цената на производот што го следите</translation>
@@ -2636,6 +2631,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9090979472668095374">Изговарај ги одговорите</translation>
 <translation id="9094033019050270033">Ажурирај ја лозинката</translation>
 <translation id="9098541895599151034">Да се избришат <ph name="NUMBER_OF_ACCOUNTS" /> лозинки?</translation>
+<translation id="909874878420399003">Автоматско поднесување</translation>
 <translation id="9099233023029360602">Прашувај ме која сметка да се користи секој пат</translation>
 <translation id="9099821309562615674">Погрижете се текстот што го преведувате да биде јасен и врамен.</translation>
 <translation id="9100610230175265781">Потребна е лозинка-фраза</translation>
@@ -2669,6 +2665,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9203951165704618409">Префрлете ја лентата за адреси одозгора најдолу за приспособено доживување при прелистувањето.</translation>
 <translation id="9205189991633470489">Заклучување картички „Инкогнито“</translation>
 <translation id="9206887540681440657">Брзина</translation>
+<translation id="9218088788182688902">Нешто тргна наопаку со поставкава. Ажурирајте ги Chrome и iPadOS, па рестартирајте го уредот за да се обидете повторно. Ако не се реши ова, вашиот iPad можеби не ја поддржува поставкава.</translation>
 <translation id="9218430445555521422">Постави како стандардно</translation>
 <translation id="9219103736887031265">Слики</translation>
 <translation id="9219154867334666734">Пребарајте ги картичките…</translation>

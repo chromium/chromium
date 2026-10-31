@@ -150,7 +150,6 @@
 <translation id="1247030632403369975">Aluminum</translation>
 <translation id="1249643768796040660">מחיקת המידע הזה</translation>
 <translation id="1253846494229886276">צילום המסך נשמר</translation>
-<translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (מסונכרנים)</translation>
 <translation id="1255931290436977164">דרכון</translation>
 <translation id="1256368399071562588">‏&lt;p&gt;אם ניסית להיכנס לאתר והוא לא נפתח, קודם יש לנסות לפתור את הבעיה בעזרת השלבים הבאים:&lt;/p&gt;
     &lt;ol&gt;
@@ -691,6 +690,7 @@
 <translation id="2155260325161282517">‏5x7 אינץ'</translation>
 <translation id="2156467141257470387">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הפעולה הזו לא תשנה את כתובת העבודה הקיימת שלך. הכתובת תישמר בחשבון Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">התראות על מעקב אחר מחירים</translation>
+<translation id="2158964559178498011">‏המילוי האוטומטי פועל בעוד מקומות – כדי למצוא ולמלא פרטים, צריך ללחוץ פעמיים על Ctrl</translation>
 <translation id="2161656808144014275">טקסט</translation>
 <translation id="2162435186600002085">הלוגו הראשי בכותרת</translation>
 <translation id="2162535140284745414">‏הצעות בזמן אמת יעזרו לך לגלות דרכים חדשות לגלוש באמצעות AI.</translation>
@@ -1649,6 +1649,7 @@
 <translation id="3749600200023337912">‏כדי לבצע את התשלום הזה, יכול להיות שייעשה שימוש באמצעי התשלום האוטומטי ששמרת. כדי להשבית את הארנקים האלקטרוניים או את אפליקציית התשלומים ב-Chrome, צריך לעבור אל <ph name="BEGIN_LINK1" />הגדרות התשלומים<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">לשמור את הכתובת בחשבון?</translation>
 <translation id="3752543821772132562">המערכת התעלמה מהמדיניות הזו כי המדיניות <ph name="POLICY_NAME" /> לא מוגדרת.</translation>
+<translation id="3753412199586870466">פתיחת החלונית הצדדית</translation>
 <translation id="3754210790023674521">יציאה ממצב תמונה בתוך תמונה</translation>
 <translation id="3757511311058373406">מסננים לפעולות אוטומטיות בדפדפן</translation>
 <translation id="3759461132968374835">לא התקבלו דיווחים על קריסות לאחרונה. קריסות שהתרחשו בזמן שאפשרות הדיווח על קריסות הייתה מושבתת לא יופיעו כאן.</translation>
@@ -2201,6 +2202,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">לתרגם את הדף?</translation>
 <translation id="468314109939257734">הצגת המספר של הכרטיס הווירטואלי שלך</translation>
+<translation id="4684818564800397688">המילוי האוטומטי פועל בעוד מקומות – כדי למצוא ולמלא פרטים, צריך ללחוץ פעמיים על ⌘</translation>
 <translation id="4686942373615810936">נוצרה עכשיו</translation>
 <translation id="4690205240253392065">בחירת ספק לתשלום אחר כך</translation>
 <translation id="469028408546145398">הכפתור לסגירת החלונות הפרטיים, מפעילים אותו כדי לסגור את כל החלונות הפרטיים שפתוחים כרגע</translation>
@@ -2953,7 +2955,6 @@ Del</translation>
 <translation id="5902204772823742902">‏הוספת רישיון נהיגה באופן מאובטח ל-Google Wallet</translation>
 <translation id="5903264686717710770">כותרת:</translation>
 <translation id="5905671155741555195">‏הכתובת בעבודה יכולה לעזור לך בשירותי Google, למשל לקבל תוצאות חיפוש רלוונטיות יותר ומסלולים במפות Google. אפשר לערוך או למחוק את הכתובת <ph name="BEGIN_LINK" />בחשבון <ph name="ACCOUNT" /> ב-Google<ph name="END_LINK" />.</translation>
-<translation id="5908541034548427511"><ph name="TYPE_1" /> (מסונכרנים)</translation>
 <translation id="5910140988253729859">ביטול המילוי האוטומטי</translation>
 <translation id="5911110632211230665">הפתיחה נחסמה</translation>
 <translation id="5912796581727968237">‏לפתיחת Google Wallet</translation>
@@ -3023,7 +3024,6 @@ Del</translation>
 <translation id="6018650639991193045">‏בהגדרות של Chrome אפשר למחוק את היסטוריית הגלישה, את קובצי ה-Cookie, את המטמון ועוד</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">‏לא ניתן לשמור את הסרטון ב-OneDrive</translation>
-<translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (מסונכרנים)</translation>
 <translation id="6025471531651464742">הוספת קבצים</translation>
 <translation id="6028591542479806248">ניהול של ההתראות בנייד ובאימייל</translation>
 <translation id="6029805223627823735">‏‫<ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, כדי לפתוח חלון מבודד חדש לגלישה פרטית, צריך ללחוץ על Tab ואז על Enter</translation>
@@ -3745,7 +3745,6 @@ Del</translation>
 <translation id="7240120331469437312">שם חלופי של נושא האישור</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244061187185055290">בכמה מילים, צריך לתאר מה מחפשים</translation>
 <translation id="7247459554233215758">לוחצים על פרטי הכרטיס כדי להוסיף אותו לביצוע תשלום.</translation>
 <translation id="7250174481516136841"><ph name="BEGIN_LINK" />מידע נוסף על ההטבות בכרטיסים<ph name="END_LINK" /></translation>
 <translation id="7251437084390964440">‏תצורת הרשת אינה תואמת לתקן ONC. ייתכן שחלקים מהתצורה לא ייכללו בייבוא.

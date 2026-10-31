@@ -22,6 +22,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1125124144982679672">Wie gebruik tans Chrome?</translation>
 <translation id="1142745911746664600">Kan nie Chrome opdateer nie</translation>
 <translation id="1148360048981192980">Jy sal ’n porboodskap sien om Google Wagwoordbestuurder te gebruik wanneer jy volgende keer Chrome op jou <ph name="DEVICE_TYPE" /> oopmaak.</translation>
+<translation id="1150418667633096194">Die “Google Search-kantpaneel”-knoppie op die nutsbalk het ’n nuwe ikoon. Klik dit om vrae te vra terwyl jy met die Google Search-kantpaneel blaai.</translation>
 <translation id="1152920704813762236">Meer oor ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Maak in Chrome oop</translation>
 <translation id="1157952955648710254">Maak Google Search-kantpaneel toe</translation>
@@ -52,11 +53,13 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1439793550875056299">Speld Chrome vas</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Jou admin vereis dat jy Chrome herbegin om ’n opdatering toe te pas. Jou geïsoleerde venster sal nie weer oopmaak nie.}other{Jou admin vereis dat jy Chrome herbegin om ’n opdatering toe te pas. Jou # geïsoleerde vensters sal nie weer oopmaak nie.}}</translation>
 <translation id="146866447420868597">Meld by Chrome aan?</translation>
+<translation id="1470136641087909499">Jy kan Google Search in Chrome weer oopmaak om vrae te vra terwyl jy blaai</translation>
 <translation id="1476347941828409626">&amp;Bestuur Chrome-profiele</translation>
 <translation id="1492280395845991349">Herbegin om Chrome-opdatering te voltooi</translation>
 <translation id="1497802159252041924">Installeerfout: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Pasmaak jou nuwe Chrome-profiel</translation>
 <translation id="1518627427551567882">Hierdie bladsy is beskermd</translation>
+<translation id="15408169957028265">Maak Google Search weer in Chrome oop</translation>
 <translation id="1547295885616600893">Chrome-bedryfstelsel word deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" /> moontlik gemaak.</translation>
 <translation id="1547469039832541117">Beëindig die gemerkte taak.</translation>
 <translation id="1553358976309200471">Dateer Chrome op</translation>
@@ -89,6 +92,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1713301662689114961">{0,plural, =1{Chrome sal oor 'n uur herbegin}other{Chrome sal oor # uur herbegin}}</translation>
 <translation id="1722488837206509557">Hiermee sal jy uit beskikbare toestelle kan kies en inhoud daarop kan wys.</translation>
 <translation id="1724094881572874997">Jou organisasie sal sekere inligting kan bekyk of bestuur om jou werk op Chrome te beveilig wanneer jy by Chrome aangemeld is.</translation>
+<translation id="1769661297620183092">Jy kan die Google Search-paneel weer oopmaak om vrae te vra terwyl jy blaai</translation>
 <translation id="177180974022074201">Probeer met Gemini in Chrome</translation>
 <translation id="1786003790898721085">Maak seker dat jy by Chrome aangemeld is op jou <ph name="TARGET_DEVICE_NAME" /> en probeer dan weer stuur.</translation>
 <translation id="1786044937610313874">Kortpaaie maak oop in Chrome</translation>
@@ -107,6 +111,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1880677175115548835">Kies teks</translation>
 <translation id="1896602904211344018">Kry die Chrome-app</translation>
 <translation id="1919130412786645364">Laat Chrome-aanmelding toe</translation>
+<translation id="1925069572871307609">Jy het Windows 10-weergawe 1809 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik ’n ouer weergawe van Windows 10.</translation>
 <translation id="1953553007165777902">Laai tans af … <ph name="MINUTE" /> minuut(minute) oor</translation>
 <translation id="1975400514743766362">Gebruik die Chrome-app op jou <ph name="DEVICE_TYPE" /> om die veiligheid van Google saam te neem terwyl jy aan die beweeg is</translation>
 <translation id="1979600810166324878">Bly veiliger terwyl jy aan die beweeg is met Verbeterde Veiligblaai op Chrome vir iOS</translation>
@@ -120,6 +125,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2040220733769034247">Skandeer die QR-kode met jou foon om Chrome af te laai en by jou Google-rekening aan te meld.</translation>
 <translation id="2044908892530830113">Wys Soek met Chrome in Mac-kieslysbalk en skakel kortpadsleutel aan</translation>
 <translation id="2050189601866423230">Jy kan Google Search KI-modus vasspeld om vrae te vra terwyl jy blaai</translation>
+<translation id="2060311596979880693">Sukses! Jy kan nou maklik vrae vra terwyl jy met Google Search in Chrome blaai</translation>
 <translation id="2091012649849228750">Jy het Windows 10 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex-bepalings</translation>
 <translation id="2094919256425865063">Verlaat Chrome in elk geval?</translation>
@@ -145,6 +151,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2216543877350048334">Meld af om jou Google-rekening uit Chrome te verwyder</translation>
 <translation id="2236949375853147973">My aktiwiteit</translation>
 <translation id="22791603784558743">Maak Gemini in Chrome Dev toe</translation>
+<translation id="2283228908180457226">Nuwe ikoon, dieselfde kortpad: Klik om vrae te vra terwyl jy met die Google Search-kantpaneel blaai.</translation>
 <translation id="2290014774651636340">Google API-sleutels ontbreek. Sommige funksies van Google Chrome sal gedeaktiveer word.</translation>
 <translation id="2290095356545025170">Is jy seker jy wil Google Chrome deïnstalleer?</translation>
 <translation id="2295218613066132598">Wys Chrome-werfkortpaaie</translation>
@@ -207,6 +214,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="2861074815332034794">Dateer tans Chrome op (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">Meld by Chrome aan</translation>
 <translation id="2875053229394024379">Wanneer jy met jou Google-rekening by Chrome aanmeld, kan jy jou Chrome-profiel met Gemini gebruik. <ph name="BEGIN_LINK" />Vind uit hoe om by Chrome aan te meld<ph name="END_LINK" /></translation>
+<translation id="2876152561415416331">Maak die Google Search-paneel weer oop</translation>
 <translation id="2876628302275096482">Kom meer te wete oor <ph name="BEGIN_LINK" />hoe Chrome jou data privaat hou<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Taakbestuurder</translation>
 <translation id="2888126860611144412">Meer oor Chrome</translation>
@@ -222,6 +230,8 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="3003694935412297923">Alle take</translation>
 <translation id="3018957014024118866">Vee ook data uit Chrome uit (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Herbegin om Chrome OS Flex op te dateer</translation>
+<translation id="3034219227076811559">Google Search in Chrome</translation>
+<translation id="3037190258341683404">Jy kan Google Search in Chrome vasspeld om vrae te vra terwyl jy blaai</translation>
 <translation id="3037517125981011456">Wys porboodskappe om by Chrome aan te meld.</translation>
 <translation id="3037838751736561277">Google Chrome is in agtergrondmodus.</translation>
 <translation id="3038232873781883849">Wag tans om te installeer...</translation>
@@ -328,6 +338,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="3968962723676998462">Voer jou wagfrase in om Chrome-data in jou rekening, <ph name="ACCOUNT_EMAIL" />, te gebruik en te stoor</translation>
 <translation id="3973161977468201858">Google Chrome wil jou Google Wagwoordbestuurder-data uitvee. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
+<translation id="3984557288004650913">Jy kan Google Search in Chrome vanaf die “Google Search in Chrome”-knoppie op die nutsbalk weer oopmaak om vrae te vra terwyl jy blaai</translation>
 <translation id="400161754580828648">Om jou skerm te deel, moet jy skermopname vir Chrome in Stelselinstellings toelaat.</translation>
 <translation id="4012899077942246412">Terwyl jy aangemeld is, kan jy jou wagwoorde en meer uit jou Google-rekening in Chrome gebruik. Gaan na “Jou rekening in Chrome” toe om dit te verander.</translation>
 <translation id="4022972681110646219">Vertaal skerm</translation>
@@ -402,6 +413,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="4768676935374695498">Soek hierdie video met Google Lens</translation>
 <translation id="479167709087336770">Dit gebruik dieselfde speltoetser wat in Google-soektog gebruik word. Teks wat jy in die blaaier tik, word na Google toe gestuur. Jy kan altyd hierdie gedrag in instellings verander.</translation>
 <translation id="4793679854893018356">Vinnd uit hoe Chrome jou veilig hou</translation>
+<translation id="4803313124144656665">Maak Google Search in Chrome toe</translation>
 <translation id="4828579605166583682">Google Chrome probeer tans bestaande wagwoorde vervang. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="4836321460899997044">Chrome-profiel</translation>
 <translation id="4839733921943823254">Speld kortpad vas</translation>
@@ -452,6 +464,7 @@ Sommige kenmerke kan dalk onbeskikbaar wees. Spesifiseer 'n ander profielgids of
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5239627039202700673">Gebruik Chrome enige tyd wanneer jy op skakels in boodskappe, dokumente en ander apps klik</translation>
 <translation id="524751727772074981">Vra enigiets, net waar jy is, met Gemini in Chrome</translation>
+<translation id="5247617065091903691">Jy kan die Google Search-kantpaneel vasspeld om vrae te vra terwyl jy blaai</translation>
 <translation id="5251420635869119124">Gaste kan Chrome gebruik sonder om iets agter te laat.</translation>
 <translation id="5271833978500241046">Gebruik hulle saam met ander Gemini-kenmerke in Chrome</translation>
 <translation id="5286907366254680517">Bespeur</translation>
@@ -473,6 +486,7 @@ Sommige kenmerke kan dalk onbeskikbaar wees. Spesifiseer 'n ander profielgids of
 Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5465210843490471889">Kies ’n Chrome-profiel om met <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> te gebruik</translation>
 <translation id="547202872422499512">Chrome begin nou wanneer Windows begin sodat jy dadelik kan begin blaai. Jy kan dit in instellings afskakel.</translation>
+<translation id="5482575505313585759">Maak die Google Search-paneel toe</translation>
 <translation id="5486346529181556467">Verbeter aanlyn veiligheid vir almal wanneer jy ’n werf aangee wat jy dink skadelik is. Kry meer inligting oor <ph name="BEGIN_LINK" />Google se beleid oor onveilige werwe.<ph name="END_LINK" /></translation>
 <translation id="5503069778428381665">Wanneer jy Google Lens op ’n rekenaar gebruik, word die bladsytitel, URL en inhoud, insluitend PDF’s, na Google toe gestuur</translation>
 <translation id="5524890928877629608">boonste linkerhoek van soekgebied: links <ph name="LEFT" />%, bo <ph name="TOP" />%</translation>
@@ -490,6 +504,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="566568153320186256">Chrome bespaar batterykrag deur agtergrondaktiwiteit en visuele effekte, soos gladde rollees en videoraamtempo’s, te beperk. <ph name="BEGIN_LINK" />Kry meer inligting oor Energiebespaarder<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Vee die Chrome-data in jou rekening uit</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Jou administrateur vra dat jy Chrome herbegin om hierdie opdatering toe te pas}=1{Jou administrateur vra dat jy Chrome herbegin om hierdie opdatering toe te pas. Jou incognitovenster sal nie weer oopgemaak word nie.}other{Jou administrateur vra dat jy Chrome herbegin om hierdie opdatering toe te pas. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
+<translation id="568656514202614970">Sukses! Jy kan nou maklik vrae vra terwyl jy met Google Search-kantpaneel blaai</translation>
 <translation id="5686916850681061684">Pasmaak en beheer Google Chrome. Iets verg jou aandag – klik vir besonderhede.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Kon nie aan die internet koppel nie. Instaanbediener vereis stawing.</translation>
@@ -517,6 +532,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5940385492829620908">Jou web, boekmerke en ander Chrome-goed woon hier.</translation>
 <translation id="5941711191222866238">Maak kleiner</translation>
 <translation id="5941830788786076944">Maak Google Chrome die verstekblaaier</translation>
+<translation id="5944731887996253728">Chrome sal opdateer wanneer jou skerm ongebruik is</translation>
 <translation id="5947104538377036631">Chrome-kortpad</translation>
 <translation id="5960071705175224773">Jou instellings is deur ’n onbekende app verander</translation>
 <translation id="5980111191913430208">Uitbreidings, apps en temas van onbekende bronne af kan jou toestel beskadig. Chrome beveel aan dat hulle net uit die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> geïnstalleer word</translation>
@@ -565,11 +581,14 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6288580400488258237">Stel Google Chrome as jou verstekblaaier en speld dit aan jou taakbalk vas</translation>
 <translation id="6291089322031436445">Chrome Dev-programme</translation>
 <translation id="6291549208091401781">Google Chrome is reeds vir alle gebruikers op jou rekenaar geïnstalleer.</translation>
+<translation id="6294638840436017818">Jy kan die Google Search-kantpaneel vanaf die “Google Search-kantpaneel”-knoppie op die nutsbalk weer oopmaak om vrae te vra terwyl jy blaai</translation>
+<translation id="6308106880471005841">Die “Google Search-paneel”-knoppie op die nutsbalk het ’n nuwe ikoon. Klik dit om vrae te vra terwyl jy met die Google Search-paneel blaai.</translation>
 <translation id="6311220991371174222">Kan nie Chrome begin nie omdat iets verkeerd geloop het met die oopmaak van jou profiel. Probeer om Chrome te herbegin.</translation>
 <translation id="6319856120645568262">Chrome het toestemming nodig om jou omgewing te karteer en jou hande na te spoor</translation>
 <translation id="6321592572353357376">Die uitbreiding “<ph name="EXTENSION_NAME" />” wil hê dat jy by Chrome moet aanmeld</translation>
 <translation id="6326175484149238433">Verwyder van Chrome af</translation>
 <translation id="6334815226785304306">Maak Google Chrome die verstekblaaier en speld dit aan die taakbalk vas</translation>
+<translation id="6339888439788291743">Nuwe ikoon, dieselfde kortpad: Klik om vrae te vra terwyl jy met Google Search KI-modus blaai.</translation>
 <translation id="63540178978900677">Chrome is nie meer jou verstekblaaier nie. Maak Chrome die verstekblaaier?</translation>
 <translation id="6357670763064300993">Gemini Enterprise in Chrome</translation>
 <translation id="6360449101159168105">Geheue is beskikbaar gemaak terwyl hierdie oortjie onaktief was om Chrome vinnig te hou. Jy kan kies om hierdie werf altyd daarvan uit te sluit om onaktief te wees.</translation>
@@ -619,6 +638,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6723445727540769832">Kry die beste van Google met die Chrome-app op jou foon</translation>
 <translation id="6734827584173583205">Jy het nie onlangs die webwerf besoek nie. Chrome het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="COUNT" /> verwyder.</translation>
 <translation id="6735387454586646204">Chrome OS Flex-stelsel</translation>
+<translation id="674891594898436429">Maak aktiewe soektog in hierdie oortjie toe</translation>
 <translation id="6750954913813541382">Chrome stuur die teks wat jy in die blaaier tik na Google om spelfoute reg te maak.</translation>
 <translation id="6760235774835597023">Maak werwe vinniger met Chrome se V8-enjin, maar maak Chrome effens minder bestand teen aanvalle. Hierdie instelling is aan.</translation>
 <translation id="677276454032249905">Verlaat Chrome in elk geval?</translation>
@@ -637,6 +657,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="689368324615299626">Kry die beste van Google met die Chrome-app op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6908182077349113099">Hou jou wagwoorde, boekmerke en geskiedenis perfek gesinkroniseer op alle toestelle. Kry maklik toegang tot die kenmerke wat jy ken en van hou deur jou verstekblaaier na Chrome op te gradeer.</translation>
+<translation id="6926772305569367352">Die “Google Search in Chrome”-knoppie op die nutsbalk het ’n nuwe ikoon. Klik dit om vrae te vra terwyl jy met Google Search in Chrome blaai.</translation>
 <translation id="6930294499209825">Hou jou Google-sagteware bygewerk. As hierdie diens gedeaktiveer of gestop word, sal jou Google-sagteware nie bygewerk gehou word nie, wat beteken dat sekuriteitskwesbaarhede kan opduik wat nie reggestel kan word nie, en dat kenmerke dalk nie sal werk nie. Hierdie diens deïnstalleer vanself wanneer geen Google-sagteware dit gebruik nie.</translation>
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jy het Windows 10 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik Windows 8.1.</translation>
@@ -673,6 +694,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> bestuur Chrome</translation>
 <translation id="7285990705317078173">Laai Chrome op jou foon af om pryse na te spoor en opletberigte te kry wanneer die prys op enige werf daal</translation>
 <translation id="7288567540154601580">Oortjies en uitbreidings</translation>
+<translation id="7290997427370476749">Jy kan die Google Search-paneel weer vanaf die “Google Search-paneel”-knoppie op die nutsbalk oopmaak om vrae te vra terwyl jy blaai</translation>
 <translation id="7296210096911315575">Belangrike gebruik- en veiligheidinligting</translation>
 <translation id="7299899569525778554">Soek vanaf rekenaar</translation>
 <translation id="7302361266603927550">Sommige van jou Chrome-data is nog nie in jou Google-rekening gestoor nie. Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
@@ -680,6 +702,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7308322188646931570">Chrome het bergingtoegang nodig om lêers af te laai</translation>
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
 <translation id="7371412052245999753">Beskerm Chrome se geheue teen ander apps op jou rekenaar.</translation>
+<translation id="7374061268215476070">Jy kan die Google Search-kantpaneel weer oopmaak om vrae te vra terwyl jy blaai</translation>
 <translation id="73786666777299047">Maak Chrome Webwinkel oop</translation>
 <translation id="7386878009611068389">Skakel oor na jou Chrome-profiel waar jy reeds aangemeld is as <ph name="USER_EMAIL_ADDRESS" /> om met jou ouers se keuses veiliger aanlyn te bly</translation>
 <translation id="7398801000654795464">Jy was as <ph name="USER_EMAIL_ADDRESS" /> by Chrome aangemeld. Gebruik asseblief dieselfde rekening om weer aan te meld.</translation>
@@ -733,6 +756,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="778331955594035129">Chrome het liggingtoestemming vir hierdie werf nodig</translation>
 <translation id="7787950393032327779">Dit lyk of die profiel tans deur 'n ander Google Chrome-proses (<ph name="PROCESS_ID" />) op 'n ander rekenaar (<ph name="HOST_NAME" />) gebruik word. Chrome het die profiel gesluit sodat dit nie gekorrupteer word nie. As jy seker is geen ander prosesse gebruik hierdie profiel nie, kan jy die profiel ontsluit en Chrome herbegin.</translation>
 <translation id="7800043020703832708">Maak Google Search in kantpaneel toe</translation>
+<translation id="7801317262080715012">Nuwe ikoon, dieselfde kortpad: Klik om vrae te vra terwyl jy met die Google Search-paneel blaai.</translation>
 <translation id="7801699035218095297">Google Chrome probeer tans om wagwoorde te kopieer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="7804364787702057554">Jou rekening in Chrome</translation>
 <translation id="7804947029129221742">Jou soekenjin is van buite Chrome af verander. Chrome het dit na die oorspronklike verstek teruggestel om jou te beskerm. <ph name="LEARN_MORE_LINK" /></translation>
@@ -787,7 +811,9 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8162006532256575008">Gebruik Chrome sonder ’n rekening</translation>
 <translation id="8172231188687329735">Kry die Chrome-app om wagwoorde te stoor terwyl jy aan die beweeg is</translation>
 <translation id="8177472873527554730">Kan nie inhoud op die bladsy vind nie</translation>
+<translation id="818985547157682832">Die “Google Search KI-modus”-knoppie op die nutsbalk het ’n nuwe ikoon. Klik dit om vrae te vra terwyl jy met Google Search KI-modus blaai.</translation>
 <translation id="8196526165798579689">Soek met Chrome Dev</translation>
+<translation id="8203105157044679380">Google Search-paneel</translation>
 <translation id="8221491193165283816">Jy blokkeer gewoonlik kennisgewings. Klik hier sodat dié werf jou in kennis kan stel.</translation>
 <translation id="8227493674161801700">Soek met Chrome Beta</translation>
 <translation id="8233224921566021881">Chrome het toegang tot jou plaaslike netwerk nodig om toestelle in die omtrek te ontdek en te gebruik</translation>
@@ -799,6 +825,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8291415872436043161">Laai Chrome af</translation>
 <translation id="829923460755755423">Voeg ’n kortpad na Google Wagwoordbestuurder by</translation>
 <translation id="8313851650939857356">Aanskakelingfout: <ph name="STARTUP_ERROR" />.</translation>
+<translation id="8321058241987390452">Sukses! Jy kan nou maklik vrae vra terwyl jy met Google Search-paneel blaai</translation>
 <translation id="8321888067342493336">Stoor as prent</translation>
 <translation id="8336463659890584292">Chrome gebruik Google-bedieners wanneer ’n werf vra om skakels op hul bladsy vooraf te laai. Dit versteek jou identiteit vir die werf wat vooraf gelaai is, maar Google vind uit watter werwe vooraf gelaai word.</translation>
 <translation id="8342675569599923794">Hierdie lêer is gevaarlik en daarom het Chrome dit geblokkeer.</translation>
@@ -809,6 +836,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8367950957770994118">Maak Gemini vinnig in Chrome oop wanneer jy dit ook al nodig het</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="8370748943308169953">QR-kode om as <ph name="USER_NAME" /> by Chrome aan te meld</translation>
+<translation id="8374507495134902558">’n <ph name="IMPORTANT_UPDATE" /> is gereed. Jy kan nou herbegin, of Chrome stel om op te dateer die volgende keer wanneer jou skerm aan en ongebruik bly vir <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">Google Search-kantpaneel</translation>
 <translation id="8377158135256176353">Wissel Gemini in Chrome Kanarie</translation>
 <translation id="8380754585531979907">Gebruik jou sleutelbord om tussen Gemini in Chrome en jou oop oortjie te navigeer.</translation>
@@ -824,10 +852,12 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 
 Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige uitvee nie. As jy nou afmeld, sal ongestoorde boekmerke uitgevee word.</translation>
 <translation id="8458117863387545390">Kry Chrome op jou foon</translation>
+<translation id="8467931559764188481">Maak aktiewe Google Search toe</translation>
 <translation id="848851325211467878">Aangemeld as <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-lidmaatskap. Maak die rekeningkieslys oop</translation>
 <translation id="8496177819998570653">Google W&amp;agwoordbestuurder</translation>
 <translation id="8498858610309223613">'n Spesiale sekuriteitsopdatering vir Google Chrome is sopas toegepas. Herbegin nou en ons sal jou oortjies teruglaai.</translation>
 <translation id="8502181052659370">Soek hierdie oortjie met Google Lens</translation>
+<translation id="8520489851087523435">Maak Google Search-kantpaneel weer oop</translation>
 <translation id="8521348052903287641">Inkomende reël vir Google Chrome Dev om mDNS-verkeer toe te laat.</translation>
 <translation id="852529348814672339">Vertoon Chrome in hierdie taal</translation>
 <translation id="8525579356836940628">Installering is gestop</translation>
@@ -836,6 +866,7 @@ Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige uitvee nie
 <translation id="8555465886620020932">Diensfout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8564408666201523086">Sukses! Jy kan nou maklik vrae vra terwyl jy met Google Search in die kantpaneel blaai</translation>
 <translation id="856656450041460113">Deursoek lys tale</translation>
+<translation id="8568499811906962479">Jy kan die Google Search-paneel vasspeld om vrae te vra terwyl jy blaai</translation>
 <translation id="8575047640889685742">Gebruik jou <ph name="BEGIN_LINK" />eie wagfrase<ph name="END_LINK" /> om al die Chrome-data in jou Google-rekening te enkripteer. Betaalmetodes en adresse van Google Pay af sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.</translation>
 <translation id="8590782867495422699">Maak Google Search KI-modus weer oop</translation>
 <translation id="8598779894319572882">Jy kan Google Search KI-modus vanaf die “Google Search KI-modus”-knoppie op die nutsbalk heropen om vrae te vra terwyl jy blaai</translation>
@@ -848,6 +879,8 @@ Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige uitvee nie
 <translation id="8656634243791296665">Maak Gemini in Chrome Dev oop</translation>
 <translation id="8669527147644353129">Google Chrome-helper</translation>
 <translation id="8679801911857917785">Dit beheer ook watter bladsy gewys word wanneer jy Chrome begin.</translation>
+<translation id="8689408573494410517">Die “Google Search in die kantpaneel”-knoppie op die nutsbalk het ’n nuwe ikoon. Klik dit om vrae te vra terwyl jy met Google Search in die kantpaneel blaai.</translation>
+<translation id="8699232386626916686">Dateer Chrome op om veilig te bly</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="8712767363896337380">Amper op datum! Herbegin Chrome om opdatering te voltooi.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> is reeds aangemeld. Meld in jou eie profiel as <ph name="USER_EMAIL_ADDRESS" /> by Chrome aan om jou blaai-aktiwiteit apart te hou. Jy sal ook jou leeslys en meer van <ph name="DEVICE" /> af kry.</translation>
@@ -867,8 +900,10 @@ Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige uitvee nie
 <translation id="8834965163890861871">Google Chrome probeer tans om wagwoorde te wysig. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="8841151363570555833">Wys Gemini in Chrome in die Mac-kieslysbalk</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome beveel aan dat jy dit verwyder}other{Chrome beveel aan dat jy hulle verwyder.}}</translation>
+<translation id="8861692536395317751">Google Chrome vereis Windows 10-weergawe 1809 of nuwer.</translation>
 <translation id="8862326446509486874">Jy het nie die gepaste regte vir stelselvlak-installering nie. Probeer om die installeerder weer te laat loop as Administrateur.</translation>
 <translation id="8865415417596392024">Chrome-data in jou rekening</translation>
+<translation id="8897637834206928776">Nuwe ikoon, dieselfde kortpad: Klik om vrae te vra terwyl jy met Google Search in die kantpaneel blaai.</translation>
 <translation id="8914504000324227558">Herbegin Chrome</translation>
 <translation id="8920304659326707347">Gaan weer aan net waar jy opgehou het met Chrome op iOS.</translation>
 <translation id="8922998289262614701">Verwyder hierdie app se data uit Chrome</translation>
@@ -894,6 +929,7 @@ Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige uitvee nie
 <translation id="9018218886431812662">Installering is voltooi</translation>
 <translation id="9066987883552592250">Maak Gemini in Chrome Kanarie toe</translation>
 <translation id="9074041031320636790">Sukses! Jy kan nou maklik vrae vra terwyl jy blaai met Google Search KI-modus</translation>
+<translation id="9074163480955555019">Nuwe ikoon, dieselfde kortpad: Klik om vrae te vra terwyl jy met Google Search in Chrome blaai.</translation>
 <translation id="9090566250983691233">Vind uit hoekom Chrome sommige lêers blokkeer</translation>
 <translation id="9106236359747881194">Kies teks om te soek</translation>
 <translation id="911206726377975832">Vee ook jou blaaidata uit?</translation>

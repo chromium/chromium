@@ -100,6 +100,7 @@
 <translation id="1363028406613469049">تتبّع</translation>
 <translation id="1366525380420346469">عندما يكون الإعداد مفعَّلاً</translation>
 <translation id="137496472437646183">اختَر "الحماية المحسَّنة"</translation>
+<translation id="1375217160772234287">الرجوع</translation>
 <translation id="1376578503827013741">جارٍ الحوسبة...</translation>
 <translation id="138181280295369883">يمكنك تسجيل الدخول للوصول إلى معلوماتك المحفوظة وغيرها على جميع أجهزتك</translation>
 <translation id="1381838868249179644">للحفاظ على أمان جهازك، تمت إزالة أذونات من بعض المواقع الإلكترونية</translation>
@@ -291,6 +292,7 @@
 <translation id="2172905120685242547">هل تريد إغلاق النافذة؟</translation>
 <translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
+<translation id="21762520333561690">عرض جميع علامات التبويب</translation>
 <translation id="2184272387334793084">سجِّل الدخول للوصول إلى كلمات المرور والإعدادات الأخرى على جميع أجهزتك</translation>
 <translation id="218608176142494674">المشاركة</translation>
 <translation id="2186779861549045980">‏يمكنك اختيار البيانات المراد حفظها في حسابك على Google.‏\nبإمكانك أيضًا الاطّلاع على هذه العناصر وإدارتها في الإشارات المرجعية أو "قائمة القراءة" أو "مدير كلمات المرور".</translation>
@@ -421,6 +423,7 @@
 <translation id="2650348088770008516">تم إغلاق شرح دليل الخصوصية.</translation>
 <translation id="2650751991977523696">هل تريد تنزيل الملف مرة أخرى؟</translation>
 <translation id="265156376773362237">التحميل المُسبق العادي</translation>
+<translation id="2651797114528729973">‏إليك شريط الأدوات الجديد مع Gemini وأدواتك الأساسية</translation>
 <translation id="2656405586795711023">تطبيقات الويب</translation>
 <translation id="2664252182805397291">عرض المواقع الإلكترونية</translation>
 <translation id="2666092431469916601">في الأعلى</translation>
@@ -453,6 +456,7 @@
 <translation id="2826576843404243001">بالنسبة إلى المواقع الإلكترونية التي لا تتيح الاتصالات الآمنة، سيظهر لك تحذير قبل الانتقال إليها. لا يمكنك تغيير هذه الإعدادات لأنّ إعداد "الحماية المتقدّمة" مفعّل.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">تم إخفاء محتوى الحافظة.</translation>
+<translation id="2832220615205666541">مظهر جديد لتسهيل الوصول إلى أدواتك الأساسية</translation>
 <translation id="2834884592945939112">‏الإعدادات: خطأ في حساب Google</translation>
 <translation id="2838367486340230368">تم فتح شرح دليل الخصوصية في نصف الشاشة.</translation>
 <translation id="2839604041336226596">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبّتة تم اختيارها عدة مرات</translation>
@@ -467,6 +471,7 @@
 <translation id="2876136027428473467">"<ph name="CHILD_NAME" />" بحاجة إلى موافقتك على زيارة هذا الموقع الإلكتروني:</translation>
 <translation id="2876556152483133018">بحث في الموقع الإلكتروني</translation>
 <translation id="2876628302275096482">‏مزيد من المعلومات حول <ph name="BEGIN_LINK" />الطريقة التي يتّبعها Chrome للحفاظ على خصوصية بياناتك<ph name="END_LINK" /></translation>
+<translation id="2877922074420892347">‏يمكنك سؤال Gemini عن أي شيء في صفحتك</translation>
 <translation id="2878607776582720720">‫"<ph name="TAB_TITLE" />"، علامة تبويب تم اختيارها مع علامات تبويب أخرى في "وضع التصفّح المتخفي" وتشارك محتواها</translation>
 <translation id="2885355868600171871">الانتقال إلى شريط العناوين</translation>
 <translation id="2888126860611144412">‏لمحة عن Chrome</translation>
@@ -781,6 +786,7 @@
 <translation id="4137746084635924146">لغة الجهاز الحالية</translation>
 <translation id="414128724510021958">المواقع الإلكترونية المتوافقة مع أجهزة الكمبيوتر المكتبي يتم طلبها تلقائيًا</translation>
 <translation id="4150837143272125910">تم تنزيل تحديث</translation>
+<translation id="4150903149492129817">‏فرصة لتجربة المظهر الجديد المُصمَّم لراحتك من Chrome</translation>
 <translation id="4162867837470729563">قائمة خيارات المشاركة مفتوحة بطول الشاشة.</translation>
 <translation id="4164642020717536140">تصفُّح سريع وآمن للويب</translation>
 <translation id="4165077084524712774">مزيد من الأدوات</translation>
@@ -806,6 +812,7 @@
 <translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">الاستماع إلى هذه الصفحة</translation>
 <translation id="4217657297368492684">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تم اختيارها في "وضع التصفّح المتخفي" تعرض فيديو في وضع "نافذة ضمن النافذة"</translation>
+<translation id="421881184879612737">يمكنك تخصيص صفحتك الرئيسية عبر <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />. وفي حال عدم ضبطها، يتم فتح صفحة "علامة تبويب جديدة" تلقائيًا.</translation>
 <translation id="4225895483398857530">اختصارات شريط الأدوات</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
@@ -1316,6 +1323,7 @@
 <translation id="6254139308321626268">‏يتم الآن عرض ملف PDF</translation>
 <translation id="6255809143828972562">‏باستخدام أدوات من Chrome، يمكنك التصفّح بأمان والتحكّم في بياناتك بشكل كامل</translation>
 <translation id="6259107733340311168">فُتحَت بطول الشاشة البطاقة السفلية لبيان إخلاء المسؤولية بشأن الإشارات المؤسسية</translation>
+<translation id="6259539576554609209">كل أدواتك الأساسية ستظهر في شريط الأدوات مباشرةً. يمكنك الرجوع إلى التصميم القديم في أي وقت عبر <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" /></translation>
 <translation id="6260260490042862943">عناصر التحكّم في الموقع</translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
 <translation id="6264485186158353794">الرجوع</translation>
@@ -1675,6 +1683,7 @@
 <translation id="7499065150275272675">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة ومكتومة الصوت</translation>
 <translation id="7500851014030446046">‏جارٍ تنزيل ملف PDF</translation>
 <translation id="7501135638693251872">جميع الإشارات المرجعية</translation>
+<translation id="7504076214066136798">يتعذَّر حفظ التعديلات</translation>
 <translation id="7507207699631365376">الاطّلاع على <ph name="BEGIN_LINK" />سياسة خصوصية<ph name="END_LINK" /> مقدّم الخدمة</translation>
 <translation id="750886945254958667">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو مغادرتها إذا لم تعُد بحاجة إليها</translation>
 <translation id="7514365320538308">تنزيل</translation>
@@ -1831,6 +1840,7 @@
 <translation id="8084864785646838999">‏قد لا تظهر هنا بعض بيانات السجلّ. للاطّلاع على جميع البيانات، افتح سجلّ Chrome الكامل. قد يتضمّن حسابك على Google أيضًا نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8088176524274673045">للمشاركة مع المستخدمين على مقربة منك، اسمح لهم بمسح رمز الاستجابة السريعة هذا ضوئيًا.</translation>
 <translation id="8090732854597034573">إذا احتجت للمساعدة، يمكنك طلبها من أحد والدَيك.</translation>
+<translation id="8095180473590852507">‏يقدم لك Chrome شريط أدوات جديدًا من أجل راحتك. يمكنك الرجوع إلى التصميم القديم في أي وقت عبر <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="8101414242770404289">لم يتم إغلاق أي علامات تبويب خلال <ph name="TIME_PERIOD" />.</translation>
 <translation id="810433609302852">بطاقة سفلية عن العرض الترويجي لميزة إشعارات النصائح وخطوات استخدامها</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1953,6 +1963,7 @@
 <translation id="8512053371384421952">لن تصلك إشعارات أخرى من <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">أداة تحرير الصور</translation>
 <translation id="8517759303731677493">تعديل…</translation>
+<translation id="852336920923080209">هل يهمك ظهور جميع الأدوات في أسفل الشاشة؟ يمكنك الضغط مع الاستمرار على شريط العناوين لنقله للأسفل</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">التصفُّح الآمن مفعّل</translation>
 <translation id="8538291624121505885">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تم اختيارها في وضع "نافذة ضمن النافذة" مع علامات تبويب أخرى</translation>
@@ -1982,6 +1993,7 @@
 <translation id="8635399646025169806">هل تريد الاحتفاظ بمجموعة علامات التبويب؟</translation>
 <translation id="8636825310635137004">للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل المزامنة.</translation>
 <translation id="8639963783467694461">إعدادات الملء التلقائي</translation>
+<translation id="8644482734962137770">‏‫Gemini بحاجة إلى إذن لاستخدام Chrome</translation>
 <translation id="8662474268934425487">سجّل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">اسم الملف موجود</translation>
 <translation id="8676276370198826499">الاشتراك في <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1998,6 +2010,7 @@
 <translation id="8723453889042591629">يمكنك ترجمة هذه الصفحة بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
 <translation id="8725066075913043281">إعادة المحاولة</translation>
 <translation id="8727043961453758442">‏أفضل ميزات Chrome بانتظارك</translation>
+<translation id="8728810647305130936">فتح علامات تبويب جديدة</translation>
 <translation id="8731268612289859741">رمز الأمان</translation>
 <translation id="8738163682604285902">عرض "وضع القراءة"؟</translation>
 <translation id="8746155870861185046">مشاركة النص المميّز</translation>
@@ -2116,6 +2129,7 @@
 <translation id="916607977885256133">نافذة ضمن النافذة</translation>
 <translation id="9168847423516963845">نقل شريط العناوين إلى الأسفل</translation>
 <translation id="9169507124922466868">سجلّ التنقل مفتوح جزئيًا</translation>
+<translation id="9174218240999351230">‏لإنجاز مهامك، يمكنك منح Gemini الإذن باستخدام ميزة "التصفّح التلقائي" في Chrome على هذا الجهاز</translation>
 <translation id="9183563643084679152">‏لقد مسحت رمز استجابة سريعة ضوئيًا لتسجيل الدخول إلى Chrome. بإمكانك الوصول إلى كلمات المرور والإشارات المرجعية وغيرها من هذا الحساب.</translation>
 <translation id="9189607089796819144">هل المطلوب تنزيل "<ph name="FILE_NAME" />" ‏(<ph name="FILE_SIZE" />) على أي حال؟</translation>
 <translation id="9190276265094487094">سيظهر لك سجل التصفّح على جميع الأجهزة التي تتم مزامنة حسابك معها، ما يعني أنه يمكنك مواصلة التصفّح من حيث توقفت.</translation>

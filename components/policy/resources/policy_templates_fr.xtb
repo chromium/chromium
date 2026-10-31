@@ -1728,6 +1728,19 @@ Cette règle est habituellement désactivée pour protéger les utilisateurs con
 <translation id="2086505225896497574">Cette règle permet de spécifier les ID RP WebAuthn pour lesquels aucune invite ne s'affiche lorsque des certificats d'attestation des clés de sécurité sont demandés sur l'écran de connexion. Un signal est également envoyé à la clé de sécurité pour indiquer qu'une attestation d'entreprise peut être utilisée. Sans cela, les utilisateurs sont avertis lorsque des sites demandent une attestation des clés de sécurité.
 
 Cette règle relative aux appareils est équivalente à la règle relative aux utilisateurs <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" /> existante, à la différence qu'elle s'applique au profil de connexion sur l'écran de connexion.</translation>
+<translation id="2088835253645709768">Cette règle est obsolète dans M157, car la fonctionnalité de recherche dans l'historique optimisée par l'IA a été supprimée.
+
+Cette fonctionnalité permet aux utilisateurs d'effectuer des recherches dans leur historique de navigation et de recevoir des réponses générées en fonction du contenu (et pas seulement du titre et de l'URL) des pages.
+
+0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. Elles pourront également être examinées par des réviseurs humains afin d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les sources et les retours écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés via la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Ne pas autoriser la fonctionnalité.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2089541797660774692">Activer la création de rapports cloud via un navigateur géré</translation>
 <translation id="2090280024671359587">Autoriser la Capture de texte et améliorer les modèles d'IA.</translation>
 <translation id="2090712407517297305">La page de l'historique Chrome organisée par groupes sera visible sur chrome://history/grouped.</translation>

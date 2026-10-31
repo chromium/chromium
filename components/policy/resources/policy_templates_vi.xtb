@@ -1764,6 +1764,19 @@ Thông thường, chính sách này bị Disabled (Tắt) để chống lừa đ
 <translation id="2086505225896497574">Việc bạn đặt chính sách này sẽ chỉ định mã nhận dạng bên phụ thuộc của WebAuthn mà hệ thống sẽ không hiển thị lời nhắc khi trang web yêu cầu chứng chỉ chứng thực từ khoá bảo mật trên màn hình đăng nhập. Hệ thống cũng sẽ gửi một tín hiệu tới khoá bảo mật để cho biết có thể sử dụng chứng thực doanh nghiệp. Nếu bạn không đặt chính sách này thì khi các trang web yêu cầu chứng thực của khoá bảo mật, hệ thống sẽ hiển thị lời nhắc cho người dùng.
 
 Chính sách thiết bị này tương đương với chính sách người dùng <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" /> hiện tại, nhưng áp dụng cho hồ sơ đăng nhập trên màn hình đăng nhập.</translation>
+<translation id="2088835253645709768">Chính sách này không còn được sử dụng kể từ phiên bản M157 vì tính năng Tìm thông tin trong nhật ký bằng AI đã bị xoá.
+
+Tìm thông tin trong nhật ký bằng AI là một tính năng cho phép người dùng tìm thông tin trong nhật ký duyệt web và nhận câu trả lời được tạo dựa trên nội dung trang chứ không chỉ dựa trên URL và tiêu đề trang.
+
+0 = Cho phép sử dụng tính năng này và cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. Dữ liệu này cũng có thể được nhân viên xem xét để cải tiến các mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Cho phép sử dụng tính năng nhưng không cho phép Google sử dụng nội dung của người dùng (bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+2 = Không cho phép sử dụng tính năng này.
+
+Nếu bạn không đặt chính sách này thì hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2089541797660774692">Bật tính năng báo cáo trên đám mây qua trình duyệt được quản lý</translation>
 <translation id="2090280024671359587">Cho phép tính năng Chụp văn bản và tham gia cải tiến các mô hình AI</translation>
 <translation id="2090712407517297305">Trang Nhật ký duyệt web trên Chrome được sắp xếp theo nhóm sẽ hiển thị tại chrome://history/grouped.</translation>

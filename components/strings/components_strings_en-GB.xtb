@@ -150,7 +150,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1249643768796040660">Remove this info</translation>
 <translation id="1253846494229886276">Saving screenshot</translation>
-<translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synced)</translation>
 <translation id="1255931290436977164">Passport</translation>
 <translation id="1256368399071562588">&lt;p&gt;If you try to visit a website and it doesn’t open, first try to fix the error with these troubleshooting steps:&lt;/p&gt;
     &lt;ol&gt;
@@ -935,6 +934,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2535585790302968248">Open a new incognito tab to browse privately</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{and 1 more}other{and # more}}</translation>
 <translation id="2536110899380797252">Add Address</translation>
+<translation id="2536852576044236667">Previous outside view</translation>
 <translation id="2537931901612099523">Others who use this device won’t see your activity, so you can browse more privately. This won't change how data is collected by websites that you visit and the services that they use, including Google. Downloads and bookmarks will be saved.</translation>
 <translation id="2541219929084442027">Pages that you view in Incognito tabs won’t stick around in your browser’s history, cookie store or search history after you’ve closed all of your Incognito tabs. Any files that you download or bookmarks that you create will be kept.</translation>
 <translation id="2541474152868747095">To get your history from your other devices, verify that it's you. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
@@ -1092,6 +1092,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2826760142808435982">The connection is encrypted and authenticated using <ph name="CIPHER" /> and uses <ph name="KX" /> as the key exchange mechanism.</translation>
 <translation id="2828797285817981634">Motion sensors allowed for now</translation>
 <translation id="2835907903001172712">Browser overview</translation>
+<translation id="2836653778330912701">Next outside view</translation>
 <translation id="2837891525090413132">Can ask to lock and use your keyboard</translation>
 <translation id="2839032553903800133">Notifications blocked</translation>
 <translation id="2839501879576190149">Fake site ahead</translation>
@@ -1206,6 +1207,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3030331669969285614">These flags prevent or revert a breaking change and will only be available for a limited time.</translation>
 <translation id="3033200136993730761">Your home address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK" />in your Google Account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Motion and light sensors allowed for now</translation>
+<translation id="3034219227076811559">Google Search in Chrome</translation>
 <translation id="3034526003882782781">Scroll and zoom allowed</translation>
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
@@ -1650,6 +1652,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3749600200023337912">Your saved auto-pay method may be used for this payment. To turn off eWallets or payment app in Chrome, go to your <ph name="BEGIN_LINK1" />payment settings<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Save address in account?</translation>
 <translation id="3752543821772132562">Ignored because <ph name="POLICY_NAME" /> is not set.</translation>
+<translation id="3753412199586870466">Open side panel</translation>
 <translation id="3754210790023674521">Exit picture-in-picture</translation>
 <translation id="3757511311058373406">Auto browse filters</translation>
 <translation id="3759461132968374835">You have no recently reported crashes.  Crashes that occurred when crash reporting was disabled will not appear here.</translation>
@@ -2234,6 +2237,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4732860731866514038">Downloading <ph name="LANGUAGE" /> language pack… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> wants to use your device's location</translation>
 <translation id="473414950835101501">Use your cameras</translation>
+<translation id="4735688073239574197">Jump to the bottom</translation>
 <translation id="4736089601076994090">Expires: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Restart Chromium</translation>
 <translation id="4736934858538408121">Virtual card</translation>
@@ -2445,6 +2449,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5053116470141135293">A virtual card number will be filled when you check out with this card to protect your actual details. Manage in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
 <translation id="5056587122125565772">Create image</translation>
+<translation id="5056908537436373373">Open window <ph name="WINDOW_INDEX" /> (1 tab) in a new window</translation>
 <translation id="505757197798929356">Provide reason for opening (required)</translation>
 <translation id="5058282932481719070">learn more about enhanced autofill in settings</translation>
 <translation id="5061227663725596739">Did you mean <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2950,7 +2955,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5902204772823742902">Add driving licence securely to Google Wallet</translation>
 <translation id="5903264686717710770">Title:</translation>
 <translation id="5905671155741555195">Your work address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK" />in your Google Account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
-<translation id="5908541034548427511"><ph name="TYPE_1" /> (synced)</translation>
 <translation id="5910140988253729859">Undo autofill</translation>
 <translation id="5911110632211230665">Blocked open</translation>
 <translation id="5912796581727968237">Open Google Wallet</translation>
@@ -3020,7 +3024,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6018650639991193045">Delete your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Can't save video to OneDrive</translation>
-<translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synced)</translation>
 <translation id="6025471531651464742">Add files</translation>
 <translation id="6028591542479806248">Manage mobile and email notifications</translation>
 <translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to open a new Isolated Window to browse privately</translation>
@@ -3072,6 +3075,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6097297436119286254">Verify that it's you to fill in your payment info</translation>
 <translation id="6099269767116481177">22.0 in x 29.5 in</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">This policy is intended to be applied at the machine level. Its behaviour when applied as a user policy is not officially supported and will be deprecated.</translation>
 <translation id="6105460996796456817">Create site</translation>
 <translation id="6105511947520166941">Pay with Pix directly in Chrome next time</translation>
 <translation id="6105745639559695088">Toggle sidebar</translation>
@@ -3183,6 +3187,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6284292079994426700">26 in x 38 in</translation>
 <translation id="6284517535531159884">Variations Seed Type</translation>
 <translation id="6287197303017372967">Get directions to your destination with turn-by-turn guidance using the navigation feature.</translation>
+<translation id="6287497864845330943">Window <ph name="WINDOW_NUMBER" /> · <ph name="NUM_TABS" /> tabs</translation>
 <translation id="628877850550444614">Discount found</translation>
 <translation id="6289939620939689042">Page colour</translation>
 <translation id="6292819926564202163">Your search engine in Chrome</translation>
@@ -3221,6 +3226,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6342069812937806050">Just now</translation>
 <translation id="6342171901363060580">You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Directions</translation>
+<translation id="6345664705388712774">Add images to your search</translation>
 <translation id="6348220984832452017">Active variations</translation>
 <translation id="6349101878882523185">Install <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Pay without copying and pasting Pix code. <ph name="BEGIN_LINK1" />See how it works<ph name="END_LINK1" /></translation>
@@ -3613,6 +3619,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="7013835112918108252">Can ask to lock and use your mouse</translation>
 <translation id="7013844825046560088">Chrome logs how you use the feature, such as your requests and your behaviour when you accept or ignore suggestions</translation>
 <translation id="7014741021609395734">Zoom level</translation>
+<translation id="7016016144157344115">Window <ph name="WINDOW_NUMBER" /> · 1 tab</translation>
 <translation id="7016992613359344582">These charges could be one-off or recurring and may not be obvious.</translation>
 <translation id="7020464868401003526">The URL of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH" /> characters.</translation>
 <translation id="7020581144940000377">Use approximate location</translation>
@@ -3742,7 +3749,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="7240120331469437312">Certificate Subject Alternative Name</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244061187185055290">In a few words, describe what you're searching for</translation>
 <translation id="7247459554233215758">Tap card details to add them to checkout.</translation>
 <translation id="7250174481516136841"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> about card benefits</translation>
 <translation id="7251437084390964440">The network configuration doesn't comply to the ONC standard. Parts of the configuration may not be imported.
@@ -4164,6 +4170,7 @@ Additional details:
 <translation id="7911651285409665023">Close and go back to '<ph name="TAB_TITLE" />'</translation>
 <translation id="7912924955815015552">Imported from Safari</translation>
 <translation id="7916162853251942238">Flexo base</translation>
+<translation id="7916802424606434188">Open window <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> tabs) in a new window</translation>
 <translation id="791698251820376781">Your organisation doesn't allow you to sign in</translation>
 <translation id="7927046851848613453">Save tickets, events and other info from pages that you view – not just forms that you fill. Then quickly access your passes, like event tickets and loyalty cards. Your saved info can appear on your devices and across Google products.</translation>
 <translation id="7930282586031445870">Buy now, pay later Terms of Service screen is closed.</translation>
@@ -4322,6 +4329,7 @@ Additional details:
 <translation id="8199437620497683918">Optical disc (glossy)</translation>
 <translation id="8202097416529803614">Order summary</translation>
 <translation id="8202370299023114387">Conflict</translation>
+<translation id="8203105157044679380">Google Search panel</translation>
 <translation id="8208363704094329105">300 mm x 400 mm</translation>
 <translation id="8208629719488976364">The content of pages you print and information about your printer is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data and might be stored based on company policies and visible to your administrator.</translation>
 <translation id="8210490490377416373">Select policy name</translation>

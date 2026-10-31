@@ -419,6 +419,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1293360286536751243">O xesto <ph name="MAIN_GESTURE" /> pode confundirse con <ph name="CONFLICTING_GESTURE_ONE" />, <ph name="CONFLICTING_GESTURE_TWO" /> e <ph name="CONFLICTING_GESTURE_THREE" />. Se é posible, escolle outro aceno.</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="12951065153783848">A túa organización xestiona a túa conta</translation>
+<translation id="129553762522093515">Pechado recentemente</translation>
 <translation id="1296410481664942178">Non mostrar Google Calendar</translation>
 <translation id="1296911687402551044">Fixar pestana seleccionada</translation>
 <translation id="1297175357211070620">Destino</translation>
@@ -2970,7 +2971,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3261798996834477302">Activar son do sitio da parte inferior</translation>
 <translation id="3261832505033014216">Clave de acceso de <ph name="USER_EMAIL" /></translation>
 <translation id="3262261769033093854">Non permitir que os sitios capturen e usen a entrada do rato</translation>
-<translation id="3262336253311870293">Dado que <ph name="DOMAIN" /> xestiona a túa conta, non se pechará sesión na túa Conta de Google. Deixarán de sincronizarse os marcadores, o historial, os contrasinais e outras opcións de configuración. Non obstante, os datos que se sincronizasen anteriormente permanecerán almacenados na túa Conta de Google e poden xestionarse en <ph name="BEGIN_LINK" />Panel de control de Google<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">Demasiado grande</translation>
 <translation id="3264544094376351444">Tipo de letra sen serifas</translation>
 <translation id="3264582393905923483">Contexto</translation>
@@ -4218,6 +4218,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4200609364258658652">Copia&amp;r fotograma de vídeo</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
 <translation id="4200983522494130825">Nova pes&amp;tana</translation>
+<translation id="4202186506458631436">Despraza á dereita</translation>
 <translation id="4202536110335087135">Probar agora</translation>
 <translation id="4203065553461038553">O nome ou a localización do ficheiro son demasiado longos</translation>
 <translation id="4203769790323223880">O acceso á cámara non está permitido</translation>
@@ -5825,7 +5826,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5441292787273562014">Volver cargar a páxina</translation>
 <translation id="5441466871879044658">Traducir texto a este idioma</translation>
 <translation id="5442550868130618860">Activar actualización automática</translation>
-<translation id="5444281205834970653">Eliminar e continuar</translation>
 <translation id="5444452275167152925">Importados de ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446836766119801744">⌥L</translation>
@@ -6859,7 +6859,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6264485186158353794">Volver para estar a salvo</translation>
 <translation id="6264636978858465832">O xestor de contrasinais necesita máis acceso</translation>
 <translation id="626495329434552273">Permiso concedido para ignorar a entrada do teclado</translation>
-<translation id="62650662268452475">Mentres teñas a sesión iniciada, poderás usar os marcadores e as extensións, ademais doutros datos gardados na túa Conta de Google, en todos os teus dispositivos</translation>
 <translation id="6265159465845424232">Preguntar antes de copiar ficheiros de Microsoft e movelos a Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Quitar porto</translation>
 <translation id="6266532094411434237">Conectando co dispositivo (<ph name="DEVICE" />)</translation>
@@ -7036,7 +7035,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6410257289063177456">Ficheiros de imaxe</translation>
 <translation id="6410328738210026208">Cambiar canle e Powerwash</translation>
 <translation id="6410390304316730527">A función Navegación segura protéxete contra os piratas informáticos que poden enganarte para que realices accións perigosas, como instalar un software malicioso ou revelar información persoal (por exemplo, contrasinais, números de teléfono ou tarxetas de crédito). Se a desactivas, ten coidado ao consultar sitios descoñecidos ou con mala reputación.</translation>
-<translation id="6410390446958964276">Mentres teñas a sesión iniciada, poderás usar os temas e as opcións de configuración, ademais doutros datos gardados na túa Conta de Google, en todos os teus dispositivos</translation>
 <translation id="6411135999030237579">Manter premida unha tecla para que se repita automaticamente</translation>
 <translation id="6415757856498750027">Escribir "w" para obter "ư"</translation>
 <translation id="6415900369006735853">Conéctase a Internet a través do teléfono</translation>
@@ -7680,6 +7678,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6892812721183419409">Abrir ligazón como <ph name="USER" /></translation>
 <translation id="6893164346922798247">eSpeak</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6897341342232909480">Mover cara á esquerda</translation>
 <translation id="6897363604023044284">Escoller sitios dos que borrar datos</translation>
 <translation id="689770193677424784">Saír da pantalla completa para mostrar as pestanas en vertical</translation>
 <translation id="6897756054229464646">Con Gemini</translation>
@@ -8599,7 +8598,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7605163396341021431">Permite que as aplicacións para Android controlen os dispositivos USB neste Chromebook.</translation>
 <translation id="7605594153474022051">A sincronización non funciona</translation>
 <translation id="7606560865764296217">Pór animación en pausa</translation>
-<translation id="7606639338662398635">Grupos de pestanas</translation>
 <translation id="7606802863538485839">Reproducir efectos</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7608810328871051088">Preferencias de Android</translation>

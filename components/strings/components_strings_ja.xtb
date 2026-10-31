@@ -150,7 +150,6 @@
 <translation id="1247030632403369975">アルミニウム</translation>
 <translation id="1249643768796040660">この情報を削除</translation>
 <translation id="1253846494229886276">スクリーンショットを保存しています</translation>
-<translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（同期済み）</translation>
 <translation id="1255931290436977164">パスポート</translation>
 <translation id="1256368399071562588">&lt;p&gt;ウェブサイトにアクセスしようとしてもサイトが開かない場合は、まず次の解決方法を行って、エラーが解消されるかご確認ください。&lt;/p&gt;
     &lt;ol&gt;
@@ -935,6 +934,7 @@
 <translation id="2535585790302968248">新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
 <translation id="2536110899380797252">住所を追加</translation>
+<translation id="2536852576044236667">表示範囲外の前の結果</translation>
 <translation id="2537931901612099523">あなたのアクティビティはこのデバイスを使用する他のユーザーに表示されないため、プライバシーを守りながらブラウジングできます。アクセスしたウェブサイトと、そのウェブサイトが使用するサービス（Google を含む）のデータ収集方法は変更されません。ダウンロードしたファイルとブックマークは保存されます。</translation>
 <translation id="2541219929084442027">シークレット タブで表示したページの記録は、シークレット タブをすべて閉じた後、ブラウザの履歴、Cookie の保存場所、検索履歴から削除されます。ただし、ダウンロードしたファイルや作成したブックマークは保存されます。</translation>
 <translation id="2541474152868747095">お使いの他のデバイスからも履歴にアクセスできるようにするには、本人確認を行ってください。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
@@ -1092,6 +1092,7 @@
 <translation id="2826760142808435982">接続は <ph name="CIPHER" /> を使用して暗号化および認証されており、<ph name="KX" /> が鍵交換メカニズムとして使用されています。</translation>
 <translation id="2828797285817981634">モーション センサーの使用を一時的に許可しました</translation>
 <translation id="2835907903001172712">ブラウザの概要</translation>
+<translation id="2836653778330912701">表示範囲外の次の結果</translation>
 <translation id="2837891525090413132">キーボードのロックと使用を要求できます</translation>
 <translation id="2839032553903800133">通知をブロック中</translation>
 <translation id="2839501879576190149">偽のサイトにアクセスしようとしています</translation>
@@ -1651,6 +1652,7 @@
 <translation id="3749600200023337912">保存した自動支払い方法をこの支払いで使用できます。Chrome で電子ウォレットまたは決済アプリをオフにするには、<ph name="BEGIN_LINK1" />お支払い設定<ph name="END_LINK1" />に移動してください</translation>
 <translation id="3752181611900535304">アカウントに住所を保存しますか？</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> が設定されていないため無視されました。</translation>
+<translation id="3753412199586870466">サイドパネルを開く</translation>
 <translation id="3754210790023674521">ピクチャー イン ピクチャーを終了</translation>
 <translation id="3757511311058373406">自動ブラウジング フィルタ</translation>
 <translation id="3759461132968374835">最近発生した障害はありません。障害レポートが無効になっているときに発生した障害は、ここには表示されません。</translation>
@@ -2446,6 +2448,7 @@
 <translation id="5053116470141135293">このカードでご購入手続きを行う際に仮想カード番号が入力され、実際のカード情報が保護されます。管理は Google ウォレットで行います。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
 <translation id="5056587122125565772">画像を作成</translation>
+<translation id="5056908537436373373">ウィンドウ <ph name="WINDOW_INDEX" />（1 個のタブ）を新しいウィンドウで開く</translation>
 <translation id="505757197798929356">開く理由をお知らせください（必須）</translation>
 <translation id="5058282932481719070">高精度の自動入力の設定で詳細をご確認ください</translation>
 <translation id="5061227663725596739">もしかして: <ph name="LOOKALIKE_DOMAIN" /></translation>
@@ -2951,7 +2954,6 @@
 <translation id="5902204772823742902">Google ウォレットに運転免許証を安全に追加</translation>
 <translation id="5903264686717710770">タイトル:</translation>
 <translation id="5905671155741555195">職場の住所は、関連性の高い検索結果や Google マップのルートの表示など、Google サービス全体の利便性の向上に役立ちます。住所は <ph name="BEGIN_LINK" />Google アカウント（<ph name="ACCOUNT" />）<ph name="END_LINK" />で編集、削除できます。</translation>
-<translation id="5908541034548427511"><ph name="TYPE_1" />（同期済み）</translation>
 <translation id="5910140988253729859">自動入力を取り消す</translation>
 <translation id="5911110632211230665">開けないようブロックされました</translation>
 <translation id="5912796581727968237">Google ウォレットを開く</translation>
@@ -3021,7 +3023,6 @@
 <translation id="6018650639991193045">Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">動画を OneDrive に保存できません</translation>
-<translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" />（同期済み）</translation>
 <translation id="6025471531651464742">ファイルを追加</translation>
 <translation id="6028591542479806248">モバイル通知とメール通知を管理します</translation>
 <translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しいアイソレート ウィンドウを開いてシークレット モードでブラウジングします</translation>
@@ -3184,6 +3185,7 @@
 <translation id="6284292079994426700">26x38 インチ</translation>
 <translation id="6284517535531159884">バリエーション シードタイプ</translation>
 <translation id="6287197303017372967">ターンバイターン方式のナビゲーション ガイダンスで目的地までのルートを案内します。</translation>
+<translation id="6287497864845330943">ウィンドウ <ph name="WINDOW_NUMBER" /> · <ph name="NUM_TABS" /> 個のタブ</translation>
 <translation id="628877850550444614">割引が見つかりました</translation>
 <translation id="6289939620939689042">ページの色</translation>
 <translation id="6292819926564202163">Chrome で使用する検索サービス</translation>
@@ -3222,6 +3224,7 @@
 <translation id="6342069812937806050">たった今</translation>
 <translation id="6342171901363060580">この警告は、サイトが HTTPS に対応しておらず、シークレット モードを使用している場合に表示されます。<ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">経路案内</translation>
+<translation id="6345664705388712774">検索に画像を追加</translation>
 <translation id="6348220984832452017">バリエーションを有効にする</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
 <translation id="6350739641326887427">Pix コードをコピーして貼り付けなくても、お支払いが可能。<ph name="BEGIN_LINK1" />仕組みを確認<ph name="END_LINK1" /></translation>
@@ -3614,6 +3617,7 @@
 <translation id="7013835112918108252">マウスのロックと使用を要求できます</translation>
 <translation id="7013844825046560088">Chrome は、リクエストの内容や、候補を採用または無視したときの動作など、この機能の利用状況を記録します</translation>
 <translation id="7014741021609395734">ズームレベル</translation>
+<translation id="7016016144157344115">ウィンドウ <ph name="WINDOW_NUMBER" /> · 1 個のタブ</translation>
 <translation id="7016992613359344582">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。</translation>
 <translation id="7020464868401003526">ショートカットの URL が指定可能な最大文字数（<ph name="MAX_LENGTH" /> 文字）を超えています。</translation>
 <translation id="7020581144940000377">おおよその位置情報を使用</translation>
@@ -3743,7 +3747,6 @@
 <translation id="7240120331469437312">証明書のサブジェクトの代替名</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />、<ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244061187185055290">検索する内容を表す単語をいくつか入力</translation>
 <translation id="7247459554233215758">購入手続きに追加するには、カード情報をタップします。</translation>
 <translation id="7250174481516136841">カードのメリットの<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7251437084390964440">ネットワーク設定が ONC 標準に準拠していません。設定の一部がインポートされない可能性があります。
@@ -4165,6 +4168,7 @@
 <translation id="7911651285409665023">閉じて「<ph name="TAB_TITLE" />」に戻る</translation>
 <translation id="7912924955815015552">Safari からのインポート</translation>
 <translation id="7916162853251942238">フレキソベース</translation>
+<translation id="7916802424606434188">ウィンドウ <ph name="WINDOW_INDEX" />（<ph name="NUM_TABS" /> 個のタブ）を新しいウィンドウで開く</translation>
 <translation id="791698251820376781">組織がログインを許可していません</translation>
 <translation id="7927046851848613453">ページ上で入力したフォームだけでなく、チケット、イベント、その他の情報を保存して、イベント チケットやポイントカードなどのパスにすばやくアクセスできます。保存した情報は、お使いのデバイスや Google サービスに表示されます。</translation>
 <translation id="7930282586031445870">後払い決済の利用規約画面が閉じられました。</translation>

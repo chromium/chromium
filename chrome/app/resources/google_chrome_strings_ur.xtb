@@ -22,6 +22,7 @@
 <translation id="1125124144982679672">‏Chrome کون استعمال کر رہا ہے؟</translation>
 <translation id="1142745911746664600">‏Chrome اپ ڈیٹ نہیں ہو سکتا</translation>
 <translation id="1148360048981192980">‏اگلی بار جب آپ اپنے <ph name="DEVICE_TYPE" /> پر Chrome کھولیں گے تو آپ کو Google پاس ورڈ مینیجر استعمال کرنے کے لیے ایک پرامپٹ نظر آئے گا۔</translation>
+<translation id="1150418667633096194">‏ٹول بار پر موجود "Google تلاش سائیڈ پینل" بٹن اب ایک نئے آئیکن کے ساتھ دستیاب ہے۔ ‫Google تلاش سائیڈ پینل کے ساتھ براؤز کرتے وقت سوالات پوچھنے کے لیے اس پر کلک کریں۔</translation>
 <translation id="1152920704813762236">‏ChromeOS کے بارے میں</translation>
 <translation id="1154147086299354128">‏Chrome میں &amp;کھولیں</translation>
 <translation id="1157952955648710254">‏Google تلاش کے سائیڈ پینل کو بند کریں</translation>
@@ -52,11 +53,13 @@
 <translation id="1439793550875056299">‏‫Chrome کو پن کریں</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی پوشیدگی ونڈو دوبارہ نہیں کھلے گی۔}other{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی # الگ تھلگ ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
 <translation id="146866447420868597">‏Chrome میں سائن ان کریں؟</translation>
+<translation id="1470136641087909499">‏آپ براؤز کرتے وقت سوالات پوچھنے کے لیے Chrome میں Google تلاش کو دوبارہ کھول سکتے ہیں</translation>
 <translation id="1476347941828409626">‏Chrome پروفائلز کا &amp;نظم کریں</translation>
 <translation id="1492280395845991349">‏Chrome اپ ڈیٹ مکمل کرنے کے لیے بند کر کے دوبارہ چلائیں</translation>
 <translation id="1497802159252041924">انسٹال کی خرابی: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">‏اپنی نئی Chrome پروفائل کو حسب ضرورت بنائیں</translation>
 <translation id="1518627427551567882">یہ صفحہ محفوظ ہے</translation>
+<translation id="15408169957028265">‏‫Chrome میں Google تلاش کو دوبارہ کھولیں</translation>
 <translation id="1547295885616600893">‏ChromeOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے۔</translation>
 <translation id="1547469039832541117">نمایاں کردہ ٹاسک کو بند کرتا ہے۔</translation>
 <translation id="1553358976309200471">‏Chrome کو اپ ڈیٹ کریں</translation>
@@ -89,6 +92,7 @@
 <translation id="1713301662689114961">{0,plural, =1{‏ایک گھنٹے میں Chrome دوبارہ لانچ ہوگا}other{‏# گھنٹے میں Chrome دوبارہ لانچ ہوگا}}</translation>
 <translation id="1722488837206509557">یہ آپ کو دستیاب آلات میں سے انتخاب کرنے اور ان پر مواد ڈسپلے کرنے کی اجازت دے گا۔</translation>
 <translation id="1724094881572874997">‏‫Chrome پر اپنے کام کو محفوظ بنانے کے لیے، آپ کے Chrome میں سائن ان ہونے پر آپ کی تنظیم کچھ معلومات دیکھ سکے گی یا ان کا نظم کر سکے گی۔</translation>
+<translation id="1769661297620183092">‏آپ براؤزنگ کے دوران سوالات پوچھنے کے لیے Google تلاش پینل کو دوبارہ کھول سکتے ہیں</translation>
 <translation id="177180974022074201">‏‫Chrome میں Gemini کے ساتھ آزمائیں</translation>
 <translation id="1786003790898721085">‏یقینی بنائیں کہ آپ اپنے <ph name="TARGET_DEVICE_NAME" /> پر Chrome میں سائن ان ہیں اور پھر دوبارہ بھیج کر دیکھیں۔</translation>
 <translation id="1786044937610313874">‏Chrome میں شارٹ کٹس کھلتے ہیں</translation>
@@ -107,6 +111,7 @@
 <translation id="1880677175115548835">متن منتخب کریں</translation>
 <translation id="1896602904211344018">‏‫Chrome ایپ حاصل کریں</translation>
 <translation id="1919130412786645364">‏Chrome میں سائن ان کی اجازت دیں</translation>
+<translation id="1925069572871307609">‏مستقبل کے Google Chrome اپ ڈیٹس حاصل کرنے کے لیے، آپ کو Windows 10 ورژن 1809 یا اس کے بعد کے ورژن کی ضرورت ہوگی۔ یہ کمپیوٹر Windows 10 کا پرانا ورژن استعمال کر رہا ہے۔</translation>
 <translation id="1953553007165777902">ڈاؤن لوڈ ہو رہی ہے… <ph name="MINUTE" /> منٹ(منٹس) باقی ہے</translation>
 <translation id="1975400514743766362">‏اپنے <ph name="DEVICE_TYPE" /> پر Chrome ایپ کے ساتھ چلتے پھرتے Google کی حفاظت کا فائدہ اٹھائیں</translation>
 <translation id="1979600810166324878">‏‫iOS کے لیے Chrome پر بہتر کردہ محفوظ براؤزنگ کے ساتھ دوران سفر زیادہ محفوظ رہیں</translation>
@@ -120,6 +125,7 @@
 <translation id="2040220733769034247">‏‫Chrome ڈاؤن لوڈ کرنے اور اپنے Google اکاؤنٹ میں سائن ان کرنے کے لیے اپنے فون سے QR کوڈ اسکین کریں۔</translation>
 <translation id="2044908892530830113">‏‫Mac مینیو بار میں Chrome کے ساتھ تلاش دکھائیں اور کی بورڈ شارٹ کٹ آن کریں</translation>
 <translation id="2050189601866423230">‏براؤز کرتے وقت سوالات پوچھنے کے لیے آپ "Google تلاش AI وضع" کو پن کر سکتے ہیں</translation>
+<translation id="2060311596979880693">‏کامیاب! اب آپ Chrome میں Google تلاش کے ساتھ براؤز کرتے وقت آسانی سے سوالات پوچھ سکتے ہیں</translation>
 <translation id="2091012649849228750">‏مستقبل کے Google Chrome اپ ڈیٹس حاصل کرنے کے لیے، آپ کو Windows 10 یا اس کے بعد کے ورژن کی ضرورت ہوگی۔ یہ کمپیوٹر Windows 8 استعمال کر رہا ہے۔</translation>
 <translation id="2094648590148273905">‏ChromeOS Flex کی شرائط</translation>
 <translation id="2094919256425865063">‏بہر حال Chrome بند کریں؟</translation>
@@ -145,6 +151,7 @@
 <translation id="2216543877350048334">‏Chrome سے اپنا Google اکاؤنٹ ہٹانے کے لیے، سائن آؤٹ کریں</translation>
 <translation id="2236949375853147973">میری سرگرمی</translation>
 <translation id="22791603784558743">‏‫Chrome Dev میں Gemini کو بند کریں</translation>
+<translation id="2283228908180457226">‏نیا آئیکن، وہی شارٹ کٹ: Google تلاش کے سائیڈ پینل کے ساتھ براؤز کرتے وقت سوالات پوچھنے کے لیے کلک کریں۔</translation>
 <translation id="2290014774651636340">‏Google API کلیدیں چھوٹی ہوئی ہیں۔ Google Chrome کی کچھ فعالیت غیر فعال ہو جائے گی۔</translation>
 <translation id="2290095356545025170">‏کیا آپ واقعی Google Chrome کو ان انسٹال کرنا چاہتے ہیں؟</translation>
 <translation id="2295218613066132598">‏‫Chrome سائٹ کے شارٹ کٹس دکھائیں</translation>
@@ -207,6 +214,7 @@
 <translation id="2861074815332034794">‏Chrome اپ ڈیٹ کیا جا رہا ہے (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">‏Chrome میں سائن ان کریں</translation>
 <translation id="2875053229394024379">‏جب آپ اپنے Google اکاؤنٹ سے Chrome میں سائن ان کرتے ہیں تو آپ Gemini کے ساتھ اپنی Chrome پروفائل استعمال کر سکتے ہیں۔ <ph name="BEGIN_LINK" />‫Chrome میں سائن ان کرنے کا طریقہ جانیں<ph name="END_LINK" /></translation>
+<translation id="2876152561415416331">‏‫Google تلاش پینل کو دوبارہ کھولیں</translation>
 <translation id="2876628302275096482">‏اس بارے میں مزید جانیں کہ <ph name="BEGIN_LINK" />Chrome آپ کے ڈیٹا کو کس طرح نجی رکھتا ہے<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">ٹاسک مینیجر</translation>
 <translation id="2888126860611144412">‏Chrome کے بارے میں</translation>
@@ -222,6 +230,8 @@
 <translation id="3003694935412297923">سبھی ٹاسکس</translation>
 <translation id="3018957014024118866">‏Chrome (<ph name="URL" />) سے ڈیٹا بھی حذف کریں</translation>
 <translation id="3019382870990049182">‏ChromeOS Flex&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
+<translation id="3034219227076811559">‏‫Chrome میں Google تلاش</translation>
+<translation id="3037190258341683404">‏براؤز کرتے وقت سوالات پوچھنے کے لیے آپ Chrome میں Google تلاش کو پن کر سکتے ہیں</translation>
 <translation id="3037517125981011456">‏Chrome میں سائن ان کرنے کے لیے پرامپٹس دکھاتا ہے</translation>
 <translation id="3037838751736561277">‏Google Chrome پس منظر وضع میں ہے۔</translation>
 <translation id="3038232873781883849">انسٹال ہونے کا انتظار ہے...</translation>
@@ -327,6 +337,7 @@
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3968962723676998462">‏اپنے اکاؤنٹ، <ph name="ACCOUNT_EMAIL" /> میں Chrome ڈیٹا کا استعمال کرنے اور محفوظ کرنے کے لیے اپنا پاس فریز درج کریں</translation>
 <translation id="3973161977468201858">‏‫Google Chrome آپ کے Google پاس ورڈ مینیجر کا ڈیٹا حذف کرنا چاہتا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
+<translation id="3984557288004650913">‏ٹول بار پر موجود "Chrome میں Google تلاش" بٹن کے ذریعے، آپ براؤزنگ کے دوران سوالات پوچھنے کے لیے Chrome میں Google تلاش کو دوبارہ کھول سکتے ہیں</translation>
 <translation id="400161754580828648">‏اپنی اسکرین کا اشتراک کرنے کیلئے، سسٹم کی ترتیبات میں Chrome کیلئے اسکرین ریکارڈنگ کی اجازت دیں۔</translation>
 <translation id="4012899077942246412">‏جب آپ سائن ان ہوتے ہیں، آپ Chrome میں اپنے Google اکاؤنٹ سے اپنے پاس ورڈز وغیرہ استعمال کر سکتے ہیں۔ اسے تبدیل کرنے کے لیے، "Chrome میں آپ کا اکاؤنٹ" پر جائیں۔</translation>
 <translation id="4022972681110646219">اسکرین پر موجود مواد کا ترجمہ کریں</translation>
@@ -401,6 +412,7 @@
 <translation id="4768676935374695498">‏‫Google لینز کے ساتھ اس ویڈیو کو تلاش کریں</translation>
 <translation id="479167709087336770">‏یہ وہی املا جانچ کنندہ استعمال کرتا ہے جسے Google تلاش میں استعمال کیا جاتا ہے۔ آپ براؤزر میں جو متن ٹائپ کرتے ہیں، اسے Google کو بھیجا جاتا ہے۔ آپ اس برتاؤ کو کسی بھی وقت ترتیبات میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="4793679854893018356">‏جانیں کہ Chrome آپ کو کیسے محفوظ رکھتا ہے</translation>
+<translation id="4803313124144656665">‏‫Chrome میں Google تلاش بند کریں</translation>
 <translation id="4828579605166583682">‏Google Chrome موجودہ پاس ورڈز کو تبدیل کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="4836321460899997044">‏‫Chrome پروفائل</translation>
 <translation id="4839733921943823254">شارٹ کٹ کو پن کریں</translation>
@@ -451,6 +463,7 @@
 <translation id="5234764350956374838">برخاست کریں</translation>
 <translation id="5239627039202700673">‏جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر کلک کرتے وقت Chrome استعمال کریں</translation>
 <translation id="524751727772074981">‏‫Chrome میں Gemini کے ساتھ، آپ جہاں ہیں وہیں سے کچھ بھی پوچھیں</translation>
+<translation id="5247617065091903691">‏براؤز کرتے وقت سوالات پوچھنے کے لیے آپ Google تلاش کے سائیڈ پینل کو پن کر سکتے ہیں</translation>
 <translation id="5251420635869119124">‏مہمان کسی چیز کو پیچھے چھوڑے بغیر Chrome کو استعمال کر سکتے ہیں۔</translation>
 <translation id="5271833978500241046">‏انہیں Chrome میں Gemini کی دیگر خصوصیات کے ساتھ استعمال کریں</translation>
 <translation id="5286907366254680517">پتا چلا</translation>
@@ -472,6 +485,7 @@
 Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہے۔</translation>
 <translation id="5465210843490471889">‏<ph name="START_GLIC_STYLING" />‫Gemini<ph name="END_GLIC_STYLING" /> کے ساتھ استعمال کرنے کے لیے Chrome پروفائل کا انتخاب کریں</translation>
 <translation id="547202872422499512">‏‫Windows کے شروع ہونے پر Chrome اب لانچ ہوتا ہے تاکہ آپ فوری طور پر براؤزنگ شروع کر سکیں۔ آپ اسے ترتیبات میں آف کر سکتے ہیں۔</translation>
+<translation id="5482575505313585759">‏‫Google تلاش پینل بند کریں</translation>
 <translation id="5486346529181556467">‏جب آپ کسی ایسی سائٹ کی اطلاع دیتے ہیں جو آپ کے خیال میں نقصان دہ ہے تو سبھی کے لیے آن لائن حفاظت کو بہتر بنائیں۔ <ph name="BEGIN_LINK" />‫Google کی غیر محفوظ سائٹ کی پالیسی<ph name="END_LINK" /> کے بارے میں مزید جانیں۔</translation>
 <translation id="5503069778428381665">‏جب آپ ڈیسک ٹاپ پر Google لینز استعمال کرتے ہیں، تو صفحہ کا عنوان، URL اور مواد، بشمول PDFs، ‏Google کو بھیجے جاتے ہیں</translation>
 <translation id="5524890928877629608">تلاش کے حلقے کا اوپری دایاں کونا: <ph name="LEFT" /> فیصد دائیں، <ph name="TOP" /> فیصد اوپر</translation>
@@ -489,6 +503,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="566568153320186256">‏‫Chrome ہموار اسکرولنگ اور ویڈیو فریم ریٹس جیسی پس منظر کی سرگرمی اور ویژوئل ایفیکٹس کو محدود کر کے بیٹری پاور کی بچت کرتا ہے۔ <ph name="BEGIN_LINK" />اپنے انرجی سیور کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">‏اپنے اکاؤنٹ میں Chrome کا ڈیٹا صاف کریں</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{‏آپ کے منتظم کا کہنا ہے کہ آپ اس اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں}=1{‏آپ کے منتظم کا کہنا ہے کہ آپ اس اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی پوشیدگی ونڈو دوبارہ نہیں کھلے گی۔}other{‏آپ کے منتظم کا کہنا ہے کہ آپ اس اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی # پوشیدگی ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
+<translation id="568656514202614970">‏کامیاب! اب آپ Google تلاش کے سائیڈ پینل کے ذریعے براؤزنگ کے دوران آسانی سے سوالات پوچھ سکتے ہیں</translation>
 <translation id="5686916850681061684">‏Google Chrome کو حسب ضرورت بنائیں اور کنٹرول کریں۔ کچھ چیزوں کو آپ کی توجہ درکار ہے۔ تفصیلات کیلئے کلک کریں۔</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">انٹرنیٹ سے منسلک ہونے سے قاصر۔ پراکسی سرور کیلئے تصدیق درکار ہے۔</translation>
@@ -516,6 +531,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="5940385492829620908">‏آپ کا ویب، بُک مارکس اور دیگر Chrome مواد یہاں رہتے ہیں۔</translation>
 <translation id="5941711191222866238">چھوٹا کریں</translation>
 <translation id="5941830788786076944">‏Google Chrome کو ڈیفالٹ براؤزر بنائیں</translation>
+<translation id="5944731887996253728">‏آپ کی اسکرین کے غیر استعمال شدہ ہونے پر Chrome اپ ڈیٹ ہو جائے گا</translation>
 <translation id="5947104538377036631">‏‫Chrome شارٹ کٹ</translation>
 <translation id="5960071705175224773">آپ کی ترتیبات کو ایک نامعلوم ایپ نے تبدیل کر دیا</translation>
 <translation id="5980111191913430208">‏نامعلوم ذرائع کی ایکسٹینشنز، ایپس اور تھیمز آپ کے آلے کو نقصان پہنچا سکتی ہیں۔ ‫Chrome انہیں صرف <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> سے انسٹال کرنے کا مشورہ دیتا ہے</translation>
@@ -564,11 +580,14 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6288580400488258237">‏‫Google Chrome کو اپنے ڈیفالٹ براؤزر کے طور پر سیٹ کریں اور اسے اپنے ٹاسک بار پر پن کریں</translation>
 <translation id="6291089322031436445">‏Chrome Dev ایپس</translation>
 <translation id="6291549208091401781">‏Google Chrome پہلے سے ہی آپ کے کمپیوٹر پر سبھی صارفین کیلئے انسٹال ہے۔</translation>
+<translation id="6294638840436017818">‏ٹول بار پر موجود "Google تلاش سائیڈ پینل" بٹن کی مدد سے، آپ براؤزنگ کے دوران سوالات پوچھنے کے لیے Google تلاش سائیڈ پینل کو دوبارہ کھول سکتے ہیں</translation>
+<translation id="6308106880471005841">‏ٹول بار پر موجود "Google تلاش پینل" بٹن اب ایک نئے آئیکن کے ساتھ دستیاب ہے۔ ‫Google تلاش پینل کے ساتھ براؤز کرتے وقت سوالات پوچھنے کے لیے اس پر کلک کریں۔</translation>
 <translation id="6311220991371174222">‏Chrome کو شروع نہیں کیا جا سکتا ہے کیوںکہ آپ کے پروفائل کو کھولتے وقت کچھ غلط ہوگیا۔ Chrome کو دوبارہ شروع کرنے کی کوشش کریں۔</translation>
 <translation id="6319856120645568262">‏آپ کے اطراف کا نقشہ بنانے اور آپ کے ہاتھوں کو ٹریک کرنے کیلئے، Chrome کو اجازت درکار ہے</translation>
 <translation id="6321592572353357376">‏ایکسٹینشن "<ph name="EXTENSION_NAME" />" چاہتی ہے کہ آپ Chrome میں سائن ان کریں</translation>
 <translation id="6326175484149238433">‏Chrome سے ہٹائیں</translation>
 <translation id="6334815226785304306">‏‫Google Chrome کو ڈیفالٹ براؤزر بنائیں اور ٹاسک بار کو پن کریں</translation>
+<translation id="6339888439788291743">‏نیا آئیکن، وہی شارٹ کٹ: Google تلاش AI وضع کے ساتھ براؤز کرتے وقت سوالات پوچھنے کے لیے کلک کریں۔</translation>
 <translation id="63540178978900677">‏‫Chrome اب آپ کا ڈیفالٹ براؤزر نہیں ہے۔ ‫Chrome کو ڈیفالٹ براؤزر بنائیں؟</translation>
 <translation id="6357670763064300993">‏‫Chrome میں Gemini Enterprise</translation>
 <translation id="6360449101159168105">‏جب یہ ٹیب غیر فعال تھا تو Chrome کو تیز رکھنے کے لیے میموری خالی کر دی گئی تھی۔ آپ اس سائٹ کو ہمیشہ غیر فعال ہونے سے خارج کرنے کا انتخاب کر سکتے ہیں۔</translation>
@@ -618,6 +637,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6723445727540769832">‏اپنے فون پر Chrome ایپ کے ساتھ Google سے زیادہ سے زیادہ فائدہ اٹھائیں</translation>
 <translation id="6734827584173583205">‏آپ نے حال ہی میں ملاحظہ نہیں کیا ہے۔ ‫Chrome نے <ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="COUNT" /> مزید کو ہٹا دیا۔</translation>
 <translation id="6735387454586646204">‏ChromeOS Flex سسٹم</translation>
+<translation id="674891594898436429">اس ٹیب میں فعال تلاش کو برخاست کریں</translation>
 <translation id="6750954913813541382">‏املا کی غلطیوں کو درست کرنے کے لیے، آپ براؤزر میں جو متن ٹائپ کرتے ہیں، Chrome اسے Google کو بھیج دیتا ہے</translation>
 <translation id="6760235774835597023">‏‫Chrome کے V8 انجن کے ساتھ سائٹس کو تیز رفتار بناتا ہے لیکن Chrome کو حملوں کے خلاف قدرے کم مزاحم بناتا ہے۔ یہ ترتیب آن ہے۔</translation>
 <translation id="677276454032249905">‏بہر حال Chrome کو بند کریں؟</translation>
@@ -636,6 +656,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="689368324615299626">‏اپنے <ph name="DEVICE_TYPE" /> پر Chrome ایپ کے ساتھ Google سے زیادہ سے زیادہ فائدہ اٹھائیں</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6908182077349113099">‏اپنے پاس ورڈز، بُک مارکس اور سرگزشت کو آلات پر مکمل طور پر مطابقت پذیر رکھیں۔ اپنے ڈیفالٹ براؤزر کو Chrome میں اپ ڈیٹ کر کے ان خصوصیات تک آسانی سے رسائی حاصل کریں جنہیں آپ جانتے اور پسند کرتے ہیں۔</translation>
+<translation id="6926772305569367352">‏ٹول بار پر موجود "Chrome میں Google تلاش" بٹن اب ایک نئے آئیکن کے ساتھ دستیاب ہے۔ ‫Chrome میں Google تلاش کے ساتھ براؤزنگ کے دوران سوالات پوچھنے کے لیے اس پر کلک کریں۔</translation>
 <translation id="6930294499209825">‏آپ کے Google سافٹ ویئر کو تازہ ترین رکھتی ہے۔ اگر اس خدمت کو غیر فعّال کردیا گیا یا بند کردیا گیا ہے تو، آپ کے گوگل سافٹ ویئر کی تازہ کاری نہیں ہوگی، مطلب یہ کہ ممکنہ طور پر پیش آسکنے والے تحفظاتی مصائب درست نہیں ہوسکتے ہیں اور خصوصیات کام نہیں کرسکتی ہیں۔ جب Google سافٹ ویئر اس کو استعمال نہیں کر رہا ہوتا ہے تو یہ خدمت خود بخود غیر نصب ہوجاتی ہے۔</translation>
 <translation id="6933858244219479645">‏ChromeOS سسٹم</translation>
 <translation id="6938166777909186039">‏مستقبل کے Google Chrome اپ ڈیٹس حاصل کرنے کے لیے، آپ کو Windows 10 یا اس کے بعد کے ورژن کی ضرورت ہوگی۔ یہ کمپیوٹر Windows 8.1 استعمال کر رہا ہے۔</translation>
@@ -672,6 +693,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="7285616922384953075">‏<ph name="MANAGER" /> ‫Chrome کا نظم کرتا ہے</translation>
 <translation id="7285990705317078173">‏قیمتوں کو ٹریک کرنے اور کسی بھی سائٹ پر قیمت کم ہونے پر الرٹس حاصل کرنے کے لیے اپنے فون پر Chrome ڈاؤن لوڈ کریں</translation>
 <translation id="7288567540154601580">ٹیبز اور ایکسٹینشز</translation>
+<translation id="7290997427370476749">‏ٹول بار پر "Google تلاش پینل" بٹن سے، آپ براؤز کرتے وقت سوالات پوچھنے کے لیے Google تلاش پینل کو دوبارہ کھول سکتے ہیں</translation>
 <translation id="7296210096911315575">استعمال اور حفاظت سے متعلق اہم معلومات</translation>
 <translation id="7299899569525778554">ڈیسک ٹاپ سے تلاش کریں</translation>
 <translation id="7302361266603927550">‏آپ کا کچھ Chrome ڈیٹا ابھی تک آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوا ہے۔ سائن آؤٹ کرنے سے پہلے کچھ منٹ انتظار کر کے دیکھیں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا حذف ہو جائے گا۔</translation>
@@ -679,6 +701,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="7308322188646931570">‏Chrome کو فائلیں ڈاؤن لوڈ کرنے کیلئے اسٹوریج تک رسائی درکار ہے</translation>
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7371412052245999753">‏‫Chrome کی میموری کو آپ کے کمپیوٹر پر موجود دیگر ایپلیکیشنز سے محفوظ رکھتا ہے۔</translation>
+<translation id="7374061268215476070">‏آپ براؤز کرتے وقت سوالات پوچھنے کے لیے Google تلاش کا سائیڈ پینل دوبارہ کھول سکتے ہیں</translation>
 <translation id="73786666777299047">‏Chrome ویب اسٹور کھولیں</translation>
 <translation id="7386878009611068389">‏اپنے والدین کے انتخابات کے ساتھ آن لائن محفوظ رہنے کے لیے اپنے Chrome پروفائل پر سوئچ کریں جہاں آپ نے پہلے سے بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان کر رکھا ہے</translation>
 <translation id="7398801000654795464">‏آپ Chrome میں بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان تھے۔ براہ کرم دوبارہ سائن ان کرنے کیلئے وہی اکاؤنٹ استعمال کریں۔</translation>
@@ -732,6 +755,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="778331955594035129">‏Chrome کو اس سائٹ کے لیے مقام کی اجازت درکار ہے</translation>
 <translation id="7787950393032327779">‏ایسا لگتا ہے کہ پروفائل کسی دوسری Google Chrome کارروائی (<ph name="PROCESS_ID" />) کے ذریعے کسی دوسرے کمپیوٹر (<ph name="HOST_NAME" />) پر استعمال میں ہے۔  Chrome نے پروفائل کو مقفل کر دیا ہے تاکہ یہ خراب نہ ہو۔  اگر آپ کو یقین ہے کہ کوئی دیگر کارروائیاں اس پروفائل کا استعمال نہیں کر رہی ہیں تو آپ پروفائل کو غیر مقفل کر سکتے اور Chrome کو دوبارہ شروع کر سکتے ہیں۔</translation>
 <translation id="7800043020703832708">‏سائیڈ پینل میں Google تلاش بند کریں</translation>
+<translation id="7801317262080715012">‏نیا آئیکن، وہی شارٹ کٹ: Google تلاش پینل کے ساتھ براؤز کرتے وقت سوالات پوچھنے کے لیے کلک کریں۔</translation>
 <translation id="7801699035218095297">‏Google Chrome پاس ورڈز کاپی کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="7804364787702057554">‏‫Chrome میں آپ کا اکاؤنٹ</translation>
 <translation id="7804947029129221742">‏آپ کا سرچ انجن Chrome کے باہر سے تبدیل کیا گیا تھا۔ آپ کی حفاظت کیلئے، Chrome نے اسے اس کے اصل ڈیفالٹ پر ری سیٹ کر دیا۔ <ph name="LEARN_MORE_LINK" /></translation>
@@ -786,7 +810,9 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8162006532256575008">‏اکاؤنٹ کے بغیر Chrome استعمال کریں</translation>
 <translation id="8172231188687329735">‏چلتے پھرتے پاس ورڈز محفوظ کرنے کے لیے Chrome ایپ حاصل کریں</translation>
 <translation id="8177472873527554730">صفحے پر مواد تلاش کرنے سے قاصر</translation>
+<translation id="818985547157682832">‏ٹول بار پر موجود "Google تلاش AI وضع" بٹن اب ایک نئے آئیکن کے ساتھ دستیاب ہے۔ ‫Google تلاش AI وضع کے ساتھ براؤز کرتے وقت سوالات پوچھنے کے لیے اس پر کلک کریں۔</translation>
 <translation id="8196526165798579689">‏‫Chrome Dev کے ساتھ تلاش کریں</translation>
+<translation id="8203105157044679380">‏‫Google تلاش پینل</translation>
 <translation id="8221491193165283816">آپ عام طور پر اطلاعات کو مسدود کرتے ہیں۔ اس سائٹ کو آپ کو مطلع کرنے دینے کے لیے، یہاں کلک کریں۔</translation>
 <translation id="8227493674161801700">‏‫Chrome بی ٹاکے ساتھ تلاش کریں</translation>
 <translation id="8233224921566021881">‏قریبی آلات کو دریافت کرنے اور استعمال کرنے کے لیے Chrome کو آپ کے مقامی نیٹ ورک تک رسائی درکار ہے</translation>
@@ -798,6 +824,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8291415872436043161">‏Chrome ڈاؤن لوڈ کریں</translation>
 <translation id="829923460755755423">‏Google پاس ورڈ مینیجر میں ایک شارٹ کٹ شامل کریں</translation>
 <translation id="8313851650939857356">اسٹارٹ کی اپ خرابی: <ph name="STARTUP_ERROR" />۔</translation>
+<translation id="8321058241987390452">‏کامیاب! اب آپ Google تلاش پینل کے ساتھ براؤز کرتے وقت آسانی سے سوالات پوچھ سکتے ہیں</translation>
 <translation id="8321888067342493336">بطور تصویر کے محفوظ کریں</translation>
 <translation id="8336463659890584292">‏جب سائٹ اپنے صفحے پر لنکس کو نجی طور پر پیشگی لوڈ کرنے کا مطالبہ کرتی ہے تو Chrome ‏Google سرورز کا استعمال کرتا ہے۔ اس سے پیشگی لوڈ کردہ سائٹ سے آپ کی شناخت پوشیدہ ہو جاتی ہے لیکن Google جانتا ہے کہ کونسی سائٹس پیشگی لوڈ ہوتی ہیں۔</translation>
 <translation id="8342675569599923794">‏یہ فائل خطرناک ہے، اس لیے Chrome نے اسے مسدود کر دیا ہے۔</translation>
@@ -808,6 +835,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8367950957770994118">‏ضرورت پڑنے پر Chrome میں Gemini کو جلدی سے کھولیں</translation>
 <translation id="8370517070665726704">‏کاپی رائٹ<ph name="YEAR" /> Google LLC۔ جملہ حقوق محفوظ ہیں۔</translation>
 <translation id="8370748943308169953">‏‫<ph name="USER_NAME" /> کے بطور Chrome میں سائن ان کرنے کے لیے QR کوڈ</translation>
+<translation id="8374507495134902558">‏ایک <ph name="IMPORTANT_UPDATE" /> تیار ہے۔ آپ ابھی بند کر کے دوبارہ چلا سکتے ہیں یا اگلی بار جب آپ کی اسکرین آن رہے اور <ph name="IDLE_DURATION" /> تک استعمال نہ ہو تو Chrome کو اپ ڈیٹ کرنے کے لیے سیٹ کر سکتے ہیں۔</translation>
 <translation id="8376752431516546391">‏Google تلاش کا سائیڈ پینل</translation>
 <translation id="8377158135256176353">‏‫Chrome Canary میں Gemini کو ٹوگل کریں</translation>
 <translation id="8380754585531979907">‏‫Chrome میں Gemini اور اپنے کھلے ٹیب کے درمیان نیویگیٹ کرنے کے لیے اپنا کی بورڈ استعمال کریں۔</translation>
@@ -823,10 +851,12 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 
 جب تک آپ کچھ بُک مارکس کو حذف نہیں کرتے ہیں تب تک نئے بُک مارکس آپ کے اکاؤنٹ میں محفوظ نہیں کیے جا سکتے۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو غیر محفوظ کردہ بُک مارکس حذف ہو جائیں گے۔</translation>
 <translation id="8458117863387545390">‏اپنے فون پر Chrome حاصل کریں</translation>
+<translation id="8467931559764188481">‏فعال Google تلاش کو برخاست کریں</translation>
 <translation id="848851325211467878">‏بطور <ph name="USER_NAME" />، <ph name="USER_EMAIL" />، Google رکنیت سائن ان ہے۔ اکاؤنٹ مینیو کھولیں</translation>
 <translation id="8496177819998570653">‏Google پاس ورڈ مینیجر</translation>
 <translation id="8498858610309223613">‏Google Chrome کے لیے ایک خاص سیکیورٹی اپ ڈیٹ ابھی ابھی لاگو کیا گیا ہے۔ ابھی دوبارہ شروع کریں اور ہم آپ کے ٹیبز کو بحال کر دیں گے۔</translation>
 <translation id="8502181052659370">‏‫Google لینز کے ساتھ اس ٹیب کو تلاش کریں</translation>
+<translation id="8520489851087523435">‏‫Google تلاش سائیڈ پینل کو دوبارہ کھولیں</translation>
 <translation id="8521348052903287641">‏mDNS ٹریفک کی اجازت دینے کے لیے Google Chrome Dev کے لیے ان باؤنڈ اصول۔</translation>
 <translation id="852529348814672339">‏‫Chrome کو اس زبان میں ڈسپلے کریں</translation>
 <translation id="8525579356836940628">انسٹالیشن رک گئی</translation>
@@ -835,6 +865,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8555465886620020932">سروس کی خرابی: <ph name="SERVICE_ERROR" />۔</translation>
 <translation id="8564408666201523086">‏کامیاب! اب آپ سائیڈ پینل میں Google تلاش کے ساتھ براؤز کرتے وقت آسانی سے سوالات پوچھ سکتے ہیں</translation>
 <translation id="856656450041460113">زبان کی فہرست تلاش کریں</translation>
+<translation id="8568499811906962479">‏براؤزنگ کے دوران سوالات پوچھنے کے لیے آپ Google تلاش پینل کو پن کر سکتے ہیں</translation>
 <translation id="8575047640889685742">‏اپنے Google اکاؤنٹ میں موجود تمام Chrome ڈیٹا کو مرموز کرنے کے لیے <ph name="BEGIN_LINK" />اپنا خود کا پاس فریز<ph name="END_LINK" /> استعمال کریں۔ ‫Google Pay سے ادائیگی کے طریقے اور پتے مرموز نہیں ہوں گے۔ ‫Chrome سے براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔</translation>
 <translation id="8590782867495422699">‏‫Google تلاش AI وضع کو دوبارہ کھولیں</translation>
 <translation id="8598779894319572882">‏ٹول بار پر "Google تلاش AI وضع" بٹن سے، آپ براؤز کرتے وقت سوالات پوچھنے کے لیے Google تلاش AI وضع کو دوبارہ کھول سکتے ہیں</translation>
@@ -847,6 +878,8 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8656634243791296665">‏‫Chrome Dev میں Gemini کھولیں</translation>
 <translation id="8669527147644353129">‏Google Chrome مدد کنندہ</translation>
 <translation id="8679801911857917785">‏یہ آپ کی جانب سے Chrome شروع کیے جانے پر دکھائی دینے والے صفحہ کو بھی کنٹرول کرتا ہے۔</translation>
+<translation id="8689408573494410517">‏ٹول بار پر موجود "سائیڈ پینل میں Google تلاش" بٹن اب ایک نئے آئیکن کے ساتھ دستیاب ہے۔ سائیڈ پینل میں Google تلاش کے ساتھ براؤزنگ کے دوران سوالات پوچھنے کے لیے اس پر کلک کریں۔</translation>
+<translation id="8699232386626916686">‏محفوظ رہنے کے لیے Chrome کو اپ ڈیٹ کریں</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8712767363896337380">‏تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ مکمل کرنے کے لیے Chrome کو بند کر کے دوبارہ چلائیں۔</translation>
 <translation id="8717554232729236539">‏‫<ph name="EXISTING_USER" /> پہلے سے ہی سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کے لیے، اپنی پروفائل میں Chrome میں بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان کریں۔ آپ کو <ph name="DEVICE" /> سے اپنی پڑھنے کی فہرست اور مزید چیزیں بھی مل جائیں گی۔</translation>
@@ -866,8 +899,10 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8834965163890861871">‏Google Chrome پاس ورڈز میں ترمیم کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="8841151363570555833">‏‫Mac مینیو بار میں Chrome میں Gemini دکھائیں</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{‏Chrome تجویز کرتا ہے کہ آپ اسے ہٹا دیں}other{‏Chrome تجویز کرتا ہے کہ آپ انہیں ہٹا دیں}}</translation>
+<translation id="8861692536395317751">‏‫Google Chrome کے لیے Windows 10 ورژن 1809 یا اس کے بعد کا ورژن درکار ہے۔</translation>
 <translation id="8862326446509486874">سسٹم کی سطح پر انسٹال کرنے کیلئے آپ کے پاس مناسب حقوق نہیں ہیں۔ انسٹالر کو دوبارہ منتظم کے بطور چلانے کی کوشش کریں۔</translation>
 <translation id="8865415417596392024">‏آپ کے اکاؤنٹ میں Chrome کا ڈیٹا</translation>
+<translation id="8897637834206928776">‏نیا آئیکن، وہی شارٹ کٹ: سائیڈ پینل میں Google تلاش کے ذریعے براؤزنگ کے دوران سوالات پوچھنے کے لیے یہاں کلک کریں۔</translation>
 <translation id="8914504000324227558">‏Chrome کو دوبارہ شروع کریں</translation>
 <translation id="8920304659326707347">‏‫iOS پر Chrome کے ساتھ وہیں سے شروع کریں جہاں سے آپ نے چھوڑا تھا۔</translation>
 <translation id="8922998289262614701">‏‫Chrome سے اس ایپس کا ڈیٹا ہٹائیں</translation>
@@ -893,6 +928,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="9018218886431812662">انسٹالیشن مکمل ہو گئی</translation>
 <translation id="9066987883552592250">‏‫Chrome Canary میں Gemini کو بند کریں</translation>
 <translation id="9074041031320636790">‏کامیاب! اب آپ Google تلاش AI وضع کے ساتھ براؤز کرتے وقت آسانی سے سوالات پوچھ سکتے ہیں</translation>
+<translation id="9074163480955555019">‏نیا آئیکن، وہی شارٹ کٹ: Chrome میں Google تلاش کے ساتھ براؤز کرتے وقت سوالات پوچھنے کے لیے کلک کریں۔</translation>
 <translation id="9090566250983691233">‏Chrome کے کچھ فائلز کو مسدود کرنے کی وجہ جانیں</translation>
 <translation id="9106236359747881194">تلاش کرنے کے لیے ٹیکسٹ منتخب کریں</translation>
 <translation id="911206726377975832">نیز آپ کا براؤزنگ ڈیٹا حذف کریں؟</translation>

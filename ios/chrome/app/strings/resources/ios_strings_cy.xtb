@@ -40,6 +40,7 @@
 <translation id="1085677983426914530">Ni fu modd agor <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Chwilio â Google Lens</translation>
 <translation id="1095093219235104018">Dod o hyd i wybodaeth a'i llenwi gyda Gemini</translation>
+<translation id="1096245844813536669">Yn cyflwyno'ch chwiliad yn awtomatig pan fyddwch yn stopio siarad</translation>
 <translation id="1096992026380844478">Bydd eich gosodiadau cysoni yn cael eu hadfer yn seiliedig ar eich copi wrth gefn diwethaf. <ph name="BEGIN_LINK" />Gweld beth allwch ei gysoni<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Cyfieithu <ph name="LANGUAGE" /> bob amser</translation>
 <translation id="1110772719190051587">Datgloi gyda Face ID</translation>
@@ -392,7 +393,6 @@
 <translation id="2139867232736819575">Chwilio am Destun y Gwnaethoch ei Gopïo</translation>
 <translation id="2140913838150159519">Pinio tab</translation>
 <translation id="2147127444698817042">Dim ond ar gael ar iPhone</translation>
-<translation id="2148326276832455306">Mae sgyrsiau'n cael eu hadolygu a'u defnyddio i wella AI Google. Gallwch <ph name="BEGIN_LINK" />reoli eich gweithgarwch<ph name="END_LINK" />, gan gynnwys gwybodaeth am eich lleoliad. <ph name="BEGIN_LINK" />Dysgu rhagor am eich dewisiadau<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Mewngofnodi i wefannau ac apiau yn gyflym gyda'ch cyfrineiriau sydd wedi'u cadw.</translation>
 <translation id="2149968176347646218">Nid yw'r cysylltiad yn ddiogel</translation>
 <translation id="2149973817440762519">Golygu Nod Tudalen</translation>
@@ -458,7 +458,6 @@
 <translation id="2327445548174191329">O <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Dim amddiffyniad</translation>
 <translation id="233375395665273385">Dileu ac allgofnodi</translation>
-<translation id="2340966584724330791">Mae Google yn casglu eich sgyrsiau a'r hyn rydych yn ei rannu â Gemini (megis ffeiliau, fideos, sgriniau a lluniau). Mae hefyd yn casglu eich adborth, gwybodaeth o wefannau rydych yn ymweld â nhw gyda Gemini, defnydd cynnyrch, a gwybodaeth lleoliad (gan gynnwys lleoliad cyffredinol eich dyfais, cyfeiriad IP, neu gyfeiriadau Cartref neu Waith yn eich Cyfrif Google).</translation>
 <translation id="2350463587705616331">Lliw cefndir sepia</translation>
 <translation id="2351097562818989364">Mae eich gosodiadau cyfieithu wedi'u hailosod.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Gallwch gadw eich cyfrinair ar gyfer {DOMAIN_ONE} yn eich Cyfrif Google, {EMAIL}.}=2{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE} a {DOMAIN_TWO} yn eich Cyfrif Google, {EMAIL}.}=3{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}zero{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}many{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}other{Gallwch gadw eich cyfrineiriau ar gyfer {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} arall yn eich Cyfrif Google, {EMAIL}.}}</translation>
@@ -720,6 +719,7 @@
 <translation id="3186796054637504691">Clirio Hanes a Data Gwefan</translation>
 <translation id="3190558889382726167">Mae'r cyfrinair wedi'i gadw</translation>
 <translation id="3190736958609431397">Dadolrhain</translation>
+<translation id="3192820089569442694">Aeth rhywbeth o'i le gyda'ch cais optio allan o ddata</translation>
 <translation id="3208260410153224535">Mae eich sefydliad wedi diffodd mewngofnodi. Dim ond i'r ddyfais hon y bydd nodau tudalen, cyfrineiriau a rhagor sy'n newydd yn cael eu cadw.</translation>
 <translation id="3211969308836412674">Dad-binio'r wefan</translation>
 <translation id="3213807041830307252">Siopa, cyfieithu, a nodi'r hyn a welwch gan ddefnyddio'ch camera a'ch oriel luniau.</translation>
@@ -741,7 +741,6 @@
 <translation id="3265736395246760288">Mewngofnodwch yn gyflymach o unrhyw un o'ch dyfeisiau sydd wedi'u cysoni.</translation>
 <translation id="3268166994745151153">Mae hyn yn golygu y byddwch yn colli eich cynnydd presennol</translation>
 <translation id="3272527697863656322">Canslo</translation>
-<translation id="3272955648592358996">Mae eich data yn gwella AI Google</translation>
 <translation id="3273510436356991673">Addasu eich sgrîn hafan</translation>
 <translation id="327455571215090823">Awtolenwi clyfrach, wedi'i gadw'n breifat</translation>
 <translation id="3277021493514034324">Copïwyd cyfeiriad y wefan</translation>
@@ -787,6 +786,7 @@
 <translation id="344589138074534176">Dysgu rhagor am Google Lens</translation>
 <translation id="3449029510150690417">Creu eich grŵp tabiau newydd trwy roi enw a lliw iddo</translation>
 <translation id="345348365500626747">Canfuwyd y cyfeiriad</translation>
+<translation id="3453878468834191501">Mae'r tab presennol yn cael ei rannu â Gemini pan fyddwch yn dechrau sgwrs newydd. <ph name="BEGIN_LINK" />Dysgu rhagor am AI a phreifatrwydd<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Ewch yn Live gyda Gemini i ofyn am dudalen, taflu syniadau yn uchel, a siarad yn ôl ac ymlaen.</translation>
 <translation id="3462768334899086950">Mae hyn yn golygu y byddwch yn colli eich ffeil heb ei chadw a'ch tabiau cyfredol</translation>
 <translation id="3464194322481586217">Methu ag olrhain y pris.</translation>
@@ -850,6 +850,7 @@
 <translation id="3641456520301071208">Gall gwefannau ofyn am eich lleoliad</translation>
 <translation id="3642060527569456384">Mae grwpiau tabiau yn cael eu cadw a'u diweddaru'n awtomatig ar draws eich holl ddyfeisiau.</translation>
 <translation id="3643338347976071250">{count,plural, =1{Mae {count} cyfrinair wedi'i gadw i'r ddyfais hon yn unig. Er mwyn ei defnyddio ar eich dyfeisiau eraill, cadwch hi yn eich Cyfrif Google, {email}.}zero{Mae {count} cyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}two{Mae {count} gyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}few{Mae {count} chyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}many{Mae {count} chyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}other{Mae {count} cyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}}</translation>
+<translation id="3657176844107584515"><ph name="EMAIL" />, aelodaeth Google.</translation>
 <translation id="3659297405161482746">Ni chanfuwyd unrhyw ddulliau talu</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 wedi'i ddewis}zero{Mae # wedi'u dewis}two{Mae # wedi'u dewis}few{Mae # wedi'u dewis}many{Mae # wedi'u dewis}other{Mae # wedi'u dewis}}</translation>
 <translation id="3668035568083954765">Amddiffyn eich preifatrwydd a chadw'n ddiogel</translation>
@@ -917,7 +918,6 @@
 <translation id="3888863481921783344">Bydd hwn yn cael ei ddefnyddio i ddangos i chi wahoddedigion posib i'ch digwyddiad.</translation>
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Byddwch yn gweld eich hanes yma</translation>
-<translation id="3892695492576181257">Pan fydd ymlaen, mae eich gweithgarwch yn cael ei gadw yng Ngweithgarwch Apiau Gemini am 18 mis, y gallwch ei newid i 3 neu 36 mis. Mae Google yn defnyddio'ch gweithgarwch i ddatblygu a gwella ei wasanaethau (gan gynnwys modelau Gemini), yn ogystal ag i amddiffyn Google, ei ddefnyddwyr, a'r cyhoedd (gyda chymorth adolygwyr dynol). Caiff data a adolygir gan ddarparwyr gwasanaeth eu datgysylltu o'ch cyfrif a'u cadw am 3 blynedd.</translation>
 <translation id="3893858854379998374">I gadw nodau tudalen yn eich cyfrif, dilëwch eich nodau tudalen sydd heb eu defnyddio</translation>
 <translation id="3897092660631435901">Dewislen</translation>
 <translation id="3904270275864974753">Golygu'r carwsél</translation>
@@ -947,6 +947,7 @@
 <translation id="3955740319737378355">Wedi gorffen</translation>
 <translation id="3955822496205734389">Mae gennych gyfrineiriau gwan.</translation>
 <translation id="3957016963627617921">Gwnewch ragor gyda Gemini yn Chrome</translation>
+<translation id="3957737662589242353"><ph name="NAME" />, <ph name="EMAIL" />, aelodaeth Google.</translation>
 <translation id="3958312024468322930">Llusgwch ef i'r doc ar waelod eich Sgrîn Hafan</translation>
 <translation id="3962326069546168954">Cadw</translation>
 <translation id="3967327056943561740">Nodau tudalen</translation>
@@ -1428,7 +1429,6 @@
 <translation id="5447973833955560753">Cyfrinair adfer</translation>
 <translation id="5448623529214315261">Llun wedi'i gadw <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Defnyddiwch gyfrinair cryf</translation>
-<translation id="5453088693079603292">Pa weithgarwch sy'n cael ei gasglu</translation>
 <translation id="5454211924362324495">I atal eraill rhag defnyddio'ch cyfrinair, <ph name="BEGIN_LINK" />newidiwch ef ar <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Ychwanegu at eich chwiliad</translation>
 <translation id="5457226814769348910">Agor Fersiwn All-lein</translation>
@@ -1542,7 +1542,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5801568494490449797">Dewisiadau</translation>
 <translation id="5803566855766646066">Ydych chi'n siŵr eich bod am gael gwared ar y cerdyn newydd hwn?</translation>
 <translation id="5804241973901381774">Caniatadau</translation>
-<translation id="58081802114142635">Mae eich gweithgaredd yn gwella AI Google</translation>
 <translation id="5817176759448082654">Gwiriad Cyfrineiriau</translation>
 <translation id="5818161931099046557">Golygu yn eich Cyfrif Google</translation>
 <translation id="5819208479324046259">Rheolir gan <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -1591,7 +1590,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5971459446352190251">Chwilio am god QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{Mae 1 nod tudalen wedi'i ddileu}zero{Mae {count} nod tudalen wedi'u dileu}two{Mae {count} nod tudalen wedi'u dileu}few{Mae {count} nod tudalen wedi'u dileu}many{Mae {count} nod tudalen wedi'u dileu}other{Mae {count} nod tudalen wedi'u dileu}}</translation>
 <translation id="5972844218283131174">Dad-ddewis popeth</translation>
-<translation id="597482816780655631">Mae Gemini yn AI a gall wneud camgymeriadau, gan gynnwys am bobl. Mae'n bosib na fydd rhywfaint o'r cynnwys yn addas i bawb. Mae sgyrsiau'n cael eu hadolygu a'u defnyddio i wella AI Google. <ph name="BEGIN_LINK" />Dysgu am eich dewisiadau.<ph name="END_LINK" /> Mae ein <ph name="BEGIN_LINK" />Telerau<ph name="END_LINK" /> a'n <ph name="BEGIN_LINK" />Hysbysiad Preifatrwydd<ph name="END_LINK" /> yn berthnasol.</translation>
 <translation id="5976160379964388480">Eraill</translation>
 <translation id="5977976211062815271">Ar y ddyfais hon</translation>
 <translation id="5986043348928676121">Nesaf</translation>
@@ -1609,7 +1607,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6027945736510816438">A oeddech chi'n golygu <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nodwedd newydd</translation>
 <translation id="6038823991892265570">Rheoli storfa Google</translation>
-<translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="6042308850641462728">Mwy</translation>
 <translation id="6045460247888249350">Ychwanegu teitl</translation>
@@ -1626,6 +1623,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6078236141387574983">Addaswch uchder y ddalen</translation>
 <translation id="6084848228346514841">Dewis Tabiau</translation>
 <translation id="6089212833343035912">PIN Rheolwr Cyfrineiriau Google</translation>
+<translation id="6090690847556987004">Aeth rhywbeth o'i le gyda'r gosodiad hwn. Diweddarwch Chrome ac iOS, yna ailgychwynnwch eich dyfais i roi cynnig arall arni. Os yw hyn yn parhau i ddigwydd, mae'n bosib na fydd eich iPhone yn cefnogi'r gosodiad hwn.</translation>
 <translation id="6090760257419195752">Rhybuddion a ddiystyrwyd</translation>
 <translation id="6094325891006032858">Troi Gwell Pori'n Ddiogel ymlaen</translation>
 <translation id="6096965253650248286">Canfuwyd <ph name="COUNT" /></translation>
@@ -1817,7 +1815,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6609890790934458793">Bydd y cyfrineiriau ar gyfer <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, a <ph name="THIRD_WEBSITE" /> yn cael eu dileu. Ni fydd eich cyfrifon yn cael eu dileu.</translation>
 <translation id="661266467055912436">Yn gwella diogelwch i chi a phawb ar y we.</translation>
 <translation id="6612912757320004438">Caniatáu Hysbysiadau Tabiau…</translation>
-<translation id="6613372200395638275">Er mwyn darparu help pwrpasol, mae Gemini yn rhannu rhywfaint o'ch data (fel rhannau o'ch sgyrsiau, lleoliad, a gwybodaeth berthnasol arall) â gwasanaethau Google eraill, megis Maps a Flights. Gall y gwasanaethau hyn ddefnyddio'r wybodaeth honno i wella, hyd yn oed os byddwch yn dileu eich gweithgarwch Gemini Apps yn ddiweddarach. Dysgu rhagor yn <ph name="BEGIN_LINK" />Canolfan Breifatrwydd Gemini Apps<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Clirio'r testun</translation>
 <translation id="6619015782482868078">Thema laswerdd</translation>
 <translation id="6620279676667515405">Canslo</translation>
@@ -1977,7 +1974,6 @@ I barhau o'ch cyfrifiadur, newidiwch i <ph name="OTHER_EMAIL" />. Byddwch yn cae
 <translation id="7091023926159231962">{count,plural, =1{Methu mewnforio {count} cyfrinair}zero{Methu mewnforio {count} cyfrineiriau}two{Methu mewnforio {count} gyfrinair}few{Methu mewnforio {count} chyfrinair}many{Methu mewnforio {count} chyfrinair}other{Methu mewnforio {count} cyfrinair}}</translation>
 <translation id="7095110968493193530">I Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Yn y bar cyfeiriad, tapiwch hanes prisiau i weld newidiadau pris dros amser</translation>
-<translation id="7098554251807199977">Ni fydd eich sgyrsiau gyda Gemini na'ch <ph name="BEGIN_LINK" />data Google Workspace<ph name="END_LINK" /> yn cael eu hadolygu na'u defnyddio i wella modelau AI cynhyrchiol.</translation>
 <translation id="7102005569666697658">Wrthi'n lawrlwytho… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Dewislen → Gosodiadau → Dulliau talu</translation>
 <translation id="7108338896283013870">Cuddio</translation>
@@ -2122,6 +2118,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="7557508262441527045">Rydych wedi'ch allgofnodi</translation>
 <translation id="7561196759112975576">Bob tro</translation>
 <translation id="7561982940498449837">Cau'r ddewislen</translation>
+<translation id="7562347727679121642">Ychwanegu llun at eich chwiliad</translation>
 <translation id="7566349809380613217">Agor <ph name="GROUP_TITLE" />, grŵp a rennir o <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Mae Nodau Tudalen wedi'u cuddio</translation>
 <translation id="7575664680938145959">Agor gydag Un Tap</translation>
@@ -2417,7 +2414,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8439758443371991593">Cuddio Ychwanegu at Restr Darllen</translation>
 <translation id="8443986842926457191">Mae'r URL yn fwy na 2048 nod</translation>
 <translation id="8449869326050867919">Wedi rhannu cyfrinair</translation>
-<translation id="8461708300275916315">Os ydych o dan 18 oed</translation>
 <translation id="8473815223723723001">Golygu llun gyda Gemini</translation>
 <translation id="8473863474539038330">Cyfeiriadau a rhagor</translation>
 <translation id="8474378002946546633">Caniatáu hysbysiadau</translation>
@@ -2497,7 +2493,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8672733398999596205">Galluogi Pob Un</translation>
 <translation id="8674716540979958118">Mae gennych gyfrineiriau sydd wedi'u darganfod.</translation>
 <translation id="8679900250380464358">Ychwanegu at y Rhestr Ddarllen</translation>
-<translation id="8680643216091361291">Mae eich gosodiad <ph name="BEGIN_LINK" />Cadw Gweithgarwch<ph name="END_LINK" /> wedi'i ddiffodd yn ddiofyn. Pan fydd wedi'i ddiffodd, mae Google yn cadw'ch sgyrsiau am 3 diwrnod. Mae'n eu defnyddio i wneud i Gemini Apps weithio'n gywir, helpu i'w cadw'n ddiogel, a defnyddio'ch adborth i ddatrys problemau. Gallwch droi Cadw Gweithgarwch ymlaen i helpu i wella AI Google i bawb.</translation>
 <translation id="8680787084697685621">Mae manylion mewngofnodi'r cyfrif yn hen.</translation>
 <translation id="868648444055742370">Ni chaniateir i "<ph name="SITE_DOMAIN" />" gael mynediad at eich meicroffon</translation>
 <translation id="8690752723634292147">Cadarnhewch eich bod am ei ddileu</translation>
@@ -2555,7 +2550,6 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="882557203579758546">Chwilio'r Dudalen…</translation>
 <translation id="8829809207373502270">Nid yw'r cod pas hwn yn gweithio mwyach. Cafodd ei ddileu o <ph name="WEBSITE" /> a bydd yn cael ei ddileu o'r fan hon yn fuan. <ph name="BEGIN_LINK" />Ynglŷn â chodau pas<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Cau pob tab anweithredol</translation>
-<translation id="8831871601813227635">Mae ein <ph name="BEGIN_LINK" />Telerau<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Telerau Lleoliad Corea<ph name="END_LINK" />, a'n <ph name="BEGIN_LINK" />Hysbysiad Preifatrwydd<ph name="END_LINK" /> yn berthnasol. Mae sgyrsiau'n cael eu hadolygu a'u defnyddio i wella AI Google. Mae Gemini yn AI a gall wneud camgymeriadau, gan gynnwys am bobl. Mae'n bosib na fydd rhywfaint o'r cynnwys yn addas i bawb. Gallwch <ph name="BEGIN_LINK" />reoli eich gweithgarwch<ph name="END_LINK" />, gan gynnwys gwybodaeth am eich lleoliad. <ph name="BEGIN_LINK" />Dysgu rhagor am eich dewisiadau<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Trefnu yn ôl cyhoeddwr</translation>
 <translation id="884351711508006491">Mae eich gwybodaeth wedi'i chadw i'ch dyfais.</translation>
 <translation id="8844136307393039959">Gostyngiad pris ar eich cynnyrch wedi'i olrhain</translation>
@@ -2636,6 +2630,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="9090979472668095374">Siaradwch yr atebion yn ôl</translation>
 <translation id="9094033019050270033">Diweddaru cyfrinair</translation>
 <translation id="9098541895599151034">Dileu <ph name="NUMBER_OF_ACCOUNTS" /> o Gyfrineiriau?</translation>
+<translation id="909874878420399003">Cyflwyno'n awtomatig</translation>
 <translation id="9099233023029360602">Gofyn pa gyfrif i'w ddefnyddio pob amser</translation>
 <translation id="9099821309562615674">Gwnewch yn siŵr bod y testun rydych chi'n ei gyfieithu yn glir ac yn y ffrâm.</translation>
 <translation id="9100610230175265781">Angen cyfrinymadrodd</translation>
@@ -2669,6 +2664,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="9203951165704618409">Newidiwch eich bar cyfeiriad o'r brig i'r gwaelod i gael profiad pori personol.</translation>
 <translation id="9205189991633470489">Clo anhysbys</translation>
 <translation id="9206887540681440657">Cyflymder</translation>
+<translation id="9218088788182688902">Aeth rhywbeth o'i le gyda'r gosodiad hwn. Diweddarwch Chrome ac iPadOS, yna ailgychwynnwch eich dyfais i roi cynnig arall arni. Os yw hyn yn parhau i ddigwydd, mae'n bosib nad yw eich iPad yn cefnogi'r gosodiad hwn.</translation>
 <translation id="9218430445555521422">Gosod fel diofyn</translation>
 <translation id="9219103736887031265">Lluniau</translation>
 <translation id="9219154867334666734">Chwilio Tabiau…</translation>

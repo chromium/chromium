@@ -150,7 +150,6 @@
 <translation id="1247030632403369975">铝</translation>
 <translation id="1249643768796040660">移除此信息</translation>
 <translation id="1253846494229886276">正在保存屏幕截图</translation>
-<translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（已同步）</translation>
 <translation id="1255931290436977164">护照</translation>
 <translation id="1256368399071562588">&lt;p&gt;如果您尝试访问某个网站，但无法打开它，可以按照以下问题排查步骤操作，尝试解决问题：&lt;/p&gt;
     &lt;ol&gt;
@@ -935,6 +934,7 @@
 <translation id="2535585790302968248">打开新的无痕式标签页即可进行无痕浏览</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{以及另外 1 个网域}other{以及另外 # 个网域}}</translation>
 <translation id="2536110899380797252">添加地址</translation>
+<translation id="2536852576044236667">上一个视图以外的匹配项</translation>
 <translation id="2537931901612099523">使用此设备的其他用户不会看到您的活动记录，因此您可以获得更私密的浏览体验。这不会改变您访问的网站及其所用服务（包括 Google）收集数据的方式。下载内容和书签将会保存在此设备上。</translation>
 <translation id="2541219929084442027">在您关闭所有无痕式标签页后，您在这些标签页中浏览的网页不会在浏览器历史记录、Cookie 存储区或搜索记录中留下任何痕迹。不过，您下载的所有文件或创建的书签均会保留下来。</translation>
 <translation id="2541474152868747095">如需访问您在其他设备上的历史记录，请验证身份。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
@@ -1092,6 +1092,7 @@
 <translation id="2826760142808435982">该连接使用 <ph name="CIPHER" /> 进行加密和身份验证，并使用 <ph name="KX" /> 作为密钥交换机制。</translation>
 <translation id="2828797285817981634">目前允许使用移动传感器</translation>
 <translation id="2835907903001172712">浏览器概览</translation>
+<translation id="2836653778330912701">下一个视图以外的匹配项</translation>
 <translation id="2837891525090413132">可以请求锁定和使用您的键盘</translation>
 <translation id="2839032553903800133">已阻止显示通知</translation>
 <translation id="2839501879576190149">您要访问的是虚假网站</translation>
@@ -1206,6 +1207,7 @@
 <translation id="3030331669969285614">这些标记可以防止或还原破坏性更改，并且只能在有限的时间内使用。</translation>
 <translation id="3033200136993730761">保留住址可方便您畅享各项 Google 服务，例如在 Google 地图中获得更精确的搜索结果和路线。您可在 <ph name="BEGIN_LINK" />Google 账号 <ph name="ACCOUNT" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
 <translation id="3033777742142108756">目前允许使用移动传感器和光传感器</translation>
+<translation id="3034219227076811559">Chrome 中的 Google 搜索</translation>
 <translation id="3034526003882782781">允许滚动和缩放</translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
@@ -1646,6 +1648,7 @@
 <translation id="3749600200023337912">系统可能会使用您已保存的自动支付方式来支付此款项。如需在 Chrome 中关闭电子钱包或支付应用，请前往<ph name="BEGIN_LINK1" />支付设置<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">要将地址保存到账号吗？</translation>
 <translation id="3752543821772132562">已忽略，因为未设置 <ph name="POLICY_NAME" />。</translation>
+<translation id="3753412199586870466">打开侧边栏</translation>
 <translation id="3754210790023674521">退出“画中画”模式</translation>
 <translation id="3757511311058373406">自动浏览过滤条件</translation>
 <translation id="3759461132968374835">您最近未收到崩溃报告。崩溃报告停用时发生的崩溃不会在此处显示。</translation>
@@ -2441,6 +2444,7 @@
 <translation id="5053116470141135293">使用此卡结账时，系统会填写虚拟卡号，以保护您的真实详细信息。在 Google 钱包中管理。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{若要使用“附近分享”功能发送这个文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}other{若要使用“附近分享”功能发送这些文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056587122125565772">创建图片</translation>
+<translation id="5056908537436373373">在新窗口中打开窗口 <ph name="WINDOW_INDEX" />（1 个标签页）</translation>
 <translation id="505757197798929356">请提供打开原因（必填）</translation>
 <translation id="5058282932481719070">在设置中详细了解增强型自动填充功能</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
@@ -2946,7 +2950,6 @@
 <translation id="5902204772823742902">安全地向 Google 钱包添加驾照</translation>
 <translation id="5903264686717710770">标题：</translation>
 <translation id="5905671155741555195">保留工作地址可方便您畅享各项 Google 服务，例如在 Google 地图中获得更精确的搜索结果和路线。您可在 <ph name="BEGIN_LINK" />Google 账号 <ph name="ACCOUNT" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
-<translation id="5908541034548427511"><ph name="TYPE_1" />（已同步）</translation>
 <translation id="5910140988253729859">撤消自动填充</translation>
 <translation id="5911110632211230665">禁止打开</translation>
 <translation id="5912796581727968237">打开 Google 钱包</translation>
@@ -3016,7 +3019,6 @@
 <translation id="6018650639991193045">在 Chrome 的“设置”页面中删除浏览记录、Cookie、缓存内容及其他数据</translation>
 <translation id="6019118530636932154">Google Apps 脚本</translation>
 <translation id="6023960830218262456">无法将视频保存到 OneDrive</translation>
-<translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" />（已同步）</translation>
 <translation id="6025471531651464742">添加文件</translation>
 <translation id="6028591542479806248">管理移动应用和电子邮件通知</translation>
 <translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可打开新的隔离窗口进行私密浏览</translation>
@@ -3178,6 +3180,7 @@
 <translation id="6284292079994426700">26 x 38 英寸</translation>
 <translation id="6284517535531159884">变体版本种子类型</translation>
 <translation id="6287197303017372967">使用导航功能查询前往目的地的精细路线指导。</translation>
+<translation id="6287497864845330943">窗口 <ph name="WINDOW_NUMBER" /> · <ph name="NUM_TABS" /> 个标签页</translation>
 <translation id="628877850550444614">发现了折扣</translation>
 <translation id="6289939620939689042">页面颜色</translation>
 <translation id="6292819926564202163">您在 Chrome 中使用的搜索引擎</translation>
@@ -3216,6 +3219,7 @@
 <translation id="6342069812937806050">刚刚</translation>
 <translation id="6342171901363060580">您之所以会看到此警告，是因为该网站不支持 HTTPS 且您处于无痕模式。<ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">路线</translation>
+<translation id="6345664705388712774">将图片添加到搜索会话</translation>
 <translation id="6348220984832452017">使用中的变体</translation>
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
 <translation id="6350739641326887427">无需复制和粘贴 Pix 代码即可付款。<ph name="BEGIN_LINK1" />了解运作方式<ph name="END_LINK1" /></translation>
@@ -3608,6 +3612,7 @@
 <translation id="7013835112918108252">可以请求锁定和使用您的鼠标</translation>
 <translation id="7013844825046560088">Chrome 会记录您对该功能的使用情况，例如您的请求以及您在面对建议时是选择接受还是忽略</translation>
 <translation id="7014741021609395734">缩放级别</translation>
+<translation id="7016016144157344115">窗口 <ph name="WINDOW_NUMBER" /> · 1 个标签页</translation>
 <translation id="7016992613359344582">这些费用可能只收取一次，也可能会周期性收取，而且可能不易察觉。</translation>
 <translation id="7020464868401003526">快捷方式的网址超出了允许的长度上限（<ph name="MAX_LENGTH" /> 个字符）。</translation>
 <translation id="7020581144940000377">使用大致位置</translation>
@@ -3737,7 +3742,6 @@
 <translation id="7240120331469437312">证书主题背景的备用名称</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />；<ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244061187185055290">请简要描述您要搜索的内容</translation>
 <translation id="7247459554233215758">点按卡详细信息，即可将其添加到结账流程。</translation>
 <translation id="7250174481516136841"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />凭卡可享受的福利</translation>
 <translation id="7251437084390964440">网络配置不符合 ONC 标准，因此它的某些部分可能会无法导入。
@@ -4159,6 +4163,7 @@
 <translation id="7911651285409665023">关闭并返回“<ph name="TAB_TITLE" />”</translation>
 <translation id="7912924955815015552">由 Safari 导入</translation>
 <translation id="7916162853251942238">柔印底基</translation>
+<translation id="7916802424606434188">在新窗口中打开窗口 <ph name="WINDOW_INDEX" />（<ph name="NUM_TABS" /> 个标签页）</translation>
 <translation id="791698251820376781">您所在的组织不允许您登录</translation>
 <translation id="7927046851848613453">不只可以保存您填写的表单信息，您浏览的网页中的票券、活动及其他信息也能一并保存。随后，您就能轻松使用各类卡券，例如活动门票和会员卡。您保存的信息可能会显示在您的设备上以及各项 Google 产品中。</translation>
 <translation id="7930282586031445870">“先买后付”服务条款界面已关闭。</translation>
@@ -4317,6 +4322,7 @@
 <translation id="8199437620497683918">光盘（平滑）</translation>
 <translation id="8202097416529803614">订单摘要</translation>
 <translation id="8202370299023114387">冲突</translation>
+<translation id="8203105157044679380">Google 搜索面板</translation>
 <translation id="8208363704094329105">300 x 400 毫米</translation>
 <translation id="8208629719488976364">系统会将您打印的页面内容和您的打印机相关信息发送到 Google Cloud 或第三方以供分析。例如，这些内容和信息可能会被扫描以确定其是否包含敏感数据，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="8210490490377416373">选择政策名称</translation>

@@ -150,7 +150,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1249643768796040660">Usuń te informacje</translation>
 <translation id="1253846494229886276">Zapisuję zrzut ekranu</translation>
-<translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (zsynchronizowane)</translation>
 <translation id="1255931290436977164">Paszport</translation>
 <translation id="1256368399071562588">&lt;p&gt;Jeśli nie udaje się otworzyć strony, spróbuj wykonać najpierw te czynności, aby rozwiązać problem:&lt;/p&gt;
     &lt;ol&gt;
@@ -935,6 +934,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2535585790302968248">Otwórz nową kartę incognito, aby przeglądać prywatnie</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}many{i jeszcze #}other{i jeszcze #}}</translation>
 <translation id="2536110899380797252">Dodaj adres</translation>
+<translation id="2536852576044236667">Poprzedni poza widokiem</translation>
 <translation id="2537931901612099523">Inne osoby korzystające z tego urządzenia nie zobaczą Twojej aktywności, dzięki czemu możesz przeglądać internet w sposób bardziej prywatny. Nie zmieni to sposobu zbierania danych przez odwiedzane witryny i używane przez nie usługi, w tym Google. Pobrane pliki i zakładki zostaną zapisane.</translation>
 <translation id="2541219929084442027">Po zamknięciu wszystkich kart incognito wyświetlane na nich strony nie pozostawią żadnych śladów w historii przeglądarki, magazynie plików cookie ani historii wyszukiwania. Pobrane pliki i utworzone zakładki zostaną jednak zachowane.</translation>
 <translation id="2541474152868747095">Aby zobaczyć historię z innych urządzeń, potwierdź swoją tożsamość. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
@@ -1092,6 +1092,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2826760142808435982">Połączenie jest szyfrowane i uwierzytelniane algorytmem <ph name="CIPHER" />, a mechanizm wymiany kluczy to <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Czujniki ruchu są na razie dozwolone</translation>
 <translation id="2835907903001172712">Ogólne informacje o przeglądarce</translation>
+<translation id="2836653778330912701">Następny poza widokiem</translation>
 <translation id="2837891525090413132">Może poprosić o zablokowanie i używanie klawiatury</translation>
 <translation id="2839032553903800133">Powiadomienia blokowane</translation>
 <translation id="2839501879576190149">Wchodzisz na fałszywą stronę</translation>
@@ -1206,6 +1207,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3030331669969285614">Te oznaczenia zapobiegają zmianom powodującym niezgodność lub je cofają. Będą one dostępne tylko przez ograniczony czas.</translation>
 <translation id="3033200136993730761">Dzięki adresowi domowemu możesz korzystać z usług Google w bardziej efektywny sposób, np. otrzymywać trafniejsze wyniki wyszukiwania i wskazówki dojazdu w Mapach Google. Adres możesz zmienić lub usunąć <ph name="BEGIN_LINK" />na koncie Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Czujniki ruchu i światła są na razie dozwolone</translation>
+<translation id="3034219227076811559">Wyszukiwarka Google w Chrome</translation>
 <translation id="3034526003882782781">Przewijanie i powiększanie jest dozwolone</translation>
 <translation id="3037177537145227281">Monitoruję cenę</translation>
 <translation id="3037605927509011580">Kurza twarz!</translation>
@@ -1650,6 +1652,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3749600200023337912">Do tej płatności może zostać użyta zapisana forma płatności automatycznej. Aby wyłączyć e-portfele lub aplikację płatniczą w Chrome, otwórz <ph name="BEGIN_LINK1" />ustawienia płatności<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Zapisać adres na koncie?</translation>
 <translation id="3752543821772132562">Ignorowana, bo zasada <ph name="POLICY_NAME" /> nie jest skonfigurowana.</translation>
+<translation id="3753412199586870466">Otwórz panel boczny</translation>
 <translation id="3754210790023674521">Wyłącz tryb obrazu w obrazie</translation>
 <translation id="3757511311058373406">Filtry automatycznego przeglądania</translation>
 <translation id="3759461132968374835">Brak ostatnio zgłoszonych awarii. Awarie, które nastąpiły wówczas, gdy funkcja zgłaszania awarii była wyłączona, nie są tutaj wymienione.</translation>
@@ -2445,6 +2448,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5053116470141135293">Podczas płacenia tą kartą zostanie wypełniony numer karty wirtualnej – pozwala to chronić Twoje prawdziwe dane. Zarządzaj w Portfelu Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Aby wysłać plik przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}few{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}many{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}other{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}}</translation>
 <translation id="5056587122125565772">Utwórz obraz</translation>
+<translation id="5056908537436373373">Otwórz okno <ph name="WINDOW_INDEX" /> (1 karta) w nowym oknie</translation>
 <translation id="505757197798929356">Podaj powód otwarcia (wymagane)</translation>
 <translation id="5058282932481719070">Więcej informacji o ulepszonym autouzupełnianiu w ustawieniach</translation>
 <translation id="5061227663725596739">Czy chodziło Ci o <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2950,7 +2954,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5902204772823742902">Bezpiecznie dodaj prawo jazdy do Portfela Google</translation>
 <translation id="5903264686717710770">Tytuł:</translation>
 <translation id="5905671155741555195">Dzięki adresowi służbowemu możesz korzystać z usług Google w bardziej efektywny sposób, np. otrzymywać trafniejsze wyniki wyszukiwania i wskazówki dojazdu w Mapach Google. Adres możesz zmienić lub usunąć <ph name="BEGIN_LINK" />na koncie Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
-<translation id="5908541034548427511"><ph name="TYPE_1" /> (zsynchronizowane)</translation>
 <translation id="5910140988253729859">Cofnij autouzupełnianie</translation>
 <translation id="5911110632211230665">Otwieranie zostało zablokowane</translation>
 <translation id="5912796581727968237">Otwórz Portfel Google</translation>
@@ -3020,7 +3023,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6018650639991193045">Usuń historię przeglądania, pliki cookie, pamięć podręczną i inne dane w ustawieniach Chrome</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Nie udało się zapisać filmu w OneDrive</translation>
-<translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (zsynchronizowane)</translation>
 <translation id="6025471531651464742">Dodaj pliki</translation>
 <translation id="6028591542479806248">Zarządzaj powiadomieniami e-mailowymi i mobilnymi</translation>
 <translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, naciśnij Tab, a potem Enter, aby otworzyć nowe okno przeglądania prywatnego</translation>
@@ -3183,6 +3185,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6284292079994426700">26 x 38 cali</translation>
 <translation id="6284517535531159884">Typ materiału wyjściowego dla odmian</translation>
 <translation id="6287197303017372967">Korzystaj ze szczegółowych wskazówek dojazdu dostępnych w funkcji nawigacji.</translation>
+<translation id="6287497864845330943">Okno <ph name="WINDOW_NUMBER" /> · <ph name="NUM_TABS" /> karty</translation>
 <translation id="628877850550444614">Znaleziono rabat</translation>
 <translation id="6289939620939689042">Kolor strony</translation>
 <translation id="6292819926564202163">Twoja wyszukiwarka w Chrome</translation>
@@ -3221,6 +3224,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6342069812937806050">Przed momentem</translation>
 <translation id="6342171901363060580">Widzisz to ostrzeżenie, ponieważ korzystasz z trybu incognito, a ta witryna nie obsługuje HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Trasa</translation>
+<translation id="6345664705388712774">Dodaj obrazy do wyszukiwania</translation>
 <translation id="6348220984832452017">Aktywne warianty</translation>
 <translation id="6349101878882523185">Zainstaluj aplikację <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Płać bez kopiowania i wklejania kodu Pix. <ph name="BEGIN_LINK1" />Jak to działa<ph name="END_LINK1" /></translation>
@@ -3613,6 +3617,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7013835112918108252">Może poprosić o zablokowanie i używanie myszy</translation>
 <translation id="7013844825046560088">Chrome rejestruje sposób korzystania z tej funkcji, np. Twoje prośby i zachowanie, gdy akceptujesz lub ignorujesz sugestie</translation>
 <translation id="7014741021609395734">Poziom powiększenia</translation>
+<translation id="7016016144157344115">Okno <ph name="WINDOW_NUMBER" /> · 1 karta</translation>
 <translation id="7016992613359344582">Może to być opłata jednorazowa lub cykliczna, a informacje o niej mogą nie być wyraźnie podane.</translation>
 <translation id="7020464868401003526">Adres URL skrótu jest za długi. Maksymalna dozwolona liczba znaków: <ph name="MAX_LENGTH" />.</translation>
 <translation id="7020581144940000377">Użyj przybliżonej lokalizacji</translation>
@@ -3742,7 +3747,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7240120331469437312">Alternatywna nazwa podmiotu certyfikatu</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244061187185055290">Opisz w kilku słowach, czego szukasz</translation>
 <translation id="7247459554233215758">Kliknij dane karty, aby dodać je podczas płatności.</translation>
 <translation id="7250174481516136841"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o korzyściach z karty</translation>
 <translation id="7251437084390964440">Konfiguracja sieci jest niezgodna ze standardem ONC. Jej część mogła nie zostać zaimportowana.
@@ -4164,6 +4168,7 @@ Dodatkowe informacje:
 <translation id="7911651285409665023">Zamknij i wróć na kartę „<ph name="TAB_TITLE" />”</translation>
 <translation id="7912924955815015552">Zaimportowane z Safari</translation>
 <translation id="7916162853251942238">Podstawa fleksograficzna</translation>
+<translation id="7916802424606434188">Otwórz okno <ph name="WINDOW_INDEX" /> (liczba kart: <ph name="NUM_TABS" />) w nowym oknie</translation>
 <translation id="791698251820376781">Twoja organizacja nie zezwala na logowanie się</translation>
 <translation id="7927046851848613453">Zapisuj bilety, wydarzenia i inne informacje z wyświetlanych stron, a nie tylko z formularzy, które wypełniasz. Dzięki temu masz szybki dostęp do swoich dokumentów, takich jak bilety na wydarzenia i karty lojalnościowe. Z zapisanych informacji możesz korzystać na swoich urządzeniach i w usługach Google.</translation>
 <translation id="7930282586031445870">Ekran warunków korzystania z opcji „Kup teraz, zapłać później” został zamknięty.</translation>
@@ -4322,6 +4327,7 @@ Dodatkowe informacje:
 <translation id="8199437620497683918">Dysk optyczny (błyszczący)</translation>
 <translation id="8202097416529803614">Podsumowanie zamówienia</translation>
 <translation id="8202370299023114387">Konflikt</translation>
+<translation id="8203105157044679380">Panel wyszukiwarki Google</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">Zawartość drukowanych stron i informacje o drukarce są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane pod kątem danych wrażliwych, a także mogą być przechowywane zgodnie z zasadami firmy i widoczne dla administratora.</translation>
 <translation id="8210490490377416373">Wybierz nazwę zasady</translation>

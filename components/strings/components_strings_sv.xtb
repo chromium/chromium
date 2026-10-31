@@ -150,7 +150,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1249643768796040660">Ta bort den här informationen</translation>
 <translation id="1253846494229886276">Skärmbilden sparas</translation>
-<translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synkroniserade)</translation>
 <translation id="1255931290436977164">Pass</translation>
 <translation id="1256368399071562588">&lt;p&gt;Om det inte går att öppna en webbplats testar du först att åtgärda felet med hjälp av dessa felsökningssteg:&lt;/p&gt;
     &lt;ol&gt;
@@ -935,6 +934,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2535585790302968248">Öppna en ny inkognitoflik och surfa privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{och 1 till}other{och # till}}</translation>
 <translation id="2536110899380797252">Lägg till adress</translation>
+<translation id="2536852576044236667">Föregående utanför vyn</translation>
 <translation id="2537931901612099523">Andra som använder enheten kan inte se din aktivitet, så du kan surfa privat. Detta påverkar inte hur data samlas in av webbplatser du besöker och i de tjänster de använder, inklusive Google. Nedladdningar och bokmärken sparas.</translation>
 <translation id="2541219929084442027">Sidor som visas på flikar i inkognitoläget försvinner från webbhistoriken, från dina cookies och från sökhistoriken när alla inkognitoflikar har stängts. Alla filer som du laddar ned eller bokmärken som du skapar sparas.</translation>
 <translation id="2541474152868747095">Verifiera din identitet för att få tillgång till historiken på alla enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
@@ -1092,6 +1092,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2826760142808435982">Anslutningen är krypterad och verifieras med <ph name="CIPHER" /> och använder <ph name="KX" /> som nyckelutbytesmekanism.</translation>
 <translation id="2828797285817981634">Rörelsesensorer tillåts för närvarande</translation>
 <translation id="2835907903001172712">webbläsaröversikt</translation>
+<translation id="2836653778330912701">Nästa utanför vyn</translation>
 <translation id="2837891525090413132">Kan be om tillåtelse att låsa och använda ditt tangentbord</translation>
 <translation id="2839032553903800133">Aviseringar har blockerats</translation>
 <translation id="2839501879576190149">Webbplatsen som öppnas är en bluff</translation>
@@ -1206,6 +1207,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3030331669969285614">Dessa flaggor förhindrar eller återställer en icke-bakåtkompatibel ändring och är endast tillgängliga under en begränsad tid.</translation>
 <translation id="3033200136993730761">Din hemadress kan hjälpa dig att få saker gjorda i Googles tjänster, till exempel mer relevanta sökresultat och vägbeskrivningar i Google Maps. Du kan redigera eller radera din adress <ph name="BEGIN_LINK" />i Google-kontot <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Rörelse- och ljussensorer tillåts för närvarande</translation>
+<translation id="3034219227076811559">Google Sök i Chrome</translation>
 <translation id="3034526003882782781">Scrollning och zoom tillåts</translation>
 <translation id="3037177537145227281">Bevakar pris</translation>
 <translation id="3037605927509011580">Oj, ett fel har uppstått!</translation>
@@ -1650,6 +1652,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3749600200023337912">Din sparade betalningsmetod för automatiska betalningar kan användas för denna betalning. Om du vill inaktivera digitala plånböcker eller betalningsappar i Chrome öppnar du <ph name="BEGIN_LINK1" />betalningsinställningarna<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Vill du spara adressen i kontot?</translation>
 <translation id="3752543821772132562">Ignoreras eftersom <ph name="POLICY_NAME" /> inte har angetts.</translation>
+<translation id="3753412199586870466">Öppna sidopanel</translation>
 <translation id="3754210790023674521">Avsluta bild-i-bild-läge</translation>
 <translation id="3757511311058373406">Filter för automatisk webbsökning</translation>
 <translation id="3759461132968374835">Inga krascher har rapporterats nyligen. Krascher som uppstod när kraschrapporteringen var inaktiverad visas inte här.</translation>
@@ -2234,6 +2237,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4732860731866514038">Laddar ned språkpaketet för <ph name="LANGUAGE" /> … <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> vill använda enhetens plats</translation>
 <translation id="473414950835101501">använda kamerorna</translation>
+<translation id="4735688073239574197">Hoppa längst ned</translation>
 <translation id="4736089601076994090">Upphör att gälla: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Starta om Chromium</translation>
 <translation id="4736934858538408121">Virtuellt kort</translation>
@@ -2445,6 +2449,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5053116470141135293">Ett virtuellt kortnummer fylls i när du betalar med det här kortet för att skydda dina faktiska uppgifter. Hantera i Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Om du vill skicka den här filen med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}other{Om du vill skicka de här filerna med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
 <translation id="5056587122125565772">Skapa bild</translation>
+<translation id="5056908537436373373">Öppna fönstret <ph name="WINDOW_INDEX" /> (1 flik) i ett nytt fönster</translation>
 <translation id="505757197798929356">Ange anledning till att den öppnas (obligatoriskt)</translation>
 <translation id="5058282932481719070">läs mer om förbättrad autofyll i inställningarna</translation>
 <translation id="5061227663725596739">Menade du <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2950,7 +2955,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5902204772823742902">Lägg till ett körkort i Google Wallet på ett säkert sätt</translation>
 <translation id="5903264686717710770">Namn:</translation>
 <translation id="5905671155741555195">Din jobbadress kan hjälpa dig att få saker gjorda i Googles tjänster, till exempel mer relevanta sökresultat och vägbeskrivningar i Google Maps. Du kan redigera eller radera din adress <ph name="BEGIN_LINK" />i Google-kontot <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
-<translation id="5908541034548427511"><ph name="TYPE_1" /> (synkroniserade)</translation>
 <translation id="5910140988253729859">Ångra autofyll</translation>
 <translation id="5911110632211230665">Öppning har blockerats</translation>
 <translation id="5912796581727968237">Öppna Google Wallet</translation>
@@ -3020,7 +3024,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6018650639991193045">Radera webbhistorik, cookies, cache med mera i inställningarna för Chrome</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Det gick inte att spara videon i OneDrive</translation>
-<translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synkroniserade)</translation>
 <translation id="6025471531651464742">Lägg till filer</translation>
 <translation id="6028591542479806248">Hantera telefon- och e-postaviseringar</translation>
 <translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />. Tryck på Tabb och sedan på Retur om du vill öppna ett nytt isolerat fönster och surfa privat</translation>
@@ -3183,6 +3186,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6284292079994426700">26 x 38 tum</translation>
 <translation id="6284517535531159884">Typ av variantkälla</translation>
 <translation id="6287197303017372967">Få en detaljerad vägbeskrivning dit du ska med hjälp av navigeringsfunktionen.</translation>
+<translation id="6287497864845330943">Fönster <ph name="WINDOW_NUMBER" /> · <ph name="NUM_TABS" /> flikar</translation>
 <translation id="628877850550444614">En rabatt hittades</translation>
 <translation id="6289939620939689042">Sidfärg</translation>
 <translation id="6292819926564202163">Din sökmotor i Chrome</translation>
@@ -3221,6 +3225,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6342069812937806050">Alldeles nyss</translation>
 <translation id="6342171901363060580">Den här varningen visas därför att webbplatsen inte stöder HTTPS, och du är i inkognitoläge. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Vägbeskrivning</translation>
+<translation id="6345664705388712774">Lägg till bilder i sökningen</translation>
 <translation id="6348220984832452017">Aktiva variationer</translation>
 <translation id="6349101878882523185">Installera <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Betala utan att kopiera och klistra in Pix-koden. <ph name="BEGIN_LINK1" />Så fungerar det<ph name="END_LINK1" /></translation>
@@ -3613,6 +3618,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="7013835112918108252">Kan be om tillåtelse att låsa och använda din mus</translation>
 <translation id="7013844825046560088">Chrome loggar hur du använder funktionen, till exempel dina begäranden och ditt beteende när du godkänner eller ignorerar förslag</translation>
 <translation id="7014741021609395734">Zoomnivå</translation>
+<translation id="7016016144157344115">Fönster <ph name="WINDOW_NUMBER" /> · 1 flik</translation>
 <translation id="7016992613359344582">Debiteringen kan göras en gång eller återkommande och det behöver inte framgå tydligt att detta händer.</translation>
 <translation id="7020464868401003526">Webbadressen till genvägen överskrider den maximala tillåtna längden på <ph name="MAX_LENGTH" /> tecken.</translation>
 <translation id="7020581144940000377">Använd ungefärlig plats</translation>
@@ -3742,7 +3748,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="7240120331469437312">Certifikatämnets andra namn</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244061187185055290">Beskriv vad du söker efter med några få ord</translation>
 <translation id="7247459554233215758">Tryck på kortuppgifterna för att lägga till dem i kassan.</translation>
 <translation id="7250174481516136841"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om kortförmåner</translation>
 <translation id="7251437084390964440">Nätverkskonfigurationen uppfyller inte ONC-standarden. Det kan hända att delar av konfigurationen inte kan importeras.
@@ -4164,6 +4169,7 @@ Mer information.
 <translation id="7911651285409665023">Stäng och återgå till <ph name="TAB_TITLE" /></translation>
 <translation id="7912924955815015552">Importerat från Safari</translation>
 <translation id="7916162853251942238">Flexo-base</translation>
+<translation id="7916802424606434188">Öppna fönstret <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> flikar) i ett nytt fönster</translation>
 <translation id="791698251820376781">Organisationen tillåter inte att du loggar in</translation>
 <translation id="7927046851848613453">Spara biljetter, händelser och annan information från sidor du besöker – inte bara formulär du fyller i. Kom sedan snabbt åt dina värdehandlingar, till exempel evenemangsbiljetter och stamkundskort. Din sparade information kan visas på dina enheter och i Googles produkter.</translation>
 <translation id="7930282586031445870">Användarvillkorsskärmen för Köp nu, betala senare har stängts.</translation>
@@ -4322,6 +4328,7 @@ Mer information.
 <translation id="8199437620497683918">Optisk skiva (blank)</translation>
 <translation id="8202097416529803614">Beställningsöversikt</translation>
 <translation id="8202370299023114387">Konflikt</translation>
+<translation id="8203105157044679380">Google Sök-panelen</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">Innehållet på sidor du skriver ut och information om skrivaren skickas till Google Cloud eller tredje part för analys. Det kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig kod, och det kan lagras i enlighet med företagspolicyer och är synligt för administratören.</translation>
 <translation id="8210490490377416373">Välj principnamn</translation>

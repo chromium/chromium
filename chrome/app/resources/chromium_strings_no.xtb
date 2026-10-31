@@ -16,6 +16,7 @@
 <translation id="113122355610423240">Chromium er standardnettleseren din</translation>
 <translation id="1131805035311359397">For å sjekke om passordene dine er trygge mot databrudd og andre sikkerhetsproblemer, <ph name="BEGIN_LINK" />logg på Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen. Det er ett inkognitovindu eller ett isolert vindu åpent. Gjenåpning skjer ikke når du starter nettleseren på nytt.}other{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. Gjenåpning skjer ikke når du starter nettleseren på nytt.}}</translation>
+<translation id="1150418667633096194">Knappen «Google Søk-sidepanelet» på verktøylinjen har fått nytt ikon. Klikk på den for å stille spørsmål mens du surfer, med Google Søk-sidepanelet.</translation>
 <translation id="1153368717515616349">Klikk på Chromium-menyen</translation>
 <translation id="1157952955648710254">Lukk sidepanelet for Google Søk</translation>
 <translation id="1157985233335035034">Nylig brukte språk</translation>
@@ -46,11 +47,13 @@
 <translation id="141901961143729572">Del det du har på hjertet</translation>
 <translation id="1438812738230833934">Du kan åpne Google Søk i sidepanelet igjen for å stille spørsmål mens du surfer</translation>
 <translation id="1465192221147974788">For å dele vinduet, tillat skjermopptak for Chromium i Systeminnstillinger.</translation>
+<translation id="1470136641087909499">Du kan åpne Google Søk i Chrome igjen for å stille spørsmål mens du surfer</translation>
 <translation id="1478370723027452770">Få hjelp med Chrome for testing</translation>
 <translation id="147870194906295621">Logg på Chromium for å få den lagrede informasjonen med mer fra <ph name="DEVICE" />.</translation>
 <translation id="1497802159252041924">Installasjonsfeil: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Denne siden er beskyttet</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
+<translation id="15408169957028265">Åpne Google Søk i Chrome igjen</translation>
 <translation id="154404805518949443">Logg på Chromium</translation>
 <translation id="1547469039832541117">Avslutter den fremhevede oppgaven.</translation>
 <translation id="1562320819937089394">Fest Chromium</translation>
@@ -60,6 +63,7 @@
 <translation id="1623563412065267963">Få det beste fra Google med Chromium-appen på telefonen</translation>
 <translation id="1625909126243026060">Gjennomgå viktige personvern- og sikkerhetskontroller i Chromium</translation>
 <translation id="1640672724030957280">Laster ned …</translation>
+<translation id="1648201623125974721">Nytt ikon, samme snarvei: Klikk for å stille spørsmål mens du surfer, med Kontekstuelle oppgaver.</translation>
 <translation id="1665602916345474427">Logget på som <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, medlem. Åpne kontomenyen</translation>
 <translation id="1708414395296835197">Du kan bruke Chromium hver gang du klikker på linker i meldinger, dokumenter og andre apper. Den festes også til oppgavelinjen.</translation>
 <translation id="1709772298389099340">Gir overordnet rettighet til <ph name="BROWSER_NAME" />.</translation>
@@ -69,6 +73,7 @@
 <translation id="1736662517232558588">Slettet Chromium-data</translation>
 <translation id="1745121272106313518">Chromium startes på nytt om <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Når HTTPS ikke er tilgjengelig, bruker Chromium usikre tilkoblinger uten å advare deg</translation>
+<translation id="1769661297620183092">Du kan åpne Google Søk-panelet igjen for å stille spørsmål mens du surfer</translation>
 <translation id="1774152462503052664">La Chromium kjøre i bakgrunnen</translation>
 <translation id="1779356040007214683">For å gjøre Chromium tryggere, har vi deaktivert noen utvidelser som ikke er oppført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt uten at du har vært klar over det.</translation>
 <translation id="1793486931176048546">Klikk på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-varselet for å feste Chromium til oppgavelinjen for rask tilgang</translation>
@@ -101,6 +106,7 @@
 <translation id="2039417478970545937">Innstillinger.</translation>
 <translation id="2049376729098081731">Velg om Chromium-loggen skal inkluderes for å gi opplevelser i Google-tjenester mer personlig preg</translation>
 <translation id="2050698962207788467">Integrert i Chromium for å hjelpe deg med å opprette, lagre og autofylle sterke passord. Legg til snarveien for enkel tilgang.</translation>
+<translation id="2060311596979880693">Fullført. Nå kan du enkelt stille spørsmål mens du surfer, med Google Søk i Chrome</translation>
 <translation id="2064856577282482477">Klikk på Tilpass Chromium-knappen på Ny fane-siden for å gi Chromium et nytt utseende</translation>
 <translation id="2086476982681781442">Chromium har blokkert denne nedlastingen fordi filen er villedende og kan gjøre uventede endringer på enheten din</translation>
 <translation id="208726765006323911">Du ser en forespørsel om å prøve <ph name="FEATURE_NAME" /> neste gang du åpner Chromium iOS.</translation>
@@ -126,6 +132,7 @@
 <translation id="2238130810669087193">For å få adressene dine med mer på alle enhetene dine, logg på Chromium. Denne adressen blir lagret i Google-kontoen din når du logger på.</translation>
 <translation id="2241627712206172106">Hvis du deler en datamaskin med andre, kan venner og familie surfe hver for seg og konfigurere Chromium akkurat slik de vil.</translation>
 <translation id="22571759390241347">Ferdigheter i Chromium</translation>
+<translation id="2283228908180457226">Nytt ikon, samme snarvei: Klikk for å stille spørsmål mens du surfer, med Google Søk-sidepanelet.</translation>
 <translation id="2283803047247799269">Søk på denne fanen med Bildesøk</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium anbefaler at du setter fanen som gjør nettleseren treg, på pause}other{Chromium anbefaler at du setter fanene som gjør nettleseren treg, på pause}}</translation>
 <translation id="2307973900865360088">Behold i dokken</translation>
@@ -183,6 +190,7 @@
 <translation id="2846251086934905009">Installasjonsfeil: Installasjonsprogrammet ble ikke fullført. Installasjonen er avbrutt.</translation>
 <translation id="2847479871509788944">Fjern fra Chromium</translation>
 <translation id="2850691299438350830">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget</translation>
+<translation id="2876152561415416331">Åpne Google Søk-panelet igjen</translation>
 <translation id="2885378588091291677">Oppgavebehandling</translation>
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
 <translation id="2915996080311180594">Start på nytt senere</translation>
@@ -200,6 +208,8 @@
 <translation id="302551344979399011">AI-innovasjoner som ferdigheter lagres i Google-kontoen og administreres separat fra Chromium-synkronisering</translation>
 <translation id="3032219013429286568">Logg på Chromium for å få utvidelsene med mer på alle enhetene.</translation>
 <translation id="3032787606318309379">Legger til i Chromium …</translation>
+<translation id="3034219227076811559">Google Søk i Chrome</translation>
+<translation id="3037190258341683404">Du kan feste Google Søk i Chrome for å stille spørsmål mens du surfer</translation>
 <translation id="3038232873781883849">Venter på installering</translation>
 <translation id="3045032126857188731">Oversatt språk: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Lukk dialogboksen for tilbakemeldinger</translation>
@@ -293,6 +303,7 @@
 <translation id="3967822245660637423">Nedlasting fullført</translation>
 <translation id="3971865010372729242">Når du skriver i adressefeltet eller søkefeltet, sender Chromium det du skriver, til organisasjonens søke-, AI- og agentverktøy for å få forslag.</translation>
 <translation id="3975724895399328945">Om &amp;Google Chrome for testing</translation>
+<translation id="3984557288004650913">Med knappen «Google Søk i Chrome» på verktøylinjen kan du åpne Google Søk i Chrome igjen for å stille spørsmål mens du surfer</translation>
 <translation id="3997429360543082038">Om ChromiumOS</translation>
 <translation id="4016217212818346953">Hold deg trygg med Passordlagring</translation>
 <translation id="4019629340646866719">ChromiumOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -308,6 +319,7 @@
 <translation id="4135244987012252068">Tilpass Chromium for å gi nettleseren et nytt utseende</translation>
 <translation id="4147856324248078748">Tilpass Chromium</translation>
 <translation id="4148957013307229264">Installerer ...</translation>
+<translation id="4197500750628721662">Oppdater Chromium for å holde deg trygg</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – nettverkspålogging – Chromium</translation>
 <translation id="4208652172235621272"><ph name="EXISTING_USER" /> er allerede logget på. For å holde surfingen din atskilt, logg på Chromium i din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du får også leselisten med mer på alle enhetene dine.</translation>
 <translation id="421369550622382712">Oppdag flotte apper, spill, utvidelser og temaer for Chromium.</translation>
@@ -371,6 +383,7 @@
 <translation id="4771701986670315895">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="COUNT" /> til</translation>
 <translation id="4786083865378785874">Hvis Gemini i Chromium er åpent, forblir sidepanelet åpent når du åpner nye faner</translation>
 <translation id="479167709087336770">Denne funksjonen bruker den samme stavekontrollen som Google Søk. Tekst du skriver inn i nettleseren, sendes til Google. Du kan når som helst endre dette i innstillingene.</translation>
+<translation id="4803313124144656665">Lukk Google Søk i Chrome</translation>
 <translation id="4814736265800133385">Bruk Chromium uten noen konto</translation>
 <translation id="4839733921943823254">Fest snarveien</translation>
 <translation id="4888717733111232871">Regel om innkommende trafikk for Chromium for å tillate mDNS-trafikk.</translation>
@@ -397,6 +410,7 @@
 <translation id="5223510345050543907">Fortsett der du slapp med Chromium på iOS.</translation>
 <translation id="5231355151045086930">Vil du logge av Chromium?</translation>
 <translation id="5234764350956374838">Lukk</translation>
+<translation id="5247617065091903691">Du kan feste Google Søk-sidepanelet for å stille spørsmål mens du surfer</translation>
 <translation id="5249261924633168472">Åpne linken i et inkognitovindu i Chromium</translation>
 <translation id="5276305953263010518">Skaff deg Chromium-appen for å lagre passord uansett hvor du er</translation>
 <translation id="5277894862589591112">For å bruke endringene dine må du starte Chromium på nytt</translation>
@@ -426,6 +440,7 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium anbefaler at du setter fanen som gjør nettleseren treg, på pause}other{Chromium anbefaler at du setter fanene som gjør nettleseren treg, på pause}}</translation>
 <translation id="5473971139929175403">Det kan hende Chromium ikke fungerer skikkelig fordi den ikke lenger støttes i denne Linux-distribusjonen</translation>
 <translation id="5475924890392386523">Chromium har blokkert denne nedlastingen fordi filen kan skade de personlige kontoene dine og kontoene dine på sosiale nettverk</translation>
+<translation id="5482575505313585759">Lukk Google Søk-panelet</translation>
 <translation id="549669000822060376">Vent mens Chromium installerer de nyeste systemoppdateringene.</translation>
 <translation id="5496810170689441661">Chromium prøver å redigere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="549975168243349205">Bruk favorittappene dine som Google Disk og YouTube sømløst med Chromium, uansett hvor du er.</translation>
@@ -442,10 +457,13 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5596063723521813107">{COUNT,plural, =1{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Det isolerte vinduet gjenåpnes ikke.}other{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. De # isolerte vinduene gjenåpnes ikke.}}</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5605834417512968703">Velg hva som helst for å søke med bildesøk, eller trykk på Esc for å avslutte bildesøk</translation>
+<translation id="5614149501995591823">En <ph name="IMPORTANT_UPDATE" /> er klar. Du kan starte på nytt nå eller angi at Chromium skal oppdateres neste gang skjermen er på og ikke i bruk i <ph name="IDLE_DURATION" />.</translation>
 <translation id="5618818588972826921">Velg tekst eller bilder for å søke med bildesøk, eller trykk på Esc for å avslutte bildesøk</translation>
 <translation id="5623402015214259806">{0,plural, =0{En Chromium-oppdatering er tilgjengelig}=1{En Chromium-oppdatering er tilgjengelig}other{En Chromium-oppdatering har vært tilgjengelig i # dager}}</translation>
 <translation id="5643865575100044307">Slett alltid nettstedsdata fra enheten når du lukker Chromium</translation>
 <translation id="5653831366781983928">Start Chromium på nytt nå</translation>
+<translation id="565409517765894456">For å få fremtidige Chromium-oppdateringer må du ha Windows 10 versjon 1809 eller nyere. Denne datamaskinen bruker en eldre versjon av Windows 10.</translation>
+<translation id="568656514202614970">Fullført. Nå kan du enkelt stille spørsmål mens du surfer, med Google Søk-sidepanelet</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Vis Chromium på dette språket</translation>
 <translation id="569897634095159764">Kan ikke koble til internett. Proxy-tjeneren krever autentisering.</translation>
@@ -463,6 +481,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5889361821821684993">Chromium sjekker regelmessig at nettleseren din har de tryggeste innstillingene. Vi gir deg beskjed hvis det er noe du må se nærmere på.</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5896077214220653386">Gemini Enterprise i Chromium</translation>
+<translation id="5900507321340749588">For å drive funksjoner som svindeloppdagelse kan Chromium bruke AI-modeller som kjøres direkte på enheten din. Når dette er av, fungerer kanskje ikke disse funksjonene. <ph name="BEGIN_LINK" />Finn ut mer om AI på enheten<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – nettverkspålogging</translation>
 <translation id="5924017743176219022">Kobler til internett …</translation>
 <translation id="5941711191222866238">Minimer</translation>
@@ -496,6 +515,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6192070012454216182">Søk og still spørsmål fra hvor som helst, selv om Chromium er minimert. Lar Chromium kjøre i bakgrunnen.</translation>
 <translation id="6212496753309875659">Denne datamaskinen har allerede en nyere versjon av Chromium. Hvis programvaren ikke fungerer, må du avinstallere Chromium og prøve på nytt.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium startes på nytt nå}=1{Chromium startes på nytt om 1 sekund}other{Chromium startes på nytt om # sekunder}}</translation>
+<translation id="6232046770428574552">Chromium oppdateres når skjermen ikke er i bruk</translation>
 <translation id="6241367896540709610">Chromium må ha lagringstilgang for å kunne laste ned filer</translation>
 <translation id="6245734527075554892">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder</translation>
 <translation id="6248213926982192922">Gjør Chromium til standardnettleser</translation>
@@ -505,8 +525,10 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6270547683008298381">Disse fanene bruker ekstra ressurser. For å få bedre ytelse kan du la Chromium gjøre dem inaktive.</translation>
 <translation id="6281746429495226318">Tilpass Chromium-profilen din</translation>
 <translation id="6290827346642914212">Gi navn til Chromium-profilen din</translation>
+<translation id="6294638840436017818">Med knappen «Google Søk-sidepanelet» på verktøylinjen kan du åpne Google Søk-sidepanelet igjen for å stille spørsmål mens du surfer</translation>
 <translation id="6294831894865512704">En utvidelse vil at du skal logge på Chromium</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> kan være farlig, så Chromium har blokkert den.</translation>
+<translation id="6308106880471005841">Knappen «Google Søk-panelet» på verktøylinjen har fått nytt ikon. Klikk på den for å stille spørsmål mens du surfer, med Google Søk-panelet.</translation>
 <translation id="6309712487085796862">Chromium bruker kameraet ditt.</translation>
 <translation id="6333502561965082103">En annen handling er i gang på Chromium. Prøv på nytt senere.</translation>
 <translation id="6334986366598267305">Nå er det enklere å bruke Chromium med Google-kontoen din og på datamaskiner du deler med andre.</translation>
@@ -560,10 +582,12 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="6729124504294600478">For å få personlig tilpasning og andre funksjoner må du inkludere Chromium i Nett- og appaktivitet og tilknyttede Google-tjenester</translation>
 <translation id="6734291798041940871">Chromium er allerede installert for alle brukerne på datamaskinen din.</translation>
 <translation id="6742093177587589736">For å få bokmerkene dine med mer på alle enhetene dine, logg på Chromium. Dette bokmerket lagres i Google-kontoen din når du logger på.</translation>
+<translation id="674891594898436429">Avvis det aktive søket i denne fanen</translation>
 <translation id="6751374565094704799">Gjør nettsteder raskere med V8-motoren i Chromium, men gjør Chromium litt mindre motstandsdyktig mot angrep. Denne innstillingen er på.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå. Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, slettes disse dataene (1 element).}other{Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå. Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, slettes disse dataene ({count} elementer).}}</translation>
 <translation id="67706546131546258">Chromium anbefaler å skanne denne filen ettersom den kan være farlig.</translation>
 <translation id="6779406956731413166">ChromiumOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6804256634866838775">Avvis det aktive søket</translation>
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="6847869444787758381">Med Chromium får du beskjed hvis passordene dine noensinne utsettes for sikkerhetsbrudd</translation>
 <translation id="684888714667046800">Kan ikke koble til internett. Hvis du bruker en brannmur, må du sørge for at <ph name="PRODUCT_EXE_NAME" /> står på godkjenningslisten.</translation>
@@ -588,6 +612,7 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
             • tilbakestille Chromium-snarveier
             <ph name="LINE_BREAKS" />
             Bokmerker, loggen og lagrede passord vil ikke bli påvirket.</translation>
+<translation id="6926772305569367352">Knappen «Google Søk i Chrome» på verktøylinjen har fått nytt ikon. Klikk på den for å stille spørsmål mens du surfer, med Google Søk i Chrome.</translation>
 <translation id="6948031725951063910">Du har nådd Chromiums grense på <ph name="BOOKMARK_LIMIT" /> bokmerker, så noen av bokmerkene dine er ikke lagret i Google-kontoen din ennå.
 
 Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logger av nå, slettes bokmerker som ikke er lagret.</translation>
@@ -613,6 +638,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="7204669035546236137">Spør om hva som helst, akkurat der du er, med Gemini i Chromium</translation>
 <translation id="7213008767289637091">Ha Chromium i dokken for å få rask tilgang til den når som helst</translation>
 <translation id="7213407614656404070">Bruk Chromium hver gang du klikker på linker i meldinger, dokumenter og andre apper</translation>
+<translation id="7213435258745128111">Google Søk i Chromium</translation>
 <translation id="7216228761061470870">Når du bruker bildesøk på datamaskiner, sendes sidetittel, nettadresse og innhold, inkludert PDF-filer, til tjeneren</translation>
 <translation id="7223968959479464213">Oppgavebehandling – Chromium</translation>
 <translation id="7226331818892775989">Spør om innhold utenfor Chromium, for eksempel andre apper eller filer</translation>
@@ -620,6 +646,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="7252276985725323153">Begynn å surfe umiddelbart: Nå kan Chromium startes når Windows starter.</translation>
 <translation id="7274695763216404502">Festet. Bruk bildesøk igjen fra verktøylinjen</translation>
 <translation id="7288567540154601580">Faner og utvidelser</translation>
+<translation id="7290997427370476749">Med knappen «Google Søk-panelet» på verktøylinjen kan du åpne Google Søk-panelet igjen for å stille spørsmål mens du surfer</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium anbefaler at du fjerner den}other{Chromium anbefaler at du fjerner dem}}</translation>
 <translation id="7296334833518879294">For å dele systemlyd, åpne Systeminnstillinger og tillat «Bare opptak av systemlyd» for Chromium. Deretter må du starte Chromium på nytt.</translation>
 <translation id="7299899569525778554">Søk fra datamaskinen</translation>
@@ -633,6 +660,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7349591376906416160">Systemadministratoren din har konfigurert Chromium til å åpne <ph name="ALTERNATIVE_BROWSER_NAME" /> for å få tilgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7368826207863345663">For å få fremtidige Chromium-oppdateringer må du ha macOS 13 eller nyere. Denne datamaskinen bruker macOS 12.</translation>
+<translation id="7374061268215476070">Du kan åpne Google Søk-sidepanelet igjen for å stille spørsmål mens du surfer</translation>
 <translation id="7376384068949534168">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Åpne Chrome Nettmarked</translation>
 <translation id="7394275517973019558">Vis Gemini i Chromium i systemfeltet</translation>
@@ -676,6 +704,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7786760609782648049">Gjør Chromium raskere</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7800043020703832708">Lukk Google Søk i sidepanelet</translation>
+<translation id="7801317262080715012">Nytt ikon, samme snarvei: Klikk for å stille spørsmål mens du surfer, med Google Søk-panelet.</translation>
 <translation id="7803986347287457849">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. Chromium bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System).</translation>
 <translation id="7810005234485217901">Du kan feste bildesøk for enklere tilgang</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. Det er ett inkognitovindu eller ett isolert vindu åpent. Gjenåpning skjer ikke når du starter nettleseren på nytt.}other{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. Gjenåpning skjer ikke når du starter nettleseren på nytt.}}</translation>
@@ -721,6 +750,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="81770708095080097">Denne filen er farlig, så Chromium har blokkert den.</translation>
 <translation id="8177472873527554730">Finner ikke innhold på siden</translation>
 <translation id="8200109504272824693">Skriv inn passordfrasen din for å bruke og lagre Chromium-data i kontoen din, <ph name="USER_EMAIL" /></translation>
+<translation id="8203105157044679380">Google Søk-panelet</translation>
 <translation id="820759916613250543">Søk i dette bildet med Bildesøk</translation>
 <translation id="8221491193165283816">Du blokkerer vanligvis varsler. For å la dette nettstedet varsle deg, klikk her.</translation>
 <translation id="8223363452568144035">For å la Chromium bruke kameraet må du gi tilgang i <ph name="BEGIN_LINK" />systeminnstillingene<ph name="END_LINK" /></translation>
@@ -735,6 +765,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8310603974518734211">QR-kode for å logge på Chromium som <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Oppstartsfeil: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasjonen din lukker Chromium når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>
+<translation id="8321058241987390452">Fullført. Nå kan du enkelt stille spørsmål mens du surfer, med Google Søk-panelet</translation>
 <translation id="8321888067342493336">Lagre som bilde</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> brukte Chromium tidligere</translation>
 <translation id="8351551329754447960">Slå på ferdigheter i Chromium</translation>
@@ -759,6 +790,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8482493977473846331">Viser oppfordringer som ber deg logge på Chromium.</translation>
 <translation id="8493179195440786826">Chromium er utdatert</translation>
 <translation id="850264194101621529">Takk for at du har valgt Chromium som standardnettleser!</translation>
+<translation id="8520489851087523435">Åpne Google Søk-sidepanelet igjen</translation>
 <translation id="8522801943730206384">Chromium kan sjekke passordene dine når du lagrer dem</translation>
 <translation id="8525579356836940628">Installasjonen er stoppet</translation>
 <translation id="8545729292258443488">Ta med deg passordene, fanene og mer med Chromium-appen på <ph name="DEVICE_TYPE" /></translation>
@@ -767,6 +799,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8556420416730706394">Du kan feste bildesøk for enklere tilgang. Klikk på Fest-knappen øverst i sidepanelet.</translation>
 <translation id="8564408666201523086">Fullført. Med Google Søk i sidepanelet kan du enkelt stille spørsmål mens du surfer.</translation>
 <translation id="856656450041460113">Søk på språklisten</translation>
+<translation id="8568499811906962479">Du kan feste Google Søk-panelet for å stille spørsmål mens du surfer</translation>
 <translation id="8576826849825683917">Flere organisasjoner administrerer Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="8590782867495422699">Åpne AI-modus for Google Søk igjen</translation>
@@ -774,6 +807,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8624541899164515475">Innstillinger (åpnes i en ny fane).</translation>
 <translation id="8648201657708811153">Google Chrome for testing kan ikke brukes som standardnettleser.</translation>
 <translation id="8676101123715131330">Søk med Chromium fra hvor som helst</translation>
+<translation id="8689408573494410517">Knappen «Google Søk i sidepanelet» på verktøylinjen har fått nytt ikon. Klikk på den for å stille spørsmål mens du surfer, med Google Søk i sidepanelet.</translation>
 <translation id="8697124171261953979">Den styrer også hvilken side som vises når du starter Chromium eller søker fra multifunksjonsfeltet.</translation>
 <translation id="8702213505203810093">For å sende denne fanen til en annen enhet, logg på Chromium der</translation>
 <translation id="8704119203788522458">Dette er din Chromium</translation>
@@ -792,6 +826,8 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8876044221123442390">Legg til en Chromium-profil</translation>
 <translation id="8890569919834781711">ChromiumOS kunne ikke lagre Chromium-data i Google-kontoen din på grunn av en påloggingsfeil</translation>
 <translation id="8891709362986793894">Organisasjonen din krever at du logger på Chromium</translation>
+<translation id="8897637834206928776">Nytt ikon, samme snarvei: Klikk for å stille spørsmål mens du surfer, med Google Søk i sidepanelet.</translation>
+<translation id="8906384069222226849">Chromium krever Windows 10 versjon 1809 eller nyere.</translation>
 <translation id="8907580949721785412">Chromium forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="8932992523185907506">Chromium er ikke lenger standardnettleseren din. Vil du gjøre Chromium til standardnettleseren?</translation>
 <translation id="8941642502866065432">Kan ikke oppdatere Chromium</translation>
@@ -821,6 +857,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9057625473949801035">Logg på Chromium for å få passordene med mer fra <ph name="DEVICE" />.</translation>
 <translation id="9062666675513499497">Logg på Chromium når du logger på andre Google-tjenester</translation>
 <translation id="9074041031320636790">Fullført. Nå kan du enkelt stille spørsmål mens du surfer, med AI-modus for Google Søk</translation>
+<translation id="9074163480955555019">Nytt ikon, samme snarvei: Klikk for å stille spørsmål mens du surfer, med Google Søk i Chrome.</translation>
 <translation id="9078733879136747090">Chromium ble lukket automatisk</translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium startes på nytt om en time}other{Chromium startes på nytt om # timer}}</translation>
@@ -828,6 +865,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9106612006984859720">For å få fremtidige Chromium-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.1.</translation>
 <translation id="91086099826398415">Åpne linken i en ny &amp;fane i Chromium</translation>
 <translation id="911206726377975832">Vil du slette all nettlesingsdata også?</translation>
+<translation id="9118146721060781133">Knappen «Kontekstuelle oppgaver» på verktøylinjen har fått nytt ikon. Klikk på den for å stille spørsmål mens du surfer, med Kontekstuelle oppgaver.</translation>
 <translation id="9134482777260927479">Leksehjelp</translation>
 <translation id="9148058034647219655">Avslutt</translation>
 <translation id="9155105544013854680">Fortsett der du avsluttet: Chromium kan gjenopprette fanene dine hver gang du starter på nytt. For å slå på dette, gå til</translation>

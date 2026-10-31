@@ -150,7 +150,6 @@
 <translation id="1247030632403369975">अ‍ॅल्युमिनिअम</translation>
 <translation id="1249643768796040660">ही माहिती काढून टाका</translation>
 <translation id="1253846494229886276">स्क्रीनशॉट सेव्ह करत आहे</translation>
-<translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (सिंक केलेले)</translation>
 <translation id="1255931290436977164">पासपोर्ट</translation>
 <translation id="1256368399071562588">&lt;p&gt;जर तुम्ही एखाद्या वेबसाइटला भेट देण्याचा प्रयत्न केला आणि ती उघडली नाही, तर सगळ्यात आधी ट्रबलशूटिंग स्टेप्सद्धारे या एररवर उपाय काढण्याचा प्रयत्न करा:&lt;/p&gt;
     &lt;ol&gt;
@@ -935,6 +934,7 @@
 <translation id="2535585790302968248">खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त टॅब उघडा</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{आणि आणखी एक}other{आणि आणखी #}}</translation>
 <translation id="2536110899380797252">पत्ता जोडा</translation>
+<translation id="2536852576044236667">मागील बाह्य दृश्य</translation>
 <translation id="2537931901612099523">हे डिव्हाइस वापरणाऱ्या इतरांना तुमची अ‍ॅक्टिव्हिटी दिसणार नाही, जेणेकरून तुम्ही आणखी खाजगीरीत्या ब्राउझ करू शकता. Google च्या समावेशासह, तुम्ही भेट देत असलेल्या वेबसाइटद्वारे आणि ते वापरत असलेल्या सेवांद्वारे डेटा कसा गोळा केला जातो यात यामुळे बदल होणार नाही. डाउनलोड आणि बुकमार्क सेव्ह केली जातील.</translation>
 <translation id="2541219929084442027">तुम्ही गुप्त मोडमध्ये पाहिलेली पेज तुमचे सर्व गुप्त टॅब बंद केल्यानंतर तुमचा ब्राउझर इतिहास, कुकी स्टोअर किंवा शोध इतिहास यांमध्ये राहणार नाहीत. तुम्ही डाउनलोड करता त्या कोणत्याही फाइल किंवा तुम्ही तयार केलेले बुकमार्क ठेवले जातील.</translation>
 <translation id="2541474152868747095">तुमच्या इतर डिव्हाइसवरील तुमचा इतिहास मिळवण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा. तुम्ही सेटिंग्जमध्ये सिंक करणे कधीही थांबवू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
@@ -1092,6 +1092,7 @@
 <translation id="2826760142808435982">कनेक्शन <ph name="CIPHER" /> वापरून आणि महत्त्वाचे एक्स्चेंज तंत्र म्हणून <ph name="KX" /> वापर एंक्रिप्ट आणि ऑथेंटिकेट केले आहे.</translation>
 <translation id="2828797285817981634">मोशन सेन्सरना सध्यासाठी अनुमती आहे</translation>
 <translation id="2835907903001172712">ब्राउझरचे अवलोकन</translation>
+<translation id="2836653778330912701">दृश्याच्या बाहेरील पुढील जुळणी</translation>
 <translation id="2837891525090413132">लॉक करण्यासाठी आणि तुमचा कीबोर्ड वापरण्यासाठी विचारू शकते</translation>
 <translation id="2839032553903800133">सूचना ब्लॉक केल्या आहेत</translation>
 <translation id="2839501879576190149">पुढे बनावट साइट आहे</translation>
@@ -1650,6 +1651,7 @@
 <translation id="3749600200023337912">तुमची सेव्ह केलेली ऑटोमॅटिक पेमेंट पद्धत या पेमेंटसाठी वापरली जाऊ शकते. Chrome मध्ये ईवॉलेट किंवा पेमेंट अ‍ॅप बंद करण्यासाठी, तुमच्या <ph name="BEGIN_LINK1" />पेमेंट सेटिंग्ज<ph name="END_LINK1" /> वर जा</translation>
 <translation id="3752181611900535304">खात्यामध्ये पत्ता सेव्ह करायचा आहे का?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> सेट केले नसल्याने दुर्लक्ष केले.</translation>
+<translation id="3753412199586870466">साइड पॅनल उघडा</translation>
 <translation id="3754210790023674521">चित्रात-चित्र मधून बाहेर पडा</translation>
 <translation id="3757511311058373406">ऑटोमॅटिक ब्राउझिंग फिल्टर</translation>
 <translation id="3759461132968374835">तुम्ही अलीकडे कोणतेही क्रॅश नोंदवले नाहीत. क्रॅश नोंदवणे अक्षम असताना झालेले क्रॅश येथे दिसून येणार नाहीत.</translation>
@@ -2234,6 +2236,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> भाषा पॅक डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ला तुमच्या डिव्हाइसचे स्थान वापरायचे आहे</translation>
 <translation id="473414950835101501">तुमचे कॅमेरा वापरा</translation>
+<translation id="4735688073239574197">थेट तळाशी जा</translation>
 <translation id="4736089601076994090">एक्स्पायर होईल: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium रीस्टार्ट करा</translation>
 <translation id="4736934858538408121">व्हर्च्युअल कार्ड</translation>
@@ -2445,6 +2448,7 @@
 <translation id="5053116470141135293">तुमच्या वास्तविक तपशिलांचे संरक्षण करण्यासाठी तुम्ही हे कार्ड वापरून चेक आउट कराल, तेव्हा व्हर्चुअल कार्ड नंबर भरला जाईल. Google Wallet मध्ये व्यवस्थापित करा. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby सह शेअरिंग वापरून ही फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}other{Nearby सह शेअरिंग वापरून या फाइल पाठवण्यासाठी, तुमच्या डिव्हाइसवरील (<ph name="DISK_SPACE_SIZE" />) जागा मोकळी करा}}</translation>
 <translation id="5056587122125565772">इमेज तयार करा</translation>
+<translation id="5056908537436373373">नवीन विंडोमध्ये विंडो <ph name="WINDOW_INDEX" /> (१ टॅब) उघडा</translation>
 <translation id="505757197798929356">उघड्याचे कारण द्या (आवश्यक)</translation>
 <translation id="5058282932481719070">सेटिंग्जमध्ये वर्धित केलेल्या ऑटोफिलबद्दल अधिक जाणून घ्या</translation>
 <translation id="5061227663725596739">तुम्हाला <ph name="LOOKALIKE_DOMAIN" />असे म्हणायचे होते का?</translation>
@@ -2950,7 +2954,6 @@
 <translation id="5902204772823742902">Google Wallet मध्ये ड्रायव्हरचा परवाना सुरक्षितपणे जोडा</translation>
 <translation id="5903264686717710770">शीर्षक:</translation>
 <translation id="5905671155741555195">तुमच्या ऑफिसच्या पत्त्यामुळे तुम्हाला संपूर्ण Google सेवांवर कामे पूर्ण करण्यात मदत होऊ शकते, जसे की सर्वात सुसंबद्ध Search परिणाम आणि Google Maps मध्ये दिशानिर्देश. तुम्ही तुमचे <ph name="BEGIN_LINK" />Google खाते <ph name="ACCOUNT" /> यामध्ये<ph name="END_LINK" /> तुमचा पत्ता संपादित करू किंवा हटवू शकता.</translation>
-<translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक केलेले)</translation>
 <translation id="5910140988253729859">ऑटोफिल पहिल्यासारखे करा</translation>
 <translation id="5911110632211230665">फाइल उघडणे ब्लॉक केले आहे</translation>
 <translation id="5912796581727968237">Google Wallet उघडा</translation>
@@ -3020,7 +3023,6 @@
 <translation id="6018650639991193045">Chrome सेटिंग्जमधील तुमचा ब्राउझिंग इतिहास, कुकी, कॅशे आणि बरेच काही हटवा</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">OneDrive वर व्हिडिओ सेव्ह करू शकत नाही</translation>
-<translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (सिंक केलेले)</translation>
 <translation id="6025471531651464742">फाइल जोडा</translation>
 <translation id="6028591542479806248">मोबाइल आणि ईमेल सूचना व्यवस्थापित करा</translation>
 <translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, खाजगीरीत्या ब्राउझ करण्यासाठी नवीन अलिप्त विंडो उघडण्याकरिता टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
@@ -3072,6 +3074,7 @@
 <translation id="6097297436119286254">तुमची पेमेंट माहिती भरण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="6099269767116481177">२२ x २९.५ इं</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">हे धोरण मशीन पातळीवर लागू करण्यासाठी आहे. वापरकर्ता धोरण म्हणून लागू केल्यावर त्याच्या वर्तनाला अधिकृतपणे सपोर्ट नाही आणि ते डेप्रिकेट केले जाईल.</translation>
 <translation id="6105460996796456817">साइट तयार करा</translation>
 <translation id="6105511947520166941">पुढील वेळी थेट Chrome मध्ये Pix वापरून पेमेंट करा</translation>
 <translation id="6105745639559695088">साइडबार टॉगल करा</translation>
@@ -3184,6 +3187,7 @@
 <translation id="6284292079994426700">26 x 38 in</translation>
 <translation id="6284517535531159884">व्हेरिएशन सीड प्रकार</translation>
 <translation id="6287197303017372967">नेव्हिगेशन वैशिष्ट्य वापरून टर्न-बाय-टर्न मार्गदर्शनासह तुमच्या गंतव्यस्थानासाठी दिशानिर्देश मिळवा.</translation>
+<translation id="6287497864845330943">विंडो <ph name="WINDOW_NUMBER" /> · <ph name="NUM_TABS" /> टॅब</translation>
 <translation id="628877850550444614">सवलत सापडली</translation>
 <translation id="6289939620939689042">पेजचा रंग</translation>
 <translation id="6292819926564202163">Chrome मधील तुमचे शोध इंजीन</translation>
@@ -3222,6 +3226,7 @@
 <translation id="6342069812937806050">आत्ताच</translation>
 <translation id="6342171901363060580">तुम्हाला ही चेतावणी दिसत आहे, कारण ही साइट HTTPS ला सपोर्ट करत नाही आणि तुम्ही गुप्त मोडमध्ये आहात. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">दिशानिर्देश</translation>
+<translation id="6345664705388712774">तुमच्या शोधामध्ये इमेज जोडा</translation>
 <translation id="6348220984832452017">अ‍ॅक्टिव्ह व्हेरिएशन</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करा</translation>
 <translation id="6350739641326887427">Pix कोड कॉपी करून पेस्ट न करता पेमेंट करा. <ph name="BEGIN_LINK1" />हे कसे काम करते ते पहा<ph name="END_LINK1" /></translation>
@@ -3614,6 +3619,7 @@
 <translation id="7013835112918108252">लॉक करण्यासाठी आणि तुमचा माउस वापरण्यासाठी विचारू शकते</translation>
 <translation id="7013844825046560088">तुम्ही सूचना स्वीकारता किंवा त्यांकडे दुर्लक्ष करता, तेव्हा Chrome हे तुम्ही वैशिष्ट्य कसे वापरता हे लॉग करते, जसे की तुमच्या विनंत्या आणि तुमचे वर्तन</translation>
 <translation id="7014741021609395734">झूम करण्याची पातळी</translation>
+<translation id="7016016144157344115">विंडो <ph name="WINDOW_NUMBER" /> · १ टॅब</translation>
 <translation id="7016992613359344582">हे शुल्क एकाच वेळी द्यायचे किंवा आवर्ती असू शकतात आणि स्पष्ट नसू शकतात.</translation>
 <translation id="7020464868401003526">शॉर्टकटची URL अनुमती असलेल्या <ph name="MAX_LENGTH" /> वर्ण इतक्या कमाल लांबीपेक्षा मोठी आहे.</translation>
 <translation id="7020581144940000377">अंदाजे स्थान वापरा</translation>
@@ -3743,7 +3749,6 @@
 <translation id="7240120331469437312">सर्टिफिकेट विषय वैकल्पिक नाव</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244061187185055290">तुम्ही काय शोधत आहात याचे काही शब्दांमध्ये वर्णन करा</translation>
 <translation id="7247459554233215758">चेकआउटमध्ये कार्डचे तपशील जोडण्यासाठी त्यांवर टॅप करा.</translation>
 <translation id="7250174481516136841">कार्डच्या फायद्यांबद्दल <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="7251437084390964440">नेटवर्क कॉन्फिगरेशन ONC स्टँडर्डचे पालन करत नाही. कॉन्फिगरेशनचे भाग कदाचित इंपोर्ट करता येणार नाहीत.
@@ -4165,6 +4170,7 @@
 <translation id="7911651285409665023">बंद करा आणि "<ph name="TAB_TITLE" />" वर परत जा</translation>
 <translation id="7912924955815015552">Safari मधून इंपोर्ट केलेले</translation>
 <translation id="7916162853251942238">फ्लेक्सो बेस</translation>
+<translation id="7916802424606434188">नवीन विंडोमध्ये विंडो <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> टॅब) उघडा</translation>
 <translation id="791698251820376781">तुमची संस्था तुम्हाला साइन इन करण्याची अनुमती देत नाही</translation>
 <translation id="7927046851848613453">तुम्ही पाहत असलेल्या पेजवरील तिकिटे, इव्हेंट आणि इतर माहिती सेव्ह करा — फक्त तुम्ही भरत असलेले फॉर्म नव्हे. त्यानंतर इव्हेंटची तिकिटे आणि लॉयल्टी कार्ड यांसारखे तुमचे पास झटपट अ‍ॅक्सेस करा. तुमची सेव्ह केलेली माहिती तुमच्या डिव्हाइसवर आणि सर्व Google उत्पादनांमध्ये दिसू शकते.</translation>
 <translation id="7930282586031445870">आता विकत घ्या, नंतर पैसे द्या यासंबंधित सेवा अटींची स्क्रीन बंद केली आहे.</translation>

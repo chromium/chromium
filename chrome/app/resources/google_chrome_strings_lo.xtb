@@ -532,6 +532,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5940385492829620908">ເວັບຂອງທ່ານ, ບຸກມາກສ໌, ແລະ Chrome ອື່ນສົດຢູ່ທີ່ນີ້.</translation>
 <translation id="5941711191222866238">ຫຍໍ້ລົງ</translation>
 <translation id="5941830788786076944">ເຮັດ Google Chrome ເປັນບຣາວເຊີມາດຕະຖານ</translation>
+<translation id="5944731887996253728">Chrome ຈະອັບເດດເມື່ອບໍ່ມີການນຳໃຊ້ໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="5947104538377036631">ທາງລັດ Chrome</translation>
 <translation id="5960071705175224773">ແອັບທີ່ບໍ່ຮູ້ຈັກປ່ຽນການຕັ້ງຄ່າຂອງທ່ານ</translation>
 <translation id="5980111191913430208">ສ່ວນຂະຫຍາຍ, ແອັບ ແລະ ຮູບແບບສີສັນຈາກແຫຼ່ງຂໍ້ມູນທີ່ບໍ່ຮູ້ຈັກອາດເປັນອັນຕະລາຍກັບອຸປະກອນຂອງທ່ານໄດ້. Chrome ແນະນຳໃຫ້ຕິດຕັ້ງພວກມັນຈາກ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ເທົ່ານັ້ນ</translation>
@@ -835,6 +836,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8367950957770994118">ເປີດ Gemini ໃນ Chrome ໄດ້ຢ່າງວ່ອງໄວທຸກເທື່ອທີ່ທ່ານຕ້ອງການ</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="8370748943308169953">ລະຫັດ QR ເພື່ອເຂົ້າສູ່ລະບົບ Chrome ໃນຊື່ <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> ພ້ອມແລ້ວ. ທ່ານສາມາດເລີ່ມເປີດໃຊ້ໃໝ່ໄດ້ຕອນນີ້ ຫຼື ຕັ້ງຄ່າ Chrome ໃຫ້ອັບເດດໃນເທື່ອຕໍ່ໄປທີ່ໜ້າຈໍຂອງທ່ານເປີດຢູ່ ແລະ ບໍ່ມີການນຳໃຊ້ເປັນເວລາ <ph name="IDLE_DURATION" /> ກໍໄດ້.</translation>
 <translation id="8376752431516546391">ແຜງຄວບຄຸມດ້ານຂ້າງຂອງ Google ຊອກຫາ</translation>
 <translation id="8377158135256176353">ເປີດ/ປິດ Gemini ໃນ Chrome Canary</translation>
 <translation id="8380754585531979907">ໃຊ້ແປ້ນພິມຂອງທ່ານເພື່ອນຳທາງລະຫວ່າງ Gemini ໃນ Chrome ແລະ ແຖບທີ່ເປີດຢູ່ຂອງທ່ານ.</translation>
@@ -878,6 +880,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8669527147644353129">ຕົວຊ່ວຍ Google Chrome</translation>
 <translation id="8679801911857917785">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chrome.</translation>
 <translation id="8689408573494410517">ປຸ່ມ "Google ຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງ" ຢູ່ແຖບເຄື່ອງມືມີໄອຄອນໃໝ່. ຄລິກມັນເພື່ອຖາມຄຳຖາມໃນຂະນະທີ່ທ່ານເລືອກເບິ່ງດ້ວຍ Google ຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງ.</translation>
+<translation id="8699232386626916686">ອັບເດດ Chrome ເພື່ອຮັກສາຄວາມປອດໄພ</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8712767363896337380">ອັບເດດໃກ້ແລ້ວໆ! ເລີ່ມເປີດໃຊ້ Chrome ໃໝ່ເພື່ອອັບເດດໃຫ້ແລ້ວ.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບຢູ່ແລ້ວ. ເພື່ອແຍກການທ່ອງເວັບຂອງທ່ານໄວ້ຕ່າງຫາກ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome ໃນໂປຣໄຟລ໌ຂອງທ່ານເອງດ້ວຍ <ph name="USER_EMAIL_ADDRESS" />. ນອກຈາກນີ້, ທ່ານຍັງຈະໄດ້ຮັບລາຍຊື່ການອ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານຈາກ <ph name="DEVICE" /> ນຳ.</translation>

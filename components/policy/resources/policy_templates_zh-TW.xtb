@@ -1681,6 +1681,19 @@ ChromeOS M184 將是最後一個支援 Chrome 應用程式的 ChromeOS 版本。
 <translation id="2086505225896497574">如果設定這項政策，當網站要求安全金鑰認證憑證時，系統就會指定 WebAuthn RP ID，而不會在登入畫面顯示提示。系統也會傳送信號給安全金鑰，表明可能會使用企業認證。如果未設定這項政策，當網站要求安全金鑰的認證時，系統會向使用者顯示提示。
 
 這項裝置政策與現有的使用者政策 <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" /> 相同，但適用於登入畫面上的登入設定檔。</translation>
+<translation id="2088835253645709768">AI 輔助歷史記錄搜尋功能已移除，因此這項政策已在 M157 淘汰。
+
+透過 AI 輔助歷史記錄搜尋功能，使用者除了可以搜尋網頁標題和網址，還能根據網頁內容搜尋瀏覽記錄，並取得生成的解答。
+
+0 = 允許使用這項功能，並允許 Google 運用相關資料改善 AI 模型。相關資料可能包括提示詞、輸入內容、生成結果、來源資料和文字意見回饋 (視功能而定)。這些資料也可能會送交人工審查，以改良 AI 模型。預設值為 0，但以下註明的情形除外。
+
+1 = 允許使用這項功能，但不允許 Google 運用使用者的內容 (包括提示詞、輸入內容、生成結果、來源資料和文字意見回饋) 改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
+
+2 = 不允許使用這項功能。
+
+如果未設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
+
+如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="2089541797660774692">啟用受管理瀏覽器的雲端報告功能</translation>
 <translation id="2090280024671359587">允許使用文字擷取功能，並協助改良 AI 模型。</translation>
 <translation id="2090712407517297305">chrome://history/grouped 的 Chrome 歷史記錄頁面會依群組顯示內容。</translation>

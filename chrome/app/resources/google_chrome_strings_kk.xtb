@@ -22,6 +22,7 @@
 <translation id="1125124144982679672">Chrome браузерін кім пайдаланып жатыр?</translation>
 <translation id="1142745911746664600">Chrome браузерін жаңарту мүмкін емес</translation>
 <translation id="1148360048981192980">Келесі жолы Chrome-ды <ph name="DEVICE_TYPE" /> құрылғысынан ашқан кезде, Google Password Manager-ді пайдалану туралы нұсқауды көресіз.</translation>
+<translation id="1150418667633096194">Құралдар тақтасындағы "Google Search бүйірлік панелі" түймесінің жаңа белгішесі бар. Google Search бүйірлік панелімен шолу кезінде сұрақ қою үшін оны басыңыз.</translation>
 <translation id="1152920704813762236">ChromeOS туралы</translation>
 <translation id="1154147086299354128">&amp;Chrome браузерінде ашу</translation>
 <translation id="1157952955648710254">Google Search бүйірлік панелін жабу</translation>
@@ -52,11 +53,13 @@
 <translation id="1439793550875056299">Chrome-ды бекіту</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Жаңартылған нұсқаны қолдану үшін әкімшіңіз Chrome браузерін қайта іске қосуыңызды талап етеді. Оқшау терезе қайта ашылмайды.}other{Жаңартылған нұсқаны қолдану үшін әкімшіңіз Chrome браузерін қайта іске қосуыңызды талап етеді. # оқшау терезе қайта ашылмайды.}}</translation>
 <translation id="146866447420868597">Chrome-ға кіру қажет пе?</translation>
+<translation id="1470136641087909499">Шолу кезінде сұрақ қою үшін Chrome-да Google Search-ті қайта ашуға болады.</translation>
 <translation id="1476347941828409626">&amp;Chrome профильдерін басқару</translation>
 <translation id="1492280395845991349">Chrome жаңартылып болуы үшін оны қайта іске қосу қажет</translation>
 <translation id="1497802159252041924">Орнату қатесі: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Жаңа Chrome профиліңізді реттеңіз.</translation>
 <translation id="1518627427551567882">Бұл бет қорғалған</translation>
+<translation id="15408169957028265">Chrome-да Google Search-ті қайта ашу</translation>
 <translation id="1547295885616600893">ChromeOS жүйесі <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="1547469039832541117">Ерекшеленген тапсырманы аяқтайды.</translation>
 <translation id="1553358976309200471">Chrome жаңарту</translation>
@@ -89,6 +92,7 @@
 <translation id="1713301662689114961">{0,plural, =1{Chrome браузері бір сағаттан кейін қайта іске қосылады}other{Chrome браузері # сағаттан кейін қайта іске қосылады}}</translation>
 <translation id="1722488837206509557">Бұл жағдайда қолжетімді құрылғылардың арасынан таңдап, оларда контент көрсетуге болады.</translation>
 <translation id="1724094881572874997">Chrome-ға кірген кезіңізде, Chrome-дағы жұмысыңызды қорғау үшін ұйымыңыз белгілі бір ақпаратты көре алады немесе басқара алады.</translation>
+<translation id="1769661297620183092">Шолу кезінде сұрақ қою үшін Google Search панелін қайта ашуға болады.</translation>
 <translation id="177180974022074201">Chrome-дағы Gemini-мен байқап көру</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> құрылғысындағы Chrome браузеріне кіргеніңізді тексеріп, қайта жіберіп көріңіз.</translation>
 <translation id="1786044937610313874">Chrome-да ашық тіркесімдер</translation>
@@ -107,6 +111,7 @@
 <translation id="1880677175115548835">Мәтінді таңдаңыз</translation>
 <translation id="1896602904211344018">Chrome қолданбасын жүктеп алу</translation>
 <translation id="1919130412786645364">Chrome браузеріне кіруге рұқсат ету</translation>
+<translation id="1925069572871307609">Google Chrome-ның жаңа нұсқаларын алып тұру үшін Windows 10 жүйесінің 1809 немесе одан кейінгі нұсқасы керек болады. Бұл компьютерде Windows 10 жүйесінің ескі нұсқасы орнатылған.</translation>
 <translation id="1953553007165777902">Жүктеп алынып жатыр… <ph name="MINUTE" /> минут қалды.</translation>
 <translation id="1975400514743766362"><ph name="DEVICE_TYPE" /> құрылғысындағы Chrome-мен жол-жөнекей Google қауіпсіздігін қамтамасыз етіңіз</translation>
 <translation id="1979600810166324878">iOS жүйесіне арналған Chrome-дағы Күшейтілген Safe Browsing деректеріңізді фондық режимде қорғауға көмектеседі.</translation>
@@ -120,6 +125,7 @@
 <translation id="2040220733769034247">Chrome браузерін жүктеп алу және Google аккаунтына кіру үшін телефонмен QR кодын сканерлеңіз.</translation>
 <translation id="2044908892530830113">Chrome-мен іздеу функциясын Mac мәзір жолағында көрсету және пернелер тіркесімін қосу</translation>
 <translation id="2050189601866423230">Шолу кезінде сұрақ қою үшін Google Search ЖИ режимін бекітуге болады.</translation>
+<translation id="2060311596979880693">Дайын! Енді Chrome-дағы Google Search-пен шолу кезінде оңай сұрақ қоя аласыз.</translation>
 <translation id="2091012649849228750">Google Chrome-ның жаңа нұсқаларын алып тұру үшін Windows 10 не одан кейінгі операциялық жүйе керек болады. Бұл компьютерде Windows 8 нұсқасы орнатылған.</translation>
 <translation id="2094648590148273905">ChromeOS Flex шарттары</translation>
 <translation id="2094919256425865063">Chrome браузерінен бәрібір шығасыз ба?</translation>
@@ -145,6 +151,7 @@
 <translation id="2216543877350048334">Chrome-нан Google аккаунтын өшіру үшін аккаунттан шығыңыз.</translation>
 <translation id="2236949375853147973">Әрекеттерім</translation>
 <translation id="22791603784558743">Chrome Dev-дегі Gemini-ды жабу</translation>
+<translation id="2283228908180457226">Белгіше жаңа, таңбаша бұрынғыдай: Google Search бүйірлік панелімен шолу кезінде сұрақ қою үшін басыңыз.</translation>
 <translation id="2290014774651636340">Google API пернелері жоқ. Кейбір Google Chrome функционалдықтары өшіріледі.</translation>
 <translation id="2290095356545025170">Google Chrome жою қажет пе?</translation>
 <translation id="2295218613066132598">Chrome сайтының пернелер тіркесімдерін көрсету</translation>
@@ -207,6 +214,7 @@
 <translation id="2861074815332034794">Chrome жаңартылуда (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">Chrome-ға кіріңіз</translation>
 <translation id="2875053229394024379">Chrome-ға Google аккаунтыңызбен кірген кезде, Chrome профиліңізді Gemini-мен бірге пайдалана аласыз. <ph name="BEGIN_LINK" />Chrome-ға кіру жолы туралы ақпарат алыңыз<ph name="END_LINK" />.</translation>
+<translation id="2876152561415416331">Google Search панелін қайта ашу</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome-ның деректеріңізді құпия сақтау жолы<ph name="END_LINK" /> туралы толық ақпарат</translation>
 <translation id="2885378588091291677">Тапсырмалар реттегіші</translation>
 <translation id="2888126860611144412">Chrome туралы</translation>
@@ -222,6 +230,8 @@
 <translation id="3003694935412297923">Барлық тапсырма</translation>
 <translation id="3018957014024118866">Деректерді Chrome-нан (<ph name="URL" />) да жою</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex жүйесін жаңарту үшін оны қайта іске қосу</translation>
+<translation id="3034219227076811559">Chrome-дағы Google Search</translation>
+<translation id="3037190258341683404">Шолу кезінде сұрақ қою үшін Google Search-ті Chrome-ға бекітуге болады.</translation>
 <translation id="3037517125981011456">Chrome-ға кіру нұсқауларын көрсетеді.</translation>
 <translation id="3037838751736561277">Google Chrome фондық режимде.</translation>
 <translation id="3038232873781883849">Сәлден соң орнатыла бастайды…</translation>
@@ -327,6 +337,7 @@
 <translation id="3967822245660637423">Жүктеп алынды</translation>
 <translation id="3968962723676998462">Chrome деректерін <ph name="ACCOUNT_EMAIL" /> аккаунтында қолдану және сақтау үшін құпия фразаны енгізіңіз.</translation>
 <translation id="3973161977468201858">Google Chrome браузері Google Password Manager-дегі деректеріңізді жоюға рұқсат сұрайды. Рұқсат беру үшін Windows құпия сөзін енгізіңіз.</translation>
+<translation id="3984557288004650913">Шолу кезінде сұрақ қою үшін құралдар тақтасындағы "Chrome-дағы Google Search" түймесін басып, Chrome-дағы Google Search-ті қайта ашуға болады</translation>
 <translation id="400161754580828648">Экранды бөлісу үшін жүйе параметрлерінде Chrome-ға экран жазуға рұқсат беріңіз.</translation>
 <translation id="4012899077942246412">Аккаунтқа кірсеңіз, Chrome-нан Google аккаунтыңыздағы құпия сөздер мен т.б. ақпаратты пайдалана аласыз. Мұны өзгерту үшін "Chrome-дағы аккаунтыңыз" бөліміне өтіңіз.</translation>
 <translation id="4022972681110646219">Экран мазмұнын аудару</translation>
@@ -401,6 +412,7 @@
 <translation id="4768676935374695498">Бұл бейнені Google Lens-бен іздеу</translation>
 <translation id="479167709087336770">Google Search қызметіндегі емле тексеру құралы пайдаланылады. Браузерде терілген мәтін Google-ға жіберіледі. Мұны параметрлерде өзгертуіңізге болады.</translation>
 <translation id="4793679854893018356">Chrome сізді қалай қорғайтыны туралы ақпарат алыңыз</translation>
+<translation id="4803313124144656665">Chrome-дағы Google Search-ті жабу</translation>
 <translation id="4828579605166583682">Google Chrome бұрыннан бар құпия сөздерді ауыстырғысы келеді. Бұған рұқсат беру үшін Windows құпия сөзін енгізіңіз.</translation>
 <translation id="4836321460899997044">Chrome профилі</translation>
 <translation id="4839733921943823254">Таңбашаны бекіту</translation>
@@ -451,6 +463,7 @@
 <translation id="5234764350956374838">Жабу</translation>
 <translation id="5239627039202700673">Хабарларда, құжаттарда және басқа қолданбаларда сілтемелерді басып, Chrome браузерін кез келген уақытта пайдаланыңыз.</translation>
 <translation id="524751727772074981">Қай жерде болсаңыз да, Chrome-дағы Gemini-ға кез келген сұрақ қойыңыз</translation>
+<translation id="5247617065091903691">Шолу кезінде сұрақ қою үшін Google Search бүйірлік панелін бекітуге болады.</translation>
 <translation id="5251420635869119124">Қонақтар Chrome қолданбасын ешқандай дерек қалдырмай пайдалана алады.</translation>
 <translation id="5271833978500241046">Оларды Chrome-дағы басқа Gemini функцияларымен бірге пайдаланыңыз.</translation>
 <translation id="5286907366254680517">Анықталды</translation>
@@ -472,6 +485,7 @@
 Google Chrome параметрлеріңізді қалпына келтіре алмайды.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-мен пайдалану үшін Chrome профилін таңдаңыз</translation>
 <translation id="547202872422499512">Windows жұмысын бастаған кезде, Chrome іске қосылады, сондықтан браузерді бірден пайдалануға болады. Оны параметрлерден өшіруге болады.</translation>
+<translation id="5482575505313585759">Google Search панелін жабу</translation>
 <translation id="5486346529181556467">Зиянды деп ойлаған сайт туралы шағымданғанда, онлайн қауіпсіздікті барлық пайдаланушы үшін жақсартыңыз. <ph name="BEGIN_LINK" />Google-дың қауіпсіз емес сайт саясаты<ph name="END_LINK" /> туралы толық ақпарат алыңыз.</translation>
 <translation id="5503069778428381665">Компьютерде Google Lens пайдаланған кезде, бет атауы, URL мекенжайы және контенті, сондай-ақ PDF файлдары Google-ға жіберіледі.</translation>
 <translation id="5524890928877629608">іздеу аймағының жоғарғы сол жақ бұрышы: сол жақ <ph name="LEFT" />%, жоғарғы жақ <ph name="TOP" />%</translation>
@@ -489,6 +503,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="566568153320186256">Chrome браузері біркелкі айналдыру және бейнекадр жиілігі сияқты фондық әрекеттерді және визуалдық әсерлерді шектеу арқылы батарея қуатын үнемдейді. <ph name="BEGIN_LINK" />Қуат үнемдеу туралы толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Аккаунттағы Chrome деректерін тазалау</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Жаңартылған нұсқасын қолдану үшін әкімші Chrome браузерін қайта іске қосуыңызды сұрайды.}=1{Жаңартылған нұсқасын қолдану үшін әкімші Chrome браузерін қайта іске қосуыңызды сұрайды. Инкогнито терезесі қайта ашылмайды.}other{Жаңартылған нұсқасын қолдану үшін әкімші Chrome браузерін қайта іске қосуыңызды сұрайды. # инкогнито терезесі қайта ашылмайды.}}</translation>
+<translation id="568656514202614970">Дайын! Енді Google Search бүйірлік панелімен шолу кезінде оңай сұрақ қоя аласыз.</translation>
 <translation id="5686916850681061684">Google Chrome-ды реттеу және басқару. Назар аударуыңыз қажет. Толығырақ ақпарат алу үшін басыңыз.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Интернетке қосылу мүмкін емес. Прокси-сервер үшін аутентификация қажет.</translation>
@@ -516,6 +531,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="5940385492829620908">Веб-сайттар, бетбелгілер және басқа Chrome материалдары осы жерде болады.</translation>
 <translation id="5941711191222866238">Жию</translation>
 <translation id="5941830788786076944">Google Chrome қолданбасын әдепкі браузер етіп орнату</translation>
+<translation id="5944731887996253728">Chrome экраныңыз пайдаланылмаған кезде жаңартылады.</translation>
 <translation id="5947104538377036631">Chrome пернелер тіркесімі</translation>
 <translation id="5960071705175224773">Параметрлеріңізді белгісіз қолданба өзгертті</translation>
 <translation id="5980111191913430208">Белгісіз дереккөздерден алынған кеңейтімдер, қолданбалар мен тақырыптар құрылғыңызға зиянын тигізуі мүмкін. Chrome оларды тек <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> дүкенінен орнатуға кеңес береді.</translation>
@@ -564,11 +580,14 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="6288580400488258237">Google Chrome-ды әдепкі браузер ретінде орнатып, тапсырмалар жолағына бекітіңіз.</translation>
 <translation id="6291089322031436445">Chrome Dev қолданбалары</translation>
 <translation id="6291549208091401781">Google Chrome компьютердегі барлық пайдаланушылар үшін әлдеқашан орнатылған.</translation>
+<translation id="6294638840436017818">Шолу кезінде сұрақ қою үшін құралдар тақтасындағы "Google Search бүйірлік панелі" түймесін басып, Google Search бүйірлік панелін қайта ашуға болады</translation>
+<translation id="6308106880471005841">Құралдар тақтасындағы "Google Search панелі" түймесінің жаңа белгішесі бар. Google Search панелімен шолу кезінде сұрақ қою үшін оны басыңыз.</translation>
 <translation id="6311220991371174222">Профильді ашу кезінде қате кеткендіктен, Chrome іске қосылмады. Оны қайта іске қосып көріңіз.</translation>
 <translation id="6319856120645568262">Chrome-ға айналаңызды картаға түсіруге және қолыңызды бақылауға рұқсат қажет.</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" кеңейтімін қолдану үшін Chrome-ға кіруіңіз керек</translation>
 <translation id="6326175484149238433">Chrome бағдарламасынан жою</translation>
 <translation id="6334815226785304306">Google Chrome қолданбасын әдепкі браузер етіп орнату және тапсырмалар жолағына бекіту</translation>
+<translation id="6339888439788291743">Белгіше жаңа, таңбаша бұрынғыдай: Google Search ЖИ режимімен шолу кезінде сұрақ қою үшін басыңыз.</translation>
 <translation id="63540178978900677">Chrome енді әдепкі браузеріңіз емес. Оны әдепкі браузер ретінде орнату қажет пе?</translation>
 <translation id="6357670763064300993">Chrome-дағы Gemini Enterprise</translation>
 <translation id="6360449101159168105">Бұл қойынды әрекетсіз тұрған кезде, Chrome жылдам жұмыс істеуі үшін, жад босатылды. Сіз бұл сайтты әрекетсіз тұру тізімінен әрдайым шығарып отыру опциясын таңдай аласыз.</translation>
@@ -618,6 +637,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="6723445727540769832">Телефондағы Chrome-мен Google-дың барлық мүмкіндігін пайдаланыңыз</translation>
 <translation id="6734827584173583205">Жақында кірмедіңіз. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> рұқсаттарын және тағы <ph name="COUNT" /> рұқсатты өшірді.</translation>
 <translation id="6735387454586646204">ChromeOS Flex жүйесі</translation>
+<translation id="674891594898436429">Осы қойындыдағы әрекеттерден іздеу функциясын жабу</translation>
 <translation id="6750954913813541382">Емле қателерін түзету үшін Chrome браузерде терілетін мәтінді Google-ға жібереді.</translation>
 <translation id="6760235774835597023">Chrome-ның V8 жүйесімен сайттар жылдам жұмыс істейді, бірақ Chrome-ның шабуылдарға төзімділігі сәл азаяды. Бұл параметр қосулы.</translation>
 <translation id="677276454032249905">Chrome браузерінен бәрібір шығасыз ба?</translation>
@@ -636,6 +656,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="689368324615299626"><ph name="DEVICE_TYPE" /> құрылғысындағы Chrome-мен Google-дың барлық мүмкіндігін пайдаланыңыз</translation>
 <translation id="6896758677409633944">Көшіру</translation>
 <translation id="6908182077349113099">Құпия сөздеріңіз, бетбелгілеріңіз және тарихыңыз құрылғыларда синхрондалады. Әдепкі браузеріңізді Chrome-ға жаңартып, өзіңізге таныс және ұнайтын функцияларды оңай пайдаланыңыз.</translation>
+<translation id="6926772305569367352">Құралдар тақтасындағы "Chrome-дағы Google Search" түймесінің жаңа белгішесі бар. Chrome-да Google Search-пен шолу кезінде сұрақ қою үшін оны басыңыз.</translation>
 <translation id="6930294499209825">Google бағдарламалық құралын жаңартып отырады. Егер бұл қызмет өшірілген немесе тоқтатылған болса, Google бағдарламалық құралыңыз жаңартылмайды. Нәтижесінде қауіпсіздік ақауларын жою мүмкін болмай, функциялар жұмыс істемеуі мүмкін. Бұл қызмет пайдаланылатын Google бағдарламалық құралы болмаса, өздігінен жойылады.</translation>
 <translation id="6933858244219479645">ChromeOS жүйесі</translation>
 <translation id="6938166777909186039">Google Chrome-ның жаңа нұсқаларын алып тұру үшін Windows 10 не одан кейінгі операциялық жүйе керек болады. Бұл компьютерде Windows 8.1 нұсқасы орнатылған.</translation>
@@ -672,6 +693,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="7285616922384953075">Chrome-ды <ph name="MANAGER" /> басқарады</translation>
 <translation id="7285990705317078173">Бағаларды бақылау және кез келген сайтта баға түскен кезде, хабарландырулар алу үшін телефоныңызға Chrome-ды жүктеп алыңыз.</translation>
 <translation id="7288567540154601580">Қойындылар мен кеңейтімдер</translation>
+<translation id="7290997427370476749">Шолу кезінде сұрақ қою үшін құралдар тақтасындағы "Google Search панелі" түймесін басып, Google Search панелін қайта ашуға болады</translation>
 <translation id="7296210096911315575">Пайдалану және қауіпсіздік туралы маңызды ақпарат</translation>
 <translation id="7299899569525778554">Компьютерден іздеу</translation>
 <translation id="7302361266603927550">Chrome деректерінің кейбірі Google аккаунтыңызға әлі сақталмаған. Шығу алдында бірнеше минут күтіп көріңіз. Қазір шықсаңыз, бұл деректер жойылады.</translation>
@@ -679,6 +701,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="7308322188646931570">Файлдарды жүктеп алу үшін Chrome браузеріне сақтау орнын пайдалану құқығы қажет</translation>
 <translation id="7352651011704765696">Бірнәрсе дұрыс емес</translation>
 <translation id="7371412052245999753">Chrome жадын компьютеріңіздегі басқа қолданбалардан қорғайды.</translation>
+<translation id="7374061268215476070">Шолу кезінде сұрақ қою үшін Google Search бүйірлік панелін қайта ашуға болады.</translation>
 <translation id="73786666777299047">Chrome Web Store қызметін ашу</translation>
 <translation id="7386878009611068389">Ата-анаңыздың таңдауымен интернетті қауіпсіз пайдалану үшін <ph name="USER_EMAIL_ADDRESS" /> ретінде кірген Chrome профиліңізге ауысыңыз.</translation>
 <translation id="7398801000654795464">Chrome жүйесіне <ph name="USER_EMAIL_ADDRESS" /> ретінде кірдіңіз. Қайта кіру үшін бірдей аккаунтты пайдаланыңыз.</translation>
@@ -732,6 +755,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="778331955594035129">Chrome бұл сайт үшін локацияны пайдалануға рұқсат сұрайды.</translation>
 <translation id="7787950393032327779">Профиль басқа компьютердегі (<ph name="HOST_NAME" />) басқа Google Chrome процесінде(<ph name="PROCESS_ID" />) пайдаланылуда. Бүлініп қалмауы үшін Chrome профильді құлыптап қойды. Басқа процестер бұл профильді пайдаланбайтынына көз жеткізсеңіз, профильді құлыптан ашып, Chrome қайта іске қосуыңызға болады.</translation>
 <translation id="7800043020703832708">Бүйірлік панельдегі Google Search-ті жабу</translation>
+<translation id="7801317262080715012">Белгіше жаңа, таңбаша бұрынғыдай: Google Search панелімен шолу кезінде сұрақ қою үшін басыңыз.</translation>
 <translation id="7801699035218095297">Google Chrome құпия сөздерді көшіргісі келеді. Бұған рұқсат беру үшін Windows құпия сөзіңізді теріңіз.</translation>
 <translation id="7804364787702057554">Chrome-дағы аккаунтыңыз</translation>
 <translation id="7804947029129221742">Іздеу жүйесі Chrome-нан тыс өзгертілді. Сізді қорғау үшін Chrome оны бастапқы әдепкі күйіне қайтарды. <ph name="LEARN_MORE_LINK" /></translation>
@@ -786,7 +810,9 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="8162006532256575008">Chrome браузерін аккаунтсыз қолдану</translation>
 <translation id="8172231188687329735">Құпия сөздерді кез келген жерде сақтау үшін Chrome қолданбасын жүктеп алыңыз.</translation>
 <translation id="8177472873527554730">Беттен ештеңе табылмады.</translation>
+<translation id="818985547157682832">Құралдар тақтасындағы "Google Search ЖИ режимі" түймесінің жаңа белгішесі бар. Google Search ЖИ режимімен шолу кезінде сұрақ қою үшін оны басыңыз.</translation>
 <translation id="8196526165798579689">Chrome Dev-пен іздеу</translation>
+<translation id="8203105157044679380">Google Search панелі</translation>
 <translation id="8221491193165283816">Әдетте хабарландыруларға тыйым саласыз. Осы сайттың сізге хабарландыру жіберуіне рұқсат ету үшін осы жерді басыңыз.</translation>
 <translation id="8227493674161801700">Chrome Beta-мен іздеу</translation>
 <translation id="8233224921566021881">Маңайдағы құрылғыларды табу және пайдалану үшін Chrome-ға жергілікті желіңізді пайдалану рұқсаты қажет.</translation>
@@ -798,6 +824,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="8291415872436043161">Chrome-ды жүктеп алу</translation>
 <translation id="829923460755755423">Google Password Manager таңбашасын қосу</translation>
 <translation id="8313851650939857356">Іске қосу қатесі: <ph name="STARTUP_ERROR" />.</translation>
+<translation id="8321058241987390452">Дайын! Енді Google Search панелімен шолу кезінде оңай сұрақ қоя аласыз.</translation>
 <translation id="8321888067342493336">Сурет түрінде сақтау</translation>
 <translation id="8336463659890584292">Сайт беттегі сілтемелерді құпия түрде алдын ала жүктеуді сұрағанда, Chrome браузері Google серверлерін пайдаланады. Осылайша жеке деректеріңіз алдын ала жүктелетін сайттан жасырылады, бірақ Google алдын ала жүктелетін сайттарды біледі.</translation>
 <translation id="8342675569599923794">Бұл файл қауіпті болғандықтан, Chrome оны бөгеді.</translation>
@@ -808,6 +835,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="8367950957770994118">Chrome-дағы Gemini-ды қажет кезде лезде ашыңыз.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Барлық құқықтары қорғалған.</translation>
 <translation id="8370748943308169953">Chrome-ға <ph name="USER_NAME" /> ретінде кіруге арналған QR коды</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> дайын. Қазір қайта іске қосуға немесе Chrome-ды келесі жолы экран қосулы және <ph name="IDLE_DURATION" /> бойы пайдаланылмаған кезде жаңартылатындай етіп орнатуға болады.</translation>
 <translation id="8376752431516546391">Google Search бүйірлік панелі</translation>
 <translation id="8377158135256176353">Chrome Canary-дегі Gemini-ды қосу/өшіру</translation>
 <translation id="8380754585531979907">Chrome-дағы Gemini мен ашық қойынды арасында ауысу үшін пернетақтаны пайдаланыңыз.</translation>
@@ -823,10 +851,12 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 
 Кейбір бетбелгілерді жоймайынша, аккаунтыңызға жаңа бетбелгілерді сақтау мүмкін емес. Аккаунттан қазір шықсаңыз, сақталмаған бетбелгілер жойылады.</translation>
 <translation id="8458117863387545390">Телефоныңызға Chrome-ды орнатыңыз</translation>
+<translation id="8467931559764188481">Ашық Google Search-ті жабу</translation>
 <translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" /> (Google мүшесі) ретінде кірдіңіз. Аккаунт мәзірін ашу</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">Google Chrome браузеріне қазір ғана қауіпсіздік бойынша арнайы жаңартылған нұсқа қолданылды. Оны қазір қайта ашсаңыз, ондағы қойындылар қалпына келтіріледі.</translation>
 <translation id="8502181052659370">Бұл қойындыны Google Lens-бен іздеу</translation>
+<translation id="8520489851087523435">Google Search бүйірлік панелін қайта ашу</translation>
 <translation id="8521348052903287641">mDNS трафигіне рұқсат беретін Google Chrome Dev кіріс ережесі.</translation>
 <translation id="852529348814672339">Chrome-ды осы тілде көрсету</translation>
 <translation id="8525579356836940628">Орнату тоқтап қалды.</translation>
@@ -835,6 +865,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="8555465886620020932">Қызмет қатесі: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8564408666201523086">Дайын! Енді бүйірлік панельдегі Google Search-пен шолған кезде, оңай сұрақ қоя аласыз.</translation>
 <translation id="856656450041460113">Тілдер тізімін іздеу</translation>
+<translation id="8568499811906962479">Шолу кезінде сұрақ қою үшін Google Search панелін бекітуге болады.</translation>
 <translation id="8575047640889685742">Google аккаунтындағы барлық Chrome дерегін шифрлау үшін <ph name="BEGIN_LINK" />жеке құпия фразаны<ph name="END_LINK" /> пайдаланыңыз. Google Pay қызметіндегі төлеу әдістері мен мекенжайлары шифрланбайды. Chrome-ның браузерді қолдану тарихы синхрондалмайды.</translation>
 <translation id="8590782867495422699">Google Search ЖИ режимін қайта ашу</translation>
 <translation id="8598779894319572882">Шолу кезінде сұрақ қою үшін құралдар тақтасындағы "Google Search-тегі ЖИ режимі" түймесін басып, Google Search-тегі ЖИ режимін қайта ашуға болады.</translation>
@@ -847,6 +878,8 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="8656634243791296665">Chrome Dev-дегі Gemini-ды ашу</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Сонымен қатар Chrome бастапқы бетін де бақылайды.</translation>
+<translation id="8689408573494410517">Құралдар тақтасындағы "Бүйірлік панельдегі Google Search" түймесінің жаңа белгішесі бар. Бүйірлік панельдегі Google Search-пен шолу кезінде сұрақ қою үшін оны басыңыз.</translation>
+<translation id="8699232386626916686">Қауіпсіздікті сақтау үшін Chrome-ды жаңартыңыз</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8712767363896337380">Дайын болып қалды. Жаңартуды аяқтау үшін Chrome браузерін қайта іске қосыңыз.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> әлдеқашан кірді. Браузерді пайдалану тарихын бөлек сақтау үшін Chrome-ға <ph name="USER_EMAIL_ADDRESS" /> ретінде жеке профиліңізбен кіріңіз. Оқу тізімі мен басқа деректерді <ph name="DEVICE" /> құрылғысынан да аласыз.</translation>
@@ -866,8 +899,10 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="8834965163890861871">Google Chrome құпия сөздерді өзгерткісі келеді. Бұған рұқсат беру үшін Windows құпия сөзіңізді теріңіз.</translation>
 <translation id="8841151363570555833">Chrome-дағы Gemini-ды Mac мәзір жолағында көрсету</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome мұны өшіруге кеңес береді.}other{Chrome бұларды өшіруге кеңес береді.}}</translation>
+<translation id="8861692536395317751">Google Chrome браузері Windows 10 жүйесінің 1809 немесе одан кейінгі нұсқасын қажет етеді.</translation>
 <translation id="8862326446509486874">Жүйе деңгейінде орнату үшін тиісті құқықтарыңыз жоқ. Әкімші ретінде орнату құралын қайта іске қосып көріңіз.</translation>
 <translation id="8865415417596392024">Аккаунтыңыздағы Chrome деректері</translation>
+<translation id="8897637834206928776">Белгіше жаңа, таңбаша бұрынғыдай: бүйірлік панельдегі Google Search-пен шолу кезінде сұрақ қою үшін басыңыз.</translation>
 <translation id="8914504000324227558">Chrome қолданбасын қайта іске қосу</translation>
 <translation id="8920304659326707347">iOS-тегі Chrome-да тоқтаған жеріңізден жалғастырыңыз.</translation>
 <translation id="8922998289262614701">Chrome-нан бұл қолданба деректерін өшіру</translation>
@@ -893,6 +928,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="9018218886431812662">Орнату аяқталды</translation>
 <translation id="9066987883552592250">Chrome Canary-дегі Gemini-ды жабу</translation>
 <translation id="9074041031320636790">Дайын! Енді Google Search AI режимімен шолған кезде, оңай сұрақ қоя аласыз.</translation>
+<translation id="9074163480955555019">Белгіше жаңа, таңбаша бұрынғыдай: Chrome-да Google Search арқылы шолу кезінде сұрақ қою үшін басыңыз.</translation>
 <translation id="9090566250983691233">Неліктен Chrome кейбір файлдарды блоктайтыны туралы ақпарат алыңыз</translation>
 <translation id="9106236359747881194">Іздеу үшін мәтін таңдаңыз.</translation>
 <translation id="911206726377975832">Сонымен қатар шолу деректеріңізді жоясыз ба?</translation>

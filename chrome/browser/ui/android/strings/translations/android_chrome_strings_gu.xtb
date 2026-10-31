@@ -100,6 +100,7 @@
 <translation id="1363028406613469049">ટ્રૅક</translation>
 <translation id="1366525380420346469">જ્યારે ચાલુ હોય</translation>
 <translation id="137496472437646183">'વધારેલું સંરક્ષણ' પસંદ કરો</translation>
+<translation id="1375217160772234287">પાછા સ્વિચ કરો</translation>
 <translation id="1376578503827013741">ગણતરી કરી રહ્યાં છે…</translation>
 <translation id="138181280295369883">તમારા બધા ડિવાઇસ પર તમારી સાચવેલી માહિતી અને બીજું ઘણું મેળવવા માટે, સાઇન ઇન કરો</translation>
 <translation id="1381838868249179644">તમને સુરક્ષિત રાખવામાં સહાય કરવા માટે, અમુક સાઇટ પરથી પરવાનગીઓ દૂર કરવામાં આવી હતી</translation>
@@ -291,6 +292,7 @@
 <translation id="2172905120685242547">વિન્ડો બંધ કરીએ?</translation>
 <translation id="2173302385160625112">તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
+<translation id="21762520333561690">તમારા બધા ટૅબ જુઓ</translation>
 <translation id="2184272387334793084">તમારા બધા ડિવાઇસ પર પાસવર્ડ અને બીજું ઘણું મેળવવા સાઇન ઇન કરો</translation>
 <translation id="218608176142494674">શેરિંગ</translation>
 <translation id="2186779861549045980">તમારા Google એકાઉન્ટમાં સાચવવા માટેના ડેટાની પસંદગી તમે કરી શકો છો.\nતમે આ આઇટમને તમારા બુકમાર્ક, વાંચન સૂચિ કે પાસવર્ડ મેનેજરમાં પણ જોઈ અને સાચવી શકો છો.</translation>
@@ -421,6 +423,7 @@
 <translation id="2650348088770008516">પ્રાઇવસી સંબંધિત માર્ગદર્શિકાની સમજૂતી બંધ કરી</translation>
 <translation id="2650751991977523696">ફાઇલને ફરીથી ડાઉનલોડ કરીએ?</translation>
 <translation id="265156376773362237">પહેલેથી લોડ કરવાનો માનક મોડ</translation>
+<translation id="2651797114528729973">નવા ટૂલબાર પર Gemini અને તમારી આવશ્યક વસ્તુઓ</translation>
 <translation id="2656405586795711023">વેબ ઍપ</translation>
 <translation id="2664252182805397291">સાઇટ જુઓ</translation>
 <translation id="2666092431469916601">ઉપર</translation>
@@ -453,6 +456,7 @@
 <translation id="2826576843404243001">સુરક્ષિત કનેક્શનને સપોર્ટ કરતી ન હોય તેવી સાઇટ માટે, સાઇટની મુલાકાત લેતા પહેલાં ચેતવણી મેળવો. તમે અદ્યતન સુરક્ષાનું સેટિંગ ચાલુ કરેલું હોવાથી તમે આ સેટિંગ બદલી શકતા નથી.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">ક્લિપબોર્ડનું કન્ટેન્ટ છુપાવેલું છે</translation>
+<translation id="2832220615205666541">તમારી આવશ્યક વસ્તુઓના સરળ ઍક્સેસ માટે નવો દેખાવ</translation>
 <translation id="2834884592945939112">સેટિંગ, Google એકાઉન્ટમાં ભૂલ</translation>
 <translation id="2838367486340230368">પ્રાઇવસી સંબંધિત માર્ગદર્શિકાની સમજૂતી અડધી ઊંચાઈ સુધી ખોલી છે</translation>
 <translation id="2839604041336226596"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલા એવા ટૅબ જે પિન કરેલા છે</translation>
@@ -467,6 +471,7 @@
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> ઇચ્છે છે કે તમે આ વેબસાઇટ માટે મંજૂરી આપો:</translation>
 <translation id="2876556152483133018">સાઇટ શોધ</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>
+<translation id="2877922074420892347">તમારા પેજ પરના કોઈપણ કન્ટેન્ટ વિશે Geminiને પૂછો</translation>
 <translation id="2878607776582720720"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું, શેર કરતું છૂપું ટૅબ</translation>
 <translation id="2885355868600171871">ઍડ્રેસ બાર પર જાઓ</translation>
 <translation id="2888126860611144412">Chrome વિશે</translation>
@@ -780,6 +785,7 @@
 <translation id="4137746084635924146">ડિવાઇસની હાલની ભાષા</translation>
 <translation id="414128724510021958">ડિફૉલ્ટ તરીકે વિનંતી કરાયેલી ડેસ્કટૉપ સાઇટ</translation>
 <translation id="4150837143272125910">એક અપડેટ ડાઉનલોડ કરવામાં આવી છે</translation>
+<translation id="4150903149492129817">Chromeના નવા દેખાવનો પ્રીવ્યૂ કરો, જે સુવિધા માટે બનાવવામાં આવ્યો છે</translation>
 <translation id="4162867837470729563">શેરિંગના વિકલ્પોની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલી છે.</translation>
 <translation id="4164642020717536140">ઝડપી અને સુરક્ષિત વેબ બ્રાઉઝિંગ</translation>
 <translation id="4165077084524712774">વધુ ટૂલ</translation>
@@ -805,6 +811,7 @@
 <translation id="421590277191613555"><ph name="GROUP_DESCRIPTION" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="4216511743389425832">આ પેજને સાંભળો</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, પસંદ કરેલું પિન કરેલું ચિત્ર-માં-ચિત્રનું છૂપું ટૅબ</translation>
+<translation id="421881184879612737">તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને તમારા હોમપેજને કસ્ટમાઇઝ કરી શકો છો. જો કોઈ સેટ ન હોય, તો ડિફૉલ્ટ તરીકે નવા ટૅબ પેજ પર સેટ થાય છે.</translation>
 <translation id="4225895483398857530">ટૂલબારનો શૉર્ટકટ</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
@@ -1315,6 +1322,7 @@
 <translation id="6254139308321626268">તમે કોઈ PDF ફાઇલ જોઈ રહ્યાં છો</translation>
 <translation id="6255809143828972562">Chromeના ટૂલ વડે, તમે સલામત રીતે બ્રાઉઝ કરી શકો છો તેમજ નિયંત્રણ જાળવી શકો છો</translation>
 <translation id="6259107733340311168">એન્ટરપ્રાઇઝ સિગ્નલ સંબંધિત અસ્વીકાર બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
+<translation id="6259539576554609209">તમારી આવશ્યક વસ્તુઓ, સીધી ટૂલબાર પર. તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પાછા સ્વિચ કરી શકો છો</translation>
 <translation id="6260260490042862943">સાઇટના નિયંત્રણો</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
 <translation id="6264485186158353794">સુરક્ષા પર પાછા</translation>
@@ -1672,6 +1680,7 @@
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, પિન કરેલું મ્યૂટ કરેલું ટૅબ</translation>
 <translation id="7500851014030446046">PDF ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="7501135638693251872">બધા બુકમાર્ક્સ</translation>
+<translation id="7504076214066136798">ફેરફારો સાચવી શકતા નથી</translation>
 <translation id="7507207699631365376">આ પ્રદાતાની <ph name="BEGIN_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_LINK" /> જુઓ</translation>
 <translation id="750886945254958667">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેનો ઍક્સેસ ન જોઈતો હોય તો તેને છોડી દો</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
@@ -1828,6 +1837,7 @@
 <translation id="8084864785646838999">તમારો અમુક ઇતિહાસ કદાચ અહીં જોવા ન પણ મળી શકે. તમારો બધો Chrome ઇતિહાસ જોવા માટે, સંપૂર્ણ Chrome ઇતિહાસ ખોલો. તે ઉપરાંત, તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના અન્ય સ્વરૂપો પણ હોઈ શકે છે.</translation>
 <translation id="8088176524274673045">નજીકના લોકો સાથે શેર કરવા માટે, તેમને આ QR કોડ સ્કૅન કરવા દો</translation>
 <translation id="8090732854597034573">જો તમને સહાયની કોઈ જરૂર હોય, તો માતાપિતાને પૂછો</translation>
+<translation id="8095180473590852507">Chromeમાં નવું ટૂલબાર છે, જે સુવિધા માટે બનાવવામાં આવ્યું છે. તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પાછા સ્વિચ કરી શકો છો.</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />માં ખોલવામાં આવેલું કોઈપણ ટૅબ બંધ કરાશે નહીં</translation>
 <translation id="810433609302852">ટિપ સંબંધિત નોટિફિકેશન સુવિધાનો પ્રોમો અને વપરાશના પગલાંની બોટમ શીટ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1949,6 +1959,7 @@
 <translation id="8512053371384421952">તમને હવે <ph name="DOMAIN" /> તરફથી નોટિફિકેશન મળશે નહીં.</translation>
 <translation id="8516012719330875537">ઇમેજ એડિટર</translation>
 <translation id="8517759303731677493">ફેરફાર કરો…</translation>
+<translation id="852336920923080209">તમારા બધા ટૂલ સૌથી નીચે જોઈએ છે? ઍડ્રેસ બારને ખસેડવા માટે તેને દબાવી રાખો</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsingની સુવિધા ચાલુ છે</translation>
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું પિન કરેલું ચિત્ર-માં-ચિત્રનું ટૅબ</translation>
@@ -1978,6 +1989,7 @@
 <translation id="8635399646025169806">ટૅબનું ગ્રૂપ રાખીએ?</translation>
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
 <translation id="8639963783467694461">સ્વતઃભરો સેટિંગ્સ</translation>
+<translation id="8644482734962137770">Geminiને Chromeનો ઉપયોગ કરવા માટે પરવાનગીની જરૂર છે</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />માં સાઇન ઇન કરો</translation>
 <translation id="8664979001105139458">ફાઇલનું નામ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" /> માટે સાઇન અપ કરો</translation>
@@ -1994,6 +2006,7 @@
 <translation id="8723453889042591629">આ પેજનો ઝડપથી અનુવાદ કરો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8727043961453758442">Chromeનો વધુને વધુ લાભ મેળવો</translation>
+<translation id="8728810647305130936">નવા ટૅબ ખોલો</translation>
 <translation id="8731268612289859741">સિક્યુરિટી કોડ</translation>
 <translation id="8738163682604285902">વાંચન મોડ જોઈએ છે?</translation>
 <translation id="8746155870861185046">હાઇલાઇટ કરેલી ટેક્સ્ટ શેર કરો</translation>
@@ -2112,6 +2125,7 @@
 <translation id="916607977885256133">ચિત્ર-માં-ચિત્ર</translation>
 <translation id="9168847423516963845">ઍડ્રેસ બારને સૌથી નીચે ખસેડો</translation>
 <translation id="9169507124922466868">નૅવિગેશન ઇતિહાસ અડધા ભાગમાં ખુલ્લો છે</translation>
+<translation id="9174218240999351230">તમારા ટાસ્ક પર કામ કરવા માટે, Geminiને આ ડિવાઇસ પર Chromeની ઑટો બ્રાઉઝ સુવિધાનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
 <translation id="9183563643084679152">Chromeમાં સાઇન ઇન કરવા માટે તમે QR કોડ સ્કૅન કર્યો છે. તમને આ એકાઉન્ટમાંથી પાસવર્ડ, બુકમાર્ક અને બીજું ઘણું મળશે.</translation>
 <translation id="9189607089796819144">શું તેમ છતાં તમે "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="9190276265094487094">તમને તમારા સિંક કરેલા તમામ ડિવાઇસ પર તમારો ઇતિહાસ મળશે, જેથી તમે જે કરતા હતા તે ચાલુ રાખી શકો</translation>

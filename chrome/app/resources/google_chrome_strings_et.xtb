@@ -528,6 +528,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5940385492829620908">Siin asuvad teie veeb, järjehoidjad ja muu Chrome'i kraam.</translation>
 <translation id="5941711191222866238">Minimeeri</translation>
 <translation id="5941830788786076944">Tee Google Chrome vaikebrauseriks</translation>
+<translation id="5944731887996253728">Chrome’i värskendatakse, kui teie ekraani ei kasutata.</translation>
 <translation id="5947104538377036631">Chrome'i otsetee</translation>
 <translation id="5960071705175224773">Tundmatu rakendus muutis teie seadeid</translation>
 <translation id="5980111191913430208">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chrome soovitab need installida ainult järgmisest poest: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -831,6 +832,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8367950957770994118">Avage Gemini Chrome'is kiiresti just siis, kui seda vajate</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
 <translation id="8370748943308169953">QR-kood Chrome'i kasutajana <ph name="USER_NAME" /> sisselogimiseks</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> on valmis. Saate kohe uuesti käivitada või seadistada Chrome’i värskendama järgmine kord, kui teie ekraan jääb sisselülitatuks ja seda ei kasutata <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">Google’i otsingu külgpaneel</translation>
 <translation id="8377158135256176353">Gemini sisse- ja väljalülitamine Chrome Canarys</translation>
 <translation id="8380754585531979907">Kasutage klaviatuuri, et navigeerida Chrome'i Gemini ja avatud vahelehe vahel.</translation>
@@ -874,6 +876,7 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Lisaks juhib see Chrome'i käivitamisel kuvatavat lehte.</translation>
 <translation id="8689408573494410517">Tööriistariba nupul „Google'i otsing külgpaneelil“ on uus ikoon. Klõpsake sellel, et külgpaneelil oleva Google'i otsingu kaudu sirvimise ajal küsimusi esitada.</translation>
+<translation id="8699232386626916686">Turvalisuse tagamiseks värskendage Chrome’i</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8712767363896337380">Peaaegu ajakohane! Värskendamise lõpuleviimiseks käivitage Chrome uuesti.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chrome'i sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma lugemisloendile ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>

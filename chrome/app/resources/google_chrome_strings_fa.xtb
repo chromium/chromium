@@ -20,6 +20,7 @@
 <translation id="1125124144982679672">‏چه‌کسی از Chrome استفاده می‌کند؟</translation>
 <translation id="1142745911746664600">‏به‌روزرسانی Chrome امکان‌پذیر نیست</translation>
 <translation id="1148360048981192980">‏دفعه بعد که Chrome را در <ph name="DEVICE_TYPE" /> باز می‌کنید، پیام‌واره‌ای برای استفاده از «مدیر گذرواژه Google» خواهید دید.</translation>
+<translation id="1150418667633096194">‏دکمه «قاب کناری جستجوی Google» در نوارابزار نماد جدیدی دارد. روی آن کلیک کنید تا هنگام مرور کردن با قاب کناری «جستجوی Google»، سؤال بپرسید.</translation>
 <translation id="1152920704813762236">‏درباره ChromeOS</translation>
 <translation id="1154147086299354128">‏&amp;باز کردن در Chrome</translation>
 <translation id="1157952955648710254">‏بستن پانل کناری «جستجوی Google»</translation>
@@ -50,11 +51,13 @@
 <translation id="1439793550875056299">‏سنجاق کردن Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{‏سرپرست لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. «پنجره مجزا» دوباره باز نخواهد شد.}one{‏سرپرست لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. ‫# «پنجره مجزا» دوباره باز نمی‌شود.}other{‏سرپرست لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. ‫# «پنجره مجزا» دوباره باز نمی‌شود.}}</translation>
 <translation id="146866447420868597">‏به سیستم Chrome وارد می‌شوید؟</translation>
+<translation id="1470136641087909499">‏می‌توانید «جستجوی Google» را در Chrome دوباره باز کنید تا هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="1476347941828409626">‏مدیریت نمایه‌های Chrome</translation>
 <translation id="1492280395845991349">‏راه‌اندازی مجدد برای تکمیل به‌روزرسانی Chrome</translation>
 <translation id="1497802159252041924">خطای نصب: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">‏سفارشی کردن نمایه جدید Chrome</translation>
 <translation id="1518627427551567882">این صفحه محافظت شده است</translation>
+<translation id="15408169957028265">‏باز کردن مجدد «جستجوی Google» در Chrome</translation>
 <translation id="1547295885616600893">‏ارائه ChromeOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="1547469039832541117">تکلیف برجسته‌شده را به‌پایان می‌رساند.</translation>
 <translation id="1553358976309200471">‏به‌روزرسانی Chrome</translation>
@@ -85,6 +88,7 @@
 <translation id="1713301662689114961">{0,plural, =1{‏Chrome یک ساعت دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome # ساعت دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome # ساعت دیگر راه‌اندازی مجدد می‌شود}}</translation>
 <translation id="1722488837206509557">این کار به شما امکان می‌دهد از بین دستگاه‌های دردسترس انتخاب کنید و محتوا را در آن‌ها نمایش دهید.</translation>
 <translation id="1724094881572874997">‏برای حفظ امنیت کارهای شما در Chrome، سازمان‌تان می‌تواند اطلاعات مشخصی را هنگام ورود به سیستم Chrome مشاهده یا مدیریت کند.</translation>
+<translation id="1769661297620183092">‏می‌توانید پانل «جستجوی Google» را دوباره باز کنید تا هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="177180974022074201">‏با «Gemini در Chrome» امتحان کنید</translation>
 <translation id="1786003790898721085">‏مطمئن شوید در <ph name="TARGET_DEVICE_NAME" /> به سیستم Chrome وارد شده باشید و سپس دوباره ارسال کنید.</translation>
 <translation id="1786044937610313874">‏میان‌برها در Chrome باز می‌شود</translation>
@@ -103,6 +107,7 @@
 <translation id="1880677175115548835">انتخاب نوشتار</translation>
 <translation id="1896602904211344018">‏دریافت برنامه Chrome</translation>
 <translation id="1919130412786645364">‏مجاز کردن ورود به سیستم Chrome</translation>
+<translation id="1925069572871307609">‏برای دریافت به‌روزرسانی‌های آتی Google Chrome، باید Windows 10 نسخه ۱۸۰۹ یا بالاتر داشته باشید. این رایانه از نسخه قدیمی‌تر Windows 10 استفاده می‌کند.</translation>
 <translation id="1953553007165777902">درحال بارگیری… <ph name="MINUTE" /> دقیقه باقی مانده است</translation>
 <translation id="1975400514743766362">‏با برنامه Chrome در <ph name="DEVICE_TYPE" />، ایمنی Google را در حرکت داشته باشید</translation>
 <translation id="1979600810166324878">‏با «مرور ایمن پیشرفته» در Chrome برای iOS، درحرکت ایمن‌تر مرور کنید</translation>
@@ -116,6 +121,7 @@
 <translation id="2040220733769034247">‏برای بارگیری Chrome و ورود به سیستم «حساب Google»، رمزینه پاسخ‌سریع را با تلفنتان اسکن کنید.</translation>
 <translation id="2044908892530830113">‏نشان دادن جستجو با Chrome در نوار منو Mac و روشن کردن میان‌بر صفحه‌کلید</translation>
 <translation id="2050189601866423230">‏می‌توانید «حالت هوشواره‌ای جستجوی Google» را سنجاق کنید تا هنگام مرور کردن، به‌راحتی سوال بپرسید</translation>
+<translation id="2060311596979880693">‏انجام شد! اکنون می‌توانید با «جستجوی Google» در Chrome به‌راحتی هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="2091012649849228750">‏برای دریافت به‌روزرسانی‌های آتی Google Chrome، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 8 استفاده می‌کند.</translation>
 <translation id="2094648590148273905">‏شرایط ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
@@ -141,6 +147,7 @@
 <translation id="2216543877350048334">‏برای برداشتن «حساب Google» خود از Chrome، از سیستم خارج شوید</translation>
 <translation id="2236949375853147973">فعالیت‌هایم</translation>
 <translation id="22791603784558743">‏بستن «Gemini در Chrome Dev»</translation>
+<translation id="2283228908180457226">‏نماد جدید، میان‌بر یکسان: برای پرسیدن سؤال هنگام مرور کردن با قاب کناری «جستجوی Google»، کلیک کنید.</translation>
 <translation id="2290014774651636340">‏کلیدهای Google API وجود ندارد. برخی از عملکردهای Google Chrome از کار خواهد افتاد.</translation>
 <translation id="2290095356545025170">‏آیا می‌خواهید Google Chrome را غیر فعال کنید؟</translation>
 <translation id="2295218613066132598">‏نشان دادن میان‌برهای سایت Chrome</translation>
@@ -203,6 +210,7 @@
 <translation id="2861074815332034794">‏درحال به‌روزرسانی Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">‏ورود به سیستم Chrome</translation>
 <translation id="2875053229394024379">‏وقتی‌که با «حساب Google» خود به سیستم Chrome وارد می‌شوید، می‌توانید از نمایه Chrome خود همراه با Gemini استفاده کنید. <ph name="BEGIN_LINK" />با نحوه ورود به سیستم Chrome آشنا شوید<ph name="END_LINK" /></translation>
+<translation id="2876152561415416331">‏باز کردن مجدد پانل «جستجوی Google»</translation>
 <translation id="2876628302275096482">‏درباره اینکه <ph name="BEGIN_LINK" />Chrome چگونه داده‌های شما را خصوصی نگه می‌دارد<ph name="END_LINK" /> بیشتر بدانید</translation>
 <translation id="2885378588091291677">مدیر وظایف</translation>
 <translation id="2888126860611144412">‏درباره Chrome</translation>
@@ -218,6 +226,8 @@
 <translation id="3003694935412297923">همه تکلیف‌ها</translation>
 <translation id="3018957014024118866">‏داده‌ها از Chrome هم حذف شود (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">‏برای به‌روزرسانی &amp;ChromeOS Flex، راه‌اندازی مجدد کنید</translation>
+<translation id="3034219227076811559">‏«جستجوی Google» در Chrome</translation>
+<translation id="3037190258341683404">‏می‌توانید «جستجوی Google» را در Chrome سنجاق کنید تا هنگام مرور کردن سوال بپرسید</translation>
 <translation id="3037517125981011456">‏درخواست‌های ورود به سیستم Chrome را نشان می‌دهد</translation>
 <translation id="3037838751736561277">‏Google Chrome در حالت پس‌زمینه است.</translation>
 <translation id="3038232873781883849">درانتظار نصب…</translation>
@@ -324,6 +334,7 @@
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3968962723676998462">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>
 <translation id="3973161977468201858">‏‫Google Chrome می‌خواهد داده‌های «مدیر گذرواژه» شما را حذف کند. برای مجاز کردن این کار، گذرواژه Windows خود را تایپ کنید.</translation>
+<translation id="3984557288004650913">‏ازطریق دکمه «جستجوی Google در Chrome» در نوارابزار، می‌توانید «جستجوی Google» در Chrome را دوباره باز کنید تا بتوانید هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="400161754580828648">‏برای هم‌رسانی صفحه‌نمایش، ضبط صفحه‌نمایش را در «تنظیمات سیستم» برای Chrome مجاز کنید.</translation>
 <translation id="4012899077942246412">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از گذرواژه‌ها و سایر داده‌های «حساب Google» خود در Chrome استفاده کنید. برای تغییر دادن این تنظیم، به «حساب شما در Chrome» بروید.</translation>
 <translation id="4022972681110646219">ترجمه کردن صفحه‌نمایش</translation>
@@ -398,6 +409,7 @@
 <translation id="4768676935374695498">‏جستجوی این ویدیو با «لنز Google»</translation>
 <translation id="479167709087336770">‏از همان غلط‌یاب املا استفاده می‌کند که در جستجوی Google استفاده می‌شود. نوشتاری که در مرورگر تایپ کرده‌اید برای Google ارسال می‌شود. هروقت بخواهید می‌توانید این رفتار را در تنظیمات تغییر دهید.</translation>
 <translation id="4793679854893018356">‏ببینید Chrome چگونه ایمنی شما را حفظ می‌کند</translation>
+<translation id="4803313124144656665">‏بستن «جستجوی Google» در Chrome</translation>
 <translation id="4828579605166583682">‏Google Chrome می‌خواهد گذرواژه‌های موجود را جایگزین کند. برای مجاز کردن این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="4836321460899997044">‏نمایه Chrome</translation>
 <translation id="4839733921943823254">سنجاق کردن میان‌بر</translation>
@@ -446,6 +458,7 @@
 <translation id="5234764350956374838">بستن</translation>
 <translation id="5239627039202700673">‏از Chrome برای باز کردن پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر استفاده کنید</translation>
 <translation id="524751727772074981">‏در همان جایی که هستید، درباره هر چیزی از «Gemini در Chrome» بپرسید</translation>
+<translation id="5247617065091903691">‏می‌توانید قاب کناری «جستجوی Google» را سنجاق کنید تا هنگام مرور کردن سوال بپرسید</translation>
 <translation id="5251420635869119124">‏مهمان‌‌ها می‌توانند از Chrome استفاده کنند بدون اینکه اثری از خود به جا بگذارند.</translation>
 <translation id="5271833978500241046">‏از آن‌ها در کنار دیگر ویژگی‌های Gemini در Chrome استفاده کنید</translation>
 <translation id="5286907366254680517">تشخیص داده شد</translation>
@@ -465,6 +478,7 @@
 <translation id="5430073640787465221">‏فایل اولویت‌های شما خراب یا نامعتبر است. Google Chrome نمی‌تواند تنظیمات شما را بازیابی کند.</translation>
 <translation id="5465210843490471889">‏انتخاب کردن نمایه Chrome برای استفاده همراه با <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">‏اکنون Chrome هنگام شروع Windows راه‌اندازی می‌شود تا بتوانید بلافاصله مرور را شروع کنید. می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
+<translation id="5482575505313585759">‏بستن پانل «جستجوی Google»</translation>
 <translation id="5486346529181556467">‏وقتی سایتی را که فکر می‌کنید مضر است گزارش می‌کنید، به بهبود ایمنی آنلاین برای همه کمک می‌کنید. درباره <ph name="BEGIN_LINK" />خط‌مشی Google درخصوص سایت‌های ناامن<ph name="END_LINK" /> بیشتر بدانید.</translation>
 <translation id="5503069778428381665">‏وقتی از «لنز Google» در رایانه استفاده می‌کنید، عنوان، نشانی وب، و محتوای صفحه (ازجمله فایل‌های PDF) به Google ارسال می‌شود</translation>
 <translation id="5524890928877629608">‏گوشه بالا سمت راست ناحیه جستجو: ‎٪<ph name="LEFT" /> سمت راست، ‎٪<ph name="TOP" /> بالا</translation>
@@ -482,6 +496,7 @@
 <translation id="566568153320186256">‏‫Chrome با محدود کردن فعالیت پس‌زمینه و جلوه‌های دیداری، مثل پیمایش روان و نرخ فریم ویدیو، در مصرف باتری صرفه‌جویی می‌کند. <ph name="BEGIN_LINK" />درباره «بهینه‌سازی انرژی» بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">‏داده‌های Chrome ذخیره‌شده در حسابتان را پاک کنید</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{‏سرپرست سیستم از شما می‌خواهد برای اعمال این به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید}=1{‏سرپرست سیستم از شما می‌خواهد برای اعمال این به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. پنجره ناشناس بازگشایی نمی‌شود.}one{‏سرپرست سیستم از شما می‌خواهد برای اعمال این به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}other{‏سرپرست سیستم از شما می‌خواهد برای اعمال این به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}}</translation>
+<translation id="568656514202614970">‏انجام شد! اکنون می‌توانید با قاب کناری «جستجوی Google» به‌راحتی هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="5686916850681061684">‏Google Chrome ‫را سفارشی و کنترل کنید. چیزی نیاز به رسیدگی دارد، برای اطلاعات بیشتر کلیک کنید.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">اتصال به اینترنت برقرار نشد. سرور پروکسی به اصالت‌سنجی نیاز دارد.</translation>
@@ -509,6 +524,7 @@
 <translation id="5940385492829620908">‏وب، نشانک‌ها و موارد دیگر Chrome شما در اینجا هستند.</translation>
 <translation id="5941711191222866238">کوچک کردن</translation>
 <translation id="5941830788786076944">‏Google Chrome مرورگر پیش‌فرض شود</translation>
+<translation id="5944731887996253728">‏‫Chrome وقتی که از صفحه‌نمایش استفاده نمی‌کنید به‌روز خواهد شد</translation>
 <translation id="5947104538377036631">‏میان‌بر Chrome</translation>
 <translation id="5960071705175224773">برنامه‌ای ناشناس تنظیمات شما را تغییر داد</translation>
 <translation id="5980111191913430208">‏افزونه‌ها، برنامه‌ها، و زمینه‌های دریافتی از منابع ناشناخته می‌توانند به دستگاهتان آسیب برسانند. ‫Chrome توصیه می‌کند آن‌ها را فقط از <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> نصب کنید</translation>
@@ -557,11 +573,14 @@
 <translation id="6288580400488258237">‏‫Google Chrome را به‌عنوان مرورگر پیش‌فرض خود تنظیم کنید و آن را به نوار وظیفه‌تان سنجاق کنید</translation>
 <translation id="6291089322031436445">‏برنامه‌های Chrome نسخه Dev</translation>
 <translation id="6291549208091401781">‏Google Chrome از قبل برای همه کاربران این رایانه نصب شده است.</translation>
+<translation id="6294638840436017818">‏ازطریق دکمه «قاب کناری جستجوی Google» در نوارابزار، می‌توانید قاب کناری «جستجوی Google» را دوباره باز کنید تا بتوانید هنگام مرور کردن سؤال بپرسید</translation>
+<translation id="6308106880471005841">‏دکمه «پانل جستجوی Google» در نوارابزار نماد جدیدی دارد. روی آن کلیک کنید تا هنگام مرور کردن با پانل «جستجوی Google» سؤال بپرسید.</translation>
 <translation id="6311220991371174222">‏راه‌اندازی Chrome ممکن نیست زیرا هنگام باز کردن نمایه‌تان مشکلی پیش آمد. Chrome را راه‌اندازی مجدد کنید.</translation>
 <translation id="6319856120645568262">‏‫Chrome برای نقشه‌برداری از محیط اطراف و ردیابی دستان شما به اجازه نیاز دارد</translation>
 <translation id="6321592572353357376">‏افزونه «<ph name="EXTENSION_NAME" />» از شما می‌خواهد به سیستم Chrome وارد شوید</translation>
 <translation id="6326175484149238433">‏حذف از Chrome</translation>
 <translation id="6334815226785304306">‏تنظیم کردن Google Chrome به‌عنوان مرورگر پیش‌فرض و سنجاق کردن آن به نوار وظیفه</translation>
+<translation id="6339888439788291743">‏نماد جدید، میان‌بر یکسان: برای پرسیدن سؤال هنگام مرور کردن با «حالت هوشواره‌ای جستجوی Google» کلیک کنید.</translation>
 <translation id="63540178978900677">‏‫Chrome دیگر مرورگر پیش‌فرض شما نیست. آیا Chrome مرورگر پیش‌فرض شود؟</translation>
 <translation id="6357670763064300993">‏‫Gemini Enterprise در Chrome</translation>
 <translation id="6360449101159168105">‏وقتی این زبانه غیرفعال بود، مقداری از حافظه آزاد شد تا سرعت Chrome حفظ شود. می‌توانید انتخاب کنید این سایت همیشه از غیرفعال شدن مستثنی شود.</translation>
@@ -611,6 +630,7 @@
 <translation id="6723445727540769832">‏با برنامه Chrome در تلفنتان، بیشترین بهره را از Google ببرید</translation>
 <translation id="6734827584173583205">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="COUNT" /> مورد دیگر را برداشت.</translation>
 <translation id="6735387454586646204">‏سیستم ChromeOS Flex</translation>
+<translation id="674891594898436429">بستن جستجوی فعال در این زبانه</translation>
 <translation id="6750954913813541382">‏Chrome برای رفع غلط‌های املایی، نوشتاری را که در مرورگر تایپ می‌کنید به Google ارسال می‌کند</translation>
 <translation id="6760235774835597023">‏با این کار سرعت سایت‌ها با موتور Chrome نسخه ۸ بالاتر می‌رود اما مقاومت Chrome دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم روشن است.</translation>
 <translation id="677276454032249905">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
@@ -629,6 +649,7 @@
 <translation id="689368324615299626">‏با برنامه Chrome در <ph name="DEVICE_TYPE" />، بیشترین بهره را از Google ببرید</translation>
 <translation id="6896758677409633944">کپی کردن</translation>
 <translation id="6908182077349113099">‏گذرواژه‌ها، نشانک‌ها، و سابقه را در همه دستگاه‌ها کاملاً همگام‌سازی کنید. با به‌روز کردن مرورگر پیش‌فرض به Chrome، به‌راحتی به ویژگی‌هایی که می‌شناسید و دوست دارید دسترسی پیدا کنید.</translation>
+<translation id="6926772305569367352">‏دکمه «جستجوی Google» در Chrome در نوارابزار نماد جدیدی دارد. برای پرسیدن سؤال هنگام مرور با «جستجوی Google» در Chrome، روی آن کلیک کنید.</translation>
 <translation id="6930294499209825">‏نرم‌افزار Google را به‌روز نگه می‌دارد. اگر این سرویس غیرفعال یا متوقف شود، نرم‌افزار Google به‌روز نخواهد ماند، به این معنی که آسیب‌پذیری‌های امنیتی احتمالی برطرف نمی‌شود و ممکن است ویژگی‌ها کار نکنند. این سرویس زمانی‌که هیچ نرم‌افزار Google از آن استفاده نکند، خود را حذف نصب می‌کند.</translation>
 <translation id="6933858244219479645">‏سیستم ChromeOS</translation>
 <translation id="6938166777909186039">‏برای دریافت به‌روزرسانی‌های آتی Google Chrome، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 8.1 استفاده می‌کند.</translation>
@@ -649,7 +670,7 @@
 <translation id="7059914902409643750">‏Chrome را برای خودتان اختصاصی کنید</translation>
 <translation id="7060643578009939353">‏جستجوی این ویدیو با «لنز Google»</translation>
 <translation id="7071827361006050863">‏Chrome به‌زودی داده‌های مرور را حذف می‌کند</translation>
-<translation id="7085332316435785646">‏انتخاب کنید که آیا سابقه Chrome برای تجربه‌های شخصی‌شده‌تر در سرویس‌های Google لحاظ شود یا نه</translation>
+<translation id="7085332316435785646">‏انتخاب کنید که آیا سابقه Chrome برای تجربه‌های شخصی‌سازی‌شده‌تر در سرویس‌های Google گنجانده شود یا نه</translation>
 <translation id="7088681679121566888">‏Chrome به‌روز است</translation>
 <translation id="708972073591616506">‏با Chrome در iOS، هوشواره‌های Google دلخواهتان را درحرکت همراه داشته باشید.</translation>
 <translation id="7096221564931416126">‏نوشتار یا تصویری را برای جستجو کردن با «لنز Google» انتخاب کنید</translation>
@@ -665,6 +686,7 @@
 <translation id="7285616922384953075">‏‫<ph name="MANAGER" /> ‏Chrome را مدیریت می‌کند</translation>
 <translation id="7285990705317078173">‏برای پیگیری قیمت‌ها و دریافت هشدار درصورت کاهش قیمت در هر سایتی، Chrome را در تلفنتان بارگیری کنید</translation>
 <translation id="7288567540154601580">زبانه‌ها و افزونه‌ها</translation>
+<translation id="7290997427370476749">‏ازطریق دکمه «پانل جستجوی Google» در نوارابزار، می‌توانید پانل «جستجوی Google» را دوباره باز کنید تا بتوانید هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="7296210096911315575">اطلاعات مهم درباره استفاده و ایمنی</translation>
 <translation id="7299899569525778554">جستجو کردن از رایانه</translation>
 <translation id="7302361266603927550">‏برخی‌از داده‌های Chrome هنوز در «حساب Google» شما ذخیره نشده است. پیش‌از خروج از سیستم، چند دقیقه صبر کنید. اگر اکنون از سیستم خارج شوید، این داده‌ها حذف خواهد شد.</translation>
@@ -672,6 +694,7 @@
 <translation id="7308322188646931570">‏Chrome برای بارگیری فایل‌ها باید به حافظه دسترسی داشته باشد</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7371412052245999753">‏از حافظه Chrome دربرابر سایر برنامه‌های رایانه محافظت می‌کند.</translation>
+<translation id="7374061268215476070">‏می‌توانید قاب کناری «جستجوی Google» را دوباره باز کنید تا بتوانید هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="73786666777299047">‏باز کردن نت‌بازار Chrome</translation>
 <translation id="7386878009611068389">‏برای ایمن‌تر ماندن در فضای آنلاین با کمک انتخاب‌های ولی‌تان، به همان نمایه Chrome بروید که قبلاً با <ph name="USER_EMAIL_ADDRESS" /> به سیستم وارد شده‌اید</translation>
 <translation id="7398801000654795464">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chrome شدید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
@@ -725,6 +748,7 @@
 <translation id="778331955594035129">‏Chrome برای این سایت به اجازه مکان نیاز دارد</translation>
 <translation id="7787950393032327779">‏ظاهراً نمایه توسط فرایند Google Chrome دیگری (<ph name="PROCESS_ID" />) در رایانه‌ای دیگر (<ph name="HOST_NAME" />) درحال استفاده است. Chrome نمایه را قفل کرده است تا خراب نشود. اگر مطمئنید فرایندهای دیگری از این نمایه استفاده نمی‌کنند، می‌توانید قفل نمایه را باز کنید و Chrome را مجدداً راه‌اندازی کنید.</translation>
 <translation id="7800043020703832708">‏بستن «جستجوی Google» در قاب کناری</translation>
+<translation id="7801317262080715012">‏نماد جدید، میان‌بر یکسان: برای پرسیدن سؤال هنگام مرور کردن با پانل «جستجوی Google»، کلیک کنید.</translation>
 <translation id="7801699035218095297">‏Google Chrome می‌خواهد گذرواژه‌ها را کپی کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="7804364787702057554">‏حساب شما در Chrome</translation>
 <translation id="7804947029129221742">‏موتور جستجوی شما از خارج از Chrome تغییر کرد. برای محافظت از شما، Chrome آن را به پیش‌فرض اصلی‌اش بازنشانی کرد. <ph name="LEARN_MORE_LINK" /></translation>
@@ -779,7 +803,9 @@
 <translation id="8162006532256575008">‏استفاده از Chrome بدون حساب</translation>
 <translation id="8172231188687329735">‏برای ذخیره کردن گذرواژه‌ها درحرکت، برنامه Chrome را دریافت کنید</translation>
 <translation id="8177472873527554730">محتوای موردنظر در صفحه پیدا نشد</translation>
+<translation id="818985547157682832">‏دکمه «حالت هوشواره‌ای جستجوی Google» در نوارابزار نماد جدیدی دارد. روی آن کلیک کنید تا هنگام مرور کردن با «حالت هوشواره‌ای جستجوی Google» سؤال بپرسید.</translation>
 <translation id="8196526165798579689">‏جستجو کردن با Chrome Dev</translation>
+<translation id="8203105157044679380">‏پانل «جستجوی Google»</translation>
 <translation id="8221491193165283816">معمولاً اعلان‌ها را مسدود می‌کنید. برای اینکه اجازه دهید این سایت اعلان بفرستد، اینجا را کلیک کنید.</translation>
 <translation id="8227493674161801700">‏جستجو کردن با «Chrome نسخه بتا»</translation>
 <translation id="8233224921566021881">‏‫Chrome برای پیدا کردن و استفاده از دستگاه‌های اطراف به دست‌یابی به شبکه محلی نیاز دارد</translation>
@@ -791,6 +817,7 @@
 <translation id="8291415872436043161">‏بارگیری Chrome</translation>
 <translation id="829923460755755423">‏میان‌بری به «مدیر گذرواژه Google» اضافه کنید</translation>
 <translation id="8313851650939857356">خطای راه‌اندازی: <ph name="STARTUP_ERROR" />.</translation>
+<translation id="8321058241987390452">‏انجام شد! اکنون می‌توانید با پانل «جستجوی Google» به‌راحتی هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="8321888067342493336">ذخیره کردن به‌عنوان تصویر</translation>
 <translation id="8336463659890584292">‏وقتی سایتی برای پیش‌بارگیری خصوصی پیوندها در صفحه خود درخواست می‌کند، Chrome از سرورهای Google استفاده می‌کند. با این کار هویتتان از سایت پیش‌بارگیری‌شده پنهان می‌شود، اما Google متوجه می‌شود که چه سایت‌هایی پیش‌بارگیری شده‌اند.</translation>
 <translation id="8342675569599923794">‏این فایل خطرناک است، بنابراین Chrome آن را مسدود کرده است.</translation>
@@ -801,6 +828,7 @@
 <translation id="8367950957770994118">‏هر زمان که نیاز داشتید، «Gemini در Chrome» به‌سرعت باز می‌شود</translation>
 <translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="8370748943308169953">‏رمزینه پاسخ‌سریع برای ورود به سیستم Chrome با <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558">‏‫<ph name="IMPORTANT_UPDATE" /> آماده است. می‌توانید اکنون راه‌اندازی مجدد کنید، یا Chrome را طوری تنظیم کنید که دفعه بعد که صفحه‌نمایش روشن است و به‌مدت <ph name="IDLE_DURATION" /> از آن استفاده نمی‌شود به‌روز شود.</translation>
 <translation id="8376752431516546391">‏پانل کناری «جستجوی Google»</translation>
 <translation id="8377158135256176353">‏روشن/خاموش کردن Gemini در Chrome Canary</translation>
 <translation id="8380754585531979907">‏از صفحه‌کلید برای پیمایش بین «Gemini در Chrome» و زبانه باز استفاده کنید.</translation>
@@ -816,10 +844,12 @@
 
 تا زمانی‌که تعدادی از نشانک‌ها را حذف نکنید، نمی‌توانید نشانک‌های جدید را در حسابتان ذخیره کنید. اگر اکنون از سیستم خارج شوید، نشانک‌های ذخیره‌نشده حذف خواهد شد.</translation>
 <translation id="8458117863387545390">‏دریافت Chrome در تلفن</translation>
+<translation id="8467931559764188481">‏بستن «جستجوی Google» فعال</translation>
 <translation id="848851325211467878">‏با <ph name="USER_NAME" />، <ph name="USER_EMAIL" />، عضویت Google به سیستم وارد شده‌اید. باز کردن منو حساب</translation>
 <translation id="8496177819998570653">‏مدیر گذرواژه Google</translation>
 <translation id="8498858610309223613">‏لحظاتی پیش به‌روزرسانی امنیتی ویژه‌ای برای Google Chrome اعمال شد. هم‌اکنون بازراه‌اندازی کنید و ما برگه‌هایتان را بازیابی خواهیم کرد.</translation>
 <translation id="8502181052659370">‏جستجوی این زبانه با «لنز Google»</translation>
+<translation id="8520489851087523435">‏باز کردن مجدد قاب کناری «جستجوی Google»</translation>
 <translation id="8521348052903287641">‏قانون ترافیک ورودی Google Chrome نسخه Dev برای امکان دادن به ترافیک mDNS.</translation>
 <translation id="852529348814672339">‏نمایش دادن Chrome به این زبان</translation>
 <translation id="8525579356836940628">نصب متوقف شد</translation>
@@ -828,6 +858,7 @@
 <translation id="8555465886620020932">خطای سرویس: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8564408666201523086">‏انجام شد! اکنون می‌توانید با «جستجوی Google» در قاب کناری به‌راحتی هنگام مرور کردن سؤال بپرسید</translation>
 <translation id="856656450041460113">جستجوی فهرست زبان‌ها</translation>
+<translation id="8568499811906962479">‏می‌توانید پانل «جستجوی Google» را سنجاق کنید تا هنگام مرور کردن سوال بپرسید</translation>
 <translation id="8575047640889685742">‏استفاده از <ph name="BEGIN_LINK" />گذرعبارت خودتان<ph name="END_LINK" /> برای رمزگذاری همه داده‌های Chrome موجود در «حساب Google» شما. روش‌های پرداخت و نشانی‌های موجود در Google Pay رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.</translation>
 <translation id="8590782867495422699">‏باز کردن مجدد «حالت هوشواره‌ای جستجوی Google»</translation>
 <translation id="8598779894319572882">‏ازطریق دکمه «حالت هوشواره‌ای جستجوی Google» در نوارابزار، می‌توانید «حالت هوشواره‌ای جستجوی Google» را دوباره باز کنید تا بتوانید هنگام مرور کردن سؤال بپرسید</translation>
@@ -840,6 +871,8 @@
 <translation id="8656634243791296665">‏باز کردن «Gemini در Chrome Dev»</translation>
 <translation id="8669527147644353129">‏راهنمای Google Chrome</translation>
 <translation id="8679801911857917785">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chrome نشان داده می‌شود، کنترل می‌کند.</translation>
+<translation id="8689408573494410517">‏دکمه «جستجوی Google در قاب کناری» در نوارابزار نماد جدیدی دارد. روی آن کلیک کنید تا هنگام مرور کردن با «جستجوی Google» در قاب کناری، سؤال بپرسید.</translation>
+<translation id="8699232386626916686">‏برای ایمن ماندن، Chrome را به‌روز کنید</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8712767363896337380">‏تقریباً به‌روزرسانی شده است! برای تکمیل به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید.</translation>
 <translation id="8717554232729236539">‏‫<ph name="EXISTING_USER" /> از قبل به سیستم وارد شده است. برای جدا نگه داشتن مرورتان، در نمایه خود با حساب <ph name="USER_EMAIL_ADDRESS" /> به سیستم Chrome وارد شوید. همچنین فهرست خواندن و سایر موارد را از <ph name="DEVICE" /> دریافت خواهید کرد.</translation>
@@ -859,8 +892,10 @@
 <translation id="8834965163890861871">‏Google Chrome می‌خواهد گذرواژه‌ها را ویرایش کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="8841151363570555833">‏نمایش «Gemini در Chrome» در نوار منو Mac</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{‏Chrome توصیه می‌کند آن را بردارید}one{‏Chrome توصیه می‌کند آن را بردارید}other{‏Chrome توصیه می‌کند آن‌ها را بردارید}}</translation>
+<translation id="8861692536395317751">‏‫Google Chrome به Windows 10 نسخه ۱۸۰۹ یا بالاتر نیاز دارد.</translation>
 <translation id="8862326446509486874">شما حقوق لازم برای نصب در سطح سیستم را ندارید. دوباره به‌عنوان سرپرست نصب‌کننده را اجرا کنید.</translation>
 <translation id="8865415417596392024">‏داده‌های Chrome در حساب شما</translation>
+<translation id="8897637834206928776">‏نماد جدید، میان‌بر یکسان: برای پرسیدن سؤال هنگام مرور کردن با «جستجوی Google» در قاب کناری کلیک کنید.</translation>
 <translation id="8914504000324227558">‏راه‌اندازی مجدد Chrome</translation>
 <translation id="8920304659326707347">‏ادامه کار را دقیقاً از همان جایی که در Chrome روی iOS متوقف کرده بودید، از سر بگیرید.</translation>
 <translation id="8922998289262614701">‏برداشتن داده‌های این برنامه از Chrome</translation>
@@ -886,6 +921,7 @@
 <translation id="9018218886431812662">نصب کامل شد</translation>
 <translation id="9066987883552592250">‏بستن «Gemini در Chrome Canary»</translation>
 <translation id="9074041031320636790">‏انجام شد! اکنون می‌توانید با «حالت هوشواره‌ای جستجوی Google» به‌راحتی هنگام مرور کردن سؤال بپرسید</translation>
+<translation id="9074163480955555019">‏نماد جدید، میان‌بر یکسان: برای پرسیدن سؤال هنگام مرور با «جستجوی Google» در Chrome، کلیک کنید.</translation>
 <translation id="9090566250983691233">‏ببینید چرا Chrome برخی‌از فایل‌ها را مسدود می‌کند</translation>
 <translation id="9106236359747881194">نوشتاری را برای جستجو انتخاب کنید</translation>
 <translation id="911206726377975832">داده‌های مرور شما نیز حذف شود؟</translation>

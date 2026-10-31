@@ -18,6 +18,7 @@
 <translation id="113122355610423240">Chromium તમારું ડિફૉલ્ટ બ્રાઉઝર છે</translation>
 <translation id="1131805035311359397">ડેટા ઉલ્લંઘન અને અન્ય સુરક્ષાની સમસ્યાથી તમારા પાસવર્ડ સુરક્ષિત છે કે નહીં તે ચેક કરવા માટે, <ph name="BEGIN_LINK" />Chromeiumમાં સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{તમારા ઍડમિનિસ્ટ્રેટરનું કહેવું છે કે આ અપડેટ લાગુ કરવા માટે Chromium ફરીથી લૉન્ચ કરો. છૂપી અથવા આઇસોલેટેડ વિન્ડો ખુલ્લી છે. તમે ફરીથી લૉન્ચ કરો એ પછી તે ફરીથી ખુલશે નહીં.}one{તમારા ઍડમિનિસ્ટ્રેટરનું કહેવું છે કે આ અપડેટ લાગુ કરવા માટે Chromium ફરીથી લૉન્ચ કરો. તમામ પ્રોફાઇલમાં # છૂપી અને આઇસોલેટેડ વિન્ડો ખુલ્લી છે. તમે ફરીથી લૉન્ચ કરો એ પછી તે ફરીથી ખુલશે નહીં.}other{તમારા ઍડમિનિસ્ટ્રેટરનું કહેવું છે કે આ અપડેટ લાગુ કરવા માટે Chromium ફરીથી લૉન્ચ કરો. તમામ પ્રોફાઇલમાં # છૂપી અને આઇસોલેટેડ વિન્ડો ખુલ્લી છે. તમે ફરીથી લૉન્ચ કરો એ પછી તે ફરીથી ખુલશે નહીં.}}</translation>
+<translation id="1150418667633096194">ટૂલબાર પરના "Google Search બાજુની પૅનલ" બટનમાં નવું આઇકન છે. તમે Google Searchની બાજુની પૅનલ વડે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે તેના પર ક્લિક કરો.</translation>
 <translation id="1153368717515616349">Chromium મેનૂ પર ક્લિક કરો</translation>
 <translation id="1157952955648710254">Google Searchની બાજુની પૅનલ બંધ કરો</translation>
 <translation id="1157985233335035034">તાજેતરની ભાષાઓ</translation>
@@ -48,11 +49,13 @@
 <translation id="141901961143729572">તમારા વિચારો શેર કરો</translation>
 <translation id="1438812738230833934">તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે બાજુની પૅનલમાં Google Search ફરીથી ખોલી શકો છો</translation>
 <translation id="1465192221147974788">તમારી વિન્ડો શેર કરવા માટે, સિસ્ટમના સેટિંગમાં Chromium માટે સ્ક્રીન રેકોર્ડિંગની મંજૂરી આપો.</translation>
+<translation id="1470136641087909499">તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Chromeમાં Google Search ફરીથી ખોલી શકો છો</translation>
 <translation id="1478370723027452770">Chrome for Testing માટે સહાય મેળવો</translation>
 <translation id="147870194906295621"><ph name="DEVICE" />માંથી તમારી સાચવેલી માહિતી અને બીજું ઘણું મેળવવા માટે, Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="1497802159252041924">ઇન્સ્ટૉલ કરવામાં ભૂલ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">આ પેજ સંરક્ષિત છે</translation>
 <translation id="1524282610922162960">Chromium ટૅબ શેર કરો</translation>
+<translation id="15408169957028265">Chromeમાં Google Search ફરીથી ખોલો</translation>
 <translation id="154404805518949443">Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="1547469039832541117">હાઇલાઇટ કરેલું કાર્ય સમાપ્ત કરે છે.</translation>
 <translation id="1562320819937089394">Chromiumને પિન કરો</translation>
@@ -62,6 +65,7 @@
 <translation id="1623563412065267963">તમારા ફોન પર Chromium ઍપ વડે Googleનો વધુમાં વધુ લાભ મેળવો</translation>
 <translation id="1625909126243026060">Chromiumમાં પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોનો રિવ્યૂ કરો</translation>
 <translation id="1640672724030957280">ડાઉનલોડ કરી રહ્યું છે...</translation>
+<translation id="1648201623125974721">નવું આઇકન, એ જ શૉર્ટકટ: સંદર્ભિત ટાસ્ક વડે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે ક્લિક કરો.</translation>
 <translation id="1665602916345474427"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, મેમ્બરશિપ તરીકે સાઇન ઇન કર્યું. એકાઉન્ટ મેનૂ ખોલો</translation>
 <translation id="1708414395296835197">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાંની લિંક પર ક્લિક કરો, ત્યારે તમે Chromiumનો ઉપયોગ કરી શકો છો. તેને તમારા ટાસ્કબાર પર પણ પિન કરવામાં આવશે.</translation>
 <translation id="1709772298389099340"><ph name="BROWSER_NAME" /> માટે વધારેલા વિશેષાધિકારો પ્રદાન કરે છે.</translation>
@@ -71,6 +75,7 @@
 <translation id="1736662517232558588">Chromium ડેટા સાફ કર્યો</translation>
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" />માં ફરી શરૂ થશે</translation>
 <translation id="1749104137266986751">જ્યારે HTTPS ઉપલબ્ધ ન હોય, ત્યારે Chromium તમને ચેતવણી આપ્યા વિના અસુરક્ષિત કનેક્શનનો ઉપયોગ કરશે</translation>
+<translation id="1769661297620183092">તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Google Search પૅનલ ફરીથી ખોલી શકો છો</translation>
 <translation id="1774152462503052664">Chromiumને બૅકગ્રાઉન્ડમાં ચાલવા દો</translation>
 <translation id="1779356040007214683">Chromium ને સુરક્ષિત બનાવવા માટે, અમે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યાં હોઈ શકે છે તેવા કેટલાક એક્સ્ટેન્શન્સને અક્ષમ કર્યા છે.</translation>
 <translation id="1793486931176048546">ઝડપી ઍક્સેસ માટે Chromiumને તમારા ટાસ્કબાર પર પિન કરવા માટે Windows નોટિફિકેશનમાં <ph name="BEGIN_BOLD" />હા<ph name="END_BOLD" /> પર ક્લિક કરો</translation>
@@ -103,6 +108,7 @@
 <translation id="2039417478970545937">સેટિંગ.</translation>
 <translation id="2049376729098081731">Googleની સેવાઓમાં વધુ મનગમતા બનાવેલા અનુભવો આપવા માટે, Chromium ઇતિહાસ શામેલ કરવો કે નહીં, તે પસંદ કરો</translation>
 <translation id="2050698962207788467">તમને સશક્ત પાસવર્ડ બનાવવામાં, સાચવવામાં અને તેને ઑટોમૅટિક રીતે ભરવામાં મદદ કરવા માટે Chromiumમાં પહેલેથી જ આ સુવિધા આપવામાં આવી છે. સરળ ઍક્સેસ માટે શૉર્ટકટ ઉમેરો.</translation>
+<translation id="2060311596979880693">સફળતા! હવે તમે Chromeમાં Google Search વડે બ્રાઉઝ કરો ત્યારે સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
 <translation id="2064856577282482477">Chromiumને નવો દેખાવ આપવા માટે નવા ટૅબ પેજ પર જઈને Chromiumને કસ્ટમાઇઝ કરો બટન પર ક્લિક કરો</translation>
 <translation id="2086476982681781442">Chromium દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે આ ફાઇલ છેતરામણી છે અને તે તમારા ડિવાઇસમાં અનપેક્ષિત ફેરફારો કરે તેમ બની શકે છે</translation>
 <translation id="208726765006323911">તમે આગલી વખતે Chromium iOS ખોલો ત્યારે તમને <ph name="FEATURE_NAME" /> અજમાવવા માટેનો પ્રૉમ્પ્ટ દેખાશે.</translation>
@@ -128,6 +134,7 @@
 <translation id="2238130810669087193">તમારા બધા ડિવાઇસ પર તમારા ઍડ્રેસ અને બીજું ઘણું મેળવવા માટે, Chromiumમાં સાઇન ઇન કરો. તમે સાઇન ઇન કરો તે પછી આ ઍડ્રેસ તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે.</translation>
 <translation id="2241627712206172106">જો તમે કમ્પ્યુટરને શેર કરો છો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી અને તેમને જોઇએ તેમ Chromium ને સેટ કરી શકે છે.</translation>
 <translation id="22571759390241347">Chromiumમાં કૌશલ્યો</translation>
+<translation id="2283228908180457226">નવું આઇકન, એ જ શૉર્ટકટ: તમે Google Searchની બાજુની પૅનલ વડે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે ક્લિક કરો.</translation>
 <translation id="2283803047247799269">'છબી વડે શોધ' સુવિધા વડે આ ટૅબ શોધો</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યું હોય એવા ટૅબને થોભાવી દો}one{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યું હોય એવા ટૅબને થોભાવી દો}other{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યાં હોય એવા ટૅબને થોભાવી દો}}</translation>
 <translation id="2307973900865360088">ડૉકમાં રાખો</translation>
@@ -185,6 +192,7 @@
 <translation id="2846251086934905009">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલર પૂર્ણ થયું નહીં. ઇન્સ્ટોલેશન રદ કરવામાં આવ્યું છે.</translation>
 <translation id="2847479871509788944">Chromium માંથી દૂર કરો...</translation>
 <translation id="2850691299438350830">તમને Chromium પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં કદાચ ઉપયોગમાં લેવાઈ શકે છે</translation>
+<translation id="2876152561415416331">Google Search પૅનલ ફરીથી ખોલો</translation>
 <translation id="2885378588091291677">કાર્ય વ્યવસ્થાપક</translation>
 <translation id="2910007522516064972">&amp;Chromium વિશે</translation>
 <translation id="2915996080311180594">પછીથી ફરી શરૂ કરો</translation>
@@ -202,6 +210,8 @@
 <translation id="302551344979399011">કૌશલ્યો જેવી AI ઇનોવેશન તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે અને Chromium સિંકથી અલગથી મેનેજ કરવામાં આવે છે</translation>
 <translation id="3032219013429286568">તમારા બધા ડિવાઇસ પર તમારા એક્સ્ટેન્શન અને બીજું ઘણું મેળવવા માટે, Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="3032787606318309379">Chromium માં ઉમેરી રહ્યું છે...</translation>
+<translation id="3034219227076811559">Chromeમાં Google Search</translation>
+<translation id="3037190258341683404">તમે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે, તમે Chromeમાં Google Searchને પિન કરી શકો છો</translation>
 <translation id="3038232873781883849">ઇન્સ્ટૉલ થવાની રાહ જોઈ રહ્યાં છીએ...</translation>
 <translation id="3045032126857188731">અનુવાદિત ભાષા: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">પ્રતિસાદનો સંવાદ બંધ કરો</translation>
@@ -295,6 +305,7 @@
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
 <translation id="3971865010372729242">તમે જ્યારે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં ટાઇપ કરો છો, ત્યારે સૂચનો મેળવવા માટે Chromium તમે જે ટાઇપ કરો છો તેને તમારી સંસ્થાના શોધ, AI અને એજન્ટ ટૂલ પર મોકલે છે.</translation>
 <translation id="3975724895399328945">Google Chrome for Testing વિશે</translation>
+<translation id="3984557288004650913">ટૂલબાર પરના "Chromeમાં Google Search" બટન પરથી, તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Chromeમાં Google Search ફરીથી ખોલી શકો છો</translation>
 <translation id="3997429360543082038">ChromiumOS વિશે</translation>
 <translation id="4016217212818346953">Password Manager સાથે સુરક્ષિત રહો</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ડેવલપમેન્ટ એન્વાયરમેન્ટ<ph name="END_LINK_LINUX_OSS" />ની જેમ, ChromiumOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
@@ -310,6 +321,7 @@
 <translation id="4135244987012252068">તમારા બ્રાઉઝરને કોઈ નવો દેખાવ આપવા માટે Chromiumને કસ્ટમાઇઝ કરો</translation>
 <translation id="4147856324248078748">તમારા Chromiumને કસ્ટમાઇઝ કરો</translation>
 <translation id="4148957013307229264">ઇન્સ્ટોલ કરી રહ્યું છે...</translation>
+<translation id="4197500750628721662">સુરક્ષિત રહેવા માટે Chromium અપડેટ કરો</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chromium</translation>
 <translation id="4208652172235621272"><ph name="EXISTING_USER" /> દ્વારા પહેલેથી જ સાઇન ઇન કરવામાં આવ્યું છે. તમારું બ્રાઉઝિંગ અલગ રાખવા માટે, તમારી પોતાની પ્રોફાઇલમાં Chromiumમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કરો. તમને તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ અને બીજું પણ ઘણું મળશે.</translation>
 <translation id="421369550622382712">Chromium માટે શ્રેષ્ઠ એપ્લીકેશન્સ, રમતો, એક્સટેન્શન્સ અને થીમ્સ શોધો.</translation>
@@ -373,6 +385,7 @@
 <translation id="4771701986670315895">તમે તાજેતરમાં આ સાઇટની મુલાકાત લીધી નથી. Chromium દ્વારા <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ની અને વધુ <ph name="COUNT" /> પરવાનગી કાઢી નાખવામાં આવી.</translation>
 <translation id="4786083865378785874">જો Chromiumમાં Gemini ખુલ્લું હોય, તો નવા ટૅબ બનાવતી વખતે બાજુની પૅનલ ખુલ્લી રહે છે</translation>
 <translation id="479167709087336770">આ પણ Google Searchમાં જે જોડણી તપાસનારનો ઉપયોગ થાય છે તેનો જ ઉપયોગ કરે છે. તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Googleને મોકલવામાં આવે છે. તમે સેટિંગમાં આ વર્તણૂકને હંમેશાં બદલી શકો છો.</translation>
+<translation id="4803313124144656665">Chromeમાં Google Search બંધ કરો</translation>
 <translation id="4814736265800133385">એકાઉન્ટ વગર Chromiumનો ઉપયોગ કરો</translation>
 <translation id="4839733921943823254">શૉર્ટકટ પિન કરો</translation>
 <translation id="4888717733111232871">mDNS ટ્રાફિકને મંજૂરી આપવા Chromium માટે ઇનબાઉન્ડ નિયમ.</translation>
@@ -399,6 +412,7 @@
 <translation id="5223510345050543907">iOS પર Chromium વડે તમે જ્યાંથી છોડ્યું હતું, ત્યાંથી શરૂ કરો.</translation>
 <translation id="5231355151045086930">Chromiumમાંથી સાઇન આઉટ કરો</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
+<translation id="5247617065091903691">તમે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે, તમે બાજુની પૅનલમાં Google Searchને પિન કરી શકો છો</translation>
 <translation id="5249261924633168472">Chromium Inco&amp;gnito વિન્ડોમાં લિંક ખોલો</translation>
 <translation id="5276305953263010518">મુસાફરીમાં પાસવર્ડ સાચવવા માટે Chromium ઍપ મેળવો</translation>
 <translation id="5277894862589591112">તમારા ફેરફારો લાગુ કરવા માટે, Chromiumને ફરી લૉન્ચ કરો</translation>
@@ -428,6 +442,7 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યું હોય એવા ટૅબને થોભાવી દો}one{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યું હોય એવા ટૅબને થોભાવી દો}other{Chromiumનો સુઝાવ છે કે તમારા બ્રાઉઝરની સ્પીડને ધીમી કરી રહ્યાં હોય એવા ટૅબને થોભાવી દો}}</translation>
 <translation id="5473971139929175403">આ Linux વિતરણ સિસ્ટમ પર Chromium હવે સપોર્ટ કરતું ન હોવાથી કદાચ તે યોગ્ય રીતે કાર્ય ન કરે</translation>
 <translation id="5475924890392386523">Chromium દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું છે, કારણ કે આ ફાઇલ તમારા વ્યક્તિગત અને સોશિયલ નેટવર્ક એકાઉન્ટને નુકસાન પહોંચાડી શકે છે</translation>
+<translation id="5482575505313585759">Google Search પૅનલ બંધ કરો</translation>
 <translation id="549669000822060376">કૃપા કરીને Chromium, નવીનતમ સિસ્ટમ અપડેટ્સ ઇન્સ્ટોલ કરે ત્યાં સુધી રાહ જુઓ.</translation>
 <translation id="5496810170689441661">Chromium પાસવર્ડમાં ફેરફાર કરવાનો પ્રયાસ કરે છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="549975168243349205">Chromium વડે મુસાફરીમાં Google Drive અને YouTube જેવી તમારી મનપસંદ ઍપ સાથે વિક્ષેપરહિત કામ કરો.</translation>
@@ -444,10 +459,13 @@
 <translation id="5596063723521813107">{COUNT,plural, =1{તમારા ઍડમિનિસ્ટ્રેટરની આવશ્યકતા છે કે અપડેટ લાગુ કરવા માટે તમે Chromiumને ફરીથી લૉન્ચ કરો. તમારી આઇસોલેટેડ વિન્ડો ફરીથી ખુલશે નહીં.}one{તમારા ઍડમિનિસ્ટ્રેટરની આવશ્યકતા છે કે અપડેટ લાગુ કરવા માટે તમે Chromiumને ફરીથી લૉન્ચ કરો. તમારી # આઇસોલેટેડ વિન્ડો ફરીથી ખુલશે નહીં.}other{તમારા ઍડમિનિસ્ટ્રેટરની આવશ્યકતા છે કે અપડેટ લાગુ કરવા માટે તમે Chromiumને ફરીથી લૉન્ચ કરો. તમારી # આઇસોલેટેડ વિન્ડો ફરીથી ખુલશે નહીં.}}</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5605834417512968703">'છબી વડે શોધ' સુવિધા વડે શોધવા માટે કંઈપણ પસંદ કરો અથવા 'છબી વડે શોધ' સુવિધામાંથી બહાર નીકળવા માટે Escape કી દબાવો</translation>
+<translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> તૈયાર છે. તમે હમણાં ફરીથી લૉન્ચ કરી શકો છો અથવા આગલી વખતે જ્યારે તમારી સ્ક્રીન ચાલુ હોય પણ <ph name="IDLE_DURATION" /> સુધી તેનો ઉપયોગ ન થાય, ત્યારે Chromium અપડેટ થાય તેવું સેટિંગ કરી શકો છો.</translation>
 <translation id="5618818588972826921">'છબી વડે શોધ' સુવિધા વડે શોધવા માટે કોઈપણ ટેક્સ્ટ અથવા છબી પસંદ કરો અથવા 'છબી વડે શોધ' સુવિધામાંથી બહાર નીકળવા માટે Escape દબાવો</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium અપડેટ ઉપલબ્ધ છે}=1{Chromium અપડેટ ઉપલબ્ધ છે}one{Chromium અપડેટ # દિવસ માટે ઉપલબ્ધ છે}other{Chromium અપડેટ # દિવસ માટે ઉપલબ્ધ છે}}</translation>
 <translation id="5643865575100044307">જ્યારે તમે Chromium બંધ કરો, ત્યારે હંમેશાં તમારા ડિવાઇસમાંથી સાઇટનો ડેટા ડિલીટ કરો</translation>
 <translation id="5653831366781983928">કૃપા કરીને હવે Chromium ફરી શરૂ કરો</translation>
+<translation id="565409517765894456">Chromiumની ભાવિ અપડેટ મેળવવા માટે, તમારે Windows 10 વર્ઝન 1809 કે તે પછીના વર્ઝન પર અપડેટ કરવું જરૂરી રહેશે. આ કમ્પ્યૂટર Windows 10ના જૂના વર્ઝનનો ઉપયોગ કરી રહ્યું છે.</translation>
+<translation id="568656514202614970">સફળતા! હવે તમે Google Searchની બાજુની પૅનલ વડે બ્રાઉઝ કરો ત્યારે સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">આ ભાષામાં Chromium બતાવો</translation>
 <translation id="569897634095159764">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. પ્રૉક્સી સર્વરને પ્રમાણીકરણની જરૂર છે.</translation>
@@ -498,6 +516,7 @@
 <translation id="6192070012454216182">ગમે ત્યાંથી શોધો અને પ્રશ્નો પૂછો, પછી ભલેને Chromium નાનું કર્યું હોય. Chromiumને બૅકગ્રાઉન્ડમાં ચાલવાની મંજૂરી આપે છે.</translation>
 <translation id="6212496753309875659">આ કમ્પ્યુટર પર પહેલાંથી જ Chromiumનું સૌથી તાજેતરનું વર્ઝન છે. જો સૉફ્ટવેર કાર્ય કરી રહ્યું નથી, તો કૃપા કરીને Chromiumને અનઇન્સ્ટૉલ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium હમણાં ફરીથી લૉન્ચ થશે}=1{Chromium 1 સેકન્ડમાં ફરીથી લૉન્ચ થશે}one{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}other{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}}</translation>
+<translation id="6232046770428574552">જ્યારે તમારી સ્ક્રીનનો ઉપયોગ ન થતો હોય, ત્યારે Chromium અપડેટ થશે</translation>
 <translation id="6241367896540709610">ફાઇલો ડાઉનલોડ કરવા માટે, Chromiumને સ્ટોરેજના ઍક્સેસની પરવાનગીની જરૂર છે</translation>
 <translation id="6245734527075554892">URLsને Chromiumમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે સરખાવીને ચેક કરે છે</translation>
 <translation id="6248213926982192922">Chromiumને ડિફૉલ્ટ બ્રાઉઝર બનાવો</translation>
@@ -507,8 +526,10 @@
 <translation id="6270547683008298381">આ ટૅબ વધારાના સંસાધનોનો ઉપયોગ કરી રહ્યાં છે. તમારા પર્ફોર્મન્સને બહેતર બનાવવા માટે, Chromiumને તેમને નિષ્ક્રિય કરવા દો.</translation>
 <translation id="6281746429495226318">તમારી Chromium પ્રોફાઇલને કસ્ટમાઇઝ કરો</translation>
 <translation id="6290827346642914212">તમારી Chromium પ્રોફાઇલને નામ આપો</translation>
+<translation id="6294638840436017818">ટૂલબાર પરના "Google Searchની બાજુની પૅનલ" બટન પરથી, તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Google Searchની બાજુની પૅનલ ફરીથી ખોલી શકો છો</translation>
 <translation id="6294831894865512704">કોઈ એક્સ્ટેન્શન ઇચ્છે છે કે તમે Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> જોખમી હોઈ શકે છે, તેથી Chromium એ તેને અવરોધિત કરેલ છે.</translation>
+<translation id="6308106880471005841">ટૂલબાર પરના "Google Search પૅનલ" બટન પર નવું આઇકન છે. તમે Google Search પૅનલ વડે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે તેના પર ક્લિક કરો.</translation>
 <translation id="6309712487085796862">Chromium તમારા કૅમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="6333502561965082103">Chromium પર બીજી ક્રિયા ચાલુ છે. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="6334986366598267305">હવે તમારા Google એકાઉન્ટ સાથે અને શેર કરેલ કમ્પ્યુટર પર Chromium નો ઉપયોગ કરવો વધુ સરળ છે.</translation>
@@ -562,10 +583,12 @@
 <translation id="6729124504294600478">મનગમતું બનાવવાની અને અન્ય સુવિધાઓ મેળવવા માટે, Chromiumનો વેબ અને ઍપ ઍક્ટિવિટી અને લિંક કરેલી Google સેવાઓમાં સમાવેશ કરો</translation>
 <translation id="6734291798041940871">Chromium, તમારા કમ્પ્યુટર પર તમામ વપરાશકર્તાઓ માટે પહેલાંથી ઇન્સ્ટૉલ કરેલ છે.</translation>
 <translation id="6742093177587589736">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, Chromiumમાં સાઇન ઇન કરો. તમે સાઇન ઇન કરો તે પછી આ બુકમાર્ક તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે.</translation>
+<translation id="674891594898436429">આ ટૅબમાં ઍક્ટિવિટી શોધ છોડી દો</translation>
 <translation id="6751374565094704799">Chromiumના V8 એન્જિન વડે સાઇટની ગતિ વધારે છે પરંતુ Chromiumને અટૅક સામે થોડું ઓછું પ્રતિરોધક બનાવે છે. આ સેટિંગ ચાલુ છે.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Chromiumનો તમારો કેટલોક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી. સાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા (1 આઇટમ) ડિલીટ કરવામાં આવશે.}one{Chromiumનો તમારો કેટલોક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી. સાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા ({count} આઇટમ) ડિલીટ કરવામાં આવશે.}other{Chromiumનો તમારો કેટલોક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી. સાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા ({count} આઇટમ) ડિલીટ કરવામાં આવશે.}}</translation>
 <translation id="67706546131546258">Chromium આ ફાઇલને સ્કૅન કરવાનો સુઝાવ આપે છે, કારણ કે તે જોખમકારક હોઈ શકે છે.</translation>
 <translation id="6779406956731413166">ChromiumOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
+<translation id="6804256634866838775">ઍક્ટિવિટી શોધ છોડી દો</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
 <translation id="6847869444787758381">Chromium વડે તમે તમારા પાસવર્ડમાં ક્યારેક ચેડાં થાય તો તેના વિશે જાણકારી મેળવી શકો છો</translation>
 <translation id="684888714667046800">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. જો તમે કોઈ ફાયરવૉલનો ઉપયોગ કરતા હો, તો કૃપા કરીને ખાતરી કરો કે <ph name="PRODUCT_EXE_NAME" /> વ્હાઇટલિસ્ટમાં છે.</translation>
@@ -590,6 +613,7 @@
             • Chromium શૉર્ટકટ રીસેટ થઈ જશે
             <ph name="LINE_BREAKS" />
             બુકમાર્ક, ઇતિહાસ અને સાચવેલા પાસવર્ડને કોઈ અસર થશે નહીં.</translation>
+<translation id="6926772305569367352">ટૂલબાર પરના "Chromeમાં Google Search" બટન પર નવું આઇકન છે. Chromeમાં Google Search વડે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે તેના પર ક્લિક કરો.</translation>
 <translation id="6948031725951063910">તમે Chromiumની <ph name="BOOKMARK_LIMIT" /> બુકમાર્કની મર્યાદાએ પહોંચી ગયા છો, તેથી તમારા અમુક બુકમાર્ક હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યા નથી.
 
 જ્યાં સુધી તમે અમુક બુકમાર્ક ડિલીટ ન કરો, ત્યાં સુધી નવા બુકમાર્ક તમારા એકાઉન્ટમાં સાચવી શકાશે નહીં. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો ન સચવાયેલા બુકમાર્ક ડિલીટ કરવામાં આવશે.</translation>
@@ -615,6 +639,7 @@
 <translation id="7204669035546236137">Gemini in Chromium વડે તમે જ્યાં પણ હો, ત્યાંથી કંઈપણ પૂછો</translation>
 <translation id="7213008767289637091">Chromiumને કોઈપણ સમયે ઝડપથી ઍક્સેસ કરવા માટે, તેને તમારા ડૉકમાં રાખો</translation>
 <translation id="7213407614656404070">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાંની લિંક પર ક્લિક કરો, ત્યારે Chromiumનો ઉપયોગ કરો</translation>
+<translation id="7213435258745128111">Chromiumમાં Google Search</translation>
 <translation id="7216228761061470870">જ્યારે તમે ડેસ્કટૉપ પર 'છબી વડે શોધ' સુવિધાનો ઉપયોગ કરો છો, ત્યારે PDFs સહિત પેજનું શીર્ષક, URL અને કન્ટેન્ટ સર્વરને મોકલવામાં આવે છે.</translation>
 <translation id="7223968959479464213">કાર્ય વ્યવસ્થાપક - Chromium</translation>
 <translation id="7226331818892775989">Chromiumની બહારના કન્ટેન્ટ વિશે પૂછો, જેમ કે અન્ય ઍપ અથવા ફાઇલો</translation>
@@ -622,6 +647,7 @@
 <translation id="7252276985725323153">ઝટપટ બ્રાઉઝિંગ શરૂ કરો: હવે Windows શરૂ થાય ત્યારે Chromium લૉન્ચ થઈ શકે છે.</translation>
 <translation id="7274695763216404502">પિન કરેલી છે! ટૂલબારમાંથી ફરીથી 'છબી વડે શોધ' સુવિધાનો ઉપયોગ કરો</translation>
 <translation id="7288567540154601580">ટૅબ અને એક્સ્ટેન્શન</translation>
+<translation id="7290997427370476749">ટૂલબાર પરના "Google Search પૅનલ" બટન પરથી, તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Google Search પૅનલ ફરીથી ખોલી શકો છો</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે}one{Chromium તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે}other{Chromium તેમને કાઢી નાખવાનો સુઝાવ તમને આપે છે}}</translation>
 <translation id="7296334833518879294">Chromiumમાં સિસ્ટમ ઑડિયો શેર કરવા માટે, સિસ્ટમના સેટિંગ ખોલો અને 'માત્ર સિસ્ટમ ઑડિયો રેકોર્ડિંગ'ને મંજૂરી આપો. ત્યાર પછી તમારે Chromium ફરી શરૂ કરવું જરૂરી રહેશે.</translation>
 <translation id="7299899569525778554">ડેસ્કટૉપ પરથી શોધો</translation>
@@ -635,6 +661,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="7349591376906416160">તમારા સિસ્ટમ વ્યવસ્થાપકે <ph name="TARGET_URL_HOSTNAME" />ને ઍક્સેસ કરવા Chromiumને <ph name="ALTERNATIVE_BROWSER_NAME" /> ખોલવા માટે ગોઠવેલું છે.</translation>
 <translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
 <translation id="7368826207863345663">Chromiumની ભાવિ અપડેટ મેળવવા માટે, તમને macOS 13 કે તે પછીનું વર્ઝન જોઈશે. આ કમ્પ્યૂટર macOS 12નો ઉપયોગ કરી રહ્યું છે.</translation>
+<translation id="7374061268215476070">તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Google Searchની બાજુની પૅનલ ફરીથી ખોલી શકો છો</translation>
 <translation id="7376384068949534168">તમે તાજેતરમાં આ સાઇટની મુલાકાત લીધી નથી. Chromium દ્વારા <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ની પરવાનગીઓ કાઢી નાખવામાં આવી.</translation>
 <translation id="73786666777299047">Chrome વેબ દુકાન ખોલો</translation>
 <translation id="7394275517973019558">સિસ્ટમ ટ્રેમાં Chromiumમાં Gemini બતાવો</translation>
@@ -678,6 +705,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="7786760609782648049">Chromiumને વધુ ઝડપી બનાવો</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7800043020703832708">બાજુની પૅનલમાં Google Search બંધ કરો</translation>
+<translation id="7801317262080715012">નવું આઇકન, એ જ શૉર્ટકટ: તમે Google Search પૅનલ વડે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે ક્લિક કરો.</translation>
 <translation id="7803986347287457849">તમારા ઇન્ટરનેટ ટ્રાફિકનો ઍક્સેસ ધરાવતા લોકો માટે, તમે કઈ સાઇટની મુલાકાત લો છો તે જોવાનું વધુ મુશ્કેલ બનાવો. Chromium દ્વારા DNS (ડોમેન નેમ સિસ્ટમ)માં સાઇટનું IP ઍડ્રેસ જોવા માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરવામાં આવે છે.</translation>
 <translation id="7810005234485217901">તમે સરળ ઍક્સેસ માટે 'છબી વડે શોધ' સુવિધાને પિન કરી શકો છો</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{Chromium માટે નવી અપડેટ ઉપલબ્ધ છે અને જેવું તમે ફરીથી લૉન્ચ કરશો, એટલે તરત જ તેને લાગુ કરવામાં આવશે. છૂપી અથવા આઇસોલેટેડ વિન્ડો ખુલ્લી છે. તમે ફરીથી લૉન્ચ કરો એ પછી તે ફરીથી ખુલશે નહીં.}one{Chromium માટે નવી અપડેટ ઉપલબ્ધ છે અને જેવું તમે ફરીથી લૉન્ચ કરશો, એટલે તરત જ તેને લાગુ કરવામાં આવશે. તમામ પ્રોફાઇલમાં # છૂપી અને આઇસોલેટેડ વિન્ડો ખુલ્લી છે. તમે ફરીથી લૉન્ચ કરો એ પછી તે ફરીથી ખુલશે નહીં.}other{Chromium માટે નવી અપડેટ ઉપલબ્ધ છે અને જેવું તમે ફરીથી લૉન્ચ કરશો, એટલે તરત જ તેને લાગુ કરવામાં આવશે. તમામ પ્રોફાઇલમાં # છૂપી અને આઇસોલેટેડ વિન્ડો ખુલ્લી છે. તમે ફરીથી લૉન્ચ કરો એ પછી તે ફરીથી ખુલશે નહીં.}}</translation>
@@ -723,6 +751,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="81770708095080097">આ ફાઇલ જોખમી છે, તેથી Chromium એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="8177472873527554730">પેજમાં કન્ટેન્ટ શોધી શકાતું નથી</translation>
 <translation id="8200109504272824693">તમારા <ph name="USER_EMAIL" /> એકાઉન્ટમાં Chromium ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે તમારો પાસફ્રેઝ દાખલ કરો</translation>
+<translation id="8203105157044679380">Google Search પૅનલ</translation>
 <translation id="820759916613250543">'છબી વડે શોધ'ની સુવિધાનો ઉપયોગ કરીને આ છબી શોધો</translation>
 <translation id="8221491193165283816">તમે સામાન્ય રીતે નોટિફિકેશનને બ્લૉક કરો છો. આ સાઇટને તમને નોટિફિકેશન આપવાની મંજૂરી આપવા માટે, અહીં ક્લિક કરો.</translation>
 <translation id="8223363452568144035">તમારા કૅમેરાનો ઉપયોગ કરવા માટે, <ph name="BEGIN_LINK" />સિસ્ટમના સેટિંગ<ph name="END_LINK" />માં જઈને Chromiumને ઍક્સેસ આપો</translation>
@@ -737,6 +766,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="8310603974518734211"><ph name="USER_NAME" /> તરીકે Chromiumમાં સાઇન ઇન કરવા માટેનો QR કોડ</translation>
 <translation id="8313851650939857356">સ્ટાર્ટઅપ દરમિયાન ભૂલ: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">જ્યારે તમારી સંસ્થા <ph name="TIMEOUT_DURATION" /> માટે Chromiumનો ઉપયોગ ન કરે ત્યારે તેને બંધ કરે છે.</translation>
+<translation id="8321058241987390452">સફળતા! હવે તમે Google Search પૅનલ વડે બ્રાઉઝ કરો ત્યારે સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
 <translation id="8321888067342493336">છબી તરીકે સાચવો</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" />, પહેલાં Chromium નો ઉપયોગ કરી રહ્યાં હતાં</translation>
 <translation id="8351551329754447960">Chromiumમાં કૌશલ્યો ચાલુ કરો</translation>
@@ -761,6 +791,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="8482493977473846331">Chromiumમાં સાઇન ઇન કરવા માટેના પ્રૉમ્પ્ટ બતાવો</translation>
 <translation id="8493179195440786826">Chromium જૂનું થઈ ગયું છે</translation>
 <translation id="850264194101621529">Chromiumને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે પસંદ કરવા બદલ આભાર!</translation>
+<translation id="8520489851087523435">Google Searchની બાજુની પૅનલ ફરીથી ખોલો</translation>
 <translation id="8522801943730206384">જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chromium તેને ચેક કરી શકે છે</translation>
 <translation id="8525579356836940628">ઇન્સ્ટૉલેશનની પ્રક્રિયા રોકી</translation>
 <translation id="8545729292258443488">તમારા <ph name="DEVICE_TYPE" /> પર Chromium ઍપ વડે તમારા પાસવર્ડ, ટૅબ અને બીજું ઘણું મુસાફરીમાં સાથે રાખો</translation>
@@ -769,6 +800,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="8556420416730706394">તમે સરળ ઍક્સેસ માટે 'છબી વડે શોધ' સુવિધાને પિન કરી શકો છો; બાજુની પૅનલમાં સૌથી ઉપર પિન કરો બટન પર ક્લિક કરો</translation>
 <translation id="8564408666201523086">સફળતા! હવે તમે બાજુની પૅનલમાં Google Search વડે બ્રાઉઝ કરો ત્યારે સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
 <translation id="856656450041460113">ભાષાની સૂચિ શોધો</translation>
+<translation id="8568499811906962479">તમે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે, તમે Google Search પૅનલને પિન કરી શકો છો</translation>
 <translation id="8576826849825683917">એકથી વધુ સંસ્થાઓ Chromiumને મેનેજ કરે છે</translation>
 <translation id="8586442755830160949">કોપિરાઇટ <ph name="YEAR" /> The Chromium Authors. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="8590782867495422699">Google Searchનો AI મોડ ફરીથી ખોલો</translation>
@@ -776,6 +808,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="8624541899164515475">સેટિંગ, નવા ટૅબમાં ખૂલે છે.</translation>
 <translation id="8648201657708811153">Chrome for Testingને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવી શકાતું નથી.</translation>
 <translation id="8676101123715131330">ગમે ત્યાંથી Chromium વડે શોધો</translation>
+<translation id="8689408573494410517">ટૂલબાર પરના "બાજુની પૅનલમાં Google Search" બટનમાં નવું આઇકન છે. તમે બાજુની પૅનલમાં Google Search વડે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે તેના પર ક્લિક કરો.</translation>
 <translation id="8697124171261953979">જ્યારે તમે Chromium શરૂ કરો અથવા ઑમ્નિબૉક્સ પરથી શોધ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
 <translation id="8702213505203810093">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, ત્યાં Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="8704119203788522458">આ તમારું Chromium છે</translation>
@@ -794,6 +827,8 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="8876044221123442390">Chromium પ્રોફાઇલ ઉમેરો</translation>
 <translation id="8890569919834781711">સાઇન ઇન કરવામાં ભૂલ આવવાને કારણે, ChromiumOS તમારા Google એકાઉન્ટમાં Chromium ડેટા સાચવી શક્યું નથી</translation>
 <translation id="8891709362986793894">તમારી સંસ્થા માટે જરૂરી છે કે તમે Chromiumમાં સાઇન ઇન કરો</translation>
+<translation id="8897637834206928776">નવું આઇકન, એ જ શૉર્ટકટ: તમે બાજુની પૅનલમાં Google Search વડે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે ક્લિક કરો.</translation>
+<translation id="8906384069222226849">Chromium માટે Windows 10 વર્ઝન 1809 અથવા તે પછીનું વર્ઝન આવશ્યક છે.</translation>
 <translation id="8907580949721785412">Chromium પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="8932992523185907506">Chromium હવેથી તમારું ડિફૉલ્ટ બ્રાઉઝર નથી. Chromiumને ડિફૉલ્ટ બ્રાઉઝર બનાવીએ?</translation>
 <translation id="8941642502866065432">Chromium અપડેટ કરી શકતાં નથી</translation>
@@ -823,6 +858,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="9057625473949801035"><ph name="DEVICE" />માંથી તમારા પાસવર્ડ અને બીજું ઘણું મેળવવા માટે, Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="9062666675513499497">જ્યારે તમે Googleની અન્ય સેવાઓમાં સાઇન ઇન કરશો, ત્યારે Chromiumમાં સાઇન ઇન કરો</translation>
 <translation id="9074041031320636790">સફળતા! હવે તમે Google Search AI મોડ વડે બ્રાઉઝ કરો ત્યારે સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
+<translation id="9074163480955555019">નવું આઇકન, એ જ શૉર્ટકટ: તમે Chromeમાં Google Search વડે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે ક્લિક કરો.</translation>
 <translation id="9078733879136747090">Chromium ઑટોમૅટિક રીતે બંધ થઈ ગયું હતું</translation>
 <translation id="9089354809943900324">Chromium જૂનું થઈ ગયું છે</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium એક કલાકમાં ફરીથી લૉન્ચ થશે}one{Chromium # કલાકમાં ફરીથી લૉન્ચ થશે}other{Chromium # કલાકમાં ફરીથી લૉન્ચ થશે}}</translation>
@@ -830,6 +866,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="9106612006984859720">Chromiumની ભાવિ અપડેટ મેળવવા માટે, તમારે Windows 10 કે તે પછીના વર્ઝન પર અપડેટ કરવું જરૂરી રહેશે. આ કમ્પ્યુટર Windows 8.1નો ઉપયોગ કરે છે.</translation>
 <translation id="91086099826398415">નવા Chromium &amp;ટૅબમાં લિંક ખોલો</translation>
 <translation id="911206726377975832">તમારો બ્રાઉઝિંગ ડેટા પણ ડિલીટ કરી દઈએ?</translation>
+<translation id="9118146721060781133">ટૂલબાર પરના "સંદર્ભિત ટાસ્ક" બટનમાં નવું આઇકન છે. તમે સંદર્ભિત ટાસ્ક વડે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે તેના પર ક્લિક કરો.</translation>
 <translation id="9134482777260927479">હોમવર્ક માટે મદદ</translation>
 <translation id="9148058034647219655">બહાર નીકળો</translation>
 <translation id="9155105544013854680">તમે જ્યાંથી છોડ્યું હતું ત્યાંથી ચાલુ કરો: Chromium તમે જ્યારે ફરી શરૂ કરો છો ત્યારે દરેક વખતે તમારા ટૅબ રિસ્ટોર કરી શકે છે. આને ચાલુ કરવા માટે, આના પર જાઓ</translation>

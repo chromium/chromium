@@ -419,6 +419,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" pode sobrepor-se a "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />" e "<ph name="CONFLICTING_GESTURE_THREE" />". Se possível, experimente escolher um gesto diferente.</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="12951065153783848">A sua organização gere a sua conta</translation>
+<translation id="129553762522093515">Fechados recentemente</translation>
 <translation id="1296410481664942178">Não mostrar o Calendário Google</translation>
 <translation id="1296911687402551044">Fixar o separador selecionado</translation>
 <translation id="1297175357211070620">Destino</translation>
@@ -682,6 +683,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1523279371236772909">Visto no mês passado</translation>
 <translation id="1523978563989812243">Motores da conversão de texto em voz</translation>
 <translation id="1524563461097350801">Não</translation>
+<translation id="1524903662136734524">Adicionar a partir do Drive</translation>
 <translation id="1525740877599838384">Usar apenas Wi-Fi para determinar a localização</translation>
 <translation id="1526274304859009691">Inicie sessão para aceder às suas extensões e muito mais do <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Documento sem nome</translation>
@@ -2970,7 +2972,6 @@ Quer pará-lo?</translation>
 <translation id="3261798996834477302">Reativar som do site inferior</translation>
 <translation id="3261832505033014216">Chave de acesso de <ph name="USER_EMAIL" /></translation>
 <translation id="3262261769033093854">Não permitir que os sites capturem e usem a entrada de rato</translation>
-<translation id="3262336253311870293">Uma vez que esta conta é gerida pelo domínio <ph name="DOMAIN" />, a sua sessão na Conta Google não vai ser terminada. Os marcadores, o histórico, as palavras-passe e outras definições vão deixar de ser sincronizados. No entanto, os dados sincronizados anteriormente vão permanecer armazenados na sua Conta Google e podem ser geridos no <ph name="BEGIN_LINK" />Painel de Controlo Google<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">Demasiado grande</translation>
 <translation id="3264544094376351444">Tipo de letra Sans-Serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
@@ -3192,6 +3193,7 @@ Quer pará-lo?</translation>
 <translation id="3436118221454753036">Perguntar ao Modo IA</translation>
 <translation id="3437397693214267762">Veja os seus ficheiros do Calendário do Outlook, do SharePoint e do OneDrive</translation>
 <translation id="3437494162908353428">As DevTools não são permitidas para este URL.</translation>
+<translation id="3437498061222607130">Tem sessão iniciada na Pesquisa com a sua conta <ph name="USER_EMAIL" /></translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Permitir sempre que <ph name="HOST" /> aceda ao seu microfone</translation>
 <translation id="3439970425423980614">A abrir PDF na Pré-visualização</translation>
@@ -4214,6 +4216,7 @@ Quer pará-lo?</translation>
 <translation id="4200609364258658652">Cop&amp;iar frame do vídeo</translation>
 <translation id="4200689466366162458">Palavras personalizadas</translation>
 <translation id="4200983522494130825">Novo &amp;separador</translation>
+<translation id="4202186506458631436">Mover para a direita</translation>
 <translation id="4202536110335087135">Experimentar agora</translation>
 <translation id="4203065553461038553">O nome ou a localização do ficheiro é demasiado longo</translation>
 <translation id="4203769790323223880">Acesso à câmara não permitido</translation>
@@ -5015,6 +5018,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4823484602432206655">Ler e alterar definições do utilizador e do dispositivo</translation>
 <translation id="4824037980212326045">Cópia de segurança e restauro do Linux</translation>
 <translation id="4824263260587281352">Alterar combinação de teclas <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Conta Google: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Quer cancelar a sincronização?</translation>
 <translation id="4825462365587146530">Saber mais sobre a Chrome Root Store num novo separador.</translation>
 <translation id="4825532258163983651">Não é possível eliminar o token de acesso</translation>
@@ -5820,7 +5824,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5441292787273562014">Atualizar página</translation>
 <translation id="5441466871879044658">Traduza para este idioma</translation>
 <translation id="5442550868130618860">Ativar atualização automática</translation>
-<translation id="5444281205834970653">Eliminar e continuar</translation>
 <translation id="5444452275167152925">Importados do ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446836766119801744">⌥L</translation>
@@ -6858,7 +6861,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6264485186158353794">Voltar para segurança</translation>
 <translation id="6264636978858465832">O Gestor de Palavras-passe precisa de mais acesso</translation>
 <translation id="626495329434552273">Com autorização para substituir a entrada de teclado</translation>
-<translation id="62650662268452475">Enquanto tiver sessão iniciada, pode usar os marcadores, as extensões e outros itens guardados na sua Conta Google em todos os seus dispositivos</translation>
 <translation id="6265159465845424232">Perguntar antes de copiar ou mover ficheiros da Microsoft para o Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Remover porta</translation>
 <translation id="6266532094411434237">A ligar ao dispositivo <ph name="DEVICE" /></translation>
@@ -7035,7 +7037,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6410257289063177456">Ficheiros de imagem</translation>
 <translation id="6410328738210026208">Alterar canal e Powerwash</translation>
 <translation id="6410390304316730527">A Navegação Segura permite-lhe proteger-se contra os atacantes que o podem enganar no sentido de fazer algo perigoso, como instalar software malicioso, ou revelar informações pessoais, como palavras-passe, números de telefone ou cartões de crédito. Se a desativar, tenha cuidado ao navegar em sites desconhecidos ou pouco credíveis.</translation>
-<translation id="6410390446958964276">Enquanto tiver sessão iniciada, pode usar os temas, as definições e outros itens guardados na sua Conta Google em todos os seus dispositivos</translation>
 <translation id="6411135999030237579">Premir sem soltar para repetir automaticamente a tecla</translation>
 <translation id="6415757856498750027">Escrever "w" para obter "ư"</translation>
 <translation id="6415900369006735853">Ligue-se à Internet através do seu telemóvel</translation>
@@ -7679,6 +7680,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6892812721183419409">Abrir link como <ph name="USER" /></translation>
 <translation id="6893164346922798247">Síntese de voz</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6897341342232909480">Mover para a esquerda</translation>
 <translation id="6897363604023044284">Escolher sites a limpar</translation>
 <translation id="689770193677424784">Saia do ecrã inteiro para mostrar os separadores na vertical</translation>
 <translation id="6897756054229464646">Com o Gemini</translation>
@@ -7866,6 +7868,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7030304022046916278">Envia URLs para a Navegação segura para os verificar</translation>
 <translation id="7030695672997239647">Clique com o botão direito do rato num separador, selecione "Adicionar separador a grupo" e, em seguida, "Novo grupo"</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - porta de série associada</translation>
+<translation id="7032334023419126809">Conta Google: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">A entrada tem de ter, no máximo, 62 carateres</translation>
 <translation id="7033731598469029604">Navegação automática</translation>
 <translation id="70356134210715500">Aceder às chaves de acesso</translation>
@@ -8598,7 +8601,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7605163396341021431">Dê às apps Android controlo sobre dispositivos USB neste Chromebook</translation>
 <translation id="7605594153474022051">A sincronização não está a funcionar</translation>
 <translation id="7606560865764296217">Pausar animação</translation>
-<translation id="7606639338662398635">Grupos de separadores</translation>
 <translation id="7606802863538485839">Ver efeitos</translation>
 <translation id="7607002721634913082">Em pausa</translation>
 <translation id="7608810328871051088">Preferências do Android</translation>
@@ -9388,6 +9390,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8199300056570174101">Propriedades da rede (serviço) e do dispositivo</translation>
 <translation id="8200772114523450471">Continuar</translation>
 <translation id="8202827109322349110">Abrir no editor básico</translation>
+<translation id="8203105157044679380">Painel da Pesquisa Google</translation>
 <translation id="8203152941016626022">Nome do dispositivo na funcionalidade Partilhar na proximidade</translation>
 <translation id="8203732864715032075">Enviar-lhe notificações e memorizar este computador para a app Mensagens como predefinição. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Clicar com o botão direito do rato</translation>
@@ -10199,6 +10202,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8818152010000655963">Imagem de fundo</translation>
 <translation id="8818988764764862764">Janela movida para a esquerda</translation>
 <translation id="8819510664278523111">O EID do dispositivo é <ph name="EID_NUMBER" />, o IMEI do dispositivo é <ph name="IMEI_NUMBER" /> e o número de série do dispositivo é <ph name="SERIAL_NUMBER" />. Estes números podem ser usados para ajudar a ativar o serviço.</translation>
+<translation id="8819762137851963556">Encontrar cursor do rato</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8821045908425223359">Configurar endereço IP automaticamente</translation>
 <translation id="8821206216942230957">A sua conta não tem acesso ao Gemini no Chrome</translation>

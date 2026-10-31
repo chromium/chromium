@@ -419,6 +419,7 @@
 <translation id="1293360286536751243">ჟესტმა „<ph name="MAIN_GESTURE" />“ შეიძლება გადაფაროს ჟესტები — „<ph name="CONFLICTING_GESTURE_ONE" />“, „<ph name="CONFLICTING_GESTURE_TWO" />“ და „<ph name="CONFLICTING_GESTURE_THREE" />“. თუ შესაძლებელია, აირჩიეთ სხვა ჟესტი.</translation>
 <translation id="1293556467332435079">ფაილები</translation>
 <translation id="12951065153783848">თქვენი ორგანიზაცია მართავს თქვენს ანგარიშს</translation>
+<translation id="129553762522093515">ბოლოს დახურული</translation>
 <translation id="1296410481664942178">Google Calendar-ის დამალვა</translation>
 <translation id="1296911687402551044">არჩეული ჩანართის ჩამაგრება</translation>
 <translation id="1297175357211070620">დანიშნულება</translation>
@@ -682,6 +683,7 @@
 <translation id="1523279371236772909">ნანახია წინა თვეში</translation>
 <translation id="1523978563989812243">ტექსტის გახმოვანების ძრავები</translation>
 <translation id="1524563461097350801">არა, გმადლობთ</translation>
+<translation id="1524903662136734524">Drive-იდან დამატება</translation>
 <translation id="1525740877599838384">მდებარეობის დასადგენად მხოლოდ Wi-Fi ქსელის გამოყენება</translation>
 <translation id="1526274304859009691">გაიარეთ ავტორიზაცია, რომ მიიღოთ თქვენი გაფართოებები და სხვა მონაცემები <ph name="DEVICE" />-დან</translation>
 <translation id="1526560967942511387">უსათაურო დოკუმენტი</translation>
@@ -929,6 +931,7 @@
 <translation id="1703666494654169921">საიტებისთვის ვირტუალური რეალობის მოწყობილობებისა თუ მონაცემების გამოყენების აკრძალვა</translation>
 <translation id="1704097193565924901">გამთავრულება</translation>
 <translation id="1704230497453185209">საიტებისთვის ხმის დაკვრის აკრძალვა</translation>
+<translation id="170494114379308411">არც თქვენი საუბრები Gemini-სთან და არც თქვენი <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace მონაცემები<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> არ იქნება მიმოხილული ან გამოყენებული გენერაციული ხელოვნური ინტელექტის მოდელების გასაწვრთნელად. Gemini ხელოვნური ინტელექტია და შეიძლება შეცდეს.</translation>
 <translation id="170658918174941828">თქვენ მიერ ზემოთ არჩეულ ინფორმაციას, ასევე, დაერთვება თქვენი Chrome-ის ვერსია, ოპერაციული სისტემის ვერსია, ტრანსლირების პარამეტრები, არეკვლის მუშაობის სტატისტიკა და საკომუნიკაციო არხის დიაგნოსტიკური ჟურნალები. თქვენი გამოხმაურება გამოიყენება პრობლემათა დიაგნოსტირებისა და ფუნქციის გაუმჯობესებისთვის. თქვენ მიერ პირდაპირ ან ირიბად გადმოგზავნილი ნებისმიერი პერსონალური ინფორმაცია ჩვენი კონფიდენციალურობის დებულებების შესაბამისად იქნება დაცული. გამოხმაურების გადმოგზავნით თანხმდებით, რომ Google უფლებამოსილი იქნება, თქვენი გამოხმაურება ნებისმიერი Google პროდუქტის ან სერვისის გასაუმჯობესებლად გამოიყენოს.</translation>
 <translation id="17081583771848899">გამშვები + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="170825127491242914">ღრუბლოვან საცავში შენახვა</translation>
@@ -1154,6 +1157,7 @@
 <translation id="1881445033931614352">კლავიატურის განლაგება</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ერთეული}other{# ერთეული}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">Gemini-ს ისტორია</translation>
 <translation id="1884340228047885921">ხილვადობის პარამეტრად ამჟამად მითითებულია ზოგიერთი კონტაქტი</translation>
 <translation id="1884705339276589024">Linux-ის დისკის ზომის შეცვლა</translation>
 <translation id="1885066963699478692">XML ფაილები, რომლებიც გამოიყენება წესების განსაზღვრისთვის.</translation>
@@ -1619,6 +1623,7 @@
 <translation id="2246549592927364792">გსურთ სურათების აღწერილობების მიღება Google-ისგან?</translation>
 <translation id="2247738527273549923">თქვენს მოწყობილობას მართავს თქვენი ორგანიზაცია</translation>
 <translation id="2247870315273396641">ხმის წინასწარი ვერსია</translation>
+<translation id="2247960558975094922">Gemini-ს ისტორია</translation>
 <translation id="224835741840550119">შეასრულეთ თქვენი მოწყობილობის დეზინფიცირება</translation>
 <translation id="2249111429176737533">ფანჯრის გახსნა ჩანართებიან რეჟიმში</translation>
 <translation id="2249605167705922988">მაგ., 1-5, 8, 11-13</translation>
@@ -2670,6 +2675,7 @@
 <translation id="3030772324014024606">რედაქტირება</translation>
 <translation id="3030795534674718505">დაშვებული აქვს, მათ მიერ თქვენ შესახებ შენახული ინფორმაციის გამოყენება</translation>
 <translation id="3030967311408872958">მზის ჩასვლიდან ამოსვლამდე</translation>
+<translation id="3030970046240311592">ნახეთ და მართეთ თქვენი Gemini-ს ისტორია</translation>
 <translation id="3031417829280473749">აგენტი X</translation>
 <translation id="3031532026314193077">მარჯვენა დაწკაპუნებისთვის სენსორული პანელის ან კლავიატურის გამოყენება</translation>
 <translation id="3031557471081358569">აირჩიეთ ელემენტები იმპორტისთვის:</translation>
@@ -2969,7 +2975,6 @@
 <translation id="3261798996834477302">ქვედა საიტის დადუმების მოხსნა</translation>
 <translation id="3261832505033014216">წვდომის გასაღები <ph name="USER_EMAIL" />-ისთვის</translation>
 <translation id="3262261769033093854">საიტებისთვის თქვენი მაუსის მეშვეობით განხორციელებული შენატანების დაფიქსირებისა და გამოყენების აკრძალვა</translation>
-<translation id="3262336253311870293">ვინაიდან ამ ანგარიშს <ph name="DOMAIN" /> მართავს, თქვენი Google ანგარიშიდან არ გამოხვალთ. თქვენი სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები აღარ იქნება სინქრონიზებული. მიუხედავად ამისა, ადრე სინქრონიზებული მონაცემები შენახული დარჩება თქვენს Google ანგარიშში და ისინი ხელმისაწვდომი იქნება <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />-ში.</translation>
 <translation id="3262986719682892278">ზედმეტად დიდი</translation>
 <translation id="3264544094376351444">Sans-serif შრიფტი</translation>
 <translation id="3264582393905923483">კონტექსტი</translation>
@@ -3191,6 +3196,7 @@
 <translation id="3436118221454753036">რეჟიმი „ხელოვნური ინტელექტისთვის კითხვა“</translation>
 <translation id="3437397693214267762">იხილეთ თქვენი Outlook Calendar, SharePoint და OneDrive ფაილები</translation>
 <translation id="3437494162908353428">DevTools არ არის დაშვებული ამ URL-ისთვის.</translation>
+<translation id="3437498061222607130">შესული ხართ Search-ში თქვენი <ph name="USER_EMAIL" /> ანგარიშით</translation>
 <translation id="3438633801274389918">ნინძა</translation>
 <translation id="3439153939049640737">ყოველთვის მიეცი ნება <ph name="HOST" />-ს, მიიღოს წვდომა მიკროფონზე</translation>
 <translation id="3439970425423980614">PDF-ის გახსნა წინასწარ ხედში</translation>
@@ -4120,6 +4126,7 @@
 <translation id="4107793386654579933">აირჩიეთ მალსახმობი მოქმედებისთვის <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">ფანჯრის გადატანა <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">გაფრთხილების აღდგენა</translation>
+<translation id="4110984310437592352">გამოიყენეთ თქვენი მიკროფონი Gemini-სთან საუბრისთვის. როდესაც Gemini-სთან საუბრობთ, აუდიო ინახება Gemini-ს ისტორიაში (თუ ის ჩართულია).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ხაზგარეშე)</translation>
 <translation id="4112282889480354965">გაფართოებები და უნარები</translation>
 <translation id="4113743276555482284">ფაილის პაროლი</translation>
@@ -4209,10 +4216,12 @@
 <translation id="419427585139779713">თითო ჯერზე თითო მარცვალი უნდა შეიყვანოთ</translation>
 <translation id="4195643157523330669">ახალ ჩანართში გახსნა</translation>
 <translation id="4195814663415092787">გააგრძელეთ იქიდან, სადაც შეჩერდით</translation>
+<translation id="4196632390211257612">არც თქვენი საუბრები Gemini-სთან და არც თქვენი <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace მონაცემები<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> არ იქნება მიმოხილული ან გამოყენებული გენერაციული ხელოვნური ინტელექტის მოდელების გასაწვრთნელად. Gemini ხელოვნური ინტელექტია და შეიძლება შეცდეს. ზოგიერთი კონტენტი შეიძლება არ იყოს ყველასთვის შესაფერისი.</translation>
 <translation id="4198268995694216131">დამატებითი საიტები</translation>
 <translation id="4200609364258658652">ვიდეოს კადრის კო&amp;პირება</translation>
 <translation id="4200689466366162458">მორგებული სიტყვები</translation>
 <translation id="4200983522494130825">ახალი &amp;ჩანართი</translation>
+<translation id="4202186506458631436">გადაადგილება მრჯვნივ</translation>
 <translation id="4202536110335087135">ახლავე ცდა</translation>
 <translation id="4203065553461038553">ფაილის სახელი ან მდებარეობა ზედმეტად დიდია</translation>
 <translation id="4203769790323223880">კამერაზე წვდომა დაუშვებელია</translation>
@@ -4808,6 +4817,7 @@
 <translation id="4665035764476941598">დააწკაპუნეთ აქ, რომ დააბრუნოთ თქვენი სხვა ჩანართები</translation>
 <translation id="4665446389743427678"><ph name="SITE" />-ის მიერ შენახული ყველა მონაცემი ამოიშლება.</translation>
 <translation id="4666472247053585787">იხილეთ შეტყობინებები თქვენი ტელეფონიდან თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
+<translation id="4666483368282673356">თქვენი Gemini ისტორიის მართვა</translation>
 <translation id="4666911709726371538">სხვა აპები</translation>
 <translation id="4668929960204016307">.</translation>
 <translation id="4668936527507421457">PIN-კოდი მხოლოდ ციფრებს უნდა შეიცავდეს</translation>
@@ -5014,6 +5024,7 @@
 <translation id="4823484602432206655">მომხმარებელთა და მოწყობილობათა პარამეტრების წაკითხვა და შეცვლა</translation>
 <translation id="4824037980212326045">Linux-ის სარეზერვო ასლის შექმნა და აღდგენა</translation>
 <translation id="4824263260587281352">შეცვლის კლავიშების კომბინაცია <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Google ანგარიში: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">გსურთ სინქრონიზაციის გაუქმება?</translation>
 <translation id="4825462365587146530">შეიტყვეთ მეტი Chrome Root Store-ის შესახებ ახალ ჩანართში.</translation>
 <translation id="4825532258163983651">წვდომის გასაღების წაშლა ვერ მოხერხდა</translation>
@@ -5278,6 +5289,7 @@
 <translation id="5012523644916800014">პაროლებისა და წვდომის გასაღებების მართვა</translation>
 <translation id="501394389332262641">ხმა ბატარეის დაბალი მუხტისას</translation>
 <translation id="5014286001996333986">ჩაანაცვლებთ თუ შექმნით ახალ ჯგუფს?</translation>
+<translation id="5014385104640320445">გამოიყენეთ თქვენი მიკროფონი Gemini-სთან საუბრისთვის. როდესაც Gemini-სთან საუბრობთ, აუდიო ინახება Gemini-ს ისტორიაში (თუ ის ჩართულია). თქვენი მონაცემები არ გამოიყენება გენერაციული ხელოვნური ინტელექტის მოდელების გასაუმჯობესებლად.</translation>
 <translation id="5015344424288992913">პროქსის გადაწყვეტა…</translation>
 <translation id="5016305686459575361">ტელეფონის დაკავშირების შემთხვევაში შეგეძლებათ:</translation>
 <translation id="5016491575926936899">თქვენი ტელეფონის მეშვეობით შეგიძლიათ კომპიუტერიდან ტექსტური შეტყობინებების გაგზავნა, ინტერნეტთან კავშირის გაზიარება, შეტყობინებებიდან საუბარზე პასუხი და თქვენი <ph name="DEVICE_TYPE" />-ის განბლოკვა.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -5819,7 +5831,6 @@
 <translation id="5441292787273562014">გვერდის გადატვირთვა</translation>
 <translation id="5441466871879044658">ამ ენაზე თარგმნა</translation>
 <translation id="5442550868130618860">ავტომატური განახლების ჩართვა</translation>
-<translation id="5444281205834970653">წაშლა და გაგრძელება</translation>
 <translation id="5444452275167152925">დაიმპორტებულია ChromeOS-იდან</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446836766119801744">⌥L</translation>
@@ -5909,6 +5920,7 @@
 <translation id="5499634624419508916">ჩანართების არსებული ჯგუფის ჩანაცვლება</translation>
 <translation id="5500163593833085874">როცა მაუსის მარცხენა ღილაკია არჩეული, გამოიყენეთ „+“ ორმაგად დაწკაპუნებისთვის</translation>
 <translation id="5500168250243071806">თქვენს Google ანგარიშში შეიძლება ინახებოდეს <ph name="BEGIN_LINK_SEARCH" />ძიების ისტორია<ph name="END_LINK_SEARCH" /> და <ph name="BEGIN_LINK_GOOGLE" />სხვა ტიპის აქტივობა<ph name="END_LINK_GOOGLE" />, როცა შესული ხართ სისტემაში. აღნიშნულის წაშლა ნებისმიერ დროს შეგიძლიათ.</translation>
+<translation id="5500956227241240933">საჭიროა შეტანა</translation>
 <translation id="5501322521654567960">მარცხნივი სწორების გვერდითა პანელი</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" />-დან ვერ მიიღეთ}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" />-დან ვერ მიიღეთ}}</translation>
 <translation id="5501979953419946416">დაწერე რამე ახალი</translation>
@@ -5976,6 +5988,7 @@
 <translation id="5558129378926964177">მასშტაბის &amp;გადიდება</translation>
 <translation id="5558594314398017686">ოპერაციული სისტემის ნაგულისხმევი (როცა ხელმისაწვდომია)</translation>
 <translation id="5559311991468302423">მისამართის წაშლა</translation>
+<translation id="5559646482656763170">განახლება, როცა არ გამოიყენება</translation>
 <translation id="555968128798542113">ამ საიტს შეუძლია თქვენი MIDI-მოწყობილობების მართვა და ხელახლა დაპროგრამება</translation>
 <translation id="5559768063688681413">შენახული პრინტერები არ არის</translation>
 <translation id="55601339223879446">ეკრანის ფარგლებში თქვენი დესკტოპის საზღვრების დარეგულირება</translation>
@@ -6473,6 +6486,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{ყველას ა&amp;ხალ ფანჯარაში გახსნა}=1{ა&amp;ხალ ფანჯარაში გახსნა}other{{COUNT}-ვეს ა&amp;ხალ ფანჯარაში გახსნა}}</translation>
 <translation id="5964247741333118902">ჩაშენებული კონტენტი</translation>
 <translation id="5965607173855879702">მონაცემების წაშლა...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> გადატანილია პოზიციაზე <ph name="SHORTCUT_POSITION" /> / <ph name="TOTAL_SHORTCUTS" />-დან.</translation>
 <translation id="5966511985653515929">საიტების მონაცემები წაიშლება თქვენი მოწყობილობიდან  ყველა ფანჯრის დახურვისას</translation>
 <translation id="5968022600320704045">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="5968400720580217226">ხელოვნური ინტელექტის რეჟიმი</translation>
@@ -6856,7 +6870,6 @@
 <translation id="6264485186158353794">უსაფრთხოებაზე დაბრუნება</translation>
 <translation id="6264636978858465832">პაროლების მმართველი საჭიროებს მეტ წვდომას</translation>
 <translation id="626495329434552273">თქვენი კლავიატურის შენატანის უგულებელყოფა ნებადართულია</translation>
-<translation id="62650662268452475">როცა შესული ხართ, შეგიძლიათ თქვენს ყველა მოწყობილობაში გამოიყენოთ თქვენს Google ანგარიშში შენახული სანიშნეები, გაფართოებები და სხვა მონაცემები</translation>
 <translation id="6265159465845424232">მკითხეთ Microsoft ფაილების Microsoft OneDrive-ში კოპირებამდე ან გადატანამდე</translation>
 <translation id="6265687851677020761">პორტის ამოშლა</translation>
 <translation id="6266532094411434237">მიმდინარეობს <ph name="DEVICE" />-თან დაკავშირება</translation>
@@ -7033,7 +7046,6 @@
 <translation id="6410257289063177456">გამოსახულების ფაილები</translation>
 <translation id="6410328738210026208">არხის შეცვლა და განახლება</translation>
 <translation id="6410390304316730527">Safe Browsing დაგიცავთ თავდამსხმელებისგან, რომლებმაც შეიძლება მოტყუებით ჩაგადენინონ ისეთი სახიფათო ქმედება, როგორიცაა პროგრამული უზრუნველყოფის ინსტალაცია ან თქვენი პერსონალური ინფორმაციის (მაგალითად, პაროლების, ტელეფონის ნომრების ან საკრედიტო ბარათების მონაცემების) გამჟღავნება. გამორთვის შემთხვევაში გამოიჩინეთ სიფრთხილე უცნობი საიტების დათვალიერებისას.</translation>
-<translation id="6410390446958964276">როცა შესული ხართ, შეგიძლიათ თქვენს ყველა მოწყობილობაში გამოიყენოთ თქვენს Google ანგარიშში შენახული თემები, პარამეტრები და სხვა მონაცემები</translation>
 <translation id="6411135999030237579">ხანგრძლივად დაჭერა კლავიშის ავტომატურად გასამეორებლად</translation>
 <translation id="6415757856498750027">„w““-ის აკრეფით „ư“-ს მიღება</translation>
 <translation id="6415900369006735853">დაუკავშირდით ინტერნეტს თქვენი ტელეფონის მეშვეობით</translation>
@@ -7123,6 +7135,7 @@
 <translation id="6476482583633999078">მეტყველების სიჩქარე</translation>
 <translation id="6476671549211161535">დააჭირეთ ღილაკს, რომელიც თქვენს <ph name="DEVICE_NAME" />-ზე არ არის მაუსის მარცხენა ან მარჯვენა ღილაკი.</translation>
 <translation id="6477822444490674459">შეტყობინებების სინქრონიზაცია მხარდაუჭერელია ტელეფონებზე, რომლებზეც სამსახურის პროფილია. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="6479376214595342779">გადატვირთეთ არააქტიური ჩანართები, რათა დაამატოთ ისინი თქვენს ძიებაში</translation>
 <translation id="6479881432656947268">Chrome Web Store-ზე გადასვლა</translation>
 <translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>
 <translation id="6480532238409319936">განახლების ოპერაცია ვერ შესრულდა</translation>
@@ -7135,6 +7148,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" /> ვერ ამოწმებს, შეეხო თუ არა თქვენს პაროლებს პერსონალურ მონაცემთა გაჟონვის შემთხვევები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="648927581764831596">არ არის ხელმისაწვდომი</translation>
 <translation id="6490471652906364588">USB-C მოწყობილობა (მარჯვენა პორტი)</translation>
+<translation id="6491890991754498129">გახსნა &amp;აპით...</translation>
 <translation id="649396225532207613">ამ ფაილს შეუძლია თქვენი პერსონალური და სოციალური ქსელების ანგარიშების დაზიანება</translation>
 <translation id="6493991254603208962">სიკაშკაშის დაკლება</translation>
 <translation id="6494327278868541139">გაძლიერებული დაცვის დეტალების ჩვენება</translation>
@@ -7677,6 +7691,7 @@
 <translation id="6892812721183419409">ბმულის გახსნა, როგორც <ph name="USER" /></translation>
 <translation id="6893164346922798247">eSpeak</translation>
 <translation id="6896758677409633944">კოპირება</translation>
+<translation id="6897341342232909480">გადაადგილდით მარცხნივ</translation>
 <translation id="6897363604023044284">გასასუფთავებლად აირჩიეთ საიტები</translation>
 <translation id="689770193677424784">დატოვეთ სრულეკრანიანი რეჟიმი, რომ ჩანართები ვერტიკალურად აჩვენოთ</translation>
 <translation id="6897756054229464646">Gemini-ის მეშვეობით</translation>
@@ -7863,6 +7878,7 @@
 <translation id="7030304022046916278">URL-ები შესამოწმებლად გაეგზავნება Safe Browsing-ს</translation>
 <translation id="7030695672997239647">მარჯვენა ღილაკით დააწკაპუნეთ ჩანართზე, აირჩიეთ „ჩანართის დამატება ჯგუფში“, შემდეგ კი — „ახალი ჯგუფი“</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> — დაკავშირებულია თანმიმდევრული პორტი</translation>
+<translation id="7032334023419126809">Google ანგარიში: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">შენატანის სიგრძე უნდა იყოს მაქსიმუმ 62 სიმბოლო</translation>
 <translation id="7033731598469029604">ბრაუზერის ავტორეჟიმი</translation>
 <translation id="70356134210715500">მიიღეთ თქვენი წვდომის გასაღებები</translation>
@@ -7950,6 +7966,7 @@
 <translation id="710224247908684995">გაფართოებამ გამორთო Safe Browsing</translation>
 <translation id="7102832101143475489">მოთხოვნის დრო ამოიწურა</translation>
 <translation id="7103944802169726298">პერსონალური კომპიუტერი და გადაცემის მოწყობილობა ერთსა და იმავე Wi-Fi ქსელში</translation>
+<translation id="7104134653119992646">ჩეთები მიმოიხილება და გამოიყენება გენერაციული ხელოვნური ინტელექტის მოდელების გასაწვრთნელად. Gemini ხელოვნური ინტელექტია და შეიძლება შეცდეს. შეგიძლიათ <ph name="BEGIN_LINK_MANAGE_HISTORY" />მართოთ თქვენი ისტორია<ph name="END_LINK_MANAGE_HISTORY" />, მათ შორის, ინფორმაცია თქვენი მდებარეობის შესახებ. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი თქვენი არჩევანის შესახებ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />, Google-ის წევრობა</translation>
 <translation id="7107609441453408294">ყველა დინამიკში ერთი და იგივე აუდიოს დაკვრა</translation>
 <translation id="7108338896283013870">დამალვა</translation>
@@ -8594,7 +8611,6 @@
 <translation id="7605163396341021431">მიეცით Android აპებს ამ Chromebook-ზე USB მოწყობილობებზე წვდომის უფლება.</translation>
 <translation id="7605594153474022051">სინქრონიზაცია არ მუშაობს</translation>
 <translation id="7606560865764296217">ანიმაციის დაპაუზება</translation>
-<translation id="7606639338662398635">ჩანართების ჯგუფები</translation>
 <translation id="7606802863538485839">ეფექტების დაკვრა</translation>
 <translation id="7607002721634913082">დაპაუზებული</translation>
 <translation id="7608810328871051088">Android-ის პარამეტრები</translation>
@@ -8974,6 +8990,7 @@
 <translation id="7903925330883316394">უტილიტა: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">კატაკანა</translation>
 <translation id="7904492297081735975">სანიშნეების მმართველის &amp;გახსნა</translation>
+<translation id="7904508617992122201">ჩეთები მიმოიხილება და გამოიყენება გენერაციული ხელოვნური ინტელექტის მოდელების გასაწვრთნელად. Gemini ხელოვნური ინტელექტია და შეიძლება შეცდეს. ზოგიერთი კონტენტი შეიძლება არ იყოს ყველასთვის შესაფერისი. შეგიძლიათ <ph name="BEGIN_LINK_MANAGE_HISTORY" />მართოთ თქვენი ისტორია<ph name="END_LINK_MANAGE_HISTORY" />, მათ შორის, ინფორმაცია თქვენი მდებარეობის შესახებ. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი თქვენი არჩევანის შესახებ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Linux-ის პორტების ხელმისაწვდომობის დაშვება თქვენს ქსელში არსებულ სხვა მოწყობილობებზე.</translation>
 <translation id="7907312522152480478">დაადასტურეთ თქვენი ვინაობა და დაასინქრონეთ ისტორია და ჩანართები, რომ სხვა მოწყობილობებიდან შეძლოთ თქვენი ჩანართების გადმოტანა. სინქრონიზაციის ნებისმიერ დროს შეცვლა შეგიძლიათ პარამეტრებიდან. თქვენი ისტორიის მეშვეობით Google შეძლებს Search-ისა და სხვა სერვისების თქვენთვის პერსონალიზებას.</translation>
 <translation id="7907502219904644296">წვდომის შეცვლა</translation>
@@ -9003,6 +9020,7 @@
 <translation id="7921782882718083488">შეაჯამეთ ეს გვერდი</translation>
 <translation id="7921901223958867679">ამ გაფართოებას შეუძლია, წაიკითხოს და შეცვალოს <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 გაფართოება</translation>
+<translation id="792402788739682108">ჩანართების გადატვირთვა</translation>
 <translation id="7924075559900107275">გრძელვადიანი მხარდაჭერის კანდიდატი</translation>
 <translation id="7924358170328001543">პორტის გადამისამართება ვერ მოხერხდა</translation>
 <translation id="7925108652071887026">ავტომატური შევსების მონაცემები</translation>
@@ -9384,6 +9402,7 @@
 <translation id="8199300056570174101">ქსელის (სერვისი) და მოწყობილობის მახასიათებლები</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8202827109322349110">საბაზისო რედაქტორში გახსნა</translation>
+<translation id="8203105157044679380">Google Search-ის პანელი</translation>
 <translation id="8203152941016626022">მახლობლად გაზიარების მოწყობილობის სახელი</translation>
 <translation id="8203732864715032075">თქვენთვის შეტყობინებების გამოგზავნა და ნაგულისხმევად ამ კომპიუტერის დამახსოვრება Messages-თვის. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">მარჯვენა დაწკაპუნება</translation>
@@ -9991,6 +10010,7 @@
 <translation id="8666268818656583275">F‑კლავიშებს ახლა სისტემის ზედა მწკრივის კლავიშების იდენტური ფუნქცია აქვს</translation>
 <translation id="8666321716757704924">ნებართვების ხელახლა დაიშვა <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="8667261224612332309">თქვენი ზოგიერთი პაროლის გაუმჯობესება შეიძლება</translation>
+<translation id="8667543835349994431">გახსნა &amp;აპით...</translation>
 <translation id="8668378421690365723">თქვენმა მოწყობილობამ, შესაძლოა, სათანადოდ აღარ იმუშაოს, უსაფრთხოებასა და წარმადობასთან დაკავშირებით კი გარკვეული პრობლემები შეგექმნათ.</translation>
 <translation id="8669284339312441707">უფრო თბილი</translation>
 <translation id="8670537393737592796">აქ უფრო სწრაფად რომ დაბრუნდეთ ხოლმე, დააინსტალირეთ <ph name="APP_NAME" /> — ამისთვის დააწკაპუნეთ ინსტალაციის ღილაკზე</translation>
@@ -10099,6 +10119,7 @@
 <translation id="8738418093147087440">მოიძიეთ ქვეყნების, ენის ან შეყვანის სახელების მიხედვით</translation>
 <translation id="8741944563400125534">გადამრთველით წვდომის დაყენების სახელმძღვანელო</translation>
 <translation id="8743357966416354615">შემუშავების მართული გარემო (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">გსურთ ამის ნაცვლად <ph name="URL" />-ზე გადასვლა?</translation>
 <translation id="8744641000906923997">რომაძი</translation>
 <translation id="8744913471985800082">სანამ განახლდება, გადახედეთ URL-ის ცვლილებას, რათა დარწმუნდეთ, რომ ცვლილება გაკმაყოფილებთ.</translation>
 <translation id="8745034592125932220">თქვენს მოწყობილობაზე მონაცემების შენახვა დაშვებული არ არის</translation>
@@ -10195,6 +10216,7 @@
 <translation id="8818152010000655963">ფონი</translation>
 <translation id="8818988764764862764">ფანჯარამ გადაინაცვლა მარცხნივ</translation>
 <translation id="8819510664278523111">თქვენი მოწყობილობის EID არის <ph name="EID_NUMBER" />, მისი IMEI არის <ph name="IMEI_NUMBER" />, ხოლო მისი სერიული ნომერია <ph name="SERIAL_NUMBER" />. აღნიშნული ნომრები დაგეხმარებათ სერვისის გააქტიურებაში.</translation>
+<translation id="8819762137851963556">მაუსის კურსორის პოვნა</translation>
 <translation id="8820817407110198400">სანიშნეები</translation>
 <translation id="8821045908425223359">IP მისამართის ავტომატური კონფიგურაცია</translation>
 <translation id="8821206216942230957">თქვენს ანგარიშს არ აქვს წვდომა Gemini-ზე Chrome-ში</translation>
@@ -10561,6 +10583,7 @@
 <translation id="9089416786594320554">შეყვანის მეთოდები</translation>
 <translation id="9090044809052745245">როგორ ჩანს თქვენი მოწყობილობა სხვებისთვის</translation>
 <translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{ფაილის <ph name="CLOUD_PROVIDER" />-ში გადატანა ვერ მოხერხდა}other{ფაილების <ph name="CLOUD_PROVIDER" />-ში გადატანა ვერ მოხერხდა}}</translation>
+<translation id="9092594036947304891">პასუხი მზადაა</translation>
 <translation id="9093470422440389061">Wi-Fi-ს წარმადობის მეტრიკა</translation>
 <translation id="9094033019050270033">პაროლის განახლება</translation>
 <translation id="9094038138851891550">მომხმარებლის სახელი არასწორია</translation>

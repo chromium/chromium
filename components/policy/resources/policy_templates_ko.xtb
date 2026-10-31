@@ -1775,6 +1775,19 @@ URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사�
 <translation id="2086505225896497574">정책을 설정하면 로그인 화면에서 보안 키의 증명 인증서가 요청될 때 메시지가 표시되지 않는 WebAuthn RP ID가 지정됩니다. 또한 엔터프라이즈 증명이 사용될 수 있음을 나타내는 신호가 보안 키로 전송됩니다. 정책을 설정하지 않으면 사이트에서 보안 키의 증명을 요청할 때 사용자에게 메시지가 표시됩니다.
 
 이 기기 정책은 기존 사용자 정책(<ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />)과 동일하지만, 로그인 화면의 로그인 프로필에 대신 적용됩니다.</translation>
+<translation id="2088835253645709768">이 정책은 AI 기록 검색 기능이 삭제됨에 따라 M157에서 지원 중단되었습니다.
+
+AI 기록 검색은 사용자가 방문 기록을 검색하고 페이지 제목과 URL뿐만 아니라 페이지 콘텐츠를 토대로 생성된 답변을 받을 수 있는 기능입니다.
+
+0 = 이 기능을 사용하도록 허용하면서 Google에서 관련 데이터를 사용하여 AI 모델을 개선하도록 허용합니다. 관련 데이터에는 기능에 따라 프롬프트나 입력, 출력, 소스 자료, 서면 의견이 포함될 수 있습니다. AI 모델을 개선하기 위해 사람이 데이터를 검토할 수도 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
+
+1 = 기능을 사용하도록 허용하되 Google에서 사용자 콘텐츠(프롬프트, 입력, 출력, 소스 자료, 서면 의견 등)를 사용하여 모델을 개선하도록 허용하지 않습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
+
+2 = 기능을 허용하지 않습니다.
+
+정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.
+
+생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="2089541797660774692">관리 브라우저 클라우드 보고 사용</translation>
 <translation id="2090280024671359587">텍스트 캡처 허용 및 AI 모델 개선</translation>
 <translation id="2090712407517297305">그룹으로 구성된 Chrome 방문 기록 페이지가 chrome://history/grouped에 표시됩니다.</translation>

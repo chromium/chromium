@@ -419,6 +419,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1293360286536751243"><ph name="MAIN_GESTURE" /> kan krocka med <ph name="CONFLICTING_GESTURE_ONE" />, <ph name="CONFLICTING_GESTURE_TWO" /> och <ph name="CONFLICTING_GESTURE_THREE" />. Välj en annan rörelse om det går.</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="12951065153783848">Din organisation hanterar ditt konto</translation>
+<translation id="129553762522093515">Nyligen stängda</translation>
 <translation id="1296410481664942178">Visa inte Google Kalender</translation>
 <translation id="1296911687402551044">Fäst vald flik</translation>
 <translation id="1297175357211070620">Destination</translation>
@@ -683,6 +684,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1523279371236772909">Visades under den senaste månaden</translation>
 <translation id="1523978563989812243">Motorer för text till tal</translation>
 <translation id="1524563461097350801">Nej tack</translation>
+<translation id="1524903662136734524">Lägg till från Drive</translation>
 <translation id="1525740877599838384">Fastställ platsen enbart utifrån wifi</translation>
 <translation id="1526274304859009691">Logga in om du vill ha dina tillägg och annat från <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Namnlöst dokument</translation>
@@ -930,6 +932,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1703666494654169921">Tillåt inte att webbplatser använder VR-enheter eller VR-data</translation>
 <translation id="1704097193565924901">Använd versaler</translation>
 <translation id="1704230497453185209">Tillåt inte att webbplatser spelar upp ljud</translation>
+<translation id="170494114379308411">Varken dina konversationer med Gemini eller din <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace-data<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> granskas eller används för att träna generativa AI-modeller. Gemini är AI och den kan göra misstag.</translation>
 <translation id="170658918174941828">Chrome-versionen, operativsystemversionen, Cast-inställningar,
     statistik över speglingsprestationer och diagnostiseringsloggar för kommunikationskanaler
     skickas in tillsammans med den övriga informationen
@@ -1164,6 +1167,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1881445033931614352">Tangentbordslayout</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Objekt}other{# objekt}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">Gemini-historik</translation>
 <translation id="1884340228047885921">Den aktuella synlighetsinställningen är Vissa kontakter</translation>
 <translation id="1884705339276589024">Ändra storlek på Linux-disken</translation>
 <translation id="1885066963699478692">XML-filer som används för att ställa in principerna.</translation>
@@ -1629,6 +1633,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2246549592927364792">Vill du hämta bildbeskrivningar från Google?</translation>
 <translation id="2247738527273549923">Enheten hanteras av organisationen.</translation>
 <translation id="2247870315273396641">Förhandslyssna på röst</translation>
+<translation id="2247960558975094922">Gemini-historik</translation>
 <translation id="224835741840550119">Rensa enheten</translation>
 <translation id="2249111429176737533">Öppna som fönster med flikar</translation>
 <translation id="2249605167705922988">till exempel 1-5, 8, 11-13</translation>
@@ -2683,6 +2688,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3030772324014024606">Redigera</translation>
 <translation id="3030795534674718505">Tillåts att använda uppgifter som webbplatsen har sparat om dig</translation>
 <translation id="3030967311408872958">Solnedgång till soluppgång</translation>
+<translation id="3030970046240311592">Visa och hantera din Gemini-historik</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Använd styrplattan och tangentbordet för att högerklicka</translation>
 <translation id="3031557471081358569">Välj objekt att importera:</translation>
@@ -2982,7 +2988,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3261798996834477302">Slå på ljudet för webbplatsen längst ned</translation>
 <translation id="3261832505033014216">Nyckel för <ph name="USER_EMAIL" /></translation>
 <translation id="3262261769033093854">Tillåt inte att webbplatser registrerar och använder musindata</translation>
-<translation id="3262336253311870293">Eftersom det här kontot hanteras av <ph name="DOMAIN" /> loggas du inte ut från Google-kontot. Bokmärken, historik, lösenord och andra inställningar synkroniseras inte längre. Däremot lagras tidigare synkroniserad data i Google-kontot och du kan hantera den i <ph name="BEGIN_LINK" />Google Översikt<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">För stor</translation>
 <translation id="3264544094376351444">Sans serif-font</translation>
 <translation id="3264582393905923483">Sammanhang</translation>
@@ -3204,6 +3209,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3436118221454753036">Fråga AI-läget</translation>
 <translation id="3437397693214267762">Se Outlook-kalendern och SharePoint- och OneDrive-filer</translation>
 <translation id="3437494162908353428">DevTools tillåts inte för den här webbadressen.</translation>
+<translation id="3437498061222607130">Du är inloggad på Sök med kontot för <ph name="USER_EMAIL" /></translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Låt alltid <ph name="HOST" /> använda din mikrofon</translation>
 <translation id="3439970425423980614">Öppnar PDF i förhandsgranskning</translation>
@@ -4133,6 +4139,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4107793386654579933">Välj ett kortkommando för åtgärden <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Flytta fönster till <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Återställ varning</translation>
+<translation id="4110984310437592352">Använd mikrofonen för att chatta med Gemini. När du pratar med Gemini sparas ljud i Gemini-historiken (om den är aktiverad).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4112282889480354965">Tillägg och färdigheter</translation>
 <translation id="4113743276555482284">Filens lösenord</translation>
@@ -4222,10 +4229,12 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="419427585139779713">Mata in en stavelse i taget</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4195814663415092787">Fortsätt där du slutade</translation>
+<translation id="4196632390211257612">Varken dina konversationer med Gemini eller din <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace-data<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> granskas eller används för att träna generativa AI-modeller. Gemini är AI och den kan göra misstag. Visst innehåll kanske inte är lämpligt för alla.</translation>
 <translation id="4198268995694216131">Ytterligare webbplatser</translation>
 <translation id="4200609364258658652">Kopiera videobildrutan</translation>
 <translation id="4200689466366162458">Anpassade ord</translation>
 <translation id="4200983522494130825">Ny &amp;flik</translation>
+<translation id="4202186506458631436">Flytta åt höger</translation>
 <translation id="4202536110335087135">Prova nu</translation>
 <translation id="4203065553461038553">Filens namn och/eller sökväg är för långa</translation>
 <translation id="4203769790323223880">Kamera tillåts inte</translation>
@@ -4821,6 +4830,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4665035764476941598">Klicka här om du vill få tillbaka de andra flikarna</translation>
 <translation id="4665446389743427678">All data som lagrats av <ph name="SITE" /> raderas.</translation>
 <translation id="4666472247053585787">Visa aviseringar från telefonen på din <ph name="DEVICE_TYPE" /></translation>
+<translation id="4666483368282673356">Hantera din Gemini-historik</translation>
 <translation id="4666911709726371538">Fler appar</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">Pinkoden får endast innehålla siffror</translation>
@@ -5027,6 +5037,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4823484602432206655">Läsa och ändra användarinställningar och enhetsinställningar</translation>
 <translation id="4824037980212326045">Säkerhetskopiering och återställning i Linux</translation>
 <translation id="4824263260587281352">Ändra tangentkombination <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Google-konto: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Vill du avbryta synkroniseringen?</translation>
 <translation id="4825462365587146530">Läs mer om Chrome Root Store på en ny flik.</translation>
 <translation id="4825532258163983651">Det gick inte att radera nyckeln</translation>
@@ -5291,6 +5302,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5012523644916800014">Hantera lösenord och nycklar</translation>
 <translation id="501394389332262641">Ljud för låg batterinivå</translation>
 <translation id="5014286001996333986">Vill du ersätta eller skapa en ny grupp?</translation>
+<translation id="5014385104640320445">Använd mikrofonen för att chatta med Gemini. När du pratar med Gemini sparas ljud i Gemini-historiken (om den är aktiverad). Din data används inte för att förbättra generativa AI-modeller.</translation>
 <translation id="5015344424288992913">Tolkar proxy...</translation>
 <translation id="5016305686459575361">Om du ansluter telefonen kan du göra följande:</translation>
 <translation id="5016491575926936899">Du kan skicka sms från datorn, dela internetanslutning, svara på aviseringar om konversationer och låsa upp <ph name="DEVICE_TYPE" /> med telefonen.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -5832,7 +5844,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5441292787273562014">Hämta sidan igen</translation>
 <translation id="5441466871879044658">Översätt till detta språk</translation>
 <translation id="5442550868130618860">Aktivera automatiska uppdateringar</translation>
-<translation id="5444281205834970653">Radera och fortsätt</translation>
 <translation id="5444452275167152925">Importerade från ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446836766119801744">⌥L</translation>
@@ -5922,6 +5933,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5499634624419508916">Ersätt befintlig flikgrupp</translation>
 <translation id="5500163593833085874">När vänster musknapp har valts kan du dubbelklicka med +</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Sökhistorik<ph name="END_LINK_SEARCH" /> och <ph name="BEGIN_LINK_GOOGLE" />annan aktivitet<ph name="END_LINK_GOOGLE" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
+<translation id="5500956227241240933">Behöver input</translation>
 <translation id="5501322521654567960">Vänsterställd sidopanel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Mottagningen av <ph name="ATTACHMENTS" /> från <ph name="DEVICE_NAME" /> misslyckades}other{Mottagningen av <ph name="ATTACHMENTS" /> från <ph name="DEVICE_NAME" /> misslyckades}}</translation>
 <translation id="5501979953419946416">Skriv något nytt</translation>
@@ -5989,6 +6001,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5558129378926964177">Zooma &amp;in</translation>
 <translation id="5558594314398017686">Standardinställning för operativsystemet (om tillgängligt)</translation>
 <translation id="5559311991468302423">Radera adressen</translation>
+<translation id="5559646482656763170">Uppdatera när enheten inte används</translation>
 <translation id="555968128798542113">Den här webbplatsen kan styra och omprogrammera dina MIDI-enheter</translation>
 <translation id="5559768063688681413">Inga sparade skrivare</translation>
 <translation id="55601339223879446">Justera skrivbordets avgränsning på skärmen</translation>
@@ -6486,6 +6499,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Öppna alla i ett &amp;nytt fönster}=1{Öppna i &amp;nytt fönster}other{Öppna alla ({COUNT}) i ett &amp;nytt fönster}}</translation>
 <translation id="5964247741333118902">Inbäddat innehåll</translation>
 <translation id="5965607173855879702">Radera data …</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> har flyttats till position <ph name="SHORTCUT_POSITION" /> av <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Webbplatsdata raderas från enheten när du stänger alla fönster</translation>
 <translation id="5968022600320704045">Inga sökresultat</translation>
 <translation id="5968400720580217226">AI-läge</translation>
@@ -6869,7 +6883,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6264485186158353794">Tillbaka till säker webbplats</translation>
 <translation id="6264636978858465832">Lösenordshantering behöver mer åtkomst</translation>
 <translation id="626495329434552273">Får åsidosätta indata från tangentbordet</translation>
-<translation id="62650662268452475">När du är inloggad kan du använda bokmärken, tillägg och annat som har sparats i ditt Google-konto på alla dina enheter</translation>
 <translation id="6265159465845424232">Fråga innan Microsoft-filer kopieras eller flyttas till Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Ta bort port</translation>
 <translation id="6266532094411434237">Ansluter till <ph name="DEVICE" /></translation>
@@ -7046,7 +7059,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6410257289063177456">Bildfiler</translation>
 <translation id="6410328738210026208">Byt kanal och Powerwash</translation>
 <translation id="6410390304316730527">Säker webbsökning skyddar dig mot angripare som kan försöka lura dig att göra något riskfyllt, till exempel installera skadlig kod eller avslöja personliga uppgifter som lösenord, telefonnummer eller kreditkortsuppgifter. Om du inaktiverar detta bör du vara försiktig när du besöker okända webbplatser.</translation>
-<translation id="6410390446958964276">När du är inloggad kan du använda teman, inställningar med mera som har sparats i ditt Google-konto på alla dina enheter</translation>
 <translation id="6411135999030237579">Håll tangenten nedtryckt för att upprepa den automatiskt</translation>
 <translation id="6415757856498750027">Skriv ”w” för att få ”ư”</translation>
 <translation id="6415900369006735853">Anslut till internet via mobilen</translation>
@@ -7136,6 +7148,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6476482583633999078">Talhastighet</translation>
 <translation id="6476671549211161535">Tryck på en knapp som inte är vänster eller höger musknapp på din <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Synkronisering av aviseringar stöds inte på telefoner med en jobbprofil. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="6479376214595342779">Läs in inaktiva flikar på nytt för att lägga till dem i sökningen</translation>
 <translation id="6479881432656947268">Besök Chrome Web Store</translation>
 <translation id="6480327114083866287">Hanteras av <ph name="MANAGER" /></translation>
 <translation id="6480532238409319936">Uppdateringen misslyckades</translation>
@@ -7148,6 +7161,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> kan inte kontrollera dina lösenord mot dataintrång. Testa att kontrollera internetanslutningen.</translation>
 <translation id="648927581764831596">Inte tillgängligt</translation>
 <translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
+<translation id="6491890991754498129">Öppna &amp;med …</translation>
 <translation id="649396225532207613">Den här filen kan skada dina personliga konton och sociala nätverkskonton</translation>
 <translation id="6493991254603208962">minska ljusstyrkan</translation>
 <translation id="6494327278868541139">Visa detaljer om förbättrat skydd</translation>
@@ -7690,6 +7704,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6892812721183419409">Öppna länk som <ph name="USER" /></translation>
 <translation id="6893164346922798247">eSpeak</translation>
 <translation id="6896758677409633944">Kopiera</translation>
+<translation id="6897341342232909480">Flytta åt vänster</translation>
 <translation id="6897363604023044284">Välj vilka webbplatser du vill rensa</translation>
 <translation id="689770193677424784">Avsluta helskärmsläge för att visa flikar vertikalt</translation>
 <translation id="6897756054229464646">med Gemini</translation>
@@ -7877,6 +7892,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7030304022046916278">Webbadresser skickas till Säker webbsökning för kontroll</translation>
 <translation id="7030695672997239647">Högerklicka på en flik och välj Lägg till fliken i gruppen, och välj sedan Ny grupp</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serieporten är ansluten</translation>
+<translation id="7032334023419126809">Google-konto: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">Ange högst 62 tecken</translation>
 <translation id="7033731598469029604">Automatisk webbsökning</translation>
 <translation id="70356134210715500">Skaffa dina nycklar</translation>
@@ -7964,6 +7980,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="710224247908684995">Ett tillägg har inaktiverat Säker webbsökning</translation>
 <translation id="7102832101143475489">Begäran tog för lång tid</translation>
 <translation id="7103944802169726298">Datorn och Cast-enheten är på samma wifi-nätverk</translation>
+<translation id="7104134653119992646">Chattar granskas och används för att träna generativa AI-modeller. Gemini är AI och den kan göra misstag. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />hantera din historik<ph name="END_LINK_MANAGE_HISTORY" />, inklusive information om din plats. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer om dina val<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-medlemskap</translation>
 <translation id="7107609441453408294">Spela upp samma ljud i alla högtalare</translation>
 <translation id="7108338896283013870">Dölj</translation>
@@ -8609,7 +8626,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7605163396341021431">Ge Android-appar kontroll över USB-enheter på denna Chromebook</translation>
 <translation id="7605594153474022051">Det går inte att synkronisera</translation>
 <translation id="7606560865764296217">Pausa animation</translation>
-<translation id="7606639338662398635">Flikgrupper</translation>
 <translation id="7606802863538485839">Spela upp effekter</translation>
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7608810328871051088">Android-inställningar</translation>
@@ -8989,6 +9005,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7903925330883316394">Verktyg: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Öppna bokmärkeshanteraren</translation>
+<translation id="7904508617992122201">Chattar granskas och används för att träna generativa AI-modeller. Gemini är AI och den kan göra misstag. Visst innehåll kanske inte är lämpligt för alla. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />hantera din historik<ph name="END_LINK_MANAGE_HISTORY" />, inklusive information om din plats. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer om dina val<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Gör Linux-portar tillgängliga för andra enheter på nätverket.</translation>
 <translation id="7907312522152480478">Om du vill få tillgång till flikar från dina andra enheter måste du verifiera din identitet och synkronisera din historik och dina flikar. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="7907502219904644296">Ändra åtkomst</translation>
@@ -9018,6 +9035,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7921782882718083488">Sammanfatta den här sidan</translation>
 <translation id="7921901223958867679">Det här tillägget kan läsa och ändra <ph name="HOST" /></translation>
 <translation id="7922606348470480702">Ett tillägg</translation>
+<translation id="792402788739682108">Läsa in flikar igen</translation>
 <translation id="7924075559900107275">kandidat för långsiktig support</translation>
 <translation id="7924358170328001543">Det gick inte att vidarebefordra porten</translation>
 <translation id="7925108652071887026">Fyll i uppgifter automatiskt</translation>
@@ -9399,6 +9417,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8199300056570174101">Nätverkstjänst och enhetsegenskaper</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8202827109322349110">Öppna i grundläggande redigeringsläge</translation>
+<translation id="8203105157044679380">Google Sök-panelen</translation>
 <translation id="8203152941016626022">Enhetsnamn för Närdelning</translation>
 <translation id="8203732864715032075">Skicka aviseringar till dig och komma ihåg den här datorn som standard för Messages. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Högerklicka</translation>
@@ -10006,6 +10025,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8666268818656583275">F-tangenterna fungerar nu som systemets översta tangenter</translation>
 <translation id="8666321716757704924">Behörigheter har tillåtits igen för <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Du har lösenord du bör ändra till något starkare</translation>
+<translation id="8667543835349994431">Öppna &amp;med …</translation>
 <translation id="8668378421690365723">Enheten kanske inte längre fungerar som den ska och säkerhets- och prestandaproblem kan uppstå.</translation>
 <translation id="8669284339312441707">Varmare</translation>
 <translation id="8670537393737592796">Installera <ph name="APP_NAME" /> genom att klicka på installationsknappen, så att du kan komma tillbaka hit snabbt</translation>
@@ -10114,6 +10134,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8738418093147087440">Sök efter land, språk eller inmatningsnamn</translation>
 <translation id="8741944563400125534">Konfigurationsguide för brytarstyrning</translation>
 <translation id="8743357966416354615">Hanterad utvecklingsmiljö (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Vill du navigera till <ph name="URL" /> i stället?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Granska webbadressändringen och se till att du är nöjd med den innan du uppdaterar.</translation>
 <translation id="8745034592125932220">Får inte spara data på enheten</translation>
@@ -10210,6 +10231,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8818152010000655963">Bakgrund</translation>
 <translation id="8818988764764862764">Fönstret har flyttats åt vänster</translation>
 <translation id="8819510664278523111">Enhetens EID är <ph name="EID_NUMBER" />, IMEI-koden är <ph name="IMEI_NUMBER" /> och enhetens serienummer är <ph name="SERIAL_NUMBER" />. Dessa nummer kan användas för att aktivera tjänsten.</translation>
+<translation id="8819762137851963556">Hitta muspekaren</translation>
 <translation id="8820817407110198400">Bokmärken</translation>
 <translation id="8821045908425223359">Konfigurera IP-adress automatiskt</translation>
 <translation id="8821206216942230957">Ditt konto har inte åtkomst till Gemini i Chrome</translation>
@@ -10520,6 +10542,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9043767139743235992">Kontakta Googles support för användare med funktionsnedsättning</translation>
 <translation id="9044646465488564462">Det gick inte att ansluta till nätverket: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Läslistan har flyttats till den nya sidopanelen. Testa här.</translation>
+<translation id="9046240419485318563">Bläddra i minnet</translation>
 <translation id="9048745018038487540">Välj alla fonter</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
 <translation id="905137631551495997">Tillägg</translation>
@@ -10576,6 +10599,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9089416786594320554">Inmatningsmetoder</translation>
 <translation id="9090044809052745245">Hur enheten visas för andra</translation>
 <translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{Det går inte att flytta filen till <ph name="CLOUD_PROVIDER" />}other{Det går inte att flytta filerna till <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="9092594036947304891">Svaret är klart</translation>
 <translation id="9093470422440389061">Statistik för wifi-prestanda</translation>
 <translation id="9094033019050270033">Uppdatera lösenordet</translation>
 <translation id="9094038138851891550">Ogiltigt användarnamn</translation>

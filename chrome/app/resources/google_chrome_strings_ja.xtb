@@ -521,6 +521,7 @@
 <translation id="5940385492829620908">ウェブ、ブックマーク、その他の Chrome データを好みに設定できます。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">Google Chrome を既定のブラウザにする</translation>
+<translation id="5944731887996253728">Chrome は、画面が使用されていないときに更新されます</translation>
 <translation id="5947104538377036631">Chrome のショートカット</translation>
 <translation id="5960071705175224773">不明なアプリによって設定が変更されました</translation>
 <translation id="5980111191913430208">提供元不明の拡張機能、アプリ、テーマはデバイスに危害を及ぼす可能性があります。<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> で公開されているアイテムのみをインストールすることをおすすめします</translation>
@@ -824,6 +825,7 @@
 <translation id="8367950957770994118">必要なときに Gemini in Chrome をすばやく開くことができます。</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8370748943308169953"><ph name="USER_NAME" /> として Chrome にログインするための QR コード</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> の準備ができました。今すぐ再起動するか、次回画面がオンのまま <ph name="IDLE_DURATION" /> 間使用されなかったときに Chrome を更新するように設定できます。</translation>
 <translation id="8376752431516546391">Google 検索サイドパネル</translation>
 <translation id="8377158135256176353">Gemini in Chrome Canary を切り替える</translation>
 <translation id="8380754585531979907">キーボードを使用して、Gemini in Chrome と開いているタブを切り替えます。</translation>
@@ -867,6 +869,7 @@
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">この拡張機能では、Chrome の起動時に表示されるページも制御されます。</translation>
 <translation id="8689408573494410517">ツールバーの [サイドパネルで Google 検索] ボタンのアイコンが新しくなりました。クリックすると、ブラウジング中にサイドパネルの Google 検索で質問できます。</translation>
+<translation id="8699232386626916686">セキュリティを確保するため Chrome を更新してください</translation>
 <translation id="8712637175834984815">理解しました</translation>
 <translation id="8712767363896337380">アップデートが適用されました。更新を完了するには Chrome を再起動してください。</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。<ph name="DEVICE" /> のリーディング リストなどを使用できます。</translation>

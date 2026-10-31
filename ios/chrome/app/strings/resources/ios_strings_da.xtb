@@ -40,6 +40,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> kunne ikke åbnes</translation>
 <translation id="1086486568852410168">Søg med Google Lens</translation>
 <translation id="1095093219235104018">Find og udfyld med Gemini</translation>
+<translation id="1096245844813536669">Indsender automatisk din søgning, når du stopper med at tale</translation>
 <translation id="1096992026380844478">Dine indstillinger for synkronisering gendannes på baggrund af din seneste sikkerhedskopi. <ph name="BEGIN_LINK" />Se, hvad du kan synkronisere<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Lås op med Face ID</translation>
@@ -392,7 +393,6 @@
 <translation id="2139867232736819575">Søg efter tekst, du har kopieret</translation>
 <translation id="2140913838150159519">Fastgør en fane</translation>
 <translation id="2147127444698817042">Kun tilgængelig på iPhone</translation>
-<translation id="2148326276832455306">Chatsamtaler gennemgås og bruges til at forbedre Google AI. Du kan <ph name="BEGIN_LINK" />administrere din aktivitet<ph name="END_LINK" />, herunder oplysninger om din lokation. <ph name="BEGIN_LINK" />Få flere oplysninger om dine muligheder.<ph name="END_LINK" /></translation>
 <translation id="2148799636999124959">Log hurtigt ind på websites og i apps med dine gemte adgangskoder.</translation>
 <translation id="2149968176347646218">Forbindelsen er ikke sikker</translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
@@ -458,7 +458,6 @@
 <translation id="2327445548174191329">Fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Ingen beskyttelse</translation>
 <translation id="233375395665273385">Slet, og log ud</translation>
-<translation id="2340966584724330791">Google indsamler dine chatsamtaler og det indhold, du deler med Gemini (f.eks. filer, videoer, skærmindhold og billeder). Google indsamler også din feedback, oplysninger fra de websites, du besøger med Gemini, produktbrug og lokationsoplysninger (herunder din enheds omtrentlige lokation, din IP-adresse samt hjemme- og arbejdsadressen på din Google-konto).</translation>
 <translation id="2350463587705616331">Sepia baggrundsfarve</translation>
 <translation id="2351097562818989364">Dine oversættelsesindstillinger er nulstillet.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Du kan gemme din adgangskode til {DOMAIN_ONE} på din Google-konto, {EMAIL}.}=2{Du kan gemme dine adgangskoder til {DOMAIN_ONE} og {DOMAIN_TWO} på din Google-konto, {EMAIL}.}=3{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} anden på din Google-konto, {EMAIL}.}one{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} anden på din Google-konto, {EMAIL}.}other{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} andre på din Google-konto, {EMAIL}}}</translation>
@@ -720,6 +719,7 @@
 <translation id="3186796054637504691">Ryd historik og websitedata</translation>
 <translation id="3190558889382726167">Adgangskoden er blevet gemt</translation>
 <translation id="3190736958609431397">Hold ikke længere øje</translation>
+<translation id="3192820089569442694">Noget gik galt med din anmodning om fravalg af databrug</translation>
 <translation id="3208260410153224535">Din organisation har deaktiveret login. Nye bogmærker, adgangskoder m.m. gemmes kun på denne enhed.</translation>
 <translation id="3211969308836412674">Frigør website</translation>
 <translation id="3213807041830307252">Køb, oversæt og identificer det, du ser, med dit kamera og billedgalleri.</translation>
@@ -741,7 +741,6 @@
 <translation id="3265736395246760288">Log hurtigere ind fra en hvilken som helst af dine synkroniserede enheder.</translation>
 <translation id="3268166994745151153">Hvis du fortsætter, mister du dine aktuelle fremskridt</translation>
 <translation id="3272527697863656322">Annuller</translation>
-<translation id="3272955648592358996">Dine data forbedrer Google AI</translation>
 <translation id="3273510436356991673">Tilpas din startskærm</translation>
 <translation id="327455571215090823">Smartere autofyld, der holdes privat</translation>
 <translation id="3277021493514034324">Webadressen er kopieret</translation>
@@ -787,6 +786,7 @@
 <translation id="344589138074534176">Få flere oplysninger om Google Lens</translation>
 <translation id="3449029510150690417">Opret din nye fanegruppe ved at give den et navn og en farve</translation>
 <translation id="345348365500626747">Adressen blev fundet</translation>
+<translation id="3453878468834191501">Den aktuelle fane deles med Gemini, når du starter en ny chat. <ph name="BEGIN_LINK" />Få flere oplysninger om AI og privatliv<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Brug Live med Gemini til at spørge om en side, brainstorme højt og føre samtaler.</translation>
 <translation id="3462768334899086950">Det betyder, at du mister din ikke-gemte fil og dine aktuelle faner</translation>
 <translation id="3464194322481586217">Prissporing mislykkedes.</translation>
@@ -850,6 +850,7 @@
 <translation id="3641456520301071208">Websites kan anmode om adgang til din lokation</translation>
 <translation id="3642060527569456384">Fanegrupper gemmes og opdateres automatisk på alle dine enheder.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} adgangskode gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, {email}.}one{{count} adgangskode gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, {email}.}other{{count} adgangskoder gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, {email}.}}</translation>
+<translation id="3657176844107584515"><ph name="EMAIL" />, Google-medlemskab.</translation>
 <translation id="3659297405161482746">Der blev ikke fundet nogen betalingsmetoder</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 er valgt}one{# er valgt}other{# er valgt}}</translation>
 <translation id="3668035568083954765">Beskyt dit privatliv, og øg sikkerheden</translation>
@@ -917,7 +918,6 @@
 <translation id="3888863481921783344">Dette bruges til at vise dig mulige gæster til din begivenhed.</translation>
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Her kan du se din historik</translation>
-<translation id="3892695492576181257">Når den er aktiveret, gemmes din aktivitet i Gemini-appaktivitet i 18 måneder, men du kan ændre det til 3 eller 36 måneder. Google bruger din aktivitet til at udvikle og forbedre sine tjenester (herunder Gemini-modeller) samt til at beskytte Google, Googles brugere og offentligheden med hjælp fra menneskelige kontrollanter. Data, der gennemgås af vores tjenesteudbydere, gemmes i 3 år, og tilknytningen til din konto fjernes.</translation>
 <translation id="3893858854379998374">Hvis du vil gemme bogmærker på din konto, skal du slette dine ubrugte bogmærker</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Rediger karrusel</translation>
@@ -947,6 +947,7 @@
 <translation id="3955740319737378355">Udfør</translation>
 <translation id="3955822496205734389">Du har svage adgangskoder.</translation>
 <translation id="3957016963627617921">Udret mere med Gemini i Chrome</translation>
+<translation id="3957737662589242353"><ph name="NAME" />, <ph name="EMAIL" />, Google-medlemskab.</translation>
 <translation id="3958312024468322930">Træk det til Dock nederst på hjemmeskærmen</translation>
 <translation id="3962326069546168954">Gem</translation>
 <translation id="3967327056943561740">Bogmærker</translation>
@@ -1428,7 +1429,6 @@
 <translation id="5447973833955560753">Adgangskode til gendannelse</translation>
 <translation id="5448623529214315261">Gemt billede <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Brug en stærk adgangskode:</translation>
-<translation id="5453088693079603292">Hvilken aktivitet indsamles?</translation>
 <translation id="5454211924362324495">Du kan forhindre andre i at bruge din adgangskode ved at <ph name="BEGIN_LINK" />ændre den på <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Føj mere til din søgning</translation>
 <translation id="5457226814769348910">Åbn offlineversion</translation>
@@ -1542,7 +1542,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5801568494490449797">Præferencer</translation>
 <translation id="5803566855766646066">Er du sikker på, at du vil kassere dette nye kort?</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
-<translation id="58081802114142635">Din aktivitet forbedrer Google AI</translation>
 <translation id="5817176759448082654">Adgangskodetjek</translation>
 <translation id="5818161931099046557">Rediger på Google-kontoen</translation>
 <translation id="5819208479324046259">Administreres af <ph name="MANAGER" /> <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -1591,7 +1590,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5971459446352190251">Søgning efter QR-kode</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bogmærke er slettet}one{{count} bogmærke er slettet}other{{count} bogmærker er slettet}}</translation>
 <translation id="5972844218283131174">Fravælg alle</translation>
-<translation id="597482816780655631">Gemini er en AI-assistent og kan begå fejl, herunder om personer. Noget indhold er muligvis ikke egnet for alle. Chatsamtaler gennemgås og bruges til at forbedre Google AI. <ph name="BEGIN_LINK" />Få flere oplysninger om dine valgmuligheder.<ph name="END_LINK" /> Vores <ph name="BEGIN_LINK" />vilkår<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />privatlivsmeddelelse<ph name="END_LINK" /> er gældende.</translation>
 <translation id="5976160379964388480">Andre</translation>
 <translation id="5977976211062815271">På denne enhed</translation>
 <translation id="5986043348928676121">Næste</translation>
@@ -1609,7 +1607,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6027945736510816438">Mente du <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">ny funktion</translation>
 <translation id="6038823991892265570">Administrer Google-lagerplads</translation>
-<translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6042308850641462728">Mere</translation>
 <translation id="6045460247888249350">Tilføj titel</translation>
@@ -1626,6 +1623,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6078236141387574983">Juster regnearkets højde</translation>
 <translation id="6084848228346514841">Vælg faner</translation>
 <translation id="6089212833343035912">Pinkode til Google Adgangskodeadministrator</translation>
+<translation id="6090690847556987004">Noget gik galt med denne indstilling. Opdater Chrome og iOS, og genstart derefter din enhed for at prøve igen. Hvis dette fortsætter, understøtter din iPhone muligvis ikke denne indstilling.</translation>
 <translation id="6090760257419195752">Lukkede advarsler</translation>
 <translation id="6094325891006032858">Aktivér Udvidet beskyttet browsing</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> blev fundet</translation>
@@ -1817,7 +1815,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6609890790934458793">Adgangskoderne til <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="THIRD_WEBSITE" /> slettes. Dine konti slettes ikke.</translation>
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
 <translation id="6612912757320004438">Tillad notifikationer om faner…</translation>
-<translation id="6613372200395638275">For at give dig tilpasset hjælp deler Gemini nogle af dine data (f.eks. uddrag af dine chatsamtaler, din lokation og andre relevante oplysninger) med andre Google-tjenester, f.eks. Maps og Flights. Disse tjenester kan bruge oplysningerne til at blive bedre, også selvom du senere sletter din Gemini-appaktivitet. Få flere oplysninger i <ph name="BEGIN_LINK" />Hjælp til privatliv for Gemini-apps<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Ryd tekst</translation>
 <translation id="6619015782482868078">Turkis tema</translation>
 <translation id="6620279676667515405">Annuller</translation>
@@ -1977,7 +1974,6 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="7091023926159231962">{count,plural, =1{{count} adgangskode kunne ikke importeres}one{{count} adgangskode kunne ikke importeres}other{{count} adgangskoder kunne ikke importeres}}</translation>
 <translation id="7095110968493193530">I Google Adgangs­kode­admin­istrator for <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Tryk på prishistorikken i adresselinjen for at se prisændringer over tid</translation>
-<translation id="7098554251807199977">Hverken dine samtaler med Gemini eller dine <ph name="BEGIN_LINK" />Google Workspace-data<ph name="END_LINK" /> bliver gennemgået eller anvendt til at forbedre generativ AI-modeller.</translation>
 <translation id="7102005569666697658">Downloader… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Indstillinger → Betalingsmetoder</translation>
 <translation id="7108338896283013870">Skjul</translation>
@@ -2122,6 +2118,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7557508262441527045">Logget ud</translation>
 <translation id="7561196759112975576">Altid</translation>
 <translation id="7561982940498449837">Luk menu</translation>
+<translation id="7562347727679121642">Føj et billede til din søgning</translation>
 <translation id="7566349809380613217">Åbn <ph name="GROUP_TITLE" />, delt gruppe med <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Bogmærkerne er skjult</translation>
 <translation id="7575664680938145959">Åbn med et enkelt tryk</translation>
@@ -2417,7 +2414,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8439758443371991593">Skjul Føj til læseliste</translation>
 <translation id="8443986842926457191">Webadressen indeholder mere end 2.048 tegn</translation>
 <translation id="8449869326050867919">Adgangskoden er delt</translation>
-<translation id="8461708300275916315">Hvis du er under 18 år</translation>
 <translation id="8473815223723723001">Rediger billedet med Gemini</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
 <translation id="8474378002946546633">Tillad notifikationer</translation>
@@ -2497,7 +2493,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8672733398999596205">Aktivér alle</translation>
 <translation id="8674716540979958118">Du har kompromitterede adgangskoder.</translation>
 <translation id="8679900250380464358">Føj til læseliste</translation>
-<translation id="8680643216091361291">Indstillingen <ph name="BEGIN_LINK" />Bevar aktivitet<ph name="END_LINK" /> er som standard deaktiveret. Når den er deaktiveret, gemmer Google dine chatsamtaler i 3 dage. Google bruger dem til at beskytte Gemini-apps, få dem til at fungere korrekt og løse problemer ud fra din feedback. Du kan aktivere Bevar aktivitet for at hjælpe med at forbedre Google AI for alle.</translation>
 <translation id="8680787084697685621">Oplysningerne om kontologin er forældede.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" har ikke adgang til din mikrofon</translation>
 <translation id="8690752723634292147">Bekræft sletning</translation>
@@ -2555,7 +2550,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="882557203579758546">Find på siden…</translation>
 <translation id="8829809207373502270">Denne adgangsnøgle virker ikke længere. Den er slettet fra <ph name="WEBSITE" /> og slettes snart herfra også. <ph name="BEGIN_LINK" />Om adgangsnøgler<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Luk alle inaktive faner</translation>
-<translation id="8831871601813227635">Vores <ph name="BEGIN_LINK" />vilkår<ph name="END_LINK" />, <ph name="BEGIN_LINK" />koreanske servicevilkår for lokation<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />privatlivsmeddelelse<ph name="END_LINK" /> er gældende. Chatsamtaler gennemgås og bruges til at forbedre Google AI. Gemini er en AI-assistent og kan begå fejl, herunder om personer. Noget indhold er muligvis ikke egnet for alle. Du kan <ph name="BEGIN_LINK" />administrere din aktivitet<ph name="END_LINK" />, herunder oplysninger om din lokation. <ph name="BEGIN_LINK" />Få flere oplysninger om dine valgmuligheder<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Sortér efter udgiver</translation>
 <translation id="884351711508006491">Dine oplysninger gemmes på din enhed.</translation>
 <translation id="8844136307393039959">Prisfald på det produkt, du holder øje med</translation>
@@ -2636,6 +2630,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="9090979472668095374">Giv talte svar</translation>
 <translation id="9094033019050270033">Opdater adgangskoden</translation>
 <translation id="9098541895599151034">Vil du slette <ph name="NUMBER_OF_ACCOUNTS" /> adgangskoder?</translation>
+<translation id="909874878420399003">Automatisk indsendelse</translation>
 <translation id="9099233023029360602">Spørg, hvilken konto der skal bruges, hver gang</translation>
 <translation id="9099821309562615674">Sørg for, at den tekst, du oversætter, er tydelig og inden for rammen.</translation>
 <translation id="9100610230175265781">Adgangssætning kræves</translation>
@@ -2669,6 +2664,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="9203951165704618409">Flyt adresselinjen fra toppen til bunden af skærmen for at få en tilpasset browseroplevelse.</translation>
 <translation id="9205189991633470489">Låsning af inkognitofaner</translation>
 <translation id="9206887540681440657">Hastighed</translation>
+<translation id="9218088788182688902">Noget gik galt med denne indstilling. Opdater Chrome og iPadOS, og genstart derefter din enhed for at prøve igen. Hvis dette fortsætter, understøtter din iPad muligvis ikke denne indstilling.</translation>
 <translation id="9218430445555521422">Angiv som standard</translation>
 <translation id="9219103736887031265">Billeder</translation>
 <translation id="9219154867334666734">Søg i faner…</translation>

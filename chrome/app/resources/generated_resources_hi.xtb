@@ -419,6 +419,7 @@
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />", "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />", और "<ph name="CONFLICTING_GESTURE_THREE" />" के साथ ओवरलैप हो सकता है. अगर मुमकिन हो, तो कोई दूसरा जेस्चर चुनें.</translation>
 <translation id="1293556467332435079">फ़ाइल</translation>
 <translation id="12951065153783848">आपका संगठन आपके खाते को मैनेज करता है</translation>
+<translation id="129553762522093515">हाल ही में बंद किए गए</translation>
 <translation id="1296410481664942178">Google Calendar न दिखाएं</translation>
 <translation id="1296911687402551044">चुने गए टैब को पिन करें</translation>
 <translation id="1297175357211070620">गंतव्य</translation>
@@ -683,6 +684,7 @@
 <translation id="1523279371236772909">पिछले एक महीने में देखा गया</translation>
 <translation id="1523978563989812243">लिखाई को बोली में बदलने के इंजन</translation>
 <translation id="1524563461097350801">नहीं, रहने दें</translation>
+<translation id="1524903662136734524">Drive में से जोड़ें</translation>
 <translation id="1525740877599838384">स्थान तय करने के लिए सिर्फ़ वाई-फ़ाई का इस्तेमाल करें</translation>
 <translation id="1526274304859009691"><ph name="DEVICE" /> से अपने एक्सटेंशन वगैरह का ऐक्सेस पाने के लिए साइन इन करें</translation>
 <translation id="1526560967942511387">टाइटल रहित दस्तावेज़</translation>
@@ -2982,7 +2984,6 @@
 <translation id="3261798996834477302">बॉटम व्यू में मौजूद साइट को अनम्यूट करें</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> के लिए पासकी</translation>
 <translation id="3262261769033093854">साइटों को अपना माउस इनपुट कैप्चर और इस्तेमाल करने की अनुमति न दें</translation>
-<translation id="3262336253311870293">इस खाते को <ph name="DOMAIN" /> मैनेज करता है, इसलिए आपको Google खाते से साइन आउट नहीं किया जाएगा. अब आपके बुकमार्क, इतिहास, पासवर्ड, और अन्य सेटिंग को सिंक नहीं किया जाएगा. हालांकि, पहले से सिंक किया गया डेटा आपके Google खाते में सेव रहेगा और उसे <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> पर मैनेज किया जा सकेगा.</translation>
 <translation id="3262986719682892278">फ़ाइल बहुत बड़ी है</translation>
 <translation id="3264544094376351444">Sans-serif फ़ॉन्ट</translation>
 <translation id="3264582393905923483">प्रसंग</translation>
@@ -3204,6 +3205,7 @@
 <translation id="3436118221454753036">एआई मोड में पूछें</translation>
 <translation id="3437397693214267762">Outlook Calendar, SharePoint, और OneDrive की फ़ाइलें देखें</translation>
 <translation id="3437494162908353428">इस यूआरएल के लिए, DevTools का इस्तेमाल नहीं किया जा सकता.</translation>
+<translation id="3437498061222607130">आपने Search में अपने <ph name="USER_EMAIL" /> खाते से साइन इन किया है</translation>
 <translation id="3438633801274389918">निंजा</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> को कभी भी अपना माइक्रोफ़ोन एक्सेस करने दें</translation>
 <translation id="3439970425423980614">PDF को 'झलक' में खोल रहे हैं</translation>
@@ -4225,6 +4227,7 @@
 <translation id="4200609364258658652">वीडियो फ़्रेम कॉपी करें</translation>
 <translation id="4200689466366162458">पसंद के मुताबिक चुने गए शब्द</translation>
 <translation id="4200983522494130825">नया &amp;टैब</translation>
+<translation id="4202186506458631436">दाएं ले जाएं</translation>
 <translation id="4202536110335087135">अभी आज़माएं</translation>
 <translation id="4203065553461038553">फ़ाइल का पाथ बहुत लंबा है या यह बहुत अंदर सेव की गई है</translation>
 <translation id="4203769790323223880">कैमरा ऐक्सेस करने की अनुमति नहीं है</translation>
@@ -5026,6 +5029,7 @@
 <translation id="4823484602432206655">उपयोगकर्ता और डिवाइस सेटिंग पढ़ें और उसमें बदलाव करें</translation>
 <translation id="4824037980212326045">Linux का बैक अप लेना और बहाल करना</translation>
 <translation id="4824263260587281352">बटन का कॉम्बिनेशन बदलें <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Google खाता: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">सिंक करना रद्द करें?</translation>
 <translation id="4825462365587146530">नए टैब में Chrome Root Store के बारे में ज़्यादा जानें.</translation>
 <translation id="4825532258163983651">पासवर्ड मिटाया नहीं जा सकता</translation>
@@ -5829,7 +5833,6 @@
 <translation id="5441292787273562014">पेज फिर से लोड करें</translation>
 <translation id="5441466871879044658">इस भाषा में अनुवाद करें</translation>
 <translation id="5442550868130618860">अपने आप होने वाले अपडेट चालू करें</translation>
-<translation id="5444281205834970653">मिटाएं और जारी रखें</translation>
 <translation id="5444452275167152925">ChromeOS से इंपोर्ट किए गए सर्टिफ़िकेट</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446836766119801744">⌥L</translation>
@@ -6866,7 +6869,6 @@
 <translation id="6264485186158353794">वापस सुरक्षित पेज पर जाएं</translation>
 <translation id="6264636978858465832">Password Manager को और चीज़ों का ऐक्सेस चाहिए</translation>
 <translation id="626495329434552273">इनके पास आपके कीबोर्ड इनपुट को बदलने की अनुमति है</translation>
-<translation id="62650662268452475">साइन इन होने के दौरान, अपने सभी डिवाइसों पर Google खाते में सेव किए गए बुकमार्क, एक्सटेंशन वगैरह इस्तेमाल किए जा सकते हैं</translation>
 <translation id="6265159465845424232">Microsoft फ़ाइलों को कॉपी करने या Microsoft OneDrive में ट्रांसफ़र करने से पहले पूछें</translation>
 <translation id="6265687851677020761">पोर्ट हटाएं</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> से कनेक्ट किया जा रहा है</translation>
@@ -7043,7 +7045,6 @@
 <translation id="6410257289063177456">इमेज फ़ाइल</translation>
 <translation id="6410328738210026208">चैनल बदलें और पावरवॉश करें</translation>
 <translation id="6410390304316730527">सुरक्षित ब्राउज़िंग की सुविधा आपको ऐसे हमलावरों से बचाती है जो धोखे से आपसे नुकसान पहुंचाने वाले सॉफ़्टवेयर इंस्टॉल करा सकते हैं या फिर आपकी व्यक्तिगत जानकारी चुरा सकते हैं जैसे कि पासवर्ड, फ़ोन नंबर या क्रेडिट कार्ड की जानकारी. अगर आप इस सुविधा को बंद करते हैं, तो ऐसी साइटें ब्राउज़ करते समय सावधान रहें जिनसे आप अनजान हैं या जो जानी-मानी नहीं हैं.</translation>
-<translation id="6410390446958964276">साइन इन होने के दौरान, अपने सभी डिवाइसों पर Google खाते में सेव की गई थीम, सेटिंग वगैरह इस्तेमाल की जा सकती हैं</translation>
 <translation id="6411135999030237579">किसी बटन के वर्ण को अपने-आप दोहराने के लिए, उसे दबाकर रखें</translation>
 <translation id="6415757856498750027">"ư" पाने के लिए "w" टाइप करें</translation>
 <translation id="6415900369006735853">अपने फ़ोन पर इंटरनेट चालू करें</translation>
@@ -7689,6 +7690,7 @@
 <translation id="6892812721183419409">लिंक को <ph name="USER" /> के रूप में खोलें</translation>
 <translation id="6893164346922798247">eSpeak</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
+<translation id="6897341342232909480">बाएं ले जाएं</translation>
 <translation id="6897363604023044284">डेटा मिटाने के लिए साइटें चुनें</translation>
 <translation id="689770193677424784">टैब वर्टिकल तरीके से दिखाने के लिए, फ़ुल स्क्रीन मोड से बाहर निकलें</translation>
 <translation id="6897756054229464646">Gemini के साथ</translation>
@@ -7876,6 +7878,7 @@
 <translation id="7030304022046916278">सुरक्षित ब्राउज़िंग की सेवा को यूआरएल भेजे जाते हैं, ताकि उनकी जांच की जा सके</translation>
 <translation id="7030695672997239647">टैब पर दायां क्लिक करें और "टैब को ग्रुप में जोड़ें" चुनें. इसके बाद, "नया ग्रुप" चुनें</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - सीरियल पोर्ट कनेक्ट है</translation>
+<translation id="7032334023419126809">Google खाता: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">नाम ज़्यादा से ज़्यादा 62 वर्णों का होना चाहिए</translation>
 <translation id="7033731598469029604">ऑटो ब्राउज़</translation>
 <translation id="70356134210715500">अपनी पासकी पाएं</translation>
@@ -8607,7 +8610,6 @@
 <translation id="7605163396341021431">इस Chromebook पर, Android ऐप्लिकेशन को यूएसबी डिवाइसों को कंट्रोल करने की अनुमति दें</translation>
 <translation id="7605594153474022051">समन्वयन काम नहीं कर रहा है</translation>
 <translation id="7606560865764296217">ऐनिमेशन रोकें</translation>
-<translation id="7606639338662398635">टैब ग्रुप</translation>
 <translation id="7606802863538485839">इफ़ेक्ट चलाएं</translation>
 <translation id="7607002721634913082">रोका गया</translation>
 <translation id="7608810328871051088">Android की प्राथमिकताएं</translation>
@@ -9397,6 +9399,7 @@
 <translation id="8199300056570174101">नेटवर्क (सेवा) और डिवाइस प्रॉपर्टी</translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8202827109322349110">बेसिक एडिटर में खोलें</translation>
+<translation id="8203105157044679380">साइड पैनल में Google Search</translation>
 <translation id="8203152941016626022">आस-पास शेयर करने की सुविधा और डिवाइस का नाम</translation>
 <translation id="8203732864715032075">आपको सूचनाएं भेजती है और यह याद रखती है कि मैसेज के लिए यह कंप्यूटर डिफ़ॉल्ट है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">राइट क्लिक करें</translation>
@@ -10066,6 +10069,7 @@
 <translation id="8708000541097332489">बाहर निकलने पर मिटाएं</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">&amp;अधिक जानकारी</translation>
+<translation id="8709234440040320647">(आइसोलेटेड मोड)</translation>
 <translation id="8709368517685334931">Chrome Web Store में थीम के पुराने रंग देखे जा सकते हैं</translation>
 <translation id="8710414664106871428">काल्पनिक</translation>
 <translation id="8711402221661888347">पिकल्‍स</translation>
@@ -10208,6 +10212,7 @@
 <translation id="8818152010000655963">वॉलपेपर</translation>
 <translation id="8818988764764862764">विंडो को बाईं ओर ले जाया गया</translation>
 <translation id="8819510664278523111">आपके डिवाइस का ईआईडी <ph name="EID_NUMBER" /> है, डिवाइस का IMEI <ph name="IMEI_NUMBER" />, और डिवाइस का सीरियल नंबर <ph name="SERIAL_NUMBER" /> है. सेवा चालू करने के लिए, इन नंबरों का इस्तेमाल किया जा सकता है.</translation>
+<translation id="8819762137851963556">माउस का कर्सर ढूंढें</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8821045908425223359">आईपी पता अपने आप कॉन्फ़िगर होने दें</translation>
 <translation id="8821206216942230957">आपके खाते से, Chrome में Gemini को ऐक्सेस नहीं किया जा सकता</translation>
@@ -10228,6 +10233,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को एक हफ़्ते के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{ग्रुप छोड़ें}one{ग्रुप छोड़ें}other{ग्रुप छोड़ें}}</translation>
 <translation id="8836782447513334597">जारी रखें</translation>
+<translation id="8837072669197607689">आइसोलेटेड मोड में अनुमति दें</translation>
 <translation id="8837573527470979311">बॉटम व्यू के साथ स्वैप करें</translation>
 <translation id="8838601485495657486">अपारदर्शी</translation>
 <translation id="8838770651474809439">हैमबर्गर</translation>

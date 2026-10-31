@@ -231,6 +231,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3037517125981011456">Viser anmodninger om at logge ind i Chrome</translation>
 <translation id="3037838751736561277">Google Chrome kører i baggrunden.</translation>
 <translation id="3038232873781883849">Venter på at installere…</translation>
+<translation id="304285957253771186">Advarsel! Google Chrome kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i isoleret tilstand.</translation>
 <translation id="3045032126857188731">Oversat sprog: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Luk dialogboks til feedback</translation>
 <translation id="306179102415443347">Brug din genvej til hurtigt at gå til Google Adgangs­kode­admin­istrator. Du kan flytte din genvej til din computers startskærm eller appliste.</translation>
@@ -524,6 +525,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5940385492829620908">Dit webindhold, dine bogmærker og andre Chrome-ting kan findes her.</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941830788786076944">Gør Google Chrome til din standardbrowser</translation>
+<translation id="5944731887996253728">Chrome opdateres, når din skærm ikke er i brug</translation>
 <translation id="5947104538377036631">Chrome-genvej</translation>
 <translation id="5960071705175224773">Dine indstillinger blev ændret af en ukendt app</translation>
 <translation id="5980111191913430208">Udvidelser, apps og temaer fra ukendte kilder kan skade din enhed. Chrome anbefaler, at de kun installeres via <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -827,6 +829,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="8367950957770994118">Åbn hurtigt Gemini i Chrome, når du har brug for det</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="8370748943308169953">QR-kode til at logge ind i Chrome som <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558">En <ph name="IMPORTANT_UPDATE" /> er klar. Du kan genstarte nu eller indstille Chrome til at opdatere, næste gang din skærm forbliver tændt og ikke bruges i <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">Sidepanel i Google Søgning</translation>
 <translation id="8377158135256176353">Slå Gemini i Chrome Canary til/fra</translation>
 <translation id="8380754585531979907">Brug dit tastatur til at navigere mellem Gemini i Chrome og din åbne fane.</translation>
@@ -870,6 +873,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="8669527147644353129">Hjælp til Google Chrome</translation>
 <translation id="8679801911857917785">Den styrer også, hvilken side der vises, når du åbner Chrome.</translation>
 <translation id="8689408573494410517">Knappen "Google Søgning i sidepanelet" på værktøjslinjen har fået et nyt ikon. Klik på den for at stille spørgsmål, mens du browser, med Google Søgning i sidepanelet.</translation>
+<translation id="8699232386626916686">Opdater Chrome for at forblive beskyttet</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8712767363896337380">Næsten opdateret! Genstart Chrome for at fuldføre opdateringen.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se din læseliste og meget mere fra <ph name="DEVICE" />.</translation>

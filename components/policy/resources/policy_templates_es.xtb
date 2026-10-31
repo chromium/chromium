@@ -1753,6 +1753,19 @@ Esta política suele estar inhabilitada para ofrecer protección contra phishing
 <translation id="2086505225896497574">Si se define esta política, se especificarán los IDs RP de WebAuthn para los que no se mostrará ningún mensaje cuando se soliciten certificados de atestación de llaves de seguridad en la pantalla de inicio de sesión. Asimismo, se enviará una señal a la llave de seguridad para indicar que es posible que se utilice esa atestación empresarial. Sin esta política, cuando los sitios soliciten la atestación de las llaves de seguridad, los usuarios verán un mensaje.
 
 Esta política de dispositivos es equivalente a la política de usuarios actual <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, pero, en su lugar, se aplica al perfil de inicio de sesión en la pantalla de inicio de sesión.</translation>
+<translation id="2088835253645709768">Esta política está obsoleta en la versión M157 porque se ha eliminado la función de búsqueda en el historial basada en IA.
+
+La búsqueda en el historial basada en IA es una función que permite a los usuarios buscar en su historial de navegación y recibir respuestas generadas en función del contenido de las páginas, no solo de su título y URL.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2089541797660774692">Habilitar los informes en la nube a través de un navegador gestionado</translation>
 <translation id="2090280024671359587">Permitir el uso de Captura de texto y mejorar los modelos de IA.</translation>
 <translation id="2090712407517297305">La página del historial de Chrome organizada en grupos se mostrará en chrome://history/grouped.</translation>

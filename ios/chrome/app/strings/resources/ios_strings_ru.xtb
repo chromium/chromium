@@ -40,6 +40,7 @@
 <translation id="1085677983426914530">Не удалось открыть файл "<ph name="FILENAME" />"</translation>
 <translation id="1086486568852410168">Поиск с Google Объективом</translation>
 <translation id="1095093219235104018">Поиск и Заполнение с Gemini</translation>
+<translation id="1096245844813536669">Автоматически отправлять запрос, когда вы закончите говорить</translation>
 <translation id="1096992026380844478">Ваши настройки синхронизации будут восстановлены на основе данных из последней резервной копии. Узнайте, <ph name="BEGIN_LINK" />какие данные можно синхронизировать<ph name="END_LINK" />.</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Разблокировка с помощью Face ID</translation>
@@ -392,7 +393,6 @@
 <translation id="2139867232736819575">Поиск скопированного текста</translation>
 <translation id="2140913838150159519">Закрепить вкладку</translation>
 <translation id="2147127444698817042">Доступно только на iPhone</translation>
-<translation id="2148326276832455306">Мы проверяем чаты и используем их, чтобы улучшать ИИ от Google. Вы можете <ph name="BEGIN_LINK" />управлять историей действий<ph name="END_LINK" />, в том числе данными о местоположении. Узнайте, <ph name="BEGIN_LINK" />какие настройки вам доступны<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Легко входите в аккаунты на сайтах и в приложениях.</translation>
 <translation id="2149968176347646218">Подключение не защищено</translation>
 <translation id="2149973817440762519">Закладка</translation>
@@ -458,7 +458,6 @@
 <translation id="2327445548174191329">С устройства <ph name="DEVICE_NAME" />.</translation>
 <translation id="2330607597130465898">Защита отключена</translation>
 <translation id="233375395665273385">Удалить и выйти</translation>
-<translation id="2340966584724330791">Google собирает ваши чаты и данные, которыми вы делитесь с Gemini, например файлы, видео, снимки экрана и фотографии. Google также собирает ваши отзывы, информацию с сайтов, которые вы посещаете вместе с Gemini, сведения об использовании сервисов и геоданные, в том числе приблизительное местоположение вашего устройства, его IP-адрес или домашний и рабочий адреса в вашем аккаунте Google.</translation>
 <translation id="2350463587705616331">Фон "Сепия"</translation>
 <translation id="2351097562818989364">Настройки перевода сброшены</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Вы можете сохранить пароль для домена {DOMAIN_ONE} в своем аккаунте Google ({EMAIL}).}=2{Вы можете сохранить пароли для доменов {DOMAIN_ONE} и {DOMAIN_TWO} в своем аккаунте Google ({EMAIL}).}=3{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} домена в своем аккаунте Google ({EMAIL}).}one{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} домена в своем аккаунте Google ({EMAIL}).}few{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} доменов в своем аккаунте Google ({EMAIL}).}many{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} доменов в своем аккаунте Google ({EMAIL}).}other{Вы можете сохранить пароли для {DOMAIN_ONE}, {DOMAIN_TWO} и ещё {OTHER_DOMAINS_COUNT} домена в своем аккаунте Google ({EMAIL}).}}</translation>
@@ -720,6 +719,7 @@
 <translation id="3186796054637504691">Очистить историю и данные сайтов</translation>
 <translation id="3190558889382726167">Пароль сохранен</translation>
 <translation id="3190736958609431397">Перестать отслеживать</translation>
+<translation id="3192820089569442694">Не удалось обработать ваш запрос на отказ от использования данных.</translation>
 <translation id="3208260410153224535">В вашей организации вход в браузере отключен. Новые закладки, пароли и другие данные будут сохраняться только на этом устройстве.</translation>
 <translation id="3211969308836412674">Открепить сайт</translation>
 <translation id="3213807041830307252">Находите товары, переводите тексты и получайте информацию о том, что вас окружает, используя камеру или фото из галереи.</translation>
@@ -741,7 +741,6 @@
 <translation id="3265736395246760288">Входите в аккаунты быстрее на синхронизированных устройствах.</translation>
 <translation id="3268166994745151153">Ваш текущий прогресс будет потерян.</translation>
 <translation id="3272527697863656322">Отмена</translation>
-<translation id="3272955648592358996">Ваши данные помогают улучшать ИИ от Google</translation>
 <translation id="3273510436356991673">Настройка главного экрана</translation>
 <translation id="327455571215090823">Умное автозаполнение с защитой личных данных</translation>
 <translation id="3277021493514034324">Адрес сайта скопирован</translation>
@@ -787,6 +786,7 @@
 <translation id="344589138074534176">Подробнее о Google Объективе…</translation>
 <translation id="3449029510150690417">Создайте новую группу вкладок, укажите ее название и цвет.</translation>
 <translation id="345348365500626747">Адрес найден</translation>
+<translation id="3453878468834191501">Когда вы начинаете новый чат, у Gemini появляется доступ к открытой вкладке. Подробнее <ph name="BEGIN_LINK" />об ИИ и конфиденциальности<ph name="END_LINK" />…</translation>
 <translation id="3459644598174926977">В режиме Live можно задавать вопросы о странице, обсуждать идеи и просто общаться</translation>
 <translation id="3462768334899086950">Несохраненный файл и текущие вкладки будут потеряны.</translation>
 <translation id="3464194322481586217">Не удалось отследить цену.</translation>
@@ -850,6 +850,7 @@
 <translation id="3641456520301071208">Разрешить сайтам запрашивать ваше местоположение</translation>
 <translation id="3642060527569456384">Группы вкладок автоматически сохраняются и обновляются на всех ваших устройствах.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} пароль сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, добавьте его в аккаунт Google ({email}).}one{{count} пароль сохранен только на этом устройстве. Чтобы они синхронизировались с другими устройствами, добавьте пароли в аккаунт Google ({email}).}few{{count} пароля сохранены только на этом устройстве. Чтобы они синхронизировались с другими устройствами, добавьте пароли в аккаунт Google ({email}).}many{{count} паролей сохранены только на этом устройстве. Чтобы они синхронизировались с другими устройствами, добавьте пароли в аккаунт Google ({email}).}other{{count} пароля сохранено только на этом устройстве. Чтобы они синхронизировались с другими устройствами, добавьте пароли в аккаунт Google ({email}).}}</translation>
+<translation id="3657176844107584515"><ph name="EMAIL" />, подписка Google.</translation>
 <translation id="3659297405161482746">Нет способов оплаты.</translation>
 <translation id="3662966164093827811">{count,plural, =1{Выбрано: 1}one{Выбрано: #}few{Выбрано: #}many{Выбрано: #}other{Выбрано: #}}</translation>
 <translation id="3668035568083954765">Защитите свою конфиденциальность и безопасность.</translation>
@@ -917,7 +918,6 @@
 <translation id="3888863481921783344">Эти данные будут использоваться для показа пользователей, которых можно пригласить на мероприятие.</translation>
 <translation id="3891414008432200754">Цена</translation>
 <translation id="3892144330757387737">Здесь вы найдете свою историю</translation>
-<translation id="3892695492576181257">Когда он включен, ваша история действий в приложениях Gemini хранится в течение 18 месяцев. Вы можете изменить этот срок и выбрать 3 или 36 месяцев. Google использует данные о ваших действиях, чтобы разрабатывать и улучшать свои сервисы, в том числе модели Gemini, а также защищать себя, пользователей и общество. В этой работе участвуют специалисты. Проверенные ими сведения не привязаны к вашему аккаунту и хранятся в течение 3 лет.</translation>
 <translation id="3893858854379998374">Чтобы сохранить новые закладки в аккаунте, удалите неиспользуемые.</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3904270275864974753">Изменить карусель</translation>
@@ -947,6 +947,7 @@
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">У вас есть простые пароли.</translation>
 <translation id="3957016963627617921">Успевайте больше с Gemini в Chrome</translation>
+<translation id="3957737662589242353"><ph name="NAME" />, <ph name="EMAIL" />, подписка Google.</translation>
 <translation id="3958312024468322930">Перетащите значок на панель Dock внизу экрана</translation>
 <translation id="3962326069546168954">Сохранить</translation>
 <translation id="3967327056943561740">Закладки</translation>
@@ -1428,7 +1429,6 @@
 <translation id="5447973833955560753">Пароль для восстановления</translation>
 <translation id="5448623529214315261">Сохранено фото <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Используйте надежный пароль</translation>
-<translation id="5453088693079603292">Какая информация о действиях собирается</translation>
 <translation id="5454211924362324495">Чтобы другие люди не могли использовать ваш пароль, <ph name="BEGIN_LINK" />измените его на сайте <ph name="WEBSITE" /><ph name="END_LINK" />.</translation>
 <translation id="5457082343331641453">Дополните запрос</translation>
 <translation id="5457226814769348910">Открыть офлайн-версию</translation>
@@ -1542,7 +1542,6 @@
 <translation id="5801568494490449797">Настройки</translation>
 <translation id="5803566855766646066">Удалить новую карту?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
-<translation id="58081802114142635">Ваши действия улучшают ИИ от Google</translation>
 <translation id="5817176759448082654">Проверка паролей</translation>
 <translation id="5818161931099046557">Изменить в аккаунте Google</translation>
 <translation id="5819208479324046259">Устройством управляет <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -1591,7 +1590,6 @@
 <translation id="5971459446352190251">Поиск по QR-коду</translation>
 <translation id="5971872012779224351">{count,plural, =1{Удалена 1 закладка.}one{Удалена {count} закладка.}few{Удалено {count} закладки.}many{Удалено {count} закладок.}other{Удалено {count} закладки.}}</translation>
 <translation id="5972844218283131174">Отменить выбор</translation>
-<translation id="597482816780655631">Gemini — это ИИ. Он может ошибаться, в том числе давать недостоверную информацию о людях. Некоторый контент может не подходить для определенных пользователей. Мы проверяем чаты и используем их, чтобы улучшать ИИ от Google. Узнайте, <ph name="BEGIN_LINK" />какие настройки вам доступны<ph name="END_LINK" />. Действуют <ph name="BEGIN_LINK" />Условия использования<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Примечание о конфиденциальности<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Другое</translation>
 <translation id="5977976211062815271">На этом устройстве</translation>
 <translation id="5986043348928676121">Далее</translation>
@@ -1609,7 +1607,6 @@
 <translation id="6027945736510816438">Вам нужен сайт <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">новая функция</translation>
 <translation id="6038823991892265570">Управление хранилищем Google</translation>
-<translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="6045460247888249350">Добавьте название</translation>
@@ -1626,6 +1623,7 @@
 <translation id="6078236141387574983">Изменить высоту нижнего экрана</translation>
 <translation id="6084848228346514841">Выбрать вкладки</translation>
 <translation id="6089212833343035912">PIN-код для Google Менеджера паролей</translation>
+<translation id="6090690847556987004">Что-то пошло не так. Обновите Chrome и iOS, затем перезапустите устройство и повторите попытку. Если проблема сохраняется, возможно, этот параметр не поддерживается на вашем iPad.</translation>
 <translation id="6090760257419195752">Закрытые предупреждения</translation>
 <translation id="6094325891006032858">Включите улучшенный Безопасный просмотр</translation>
 <translation id="6096965253650248286">Найдено: <ph name="COUNT" /></translation>
@@ -1817,7 +1815,6 @@
 <translation id="6609890790934458793">Пароли для <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и <ph name="THIRD_WEBSITE" /> будут удалены. При этом сохранятся другие данные аккаунтов для этих сайтов.</translation>
 <translation id="661266467055912436">Делает интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6612912757320004438">Разрешить уведомления с вкладок</translation>
-<translation id="6613372200395638275">Чтобы предоставлять персонализированную помощь, Gemini делится некоторыми вашими данными (например, сообщениями из чатов и местоположением) с другими сервисами Google, такими как Карты и Авиабилеты. Эти данные могут использоваться для улучшения сервисов, даже если вы удалите историю действий в приложениях Gemini. Узнайте больше в <ph name="BEGIN_LINK" />центре конфиденциальности приложений Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Очистить</translation>
 <translation id="6619015782482868078">Аквамариновая тема</translation>
 <translation id="6620279676667515405">Отмена</translation>
@@ -1977,7 +1974,6 @@
 <translation id="7091023926159231962">{count,plural, =1{Не удалось импортировать {count} пароль.}one{Не удалось импортировать {count} пароль.}few{Не удалось импортировать {count} пароля.}many{Не удалось импортировать {count} паролей.}other{Не удалось импортировать {count} пароля.}}</translation>
 <translation id="7095110968493193530">В Google Менеджере паролей для аккаунта <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Чтобы увидеть, как менялась цена, в адресной строке нажмите "История изменения цен".</translation>
-<translation id="7098554251807199977">Ваши чаты с Gemini и <ph name="BEGIN_LINK" />данные Google Workspace<ph name="END_LINK" /> не будут проверяться или использоваться для улучшения моделей генеративного ИИ.</translation>
 <translation id="7102005569666697658">Скачивание… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Настройки → Способы оплаты</translation>
 <translation id="7108338896283013870">Скрыть</translation>
@@ -2122,6 +2118,7 @@
 <translation id="7557508262441527045">Выполнен выход</translation>
 <translation id="7561196759112975576">Всегда</translation>
 <translation id="7561982940498449837">Закрыть меню</translation>
+<translation id="7562347727679121642">Добавить изображение в запрос</translation>
 <translation id="7566349809380613217">Открыть группу вкладок "<ph name="GROUP_TITLE" />", вкладок в общей группе: <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Закладки скрыты</translation>
 <translation id="7575664680938145959">Переходите одним нажатием</translation>
@@ -2417,7 +2414,6 @@
 <translation id="8439758443371991593">Скрыть действие "Добавить в список для чтения"</translation>
 <translation id="8443986842926457191">URL должен быть не длиннее 2048 символов.</translation>
 <translation id="8449869326050867919">Доступ к паролю предоставлен</translation>
-<translation id="8461708300275916315">Если вам ещё нет 18 лет</translation>
 <translation id="8473815223723723001">Изменить изображение с помощью Gemini</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
 <translation id="8474378002946546633">Разрешить оповещения</translation>
@@ -2497,7 +2493,6 @@
 <translation id="8672733398999596205">Включить все</translation>
 <translation id="8674716540979958118">У вас есть раскрытые пароли.</translation>
 <translation id="8679900250380464358">Добавить в список для чтения</translation>
-<translation id="8680643216091361291">Параметр <ph name="BEGIN_LINK" />Сохранять историю действий<ph name="END_LINK" /> отключен по умолчанию. Когда он отключен, Google хранит ваши чаты в течение трех дней. Это позволяет обеспечивать корректную работу и безопасность приложений Gemini, а также использовать ваши отзывы для устранения проблем. Вы можете включить сохранение истории действий, чтобы помочь сделать ИИ от Google лучше для всех.</translation>
 <translation id="8680787084697685621">Данные для входа в аккаунт устарели.</translation>
 <translation id="868648444055742370">У сайта "<ph name="SITE_DOMAIN" />" нет доступа к микрофону</translation>
 <translation id="8690752723634292147">Подтвердите удаление</translation>
@@ -2555,7 +2550,6 @@
 <translation id="882557203579758546">Найти на странице…</translation>
 <translation id="8829809207373502270">Ключ доступа больше не действителен. Он был удален с сайта <ph name="WEBSITE" /> и скоро будет удален из этого сервиса. <ph name="BEGIN_LINK" />О ключах доступа<ph name="END_LINK" />.</translation>
 <translation id="8831208860914609320">Закрыть все неактивные вкладки</translation>
-<translation id="8831871601813227635">Действуют <ph name="BEGIN_LINK" />Условия использования<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Условия использования геоданных для Кореи<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Примечание о конфиденциальности<ph name="END_LINK" />. Мы проверяем чаты и используем их, чтобы улучшать ИИ от Google. Gemini — это ИИ. Он может ошибаться, в том числе давать недостоверную информацию о людях. Некоторый контент может не подходить для определенных пользователей. Вы можете <ph name="BEGIN_LINK" />управлять историей действий<ph name="END_LINK" />, в том числе данными о местоположении. Узнайте, <ph name="BEGIN_LINK" />какие настройки вам доступны<ph name="END_LINK" />.</translation>
 <translation id="8837654851594567190">Сортировать по издателю</translation>
 <translation id="884351711508006491">Данные сохранены на вашем устройстве.</translation>
 <translation id="8844136307393039959">Цена отслеживаемого товара снизилась</translation>
@@ -2636,6 +2630,7 @@
 <translation id="9090979472668095374">Читать результаты вслух</translation>
 <translation id="9094033019050270033">Обновить пароль</translation>
 <translation id="9098541895599151034">Удалить выбранные пароли (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
+<translation id="909874878420399003">Автоматическая отправка</translation>
 <translation id="9099233023029360602">Всегда спрашивать, какой аккаунт использовать</translation>
 <translation id="9099821309562615674">Убедитесь, что текст для перевода различим и находится в кадре.</translation>
 <translation id="9100610230175265781">Необходима кодовая фраза</translation>
@@ -2669,6 +2664,7 @@
 <translation id="9203951165704618409">Чтобы вам было удобнее, выберите, где должна находиться адресная строка: вверху или внизу.</translation>
 <translation id="9205189991633470489">Блокировка вкладок инкогнито</translation>
 <translation id="9206887540681440657">Скорость</translation>
+<translation id="9218088788182688902">Что-то пошло не так. Обновите Chrome и iPadOS, а затем перезапустите устройство и повторите попытку. Если проблема сохраняется, возможно, этот параметр не поддерживается на вашем iPad.</translation>
 <translation id="9218430445555521422">Использовать по умолчанию</translation>
 <translation id="9219103736887031265">Картинки</translation>
 <translation id="9219154867334666734">Поиск по вкладкам</translation>

@@ -524,6 +524,7 @@
 <translation id="5940385492829620908">మీ వెబ్, బుక్‌మార్క్‌లు మరియు ఇతర Chrome అంశాలు ఇక్కడ చూపబడతాయి.</translation>
 <translation id="5941711191222866238">కనిష్టీకరించు</translation>
 <translation id="5941830788786076944">Google Chromeను డిఫాల్ట్ బ్రౌజర్‌గా చేసుకోండి</translation>
+<translation id="5944731887996253728">మీ స్క్రీన్ ఉపయోగంలో లేనప్పుడు Chrome అప్‌డేట్ అవుతుంది</translation>
 <translation id="5947104538377036631">Chrome షార్ట్‌కట్</translation>
 <translation id="5960071705175224773">మీ సెట్టింగ్‌లు తెలియని యాప్ ద్వారా మార్చబడ్డాయి</translation>
 <translation id="5980111191913430208">తెలియని సోర్స్‌లకు చెందిన ఎక్స్‌టెన్షన్‌లు, యాప్‌లు, థీమ్‌లు మీ పరికరానికి హాని కలిగించవచ్చు. <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> నుండి మాత్రమే వాటిని ఇన్‌స్టాల్ చేయని Chrome సిఫార్సు చేస్తోంది</translation>
@@ -827,6 +828,7 @@
 <translation id="8367950957770994118">మీకు అవసరమైనప్పుడల్లా Chromeలో Geminiని త్వరగా తెరవండి</translation>
 <translation id="8370517070665726704">కాపీరైట్ <ph name="YEAR" /> సర్వ హక్కులు Google LLCకి రిజర్వ్ అయ్యాయి.</translation>
 <translation id="8370748943308169953"><ph name="USER_NAME" />‌గా Chromeకు సైన్ ఇన్ చేయడానికి QR కోడ్</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> సిద్ధంగా ఉంది. మీరు ఇప్పుడు రీ-లాంచ్ చేయవచ్చు, లేదా మీ స్క్రీన్ ఆన్‌లో ఉండి, <ph name="IDLE_DURATION" /> పాటు ఉపయోగించకుండా ఉన్నప్పుడు అప్‌డేట్ అయ్యేలా Chromeను సెట్ చేయవచ్చు.</translation>
 <translation id="8376752431516546391">Google Search సైడ్ ప్యానెల్</translation>
 <translation id="8377158135256176353">Chrome కెనరీలో Geminiని టోగుల్ చేయండి</translation>
 <translation id="8380754585531979907">Chromeలో Gemini, మీరు తెరిచిన ట్యాబ్ మధ్య నావిగేట్ చేయడానికి మీ కీబోర్డ్‌ను ఉపయోగించండి.</translation>
@@ -870,6 +872,7 @@
 <translation id="8669527147644353129">Google Chrome సహాయకారుడు</translation>
 <translation id="8679801911857917785">ఇది మీరు Chromeని ప్రారంభించేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
 <translation id="8689408573494410517">టూల్‌బార్‌లోని "సైడ్ ప్యానెల్‌లో Google Search" బటన్‌కు కొత్త చిహ్నం ఉంది. సైడ్ ప్యానెల్‌లో Google Searchతో బ్రౌజ్ చేస్తున్నప్పుడు ప్రశ్నలు అడగడానికి దాన్ని క్లిక్ చేయండి.</translation>
+<translation id="8699232386626916686">సురక్షితంగా ఉండటానికి Chromeను అప్‌డేట్ చేయండి</translation>
 <translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8712767363896337380">దాదాపుగా అప్‌డేట్ అయ్యి ఉంది! అప్‌డేట్ చేయడాన్ని పూర్తి చేయడానికి Chromeను రీ-లాంచ్ చేయండి.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> ఇప్పటికే సైన్ ఇన్ అయి ఉన్నారు. మీ బ్రౌజింగ్ వివరాలను విడిగా ఉంచుకోవడానికి, <ph name="USER_EMAIL_ADDRESS" />గా మీ స్వంత ప్రొఫైల్‌తో Chromeకి సైన్ ఇన్ చేయండి. మీరు <ph name="DEVICE" /> నుండి మీ చదవాల్సిన లిస్ట్‌ను, అలాగే మరిన్ని వివరాలను కూడా పొందుతారు.</translation>

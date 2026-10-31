@@ -419,6 +419,7 @@
 <translation id="1293360286536751243">«<ph name="MAIN_GESTURE" />» ممکن است با «<ph name="CONFLICTING_GESTURE_ONE" />»، «<ph name="CONFLICTING_GESTURE_TWO" />»، و «<ph name="CONFLICTING_GESTURE_THREE" />» هم‌پوشانی داشته باشد. درصورت امکان، اشاره دیگری انتخاب کنید.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="12951065153783848">سازمان شما حسابتان را مدیریت می‌کند</translation>
+<translation id="129553762522093515">اخیراً بسته‌شده</translation>
 <translation id="1296410481664942178">‏«تقویم Google» نمایش داده نشود</translation>
 <translation id="1296911687402551044">سنجاق کردن برگه انتخاب‌شده</translation>
 <translation id="1297175357211070620">مقصد</translation>
@@ -683,6 +684,7 @@
 <translation id="1523279371236772909">در ماه گذشته مشاهده شده</translation>
 <translation id="1523978563989812243">موتورهای نوشتار به گفتار</translation>
 <translation id="1524563461097350801">نه، متشکرم</translation>
+<translation id="1524903662136734524">‏افزودن از Drive</translation>
 <translation id="1525740877599838384">‏فقط از Wi-Fi برای تعیین مکان استفاده شود</translation>
 <translation id="1526274304859009691">برای دریافت افزونه‌ها و سایر موارد از <ph name="DEVICE" />، به سیستم وارد شوید</translation>
 <translation id="1526560967942511387">سند بی‌عنوان</translation>
@@ -930,6 +932,7 @@
 <translation id="1703666494654169921">به سایت‌ها اجازه داده نشود از داده‌ها یا دستگاه‌های واقعیت مجازی استفاده کنند</translation>
 <translation id="1704097193565924901">بزرگ‌نویسی</translation>
 <translation id="1704230497453185209">به سایت‌ها اجازه داده نشود صدا پخش کنند</translation>
+<translation id="170494114379308411">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />داده‌های Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> شما برای آموزش دادن مدل‌های هوشواره‌ای زایا بازبینی و استفاده نخواهند شد. Gemini هوشواره است و ممکن است اشتباه کند.</translation>
 <translation id="170658918174941828">‏نسخه Chrome، نسخه سیستم‌عامل، تنظیمات Cast،
     آمار عملکرد بازتاب، و گزارش‌های عیب‌یابی
     کانال ارتباطی به‌همراه اطلاعاتی که
@@ -1163,6 +1166,7 @@
 <translation id="1881445033931614352">جانمایی صفحه‌کلید</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{مورد}one{# مورد}other{# مورد}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">‏سابقه Gemini</translation>
 <translation id="1884340228047885921">تنظیم رؤیت‌پذیری کنونی «برخی از مخاطبین» است</translation>
 <translation id="1884705339276589024">‏تغییر اندازه دیسک Linux</translation>
 <translation id="1885066963699478692">‏فایل‌های XML که برای تنظیم خط‌مشی‌ها استفاده می‌شوند.</translation>
@@ -1628,6 +1632,7 @@
 <translation id="2246549592927364792">‏توضیحات تصویر از Google دریافت شود؟</translation>
 <translation id="2247738527273549923">دستگاهتان را سازمانتان مدیریت می‌کند.</translation>
 <translation id="2247870315273396641">پیش‌دید کردن صدا</translation>
+<translation id="2247960558975094922">‏سابقه Gemini</translation>
 <translation id="224835741840550119">پاک‌سازی دستگاه</translation>
 <translation id="2249111429176737533">باز کردن به‌عنوان پنجره برگه‌دار</translation>
 <translation id="2249605167705922988">برای مثال 5-1، 8، 13-11</translation>
@@ -2682,6 +2687,7 @@
 <translation id="3030772324014024606">ویرایش</translation>
 <translation id="3030795534674718505">اجازه دارد از اطلاعاتی که درباره شما ذخیره کرده است استفاده کند</translation>
 <translation id="3030967311408872958">غروب تا طلوع</translation>
+<translation id="3030970046240311592">‏مشاهده و مدیریت سابقه Gemini</translation>
 <translation id="3031417829280473749">‏مأمور X</translation>
 <translation id="3031532026314193077">استفاده از صفحه لمسی و صفحه‌کلید برای کلیک راست</translation>
 <translation id="3031557471081358569">مواردی را برای وارد کردن انتخاب کنید:</translation>
@@ -2981,7 +2987,6 @@
 <translation id="3261798996834477302">باصدا کردن سایت پایین</translation>
 <translation id="3261832505033014216">گذرکلید برای <ph name="USER_EMAIL" /></translation>
 <translation id="3262261769033093854">سایت‌ها اجازه ندارند ورودی موشواره را ضبط و از آن استفاده کنند</translation>
-<translation id="3262336253311870293">‏از آن‌جایی‌که این حساب توسط <ph name="DOMAIN" /> مدیریت می‌شود، از سیستم «حساب Google» خود خارج نخواهید شد. نشانک‌ها، سابقه، گذرواژه‌ها، و سایر تنظیمات دیگر همگام‌سازی نمی‌شوند. اما داده‌های همگام‌سازی‌شده قبلی در «حساب Google» شما باقی می‌ماند و می‌توان آن‌ها را در <ph name="BEGIN_LINK" />داشبورد Google<ph name="END_LINK" /> مدیریت کرد.</translation>
 <translation id="3262986719682892278">بسیار بزرگ است</translation>
 <translation id="3264544094376351444">‏قلم Sans-Serif</translation>
 <translation id="3264582393905923483">بافت</translation>
@@ -3203,6 +3208,7 @@
 <translation id="3436118221454753036">از «حالت هوشواره‌ای» بپرسید</translation>
 <translation id="3437397693214267762">‏دیدن Outlook Calendar و SharePoint و فایل‌های OneDrive</translation>
 <translation id="3437494162908353428">‏‫DevTools برای این نشانی وب مجاز نیست.</translation>
+<translation id="3437498061222607130">با حساب <ph name="USER_EMAIL" /> به سیستم «جستجو» وارد شده‌اید</translation>
 <translation id="3438633801274389918">نینجا</translation>
 <translation id="3439153939049640737">همیشه اجازه دادن به <ph name="HOST" /> برای دسترسی به میکروفون شما</translation>
 <translation id="3439970425423980614">‏در حال باز کردن PDF در پیشنمایش</translation>
@@ -4132,6 +4138,7 @@
 <translation id="4107793386654579933">انتخاب میان‌بر برای کنش <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">انتقال پنجره به <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">بازیابی هشدار</translation>
+<translation id="4110984310437592352">‏از میکروفون خود برای گپ زدن با Gemini استفاده کنید. وقتی که با Gemini صحبت می‌کنید، صدا در «سابقه Gemini» (درصورت فعال بودن) ذخیره می‌شود.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (آفلاین)</translation>
 <translation id="4112282889480354965">افزونه‌ها و مهارت‌ها</translation>
 <translation id="4113743276555482284">گذرواژه فایل</translation>
@@ -4221,10 +4228,12 @@
 <translation id="419427585139779713">هر بار یک هجا وارد می‌شود</translation>
 <translation id="4195643157523330669">باز کردن در زبانه جدید</translation>
 <translation id="4195814663415092787">ادامه از جایی که ترک کردید</translation>
+<translation id="4196632390211257612">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />داده‌های Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> شما برای آموزش دادن مدل‌های هوشواره‌ای زایا بازبینی و استفاده نخواهند شد. Gemini هوشواره است و ممکن است اشتباه کند. برخی محتواها ممکن است برای همه مناسب نباشد.</translation>
 <translation id="4198268995694216131">سایت‌های بیشتر</translation>
 <translation id="4200609364258658652">کپی کردن فریم ویدیو</translation>
 <translation id="4200689466366162458">واژه‌های سفارشی</translation>
 <translation id="4200983522494130825">&amp;برگه جدید</translation>
+<translation id="4202186506458631436">حرکت به راست</translation>
 <translation id="4202536110335087135">امتحان کنید</translation>
 <translation id="4203065553461038553">نام یا محل فایل بیش‌ازحد طولانی است</translation>
 <translation id="4203769790323223880">دوربین مجاز نیست</translation>
@@ -4820,6 +4829,7 @@
 <translation id="4665035764476941598">برای برگرداندن سایر زبانه‌ها، اینجا کلیک کنید</translation>
 <translation id="4665446389743427678">همه داده‌های ذخیره‌شده توسط <ph name="SITE" /> حذف خواهد شد.</translation>
 <translation id="4666472247053585787">مشاهده اعلان‌های تلفن در <ph name="DEVICE_TYPE" /></translation>
+<translation id="4666483368282673356">‏مدیریت سابقه Gemini</translation>
 <translation id="4666911709726371538">برنامه‌های بیشتر</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4668936527507421457">پین باید فقط حاوی اعداد باشد</translation>
@@ -5026,6 +5036,7 @@
 <translation id="4823484602432206655">تغییر و خواندن تنظیمات کاربر و دستگاه</translation>
 <translation id="4824037980212326045">‏پشتیبان‌گیری و بازیابی Linux</translation>
 <translation id="4824263260587281352">تغییر ترکیب کلید <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">‏حساب Google: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">همگام‌سازی لغو شود؟</translation>
 <translation id="4825462365587146530">‏در زبانه جدید، درباره Chrome Root Store بیشتر بدانید.</translation>
 <translation id="4825532258163983651">گذرکلید حذف نشد</translation>
@@ -5290,6 +5301,7 @@
 <translation id="5012523644916800014">مدیریت گذرواژه‌ها و گذرکلیدها</translation>
 <translation id="501394389332262641">صدای ضعیف بودن باتری</translation>
 <translation id="5014286001996333986">جایگزین شود یا گروه جدیدی ایجاد شود؟</translation>
+<translation id="5014385104640320445">‏از میکروفون خود برای گپ زدن با Gemini استفاده کنید. وقتی که با Gemini صحبت می‌کنید، صدا در «سابقه Gemini» (درصورت فعال بودن) ذخیره می‌شود. از داده‌هایتان برای بهبود دادن مدل هوشواره‌ای زایا استفاده نمی‌شود.</translation>
 <translation id="5015344424288992913">در حال تحلیل پراکسی...</translation>
 <translation id="5016305686459575361">با متصل کردن تلفنتان، می‌توانید:</translation>
 <translation id="5016491575926936899">می‌توانید از رایانه پیامک ارسال کنید، اتصال اینترنت را به‌اشتراک بگذارید، به اعلان‌های مکالمه پاسخ دهید، و قفل <ph name="DEVICE_TYPE" /> را با تلفنتان باز کنید.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -5831,7 +5843,6 @@
 <translation id="5441292787273562014">بار کردن مجدد صفحه</translation>
 <translation id="5441466871879044658">به این زبان ترجمه شود</translation>
 <translation id="5442550868130618860">روشن کردن به‌روزرسانی خودکار</translation>
-<translation id="5444281205834970653">حذف و ادامه</translation>
 <translation id="5444452275167152925">‏واردشده از ChromeOS</translation>
 <translation id="5445400788035474247">۱۰ برابر</translation>
 <translation id="5446836766119801744">⌥L</translation>
@@ -5921,6 +5932,7 @@
 <translation id="5499634624419508916">جایگزین کردن گروه زبانه موجود</translation>
 <translation id="5500163593833085874">وقتی دکمه سمت چپ موشواره انتخاب شده است، از «+» برای دوکلیک کردن استفاده کنید</translation>
 <translation id="5500168250243071806">‏وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK_SEARCH" />سابقه «جستجو»<ph name="END_LINK_SEARCH" /> و <ph name="BEGIN_LINK_GOOGLE" />انواع دیگر فعالیت<ph name="END_LINK_GOOGLE" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.</translation>
+<translation id="5500956227241240933">به ورودی نیاز دارد</translation>
 <translation id="5501322521654567960">پانل کناری ترازشده به‌چپ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}one{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}other{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}}</translation>
 <translation id="5501979953419946416">چیز جدیدی بنویس</translation>
@@ -5988,6 +6000,7 @@
 <translation id="5558129378926964177">&amp;بزرگنمایی</translation>
 <translation id="5558594314398017686">پیش‌فرض سیستم‌عامل (درصورت وجود)</translation>
 <translation id="5559311991468302423">حذف نشانی</translation>
+<translation id="5559646482656763170">به‌روزرسانی هنگام عدم استفاده</translation>
 <translation id="555968128798542113">‏این سایت می‌تواند دستگاه‌های MIDI؜ شما را کنترل و مجدداً برنامه‌ریزی کند</translation>
 <translation id="5559768063688681413">چاپگری ذخیره نشده است</translation>
 <translation id="55601339223879446">تنظیم محدوه دسک‌تاپ شما در صفحه نمایشگر</translation>
@@ -6485,6 +6498,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{باز کردن همه در پنجره جدید}=1{باز کردن در پنجره جدید}one{باز کردن همه ({COUNT}) در پنجره جدید}other{باز کردن همه ({COUNT}) در پنجره جدید}}</translation>
 <translation id="5964247741333118902">محتوای جاسازی‌شده</translation>
 <translation id="5965607173855879702">درحال حذف کردن داده‌ها…</translation>
+<translation id="5966067139745999860">‫<ph name="SHORTCUT_TITLE" /> به جایگاه <ph name="SHORTCUT_POSITION" /> از <ph name="TOTAL_SHORTCUTS" /> منتقل شد.</translation>
 <translation id="5966511985653515929">داده‌های سایت با بسته شدن همه پنجره‌ها از دستگاه حذف شود</translation>
 <translation id="5968022600320704045">بدون نتیجه جستجو</translation>
 <translation id="5968400720580217226">حالت هوشواره‌ای</translation>
@@ -6868,7 +6882,6 @@
 <translation id="6264485186158353794">بازگشت به ایمنی</translation>
 <translation id="6264636978858465832">«مدیر گذرواژه» نیاز به دسترسی بیشتری دارد</translation>
 <translation id="626495329434552273">سایت‌هایی که مجاز هستند ورودی صفحه‌کلید را ملغی کنند</translation>
-<translation id="62650662268452475">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از نشانک‌ها، افزونه‌ها، و سایر موارد ذخیره‌شده در «حساب Google» خود در همه دستگاه‌هایتان استفاده کنید</translation>
 <translation id="6265159465845424232">‏پیش‌از کپی یا منتقل کردن فایل‌های Microsoft به Microsoft OneDrive سؤال شود</translation>
 <translation id="6265687851677020761">برداشتن درگاه</translation>
 <translation id="6266532094411434237">درحال متصل شدن به <ph name="DEVICE" /></translation>
@@ -7045,7 +7058,6 @@
 <translation id="6410257289063177456">فایل‌های تصویری</translation>
 <translation id="6410328738210026208">تغییر کانال و پاکسازی</translation>
 <translation id="6410390304316730527">«مرور ایمن» از شما دربرابر مهاجمانی محافظت می‌کند که ممکن است فریبتان دهند تا کارهای خطرناکی انجام دهید؛ ازجمله نصب نرم‌افزار مخرب یا افشای اطلاعات شخصی مثل گذرواژه‌ها، شماره‌های تماس، یا کارت‌های اعتباری. اگر «مرور ایمن» را خاموش می‌کنید، هنگام مرور کردن در سایت‌های ناآشنا یا نامعتبر احتیاط کنید.</translation>
-<translation id="6410390446958964276">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از زمینه‌ها، تنظیمات و سایر موارد ذخیره‌شده در «حساب Google» خود در تمامی دستگاه‌هایتان استفاده کنید</translation>
 <translation id="6411135999030237579">برای تکرار خودکار کلید، آن کلید فشرده و نگه داشته شود</translation>
 <translation id="6415757856498750027">‏برای دریافت «ư»، ‏«w» را تایپ کنید</translation>
 <translation id="6415900369006735853">اتصال به اینترنت ازطریق تلفن</translation>
@@ -7135,6 +7147,7 @@
 <translation id="6476482583633999078">سرعت گفتار</translation>
 <translation id="6476671549211161535">دکمه‌ای به‌غیراز دکمه سمت راست یا چپ موشواره را روی <ph name="DEVICE_NAME" /> فشار دهید.</translation>
 <translation id="6477822444490674459">همگام‌سازی اعلان در تلفن‌هایی که در نمایه کاری هستند پشتیبانی نمی‌شود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="6479376214595342779">برای افزودن زبانه های غیرفعال به جستجو، آن‌ها را مجدداً بار کنید</translation>
 <translation id="6479881432656947268">‏رفتن به «نت‌بازار Chrome»</translation>
 <translation id="6480327114083866287">تحت مدیریت <ph name="MANAGER" /></translation>
 <translation id="6480532238409319936">عملیات به‌روزرسانی ناموفق بود</translation>
@@ -7147,6 +7160,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" /> نمی‌تواند گذواژه‌های شما را دربرابر سرقت اطلاعات شبکه بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="648927581764831596">هیچ‌کدام در دسترس نیست</translation>
 <translation id="6490471652906364588">‏دستگاه USB-C (درگاه سمت راست)</translation>
+<translation id="6491890991754498129">باز کردن &amp;با…</translation>
 <translation id="649396225532207613">این فایل می‌تواند به حساب‌های شخصی و شبکه اجتماعی شما آسیب برساند</translation>
 <translation id="6493991254603208962">کم کردن روشنایی</translation>
 <translation id="6494327278868541139">نمایش جزئیات محافظت بهبودیافته</translation>
@@ -7691,6 +7705,7 @@
 <translation id="6892812721183419409">بازکردن پیوند به‌عنوان <ph name="USER" /></translation>
 <translation id="6893164346922798247">eSpeak</translation>
 <translation id="6896758677409633944">کپی کردن</translation>
+<translation id="6897341342232909480">حرکت به چپ</translation>
 <translation id="6897363604023044284">انتخاب سایت برای پاک کردن</translation>
 <translation id="689770193677424784">برای نمایش عمودی زبانه‌ها، از حالت تمام‌صفحه خارج شوید</translation>
 <translation id="6897756054229464646">‏با Gemini</translation>
@@ -7878,6 +7893,7 @@
 <translation id="7030304022046916278">نشانی‌های وب را به «مرور ایمن» ارسال می‌کند تا بررسی شوند</translation>
 <translation id="7030695672997239647">روی یکی از زبانه‌ها کلیک راست کنید و «افزودن زبانه به گروه» و سپس «گروه جدید» را انتخاب کنید</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - متصل به درگاه سریال</translation>
+<translation id="7032334023419126809">‏حساب Google: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">ورودی باید حداکثر ۶۲ نویسه داشته باشد</translation>
 <translation id="7033731598469029604">مرور خودکار</translation>
 <translation id="70356134210715500">دریافت گذرکلیدها</translation>
@@ -7965,6 +7981,7 @@
 <translation id="710224247908684995">یکی از افزونه‌ها «مرور ایمن» را خاموش کرده است</translation>
 <translation id="7102832101143475489">درنگ درخواست تمام شد</translation>
 <translation id="7103944802169726298">‏رایانه و دستگاه پخش در شبکه Wi-Fi یکسانی هستند</translation>
+<translation id="7104134653119992646">‏گپ‌ها بازبینی می‌شوند و از آن‌ها برای آموزش مدل هوشواره‌ای زایا استفاده می‌شود. Gemini هوشواره است و ممکن است اشتباه کند. می‌توانید <ph name="BEGIN_LINK_MANAGE_HISTORY" />سابقه‌تان را مدیریت کنید<ph name="END_LINK_MANAGE_HISTORY" />، ازجمله اطلاعات مربوط به مکانتان را. <ph name="BEGIN_LINK_LEARN_MORE" />درباره انتخاب‌هایتان بیشتر بدانید<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7105387152460258846">‏‫<ph name="PROFILE_NAME" />. عضویت Google</translation>
 <translation id="7107609441453408294">پخش یک صدا ازطریق همه بلندگوها</translation>
 <translation id="7108338896283013870">عدم نمایش</translation>
@@ -8610,7 +8627,6 @@
 <translation id="7605163396341021431">‏به برنامه‌های Android امکان داده می‌شود دستگاه‌های USB را در این Chromebook کنترل کنند</translation>
 <translation id="7605594153474022051">همگام‌سازی کار نمی‌کند</translation>
 <translation id="7606560865764296217">توقف موقت پویانمایی</translation>
-<translation id="7606639338662398635">گروه زبانه</translation>
 <translation id="7606802863538485839">پخش جلوه‌ها</translation>
 <translation id="7607002721634913082">متوقف</translation>
 <translation id="7608810328871051088">‏اولویت‌های Android</translation>
@@ -8990,6 +9006,7 @@
 <translation id="7903925330883316394">ابزار کمکی: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">کاتاکانا</translation>
 <translation id="7904492297081735975">&amp;باز کردن «مدیر نشانک»</translation>
+<translation id="7904508617992122201">‏گپ‌ها بازبینی می‌شوند و از آن‌ها برای آموزش مدل هوشواره‌ای زایا استفاده می‌شود. Gemini هوشواره است و ممکن است اشتباه کند. برخی محتواها ممکن است برای همه مناسب نباشد. می‌توانید <ph name="BEGIN_LINK_MANAGE_HISTORY" />سابقه‌تان را مدیریت کنید<ph name="END_LINK_MANAGE_HISTORY" />، ازجمله اطلاعات مربوط به مکانتان را. <ph name="BEGIN_LINK_LEARN_MORE" />درباره انتخاب‌هایتان بیشتر بدانید<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7904526211178107182">‏درگاه‌های Linux را در دسترس دستگاه‌های دیگری که در شبکه‌تان موجود هستند قرار دهید.</translation>
 <translation id="7907312522152480478">‏برای این‌که به زبانه‌های بازشده در سایر دستگاه‌ها دسترسی داشته باشید، هویتتان را درستی‌سنجی کنید و سابقه و زبانه‌ها را همگام‌سازی کنید. هر زمان که بخواهید می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="7907502219904644296">تغییر دسترسی</translation>
@@ -9019,6 +9036,7 @@
 <translation id="7921782882718083488">خلاصه کردن این صفحه</translation>
 <translation id="7921901223958867679">این افزونه می‌تواند <ph name="HOST" /> را بخواند و تغییر دهد</translation>
 <translation id="7922606348470480702">یک افزونه</translation>
+<translation id="792402788739682108">تازه‌سازی زبانه‌ها</translation>
 <translation id="7924075559900107275">نامزد پشتیبانی بلندمدت</translation>
 <translation id="7924358170328001543">خطا هنگام ارسال درگاه</translation>
 <translation id="7925108652071887026">داده‌های تکمیل خودکار</translation>
@@ -9400,6 +9418,7 @@
 <translation id="8199300056570174101">مشخصات دستگاه و شبکه (سرویس)</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8202827109322349110">باز کردن در ویرایشگر پایه</translation>
+<translation id="8203105157044679380">‏پانل «جستجوی Google»</translation>
 <translation id="8203152941016626022">نام دستگاه «هم‌رسانی با اطراف»</translation>
 <translation id="8203732864715032075">ارسال اعلان برای شما و به‌خاطرسپردن این رایانه به‌عنوان پیش‌فرض برای «پیام‌نگار». <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">کلیک راست</translation>
@@ -10007,6 +10026,7 @@
 <translation id="8666268818656583275">‏اکنون کلیدهای F عملکردی مشابه کلیدهای ردیف بالای سیستم خواهند داشت</translation>
 <translation id="8666321716757704924">اجازه‌ها دوباره به <ph name="WEBSITE" /> اعطا شد</translation>
 <translation id="8667261224612332309">گذرواژه‌هایی دارید که می‌توانید آن‌ها را بهبود ببخشید</translation>
+<translation id="8667543835349994431">باز کردن &amp;با…</translation>
 <translation id="8668378421690365723">ممکن است دستگاهتان دیگر به‌درستی کار نکند و احتمال دارد با مشکلات عملکردی و امنیتی مواجه شود.</translation>
 <translation id="8669284339312441707">گرم‌تر</translation>
 <translation id="8670537393737592796">برای اینکه سریع به اینجا برگردید، روی دکمه نصب کلیک کنید و برنامه <ph name="APP_NAME" /> را نصب کنید</translation>
@@ -10115,6 +10135,7 @@
 <translation id="8738418093147087440">جستجو براساس کشور، زبان، یا نام‌های ورودی</translation>
 <translation id="8741944563400125534">راهنمای راه‌اندازی «دسترسی کلیدی»</translation>
 <translation id="8743357966416354615">محیط توسعه نرم‌افزار تحت‌مدیریت (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">به‌جای آن به <ph name="URL" /> پیمایش شود؟</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">قبل‌از به‌روزرسانی، تغییر نشانی وب را بازبینی کنید تا مطمئن شوید با آن مشکلی ندارید.</translation>
 <translation id="8745034592125932220">نمی‌تواند در دستگاهتان داده ذخیره کند</translation>
@@ -10211,6 +10232,7 @@
 <translation id="8818152010000655963">کاغذ دیواری</translation>
 <translation id="8818988764764862764">پنجره به چپ منتقل شد</translation>
 <translation id="8819510664278523111">‏شماره EID دستگاه شما <ph name="EID_NUMBER" />، شماره IMEI آن <ph name="IMEI_NUMBER" />، و شماره سریال آن <ph name="SERIAL_NUMBER" /> است. می‌توان از این شماره‌ها برای کمک به فعال‌سازی سرویس استفاده کرد.</translation>
+<translation id="8819762137851963556">پیدا کردن مکان‌نمای موشواره</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="8821045908425223359">‏پیکربندی خودکار نشانی IP</translation>
 <translation id="8821206216942230957">‏حساب شما به «Gemini در Chrome» دسترسی ندارد</translation>
@@ -10577,6 +10599,7 @@
 <translation id="9089416786594320554">روش‌های ورودی</translation>
 <translation id="9090044809052745245">نحوه نمایش دستگاه شما به دیگران</translation>
 <translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{نمی‌توان فایل را به <ph name="CLOUD_PROVIDER" /> منتقل کرد}one{نمی‌توان فایل را به <ph name="CLOUD_PROVIDER" /> منتقل کرد}other{نمی‌توان فایل‌ها را به <ph name="CLOUD_PROVIDER" /> منتقل کرد}}</translation>
+<translation id="9092594036947304891">پاسخ آماده است</translation>
 <translation id="9093470422440389061">‏سنجه‌های عملکرد WiFi</translation>
 <translation id="9094033019050270033">به‌روزرسانی گذرواژه</translation>
 <translation id="9094038138851891550">نام کاربری نامعتبر است</translation>

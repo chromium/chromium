@@ -517,6 +517,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5940385492829620908">Таны веб, хавчуурга, болон Chrome-ийн бусад зүйлс энд хадгалагддаг.</translation>
 <translation id="5941711191222866238">Багасгах</translation>
 <translation id="5941830788786076944">Google Chrome-ыг анхдагч веб хөтөчөө болгоно уу</translation>
+<translation id="5944731887996253728">Дэлгэцээ ашиглаагүй үед Chrome шинэчлэгдэнэ</translation>
 <translation id="5947104538377036631">Chrome-н товчлол</translation>
 <translation id="5960071705175224773">Таны тохиргоог тодорхойгүй апп өөрчилсөн</translation>
 <translation id="5980111191913430208">Тодорхойгүй эх сурвалжийн өргөтгөл, апп, загварууд таны төхөөрөмжийг гэмтээх боломжтой. Chrome тэдгээрийг зөвхөн <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-с суулгахыг зөвлөдөг</translation>
@@ -807,6 +808,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8367950957770994118">Танд хэрэг болох бүрд Chrome дахь Gemini-г шуурхай нээгээрэй</translation>
 <translation id="8370517070665726704">Зохиогчийн эрх <ph name="YEAR" /> Google ХХК. Бүх эрх хуулиар хамгаалагдсан.</translation>
 <translation id="8370748943308169953"><ph name="USER_NAME" />-р Chrome-д нэвтрэх QR код</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> бэлэн байна. Та одоо дахин ачаалах эсвэл Chrome-г дараагийн удаа дэлгэц асаалттай бөгөөд <ph name="IDLE_DURATION" />-н турш ашиглаагүй үед шинэчлэгдэхээр тохируулах боломжтой.</translation>
 <translation id="8376752431516546391">Google Хайлтын хажуугийн самбар</translation>
 <translation id="8377158135256176353">Chrome Канар дахь Gemini-г асаах/унтраах</translation>
 <translation id="8380754585531979907">Chrome дахь Gemini, нээлттэй табынхаа хооронд шилжихэд гараа ашиглана уу.</translation>
@@ -846,6 +848,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8656634243791296665">Chrome Dev дэх Gemini-г нээх</translation>
 <translation id="8669527147644353129">Google Chrome Туслагч</translation>
 <translation id="8679801911857917785">Энэ нь мөн таныг Chrome-ыг эхлүүлэх үед гарч ирдэг хуудсыг хянадаг.</translation>
+<translation id="8699232386626916686">Аюулгүй байхын тулд Chrome-г шинэчилнэ үү</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8712767363896337380">Шинэчилж дуусаж байна! Шинэчилж дуусгахын тулд Chrome-г дахин ачаална уу.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> аль хэдийн нэвтэрсэн байна. Хөтчийн түүхээ тусад нь байлгахын тулд Chrome-д <ph name="USER_EMAIL_ADDRESS" />-р өөрийн профайлаар нэвтэрнэ үү. Та мөн <ph name="DEVICE" />-с унших жагсаалт болон бусад зүйлээ авна.</translation>

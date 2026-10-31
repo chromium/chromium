@@ -40,6 +40,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> 파일을 열 수 없습니다</translation>
 <translation id="1086486568852410168">Google 렌즈로 검색</translation>
 <translation id="1095093219235104018">Gemini로 정보 찾기 및 자동 완성</translation>
+<translation id="1096245844813536669">말을 멈추면 검색어가 자동으로 전송됩니다</translation>
 <translation id="1096992026380844478">마지막 백업에 따라 동기화 설정이 복원됩니다. <ph name="BEGIN_LINK" />동기화할 수 있는 항목 확인하기<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
 <translation id="1110772719190051587">Face ID로 잠금 해제</translation>
@@ -392,7 +393,6 @@
 <translation id="2139867232736819575">복사한 텍스트 검색</translation>
 <translation id="2140913838150159519">탭 고정</translation>
 <translation id="2147127444698817042">iPhone에서만 사용 가능</translation>
-<translation id="2148326276832455306">Google AI 개선을 위해 채팅을 검토하고 사용합니다. 사용자는 위치 정보 등의 <ph name="BEGIN_LINK" />활동을 관리<ph name="END_LINK" />할 수 있습니다. <ph name="BEGIN_LINK" />선택사항에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2148799636999124959">저장된 비밀번호로 사이트 및 앱에 빠르게 로그인하세요.</translation>
 <translation id="2149968176347646218">연결이 안전하지 않음</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
@@ -458,7 +458,6 @@
 <translation id="2327445548174191329">출처: <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">보호되지 않음</translation>
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
-<translation id="2340966584724330791">Google은 사용자의 채팅과 사용자가 Gemini와 공유한 자료(파일, 동영상, 화면, 사진 등)를 수집합니다. 또한 사용자가 제공한 의견, Gemini를 통해 방문한 웹사이트의 정보, 제품 사용 및 위치 정보(예: 기기의 대략적인 위치, IP 주소, Google 계정에 등록된 집 주소 또는 직장 주소)를 수집합니다.</translation>
 <translation id="2350463587705616331">세피아 배경 색상</translation>
 <translation id="2351097562818989364">번역 설정이 재설정되었습니다.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Google 계정({EMAIL})에 {DOMAIN_ONE}의 비밀번호를 저장할 수 있습니다.}=2{Google 계정({EMAIL})에 {DOMAIN_ONE} 및 {DOMAIN_TWO}의 비밀번호를 저장할 수 있습니다.}=3{Google 계정({EMAIL})에 {DOMAIN_ONE}, {DOMAIN_TWO} 외 {OTHER_DOMAINS_COUNT}개의 비밀번호를 저장할 수 있습니다.}other{Google 계정({EMAIL})에 {DOMAIN_ONE}, {DOMAIN_TWO} 외 {OTHER_DOMAINS_COUNT}개의 비밀번호를 저장할 수 있습니다.}}</translation>
@@ -720,6 +719,7 @@
 <translation id="3186796054637504691">방문 기록 및 웹사이트 데이터 지우기</translation>
 <translation id="3190558889382726167">비밀번호 저장됨</translation>
 <translation id="3190736958609431397">추적 취소</translation>
+<translation id="3192820089569442694">데이터 사용 중지 요청에 문제가 발생했습니다.</translation>
 <translation id="3208260410153224535">조직에서 로그인을 사용 중지했습니다. 새 북마크, 비밀번호 등이 이 기기에만 저장됩니다.</translation>
 <translation id="3211969308836412674">사이트 고정 해제</translation>
 <translation id="3213807041830307252">카메라와 사진 갤러리를 사용하여 지금 보고 있는 항목을 쇼핑하고, 번역하고, 식별하세요</translation>
@@ -741,7 +741,6 @@
 <translation id="3265736395246760288">동기화된 기기에서 더 빠르게 로그인하세요</translation>
 <translation id="3268166994745151153">현재 진행 상황이 삭제됩니다.</translation>
 <translation id="3272527697863656322">취소</translation>
-<translation id="3272955648592358996">사용자의 데이터를 통한 Google AI의 개선</translation>
 <translation id="3273510436356991673">홈 화면 맞춤설정하기</translation>
 <translation id="327455571215090823">더욱 스마트한 자동 완성, 비공개로 보호되는 개인 정보</translation>
 <translation id="3277021493514034324">사이트 주소가 복사되었습니다.</translation>
@@ -787,6 +786,7 @@
 <translation id="344589138074534176">Google 렌즈 자세히 알아보기</translation>
 <translation id="3449029510150690417">이름 및 색상을 지정하여 새로운 탭 그룹을 생성합니다.</translation>
 <translation id="345348365500626747">주소 찾음</translation>
+<translation id="3453878468834191501">새 채팅을 시작하면 현재 탭이 Gemini와 공유됩니다. <ph name="BEGIN_LINK" />AI 및 개인 정보 보호에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Gemini Live 대화로 페이지에 관해 질문하고, 소리 내어 브레인스토밍하고, 대화를 주고받을 수 있습니다.</translation>
 <translation id="3462768334899086950">저장되지 않은 파일이 삭제되고 현재 탭이 닫힙니다</translation>
 <translation id="3464194322481586217">가격을 추적할 수 없습니다.</translation>
@@ -850,6 +850,7 @@
 <translation id="3641456520301071208">사이트에서 위치 정보를 요청할 수 있음</translation>
 <translation id="3642060527569456384">탭 그룹이 모든 기기에서 자동으로 저장되고 업데이트됩니다.</translation>
 <translation id="3643338347976071250">{count,plural, =1{비밀번호 {count}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정({email})에 저장하세요.}other{비밀번호 {count}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정({email})에 저장하세요.}}</translation>
+<translation id="3657176844107584515"><ph name="EMAIL" />, Google 멤버십을 보유하고 있습니다.</translation>
 <translation id="3659297405161482746">결제 수단을 찾을 수 없음</translation>
 <translation id="3662966164093827811">{count,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
 <translation id="3668035568083954765">개인 정보 보호 및 보안 유지</translation>
@@ -917,7 +918,6 @@
 <translation id="3888863481921783344">일정에 초대할 수 있는 사람을 표시하는 데 사용됩니다.</translation>
 <translation id="3891414008432200754">가격</translation>
 <translation id="3892144330757387737">여기에서 방문 기록을 확인할 수 있습니다</translation>
-<translation id="3892695492576181257">사용 설정하면 활동이 Gemini 앱 활동에 18개월 동안 저장되며 이 기간을 3개월 또는 36개월로 변경할 수 있습니다. Google은 Gemini 모델을 비롯한 Google 서비스를 개발 및 개선하고, 인적 검토자의 도움을 받아 Google, Google 사용자, 일반 대중을 보호하는 용도로 사용자의 활동을 사용합니다. 서비스 제공업체에서 검토한 데이터는 사용자 계정과 분리되어 3년 동안 저장됩니다.</translation>
 <translation id="3893858854379998374">계정에 북마크를 저장하려면 사용하지 않는 북마크를 삭제하세요.</translation>
 <translation id="3897092660631435901">메뉴</translation>
 <translation id="3904270275864974753">캐러셀 편집</translation>
@@ -947,6 +947,7 @@
 <translation id="3955740319737378355">완료</translation>
 <translation id="3955822496205734389">비밀번호가 취약합니다.</translation>
 <translation id="3957016963627617921">Chrome의 Gemini 최대한 활용하기</translation>
+<translation id="3957737662589242353"><ph name="NAME" />, <ph name="EMAIL" />, Google 멤버십을 보유하고 있습니다.</translation>
 <translation id="3958312024468322930">아이콘을 홈 화면 하단의 도크로 드래그</translation>
 <translation id="3962326069546168954">저장</translation>
 <translation id="3967327056943561740">북마크</translation>
@@ -1428,7 +1429,6 @@
 <translation id="5447973833955560753">비밀번호 복구</translation>
 <translation id="5448623529214315261">저장된 사진 <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">안전한 비밀번호 사용</translation>
-<translation id="5453088693079603292">수집되는 활동</translation>
 <translation id="5454211924362324495">다른 사람이 내 비밀번호를 사용하지 못하도록 하려면 <ph name="BEGIN_LINK" /><ph name="WEBSITE" />에서 비밀번호를 변경<ph name="END_LINK" />하세요.</translation>
 <translation id="5457082343331641453">검색에 추가</translation>
 <translation id="5457226814769348910">오프라인 버전 열기</translation>
@@ -1542,7 +1542,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5801568494490449797">환경설정</translation>
 <translation id="5803566855766646066">새 카드를 삭제하시겠습니까?</translation>
 <translation id="5804241973901381774">권한</translation>
-<translation id="58081802114142635">사용자 활동은 Google AI를 개선하는 데 도움이 됩니다</translation>
 <translation id="5817176759448082654">비밀번호 진단</translation>
 <translation id="5818161931099046557">Google 계정에서 수정</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -1591,7 +1590,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5971459446352190251">QR 코드 검색</translation>
 <translation id="5971872012779224351">{count,plural, =1{북마크 1개가 삭제되었습니다.}other{북마크 {count}개가 삭제되었습니다.}}</translation>
 <translation id="5972844218283131174">전체 선택 해제</translation>
-<translation id="597482816780655631">Gemini는 AI이며 인물 등에 관한 정보 제공 시 실수를 할 수 있습니다. 일부 사용자에게 적합하지 않은 콘텐츠가 있을 수 있습니다. Google AI 개선을 위해 채팅을 검토하고 사용합니다. <ph name="BEGIN_LINK" />사용자의 선택권에 대해 자세히 알아보세요<ph name="END_LINK" />. Google <ph name="BEGIN_LINK" />약관<ph name="END_LINK" /> 및 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />이 적용됩니다.</translation>
 <translation id="5976160379964388480">기타</translation>
 <translation id="5977976211062815271">이 기기에서</translation>
 <translation id="5986043348928676121">다음</translation>
@@ -1609,7 +1607,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6027945736510816438"><ph name="WEBSITE" /> 도메인을 찾으셨나요?</translation>
 <translation id="6032845897905314562">새로운 기능</translation>
 <translation id="6038823991892265570">Google 스토리지 관리</translation>
-<translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6042308850641462728">더보기</translation>
 <translation id="6045460247888249350">제목 추가</translation>
@@ -1626,6 +1623,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6078236141387574983">시트 높이 재조정</translation>
 <translation id="6084848228346514841">탭 선택</translation>
 <translation id="6089212833343035912">Google 비밀번호 관리자 PIN</translation>
+<translation id="6090690847556987004">이 설정에서 문제가 발생했습니다. Chrome 및 iOS를 업데이트한 후 기기를 다시 시작하여 다시 시도해 보세요. 문제가 계속 발생하면 iPhone에서 이 설정을 지원하지 않는 것일 수 있습니다.</translation>
 <translation id="6090760257419195752">닫은 경고</translation>
 <translation id="6094325891006032858">향상된 세이프 브라우징 사용 설정하기</translation>
 <translation id="6096965253650248286"><ph name="COUNT" />개 찾음</translation>
@@ -1817,7 +1815,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, <ph name="THIRD_WEBSITE" />의 비밀번호가 삭제됩니다. 계정은 삭제되지 않습니다.</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6612912757320004438">탭 알림 허용…</translation>
-<translation id="6613372200395638275">Gemini는 맞춤형 지원을 제공하기 위해 사용자의 데이터 일부(예: 채팅의 일부, 위치, 기타 관련 정보)를 지도, 항공편 검색과 같은 다른 Google 서비스와 공유합니다. 나중에 Gemini 앱 활동을 삭제하더라도 이러한 서비스에서는 서비스 개선을 위해 이 정보를 사용할 수 있습니다. <ph name="BEGIN_LINK" />Gemini 앱 개인 정보 보호 허브<ph name="END_LINK" />에서 자세히 알아보세요.</translation>
 <translation id="6617761071025228250">텍스트 삭제</translation>
 <translation id="6619015782482868078">아쿠아 테마</translation>
 <translation id="6620279676667515405">취소</translation>
@@ -1977,7 +1974,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7091023926159231962">{count,plural, =1{비밀번호 {count}개를 가져올 수 없음}other{비밀번호 {count}개를 가져올 수 없음}}</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" />의 Google 비밀번호 관리자에 저장</translation>
 <translation id="7097046145876891318">주소 표시줄에서 가격 변동 내역을 탭하여 시간 경과에 따른 가격 변동을 확인하세요.</translation>
-<translation id="7098554251807199977">Gemini와의 대화 내용이나 <ph name="BEGIN_LINK" />Google Workspace 데이터<ph name="END_LINK" />는 검토되지 않으며, 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="7102005569666697658">다운로드 중… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">메뉴 → 설정 → 결제 수단</translation>
 <translation id="7108338896283013870">숨기기</translation>
@@ -2122,6 +2118,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7557508262441527045">로그아웃됨</translation>
 <translation id="7561196759112975576">항상</translation>
 <translation id="7561982940498449837">메뉴 닫기</translation>
+<translation id="7562347727679121642">검색에 이미지 추가</translation>
 <translation id="7566349809380613217"><ph name="GROUP_TITLE" /> 열기, <ph name="NUMBER_OF_TABS" /> 공유 그룹, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">북마크가 숨겨져 있음</translation>
 <translation id="7575664680938145959">탭 한 번으로 여세요</translation>
@@ -2417,7 +2414,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8439758443371991593">읽기 목록에 추가 숨기기</translation>
 <translation id="8443986842926457191">URL이 2,048자(영문 기준)를 초과합니다.</translation>
 <translation id="8449869326050867919">비밀번호 공유됨</translation>
-<translation id="8461708300275916315">만 18세 미만인 경우</translation>
 <translation id="8473815223723723001">Gemini로 이미지 수정</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="8474378002946546633">알림 허용</translation>
@@ -2497,7 +2493,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8672733398999596205">모두 사용</translation>
 <translation id="8674716540979958118">유출된 비밀번호가 있습니다.</translation>
 <translation id="8679900250380464358">읽기 목록에 추가</translation>
-<translation id="8680643216091361291"><ph name="BEGIN_LINK" />활동 기록 보관<ph name="END_LINK" /> 설정이 기본적으로 사용 중지되어 있습니다. 이 설정이 사용 중지되면 Google에서 3일 동안 대화 내용을 저장합니다. Google은 이러한 정보를 사용하여 Gemini 앱이 제대로 작동하도록 하고, 앱의 보안을 유지하며, 사용자 의견을 반영하여 문제를 해결합니다. 활동 기록 보관을 사용 설정하면 모두를 위해 Google AI를 개선하는 데 기여할 수 있습니다.</translation>
 <translation id="8680787084697685621">계정 로그인 세부정보의 유효기간이 만료되었습니다.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />"에서 마이크에 액세스하도록 허용되지 않습니다.</translation>
 <translation id="8690752723634292147">삭제 확인</translation>
@@ -2555,7 +2550,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="882557203579758546">페이지에서 찾기…</translation>
 <translation id="8829809207373502270">이 패스키는 더 이상 작동하지 않습니다. <ph name="WEBSITE" />에서 삭제되었으며, 곧 여기에서도 삭제됩니다. <ph name="BEGIN_LINK" />패스키에 관한 정보<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">모든 비활성 탭 닫기</translation>
-<translation id="8831871601813227635">Google <ph name="BEGIN_LINK" />약관<ph name="END_LINK" />, <ph name="BEGIN_LINK" />대한민국 위치 서비스 약관<ph name="END_LINK" />, <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />이 적용됩니다. Google AI 개선을 위해 채팅을 검토하고 사용합니다. Gemini는 AI이며 인물 등에 관한 정보 제공 시 실수를 할 수 있습니다. 일부 사용자에게 적합하지 않은 콘텐츠가 있을 수 있습니다. 사용자는 위치 정보 등의 <ph name="BEGIN_LINK" />활동을 관리<ph name="END_LINK" />할 수 있습니다. <ph name="BEGIN_LINK" />사용자의 선택권에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">게시자순 정렬</translation>
 <translation id="884351711508006491">정보가 기기에 저장됩니다.</translation>
 <translation id="8844136307393039959">추적 중인 제품의 가격 인하</translation>
@@ -2636,6 +2630,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9090979472668095374">검색 결과를 음성으로 답하기</translation>
 <translation id="9094033019050270033">비밀번호 업데이트</translation>
 <translation id="9098541895599151034">비밀번호 <ph name="NUMBER_OF_ACCOUNTS" />개를 삭제하시겠습니까?</translation>
+<translation id="909874878420399003">자동 전송</translation>
 <translation id="9099233023029360602">항상 사용할 계정 확인</translation>
 <translation id="9099821309562615674">번역할 텍스트가 선명하고 프레임 안에 있는지 확인하세요</translation>
 <translation id="9100610230175265781">암호를 입력해야 합니다.</translation>
@@ -2669,6 +2664,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9203951165704618409">주소 표시줄을 상단에서 하단으로 전환하여 탐색 환경을 맞춤설정하세요</translation>
 <translation id="9205189991633470489">시크릿 탭 잠금</translation>
 <translation id="9206887540681440657">속도</translation>
+<translation id="9218088788182688902">이 설정에서 문제가 발생했습니다. Chrome 및 iPadOS를 업데이트한 후 기기를 다시 시작하여 다시 시도해 보세요. 문제가 계속 발생하면 iPad에서 이 설정을 지원하지 않는 것일 수 있습니다.</translation>
 <translation id="9218430445555521422">기본값으로 설정</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="9219154867334666734">탭 검색…</translation>

@@ -318,6 +318,7 @@
 <translation id="4135244987012252068">Chromium をカスタマイズして、ブラウザのデザインを一新</translation>
 <translation id="4147856324248078748">Chromium をカスタマイズ(&amp;U)</translation>
 <translation id="4148957013307229264">インストール中...</translation>
+<translation id="4197500750628721662">セキュリティを確保するため Chromium を更新してください</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chromium</translation>
 <translation id="4208652172235621272"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chromium にログインしてください。すべてのデバイスで同じリーディング リストなどを使用できます。</translation>
 <translation id="421369550622382712">Chromium の優れたアプリ、ゲーム、拡張機能、テーマをぜひご利用ください。</translation>
@@ -453,6 +454,7 @@
 <translation id="5596063723521813107">{COUNT,plural, =1{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。アイソレート ウィンドウは、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。現在開いている # 個のアイソレート ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5605834417512968703">画像検索で検索する範囲を選択してください。Esc キーを押すと画像検索を終了します</translation>
+<translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> の準備ができました。今すぐ再起動するか、次回画面がオンのまま <ph name="IDLE_DURATION" /> 間使用されなかったときに Chromium を更新するように設定できます。</translation>
 <translation id="5618818588972826921">画像検索で検索するテキストまたは画像を選択してください。Esc キーを押すと画像検索を終了します。</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium のアップデートが利用可能です}=1{Chromium のアップデートが利用可能です}other{Chromium のアップデートが利用可能になってから # 日経過しています}}</translation>
 <translation id="5643865575100044307">Chromium を閉じるとき、常にデバイスからサイトデータを削除する</translation>
@@ -509,6 +511,7 @@
 <translation id="6192070012454216182">Chromium を最小化しているときでも、あらゆる場所から検索や質問を行えます。Chromium のバックグラウンドでの実行を許可します。</translation>
 <translation id="6212496753309875659">新しいバージョンの Chromium が既にインストールされています。ソフトウェアが動作しない場合は、Chromium をアンインストールしてからもう一度お試しください。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium は今すぐ再起動されます}=1{Chromium は 1 秒後に再起動されます}other{Chromium は # 秒後に再起動されます}}</translation>
+<translation id="6232046770428574552">Chromium は、画面が使用されていないときに更新されます</translation>
 <translation id="6241367896540709610">ファイルをダウンロードするには、Chromium でストレージへのアクセスを許可する必要があります</translation>
 <translation id="6245734527075554892">Chromium に保存されている安全でないサイトのリストと URL を照合します</translation>
 <translation id="6248213926982192922">Chromium を既定のブラウザにする</translation>
@@ -631,6 +634,7 @@
 <translation id="7204669035546236137">Gemini in Chromium なら、その場で何でも質問できます</translation>
 <translation id="7213008767289637091">Chromium を Dock に追加すると、いつでもすばやくアクセスできます</translation>
 <translation id="7213407614656404070">メッセージ、ドキュメント、他のアプリのリンクをクリックしたときに、常に Chromium で開くよう設定できます</translation>
+<translation id="7213435258745128111">Chromium の Google 検索</translation>
 <translation id="7216228761061470870">パソコンで画像検索を使用すると、ページのタイトル、URL、コンテンツ（PDF を含む）がサーバーに送信されます</translation>
 <translation id="7223968959479464213">タスク マネージャ - Chromium</translation>
 <translation id="7226331818892775989">他のアプリやファイルなど、Chromium 以外のコンテンツについて質問できます</translation>

@@ -150,7 +150,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1249643768796040660">Deze informatie verwijderen</translation>
 <translation id="1253846494229886276">Screenshot opslaan</translation>
-<translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (gesynchroniseerd)</translation>
 <translation id="1255931290436977164">Paspoort</translation>
 <translation id="1256368399071562588">&lt;p&gt;Als je een website wilt bezoeken en deze niet wordt geopend, kun je eerst zelf proberen het probleem op te lossen aan de hand van de volgende stappen:&lt;/p&gt;
     &lt;ol&gt;
@@ -935,6 +934,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2535585790302968248">Een nieuw incognitotabblad openen om privé te browsen</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
 <translation id="2536110899380797252">Adres toevoegen</translation>
+<translation id="2536852576044236667">Vorige weergave buiten</translation>
 <translation id="2537931901612099523">Anderen die dit apparaat gebruiken, kunnen je activiteit niet zien, dus je kunt beter privé browsen. Dit heeft geen invloed op de manier waarop gegevens worden verzameld door websites die je bezoekt en de services die ze gebruiken, waaronder Google. Downloads en bookmarks worden opgeslagen.</translation>
 <translation id="2541219929084442027">De pagina's die je op incognitotabbladen bekijkt, worden niet bewaard in je browsergeschiedenis, cookie-opslag of zoekgeschiedenis nadat je al je incognitotabbladen hebt gesloten. Alle bestanden die je hebt gedownload of bookmarks die je hebt gemaakt, blijven behouden.</translation>
 <translation id="2541474152868747095">Laat verifiëren dat jij het bent om de geschiedenis van je andere apparaten te krijgen. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
@@ -1092,6 +1092,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2826760142808435982">De verbinding is gecodeerd en geverifieerd met <ph name="CIPHER" /> en gebruikt <ph name="KX" /> als mechanisme voor sleuteluitwisseling.</translation>
 <translation id="2828797285817981634">Bewegingssensoren voorlopig toegestaan</translation>
 <translation id="2835907903001172712">Browseroverzicht</translation>
+<translation id="2836653778330912701">Volgende weergave buiten</translation>
 <translation id="2837891525090413132">Kan vragen om je toetsenbord te vergrendelen en te gebruiken</translation>
 <translation id="2839032553903800133">Meldingen geblokkeerd</translation>
 <translation id="2839501879576190149">Nepsite gedetecteerd</translation>
@@ -1206,6 +1207,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3030331669969285614">Deze flags voorkomen een schadelijke wijziging of maken deze ongedaan en zijn maar beperkte tijd beschikbaar.</translation>
 <translation id="3033200136993730761">Met je woonadres kun je meer gedaan krijgen in Google-services, zoals relevantere zoekresultaten en routes in Google Maps. Je kunt je adres bewerken of verwijderen <ph name="BEGIN_LINK" />in je Google-account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Bewegings- en lichtsensoren voorlopig toegestaan</translation>
+<translation id="3034219227076811559">Google Zoeken in Chrome</translation>
 <translation id="3034526003882782781">Scrollen en zoomen toegestaan</translation>
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
 <translation id="3037605927509011580">Oeps!</translation>
@@ -1645,6 +1647,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3749600200023337912">Je opgeslagen methode voor automatische betalingen kan worden gebruikt voor deze betaling. Als je e-wallets of de betalingsapp in Chrome wilt uitzetten, ga je naar je <ph name="BEGIN_LINK1" />betaalinstellingen<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Adres opslaan in account?</translation>
 <translation id="3752543821772132562">Genegeerd omdat <ph name="POLICY_NAME" /> niet is ingesteld.</translation>
+<translation id="3753412199586870466">Zijvenster openen</translation>
 <translation id="3754210790023674521">Scherm-in-scherm afsluiten</translation>
 <translation id="3757511311058373406">Filters voor automatisch browsen</translation>
 <translation id="3759461132968374835">Je hebt geen onlangs gemelde crashes. Crashes die zich voordeden toen de crashrapportage was uitgezet, worden hier niet weergegeven.</translation>
@@ -2439,6 +2442,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5053116470141135293">Er wordt een virtueel kaartnummer ingevuld als u afrekent met deze kaart om uw daadwerkelijke gegevens te beschermen. Beheren in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Als je dit bestand wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}other{Als je deze bestanden wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}}</translation>
 <translation id="5056587122125565772">Afbeelding maken</translation>
+<translation id="5056908537436373373">Venster <ph name="WINDOW_INDEX" /> (1 tabblad) openen in een nieuw venster</translation>
 <translation id="505757197798929356">Waarom wil je dit openen? (vereist)</translation>
 <translation id="5058282932481719070">meer informatie over verbeterd automatisch invullen in instellingen</translation>
 <translation id="5061227663725596739">Bedoelde je <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2944,7 +2948,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5902204772823742902">Rijbewijs beveiligd toevoegen aan Google Wallet</translation>
 <translation id="5903264686717710770">Titel:</translation>
 <translation id="5905671155741555195">Met je werkadres kun je meer gedaan krijgen in Google-services, zoals relevantere zoekresultaten en routes in Google Maps. Je kunt je adres bewerken of verwijderen <ph name="BEGIN_LINK" />in je Google-account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
-<translation id="5908541034548427511"><ph name="TYPE_1" /> (gesynchroniseerd)</translation>
 <translation id="5910140988253729859">Automatisch invullen ongedaan maken</translation>
 <translation id="5911110632211230665">Openen geblokkeerd</translation>
 <translation id="5912796581727968237">Google Wallet openen</translation>
@@ -3014,7 +3017,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6018650639991193045">Verwijder onder andere je browsegeschiedenis, cookies en cachegeheugen in de Chrome-instellingen</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Kan video niet opslaan in OneDrive</translation>
-<translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (gesynchroniseerd)</translation>
 <translation id="6025471531651464742">Bestanden toevoegen</translation>
 <translation id="6028591542479806248">Mobiele en e-mailmeldingen beheren</translation>
 <translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om een nieuw geïsoleerd venster te openen om privé te browsen</translation>
@@ -3176,6 +3178,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6284292079994426700">26 x 38 inch</translation>
 <translation id="6284517535531159884">Type variantseed</translation>
 <translation id="6287197303017372967">Met de navigatiefunctie krijg je stapsgewijze routeaanwijzingen voor je bestemming.</translation>
+<translation id="6287497864845330943">Venster <ph name="WINDOW_NUMBER" /> · <ph name="NUM_TABS" /> tabbladen</translation>
 <translation id="628877850550444614">Korting gevonden</translation>
 <translation id="6289939620939689042">Paginakleur</translation>
 <translation id="6292819926564202163">Je zoekmachine in Chrome</translation>
@@ -3214,6 +3217,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6342069812937806050">Zojuist</translation>
 <translation id="6342171901363060580">Je ziet deze waarschuwing omdat deze site geen HTTPS ondersteunt en je in de incognitomodus zit. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Route</translation>
+<translation id="6345664705388712774">Afbeeldingen toevoegen aan je zoekopdracht</translation>
 <translation id="6348220984832452017">Actieve variaties</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installeren</translation>
 <translation id="6350739641326887427">Betaal zonder de Pix-code te kopiëren en plakken. <ph name="BEGIN_LINK1" />Kijken hoe het werkt<ph name="END_LINK1" /></translation>
@@ -3606,6 +3610,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7013835112918108252">Kan vragen om je muis te vergrendelen en te gebruiken</translation>
 <translation id="7013844825046560088">Chrome registreert hoe je de functie gebruikt, zoals je verzoeken en je gedrag als je suggesties accepteert of negeert</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
+<translation id="7016016144157344115">Venster <ph name="WINDOW_NUMBER" /> · 1 tabblad</translation>
 <translation id="7016992613359344582">Dit kunnen eenmalige of terugkerende kosten zijn die misschien niet duidelijk worden aangegeven.</translation>
 <translation id="7020464868401003526">De URL van de snelkoppeling is langer dan de maximaal toegestane lengte van <ph name="MAX_LENGTH" /> tekens.</translation>
 <translation id="7020581144940000377">Geschatte locatie gebruiken</translation>
@@ -3735,7 +3740,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7240120331469437312">Alternatieve naam voor entiteit van certificaat</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244061187185055290">Beschrijf in een paar woorden wat je zoekt</translation>
 <translation id="7247459554233215758">Tik op kaartgegevens om deze toe te voegen aan de betaalfunctie.</translation>
 <translation id="7250174481516136841"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over kaartvoordelen</translation>
 <translation id="7251437084390964440">De netwerkconfiguratie voldoet niet aan de ONC-standaard. Delen van de configuratie worden mogelijk niet geïmporteerd.
@@ -4157,6 +4161,7 @@ Aanvullende informatie:
 <translation id="7911651285409665023">Sluiten en teruggaan naar <ph name="TAB_TITLE" /></translation>
 <translation id="7912924955815015552">Geïmporteerd uit Safari</translation>
 <translation id="7916162853251942238">Flexo-basis</translation>
+<translation id="7916802424606434188">Venster <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> tabbladen) openen in een nieuw venster</translation>
 <translation id="791698251820376781">Je organisatie staat niet toe dat je inlogt</translation>
 <translation id="7927046851848613453">Sla tickets, evenementen en andere informatie op van pagina's die je bekijkt, niet alleen van formulieren die je invult. Krijg daarna snel toegang tot je kaarten, zoals evenementtickets en klantenkaarten. Je opgeslagen informatie kan op je apparaten en in Google-producten worden getoond.</translation>
 <translation id="7930282586031445870">Scherm met servicevoorwaarden voor Koop nu, betaal later is gesloten.</translation>
@@ -4315,6 +4320,7 @@ Aanvullende informatie:
 <translation id="8199437620497683918">Optische schijf (glanzend)</translation>
 <translation id="8202097416529803614">Besteloverzicht</translation>
 <translation id="8202370299023114387">Conflict</translation>
+<translation id="8203105157044679380">Google Zoeken-venster</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">De content van pagina's die je afdrukt en informatie over je printer worden naar Google Cloud of derden gestuurd voor analyse. Deze kan bijvoorbeeld worden gescand op gevoelige gegevens en worden opgeslagen op basis van het bedrijfsbeleid en zichtbaar zijn voor je beheerder.</translation>
 <translation id="8210490490377416373">Beleidsnaam selecteren</translation>

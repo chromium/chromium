@@ -234,6 +234,7 @@
 <translation id="3037517125981011456">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते</translation>
 <translation id="3037838751736561277">Google Chrome पार्श्वभूमी मोड मध्ये आहे.</translation>
 <translation id="3038232873781883849">इंस्टॉल करण्यासाठी प्रतीक्षा करत आहे...</translation>
+<translation id="304285957253771186">चेतावणी: Google Chrome हे एक्स्टेंशनना तुमचा ब्राउझिंग इतिहास रेकॉर्ड करण्यापासून रोखू शकत नाही. हे एक्स्टेंशन आयसोलेटेड मोडमध्ये बंद करण्यासाठी, या पर्यायाची निवड रद्द करा.</translation>
 <translation id="3045032126857188731">भाषांतराची भाषा: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">फीडबॅक डायलॉग बंद करा</translation>
 <translation id="306179102415443347">Google Password Manager वर झटपट जाण्यासाठी तुमचा शॉर्टकट वापरा. तुम्ही तुमचा शॉर्टकट तुमच्या कॉंप्युटरच्या होम स्क्रीनवर किंवा अ‍ॅप लाँचरवर हलवू शकता.</translation>
@@ -530,6 +531,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5940385492829620908">तुमचे वेब, बुकमार्क आणि अन्य Chrome आशय येथे थेट आहे.</translation>
 <translation id="5941711191222866238">कमी करा</translation>
 <translation id="5941830788786076944">Google Chromeला डीफॉल्ट ब्राउझर बनवा</translation>
+<translation id="5944731887996253728">तुमची स्क्रीन वापरात नसताना Chrome अपडेट होईल</translation>
 <translation id="5947104538377036631">Chrome शॉर्टकट</translation>
 <translation id="5960071705175224773">अज्ञात ॲपने तुमची सेटिंग्ज बदलली आहेत</translation>
 <translation id="5980111191913430208">अज्ञात स्रोतांकडील एक्स्टेंशन, अ‍ॅप्स आणि थीम तुमच्या डिव्हाइसला हानी पोहोचवू शकतात. Chrome फक्त <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मधून ते इंस्टॉल करण्याची शिफारस करते</translation>
@@ -834,6 +836,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8367950957770994118">तुम्हाला गरज असेल, तेव्हा Chrome मध्ये Gemini झटपट उघडा</translation>
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्व हक्क राखीव.</translation>
 <translation id="8370748943308169953"><ph name="USER_NAME" /> म्हणून Chrome मध्ये साइन इन करण्यासाठी QR कोड</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> तयार आहे. तुम्ही आता पुन्हा लाँच करू शकता किंवा तुमची स्क्रीन सुरू राहिल्यावर आणि <ph name="IDLE_DURATION" /> साठी न वापरल्यास, पुढील वेळी अपडेट करण्यासाठी Chrome सेट करू शकता.</translation>
 <translation id="8376752431516546391">Google Search साइड पॅनल</translation>
 <translation id="8377158135256176353">Chrome कॅनरी मधील Gemini टॉगल करा</translation>
 <translation id="8380754585531979907">Chrome मधील Gemini आणि तुमचा उघडा टॅब यांदरम्यान नेव्हिगेट करण्यासाठी तुमचा कीबोर्ड वापरा.</translation>
@@ -877,6 +880,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8669527147644353129">Google Chrome मदतनीस</translation>
 <translation id="8679801911857917785">तुम्ही Chrome सुरू करता तेव्हा कोणते पेज दर्शविले जाते हेदेखील हे नियंत्रित करते.</translation>
 <translation id="8689408573494410517">टूलबारवरील "साइड पॅनलमध्ये Google Search" बटणामध्ये नवीन आयकन आहे. तुम्ही साइड पॅनलमध्ये Google Search वापरून ब्राउझ करत असताना प्रश्न विचारण्यासाठी त्यावर क्लिक करा.</translation>
+<translation id="8699232386626916686">सुरक्षित राहण्यासाठी Chrome अपडेट करा</translation>
 <translation id="8712637175834984815">समजले</translation>
 <translation id="8712767363896337380">जवळजवळ अप टू डेट! अपडेट करणे पूर्ण करण्यासाठी, Chrome पुन्हा लाँच करा.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> यांनी आधीच साइन इन केले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, तुमच्या स्वतःच्या प्रोफाइलमधील Chrome मध्ये <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन करा. तुम्हाला <ph name="DEVICE" /> कडून तुमची वाचन सूची आणि आणखी बऱ्याच गोष्टीदेखील मिळतील.</translation>

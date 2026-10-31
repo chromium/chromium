@@ -22,6 +22,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1125124144982679672">Who's using Chrome?</translation>
 <translation id="1142745911746664600">Can't update Chrome</translation>
 <translation id="1148360048981192980">Next time you open Chrome on your <ph name="DEVICE_TYPE" />, you'll see a prompt to use Google Password Manager.</translation>
+<translation id="1150418667633096194">The 'Google Search side panel' button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search side panel.</translation>
 <translation id="1152920704813762236">About ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
 <translation id="1157952955648710254">Close Google Search side panel</translation>
@@ -52,11 +53,13 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1439793550875056299">Pin Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Your administrator requires that you relaunch Chrome to apply an update. Your Isolated Window won't reopen.}other{Your administrator requires that you relaunch Chrome to apply an update. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="146866447420868597">Sign in to Chrome?</translation>
+<translation id="1470136641087909499">You can reopen Google Search in Chrome to ask questions while you browse</translation>
 <translation id="1476347941828409626">&amp;Manage Chrome profiles</translation>
 <translation id="1492280395845991349">Relaunch to finish Chrome update</translation>
 <translation id="1497802159252041924">Install error: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Customise your new Chrome profile</translation>
 <translation id="1518627427551567882">This page is protected</translation>
+<translation id="15408169957028265">Reopen Google Search in Chrome</translation>
 <translation id="1547295885616600893">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Ends the highlighted task.</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
@@ -89,6 +92,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1713301662689114961">{0,plural, =1{Chrome will relaunch in an hour}other{Chrome will relaunch in # hours}}</translation>
 <translation id="1722488837206509557">This will allow you to select from available devices and display content on them.</translation>
 <translation id="1724094881572874997">To secure your work on Chrome, your organisation will be able to view or manage certain information when you're signed in to Chrome.</translation>
+<translation id="1769661297620183092">You can reopen Google Search panel to ask questions while you browse</translation>
 <translation id="177180974022074201">Try with Gemini in Chrome</translation>
 <translation id="1786003790898721085">Make sure that you are signed in to Chrome on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
 <translation id="1786044937610313874">Shortcuts open in Chrome</translation>
@@ -107,6 +111,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1880677175115548835">Select text</translation>
 <translation id="1896602904211344018">Get the Chrome app</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
+<translation id="1925069572871307609">To get future Google Chrome updates, you'll need Windows 10 version 1809 or later. This computer is using an older version of Windows 10.</translation>
 <translation id="1953553007165777902">Downloading… <ph name="MINUTE" /> minute(s) remaining</translation>
 <translation id="1975400514743766362">Take the safety of Google on the go with the Chrome app on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Stay safer on the go with Enhanced Safe Browsing on Chrome for iOS</translation>
@@ -120,6 +125,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2040220733769034247">Scan the QR code with your phone to download Chrome and sign in to your Google Account.</translation>
 <translation id="2044908892530830113">Show search with Chrome in Mac menu bar and turn on keyboard shortcut</translation>
 <translation id="2050189601866423230">You can pin Google Search AI Mode to ask questions as you browse</translation>
+<translation id="2060311596979880693">Success! You can now easily ask questions as you browse with Google Search in Chrome</translation>
 <translation id="2091012649849228750">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex terms</translation>
 <translation id="2094919256425865063">Quit Chrome anyway?</translation>
@@ -145,6 +151,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2216543877350048334">To remove your Google Account from Chrome, sign out</translation>
 <translation id="2236949375853147973">My Activity</translation>
 <translation id="22791603784558743">Close Gemini in Chrome Dev</translation>
+<translation id="2283228908180457226">New icon, same shortcut: Click to ask questions as you browse with Google Search side panel.</translation>
 <translation id="2290014774651636340">Google API keys are missing. Some functionality of Google Chrome will be disabled.</translation>
 <translation id="2290095356545025170">Are you sure you want to uninstall Google Chrome?</translation>
 <translation id="2295218613066132598">Show Chrome site shortcuts</translation>
@@ -207,6 +214,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2861074815332034794">Updating Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">Sign In to Chrome</translation>
 <translation id="2875053229394024379">When you sign in to Chrome with your Google Account, you can use your Chrome profile with Gemini. <ph name="BEGIN_LINK" />Learn how to sign in to Chrome<ph name="END_LINK" /></translation>
+<translation id="2876152561415416331">Reopen Google Search panel</translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task manager</translation>
 <translation id="2888126860611144412">About Chrome</translation>
@@ -222,9 +230,12 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3003694935412297923">All tasks</translation>
 <translation id="3018957014024118866">Also delete data from Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Relaunch to update Chrome OS Flex</translation>
+<translation id="3034219227076811559">Google Search in Chrome</translation>
+<translation id="3037190258341683404">You can pin Google Search in Chrome to ask questions as you browse</translation>
 <translation id="3037517125981011456">Shows prompts to sign in to Chrome</translation>
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
 <translation id="3038232873781883849">Waiting to install…</translation>
+<translation id="304285957253771186">Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Isolated mode, unselect this option.</translation>
 <translation id="3045032126857188731">Translated language: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Close feedback dialogue</translation>
 <translation id="306179102415443347">Use your shortcut to quickly get to the Google Password Manager. You can move your shortcut to your computer's home screen or app launcher.</translation>
@@ -328,6 +339,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3967822245660637423">Download complete</translation>
 <translation id="3968962723676998462">Enter your passphrase to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome wants to delete your Google Password Manager data. Type in your Windows password to allow this.</translation>
+<translation id="3984557288004650913">From the 'Google Search in Chrome' button on the toolbar, you can reopen Google Search in Chrome to ask questions while you browse</translation>
 <translation id="400161754580828648">To share your screen, allow screen recording for Chrome in System Settings.</translation>
 <translation id="4012899077942246412">While you're signed in, you can use your passwords and more from your Google Account in Chrome. To change this, go to 'Your account in Chrome'.</translation>
 <translation id="4022972681110646219">Translate screen</translation>
@@ -402,6 +414,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4768676935374695498">Search this video with Google Lens</translation>
 <translation id="479167709087336770">This uses the same spell checker that's used in Google search. Text that you type in the browser is sent to Google. You can always change this behaviour in settings.</translation>
 <translation id="4793679854893018356">Learn how Chrome keeps you safe</translation>
+<translation id="4803313124144656665">Close Google Search in Chrome</translation>
 <translation id="4828579605166583682">Google Chrome is trying to replace existing passwords. Type in your Windows password to allow this.</translation>
 <translation id="4836321460899997044">Chrome profile</translation>
 <translation id="4839733921943823254">Pin shortcut</translation>
@@ -452,6 +465,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5239627039202700673">Use Chrome any time that you click links in messages, documents and other apps</translation>
 <translation id="524751727772074981">Ask anything, right where you are, with Gemini in Chrome</translation>
+<translation id="5247617065091903691">You can pin Google Search side panel to ask questions as you browse</translation>
 <translation id="5251420635869119124">Guests can use Chrome without leaving anything behind.</translation>
 <translation id="5271833978500241046">Use them alongside other Gemini features in Chrome</translation>
 <translation id="5286907366254680517">Detected</translation>
@@ -473,6 +487,7 @@ Some features may be unavailable. Please specify a different profile directory o
 Google Chrome is unable to recover your settings.</translation>
 <translation id="5465210843490471889">Choose a Chrome profile to use with <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Chrome now launches when Windows starts so that you can begin browsing instantly. You can turn this off in settings.</translation>
+<translation id="5482575505313585759">Close Google Search panel</translation>
 <translation id="5486346529181556467">Improve online safety for everyone when you report a site that you think is harmful. Learn more about <ph name="BEGIN_LINK" />Google's unsafe site policy.<ph name="END_LINK" /></translation>
 <translation id="5503069778428381665">When you use Google Lens on desktop, the page title, URL and content, including PDFs, are sent to Google</translation>
 <translation id="5524890928877629608">top-left corner of search area: left <ph name="LEFT" />%, top <ph name="TOP" />%</translation>
@@ -490,6 +505,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="566568153320186256">Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more about Energy Saver<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Clear the Chrome data in your account</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Your administrator asks that you relaunch Chrome to apply this update}=1{Your administrator asks that you relaunch Chrome to apply this update. Your Incognito window won't reopen.}other{Your administrator asks that you relaunch Chrome to apply this update. Your # Incognito windows won't reopen.}}</translation>
+<translation id="568656514202614970">Success! You can now easily ask questions as you browse with Google Search side panel</translation>
 <translation id="5686916850681061684">Customise and control Google Chrome. Something needs your attention – click for details.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Unable to connect to the Internet. Proxy server requires authentication.</translation>
@@ -517,6 +533,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5940385492829620908">Your web, bookmarks and other Chrome stuff live here.</translation>
 <translation id="5941711191222866238">Minimise</translation>
 <translation id="5941830788786076944">Make Google Chrome the default browser</translation>
+<translation id="5944731887996253728">Chrome will update when your screen is unused</translation>
 <translation id="5947104538377036631">Chrome shortcut</translation>
 <translation id="5960071705175224773">Your settings were changed by an unknown app</translation>
 <translation id="5980111191913430208">Extensions, apps and themes from unknown sources can harm your device. Chrome recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -565,11 +582,14 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6288580400488258237">Set Google Chrome as your default browser and pin it to your taskbar</translation>
 <translation id="6291089322031436445">Chrome Dev Apps</translation>
 <translation id="6291549208091401781">Google Chrome is already installed for all users on your computer.</translation>
+<translation id="6294638840436017818">From the 'Google Search side panel' button on the toolbar, you can reopen Google Search side panel to ask questions while you browse</translation>
+<translation id="6308106880471005841">The 'Google Search panel' button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search panel.</translation>
 <translation id="6311220991371174222">Cannot start Chrome because something went wrong when opening your profile. Try to restart Chrome.</translation>
 <translation id="6319856120645568262">Chrome needs permission to map your surroundings and track your hands</translation>
 <translation id="6321592572353357376">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chrome</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6334815226785304306">Make Google Chrome the default browser and pin to the taskbar</translation>
+<translation id="6339888439788291743">New icon, same shortcut: Click to ask questions as you browse with Google Search AI Mode.</translation>
 <translation id="63540178978900677">Chrome is no longer your default browser. Make Chrome the default browser?</translation>
 <translation id="6357670763064300993">Gemini Enterprise in Chrome</translation>
 <translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
@@ -619,6 +639,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6723445727540769832">Get the best of Google with the Chrome app on your phone</translation>
 <translation id="6734827584173583205">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="COUNT" /> more.</translation>
 <translation id="6735387454586646204">Chrome OS Flex system</translation>
+<translation id="674891594898436429">Dismiss active search in this tab</translation>
 <translation id="6750954913813541382">To fix spelling errors, Chrome sends the text that you type in the browser to Google</translation>
 <translation id="6760235774835597023">Speeds up sites with Chrome's V8 engine but makes Chrome slightly less resistant to attacks. This setting is on.</translation>
 <translation id="677276454032249905">Exit Chrome anyway?</translation>
@@ -637,6 +658,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="689368324615299626">Get the best of Google with the Chrome app on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6908182077349113099">Keep your passwords, bookmarks and history perfectly synced across devices. Easily access the features that you know and love by updating your default browser to Chrome.</translation>
+<translation id="6926772305569367352">The 'Google Search in Chrome' button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search in Chrome.</translation>
 <translation id="6930294499209825">Keeps your Google software up to date. If this service is disabled or stopped, your Google software will not be kept up to date, meaning security vulnerabilities that may arise cannot be fixed and features may not work. This service uninstalls itself when there is no Google software using it.</translation>
 <translation id="6933858244219479645">ChromeOS system</translation>
 <translation id="6938166777909186039">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>
@@ -673,6 +695,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> manages Chrome</translation>
 <translation id="7285990705317078173">Download Chrome on your phone to track prices and get alerts when the price drops on any site</translation>
 <translation id="7288567540154601580">Tabs and extensions</translation>
+<translation id="7290997427370476749">From the 'Google Search panel' button on the toolbar, you can reopen Google Search panel to ask questions while you browse</translation>
 <translation id="7296210096911315575">Important use and safety information</translation>
 <translation id="7299899569525778554">Search from desktop</translation>
 <translation id="7302361266603927550">Some of your Chrome data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
@@ -680,6 +703,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7308322188646931570">Chrome needs storage access to download files</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7371412052245999753">Protects Chrome's memory from other applications on your computer.</translation>
+<translation id="7374061268215476070">You can reopen Google Search side panel to ask questions while you browse</translation>
 <translation id="73786666777299047">Open Chrome Web Store</translation>
 <translation id="7386878009611068389">To stay safer online with your parent's choices, switch to your Chrome profile where you're already signed in as <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
@@ -733,6 +757,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="778331955594035129">Chrome needs location permission for this site</translation>
 <translation id="7787950393032327779">The profile appears to be in use by another Google Chrome process (<ph name="PROCESS_ID" />) on another computer (<ph name="HOST_NAME" />). Chrome has locked the profile so that it doesn't get corrupted. If you are sure no other processes are using this profile, you can unlock the profile and relaunch Chrome.</translation>
 <translation id="7800043020703832708">Close Google Search in side panel</translation>
+<translation id="7801317262080715012">New icon, same shortcut: Click to ask questions as you browse with Google Search panel.</translation>
 <translation id="7801699035218095297">Google Chrome is trying to copy passwords. Type your Windows password to allow this.</translation>
 <translation id="7804364787702057554">Your account in Chrome</translation>
 <translation id="7804947029129221742">Your search engine was changed from outside of Chrome. To protect you, Chrome reset it to its original default. <ph name="LEARN_MORE_LINK" /></translation>
@@ -787,7 +812,9 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8162006532256575008">Use Chrome without an account</translation>
 <translation id="8172231188687329735">Get the Chrome app to save passwords on the go</translation>
 <translation id="8177472873527554730">Can't find content in page</translation>
+<translation id="818985547157682832">The 'Google Search AI Mode' button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search AI Mode.</translation>
 <translation id="8196526165798579689">Search with Chrome Dev</translation>
+<translation id="8203105157044679380">Google Search panel</translation>
 <translation id="8221491193165283816">You usually block notifications. To let this site notify you, click here.</translation>
 <translation id="8227493674161801700">Search with Chrome Beta</translation>
 <translation id="8233224921566021881">Chrome needs access to your local network to discover and use nearby devices</translation>
@@ -799,6 +826,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8291415872436043161">Download Chrome</translation>
 <translation id="829923460755755423">Add a shortcut to Google Password Manager</translation>
 <translation id="8313851650939857356">Startup error: <ph name="STARTUP_ERROR" />.</translation>
+<translation id="8321058241987390452">Success! You can now easily ask questions as you browse with Google Search panel</translation>
 <translation id="8321888067342493336">Save as image</translation>
 <translation id="8336463659890584292">When a site asks to privately preload links on their page, Chrome uses Google servers. This hides your identity from the preloaded site, but Google learns what sites get preloaded.</translation>
 <translation id="8342675569599923794">This file is dangerous, so Chrome has blocked it.</translation>
@@ -809,6 +837,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8367950957770994118">Quickly open Gemini in Chrome whenever you need it</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8370748943308169953">QR code to sign in to Chrome as <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558">An <ph name="IMPORTANT_UPDATE" /> is ready. You can relaunch now or set Chrome to update the next time that your screen remains on and unused for <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">Google Search side panel</translation>
 <translation id="8377158135256176353">Toggle Gemini in Chrome Canary</translation>
 <translation id="8380754585531979907">Use your keyboard to navigate between Gemini in Chrome and your open tab.</translation>
@@ -824,10 +853,12 @@ Google Chrome is unable to recover your settings.</translation>
 
 New bookmarks can't be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.</translation>
 <translation id="8458117863387545390">Get Chrome on your phone</translation>
+<translation id="8467931559764188481">Dismiss active Google Search</translation>
 <translation id="848851325211467878">Signed in as <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google membership. Open the account menu</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
 <translation id="8502181052659370">Search this tab with Google Lens</translation>
+<translation id="8520489851087523435">Reopen Google Search side panel</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>
 <translation id="852529348814672339">Display Chrome in this language</translation>
 <translation id="8525579356836940628">Installation stopped</translation>
@@ -836,6 +867,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8564408666201523086">Success! You can now easily ask questions as you browse with Google Search in side panel</translation>
 <translation id="856656450041460113">Search language list</translation>
+<translation id="8568499811906962479">You can pin Google Search panel to ask questions as you browse</translation>
 <translation id="8575047640889685742">Use your <ph name="BEGIN_LINK" />own passphrase<ph name="END_LINK" /> to encrypt all the Chrome data in your Google Account. Payment methods and addresses from Google Pay won't be encrypted. Browsing history from Chrome won't sync.</translation>
 <translation id="8590782867495422699">Reopen Google Search AI Mode</translation>
 <translation id="8598779894319572882">From the 'Google Search AI Mode' button on the toolbar, you can reopen Google Search AI Mode to ask questions while you browse</translation>
@@ -848,6 +880,8 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8656634243791296665">Open Gemini in Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">It also controls what page is shown when you start Chrome.</translation>
+<translation id="8689408573494410517">The 'Google Search in side panel' button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search in side panel.</translation>
+<translation id="8699232386626916686">Update Chrome to stay secure</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8712767363896337380">Nearly up to date! Relaunch Chrome to finish updating.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your reading list and more from <ph name="DEVICE" />.</translation>
@@ -867,8 +901,10 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8834965163890861871">Google Chrome is trying to edit passwords. Type your Windows password to allow this.</translation>
 <translation id="8841151363570555833">Show Gemini in Chrome in Mac menu bar</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome recommends that you remove it}other{Chrome recommends that you remove them}}</translation>
+<translation id="8861692536395317751">Google Chrome requires Windows 10 version 1809 or higher.</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>
 <translation id="8865415417596392024">Chrome data in your account</translation>
+<translation id="8897637834206928776">New icon, same shortcut: Click to ask questions as you browse with Google Search in side panel.</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8920304659326707347">Pick up right where you left off with Chrome on iOS.</translation>
 <translation id="8922998289262614701">Remove this app's data from Chrome</translation>
@@ -894,6 +930,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="9018218886431812662">Installation complete</translation>
 <translation id="9066987883552592250">Close Gemini in Chrome Canary</translation>
 <translation id="9074041031320636790">Success! You can now easily ask questions as you browse with Google Search AI Mode</translation>
+<translation id="9074163480955555019">New icon, same shortcut: Click to ask questions as you browse with Google Search in Chrome.</translation>
 <translation id="9090566250983691233">Learn why Chrome blocks some files</translation>
 <translation id="9106236359747881194">Select text to search</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>

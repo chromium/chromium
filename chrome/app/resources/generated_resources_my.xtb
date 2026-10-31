@@ -419,6 +419,7 @@
 <translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" သည် "<ph name="CONFLICTING_GESTURE_ONE" />"၊ "<ph name="CONFLICTING_GESTURE_TWO" />"၊ "<ph name="CONFLICTING_GESTURE_THREE" />" တို့နှင့် ထပ်နေနိုင်သည်။ ဖြစ်နိုင်ပါက အခြားလက်ဟန်ကို ရွေးကြည့်ပါ။</translation>
 <translation id="1293556467332435079">ဖိုင်များ</translation>
 <translation id="12951065153783848">သင့်အကောင့်ကို သင်၏အဖွဲ့အစည်းက စီမံသည်</translation>
+<translation id="129553762522093515">မကြာသေးခင်က ပိတ်ထားခဲ့သည်</translation>
 <translation id="1296410481664942178">Google Calendar ကို မပြပါနှင့်</translation>
 <translation id="1296911687402551044">ရွေးထားသောတဘ်ကို ပင်ထိုးရန်</translation>
 <translation id="1297175357211070620">ခရီးဆုံး</translation>
@@ -682,6 +683,7 @@
 <translation id="1523279371236772909">ယခင်လတွင် ကြည့်ထားသည်</translation>
 <translation id="1523978563989812243">စာ-မှ-စကား အင်ဂျင်များ</translation>
 <translation id="1524563461097350801">မလိုပါ</translation>
+<translation id="1524903662136734524">Drive မှ ထည့်ရန်</translation>
 <translation id="1525740877599838384">တည်နေရာ သိရှိနိုင်ရန် Wi-Fi ကိုသာ အသုံးပြုပါ</translation>
 <translation id="1526274304859009691"><ph name="DEVICE" /> မှ နောက်ဆက်တွဲနှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1526560967942511387">ခေါင်းစဉ်မဲ့ စာတမ်း</translation>
@@ -2981,7 +2983,6 @@
 <translation id="3261798996834477302">အောက်ခြေဝဘ်ဆိုက် အသံဖွင့်ရန်</translation>
 <translation id="3261832505033014216"><ph name="USER_EMAIL" /> အတွက် လျှို့ဝှက်ကီး</translation>
 <translation id="3262261769033093854">သင့်မောက်စ်ဖြည့်သွင်းမှုကို မှတ်တမ်းတင်ပြီး သုံးရန် ဝဘ်ဆိုက်များအား ခွင့်မပြုပါနှင့်</translation>
-<translation id="3262336253311870293">ဤအကောင့်ကို <ph name="DOMAIN" /> က စီမံသည့်အတွက် သင်၏ Google Account မှ ထွက်သွားမည်မဟုတ်ပါ။ သင့်လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်နှင့် အခြားဆက်တင်များကို စင့်ခ်မလုပ်တော့ပါ။ သို့သော် ယခင်စင့်ခ်လုပ်ထားသော ဒေတာများကို သင့် Google Account တွင် ဆက်သိမ်းထားမည်ဖြစ်ပြီး <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> တွင် စီမံနိုင်ပါမည်။</translation>
 <translation id="3262986719682892278">ကြီးလွန်းနေသည်</translation>
 <translation id="3264544094376351444">Sans-serif ဖောင့်</translation>
 <translation id="3264582393905923483">အခြေအနေ</translation>
@@ -3203,6 +3204,7 @@
 <translation id="3436118221454753036">AI မုဒ်ဖြင့် မေးရန်</translation>
 <translation id="3437397693214267762">သင်၏ Outlook Calendar၊ SharePoint နှင့် OneDrive ဖိုင်များကို ကြည့်ပါ</translation>
 <translation id="3437494162908353428">ဤ URL အတွက် ဆောဖ့်ဝဲတူးလ်များကို ခွင့်မပြုပါ။</translation>
+<translation id="3437498061222607130">Search သို့ သင်၏ <ph name="USER_EMAIL" /> အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ထားသည်</translation>
 <translation id="3438633801274389918">နင်ဂျာ</translation>
 <translation id="3439153939049640737"><ph name="HOST" />သင်၏ မိုက်ခရိုဖုန်းကို ရယူမှု အမြဲတမ်း ခွင်ပြုရန်</translation>
 <translation id="3439970425423980614">PDF ကို အစမ်းကြည့်ထဲ ဖွင့်ရန်</translation>
@@ -4224,6 +4226,7 @@
 <translation id="4200609364258658652">ဗီဒီယိုဖရိမ် မိတ္တူကူးရန်</translation>
 <translation id="4200689466366162458">မိမိကိုယ်ပိုင်စကားလုံး</translation>
 <translation id="4200983522494130825">တဘ် &amp;အသစ်</translation>
+<translation id="4202186506458631436">ညာဖက်ရွှေ့</translation>
 <translation id="4202536110335087135">ယခုစမ်းကြည့်ရန်</translation>
 <translation id="4203065553461038553">ဖိုင်အမည် သို့မဟုတ် တည်နေရာမှာ ရှည်လွန်းနေသည်</translation>
 <translation id="4203769790323223880">ကင်မရာ ခွင့်ပြုမထားပါ</translation>
@@ -5025,6 +5028,7 @@
 <translation id="4823484602432206655">သုံးစွဲသူနှင့် စက်ကိရိယာ ဆက်တင်များအား ဖတ်ပြီး ပြောင်းရန်</translation>
 <translation id="4824037980212326045">Linux အရန်ကူးခြင်းနှင့် ပြန်လည်ရယူခြင်း</translation>
 <translation id="4824263260587281352"><ph name="KEY_COMBINATION" /> ကီးပေါင်းစည်းမှုကို ပြောင်းရန်</translation>
+<translation id="4824320026281030716">Google Account- <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">စင့်ခ်လုပ်ခြင်းကို ပယ်ဖျက်လိုပါသလား။</translation>
 <translation id="4825462365587146530">‘Chrome Root စတိုး’ အကြောင်း တဘ်အသစ်တွင် ပိုမိုလေ့လာရန်။</translation>
 <translation id="4825532258163983651">လျှို့ဝှက်ကီးကို ဖျက်၍မရပါ</translation>
@@ -5830,7 +5834,6 @@
 <translation id="5441292787273562014">စာမျက်နှာ ပြန်လည်စတင်ရန်</translation>
 <translation id="5441466871879044658">ဤဘာသာစကားသို့ ပြန်ဆိုပါ</translation>
 <translation id="5442550868130618860">အလိုအလျောက် အပ်ဒိတ်လုပ်ခြင်းကို ဖွင့်ရန်</translation>
-<translation id="5444281205834970653">ဖျက်ပြီး ရှေ့ဆက်ရန်</translation>
 <translation id="5444452275167152925">ChromeOS မှ ထည့်သွင်းထားသည်များ</translation>
 <translation id="5445400788035474247">၁၀ ဆ</translation>
 <translation id="5446836766119801744">⌥L</translation>
@@ -6869,7 +6872,6 @@
 <translation id="6264485186158353794">လုံခြုံရာ နောက်သို့</translation>
 <translation id="6264636978858465832">Password Manager သည် သုံးခွင့်ထပ်လိုသည်</translation>
 <translation id="626495329434552273">သင့်ကီးဘုတ်၏ ဖြည့်သွင်းချက်ကို အစားထိုးရန် ခွင့်ပြုထားသည်</translation>
-<translation id="62650662268452475">လက်မှတ်ထိုးဝင်ထားစဉ် သင့်စက်ပစ္စည်းအားလုံးရှိ Google Account တွင် သိမ်းထားသော လိပ်စာ၊ နောက်ဆက်တွဲ စသည်တို့ကို သုံးနိုင်သည်</translation>
 <translation id="6265159465845424232">Microsoft ဖိုင်များကို Microsoft OneDrive သို့ မိတ္တူမကူးမီ (သို့) မရွှေ့မီ မေးပါ</translation>
 <translation id="6265687851677020761">ပို့တ်ဖယ်ရှားရန်</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> သို့ ချိတ်ဆက်နေသည်</translation>
@@ -7046,7 +7048,6 @@
 <translation id="6410257289063177456">ပုံ ဖိုင်များ</translation>
 <translation id="6410328738210026208">ချာနယ် နှင့် တအားဆေးကြောမှု ပြောင်းလဲရန်</translation>
 <translation id="6410390304316730527">တိုက်ခိုက်သူများက သင့်ကို လှည့်စား၍ အန္တရာယ်ရှိသည့် ဆော့ဖ်ဝဲကို ထည့်သွင်းစေခြင်း သို့မဟုတ် စကားဝှက်၊ ဖုန်းနံပါတ် သို့မဟုတ် ခရက်ဒစ်ကတ်ကဲ့သို့သော ကိုယ်ရေးကိုယ်တာအချက်အလက်များကို ဖော်ပြစေခြင်းကဲ့သို့သော အန္တရာယ်ရှိသည့်အရာများ လုပ်ဆောင်စေခြင်းမှ 'ဘေးကင်းစွာ အသုံးပြုခြင်း' က ကာကွယ်ပေးသည်။ ၎င်းကို ပိတ်ထားလျှင် မရင်းနှီးသည့် သို့မဟုတ် မယုံကြည်ရသည့် ဝဘ်ဆိုက်များကို ဖွင့်သည့်အခါ သတိပြုပါ။</translation>
-<translation id="6410390446958964276">လက်မှတ်ထိုးဝင်ထားစဉ် သင့်စက်ပစ္စည်းအားလုံးရှိ Google Account တွင် သိမ်းထားသော အပြင်အဆင်၊ ဆက်တင် စသည်တို့ကို သုံးနိုင်သည်</translation>
 <translation id="6411135999030237579">နှိပ်ထားခြင်းဖြင့် အလိုအလျောက် ကီးပြန်ကျော့ရန်</translation>
 <translation id="6415757856498750027">“ư” ရရှိရန် “w” ဟုရိုက်ပါ</translation>
 <translation id="6415900369006735853">သင့်ဖုန်းမှတစ်ဆင့် အင်တာနက်သို့ ချိတ်ဆက်သည်</translation>
@@ -7688,6 +7689,7 @@
 <translation id="6892812721183419409">လင့်ကို <ph name="USER" /> အဖြစ် ဖွင့်ပါ</translation>
 <translation id="6893164346922798247">eSpeak</translation>
 <translation id="6896758677409633944">ကူးယူရန်</translation>
+<translation id="6897341342232909480">ဘယ်ဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="6897363604023044284">ရှင်းလင်းရန်အတွက် ဝဘ်ဆိုက်ကို ရွေးရန်</translation>
 <translation id="689770193677424784">တဘ်များကို ဒေါင်လိုက်ပြရန် စခရင်အပြည့်မှ ထွက်ပါ</translation>
 <translation id="6897756054229464646">Gemini ဖြင့်</translation>
@@ -7874,6 +7876,7 @@
 <translation id="7030304022046916278">URL များကို စစ်ဆေးရန် ‘လုံခြုံစွာကြည့်ရှုခြင်း’ သို့ ပို့ပေးသည်</translation>
 <translation id="7030695672997239647">တဘ်ပေါ်တွင် ညာဘက်ခလုတ်ကို နှိပ်ပြီး “အုပ်စုသို့ တဘ်ထည့်ရန်” ကို ရွေးပြီးနောက် “အုပ်စုအသစ်” ကို ရွေးနိုင်သည်</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - အမှတ်စဉ်ပို့တ် ချိတ်ဆက်ထားသည်</translation>
+<translation id="7032334023419126809">Google Account- <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">စာထည့်သွင်းရာတွင် စာလုံးရေ ၆၂ လုံး အများဆုံးရှိရမည်</translation>
 <translation id="7033731598469029604">အော်တိုဘရောက်စ်</translation>
 <translation id="70356134210715500">သင့်လျှို့ဝှက်ကီးများ ရယူရန်</translation>
@@ -8606,7 +8609,6 @@
 <translation id="7605163396341021431">Android အက်များကို ဤ Chromebook ပေါ်တွင် USB စက်များ သုံးခွင့်ပြုနိုင်သည်</translation>
 <translation id="7605594153474022051">စင့်ခ်လုပ်၍မရပါ</translation>
 <translation id="7606560865764296217">လှုပ်ရှားသက်ဝင်ပုံများ ခဏရပ်ရန်</translation>
-<translation id="7606639338662398635">တဘ်အုပ်စုများ</translation>
 <translation id="7606802863538485839">အထူးပြုလုပ်ချက်များ ဖွင့်ရန်</translation>
 <translation id="7607002721634913082">ဆိုင်းငံ့ထား</translation>
 <translation id="7608810328871051088">Android စိတ်ကြိုက်ရွေးချယ်မှုများ</translation>
@@ -9396,6 +9398,7 @@
 <translation id="8199300056570174101">ကွန်ရက် (ဝန်ဆောင်မှု) နှင့် စက်ပစ္စည်း သတ်မှတ်ချက်များ</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8202827109322349110">အခြေခံတည်းဖြတ်စနစ်တွင် ဖွင့်ရန်</translation>
+<translation id="8203105157044679380">Google Search အကန့်</translation>
 <translation id="8203152941016626022">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ကိရိယာအမည်</translation>
 <translation id="8203732864715032075">သတိပေးချက်များကို သင့်ထံ ပို့ပြီး Messages အတွက် ဤကွန်ပျူတာကို ပုံသေမှတ်ထားပေးသည်။ <ph name="LINK_BEGIN" />ပိုမို လေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">ညာဘက်ခလုတ်ကို နှိပ်ရန်</translation>
@@ -10207,6 +10210,7 @@
 <translation id="8818152010000655963">နောက်ခံပုံ</translation>
 <translation id="8818988764764862764">ဝင်းဒိုးကို ဘယ်ဘက်သို့ ရွှေ့လိုက်သည်</translation>
 <translation id="8819510664278523111">သင့်စက် EID မှာ <ph name="EID_NUMBER" /> ဖြစ်၍ စက် IMEI မှာ <ph name="IMEI_NUMBER" /> ဖြစ်ပြီး စက်အမှတ်စဉ်မှာ <ph name="SERIAL_NUMBER" /> ဖြစ်သည်။ ဝန်ဆောင်မှုစတင်ရာ၌ ကူညီရန် ဤနံပါတ်များကို သုံးနိုင်သည်။</translation>
+<translation id="8819762137851963556">မောက်စ်ကာဆာ ရှာရန်</translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
 <translation id="8821045908425223359">အိုင်ပီလိပ်စာကို အလိုအလျောက် သတ်မှတ်ရန်</translation>
 <translation id="8821206216942230957">သင့်အကောင့်သည် Chrome ရှိ Gemini ကို သုံးခွင့်မရှိပါ</translation>

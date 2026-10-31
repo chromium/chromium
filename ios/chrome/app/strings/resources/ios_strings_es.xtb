@@ -40,6 +40,7 @@
 <translation id="1085677983426914530">No se ha podido abrir <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Busca con Google Lens</translation>
 <translation id="1095093219235104018">Buscar y rellenar con Gemini</translation>
+<translation id="1096245844813536669">Envía tu búsqueda automáticamente cuando dejas de hablar</translation>
 <translation id="1096992026380844478">Tus ajustes de sincronización se restaurarán en función de tu última copia de seguridad. <ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloquear con Face ID</translation>
@@ -392,7 +393,6 @@
 <translation id="2139867232736819575">Buscar el texto que has copiado</translation>
 <translation id="2140913838150159519">Fijar una pestaña</translation>
 <translation id="2147127444698817042">Solo disponible en iPhone</translation>
-<translation id="2148326276832455306">Las conversaciones se revisan y se usan para mejorar la IA de Google. Puedes <ph name="BEGIN_LINK" />gestionar tu actividad<ph name="END_LINK" />, incluida información sobre tu ubicación. <ph name="BEGIN_LINK" />Consulta más información sobre tus opciones<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Inicia sesión rápidamente en sitios y apps con tus contraseñas guardadas.</translation>
 <translation id="2149968176347646218">La conexión no es segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
@@ -458,7 +458,6 @@
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Sin protección</translation>
 <translation id="233375395665273385">Eliminar y cerrar sesión</translation>
-<translation id="2340966584724330791">Google recoge tus conversaciones y lo que compartes con Gemini, como archivos, vídeos, pantallas y fotos. También recoge tus comentarios, información de los sitios web que visitas con Gemini, datos de uso del producto e información de ubicación (incluida la ubicación general o la dirección IP de tu dispositivo, o las direcciones de casa o del trabajo de tu cuenta de Google).</translation>
 <translation id="2350463587705616331">Color de fondo sepia</translation>
 <translation id="2351097562818989364">Se han restablecido tus ajustes de traducción.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Puedes guardar tu contraseña de {DOMAIN_ONE} en tu cuenta de Google ({EMAIL}).}=2{Puedes guardar tus contraseñas de {DOMAIN_ONE} y {DOMAIN_TWO} en tu cuenta de Google ({EMAIL}).}=3{Puedes guardar tus contraseñas de {DOMAIN_ONE}, {DOMAIN_TWO} y {OTHER_DOMAINS_COUNT} más en tu cuenta de Google ({EMAIL}).}other{Puedes guardar tus contraseñas de {DOMAIN_ONE}, {DOMAIN_TWO} y {OTHER_DOMAINS_COUNT} más en tu cuenta de Google ({EMAIL}).}}</translation>
@@ -720,6 +719,7 @@
 <translation id="3186796054637504691">Borrar historial y datos de sitios web</translation>
 <translation id="3190558889382726167">Contraseña guardada</translation>
 <translation id="3190736958609431397">Dejar de seguir</translation>
+<translation id="3192820089569442694">Se ha producido un error con tu solicitud para dejar de compartir datos</translation>
 <translation id="3208260410153224535">Tu organización ha desactivado el inicio de sesión. Los marcadores, las contraseñas y otros elementos nuevos solo se guardarán en este dispositivo.</translation>
 <translation id="3211969308836412674">Desfijar sitio</translation>
 <translation id="3213807041830307252">Compra, traduce e identifica lo que ves con tu cámara y tu galería de fotos.</translation>
@@ -741,7 +741,6 @@
 <translation id="3265736395246760288">Inicia sesión más rápido desde cualquiera de tus dispositivos sincronizados.</translation>
 <translation id="3268166994745151153">Esto significa que perderás tu progreso actual</translation>
 <translation id="3272527697863656322">Cancelar</translation>
-<translation id="3272955648592358996">Tus datos mejoran la IA de Google</translation>
 <translation id="3273510436356991673">Personaliza tu pantalla de inicio</translation>
 <translation id="327455571215090823">Función Autocompletar más inteligente y privada</translation>
 <translation id="3277021493514034324">Se ha copiado la dirección del sitio web</translation>
@@ -787,6 +786,7 @@
 <translation id="344589138074534176">Más información sobre Google Lens</translation>
 <translation id="3449029510150690417">Crea tu nuevo grupo de pestañas dándole un nombre y un color</translation>
 <translation id="345348365500626747">Dirección encontrada</translation>
+<translation id="3453878468834191501">La pestaña actual se comparte con Gemini cuando inicias una conversación. <ph name="BEGIN_LINK" />Más información sobre IA y privacidad<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Usa Live para hacer preguntas sobre una página, explorar ideas en voz alta y hablar con Gemini.</translation>
 <translation id="3462768334899086950">Esto significa que perderás el archivo sin guardar y las pestañas actuales</translation>
 <translation id="3464194322481586217">No se ha podido hacer un seguimiento del precio.</translation>
@@ -850,6 +850,7 @@
 <translation id="3641456520301071208">Los sitios pueden solicitar permiso para acceder a tu ubicación</translation>
 <translation id="3642060527569456384">Los grupos de pestañas se guardan y se actualizan automáticamente en todos tus dispositivos.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} contraseña solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google: {email}.}other{{count} contraseñas solo se guardan en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu cuenta de Google: {email}.}}</translation>
+<translation id="3657176844107584515"><ph name="EMAIL" />. Suscripción de Google.</translation>
 <translation id="3659297405161482746">No se ha encontrado ningún método de pago</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 seleccionada}other{# seleccionadas}}</translation>
 <translation id="3668035568083954765">Protege tu privacidad y mantén la seguridad</translation>
@@ -917,7 +918,6 @@
 <translation id="3888863481921783344">Se usará para mostrarte posibles invitados a tu evento.</translation>
 <translation id="3891414008432200754">Precio</translation>
 <translation id="3892144330757387737">Aquí verás tu historial</translation>
-<translation id="3892695492576181257">Si esta opción está activada, tu actividad se guarda en Actividad en las Aplicaciones de Gemini durante 18 meses, aunque puedes cambiar este periodo a 3 o 36 meses. Google usa tu actividad para desarrollar y mejorar sus servicios (incluidos los modelos de Gemini), así como para proteger a Google, a sus usuarios y al público en general con la ayuda de revisores humanos. Los datos revisados por proveedores de servicios se desvinculan de tu cuenta y se guardan durante 3 años.</translation>
 <translation id="3893858854379998374">Para guardar marcadores en tu cuenta, elimina los que no uses</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3904270275864974753">Editar carrusel</translation>
@@ -947,6 +947,7 @@
 <translation id="3955740319737378355">Hecho</translation>
 <translation id="3955822496205734389">Tienes contraseñas poco seguras.</translation>
 <translation id="3957016963627617921">Haz más con Gemini en Chrome</translation>
+<translation id="3957737662589242353"><ph name="NAME" />, <ph name="EMAIL" />. Suscripción de Google.</translation>
 <translation id="3958312024468322930">Arrástralo al Dock situado en la parte inferior de la pantalla de inicio</translation>
 <translation id="3962326069546168954">Guardar</translation>
 <translation id="3967327056943561740">Marcadores</translation>
@@ -1428,7 +1429,6 @@
 <translation id="5447973833955560753">Contraseña de recuperación</translation>
 <translation id="5448623529214315261">Foto guardada <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Usar contraseña segura:</translation>
-<translation id="5453088693079603292">Qué actividad se recoge</translation>
 <translation id="5454211924362324495">Para impedir que otros usuarios usen tu contraseña, <ph name="BEGIN_LINK" />cámbiala en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Añade algo a tu búsqueda</translation>
 <translation id="5457226814769348910">Abrir versión sin conexión</translation>
@@ -1542,7 +1542,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5803566855766646066">¿Seguro que quieres descartar esta nueva tarjeta?</translation>
 <translation id="5804241973901381774">Permisos</translation>
-<translation id="58081802114142635">Tu actividad mejora la IA de Google</translation>
 <translation id="5817176759448082654">Revisión de contraseñas</translation>
 <translation id="5818161931099046557">Editar en la cuenta de Google</translation>
 <translation id="5819208479324046259">Gestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -1591,7 +1590,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5971459446352190251">Búsqueda mediante códigos QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
 <translation id="5972844218283131174">Desmarcar todo</translation>
-<translation id="597482816780655631">Gemini es una IA y puede cometer errores, incluso sobre personas. Es posible que parte del contenido no sea adecuado para todos los usuarios. Las conversaciones se revisan y se usan para mejorar la IA de Google. <ph name="BEGIN_LINK" />Consulta más información sobre tus opciones<ph name="END_LINK" />. Se aplican nuestros <ph name="BEGIN_LINK" />Términos<ph name="END_LINK" /> y el <ph name="BEGIN_LINK" />Aviso de Privacidad<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Otros</translation>
 <translation id="5977976211062815271">En este dispositivo</translation>
 <translation id="5986043348928676121">Siguiente</translation>
@@ -1609,7 +1607,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6027945736510816438">¿Quieres decir <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nueva función</translation>
 <translation id="6038823991892265570">Gestionar almacenamiento de Google</translation>
-<translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
 <translation id="6045460247888249350">Añade un título</translation>
@@ -1626,6 +1623,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6078236141387574983">Ajustar la altura de la hoja</translation>
 <translation id="6084848228346514841">Seleccionar pestañas</translation>
 <translation id="6089212833343035912">PIN del Gestor de Contraseñas de Google</translation>
+<translation id="6090690847556987004">No se ha podido aplicar este ajuste. Actualiza Chrome y iOS, y reinicia tu dispositivo para volver a intentarlo. Si este error sigue produciéndose, es posible que tu iPhone no admita este ajuste.</translation>
 <translation id="6090760257419195752">Advertencias ignoradas</translation>
 <translation id="6094325891006032858">Activa Navegación segura mejorada</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> encontradas</translation>
@@ -1657,7 +1655,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6169031022444660352">Para eliminar todas las credenciales guardadas, primero debes configurar un código de acceso en tu dispositivo.</translation>
 <translation id="6172428250974276014">Sí, mantener los datos separados (recomendado)</translation>
 <translation id="6173499589275053515">Contraseña guardada en tu cuenta de Google (<ph name="EMAIL" />)</translation>
-<translation id="6181969657494915430">Buscar en la pantalla</translation>
+<translation id="6181969657494915430">Buscar en pantalla</translation>
 <translation id="6182851675249594487">Tema de color personalizado</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Fecha de creación: <ph name="DATE" /></translation>
@@ -1817,7 +1815,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6609890790934458793">Se eliminarán las contraseñas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> y <ph name="THIRD_WEBSITE" />. Tus cuentas no se eliminarán.</translation>
 <translation id="661266467055912436">Mejora tu seguridad y la de todo el mundo en la Web.</translation>
 <translation id="6612912757320004438">Permitir notificaciones de pestañas…</translation>
-<translation id="6613372200395638275">Para ofrecerte ayuda personalizada, Gemini comparte algunos de tus datos (como partes de tus conversaciones, tu ubicación y otra información pertinente) con otros servicios de Google, como Maps y Vuelos. Esos servicios pueden usar la información para mejorar, aunque luego elimines tu actividad en las aplicaciones de Gemini. Consulta más información en el <ph name="BEGIN_LINK" />Centro de Privacidad de las Aplicaciones de Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Borrar texto</translation>
 <translation id="6619015782482868078">Tema aguamarina</translation>
 <translation id="6620279676667515405">Cancelar</translation>
@@ -1977,7 +1974,6 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="7091023926159231962">{count,plural, =1{No se ha podido importar {count} contraseña}other{No se han podido importar {count} contraseñas}}</translation>
 <translation id="7095110968493193530">En el gestor de contraseñas de Google de <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">En la barra de direcciones, toca el historial de precios para ver los cambios de precio a lo largo del tiempo</translation>
-<translation id="7098554251807199977">Ni tus conversaciones con Gemini ni tus <ph name="BEGIN_LINK" />datos de Google Workspace<ph name="END_LINK" /> serán revisados ni se usarán de ningún otro modo para mejorar los modelos de IA generativa.</translation>
 <translation id="7102005569666697658">Descargando… (<ph name="FILE_SIZE" />)</translation>
 <translation id="7104701424653979232">Menú → Configuración → Métodos de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
@@ -2122,6 +2118,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7557508262441527045">Se ha cerrado la sesión</translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
+<translation id="7562347727679121642">Añade una imagen a tu búsqueda</translation>
 <translation id="7566349809380613217">Abrir <ph name="GROUP_TITLE" />, grupo compartido de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Los marcadores están ocultos</translation>
 <translation id="7575664680938145959">Abrir con un toque</translation>
@@ -2417,7 +2414,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8439758443371991593">Ocultar Añadir a lista de lectura</translation>
 <translation id="8443986842926457191">La URL contiene más de 2048 caracteres</translation>
 <translation id="8449869326050867919">Contraseña compartida</translation>
-<translation id="8461708300275916315">Si tienes menos de 18 años</translation>
 <translation id="8473815223723723001">Editar imagen con Gemini</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474378002946546633">Permitir notificaciones</translation>
@@ -2497,7 +2493,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8672733398999596205">Habilitar todo</translation>
 <translation id="8674716540979958118">Tienes contraseñas vulneradas.</translation>
 <translation id="8679900250380464358">Añadir a lista de lectura</translation>
-<translation id="8680643216091361291">El ajuste <ph name="BEGIN_LINK" />Guardar actividad<ph name="END_LINK" /> está desactivado de forma predeterminada. Cuando está desactivado, Google guarda tus conversaciones durante 3 días y las usa para que las aplicaciones de Gemini funcionen correctamente, para proteger su seguridad y para solucionar problemas a partir de tus opiniones. Puedes activar el ajuste Guardar actividad y ayudar a mejorar la IA de Google para todos los usuarios.</translation>
 <translation id="8680787084697685621">La información de inicio de sesión no está actualizada.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" no tiene permiso para acceder a tu micrófono</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
@@ -2555,7 +2550,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="882557203579758546">Buscar en la página…</translation>
 <translation id="8829809207373502270">Esta llave de acceso ya no funciona. Se ha eliminado de <ph name="WEBSITE" /> y pronto se eliminará de aquí. <ph name="BEGIN_LINK" />Información sobre las llaves de acceso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Cerrar todas las inactivas</translation>
-<translation id="8831871601813227635">Se aplican nuestros <ph name="BEGIN_LINK" />Términos<ph name="END_LINK" />, los <ph name="BEGIN_LINK" />Términos del Servicio de Ubicación de Corea<ph name="END_LINK" /> y el <ph name="BEGIN_LINK" />Aviso de Privacidad<ph name="END_LINK" />. Las conversaciones se revisan y se usan para mejorar la IA de Google. Gemini es una IA y puede cometer errores, incluso sobre personas. Es posible que parte del contenido no sea adecuado para todos los usuarios. Puedes <ph name="BEGIN_LINK" />gestionar tu actividad<ph name="END_LINK" />, incluida información sobre tu ubicación. <ph name="BEGIN_LINK" />Consulta más información sobre tus opciones<ph name="END_LINK" />.</translation>
 <translation id="8837654851594567190">Ordenar por editor</translation>
 <translation id="884351711508006491">Tu información se guarda en tu dispositivo.</translation>
 <translation id="8844136307393039959">Bajada de precio en el producto que sigues</translation>
@@ -2636,6 +2630,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="9090979472668095374">Decir las respuestas</translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>
 <translation id="9098541895599151034">¿Eliminar <ph name="NUMBER_OF_ACCOUNTS" /> contraseñas?</translation>
+<translation id="909874878420399003">Envío automático</translation>
 <translation id="9099233023029360602">Preguntar qué cuenta usar cada vez</translation>
 <translation id="9099821309562615674">Asegúrate de que el texto que quieres traducir se vea bien y esté encuadrado</translation>
 <translation id="9100610230175265781">La frase de contraseña es obligatoria</translation>
@@ -2669,6 +2664,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="9203951165704618409">Mueve la barra de direcciones de la parte superior a la parte inferior para personalizar tu experiencia de navegación.</translation>
 <translation id="9205189991633470489">Bloqueo de pestañas de Incógnito</translation>
 <translation id="9206887540681440657">Velocidad</translation>
+<translation id="9218088788182688902">No se ha podido aplicar este ajuste. Actualiza Chrome y iPadOS, y reinicia el dispositivo para volver a intentarlo. Si este error sigue produciéndose, es posible que tu iPad no admita este ajuste.</translation>
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="9219154867334666734">Buscar pestañas…</translation>

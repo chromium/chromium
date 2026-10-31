@@ -1778,6 +1778,19 @@ Genellikle bu politika kimlik avına karşı bir savunma olarak Devre Dışıdı
 <translation id="2086505225896497574">Politikanın ayarlanması, giriş ekranında güvenlik anahtarlarından onay sertifikaları istendiğinde hiçbir istem görünmeyen WebAuthn RP kimliklerini belirtir. Ayrıca, güvenlik anahtarına bağımsız onayın kullanılabileceğini belirten bir sinyal gönderilir. Bu olmadan, siteler güvenlik anahtarlarının onayını istediğinde kullanıcılar istem alır.
 
 Bu cihaz politikası, mevcut <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" /> kullanıcı politikası ile aynıdır ancak giriş ekranındaki oturum açma profilinde geçerlidir.</translation>
+<translation id="2088835253645709768">Yapay zeka destekli geçmişte arama özelliği kaldırıldığı için bu politikanın desteği M157 sürümünde sonlandırıldı.
+
+Yapay zeka destekli geçmişte arama işlevi, kullanıcıların tarama geçmişlerinde yalnızca sayfa başlığı ve URL ile değil, sayfa içeriğine göre de arama yapmasına ve oluşturulan yanıtları almasına olanak tanıyan bir özelliktir.
+
+0 = Özelliğin kullanılmasına izin verirken Google'ın yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Bu bilgiler, gerçek kişiler tarafından da yapay zeka modellerini iyileştirmek için incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliğin kullanılmasına izin verir ancak Google'ın kullanıcıların içeriklerini (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) kullanarak modelleri iyileştirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
+
+2 = Özelliğe izin vermez.
+
+Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
+
+Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="2089541797660774692">Yönetilen tarayıcı bulut raporlamasını etkinleştir</translation>
 <translation id="2090280024671359587">Metin yakalama özelliğine izin ver ve yapay zeka modellerini iyileştir</translation>
 <translation id="2090712407517297305">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası chrome://history/grouped adresinde görülebilir.</translation>

@@ -22,6 +22,7 @@
 <translation id="1125124144982679672">Chrome ကို မည်သူသုံးနေသလဲ။</translation>
 <translation id="1142745911746664600">Chrome ကို အပ်ဒိတ်လုပ်၍ မရခြင်း</translation>
 <translation id="1148360048981192980">နောက်တစ်ကြိမ်တွင် သင်၏ <ph name="DEVICE_TYPE" /> ၌ Chrome ဖွင့်သောအခါ Google Password Manager သုံးရန် တိုက်တွန်းချက်ကို မြင်ရပါမည်။</translation>
+<translation id="1150418667633096194">ကိရိယာဘားရှိ “Google Search ဘေးအကန့်” ခလုတ်တွင် သင်္ကေတအသစ် ရှိသည်။ ဘရောက်စ်လုပ်နေစဉ် Google Search ဘေးအကန့်ဖြင့် မေးခွန်းများမေးရန် ၎င်းကိုနှိပ်ပါ။</translation>
 <translation id="1152920704813762236">ChromeOS အကြောင်း</translation>
 <translation id="1154147086299354128">&amp;Chrome တွင် ဖွင့်ရန်</translation>
 <translation id="1157952955648710254">Google Search ဘေးအကန့် ပိတ်ရန်</translation>
@@ -52,11 +53,13 @@
 <translation id="1439793550875056299">Chrome ကို ပင်ထိုးရန်</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{ဤအပ်ဒိတ်ကို အသုံးပြုနိုင်ရန်အတွက် Chrome ကို ပြန်ဖွင့်ရန် သင်၏ စီမံခန့်ခွဲသူက သတ်မှတ်ထားသည်။ သင်၏ ‘သီးခြားဝင်းဒိုး’ ပြန်ပွင့်မည်မဟုတ်ပါ။}other{ဤအပ်ဒိတ်ကို အသုံးပြုနိုင်ရန်အတွက် Chrome ကို ပြန်ဖွင့်ရန် သင်၏ စီမံခန့်ခွဲသူက သတ်မှတ်ထားသည်။ သင်၏ ‘သီးခြားဝင်းဒိုး’ # ခု ပြန်ပွင့်မည်မဟုတ်ပါ။}}</translation>
 <translation id="146866447420868597">Chrome သို့ လက်မှတ်ထိုးဝင်မလား။</translation>
+<translation id="1470136641087909499">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် ‘Chrome ရှိ Google Search’ ကို ပြန်ဖွင့်နိုင်သည်</translation>
 <translation id="1476347941828409626">Chrome ပရိုဖိုင်များ &amp;စီမံရန်</translation>
 <translation id="1492280395845991349">Chrome အပ်ဒိတ်အပြီးသတ်ရန် ပြန်ဖွင့်ခြင်း</translation>
 <translation id="1497802159252041924">တပ်ဆင်မှုအမှား- <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">သင့် Chrome ပရိုဖိုင်ကို စိတ်ကြိုက်ပြင်ပါ</translation>
 <translation id="1518627427551567882">ဤစာမျက်နှာကို ကာကွယ်ထားသည်</translation>
+<translation id="15408169957028265">‘Chrome ရှိ Google Search’ ပြန်ဖွင့်ရန်</translation>
 <translation id="1547295885616600893">ChromeOS ကို <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ရေးဆွဲထားသည်။</translation>
 <translation id="1547469039832541117">မြင်သာအောင်လုပ်ထားသော လုပ်ဆောင်ချက်ကို အဆုံးသတ်ပေးသည်။</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
@@ -89,6 +92,7 @@
 <translation id="1713301662689114961">{0,plural, =1{Chrome ကို တစ်နာရီအကြာတွင် ပြန်လည်စတင်ပါမည်}other{Chrome ကို # နာရီအကြာတွင် ပြန်လည်စတင်ပါမည်}}</translation>
 <translation id="1722488837206509557">၎င်းသည် ရနိုင်သောစက်များမှ ရွေးပြီး ၎င်းတို့တွင် အကြောင်းအရာပြရန် သင့်အားခွင့်ပြုမည်။</translation>
 <translation id="1724094881572874997">Chrome တွင် သင့်အလုပ်ကို လုံခြုံစေရန်အတွက် Chrome သို့ လက်မှတ်ထိုးဝင်ထားသည့်အခါ သင့်အဖွဲ့အစည်းသည် အချို့သောအချက်အလက်များကို ကြည့်ရှုနိုင် သို့မဟုတ် စီမံနိုင်ပါမည်။</translation>
+<translation id="1769661297620183092">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် Google Search အကန့်ကို ပြန်ဖွင့်နိုင်သည်</translation>
 <translation id="177180974022074201">Chrome ရှိ Gemini ဖြင့် စမ်းသုံးပါ</translation>
 <translation id="1786003790898721085">သင်၏ <ph name="TARGET_DEVICE_NAME" /> တွင် Chrome သို့ လက်မှတ်ထိုးဝင်ထားကြောင်း သေချာစေပြီး ထပ်ပို့ကြည့်ပါ။</translation>
 <translation id="1786044937610313874">Chrome တွင် ဖြတ်လမ်းလင့်ခ်များဖွင့်သည်</translation>
@@ -107,6 +111,7 @@
 <translation id="1880677175115548835">စာသား ရွေးမည်</translation>
 <translation id="1896602904211344018">Chrome အက်ပ် ရယူရန်</translation>
 <translation id="1919130412786645364">Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့် ပေးပါ</translation>
+<translation id="1925069572871307609">နောက်ပိုင်းထွက်မည့် Google Chrome အပ်ဒိတ်များ ရယူရန် Windows 10 ဗားရှင်း 1809 နှင့်အထက် လိုအပ်မည်။ ဤကွန်ပျူတာသည် Windows 10 ဗားရှင်းအဟောင်းကို သုံးနေသည်။</translation>
 <translation id="1953553007165777902">ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="MINUTE" /> မိနစ် ကျန်သည်</translation>
 <translation id="1975400514743766362">သင့် <ph name="DEVICE_TYPE" /> တွင် Chrome အက်ပ်ဖြင့် Google ၏ လုံခြုံမှုကို သွားရင်းလာရင်း ရယူပါ</translation>
 <translation id="1979600810166324878">iOS အတွက် Chrome တွင် ‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ဖြင့် သွားရင်းလာရင်း ပိုလုံခြုံနိုင်သည်</translation>
@@ -120,6 +125,7 @@
 <translation id="2040220733769034247">Chrome ဒေါင်းလုဒ်လုပ်ရန်နှင့် သင့် Google Account သို့ လက်မှတ်ထိုးဝင်ရန် QR ကုဒ်ကို ဖုန်းဖြင့် စကင်ဖတ်ပါ။</translation>
 <translation id="2044908892530830113">Mac မီနူးဘားတွင် ‘Chrome ဖြင့် ရှာဖွေမှု’ ကို ပြပြီး လက်ကွက်ဖြတ်လမ်းကို ဖွင့်ရန်</translation>
 <translation id="2050189601866423230">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများ မေးနိုင်ရန် ‘Google Search AI မုဒ်’ ကို ပင်ထိုးထားနိုင်သည်</translation>
+<translation id="2060311596979880693">အောင်မြင်သွားပါပြီ။ ‘Chrome ရှိ Google Search’ ဖြင့် ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများ အလွယ်တကူမေးနိုင်ပါပြီ</translation>
 <translation id="2091012649849228750">နောင်လာမည့် Google Chrome အပ်ဒိတ်များ ရယူရန် Windows 10 နှင့်အထက် လိုအပ်မည်။ ဤကွန်ပျူတာက Windows 8 သုံးနေသည်။</translation>
 <translation id="2094648590148273905">ChromeOS Flex စည်းမျဉ်းများ</translation>
 <translation id="2094919256425865063">Chrome ကို မည်သို့ပင်ဖြစ်စေ ပိတ်လိုပါသလား။</translation>
@@ -145,6 +151,7 @@
 <translation id="2216543877350048334">သင့် Google Account ကို Chrome မှ ဖယ်ရှားရန် ထွက်ပါ</translation>
 <translation id="2236949375853147973">ကျွန်ုပ်၏လုပ်ဆောင်ချက်</translation>
 <translation id="22791603784558743">Chrome Dev တွင် Gemini ပိတ်ပါ</translation>
+<translation id="2283228908180457226">သင်္ကေတအသစ်၊ ဖြတ်လမ်းလင့်ခ်အဟောင်း- ဘရောက်စ်လုပ်နေစဉ် Google Search ဘေးအကန့်ဖြင့် မေးခွန်းများမေးရန် နှိပ်ပါ။</translation>
 <translation id="2290014774651636340">Google API သော့များ မရှိပါ။ Google Chrome ၏ အချို့သော လုပ်ကိုင်နိုင်စွမ်းများမှာ ပိတ်ခံကြရမည်။</translation>
 <translation id="2290095356545025170">သင်သည် Google Chromeကို ဖြုတ်ချင်တာ သေချာလား?</translation>
 <translation id="2295218613066132598">Chrome ဝဘ်ဆိုက်ဖြတ်လမ်းလင့်ခ်များ ပြပါ</translation>
@@ -207,6 +214,7 @@
 <translation id="2861074815332034794">Chrome ကို အပ်ဒိတ်လုပ်နေသည် (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">Chrome တွင် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2875053229394024379">သင့် Google Account ဖြင့် Chrome သို့ လက်မှတ်ထိုးဝင်သောအခါ သင်၏ Chrome ပရိုဖိုင်ကို Gemini ဖြင့် သုံးနိုင်သည်။ <ph name="BEGIN_LINK" />Chrome သို့ လက်မှတ်ထိုးဝင်နည်းကို လေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="2876152561415416331">Google Search အကန့် ပြန်ဖွင့်ရန်</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome က သင့်ဒေတာကို သီးသန့်ထားပေးပုံ<ph name="END_LINK" /> အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="2885378588091291677">အလုပ် မန်နေဂျာ</translation>
 <translation id="2888126860611144412">Chrome အကြောင်း</translation>
@@ -222,6 +230,8 @@
 <translation id="3003694935412297923">လုပ်ဆောင်စရာ အားလုံး</translation>
 <translation id="3018957014024118866">Chrome (<ph name="URL" />) မှဒေတာကိုလည်း ဖျက်ရန်</translation>
 <translation id="3019382870990049182">ChromeOS Flex အပ်ဒိတ်လုပ်ရန်အတွက် ပြန်ဖွင့်ရန်</translation>
+<translation id="3034219227076811559">Chrome ရှိ Google Search</translation>
+<translation id="3037190258341683404">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် ‘Chrome ရှိ Google Search’ ကို ပင်ထိုးထားနိုင်သည်</translation>
 <translation id="3037517125981011456">Chrome သို့ လက်မှတ်ထိုးဝင်ရန် အတည်ပြုခြင်းစနစ်များ ပြသည်</translation>
 <translation id="3037838751736561277">Google Chrome သည် နောက်ခံ မုဒ်ထဲမျာ ရှိနေသည်။</translation>
 <translation id="3038232873781883849">ထည့်သွင်းရန်စောင့်နေသည်…</translation>
@@ -328,6 +338,7 @@
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3968962723676998462">သင်၏အကောင့် <ph name="ACCOUNT_EMAIL" /> တွင် Chrome ဒေတာ သုံးရန်နှင့် သိမ်းရန်အတွက် စကားဝှက်စာ ထည့်ပါ</translation>
 <translation id="3973161977468201858">Google Chrome က သင်၏ Google Password Manager ဒေတာကို ဖျက်လိုသည်။ ၎င်းကိုခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ရိုက်ပါ။</translation>
+<translation id="3984557288004650913">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် ကိရိယာဘားတွင် “Chrome ရှိ Google Search” ခလုတ်မှတစ်ဆင့် ‘Chrome ရှိ Google Search’ ကို ပြန်ဖွင့်နိုင်သည်</translation>
 <translation id="400161754580828648">သင့်ဖန်သားပြင်ကို မျှဝေရန် ‘စနစ် ဆက်တင်များ’ တွင် Chrome အတွက် ဖန်သားပြင်ရိုက်ကူးခြင်းကို ခွင့်ပြုပါ။</translation>
 <translation id="4012899077942246412">လက်မှတ်ထိုးဝင်ထားစဉ် Chrome ရှိ သင်၏ Google Account မှ စကားဝှက်နှင့် အခြားအရာများကို သုံးနိုင်သည်။ ၎င်းကိုပြောင်းရန် “Chrome ရှိ သင့်အကောင့်” သို့ သွားပါ။</translation>
 <translation id="4022972681110646219">ဖန်သားပြင်ကို ဘာသာပြန်ရန်</translation>
@@ -402,6 +413,7 @@
 <translation id="4768676935374695498">ဤဗီဒီယိုကို Google Lens ဖြင့် ရှာပါ</translation>
 <translation id="479167709087336770">၎င်းက Google ရှာဖွေမှုတွင် အသုံးပြုထားသော စာလုံးပေါင်း စစ်စနစ် တစ်ခုတည်းကို အသုံးပြုသည်။ ဘရောင်ဇာတွင် သင်ရိုက်သည့် စာသားကို Google သို့ပို့ပါသည်။ ဤလုပ်ဆောင်ပုံကို ဆက်တင်များတွင် အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="4793679854893018356">Chrome က သင်ဘေးကင်းစေရန် လုပ်ဆောင်ပုံကို လေ့လာခြင်း</translation>
+<translation id="4803313124144656665">‘Chrome ရှိ Google Search’ ပိတ်ရန်</translation>
 <translation id="4828579605166583682">Google Chrome သည် ရှိပြီးသား စကားဝှက်များကို အစားထိုးလိုသည်။ ၎င်းကိုခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ရိုက်ပါ။</translation>
 <translation id="4836321460899997044">Chrome ပရိုဖိုင်</translation>
 <translation id="4839733921943823254">ဖြတ်လမ်း ပင်ထိုးရန်</translation>
@@ -452,6 +464,7 @@
 <translation id="5234764350956374838">ပယ်ရန်</translation>
 <translation id="5239627039202700673">မက်ဆေ့ဂျ်၊ မှတ်တမ်းနှင့် အခြားအက်ပ်တို့ရှိ လင့်ခ်များကို နှိပ်သည့်အခါတိုင်း Chrome ကို အသုံးပြုနိုင်သည်</translation>
 <translation id="524751727772074981">Chrome ရှိ Gemini ဖြင့် ရောက်ရာနေရာမှ ဘာမဆို မေးပါ</translation>
+<translation id="5247617065091903691">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် Google Search ဘေးအကန့်ကို ပင်ထိုးထားနိုင်သည်</translation>
 <translation id="5251420635869119124">ဧည့်သည်များသည် နောက်မှာ မကျန်ရစ်စေခဲ့ဘဲ Chrome ကို သုံးနိုင်ကြသည်။</translation>
 <translation id="5271833978500241046">၎င်းတို့ကို Chrome ရှိ အခြား Gemini တူးလ်များနှင့်အတူ သုံးပါ</translation>
 <translation id="5286907366254680517">တွေ့ရှိသည်</translation>
@@ -473,6 +486,7 @@
 Google Chrome သည် သင်၏ ဆက်တင်များကို ပြန်ပြီး မဖေါ်ထုတ်နိုင်ပါ။</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ဖြင့် သုံးရန် Chrome ပရိုဖိုင် ရွေးပါ</translation>
 <translation id="547202872422499512">Windows စတင်သည့်အခါ Chrome စတင်သဖြင့် ချက်ချင်းဘရောက်စ်လုပ်နိုင်သည်။ ၎င်းကို ဆက်တင်များတွင် ပိတ်နိုင်သည်။</translation>
+<translation id="5482575505313585759">Google Search အကန့် ပိတ်ရန်</translation>
 <translation id="5486346529181556467">အန္တရာယ်ရှိသည်ဟု ယူဆသော ဝဘ်ဆိုက်ကို တိုင်ကြားခြင်းဖြင့် လူတိုင်းအတွက် အွန်လိုင်းလုံခြုံရေးကို မြှင့်တင်နိုင်သည်။ <ph name="BEGIN_LINK" />Google ၏ မလုံခြုံသော ဝဘ်ဆိုက်မူဝါဒ<ph name="END_LINK" /> အကြောင်း ပိုမိုလေ့လာပါ။</translation>
 <translation id="5503069778428381665">ဒက်စ်တော့တွင် Google Lens သုံးသောအခါ PDF များအပါအဝင် စာမျက်နှာခေါင်းစဉ်၊ URL နှင့် အကြောင်းအရာတို့ကို Google သို့ ပို့သည်</translation>
 <translation id="5524890928877629608">ရှာဖွေမှုနေရာ၏ ဘယ်ဘက်ထိပ်ထောင့်- ဘယ် <ph name="LEFT" />%၊ ထိပ် <ph name="TOP" />%</translation>
@@ -490,6 +504,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="566568153320186256">ချောမွေ့စွာလှိမ့်ခြင်းနှင့် ဗီဒီယိုဖရိမ်ပြနှုန်းများကဲ့သို့ နောက်ခံလုပ်ဆောင်ချက်နှင့် ပြသမှုဆိုင်ရာ အထူးပြုလုပ်ချက်များကို ကန့်သတ်ခြင်းဖြင့် Chrome သည် ဘက်ထရီပါဝါကို ချွေတာသည်။ <ph name="BEGIN_LINK" />‘စွမ်းအင်ချွေတာစနစ်’ အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">သင့်အကောင့်ရှိ Chrome ဒေတာ ရှင်းထုတ်ရန်</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{ဤအပ်ဒိတ်ကို အသုံးပြုနိုင်ရန်အတွက် Chrome ကို ပြန်လည်စတင်ရန် သင်၏စီမံခန့်ခွဲသူက တောင်းဆိုထားပါသည်}=1{ဤအပ်ဒိတ်ကို အသုံးပြုနိုင်ရန်အတွက် Chrome ကို ပြန်လည်စတင်ရန် သင်၏စီမံခန့်ခွဲသူက တောင်းဆိုထားပါသည်။ သင်၏ရုပ်ဖျက် ဝင်ဒိုးကို ပြန်ဖွင့်မည် မဟုတ်ပါ။}other{ဤအပ်ဒိတ်ကို အသုံးပြုနိုင်ရန်အတွက် Chrome ကို ပြန်လည်စတင်ရန် သင်၏စီမံခန့်ခွဲသူက တောင်းဆိုထားပါသည်။ သင်၏ရုပ်ဖျက် ဝင်ဒိုး # ခုကို ပြန်ဖွင့်မည် မဟုတ်ပါ။}}</translation>
+<translation id="568656514202614970">အောင်မြင်သွားပါပြီ။ ဘရောက်စ်လုပ်နေစဉ် Google Search ဘေးအကန့်ဖြင့် မေးခွန်းများ အလွယ်တကူ မေးနိုင်ပါပြီ</translation>
 <translation id="5686916850681061684">Google Chrome ကို စိတ်ကြိုက် ပြုပြင်ရန် နှင့် ထိန်းချုပ်ရန်။ သင် ဆောင်ရွက်စရာ ရှိသည် - အသေးစိတ်အတွက် နှိပ်ပါ။</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">အင်တာနက် ချိတ်ဆက်၍ မရပါ။ ပရောက်စီဆာဗာအတွက် အထောက်အထားစိစစ်ရန် လိုအပ်သည်။</translation>
@@ -565,11 +580,14 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6288580400488258237">Google Chrome ကို သင်၏မူရင်း ဘရောင်ဇာအဖြစ် သတ်မှတ်ပြီး Taskbar တွင် ၎င်းအား ပင်ထိုးပါ</translation>
 <translation id="6291089322031436445">Chrome Dev အက်ပ်များ</translation>
 <translation id="6291549208091401781">သင့်ကွန်ပျူတာပေါ်ရှိ အသုံးပြုသူများအတွက် Google Chrome ကို ထည့်သွင်းထားပြီးဖြစ်ပါသည်။</translation>
+<translation id="6294638840436017818">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် ကိရိယာဘားတွင် “Google Search ဘေးအကန့်” ခလုတ်မှတစ်ဆင့် ‘Google Search ဘေးအကန့်’ ကို ပြန်ဖွင့်နိုင်သည်</translation>
+<translation id="6308106880471005841">ကိရိယာဘားရှိ “Google Search အကန့်” ခလုတ်တွင် သင်္ကေတအသစ် ရှိသည်။ ဘရောက်စ်လုပ်နေစဉ် Google Search အကန့်ဖြင့် မေးခွန်းများမေးရန် ၎င်းကိုနှိပ်ပါ။</translation>
 <translation id="6311220991371174222">သင့်ပရိုဖိုင်ကို ဖွင့်စဉ်တွင် တစ်ခုခုချွတ်ယွင်းသွားသောကြောင့် Chrome ကို မစတင်နိုင်ခဲ့ပါ။ Chrome ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="6319856120645568262">Chrome သည် သင့်ပတ်ဝန်းကျင်ကို ပုံထုတ်ရန်နှင့် လက်များကို မှတ်သားရန် ခွင့်ပြုချက်လိုအပ်သည်</translation>
 <translation id="6321592572353357376">နောက်ဆက်တွဲ “<ph name="EXTENSION_NAME" />” က သင့်အား Chrome သို့ လက်မှတ်ထိုးဝင်စေလိုသည်</translation>
 <translation id="6326175484149238433">Chrome ထဲမှ ဖယ်ရှားပစ်ရန်</translation>
 <translation id="6334815226785304306">Google Chrome ကို မူရင်းဘရောင်ဇာအဖြစ် ပြုလုပ်ပြီး Taskbar တွင် ပင်ထိုးရန်</translation>
+<translation id="6339888439788291743">သင်္ကေတအသစ်၊ ဖြတ်လမ်းလင့်ခ်အဟောင်း- ဘရောက်စ်လုပ်နေစဉ် ‘Google Search AI မုဒ်’ ဖြင့် မေးခွန်းများမေးရန် နှိပ်ပါ။</translation>
 <translation id="63540178978900677">Chrome သည် သင်၏ မူရင်းဘရောင်ဇာ မဟုတ်တော့ပါ။ Chrome ကို မူရင်းဘရောင်ဇာ သတ်မှတ်မလား</translation>
 <translation id="6357670763064300993">Chrome ရှိ Gemini Enterprise</translation>
 <translation id="6360449101159168105">Chrome မြန်ဆန်စေရန်အတွက် ဤတဘ် အသုံးမပြုစဉ် မှတ်ဉာဏ်ကို နေရာလွတ်ပြုလုပ်ထားသည်။ ဤဝဘ်ဆိုက်ကို အသုံးမပြုသည့်စာရင်းမှ အမြဲဖယ်ထုတ်ထားရန် ရွေးနိုင်သည်။</translation>
@@ -619,6 +637,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6723445727540769832">သင့်ဖုန်းရှိ Chrome အက်ပ်ဖြင့် Google ၏ အကောင်းဆုံးများကို ရယူပါ</translation>
 <translation id="6734827584173583205">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chrome သည် <ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="COUNT" /> ခုတို့ကို ဖယ်ရှားလိုက်သည်။</translation>
 <translation id="6735387454586646204">ChromeOS Flex စနစ်</translation>
+<translation id="674891594898436429">ဤတဘ်ရှိ လက်ရှိရှာဖွေမှုကို ပယ်ရန်</translation>
 <translation id="6750954913813541382">စာလုံးပေါင်း အမှားများ ပြင်ရန် Chrome က ဘရောင်ဇာတွင် သင်ရိုက်သည့် စာသားကို Google သို့ ပို့ပါသည်</translation>
 <translation id="6760235774835597023">Chrome ၏ V8 အင်ဂျင်ဖြင့် ဝဘ်ဆိုက်များကို အရှိန်မြှင့်တင်ပါ။ သို့သော် Chrome ကို တိုက်ခိုက်ခံရခြင်းမှ ကာကွယ်နိုင်စွမ်း အနည်းငယ်လျော့သွားပါမည်။ ဤဆက်တင်ကို ဖွင့်ထားသည်။</translation>
 <translation id="677276454032249905">မည်သို့ပင်ဖြစ်စေ Chrome မှ ထွက်လိုပါသလား။</translation>
@@ -637,6 +656,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="689368324615299626">သင့် <ph name="DEVICE_TYPE" /> တွင် Chrome အက်ပ်ဖြင့် Google ၏ အကောင်းဆုံးအရာများကို သုံးပါ</translation>
 <translation id="6896758677409633944">ကူးယူရန်</translation>
 <translation id="6908182077349113099">စက်များတွင် သင့်စကားဝှက်၊ လိပ်စာနှင့် မှတ်တမ်းများကို အပြည့်အဝ စင့်ခ်လုပ်ထားနိုင်သည်။ မူရင်း ဘရောင်ဇာကို Chrome သို့ အပ်ဒိတ်လုပ်ပြီး သင်ရင်းနှီး၊ နှစ်သက်သော တူးလ်များကို အလွယ်တကူသုံးနိုင်သည်။</translation>
+<translation id="6926772305569367352">ကိရိယာဘားရှိ “Chrome ရှိ Google Search” ခလုတ်တွင် သင်္ကေတအသစ် ရှိသည်။ ဘရောက်စ်လုပ်နေစဉ် ‘Chrome ရှိ Google Search’ ဖြင့် မေးခွန်းများမေးရန် ၎င်းကိုနှိပ်ပါ။</translation>
 <translation id="6930294499209825">သင့် Google ဆော့ဖ်ဝဲကို အပ်ဒိတ်ဖြစ်နေအောင် လုပ်ပေးသည်။ ဤဝန်ဆောင်မှုကို ပိတ်ထားပါက (သို့) ရပ်ထားပါက Google ဆော့ဖ်ဝဲသည် အပ်ဒိတ်ဖြစ်နေအောင် လုပ်ထားမည်မဟုတ်ပါ။ ထို့ကြောင့် ဖြစ်ပေါ်လာနိုင်သည့် လုံခြုံရေး အားနည်းချက်များကို ပြင်ဆင်၍ မရနိုင်သည့်အပြင် အင်္ဂါရပ်များ အလုပ်လုပ်နိုင်ဖွယ်မရှိပါ။ Google ဆော့ဖ်ဝဲ အသုံးမပြုပါက ဤဝန်ဆောင်မှုကို သူ့အလိုလို ဖယ်ရှားသွားပါမည်။</translation>
 <translation id="6933858244219479645">ChromeOS စနစ်</translation>
 <translation id="6938166777909186039">နောက်ပိုင်းထွက်မည့် Google Chrome အပ်ဒိတ်များ ရယူရန် Windows 10 နှင့်အထက် လိုအပ်မည်။ ဤကွန်ပျူတာက Windows 8.1 သုံးနေသည်။</translation>
@@ -673,6 +693,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7285616922384953075"><ph name="MANAGER" /> က Chrome ကို စီမံသည်</translation>
 <translation id="7285990705317078173">ဈေးနှုန်းများ ခြေရာခံရန်နှင့် ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူရန် သင့်ဖုန်းတွင် Chrome ဒေါင်းလုဒ်လုပ်ပါ</translation>
 <translation id="7288567540154601580">တဘ်များနှင့် နောက်ဆက်တွဲများ</translation>
+<translation id="7290997427370476749">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် ကိရိယာဘားရှိ “Google Search အကန့်” ခလုတ်မှတစ်ဆင့် ‘Google Search အကန့်’ ကို ပြန်ဖွင့်နိုင်သည်</translation>
 <translation id="7296210096911315575">အရေးကြီး အသုံးပြုခြင်းနှင့် အန္တရာယ်ကင်း အချက်အလက်များ</translation>
 <translation id="7299899569525778554">ဒက်စ်တော့မှ ရှာဖွေခြင်း</translation>
 <translation id="7302361266603927550">သင်၏ Chrome ဒေတာအချို့ကို သင့် Google Account တွင် မသိမ်းရသေးပါ။ မထွက်မီ အချိန်အနည်းငယ် စောင့်ပါ။ ယခု ထွက်သွားပါက ဤဒေတာကို ဖျက်ပါမည်။</translation>
@@ -680,6 +701,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7308322188646931570">ဖိုင်များကို ဒေါင်းလုဒ်လုပ်ရန်အတွက် Chrome သည် သိုလှောင်ခန်းကို သုံးခွင့်ရရန် လိုအပ်သည်</translation>
 <translation id="7352651011704765696">တစ်ခုခု မှားသွားသည်</translation>
 <translation id="7371412052245999753">Chrome ၏ မှတ်ဉာဏ်ကို သင့်ကွန်ပျူတာရှိ အခြားအပလီကေးရှင်းများမှ ကာကွယ်ပေးသည်။</translation>
+<translation id="7374061268215476070">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် Google Search ဘေးအကန့်ကို ပြန်ဖွင့်နိုင်သည်</translation>
 <translation id="73786666777299047">Chrome Web စတိုးကို ဖွင့်ရန်</translation>
 <translation id="7386878009611068389">သင့်မိဘ၏ ရွေးချယ်မှုများဖြင့် အွန်လိုင်းတွင် ပိုမိုဘေးကင်းစေရန် <ph name="USER_EMAIL_ADDRESS" /> အဖြစ် သင်လက်မှတ်ထိုးဝင်ပြီးဖြစ်သည့် Chrome ပရိုဖိုင်သို့ ပြောင်းပါ</translation>
 <translation id="7398801000654795464">Chrome သို့ <ph name="USER_EMAIL_ADDRESS" /> အဖြစ်သင် ဝင်ရောက်ခဲ့သည်။ ကျေးဇူးပြု၍ တူညီသည့်အကောင့်ကို အသုံးပြုကာ ထပ်မံဝင်ရောက်ပါ။</translation>
@@ -733,6 +755,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="778331955594035129">Chrome သည် ဤဝဘ်ဆိုက်အတွက် တည်နေရာခွင့်ပြုချက် လိုအပ်သည်</translation>
 <translation id="7787950393032327779">ပရိုဖိုင်အား Google Chrome လုပ်ငန်းစဉ် (<ph name="PROCESS_ID" />) မှ အခြားကွန်ပျူတာ တစ်ခု (<ph name="HOST_NAME" />) တွင် အသုံးပြုနေခြင်း ဖြစ်နိုင်သည်။  Chrome သည်ပရိုဖိုင်အား သော့ချထားသောကြောင့် မပျက်စီးနိုင်ပါ။ သင်သည် ဤပရိုဖိုင်အား မည်သူမျှ အသုံးမပြုဟု သေချာမှုရှိလျှင်၊ ပရိုဖိုင်အား သော့ဖွင့်၍ Chrome အား ပြန်လည်စတင်နိုင်ပါသည်။</translation>
 <translation id="7800043020703832708">ဘေးအကန့်ရှိ Google Search ပိတ်ရန်</translation>
+<translation id="7801317262080715012">သင်္ကေတအသစ်၊ ဖြတ်လမ်းလင့်ခ်အဟောင်း- ဘရောက်စ်လုပ်နေစဉ် Google Search အကန့်ဖြင့် မေးခွန်းများမေးရန် နှိပ်ပါ။</translation>
 <translation id="7801699035218095297">Google Chrome သည် စကားဝှက်များ မိတ္တူကူးရန် ကြိုးစားနေသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ရိုက်ထည့်ပါ။</translation>
 <translation id="7804364787702057554">Chrome ရှိ သင့်အကောင့်</translation>
 <translation id="7804947029129221742">သင်၏ရှာဖွေရေးအင်ဂျင်ကို Chrome ပြင်ပမှ ပြောင်းထားသည်။ သင့်အား ကာကွယ်ရန် Chrome သည် ၎င်းကို မူရင်းပုံမှန်အတိုင်း ပြင်ဆင်သတ်မှတ်ထားသည်။ <ph name="LEARN_MORE_LINK" /></translation>
@@ -786,7 +809,9 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8162006532256575008">Chrome ကို အကောင့်မပါဘဲ သုံးရန်</translation>
 <translation id="8172231188687329735">သွားရင်းလာရင်း စကားဝှက်များသိမ်းရန် Chrome အက်ပ် ရယူပါ</translation>
 <translation id="8177472873527554730">စာမျက်နှာတွင် အကြောင်းအရာ ရှာမတွေ့ပါ</translation>
+<translation id="818985547157682832">ကိရိယာဘားရှိ “Google Search AI မုဒ်” ခလုတ်တွင် သင်္ကေတအသစ် ရှိသည်။ ဘရောက်စ်လုပ်နေစဉ် ‘Google Search AI မုဒ်’ ဖြင့် မေးခွန်းများမေးရန် ၎င်းကိုနှိပ်ပါ။</translation>
 <translation id="8196526165798579689">Chrome Dev ဖြင့် ရှာရန်</translation>
+<translation id="8203105157044679380">Google Search အကန့်</translation>
 <translation id="8221491193165283816">ပုံမှန်အားဖြင့် သင်သည် အကြောင်းကြားချက်များကို ပိတ်ထားသည်။ သင့်ထံအကြောင်းကြားရန်အတွက် ဤဝဘ်ဆိုက်အား ခွင့်ပြုရန် ဤနေရာတွင် နှိပ်ပါ။</translation>
 <translation id="8227493674161801700">‘Chrome စမ်းသပ်ဆော့ဖ်ဝဲ’ ဖြင့် ရှာရန်</translation>
 <translation id="8233224921566021881">Chrome သည် အနီးရှိစက်များကို ရှာဖွေပြီး အသုံးပြုရန်အတွက် သင်၏အိမ်သုံးကွန်ရက်ကို သုံးခွင့်လိုအပ်သည်</translation>
@@ -798,6 +823,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8291415872436043161">Chrome ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="829923460755755423">Google Password Manager သို့ ဖြတ်လမ်းလင့်ခ် ထည့်နိုင်သည်</translation>
 <translation id="8313851650939857356">စတင်မှုဆိုင်ရာ အမှားအယွင်း- <ph name="STARTUP_ERROR" />။</translation>
+<translation id="8321058241987390452">အောင်မြင်သွားပါပြီ။ ဘရောက်စ်လုပ်နေစဉ် Google Search အကန့်ဖြင့် မေးခွန်းများ အလွယ်တကူမေးနိုင်ပါပြီ</translation>
 <translation id="8321888067342493336">ပုံအဖြစ် သိမ်းရန်</translation>
 <translation id="8336463659890584292">ဝဘ်ဆိုက်က ၎င်း၏စာမျက်နှာရှိ လင့်ခ်များ သီးသန့်ကြိုဖွင့်ရန် တောင်းဆိုသောအခါ Chrome က Google ဆာဗာကို သုံးသည်။ ၎င်းက သင့်အထောက်အထားကို ကြိုဖွင့်ထားသည့် ဝဘ်ဆိုက်ထံမှ ဖျောက်ပေးသော်လည်း မည်သည့်ဝဘ်ဆိုက်ကို ကြိုဖွင့်ထားကြောင်း Google က လေ့လာသည်။</translation>
 <translation id="8342675569599923794">ဤဖိုင်သည် အန္တရာယ်ရှိပါသည်။ ထို့ကြောင့် Chrome သည် ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>
@@ -823,10 +849,12 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 
 လိပ်စာအချို့ကို မဖျက်မချင်း သင့်အကောင့်တွင် အသစ်များကို သိမ်း၍မရပါ။ ယခုထွက်လိုက်ပါက မသိမ်းရသေးသော ဝဘ်လိပ်စာများကို ဖျက်ပါမည်။</translation>
 <translation id="8458117863387545390">သင့်ဖုန်းတွင် Chrome ရယူပါ</translation>
+<translation id="8467931559764188481">လက်ရှိ Google Search ကို ပယ်ရန်</translation>
 <translation id="848851325211467878"><ph name="USER_NAME" />၊ <ph name="USER_EMAIL" />၊ အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်။ Google စာရင်းသွင်းမှု။ အကောင့်မီနူး ဖွင့်ရန်</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">Google Chrome အတွက် အထူးလုံခြုံရေးအပ်ဒိတ်ကို ယခုလေးတင် ထည့်သွင်းထားသည်။ ယခုပြန်လည်စတင်လိုက်ပါက သင်၏ တဘ်များကို ပြန်ဖွင့်ပေးပါမည်။</translation>
 <translation id="8502181052659370">ဤတဘ်ကို Google Lens ဖြင့် ရှာပါ</translation>
+<translation id="8520489851087523435">Google Search ဘေးအကန့် ပြန်ဖွင့်ရန်</translation>
 <translation id="8521348052903287641">Google Chrome Dev က mDNS အသွားအလာကို ခွင့်ပြုပေးနိုင်ရန်အတွက် ချမှတ်ထားသော အတွင်းစည်းမျဉ်း။</translation>
 <translation id="852529348814672339">Chrome ကို ဤဘာသာစကားဖြင့် ပြပါ</translation>
 <translation id="8525579356836940628">ထည့်သွင်းမှု ရပ်လိုက်သည်</translation>
@@ -835,6 +863,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8555465886620020932">ဆာဗာ အမှား -<ph name="SERVICE_ERROR" />။</translation>
 <translation id="8564408666201523086">အောင်မြင်သွားပါပြီ။ ဘေးအကန့်ရှိ Google Search ဖြင့် ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများ အလွယ်တကူမေးနိုင်ပါပြီ</translation>
 <translation id="856656450041460113">ဘာသာစကား စာရင်းကို ရှာရန်</translation>
+<translation id="8568499811906962479">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် Google Search အကန့်ကို ပင်ထိုးထားနိုင်သည်</translation>
 <translation id="8575047640889685742">သင်၏ Google Account ရှိ Chrome ဒေတာအားလုံး အသွင်ဝှက်ရန်အတွက် သင့် <ph name="BEGIN_LINK" />ကိုယ်ပိုင်စကားဝှက်စာ<ph name="END_LINK" /> ကို သုံးရန်။ Google Pay ရှိ ငွေပေးချေနည်းလမ်းနှင့် လိပ်စာများကို အသွင်ဝှက်မည်မဟုတ်ပါ။ Chrome ရှိ ကြည့်ရှုမှုမှတ်တမ်းကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။</translation>
 <translation id="8590782867495422699">Google Search AI မုဒ် ပြန်ဖွင့်ရန်</translation>
 <translation id="8598779894319572882">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် ကိရိယာဘားရှိ “Google Search AI မုဒ်” ခလုတ်မှတစ်ဆင့် ‘Google Search AI မုဒ်’ ကို ပြန်ဖွင့်နိုင်သည်</translation>
@@ -847,6 +876,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8656634243791296665">Chrome Dev တွင် Gemini ဖွင့်ပါ</translation>
 <translation id="8669527147644353129">Google Chrome ကူညီပေးသူ</translation>
 <translation id="8679801911857917785">သင်က Chrome ကို စတင်စဉ် ဘယ်စာမျက်နှာ ပြကြောင်းကိုပါ ၎င်းက ထိန်းချုပ်ပါသည်။</translation>
+<translation id="8689408573494410517">ကိရိယာဘားရှိ “ဘေးအကန့်ရှိ Google Search” ခလုတ်တွင် သင်္ကေတအသစ် ရှိသည်။ ဘရောက်စ်လုပ်နေစဉ် ဘေးအကန့်ရှိ Google Search ဖြင့် မေးခွန်းများမေးရန် ၎င်းကို နှိပ်ပါ။</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8712767363896337380">အပ်ဒိတ်ဖြစ်ပါတော့မည်။ အပ်ဒိတ်လုပ်ခြင်း အပြီးသတ်ရန် Chrome ပြန်ဖွင့်ပါ။</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> သည် လက်မှတ်ထိုးဝင်ပြီးဖြစ်သည်။ သင်၏ ဘရောက်စ်လုပ်ခြင်းကို ခွဲခြားထားရန်အတွက် သင့်ကိုယ်ပိုင်ပရိုဖိုင်တွင် <ph name="USER_EMAIL_ADDRESS" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။ <ph name="DEVICE" /> မှ ဖတ်ရန်စာရင်းနှင့် အခြားအရာများကိုလည်း ရရှိပါမည်။</translation>
@@ -866,8 +896,10 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8834965163890861871">Google Chrome သည် စကားဝှက်များ တည်းဖြတ်ရန် ကြိုးပမ်းနေသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ထည့်ပါ။</translation>
 <translation id="8841151363570555833">Chrome ရှိ Gemini ကို Mac မီနူးဘားတွင် ပြပါ</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{၎င်းကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်}other{၎င်းတို့ကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်}}</translation>
+<translation id="8861692536395317751">Google Chrome ထည့်သွင်းရန် Windows 10 ဗားရှင်း 1809 နှင့်အထက် လိုအပ်သည်။</translation>
 <translation id="8862326446509486874">သင့်ဆီမှာ စနစ်အဆင့်မှာ တပ်ဆင်နိုင်ရန် အတွက် လိုအပ်သည့် လုပ်ပိုင်ခွင့်များ မရှိပါ။ တပ်ဆင်သူကို ထပ်ပြီး စီမံအုပ်ချုပ်သူ အဖြစ် ဖွင့်သုံးကြည့်ပါ။</translation>
 <translation id="8865415417596392024">သင့်အကောင့်ရှိ Chrome ဒေတာ</translation>
+<translation id="8897637834206928776">သင်္ကေတအသစ်၊ ဖြတ်လမ်းလင့်ခ်အဟောင်း- ဘရောက်စ်လုပ်နေစဉ် ဘေးအကန့်ရှိ Google Search ဖြင့် မေးခွန်းများမေးရန် နှိပ်ပါ။</translation>
 <translation id="8914504000324227558">Chromium ကို အသစ်တစ်ဖန် ပြန်စရန်</translation>
 <translation id="8920304659326707347">iOS တွင် Chrome ဖြင့် ရပ်ထားသည့်နေရာမှ ဆက်သုံးနိုင်သည်။</translation>
 <translation id="8922998289262614701">ဤအက်ပ်၏ဒေတာကို Chrome မှ ဖယ်ရှားရန်</translation>
@@ -893,6 +925,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="9018218886431812662">ထည့်ပြီးပါပြီ</translation>
 <translation id="9066987883552592250">Chrome Canary တွင် Gemini ပိတ်ပါ</translation>
 <translation id="9074041031320636790">အောင်မြင်သွားပါပြီ။ ‘Google Search AI မုဒ်’ ဖြင့် ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများ အလွယ်တကူမေးနိုင်ပါပြီ</translation>
+<translation id="9074163480955555019">သင်္ကေတအသစ်၊ ဖြတ်လမ်းလင့်ခ်အဟောင်း- ဘရောက်စ်လုပ်နေစဉ် ‘Chrome ရှိ Google Search’ ဖြင့် မေးခွန်းများမေးရန် နှိပ်ပါ။</translation>
 <translation id="9090566250983691233">ဖိုင်အချို့ကို Chrome က ဘာကြောင့်ပိတ်ထားကြောင်း လေ့လာရန်</translation>
 <translation id="9106236359747881194">ရှာဖွေရန် စာသားရွေးပါ</translation>
 <translation id="911206726377975832">သင့်အသုံးပြုမှု ဒေတာအားလဲ ဖျက်မည်လား?</translation>

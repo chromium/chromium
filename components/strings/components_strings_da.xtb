@@ -150,7 +150,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1249643768796040660">Fjern disse oplysninger</translation>
 <translation id="1253846494229886276">Gemmer screenshot</translation>
-<translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synkroniseret)</translation>
 <translation id="1255931290436977164">Pas</translation>
 <translation id="1256368399071562588">&lt;p&gt;Hvis du forsøger at besøge et website, og det ikke åbnes, kan du starte med at prøve at rette fejlen med følgende fejlfindingstrin:&lt;/p&gt;
     &lt;ol&gt;
@@ -935,6 +934,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2535585790302968248">Åbn en ny inkognitofane for at browse privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 mere}one{og # mere}other{og # mere}}</translation>
 <translation id="2536110899380797252">Tilføj adresse</translation>
+<translation id="2536852576044236667">Forrige er uden for visning</translation>
 <translation id="2537931901612099523">Andre, der bruger denne enhed, kan ikke se din aktivitet, så du kan bruge nettet på en mere privat måde. Dette ændrer ikke på, hvordan data indsamles af websites, du besøger, og de tjenester, de bruger, herunder Google. Downloads og bogmærker gemmes stadig.</translation>
 <translation id="2541219929084442027">Når du har lukket alle dine inkognitofaner, gemmes der hverken cookies, browser- eller søgehistorik for de sider, du besøger i inkognitotilstand. Dog gemmes alle de filer, du downloader, og bogmærker, du opretter.</translation>
 <translation id="2541474152868747095">Verificer din identitet for at få adgang til din historik på dine andre enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
@@ -1092,6 +1092,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2826760142808435982">Forbindelsen er krypteret og godkendt ved hjælp af <ph name="CIPHER" />, og den anvender <ph name="KX" /> som primær udvekslingsmekanisme.</translation>
 <translation id="2828797285817981634">Brug af bevægelsessensorer er tilladt indtil videre</translation>
 <translation id="2835907903001172712">Browseroversigt</translation>
+<translation id="2836653778330912701">Næste er uden for visning</translation>
 <translation id="2837891525090413132">Kan anmode om at låse og bruge dit tastatur</translation>
 <translation id="2839032553903800133">Notifikationer blokeres</translation>
 <translation id="2839501879576190149">Falsk website forude</translation>
@@ -1651,6 +1652,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3749600200023337912">Din gemte betalingsmetode til automatisk betaling kan blive anvendt til denne betaling. Hvis du vil deaktivere elektroniske punge eller betalingsappen i Chrome, skal du gå til dine <ph name="BEGIN_LINK1" />betalingsindstillinger<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Vil du gemme adressen på kontoen?</translation>
 <translation id="3752543821772132562">Ignoreret, fordi <ph name="POLICY_NAME" /> ikke er angivet.</translation>
+<translation id="3753412199586870466">Åbn sidepanel</translation>
 <translation id="3754210790023674521">Afslut integreret billede</translation>
 <translation id="3757511311058373406">Filtre for automatisk browsing</translation>
 <translation id="3759461132968374835">Du har ingen nyligt rapporterede nedbrud. Nedbrud, der opstod, mens rapportering om nedbrud var deaktiveret, vises ikke her.</translation>
@@ -2446,6 +2448,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5053116470141135293">Der udfyldes et virtuelt kortnummer, når du betaler med dette kort, for at beskytte dine faktiske oplysninger. Administrer i Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Hvis du vil sende denne fil ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}one{Hvis du vil sende denne fil ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}other{Hvis du vil sende disse filer ved hjælp af Deling tæt på, skal du frigøre plads (<ph name="DISK_SPACE_SIZE" />) på din enhed}}</translation>
 <translation id="5056587122125565772">Opret billede</translation>
+<translation id="5056908537436373373">Åbn vinduet <ph name="WINDOW_INDEX" /> (1 fane) i et nyt vindue</translation>
 <translation id="505757197798929356">Angiv årsag til åbning (påkrævet)</translation>
 <translation id="5058282932481719070">få flere oplysninger om forbedret autofyld i indstillingerne</translation>
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -2951,7 +2954,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5902204772823742902">Føj et kørekort til Google Wallet på sikker vis</translation>
 <translation id="5903264686717710770">Titel:</translation>
 <translation id="5905671155741555195">Din arbejdsadresse kan hjælpe dig med at udrette mere i Google-tjenester, f.eks. ved hjælp af mere relevante søgeresultater og mere præcis rutevejledning i Google Maps. Du kan til enhver tid redigere eller slette din adresse <ph name="BEGIN_LINK" />på din Google-konto <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
-<translation id="5908541034548427511"><ph name="TYPE_1" /> (synkroniseret)</translation>
 <translation id="5910140988253729859">Fortryd autofyld</translation>
 <translation id="5911110632211230665">Åbning er ikke tilladt</translation>
 <translation id="5912796581727968237">Åbn Google Wallet</translation>
@@ -3021,7 +3023,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6018650639991193045">Slet browserhistorik, cookies, cache m.m. i Chrome-indstillingerne</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Videoen kan ikke gemmes i OneDrive</translation>
-<translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synkroniseret)</translation>
 <translation id="6025471531651464742">Tilføj filer</translation>
 <translation id="6028591542479806248">Administrer notifikationer på mobilenheder og mail</translation>
 <translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at åbne et nyt isoleret vindue, så du kan browse privat</translation>
@@ -3073,6 +3074,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6097297436119286254">Verificer din identitet for at udfylde dine betalingsoplysninger</translation>
 <translation id="6099269767116481177">22 x 29,5 tommer</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Denne politik er beregnet til at blive anvendt på enhedsniveau. Dens adfærd, når den anvendes som en brugerpolitik, understøttes ikke officielt og vil blive udfaset.</translation>
 <translation id="6105460996796456817">Opret website</translation>
 <translation id="6105511947520166941">Betal med Pix direkte i Chrome næste gang</translation>
 <translation id="6105745639559695088">Vis/skjul sidebjælke</translation>
@@ -3184,6 +3186,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6284292079994426700">26 x 38 tommer</translation>
 <translation id="6284517535531159884">Varianter af seedtype</translation>
 <translation id="6287197303017372967">Få en detaljeret rutevejledning til din destination ved hjælp af navigationsfunktionen.</translation>
+<translation id="6287497864845330943">Vindue <ph name="WINDOW_NUMBER" /> · <ph name="NUM_TABS" /> faner</translation>
 <translation id="628877850550444614">Der blev fundet en rabat</translation>
 <translation id="6289939620939689042">Farve på side</translation>
 <translation id="6292819926564202163">Din søgemaskine i Chrome</translation>
@@ -3222,6 +3225,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6342069812937806050">Lige nu</translation>
 <translation id="6342171901363060580">Du ser denne advarsel, fordi dette website ikke understøtter HTTPS, og du er i inkognitotilstand. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Rutevejledning</translation>
+<translation id="6345664705388712774">Føj billeder til din søgning</translation>
 <translation id="6348220984832452017">Aktive variationer</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Betal uden at kopiere og indsætte Pix-koden. <ph name="BEGIN_LINK1" />Se, hvordan det fungerer<ph name="END_LINK1" /></translation>
@@ -3614,6 +3618,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="7013835112918108252">Kan anmode om at låse og bruge din mus</translation>
 <translation id="7013844825046560088">Chrome registrerer, hvordan du bruger funktionen, f.eks. dine anmodninger og din adfærd, når du accepterer eller ignorerer forslag</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
+<translation id="7016016144157344115">Vindue <ph name="WINDOW_NUMBER" /> · 1 fane</translation>
 <translation id="7016992613359344582">Disse opkrævninger kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt.</translation>
 <translation id="7020464868401003526">Webadressen for genvejen overskrider den maksimalt tilladte længde på <ph name="MAX_LENGTH" /> tegn.</translation>
 <translation id="7020581144940000377">Brug omtrentlig lokation</translation>
@@ -3743,7 +3748,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="7240120331469437312">Alternativt navn på certifikatemne</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244061187185055290">Beskriv med få ord, hvad du leder efter</translation>
 <translation id="7247459554233215758">Tryk på kortoplysninger for at føje dem til betalingen.</translation>
 <translation id="7250174481516136841"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om kortfordele</translation>
 <translation id="7251437084390964440">Netværkskonfigurationen overholder ikke ONC-standarden. Dele af konfiguration kan muligvis ikke importeres.
@@ -4165,6 +4169,7 @@ Yderligere oplysninger:
 <translation id="7911651285409665023">Luk, og gå tilbage til "<ph name="TAB_TITLE" />"</translation>
 <translation id="7912924955815015552">Importeret fra Safari</translation>
 <translation id="7916162853251942238">Flexo-base</translation>
+<translation id="7916802424606434188">Åbn vinduet <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> faner) i et nyt vindue</translation>
 <translation id="791698251820376781">Din organisation tillader ikke, at du logger ind</translation>
 <translation id="7927046851848613453">Gem billetter, begivenheder og andre oplysninger fra de sider, du besøger – ikke kun de formularer, du udfylder. Derefter kan du hurtigt tilgå dine kort, f.eks. billetter og loyalitetskort. Dine gemte oplysninger kan vises på dine enheder og i Google-produkter.</translation>
 <translation id="7930282586031445870">Skærmen med servicevilkår for Køb nu, betal senere er lukket.</translation>

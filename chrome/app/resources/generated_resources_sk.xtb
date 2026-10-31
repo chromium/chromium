@@ -419,6 +419,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1293360286536751243">Gesto <ph name="MAIN_GESTURE" /> môže byť v konflikte s gestami <ph name="CONFLICTING_GESTURE_ONE" />, <ph name="CONFLICTING_GESTURE_TWO" /> a <ph name="CONFLICTING_GESTURE_THREE" />. Ak je to možné, skúste vybrať iné.</translation>
 <translation id="1293556467332435079">Súbory</translation>
 <translation id="12951065153783848">Váš účet spravuje vaša organizácia</translation>
+<translation id="129553762522093515">Nedávno zatvorené</translation>
 <translation id="1296410481664942178">Nezobrazovať Kalendár Google</translation>
 <translation id="1296911687402551044">Pripnúť vybranú kartu</translation>
 <translation id="1297175357211070620">Cieľ</translation>
@@ -682,6 +683,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1523279371236772909">Zobrazené v uplynulom mesiaci</translation>
 <translation id="1523978563989812243">Nástroje prevodu textu na reč</translation>
 <translation id="1524563461097350801">Nie, ďakujem</translation>
+<translation id="1524903662136734524">Pridať z Disku</translation>
 <translation id="1525740877599838384">Na zistenie polohy používať iba Wi-Fi</translation>
 <translation id="1526274304859009691">Prihláste sa a získajte tak svoje rozšírenia a ďalšie položky zo zariadenia <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Dokument bez názvu</translation>
@@ -2969,7 +2971,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3261798996834477302">Zapnúť zvuk dolného webu</translation>
 <translation id="3261832505033014216">Prístupový kľúč pre účet <ph name="USER_EMAIL" /></translation>
 <translation id="3262261769033093854">Nepovoliť webom zaznamenávať a používať vstup myši</translation>
-<translation id="3262336253311870293">Tento účet spravuje <ph name="DOMAIN" />, preto vás systém z vášho účtu Google neodhlási. Záložky, história, heslá a ďalšie nastavenia sa už nebudú synchronizovať. Doteraz synchronizované údaje však zostanú uložené vo vašom účte Google a budete ich môcť spravovať v sekcii <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">Príliš veľký</translation>
 <translation id="3264544094376351444">Bezpätkové písmo</translation>
 <translation id="3264582393905923483">Kontext</translation>
@@ -3191,6 +3192,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3436118221454753036">Spýtať sa režimu umelej inteligencie</translation>
 <translation id="3437397693214267762">Zobrazte si Kalendár programu Outlook a súbory SharePoint a OneDrive</translation>
 <translation id="3437494162908353428">Nástroje pre vývojárov nie sú pre túto webovú adresu povolené.</translation>
+<translation id="3437498061222607130">Do Vyhľadávania ste sa prihlásili účtom <ph name="USER_EMAIL" /></translation>
 <translation id="3438633801274389918">Nindža</translation>
 <translation id="3439153939049640737">Vždy povoliť stránkam <ph name="HOST" /> prístup k mikrofónu</translation>
 <translation id="3439970425423980614">Prebieha otváranie súboru PDF v aplikácii Preview</translation>
@@ -4213,6 +4215,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4200609364258658652">Kopírovať snímku videa</translation>
 <translation id="4200689466366162458">Vlastné slová</translation>
 <translation id="4200983522494130825">Nová &amp;karta</translation>
+<translation id="4202186506458631436">Posunúť doprava</translation>
 <translation id="4202536110335087135">Vyskúšať</translation>
 <translation id="4203065553461038553">Názov súboru alebo jeho umiestnenie je príliš dlhé</translation>
 <translation id="4203769790323223880">Kamera nie je povolená</translation>
@@ -5014,6 +5017,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4823484602432206655">Čítať a meniť nastavenia používateľa a zariadenia</translation>
 <translation id="4824037980212326045">Zálohovanie a obnova v systéme Linux</translation>
 <translation id="4824263260587281352">Zmeniť kombináciu klávesov <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Účet Google: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Chcete zrušiť synchronizáciu?</translation>
 <translation id="4825462365587146530">Viac o obchode Chrome Root Store sa dozviete na novej karte.</translation>
 <translation id="4825532258163983651">Prístupový kľúč sa nedá odstrániť</translation>
@@ -5817,7 +5821,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5441292787273562014">Znova načítať stránku</translation>
 <translation id="5441466871879044658">Preložiť do tohto jazyka</translation>
 <translation id="5442550868130618860">Zapnúť automatické aktualizácie</translation>
-<translation id="5444281205834970653">Odstrániť a pokračovať</translation>
 <translation id="5444452275167152925">Importované zo systému ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446836766119801744">⌥L</translation>
@@ -6854,7 +6857,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6264485186158353794">Späť do bezpečia</translation>
 <translation id="6264636978858465832">Správca hesiel potrebuje rozsiahlejší prístup</translation>
 <translation id="626495329434552273">Weby, ktoré majú povolenie prepísať vstup klávesnice</translation>
-<translation id="62650662268452475">Kým máte aktívne prihlásenie, môžete používať záložky, rozšírenia a ďalší obsah uložený vo vašom účte Google vo všetkých svojich zariadeniach</translation>
 <translation id="6265159465845424232">Opýtať sa pred kopírovaním alebo presunom súborov Microsoft do služby Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Odstrániť port</translation>
 <translation id="6266532094411434237">Pripája sa k zariadeniu <ph name="DEVICE" /></translation>
@@ -7031,7 +7033,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6410257289063177456">Súbory obrázkov</translation>
 <translation id="6410328738210026208">Zmeniť kanál a použiť funkciu Powerwash</translation>
 <translation id="6410390304316730527">Bezpečné prehliadanie vás chráni pred útočníkmi, ktorí vás môžu oklamať, aby ste urobili niečo nebezpečné, napríklad nainštalovali škodlivý softvér alebo odhalili osobné údaje, ako sú heslá, telefónne čísla alebo kreditné karty. Ak ho vypnete, pri prehliadaní neznámych alebo pochybných webov postupujte opatrne.</translation>
-<translation id="6410390446958964276">Kým máte aktívne prihlásenie, môžete používať motívy, nastavenia a ďalší obsah uložený vo vašom účte Google vo všetkých svojich zariadeniach</translation>
 <translation id="6411135999030237579">Pridržaním znak klávesa automaticky opakovať</translation>
 <translation id="6415757856498750027">Napísať „w“ a zadať „ư“</translation>
 <translation id="6415900369006735853">Pripojte sa k internetu cez telefón</translation>
@@ -7679,6 +7680,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6892812721183419409">Otvoriť odkaz ako <ph name="USER" /></translation>
 <translation id="6893164346922798247">eSpeak</translation>
 <translation id="6896758677409633944">Skopírovať</translation>
+<translation id="6897341342232909480">Posunúť doľava</translation>
 <translation id="6897363604023044284">Vybrať weby na vymazanie</translation>
 <translation id="689770193677424784">Ak chcete zobraziť karty zvisle, ukončite režim celej obrazovky</translation>
 <translation id="6897756054229464646">S Gemini</translation>
@@ -7866,6 +7868,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7030304022046916278">Odosiela Bezpečnému prehliadaniu webové adresy na kontrolu</translation>
 <translation id="7030695672997239647">Pravým tlačidlom kliknite na kartu a vyberte Pridať kartu do skupiny. Potom vyberte položku Nová skupina.</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – sériový port je pripojený</translation>
+<translation id="7032334023419126809">Účet Google: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">Vstup môže mať maximálne 62 znakov</translation>
 <translation id="7033731598469029604">Automatická navigácia</translation>
 <translation id="70356134210715500">Získať prístupové kľúče</translation>
@@ -8597,7 +8600,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7605163396341021431">Povoľte aplikáciám pre Android ovládať zariadenia USB v tomto Chromebooku</translation>
 <translation id="7605594153474022051">Synchronizácia nefunguje</translation>
 <translation id="7606560865764296217">Pozastaviť animáciu</translation>
-<translation id="7606639338662398635">Skupiny kariet</translation>
 <translation id="7606802863538485839">Prehrať efekty</translation>
 <translation id="7607002721634913082">Pozastavené</translation>
 <translation id="7608810328871051088">Predvoľby Androidu</translation>
@@ -9387,6 +9389,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8199300056570174101">Vlastnosti siete (služba) a zariadenia</translation>
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8202827109322349110">Otvoriť v základnom editore</translation>
+<translation id="8203105157044679380">Panel Vyhľadávania Google</translation>
 <translation id="8203152941016626022">Názov zariadenia pri Zdieľaní nablízku</translation>
 <translation id="8203732864715032075">Odosiela upozornenia a predvolene si zapamätá tento počítač pre Správy. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Kliknutie pravým tlačidlom myši</translation>
@@ -10198,6 +10201,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8818988764764862764">Okno bolo presunuté doľava</translation>
 <translation id="8819510664278523111">EID zariadenia je <ph name="EID_NUMBER" />, jeho IMEI je <ph name="IMEI_NUMBER" /> a jeho sériové číslo je <ph name="SERIAL_NUMBER" />. Pomocou týchto čísel je možné aktivovať službu.</translation>
+<translation id="8819762137851963556">Nájsť kurzor myši</translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="8821045908425223359">Automaticky konfigurovať adresu IP</translation>
 <translation id="8821206216942230957">Váš účet nemá prístup ku Gemini v Chrome</translation>

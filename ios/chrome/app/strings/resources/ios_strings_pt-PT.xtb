@@ -392,7 +392,6 @@
 <translation id="2139867232736819575">Pesquisar o texto que copiou</translation>
 <translation id="2140913838150159519">Fixe um separador</translation>
 <translation id="2147127444698817042">Disponível apenas no iPhone</translation>
-<translation id="2148326276832455306">Os chats são revistos e usados para melhorar a IA da Google. Pode <ph name="BEGIN_LINK" />gerir a sua atividade<ph name="END_LINK" />, incluindo informações sobre a sua localização. <ph name="BEGIN_LINK" />Learn more about your choices<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Inicie sessão rapidamente em sites e apps com as suas palavras-passe guardadas.</translation>
 <translation id="2149968176347646218">A ligação não é segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
@@ -458,7 +457,6 @@
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Sem proteção</translation>
 <translation id="233375395665273385">Eliminar e terminar sessão</translation>
-<translation id="2340966584724330791">A Google recolhe os seus chats e o que partilha com o Gemini (como ficheiros, vídeos, ecrãs e fotos). Também recolhe o seu feedback, informações dos Websites que visita com o Gemini, a utilização do produto e informações de localização (incluindo a localização geral do seu dispositivo, o endereço IP ou as moradas de casa ou do trabalho na sua Conta Google).</translation>
 <translation id="2350463587705616331">Cor de fundo sépia</translation>
 <translation id="2351097562818989364">As definições de tradução foram repostas.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Pode guardar a palavra-passe do domínio {DOMAIN_ONE} na sua Conta Google, {EMAIL}.}=2{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE} e {DOMAIN_TWO} na sua Conta Google, {EMAIL}.}=3{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} na sua Conta Google, {EMAIL}.}other{Pode guardar as palavras-passe dos domínios {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} na sua Conta Google, {EMAIL}.}}</translation>
@@ -741,7 +739,6 @@
 <translation id="3265736395246760288">Inicie sessão mais rapidamente a partir de qualquer um dos seus dispositivos sincronizados.</translation>
 <translation id="3268166994745151153">Isto significa que vai perder o seu progresso atual</translation>
 <translation id="3272527697863656322">Cancelar</translation>
-<translation id="3272955648592358996">Os seus dados melhoram a IA da Google</translation>
 <translation id="3273510436356991673">Personalizar o ecrã principal</translation>
 <translation id="327455571215090823">Preenchimento automático mais inteligente, mantido em privado</translation>
 <translation id="3277021493514034324">Endereço do site copiado</translation>
@@ -917,7 +914,6 @@
 <translation id="3888863481921783344">Isto vai ser usado para lhe mostrar possíveis convidados para o seu evento.</translation>
 <translation id="3891414008432200754">Preço</translation>
 <translation id="3892144330757387737">O seu histórico será apresentado aqui</translation>
-<translation id="3892695492576181257">Quando está ativada, a sua atividade é guardada na Atividade das Apps Gemini durante 18 meses, que pode alterar para 3 ou 36 meses. A Google usa a sua atividade para desenvolver e melhorar os respetivos serviços (incluindo modelos do Gemini), bem como para proteger a Google, os respetivos utilizadores e o público com a ajuda de revisores humanos. Os dados revistos por fornecedores de serviços são desassociados da sua conta e guardados durante 3 anos.</translation>
 <translation id="3893858854379998374">Para guardar marcadores na sua conta, elimine os marcadores não usados</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Edite o carrossel</translation>
@@ -1428,7 +1424,6 @@
 <translation id="5447973833955560753">Palavra-passe de recuperação</translation>
 <translation id="5448623529214315261">Foto guardada <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Use uma palavra-passe forte:</translation>
-<translation id="5453088693079603292">Que atividade é recolhida</translation>
 <translation id="5454211924362324495">Para impedir que outras pessoas usem a sua palavra-passe, <ph name="BEGIN_LINK" />altere-a em <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Adicione à sua pesquisa</translation>
 <translation id="5457226814769348910">Abrir versão offline</translation>
@@ -1542,7 +1537,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5801568494490449797">Preferências</translation>
 <translation id="5803566855766646066">Quer mesmo rejeitar o novo cartão?</translation>
 <translation id="5804241973901381774">Permissões</translation>
-<translation id="58081802114142635">A sua atividade melhora a IA da Google</translation>
 <translation id="5817176759448082654">Verificação de Palavra-passe</translation>
 <translation id="5818161931099046557">Editar na Conta Google</translation>
 <translation id="5819208479324046259">Gerido por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1591,7 +1585,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5971459446352190251">Pesquisa de códigos QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>
-<translation id="597482816780655631">O Gemini é IA e pode cometer erros, inclusive sobre pessoas. Algum conteúdo pode não ser adequado para todos. Os chats são revistos e usados para melhorar a IA da Google. <ph name="BEGIN_LINK" />Saiba mais sobre as suas opções<ph name="END_LINK" />. Aplicam-se os nossos <ph name="BEGIN_LINK" />Termos<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Aviso de Privacidade<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Outros</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5986043348928676121">Seguinte</translation>
@@ -1609,7 +1602,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6027945736510816438">Será que quis dizer <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nova funcionalidade</translation>
 <translation id="6038823991892265570">Gerir armazenamento Google</translation>
-<translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6042308850641462728">Mais</translation>
 <translation id="6045460247888249350">Adicione um título</translation>
@@ -1817,7 +1809,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6609890790934458793">As palavras-passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="THIRD_WEBSITE" /> vão ser apagadas. As suas contas não vão ser apagadas.</translation>
 <translation id="661266467055912436">Melhora a segurança para si e todas as pessoas na Web.</translation>
 <translation id="6612912757320004438">Permitir notificações de separadores…</translation>
-<translation id="6613372200395638275">Para oferecer ajuda personalizada, o Gemini partilha alguns dos seus dados (como partes dos seus chats, a localização e outras informações relevantes) com outros serviços Google, como o Maps e o Voos. Estes serviços podem usar essas informações para melhorias, mesmo que elimine a Atividade das Apps Gemini mais tarde. Learn more in the <ph name="BEGIN_LINK" />Gemini Apps Privacy Hub<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Limpar texto</translation>
 <translation id="6619015782482868078">Tema aqua</translation>
 <translation id="6620279676667515405">Cancelar</translation>
@@ -1977,7 +1968,6 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="7091023926159231962">{count,plural, =1{Não foi possível importar {count} palavra-passe}other{Não foi possível importar {count} palavras-passes}}</translation>
 <translation id="7095110968493193530">Para o Gestor de Palavras-passe da Google da conta <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Na barra de endereço, toque no histórico de preços para ver as alterações de preço ao longo do tempo</translation>
-<translation id="7098554251807199977">Nem as suas conversas com o Gemini nem os seus <ph name="BEGIN_LINK" />dados do Google Workspace<ph name="END_LINK" /> são revistos ou usados para melhorar os modelos de IA generativa.</translation>
 <translation id="7102005569666697658">A transferir… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Definições → Métodos de pagamento</translation>
 <translation id="7108338896283013870">Ocultar</translation>
@@ -2417,7 +2407,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8439758443371991593">Ocultar Adicionar à Lista de leitura</translation>
 <translation id="8443986842926457191">O URL contém mais de 2048 carateres</translation>
 <translation id="8449869326050867919">Palavra-passe partilhada</translation>
-<translation id="8461708300275916315">Se tiver menos de 18 anos</translation>
 <translation id="8473815223723723001">Editar imagem com o Gemini</translation>
 <translation id="8473863474539038330">Moradas e muito mais</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
@@ -2497,7 +2486,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8672733398999596205">Ativar tudo</translation>
 <translation id="8674716540979958118">Tem palavras-passe comprometidas.</translation>
 <translation id="8679900250380464358">Adicionar à Lista de leitura</translation>
-<translation id="8680643216091361291">A definição <ph name="BEGIN_LINK" />Manter Atividade<ph name="END_LINK" /> está desativada por predefinição. Quando esta opção está desativada, a Google guarda os seus chats durante 3 dias. Usa-os para que as Apps Gemini funcionem corretamente, para ajudar a manter a segurança e para usar o seu feedback para corrigir problemas. Pode ativar a definição Manter Atividade para ajudar a melhorar a IA da Google para todos.</translation>
 <translation id="8680787084697685621">Os detalhes de início de sessão na conta estão desactualizados.</translation>
 <translation id="868648444055742370">O site "<ph name="SITE_DOMAIN" />" não tem autorização para aceder ao seu microfone</translation>
 <translation id="8690752723634292147">Confirmar eliminação</translation>
@@ -2555,7 +2543,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="882557203579758546">Localizar na página…</translation>
 <translation id="8829809207373502270">Esta chave de acesso já não funciona. Foi eliminada de <ph name="WEBSITE" /> e vai ser eliminada daqui em breve. <ph name="BEGIN_LINK" />Acerca das chaves de acesso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Fechar todos os inativos</translation>
-<translation id="8831871601813227635">Aplicam-se os nossos <ph name="BEGIN_LINK" />Termos<ph name="END_LINK" />, os <ph name="BEGIN_LINK" />Termos de Utilização da Localização Coreanos<ph name="END_LINK" /> e o <ph name="BEGIN_LINK" />Aviso de Privacidade<ph name="END_LINK" />. Os chats são revistos e usados para melhorar a IA da Google. O Gemini é IA e pode cometer erros, inclusive sobre pessoas. Algum conteúdo pode não ser adequado para todos. Pode <ph name="BEGIN_LINK" />gerir a sua atividade<ph name="END_LINK" />, incluindo informações sobre a sua localização. <ph name="BEGIN_LINK" />Saiba mais sobre as suas opções<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Ordenar por publicador</translation>
 <translation id="884351711508006491">As informações são guardadas no seu dispositivo</translation>
 <translation id="8844136307393039959">Queda de preço no produto acompanhado</translation>

@@ -517,6 +517,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="5940385492829620908">ਤੁਹਾਡੀ ਵੈੱਬ, ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ Chrome ਸਮੱਗਰੀ ਇੱਥੇ ਲਾਈਵ ਹੈ।</translation>
 <translation id="5941711191222866238">ਨਿਊਨਤਮ</translation>
 <translation id="5941830788786076944">Google Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਬਣਾਓ</translation>
+<translation id="5944731887996253728">ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੀ ਵਰਤੋਂ ਨਾ ਹੋਣ 'ਤੇ Chrome ਅੱਪਡੇਟ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="5947104538377036631">Chrome ਦਾ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="5960071705175224773">ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਕਿਸੇ ਅਗਿਆਤ ਐਪ ਵੱਲੋਂ ਬਦਲਿਆ ਗਿਆ ਸੀ</translation>
 <translation id="5980111191913430208">ਅਗਿਆਤ ਸਰੋਤਾਂ ਤੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ, ਐਪਾਂ ਅਤੇ ਥੀਮਾਂ ਨਾਲ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਨੁਕਸਾਨ ਪਹੁੰਚ ਸਕਦਾ ਹੈ। Chrome ਇਨ੍ਹਾਂ ਨੂੰ ਸਿਰਫ਼ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ਤੋਂ ਸਥਾਪਤ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ</translation>
@@ -809,6 +810,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8367950957770994118">ਜਦੋਂ ਵੀ ਚਾਹੋ, Chrome ਵਿੱਚ Gemini ਨੂੰ ਤੁਰੰਤ ਖੋਲ੍ਹੋ</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="8370748943308169953">Chrome ਵਿੱਚ <ph name="USER_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ QR ਕੋਡ</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> ਤਿਆਰ ਹੈ। ਤੁਸੀਂ ਹੁਣੇ ਮੁੜ-ਲਾਂਚ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਅਗਲੀ ਵਾਰ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੇ ਚਾਲੂ ਰਹਿਣ ਅਤੇ <ph name="IDLE_DURATION" /> ਲਈ ਅਣਵਰਤੀ ਰਹਿਣ 'ਤੇ Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਸੈੱਟ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8376752431516546391">Google Search ਦਾ ਸਾਈਡ ਪੈਨਲ</translation>
 <translation id="8377158135256176353">Chrome Canary ਵਿੱਚ Gemini ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="8380754585531979907">Chrome ਵਿੱਚ Gemini ਅਤੇ ਆਪਣੀ ਖੁੱਲ੍ਹੀ ਟੈਬ ਵਿਚਕਾਰ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਆਪਣੇ ਕੀ-ਬੋਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
@@ -848,6 +850,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8656634243791296665">Chrome Dev ਵਿੱਚ Gemini ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="8669527147644353129">Google Chrome ਸਹਾਇਕ</translation>
 <translation id="8679801911857917785">ਇਹ ਇਸ ਨੂੰ ਵੀ ਕੰਟਰੋਲ ਕਰਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਸੀਂ Chrome ਨੂੰ ਸ਼ੁਰੂ ਕਰਦੇ ਹੋ ਤਾਂ ਕਿਹੜਾ ਪੰਨਾ ਦਿਖਾਇਆ ਜਾਵੇ।</translation>
+<translation id="8699232386626916686">ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8712767363896337380">ਲਗਭਗ ਅੱਪ-ਟੂ-ਡੇਟ! ਅੱਪਡੇਟ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ।</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> ਨੇ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਆਪਣੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵੱਖਰਾ ਰੱਖਣ ਲਈ, Chrome ਦੇ ਅੰਦਰ ਆਪਣੇ ਖੁਦ ਦੇ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ <ph name="DEVICE" /> ਤੋਂ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕੋਗੇ।</translation>
