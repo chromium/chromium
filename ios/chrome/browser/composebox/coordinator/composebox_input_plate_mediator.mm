@@ -2012,7 +2012,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 // instead of routing through the standard search navigation flow.
 - (BOOL)shouldInvokeAssistantForAIMQuery {
   return _modeHolder.mode == ComposeboxMode::kAIM && !_isIncognito &&
-         IsAimCobrowseEligible(_aimEligibilityService, _prefService) &&
+         IsAimCobrowseAddTabEligible(_aimEligibilityService, _prefService) &&
          [self isActiveTabAttached];
 }
 

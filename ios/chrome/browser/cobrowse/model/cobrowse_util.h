@@ -15,6 +15,12 @@ bool IsAimCobrowseEligible(AimEligibilityService* aim_eligibility_service,
                            const PrefService* prefs);
 bool IsAimCobrowseEligible(ProfileIOS* profile);
 
+// Returns true if the AIM Cobrowse Add Tab entrypoint is enabled and the user
+// is eligible for AIM Cobrowse.
+bool IsAimCobrowseAddTabEligible(AimEligibilityService* aim_eligibility_service,
+                                 const PrefService* prefs);
+bool IsAimCobrowseAddTabEligible(ProfileIOS* profile);
+
 // Returns true if AIM Cobrowse Web Selection Search feature is enabled and the
 // user is eligible for AIM Cobrowse.
 bool IsAimCobrowseWebSelectionSearchEligible(

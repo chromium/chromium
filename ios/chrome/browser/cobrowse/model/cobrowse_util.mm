@@ -48,6 +48,17 @@ bool IsAimCobrowseEligible(ProfileIOS* profile) {
       profile->GetPrefs());
 }
 
+bool IsAimCobrowseAddTabEligible(AimEligibilityService* aim_eligibility_service,
+                                 const PrefService* prefs) {
+  return IsAimCobrowseEligible(aim_eligibility_service, prefs) &&
+         IsAimCobrowseAddTabEntrypointEnabled();
+}
+
+bool IsAimCobrowseAddTabEligible(ProfileIOS* profile) {
+  return IsAimCobrowseEligible(profile) &&
+         IsAimCobrowseAddTabEntrypointEnabled();
+}
+
 bool IsAimCobrowseWebSelectionSearchEligible(
     AimEligibilityService* aim_eligibility_service,
     const PrefService* prefs) {
