@@ -169,10 +169,15 @@ class InlineScriptCodeCacheBrowserTestBase : public ContentBrowserTest {
       } else if (absolute_url.GetPath() == "/never-cachehint.html") {
         cachehint_value = "never";
       }
+      // Skip the expensive warmup when caching for default hints is disabled.
+      std::string warmup_script;
+      if (cachehint_value != "default" ||
+          blink::features::kInlineScriptCacheEnabledForDefaultHint.Get()) {
+        warmup_script = GenerateUniqueHeavyJavascriptSource();
+      }
       std::string content = base::StrCat(
           {"<html><head><title>Title</title></head><body>",
-           "<script type='text/javascript'>",
-           GenerateUniqueHeavyJavascriptSource(),
+           "<script type='text/javascript'>", warmup_script,
            "</script><script type='text/javascript' cachehint='",
            cachehint_value, "'>", GetCacheableLongStaticJavascriptSource(),
            "</script></body></html>\n"});
@@ -314,6 +319,8 @@ IN_PROC_BROWSER_TEST_P(InlineScriptCacheHintBrowserTest,
   GURL url =
       embedded_test_server()->GetURL("example.com", "/default-cachehint.html");
 
+  base::HistogramTester total_histogram_tester;
+
   // Step 1: Load the page first time.
   {
     base::HistogramTester histogram_tester;
@@ -348,6 +355,9 @@ IN_PROC_BROWSER_TEST_P(InlineScriptCacheHintBrowserTest,
       EXPECT_TRUE(produced) << "Failed to produce cache";
     } else {
       EXPECT_FALSE(produced) << "Cache should not be produced";
+      // A cold or uninitialized backend must not hide accidental cache access.
+      total_histogram_tester.ExpectTotalCount(
+          "Blink.Script.InlineScriptCache.FetchResult", 0);
     }
   }
 }
