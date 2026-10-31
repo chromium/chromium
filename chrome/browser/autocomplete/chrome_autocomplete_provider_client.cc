@@ -810,7 +810,10 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 
 bool ChromeAutocompleteProviderClient::ShouldOpenCoBrowsePanel() const {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!omnibox::AreContextualTasksEligible(profile_)) {
+  // The CoBrowse side panel depends on sharing the current tab, so don't open
+  // it when tab sharing isn't supported.
+  if (!omnibox::AreContextualTasksEligible(profile_) ||
+      !contextual_tasks::IsTabSharingEligible(profile_)) {
     return false;
   }
 
