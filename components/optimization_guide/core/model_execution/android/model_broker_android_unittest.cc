@@ -297,14 +297,19 @@ TEST_F(ModelBrokerAndroidTest, EnterprisePolicyDisallowsModel) {
   InstallTestFeatureConfig();
   ModelBrokerClient client(fake_broker_.BindAndPassRemote(), nullptr);
 
+  base::test::TestFuture<std::optional<mojom::ModelUnavailableReason>,
+                         std::optional<mojom::ModelNotSupportedDetailedReason>>
+      can_create_future;
+  client.GetSubscriber(mojom::OnDeviceFeature::kTest)
+      .CanCreateSession({}, can_create_future.GetCallback());
+
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
-  base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
-               .unavailable_reason() ==
-           mojom::ModelUnavailableReason::kNotSupported;
-  });
+  EXPECT_EQ(can_create_future.Get(),
+            std::make_tuple(
+                mojom::ModelUnavailableReason::kNotSupported,
+                mojom::ModelNotSupportedDetailedReason::kFeatureNotEnabled));
   EXPECT_EQ(future.Get(), nullptr);
 }
 

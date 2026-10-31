@@ -104,8 +104,6 @@ std::string_view GetStringNameForOptimizationTarget(
       return "TextSafety";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER:
       return "SegmentationAndroidHomeModuleRanker";
-    case proto::OPTIMIZATION_TARGET_COMPOSE:
-      return "Compose";
     case proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER:
       return "PassageEmbedder";
     case proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION:
@@ -116,28 +114,12 @@ std::string_view GetStringNameForOptimizationTarget(
       return "URLVisitResumptionRanker";
     case proto::OPTIMIZATION_TARGET_CAMERA_BACKGROUND_SEGMENTATION:
       return "CameraBackgroundSegmentation";
-    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
-      return "ModelExecutionFeatureHistorySearch";
-    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API:
-      return "ModelExecutionFeaturePromptAPI";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_METRICS_CLUSTERING:
       return "SegmentationMetricsClustering";
-    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SUMMARIZE:
-      return "ModelExecutionFeatureSummarize";
     case proto::OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION:
       return "PasswordManagerFormClassification";
     case proto::OPTIMIZATION_TARGET_NOTIFICATION_CONTENT_DETECTION:
       return "NotificationContentDetection";
-    case proto::
-        OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT:
-      return "ModelExecutionFeatureHistoryQueryIntent";
-    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION:
-      return "ModelExecutionFeatureScamDetection";
-    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PERMISSIONS_AI:
-      return "ModelExecutionFeaturePermissionsAi";
-    case proto::
-        OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API:
-      return "ModelExecutionFeatureWritingAssistanceApi";
     case proto::OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER:
       return "ExperimentalEmbedder";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER:
@@ -146,8 +128,6 @@ std::string_view GetStringNameForOptimizationTarget(
       return "GeolocationPermissionsV3";
     case proto::OPTIMIZATION_TARGET_NOTIFICATION_IMAGE_PERMISSION_RELEVANCE:
       return "NotificationPermissionsV3";
-    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROOFREADER_API:
-      return "ModelExecutionFeatureProofreaderApi";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_IOS_DEFAULT_BROWSER_PROMO:
       return "SegmentationIosDefaultBrowserPromo";
     case proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER:
@@ -162,18 +142,10 @@ std::string_view GetStringNameForOptimizationTarget(
       return "PermissionsAiv4NotificationsAndroid";
     case proto::OPTIMIZATION_TARGET_GENERALIZED_SAFETY:
       return "GeneralizedSafety";
-    case proto::
-        OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION:
-      return "OnDeviceSpeechRecognition";
-    case proto::
-        OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION_TINY_GEMMA:
-      return "SpeechRecognitionSmallExpertModel";
     case proto::OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR:
       return "WebRTCNeuralResidualEchoEstimator";
     case proto::OPTIMIZATION_TARGET_WEBRTC_VOICE_ISOLATION_DENOISER:
       return "WebRTCVoiceIsolationDenoiser";
-    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_CLASSIFIER:
-      return "ModelExecutionFeatureClassifier";
     case proto::OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE:
       return "ContextualTasksTabRelevance";
     case proto::OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_MULTI_TURN_TAB_RELEVANCE:

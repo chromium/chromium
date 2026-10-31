@@ -407,10 +407,7 @@ ModelBrokerAndroid::SolutionFactory::MakeSolution(
   }
 
   if (!IsModelAllowed(&(*parent_->local_state_))) {
-    // Preserve the existing NotSupported mapping when model execution is
-    // disallowed by feature flag or enterprise policy.
-    return base::unexpected(
-        OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable);
+    return base::unexpected(OnDeviceModelEligibilityReason::kFeatureNotEnabled);
   }
 
   auto spec_it = base_model_specs_.find(*aicore_feature);

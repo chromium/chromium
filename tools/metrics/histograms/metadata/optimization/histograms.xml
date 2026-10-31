@@ -166,7 +166,6 @@ chromium-metrics-reviews@google.com.
   <variant name="ClientSidePhishing" summary="Client Side Phishing"/>
   <variant name="ClientSidePhishingImageEmbedder"
       summary="Client Side Phishing Image Embedder"/>
-  <variant name="Compose" summary="Weights for On-Device Compose"/>
   <variant name="ContextualPageActionPriceTracking"
       summary="Contextual Page Action: Show price tracking"/>
   <variant name="ContextualTasksMultiTurnTabRelevance"
@@ -187,22 +186,6 @@ chromium-metrics-reviews@google.com.
   <variant name="LanguageDetection" summary="Language detection"/>
   <variant name="ModelExecutionFeatureAiEmbeddings"
       summary="Model Execution Feature: AI Embeddings"/>
-  <variant name="ModelExecutionFeatureHistoryQueryIntent"
-      summary="Model Execution Feature: History Query Intent"/>
-  <variant name="ModelExecutionFeatureHistorySearch"
-      summary="Model Execution Feature: History Search"/>
-  <variant name="ModelExecutionFeaturePermissionsAi"
-      summary="Model Execution Feature: Permissions AI"/>
-  <variant name="ModelExecutionFeaturePromptAPI"
-      summary="Model Execution Feature: Prompt API"/>
-  <variant name="ModelExecutionFeatureProofreaderApi"
-      summary="Model Execution Feature: Proofreader API"/>
-  <variant name="ModelExecutionFeatureScamDetection"
-      summary="Model Execution Feature: Scam Detection"/>
-  <variant name="ModelExecutionFeatureSummarize"
-      summary="Model Execution Feature: Summarize"/>
-  <variant name="ModelExecutionFeatureWritingAssistanceApi"
-      summary="Model Execution Feature: Writing Assistance APIs"/>
   <variant name="ModelValidation" summary="Model validation triggered via CLI"/>
   <variant name="NewTabPageHistoryClustersModuleRanking"
       summary="New Tab Page History Clusters Module Ranking"/>
@@ -277,8 +260,6 @@ chromium-metrics-reviews@google.com.
       summary="Segmentation: Tablet Productivity user"/>
   <variant name="SegmentationVoice" summary="Segmentation: Voice user"/>
   <variant name="ShoppingClassifier" summary="Shopping classifier"/>
-  <variant name="SpeechRecognitionSmallExpertModel"
-      summary="Speech Recognition Small Expert Model (TinyGemma)"/>
   <variant name="TextClassifier" summary="Smart text selection"/>
   <variant name="TextEmbedder" summary="Generic Text Embedding"/>
   <variant name="TextSafety" summary="Classifies safety of the text"/>
