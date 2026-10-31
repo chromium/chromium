@@ -2891,6 +2891,46 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AttachmentImageFormat"
+    enum="FuseboxSniffedImageFormat" expires_after="2027-04-30">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    The container format of a Fusebox attachment as identified from its leading
+    bytes, independent of the mime type the content provider declared. Formats
+    that Blink's image decoders cannot handle (HEIF/HEIC, TIFF/DNG, JPEG XL, or
+    an unrecognised signature on a declared image) are transcoded to JPEG on the
+    client before upload; without that, native decoding returns a null bitmap
+    and the upload fails with IMAGE_PROCESSING_ERROR.
+
+    Recorded once per attachment whose bytes were read (including short reads,
+    which are still forwarded), before any transcoding or downscaling, and which
+    is either declared as an image by the content provider or sniffs as a known
+    image format (e.g. application/octet-stream from a generic file picker). Not
+    recorded when the title or mime type is missing, when the read fails or
+    returns no bytes, or for attachments not declared as images whose size is
+    unknown or over the file size limit, since those are rejected before their
+    bytes are read. Duplicate files produce separate emissions.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.AttachmentImageFormatMismatch"
+    enum="Boolean" expires_after="2027-04-30">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Whether the mime type the content provider declared for an image attachment
+    disagrees with the format sniffed from its bytes (e.g. image/jpeg declared
+    for a HEIC payload, as observed with cloud-backed photo picker items). Only
+    recorded when the declared mime type is an image type; when either side is
+    unrecognised the pair is treated as consistent and false is recorded.
+
+    Emitted together with Omnibox.MobileFusebox.AttachmentImageFormat, but only
+    for attachments declared as images; attachments that only sniff as an image
+    record AttachmentImageFormat alone.
+  </summary>
+</histogram>
+
 <histogram
     name="Omnibox.MobileFusebox.AttachmentLoadOOM{FuseboxAttachmentFileType}"
     enum="Boolean" expires_after="2027-03-30">
@@ -2928,10 +2968,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
     Distinguishes a clean read from an empty stream, a short read (fewer bytes
     than the provider-reported size, possibly recovered by a retry), I/O and
-    memory errors, and - when AIM image downscaling is enabled - bytes that the
-    platform image decoder rejected. Empty, I/O, OOM and undecodable outcomes
-    cause the attachment to be dropped on the client; short reads are forwarded
-    to the upload pipeline so that the decoder has the final say.
+    memory errors, and bytes that the platform image decoder rejected. Decoding
+    happens when AIM image downscaling is enabled, and always for formats that
+    must be transcoded before upload (HEIF, TIFF/DNG, JPEG XL, or an
+    unrecognised signature on a declared image). For declared images, an
+    OutOfMemoryError or decoder rejection during that mandatory transcode is
+    recorded as undecodable; attachments not declared as images keep their raw
+    bytes and are uploaded as plain files instead. Empty, I/O, OOM and
+    undecodable outcomes cause the attachment to be dropped on the client; short
+    reads are forwarded to the upload pipeline so that the decoder has the final
+    say. The file type is the one the content provider declared (e.g. Unknown
+    for application/octet-stream), even if the bytes are an image.
 
     There is a unique histogram for each file type (Audio, Image, PDF, ...), and
     a general aggregate total histogram for all file types. Recorded once per

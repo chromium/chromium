@@ -14,6 +14,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.fusebox.ImageFormatSniffer.ImageFormat;
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -57,6 +58,14 @@ public class FuseboxMetrics {
     @VisibleForTesting
     /* package */ static final String ATTACHMENT_READ_RESULT_HISTOGRAM =
             "Omnibox.MobileFusebox.AttachmentReadResult";
+
+    @VisibleForTesting
+    /* package */ static final String ATTACHMENT_IMAGE_FORMAT_HISTOGRAM =
+            "Omnibox.MobileFusebox.AttachmentImageFormat";
+
+    @VisibleForTesting
+    /* package */ static final String ATTACHMENT_IMAGE_FORMAT_MISMATCH_HISTOGRAM =
+            "Omnibox.MobileFusebox.AttachmentImageFormatMismatch";
 
     @VisibleForTesting
     /* package */ static final String TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM =
@@ -540,6 +549,16 @@ public class FuseboxMetrics {
 
     static void recordAttachmentC2paDetected(boolean detected) {
         RecordHistogram.recordBooleanHistogram(ATTACHMENT_C2PA_DETECTED_HISTOGRAM, detected);
+    }
+
+    static void recordAttachmentImageFormat(@ImageFormat int format) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ATTACHMENT_IMAGE_FORMAT_HISTOGRAM, format, ImageFormat.COUNT);
+    }
+
+    static void recordAttachmentImageFormatMismatch(boolean mismatch) {
+        RecordHistogram.recordBooleanHistogram(
+                ATTACHMENT_IMAGE_FORMAT_MISMATCH_HISTOGRAM, mismatch);
     }
 
     static void recordAttachmentReadResult(

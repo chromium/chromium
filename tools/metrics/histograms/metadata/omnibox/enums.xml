@@ -276,6 +276,24 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:FuseboxAttachmentSizeLimitCheck) -->
 
+<!-- LINT.IfChange(FuseboxSniffedImageFormat) -->
+
+<enum name="FuseboxSniffedImageFormat">
+  <int value="0" label="Unknown / unrecognised signature"/>
+  <int value="1" label="JPEG"/>
+  <int value="2" label="PNG"/>
+  <int value="3" label="GIF"/>
+  <int value="4" label="WebP"/>
+  <int value="5" label="BMP"/>
+  <int value="6" label="ICO / CUR"/>
+  <int value="7" label="AVIF"/>
+  <int value="8" label="HEIF / HEIC"/>
+  <int value="9" label="TIFF (incl. DNG)"/>
+  <int value="10" label="JPEG XL"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/ImageFormatSniffer.java:FuseboxSniffedImageFormat) -->
+
 <!-- LINT.IfChange(FuseboxTabAttachStartFailureReason) -->
 
 <enum name="FuseboxTabAttachStartFailureReason">

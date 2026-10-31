@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentReadResult;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentSizeLimitCheck;
+import org.chromium.chrome.browser.omnibox.fusebox.ImageFormatSniffer.ImageFormat;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.MimeTypeUtils;
 
@@ -220,7 +221,9 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
     /**
      * Reads the attachment payload from {@link #mUri}, validating that the bytes look complete and
-     * (for downscalable images) decodable before handing them to the upload pipeline.
+     * (for images) decodable before handing them to the upload pipeline. Formats Blink cannot
+     * decode are transcoded to JPEG; when that happens, {@link #mMimeType} is rewritten to
+     * image/jpeg as a side effect.
      *
      * <p>The content URI is opened at most twice (once, plus one retry on an empty/short read). The
      * same in-memory bytes are reused for the C2PA sniff and for downscaling, so pipe-backed
@@ -237,25 +240,66 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         @FuseboxAttachmentReadResult int result = read.mResult;
         byte[] data = read.mData;
 
-        @Nullable CompressFormat outputFormat = getCompressionFormat(mimeType);
-        boolean downscalingEnabled =
-                outputFormat != null && OmniboxFeatures.sOmniboxAimImageDownscaling.isEnabled();
+        if (data == null) {
+            FuseboxMetrics.recordAttachmentLoadOom(oomOccurred, fileType);
+            FuseboxMetrics.recordAttachmentReadResult(result, fileType);
+            return null;
+        }
 
-        if (data != null && downscalingEnabled) {
-            boolean hasC2pa = C2paMetadataUtils.hasC2paMetadata(data);
-            FuseboxMetrics.recordAttachmentC2paDetected(hasC2pa);
+        // The declared mime type is not trustworthy (cloud-backed picker items have been seen to
+        // report image/jpeg for HEIC), so identify the container from the bytes. Record for every
+        // declared image and for anything that sniffs as an image regardless of declared type, but
+        // not for other non-image attachments so they don't dilute the histogram.
+        @ImageFormat int format = ImageFormatSniffer.sniff(data);
+        boolean declaredImage = fileType == MimeTypeUtils.Type.IMAGE;
+        if (declaredImage || format != ImageFormat.UNKNOWN) {
+            FuseboxMetrics.recordAttachmentImageFormat(format);
+            if (declaredImage) {
+                FuseboxMetrics.recordAttachmentImageFormatMismatch(
+                        ImageFormatSniffer.declaredMimeTypeMismatches(mimeType, format));
+            }
+        }
 
-            if (!hasC2pa) {
-                try {
-                    data = loadDownscaledImage(data, assumeNonNull(outputFormat));
-                } catch (OutOfMemoryError e) {
-                    // Keep the raw bytes; native may still manage to process them.
-                    Log.w(TAG, "OOM while downscaling attachment; using original bytes", e);
-                    oomOccurred = true;
-                } catch (IOException | IllegalArgumentException e) {
-                    // We hold the complete payload and the platform decoder rejected it. Native
-                    // decoding will fail the same way, so fail fast here with a precise reason
-                    // rather than surfacing a generic IMAGE_PROCESSING_ERROR later.
+        // Formats Blink cannot decode (HEIF, DNG, ...) must be re-encoded here, where the platform
+        // decoder can handle them; otherwise native decoding returns a null bitmap and the upload
+        // fails with IMAGE_PROCESSING_ERROR. This is independent of the downscaling feature.
+        boolean mustTranscode = ImageFormatSniffer.requiresClientTranscode(mimeType, format);
+
+        @Nullable CompressFormat outputFormat;
+        boolean shouldReencode;
+        if (mustTranscode) {
+            outputFormat = CompressFormat.JPEG;
+            shouldReencode = true;
+        } else {
+            outputFormat = getCompressionFormat(format);
+            boolean downscalingEnabled =
+                    outputFormat != null && OmniboxFeatures.sOmniboxAimImageDownscaling.isEnabled();
+            shouldReencode = false;
+            if (downscalingEnabled) {
+                boolean hasC2pa = C2paMetadataUtils.hasC2paMetadata(data);
+                FuseboxMetrics.recordAttachmentC2paDetected(hasC2pa);
+                shouldReencode = !hasC2pa;
+            }
+        }
+
+        if (shouldReencode) {
+            try {
+                data = loadDownscaledImage(data, assumeNonNull(outputFormat));
+                if (mustTranscode) mMimeType = MimeTypeUtils.IMAGE_JPEG_MIME_TYPE;
+            } catch (OutOfMemoryError e) {
+                Log.w(TAG, "OOM while re-encoding attachment", e);
+                oomOccurred = true;
+                if (mustTranscode && declaredImage) {
+                    // The raw bytes are guaranteed to fail downstream; don't forward them.
+                    result = FuseboxAttachmentReadResult.DECODE_FAILED;
+                    data = null;
+                }
+                // Otherwise keep the raw bytes: a Blink-decodable image, or a plain file.
+            } catch (IOException | IllegalArgumentException e) {
+                if (!declaredImage) {
+                    // Only the bytes suggested an image; keep uploading it as a plain file.
+                    Log.w(TAG, "Sniffed image is not decodable; keeping it as a file", e);
+                } else {
                     Log.w(TAG, "Attachment bytes are not decodable (%d bytes)", data.length, e);
                     result = FuseboxAttachmentReadResult.DECODE_FAILED;
                     data = null;
@@ -386,11 +430,14 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         return new Size(targetWidth, targetHeight);
     }
 
-    private static @Nullable CompressFormat getCompressionFormat(String mimeType) {
-        return switch (mimeType) {
-            case MimeTypeUtils.IMAGE_JPEG_MIME_TYPE, MimeTypeUtils.IMAGE_JPG_MIME_TYPE ->
-                    CompressFormat.JPEG;
-            case MimeTypeUtils.IMAGE_PNG_MIME_TYPE -> CompressFormat.PNG;
+    /**
+     * Returns the format the downscaling feature should re-encode a Blink-decodable image as, or
+     * null if the format should be left untouched (e.g. animated GIF/WebP).
+     */
+    private static @Nullable CompressFormat getCompressionFormat(@ImageFormat int format) {
+        return switch (format) {
+            case ImageFormat.JPEG -> CompressFormat.JPEG;
+            case ImageFormat.PNG -> CompressFormat.PNG;
             default -> null;
         };
     }
