@@ -214,16 +214,11 @@ void MarkLinesCrossingBox(base::span<const RulingLine> vertical_lines,
   }
 }
 
-// Returns the vertical lines in `ruling_lines` that don't run through any
-// character in `text_runs`, such as table column dividers (as opposed to chart
-// gridlines behind text), sorted by x. `chars` holds the characters of
-// `text_runs`.
-std::vector<RulingLine> GetVerticalDividers(
-    base::span<const RulingLine> ruling_lines,
-    base::span<const chrome_pdf::AccessibilityCharInfo> chars,
-    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs) {
-  // `ruling_lines` must hold horizontal lines first, then vertical lines sorted
-  // by x, for the binary searches in `GetVerticalLineIndicesInXRange()`.
+// Returns the vertical lines in `ruling_lines`, which must be ordered as
+// returned by `ExtractRulingLines()`. The vertical lines are sorted by x, as
+// needed by the binary searches in `GetVerticalLineIndicesInXRange()`.
+base::span<const RulingLine> GetVerticalLines(
+    base::span<const RulingLine> ruling_lines) {
   CHECK(std::ranges::is_partitioned(ruling_lines, &RulingLine::is_horizontal));
   auto vertical_begin =
       std::ranges::partition_point(ruling_lines, &RulingLine::is_horizontal);
@@ -232,6 +227,19 @@ std::vector<RulingLine> GetVerticalDividers(
   CHECK(std::ranges::is_sorted(vertical_lines, {}, [](const RulingLine& line) {
     return line.start.x();
   }));
+  return vertical_lines;
+}
+
+// Returns the vertical lines in `ruling_lines` that don't run through any
+// character in `text_runs`, such as table column dividers (as opposed to chart
+// gridlines behind text), sorted by x. `chars` holds the characters of
+// `text_runs`.
+std::vector<RulingLine> GetVerticalDividers(
+    base::span<const RulingLine> ruling_lines,
+    base::span<const chrome_pdf::AccessibilityCharInfo> chars,
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs) {
+  const base::span<const RulingLine> vertical_lines =
+      GetVerticalLines(ruling_lines);
   if (vertical_lines.empty()) {
     return {};
   }
