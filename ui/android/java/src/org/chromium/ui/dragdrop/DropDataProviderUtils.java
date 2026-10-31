@@ -11,17 +11,25 @@ import static org.chromium.ui.dragdrop.DropDataProviderImpl.URI_PARAM;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/**
- * This class wraps all the calls to ContentResolver#call.
- *
- */
+/** This class wraps all the calls to ContentResolver#call. */
 @NullMarked
 public class DropDataProviderUtils {
+    /** Returns whether {@code uri} is served by this app's DropDataProvider. */
+    public static boolean isDropDataProviderUri(Uri uri) {
+        // Both the authority and the authority of the round-trip Uri.parse(Uri.toString()) are
+        // checked since android has had security bugs where Uri.getAuthority() can be different
+        // from the value used in Uri.toString(). Any such mismatch is rejected.
+        String authority = DropDataProviderImpl.FULL_AUTH_URI.getAuthority();
+        return TextUtils.equals(authority, uri.getAuthority())
+                && TextUtils.equals(authority, Uri.parse(uri.toString()).getAuthority());
+    }
+
     /**
      * Wraps the call to onDragEnd in the provider, we call it to clear the cached image data after
      * dragging ends

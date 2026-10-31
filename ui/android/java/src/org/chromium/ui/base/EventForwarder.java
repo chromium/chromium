@@ -39,6 +39,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.input.InputFeatureMap;
 import org.chromium.ui.dragdrop.DropDataAndroid;
+import org.chromium.ui.dragdrop.DropDataProviderUtils;
 import org.chromium.ui.util.MotionEventUtils;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -806,6 +807,18 @@ public class EventForwarder {
                         || event.getActionMasked() == MotionEvent.ACTION_CANCEL);
     }
 
+    private static boolean isUriSafeForDrop(Uri uri) {
+        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+            return false;
+        }
+        @ContentUriOwner int owner = ContentUriUtils.resolveContentUriOwner(uri);
+        if (owner == ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP) {
+            // The only internal provider allowed is to drag-drop images between tabs.
+            return DropDataProviderUtils.isDropDataProviderUri(uri);
+        }
+        return owner != ContentUriOwner.EXPORTED_FROM_CURRENT_APP;
+    }
+
     /**
      * @see View#onDragEvent(DragEvent)
      * @param event {@link DragEvent} instance.
@@ -860,16 +873,9 @@ public class EventForwarder {
                         // Reject non-URIs or URIs originating from this app to prevent the browser
                         // from opening private files on behalf of an untrusted paste request.
                         if (UiAndroidFeatureMap.isEnabled(
-                                UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)) {
-                            if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-                                continue;
-                            }
-                            @ContentUriOwner
-                            int owner = ContentUriUtils.resolveContentUriOwner(uri);
-                            if (owner == ContentUriOwner.EXPORTED_FROM_CURRENT_APP
-                                    || owner == ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP) {
-                                continue;
-                            }
+                                        UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+                                && !isUriSafeForDrop(uri)) {
+                            continue;
                         }
 
                         String uriString = uri.toString();
