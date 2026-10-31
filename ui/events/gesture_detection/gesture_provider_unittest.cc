@@ -214,8 +214,7 @@ class GestureProviderTest : public testing::Test, public GestureProviderClient {
   }
 
   const GestureProvider::Config& GetDefaultConfig() const {
-    static GestureProvider::Config sConfig = CreateDefaultConfig();
-    return sConfig;
+    return default_config_;
   }
 
   float GetTapSlop(
@@ -517,6 +516,8 @@ class GestureProviderTest : public testing::Test, public GestureProviderClient {
         FROM_HERE, run_loop.QuitClosure(), delay);
     run_loop.Run();
   }
+
+  const GestureProvider::Config default_config_ = CreateDefaultConfig();
 
   std::vector<GestureEventData> gestures_;
   std::unique_ptr<GestureProvider> gesture_provider_;

@@ -9,8 +9,10 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -3705,7 +3707,7 @@ TEST_F(RenderTextTest, GetDisplayTextDirection) {
 struct GetTextIndexOfLineCase {
   const char* test_name;
   const char16_t* const text;
-  const std::vector<size_t> line_breaks;
+  const std::array<std::optional<size_t>, 5> line_breaks;
   const bool set_word_wrap = false;
   const bool set_obscured = false;
 };
@@ -3731,12 +3733,13 @@ TEST_P(RenderTextTestWithGetTextIndexOfLineCase, GetTextIndexOfLine) {
   }
   render_text->SetObscured(param.set_obscured);
   render_text->SetText(param.text);
-  for (size_t i = 0; i < param.line_breaks.size(); ++i) {
-    EXPECT_EQ(param.line_breaks[i], render_text->GetTextIndexOfLine(i));
+  for (size_t i = 0; i < param.line_breaks.size() && param.line_breaks[i];
+       ++i) {
+    EXPECT_EQ(*param.line_breaks[i], render_text->GetTextIndexOfLine(i));
   }
 }
 
-const GetTextIndexOfLineCase kGetTextIndexOfLineCases[] = {
+constexpr GetTextIndexOfLineCase kGetTextIndexOfLineCases[] = {
     {"emptyString", u"", {0}},
     // The following test strings are three character strings.
     // The word wrap makes each character fall on a new line.

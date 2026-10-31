@@ -153,7 +153,7 @@ TEST(TextEliderTest, TestFilenameEliding) {
             "file.name.really.long.text.superduperextremelylongext"),
         u"file.name.re…emelylongext"}});
 
-  static const FontList font_list;
+  const FontList font_list;
   for (const auto& c : cases) {
     std::u16string using_width_of =
         c.using_width_of.empty() ? c.output : c.using_width_of;

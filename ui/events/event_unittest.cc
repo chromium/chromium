@@ -859,10 +859,10 @@ TEST(EventTest, ToStringNotEmpty) {
 #if BUILDFLAG(IS_WIN)
 namespace {
 
-const struct AltGraphEventTestCase {
+constexpr struct AltGraphEventTestCase {
   KeyboardCode key_code;
   KeyboardLayout layout;
-  std::vector<KeyboardCode> modifier_key_codes;
+  std::array<KeyboardCode, 4> modifier_key_codes;
   int expected_flags;
 } kAltGraphEventTestCases[] = {
     // US English -> AltRight never behaves as AltGraph.

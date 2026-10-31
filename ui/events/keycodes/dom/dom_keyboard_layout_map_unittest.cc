@@ -7,7 +7,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -112,33 +111,36 @@ DomKey GetKeyFromFullLookupTable(DomCode dom_code) {
 
 DomKey GetKeyFromCombiningLayoutTable(DomCode dom_code) {
   // Used for testing combining keys in both printable and combining forms.
-  static base::flat_map<DomCode, DomKey> kCombiningLayoutTable({
-      // Grave, combining.
-      {DomCode::DIGIT0, DomKey::DeadKeyFromCombiningCharacter(0x0300)},
-      // Grave, printable.
-      {DomCode::DIGIT1, DomKey::FromCharacter(0x0060)},
-      // Acute, combining.
-      {DomCode::DIGIT2, DomKey::DeadKeyFromCombiningCharacter(0x0301)},
-      // Acute, printable.
-      {DomCode::DIGIT3, DomKey::FromCharacter(0x0027)},
-      // Circumflex, combining.
-      {DomCode::DIGIT4, DomKey::DeadKeyFromCombiningCharacter(0x0302)},
-      // Circumflex, printable.
-      {DomCode::DIGIT5, DomKey::FromCharacter(0x005e)},
-      // Tilde, combining.
-      {DomCode::DIGIT6, DomKey::DeadKeyFromCombiningCharacter(0x0303)},
-      // Tilde, printable.
-      {DomCode::DIGIT7, DomKey::FromCharacter(0x007e)},
-      // Diaeresis, combining.
-      {DomCode::DIGIT8, DomKey::DeadKeyFromCombiningCharacter(0x0308)},
-      // Diaeresis, printable.
-      {DomCode::DIGIT9, DomKey::FromCharacter(0x00a8)},
-  });
+  static constexpr auto kCombiningLayoutTable =
+      base::MakeFixedFlatMap<DomCode, DomKey>({
+          // Grave, combining.
+          {DomCode::DIGIT0, DomKey::DeadKeyFromCombiningCharacter(0x0300)},
+          // Grave, printable.
+          {DomCode::DIGIT1, DomKey::FromCharacter(0x0060)},
+          // Acute, combining.
+          {DomCode::DIGIT2, DomKey::DeadKeyFromCombiningCharacter(0x0301)},
+          // Acute, printable.
+          {DomCode::DIGIT3, DomKey::FromCharacter(0x0027)},
+          // Circumflex, combining.
+          {DomCode::DIGIT4, DomKey::DeadKeyFromCombiningCharacter(0x0302)},
+          // Circumflex, printable.
+          {DomCode::DIGIT5, DomKey::FromCharacter(0x005e)},
+          // Tilde, combining.
+          {DomCode::DIGIT6, DomKey::DeadKeyFromCombiningCharacter(0x0303)},
+          // Tilde, printable.
+          {DomCode::DIGIT7, DomKey::FromCharacter(0x007e)},
+          // Diaeresis, combining.
+          {DomCode::DIGIT8, DomKey::DeadKeyFromCombiningCharacter(0x0308)},
+          // Diaeresis, printable.
+          {DomCode::DIGIT9, DomKey::FromCharacter(0x00a8)},
+      });
 
-  if (kCombiningLayoutTable.count(dom_code) == 0)
+  const auto it = kCombiningLayoutTable.find(dom_code);
+  if (it == kCombiningLayoutTable.end()) {
     return DomKey::NONE;
+  }
 
-  return kCombiningLayoutTable[dom_code];
+  return it->second;
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <limits>
+#include <string>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -121,10 +122,7 @@ class IdMutatingMockPlatformFont : public PlatformFont {
   int GetCapHeight() override { return 10; }
   int GetExpectedTextWidth(int length) override { return length * 5; }
   int GetStyle() const override { return Font::NORMAL; }
-  const std::string& GetFontName() const override {
-    static const std::string name = "Mock";
-    return name;
-  }
+  const std::string& GetFontName() const override { return font_name_; }
   std::string GetActualFontName() const override { return "Mock"; }
   std::vector<std::string> GetActualFontNames() const override {
     return {"Mock"};
@@ -142,6 +140,8 @@ class IdMutatingMockPlatformFont : public PlatformFont {
 
  private:
   ~IdMutatingMockPlatformFont() override = default;
+
+  const std::string font_name_ = "Mock";
   sk_sp<SkTypeface> typeface_;
 };
 
