@@ -2053,6 +2053,10 @@ void ExecutionEngine::UninterruptFromTool() {
 void ExecutionEngine::EnqueueFollowupAction(
     std::unique_ptr<ToolRequest> action) {
   action->SetAsFollowup(base::PassKey<ExecutionEngine>());
+  // Follow-ups act on behalf of the in-progress action, so they inherit its
+  // observation delay behavior.
+  action->SetSkipObservationDelay(
+      GetInProgressAction().ShouldSkipObservationDelay());
   action_sequence_.insert(action_sequence_.begin() + next_action_index_,
                           std::move(action));
 }

@@ -1116,6 +1116,91 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ClickElement) {
   EXPECT_EQ(true, content::EvalJs(web_contents(), "button_clicked"));
 }
 
+// Runs `ToolController` with the actor's page stability and observation delay
+// timeouts effectively disabled, so that a page which never settles would block
+// tool completion indefinitely unless TTC skips the observation delay.
+class ToolControllerSkipObservationDelayBrowserTest
+    : public ToolControllerBrowserTest {
+ public:
+  ToolControllerSkipObservationDelayBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{actor::kActorPageStability,
+          {{actor::kActorPageStabilityTimeout.name, "300s"}}},
+         {actor::kActorObservationDelay,
+          {{actor::kActorObservationDelayTimeout.name, "300s"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Clicking a button that keeps the page's main thread busy forever completes
+// promptly because TTC skips the observation delay.
+IN_PROC_BROWSER_TEST_F(ToolControllerSkipObservationDelayBrowserTest,
+                       ClickOnPageThatNeverSettles) {
+  ttc_service().StartSession();
+  SessionController* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL(
+          "example.com", "/page_content_annotations/page_stability.html")));
+
+  std::optional<int> button_id = content::GetDOMNodeId(
+      *web_contents()->GetPrimaryMainFrame(), "#btnWorkForever");
+  ASSERT_TRUE(button_id);
+  std::string document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "click_element";
+  tool_request.arguments.Set("node_id", base::DictValue()
+                                            .Set("document_id", document_id)
+                                            .Set("dom_node_id", *button_id));
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  EXPECT_TRUE(future.Take().Ok());
+}
+
+// `open_url` navigates via a follow-up `NavigateTool` action, which must also
+// skip the observation delay. The target page never finishes loading, so this
+// only completes promptly if the follow-up inherits the skip.
+IN_PROC_BROWSER_TEST_F(ToolControllerSkipObservationDelayBrowserTest,
+                       OpenUrlToPageThatNeverLoads) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+
+  ttc_service().StartSession();
+  SessionController* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  // The target page has an iframe whose navigation is held by
+  // `subframe_manager` and never resumed, so the load event never fires.
+  const GURL target_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/simple_iframe.html");
+  content::TestNavigationManager subframe_manager(
+      web_contents(),
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html"));
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = std::string(actor::OpenUrlToolRequest::kModelFacingName);
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
+                             target_url.spec());
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  EXPECT_TRUE(future.Take().Ok());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ClickElementMissingNodeId) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -1229,12 +1314,17 @@ IN_PROC_BROWSER_TEST_F(ToolControllerNavigationGatingBrowserTest,
   tool_request.arguments.Set("node_id", base::DictValue()
                                             .Set("document_id", document_id)
                                             .Set("dom_node_id", *link_id));
+
+  content::TestNavigationObserver navigation_observer(new_origin_url);
+  navigation_observer.WatchExistingWebContents();
+
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
+  ASSERT_TRUE(future.Take().Ok());
 
-  // Without a navigation confirmation, this fails with
-  // kTriggeredNavigationBlocked.
-  EXPECT_TRUE(future.Take().Ok());
+  // Wait for the navigation to finish (the click tool doesn't for TTC).
+  navigation_observer.Wait();
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), new_origin_url);
 }
 

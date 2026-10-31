@@ -112,6 +112,12 @@ class ToolRequest {
   virtual ObservationDelayController::PageStabilityConfig
   GetObservationPageStabilityConfig() const;
 
+  // Returns true if the tool should complete as soon as it finishes invoking,
+  // without waiting for the page to settle (i.e. without an
+  // `ObservationDelayController`).
+  bool ShouldSkipObservationDelay() const;
+  void SetSkipObservationDelay(bool skip_observation_delay);
+
   // While acting, navigations are generally forced to happen in the same tab,
   // as we do not currently support multiple tabs (see
   // https://crbug.com/420669167 ). Individual tools that cannot function with
@@ -122,6 +128,7 @@ class ToolRequest {
 
  private:
   bool is_followup_ = false;
+  bool skip_observation_delay_ = false;
 };
 
 // Tool requests targeting a specific, existing tab should inherit from this
