@@ -54,6 +54,24 @@ std::vector<uint32_t> GetTextRunStartIndices(
   return start_indices;
 }
 
+// Returns copies of the annotations in `page_objects` with text run indices
+// remapped to `result.text_runs`, or `std::nullopt` if no run was split.
+std::optional<chrome_pdf::AccessibilityPageObjects> GetSplitPageObjects(
+    const pdf::SplitTextRunsResult& result,
+    const chrome_pdf::AccessibilityPageObjects& page_objects) {
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
+      result.text_runs.empty()) {
+    return std::nullopt;
+  }
+  chrome_pdf::AccessibilityPageObjects split_page_objects;
+  split_page_objects.links = page_objects.links;
+  split_page_objects.images = page_objects.images;
+  split_page_objects.highlights = page_objects.highlights;
+  split_page_objects.graphics = page_objects.graphics;
+  pdf::RemapTextRunIndices(result.first_split_run_indices, split_page_objects);
+  return split_page_objects;
+}
+
 // Holds sanitized text and corresponding character offsets for a text run.
 struct ProcessedTextRun {
   std::string chars_utf8;
@@ -218,16 +236,22 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
       // mode only when no structure tree is available.
       use_structure_mode_(ShouldUseStructureMode(page_structure_tree)),
       ruling_lines_(GetRulingLines(page_objects, use_structure_mode_)),
-      split_text_runs_(
+      split_result_(
           SplitTextRunsAtVerticalDividers(ruling_lines_, chars, text_runs)),
       text_run_start_indices_(GetTextRunStartIndices(
-          split_text_runs_.empty() ? text_runs : split_text_runs_)),
+          split_result_.text_runs.empty() ? text_runs
+                                          : split_result_.text_runs)),
+      split_page_objects_(GetSplitPageObjects(split_result_, page_objects)),
       text_runs_(text_runs),
       chars_(chars),
-      links_(page_objects.links),
-      images_(page_objects.images),
-      highlights_(page_objects.highlights),
-      graphics_(page_objects.graphics),
+      links_(split_page_objects_ ? split_page_objects_->links
+                                 : page_objects.links),
+      images_(split_page_objects_ ? split_page_objects_->images
+                                  : page_objects.images),
+      highlights_(split_page_objects_ ? split_page_objects_->highlights
+                                      : page_objects.highlights),
+      graphics_(split_page_objects_ ? split_page_objects_->graphics
+                                    : page_objects.graphics),
       page_structure_tree_(page_structure_tree),
       page_index_(page_index),
       root_node_(root_node),

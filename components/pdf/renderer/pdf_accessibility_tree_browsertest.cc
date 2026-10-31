@@ -7811,6 +7811,19 @@ class PdfAccessibilityTreeSplitTextRunsTest
     }
     return names;
   }
+
+  // Returns the first link node under `node` in tree order, or nullptr.
+  static const ui::AXNode* FindFirstLink(const ui::AXNode* node) {
+    if (node->GetRole() == ax::mojom::Role::kLink) {
+      return node;
+    }
+    for (size_t i = 0; i < node->GetChildCount(); ++i) {
+      if (const ui::AXNode* link = FindFirstLink(node->GetChildAtIndex(i))) {
+        return link;
+      }
+    }
+    return nullptr;
+  }
 };
 
 TEST_P(PdfAccessibilityTreeSplitTextRunsTest, SplitsAtVerticalDivider) {
@@ -7836,6 +7849,33 @@ TEST_P(PdfAccessibilityTreeSplitTextRunsTest, SplitsAtVerticalDivider) {
     EXPECT_THAT(GetInlineTextBoxNames(page),
                 testing::ElementsAre("Left Right"));
   }
+}
+
+TEST_P(PdfAccessibilityTreeSplitTextRunsTest, RemapsLinkAfterSplitRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{::features::kPdfAccessibilityHeuristicEnhancements,
+        HeuristicEnhancementsEnabled()},
+       {chrome_pdf::features::kPdfTags, false}});
+
+  // The vertical line splits "Left Right" into two runs, so the link on the
+  // next run must shift from run 1 to run 2.
+  page_objects_.line_segments = {
+      {gfx::PointF(145.0f, 95.0f), gfx::PointF(145.0f, 117.0f)},
+  };
+  chrome_pdf::AccessibilityLinkInfo link;
+  link.url = kChromiumTestUrl;
+  link.bounds = gfx::RectF(100.0f, 200.0f, 40.0f, 12.0f);
+  link.text_range = {.index = 1, .count = 1};
+  page_objects_.links.push_back(link);
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Left Right", "Next"}, {gfx::RectF(100.0f, 100.0f, 100.0f, 12.0f),
+                               gfx::RectF(100.0f, 200.0f, 40.0f, 12.0f)});
+  ASSERT_NE(nullptr, page);
+
+  const ui::AXNode* link_node = FindFirstLink(page);
+  ASSERT_NE(nullptr, link_node);
+  EXPECT_THAT(GetInlineTextBoxNames(link_node), testing::ElementsAre("Next"));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

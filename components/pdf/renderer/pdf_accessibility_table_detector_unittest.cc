@@ -187,21 +187,35 @@ class PdfAccessibilityTableDetectorSplitTest : public testing::Test {
 
   bool Split(
       const std::vector<chrome_pdf::AccessibilityLineSegment>& segments) {
-    std::vector<chrome_pdf::AccessibilityTextRunInfo> split_runs =
-        SplitTextRunsAtVerticalDividers(ExtractRulingLines(segments, {}),
-                                        chars_, text_runs_);
-    if (split_runs.empty()) {
+    SplitTextRunsResult result = SplitTextRunsAtVerticalDividers(
+        ExtractRulingLines(segments, {}), chars_, text_runs_);
+    if (result.text_runs.empty()) {
       return false;
     }
-    text_runs_ = std::move(split_runs);
+    text_runs_ = std::move(result.text_runs);
+    RemapTextRunIndices(result.first_split_run_indices, page_objects_);
     return true;
   }
 
   std::vector<chrome_pdf::AccessibilityCharInfo> chars_;
   std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs_;
+  chrome_pdf::AccessibilityPageObjects page_objects_;
 };
 
 TEST_F(PdfAccessibilityTableDetectorSplitTest, SplitsAtVerticalDivider) {
+  page_objects_.links.push_back({/*url=*/"",
+                                 /*index_in_page=*/0,
+                                 gfx::RectF(),
+                                 {.index = 0, .count = 1}});
+  page_objects_.highlights.push_back({/*note_text=*/"",
+                                      /*index_in_page=*/0,
+                                      /*color=*/0,
+                                      gfx::RectF(),
+                                      {.index = 1, .count = 1}});
+  page_objects_.graphics.push_back({.text_range = {.index = 0, .count = 2}});
+  page_objects_.images.push_back({/*alt_text=*/"", /*text_run_index=*/2,
+                                  gfx::RectF(), /*page_object_index=*/0});
+
   ASSERT_TRUE(Split({CreateSegment(145, 95, 145, 117)}));
 
   // The trailing space stays with "Left ", but its bounds end at the space.
@@ -209,6 +223,14 @@ TEST_F(PdfAccessibilityTableDetectorSplitTest, SplitsAtVerticalDivider) {
   ExpectTextRun(text_runs_[0], 0, 5, gfx::RectF(100, 100, 40, 12));
   ExpectTextRun(text_runs_[1], 5, 5, gfx::RectF(150, 100, 50, 12));
   ExpectTextRun(text_runs_[2], 10, 4, gfx::RectF(100, 200, 40, 12));
+
+  EXPECT_EQ(0u, page_objects_.links[0].text_range.index);
+  EXPECT_EQ(2u, page_objects_.links[0].text_range.count);
+  EXPECT_EQ(2u, page_objects_.highlights[0].text_range.index);
+  EXPECT_EQ(1u, page_objects_.highlights[0].text_range.count);
+  EXPECT_EQ(0u, page_objects_.graphics[0].text_range.index);
+  EXPECT_EQ(3u, page_objects_.graphics[0].text_range.count);
+  EXPECT_EQ(3u, page_objects_.images[0].text_run_index);
 }
 
 TEST_F(PdfAccessibilityTableDetectorSplitTest, SplitsAtMultipleDividers) {

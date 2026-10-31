@@ -368,6 +368,15 @@ void AppendRunParts(
                   gfx::RangeF(edges[part_start], run.bounds.right())));
 }
 
+// Remaps `range` to the split text runs.
+void RemapTextRunRange(base::span<const uint32_t> first_split_run_indices,
+                       chrome_pdf::AccessibilityTextRunRangeInfo& range) {
+  const uint32_t start = first_split_run_indices[range.index];
+  const uint32_t end = first_split_run_indices[range.index + range.count];
+  range.index = start;
+  range.count = end - start;
+}
+
 }  // namespace
 
 std::vector<RulingLine> ExtractRulingLines(
@@ -406,8 +415,7 @@ std::vector<RulingLine> ExtractRulingLines(
   return lines;
 }
 
-std::vector<chrome_pdf::AccessibilityTextRunInfo>
-SplitTextRunsAtVerticalDividers(
+SplitTextRunsResult SplitTextRunsAtVerticalDividers(
     base::span<const RulingLine> ruling_lines,
     base::span<const chrome_pdf::AccessibilityCharInfo> chars,
     base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs) {
@@ -417,19 +425,43 @@ SplitTextRunsAtVerticalDividers(
     return {};
   }
 
-  std::vector<chrome_pdf::AccessibilityTextRunInfo> split_runs;
+  SplitTextRunsResult result;
+  result.first_split_run_indices.reserve(text_runs.size() + 1);
+  result.first_split_run_indices.push_back(0);
   for (const chrome_pdf::AccessibilityTextRunInfo& run : text_runs) {
     auto [run_chars, remaining_chars] = chars.split_at(run.len);
-    AppendRunParts(run, run_chars, vertical_dividers, split_runs);
+    AppendRunParts(run, run_chars, vertical_dividers, result.text_runs);
+    result.first_split_run_indices.push_back(
+        base::checked_cast<uint32_t>(result.text_runs.size()));
     chars = remaining_chars;
   }
-  // `split_runs` contains at least all of the `text_runs`. If their sizes are
-  // equal then none of the runs were actually split.
-  if (split_runs.size() == text_runs.size()) {
+  // `result.text_runs` contains at least all of the `text_runs`. If their sizes
+  // are equal then none of the runs were actually split.
+  if (result.text_runs.size() == text_runs.size()) {
     return {};
   }
-  CHECK_GT(split_runs.size(), text_runs.size());
-  return split_runs;
+  CHECK_GT(result.text_runs.size(), text_runs.size());
+  return result;
+}
+
+void RemapTextRunIndices(base::span<const uint32_t> first_split_run_indices,
+                         chrome_pdf::AccessibilityPageObjects& page_objects) {
+  // Text runs already break at annotation boundaries, so each annotation still
+  // covers whole runs after splitting.
+  for (chrome_pdf::AccessibilityLinkInfo& link : page_objects.links) {
+    RemapTextRunRange(first_split_run_indices, link.text_range);
+  }
+  for (chrome_pdf::AccessibilityHighlightInfo& highlight :
+       page_objects.highlights) {
+    RemapTextRunRange(first_split_run_indices, highlight.text_range);
+  }
+  for (chrome_pdf::AccessibilityFormGraphicInfo& graphic :
+       page_objects.graphics) {
+    RemapTextRunRange(first_split_run_indices, graphic.text_range);
+  }
+  for (chrome_pdf::AccessibilityImageInfo& image : page_objects.images) {
+    image.text_run_index = first_split_run_indices[image.text_run_index];
+  }
 }
 
 }  // namespace pdf
