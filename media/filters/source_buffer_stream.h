@@ -455,6 +455,7 @@ class MEDIA_EXPORT SourceBufferStream {
   base::TimeDelta last_appended_buffer_timestamp_ = kNoTimestamp;
   base::TimeDelta last_appended_buffer_duration_ = kNoTimestamp;
   bool last_appended_buffer_is_keyframe_ = false;
+  base::TimeDelta last_appended_gop_keyframe_timestamp_ = kNoTimestamp;
 
   // When buffering GOPs by keyframe PTS and intra-gop by nonkeyframe DTS, to
   // verify monotonically increasing intra-GOP DTS sequence and to update max
