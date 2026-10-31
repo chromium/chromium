@@ -28,6 +28,7 @@
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_request_construction.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
@@ -9784,6 +9785,9 @@ TEST_F(ComposeboxQueryControllerTest,
             1);
 
   histogram_tester.ExpectUniqueSample(
+      "Lens.IdentityDelegation.RetriedWithoutAuthOn401",
+      lens::LensIdentityDelegationRetryRequestType::kComposeboxClusterInfo, 1);
+  histogram_tester.ExpectUniqueSample(
       "Lens.Composebox.ClusterInfo.Status",
       ComposeboxQueryController::ClusterInfoStatus::kSuccess, 1);
   histogram_tester.ExpectTotalCount("Lens.Composebox.ClusterInfo.ResponseTime",
@@ -9819,6 +9823,9 @@ TEST_F(ComposeboxQueryControllerTest,
               testing::Not(testing::Contains("Authorization")));
 
   histogram_tester.ExpectUniqueSample(
+      "Lens.IdentityDelegation.RetriedWithoutAuthOn401",
+      lens::LensIdentityDelegationRetryRequestType::kComposeboxClusterInfo, 1);
+  histogram_tester.ExpectUniqueSample(
       "Lens.Composebox.ClusterInfo.Status",
       ComposeboxQueryController::ClusterInfoStatus::kHttpError, 1);
 }
@@ -9828,6 +9835,7 @@ TEST_F(ComposeboxQueryControllerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       lens::features::kLensComposeboxIdentityDelegation);
+  base::HistogramTester histogram_tester;
 
   controller().set_reject_requests_with_auth_header_with_401(true);
   controller().set_get_auth_headers_callback_for_testing(
@@ -9857,6 +9865,13 @@ TEST_F(ComposeboxQueryControllerTest,
               testing::Not(testing::Contains("Authorization")));
   EXPECT_THAT(controller().sent_request_headers_history()[3],
               testing::Contains("Origin"));
+
+  histogram_tester.ExpectBucketCount(
+      "Lens.IdentityDelegation.RetriedWithoutAuthOn401",
+      lens::LensIdentityDelegationRetryRequestType::kComposeboxClusterInfo, 1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.IdentityDelegation.RetriedWithoutAuthOn401",
+      lens::LensIdentityDelegationRetryRequestType::kComposeboxFetchRequest, 1);
 }
 
 }  // namespace contextual_search

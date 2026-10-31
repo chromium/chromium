@@ -4,6 +4,7 @@
 
 #include "components/lens/lens_request_construction.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -71,12 +72,17 @@ bool StripAuthorizationHeader(std::vector<std::string>& headers) {
 
 bool ShouldRetryRequestWithoutAuthOn401(
     const endpoint_fetcher::EndpointResponse* response,
-    std::vector<std::string>& headers) {
-  return features::UseIdentityDelegationForLensComposeboxRequests() &&
-         response &&
-         response->http_status_code ==
-             google_apis::ApiErrorCode::HTTP_UNAUTHORIZED &&
-         StripAuthorizationHeader(headers);
+    std::vector<std::string>& headers,
+    LensIdentityDelegationRetryRequestType request_type) {
+  if (features::UseIdentityDelegationForLensComposeboxRequests() && response &&
+      response->http_status_code ==
+          google_apis::ApiErrorCode::HTTP_UNAUTHORIZED &&
+      StripAuthorizationHeader(headers)) {
+    base::UmaHistogramEnumeration(
+        "Lens.IdentityDelegation.RetriedWithoutAuthOn401", request_type);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace lens

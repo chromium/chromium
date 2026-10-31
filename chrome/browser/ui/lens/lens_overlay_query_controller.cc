@@ -871,8 +871,9 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
     return;
   }
 
-  if (lens::ShouldRetryRequestWithoutAuthOn401(response.get(),
-                                               request_headers)) {
+  if (lens::ShouldRetryRequestWithoutAuthOn401(
+          response.get(), request_headers,
+          lens::LensIdentityDelegationRetryRequestType::kOverlayClusterInfo)) {
     PerformClusterInfoFetchRequest(query_start_time,
                                    std::move(request_headers));
     return;
@@ -2147,8 +2148,9 @@ void LensOverlayQueryController::OnFetchResponseReceived(
   if (IsOff()) {
     return;
   }
-  if (lens::ShouldRetryRequestWithoutAuthOn401(response.get(),
-                                               request_headers)) {
+  if (lens::ShouldRetryRequestWithoutAuthOn401(
+          response.get(), request_headers,
+          lens::LensIdentityDelegationRetryRequestType::kOverlayFetchRequest)) {
     std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
         std::move(request_string), fetch_url, HttpMethod::kPost, timeout,
         request_headers, cors_exempt_headers,

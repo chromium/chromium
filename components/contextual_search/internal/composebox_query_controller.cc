@@ -2087,8 +2087,10 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   }
   cluster_info_endpoint_fetcher_.reset();
 
-  if (lens::ShouldRetryRequestWithoutAuthOn401(response.get(),
-                                               request_headers)) {
+  if (lens::ShouldRetryRequestWithoutAuthOn401(
+          response.get(), request_headers,
+          lens::LensIdentityDelegationRetryRequestType::
+              kComposeboxClusterInfo)) {
     SendClusterInfoNetworkRequest(std::move(request_headers));
     return;
   }
@@ -3028,8 +3030,10 @@ void ComposeboxQueryController::OnFetchResponseReceived(
     endpoint_fetcher::EndpointFetcherCallback response_received_callback,
     UploadProgressCallback upload_progress_callback,
     std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
-  if (lens::ShouldRetryRequestWithoutAuthOn401(response.get(),
-                                               request_headers)) {
+  if (lens::ShouldRetryRequestWithoutAuthOn401(
+          response.get(), request_headers,
+          lens::LensIdentityDelegationRetryRequestType::
+              kComposeboxFetchRequest)) {
     std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
         std::move(request_string), fetch_url, HttpMethod::kPost, timeout,
         request_headers, cors_exempt_headers,
