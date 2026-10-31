@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {MostVisitedElement} from './most_visited.js';
 
@@ -10,6 +10,7 @@ export function getHtml(this: MostVisitedElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container" ?hidden="${!this.visible_}"
+    role="${this.inReorderMode_ ? 'application' : nothing}"
     .style="--tile-background-color: ${this.getBackgroundColorStyle_()};
             --column-count: ${this.columnCount_};
             --row-count: ${this.rowCount_};">
@@ -22,8 +23,8 @@ export function getHtml(this: MostVisitedElement) {
         @mousedown="${this.onTileMousedown_}" @keydown="${this.onTileKeydown_}"
         draggable="${!this.nonEditable}" data-index="${index}">
       <a href="${this.inReorderMode_ ? '' : item.url}"
-        aria-label="${this.getTileAriaLabel_(item.title)}"
-      draggable="false"></a>
+          aria-label="${this.getTileAriaLabel_(item.title)}" draggable="false">
+      </a>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
           title="${this.getMoreActionText_(item.title)}"
           @click="${this.onTileActionButtonClick_}" tabindex="0"

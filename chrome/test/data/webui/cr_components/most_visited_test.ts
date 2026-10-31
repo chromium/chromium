@@ -2404,6 +2404,7 @@ suite('ShortcutsReorder', () => {
     tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
     await microtasksFinished();
     $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+    await new Promise(requestAnimationFrame);
     await microtasksFinished();
 
     // The aria-label should change when in reorder mode.
@@ -2413,6 +2414,24 @@ suite('ShortcutsReorder', () => {
     assertEquals('', tileLink.getAttribute('href'));
     assertEquals(tileLink, mostVisited.shadowRoot?.activeElement);
   });
+
+  test('container role is application only in reorder mode', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({shortcutsReorderEnabled: true});
+    await addTiles(1);
+    const container = $$<HTMLElement>(mostVisited, '#container');
+    assertFalse(container.hasAttribute('role'));
+
+    // Enter reorder mode.
+    const tile = queryTiles()[0]!;
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+    await microtasksFinished();
+
+    assertEquals('application', container.getAttribute('role'));
+  });
+
   test('tiles reorder correctly with arrow keys', async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     await setUpTest({shortcutsReorderEnabled: true});
@@ -2437,6 +2456,38 @@ suite('ShortcutsReorder', () => {
     // second
     assertEquals(secondTitleBefore, tilesAfter[0]!.title);
     assertEquals(firstTitleBefore, tilesAfter[1]!.title);
+  });
+
+  test('tiles reorder wraps only across visible tiles', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({
+      shortcutsReorderEnabled: true,
+      expandableTilesEnabled: true,
+      maxTilesInCollapsedState: 2,
+    });
+    await addTiles(3);
+    const tilesBefore = queryTiles();
+    const firstTitle = tilesBefore[0]!.title;
+    const secondTitle = tilesBefore[1]!.title;
+    const hiddenTitle = tilesBefore[2]!.title;
+    assertTrue(tilesBefore[2]!.hidden);
+
+    // Enter reorder mode on the first visible tile.
+    tilesBefore[0]!.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+    await microtasksFinished();
+
+    // Press Left arrow to wrap around to the last visible tile,
+    // skipping the hidden tile.
+    tilesBefore[0]!.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowLeft', bubbles: true}));
+    await microtasksFinished();
+
+    const tilesAfter = queryTiles();
+    assertEquals(secondTitle, tilesAfter[0]!.title);
+    assertEquals(firstTitle, tilesAfter[1]!.title);
+    assertEquals(hiddenTitle, tilesAfter[2]!.title);
   });
 });
 
