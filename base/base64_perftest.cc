@@ -47,10 +47,6 @@ void BM_Base64Encode_ModpB64(::benchmark::State& state) {
   RunBase64Encode<&Base64EncodeAppendModpB64ForTesting>(state);
 }
 
-void BM_Base64Encode_Simdutf(::benchmark::State& state) {
-  RunBase64Encode<&Base64EncodeAppendSimdutfForTesting>(state);
-}
-
 void BM_Base64Encode_Base64Simd(::benchmark::State& state) {
   RunBase64Encode<&Base64EncodeAppendBase64SimdForTesting>(state);
 }
@@ -65,7 +61,6 @@ void AddBenchmarkArgs(::benchmark::Benchmark* benchmark) {
 // `--benchmark_filter` and `--benchmark_list_tests`.
 TEST(Base64PerfTest, Encode) {
   BENCHMARK(BM_Base64Encode_ModpB64)->Apply(AddBenchmarkArgs);
-  BENCHMARK(BM_Base64Encode_Simdutf)->Apply(AddBenchmarkArgs);
   BENCHMARK(BM_Base64Encode_Base64Simd)->Apply(AddBenchmarkArgs);
 }
 

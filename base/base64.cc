@@ -15,7 +15,6 @@
 #include "base/containers/span_rust.h"
 #include "base/features.h"
 #include "base/numerics/checked_math.h"
-#include "base/simdutf_shim.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "third_party/modp_b64/modp_b64.h"
@@ -56,27 +55,6 @@ void Base64EncodeAppendModpB64(span<const uint8_t> input, std::string* output) {
   CHECK_EQ(written_size, write.size());
 }
 
-void Base64EncodeAppendSimdutf(span<const uint8_t> input, std::string* output) {
-  // Ensure `modp_b64_encode_data_len` will not overflow.
-  // For now, use this with simdutf as well for consistency.
-  CHECK_LE(input.size(), MODP_B64_MAX_INPUT_LEN);
-
-  size_t encode_data_len =
-      internal::simdutf_base64_length_from_binary(input.size());
-
-  const size_t after_size =
-      CheckAdd(encode_data_len, output->size()).ValueOrDie();
-  output->resize(after_size);
-
-  span<char> write = span(*output).last(encode_data_len);
-
-  const size_t written_size = internal::simdutf_binary_to_base64(input, write);
-  // If this failed, it would indicate simdutf wrote OOB or left bytes
-  // uninitialized. It's possible for this to be elided by the compiler, since
-  // writing OOB is UB.
-  CHECK_EQ(written_size, write.size());
-}
-
 void Base64EncodeAppendBase64Simd(span<const uint8_t> input,
                                   std::string* output) {
   // Ensure `modp_b64_encode_data_len` will not overflow.
@@ -105,11 +83,6 @@ std::string Base64Encode(span<const uint8_t> input) {
 }
 
 void Base64EncodeAppend(span<const uint8_t> input, std::string* output) {
-  if (FeatureList::IsEnabled(features::kSimdutfBase64Encode)) {
-    Base64EncodeAppendSimdutf(input, output);
-    return;
-  }
-
   if (FeatureList::IsEnabled(features::kBase64SimdBase64Encode)) {
     Base64EncodeAppendBase64Simd(input, output);
     return;
@@ -121,11 +94,6 @@ void Base64EncodeAppend(span<const uint8_t> input, std::string* output) {
 void Base64EncodeAppendModpB64ForTesting(span<const uint8_t> input,
                                          std::string* output) {
   Base64EncodeAppendModpB64(input, output);
-}
-
-void Base64EncodeAppendSimdutfForTesting(span<const uint8_t> input,
-                                         std::string* output) {
-  Base64EncodeAppendSimdutf(input, output);
 }
 
 void Base64EncodeAppendBase64SimdForTesting(span<const uint8_t> input,
