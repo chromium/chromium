@@ -28,7 +28,10 @@ source_set("subscription_eligibility") {
 # Display names of the AI subscription tiers.
 source_set("tier_names") {
   public = [ "ai_subscription_tier_names.h" ]
-  sources = [ "ai_subscription_tier_names.cc" ]
+  sources = [
+    "ai_subscription_tier_name_types.h",
+    "ai_subscription_tier_names.cc",
+  ]
 
   # Google Chrome builds use the branded names from src-internal.
   if (is_chrome_branded) {
