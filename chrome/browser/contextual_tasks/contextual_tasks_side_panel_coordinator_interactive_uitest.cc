@@ -1121,6 +1121,19 @@ class ContextualTasksSidePanelCoordinatorFeatureDisabledInteractiveUiTest
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{kContextualTasksSidePanel},
+        /*disabled_features=*/{kContextualTasks,
+                               kContextualTasksClobberActiveTab});
+  }
+};
+
+class ContextualTasksSidePanelCoordinatorFeatureDisabledClobberInteractiveUiTest
+    : public ContextualTasksSidePanelCoordinatorInteractiveUiTest {
+ public:
+  ContextualTasksSidePanelCoordinatorFeatureDisabledClobberInteractiveUiTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kContextualTasksSidePanel,
+                              kContextualTasksClobberActiveTab},
         /*disabled_features=*/{kContextualTasks});
   }
 };
@@ -1221,6 +1234,39 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(task_id2_, active_task->GetTaskId());
 
   // Verify the side panel is open for the new tab.
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+  EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelCoordinatorFeatureDisabledClobberInteractiveUiTest,
+    OnThreadLinkClicked_ContextualTasksDisabled_ClobbersActiveTabAndAssociatesTask) {
+  SetUpTasks();
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
+
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  ASSERT_TRUE(ui_service);
+
+  ui_service->OnThreadLinkClicked(GURL(chrome::kChromeUISettingsURL), task_id2_,
+                                  /*tab=*/nullptr, browser()->GetWeakPtr(),
+                                  url::Origin());
+  EXPECT_EQ(4, tab_list->GetTabCount());
+
+  // Verify the clobbered active tab is associated with the task.
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  content::WebContents* active_contents =
+      tab_list->GetActiveTab()->GetContents();
+  std::optional<ContextualTask> active_task =
+      contextual_tasks_service->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(active_contents));
+  ASSERT_TRUE(active_task.has_value());
+  EXPECT_EQ(task_id2_, active_task->GetTaskId());
+
+  // Verify the side panel is open for the active tab.
   ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
   EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask());
 }

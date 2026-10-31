@@ -421,6 +421,18 @@ class ContextualTasksExtensionHandlerBrowserTest
             {kContextualTasks, kContextualTasksRearchitecture,
              kContextualTasksSidePanelRearchitecture,
              kContextualTasksForceEntryPointEligibility},
+            {kContextualTasksClobberActiveTab}) {}
+};
+
+class ContextualTasksExtensionHandlerClobberActiveTabBrowserTest
+    : public ContextualTasksExtensionHandlerBrowserTestBase {
+ public:
+  ContextualTasksExtensionHandlerClobberActiveTabBrowserTest()
+      : ContextualTasksExtensionHandlerBrowserTestBase(
+            {kContextualTasks, kContextualTasksRearchitecture,
+             kContextualTasksSidePanelRearchitecture,
+             kContextualTasksForceEntryPointEligibility,
+             kContextualTasksClobberActiveTab},
             {}) {}
 };
 
@@ -3062,6 +3074,78 @@ IN_PROC_BROWSER_TEST_F(
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_NE(active_contents, nullptr);
   EXPECT_NE(active_contents, original_tab_contents);
+  EXPECT_EQ(active_contents->GetVisibleURL(), target_url);
+
+  auto* tasks_service = ContextualTasksServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(active_contents->GetBrowserContext()));
+  ASSERT_NE(tasks_service, nullptr);
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_contents);
+  std::optional<ContextualTask> task =
+      tasks_service->GetContextualTaskForTab(active_tab_id);
+  ASSERT_TRUE(task.has_value());
+  EXPECT_EQ(task->GetTaskId(), *side_panel_task_id_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerClobberActiveTabBrowserTest,
+    OnWebviewMessage_SearchToClientMessageOpenLinkInSidePanelMode_ClobbersActiveTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
+
+  EmbedHandlerInSidePanel();
+  ASSERT_TRUE(side_panel_task_id_.has_value());
+  content::WebContents* original_tab_contents = web_contents_;
+
+  lens::SearchToClientMessage message;
+  message.mutable_open_link_in_side_panel_mode()->set_url(target_url.spec());
+  const size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  message.SerializeToArray(serialized_message.data(), size);
+
+  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(active_contents, nullptr);
+  EXPECT_EQ(active_contents, original_tab_contents);
+  EXPECT_EQ(active_contents->GetVisibleURL(), target_url);
+
+  auto* tasks_service = ContextualTasksServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(active_contents->GetBrowserContext()));
+  ASSERT_NE(tasks_service, nullptr);
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_contents);
+  std::optional<ContextualTask> task =
+      tasks_service->GetContextualTaskForTab(active_tab_id);
+  ASSERT_TRUE(task.has_value());
+  EXPECT_EQ(task->GetTaskId(), *side_panel_task_id_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerClobberActiveTabBrowserTest,
+    OnWebviewMessage_AimToClientMessageOpenLinkInSidePanelMode_ClobbersActiveTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
+
+  EmbedHandlerInSidePanel();
+  ASSERT_TRUE(side_panel_task_id_.has_value());
+  content::WebContents* original_tab_contents = web_contents_;
+
+  lens::AimToClientMessage message;
+  message.mutable_open_link_in_side_panel_mode()->set_url(target_url.spec());
+  const size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  message.SerializeToArray(serialized_message.data(), size);
+
+  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(active_contents, nullptr);
+  EXPECT_EQ(active_contents, original_tab_contents);
   EXPECT_EQ(active_contents->GetVisibleURL(), target_url);
 
   auto* tasks_service = ContextualTasksServiceFactory::GetForProfile(

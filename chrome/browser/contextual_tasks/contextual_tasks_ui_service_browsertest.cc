@@ -570,7 +570,7 @@ class ContextualTasksUiServiceRearchitectureEnabledTest
          {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}},
          {omnibox::kWebUIOmniboxAskGAboutThisPage,
           {{"Omnibox_AskGCoBrowse", "true"}}}},
-        {});
+        {contextual_tasks::kContextualTasksClobberActiveTab});
   }
 
   std::string GetExpectedCs(BrowserWindowInterface* browser = nullptr) {
@@ -874,6 +874,73 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceRearchitectureEnabledTest,
                 ->GetContents()
                 ->GetVisibleURL(),
             third_party_url);
+}
+
+class ContextualTasksUiServiceRearchitectureClobberActiveTabTest
+    : public ContextualTasksUiServiceZeroStateTestBase {
+ public:
+  ContextualTasksUiServiceRearchitectureClobberActiveTabTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksRearchitecture, {}},
+         {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}},
+         {contextual_tasks::kContextualTasksClobberActiveTab, {}},
+         {omnibox::kWebUIOmniboxAskGAboutThisPage,
+          {{"Omnibox_AskGCoBrowse", "true"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUiServiceRearchitectureClobberActiveTabTest,
+    SidePanelNavigation_ThirdPartyUrl_ClobbersActiveTab) {
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  GURL initial_url("https://www.google.com/search?q=test");
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+
+  ui_service->StartTaskUiInSidePanel(browser(), tab, initial_url, nullptr);
+
+  auto* controller = ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller && controller->IsPanelOpenForContextualTask();
+  }));
+
+  content::WebContents* panel_contents = controller->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents);
+
+  auto* aim_service = static_cast<MockAimEligibilityService*>(
+      AimEligibilityServiceFactory::GetForProfile(browser()->GetProfile()));
+  GURL third_party_url("https://example.com/article");
+  ON_CALL(*aim_service, IsAimUrl(testing::_, testing::_))
+      .WillByDefault(testing::Return(false));
+
+  int initial_tab_count = browser()->GetTabStripModel()->count();
+
+  content::OpenURLParams params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          third_party_url, WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_LINK);
+
+  bool handled = ui_service->HandleNavigation(
+      params, panel_contents, /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures());
+  EXPECT_TRUE(handled);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return browser()
+               ->GetTabStripModel()
+               ->GetActiveTab()
+               ->GetContents()
+               ->GetVisibleURL() == third_party_url;
+  }));
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), initial_tab_count);
 }
 
 IN_PROC_BROWSER_TEST_F(
