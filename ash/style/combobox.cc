@@ -179,10 +179,10 @@ class Combobox::ComboboxMenuView : public views::View {
         this, kMenuBackgroundColorId, StyleUtil::kBackgroundBlurSigma,
         kMenuRoundedCorners);
     // The drop shadow is provided by the menu widget (`ShadowType::kDrop`).
-    decoration_ = SystemDecoration::CreateForView(
+    highlight_border_ = SystemDecoration::CreateForView(
         this, SystemDecoration::ShadowType::kNone,
         SystemDecoration::HighlightBorderMode::kHighlightBorder);
-    decoration_->SetRoundedCorners(kMenuRoundedCorners);
+    highlight_border_->SetRoundedCorners(kMenuRoundedCorners);
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -255,7 +255,7 @@ class Combobox::ComboboxMenuView : public views::View {
  private:
   const base::WeakPtr<Combobox> combobox_;
   std::unique_ptr<BlurredBackgroundShield> background_shield_;
-  std::unique_ptr<SystemDecoration> decoration_;
+  std::unique_ptr<SystemDecoration> highlight_border_;
 
   // Owned by this.
   raw_ptr<ComboboxMenuOptionGroup> menu_item_group_;
