@@ -539,11 +539,13 @@ ShellContentBrowserClient::GetWebContentsViewDelegate(
 bool ShellContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
     const GURL& url) {
-  static auto kIsolatedContextOrigins = GetIsolatedContextOriginSetFromFlag();
+  if (!isolated_context_origins_) {
+    isolated_context_origins_ = GetIsolatedContextOriginSetFromFlag();
+  }
 
   GURL::Replacements replacements;
   replacements.ClearPort();
-  return kIsolatedContextOrigins.contains(
+  return isolated_context_origins_->contains(
       url::Origin::Create(url.ReplaceComponents(replacements)));
 }
 

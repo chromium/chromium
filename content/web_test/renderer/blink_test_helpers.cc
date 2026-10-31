@@ -6,7 +6,9 @@
 
 #include <string_view>
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,28 +32,15 @@ namespace {
 constexpr std::string_view kFileScheme = "file:///";
 
 base::FilePath GetWebTestsFilePath() {
-  static base::FilePath path;
-  if (path.empty()) {
-    base::FilePath root_path;
-    bool success =
-        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
-    CHECK(success);
-    path = root_path.Append(FILE_PATH_LITERAL("third_party/blink/web_tests/"));
-  }
-  return path;
+  base::FilePath root_path;
+  bool success =
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
+  CHECK(success);
+  return root_path.Append(FILE_PATH_LITERAL("third_party/blink/web_tests/"));
 }
 
 base::FilePath GetExternalWPTFilePath() {
-  static base::FilePath path;
-  if (path.empty()) {
-    base::FilePath root_path;
-    bool success =
-        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
-    CHECK(success);
-    path = root_path.Append(
-        FILE_PATH_LITERAL("third_party/blink/web_tests/external/wpt"));
-  }
-  return path;
+  return GetWebTestsFilePath().Append(FILE_PATH_LITERAL("external/wpt"));
 }
 
 // WPT tests use absolute path links such as

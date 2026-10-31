@@ -68,6 +68,7 @@ constexpr ui::AXMode kVoiceOverEnabledAXMode =
 @interface ContentShellWindowDelegate : UIViewController <UITextFieldDelegate> {
  @private
   raw_ptr<content::Shell> _shell;
+  std::unique_ptr<content::ScopedAccessibilityMode> _scopedAccessibilityMode;
 }
 // Toolbar containing navigation buttons and |urlField|.
 @property(nonatomic, strong) UIStackView* toolbarBackgroundView;
@@ -118,7 +119,6 @@ constexpr ui::AXMode kVoiceOverEnabledAXMode =
 @synthesize toolbarBackgroundView = _toolbarBackgroundView;
 @synthesize toolbarContentView = _toolbarContentView;
 @synthesize tracingHandler = _tracingHandler;
-std::unique_ptr<content::ScopedAccessibilityMode> _scopedAccessibilityMode;
 
 + (UIColor*)backgroundColorDefault {
   return [UIColor colorWithRed:66.0 / 255.0

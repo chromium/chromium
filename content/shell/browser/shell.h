@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -82,7 +83,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   static Shell* FromWebContents(WebContents* web_contents);
 
   // Returns the currently open windows.
-  static std::vector<raw_ptr<Shell>>& windows() { return windows_; }
+  static base::span<const raw_ptr<Shell>> windows();
 
   // Stores the supplied |quit_closure|, to be run when the last Shell instance
   // is destroyed.
@@ -255,12 +256,6 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   bool hold_file_chooser_ = false;
   scoped_refptr<FileSelectListener> held_file_chooser_listener_;
   size_t run_file_chooser_count_ = 0u;
-
-  // A container of all the open windows. We use a vector so we can keep track
-  // of ordering.
-  static std::vector<raw_ptr<Shell>> windows_;
-
-  static base::OnceCallback<void(Shell*)> shell_created_callback_;
 };
 
 }  // namespace content
