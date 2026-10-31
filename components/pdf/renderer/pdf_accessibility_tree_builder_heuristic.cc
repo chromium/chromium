@@ -63,6 +63,8 @@ struct ListMarkerKind {
   ListMarkerForm form = ListMarkerForm::kNone;
   // The number of a decimal ordered list marker; unset for unordered markers.
   std::optional<int> ordered_value;
+  // Whether this is one of `kNestedOnlyListMarkers` or a Word nested marker.
+  bool nested_only = false;
 };
 
 namespace {
@@ -1764,7 +1766,7 @@ ListMarkerKind ClassifyListMarker(
       const float max_nest = kMaxListNestingIndentEm *
                              GetListItemFontSize(run_context, nested_form);
       if (run_x <= parent->marker_x + max_nest) {
-        return {.form = nested_form};
+        return {.form = nested_form, .nested_only = true};
       }
     }
   }
@@ -2188,6 +2190,22 @@ void SortBlockNodesByVerticalBands(std::vector<ui::AXNodeData*>& block_nodes,
     sorted_blocks[i] = block_nodes[order[i]];
   }
   block_nodes = std::move(sorted_blocks);
+}
+
+void RecordListStartReason(const ListMarkerKind& kind) {
+  ListStartReason reason;
+  if (kind.ordered_value) {
+    // New ordered lists start at 1, or above 1 when resuming numbering (e.g.
+    // on a new page); see `ClassifyListMarker()`.
+    reason = *kind.ordered_value == 1 ? ListStartReason::kDecimalStartsAtOne
+                                      : ListStartReason::kDecimalStartsAboveOne;
+  } else if (kind.nested_only) {
+    reason = ListStartReason::kNestedOnlyMarker;
+  } else {
+    reason = ListStartReason::kUnorderedMarker;
+  }
+  base::UmaHistogramEnumeration("Accessibility.PdfHeuristics.ListStartReason",
+                                reason);
 }
 
 }  // namespace
@@ -2785,6 +2803,7 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateListItemNode(
 
   switch (placement.kind) {
     case ListPlacementKind::kNewList: {
+      RecordListStartReason(marker_kind);
       // Start a new top-level list if no list is currently open, or if the
       // marker is indented far to the right (e.g. crossing into a new column).
       ui::AXNodeData* list =
@@ -2797,6 +2816,7 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateListItemNode(
       break;
     }
     case ListPlacementKind::kNested: {
+      RecordListStartReason(marker_kind);
       // Deeper indent: start a nested list inside the previous list item,
       // matching Blink's <ul><li>...<ul>...</ul></li></ul> structure.
       levels.resize(placement.level_index + 1);

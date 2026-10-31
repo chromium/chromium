@@ -72,6 +72,20 @@ enum class HeadingClassifier {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PdfAccessibilityHeadingClassifier)
 
+// LINT.IfChange(PdfAccessibilityListStartReason)
+// Heuristic rules that started a list.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ListStartReason {
+  kUnorderedMarker = 0,
+  kNestedOnlyMarker = 1,
+  kDecimalStartsAtOne = 2,
+  kDecimalStartsAboveOne = 3,
+
+  kMaxValue = kDecimalStartsAboveOne,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PdfAccessibilityListStartReason)
+
 // LINT.IfChange(HeaderFooterRepetition)
 // How a heuristically detected header or footer's text repeats across pages in
 // an untagged PDF. Headers are compared only with headers, and footers only

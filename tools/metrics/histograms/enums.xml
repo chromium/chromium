@@ -24171,6 +24171,17 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_tree.h:HeadingClassifier) -->
 
+<!-- LINT.IfChange(PdfAccessibilityListStartReason) -->
+
+<enum name="PdfAccessibilityListStartReason">
+  <int value="0" label="Unordered marker"/>
+  <int value="1" label="Nested-only unordered marker"/>
+  <int value="2" label="Ordered numeric marker starting at 1"/>
+  <int value="3" label="Ordered numeric marker starting above 1"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_tree.h:PdfAccessibilityListStartReason) -->
+
 <enum name="PerformanceMonitor.UsageScenario.LongInterval">
   <int value="1" label="All Tabs Hidden Audio"/>
   <int value="2" label="All Tabs Hidden No Video Capture or Audio"/>

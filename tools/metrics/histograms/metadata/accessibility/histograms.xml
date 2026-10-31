@@ -2606,6 +2606,17 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfHeuristics.ListStartReason"
+    enum="PdfAccessibilityListStartReason" expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the reason a list was created in an untagged PDF document. Recorded
+    once per list (including nested lists) when it is created.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfHeuristics.{Role}Repetition"
     enum="PdfAccessibilityHeaderFooterRepetition" expires_after="2027-08-01">
   <owner>kristislee@google.com</owner>

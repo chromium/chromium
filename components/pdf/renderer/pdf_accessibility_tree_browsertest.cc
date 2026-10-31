@@ -5422,6 +5422,7 @@ TEST_F(PdfAccessibilityTreeTest,
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedList) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -5450,6 +5451,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedList) {
   CheckUnorderedList(page->GetChildAtIndex(1u),
                      {"Apples", "Bananas", "Cherries", "Dates", "Elderberries"},
                      {"• ", "● ", "• ", "▪ ", "○ "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kUnorderedMarker, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByLargeGap) {
@@ -5724,6 +5728,7 @@ TEST_F(PdfAccessibilityTreeTest,
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedList) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -5766,6 +5771,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedList) {
       nested_list->GetChildAtIndex(0u)->data().relative_bounds.bounds));
   EXPECT_TRUE(item_a->data().relative_bounds.bounds.Contains(
       nested_list->GetChildAtIndex(1u)->data().relative_bounds.bounds));
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kUnorderedMarker, 2);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedListThreeLevels) {
@@ -5917,6 +5925,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicNestedListWordCourierMarker) {
 
 // Word's level-3 bullets, standalone Wingdings characters, are named "▪ ".
 TEST_F(PdfAccessibilityTreeTest, HeuristicNestedListWordWingdingsMarker) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -5944,6 +5953,14 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicNestedListWordWingdingsMarker) {
   const ui::AXNode* nested_list =
       CheckListItemWithNestedList(top_list->GetChildAtIndex(0u), "Level 1");
   CheckUnorderedList(nested_list, {"Wingdings level 3"}, "▪ ");
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kUnorderedMarker, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kNestedOnlyMarker, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.ListStartReason", 2);
 }
 
 // Font-specific markers are ignored at the top level, when combined with text,
@@ -6301,6 +6318,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListAfterParagraph) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedList) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -6322,6 +6340,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedList) {
   CheckOrderedList(page->GetChildAtIndex(0u),
                    {"First item", "Second item", "Third item"},
                    {"1. ", "2. ", "3. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kDecimalStartsAtOne, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedRuns) {
@@ -6891,6 +6912,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListGapAfterFirstLineNotList) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListStartsAboveOne) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -6913,6 +6935,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListStartsAboveOne) {
 
   CheckOrderedList(page->GetChildAtIndex(0u), {"Item E", "Item F", "Item G"},
                    {"5. ", "6. ", "7. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kDecimalStartsAboveOne, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListSpacedItems) {
