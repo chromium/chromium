@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -49,12 +50,12 @@ class RecordingObserver : public VoiceFocusedContentsTracker::Observer {
   }
 
   // Returns the changes recorded since the last call, and clears them.
-  std::vector<content::WebContents*> TakeChanges() {
+  std::vector<raw_ptr<content::WebContents>> TakeChanges() {
     return std::exchange(changes_, {});
   }
 
  private:
-  std::vector<content::WebContents*> changes_;
+  std::vector<raw_ptr<content::WebContents>> changes_;
   base::ScopedObservation<VoiceFocusedContentsTracker,
                           VoiceFocusedContentsTracker::Observer>
       observation_{this};
