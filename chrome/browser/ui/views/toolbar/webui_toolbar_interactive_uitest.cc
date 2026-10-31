@@ -1572,6 +1572,26 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
         ->IsPopupOpen();
   }
 
+  // Drops `text` as `text/plain` on the center of the omnibox through
+  // `WebUIToolbarDropSimulator`, i.e. through the same calls as a real drag.
+  // This is not a step of `RunTestSequence()`, to avoid a nested run loop in a
+  // step, since it waits for the renderer.
+  void DropTextOnOmnibox(const std::string& text,
+                         WebUIToolbarDropSimulator::DragOrigin origin) {
+    const content::EvalJsResult center = EvalOmniboxJs(R"(
+      const r = omnibox.getBoundingClientRect();
+      return [Math.round(r.left + r.width / 2),
+              Math.round(r.top + r.height / 2)];
+    )");
+    const base::ListValue& point = center.ExtractList();
+    WebUIToolbarDropSimulator drop_simulator(
+        ::GetWebUIToolbarWebView(browser()),
+        GetWebUIToolbarWebView()->GetWebContents());
+    drop_simulator.set_drop_point(
+        gfx::PointF(point[0].GetInt(), point[1].GetInt()));
+    drop_simulator.SimulateTextDrop(text, origin);
+  }
+
 #if defined(USE_AURA)
   // The drag data expected from the omnibox. Like the native omnibox, both copy
   // and move are always allowed.
@@ -1663,8 +1683,42 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
 #endif
 
  private:
+  // Runs `body` in the toolbar WebUI with `omnibox` bound to the omnibox
+  // element, and returns the value it returns.
+  content::EvalJsResult EvalOmniboxJs(std::string_view body) {
+    return content::EvalJs(
+        GetWebUIToolbarWebView()->GetWebContents(),
+        base::StrCat({"(() => { const omnibox = "
+                      "document.querySelector('toolbar-app').shadowRoot"
+                      ".querySelector('#location-bar').shadowRoot"
+                      ".querySelector('#omnibox');",
+                      body, "})()"}));
+  }
+
   base::test::ScopedFeatureList feature_list_;
 };
+
+// Like the native omnibox, a drop from a web page in the same window focuses
+// the omnibox.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+                       Omnibox_DropFromWebPage_FocusesOmnibox) {
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+
+  RunTestSequence(WaitForToolbarLoaded(),
+                  NavigateWebContents(TabId(), initial_url),
+                  WaitForJsResultAt(WebUIToolbarId(), kTextInputDeepQuery,
+                                    "el => el.value.includes('title1')"),
+                  FocusWebContents(TabId()),
+                  CheckJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
+                                  "el => !el.hasFocus()"));
+
+  DropTextOnOmnibox("hello world",
+                    WebUIToolbarDropSimulator::DragOrigin::kWebPage);
+
+  RunTestSequence(WaitForOmniboxValue("hello world"),
+                  WaitForJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
+                                    "el => el.hasFocus()"));
+}
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragLocationIcon DragLocationIcon

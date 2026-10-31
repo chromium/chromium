@@ -216,6 +216,8 @@ class WebUIReadOnlyOmnibox
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropUrl();
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropFile(
       const toolbar_ui_api::mojom::OmniboxActionDropFile& drop_file);
+  // Focuses the omnibox after a drop, if it isn't focused already.
+  void FocusForDrop();
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDragStart();
 
   void OnContextMenuReady(views::Widget* widget,

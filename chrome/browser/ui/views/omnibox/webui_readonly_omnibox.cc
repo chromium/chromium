@@ -1066,6 +1066,7 @@ WebUIReadOnlyOmnibox::OnDropText(
   base::TrimWhitespace(text, base::TRIM_ALL, &text);
 
   SetUserText(text, /*update_popup=*/false);
+  FocusForDrop();
   SelectAll(false);
   return base::ok(std::monostate());
 }
@@ -1085,6 +1086,7 @@ WebUIReadOnlyOmnibox::OnDropUrl() {
       omnibox::StripJavascriptSchemas(base::UTF8ToUTF16(url->spec()));
   if (!text.empty()) {
     SetUserText(text, /*update_popup=*/false);
+    FocusForDrop();
     SelectAll(false);
   }
   return base::ok(std::monostate());
@@ -1098,10 +1100,20 @@ WebUIReadOnlyOmnibox::OnDropFile(
     std::u16string text = base::UTF8ToUTF16(url->spec());
     if (!text.empty()) {
       SetUserText(text, /*update_popup=*/false);
+      FocusForDrop();
       SelectAll(false);
     }
   }
   return base::ok(std::monostate());
+}
+
+void WebUIReadOnlyOmnibox::FocusForDrop() {
+  // Like OmniboxViewViews::PerformDrop(), focus the omnibox when something is
+  // dropped into it. The focus is not user initiated, so that it neither
+  // unelides the text nor opens the popup.
+  if (!has_focus_) {
+    SetFocus(/*is_user_initiated=*/false);
+  }
 }
 
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
