@@ -57,9 +57,7 @@ export function getHtml(this: ComposeboxElement) {
         .sharedTabs="${this.getSharedTabs()}"
         .isSidePanel="${this.isSidePanel}"
         ?show-context-menu-description="${this.showContextMenuDescription}"
-        .glifAnimationState="${this.glifAnimationState}"
-        .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
-        .disableFallbackGlifAnimation="${this.disableFallbackGlifAnimation}">
+        .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}">
     </cr-composebox-contextual-entrypoint-and-menu>
   ` : html`
     ${hasAllowedInputs(this.inputState, this.usePecApi) ? html`
@@ -75,9 +73,7 @@ export function getHtml(this: ComposeboxElement) {
           .sharedTabs="${this.getSharedTabs()}"
           .restoredTabs="${this.aimThreadRestoredTabs}"
           ?show-context-menu-description="${this.showContextMenuDescription}"
-          .glifAnimationState="${this.glifAnimationState}"
-          .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
-          .disableFallbackGlifAnimation="${this.disableFallbackGlifAnimation}">
+          .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}">
       </cr-composebox-contextual-entrypoint-button>
     ` : ''}
   `}
