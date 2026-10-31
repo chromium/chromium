@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tabs/contextual_tasks_tab_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_onboarding_bubble_view.h"
@@ -168,6 +169,13 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
     GetCoordinator()->CreateCachedWebContentsForTesting(task_id, is_open);
   }
 
+  content::WebContents* GetCachedWebContentsForTask(const base::Uuid& task_id) {
+    auto it = GetCoordinator()->task_id_to_web_contents_cache_.find(task_id);
+    return it != GetCoordinator()->task_id_to_web_contents_cache_.end()
+               ? it->second->web_contents.get()
+               : nullptr;
+  }
+
   void SetUpTasks() {
     ActiveTaskContextProvider::From(browser())->AddObserver(
         &mock_active_task_context_provider_observer_);
@@ -231,7 +239,8 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
               LOG(INFO) << "URLLoaderInterceptor intercepted URL: "
                         << url.spec();
               if (url.host() == "www.google.com" ||
-                  url.host() == "support.google.com") {
+                  url.host() == "support.google.com" ||
+                  url.host() == "www.g.ai" || url.host() == "g.ai") {
                 content::URLLoaderInterceptor::WriteResponse(
                     "chrome/test/data/mock_aim_page.html",
                     params->client.get());
@@ -1455,6 +1464,85 @@ IN_PROC_BROWSER_TEST_F(
         coordinator->ShareTabsWithNewThread({tab2_handle});
         EXPECT_EQ(coordinator->GetCurrentTask()->GetTaskId(), new_task_id);
       }));
+}
+
+// This tests the following CUJ:
+//  (1) Browser has multiple tabs with cached side panel tasks.
+//  (2) One cached task has a valid non-empty thread title, while another cached
+//      task has a whitespace query and whitespace fallback title.
+//  (3) User opens the tab context submenu (`ContextualTasksTabSubMenuModel`) on
+//      an eligible tab.
+//  (4) Verify only the valid titled thread is listed in the submenu, and the
+//      blank/whitespace thread is omitted.
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       TabSubMenuSkipsBlankTitleThreads) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title2.html"),
+      WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+
+  // Task 1: Valid thread title.
+  ContextualTask task1 = contextual_tasks_service->CreateTask();
+  contextual_tasks_service->AssociateTabWithTask(
+      task1.GetTaskId(),
+      sessions::SessionTabHelper::IdForTab(
+          TabListInterface::From(browser())->GetTab(0)->GetContents()));
+  contextual_tasks_service->UpdateThreadForTask(task1.GetTaskId(),
+                                                ThreadType::kAiMode, "thread1",
+                                                std::nullopt, "Valid Thread");
+  CreateCachedWebContentsForTesting(task1.GetTaskId(), /*is_open=*/true);
+
+  // Navigate cached `WebContents` for `task1` to an AI Mode URL.
+  content::WebContents* task1_wc =
+      GetCachedWebContentsForTask(task1.GetTaskId());
+  ASSERT_NE(task1_wc, nullptr);
+  task1_wc->GetController().LoadURL(
+      GURL("https://www.g.ai/search?udm=50&mtid=1"), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  ASSERT_TRUE(content::WaitForLoadStop(task1_wc));
+
+  // Task 2: Whitespace-only thread query and fallback title.
+  ContextualTask task2 = contextual_tasks_service->CreateTask();
+  contextual_tasks_service->AssociateTabWithTask(
+      task2.GetTaskId(),
+      sessions::SessionTabHelper::IdForTab(
+          TabListInterface::From(browser())->GetTab(1)->GetContents()));
+  contextual_tasks_service->UpdateThreadForTask(
+      task2.GetTaskId(), ThreadType::kAiMode, "thread2", std::nullopt, "   ");
+  CreateCachedWebContentsForTesting(task2.GetTaskId(), /*is_open=*/false);
+
+  // Navigate cached `WebContents` for `task2` to a URL with whitespace query
+  // param `q=+`.
+  content::WebContents* task2_wc =
+      GetCachedWebContentsForTask(task2.GetTaskId());
+  ASSERT_NE(task2_wc, nullptr);
+  task2_wc->GetController().LoadURL(
+      GURL("https://www.g.ai/search?udm=50&mtid=5&q=+"), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  ASSERT_TRUE(content::WaitForLoadStop(task2_wc));
+
+  RunTestSequence(Do([&]() {
+    // Open the tab context submenu model for Tab 0.
+    ContextualTasksTabSubMenuModel submenu(browser()->tab_strip_model(), 0);
+
+    // Submenu must contain:
+    //  - Index 0: `CommandAiModeCreateNewThread` ("Start new thread")
+    //  - Index 1: Separator
+    //  - Index 2: `kMinRecentThreadCommandId` with label "Valid Thread"
+    // Total items must be exactly 3. The whitespace thread must be omitted.
+    ASSERT_EQ(submenu.GetItemCount(), 3u);
+    EXPECT_EQ(submenu.GetCommandIdAt(0),
+              TabStripModel::CommandAiModeCreateNewThread);
+    EXPECT_EQ(submenu.GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+    EXPECT_EQ(submenu.GetCommandIdAt(2),
+              ContextualTasksTabSubMenuModel::kMinRecentThreadCommandId);
+    EXPECT_EQ(submenu.GetLabelAt(2), u"Valid Thread");
+  }));
 }
 
 // Regression test for crbug.com/517906613: On a buggy build, trying to show the

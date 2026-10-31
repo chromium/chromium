@@ -3582,6 +3582,26 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(untitled_id))
       .WillOnce(Return(std::vector<SessionID>{}));
 
+  // 4. Restored thread with whitespace-only `q=+` and whitespace-only fallback
+  // `Thread::title` / `ContextualTask::GetTitle()` must be skipped rather than
+  // appearing as a blank item in the tab sharing menu.
+  base::Uuid whitespace_title_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      whitespace_title_id, /*is_open=*/false,
+      GURL("https://www.google.com/search?udm=50&mtid=5&q=+"));
+  SetCacheItemLastActiveTimeForTesting(whitespace_title_id,
+                                       base_ticks + base::Seconds(12));
+  SessionID tab_session_5 = SessionID::FromSerializedValue(105);
+  ContextualTask task_with_whitespace_title(whitespace_title_id);
+  task_with_whitespace_title.AddThread(
+      Thread(ThreadType::kAiMode, "server_id_5", "   ",
+             /*last_turn_time_unix_epoch_millis=*/1));
+  task_with_whitespace_title.SetTitle(" \t\n ");
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(whitespace_title_id))
+      .WillOnce(Return(std::vector<SessionID>{tab_session_5}));
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(tab_session_5))
+      .WillOnce(Return(task_with_whitespace_title));
+
   std::vector<ContextualTasksPanelController::RecentThreadInfo> recent =
       coordinator_->GetRecentThreads();
   ASSERT_EQ(recent.size(), 2u);
