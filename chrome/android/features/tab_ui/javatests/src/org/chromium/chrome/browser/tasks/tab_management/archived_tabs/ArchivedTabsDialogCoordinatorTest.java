@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,13 +51,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
+import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -107,7 +110,7 @@ import java.util.List;
 
 /** End-to-end test for ArchivedTabsDialogCoordinator. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "TODO(crbug.com/348068134): Batch this test suite.")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({"IPH_AndroidTabDeclutter", ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287024
@@ -192,18 +195,42 @@ public class ArchivedTabsDialogCoordinatorTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
+        if (mUserActionTester != null) {
+            mUserActionTester.tearDown();
+        }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (mArchivedTabModel != null) {
                         mArchivedTabModel
                                 .getTabRemover()
-                                .forceCloseTabs(TabClosureParams.closeAllTabs().build());
+                                .forceCloseTabs(
+                                        TabClosureParams.closeAllTabs().allowUndo(false).build());
+                    }
+                    // TODO(crbug.com/580067196): Remove once
+                    // BaseCtaTransitTestRule#finishActivityWithCleanup closes tabs on
+                    // Android <= 11.
+                    if (mRegularTabModel != null) {
+                        mRegularTabModel.commitAllTabClosures();
+                        mRegularTabModel
+                                .getTabRemover()
+                                .forceCloseTabs(
+                                        TabClosureParams.closeAllTabs()
+                                                .allowUndo(false)
+                                                .saveToTabRestoreService(false)
+                                                .build());
                     }
                     if (mTabArchiveSettings != null) {
                         mTabArchiveSettings.resetSettingsForTesting();
                     }
                 });
+        // TODO(crbug.com/580067196): Remove once BaseCtaTransitTestRule#finishActivityWithCleanup
+        // waits for non-ChromeTabbedActivity instances to reach Stage.DESTROYED.
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (!(activity instanceof ChromeTabbedActivity)) {
+                ApplicationTestUtils.finishActivity(activity);
+            }
+        }
     }
 
     @Test
