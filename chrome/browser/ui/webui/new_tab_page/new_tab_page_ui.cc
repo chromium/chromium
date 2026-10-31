@@ -126,6 +126,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "third_party/omnibox_proto/lhs_rail_config.pb.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -818,9 +819,46 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
 
   // The left-hand side (LHS) threads rail embeds AI Mode content, so it is only
   // shown to AIM eligible users.
-  dict.Set("enableThreadsRail", IsThreadsRailEnabled(aim_eligible));
+  const bool enable_threads_rail = IsThreadsRailEnabled(aim_eligible);
+  dict.Set("enableThreadsRail", enable_threads_rail);
   dict.Set("enableThreadsRailHybrid",
            ntp_features::kNtpThreadsRailHybridParam.Get());
+  if (enable_threads_rail && service) {
+    if (const omnibox::LhsRailConfig* lhs_rail_config =
+            service->GetLhsRailConfig()) {
+      base::DictValue lhs_rail_config_dict;
+      base::ListValue items_list;
+      const url::Origin google_base_origin =
+          url::Origin::Create(google_base_url);
+      for (const auto& item : lhs_rail_config->lhs_items()) {
+        base::DictValue item_dict;
+        // `icon_svg` is untrusted server-supplied markup; WebUI consumers must
+        // render it in a non-script-executing context (e.g., CSS `mask-image`
+        // `data:image/svg+xml` URI) rather than injecting raw markup into the
+        // DOM.
+        item_dict.Set("iconSvg", item.icon_svg());
+        item_dict.Set("name", item.name());
+        item_dict.Set("clientAction",
+                      static_cast<int>(item.click_action().client_action()));
+        const std::string& relative_url =
+            item.click_action().link().relative_url();
+        // Ensure `relative_url` is a root-relative path (not an absolute URL or
+        // a scheme-relative `"//"` / `"/\\"` authority override) and resolves
+        // to the same origin as `google_base_url`.
+        if (relative_url.starts_with("/") && !relative_url.starts_with("//") &&
+            !relative_url.starts_with("/\\")) {
+          GURL target_url = google_base_url.Resolve(relative_url);
+          if (target_url.is_valid() && target_url.SchemeIsHTTPOrHTTPS() &&
+              google_base_origin.IsSameOriginWith(target_url)) {
+            item_dict.Set("targetUrl", target_url.spec());
+          }
+        }
+        items_list.Append(std::move(item_dict));
+      }
+      lhs_rail_config_dict.Set("items", std::move(items_list));
+      dict.Set("lhsRailConfig", std::move(lhs_rail_config_dict));
+    }
+  }
 
   // Action Chips LoadTimeData
   bool add_tab_upload_delay_on_action_chip_click =
