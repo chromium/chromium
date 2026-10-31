@@ -25,8 +25,8 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
@@ -119,7 +119,8 @@ std::unique_ptr<message_center::Notification> CreateNotification(
         NavigateParams params(
             profile.get(), GURL(chrome::kChromeUIManagementURL),
             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
-        params.disposition = WindowOpenDisposition::kNewForegroundTab;
+        params.disposition =
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab;
         params.window_action = NavigateParams::WindowAction::kShowWindow;
         Navigate(&params);
       },

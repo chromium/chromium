@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_REDIRECTION_THROTTLE_H_
 
 #include "content/public/browser/navigation_throttle.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace web_app {
 

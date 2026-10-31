@@ -14,8 +14,8 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -30,7 +30,7 @@ class WebAppServiceWorkerOpenWindowBrowserTest : public WebAppBrowserTestBase {
   NavigateParams MakeNavigateParamsForServiceWorker() const {
     NavigateParams params(browser()->GetProfile(), GetGoogleURL(),
                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     params.is_renderer_initiated = true;
     params.user_gesture = false;
     params.initiator_origin = url::Origin::Create(GetGoogleURL());

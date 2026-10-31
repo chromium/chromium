@@ -92,8 +92,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -261,10 +261,10 @@ class PwaInstallViewBrowserTest : public base::test::WithFeatureOverride,
 
   // Starts a navigation to |url| but does not wait for it to finish.
   void StartNavigateToUrl(const GURL& url) {
-    browser()->OpenURL(
-        content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                           url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+                           ui::PAGE_TRANSITION_TYPED),
+                       /*navigation_handle_callback=*/{});
     app_banner_manager_->WaitForInstallableCheckTearDown();
   }
 

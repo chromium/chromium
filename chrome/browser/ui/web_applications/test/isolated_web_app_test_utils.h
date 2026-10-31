@@ -25,7 +25,7 @@
 #include "components/webapps/isolated_web_apps/types/update_check_and_prepare_result.h"
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 class BrowserWindowInterface;
 class GURL;
@@ -72,7 +72,8 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   content::RenderFrameHost* NavigateToURLInNewTab(
       BrowserWindowInterface* window,
       const GURL& url,
-      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab);
+      ui::mojom::WindowOpenDisposition disposition =
+          ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   BrowserWindowInterface* GetBrowserFromFrame(content::RenderFrameHost* frame);
 

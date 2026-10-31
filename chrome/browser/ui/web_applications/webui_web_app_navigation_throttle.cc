@@ -12,7 +12,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -84,7 +84,7 @@ WebUIWebAppNavigationThrottle::WillStartRequest() {
       !url::IsSameOriginWith(navigation_url, start_url)) {
     content::OpenURLParams params =
         content::OpenURLParams::FromNavigationHandle(navigation_handle());
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     // Clear the FrameTreeNode id, as the new navigation will be in a new tab
     // rather than the frame of the original navigation.
     params.frame_tree_node_id = content::FrameTreeNodeId();

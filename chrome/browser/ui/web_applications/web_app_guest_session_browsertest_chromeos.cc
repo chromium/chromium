@@ -19,7 +19,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -43,7 +43,8 @@ IN_PROC_BROWSER_TEST_F(WebAppGuestSessionBrowserTest, LaunchOsSettings) {
   Profile* profile = browser()->GetProfile();
   apps::AppLaunchParams params(
       ash::kOsSettingsAppId, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewForegroundTab, apps::LaunchSource::kFromTest);
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      apps::LaunchSource::kFromTest);
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);

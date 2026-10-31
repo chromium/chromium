@@ -94,10 +94,10 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_HOSTED_APPS)
@@ -644,7 +644,8 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
       // gets executed.
       apps::AppLaunchParams params(
           app_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromOmnibox);
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
+          apps::LaunchSource::kFromOmnibox);
       params.override_url = launch_url;
       content::WebContents* new_web_contents =
           WebAppLaunchProcess::CreateAndRun(
@@ -740,7 +741,8 @@ void MaybeAddPinnedHomeTab(BrowserWindowInterface* browser,
       pinned_home_tab_url.has_value()) {
     NavigateParams home_tab_nav_params(browser, pinned_home_tab_url.value(),
                                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    home_tab_nav_params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+    home_tab_nav_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
     home_tab_nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
     Navigate(&home_tab_nav_params);
   }

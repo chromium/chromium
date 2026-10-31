@@ -25,7 +25,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -76,7 +76,8 @@ IN_PROC_BROWSER_TEST_P(ReparentWebContentsTest, ReparentToAppAndBack) {
 
   if (GetReparentingUrlType() == ReparentingUrl::kAppUrlLoading) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GetReparentingUrl(), WindowOpenDisposition::kCurrentTab,
+        browser(), GetReparentingUrl(),
+        ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
   } else {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetReparentingUrl()));

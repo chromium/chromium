@@ -16,7 +16,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace web_app {
@@ -94,8 +94,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppWindow) {
 IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppPopupWindow) {
   InstallTestWebApp();
   BrowserWindowInterface* const app_browser =
-      web_app::LaunchWebAppBrowserAndWait(profile(), test_web_app_id(),
-                                          WindowOpenDisposition::kNewPopup);
+      web_app::LaunchWebAppBrowserAndWait(
+          profile(), test_web_app_id(),
+          ui::mojom::WindowOpenDisposition::kNewPopup);
 
   ASSERT_EQ(app_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_APP_POPUP);

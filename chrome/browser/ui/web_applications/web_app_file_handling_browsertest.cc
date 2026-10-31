@@ -59,7 +59,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -252,7 +252,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
       const std::vector<base::FilePath>& files =
           std::vector<base::FilePath>()) {
     apps::AppLaunchParams params(app_id, launch_container,
-                                 WindowOpenDisposition::kNewWindow,
+                                 ui::mojom::WindowOpenDisposition::kNewWindow,
                                  launch_source);
 
     if (files.size()) {
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
     content::TestNavigationObserver navigation_observer(web_contents_);
     chrome::Reload(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
                        web_contents_),
-                   WindowOpenDisposition::kCurrentTab);
+                   ui::mojom::WindowOpenDisposition::kCurrentTab);
     navigation_observer.Wait();
     AttachTestConsumer(web_contents_);
   }
@@ -553,10 +553,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   const auto& [url, launch_files] = launch_infos[0];
   // Not NEW_WINDOW: that always opens a new window and would bypass
   // focus-existing entirely.
-  apps::AppLaunchParams params(app_id,
-                               apps::LaunchContainer::kLaunchContainerWindow,
-                               WindowOpenDisposition::kNewForegroundTab,
-                               apps::LaunchSource::kFromFileManager);
+  apps::AppLaunchParams params(
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      apps::LaunchSource::kFromFileManager);
   params.launch_files = launch_files;
   params.override_url = url;
 
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
     content::TestNavigationObserver navigation_observer(web_contents_);
     chrome::Reload(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
                        web_contents_),
-                   WindowOpenDisposition::kCurrentTab);
+                   ui::mojom::WindowOpenDisposition::kCurrentTab);
     navigation_observer.Wait();
     AttachTestConsumer(web_contents_);
   }

@@ -23,7 +23,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace {
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
             kEnabled);
 
   ui_test_utils::UrlLoadObserver url_observer(GetMixedContentAppURL());
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   url_observer.Wait();
 
   // After reloading, mixed content should successfully load.
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
   CheckMixedContentLoaded(app_browser);
 
   ui_test_utils::UrlLoadObserver url_observer(GetMixedContentAppURL());
-  chrome::Reload(app_browser, WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(app_browser, ui::mojom::WindowOpenDisposition::kCurrentTab);
   url_observer.Wait();
 
   // Mixed content should be able to load in web app windows.

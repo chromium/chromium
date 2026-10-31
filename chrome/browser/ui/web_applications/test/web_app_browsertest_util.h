@@ -20,7 +20,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 class BrowserWindowInterface;
 class GlobalBrowserCollection;
@@ -79,20 +79,22 @@ webapps::AppId InstallWebAppFromManifest(BrowserWindowInterface* browser,
 BrowserWindowInterface* LaunchWebAppBrowser(
     Profile*,
     const webapps::AppId&,
-    WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab);
+    ui::mojom::WindowOpenDisposition disposition =
+        ui::mojom::WindowOpenDisposition::kCurrentTab);
 
 // Launches the app, waits for the app url to load.
 BrowserWindowInterface* LaunchWebAppBrowserAndWait(
     Profile*,
     const webapps::AppId&,
-    WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab);
+    ui::mojom::WindowOpenDisposition disposition =
+        ui::mojom::WindowOpenDisposition::kCurrentTab);
 
 // Launches a new tab for |app| in |profile|.
 BrowserWindowInterface* LaunchBrowserForWebAppInTab(
     Profile*,
     const webapps::AppId&,
-    WindowOpenDisposition disposition =
-        WindowOpenDisposition::kNewForegroundTab);
+    ui::mojom::WindowOpenDisposition disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
 // Launches the web app to the given URL.
 BrowserWindowInterface* LaunchWebAppToURL(Profile* profile,

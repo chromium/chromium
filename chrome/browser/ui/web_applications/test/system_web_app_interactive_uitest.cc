@@ -73,8 +73,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
@@ -570,7 +570,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
 
     auto launch_params = apps::AppLaunchParams(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::kCurrentTab,
+        ui::mojom::WindowOpenDisposition::kCurrentTab,
         apps::LaunchSource::kFromAppListGrid);
 
     content::TestNavigationObserver navigation_observer(
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
     provider->scheduler().LaunchAppWithCustomParams(
         apps::AppLaunchParams(app_id2,
                               apps::LaunchContainer::kLaunchContainerWindow,
-                              WindowOpenDisposition::kCurrentTab,
+                              ui::mojom::WindowOpenDisposition::kCurrentTab,
                               apps::LaunchSource::kFromAppListGrid),
         future.GetCallback());
     EXPECT_FALSE(future.template Get<1>().get());
@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
     provider->scheduler().LaunchAppWithCustomParams(
         apps::AppLaunchParams(app_id1,
                               apps::LaunchContainer::kLaunchContainerWindow,
-                              WindowOpenDisposition::kCurrentTab,
+                              ui::mojom::WindowOpenDisposition::kCurrentTab,
                               apps::LaunchSource::kFromAppListGrid),
         future.GetCallback());
     EXPECT_TRUE(future.template Get<1>().get());

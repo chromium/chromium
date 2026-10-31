@@ -75,8 +75,8 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 class GURL;
@@ -234,9 +234,10 @@ webapps::AppId InstallWebAppFromManifest(BrowserWindowInterface* browser,
   return app_id;
 }
 
-BrowserWindowInterface* LaunchWebAppBrowser(Profile* profile,
-                                            const webapps::AppId& app_id,
-                                            WindowOpenDisposition disposition) {
+BrowserWindowInterface* LaunchWebAppBrowser(
+    Profile* profile,
+    const webapps::AppId& app_id,
+    ui::mojom::WindowOpenDisposition disposition) {
   WebAppRegistrar& registrar =
       WebAppProvider::GetForLocalAppsUnchecked(profile)->registrar_unsafe();
   GURL start_url = registrar.GetAppLaunchUrl(app_id);
@@ -299,14 +300,14 @@ BrowserWindowInterface* LaunchWebAppBrowser(Profile* profile,
 BrowserWindowInterface* LaunchWebAppBrowserAndWait(
     Profile* profile,
     const webapps::AppId& app_id,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   return LaunchWebAppBrowser(profile, app_id, disposition);
 }
 
 BrowserWindowInterface* LaunchBrowserForWebAppInTab(
     Profile* profile,
     const webapps::AppId& app_id,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   WebAppRegistrar& registrar =
       WebAppProvider::GetForLocalAppsUnchecked(profile)->registrar_unsafe();
   GURL start_url = registrar.GetAppLaunchUrl(app_id);
@@ -363,10 +364,10 @@ BrowserWindowInterface* LaunchBrowserForWebAppInTab(
 BrowserWindowInterface* LaunchWebAppToURL(Profile* profile,
                                           const webapps::AppId& app_id,
                                           const GURL& url) {
-  apps::AppLaunchParams params(app_id,
-                               apps::LaunchContainer::kLaunchContainerWindow,
-                               WindowOpenDisposition::kNewForegroundTab,
-                               apps::LaunchSource::kFromCommandLine);
+  apps::AppLaunchParams params(
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      apps::LaunchSource::kFromCommandLine);
   params.override_url = url;
 
   web_app::WebAppProvider* provider =

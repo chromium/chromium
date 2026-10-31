@@ -18,7 +18,7 @@
 #include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "components/webapps/common/web_app_id.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -267,8 +267,8 @@ class NavigationCapturingProcess
   bool IsHandledByNavigationCapturing() const;
 
   bool is_user_modified_click() const {
-    return disposition_ == WindowOpenDisposition::kNewWindow ||
-           disposition_ == WindowOpenDisposition::kNewBackgroundTab;
+    return disposition_ == ui::mojom::WindowOpenDisposition::kNewWindow ||
+           disposition_ == ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   }
 
   base::DictValue& PopulateAndGetDebugData();
@@ -283,7 +283,7 @@ class NavigationCapturingProcess
   const std::optional<webapps::AppId> source_browser_app_id_;
   const std::optional<webapps::AppId> source_tab_app_id_;
   const GURL navigation_params_url_;
-  const WindowOpenDisposition disposition_;
+  const ui::mojom::WindowOpenDisposition disposition_;
   const base::WeakPtr<BrowserWindowInterface> navigation_params_browser_;
   std::optional<webapps::AppId> first_navigation_app_id_;
   std::optional<blink::mojom::DisplayMode> first_navigation_app_display_mode_;

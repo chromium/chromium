@@ -32,7 +32,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -138,9 +138,10 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, CannotLaunchAfterUninstall) {
   const GURL app_url = GetSecureAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
 
-  apps::AppLaunchParams params(
-      app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
+  apps::AppLaunchParams params(app_id,
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               ui::mojom::WindowOpenDisposition::kNewWindow,
+                               apps::LaunchSource::kFromTest);
 
   UninstallWebApp(app_id);
 

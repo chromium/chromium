@@ -43,7 +43,7 @@
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/browser/extension_registry.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/types/display_constants.h"
 
 namespace {
@@ -136,7 +136,7 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
         profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
     EXPECT_TRUE(params.has_value());
-    params->disposition = WindowOpenDisposition::kNewPopup;
+    params->disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
 
     ash::BrowserDelegate* delegate = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),
@@ -149,7 +149,7 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
         profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
     EXPECT_TRUE(params.has_value());
-    params->disposition = WindowOpenDisposition::kNewWindow;
+    params->disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
 
     ash::BrowserDelegate* delegate = ash::LaunchSystemWebAppImpl(
         profile(), test_system_web_app_installation_->GetType(),

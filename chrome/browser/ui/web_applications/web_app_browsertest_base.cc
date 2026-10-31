@@ -53,7 +53,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace web_app {
 
@@ -292,9 +292,10 @@ content::WebContents* WebAppBrowserTestBase::OpenApplication(
                          apps::LaunchContainer>
       future;
   provider->scheduler().LaunchAppWithCustomParams(
-      apps::AppLaunchParams(
-          app_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest),
+      apps::AppLaunchParams(app_id,
+                            apps::LaunchContainer::kLaunchContainerWindow,
+                            ui::mojom::WindowOpenDisposition::kNewWindow,
+                            apps::LaunchSource::kFromTest),
       future.GetCallback());
   url_observer.Wait();
   return future.template Get<1>().get();

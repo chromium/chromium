@@ -129,9 +129,9 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1076,7 +1076,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, DesktopPWAsOpenLinksInNewTab) {
   NavigateParams param(app_browser, GURL("http://www.google.com/"),
                        ui::PAGE_TRANSITION_LINK);
   param.window_action = NavigateParams::WindowAction::kShowWindow;
-  param.disposition = WindowOpenDisposition::kNewForegroundTab;
+  param.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
 
   ui_test_utils::NavigateToURL(&param);
 
@@ -1109,7 +1109,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, DownloadInNewWindowAutoCloses) {
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   NavigateParams params(app_browser, download_url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewPopup;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
   ui_test_utils::NavigateToURL(&params);
 
   BrowserWindowInterface* download_browser = browser_created_observer.Wait();
@@ -1358,7 +1358,8 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest,
                                                       offscope_url);
     // Browser-initiated navigations expose the pending destination as visible.
     ui_test_utils::NavigateToURLWithDisposition(
-        popup_browser, offscope_url, WindowOpenDisposition::kCurrentTab,
+        popup_browser, offscope_url,
+        ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     ASSERT_TRUE(navigation_manager.WaitForRequestStart());
     ASSERT_EQ(about_blank_url, popup_contents->GetLastCommittedURL());
@@ -3054,9 +3055,10 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
   Profile* profile = browser()->GetProfile();
   const GURL app_url = GetSecureAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
-  apps::AppLaunchParams params(
-      app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
+  apps::AppLaunchParams params(app_id,
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               ui::mojom::WindowOpenDisposition::kNewWindow,
+                               apps::LaunchSource::kFromTest);
 
   BrowserHandler handler(nullptr, std::string());
   ui_test_utils::BrowserDestroyedObserver observer(browser());

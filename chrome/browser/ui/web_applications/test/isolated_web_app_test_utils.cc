@@ -57,8 +57,8 @@
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkStream.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
@@ -178,7 +178,7 @@ content::RenderFrameHost*
 IsolatedWebAppBrowserTestHarness::NavigateToURLInNewTab(
     BrowserWindowInterface* window,
     const GURL& url,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   auto new_contents = content::WebContents::Create(
       content::WebContents::CreateParams(browser()->GetProfile()));
   window->GetTabStripModel()->AppendWebContents(std::move(new_contents),

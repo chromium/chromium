@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/origin.h"
 #endif
 
@@ -204,7 +204,8 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
       ash::kCalculatorAppId));
 
   BrowserWindowInterface* second_browser = web_app::LaunchWebAppBrowser(
-      profile(), ash::kCalculatorAppId, WindowOpenDisposition::kNewWindow);
+      profile(), ash::kCalculatorAppId,
+      ui::mojom::WindowOpenDisposition::kNewWindow);
   EXPECT_EQ(app_browser, second_browser);
   EXPECT_EQ(browser_count,
             ProfileBrowserCollection::GetForProfile(profile())->GetSize());
