@@ -304,6 +304,10 @@ extern const base::FeatureParam<base::TimeDelta> kPreviousTabRecencyThreshold;
 // Whether Smart Tab Sharing is enabled for the ContextualTasksContext feature.
 extern const base::FeatureParam<bool> kContextualTasksContextSmartTabSharing;
 
+// Whether Smart Tab Sharing is enabled in the Contextual Tasks rearchitecture.
+extern const base::FeatureParam<bool>
+    kContextualTasksContextSmartTabSharingRearchitecture;
+
 // Whether Smart Tab Sharing should toggle off after query submission.
 extern const base::FeatureParam<bool>
     kContextualTasksContextToggleOffAfterSubmit;

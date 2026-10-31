@@ -23,10 +23,12 @@
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -1304,5 +1306,226 @@ TEST_F(
   web_contents_factory_.reset();
 }
 #endif
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       SmartTabSharing_DisabledWhenRearchitectureParamFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksForceEntryPointEligibility, {}},
+       {kContextualTasksContext,
+        {{kContextualTasksContextSmartTabSharing.name, "true"}}}},
+      {});
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  EXPECT_FALSE(user_data->IsSmartTabSharingEnabled());
+  EXPECT_FALSE(user_data->IsSmartTabSharingActive());
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       SmartTabSharing_ToggleMountsContextLibraryAndClearsManualTabs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksForceEntryPointEligibility, {}},
+       {kContextualTasksContext,
+        {{kContextualTasksContextSmartTabSharing.name, "true"},
+         {kContextualTasksContextSmartTabSharingRearchitecture.name,
+          "true"}}}},
+      {});
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("sts_session_123"));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+
+  std::vector<lens::ClientToSearchMessage> sent_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&sent_messages](const lens::ClientToSearchMessage& message) {
+        sent_messages.push_back(message);
+      }));
+
+  int tab_context_updated_notifications = 0;
+  constexpr int kFrameId = 1;
+  user_data->RegisterExtensionFrame(&kFrameId);
+  user_data->UpdateExtensionFrameBound(
+      &kFrameId, /*is_page_bound=*/true, base::DoNothing(), base::DoNothing(),
+      base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&tab_context_updated_notifications]() {
+            ++tab_context_updated_notifications;
+          }));
+
+  EXPECT_TRUE(user_data->IsSmartTabSharingEnabled());
+  EXPECT_FALSE(user_data->IsSmartTabSharingActive());
+
+  // Attach both a pending delayed manual tab and an uploaded manual tab first.
+  mock_handle->AddPendingDelayedTab(10, GURL("https://example.com/manual"),
+                                    "Manual Tab");
+  base::UnguessableToken uploaded_manual_token =
+      base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(
+      uploaded_manual_token);
+  mock_handle->AttachTabPendingUpload(uploaded_manual_token, 20,
+                                      GURL("https://example.com/manual2"),
+                                      "Manual Tab 2");
+  EXPECT_EQ(user_data->GetSelectedTabs().size(), 2u);
+
+  // Toggling Smart Tab Sharing ON should clear manual unsubmitted tabs,
+  // mount `CONTEXT_LIBRARY` (`is_active = true`), and notify bound extension
+  // frames.
+  sent_messages.clear();
+  user_data->SetSmartTabSharingActive(true);
+  EXPECT_TRUE(user_data->IsSmartTabSharingActive());
+  EXPECT_TRUE(user_data->GetSelectedTabs().empty());
+  EXPECT_TRUE(mock_handle->GetTabContextState().attached.empty());
+  EXPECT_GE(tab_context_updated_notifications, 1);
+
+  // Even after clearing manual tabs, `CONTEXT_LIBRARY` remains active because
+  // Smart Tab Sharing is active.
+  bool saw_inactive_context_library = false;
+  for (const auto& msg : sent_messages) {
+    if (msg.has_inject_chrome_input() &&
+        msg.inject_chrome_input().input_type() ==
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY &&
+        !msg.inject_chrome_input().is_active()) {
+      saw_inactive_context_library = true;
+    }
+  }
+  EXPECT_FALSE(saw_inactive_context_library);
+
+  // Toggling Smart Tab Sharing OFF with 0 manual tabs should unmount
+  // `CONTEXT_LIBRARY` (`is_active = false`) and notify extension frames.
+  sent_messages.clear();
+  int notifications_before_off = tab_context_updated_notifications;
+  user_data->SetSmartTabSharingActive(false);
+  EXPECT_FALSE(user_data->IsSmartTabSharingActive());
+  EXPECT_GT(tab_context_updated_notifications, notifications_before_off);
+
+  bool saw_unmount = false;
+  for (const auto& msg : sent_messages) {
+    if (msg.has_inject_chrome_input() &&
+        msg.inject_chrome_input().input_type() ==
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY &&
+        !msg.inject_chrome_input().is_active()) {
+      saw_unmount = true;
+    }
+  }
+  EXPECT_TRUE(saw_unmount);
+
+  // Toggling Smart Tab Sharing ON again with 0 manual tabs should mount
+  // `CONTEXT_LIBRARY` (`is_active = true`).
+  sent_messages.clear();
+  user_data->SetSmartTabSharingActive(true);
+  bool saw_mount = false;
+  for (const auto& msg : sent_messages) {
+    if (msg.has_inject_chrome_input() &&
+        msg.inject_chrome_input().input_type() ==
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY &&
+        msg.inject_chrome_input().is_active()) {
+      saw_mount = true;
+    }
+  }
+  EXPECT_TRUE(saw_mount);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       SmartTabSharing_ImplicitTabsExcludedFromGetSelectedTabs) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  // An implicit smart-shared tab has `is_implicit_upload = true` in its
+  // `FileInfo`.
+  base::UnguessableToken implicit_token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(implicit_token);
+  mock_handle->AttachTabPendingUpload(
+      implicit_token, 10, GURL("https://example.com/implicit"), "Implicit Tab");
+  contextual_search::FileInfo implicit_file;
+  implicit_file.file_token = implicit_token;
+  implicit_file.is_implicit_upload = true;
+
+  // An explicit manual tab has `is_implicit_upload = false`.
+  base::UnguessableToken manual_token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(manual_token);
+  mock_handle->AttachTabPendingUpload(
+      manual_token, 20, GURL("https://example.com/manual"), "Manual Tab");
+  contextual_search::FileInfo manual_file;
+  manual_file.file_token = manual_token;
+  manual_file.is_implicit_upload = false;
+
+  std::vector<contextual_search::FileInfo> uploaded_files = {implicit_file,
+                                                             manual_file};
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  // `GetSelectedTabs()` must only return the manual tab, excluding the
+  // implicit smart-shared tab.
+  std::vector<contextual_search::TabInfo> selected_tabs =
+      user_data->GetSelectedTabs();
+  ASSERT_EQ(selected_tabs.size(), 1u);
+  EXPECT_EQ(selected_tabs[0].tab_id, 20);
+  EXPECT_EQ(selected_tabs[0].context_token, manual_token);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       SmartTabSharing_ClearInputPlateStateResetsOverrideToDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksForceEntryPointEligibility, {}},
+       {kContextualTasksContext,
+        {{kContextualTasksContextSmartTabSharing.name, "true"},
+         {kContextualTasksContextSmartTabSharingRearchitecture.name, "true"}}},
+       {kContextualTasksContextSmartTabSharingDefaultOnAvailability, {}}},
+      {});
+  profile_->GetPrefs()->SetBoolean(kContextualTasksShareOpenTabsEveryThread,
+                                   true);
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  // Default-on when enabled and no per-thread override exists.
+  EXPECT_TRUE(user_data->IsSmartTabSharingEnabled());
+  EXPECT_TRUE(user_data->IsSmartTabSharingActive());
+
+  // User opts out mid-thread.
+  user_data->SetSmartTabSharingActive(false);
+  EXPECT_FALSE(user_data->IsSmartTabSharingActive());
+
+  // Starting a new thread (`ClearInputPlateState`) resets the per-thread
+  // override back to the default-on state.
+  user_data->ClearInputPlateState();
+  EXPECT_TRUE(user_data->IsSmartTabSharingActive());
+}
 
 }  // namespace contextual_tasks
