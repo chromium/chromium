@@ -157,8 +157,34 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
           "thread')");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App_Composebox_BasicMode) {
-  RunTest("contextual_tasks/app_composebox_basic_mode_test.js", "mocha.run();");
+// Run each BasicMode nested suite as a separate test so each group has its own
+// per-test time budget.
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_Composebox_BasicMode_ZOrderAndHistory) {
+  RunTest("contextual_tasks/app_composebox_basic_mode_test.js",
+          "runMochaSuite('ContextualTasksAppComposeboxBasicModeTest "
+          "ZOrderAndHistory')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_Composebox_BasicMode_NavigationFromAiPage) {
+  RunTest("contextual_tasks/app_composebox_basic_mode_test.js",
+          "runMochaSuite('ContextualTasksAppComposeboxBasicModeTest "
+          "NavigationFromAiPage')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_Composebox_BasicMode_PendingBasicMode) {
+  RunTest("contextual_tasks/app_composebox_basic_mode_test.js",
+          "runMochaSuite('ContextualTasksAppComposeboxBasicModeTest "
+          "PendingBasicMode')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       App_Composebox_BasicMode_NlmAndOnboardingTooltip) {
+  RunTest("contextual_tasks/app_composebox_basic_mode_test.js",
+          "runMochaSuite('ContextualTasksAppComposeboxBasicModeTest "
+          "NlmAndOnboardingTooltip')");
 }
 
 // TODO(crbug.com/480689282): Re-enable the test.
