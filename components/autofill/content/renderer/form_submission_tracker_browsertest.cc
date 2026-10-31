@@ -780,16 +780,11 @@ TEST_P(FormSubmissionTrackerTest,
   run_loop.Run();
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_NoLongerVisibleBothNoActions DISABLED_NoLongerVisibleBothNoActions
-#else
-#define MAYBE_NoLongerVisibleBothNoActions NoLongerVisibleBothNoActions
-#endif
 // Tests that completing an Ajax request and having the form with no action
 // specified disappear will trigger submission from Autofill's point of view,
 // even if there is still another form with no action in the page. It will
 // compare field data within the forms.
-TEST_P(FormSubmissionTrackerTest, MAYBE_NoLongerVisibleBothNoActions) {
+TEST_P(FormSubmissionTrackerTest, NoLongerVisibleBothNoActions) {
   LoadHTML(R"(
       <html>
         <form id='myForm'>
