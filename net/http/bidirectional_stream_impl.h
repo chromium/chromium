@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -25,6 +26,7 @@ namespace net {
 
 class IOBuffer;
 class NetLogWithSource;
+class SSLInfo;
 struct BidirectionalStreamRequestInfo;
 struct NetErrorDetails;
 
@@ -158,6 +160,9 @@ class NET_EXPORT_PRIVATE BidirectionalStreamImpl {
   // socket reuse info. Return true if LoadTimingInfo is obtained successfully
   // and false otherwise.
   virtual bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const = 0;
+
+  // Returns the SSL information of the underlying connection, if available.
+  virtual std::optional<SSLInfo> GetSSLInfo() = 0;
 
   // Get the network error details this stream is encountering.
   // Fills in |details| if it is available; leaves |details| unchanged if it

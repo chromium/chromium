@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -62,6 +63,7 @@ class NET_EXPORT_PRIVATE BidirectionalStreamSpdyImpl
   int64_t GetTotalReceivedBytes() const override;
   int64_t GetTotalSentBytes() const override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
+  std::optional<SSLInfo> GetSSLInfo() override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
 
   // SpdyStream::Delegate implementation:

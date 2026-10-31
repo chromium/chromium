@@ -26,6 +26,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_handle.h"
 #include "net/base/session_usage.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_request_info.h"
 #include "net/http/http_network_session.h"
@@ -455,9 +456,9 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
   std::unique_ptr<SequencedSocketData> sequenced_data_;
   std::unique_ptr<HttpNetworkSession> http_session_;
   raw_ptr<MockTaggingClientSocketFactory> socket_factory_;
+  SSLSocketDataProvider ssl_data_;
 
  private:
-  SSLSocketDataProvider ssl_data_;
   base::WeakPtr<SpdySession> session_;
 };
 
@@ -1743,6 +1744,63 @@ TEST_F(BidirectionalStreamTest, TestHonorAlternativeServiceHeader) {
                                          "www.example.org", 443);
   EXPECT_EQ(alternative_service,
             alternative_service_info_vector[0].alternative_service());
+}
+
+// Alt-Svc headers must be ignored when received over a connection with a
+// certificate error, even if the error was bypassed. BidirectionalStreams
+// don't bypass cert errors themselves, but may reuse a session that was
+// created by a request that did.
+TEST_F(BidirectionalStreamTest, IgnoreAlternativeServiceHeaderWithCertError) {
+  spdy::SpdySerializedFrame req(
+      spdy_util_.ConstructSpdyGet(kDefaultUrl, 1, LOWEST));
+  MockWrite writes[] = {CreateMockWrite(req, 0)};
+
+  std::string alt_svc_header_value =
+      quic::AlpnForVersion(DefaultSupportedQuicVersions().front());
+  alt_svc_header_value.append("=\"www.example.org:443\"");
+  const std::string_view kExtraResponseHeaders[] = {"alt-svc",
+                                                    alt_svc_header_value};
+  spdy::SpdySerializedFrame resp(
+      spdy_util_.ConstructSpdyGetReply(kExtraResponseHeaders, 1));
+  spdy::SpdySerializedFrame body_frame(
+      spdy_util_.ConstructSpdyDataFrame(1, true));
+
+  MockRead reads[] = {
+      CreateMockRead(resp, 1),
+      CreateMockRead(body_frame, 2),
+      MockRead(SYNCHRONOUS, 0, 3),
+  };
+
+  // Enable QUIC so that the alternative service header would otherwise be
+  // added to HttpServerProperties.
+  session_deps_.enable_quic = true;
+  ssl_data_.ssl_info.cert_status = CERT_STATUS_AUTHORITY_INVALID;
+  InitSession(reads, writes, SocketTag());
+
+  auto request_info = std::make_unique<BidirectionalStreamRequestInfo>();
+  request_info->method = "GET";
+  request_info->url = default_url_;
+  request_info->priority = LOWEST;
+  request_info->end_stream_on_headers = true;
+
+  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
+  auto timer = std::make_unique<MockTimer>();
+  auto delegate = std::make_unique<TestDelegateBase>(
+      read_buffer.get(), kReadBufferSize, std::move(timer));
+  delegate->SetRunUntilCompletion(true);
+  delegate->Start(std::move(request_info), http_session_.get());
+
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
+  EXPECT_EQ("200", response_headers.find(":status")->second);
+  EXPECT_EQ(alt_svc_header_value, response_headers.find("alt-svc")->second);
+  EXPECT_EQ(kUploadData, delegate->data_received());
+
+  EXPECT_TRUE(
+      http_session_->http_server_properties()
+          ->GetAlternativeServiceInfos(url::SchemeHostPort(default_url_),
+                                       NetworkAnonymizationKey())
+          .empty());
 }
 
 // Test that a BidirectionalStream created with a specific tag, tags the

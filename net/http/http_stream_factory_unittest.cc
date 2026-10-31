@@ -39,11 +39,13 @@
 #include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_proxy_delegate.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/http/bidirectional_stream.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/bidirectional_stream_request_info.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -2640,6 +2642,39 @@ TEST_P(HttpStreamFactoryQuicTest, RequestHttpStreamOverTwoQuicProxies) {
   proxy_quic_data.ExpectAllWriteDataConsumed();
 }
 
+// BidirectionalStream::Delegate that waits for response headers or a failure.
+class WaitForHeadersBidirectionalStreamDelegate
+    : public BidirectionalStream::Delegate {
+ public:
+  WaitForHeadersBidirectionalStreamDelegate() = default;
+  ~WaitForHeadersBidirectionalStreamDelegate() override = default;
+
+  // Waits for headers to be received or for the stream to fail. Returns the
+  // error, or OK if headers were received.
+  int WaitForHeaders() {
+    run_loop_.Run();
+    return error_;
+  }
+
+  // BidirectionalStream::Delegate implementation:
+  void OnStreamReady(bool request_headers_sent) override {}
+  void OnHeadersReceived(const quiche::HttpHeaderBlock& response_headers,
+                         const ProxyInfo& used_proxy_info) override {
+    run_loop_.Quit();
+  }
+  void OnDataRead(int bytes_read) override {}
+  void OnDataSent() override {}
+  void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {}
+  void OnFailed(int error) override {
+    error_ = error;
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  int error_ = OK;
+};
+
 class HttpStreamFactoryBidirectionalQuicTest
     : public TestWithTaskEnvironment,
       public ::testing::WithParamInterface<quic::ParsedQuicVersion> {
@@ -2742,6 +2777,76 @@ class HttpStreamFactoryBidirectionalQuicTest
   quic::ParsedQuicVersion version() const { return version_; }
 
   MockHostResolver* host_resolver() { return &host_resolver_; }
+
+  // Certificate verification details used for QUIC connections. Its
+  // `cert_status` may be modified before calling Initialize().
+  ProofVerifyDetailsChromium& verify_details() { return verify_details_; }
+
+  // Seeds a QUIC alternative service on port 443 for `default_url_`, then makes
+  // a BidirectionalStream request over QUIC that receives a response with an
+  // Alt-Svc header advertising HTTP/2 on port 444. Returns the alternative
+  // services for `default_url_` afterwards. Initialize() must not have been
+  // called yet.
+  AlternativeServiceInfoVector SendRequestAndRecieveAltSvcResponseHeader() {
+    MockQuicData mock_quic_data(version());
+    // Use the default priority, so that MakeRequestHeadersPacket() doesn't add
+    // a PRIORITY_UPDATE frame.
+    spdy::SpdyPriority priority =
+        ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
+    size_t spdy_headers_frame_length;
+    int packet_num = 1;
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        client_packet_maker().MakeInitialSettingsPacket(packet_num++));
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        client_packet_maker().MakeRequestHeadersPacket(
+            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+            /*fin=*/true, priority,
+            client_packet_maker().GetRequestHeaders("GET", "https", "/"),
+            &spdy_headers_frame_length));
+    quiche::HttpHeaderBlock response_headers =
+        server_packet_maker().GetResponseHeaders("200");
+    // Advertise HTTP/2 rather than QUIC, since not all QUIC versions can be
+    // advertised via Alt-Svc.
+    response_headers["alt-svc"] = "h2=\":444\"";
+    size_t spdy_response_headers_frame_length;
+    mock_quic_data.AddRead(ASYNC,
+                           server_packet_maker().MakeResponseHeadersPacket(
+                               1, GetNthClientInitiatedBidirectionalStreamId(0),
+                               /*fin=*/true, std::move(response_headers),
+                               &spdy_response_headers_frame_length));
+    mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more read data.
+    mock_quic_data.AddSocketDataToFactory(&socket_factory());
+
+    // Add hanging data for the HTTP job.
+    StaticSocketDataProvider hanging_data;
+    hanging_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+    socket_factory().AddSocketDataProvider(&hanging_data);
+
+    Initialize();
+    AddQuicAlternativeService();
+
+    auto request_info = std::make_unique<BidirectionalStreamRequestInfo>();
+    request_info->method = "GET";
+    request_info->url = default_url_;
+    request_info->end_stream_on_headers = true;
+    request_info->priority = DEFAULT_PRIORITY;
+
+    WaitForHeadersBidirectionalStreamDelegate delegate;
+    auto stream = std::make_unique<BidirectionalStream>(
+        std::move(request_info), session(),
+        /*send_request_headers_automatically=*/true, &delegate);
+    EXPECT_THAT(delegate.WaitForHeaders(), IsOk());
+    EXPECT_EQ(NextProto::kProtoQUIC, stream->GetProtocol());
+
+    // Read the end of the stream, so it's cleanly closed.
+    auto buffer = base::MakeRefCounted<IOBufferWithSize>(1);
+    EXPECT_THAT(stream->ReadData(buffer.get(), 1), IsOk());
+
+    return session()->http_server_properties()->GetAlternativeServiceInfos(
+        url::SchemeHostPort(default_url_), NetworkAnonymizationKey());
+  }
 
  private:
   quic::test::QuicFlagSaver saver_;
@@ -2861,6 +2966,33 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
                                  HttpNetworkSession::SocketPoolType::kNormal,
                                  ProxyChain::Direct()));
   EXPECT_TRUE(requester.used_proxy_info().is_direct());
+}
+
+// Tests that BidirectionalStreams process Alt-Svc headers received over QUIC.
+TEST_P(HttpStreamFactoryBidirectionalQuicTest,
+       BidirectionalStreamQuicProcessesAltSvcHeader) {
+  AlternativeServiceInfoVector alt_svc_infos =
+      SendRequestAndRecieveAltSvcResponseHeader();
+  // The Alt-Svc header should have replaced the seeded alternative service.
+  ASSERT_EQ(1u, alt_svc_infos.size());
+  EXPECT_EQ(NextProto::kProtoHTTP2,
+            alt_svc_infos[0].alternative_service().protocol);
+  EXPECT_EQ(444, alt_svc_infos[0].alternative_service().port);
+}
+
+// Tests that BidirectionalStreams ignore Alt-Svc headers received over QUIC
+// connections with certificate errors.
+TEST_P(HttpStreamFactoryBidirectionalQuicTest,
+       BidirectionalStreamQuicIgnoresAltSvcHeaderWithCertError) {
+  verify_details().cert_verify_result.cert_status =
+      CERT_STATUS_AUTHORITY_INVALID;
+  AlternativeServiceInfoVector alt_svc_infos =
+      SendRequestAndRecieveAltSvcResponseHeader();
+  // The seeded alternative service should be unchanged.
+  ASSERT_EQ(1u, alt_svc_infos.size());
+  EXPECT_EQ(NextProto::kProtoQUIC,
+            alt_svc_infos[0].alternative_service().protocol);
+  EXPECT_EQ(443, alt_svc_infos[0].alternative_service().port);
 }
 
 // Tests that if Http job fails, but Quic job succeeds, we return

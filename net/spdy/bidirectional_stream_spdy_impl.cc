@@ -17,6 +17,7 @@
 #include "net/spdy/spdy_buffer.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_stream.h"
+#include "net/ssl/ssl_info.h"
 
 namespace net {
 
@@ -189,6 +190,14 @@ bool BidirectionalStreamSpdyImpl::GetLoadTimingInfo(
     return false;
 
   return stream_->GetLoadTimingInfo(load_timing_info);
+}
+
+std::optional<SSLInfo> BidirectionalStreamSpdyImpl::GetSSLInfo() {
+  SSLInfo ssl_info;
+  if (!spdy_session_ || !spdy_session_->GetSSLInfo(&ssl_info)) {
+    return std::nullopt;
+  }
+  return ssl_info;
 }
 
 void BidirectionalStreamSpdyImpl::PopulateNetErrorDetails(

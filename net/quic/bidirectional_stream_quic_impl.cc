@@ -16,6 +16,7 @@
 #include "net/http/http_util.h"
 #include "net/socket/next_proto.h"
 #include "net/spdy/spdy_http_utils.h"
+#include "net/ssl/ssl_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "quic_http_stream.h"
 
@@ -225,6 +226,17 @@ bool BidirectionalStreamQuicImpl::GetLoadTimingInfo(
     load_timing_info->socket_reused = true;
   }
   return true;
+}
+
+std::optional<SSLInfo> BidirectionalStreamQuicImpl::GetSSLInfo() {
+  // The handle caches SSLInfo when it's created, which may be before the
+  // handshake completes, so refresh it from the live session, if possible.
+  session_->SaveSSLInfo();
+  SSLInfo ssl_info;
+  if (!session_->GetSSLInfo(&ssl_info)) {
+    return std::nullopt;
+  }
+  return ssl_info;
 }
 
 void BidirectionalStreamQuicImpl::PopulateNetErrorDetails(
