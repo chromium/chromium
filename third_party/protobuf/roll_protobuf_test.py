@@ -5317,6 +5317,43 @@ class RollProtobufStartTest(unittest.TestCase):
             ('generator inputs changed since last `roll_protobuf.py generate`',
              ), roll_protobuf._FindStaleBootstrapTriggers(checkout))
 
+    def testFixupStateAndTargetPatchResolution(self):
+        self._StartCleanRoll()
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        self.assertFalse(roll_protobuf._IsGitRebaseInProgress(checkout))
+        rebase_env = roll_protobuf._RebaseGitEnvironment(checkout)
+        self.assertEqual(':', rebase_env['GIT_EDITOR'])
+        self.assertEqual(':', rebase_env['GIT_SEQUENCE_EDITOR'])
+
+        sample_state = roll_protobuf.FixupState(
+            pre_fixup_head='a' * 40,
+            rebase_base='b' * 40,
+            target_patch=_PLAN_CLEAN_PATCH,
+            conflicting_patch=_PLAN_STACKED_PATCH,
+            conflict_files=(_PLAN_CLEAN_PATH, ),
+            index=1,
+            total=2,
+        )
+        roll_protobuf._SaveFixupState(checkout, sample_state)
+        self.assertEqual(
+            sample_state,
+            roll_protobuf.LoadFixupState(self.fixture.protobuf_directory))
+        roll_protobuf._RemoveFixupState(checkout)
+        self.assertIsNone(
+            roll_protobuf.LoadFixupState(self.fixture.protobuf_directory))
+
+        rebase_base = roll_protobuf._ResolveFixupRebaseBase(checkout)
+        commit_sha, patch_name = roll_protobuf._FindTargetPatchCommit(
+            checkout, rebase_base, '0001')
+        self.assertEqual(_PLAN_CLEAN_PATCH, patch_name)
+        self.assertEqual(
+            f'Apply patches/{_PLAN_CLEAN_PATCH}',
+            _RunGitCommand(self.repository_root,
+                           ['log', '-1', '--format=%s', commit_sha]))
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'was dropped on this branch'):
+            roll_protobuf._FindTargetPatchCommit(checkout, rebase_base, '0002')
 
 
 if __name__ == '__main__':
