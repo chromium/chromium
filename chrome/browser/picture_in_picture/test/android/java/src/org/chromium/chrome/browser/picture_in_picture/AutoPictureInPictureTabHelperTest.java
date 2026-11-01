@@ -39,16 +39,21 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.PictureInPictureActivity;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -95,6 +100,8 @@ public class AutoPictureInPictureTabHelperTest {
             "/chrome/test/data/media/picture-in-picture/autopip-video-sandboxed.html";
     private static final String AUTO_PIP_NOT_REGISTERED_PAGE =
             "/chrome/test/data/media/picture-in-picture/autopip-no-register.html";
+    private static final String AUTO_PIP_DOCUMENT_PAGE =
+            "/chrome/test/data/media/picture-in-picture/autopip-document.html";
     private static final String VIDEO_CONFERENCING_PAGE =
             "/chrome/test/data/media/picture-in-picture/video-conferencing-usermedia.html";
 
@@ -177,6 +184,57 @@ public class AutoPictureInPictureTabHelperTest {
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Did not exit auto-PiP after tab shown.");
         waitForPipWindowToClose(pipActivity);
+    }
+
+    @Test
+    @MediumTest
+    // Document PiP requires multi-window mode and is currently only supported on desktop Android.
+    @Restriction(DeviceFormFactor.DESKTOP)
+    @EnableFeatures({ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API})
+    public void testCanAutopipDocumentPipWithPopupsBlocked() throws TimeoutException {
+        // Satisfy the system Document PiP preconditions and fail the activity launch so
+        // AddNewContents drops the PiP WebContents. requestWindow() resolves as soon as
+        // CreateNewWindow succeeds, so this isolates the CanCreateWindow() popup-blocker check.
+        AndroidTaskUtils.setCanRepositionSelfWindowsForTesting(true);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        PopupCreatorImpl.setTryStartActivityResultForTesting(false);
+
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_DOCUMENT_PAGE);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        WebsitePreferenceBridge.setCategoryEnabled(
+                                mPage.getTab().getProfile(), ContentSettingsType.POPUPS, false));
+        assertTrue(
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+
+        // Swap in a handler that also tries a regular popup. The auto-PiP action grants no user
+        // activation, so only the PiP window should get past the popup blocker.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                webContents,
+                "window.autoPipResult = new Promise((resolve) => {"
+                        + "navigator.mediaSession.setActionHandler('enterpictureinpicture',"
+                        + "  () => {"
+                        + "    const popup = window.open('about:blank') ? 'opened' : 'blocked';"
+                        + "    documentPictureInPicture.requestWindow().then("
+                        + "        () => resolve(`popup ${popup}, pip opened`),"
+                        + "        (e) => resolve(`popup ${popup}, pip ${e.message}`));"
+                        + "  });"
+                        + "});"
+                        + "true;");
+
+        // Create a new tab in the background to switch to later.
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+        fulfillVideoPlaybackConditions(webContents);
+
+        // Switch away from the tab. This should trigger auto-PiP.
+        switchToTab(newTab);
+        assertEquals(
+                "\"popup blocked, pip opened\"",
+                JavaScriptUtils.runJavascriptWithAsyncResult(
+                        webContents,
+                        "window.autoPipResult.then((r) => domAutomationController.send(r));"));
     }
 
     @Test
