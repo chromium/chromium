@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_receiving_ui_handler.h"
 
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "components/send_tab_to_self/metrics_util.h"
-#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -27,7 +26,15 @@
 
 namespace send_tab_to_self {
 
-SendTabToSelfToolbarIconController::SendTabToSelfToolbarIconController(
+namespace {
+
+bool CanShowOnBrowser(BrowserWindowInterface* bwi) {
+  return bwi->GetType() == BrowserWindowInterface::TYPE_NORMAL;
+}
+
+}  // namespace
+
+SendTabToSelfReceivingUiHandler::SendTabToSelfReceivingUiHandler(
     Profile* profile)
     : profile_(profile) {
   SendTabToSelfModel* model = GetModel();
@@ -38,19 +45,13 @@ SendTabToSelfToolbarIconController::SendTabToSelfToolbarIconController(
 }
 
 // static
-SendTabToSelfToolbarIconController*
-SendTabToSelfToolbarIconController::FromReceivingUiHandlerInstance(
+SendTabToSelfReceivingUiHandler*
+SendTabToSelfReceivingUiHandler::FromReceivingUiHandlerInstance(
     send_tab_to_self::ReceivingUiHandler* ptr) {
-  return static_cast<SendTabToSelfToolbarIconController*>(ptr);
+  return static_cast<SendTabToSelfReceivingUiHandler*>(ptr);
 }
 
-// static
-bool SendTabToSelfToolbarIconController::CanShowOnBrowser(
-    BrowserWindowInterface* bwi) {
-  return bwi->GetType() == BrowserWindowInterface::TYPE_NORMAL;
-}
-
-void SendTabToSelfToolbarIconController::DisplayNewEntries(
+void SendTabToSelfReceivingUiHandler::DisplayNewEntries(
     base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
   if (new_entries.empty()) {
     return;
@@ -87,16 +88,10 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   }
 }
 
-void SendTabToSelfToolbarIconController::DismissEntries(
-    base::span<const std::string> guids) {
-  auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
-                    ->GetSendTabToSelfModel();
-  for (const std::string& guid : guids) {
-    model->DismissEntryNotification(guid);
-  }
-}
+void SendTabToSelfReceivingUiHandler::DismissEntries(
+    base::span<const std::string> guids) {}
 
-void SendTabToSelfToolbarIconController::OnBrowserActivated(
+void SendTabToSelfReceivingUiHandler::OnBrowserActivated(
     BrowserWindowInterface* browser) {
   if (!CanShowOnBrowser(browser)) {
     // Skip if not on a normal browser window.
@@ -135,14 +130,14 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
             static_cast<int>(latest_tabs_opened_in_background_.size()),
             base::UTF8ToUTF16(unopened_entries[0]->GetDeviceName()));
     params.toast_close_callback = base::ScopedClosureRunner(
-        base::BindOnce(&SendTabToSelfToolbarIconController::OnToastClosed,
+        base::BindOnce(&SendTabToSelfReceivingUiHandler::OnToastClosed,
                        weak_ptr_factory_.GetWeakPtr()));
     ToastService::From(browser)->toast_controller()->MaybeShowToast(
         std::move(params));
   }
 }
 
-void SendTabToSelfToolbarIconController::OnModelReady() {
+void SendTabToSelfReceivingUiHandler::OnModelReady() {
   SendTabToSelfModel* model = GetModel();
   if (!model->GetUnopenedEntriesTargetedToLocalDevice().empty()) {
     if (BrowserWindowInterface* const browser = GetActiveBrowser()) {
@@ -153,7 +148,7 @@ void SendTabToSelfToolbarIconController::OnModelReady() {
   }
 }
 
-void SendTabToSelfToolbarIconController::SwitchToLatestTabsOpenedInBackground(
+void SendTabToSelfReceivingUiHandler::SwitchToLatestTabsOpenedInBackground(
     BrowserWindowInterface* browser) {
   CHECK(browser);
 
@@ -168,7 +163,7 @@ void SendTabToSelfToolbarIconController::SwitchToLatestTabsOpenedInBackground(
   }
 }
 
-void SendTabToSelfToolbarIconController::OnToastClosed() {
+void SendTabToSelfReceivingUiHandler::OnToastClosed() {
   // Clear all the tabs that were opened in the background. It is possible for
   // another toast to be shown before this method is ever called for the first
   // toast, but that is very very rare, because this toast is shown for the
@@ -176,7 +171,7 @@ void SendTabToSelfToolbarIconController::OnToastClosed() {
   latest_tabs_opened_in_background_.clear();
 }
 
-BrowserWindowInterface* SendTabToSelfToolbarIconController::GetActiveBrowser() {
+BrowserWindowInterface* SendTabToSelfReceivingUiHandler::GetActiveBrowser() {
   BrowserWindowInterface* const browser =
       ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   return (browser && browser->IsActive() && CanShowOnBrowser(browser))
@@ -184,12 +179,12 @@ BrowserWindowInterface* SendTabToSelfToolbarIconController::GetActiveBrowser() {
              : nullptr;
 }
 
-SendTabToSelfModel* SendTabToSelfToolbarIconController::GetModel() {
+SendTabToSelfModel* SendTabToSelfReceivingUiHandler::GetModel() {
   return SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
       ->GetSendTabToSelfModel();
 }
 
-void SendTabToSelfToolbarIconController::StartObservingBrowserCollection() {
+void SendTabToSelfReceivingUiHandler::StartObservingBrowserCollection() {
   // Prevent adding the observer multiple times if this is called repeatedly
   // while the window is inactive (e.g. if the server sends multiple batches
   // of entries).
@@ -199,7 +194,6 @@ void SendTabToSelfToolbarIconController::StartObservingBrowserCollection() {
   }
 }
 
-SendTabToSelfToolbarIconController::~SendTabToSelfToolbarIconController() =
-    default;
+SendTabToSelfReceivingUiHandler::~SendTabToSelfReceivingUiHandler() = default;
 
 }  // namespace send_tab_to_self

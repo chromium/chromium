@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_receiving_ui_handler.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -62,7 +62,7 @@ void WaitForBrowserToBecomeInactive(BrowserWindowInterface* browser) {
 }
 #endif  // !BUILDFLAG(IS_LINUX)
 
-class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
+class SendTabToSelfReceivingUiHandlerTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -79,8 +79,8 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
-  SendTabToSelfToolbarIconController* controller() {
-    return static_cast<SendTabToSelfToolbarIconController*>(
+  SendTabToSelfReceivingUiHandler* receiving_ui_handler() {
+    return static_cast<SendTabToSelfReceivingUiHandler*>(
         SendTabToSelfClientServiceFactory::GetForProfile(
             browser()->GetProfile())
             ->GetReceivingUiHandler());
@@ -90,13 +90,15 @@ class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
-                       ControllerExists) {
-  EXPECT_TRUE(controller());
+// Verifies that `SendTabToSelfReceivingUiHandler` is registered for the
+// profile.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfReceivingUiHandlerTest, HandlerExists) {
+  EXPECT_TRUE(receiving_ui_handler());
 }
 
-// Regression test for crbug.com/534231383.
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
+// Verifies that opening an entry for an installed PWA in the background does
+// not crash (regression test for crbug.com/534231383).
+IN_PROC_BROWSER_TEST_F(SendTabToSelfReceivingUiHandlerTest,
                        OpenPwaInBackgroundDoesNotCrash) {
   GURL app_url("https://www.example-a.com/app/index.html");
   auto web_app_info =
@@ -117,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
 }
 
 class SendTabToSelfAutoOpenBrowserTest
-    : public SendTabToSelfToolbarIconControllerTest {
+    : public SendTabToSelfReceivingUiHandlerTest {
  public:
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
@@ -346,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(
   model->SetMarkEntryActivatedCallback(activated_future.GetRepeatingCallback());
 
   // Simulate clicking the toast action button.
-  controller()->SwitchToLatestTabsOpenedInBackground(browser());
+  receiving_ui_handler()->SwitchToLatestTabsOpenedInBackground(browser());
   EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 
   // Tab activation dispatches visibility changes asynchronously on macOS.
@@ -435,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(
             browser()->GetTabStripModel()->GetWebContentsAt(2)->GetURL());
 
   // Simulate clicking the toast action button.
-  controller()->SwitchToLatestTabsOpenedInBackground(browser());
+  receiving_ui_handler()->SwitchToLatestTabsOpenedInBackground(browser());
   EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
   EXPECT_EQ(url_2,
             browser()->GetTabStripModel()->GetActiveWebContents()->GetURL());
@@ -502,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   // Simulate clicking the toast action button.
-  controller()->SwitchToLatestTabsOpenedInBackground(browser());
+  receiving_ui_handler()->SwitchToLatestTabsOpenedInBackground(browser());
   EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
   EXPECT_EQ(url_2,
             browser()->GetTabStripModel()->GetActiveWebContents()->GetURL());

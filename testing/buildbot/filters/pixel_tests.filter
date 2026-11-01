@@ -162,7 +162,7 @@ SecurePaymentConfirmationDialogViewTest.InvokeUi_*
 *SendTabToSelfBubbleTest.*
 SendTabToSelfInteractiveUiTest.*
 SendTabToSelfIphInteractiveUiTest.CaptureTutorialScreenshots
-SendTabToSelfToolbarIconControllerInteractiveUiTest.*
+SendTabToSelfReceivingUiHandlerInteractiveUiTest.*
 SessionCrashedBubbleViewTest.*
 SettingsOverriddenExplicitChoiceDialogInteractiveUiTest.*
 *SharedPasswordsNotificationBubbleInteractiveUiTest.*

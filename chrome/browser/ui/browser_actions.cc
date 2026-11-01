@@ -144,7 +144,6 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -1538,8 +1537,7 @@ void BrowserActions::InitializeChromeMenuActions() {
           .SetAccelerator(GetAcceleratorForCommandId(IDC_DEV_TOOLS))
           .Build());
 
-  if (send_tab_to_self::SendTabToSelfToolbarIconController::CanShowOnBrowser(
-          bwi)) {
+  if (bwi->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
     root_action_item_->AddChild(
         ChromeMenuAction(
             base::BindRepeating(

@@ -13,13 +13,14 @@ source_set("send_tab_to_self") {
     "send_tab_to_self_activation_tracker.h",
     "send_tab_to_self_bubble.h",
     "send_tab_to_self_iph_controller.h",
+    "send_tab_to_self_receiving_ui_handler.h",
     "send_tab_to_self_sub_menu_model.h",
-    "send_tab_to_self_toolbar_icon_controller.h",
     "send_tab_to_self_util.h",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/app:command_ids",
     "//chrome/browser/send_tab_to_self",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//components/send_tab_to_self",
@@ -27,18 +28,15 @@ source_set("send_tab_to_self") {
     "//ui/base/unowned_user_data",
     "//ui/menus",
   ]
-  deps = [
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/views/toolbar",
-  ]
+  deps = [ "//chrome/browser/ui/browser_window" ]
 }
 
 source_set("impl") {
   sources = [
     "send_tab_to_self_activation_tracker.cc",
     "send_tab_to_self_iph_controller.cc",
+    "send_tab_to_self_receiving_ui_handler.cc",
     "send_tab_to_self_sub_menu_model.cc",
-    "send_tab_to_self_toolbar_icon_controller.cc",
     "send_tab_to_self_util.cc",
   ]
   deps = [
@@ -48,16 +46,13 @@ source_set("impl") {
     "//chrome/app/vector_icons",
     "//chrome/browser:primitives",
     "//chrome/browser/feature_engagement",
+    "//chrome/browser/lifetime",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
-    "//chrome/browser/ui:browser_window_header",
-    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/user_education",
-    "//chrome/browser/ui/views/frame:browser_view_header",
-    "//chrome/browser/ui/views/send_tab_to_self",
-    "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/user_education",
     "//components/feature_engagement/public",
     "//components/send_tab_to_self",
@@ -73,7 +68,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "send_tab_to_self_activation_tracker_browsertest.cc",
-      "send_tab_to_self_toolbar_icon_controller_browsertest.cc",
+      "send_tab_to_self_receiving_ui_handler_browsertest.cc",
     ]
 
     deps = [
@@ -106,7 +101,7 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "send_tab_to_self_iph_interactive_uitest.cc",
-    "send_tab_to_self_toolbar_icon_controller_interactive_uitest.cc",
+    "send_tab_to_self_receiving_ui_handler_interactive_uitest.cc",
   ]
 
   deps = [

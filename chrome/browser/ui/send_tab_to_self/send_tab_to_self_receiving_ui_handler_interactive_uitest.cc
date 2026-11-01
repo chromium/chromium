@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
-
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -11,7 +9,6 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -25,7 +22,6 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ozone_buildflags.h"
-#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -41,7 +37,7 @@ constexpr char kToastDismissedHistogram[] =
     "Toast.SendTabToSelfTabsOpenedInBackground.Dismissed";
 constexpr char kLocalCacheGuid[] = "local_cache_guid";
 
-class SendTabToSelfToolbarIconControllerInteractiveUiTest
+class SendTabToSelfReceivingUiHandlerInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   void SetUpBrowserContextKeyedServices(
@@ -52,13 +48,6 @@ class SendTabToSelfToolbarIconControllerInteractiveUiTest
           return std::make_unique<
               send_tab_to_self::StubSendTabToSelfSyncService>();
         }));
-  }
-
-  SendTabToSelfToolbarIconController* controller() {
-    return static_cast<SendTabToSelfToolbarIconController*>(
-        SendTabToSelfClientServiceFactory::GetForProfile(
-            browser()->GetProfile())
-            ->GetReceivingUiHandler());
   }
 
   BrowserView* browser_view() {
@@ -88,7 +77,9 @@ class SendTabToSelfToolbarIconControllerInteractiveUiTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerInteractiveUiTest,
+// Verifies that incoming entries are opened in the foreground with a toast when
+// the browser window is active.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfReceivingUiHandlerInteractiveUiTest,
                        AutoOpenNewEntriesInForegroundIfActive) {
   RunTestSequence(
       InstrumentTab(kFirstTab, 0), SimulateReceivingNewEntries(),
@@ -118,7 +109,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerInteractiveUiTest,
                  /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerInteractiveUiTest,
+// Verifies that entries received while the browser is inactive are opened as
+// background tabs with an actionable toast when the browser is reactivated.
+IN_PROC_BROWSER_TEST_F(SendTabToSelfReceivingUiHandlerInteractiveUiTest,
                        AutoOpenPendingEntriesAsBackgroundTabsOnActivation) {
 #if BUILDFLAG(IS_OZONE)
   if (::ui::OzonePlatform::RunningOnWaylandForTest()) {

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_ICON_CONTROLLER_H_
-#define CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_ICON_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_RECEIVING_UI_HANDLER_H_
+#define CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_RECEIVING_UI_HANDLER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -13,7 +14,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/send_tab_to_self/receiving_ui_handler.h"
-#include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 
 class BrowserWindowInterface;
@@ -26,33 +26,31 @@ class TabInterface;
 
 namespace send_tab_to_self {
 
+class SendTabToSelfEntry;
 class SendTabToSelfModel;
 
 // Controller for send tab to self that handles receiving incoming tabs on
 // Desktop, opening them in browser windows, and notifying the user.
-class SendTabToSelfToolbarIconController
+class SendTabToSelfReceivingUiHandler
     : public send_tab_to_self::ReceivingUiHandler,
       public BrowserCollectionObserver,
       public SendTabToSelfModelObserver {
  public:
-  explicit SendTabToSelfToolbarIconController(Profile* profile);
-  SendTabToSelfToolbarIconController(
-      const SendTabToSelfToolbarIconController&) = delete;
-  SendTabToSelfToolbarIconController& operator=(
-      const SendTabToSelfToolbarIconController&) = delete;
-  ~SendTabToSelfToolbarIconController() override;
+  explicit SendTabToSelfReceivingUiHandler(Profile* profile);
+  SendTabToSelfReceivingUiHandler(const SendTabToSelfReceivingUiHandler&) =
+      delete;
+  SendTabToSelfReceivingUiHandler& operator=(
+      const SendTabToSelfReceivingUiHandler&) = delete;
+  ~SendTabToSelfReceivingUiHandler() override;
 
-  // Casts the ReceivingUiHandler to a SendTabToSelfToolbarIconController.
-  // This is safe because on Desktop only SentTabToSelfToolbarIconController
+  // Casts the ReceivingUiHandler to a `SendTabToSelfReceivingUiHandler`.
+  // This is safe because on Desktop only `SendTabToSelfReceivingUiHandler`
   // implements ReceivingUiHandler.
   // NOTE: It is the caller's responsibility to make sure that the instance
-  // actually is a SendTabToSelfToolbarIconController before calling this
+  // actually is a `SendTabToSelfReceivingUiHandler` before calling this
   // function.
-  static SendTabToSelfToolbarIconController* FromReceivingUiHandlerInstance(
+  static SendTabToSelfReceivingUiHandler* FromReceivingUiHandlerInstance(
       send_tab_to_self::ReceivingUiHandler* ptr);
-
-  // Returns true if incoming tabs can be received for the provided browser.
-  static bool CanShowOnBrowser(BrowserWindowInterface* bwi);
 
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(
@@ -82,7 +80,7 @@ class SendTabToSelfToolbarIconController
 
   void StartObservingBrowserCollection();
 
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<Profile> profile_;
 
   std::vector<base::WeakPtr<tabs::TabInterface>>
       latest_tabs_opened_in_background_;
@@ -93,10 +91,9 @@ class SendTabToSelfToolbarIconController
   base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
       model_observation_{this};
 
-  base::WeakPtrFactory<SendTabToSelfToolbarIconController> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<SendTabToSelfReceivingUiHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace send_tab_to_self
 
-#endif  // CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_ICON_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_RECEIVING_UI_HANDLER_H_

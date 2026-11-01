@@ -39,12 +39,12 @@ class SendTabToSelfClientService : public KeyedService,
 
   void Shutdown() override;
 
-  // Updates the UI to reflect the new entries. Calls the handlers
-  // registered through ReceivingUIRegistry.
+  // Updates the UI to reflect the new entries. Calls the `ReceivingUiHandler`
+  // owned by this service.
   void OnEntriesAddedRemotely(
       base::span<const SendTabToSelfEntry* const> new_entries) override;
-  // Updates the UI to reflect the removal of entries. Calls the handlers
-  // registered through ReceivingUIRegistry.
+  // Updates the UI to reflect the removal of entries. Calls the
+  // `ReceivingUiHandler` owned by this service.
   void OnEntriesRemovedRemotely(base::span<const std::string> guids) override;
 
   // Returns the registered ReceivingUiHandler.

@@ -189,8 +189,8 @@ void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
     send_tab_to_self_action_item_ = actions::ActionManager::Get().FindAction(
         kActionSendTabToSelf,
         BrowserActions::From(browser.get())->root_action_item());
-    // The toolbar might not have this action button.
-    // See SendTabToSelfToolbarIconController::CanShowOnBrowser().
+    // The toolbar might not have this action button (e.g. non-normal browser
+    // windows).
     if (send_tab_to_self_action_item_) {
       send_tab_to_self_action_item_->SetIsShowingBubble(true);
     }

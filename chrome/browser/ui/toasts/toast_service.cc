@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_receiving_ui_handler.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -552,7 +552,7 @@ void ToastService::RegisterToasts() {
                     send_tab_to_self::SendTabToSelfClientServiceFactory::
                         GetForProfile(window->GetProfile())
                             ->GetReceivingUiHandler();
-                send_tab_to_self::SendTabToSelfToolbarIconController::
+                send_tab_to_self::SendTabToSelfReceivingUiHandler::
                     FromReceivingUiHandlerInstance(handler)
                         ->SwitchToLatestTabsOpenedInBackground(window);
               }))
