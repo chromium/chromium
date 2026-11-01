@@ -135,6 +135,7 @@ void ContextualTranslateDelegate::StartPartialTranslate(
           data:
             "Selected page content from the current tab."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "translate-pa.googleapis.com"
           user_data {
             type: WEB_CONTENT
           }

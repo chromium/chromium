@@ -90,6 +90,7 @@ bool TranslateURLFetcherImpl::Request(const GURL& url,
             "the site to the server to translate it, but this request doesn't "
             "send any words."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "translate.googleapis.com"
         }
         policy {
           cookies_allowed: NO
