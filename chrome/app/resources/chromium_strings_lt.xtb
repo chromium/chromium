@@ -484,6 +484,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="5889361821821684993">„Chromium“ reguliariai tikrina, ar naršyklės nustatymai yra saugiausi. Pranešime, jei reikės ką nors peržiūrėti.</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5896077214220653386">„Gemini Enterprise“ naršyklėje „Chromium“</translation>
+<translation id="5900507321340749588">Kad galėtų teikti tokias funkcijas kaip apgavikiškos veiklos aptikimas, „Chromium“ gali naudoti DI modelius, kurie veikia tiesiogiai jūsų įrenginyje. Kai tai išjungta, šios funkcijos gali neveikti. <ph name="BEGIN_LINK" />Sužinokite daugiau apie DI įrenginyje<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592">„<ph name="PAGE_TITLE" />“ – prisijungimas prie tinklo</translation>
 <translation id="5924017743176219022">Prisijungiama prie interneto...</translation>
 <translation id="5941711191222866238">Sumažinti</translation>

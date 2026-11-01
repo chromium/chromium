@@ -10067,6 +10067,7 @@
 <translation id="8708000541097332489">ล้างเมื่อออก</translation>
 <translation id="870805141700401153">การรับรองรหัสบุคคลของ Microsoft</translation>
 <translation id="8708671767545720562">&amp;ข้อมูลเพิ่มเติม</translation>
+<translation id="8709234440040320647">(โหมดแยก)</translation>
 <translation id="8709368517685334931">คุณค้นหาสีที่เก่ากว่าได้ใน Chrome เว็บสโตร์</translation>
 <translation id="8710414664106871428">แฟนตาซี</translation>
 <translation id="8711402221661888347">พิกเคิลส์</translation>
@@ -10231,6 +10232,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้ภายใน 1 สัปดาห์ <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{ออกจากกลุ่ม}other{ออกจากกลุ่ม}}</translation>
 <translation id="8836782447513334597">ต่อไป</translation>
+<translation id="8837072669197607689">อนุญาตในโหมดแยก</translation>
 <translation id="8837573527470979311">สลับกับมุมมองด้านล่าง</translation>
 <translation id="8838601485495657486">ทึบ</translation>
 <translation id="8838770651474809439">แฮมเบอร์เกอร์</translation>

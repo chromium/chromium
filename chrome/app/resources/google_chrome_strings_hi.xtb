@@ -528,6 +528,7 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="5940385492829620908">आपके वेब, बुकमार्क और अन्य Chrome सामग्री यहां मौजूद रहती है.</translation>
 <translation id="5941711191222866238">छोटा करें</translation>
 <translation id="5941830788786076944">Google Chrome को सामान्य ब्राउज़र बनाएं</translation>
+<translation id="5944731887996253728">Chrome तब अपडेट होगा, जब आपके डिवाइस की स्क्रीन इस्तेमाल में नहीं होगी</translation>
 <translation id="5947104538377036631">Chrome का शॉर्टकट</translation>
 <translation id="5960071705175224773">आपकी सेटिंग में किसी अनजान ऐप्लिकेशन ने बदलाव किए हैं</translation>
 <translation id="5980111191913430208">अज्ञात सोर्स से डाउनलोड किए गए एक्सटेंशन, ऐप्लिकेशन, और थीम से आपके डिवाइस को नुकसान पहुंच सकता है. Chrome, सिर्फ़ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> से इन्हें इंस्टॉल करने का सुझाव देता है</translation>
@@ -831,6 +832,7 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="8367950957770994118">जब भी ज़रूरत हो, 'Chrome में Gemini' को तुरंत खोलें</translation>
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="8370748943308169953"><ph name="USER_NAME" /> के तौर पर Chrome में साइन इन करने के लिए क्यूआर कोड</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> तैयार है. Chrome को अभी फिर से लॉन्च करें या इसे तब अपडेट होने के लिए सेट करें, जब अगली बार आपकी स्क्रीन चालू हो और <ph name="IDLE_DURATION" /> तक इस्तेमाल में न हो.</translation>
 <translation id="8376752431516546391">Google Search का साइड पैनल</translation>
 <translation id="8377158135256176353">Chrome कैनरी में Gemini को टॉगल करें</translation>
 <translation id="8380754585531979907">'Chrome में Gemini' और खुले हुए टैब के बीच स्विच करने के लिए, कीबोर्ड का इस्तेमाल करें.</translation>
@@ -874,6 +876,7 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="8669527147644353129">Google Chrome सहायक</translation>
 <translation id="8679801911857917785">इससे यह भी नियंत्रित होता है कि जब आप Chrome प्रारंभ करते हैं तब कौन सा पेज दिखाया जाए.</translation>
 <translation id="8689408573494410517">टूलबार पर मौजूद, "साइड पैनल में Google Search" बटन का आइकॉन बदल दिया गया है. ब्राउज़ करते समय इस पैनल में सवाल पूछने के लिए इस बटन पर क्लिक करें.</translation>
+<translation id="8699232386626916686">सुरक्षित रहने के लिए Chrome को अपडेट करें</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8712767363896337380">अपडेट होने ही वाला है! अपडेट पूरा करने के लिए, Chrome को फिर से लॉन्च करें.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> ने पहले से साइन इन किया हुआ है. अपने ब्राउज़िंग डेटा को अलग से मैनेज करने के लिए, Chrome में अपनी प्रोफ़ाइल में <ph name="USER_EMAIL_ADDRESS" /> से साइन इन करें. इससे आपको <ph name="DEVICE" /> पर रीडिंग लिस्ट वगैरह का ऐक्सेस भी मिलेगा.</translation>
