@@ -6320,6 +6320,211 @@ class RollProtobufStartTest(unittest.TestCase):
             p07.commit,
             _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD']))
 
+    def testFixupConflictAbortRestoresPreFixupHeadAndPreservesRollState(self):
+        self._StartCleanRoll()
+        pre_head = _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD'])
+
+        clean_file = pathlib.Path(self.fixture.protobuf_directory,
+                                  *_PLAN_CLEAN_PATH.split('/'))
+        cmake_file = pathlib.Path(self.fixture.protobuf_directory, 'src',
+                                  'file_lists.cmake')
+        cmake_file.write_text(
+            cmake_file.read_text(encoding='utf-8') + '# abort me\n',
+            encoding='utf-8',
+            newline='\n',
+        )
+        clean_file.write_text(
+            clean_file.read_text(encoding='utf-8').replace(
+                'clean line 7 (chromium)', 'clean line 7 (abort me)'),
+            encoding='utf-8',
+            newline='\n',
+        )
+        conflict_res = roll_protobuf.FixupPatch(
+            '0001', self.fixture.protobuf_directory)
+        self.assertEqual('conflict', conflict_res.phase)
+        self.assertEqual(2, conflict_res.index)
+
+        status1 = roll_protobuf.GetRollStatus(self.fixture.protobuf_directory)
+        self.assertEqual('conflict', status1.state)
+        self.assertEqual(_PLAN_CLEAN_PATCH, status1.patch)
+        self.assertEqual(
+            ('roll_protobuf.py continue', 'roll_protobuf.py abort'),
+            status1.next_commands)
+        self.assertIn(f'in patches/{_PLAN_CLEAN_PATCH}',
+                      roll_protobuf.FormatRollStatusReport(status1))
+
+        # Mutating roll subcommands refuse while a fixup rebase is active.
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'during a `fixup` rebase conflict'):
+            roll_protobuf.DropCurrentPatch('nope',
+                                           self.fixture.protobuf_directory)
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'during a `fixup` rebase'):
+            roll_protobuf.ResumeRoll(self.fixture.protobuf_directory)
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'rebase, merge, or cherry-pick'):
+            roll_protobuf.PrepareRoll(
+                'v37.0',
+                self.fixture.protobuf_directory,
+                upstream_repository_path=self.fixture.upstream_directory)
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'rebase, merge, or cherry-pick'):
+            roll_protobuf.StartRoll(
+                'v37.0',
+                self.fixture.protobuf_directory,
+                upstream_repository_path=self.fixture.upstream_directory)
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'rebase, merge, or cherry-pick'):
+            roll_protobuf.GenerateBootstrapFiles(
+                self.temporary_directory, self.fixture.protobuf_directory)
+
+        # Advancing manually via `git rebase --continue` updates the live step
+        # reported by `GetRollStatus`, and `main(['abort'])` resets cleanly.
+        clean_file.write_text(
+            clean_file.read_text(encoding='utf-8').splitlines()[0] + '\n',
+            encoding='utf-8',
+            newline='\n',
+        )
+        _RunGitCommand(self.repository_root,
+                       ['add', '--all', '--', 'third_party/protobuf'])
+        step2_proc = subprocess.run(
+            ['git', '-C', self.repository_root, 'rebase', '--continue'],
+            env=roll_protobuf._RebaseGitEnvironment(
+                roll_protobuf._ResolveCheckoutPaths(
+                    self.fixture.protobuf_directory)),
+            check=False,
+            capture_output=True,
+        )
+        self.assertNotEqual(0, step2_proc.returncode)
+        live_status = roll_protobuf.GetRollStatus(
+            self.fixture.protobuf_directory)
+        self.assertEqual(4, live_status.index)
+        self.assertEqual(_PLAN_STACKED_PATCH, live_status.patch)
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/temp.orig': 'orig\n'})
+        abort_attrs = pathlib.Path(self.repository_root, '.git', 'info',
+                                   'attributes')
+        abort_attrs.parent.mkdir(parents=True, exist_ok=True)
+        abort_attrs.write_text('* text eol=crlf\n',
+                               encoding='utf-8',
+                               newline='\n')
+        _RunGitCommand(self.repository_root,
+                       ['config', 'core.autocrlf', 'true'])
+        _RunGitCommand(self.repository_root,
+                       ['config', 'core.safecrlf', 'true'])
+        try:
+            abort_code, abort_out, abort_err = _RunMain(
+                'abort', '--protobuf-dir', self.fixture.protobuf_directory)
+        finally:
+            _RunGitCommand(self.repository_root,
+                           ['config', 'core.autocrlf', 'false'])
+            _RunGitCommand(self.repository_root,
+                           ['config', '--unset', 'core.safecrlf'])
+            abort_attrs.unlink(missing_ok=True)
+        self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, abort_code,
+                         abort_err)
+        self.assertIn('Aborted fixup of patches/0001-clean.patch', abort_out)
+        self.assertNotIn(b'\r\n', clean_file.read_bytes())
+        self.assertNotIn(b'\r\n', cmake_file.read_bytes())
+        self.assertTrue(
+            roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                self.fixture.protobuf_directory,
+                self.fixture.upstream_directory).IsClean())
+        self.assertEqual(
+            pre_head,
+            _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD']))
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(self.fixture.protobuf_directory, 'src',
+                             'temp.orig')))
+        self.assertIsNone(
+            roll_protobuf.LoadFixupState(self.fixture.protobuf_directory))
+        preserved_state = roll_protobuf.LoadRollState(
+            self.fixture.protobuf_directory)
+        self.assertIsNotNone(preserved_state)
+        self.assertEqual('replayed', preserved_state.phase)
+        self.assertEqual(pre_head, preserved_state.expected_head)
+        self.assertEqual(
+            'replayed',
+            roll_protobuf.GetRollStatus(self.fixture.protobuf_directory).state)
+
+        # An external git MERGE_HEAD blocks both ContinueRoll and AbortRoll.
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        merge_head = os.path.join(
+            os.path.dirname(checkout.roll_state_directory), 'MERGE_HEAD')
+        pathlib.Path(merge_head).write_text('deadbeef\n', encoding='utf-8')
+        try:
+            with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                        r'external git rebase, merge'):
+                roll_protobuf.ContinueRoll(self.fixture.protobuf_directory)
+            with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                        r'external git rebase, merge'):
+                roll_protobuf.AbortRoll(self.fixture.protobuf_directory)
+        finally:
+            os.remove(merge_head)
+
+        # A stale fixup.json left after manual `git rebase --abort` does NOT
+        # hijack a subsequent unrelated `git rebase` conflict.
+        clean_file.write_text(
+            clean_file.read_text(encoding='utf-8').replace(
+                'clean line 7 (chromium)', 'clean line 7 (stale)'),
+            encoding='utf-8',
+            newline='\n',
+        )
+        stale_res = roll_protobuf.FixupPatch('0001',
+                                             self.fixture.protobuf_directory)
+        self.assertEqual('conflict', stale_res.phase)
+        _RunGitCommand(self.repository_root, ['rebase', '--abort'])
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', pre_head])
+        self.assertIsNotNone(
+            roll_protobuf.LoadFixupState(self.fixture.protobuf_directory))
+
+        _RunGitCommand(self.repository_root,
+                       ['checkout', '--quiet', '-b', 'unrelated', 'HEAD~2'])
+        _WriteFilesToDirectory(self.repository_root,
+                               {'OTHER_CHROMIUM_FILE': 'branch side\n'})
+        _RunGitCommand(self.repository_root, ['add', 'OTHER_CHROMIUM_FILE'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Branch side'])
+        branch_tip = _RunGitCommand(self.repository_root,
+                                    ['rev-parse', 'HEAD'])
+        _RunGitCommand(self.repository_root,
+                       ['checkout', '--quiet', '-b', 'onto_side', 'HEAD~1'])
+        _WriteFilesToDirectory(self.repository_root,
+                               {'OTHER_CHROMIUM_FILE': 'onto side\n'})
+        _RunGitCommand(self.repository_root, ['add', 'OTHER_CHROMIUM_FILE'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Onto side'])
+        onto_tip = _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD'])
+        _RunGitCommand(self.repository_root,
+                       ['checkout', '--quiet', 'unrelated'])
+        subprocess.run(['git', '-C', self.repository_root, 'rebase', onto_tip],
+                       check=False,
+                       capture_output=True)
+        try:
+            with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                        r'external git rebase, merge'):
+                roll_protobuf.AbortRoll(self.fixture.protobuf_directory)
+            self.assertIsNone(
+                roll_protobuf.LoadFixupState(self.fixture.protobuf_directory))
+        finally:
+            _RunGitCommand(self.repository_root, ['rebase', '--abort'])
+            self.assertEqual(
+                branch_tip,
+                _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD']))
+            _RunGitCommand(self.repository_root,
+                           ['checkout', '--quiet', '-B', 'main', pre_head])
+
+        non_patch_status_report = roll_protobuf.FormatRollStatusReport(
+            roll_protobuf.RollStatus(state='conflict',
+                                     index=2,
+                                     total=3,
+                                     patch='Revert patches/0002-b.patch'))
+        self.assertIn('in Revert patches/0002-b.patch',
+                      non_patch_status_report)
+        self.assertNotIn('patches/Revert', non_patch_status_report)
 
 
 if __name__ == '__main__':

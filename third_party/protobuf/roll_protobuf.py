@@ -1287,6 +1287,10 @@ def PrepareRoll(to_revision: str,
     chain/*.patch and state.json under GITDIR/protobuf-roll/.
     """
     checkout = _ResolveCheckoutPaths(protobuf_directory)
+    if _IsGitOperationInProgress(checkout):
+        raise RollProtobufError('Cannot run `roll_protobuf.py prepare` while '
+                                'a git rebase, merge, or cherry-pick is in '
+                                'progress.')
     existing_state = LoadRollState(checkout)
     if existing_state is not None and (
         (existing_state.phase == 'conflict'
@@ -1718,6 +1722,15 @@ def DropCurrentPatch(
             'Provide a single-line, non-empty --reason explaining why the '
             'patch is being dropped.')
     checkout = _ResolveCheckoutPaths(protobuf_directory)
+    if _LoadActiveFixupState(checkout) is not None:
+        raise RollProtobufError(
+            'Cannot run `roll_protobuf.py drop` during a `fixup` rebase '
+            'conflict; resolve and run `roll_protobuf.py continue`, or run '
+            '`roll_protobuf.py abort` to undo the fixup.')
+    if _IsGitOperationInProgress(checkout):
+        raise RollProtobufError('Cannot run `roll_protobuf.py drop` while a '
+                                'git rebase, merge, or cherry-pick is in '
+                                'progress.')
     state = _RequireActiveConflictState(checkout, 'roll_protobuf.py drop')
     _RejectStagedChangesOutsideProtobuf(checkout)
     chain_patch = state.patches[state.current_index]
@@ -1752,6 +1765,14 @@ def DropCurrentPatch(
 def ResumeRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
     """Reconciles state.json with manual Apply/Drop commits and continues."""
     checkout = _ResolveCheckoutPaths(protobuf_directory)
+    if _LoadActiveFixupState(checkout) is not None:
+        raise RollProtobufError(
+            'Cannot run `roll_protobuf.py resume` during a `fixup` rebase; '
+            'use `roll_protobuf.py continue` or `roll_protobuf.py abort`.')
+    if _IsGitOperationInProgress(checkout):
+        raise RollProtobufError('Cannot run `roll_protobuf.py resume` while a '
+                                'git rebase, merge, or cherry-pick is in '
+                                'progress.')
     state = LoadRollState(checkout)
     roll_branch = (_FindLocalRollBranch(checkout, state) if state is not None
                    and state.phase != 'prepared' else None)
@@ -1855,6 +1876,10 @@ def StartRoll(to_revision: str,
     commits one patch at a time until all patches replay or a patch conflicts.
     """
     checkout = _ResolveCheckoutPaths(protobuf_directory)
+    if _IsGitOperationInProgress(checkout):
+        raise RollProtobufError('Cannot run `roll_protobuf.py start` while a '
+                                'git rebase, merge, or cherry-pick is in '
+                                'progress.')
     dirty_status = _RunScratchGit(checkout.repository_root, 'status',
                                   '--porcelain',
                                   '--ignore-submodules=all').stdout.strip()
@@ -1991,6 +2016,10 @@ def GenerateBootstrapFiles(
             'Provide -C <out_dir> so gen_extra_chromium_files.py can build '
             'protoc.')
     checkout = _ResolveCheckoutPaths(protobuf_directory)
+    if _IsGitOperationInProgress(checkout):
+        raise RollProtobufError('Cannot run `roll_protobuf.py generate` while '
+                                'a git rebase, merge, or cherry-pick is in '
+                                'progress.')
     state = LoadRollState(checkout)
     current_head = _ResolveCommitHash(checkout.repository_root, 'HEAD')
     if (state is not None and state.phase in ('prepared', 'conflict')
@@ -3656,6 +3685,14 @@ class RollStatus:
 
 def GetRollStatus(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollStatus:
     checkout = _ResolveCheckoutPaths(protobuf_directory)
+    if fixup_state := _LoadActiveFixupState(checkout):
+        return RollStatus(state='conflict',
+                          index=fixup_state.index,
+                          total=fixup_state.total,
+                          patch=fixup_state.conflicting_patch,
+                          files=fixup_state.conflict_files,
+                          next_commands=('roll_protobuf.py continue',
+                                         'roll_protobuf.py abort'))
     roll_state = LoadRollState(checkout)
     roll_branch = (_FindLocalRollBranch(checkout, roll_state)
                    if roll_state is not None and roll_state.phase == 'conflict'
@@ -3700,9 +3737,30 @@ def GetRollStatus(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollStatus:
                       next_commands=(next_step, 'roll_protobuf.py abort'))
 
 
-def AbortRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
-    """Resets an active roll to start_commit or clears stale roll state."""
+def AbortRoll(
+        protobuf_directory: str = _PROTOBUF_DIRECTORY
+) -> RollState | FixupState:
+    """Resets an active roll or fixup rebase, or clears stale roll state."""
     checkout = _ResolveCheckoutPaths(protobuf_directory)
+    if fixup_state := _LoadActiveFixupState(checkout):
+        _RunGit(['git', '-C', checkout.repository_root, 'rebase', '--abort'],
+                env=_RebaseGitEnvironment(checkout),
+                failure_message='git rebase --abort failed')
+        touched = set().union(*(_ProtobufPathsFromGit(
+            checkout, 'diff', '--no-renames', '--name-only', '-z', ref,
+            fixup_state.pre_fixup_head)
+                                for ref in (fixup_state.rebase_base, 'HEAD')))
+        _RunScratchGit(checkout.repository_root, '-c', 'core.autocrlf=false',
+                       'reset', '--quiet', '--hard',
+                       fixup_state.pre_fixup_head)
+        _NormalizeCommittedWorktreeFiles(checkout, touched)
+        _CleanUntrackedAndBackupFiles(checkout.protobuf_directory)
+        _RemoveFixupState(checkout)
+        return fixup_state
+    if _IsGitOperationInProgress(checkout):
+        raise RollProtobufError(
+            'Cannot run `roll_protobuf.py abort` while an external git '
+            'rebase, merge, or cherry-pick is in progress.')
     roll_state = LoadRollState(checkout)
     if roll_state is None:
         raise RollProtobufError('No protobuf roll is in progress (missing '
@@ -3761,8 +3819,10 @@ def FormatRollStatusReport(status: RollStatus) -> str:
     elif status.state == 'prepared':
         header = f'State: prepared ({status.total} patch(es)).'
     elif status.state == 'conflict':
-        header = (f'State: conflict [{status.index}/{status.total}] in '
-                  f'patches/{status.patch}')
+        sp = status.patch or 'rebase'
+        label = (f'patches/{sp}'
+                 if re.fullmatch(r'[^\s/]+\.patch', sp) else sp)
+        header = f'State: conflict [{status.index}/{status.total}] in {label}'
     else:
         header = f'State: replayed ({status.total}/{status.total} patch(es)).'
     lines = [header, *[f'  {path}' for path in status.files]]
@@ -3930,7 +3990,10 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
             did_reset = (prior_state is not None
                          and _CanResetRollHead(checkout, prior_state))
             result = AbortRoll(arguments.protobuf_directory)
-            if did_reset:
+            if isinstance(result, FixupState):
+                report = (f'Aborted fixup of patches/{result.target_patch} '
+                          f'and reset to {result.pre_fixup_head}.')
+            elif did_reset:
                 report = (f'Aborted roll to {result.new_revision} and reset '
                           f'to {result.start_commit}.')
             elif result.phase == 'prepared':
