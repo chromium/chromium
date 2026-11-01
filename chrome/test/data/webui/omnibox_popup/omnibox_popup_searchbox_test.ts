@@ -1376,24 +1376,27 @@ suite('OmniboxPopupSearchboxTest', function() {
     await microtasksFinished();
     assertTrue(input.scrollLeft > 0);
 
-    // A drag in the unfocused native omnibox from near the start past its
-    // elided end. The native omnibox kept showing the start of the text.
+    // A drag in the unfocused native omnibox over the start of its text, which
+    // it showed unscrolled.
+    const end = 20;
+    assertTrue(getTextOffsetLeft(input, end) + 1 < getVisibleTextWidth(input));
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       sequenceNumber: 2,
       text,
-      selection: {start: 5, end: text.length},
+      selection: {start: 5, end},
       isFocused: true,
     }));
     await microtasksFinished();
 
     assertEquals(5, input.selectionStart);
-    assertEquals(text.length, input.selectionEnd);
+    assertEquals(end, input.selectionEnd);
     assertEquals(0, input.scrollLeft);
   });
 
-  test('SetInputStateKeepsTextStartOnFirstFocus', async () => {
+  test('SetInputStateKeepsCaretInViewOnFirstFocus', async () => {
     // The first handoff from native Views focuses the input and applies the
-    // range in the same update.
+    // range in the same update. The range is a drag to the end of the text,
+    // which the native omnibox scrolled to follow.
     const text = 'abcdefghij'.repeat(80);
     const input = searchbox.$.input.inputElement;
     callbackRouter.setInputState(createDefaultOmniboxInputState({
@@ -1405,10 +1408,11 @@ suite('OmniboxPopupSearchboxTest', function() {
 
     assertEquals(5, input.selectionStart);
     assertEquals(text.length, input.selectionEnd);
-    assertEquals(0, input.scrollLeft);
+    assertTrue(input.scrollLeft > 0);
+    assertTextOffsetVisible(input, text.length);
   });
 
-  test('SetInputStateScrollsToSelectionStart', async () => {
+  test('SetInputStateScrollsToSelection', async () => {
     const text = 'abcdefghij'.repeat(40);
     const input = searchbox.$.input.inputElement;
     callbackRouter.setInputState(createDefaultOmniboxInputState({
@@ -1420,7 +1424,8 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertTrue(input.scrollWidth > input.clientWidth);
     assertEquals(0, input.scrollLeft);
 
-    // A range that starts past the first screenful of text.
+    // A range that starts past the first screenful of text, with the caret
+    // (`end`) after the anchor (`start`) as after a left-to-right drag.
     const start = text.length - 20;
     const end = text.length - 10;
     callbackRouter.setInputState(createDefaultOmniboxInputState({
@@ -1434,17 +1439,51 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(start, input.selectionStart);
     assertEquals(end, input.selectionEnd);
     assertTextOffsetVisible(input, start);
-    // Scroll only as far as the selection start needs.
+    assertTextOffsetVisible(input, end);
+    // Scroll only as far as the selection needs.
     assertTrue(input.scrollLeft < input.scrollWidth - input.clientWidth);
-    // That is, just far enough to show the selection start (and the 1px caret
-    // there) at the end of the visible text, which the AIM button padding
-    // doesn't count towards.
+    // That is, just far enough to show the caret (and its 1px) at the end of
+    // the visible text, which the AIM button padding doesn't count towards.
     assertFalse(isVisible(searchbox.$.composeButton));
-    const startRight = getTextOffsetLeft(input, start) + 1 - input.scrollLeft;
+    const caretRight = getTextOffsetLeft(input, end) + 1 - input.scrollLeft;
     assertTrue(
-        Math.abs(getVisibleTextWidth(input) - startRight) <= 1,
-        `selection start at ${startRight}px, visible width ${
+        Math.abs(getVisibleTextWidth(input) - caretRight) <= 1,
+        `caret at ${caretRight}px, visible width ${
             getVisibleTextWidth(input)}px`);
+  });
+
+  test('SetInputStateKeepsCaretOfWideSelectionInView', async () => {
+    const text = 'abcdefghij'.repeat(80);
+    const input = searchbox.$.input.inputElement;
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text,
+      selection: {start: 0, end: 0},
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    assertEquals(0, input.scrollLeft);
+
+    // A left-to-right drag across more text than fits in the input, as the
+    // native omnibox allows by scrolling to follow the drag.
+    const start = 100;
+    const end = text.length - 10;
+    assertTrue(
+        getTextOffsetLeft(input, end) - getTextOffsetLeft(input, start) >
+        getVisibleTextWidth(input));
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      sequenceNumber: 2,
+      text,
+      selection: {start, end},
+      isFocused: true,
+    }));
+    await microtasksFinished();
+
+    assertEquals(start, input.selectionStart);
+    assertEquals(end, input.selectionEnd);
+    // The caret stays in view, as in the native omnibox, so the selection
+    // start can't be.
+    assertTextOffsetVisible(input, end);
+    assertTrue(getTextOffsetLeft(input, start) < input.scrollLeft - 1);
   });
 
   test('SetInputStateKeepsBackwardSelection', async () => {

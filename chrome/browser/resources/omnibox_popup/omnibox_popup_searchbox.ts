@@ -1744,18 +1744,23 @@ export class OmniboxPopupSearchboxElement extends
         inputEl.scrollLeft = inputEl.scrollWidth;
       } else if (!isFullSelection) {
         this.scrollSelectionStartIntoView_(selStart);
+        // Then scroll only as far past the start as the caret (`end`) needs. A
+        // range handed off from the native omnibox is usually a drag, which
+        // scrolled its text to keep the caret in view (see
+        // OmniboxViewViews::OnMousePressed()), so this shows about the same
+        // part of the text, give or take the two inputs' widths.
+        this.scrollOffsetIntoView_(end, inputEl.scrollLeft);
       }
     }
   }
 
   /**
    * Scrolls the single-line input to the start of the text, or only as far past
-   * it as needed to show the selection start at `selStart`. In Full WebUI mode
-   * the native textfield never takes focus, so it doesn't scroll while the user
-   * drags. It shows the start of the text with the end elided, so a range
-   * handed off from it starts where the user saw it. Blink doesn't scroll a
-   * text field for `setSelectionRange()`, so without this the input keeps its
-   * old scroll offset.
+   * it as needed to show the selection start at `selStart`. The native omnibox
+   * shows the elided URL from its start while unfocused, so a range handed off
+   * from it starts where the user saw it. Blink doesn't scroll a text field for
+   * `setSelectionRange()`, so without this the input keeps its old scroll
+   * offset.
    */
   private scrollSelectionStartIntoView_(selStart: number) {
     this.scrollOffsetIntoView_(selStart, /*fromScrollLeft=*/ 0);
