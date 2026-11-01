@@ -66,12 +66,18 @@ source_set("unit_tests") {
     ":impl",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//components/favicon/content",
     "//content/public/browser",
+    "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
     "//ui/color",
     "//ui/resources",
   ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/webui/top_chrome" ]
+  }
 }
 
 if (!is_android) {

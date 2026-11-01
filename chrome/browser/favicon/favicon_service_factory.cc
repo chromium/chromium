@@ -50,8 +50,9 @@ favicon::FaviconService* FaviconServiceFactory::GetForProfile(
             profile->GetOriginalProfile(), true));
   }
 
-  // Profile is OffTheRecord without access.
-  NOTREACHED() << "This profile is OffTheRecord";
+  // An OffTheRecord profile with IMPLICIT_ACCESS gets no service, so that it
+  // leaves no traces in the original profile.
+  return nullptr;
 }
 
 // static
