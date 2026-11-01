@@ -61,6 +61,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "net/base/url_util.h"
@@ -455,7 +456,13 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
 
   dict.Set("darkMode", contextual_tasks::ShouldUseDarkMode(profile));
   dict.Set("isAiPage", false);
-  dict.Set("isSignedIn", false);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  std::optional<gaia::ListedAccount> cookie_account =
+      contextual_tasks::GetAccountFromCookieJar(identity_manager, GURL());
+  dict.Set("isSignedIn", cookie_account.has_value() &&
+                             !cookie_account->signed_out &&
+                             cookie_account->valid);
   dict.Set("expandButtonEnabled", false);
   dict.Set("profileAvatarUrl", GetProfileAvatarUrl(profile, GURL()).spec());
 

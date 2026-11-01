@@ -5056,6 +5056,44 @@ TEST_F(ContextualTasksUiTest,
   EXPECT_TRUE(dict.FindBool("isSmallDeviceFormFactor").has_value());
   EXPECT_TRUE(dict.FindBool("isUserFeedbackAllowed").has_value());
   EXPECT_TRUE(dict.FindBool("contextualTasksUnboundedMenuEnabled").has_value());
+  EXPECT_EQ(dict.FindBool("isSignedIn"), false);
+}
+
+TEST_F(ContextualTasksUiTest,
+       GetContextualTasksLoadTimeData_IsSignedInReflectsCookieAndBrowserState) {
+  EXPECT_EQ(
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_).FindBool(
+          "isSignedIn"),
+      false);
+
+  // Web signed-in via cookie jar.
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("user@example.com");
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  EXPECT_EQ(
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_).FindBool(
+          "isSignedIn"),
+      true);
+
+  // Signed-out cookie entry should report isSignedIn = false.
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId(),
+        /*signed_out=*/true}});
+  EXPECT_EQ(
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_).FindBool(
+          "isSignedIn"),
+      false);
+
+  // Browser signed-in with primary account in cookie jar.
+  identity_test_env()->SetPrimaryAccount("user@example.com",
+                                         signin::ConsentLevel::kSignin);
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  EXPECT_EQ(
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_).FindBool(
+          "isSignedIn"),
+      true);
 }
 
 TEST_F(ContextualTasksUiTest, TrackedElementsRegistered_PostRearchitecture) {

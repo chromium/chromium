@@ -372,10 +372,10 @@ suite('OverflowMenuTest', () => {
           contextualTasksEnableSpatialModelToolbarLayout: true,
           contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow:
               true,
+          isAimEligible: true,
           webuiRoundedIconsEnabled: false,
         });
         overflowMenu = document.createElement('contextual-tasks-overflow-menu');
-        overflowMenu.isAimEligible = true;
         document.body.appendChild(overflowMenu);
         await microtasksFinished();
       });
