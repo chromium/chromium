@@ -278,15 +278,18 @@
   font-weight: var(--cr-searchbox-match-font-weight, 600);
 }
 
-/* In the lens side panel searchbox, the typed prefix of the match should
- * have a different color than the rest of the autocomplete suggestion. */
-:host(:not([is-top-chrome-searchbox_])) #primaryText span:not(.match),
+/* Embedders can give the typed prefix of a match its own color. Make sure this
+ * only applies to the non-bolded prefix of suggest query text. */
+:host(:not([is-top-chrome-searchbox_]))
+    #primaryText .color-on-surface:not(.match),
 #ellipsis {
-  color: var(--color-searchbox-results-typed-prefix, --color-searchbox-results-foreground);
+  color: var(--color-searchbox-results-typed-prefix,
+      var(--color-searchbox-results-foreground));
 }
 
-/* Used to override primary text color in zero prefix matches */
-:host-context([has-empty-input]) #primaryText span,
+/* Zero prefix matches have no typed prefix, so suggest query text keeps the
+ * foreground color. */
+:host-context([has-empty-input]) #primaryText .color-on-surface,
 :host-context([has-empty-input]) #ellipsis {
   color: var(--color-searchbox-results-foreground);
 }
