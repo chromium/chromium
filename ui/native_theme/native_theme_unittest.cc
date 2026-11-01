@@ -282,6 +282,17 @@ TEST_F(NativeThemeTest, SystemColorVersionAndCacheReset) {
       manager.GetColorProviderFor(key);
     }
     EXPECT_LE(manager.num_cached_providers_for_testing(), 4u);
+
+    // Updating settings on the native UI theme that propagate to the associated
+    // web instance should also increment the web instance's system color
+    // version.
+    auto* const web_theme = NativeTheme::GetInstanceForWeb();
+    os_settings_provider().SetPreferredColorScheme(
+        NativeTheme::PreferredColorScheme::kLight);
+    const size_t web_version_before = web_theme->system_color_version();
+    os_settings_provider().SetPreferredColorScheme(
+        NativeTheme::PreferredColorScheme::kDark);
+    EXPECT_EQ(web_version_before + 1, web_theme->system_color_version());
   }
 }
 

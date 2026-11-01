@@ -98,7 +98,8 @@ void ColorProviderManager::AppendColorProviderInitializer(
       initializer_list_->Add(std::move(initializer)));
 }
 
-ColorProvider* ColorProviderManager::GetColorProviderFor(ColorProviderKey key) {
+ColorProvider* ColorProviderManager::GetColorProviderFor(
+    const ColorProviderKey& key) {
   auto iter = color_providers_.find(key);
   if (iter == color_providers_.end()) {
     base::ElapsedTimer timer;

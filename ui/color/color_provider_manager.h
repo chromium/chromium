@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
       ColorProviderInitializerList::CallbackType Initializer);
 
   // Returns a color provider for |key|, creating one if necessary.
-  ColorProvider* GetColorProviderFor(ColorProviderKey key);
+  ColorProvider* GetColorProviderFor(const ColorProviderKey& key);
 
   size_t num_providers_initialized() const {
     return num_providers_initialized_;

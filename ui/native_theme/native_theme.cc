@@ -444,6 +444,9 @@ void NativeTheme::SetAssociatedWebInstance(
   if (associated_web_instance_ != associated_web_instance) {
     associated_web_instance_ = associated_web_instance;
     if (UpdateWebInstance()) {
+      if (base::FeatureList::IsEnabled(features::kThemeChangeOptimization)) {
+        associated_web_instance_->IncrementSystemColorVersion();
+      }
       associated_web_instance_->NotifyOnNativeThemeUpdatedImpl();
     }
   }
@@ -531,6 +534,9 @@ void NativeTheme::NotifyOnNativeThemeUpdatedImpl() {
   // TODO(pkasting): Adding a scoping object to batch updates would address
   // this; see comments in header above accessors.
   if (updated_web_instance) {
+    if (base::FeatureList::IsEnabled(features::kThemeChangeOptimization)) {
+      associated_web_instance_->IncrementSystemColorVersion();
+    }
     // Calling `NotifyOnNativeThemeUpdated()` here would unnecessarily churn the
     // color provider cache.
     associated_web_instance_->NotifyOnNativeThemeUpdatedImpl();
