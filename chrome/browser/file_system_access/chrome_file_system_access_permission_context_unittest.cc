@@ -789,9 +789,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       IsOpenAllowed(home_dir.AppendASCII("allowed"), HandleType::kDirectory));
 }
 
-// TODO(crbug.com/432011571): Flaky test.
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       DISABLED_ConfirmSensitiveEntryAccess_BlockChildrenNested) {
+       ConfirmSensitiveEntryAccess_BlockChildrenNested) {
   base::FilePath user_data_dir = temp_dir_.GetPath().AppendASCII("user");
   base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
                                               user_data_dir, true, true);
