@@ -436,6 +436,20 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         return sShouldDisableNqe;
     }
 
+    @VisibleForTesting
+    public static final String DISABLE_SHARED_BROTLI_FLAG_NAME = "Cronet_disable_shared_brotli";
+
+    @Override
+    boolean shouldDisableSharedBrotli() {
+        var disableSharedBrotliFlagValue =
+                HttpFlagsForImpl.getHttpFlags(
+                                ContextUtils.getApplicationContext(),
+                                NativeCronetEngineBuilderImpl.getCronetSource())
+                        .flags()
+                        .get(DISABLE_SHARED_BROTLI_FLAG_NAME);
+        return disableSharedBrotliFlagValue != null && disableSharedBrotliFlagValue.getBoolValue();
+    }
+
     private static RequestContextConfigOptions createRequestContextConfigOptions(
             CronetEngineBuilderImpl engineBuilder, @Nullable String effectiveExperimentalOptions) {
         var flags =
