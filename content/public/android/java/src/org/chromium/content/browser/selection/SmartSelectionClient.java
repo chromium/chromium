@@ -103,11 +103,16 @@ public class SmartSelectionClient implements SelectionClient, UserData {
                 new SmartSelectionProvider(callback, webContents, mSmartSelectionEventProcessor);
     }
 
+    @Override
+    public void destroy() {
+        mProvider.destroy();
+    }
+
     @CalledByNative
     private void onNativeSideDestroyed(long nativeSmartSelectionClient) {
         assert nativeSmartSelectionClient == mNativeSmartSelectionClient;
         mNativeSmartSelectionClient = 0;
-        mProvider.cancelAllRequests();
+        mProvider.destroy();
     }
 
     // SelectionClient implementation

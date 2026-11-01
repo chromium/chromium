@@ -36,11 +36,13 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+import android.os.LocaleList;
 import android.provider.Settings;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.View;
 import android.view.textclassifier.TextClassification;
+import android.view.textclassifier.TextClassifier;
 import android.widget.FrameLayout;
 
 import org.junit.Assert;
@@ -60,6 +62,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.fakes.RoboMenu;
 import org.robolectric.util.ReflectionHelpers;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
@@ -1691,5 +1694,170 @@ public class SelectionPopupControllerTest {
         mController.getResultCallback().onClassifiedLate(result);
         assertNull(mController.getClassificationResult());
         assertNull(mController.getSelectionMenuCachedResultForTesting());
+    }
+
+    @Test
+    @Feature({"TextInput", "SmartSelection"})
+    public void testForwardTextSelectionToSystemUi_withSurroundingTextAndDestroy() {
+        AconfigFlaggedApiDelegate delegate = Mockito.mock(AconfigFlaggedApiDelegate.class);
+        when(delegate.isForwardTextSelectionToSystemUiEnabled()).thenReturn(true);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
+
+        SelectionClient.Result result = new SelectionClient.Result();
+        result.text = AMPHITHEATRE_FULL;
+        result.start = 5;
+        result.end = 17;
+
+        TestSelectionClient client = new TestSelectionClient();
+        client.setResult(result);
+        client.setResultCallback(mController.getResultCallback());
+        mController.setSelectionClient(client);
+
+        mView.mActionModeForStart = mActionMode;
+        showSelectionMenu(
+                mController,
+                AMPHITHEATRE,
+                /* selectionStartOffset= */ 5,
+                MenuSourceType.LONG_PRESS);
+
+        mController.onPrepareActionMode(mActionMode, new RoboMenu());
+        Mockito.verify(delegate, times(1))
+                .setTextSelection(
+                        eq(mActionMode),
+                        eq(AMPHITHEATRE_FULL),
+                        eq(5),
+                        eq(17),
+                        any(LocaleList.class));
+
+        mController.onDestroyActionMode();
+        Mockito.verify(delegate, times(1)).clearTextSelection(eq(mActionMode));
+    }
+
+    @Test
+    @Feature({"TextInput", "SmartSelection"})
+    public void testForwardTextSelectionToSystemUi_fallbackToSelectedText() {
+        AconfigFlaggedApiDelegate delegate = Mockito.mock(AconfigFlaggedApiDelegate.class);
+        when(delegate.isForwardTextSelectionToSystemUiEnabled()).thenReturn(true);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
+
+        mView.mActionModeForStart = mActionMode;
+        showSelectionMenu(
+                mController,
+                AMPHITHEATRE,
+                /* selectionStartOffset= */ 5,
+                MenuSourceType.LONG_PRESS);
+
+        mController.onPrepareActionMode(mActionMode, new RoboMenu());
+        Mockito.verify(delegate, times(1))
+                .setTextSelection(
+                        eq(mActionMode),
+                        eq(AMPHITHEATRE),
+                        eq(0),
+                        eq(AMPHITHEATRE.length()),
+                        any(LocaleList.class));
+    }
+
+    @Test
+    @Feature({"TextInput", "SmartSelection"})
+    public void
+            testForwardTextSelectionToSystemUi_skippedForPasswordIncognitoAndCustomClassifier() {
+        AconfigFlaggedApiDelegate delegate = Mockito.mock(AconfigFlaggedApiDelegate.class);
+        when(delegate.isForwardTextSelectionToSystemUiEnabled()).thenReturn(true);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
+
+        mView.mActionModeForStart = mActionMode;
+
+        // 1. Password selection should not forward text selection.
+        mController.showSelectionMenu(
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                /* isEditable= */ true,
+                /* isPasswordType= */ true,
+                AMPHITHEATRE,
+                /* selectionStartOffset= */ 0,
+                /* canSelectAll= */ true,
+                /* canRichlyEdit= */ true,
+                /* shouldSuggest= */ true,
+                MenuSourceType.LONG_PRESS,
+                mRenderFrameHost,
+                mMenuModelBridge);
+        mController.onPrepareActionMode(mActionMode, new RoboMenu());
+        Mockito.verify(delegate, never()).setTextSelection(any(), any(), anyInt(), anyInt(), any());
+
+        // 2. Incognito should not forward text selection.
+        when(mWebContents.isIncognito()).thenReturn(true);
+        showSelectionMenu(
+                mController,
+                AMPHITHEATRE,
+                /* selectionStartOffset= */ 5,
+                MenuSourceType.LONG_PRESS);
+        mController.onPrepareActionMode(mActionMode, new RoboMenu());
+        Mockito.verify(delegate, never()).setTextSelection(any(), any(), anyInt(), anyInt(), any());
+        when(mWebContents.isIncognito()).thenReturn(false);
+
+        // 3. Custom TextClassifier should not forward text selection.
+        TestSelectionClient customClient =
+                new TestSelectionClient() {
+                    @Override
+                    public TextClassifier getCustomTextClassifier() {
+                        return Mockito.mock(TextClassifier.class);
+                    }
+                };
+        customClient.setResult(new SelectionClient.Result());
+        customClient.setResultCallback(mController.getResultCallback());
+        mController.setSelectionClient(customClient);
+        showSelectionMenu(
+                mController,
+                AMPHITHEATRE,
+                /* selectionStartOffset= */ 5,
+                MenuSourceType.LONG_PRESS);
+        mController.onPrepareActionMode(mActionMode, new RoboMenu());
+        Mockito.verify(delegate, never()).setTextSelection(any(), any(), anyInt(), anyInt(), any());
+        mController.onDestroyActionMode();
+        Mockito.verify(delegate, never()).clearTextSelection(any());
+    }
+
+    @Test
+    @Feature({"TextInput", "SmartSelection"})
+    public void testForwardTextSelectionToSystemUi_clearsOnDestroyAfterMenuStateChanges() {
+        AconfigFlaggedApiDelegate delegate = Mockito.mock(AconfigFlaggedApiDelegate.class);
+        when(delegate.isForwardTextSelectionToSystemUiEnabled()).thenReturn(true);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
+
+        mView.mActionModeForStart = mActionMode;
+        showSelectionMenu(
+                mController,
+                AMPHITHEATRE,
+                /* selectionStartOffset= */ 5,
+                MenuSourceType.LONG_PRESS);
+        mController.onPrepareActionMode(mActionMode, new RoboMenu());
+        Mockito.verify(delegate, times(1))
+                .setTextSelection(
+                        eq(mActionMode),
+                        eq(AMPHITHEATRE),
+                        eq(0),
+                        eq(AMPHITHEATRE.length()),
+                        any(LocaleList.class));
+
+        // Even if a custom TextClassifier is installed afterward (so
+        // shouldForwardTextSelectionToSystemUi() now returns false), destroying the ActionMode
+        // must still clear the previously forwarded text selection exactly once.
+        TestSelectionClient customClient =
+                new TestSelectionClient() {
+                    @Override
+                    public TextClassifier getCustomTextClassifier() {
+                        return Mockito.mock(TextClassifier.class);
+                    }
+                };
+        mController.setSelectionClient(customClient);
+
+        mController.onDestroyActionMode();
+        mController.onDestroyActionMode();
+        Mockito.verify(delegate, times(1)).clearTextSelection(eq(mActionMode));
     }
 }

@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
+import android.os.LocaleList;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.LongSparseArray;
@@ -41,6 +42,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -180,6 +182,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private @Nullable View mView;
     private @Nullable ViewAndroidDelegate mLastViewDelegate;
     private @Nullable ActionMode mActionMode;
+    // Tracks the ActionMode instance on which delegate.setTextSelection() was called so that
+    // clearTextSelection() is paired 1:1 on teardown regardless of subsequent menu state changes.
+    private @Nullable ActionMode mTextSelectionActionMode;
 
     // Supplier of whether action bar is showing now.
     private final SettableNonNullObservableSupplier<Boolean> mIsActionBarShowingSupplier =
@@ -924,6 +929,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (isActionModeValid()) {
             mActionMode.finish();
             // Should be nulled out in case #onDestroyActionMode() is not invoked in response.
+            clearTextSelectionIfNeeded();
             setActionMode(null);
         }
     }
@@ -1076,7 +1082,81 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         assumeNonNull(mContext);
         PendingSelectionMenu pendingMenu = getPendingSelectionMenu(MenuType.FLOATING);
         pendingMenu.getMenuAsActionMode(menu);
+        maybeSetTextSelection(mode);
         return true;
+    }
+
+    static boolean shouldForwardTextSelectionToSystemUi(
+            @Nullable SelectionPopupControllerImpl controller,
+            @Nullable TextClassifier customTextClassifier) {
+        if (customTextClassifier != null) {
+            return false;
+        }
+        if (controller != null) {
+            if (controller.getMenuType() != SelectionMenuType.ACTION_MODE) {
+                return false;
+            }
+            if (controller.mSelectionClient != null
+                    && controller.mSelectionClient.getCustomTextClassifier() != null) {
+                return false;
+            }
+        }
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        return delegate != null && delegate.isForwardTextSelectionToSystemUiEnabled();
+    }
+
+    private boolean shouldForwardTextSelectionToSystemUi() {
+        return shouldForwardTextSelectionToSystemUi(this, /* customTextClassifier= */ null);
+    }
+
+    private void maybeSetTextSelection(ActionMode mode) {
+        if (!shouldForwardTextSelectionToSystemUi()
+                || !hasSelection()
+                || isSelectionPassword()
+                || isIncognito()) {
+            clearTextSelectionIfNeeded();
+            return;
+        }
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate == null) {
+            return;
+        }
+        if (mTextSelectionActionMode != null && mTextSelectionActionMode != mode) {
+            clearTextSelectionIfNeeded();
+        }
+        if (mClassificationResult != null
+                && mClassificationResult.text != null
+                && mClassificationResult.start >= 0
+                && mClassificationResult.end <= mClassificationResult.text.length()
+                && mClassificationResult.start <= mClassificationResult.end
+                && TextUtils.equals(
+                        getSelectedText(),
+                        mClassificationResult.text.substring(
+                                mClassificationResult.start, mClassificationResult.end))) {
+            delegate.setTextSelection(
+                    mode,
+                    mClassificationResult.text,
+                    mClassificationResult.start,
+                    mClassificationResult.end,
+                    LocaleList.getAdjustedDefault());
+        } else {
+            String selectedText = getSelectedText();
+            delegate.setTextSelection(
+                    mode, selectedText, 0, selectedText.length(), LocaleList.getAdjustedDefault());
+        }
+        mTextSelectionActionMode = mode;
+    }
+
+    private void clearTextSelectionIfNeeded() {
+        if (mTextSelectionActionMode == null) {
+            return;
+        }
+        ActionMode mode = mTextSelectionActionMode;
+        mTextSelectionActionMode = null;
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate != null) {
+            delegate.clearTextSelection(mode);
+        }
     }
 
     @VisibleForTesting
@@ -1320,6 +1400,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public void onDestroyActionMode() {
+        clearTextSelectionIfNeeded();
         setActionMode(null);
         if (mUnselectAllOnDismiss) {
             clearSelection();

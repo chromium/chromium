@@ -50,6 +50,7 @@ public class SmartSelectionProvider {
     }
 
     private final SelectionClient.ResultCallback mResultCallback;
+    private @Nullable WebContents mWebContents;
     private @Nullable WindowAndroid mWindowAndroid;
     private @Nullable ClassificationTask mClassificationTask;
     private @Nullable TextClassifier mTextClassifier;
@@ -74,6 +75,7 @@ public class SmartSelectionProvider {
             WebContents webContents,
             @Nullable SmartSelectionEventProcessor selectionEventProcessor) {
         mResultCallback = callback;
+        mWebContents = webContents;
         mWindowAndroid = webContents.getTopLevelNativeWindow();
         WindowEventObserverManager manager = WindowEventObserverManager.maybeFrom(webContents);
         if (manager != null) {
@@ -120,6 +122,11 @@ public class SmartSelectionProvider {
         mHandler.removeCallbacks(mClassificationTimeoutRunnable);
     }
 
+    public void destroy() {
+        cancelAllRequests();
+        mWebContents = null;
+    }
+
     /**
      * Stop waiting for the classification task result. We cancel the task with
      * mayInterruptIfRunning=false to allow the background OS classification to complete and cache
@@ -132,7 +139,7 @@ public class SmartSelectionProvider {
         }
     }
 
-    public void setTextClassifier(TextClassifier textClassifier) {
+    public void setTextClassifier(@Nullable TextClassifier textClassifier) {
         assumeNonNull(mWindowAndroid);
         mTextClassifier = textClassifier;
 
@@ -182,8 +189,30 @@ public class SmartSelectionProvider {
         return textClassifierSession;
     }
 
+    private boolean shouldForwardTextSelectionToSystemUi() {
+        WebContents webContents = mWebContents;
+        if (webContents == null || webContents.isDestroyed()) {
+            mWebContents = null;
+            return false;
+        }
+        return SelectionPopupControllerImpl.shouldForwardTextSelectionToSystemUi(
+                SelectionPopupControllerImpl.fromWebContentsNoCreate(webContents), mTextClassifier);
+    }
+
     private void sendSmartSelectionRequest(
             @RequestType int requestType, CharSequence text, int start, int end) {
+        boolean skipTextClassification = shouldForwardTextSelectionToSystemUi();
+        if (skipTextClassification && requestType == RequestType.CLASSIFY) {
+            stopWaitingForClassificationResult();
+            mHandler.removeCallbacks(mClassificationTimeoutRunnable);
+            SelectionClient.Result result = new SelectionClient.Result();
+            result.text = text.toString();
+            result.start = start;
+            result.end = end;
+            mResultCallback.onClassified(result);
+            return;
+        }
+
         TextClassifier classifier = getTextClassificationSession();
         if (classifier == null || classifier == TextClassifier.NO_OP) {
             mHandler.post(mFailureResponseRunnable);
@@ -203,7 +232,8 @@ public class SmartSelectionProvider {
                         text,
                         start,
                         end,
-                        mWindowAndroid.getContext().get());
+                        mWindowAndroid.getContext().get(),
+                        skipTextClassification);
         mClassificationTask.executeOnExecutor(mExecutor);
         if (ContentFeatureList.sTextClassifierTimeout.isEnabled()) {
             int timeoutMs = ContentFeatureList.sTextClassifierTimeoutMs.getValue();
@@ -218,6 +248,7 @@ public class SmartSelectionProvider {
         private final int mOriginalStart;
         private final int mOriginalEnd;
         private final @Nullable Context mContext;
+        private final boolean mSkipTextClassification;
 
         ClassificationTask(
                 TextClassifier classifier,
@@ -225,13 +256,15 @@ public class SmartSelectionProvider {
                 CharSequence text,
                 int start,
                 int end,
-                @Nullable Context context) {
+                @Nullable Context context,
+                boolean skipTextClassification) {
             mTextClassifier = classifier;
             mRequestType = requestType;
             mText = text;
             mOriginalStart = start;
             mOriginalEnd = end;
             mContext = context;
+            mSkipTextClassification = skipTextClassification;
         }
 
         @Override
@@ -247,9 +280,14 @@ public class SmartSelectionProvider {
                     textSelection = suggestSelection(start, end);
                     start = Math.max(0, textSelection.getSelectionStartIndex());
                     end = Math.min(mText.length(), textSelection.getSelectionEndIndex());
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        textClassification = textSelection.getTextClassification();
-                    }
+                }
+
+                if (mSkipTextClassification) {
+                    return makeResult(start, end, null, textSelection);
+                }
+
+                if (textSelection != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    textClassification = textSelection.getTextClassification();
                 }
 
                 if (textClassification == null) {
@@ -272,7 +310,7 @@ public class SmartSelectionProvider {
                 return mTextClassifier.suggestSelection(
                         new TextSelection.Request.Builder(mText, start, end)
                                 .setDefaultLocales(LocaleList.getAdjustedDefault())
-                                .setIncludeTextClassification(true)
+                                .setIncludeTextClassification(!mSkipTextClassification)
                                 .build());
             }
             return mTextClassifier.suggestSelection(
@@ -280,7 +318,7 @@ public class SmartSelectionProvider {
         }
 
         private SelectionClient.Result makeResult(
-                int start, int end, TextClassification tc, @Nullable TextSelection ts) {
+                int start, int end, @Nullable TextClassification tc, @Nullable TextSelection ts) {
             SelectionClient.Result result = new SelectionClient.Result();
 
             result.text = mText.toString();
@@ -300,7 +338,7 @@ public class SmartSelectionProvider {
         // SmartSelectionProvider. TextClassification#getActions() is only available on P and above,
         // so
         private @Nullable List<Drawable> loadIconDrawables(
-                @Nullable Context context, TextClassification tc) {
+                @Nullable Context context, @Nullable TextClassification tc) {
             if (context == null || tc == null) return null;
 
             ArrayList<Drawable> res = new ArrayList<>();

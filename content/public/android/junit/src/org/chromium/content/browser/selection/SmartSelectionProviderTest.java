@@ -5,10 +5,13 @@
 package org.chromium.content.browser.selection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,6 +38,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureListJni;
 import org.chromium.base.FeatureOverrides;
@@ -263,6 +267,153 @@ public class SmartSelectionProviderTest {
         assertEquals(tc, result.textClassification);
         verify(mTextClassifier)
                 .suggestSelection(any(CharSequence.class), anyInt(), anyInt(), any());
+        verify(mTextClassifier).classifyText(any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
+    @DisableFeatures(ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT)
+    public void testSendClassifyRequest_forwardTextSelectionToSystemUi_skipsTextClassifier() {
+        AconfigFlaggedApiDelegate delegate = mock(AconfigFlaggedApiDelegate.class);
+        when(delegate.isForwardTextSelectionToSystemUiEnabled()).thenReturn(true);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
+
+        // Clear custom TextClassifier so system TextClassifier is used.
+        mProvider.setTextClassifier(null);
+        TextClassificationManager tcm =
+                ApplicationProvider.getApplicationContext()
+                        .getSystemService(TextClassificationManager.class);
+        tcm.setTextClassifier(mTextClassifier);
+
+        mProvider.sendClassifyRequest("surrounding test text", 12, 16);
+
+        verify(mResultCallback).onClassified(mResultCaptor.capture());
+        SelectionClient.Result result = mResultCaptor.getValue();
+        assertNotNull(result);
+        assertEquals("surrounding test text", result.text);
+        assertEquals(12, result.start);
+        assertEquals(16, result.end);
+        assertNull(result.textClassification);
+        verify(mTextClassifier, never()).classifyText(any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
+    @DisableFeatures(ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT)
+    public void
+            testSendSuggestAndClassifyRequest_forwardTextSelectionToSystemUi_suggestsWithoutClassification() {
+        AconfigFlaggedApiDelegate delegate = mock(AconfigFlaggedApiDelegate.class);
+        when(delegate.isForwardTextSelectionToSystemUiEnabled()).thenReturn(true);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
+
+        // Clear custom TextClassifier so system TextClassifier is used.
+        mProvider.setTextClassifier(null);
+        TextClassificationManager tcm =
+                ApplicationProvider.getApplicationContext()
+                        .getSystemService(TextClassificationManager.class);
+        tcm.setTextClassifier(mTextClassifier);
+
+        TextSelection ts = new TextSelection.Builder(12, 21).build();
+        when(mTextClassifier.suggestSelection(any(TextSelection.Request.class))).thenReturn(ts);
+
+        mProvider.sendSuggestAndClassifyRequest("surrounding test text", 12, 16);
+        RobolectricUtil.runOneBackgroundTask();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        ArgumentCaptor<TextSelection.Request> requestCaptor =
+                ArgumentCaptor.forClass(TextSelection.Request.class);
+        verify(mTextClassifier).suggestSelection(requestCaptor.capture());
+        assertFalse(requestCaptor.getValue().shouldIncludeTextClassification());
+        verify(mTextClassifier, never()).classifyText(any(), anyInt(), anyInt(), any());
+
+        verify(mResultCallback).onClassified(mResultCaptor.capture());
+        SelectionClient.Result result = mResultCaptor.getValue();
+        assertNotNull(result);
+        assertEquals("surrounding test text", result.text);
+        assertEquals(12, result.start);
+        assertEquals(21, result.end);
+        assertEquals(0, result.startAdjust);
+        assertEquals(5, result.endAdjust);
+        assertEquals(ts, result.textSelection);
+        assertNull(result.textClassification);
+    }
+
+    @Test
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
+    @DisableFeatures(ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT)
+    public void
+            testSendClassifyRequest_forwardTextSelectionToSystemUiWithCustomClassifier_usesLocalClassifier() {
+        AconfigFlaggedApiDelegate delegate = mock(AconfigFlaggedApiDelegate.class);
+        when(delegate.isForwardTextSelectionToSystemUiEnabled()).thenReturn(true);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
+
+        // mProvider has a custom TextClassifier set in setUp().
+        when(mTextClassifier.classifyText(any(), anyInt(), anyInt(), any()))
+                .thenReturn(new TextClassification.Builder().setText("classified").build());
+
+        mProvider.sendClassifyRequest("test text", 0, 9);
+        RobolectricUtil.runOneBackgroundTask();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mResultCallback).onClassified(mResultCaptor.capture());
+        SelectionClient.Result result = mResultCaptor.getValue();
+        assertNotNull(result);
+        assertEquals("test text", result.text);
+        assertNotNull(result.textClassification);
+        assertEquals("classified", result.textClassification.getText());
+        verify(mTextClassifier).classifyText(any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
+    @DisableFeatures(ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT)
+    public void testSendClassifyRequest_destroyedWebContents_doesNotAccessWebContentsUserData() {
+        AconfigFlaggedApiDelegate delegate = mock(AconfigFlaggedApiDelegate.class);
+        when(delegate.isForwardTextSelectionToSystemUiEnabled()).thenReturn(true);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
+
+        mProvider.setTextClassifier(null);
+        TextClassificationManager tcm =
+                ApplicationProvider.getApplicationContext()
+                        .getSystemService(TextClassificationManager.class);
+        tcm.setTextClassifier(mTextClassifier);
+        when(mTextClassifier.classifyText(any(), anyInt(), anyInt(), any()))
+                .thenReturn(new TextClassification.Builder().setText("classified").build());
+
+        clearInvocations(mWebContents);
+        when(mWebContents.isDestroyed()).thenReturn(true);
+        mProvider.sendClassifyRequest("test text", 0, 9);
+        RobolectricUtil.runOneBackgroundTask();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mWebContents, never()).getOrSetUserData(any(), any());
+        verify(mTextClassifier).classifyText(any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
+    @DisableFeatures(ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT)
+    public void testDestroy_clearsWebContentsReference() {
+        AconfigFlaggedApiDelegate delegate = mock(AconfigFlaggedApiDelegate.class);
+        when(delegate.isForwardTextSelectionToSystemUiEnabled()).thenReturn(true);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(delegate);
+
+        mProvider.setTextClassifier(null);
+        TextClassificationManager tcm =
+                ApplicationProvider.getApplicationContext()
+                        .getSystemService(TextClassificationManager.class);
+        tcm.setTextClassifier(mTextClassifier);
+        when(mTextClassifier.classifyText(any(), anyInt(), anyInt(), any()))
+                .thenReturn(new TextClassification.Builder().setText("classified").build());
+
+        mProvider.destroy();
+        clearInvocations(mWebContents);
+        mProvider.sendClassifyRequest("test text", 0, 9);
+        RobolectricUtil.runOneBackgroundTask();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mWebContents, never()).isDestroyed();
+        verify(mWebContents, never()).getOrSetUserData(any(), any());
         verify(mTextClassifier).classifyText(any(), anyInt(), anyInt(), any());
     }
 }
