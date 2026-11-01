@@ -17,6 +17,7 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -42,6 +43,7 @@ class MockContextualTasksPanelController
               (override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void, OpenInZeroState, (), (override));
+  MOCK_METHOD(void, OpenUrlInNewTab, (const GURL& url), (override));
   MOCK_METHOD(bool, MoveActiveTabToNewThreadIfShared, (), (override));
   MOCK_METHOD((std::map<std::string, std::string>),
               GetTabRestoreData,

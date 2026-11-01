@@ -102,6 +102,7 @@ class ContextualTasksUIBase
   void UnpinSidePanel() override;
   void OpenMyActivityUi() override;
   void OpenOverflowMenuHelpUi() override;
+  void OpenManageAccountUi() override;
   void OpenFeedbackUi() override;
   void MoveTaskUiToNewTab() override;
   void ShowThreadHistory() override;
@@ -249,6 +250,10 @@ class ContextualTasksUIBase
   virtual ContextualTasksPermissionController* GetActiveController();
 
  private:
+  // Opens `url` in a new foreground tab from the panel's own UI, so the new tab
+  // doesn't inherit the side panel's task.
+  void OpenUrlInNewTabFromPanelUi(const GURL& url);
+
   // Refreshes the profile indicator when the Google accounts in the cookie
   // jar change, such as when the fresh list replaces the one cached from a
   // previous session. This is a separate class because `ContextualTasksUI`

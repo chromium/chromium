@@ -1438,5 +1438,25 @@ suite('TopToolbarTest', () => {
       await microtasksFinished();
       assertEquals('other@gmail.com', accountInfo.textContent);
     });
+
+    test('opens manage account page from account menu', async () => {
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      await microtasksFinished();
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      profileIndicator.click();
+      await microtasksFinished();
+
+      const accountMenu = topToolbar.$.accountMenu.get();
+      const manageAccountButton =
+          accountMenu.shadowRoot.querySelector<HTMLElement>(
+              '#manageAccountButton');
+      assertTrue(!!manageAccountButton);
+      manageAccountButton.click();
+      await toolbarProxy.handler.whenCalled('openManageAccountUi');
+      assertFalse(accountMenu.$.menu.open);
+    });
   });
 });

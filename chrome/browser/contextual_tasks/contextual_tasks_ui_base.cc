@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/contextual_tasks_resources.h"
@@ -469,6 +470,9 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
       // TODO(b/578986274): Replace with a dedicated string in M159.
       {"accountMenuButtonAccessibleName", IDS_MANAGE_PASSWORDS_LINK},
       // TODO(b/578986274): Replace with a dedicated string in M159.
+      {"accountMenuManageAccount",
+       IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_HINT},
+      // TODO(b/578986274): Replace with a dedicated string in M159.
       {"accountMenuNameAndEmail",
        IDS_ACCESSIBLE_WINDOW_TITLE_WITH_PROFILE_FORMAT},
       {"close", IDS_CLOSE},
@@ -641,6 +645,21 @@ void ContextualTasksUIBase::OpenOverflowMenuHelpUi() {
       GetProfile(),
       GURL(contextual_tasks::GetContextualTasksOverflowMenuHelpUrl()),
       WindowOpenDisposition::kNewForegroundTab, browser);
+}
+
+void ContextualTasksUIBase::OpenManageAccountUi() {
+  OpenUrlInNewTabFromPanelUi(GURL(chrome::kGoogleAccountURL));
+}
+
+void ContextualTasksUIBase::OpenUrlInNewTabFromPanelUi(const GURL& url) {
+  if (ContextualTasksPanelController* panel_controller = GetPanelController()) {
+    panel_controller->OpenUrlInNewTab(url);
+    return;
+  }
+  if (BrowserWindowInterface* browser = GetBrowser()) {
+    OpenUrlWithDisposition(GetProfile(), url,
+                           WindowOpenDisposition::kNewForegroundTab, browser);
+  }
 }
 
 void ContextualTasksUIBase::OpenFeedbackUi() {

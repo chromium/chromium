@@ -523,6 +523,7 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
       'unpinSidePanel',
       'openMyActivityUi',
       'openOverflowMenuHelpUi',
+      'openManageAccountUi',
       'openFeedbackUi',
       'moveTaskUiToNewTab',
       'showThreadHistory',
@@ -551,6 +552,10 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
 
   openOverflowMenuHelpUi() {
     this.methodCalled('openOverflowMenuHelpUi');
+  }
+
+  openManageAccountUi() {
+    this.methodCalled('openManageAccountUi');
   }
 
   openFeedbackUi() {

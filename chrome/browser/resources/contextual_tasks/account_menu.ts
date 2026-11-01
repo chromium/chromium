@@ -11,6 +11,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './account_menu.css.js';
 import {getHtml} from './account_menu.html.js';
+import type {ToolbarBrowserProxy} from './contextual_tasks_toolbar_browser_proxy.js';
+import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
 
 export interface AccountMenuElement {
   $: {menu: CrActionMenuElement};
@@ -41,6 +43,8 @@ export class AccountMenuElement extends CrLitElement {
   accessor fullName: string = '';
   accessor email: string = '';
 
+  private toolbarBrowserProxy_: ToolbarBrowserProxy =
+      ToolbarBrowserProxyImpl.getInstance();
   private isUnboundedMenuEnabled_: boolean =
       loadTimeData.valueExists('contextualTasksUnboundedMenuEnabled') &&
       loadTimeData.getBoolean('contextualTasksUnboundedMenuEnabled');
@@ -57,6 +61,11 @@ export class AccountMenuElement extends CrLitElement {
 
   close() {
     this.$.menu.close();
+  }
+
+  protected onManageAccountClick_() {
+    this.close();
+    this.toolbarBrowserProxy_.handler.openManageAccountUi();
   }
 
   protected getAccountLabel_(): string {
