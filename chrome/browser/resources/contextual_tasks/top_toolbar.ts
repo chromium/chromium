@@ -322,6 +322,14 @@ export class TopToolbarElement extends TopToolbarElementBase {
     this.fire('new-thread-click');
   }
 
+  protected onOverflowMenuNewThreadClick_(e: Event) {
+    // The overflow menu's 'new-thread-click' event is composed and bubbles out
+    // of this element's shadow root, so stop it here and re-fire a single event
+    // from the toolbar. Otherwise listeners on <top-toolbar> receive it twice.
+    e.stopPropagation();
+    this.fire('new-thread-click');
+  }
+
   protected onThreadHistoryClick_() {
     recordAction('ContextualTasks.WebUI.UserAction.OpenThreadHistory');
     this.toolbarBrowserProxy_.handler.showThreadHistory();

@@ -117,7 +117,7 @@ export function getHtml(this: TopToolbarElement) {
         .contextualTasksEnableSpatialModelToolbarLayout="${this.contextualTasksEnableSpatialModelToolbarLayout_}"
         .contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow="${this.contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow_}"
         @pin-click="${this.onPinClick_}"
-        @new-thread-click="${this.onNewThreadClick_}"
+        @new-thread-click="${this.onOverflowMenuNewThreadClick_}"
         @open-changed="${this.onOverflowMenuOpenChanged_}">
     </contextual-tasks-overflow-menu>`}">
   </cr-lazy-render-lit>
