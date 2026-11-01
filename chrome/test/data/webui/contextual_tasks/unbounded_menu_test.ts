@@ -218,4 +218,45 @@ suite('UnboundedMenuTest', () => {
       }
     });
   });
+
+  suite('AccountMenu', () => {
+    setup(async () => {
+      loadTimeData.overrideValues({
+        contextualTasksSidePanelRearchitectureEnabled: true,
+      });
+      topToolbar = document.createElement('top-toolbar');
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      document.body.appendChild(topToolbar);
+      await microtasksFinished();
+    });
+
+    test('opens account menu as an unbounded menu', async () => {
+      const menu = topToolbar.$.accountMenu.get();
+      let showUnboundedCalled = false;
+      let hideUnboundedCalled = false;
+      const dialogEl = menu.$.menu.getDialog() as UnboundedDialog;
+      dialogEl.showUnboundedElement = () => {
+        showUnboundedCalled = true;
+        return Promise.resolve();
+      };
+      dialogEl.hideUnboundedElement = () => {
+        hideUnboundedCalled = true;
+        return Promise.resolve();
+      };
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      profileIndicator.click();
+      await microtasksFinished();
+
+      assertTrue(showUnboundedCalled);
+      assertTrue(dialogEl.hasAttribute('unbounded'));
+      assertTrue(menu.$.menu.open);
+
+      menu.close();
+      await microtasksFinished();
+      assertTrue(hideUnboundedCalled);
+    });
+  });
 });

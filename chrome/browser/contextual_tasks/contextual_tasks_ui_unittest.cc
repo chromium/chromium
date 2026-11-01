@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 
+#include <tuple>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -4773,6 +4775,45 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithoutExtendedInfo) {
   EXPECT_EQ(avatar_url, GURL(profiles::GetPlaceholderAvatarIconUrl()));
 }
 
+TEST_F(ContextualTasksUiTest, ProfileIndicator_HiddenUntilCookieJarIsFresh) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("user@example.com");
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  // Simulates the cookie jar cached from a previous session, before the
+  // cookies have been checked again.
+  identity_test_env()->SetFreshnessOfAccountsInGaiaCookie(false);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<GURL> stale_future;
+  base::test::TestFuture<GURL> fresh_future;
+  EXPECT_CALL(mock_page, SetProfileAvatarUrl(_))
+      .WillOnce([&stale_future](const GURL& avatar_url) {
+        stale_future.SetValue(avatar_url);
+      })
+      .WillOnce([&fresh_future](const GURL& avatar_url) {
+        fresh_future.SetValue(avatar_url);
+      });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(stale_future.Take(), GURL());
+
+  // The fresh cookie jar arrives and the indicator shows the account.
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  EXPECT_EQ(fresh_future.Take(), GURL(profiles::GetPlaceholderAvatarIconUrl()));
+}
+
 TEST_F(ContextualTasksUiTest, ProfileIndicator_WebSignedInWithExtendedInfo) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user@example.com");
@@ -4878,6 +4919,8 @@ TEST_F(ContextualTasksUiTest,
       "https://example.com/avatar.png", gfx::Image::CreateFrom1xBitmap(bitmap));
   identity_test_env()->SetCookieAccounts(
       {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  // The cookie jar update also refreshes the indicator.
+  std::ignore = future.Take();
 
   controller.UpdateProfileIndicator(GURL("https://google.com/search"));
 
@@ -4903,6 +4946,7 @@ TEST_F(ContextualTasksUiTest,
         /*signed_out=*/true},
        {std::string(second_account.GetEmail()), second_account.GetGaiaId(),
         /*signed_out=*/false}});
+  std::ignore = future.Take();
 
   // Account 0 is signed_out=true, so index 0 returns an empty URL.
   controller.UpdateProfileIndicator(

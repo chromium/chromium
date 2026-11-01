@@ -81,11 +81,14 @@ export function getHtml(this: TopToolbarElement) {
       </cr-icon-button>
     ` : ''}
     ${this.isSidePanelRearchitectureEnabled_ && this.profileAvatarUrl ? html`
-      <div id="profileIndicator" class="profile-indicator">
+      <cr-button id="profileIndicator" class="profile-indicator"
+          aria-label="$i18n{accountMenuButtonAccessibleName}"
+          aria-haspopup="menu"
+          @click="${this.onProfileIndicatorClick_}">
         <img class="profile-avatar-img"
             src="${this.profileAvatarUrl}"
             alt="">
-      </div>
+      </cr-button>
     ` : ''}
     <cr-icon-button id="overflowMenuButton" iron-icon="cr:more-vert"
       data-element-id="kContextualTasksWebUIOverflowMenuElementId"
@@ -102,6 +105,9 @@ export function getHtml(this: TopToolbarElement) {
     </cr-icon-button>
   </div>
 </div>
+  <cr-lazy-render-lit id="accountMenu" .template="${() => html`
+    <contextual-tasks-account-menu></contextual-tasks-account-menu>`}">
+  </cr-lazy-render-lit>
   <cr-lazy-render-lit id="sourcesMenu" .template="${() => html`
     <contextual-tasks-sources-menu .contextInfos="${this.contextInfos}">
     </contextual-tasks-sources-menu>`}">

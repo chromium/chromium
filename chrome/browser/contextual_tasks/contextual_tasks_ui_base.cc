@@ -6,13 +6,16 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -128,6 +131,13 @@ GURL GetProfileAvatarUrl(Profile* profile, const GURL& url) {
     if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       return GURL();
     }
+    // A stale cookie jar is the list cached from a previous session, which
+    // can still show an account whose cookies have since expired. Wait for
+    // the fresh list; `CookieJarObserver` refreshes the toolbar when it
+    // arrives.
+    if (!identity_manager->GetAccountsInCookieJar().AreAccountsFresh()) {
+      return GURL();
+    }
     // If the user is not signed into Chrome, but signed into Google.com,
     // return cached avatar (if available; otherwise return generic).
     std::optional<gaia::ListedAccount> account =
@@ -237,10 +247,46 @@ bool HasActiveAimResults(const GURL& url) {
 
 }  // namespace
 
+class ContextualTasksUIBase::CookieJarObserver
+    : public signin::IdentityManager::Observer {
+ public:
+  CookieJarObserver(ContextualTasksUIBase& owner,
+                    signin::IdentityManager* identity_manager)
+      : owner_(owner) {
+    observation_.Observe(identity_manager);
+  }
+  CookieJarObserver(const CookieJarObserver&) = delete;
+  CookieJarObserver& operator=(const CookieJarObserver&) = delete;
+  ~CookieJarObserver() override = default;
+
+  // signin::IdentityManager::Observer:
+  void OnAccountsInCookieUpdated(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const GoogleServiceAuthError& error) override {
+    owner_->UpdateProfileIndicator();
+  }
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override {
+    observation_.Reset();
+  }
+
+ private:
+  const raw_ref<ContextualTasksUIBase> owner_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      observation_{this};
+};
+
 ContextualTasksUIBase::ContextualTasksUIBase(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui,
                               /*enable_chrome_send=*/true,
                               /*enable_chrome_histograms=*/true) {
+  if (auto* identity_manager =
+          IdentityManagerFactory::GetForProfile(GetProfile())) {
+    cookie_jar_observer_ =
+        std::make_unique<CookieJarObserver>(*this, identity_manager);
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile = GetProfile();
   if (contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
@@ -387,6 +433,8 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
   base::DictValue dict;
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      // TODO(b/578986274): Replace with a dedicated string in M159.
+      {"accountMenuButtonAccessibleName", IDS_MANAGE_PASSWORDS_LINK},
       {"close", IDS_CLOSE},
       {"closeTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CLOSE_TOOL_TIP},
       {"contextTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CONTEXT_TOOL_TIP},

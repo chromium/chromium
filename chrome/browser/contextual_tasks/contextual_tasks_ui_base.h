@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_BASE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_BASE_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -248,6 +249,12 @@ class ContextualTasksUIBase
   virtual ContextualTasksPermissionController* GetActiveController();
 
  private:
+  // Refreshes the profile indicator when the Google accounts in the cookie
+  // jar change, such as when the fresh list replaces the one cached from a
+  // previous session. This is a separate class because `ContextualTasksUI`
+  // already inherits `signin::IdentityManager::Observer`.
+  class CookieJarObserver;
+
   mojo::Receiver<contextual_tasks_toolbar::mojom::PageHandlerFactory>
       toolbar_page_factory_receiver_{this};
   mojo::Receiver<contextual_tasks_toolbar::mojom::PageHandler>
@@ -269,6 +276,8 @@ class ContextualTasksUIBase
                           PinnedToolbarActionsModel::Observer>
       pinned_toolbar_actions_model_observation_{this};
 #endif
+
+  std::unique_ptr<CookieJarObserver> cookie_jar_observer_;
 
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
