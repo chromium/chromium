@@ -314,6 +314,7 @@ if (enable_webui_ntp && !is_android) {
     ]
     deps = [
       ":searchbox_test_utils",
+      "//chrome/app:command_ids",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
       "//chrome/browser/search_engines",
@@ -349,9 +350,12 @@ if (enable_webui_ntp && !is_android) {
       "//ui/accessibility",
       "//ui/base",
       "//ui/base/clipboard",
+      "//ui/base/emoji",
       "//ui/events:test_support",
       "//ui/gfx/geometry",
       "//ui/shell_dialogs",
+      "//ui/strings",
+      "//ui/touch_selection",
       "//ui/views",
     ]
   }
