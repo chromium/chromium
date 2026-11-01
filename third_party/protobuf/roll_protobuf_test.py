@@ -4986,6 +4986,338 @@ class RollProtobufStartTest(unittest.TestCase):
             roll_protobuf._FindUnstampedRegenTarget(checkout, 'origin/main',
                                                     'HEAD'))
 
+    def testRewritePatchFilesAlongBranchRefreshesShiftedAndManualRegenCommits(
+            self):
+        self._StartCleanRoll(with_fake_generator=True)
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        branch_log = _RunGitCommand(
+            self.repository_root,
+            ['log', '--reverse', '--format=%H %s', 'origin/main..HEAD'],
+        ).splitlines()
+        import_sha = next(
+            line.split(' ', 1)[0] for line in branch_log
+            if 'Import upstream protobuf ' in line)
+        apply_0001_sha = next(
+            line.split(' ', 1)[0] for line in branch_log
+            if f'Apply patches/{_PLAN_CLEAN_PATCH}' in line)
+        self.assertEqual(
+            roll_protobuf._ComputeBootstrapInputsDigest(
+                self.fixture.protobuf_directory),
+            roll_protobuf._ComputeCommitBootstrapDigest(checkout, 'HEAD'))
+
+        if sys.platform != 'win32':
+            non_utf8_sibling = os.path.join(
+                os.fsencode(self.fixture.protobuf_directory), b'patches',
+                b'sibling-\x80.md')
+            with open(non_utf8_sibling, 'wb') as handle:
+                handle.write(b'keep me\n')
+            _RunGitCommand(self.repository_root,
+                           ['add', '-A', '--', 'third_party/protobuf/patches'])
+            _RunGitCommand(
+                self.repository_root,
+                ['commit', '--quiet', '-m', 'Add non-UTF-8 sibling'])
+
+        # First run a stamped `GenerateBootstrapFiles`, then add+drop a patch
+        # touching clean[1].cc, then run a manual unstamped "Regenerate
+        # bootstrap files" commit with explicit author metadata.
+        out_dir = os.path.join(self.temporary_directory, 'out_manual')
+        os.makedirs(out_dir, exist_ok=True)
+        roll_protobuf.GenerateBootstrapFiles(out_dir,
+                                             self.fixture.protobuf_directory)
+
+        clean_file = pathlib.Path(self.fixture.protobuf_directory,
+                                  *_PLAN_CLEAN_PATH.split('/'))
+        before_0006 = clean_file.read_text(encoding='utf-8')
+        clean_file.write_text(before_0006 + '// transient 0006\n',
+                              encoding='utf-8',
+                              newline='\n')
+        roll_protobuf.NewPatch('0006-transient',
+                               self.fixture.protobuf_directory)
+        clean_file.write_text(before_0006, encoding='utf-8', newline='\n')
+        _RunGitCommand(self.repository_root, [
+            'rm', '-fq', '--',
+            'third_party/protobuf/patches/0006-transient.patch'
+        ])
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root, [
+            'commit', '--quiet', '-m',
+            'Drop patches/0006-transient.patch\n\nReason: transient'
+        ])
+
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {'src/google/protobuf/compiler/cpp/pre_manual.h': '// pre\n'})
+        roll_protobuf.NewPatch('0007-pre-manual',
+                               self.fixture.protobuf_directory)
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {'src/google/protobuf/descriptor.pb.h': '// outdated\n'})
+        _RunGitCommand(self.repository_root, [
+            'add', 'third_party/protobuf/src/google/protobuf/descriptor.pb.h'
+        ])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Outdate bootstrap header'])
+        subprocess.run([
+            sys.executable,
+            os.path.join(self.fixture.protobuf_directory,
+                         'gen_extra_chromium_files.py'), '-C', out_dir
+        ],
+                       check=True)
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        author_env = {
+            **roll_protobuf._ScratchGitEnvironment(),
+            'GIT_AUTHOR_NAME': 'Manual Roller',
+            'GIT_AUTHOR_EMAIL': 'manual@chromium.org',
+            'GIT_AUTHOR_DATE': '2026-10-20T12:34:56+00:00',
+        }
+        subprocess.run([
+            'git', '-C', self.repository_root, 'commit', '--quiet', '-m',
+            'Regenerate bootstrap files'
+        ],
+                       env=author_env,
+                       capture_output=True,
+                       check=True)
+        pre_rebase_head = _RunGitCommand(self.repository_root,
+                                         ['rev-parse', 'HEAD'])
+        _RunGitCommand(self.repository_root,
+                       ['update-ref', 'refs/tags/import-base', import_sha])
+
+        old_0005_patch = pathlib.Path(
+            self.fixture.protobuf_directory, 'patches',
+            _PLAN_STACKED_PATCH).read_text(encoding='utf-8')
+
+        # Fold a shifted header edit + compiler input edit into 0001 via
+        # `git commit --fixup` + `git rebase --autosquash`, then rewrite
+        # patches along the branch.
+        clean_file.write_text('// shift 1\n// shift 2\n' +
+                              clean_file.read_text(encoding='utf-8'),
+                              encoding='utf-8',
+                              newline='\n')
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {'src/google/protobuf/compiler/cpp/rewritten.h': '// gen\n'})
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', f'--fixup={apply_0001_sha}'])
+        rebase_env = {
+            **roll_protobuf._ScratchGitEnvironment(),
+            'GIT_EDITOR': ':',
+            'GIT_SEQUENCE_EDITOR': ':',
+        }
+        subprocess.run([
+            'git', '-C', self.repository_root, 'rebase', '--interactive',
+            '--keep-empty', '--autosquash', import_sha
+        ],
+                       env=rebase_env,
+                       capture_output=True,
+                       check=True)
+
+        rewritten = roll_protobuf._RewritePatchFilesAlongBranch(
+            checkout, 'refs/tags/import-base', pre_fixup_head=pre_rebase_head)
+        self.assertEqual(
+            (_PLAN_CLEAN_PATCH, _PLAN_STACKED_PATCH, '0006-transient.patch'),
+            rewritten)
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(self.fixture.protobuf_directory, 'patches',
+                             '0006-transient.patch')))
+        self.assertEqual(
+            'Manual Roller <manual@chromium.org> 2026-10-20T12:34:56Z',
+            _RunGitCommand(self.repository_root,
+                           ['log', '-1', '--format=%an <%ae> %aI', 'HEAD']))
+        self.assertNotEqual(
+            old_0005_patch,
+            pathlib.Path(self.fixture.protobuf_directory, 'patches',
+                         _PLAN_STACKED_PATCH).read_text(encoding='utf-8'))
+        self.assertTrue(
+            roll_protobuf._PatchFileTouchesGenerator(checkout,
+                                                     _PLAN_CLEAN_PATCH))
+        self.assertFalse(
+            roll_protobuf._PatchFileTouchesGenerator(checkout,
+                                                     _PLAN_STACKED_PATCH))
+        empty_patch = pathlib.Path(self.fixture.protobuf_directory, 'patches',
+                                   '0998-blank.patch')
+        empty_patch.write_bytes(b'   \n')
+        self.assertFalse(
+            roll_protobuf._PatchFileTouchesGenerator(checkout,
+                                                     '0998-blank.patch'))
+        empty_patch.unlink()
+        self.assertTrue(
+            roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                self.fixture.protobuf_directory,
+                self.fixture.upstream_directory).IsClean())
+
+        # Because _RewritePatchFilesAlongBranch stamped the pre-rebase digest
+        # onto the manual "Regenerate bootstrap files" commit, CheckRoll catches
+        # the newly added compiler input!
+        roll_protobuf._SaveRollState(
+            checkout,
+            dataclasses.replace(
+                roll_protobuf.LoadRollState(self.fixture.protobuf_directory),
+                expected_head=_RunGitCommand(self.repository_root,
+                                             ['rev-parse', 'HEAD'])))
+        stale = roll_protobuf._FindStaleBootstrapTriggers(checkout)
+        self.assertEqual(
+            ('generator inputs changed since last `roll_protobuf.py generate`',
+             ), stale)
+        outdate_body = _RunGitCommand(
+            self.repository_root,
+            ['log', '--grep=^Outdate bootstrap header$', '-1', '--format=%B'])
+        self.assertNotIn('Bootstrap-Inputs-Hash:', outdate_body)
+        if sys.platform != 'win32':
+            self.assertTrue(os.path.isfile(non_utf8_sibling))
+
+        _RunGitCommand(self.repository_root, [
+            'commit', '--quiet', '--allow-empty', '-m',
+            'Apply patches/0999-empty.patch'
+        ])
+        with self.assertRaisesRegex(
+                roll_protobuf.RollProtobufError,
+                r'Fixup left patches/0999-empty\.patch empty; remove its '
+                r'`Apply patches/\.\.\.` commit.*`drop` is replay-only'):
+            roll_protobuf._RewritePatchFilesAlongBranch(checkout, import_sha)
+
+        # Manual upstream import (non-standard subject, C++ bootstrap header
+        # without python/ outputs) stays flagged as 'upstream revision changed'
+        # after _RewritePatchFilesAlongBranch, and README.chromium Step 4 ->
+        # Step 5 manual rolls stay clean on non-generator fixups and flag stale
+        # generator inputs on generator fixups.
+        roll_protobuf.AbortRoll(self.fixture.protobuf_directory)
+        _RunGitCommand(
+            self.repository_root,
+            ['checkout', '--quiet', '-b', 'manual-roll', 'origin/main'])
+        base_sha = _RunGitCommand(self.repository_root,
+                                  ['rev-parse', 'origin/main'])
+        readme_path = pathlib.Path(self.fixture.protobuf_directory,
+                                   'README.chromium')
+        old_readme = readme_path.read_text(encoding='utf-8')
+        new_readme = re.sub(r'^Revision:\s*\S+',
+                            f'Revision: {self.fixture.new_commit}',
+                            old_readme,
+                            flags=re.MULTILINE)
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory, {
+                'README.chromium': new_readme,
+                'src/google/protobuf/descriptor.pb.h': '// upstream c++\n',
+            })
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Manual import 37.0'])
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/manual_patch.cc': '// v1\n'})
+        p_res = roll_protobuf.NewPatch('0006-manual',
+                                       self.fixture.protobuf_directory)
+        pre_manual_head = p_res.commit
+        self.assertIn('upstream revision changed',
+                      roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {'src/google/protobuf/compiler/cpp/m_gen.h': '// gen\n'})
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', f'--fixup={p_res.commit}'])
+        subprocess.run([
+            'git', '-C', self.repository_root, 'rebase', '--interactive',
+            '--keep-empty', '--autosquash', base_sha
+        ],
+                       env=rebase_env,
+                       capture_output=True,
+                       check=True)
+        roll_protobuf._RewritePatchFilesAlongBranch(
+            checkout, base_sha, pre_fixup_head=pre_manual_head)
+        self.assertIn('upstream revision changed',
+                      roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+        # Step 4 (manual gen_extra_chromium_files.py with old Revision) ->
+        # Step 5 (README.chromium Revision update).
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', 'origin/main'])
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {'src/google/protobuf/descriptor.pb.h': '// step2 c++\n'})
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Step 2: extract 37.0'])
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/step3.cc': '// v1\n'})
+        step3_res = roll_protobuf.NewPatch('0006-step3',
+                                           self.fixture.protobuf_directory)
+        subprocess.run([
+            sys.executable,
+            os.path.join(self.fixture.protobuf_directory,
+                         'gen_extra_chromium_files.py'), '-C', out_dir
+        ],
+                       check=True)
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Step 4: manual regen'])
+        readme_path.write_text(new_readme, encoding='utf-8', newline='\n')
+        _RunGitCommand(self.repository_root,
+                       ['add', 'third_party/protobuf/README.chromium'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Step 5: update README'])
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+        # Non-generator fixup keeps Step 4 -> Step 5 clean.
+        pre_s5_head = _RunGitCommand(self.repository_root,
+                                     ['rev-parse', 'HEAD'])
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/step3.cc': '// v2\n'})
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', f'--fixup={step3_res.commit}'])
+        subprocess.run([
+            'git', '-C', self.repository_root, 'rebase', '--interactive',
+            '--keep-empty', '--autosquash', base_sha
+        ],
+                       env=rebase_env,
+                       capture_output=True,
+                       check=True)
+        roll_protobuf._RewritePatchFilesAlongBranch(checkout,
+                                                    base_sha,
+                                                    pre_fixup_head=pre_s5_head)
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+        # Generator fixup stamps Step 5 and flags stale generator inputs.
+        pre_s5_gen = _RunGitCommand(self.repository_root,
+                                    ['rev-parse', 'HEAD'])
+        step3_sha2 = _RunGitCommand(self.repository_root, [
+            'log', '--grep=^Apply patches/0006-step3\\.patch$', '-1',
+            '--format=%H'
+        ])
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {'src/google/protobuf/compiler/cpp/s5_gen.h': '// s5\n'})
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', f'--fixup={step3_sha2}'])
+        subprocess.run([
+            'git', '-C', self.repository_root, 'rebase', '--interactive',
+            '--keep-empty', '--autosquash', base_sha
+        ],
+                       env=rebase_env,
+                       capture_output=True,
+                       check=True)
+        roll_protobuf._RewritePatchFilesAlongBranch(checkout,
+                                                    base_sha,
+                                                    pre_fixup_head=pre_s5_gen)
+        self.assertEqual(
+            ('generator inputs changed since last `roll_protobuf.py generate`',
+             ), roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+
 
 if __name__ == '__main__':
     unittest.main()

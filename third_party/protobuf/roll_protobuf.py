@@ -2531,6 +2531,126 @@ def _FindUnstampedRegenTarget(
     return target
 
 
+def _RewritePatchFilesAlongBranch(
+        checkout: _CheckoutPaths,
+        rebase_base: str,
+        pre_fixup_head: str | None = None) -> tuple[str, ...]:
+    """Rebuilds patches/*.patch from each Apply commit in rebase_base..HEAD."""
+    root = checkout.repository_root
+    subdir_parts = ((*checkout.protobuf_prefix.split('/'),
+                     'patches') if checkout.protobuf_prefix else ('patches', ))
+    pre_t = (_FindUnstampedRegenTarget(checkout, rebase_base, pre_fixup_head)
+             if pre_fixup_head else None)
+    post_t = (_FindUnstampedRegenTarget(checkout, rebase_base, 'HEAD')
+              if pre_t else None)
+    regen_stamp = None
+    if pre_t and post_t and post_t[1] == pre_t[1]:
+        pre_d = _ComputeCommitBootstrapDigest(checkout, pre_t[2], pre_t[3])
+        post_d = _ComputeCommitBootstrapDigest(checkout, post_t[2], post_t[3])
+        if pre_d and pre_d != post_d:
+            regen_stamp = (post_t[0], pre_d)
+    base_sha = _ResolveCommitHash(root, rebase_base) or rebase_base
+    log_records = _RunScratchGit(
+        root, 'log', '--no-show-signature', '--reverse',
+        '--format=%x1e%H%x1f%T%x1f%P%x1f%an%x1f%ae%x1f%aI%x1f%s',
+        f'{base_sha}..HEAD').stdout.decode('utf-8',
+                                           errors='replace').split('\x1e')
+    current_parent = base_sha
+    ls_cache: dict[str, bytes] = {}
+    mktree_cache: dict[bytes, str] = {}
+    carried_blobs: dict[str, tuple[bool, str]] = {}
+    refreshed_bytes: dict[str, bytes] = {}
+    rewritten_patches: list[str] = []
+    for raw_record in log_records[1:]:
+        (orig_sha, orig_tree, orig_parent, author_name, author_email,
+         author_date, subject) = raw_record.rstrip('\r\n').split('\x1f', 6)
+        orig_patches = _ReadPatchesSubtreeBlobs(root, orig_tree, subdir_parts,
+                                                ls_cache)
+        apply_match = _APPLY_PATCH_SUBJECT_PATTERN.match(subject)
+        drop_match = _DROP_PATCH_SUBJECT_PATTERN.match(subject)
+        updates: dict[str, str] = {}
+        for name, (had_blob, carried_new_oid) in list(carried_blobs.items()):
+            if ((drop_match and drop_match.group(1) == name)
+                    or (had_blob and name not in orig_patches)):
+                carried_blobs.pop(name, None)
+            elif (not (apply_match and apply_match.group(1) == name)
+                  and orig_patches.get(name) != carried_new_oid):
+                updates[name] = carried_new_oid
+        if apply_match:
+            patch_name = apply_match.group(1)
+            refreshed_diff = _BuildPatchDiffFromCommit(checkout, orig_sha)
+            if not refreshed_diff:
+                raise RollProtobufError(
+                    f'Fixup left patches/{patch_name} empty; remove its '
+                    '`Apply patches/...` commit, `patches/` file, and '
+                    f'{_README_FILENAME} entry (`drop` is replay-only).')
+            new_blob_oid = _RunScratchGit(
+                root,
+                'hash-object',
+                '-w',
+                '--no-filters',
+                '--stdin',
+                input_bytes=refreshed_diff).stdout.decode().strip()
+            old_blob_oid = orig_patches.get(patch_name)
+            if new_blob_oid != old_blob_oid:
+                carried_blobs[patch_name] = (bool(old_blob_oid), new_blob_oid)
+                updates[patch_name] = new_blob_oid
+                rewritten_patches.append(patch_name)
+                refreshed_bytes[patch_name] = refreshed_diff
+            else:
+                carried_blobs.pop(patch_name, None)
+                refreshed_bytes.pop(patch_name, None)
+        stamp_digest = (regen_stamp[1] if regen_stamp
+                        and orig_sha == regen_stamp[0] else None)
+        new_tree = (_UpdatePatchesSubtree(root, orig_tree, subdir_parts,
+                                          updates, ls_cache, mktree_cache)
+                    if updates else orig_tree)
+        if (new_tree == orig_tree and current_parent == orig_parent
+                and stamp_digest is None):
+            current_parent = orig_sha
+            continue
+        raw_msg = _RunScratchGit(root, 'cat-file', 'commit',
+                                 orig_sha).stdout.partition(b'\n\n')[2]
+        if stamp_digest:
+            trailer = f'\n\n{_BOOTSTRAP_INPUTS_TRAILER_KEY}: {stamp_digest}\n'
+            raw_msg = raw_msg.rstrip(b'\n') + trailer.encode('utf-8')
+        commit_env = {
+            **_ScratchGitEnvironment(),
+            'GIT_AUTHOR_NAME': author_name,
+            'GIT_AUTHOR_EMAIL': author_email,
+            'GIT_AUTHOR_DATE': author_date,
+        }
+        current_parent = _RunGit([
+            'git', '-C', root, 'commit-tree', new_tree, '-p', current_parent,
+            '-F', '-'
+        ],
+                                 env=commit_env,
+                                 input_bytes=raw_msg).stdout.decode().strip()
+
+    old_head = _RunScratchGit(root, 'rev-parse',
+                              'HEAD').stdout.decode().strip()
+    if current_parent != old_head:
+        _RunScratchGit(root, 'update-ref', '-m',
+                       'roll_protobuf.py fixup: refresh patches', 'HEAD',
+                       current_parent, old_head)
+    final_patches = _ReadPatchesSubtreeBlobs(root, current_parent,
+                                             subdir_parts, ls_cache)
+    updated_disk_paths = []
+    for name, diff_bytes in sorted(refreshed_bytes.items()):
+        if (name in carried_blobs
+                and final_patches.get(name) == carried_blobs[name][1]):
+            patch_path = os.path.join(checkout.protobuf_directory, 'patches',
+                                      name)
+            os.makedirs(os.path.dirname(patch_path), exist_ok=True)
+            pathlib.Path(patch_path).write_bytes(diff_bytes)
+            updated_disk_paths.append(patch_path)
+    if updated_disk_paths:
+        _RunScratchGit(root, '-c', 'core.autocrlf=false', '-c',
+                       'core.safecrlf=false', 'add', '--force', '--',
+                       *updated_disk_paths)
+    return tuple(dict.fromkeys(rewritten_patches))
+
+
 def _PatchFileTouchesGenerator(checkout: _CheckoutPaths,
                                patch_name: str) -> bool:
     patch_path = os.path.join(checkout.protobuf_directory, 'patches',
