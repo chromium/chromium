@@ -1603,9 +1603,15 @@ def _RejectStagedChangesOutsideProtobuf(checkout: _CheckoutPaths) -> None:
 
 
 def ContinueRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY,
-                 allow_extra_files: bool = False) -> RollState:
+                 allow_extra_files: bool = False) -> 'RollState | FixupResult':
     """Commits a resolved patch conflict, refreshes its .patch, and continues."""
     checkout = _ResolveCheckoutPaths(protobuf_directory)
+    if fixup_state := _LoadActiveFixupState(checkout):
+        return _ContinueFixupRebase(checkout, fixup_state, allow_extra_files)
+    if _IsGitOperationInProgress(checkout):
+        raise RollProtobufError(
+            'Cannot run `roll_protobuf.py continue` while an external git '
+            'rebase, merge, or cherry-pick is in progress.')
     state = _RequireActiveConflictState(checkout, 'roll_protobuf.py continue')
     leftover_rejects = tuple(
         path
@@ -3042,6 +3048,170 @@ def _FindUnresolvedUnmergedPaths(repository_root: str,
     return tuple(unresolved)
 
 
+def _ContinueFixupRebase(checkout: _CheckoutPaths, fixup_state: FixupState,
+                         allow_extra_files: bool) -> FixupResult:
+    """Validates resolved conflicts, continues rebase, and rewrites patches."""
+    root = checkout.repository_root
+    rejects = tuple(
+        p for p in _ListRegularFilesInDirectory(checkout.protobuf_directory)
+        if p.endswith(('.rej', '.orig')))
+    if rejects:
+        raise RollProtobufError(
+            'Remove .rej and .orig files under //third_party/protobuf before '
+            'continuing: ' + ', '.join(rejects))
+    git_dir = os.path.dirname(checkout.roll_state_directory)
+    is_amend = (os.path.isfile(os.path.join(git_dir, 'rebase-merge', 'amend'))
+                and _ResolveCommitHash(root, 'HEAD~1') is not None)
+    commit_base = 'HEAD~1' if is_amend else 'HEAD'
+    subj_proc = _RunScratchGit(root,
+                               'log',
+                               '-1',
+                               '--no-show-signature',
+                               '--format=%s',
+                               'REBASE_HEAD',
+                               accepted_return_codes=None)
+    subject = (subj_proc.stdout.decode('utf-8', errors='replace').strip()
+               if subj_proc.returncode == 0 else '')
+    protobuf_pathspec = checkout.protobuf_prefix or '.'
+    prefix_slash = (f'{checkout.protobuf_prefix}/'
+                    if checkout.protobuf_prefix else '')
+    untracked_proto = {
+        p.rstrip('/')
+        for p in _SplitNulSeparatedPaths(
+            _RunScratchGit(root, 'ls-files', '--others', '--exclude-standard',
+                           '-z', '--', protobuf_pathspec).stdout)
+    }
+    if patch_match := _REBASE_PATCH_SUBJECT_PATTERN.match(subject):
+        _RejectStagedChangesOutsideProtobuf(checkout)
+        dirty_head = set(
+            _SplitNulSeparatedPaths(
+                _RunScratchGit(root, 'diff', '--no-renames', '--name-only',
+                               '--ignore-submodules=all', '-z',
+                               'HEAD').stdout))
+        unmerged_all = set(
+            _SplitNulSeparatedPaths(
+                _RunScratchGit(root, 'diff', '--name-only',
+                               '--ignore-submodules=all', '-z',
+                               '--diff-filter=U').stdout))
+        if outside := sorted(
+                p for p in (dirty_head | unmerged_all)
+                if prefix_slash and not p.startswith(prefix_slash)):
+            raise RollProtobufError('Uncommitted changes outside '
+                                    '//third_party/protobuf block '
+                                    '`git rebase --continue`: ' +
+                                    ', '.join(outside))
+        patch_name = patch_match.group(1)
+        changed = sorted(
+            set(
+                _SplitNulSeparatedPaths(
+                    _RunScratchGit(root, 'diff', '--no-renames', '--name-only',
+                                   '-z', commit_base, '--',
+                                   protobuf_pathspec).stdout))
+            | untracked_proto)
+        if marked := _FindFilesWithConflictMarkers(
+                root, (*changed, *fixup_state.conflict_files)):
+            raise RollProtobufError('Unresolved conflict markers remain in: ' +
+                                    ', '.join(marked))
+        if unresolved := _FindUnresolvedUnmergedPaths(root, protobuf_pathspec):
+            raise RollProtobufError(
+                'Unresolved unmerged files remain (write the merged file or '
+                '`git add`/`git rm` it): ' + ', '.join(unresolved))
+        content = [
+            p for p in changed if p != f'{prefix_slash}patches/{patch_name}'
+        ]
+        if not content:
+            raise RollProtobufError(
+                f'No changes remain for {patch_name}; resolve the conflict in '
+                'the working tree or run `roll_protobuf.py abort` to undo '
+                'the fixup.')
+        bad = [
+            p for p in content
+            if IsChromiumOwnedFile(rel := p.removeprefix(prefix_slash))
+            or rel in BOOTSTRAP_GENERATED_FILES or (
+                os.path.lexists(fp := os.path.join(root, *p.split('/')))
+                and not _IsRegularFile(fp))
+        ]
+        if bad:
+            raise RollProtobufError(
+                'Chromium-owned or bootstrap-generated files cannot be '
+                'included in an upstream patch commit: ' + ', '.join(bad))
+        allowed = set(fixup_state.conflict_files)
+        if _ResolveCommitHash(root, 'REBASE_HEAD') is not None:
+            allowed |= _CommitTouchedPaths(root, 'REBASE_HEAD',
+                                           checkout.protobuf_prefix)
+        if is_amend:
+            allowed |= _CommitTouchedPaths(root, 'HEAD',
+                                           checkout.protobuf_prefix)
+        if (extra := sorted(set(content) - allowed)) and not allow_extra_files:
+            raise RollProtobufError(
+                f'Modified files not touched by {patch_name} '
+                '(pass --allow-extra-files if intentional): ' +
+                ', '.join(extra))
+        _RunScratchGit(root, '-c', 'core.safecrlf=false', 'add', '--all', '--',
+                       protobuf_pathspec)
+    else:
+        changed = sorted(
+            set(
+                _SplitNulSeparatedPaths(
+                    _RunScratchGit(root, 'diff', '--ignore-submodules=all',
+                                   '--no-renames', '--name-only', '-z',
+                                   commit_base).stdout)) | untracked_proto)
+        if marked := _FindFilesWithConflictMarkers(
+                root, (*changed, *fixup_state.conflict_files)):
+            raise RollProtobufError('Unresolved conflict markers remain in: ' +
+                                    ', '.join(marked))
+        if unresolved := _FindUnresolvedUnmergedPaths(root):
+            raise RollProtobufError(
+                'Unresolved unmerged files remain (write the merged file or '
+                '`git add`/`git rm` it): ' + ', '.join(unresolved))
+        unstaged = _SplitNulSeparatedPaths(
+            _RunScratchGit(root, 'diff', '--ignore-submodules=all',
+                           '--no-renames', '--name-only', '-z').stdout)
+        unmerged = _SplitNulSeparatedPaths(
+            _RunScratchGit(root, 'diff', '--ignore-submodules=all',
+                           '--name-only', '-z', '--diff-filter=U').stdout)
+        to_stage = sorted(set(unstaged) | set(unmerged) | untracked_proto)
+        if to_stage:
+            _RunScratchGit(root, '-c', 'core.safecrlf=false',
+                           '--literal-pathspecs', 'add', '--all', '--',
+                           *to_stage)
+
+    proc = _RunGit(['git', '-C', root, 'rebase', '--continue'],
+                   env=_RebaseGitEnvironment(checkout),
+                   accepted_return_codes=None)
+    if proc.returncode != 0:
+        if _IsGitRebaseInProgress(checkout):
+            nxt = _BuildFixupConflictState(checkout,
+                                           fixup_state.pre_fixup_head,
+                                           fixup_state.rebase_base,
+                                           fixup_state.target_patch)
+            _SaveFixupState(checkout, nxt)
+            if nxt.conflict_files:
+                c_head = _ResolveCommitHash(root, 'HEAD') or ''
+                return FixupResult('conflict', fixup_state.target_patch,
+                                   c_head, (), False, nxt.conflicting_patch,
+                                   nxt.conflict_files, nxt.index, nxt.total)
+        details = '\n'.join(
+            s.decode('utf-8', errors='replace').strip()
+            for s in (proc.stderr, proc.stdout) if s.strip())
+        raise RollProtobufError(
+            f'git rebase --continue failed for '
+            f'patches/{fixup_state.target_patch}: {details}')
+    _RemoveFixupState(checkout)
+    try:
+        rewritten = _RewritePatchFilesAlongBranch(
+            checkout,
+            fixup_state.rebase_base,
+            pre_fixup_head=fixup_state.pre_fixup_head)
+    except Exception:
+        _RunScratchGit(root, 'reset', '--quiet', '--mixed',
+                       fixup_state.pre_fixup_head)
+        raise
+    return _FinalizeCompletedFixup(checkout, fixup_state.rebase_base,
+                                   fixup_state.pre_fixup_head,
+                                   fixup_state.target_patch, rewritten)
+
+
 def FormatFixupReport(result: FixupResult) -> str:
     if result.phase == 'conflict':
         cp = result.conflicting_patch or result.target_patch
@@ -3730,7 +3900,8 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
             result = ContinueRoll(
                 arguments.protobuf_directory,
                 allow_extra_files=arguments.allow_extra_files)
-            report = FormatRollStateReport(result)
+            report = (FormatFixupReport(result) if isinstance(
+                result, FixupResult) else FormatRollStateReport(result))
             exit_code = (EXIT_CODE_CONFLICT
                          if result.phase == 'conflict' else EXIT_CODE_SUCCESS)
         elif arguments.subcommand == 'drop':
