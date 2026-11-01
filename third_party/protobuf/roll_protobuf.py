@@ -2121,6 +2121,12 @@ def _ProtobufPathsFromGit(checkout: _CheckoutPaths, *git_arguments:
     }
 
 
+_APPLY_PATCH_SUBJECT_PATTERN = re.compile(
+    r'^Apply patches/([0-9]{4}-[^\s/]+\.patch)$')
+_DROP_PATCH_SUBJECT_PATTERN = re.compile(
+    r'^Drop patches/([0-9]{4}-[^\s/]+\.patch)(?:\s|$)')
+
+
 def _IsGitOperationInProgress(checkout: _CheckoutPaths) -> bool:
     git_dir = os.path.dirname(checkout.roll_state_directory)
     return any(
@@ -2366,6 +2372,183 @@ def FormatNewPatchReport(result: NewPatchResult) -> str:
             '`roll_protobuf.py generate -C <out_dir>` to update bootstrap '
             'files.')
     return '\n'.join(lines)
+
+
+def _ListGitTree(
+        root: str, sha: str,
+        ls_cache: dict[str, bytes]) -> list[tuple[str, str, str, str]]:
+    if sha not in ls_cache:
+        args = ('ls-tree', '-z', sha)
+        proc = _RunScratchGit(root, *args, accepted_return_codes=None)
+        ls_cache[sha] = proc.stdout if proc.returncode == 0 else b''
+    return [(*h.split(' '), n)
+            for rec in _SplitNulSeparatedPaths(ls_cache[sha])
+            for h, n in (rec.split('\t', 1), )]
+
+
+def _ReadPatchesSubtreeBlobs(root: str, commit_or_tree: str,
+                             subdir_parts: tuple[str, ...],
+                             ls_cache: dict[str, bytes]) -> dict[str, str]:
+    spec = f'{commit_or_tree}:{"/".join(subdir_parts)}/'
+    return {
+        n: oid
+        for _, kind, oid, n in _ListGitTree(root, spec, ls_cache)
+        if kind == 'blob' and n.endswith('.patch')
+    }
+
+
+def _UpdatePatchesSubtree(root: str, tree_sha: str | None,
+                          subdir_parts: tuple[str, ...],
+                          updates: Mapping[str, str], ls_cache: dict[str,
+                                                                     bytes],
+                          mktree_cache: dict[bytes, str]) -> str:
+    parsed = _ListGitTree(root, tree_sha, ls_cache) if tree_sha else []
+    entries, changed, seen = [], False, set()
+    for mode, kind, oid, name in parsed:
+        seen.add(name)
+        if subdir_parts:
+            if name == subdir_parts[0] and kind == 'tree':
+                new_oid = _UpdatePatchesSubtree(root, oid, subdir_parts[1:],
+                                                updates, ls_cache,
+                                                mktree_cache)
+                if new_oid != oid:
+                    oid, changed = new_oid, True
+        elif kind == 'blob' and name in updates:
+            if (new_oid := updates[name]) != oid:
+                oid, changed = new_oid, True
+        entries.append(f'{mode} {kind} {oid}\t{name}\0')
+    if subdir_parts:
+        if subdir_parts[0] not in seen and updates:
+            new_oid = _UpdatePatchesSubtree(root, None, subdir_parts[1:],
+                                            updates, ls_cache, mktree_cache)
+            entries.append(f'040000 tree {new_oid}\t{subdir_parts[0]}\0')
+            changed = True
+    else:
+        for name, new_oid in sorted(updates.items()):
+            if name not in seen:
+                entries.append(f'100644 blob {new_oid}\t{name}\0')
+                changed = True
+    if not changed and tree_sha is not None:
+        return tree_sha
+    payload = ''.join(entries).encode('utf-8', errors='surrogateescape')
+    if payload not in mktree_cache:
+        mktree_cache[payload] = _RunScratchGit(
+            root, 'mktree', '-z', input_bytes=payload).stdout.decode().strip()
+    return mktree_cache[payload]
+
+
+def _ComputeCommitBootstrapDigest(
+        checkout: _CheckoutPaths,
+        commit: str,
+        revision_override: str | None = None) -> str | None:
+    rev = revision_override or _ReadGitReadmeRevision(checkout, commit)
+    if rev is None:
+        return None
+    tree_spec = (f'{commit}:{checkout.protobuf_prefix}'
+                 if checkout.protobuf_prefix else commit)
+    ls_proc = _RunScratchGit(checkout.repository_root,
+                             'ls-tree',
+                             '-r',
+                             '-z',
+                             tree_spec,
+                             accepted_return_codes=None)
+    if ls_proc.returncode != 0:
+        return None
+    input_blobs = []
+    for record in _SplitNulSeparatedPaths(ls_proc.stdout):
+        meta, rel_path = record.split('\t', 1)
+        mode, kind, oid = meta.split(' ')
+        if (kind == 'blob' and mode in ('100644', '100755')
+                and IsBootstrapGeneratorInput(rel_path)):
+            input_blobs.append((rel_path, oid))
+    input_blobs.sort()
+    batch = _RunScratchGit(
+        checkout.repository_root,
+        'cat-file',
+        '--batch',
+        input_bytes=''.join(f'{oid}\n'
+                            for _, oid in input_blobs).encode('ascii')).stdout
+    digest = hashlib.sha256(f'Revision:{rev}\0'.encode('utf-8'))
+    offset = 0
+    for rel_path, _ in input_blobs:
+        nl = batch.index(b'\n', offset)
+        size = int(batch[offset:nl].rsplit(b' ', 1)[1])
+        raw_bytes = batch[nl + 1:nl + 1 + size]
+        offset = nl + 1 + size + 1
+        digest.update(
+            rel_path.encode('utf-8') + b'\0' +
+            raw_bytes.replace(b'\r\n', b'\n') + b'\0')
+    return digest.hexdigest()
+
+
+def _FindUnstampedRegenTarget(
+        checkout: _CheckoutPaths, rebase_base: str,
+        tip_ref: str) -> tuple[str, str, str, str | None] | None:
+    root = checkout.repository_root
+    prefix = f'{checkout.protobuf_prefix}/' if checkout.protobuf_prefix else ''
+    base_subj = _RunScratchGit(root, 'log', '-1', '--no-show-signature',
+                               '--format=%s', rebase_base).stdout.decode(
+                                   'utf-8', errors='replace').strip()
+    prev_rev = _ReadGitReadmeRevision(checkout, rebase_base)
+    unregen_rev = base_subj.startswith('Import upstream protobuf ')
+    step5_ready, target = False, None
+    raw_log = _RunScratchGit(root, 'log', '--no-show-signature', '--no-merges',
+                             '--reverse', '--no-renames', '-z',
+                             '--name-status',
+                             '--format=%x1e%H%x1f%s%x1f%B%x1d',
+                             f'{rebase_base}..{tip_ref}').stdout
+    trailer_re = re.compile(
+        rf'^[ \t]*{_BOOTSTRAP_INPUTS_TRAILER_KEY}:\s*[0-9a-f]{{64}}[ \t]*$',
+        re.MULTILINE)
+    for raw_record in raw_log.split(b'\x1e')[1:]:
+        header, _, status_blob = raw_record.partition(b'\x1d')
+        sha, subj, body = header.decode('utf-8',
+                                        errors='replace').split('\x1f', 2)
+        written = _ParseNameStatusWrittenPaths(status_blob, prefix)
+        rev = (_ReadGitReadmeRevision(checkout, sha)
+               if _README_FILENAME in written else prev_rev)
+        rev_changed, prev_rev = (prev_rev is not None and rev != prev_rev), rev
+        has_hash = bool(trailer_re.search(body))
+        is_import = subj.startswith('Import upstream protobuf ')
+        wrote_boot = written & BOOTSTRAP_GENERATED_FILES
+        wrote_py = any(p.startswith('python/') for p in wrote_boot)
+        is_manual = not is_import and (wrote_py if (rev_changed or unregen_rev)
+                                       else bool(wrote_boot))
+        is_step5 = (rev_changed and step5_ready and not is_import
+                    and all(IsChromiumOwnedFile(p) for p in written))
+        if has_hash or subj == 'Regenerate bootstrap files' or is_manual:
+            target = ((sha, subj, sha,
+                       None) if not has_hash and not is_import else None)
+            step5_ready = (not has_hash and not rev_changed and not unregen_rev
+                           and (step5_ready or wrote_py
+                                or subj == 'Regenerate bootstrap files'))
+            unregen_rev = False
+        elif (rev_changed and not is_step5) or is_import:
+            target, step5_ready, unregen_rev = None, False, True
+        elif is_step5:
+            target = (sha, subj, target[2], rev) if target else None
+            step5_ready = False
+    return target
+
+
+def _PatchFileTouchesGenerator(checkout: _CheckoutPaths,
+                               patch_name: str) -> bool:
+    patch_path = os.path.join(checkout.protobuf_directory, 'patches',
+                              patch_name)
+    if not os.path.isfile(patch_path):
+        return False
+    raw_patch = pathlib.Path(patch_path).read_bytes()
+    if not raw_patch.strip():
+        return False
+    numstat = _RunScratchGit(checkout.repository_root,
+                             'apply',
+                             '--numstat',
+                             '-z',
+                             '-',
+                             input_bytes=raw_patch).stdout
+    return any(
+        IsBootstrapGeneratorInput(record.split('\t', 2)[2])
+        for record in _SplitNulSeparatedPaths(numstat) if '\t' in record)
 
 
 def _FindLocalHygieneErrors(checkout: _CheckoutPaths) -> tuple[str, ...]:

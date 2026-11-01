@@ -4924,6 +4924,67 @@ class RollProtobufStartTest(unittest.TestCase):
             roll_protobuf.NewPatch('0006-subrepo',
                                    self.fixture.protobuf_directory)
 
+    def testTreeAndBootstrapDigestHelpersForFixup(self):
+        self._StartCleanRoll(with_fake_generator=True)
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        self.assertIsNotNone(
+            roll_protobuf._APPLY_PATCH_SUBJECT_PATTERN.match(
+                'Apply patches/0001-clean.patch'))
+        self.assertIsNotNone(
+            roll_protobuf._DROP_PATCH_SUBJECT_PATTERN.match(
+                'Drop patches/0003-upstreamed.patch (already upstream)'))
+
+        self.assertFalse(
+            roll_protobuf._PatchFileTouchesGenerator(checkout,
+                                                     _PLAN_CLEAN_PATCH))
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {'src/google/protobuf/compiler/cpp/enum.h': '// compiler edit\n'})
+        compiler_patch = roll_protobuf.NewPatch(
+            '0006-compiler', self.fixture.protobuf_directory)
+        self.assertTrue(
+            roll_protobuf._PatchFileTouchesGenerator(
+                checkout, compiler_patch.patch_name))
+
+        ls_cache = {}
+        mktree_cache = {}
+        subdir_parts = ('third_party', 'protobuf', 'patches')
+        blobs = roll_protobuf._ReadPatchesSubtreeBlobs(self.repository_root,
+                                                       'HEAD', subdir_parts,
+                                                       ls_cache)
+        self.assertIn(_PLAN_CLEAN_PATCH, blobs)
+        updated_blobs = dict(blobs)
+        updated_blobs['0099-temp.patch'] = _RunGitCommand(
+            self.repository_root,
+            ['rev-parse', f'HEAD:{checkout.protobuf_prefix}/README.chromium'])
+        new_tree = roll_protobuf._UpdatePatchesSubtree(self.repository_root,
+                                                       'HEAD^{tree}',
+                                                       subdir_parts,
+                                                       updated_blobs, ls_cache,
+                                                       mktree_cache)
+        tree_entries = {
+            name: oid
+            for _, _, oid, name in roll_protobuf._ListGitTree(
+                self.repository_root,
+                f'{new_tree}:{checkout.protobuf_prefix}/patches', ls_cache)
+        }
+        self.assertIn('0099-temp.patch', tree_entries)
+
+        digest_before = roll_protobuf._ComputeCommitBootstrapDigest(
+            checkout, 'HEAD')
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'BUILD.gn': '# non-generator edit\n'})
+        _RunGitCommand(self.repository_root,
+                       ['add', 'third_party/protobuf/BUILD.gn'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Edit BUILD.gn'])
+        self.assertEqual(
+            digest_before,
+            roll_protobuf._ComputeCommitBootstrapDigest(checkout, 'HEAD'))
+        self.assertIsNone(
+            roll_protobuf._FindUnstampedRegenTarget(checkout, 'origin/main',
+                                                    'HEAD'))
 
 
 if __name__ == '__main__':
