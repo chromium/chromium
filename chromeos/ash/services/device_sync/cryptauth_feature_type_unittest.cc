@@ -19,10 +19,30 @@ const char kEasyUnlockHostEncodedHash[] = "n_ekjyVWntQ";
 
 }  // namespace
 
+TEST(DeviceSyncCryptAuthFeatureTypeTest, FeatureTypeSets) {
+  EXPECT_TRUE(base::Intersection(GetSupportedCryptAuthFeatureTypes(),
+                                 GetEnabledCryptAuthFeatureTypes())
+                  .empty());
+  EXPECT_EQ(GetAllCryptAuthFeatureTypes(),
+            base::Union(GetSupportedCryptAuthFeatureTypes(),
+                        GetEnabledCryptAuthFeatureTypes()));
+  EXPECT_EQ(GetAllCryptAuthFeatureTypes(), CryptAuthFeatureTypeSet::All());
+}
+
 TEST(DeviceSyncCryptAuthFeatureTypeTest, ToAndFromString) {
   for (CryptAuthFeatureType feature_type : GetAllCryptAuthFeatureTypes()) {
     EXPECT_EQ(feature_type, CryptAuthFeatureTypeFromString(
                                 CryptAuthFeatureTypeToString(feature_type)));
+  }
+
+  EXPECT_EQ(GetAllCryptAuthFeatureTypes().size(),
+            GetAllCryptAuthFeatureTypeStrings().size());
+  for (std::string_view feature_type_string :
+       GetAllCryptAuthFeatureTypeStrings()) {
+    std::optional<CryptAuthFeatureType> feature_type =
+        CryptAuthFeatureTypeFromString(feature_type_string);
+    ASSERT_TRUE(feature_type.has_value());
+    EXPECT_TRUE(GetAllCryptAuthFeatureTypes().Has(*feature_type));
   }
 }
 

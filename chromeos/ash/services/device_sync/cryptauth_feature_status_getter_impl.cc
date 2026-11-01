@@ -5,8 +5,10 @@
 #include "chromeos/ash/services/device_sync/cryptauth_feature_status_getter_impl.h"
 
 #include <array>
+#include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -99,14 +101,14 @@ ConvertFeatureStatusesToSoftwareFeatureMap(
       continue;
     }
 
-    if (GetSupportedCryptAuthFeatureTypes().contains(*feature_type) &&
+    if (GetSupportedCryptAuthFeatureTypes().Has(*feature_type) &&
         status.enabled()) {
       marked_supported.insert(
           CryptAuthFeatureTypeToSoftwareFeature(*feature_type));
       continue;
     }
 
-    if (GetEnabledCryptAuthFeatureTypes().contains(*feature_type) &&
+    if (GetEnabledCryptAuthFeatureTypes().Has(*feature_type) &&
         status.enabled()) {
       marked_enabled.insert(
           CryptAuthFeatureTypeToSoftwareFeature(*feature_type));
@@ -209,9 +211,10 @@ void CryptAuthFeatureStatusGetterImpl::OnAttemptStarted(
   cryptauthv2::BatchGetFeatureStatusesRequest request;
   request.mutable_context()->CopyFrom(request_context);
   *request.mutable_device_ids() = {device_ids.begin(), device_ids.end()};
-  *request.mutable_feature_types() = {
-      GetAllCryptAuthFeatureTypeStrings().begin(),
-      GetAllCryptAuthFeatureTypeStrings().end()};
+  base::span<const std::string_view> feature_types =
+      GetAllCryptAuthFeatureTypeStrings();
+  *request.mutable_feature_types() = {feature_types.begin(),
+                                      feature_types.end()};
 
   start_get_feature_statuses_timestamp_ = base::TimeTicks::Now();
 

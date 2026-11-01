@@ -8,8 +8,10 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/enum_set.h"
+#include "base/containers/span.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 
 namespace ash {
@@ -42,6 +44,7 @@ namespace device_sync {
 enum class CryptAuthFeatureType {
   // Support for multi-device features in general.
   kBetterTogetherHostSupported = 0,
+  kMinValue = kBetterTogetherHostSupported,
   kBetterTogetherHostEnabled = 1,
   kBetterTogetherClientSupported = 2,
   kBetterTogetherClientEnabled = 3,
@@ -98,10 +101,14 @@ enum class CryptAuthFeatureType {
   kMaxValue = kPhoneHubCameraRollClientEnabled
 };
 
-const base::flat_set<CryptAuthFeatureType>& GetAllCryptAuthFeatureTypes();
-const base::flat_set<CryptAuthFeatureType>& GetSupportedCryptAuthFeatureTypes();
-const base::flat_set<CryptAuthFeatureType>& GetEnabledCryptAuthFeatureTypes();
-const base::flat_set<std::string_view>& GetAllCryptAuthFeatureTypeStrings();
+using CryptAuthFeatureTypeSet = base::EnumSet<CryptAuthFeatureType,
+                                              CryptAuthFeatureType::kMinValue,
+                                              CryptAuthFeatureType::kMaxValue>;
+
+CryptAuthFeatureTypeSet GetAllCryptAuthFeatureTypes();
+CryptAuthFeatureTypeSet GetSupportedCryptAuthFeatureTypes();
+CryptAuthFeatureTypeSet GetEnabledCryptAuthFeatureTypes();
+base::span<const std::string_view> GetAllCryptAuthFeatureTypeStrings();
 
 // Provides a unique mapping between each CryptAuthFeatureType enum value and
 // the corresponding string used in the protos and understood by CryptAuth.

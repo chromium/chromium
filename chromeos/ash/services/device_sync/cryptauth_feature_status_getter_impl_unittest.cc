@@ -27,6 +27,7 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_v2_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -60,14 +61,14 @@ const cryptauthv2::RequestContext& GetRequestContext() {
 
 cryptauthv2::DeviceFeatureStatus ConvertDeviceToDeviceFeatureStatus(
     const CryptAuthDevice& device,
-    const base::flat_set<CryptAuthFeatureType>& feature_types) {
+    CryptAuthFeatureTypeSet feature_types) {
   cryptauthv2::DeviceFeatureStatus device_feature_status;
   device_feature_status.set_device_id(device.instance_id());
 
   int64_t last_modified_time_offset_millis = 0;
   for (CryptAuthFeatureType feature_type : feature_types) {
     bool is_supported_feature_type =
-        GetSupportedCryptAuthFeatureTypes().contains(feature_type);
+        GetSupportedCryptAuthFeatureTypes().Has(feature_type);
 
     const auto it = device.feature_states.find(
         CryptAuthFeatureTypeToSoftwareFeature(feature_type));
@@ -93,7 +94,7 @@ cryptauthv2::DeviceFeatureStatus ConvertDeviceToDeviceFeatureStatus(
     if (is_supported_feature_type) {
       feature_status->set_enabled(is_supported);
     } else {
-      EXPECT_TRUE(GetEnabledCryptAuthFeatureTypes().contains(feature_type));
+      EXPECT_TRUE(GetEnabledCryptAuthFeatureTypes().Has(feature_type));
       feature_status->set_enabled(is_enabled);
     }
   }
@@ -165,15 +166,13 @@ class DeviceSyncCryptAuthFeatureStatusGetterImplTest
               base::flat_set<std::string>(
                   batch_get_feature_statuses_request_->device_ids().begin(),
                   batch_get_feature_statuses_request_->device_ids().end()));
-    EXPECT_EQ(GetAllCryptAuthFeatureTypeStrings(),
-              base::flat_set<std::string_view>(
-                  batch_get_feature_statuses_request_->feature_types().begin(),
-                  batch_get_feature_statuses_request_->feature_types().end()));
+    EXPECT_THAT(batch_get_feature_statuses_request_->feature_types(),
+                testing::ElementsAreArray(GetAllCryptAuthFeatureTypeStrings()));
   }
 
   void SendCorrectBatchGetFeatureStatusesResponse(
       const base::flat_set<std::string>& device_ids,
-      const base::flat_set<CryptAuthFeatureType>& feature_types) {
+      CryptAuthFeatureTypeSet feature_types) {
     cryptauthv2::BatchGetFeatureStatusesResponse response;
     for (const std::string& device_id : device_ids) {
       std::optional<CryptAuthDevice> device = GetTestDeviceWithId(device_id);
