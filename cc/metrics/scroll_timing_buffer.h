@@ -12,8 +12,11 @@
 
 #include "base/memory/shared_memory_safety_checker.h"
 #include "base/memory/structured_shared_memory.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/scroll_timing_info.h"
+#include "cc/paint/element_id.h"
+#include "ui/events/types/scroll_input_type.h"
 
 namespace base {
 class ReadOnlySharedMemoryRegion;
@@ -33,8 +36,11 @@ class CC_EXPORT ScrollTimingBuffer {
     // Seqlock: 2 * (index + 1) once the slot holds the record at `index`, odd
     // while Push() overwrites it.
     base::subtle::SharedAtomic<uint64_t> sequence{0};
-    // Accessed through std::atomic_ref because reads can race with Push().
-    ScrollTimingInfo record{};
+    // The whole record is too large for lock-free atomic access.
+    base::subtle::SharedAtomic<base::TimeTicks> start_time;
+    base::subtle::SharedAtomic<base::TimeTicks> end_time;
+    base::subtle::SharedAtomic<ui::ScrollInputType> input_type;
+    base::subtle::SharedAtomic<ElementId> element_id;
   };
 
   struct CC_EXPORT SharedState {

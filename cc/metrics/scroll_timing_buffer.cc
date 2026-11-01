@@ -30,13 +30,18 @@ std::unique_ptr<ScrollTimingBuffer> ScrollTimingBuffer::Create() {
 }
 
 void ScrollTimingBuffer::Push(const ScrollTimingInfo& record) {
+  // Keep the shared payload in sync when ScrollTimingInfo gains fields.
+  const auto& [start_time, end_time, input_type, element_id] = record;
   SharedState& state = storage_.WritableRef();
   const uint64_t index = state.write_count.load(std::memory_order_relaxed);
   Slot& slot = state.slots[index % kCapacity];
   // Seqlock write, as in device::OneWriterSeqLock::WriteBegin()/WriteEnd().
   slot.sequence.store(2 * index + 1, std::memory_order_relaxed);
   std::atomic_thread_fence(std::memory_order_release);
-  std::atomic_ref(slot.record).store(record, std::memory_order_relaxed);
+  slot.start_time.store(start_time, std::memory_order_relaxed);
+  slot.end_time.store(end_time, std::memory_order_relaxed);
+  slot.input_type.store(input_type, std::memory_order_relaxed);
+  slot.element_id.store(element_id, std::memory_order_relaxed);
   slot.sequence.store(2 * index + 2, std::memory_order_release);
   state.write_count.store(index + 1, std::memory_order_release);
 }
@@ -86,11 +91,12 @@ ScrollTimingBufferConsumer::Snapshot ScrollTimingBufferConsumer::ReadRecords() {
     const uint64_t sequence = 2 * index + 2;
     const uint64_t sequence_before =
         slot.sequence.load(std::memory_order_acquire);
-    // TODO(https://github.com/llvm/llvm-project/issues/118378): Remove
-    // const_cast.
-    const ScrollTimingInfo record =
-        std::atomic_ref(const_cast<ScrollTimingInfo&>(slot.record))
-            .load(std::memory_order_relaxed);
+    const ScrollTimingInfo record{
+        .start_time = slot.start_time.load(std::memory_order_relaxed),
+        .end_time = slot.end_time.load(std::memory_order_relaxed),
+        .input_type = slot.input_type.load(std::memory_order_relaxed),
+        .element_id = slot.element_id.load(std::memory_order_relaxed),
+    };
     std::atomic_thread_fence(std::memory_order_acquire);
     if (sequence_before == sequence &&
         slot.sequence.load(std::memory_order_relaxed) == sequence) {
