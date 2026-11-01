@@ -1,0 +1,64 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+.card {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.card h2 {
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--cr-primary-text-color);
+}
+
+.session-state-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.session-state-header h2 {
+  margin-bottom: 4px;
+}
+
+.session-state-header .action-button {
+  flex-shrink: 0;
+}
+
+.section-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--cr-secondary-text-color);
+}
+
+.empty-state-card {
+  text-align: center;
+  padding: 32px 20px;
+}
+
+.empty-state-text {
+  margin: 0;
+  font-size: 13px;
+  color: var(--cr-secondary-text-color);
+}

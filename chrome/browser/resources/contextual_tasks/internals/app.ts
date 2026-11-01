@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_slider/cr_slider.js';
 import '//resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 import '/strings.m.js';
+import './session_state_tab.js';
 
 import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -133,7 +134,12 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
   }
 
   private syncTabsWithUrlHash_() {
-    const tabUrlHashes = ['#model-selection', '#debugging', '#eligibility'];
+    const tabUrlHashes = [
+      '#model-selection',
+      '#debugging',
+      '#eligibility',
+      '#session-state',
+    ];
     const tabBox = this.shadowRoot.querySelector('cr-tab-box')!;
 
     tabBox.addEventListener('selected-index-change', e => {
