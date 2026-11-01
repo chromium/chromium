@@ -12,6 +12,7 @@ namespace glic {
 
 BASE_DECLARE_FEATURE(kContextualCueing);
 BASE_DECLARE_FEATURE(kGlicZeroStateSuggestions);
+BASE_DECLARE_FEATURE(kGlicZeroStateSuggestionsPreconnectWithoutCredentials);
 BASE_DECLARE_FEATURE(kEnableAutoOpenGlicSidePanel);
 BASE_DECLARE_FEATURE(kGlicBrowsingHistoryZeroStateSuggestions);
 

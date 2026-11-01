@@ -358,11 +358,13 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
   ZeroStateSuggestionsPageData::CreateForPage(web_contents->GetPrimaryPage());
 
   if (loading_predictor_) {
-    net::NetworkAnonymizationKey anonymization_key =
+    const net::NetworkAnonymizationKey anonymization_key =
         net::NetworkAnonymizationKey::CreateSameSite(
             net::SchemefulSite(mes_url_));
+    const bool allow_credentials = !base::FeatureList::IsEnabled(
+        kGlicZeroStateSuggestionsPreconnectWithoutCredentials);
     loading_predictor_->PreconnectURLIfAllowed(
-        mes_url_, /*allow_credentials=*/true, anonymization_key,
+        mes_url_, allow_credentials, anonymization_key,
         network::GetNoOpNetworkRestrictionsId());
   }
 }

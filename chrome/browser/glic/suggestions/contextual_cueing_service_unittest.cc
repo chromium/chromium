@@ -494,9 +494,27 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
 };
 
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
-       PreconnectsWithContextEnabled) {
+       PreconnectsWithContextEnabled_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      glic::kGlicZeroStateSuggestionsPreconnectWithoutCredentials);
   EXPECT_CALL(*loading_predictor(),
-              PreconnectURLIfAllowed(GURL("https://mes.com/"), _, _, _, _, _));
+              PreconnectURLIfAllowed(GURL("https://mes.com/"),
+                                     /*allow_credentials=*/true, _, _, _, _));
+
+  SetGlicTabContextEnabled(true);
+  InitializeContextualCueingService();
+  service()->PrepareToFetchContextualGlicZeroStateSuggestions(web_contents());
+}
+
+TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
+       PreconnectsWithContextEnabled_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      glic::kGlicZeroStateSuggestionsPreconnectWithoutCredentials);
+  EXPECT_CALL(*loading_predictor(),
+              PreconnectURLIfAllowed(GURL("https://mes.com/"),
+                                     /*allow_credentials=*/false, _, _, _, _));
 
   SetGlicTabContextEnabled(true);
   InitializeContextualCueingService();
