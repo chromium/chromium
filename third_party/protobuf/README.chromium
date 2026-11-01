@@ -152,9 +152,17 @@ Notes (hints) for the next roll(er):
   discards a patch that is no longer needed, `roll_protobuf.py resume` takes
   back control after manual commits, `roll_protobuf.py generate -C out/Default`
   regenerates and commits bootstrap files (as an alternative to step 4 above),
-  `roll_protobuf.py prepare --to <version>` populates `GITDIR/protobuf-roll/`
-  without modifying the working tree, and `roll_protobuf.py abort` resets the
-  branch to the commit before `start`.
+  `roll_protobuf.py new-patch NNNN-short-name` turns uncommitted changes under
+  `src/` or `python/` into `patches/NNNN-short-name.patch` and commits both
+  (then add a description under "Description of the patches" below),
+  `roll_protobuf.py fixup NNNN` folds uncommitted `src/` or `python/` changes
+  into that patch's `"Apply patches/NNNN-..."` commit (via a fixup commit and
+  autosquash rebase) and rewrites every `.patch` file from its commit (if the
+  changed patch touches the compiler, run `generate` again; `check` reminds
+  you), `roll_protobuf.py prepare --to <version>` populates
+  `GITDIR/protobuf-roll/` without modifying the working tree, and
+  `roll_protobuf.py abort` resets the branch to the commit before `start` (or
+  undoes a conflicting `fixup` rebase).
 * Run
   `third_party/protobuf/compile_size_probe.py -C out/Default --save pre_roll`
   before starting a roll and
@@ -172,8 +180,8 @@ Notes (hints) for the next roll(er):
 
 When a patch conflicts:
 
-When `start`, `continue`, `drop` or `resume` hits a patch that does not merge
-cleanly, it stops with exit code 2 and leaves only that patch partly applied in
+When `start`, `continue`, `drop`, `resume` or `fixup` hits a patch that does not
+merge cleanly, it stops with exit code 2 and leaves the conflicting changes in
 the working tree. Resolve the `<<<<<<<` markers in place (keeping the patch's
 documented intent from "Description of the patches" below and any
 `patches/NNNN-name.md` file; you can build and run tests first), then run one
@@ -181,18 +189,43 @@ of:
 
 * `third_party/protobuf/roll_protobuf.py continue`: verifies that no conflict
   markers, `.rej` or `.orig` files remain under `third_party/protobuf` and that
-  `HEAD` has not moved, commits `"Apply patches/NNNN-name.patch"`, rewrites
-  `patches/NNNN-name.patch` from that commit alone, and continues replaying the
-  remaining patches. It refuses if you modified files the patch did not touch
-  (pass `--allow-extra-files` when a resolution genuinely needs to touch another
-  file, such as after an upstream file split or rename).
-* `third_party/protobuf/roll_protobuf.py drop --reason "<why>"`: discards the
-  conflicting patch's uncommitted changes, deletes `patches/NNNN-name.patch`,
-  commits `"Drop patches/NNNN-name.patch (<why>)"`, and continues with the next
-  patch. Once all patches have replayed, remove any dropped patch descriptions
-  (and any companion `patches/NNNN-name.md` files) at the bottom of this file.
-* `third_party/protobuf/roll_protobuf.py abort`: resets the branch to the commit
-  before `start` and deletes `GITDIR/protobuf-roll/`.
+  `HEAD` has not moved, commits `"Apply patches/NNNN-name.patch"` (or continues
+  an active `fixup` rebase), rewrites `patches/*.patch` from the commits, and
+  continues replaying any remaining patches. It refuses if you modified files
+  the patch did not touch (pass `--allow-extra-files` when a resolution
+  genuinely needs to touch another file, such as after an upstream file split or
+  rename).
+* `third_party/protobuf/roll_protobuf.py drop --reason "<why>"` (during replay):
+  discards the conflicting patch's uncommitted changes, deletes
+  `patches/NNNN-name.patch`, commits `"Drop patches/NNNN-name.patch (<why>)"`,
+  and continues with the next patch. Once all patches have replayed, remove any
+  dropped patch descriptions (and any companion `patches/NNNN-name.md` files) at
+  the bottom of this file.
+* `third_party/protobuf/roll_protobuf.py abort`: during replay, resets the
+  branch to the commit before `start` and deletes `GITDIR/protobuf-roll/`;
+  during a `fixup` conflict, aborts the rebase and resets to the commit before
+  `fixup` while keeping the roll branch.
+
+Using an agent:
+
+These steps are written so that an AI coding agent can run a roll with a human
+supervising. If you are an agent:
+
+* Run `third_party/protobuf/roll_protobuf.py status --json` before and after
+  every step, and only run `roll_protobuf.py` subcommands listed in `"next"`.
+* You may do these on your own: `plan`, `prepare`, `start`, `status`, resolve a
+  conflict and `continue`, `generate`, fix the build (updating `BUILD.gn`,
+  `proto_sources.gni` and Chromium callers), `new-patch`, `fixup`, `check`, and
+  `compile_size_probe.py`.
+* Ask the human first before: `drop` (deciding a patch is no longer needed),
+  `abort`, `git cl upload`, adding a `Compile-Size:` footer, or changing what a
+  patch does rather than rebasing it.
+* When resolving a conflict, keep the patch's intent, as described under
+  "Description of the patches" at the bottom of this file and in
+  `patches/NNNN-name.md` where one exists. If the intent no longer makes sense
+  against the new upstream code, stop and ask.
+* Stop and ask if `continue` refuses twice for the same patch, or if any command
+  exits 1 for a reason the message does not explain.
 
 Doing it by hand:
 

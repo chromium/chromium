@@ -31,9 +31,9 @@ Subcommands:
     (https://crbug.com/568074155).
   status: Reports where an in-progress roll is and which commands are valid
     next.
-  continue [--allow-extra-files]: Commits a resolved patch conflict, refreshes
-    its .patch file, and continues replaying remaining patches
-    (https://crbug.com/568074254).
+  continue [--allow-extra-files]: Commits a resolved patch conflict (or
+    continues an active `fixup` rebase), refreshes `patches/*.patch`, and
+    continues replaying remaining patches (https://crbug.com/568074254).
   drop --reason <why>: Discards the current conflicting patch, deletes its
     .patch file, and continues replaying remaining patches.
   resume: Reconciles GITDIR/protobuf-roll/state.json with manual Apply/Drop
@@ -41,13 +41,19 @@ Subcommands:
   generate -C <out_dir>: Runs gen_extra_chromium_files.py -C <out_dir>,
     force-stages gitignored *_pb2.py outputs alongside bootstrap files, and
     commits "Regenerate bootstrap files".
-  abort: Resets the branch to the commit recorded by `start` and removes
-    GITDIR/protobuf-roll/.
+  new-patch <NNNN-short-name>: Turns uncommitted changes under src/ and python/
+    into patches/<NNNN-short-name>.patch and commits both
+    (https://crbug.com/568075147).
+  fixup <NNNN>: Folds uncommitted changes under src/ and python/ into that
+    patch's "Apply patches/NNNN-..." commit via git rebase --autosquash and
+    regenerates patches/*.patch from each commit.
+  abort: Resets an active roll branch or conflicting `fixup` rebase and cleans
+    up GITDIR/protobuf-roll/ state.
 
 Exit codes: 0 when the step finished (for `plan`, whatever the per-patch
-classification), 2 when `start`, `continue`, `drop`, or `resume` stopped on a
-conflict (or for invalid CLI arguments), 1 when verification failed or an error
-occurred.
+classification), 2 when `start`, `continue`, `drop`, `resume`, or `fixup`
+stopped on a conflict (or for invalid CLI arguments), 1 when verification
+failed or an error occurred.
 """
 
 from collections.abc import Collection, Iterable, Mapping, Sequence
@@ -3706,7 +3712,12 @@ def GetRollStatus(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollStatus:
             index=0,
             total=0,
             next_commands=('roll_protobuf.py plan --to <version>',
-                           'roll_protobuf.py start --to <version>'))
+                           'roll_protobuf.py prepare --to <version>',
+                           'roll_protobuf.py start --to <version>',
+                           'roll_protobuf.py generate -C <out_dir>',
+                           'roll_protobuf.py check -C <out_dir>',
+                           'roll_protobuf.py new-patch <NNNN-short-name>',
+                           'roll_protobuf.py fixup <NNNN>'))
     total = len(roll_state.patches)
     if roll_state.phase == 'prepared':
         return RollStatus(
@@ -3731,10 +3742,25 @@ def GetRollStatus(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollStatus:
     stale = _FindStaleBootstrapTriggers(checkout)
     next_step = ('roll_protobuf.py generate -C <out_dir>'
                  if stale else 'roll_protobuf.py check -C <out_dir>')
+    uncommitted = (
+        _ProtobufPathsFromGit(checkout, 'diff', '--cached', '--no-renames',
+                              '--name-only', '-z')
+        | _ProtobufPathsFromGit(checkout, 'diff', '--no-renames',
+                                '--name-only', '-z')
+        | {
+            p.rstrip('/')
+            for p in _ProtobufPathsFromGit(checkout, 'ls-files', '--others',
+                                           '--exclude-standard', '-z')
+        })
+    patch_cmds = ('roll_protobuf.py new-patch <NNNN-short-name>',
+                  'roll_protobuf.py fixup <NNNN>')
+    next_commands = ((*patch_cmds, next_step, 'roll_protobuf.py abort') if any(
+        _IsAllowedLocalPatchPath(p) for p in uncommitted) else
+                     (next_step, *patch_cmds, 'roll_protobuf.py abort'))
     return RollStatus(state='replayed',
                       index=total,
                       total=total,
-                      next_commands=(next_step, 'roll_protobuf.py abort'))
+                      next_commands=next_commands)
 
 
 def AbortRoll(
@@ -3863,8 +3889,8 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
         'next.')
     continue_parser = subparsers.add_parser(
         'continue',
-        help='Commit a resolved patch conflict, refresh its .patch file, and '
-        'continue replaying remaining patches.')
+        help='Commit a resolved patch conflict (or continue an active fixup '
+        'rebase), refresh patches/*.patch, and continue replaying patches.')
     continue_parser.add_argument(
         '--allow-extra-files',
         action='store_true',
@@ -3886,10 +3912,22 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
         'generate',
         help='Run gen_extra_chromium_files.py -C <out_dir> and commit '
         'regenerated bootstrap files.')
+    new_patch_parser = subparsers.add_parser(
+        'new-patch',
+        help='Turn uncommitted changes under src/ and python/ into '
+        'patches/<name>.patch and commit both.')
+    new_patch_parser.add_argument('patch',
+                                  help='Patch name, for example 0073-fix-foo.')
+    fixup_parser = subparsers.add_parser(
+        'fixup',
+        help='Fold uncommitted changes under src/ and python/ into an earlier '
+        'Apply commit and regenerate patches/*.patch.')
+    fixup_parser.add_argument(
+        'patch', help='4-digit patch number (0067) or patch filename.')
     subparsers.add_parser(
         'abort',
-        help='Reset an active roll branch to start_commit or clear '
-        'GITDIR/protobuf-roll/.')
+        help='Reset an active roll branch or conflicting fixup rebase, or '
+        'clear GITDIR/protobuf-roll/.')
     for target_parser in (plan_parser, prepare_parser, start_parser):
         target_parser.add_argument(
             '--to',
@@ -3980,6 +4018,15 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
                                             arguments.protobuf_directory)
             report = FormatGenerateReport(result)
             exit_code = EXIT_CODE_SUCCESS
+        elif arguments.subcommand == 'new-patch':
+            result = NewPatch(arguments.patch, arguments.protobuf_directory)
+            report = FormatNewPatchReport(result)
+            exit_code = EXIT_CODE_SUCCESS
+        elif arguments.subcommand == 'fixup':
+            result = FixupPatch(arguments.patch, arguments.protobuf_directory)
+            report = FormatFixupReport(result)
+            exit_code = (EXIT_CODE_CONFLICT
+                         if result.phase == 'conflict' else EXIT_CODE_SUCCESS)
         elif arguments.subcommand == 'status':
             result = GetRollStatus(arguments.protobuf_directory)
             report = FormatRollStatusReport(result)

@@ -4280,7 +4280,10 @@ class RollProtobufStartTest(unittest.TestCase):
             self.fixture.upstream_directory, '--json')
 
         self.assertEqual([
-            'roll_protobuf.py generate -C <out_dir>', 'roll_protobuf.py abort'
+            'roll_protobuf.py generate -C <out_dir>',
+            'roll_protobuf.py new-patch <NNNN-short-name>',
+            'roll_protobuf.py fixup <NNNN>',
+            'roll_protobuf.py abort',
         ],
                          json.loads(status_before)['next'])
         self.assertEqual(roll_protobuf.EXIT_CODE_ERROR, stale_code)
@@ -4290,9 +4293,13 @@ class RollProtobufStartTest(unittest.TestCase):
         self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, gen_code)
         self.assertEqual(len(roll_protobuf.BOOTSTRAP_GENERATED_FILES),
                          len(json.loads(gen_json)['changed_files']))
-        self.assertEqual(
-            ['roll_protobuf.py check -C <out_dir>', 'roll_protobuf.py abort'],
-            json.loads(status_after)['next'])
+        self.assertEqual([
+            'roll_protobuf.py check -C <out_dir>',
+            'roll_protobuf.py new-patch <NNNN-short-name>',
+            'roll_protobuf.py fixup <NNNN>',
+            'roll_protobuf.py abort',
+        ],
+                         json.loads(status_after)['next'])
         self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, check_code)
         check_payload = json.loads(check_json)
         self.assertTrue(check_payload['is_clean'])
@@ -6525,6 +6532,172 @@ class RollProtobufStartTest(unittest.TestCase):
         self.assertIn('in Revert patches/0002-b.patch',
                       non_patch_status_report)
         self.assertNotIn('patches/Revert', non_patch_status_report)
+
+    def testMainNewPatchAndFixupEndToEndAndReadmeAgentGuide(self):
+        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
+            os.remove(
+                os.path.join(self.fixture.protobuf_directory, 'patches',
+                             patch_name))
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Prepare clean roll'])
+        _RunGitCommand(self.repository_root,
+                       ['update-ref', 'refs/remotes/origin/main', 'HEAD'])
+
+        _, idle_json, _ = _RunMain('status', '--protobuf-dir',
+                                   self.fixture.protobuf_directory, '--json')
+        self.assertIn('roll_protobuf.py generate -C <out_dir>',
+                      json.loads(idle_json)['next'])
+        self.assertIn('roll_protobuf.py new-patch <NNNN-short-name>',
+                      json.loads(idle_json)['next'])
+        self.assertIn('roll_protobuf.py fixup <NNNN>',
+                      json.loads(idle_json)['next'])
+
+        start_code, _, _ = _RunMain('start', '--to', 'v37.0', '--protobuf-dir',
+                                    self.fixture.protobuf_directory,
+                                    '--upstream-repo',
+                                    self.fixture.upstream_directory)
+        self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, start_code)
+
+        # CLI `new-patch` (text and --json), including dirty-worktree `status`
+        # ordering `new-patch` and `fixup` ahead of `generate`.
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/google/protobuf/cli_new.h': '// v1\n'})
+        _, dirty_json, _ = _RunMain('status', '--protobuf-dir',
+                                    self.fixture.protobuf_directory, '--json')
+        self.assertEqual([
+            'roll_protobuf.py new-patch <NNNN-short-name>',
+            'roll_protobuf.py fixup <NNNN>',
+            'roll_protobuf.py generate -C <out_dir>',
+            'roll_protobuf.py abort',
+        ],
+                         json.loads(dirty_json)['next'])
+        np_code, np_out, _ = _RunMain('new-patch', '0006-cli-new',
+                                      '--protobuf-dir',
+                                      self.fixture.protobuf_directory)
+        self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, np_code)
+        self.assertIn('Created patches/0006-cli-new.patch', np_out)
+
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'python/google/protobuf/cli_py.py': '# py\n'})
+        npj_code, npj_out, _ = _RunMain('new-patch', '0007-cli-py',
+                                        '--protobuf-dir',
+                                        self.fixture.protobuf_directory,
+                                        '--json')
+        self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, npj_code)
+        self.assertEqual('0007-cli-py.patch', json.loads(npj_out)['patch'])
+
+        # CLI `fixup` clean (text and --json).
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/google/protobuf/cli_new.h': '// v2\n'})
+        fx_code, fx_out, _ = _RunMain('fixup', '0006', '--protobuf-dir',
+                                      self.fixture.protobuf_directory)
+        self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, fx_code)
+        self.assertIn('Fixed up patches/0006-cli-new.patch', fx_out)
+
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/google/protobuf/cli_new.h': '// v3\n'})
+        fxj_code, fxj_out, _ = _RunMain('fixup', '0006', '--protobuf-dir',
+                                        self.fixture.protobuf_directory,
+                                        '--json')
+        self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, fxj_code)
+        self.assertEqual('completed', json.loads(fxj_out)['phase'])
+
+        # CLI `fixup` conflict -> `status --json` -> `abort` (exit 0), then
+        # `fixup` conflict -> `continue` step 1 (exit 2) -> `continue` step 2
+        # (exit 0).
+        pre_conflict_head = _RunGitCommand(self.repository_root,
+                                           ['rev-parse', 'HEAD'])
+        clean_file = pathlib.Path(self.fixture.protobuf_directory,
+                                  *_PLAN_CLEAN_PATH.split('/'))
+        clean_file.write_text(
+            clean_file.read_text(encoding='utf-8').replace(
+                'clean line 7 (chromium)', 'clean line 7 (cli conflict)'),
+            encoding='utf-8',
+            newline='\n',
+        )
+        c_code, c_out, _ = _RunMain('fixup', '0001', '--protobuf-dir',
+                                    self.fixture.protobuf_directory)
+        self.assertEqual(roll_protobuf.EXIT_CODE_CONFLICT, c_code)
+        self.assertIn('stopped on conflict', c_out)
+
+        _, c_status_json, _ = _RunMain('status', '--protobuf-dir',
+                                       self.fixture.protobuf_directory,
+                                       '--json')
+        c_status = json.loads(c_status_json)
+        self.assertEqual('conflict', c_status['state'])
+        self.assertEqual(
+            ['roll_protobuf.py continue', 'roll_protobuf.py abort'],
+            c_status['next'])
+
+        ab_code, ab_out, _ = _RunMain('abort', '--protobuf-dir',
+                                      self.fixture.protobuf_directory)
+        self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, ab_code)
+        self.assertIn(f'Aborted fixup of patches/{_PLAN_CLEAN_PATCH}', ab_out)
+        self.assertEqual(
+            pre_conflict_head,
+            _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD']))
+
+        clean_file.write_text(
+            clean_file.read_text(encoding='utf-8').replace(
+                'clean line 7 (chromium)', 'clean line 7 (cli conflict 2)'),
+            encoding='utf-8',
+            newline='\n',
+        )
+        self.assertEqual(
+            roll_protobuf.EXIT_CODE_CONFLICT,
+            _RunMain('fixup', '0001', '--protobuf-dir',
+                     self.fixture.protobuf_directory)[0])
+        clean_file.write_text(
+            _NumberedLines(
+                'clean',
+                line3='clean line 3 (upstream)',
+                line6='clean line 6 (chromium)',
+                line7='clean line 7 (step 1)',
+                line10='clean line 10 (upstreamed)',
+            ),
+            encoding='utf-8',
+            newline='\n',
+        )
+        cont1_code, cont1_out, _ = _RunMain('continue', '--protobuf-dir',
+                                            self.fixture.protobuf_directory)
+        self.assertEqual(roll_protobuf.EXIT_CODE_CONFLICT, cont1_code)
+        self.assertIn(_PLAN_STACKED_PATCH, cont1_out)
+
+        clean_file.write_text(
+            _NumberedLines(
+                'clean',
+                line3='clean line 3 (upstream)',
+                line6='clean line 6 (chromium)',
+                line7='clean line 7 (step 2)',
+                line10='clean line 10 (upstreamed)',
+            ),
+            encoding='utf-8',
+            newline='\n',
+        )
+        cont2_code, cont2_json, _ = _RunMain('continue', '--protobuf-dir',
+                                             self.fixture.protobuf_directory,
+                                             '--json')
+        self.assertEqual(roll_protobuf.EXIT_CODE_SUCCESS, cont2_code)
+        self.assertEqual('completed', json.loads(cont2_json)['phase'])
+
+        # Verify README.chromium documents new-patch, fixup, and "Using an
+        # agent:" immediately before "Doing it by hand:".
+        real_readme = pathlib.Path(
+            _PROTOBUF_DIRECTORY, 'README.chromium').read_text(encoding='utf-8')
+        agent_idx = real_readme.index('\nUsing an agent:\n')
+        hand_idx = real_readme.index('\nDoing it by hand:\n')
+        self.assertLess(agent_idx, hand_idx)
+        agent_section = real_readme[agent_idx:hand_idx]
+        for expected in ('status --json', '"next"', 'new-patch', 'fixup',
+                         'drop', 'abort', 'git cl upload', 'Compile-Size:',
+                         'patches/NNNN-name.md', 'refuses twice'):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, agent_section)
+        self.assertEqual(
+            (), roll_protobuf._FindPatchInventoryErrors(_PROTOBUF_DIRECTORY))
+
 
 
 if __name__ == '__main__':
