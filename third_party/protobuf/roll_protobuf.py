@@ -2746,11 +2746,34 @@ def LoadFixupState(
             f'Corrupt fixup state in {fixup_path}: {error}') from error
 
 
+def _IsMatchingFixupRebase(checkout: _CheckoutPaths,
+                           fixup_state: FixupState) -> bool:
+    git_dir = os.path.dirname(checkout.roll_state_directory)
+    for sub in ('rebase-merge', 'rebase-apply'):
+        onto_p = pathlib.Path(git_dir, sub, 'onto')
+        orig_p = pathlib.Path(git_dir, sub, 'orig-head')
+        if onto_p.is_file() and orig_p.is_file():
+            onto = onto_p.read_text(encoding='utf-8', errors='replace').strip()
+            orig = orig_p.read_text(encoding='utf-8', errors='replace').strip()
+            return (onto == fixup_state.rebase_base and _ResolveCommitHash(
+                checkout.repository_root, f'{orig}~1')
+                    == fixup_state.pre_fixup_head)
+    return False
+
+
 def _LoadActiveFixupState(checkout: _CheckoutPaths) -> FixupState | None:
     fixup_state = LoadFixupState(checkout)
-    if fixup_state is not None and not _IsGitRebaseInProgress(checkout):
+    if fixup_state is not None and not _IsMatchingFixupRebase(
+            checkout, fixup_state):
         _RemoveFixupState(checkout)
         return None
+    if fixup_state is not None:
+        live = _BuildFixupConflictState(checkout, fixup_state.pre_fixup_head,
+                                        fixup_state.rebase_base,
+                                        fixup_state.target_patch)
+        if (live.index, live.total) != (fixup_state.index, fixup_state.total):
+            _SaveFixupState(checkout, live)
+            return live
     return fixup_state
 
 
@@ -2974,6 +2997,49 @@ def FixupPatch(patch_spec: str,
         raise
     return _FinalizeCompletedFixup(checkout, rebase_base, pre_head,
                                    target_patch, rewritten)
+
+
+def _CommitTouchedPaths(repository_root: str, commit_spec: str,
+                        protobuf_prefix: str) -> set[str]:
+    prefix = f'{protobuf_prefix}/' if protobuf_prefix else ''
+    out = _RunScratchGit(repository_root, 'diff-tree', '--root',
+                         '--no-commit-id', '--no-renames', '-r', '--name-only',
+                         '-z', commit_spec).stdout
+    return {
+        p
+        for p in _SplitNulSeparatedPaths(out)
+        if (not prefix or p.startswith(prefix))
+        and not IsChromiumOwnedFile(p.removeprefix(prefix))
+    }
+
+
+def _FindUnresolvedUnmergedPaths(repository_root: str,
+                                 pathspec: str | None = None
+                                 ) -> tuple[str, ...]:
+    args = ('--literal-pathspecs', 'ls-files', '-u', '-z',
+            *(('--', pathspec) if pathspec else ()))
+    stages: dict[str, dict[str, str]] = {}
+    for rec in _SplitNulSeparatedPaths(
+            _RunScratchGit(repository_root, *args).stdout):
+        meta, path = rec.split('\t', 1)
+        _, oid, stage = meta.split(' ')
+        stages.setdefault(path, {})[stage] = oid
+    unresolved = []
+    for path, st in sorted(stages.items()):
+        full_p = os.path.join(repository_root, *path.split('/'))
+        untouched_oid = st.get('2') or st.get('3')
+        if os.path.isdir(full_p) or os.path.islink(full_p):
+            unresolved.append(path)
+        elif _IsRegularFile(full_p):
+            disk_oids = {
+                _RunScratchGit(repository_root, '--literal-pathspecs',
+                               'hash-object', *flags, '--',
+                               path).stdout.decode().strip()
+                for flags in ((), ('--no-filters', ))
+            }
+            if untouched_oid in disk_oids:
+                unresolved.append(path)
+    return tuple(unresolved)
 
 
 def FormatFixupReport(result: FixupResult) -> str:

@@ -5816,6 +5816,72 @@ class RollProtobufStartTest(unittest.TestCase):
         self.assertIsNone(
             roll_protobuf.LoadFixupState(self.fixture.protobuf_directory))
 
+    def testFixupRebaseMatchingAndUnresolvedUnmergedHelpers(self):
+        self._StartCleanRoll()
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        head_sha = _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD'])
+        parent_sha = _RunGitCommand(self.repository_root,
+                                    ['rev-parse', 'HEAD~1'])
+        stale_state = roll_protobuf.FixupState(
+            pre_fixup_head=parent_sha,
+            rebase_base=parent_sha,
+            target_patch=_PLAN_CLEAN_PATCH,
+            conflicting_patch=_PLAN_STACKED_PATCH,
+            conflict_files=(_PLAN_CLEAN_PATH, ),
+            index=1,
+            total=2,
+        )
+        roll_protobuf._SaveFixupState(checkout, stale_state)
+        self.assertFalse(
+            roll_protobuf._IsMatchingFixupRebase(checkout, stale_state))
+        self.assertIsNone(roll_protobuf._LoadActiveFixupState(checkout))
+
+        rebase_merge = pathlib.Path(
+            os.path.dirname(checkout.roll_state_directory), 'rebase-merge')
+        rebase_merge.mkdir(parents=True, exist_ok=True)
+        try:
+            (rebase_merge / 'onto').write_text(f'{parent_sha}\n',
+                                               encoding='utf-8')
+            (rebase_merge / 'orig-head').write_text(f'{head_sha}\n',
+                                                    encoding='utf-8')
+            (rebase_merge / 'msgnum').write_text('2\n', encoding='utf-8')
+            (rebase_merge / 'end').write_text('3\n', encoding='utf-8')
+            roll_protobuf._SaveFixupState(checkout, stale_state)
+            self.assertTrue(
+                roll_protobuf._IsMatchingFixupRebase(checkout, stale_state))
+            synced = roll_protobuf._LoadActiveFixupState(checkout)
+            self.assertEqual((2, 3), (synced.index, synced.total))
+        finally:
+            roll_protobuf._RemoveFixupState(checkout)
+            for child in rebase_merge.iterdir():
+                child.unlink()
+            rebase_merge.rmdir()
+
+        self.assertIn(
+            f'{checkout.protobuf_prefix}/{_PLAN_CLEAN_PATH}',
+            roll_protobuf._CommitTouchedPaths(self.repository_root, 'HEAD',
+                                              checkout.protobuf_prefix))
+        self.assertEqual((),
+                         roll_protobuf._FindUnresolvedUnmergedPaths(
+                             self.repository_root, checkout.protobuf_prefix))
+        clean_rel = f'{checkout.protobuf_prefix}/{_PLAN_CLEAN_PATH}'
+        head_blob = _RunGitCommand(self.repository_root,
+                                   ['rev-parse', f'HEAD:{clean_rel}'])
+        subprocess.run(
+            [
+                'git', '-C', self.repository_root, 'update-index',
+                '--index-info'
+            ],
+            input=f'0 {"0" * 40}\t{clean_rel}\n'
+            f'100644 {head_blob} 2\t{clean_rel}\n'.encode('utf-8'),
+            check=True,
+        )
+        self.assertEqual((clean_rel, ),
+                         roll_protobuf._FindUnresolvedUnmergedPaths(
+                             self.repository_root, checkout.protobuf_prefix))
+        _RunGitCommand(self.repository_root,
+                       ['reset', '-q', 'HEAD', '--', clean_rel])
 
 
 if __name__ == '__main__':
