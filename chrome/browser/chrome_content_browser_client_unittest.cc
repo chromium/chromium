@@ -2325,6 +2325,30 @@ TEST_F(ChromeContentBrowserClientTest,
   EXPECT_EQ(22, web_prefs.default_font_size);
 }
 
+// Tests that WebPreferences of a WebContents in the Top Chrome WebUI profile
+// are computed from the user profile set for it after a navigation to a non
+// WebUI URL.
+TEST_F(ChromeContentBrowserClientTest,
+       TopChromeWebUIProfileWebPreferencesAfterNavigationUseUserProfile) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
+
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* web_contents =
+      web_contents_factory.CreateWebContents(top_chrome_webui_profile);
+  webui::SetUserProfile(web_contents, profile());
+  profile()->GetPrefs()->SetInteger(prefs::kWebKitDefaultFontSize, 22);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents, GURL(url::kAboutBlankURL));
+
+  ChromeContentBrowserClient client;
+  blink::web_pref::WebPreferences web_prefs;
+  client.OverrideWebPreferencesAfterNavigation(
+      web_contents, *web_contents->GetSiteInstance(), &web_prefs);
+  EXPECT_EQ(22, web_prefs.default_font_size);
+}
+
 // Tests that the autoplay policy of a WebContents in the Top Chrome WebUI
 // profile is computed from the user profile set for it.
 TEST_F(ChromeContentBrowserClientTest,

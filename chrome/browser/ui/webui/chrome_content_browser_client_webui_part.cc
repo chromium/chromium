@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -98,10 +99,9 @@ bool ChromeContentBrowserClientWebUiPart::OverrideWebPreferencesAfterNavigation(
     // Use default prefs for WebUi. Not further modifications necessary for
     // web_prefs_source.
   } else {
-    // Use profile prefs for normal websites.
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    PrefService* prefs = profile->GetPrefs();
+    // Use profile prefs for normal websites. A WebContents in
+    // TopChromeWebUIProfile, which has no user prefs, uses its user profile.
+    PrefService* prefs = webui::GetUserProfile(web_contents)->GetPrefs();
     web_prefs_source.default_font_size =
         prefs->GetInteger(prefs::kWebKitDefaultFontSize);
     web_prefs_source.default_fixed_font_size =
