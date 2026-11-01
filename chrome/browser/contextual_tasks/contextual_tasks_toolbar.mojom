@@ -67,6 +67,10 @@ interface PageHandler {
   // Opens the Google Account management page in a new foreground tab.
   OpenManageAccountUi();
 
+  // Navigates a new foreground tab to the Google sign-out page, which signs
+  // the user out of their Google accounts on the web.
+  OpenLogOutFlow();
+
   // Opens the feedback UI.
   OpenFeedbackUi();
 

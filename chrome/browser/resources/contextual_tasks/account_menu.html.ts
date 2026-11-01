@@ -15,6 +15,10 @@ export function getHtml(this: AccountMenuElement) {
           @click="${this.onManageAccountClick_}">
         $i18n{accountMenuManageAccount}
       </button>
+      <button id="signOutButton" class="dropdown-item"
+          @click="${this.onSignOutClick_}">
+        $i18n{accountMenuSignOut}
+      </button>
     </cr-action-menu>
   <!--_html_template_end_-->`;
   // clang-format on

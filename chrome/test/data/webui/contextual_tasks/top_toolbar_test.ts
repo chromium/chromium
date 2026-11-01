@@ -1458,5 +1458,24 @@ suite('TopToolbarTest', () => {
       await toolbarProxy.handler.whenCalled('openManageAccountUi');
       assertFalse(accountMenu.$.menu.open);
     });
+
+    test('signs out from account menu', async () => {
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      await microtasksFinished();
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      profileIndicator.click();
+      await microtasksFinished();
+
+      const accountMenu = topToolbar.$.accountMenu.get();
+      const signOutButton =
+          accountMenu.shadowRoot.querySelector<HTMLElement>('#signOutButton');
+      assertTrue(!!signOutButton);
+      signOutButton.click();
+      await toolbarProxy.handler.whenCalled('openLogOutFlow');
+      assertFalse(accountMenu.$.menu.open);
+    });
   });
 });

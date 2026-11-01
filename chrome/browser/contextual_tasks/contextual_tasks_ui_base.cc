@@ -69,6 +69,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -475,6 +476,8 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
       // TODO(b/578986274): Replace with a dedicated string in M159.
       {"accountMenuNameAndEmail",
        IDS_ACCESSIBLE_WINDOW_TITLE_WITH_PROFILE_FORMAT},
+      // TODO(b/578986274): Replace with a dedicated string in M159.
+      {"accountMenuSignOut", IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON},
       {"close", IDS_CLOSE},
       {"closeTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CLOSE_TOOL_TIP},
       {"contextTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CONTEXT_TOOL_TIP},
@@ -660,6 +663,10 @@ void ContextualTasksUIBase::OpenUrlInNewTabFromPanelUi(const GURL& url) {
     OpenUrlWithDisposition(GetProfile(), url,
                            WindowOpenDisposition::kNewForegroundTab, browser);
   }
+}
+
+void ContextualTasksUIBase::OpenLogOutFlow() {
+  OpenUrlInNewTabFromPanelUi(GaiaUrls::GetInstance()->service_logout_url());
 }
 
 void ContextualTasksUIBase::OpenFeedbackUi() {
