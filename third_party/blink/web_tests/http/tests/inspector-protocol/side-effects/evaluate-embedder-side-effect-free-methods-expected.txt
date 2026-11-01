@@ -129,6 +129,12 @@ Expression `textNode.hasChildNodes()`
 has side effect: false, expected: false
 Expression `performance.now()`
 has side effect: false, expected: false
+Expression `performance.getEntries()`
+has side effect: false, expected: false
+Expression `performance.getEntriesByType('navigation')`
+has side effect: false, expected: false
+Expression `performance.getEntriesByName('foo')`
+has side effect: false, expected: false
 Expression `global_getSelection()`
 has side effect: false, expected: false
 Expression `window.matchMedia('(min-width: 100px)')`

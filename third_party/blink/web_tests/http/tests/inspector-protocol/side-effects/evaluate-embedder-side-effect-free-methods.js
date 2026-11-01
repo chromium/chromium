@@ -116,6 +116,9 @@
 
   // Performance
   await checkHasNoSideEffect(`performance.now()`);
+  await checkHasNoSideEffect(`performance.getEntries()`);
+  await checkHasNoSideEffect(`performance.getEntriesByType('navigation')`);
+  await checkHasNoSideEffect(`performance.getEntriesByName('foo')`);
 
   // Window
   await checkHasNoSideEffect(`global_getSelection()`);

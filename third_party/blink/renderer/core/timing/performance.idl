@@ -40,9 +40,9 @@ interface Performance : EventTarget {
 
     // Performance Timeline
     // https://w3c.github.io/performance-timeline/#the-performance-interface
-    [MeasureAs=PerformanceTimeline] PerformanceEntryList getEntries();
-    [MeasureAs=PerformanceTimeline] PerformanceEntryList getEntriesByType(DOMString entryType);
-    [MeasureAs=PerformanceTimeline] PerformanceEntryList getEntriesByName(DOMString name, optional DOMString entryType);
+    [Affects=Nothing, MeasureAs=PerformanceTimeline] PerformanceEntryList getEntries();
+    [Affects=Nothing, MeasureAs=PerformanceTimeline] PerformanceEntryList getEntriesByType(DOMString entryType);
+    [Affects=Nothing, MeasureAs=PerformanceTimeline] PerformanceEntryList getEntriesByName(DOMString name, optional DOMString entryType);
 
     // Resource Timing
     // https://w3c.github.io/resource-timing/#extensions-performance-interface
