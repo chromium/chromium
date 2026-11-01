@@ -323,7 +323,7 @@ ui::EventDispatchDetails WindowEventDispatcher::DispatchMouseEnterOrExit(
     const ui::MouseEvent& event,
     ui::EventType type) {
   Env::GetInstance()->env_controller()->UpdateStateForMouseEvent(window(),
-                                                                 event);
+                                                                 target, event);
   if (!mouse_moved_handler_ || !mouse_moved_handler_->HasTargetHandler() ||
       !window()->Contains(mouse_moved_handler_))
     return DispatchDetails();
@@ -951,8 +951,8 @@ DispatchDetails WindowEventDispatcher::PreDispatchMouseEvent(
     return DispatchDetails();
   }
 
-  Env::GetInstance()->env_controller()->UpdateStateForMouseEvent(window(),
-                                                                 *event);
+  Env::GetInstance()->env_controller()->UpdateStateForMouseEvent(
+      window(), target, *event);
 
   if (IsEventCandidateForHold(*event) && !dispatching_held_event_) {
     if (move_hold_count_) {

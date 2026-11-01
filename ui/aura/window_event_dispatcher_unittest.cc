@@ -3870,4 +3870,94 @@ TEST_F(WindowEventDispatcherTest, ConsumeTouchForDrag) {
   env->RemovePreTargetHandler(&skip_gesture_handler);
 }
 
+// Tests that ConsumeLeftMousePressForDrag() only reports a left button press
+// that was dispatched to the given window, that each press can be consumed at
+// most once, and that the press is forgotten once the button is released.
+TEST_F(WindowEventDispatcherTest, ConsumeLeftMousePressForDrag) {
+  auto* env = Env::GetInstance();
+  // Use the tracked button state rather than querying the OS.
+  test::EnvTestHelper(env).SetInputStateLookup(nullptr);
+
+  auto dispatch_mouse = [&](ui::EventType type, const gfx::Point& location,
+                            int flags, int changed_flags) {
+    ui::MouseEvent event(type, location, location, ui::EventTimeForNow(), flags,
+                         changed_flags);
+    DispatchEventUsingWindowDispatcher(&event);
+  };
+  auto press_left = [&](const gfx::Point& location, int flags = ui::EF_NONE) {
+    dispatch_mouse(ui::EventType::kMousePressed, location,
+                   ui::EF_LEFT_MOUSE_BUTTON | flags, ui::EF_LEFT_MOUSE_BUTTON);
+  };
+  auto release_left = [&](const gfx::Point& location) {
+    dispatch_mouse(ui::EventType::kMouseReleased, location,
+                   ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  };
+
+  test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> window =
+      test::CreateTestWindow({.delegate = &delegate,
+                              .parent = root_window(),
+                              .bounds = {10, 10, 100, 100},
+                              .window_id = 1});
+
+  EXPECT_FALSE(env->ConsumeLeftMousePressForDrag(window.get()));
+
+  // A press outside `window` (on the root window, e.g. on a window caption)
+  // doesn't count for `window`, even though the left button is down.
+  constexpr gfx::Point outside(200, 200);
+  press_left(outside);
+  EXPECT_TRUE(env->IsLeftMouseButtonDown());
+  EXPECT_FALSE(env->ConsumeLeftMousePressForDrag(window.get()));
+  release_left(outside);
+
+  // A press on `window` can be consumed exactly once.
+  constexpr gfx::Point inside(20, 20);
+  press_left(inside);
+  EXPECT_TRUE(env->ConsumeLeftMousePressForDrag(window.get()));
+  EXPECT_FALSE(env->ConsumeLeftMousePressForDrag(window.get()));
+
+  // Pressing and releasing another button while the left button is held
+  // doesn't start a new left press.
+  dispatch_mouse(ui::EventType::kMousePressed, inside,
+                 ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON,
+                 ui::EF_RIGHT_MOUSE_BUTTON);
+  dispatch_mouse(ui::EventType::kMouseReleased, inside,
+                 ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON,
+                 ui::EF_RIGHT_MOUSE_BUTTON);
+  EXPECT_FALSE(env->ConsumeLeftMousePressForDrag(window.get()));
+
+  // A new left press without a release (e.g. because a platform drag loop or
+  // the window manager consumed it) starts a fresh, unconsumed press.
+  press_left(inside);
+  EXPECT_TRUE(env->ConsumeLeftMousePressForDrag(window.get()));
+
+  // Releasing the left button ends the press.
+  press_left(inside);
+  release_left(inside);
+  EXPECT_FALSE(env->ConsumeLeftMousePressForDrag(window.get()));
+
+  // So does clearing the button state directly, as is done when a window move
+  // is handed off to the window manager.
+  press_left(inside);
+  env->set_mouse_button_flags(ui::EF_NONE);
+  EXPECT_FALSE(env->ConsumeLeftMousePressForDrag(window.get()));
+  release_left(inside);
+
+  // A non-client press, which may become a window move, doesn't count.
+  press_left(inside, ui::EF_IS_NON_CLIENT);
+  EXPECT_TRUE(env->IsLeftMouseButtonDown());
+  EXPECT_FALSE(env->ConsumeLeftMousePressForDrag(window.get()));
+  release_left(inside);
+
+  // Destroying the target forgets it.
+  press_left(inside);
+  const aura::Window* destroyed = window.get();
+  window.reset();
+  EXPECT_FALSE(env->ConsumeLeftMousePressForDrag(destroyed));
+  release_left(inside);
+  EXPECT_FALSE(env->IsLeftMouseButtonDown());
+
+  test::EnvTestHelper(env).SetInputStateLookup(InputStateLookup::Create());
+}
+
 }  // namespace aura

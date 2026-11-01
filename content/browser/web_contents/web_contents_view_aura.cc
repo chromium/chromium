@@ -1291,9 +1291,8 @@ void WebContentsViewAura::StartDragging(
     // touch event would reach `::SendInput` via
     // DesktopWindowTreeHostWin::StartTouchDrag and could redirect the
     // synthesized click to an overlapping HWND (e.g. a permission bubble).
-    // Require a touch pressed on the web contents or a left mouse button,
-    // depending on the event source, and refuse the drag if the requirement is
-    // not met.
+    // Require a touch or a left mouse press on the web contents, depending on
+    // the event source, and refuse the drag if the requirement is not met.
     gfx::Point trusted_location;
     aura::Env* env = aura::Env::GetInstance();
     if (event_info.source == ui::mojom::DragEventSource::kTouch) {
@@ -1308,8 +1307,13 @@ void WebContentsViewAura::StartDragging(
       }
       trusted_location = *touch_location;
     } else {
+      // Likewise, a left button held elsewhere (e.g. on the window caption or
+      // a draggable region of a frameless app window to move the window), or
+      // a press that already started a drag and whose release was consumed by
+      // the platform drag loop or the window manager, must not satisfy this
+      // check.
       if (event_info.source == ui::mojom::DragEventSource::kMouse &&
-          !env->IsLeftMouseButtonDown()) {
+          !env->ConsumeLeftMousePressForDrag(content_native_view)) {
         EndDrag(std::move(source_rwh_weak_ptr), result_op);
         return;
       }

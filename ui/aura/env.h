@@ -105,6 +105,18 @@ class AURA_EXPORT Env : public ui::EventTarget {
   // consumed by a platform drag loop) can be used.
   std::optional<gfx::Point> ConsumeTouchForDrag(const aura::Window* window);
 
+  // If the left mouse button is down, the press was dispatched to `window`, and
+  // the press has not already been used to start a drag, marks it as used and
+  // returns true. Otherwise returns false.
+  //
+  // Unlike IsLeftMouseButtonDown(), this only reports a press that was
+  // dispatched to `window` itself (and was not a non-client press), and each
+  // press can start at most one drag. This makes it suitable for validating
+  // drags requested by untrusted code (e.g. a renderer), since neither a press
+  // elsewhere (e.g. holding the window caption to move the window) nor a press
+  // whose release was lost after an earlier drag can be used.
+  bool ConsumeLeftMousePressForDrag(const aura::Window* window);
+
   void set_context_factory(ui::ContextFactory* context_factory) {
     context_factory_ = context_factory;
   }

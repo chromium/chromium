@@ -1222,10 +1222,20 @@ void SimulateMouseEvent(WebContents* web_contents,
     aura::Env::GetInstance()->set_mouse_button_flags(
         aura::Env::GetInstance()->mouse_button_flags() |
         get_event_flags_for_button(button));
+    // Renderer-initiated mouse drags also require the left button press to
+    // have been dispatched to the web contents.
+    if (button == blink::WebMouseEvent::Button::kLeft) {
+      aura::test::EnvTestHelper(aura::Env::GetInstance())
+          .SetLeftMousePressTarget(rwhvb->GetNativeView());
+    }
   } else if (type == blink::WebInputEvent::Type::kMouseUp) {
     int flags = aura::Env::GetInstance()->mouse_button_flags() &
                 ~get_event_flags_for_button(button);
     aura::Env::GetInstance()->set_mouse_button_flags(flags);
+    if (button == blink::WebMouseEvent::Button::kLeft) {
+      aura::test::EnvTestHelper(aura::Env::GetInstance())
+          .SetLeftMousePressTarget(nullptr);
+    }
     if (flags == 0) {
       aura::test::EnvTestHelper(aura::Env::GetInstance())
           .SetInputStateLookup(std::move(*g_saved_input_state_lookup));

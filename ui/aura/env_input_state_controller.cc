@@ -19,14 +19,25 @@ EnvInputStateController::~EnvInputStateController() = default;
 
 void EnvInputStateController::UpdateStateForMouseEvent(
     const Window* window,
+    Window* target,
     const ui::MouseEvent& event) {
   switch (event.type()) {
     case ui::EventType::kMousePressed:
       env_->set_mouse_button_flags(event.button_flags());
+      if (event.changed_button_flags() & ui::EF_LEFT_MOUSE_BUTTON) {
+        // A non-client press (e.g. on the window caption) may become a window
+        // move, so it is not treated as a press on its target window. A press
+        // supersedes any earlier press whose release was never seen.
+        SetLeftMousePress((event.flags() & ui::EF_IS_NON_CLIENT) ? nullptr
+                                                                 : target);
+      }
       break;
     case ui::EventType::kMouseReleased:
       env_->set_mouse_button_flags(event.button_flags() &
                                    ~event.changed_button_flags());
+      if (event.changed_button_flags() & ui::EF_LEFT_MOUSE_BUTTON) {
+        ResetLeftMousePress();
+      }
       break;
     default:
       break;
@@ -115,9 +126,23 @@ std::optional<gfx::Point> EnvInputStateController::ConsumeTouchForDrag(
   return std::nullopt;
 }
 
+bool EnvInputStateController::ConsumeLeftMousePressForDrag(
+    const Window* window) {
+  if (!window || left_mouse_press_target_ != window ||
+      left_mouse_press_used_for_drag_) {
+    return false;
+  }
+  left_mouse_press_used_for_drag_ = true;
+  return true;
+}
+
 void EnvInputStateController::ResetActiveTouches() {
   active_touches_.clear();
   target_observations_.RemoveAllObservations();
+  // `left_mouse_press_target_` may still be observed.
+  if (left_mouse_press_target_) {
+    ObserveTarget(left_mouse_press_target_);
+  }
 }
 
 void EnvInputStateController::OnWindowDestroying(Window* window) {
@@ -129,6 +154,9 @@ void EnvInputStateController::OnWindowDestroying(Window* window) {
       touch.target = nullptr;
     }
   }
+  if (left_mouse_press_target_ == window) {
+    left_mouse_press_target_ = nullptr;
+  }
   target_observations_.RemoveObservation(window);
 }
 
@@ -138,9 +166,7 @@ void EnvInputStateController::AddActiveTouch(
     const gfx::Point& location_in_screen) {
   active_touches_[id] = {.target = window,
                          .location_in_screen = location_in_screen};
-  if (!target_observations_.IsObservingSource(window)) {
-    target_observations_.AddObservation(window);
-  }
+  ObserveTarget(window);
 }
 
 void EnvInputStateController::RemoveActiveTouch(ui::PointerId id) {
@@ -150,15 +176,38 @@ void EnvInputStateController::RemoveActiveTouch(ui::PointerId id) {
   }
   Window* target = it->second.target;
   active_touches_.erase(it);
-  if (!target) {
+  MaybeStopObservingTarget(target);
+}
+
+void EnvInputStateController::SetLeftMousePress(Window* window) {
+  ResetLeftMousePress();
+  left_mouse_press_target_ = window;
+  ObserveTarget(window);
+}
+
+void EnvInputStateController::ResetLeftMousePress() {
+  Window* target = left_mouse_press_target_;
+  left_mouse_press_target_ = nullptr;
+  left_mouse_press_used_for_drag_ = false;
+  MaybeStopObservingTarget(target);
+}
+
+void EnvInputStateController::ObserveTarget(Window* window) {
+  if (window && !target_observations_.IsObservingSource(window)) {
+    target_observations_.AddObservation(window);
+  }
+}
+
+void EnvInputStateController::MaybeStopObservingTarget(Window* window) {
+  if (!window || left_mouse_press_target_ == window) {
     return;
   }
-  for (const auto& [other_id, touch] : active_touches_) {
-    if (touch.target == target) {
+  for (const auto& [id, touch] : active_touches_) {
+    if (touch.target == window) {
       return;
     }
   }
-  target_observations_.RemoveObservation(target);
+  target_observations_.RemoveObservation(window);
 }
 
 void EnvInputStateController::SetLastMouseLocation(
