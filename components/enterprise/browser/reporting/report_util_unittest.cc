@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -56,6 +57,123 @@ TEST(ReportUtilTest, GetSecuritySignalsInReportWithoutCertificates) {
 
   EXPECT_EQ(dict->FindInt("certificates_count"), 0);
   EXPECT_EQ(dict->FindBool("certificates_were_truncated"), false);
+}
+
+TEST(ReportUtilTest, GetSecuritySignalsInReportWithPolicySummary) {
+  em::ChromeProfileReportRequest request;
+  auto* profile_info =
+      request.mutable_browser_report()->add_chrome_user_profile_infos();
+  profile_info->mutable_profile_signals_report();
+  profile_info->add_chrome_policies()->set_name("Policy1");
+  profile_info->add_chrome_policies()->set_name("Policy2");
+  profile_info->add_certificates()->set_data("cert_data");
+
+  std::string json_string =
+      GetSecuritySignalsInReport(request, /*include_policy_summary=*/true);
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(json_string, /*options=*/0);
+  ASSERT_TRUE(dict.has_value());
+
+  // Policies are summarized rather than listed.
+  const std::string* chrome_policies = dict->FindString("chrome_policies");
+  ASSERT_TRUE(chrome_policies);
+  EXPECT_EQ(*chrome_policies,
+            "[2 policies collected but omitted for readability]");
+  EXPECT_EQ(json_string.find("Policy1"), std::string::npos);
+
+  // All the fields from the output without the summary are also included.
+  std::optional<base::DictValue> signals_dict = base::JSONReader::ReadDict(
+      GetSecuritySignalsInReport(request), /*options=*/0);
+  ASSERT_TRUE(signals_dict.has_value());
+  for (const auto [key, value] : *signals_dict) {
+    const base::Value* debug_value = dict->Find(key);
+    ASSERT_TRUE(debug_value) << key;
+    EXPECT_EQ(*debug_value, value) << key;
+  }
+  EXPECT_EQ(dict->FindInt("certificates_count"), 1);
+}
+
+TEST(ReportUtilTest, GetSecuritySignalsInReportWithPolicySummarySinglePolicy) {
+  em::ChromeProfileReportRequest request;
+  auto* profile_info =
+      request.mutable_browser_report()->add_chrome_user_profile_infos();
+  profile_info->mutable_profile_signals_report();
+  profile_info->add_chrome_policies()->set_name("Policy1");
+
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      GetSecuritySignalsInReport(request, /*include_policy_summary=*/true),
+      /*options=*/0);
+  ASSERT_TRUE(dict.has_value());
+
+  const std::string* chrome_policies = dict->FindString("chrome_policies");
+  ASSERT_TRUE(chrome_policies);
+  EXPECT_EQ(*chrome_policies,
+            "[1 policy collected but omitted for readability]");
+}
+
+TEST(ReportUtilTest, GetSecuritySignalsInReportWithPolicySummaryNoPolicies) {
+  em::ChromeProfileReportRequest request;
+  auto* profile_info =
+      request.mutable_browser_report()->add_chrome_user_profile_infos();
+  profile_info->mutable_profile_signals_report();
+
+  std::string json_string =
+      GetSecuritySignalsInReport(request, /*include_policy_summary=*/true);
+  EXPECT_EQ(json_string, GetSecuritySignalsInReport(request));
+
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(json_string, /*options=*/0);
+  ASSERT_TRUE(dict.has_value());
+  EXPECT_FALSE(dict->Find("chrome_policies"));
+}
+
+// The default output is used for policy logging and the attestation content
+// binding, so it must not include the policy summary and must keep its format.
+TEST(ReportUtilTest, GetSecuritySignalsInReportDefaultOutputIsUnchanged) {
+  em::ChromeProfileReportRequest request;
+  auto* profile_info =
+      request.mutable_browser_report()->add_chrome_user_profile_infos();
+  profile_info->mutable_profile_signals_report();
+  profile_info->add_chrome_policies()->set_name("Policy1");
+
+  std::string json_string = GetSecuritySignalsInReport(request);
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(json_string, /*options=*/0);
+  ASSERT_TRUE(dict.has_value());
+
+  EXPECT_FALSE(dict->Find("chrome_policies"));
+  EXPECT_EQ(json_string.find("Policy1"), std::string::npos);
+
+  // Complete reports are pretty-printed.
+  std::string expected_json;
+  base::JSONWriter::WriteWithOptions(
+      *dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &expected_json);
+  EXPECT_EQ(json_string, expected_json);
+}
+
+TEST(ReportUtilTest,
+     GetSecuritySignalsInReportDefaultOutputIncompleteReportIsUnchanged) {
+  // A report with more than one profile is incomplete.
+  em::ChromeProfileReportRequest request;
+  auto* browser_report = request.mutable_browser_report();
+  browser_report->add_chrome_user_profile_infos()
+      ->add_chrome_policies()
+      ->set_name("Policy1");
+  browser_report->add_chrome_user_profile_infos()
+      ->add_chrome_policies()
+      ->set_name("Policy2");
+
+  std::string json_string = GetSecuritySignalsInReport(request);
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(json_string, /*options=*/0);
+  ASSERT_TRUE(dict.has_value());
+
+  EXPECT_FALSE(dict->Find("chrome_policies"));
+
+  // Incomplete reports are serialized compactly.
+  std::string expected_json;
+  base::JSONWriter::WriteWithOptions(*dict, /*options=*/0, &expected_json);
+  EXPECT_EQ(json_string, expected_json);
 }
 
 #if BUILDFLAG(IS_IOS)

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
@@ -94,6 +95,26 @@ ACTION_P(ScheduleGeneratorCallback, request_number) {
 ACTION(ScheduleProfileRequestGeneratorCallback) {
   ReportRequestQueue requests;
   requests.push(std::make_unique<ReportRequest>(ReportType::kProfileReport));
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
+}
+
+// Generates a profile report with security signals that contains
+// `certificates_count` certificates.
+ACTION_P(ScheduleProfileRequestWithCertificatesGeneratorCallback,
+         certificates_count) {
+  auto request = std::make_unique<ReportRequest>(ReportType::kProfileReport);
+  auto* profile_info = request->GetChromeProfileReportRequest()
+                           .mutable_browser_report()
+                           ->add_chrome_user_profile_infos();
+  profile_info->mutable_profile_signals_report();
+  for (int i = 0; i < certificates_count; ++i) {
+    profile_info->add_certificates();
+  }
+
+  ReportRequestQueue requests;
+  requests.push(std::move(request));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(arg0), std::move(requests)));
@@ -1044,6 +1065,37 @@ class EnabledProfileSecuritySignalsReportSchedulerTest
           kUserSecurityAuthenticatedReporting, base::Value(*use_cookies));
     }
   }
+
+  // Creates a profile for which only security signals reporting is enabled,
+  // and a scheduler for it.
+  void CreateSchedulerForSignalsOnlyProfile() {
+    TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+    SetCloudProfileReportingPolicy(profile, false);
+    SetUserSecuritySignalsPolicy(profile, /*enabled=*/true);
+    CreateSchedulerForProfileReporting(profile);
+  }
+
+  // Returns the "certificates_count" of the last uploaded signals, or
+  // std::nullopt if there are none.
+  std::optional<int> GetLastUploadedCertificatesCount() {
+    const std::optional<std::string>& signals_json =
+        scheduler_->GetLastUploadedSignalsJson();
+    if (!signals_json) {
+      return std::nullopt;
+    }
+    std::optional<base::DictValue> signals =
+        base::JSONReader::ReadDict(*signals_json, base::JSON_PARSE_RFC);
+    return signals ? signals->FindInt("certificates_count") : std::nullopt;
+  }
+
+  // Returns the config expected for a profile report without cookies.
+  static ReportGenerationConfig ProfileReportConfig(
+      ReportTrigger trigger,
+      SecuritySignalsMode security_signals_mode) {
+    return ReportGenerationConfig(trigger, ReportType::kProfileReport,
+                                  security_signals_mode,
+                                  /*use_cookies=*/false);
+  }
 };
 
 // Profile reporting does not support ChromeOS.
@@ -1883,6 +1935,128 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 
   // Verify scheduler is NOT listening to uploader when no security signals
   EXPECT_FALSE(uploader_->HasListener(scheduler_.get()));
+}
+
+// Tests that the signals included in a successfully uploaded report are kept so
+// that they can be displayed on chrome://connectors-internals.
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       LastUploadedSignalsJsonSetAfterSuccessfulUpload) {
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(
+          ScheduleProfileRequestWithCertificatesGeneratorCallback(2)));
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ProfileReportConfig(ReportTrigger::kTriggerProfileOpened,
+                                      SecuritySignalsMode::kSignalsOnly),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  CreateSchedulerForSignalsOnlyProfile();
+  EXPECT_FALSE(scheduler_->GetLastUploadedSignalsJson());
+
+  // Fast forward to let the startup report complete.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  EXPECT_EQ(GetLastUploadedCertificatesCount(), 2);
+}
+
+// Tests that a failed upload does not override the signals from the last
+// successful upload.
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       LastUploadedSignalsJsonNotUpdatedAfterFailedUpload) {
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(
+          ScheduleProfileRequestWithCertificatesGeneratorCallback(2)))
+      .WillOnce(WithArgs<0>(
+          ScheduleProfileRequestWithCertificatesGeneratorCallback(1)));
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ProfileReportConfig(ReportTrigger::kTriggerProfileOpened,
+                                      SecuritySignalsMode::kSignalsOnly),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  CreateSchedulerForSignalsOnlyProfile();
+
+  // Fast forward to let the startup report complete.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  ASSERT_EQ(GetLastUploadedCertificatesCount(), 2);
+
+  // The next signals report fails to upload.
+  auto failing_uploader = std::make_unique<MockReportUploader>();
+  EXPECT_CALL(*failing_uploader,
+              SetRequestAndUpload(
+                  ProfileReportConfig(ReportTrigger::kTriggerSecurity,
+                                      SecuritySignalsMode::kSignalsOnly),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kTransientError));
+  scheduler_->QueueReportUploaderForTesting(std::move(failing_uploader));
+
+  base::test::TestFuture<void> manual_report_future;
+  scheduler_->UploadReport(manual_report_future.GetCallback());
+  ASSERT_TRUE(manual_report_future.Wait());
+
+  EXPECT_EQ(GetLastUploadedCertificatesCount(), 2);
+}
+
+// Tests that no signals are kept when the uploaded report does not contain
+// security signals.
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       LastUploadedSignalsJsonNotSetForReportWithoutSignals) {
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ProfileReportConfig(ReportTrigger::kTriggerProfileOpened,
+                                      SecuritySignalsMode::kNoSignals),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
+  SetCloudProfileReportingPolicy(profile, true);
+  CreateSchedulerForProfileReporting(profile);
+
+  // Fast forward to let the startup report complete.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  EXPECT_FALSE(scheduler_->GetLastUploadedSignalsJson());
+}
+
+// Tests that the signals from the last successful upload are cleared when the
+// scheduler is stopped after signals reporting is disabled.
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       LastUploadedSignalsJsonClearedWhenReportingStops) {
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(
+          ScheduleProfileRequestWithCertificatesGeneratorCallback(2)));
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ProfileReportConfig(ReportTrigger::kTriggerProfileOpened,
+                                      SecuritySignalsMode::kSignalsOnly),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+  SetCloudProfileReportingPolicy(profile, false);
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/true);
+  CreateSchedulerForProfileReporting(profile);
+
+  // Fast forward to let the startup report complete.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  ASSERT_EQ(GetLastUploadedCertificatesCount(), 2);
+
+  // The scheduler is stopped whenever status reporting is disabled, which is
+  // always the case for signals-only profiles. The signals are kept as long as
+  // signals reporting is enabled.
+  scheduler_->OnDMTokenUpdated();
+  EXPECT_EQ(GetLastUploadedCertificatesCount(), 2);
+
+  // Once signals reporting is disabled, the signals are cleared the next time
+  // the scheduler is stopped.
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
+  scheduler_->OnDMTokenUpdated();
+  EXPECT_FALSE(scheduler_->GetLastUploadedSignalsJson());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

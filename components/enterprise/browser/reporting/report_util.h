@@ -56,9 +56,15 @@ std::unique_ptr<enterprise_management::AntiVirusProduct> TranslateAvProduct(
 // Utility function to convert report proto to readable, JSON format that
 // contains security signals-related fields only. Only
 // `ChromeProfileReportRequest` is currently supported.
+//
+// If `include_policy_summary` is true, the output also contains a summary of
+// the policies included in the report. This is meant for debugging surfaces
+// (e.g. chrome://connectors-internals) and must not be used for the report's
+// attestation payload.
 std::string GetSecuritySignalsInReport(
     const enterprise_management::ChromeProfileReportRequest&
-        chrome_profile_report_request);
+        chrome_profile_report_request,
+    bool include_policy_summary = false);
 
 void RecordReportGenerationErrorMetric(ReportGenerationError error);
 

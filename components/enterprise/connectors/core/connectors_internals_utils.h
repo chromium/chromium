@@ -132,7 +132,9 @@ CreateDeviceTrustStateWithNoKey(
     connectors_internals::mojom::ConsentMetadataPtr consent_metadata);
 
 // Creates a SignalsReportingState populated with preference timestamps and
-// scheduler status.
+// scheduler status. If `report_scheduler` successfully uploaded a report with
+// security signals since it was created, the state is also populated with
+// those signals (`SignalsSource::kLastUploadedReport`).
 connectors_internals::mojom::SignalsReportingStatePtr
 CreateSignalsReportingState(
     const PrefService* profile_prefs,

@@ -168,10 +168,24 @@ void ConnectorsInternalsPageHandler::GetSignalsReportingState(
   auto state = utils::CreateSignalsReportingState(
       profile_->GetPrefs(), profile_report_scheduler, can_collect_all_signals);
 
+  if (!state->signals_report_enabled) {
+    std::move(callback).Run(std::move(state));
+    return;
+  }
+
+  // Show the signals that were actually uploaded when available. Signals are
+  // only collected on demand as a fallback, as they can't include signals that
+  // require a challenge from the server (e.g. client certificates).
+  if (state->signals_source ==
+      connectors_internals::mojom::SignalsSource::kLastUploadedReport) {
+    std::move(callback).Run(std::move(state));
+    return;
+  }
+
   auto* signals_aggregator =
       enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile_);
 
-  if (!state->signals_report_enabled || !signals_aggregator) {
+  if (!signals_aggregator) {
     std::move(callback).Run(std::move(state));
     return;
   }
@@ -261,7 +275,11 @@ void ConnectorsInternalsPageHandler::OnReportGenerated(
   auto [error_info, signals_json] =
       utils::ProcessReportGenerationResult(std::move(result));
   state->error_info = std::move(error_info);
-  state->signals_json = std::move(signals_json);
+  if (signals_json) {
+    state->signals_json = std::move(signals_json);
+    state->signals_source =
+        connectors_internals::mojom::SignalsSource::kCollectedOnDemand;
+  }
   std::move(callback).Run(std::move(state));
   request_generator_.reset();
 }

@@ -207,6 +207,7 @@ source_set("unit_tests") {
     "browser/reporting/browser_launch/browser_launch_event_controller_unittest.cc",
     "browser/reporting/chrome_profile_request_generator_unittest.cc",
     "browser/reporting/pref_url_list_matcher_unittest.cc",
+    "browser/reporting/report_generation_config_unittest.cc",
     "browser/reporting/report_uploader_unittest.cc",
     "browser/reporting/report_util_unittest.cc",
     "browser/reporting/saas_usage/saas_usage_aggregation_utils_unittest.cc",

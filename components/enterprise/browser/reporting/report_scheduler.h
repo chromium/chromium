@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_SCHEDULER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -107,6 +108,13 @@ class ReportScheduler : public ReportUploader::Listener {
   bool IsReportingEnabled() const;
   // Returns true if security signals reporting is enabled.
   bool AreSecurityReportsEnabled() const;
+
+  // Returns a readable JSON copy of the security signals in the last report
+  // successfully uploaded by this scheduler, or std::nullopt if there is none.
+  // Unlike a preview generated on demand, it includes signals that are only
+  // collected during uploads (e.g. client certificates). Debugging use only
+  // (e.g. chrome://connectors-internals).
+  const std::optional<std::string>& GetLastUploadedSignalsJson() const;
 
   // Returns true if next report has been scheduled. The report will be
   // scheduled only if the previous report is uploaded successfully and the
@@ -226,6 +234,16 @@ class ReportScheduler : public ReportUploader::Listener {
 
   // The start time of the active report generation/upload process.
   base::TimeTicks report_generation_start_time_;
+
+  // Readable JSON representation of the security signals included in the
+  // report that is currently being uploaded, if any. Promoted to
+  // `last_uploaded_signals_json_` once the upload succeeds.
+  std::optional<std::string> pending_signals_json_;
+
+  // Readable JSON representation of the security signals included in the last
+  // report that was successfully uploaded, if any. Kept in memory only, as it
+  // contains device identifiers.
+  std::optional<std::string> last_uploaded_signals_json_;
 
   // The set of triggers that have fired while processing a report (a bitfield
   // of ReportTrigger values). They will be handled following completion of the

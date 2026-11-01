@@ -5,12 +5,19 @@
 #include "components/enterprise/browser/reporting/report_generation_config.h"
 
 #include "base/check_op.h"
+#include "base/json/json_writer.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
 namespace {
 constexpr char kReportGenerationConfigTemplate[] =
-    R"(Trigger: %s, Report Type: %s, Security Signals Mode: %s,"
-    " Using Cookies: %s, Has Challenge: %s, Selectors: %s, Is Retrying: %s)";
+    "Trigger: %s\n"
+    "Report Type: %s\n"
+    "Security Signals Mode: %s\n"
+    "Using Cookies: %s\n"
+    "Has Challenge: %s\n"
+    "Is Retrying: %s\n"
+    "Selectors: %s";
 
 std::string_view TranslateReportType(
     enterprise_reporting::ReportType report_type) {
@@ -128,13 +135,23 @@ bool ReportGenerationConfig::operator==(const ReportGenerationConfig&) const =
     default;
 
 std::string ReportGenerationConfig::ToString() const {
+  // Each field is on its own line, and the selectors are pretty-printed so
+  // that the output is readable on chrome://connectors-internals.
+  std::string selectors = "[]";
+  if (!client_certificates_selectors.empty()) {
+    selectors =
+        base::WriteJsonWithOptions(client_certificates_selectors,
+                                   base::JSONWriter::OPTIONS_PRETTY_PRINT)
+            .value_or("[]");
+    // Drop the trailing line break added by the pretty printer.
+    base::TrimWhitespaceASCII(selectors, base::TRIM_TRAILING, &selectors);
+  }
   return base::StringPrintf(
       kReportGenerationConfigTemplate, ReportTriggerToString(report_trigger),
       TranslateReportType(report_type),
       TranslateSecuritySignalsMode(security_signals_mode),
       use_cookies ? "Yes" : "No", challenge.has_value() ? "Yes" : "No",
-      client_certificates_selectors.DebugString().c_str(),
-      is_retrying ? "Yes" : "No");
+      is_retrying ? "Yes" : "No", selectors.c_str());
 }
 
 void ReportGenerationConfig::PrintDebugString(std::ostream* os) const {

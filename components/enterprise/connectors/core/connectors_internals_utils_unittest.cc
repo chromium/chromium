@@ -20,14 +20,14 @@
 #include "build/build_config.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/report_request.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/device_trust/core/common_types.h"  // nogncheck
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include "components/enterprise/device_trust/core/common_types.h"  // nogncheck
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
 #include "components/enterprise/net/core/mock_enterprise_proxy_service.h"
@@ -150,6 +150,37 @@ TEST_F(ConnectorsInternalsUtilsTest, CreateSignalsReportingState_WithPrefs) {
   EXPECT_EQ(state->last_signals_upload_config, "test_config");
   EXPECT_FALSE(state->last_upload_attempt_timestamp.empty());
   EXPECT_FALSE(state->last_upload_success_timestamp.empty());
+
+  // Without a scheduler, there are no uploaded signals to show.
+  EXPECT_FALSE(state->signals_json.has_value());
+  EXPECT_EQ(state->signals_source,
+            connectors_internals::mojom::SignalsSource::kNone);
+}
+
+TEST_F(ConnectorsInternalsUtilsTest, ProcessReportGenerationResult_Success) {
+  auto request = std::make_unique<enterprise_reporting::ReportRequest>(
+      enterprise_reporting::ReportType::kProfileReport);
+  auto* profile_info = request->GetChromeProfileReportRequest()
+                           .mutable_browser_report()
+                           ->add_chrome_user_profile_infos();
+  profile_info->mutable_profile_signals_report();
+  profile_info->add_chrome_policies()->set_name("Policy");
+
+  enterprise_reporting::ReportRequestQueue queue;
+  queue.push(std::move(request));
+  auto [error_info, signals_json] =
+      ProcessReportGenerationResult(base::ok(std::move(queue)));
+
+  EXPECT_FALSE(error_info.has_value());
+  ASSERT_TRUE(signals_json.has_value());
+  std::optional<base::DictValue> signals =
+      base::JSONReader::ReadDict(*signals_json, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(signals.has_value());
+  EXPECT_EQ(signals->FindInt("certificates_count"), 0);
+  const std::string* chrome_policies = signals->FindString("chrome_policies");
+  ASSERT_TRUE(chrome_policies);
+  EXPECT_EQ(*chrome_policies,
+            "[1 policy collected but omitted for readability]");
 }
 
 TEST_F(ConnectorsInternalsUtilsTest, ProcessReportGenerationResult_Error) {

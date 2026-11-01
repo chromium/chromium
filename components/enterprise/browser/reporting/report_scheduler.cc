@@ -170,6 +170,11 @@ bool ReportScheduler::AreSecurityReportsEnabled() const {
   return delegate_->AreSecurityReportsEnabled();
 }
 
+const std::optional<std::string>& ReportScheduler::GetLastUploadedSignalsJson()
+    const {
+  return last_uploaded_signals_json_;
+}
+
 bool ReportScheduler::IsNextReportScheduledForTesting() const {
   return request_timer_.IsRunning();
 }
@@ -285,6 +290,13 @@ void ReportScheduler::Stop() {
   active_report_generation_config_ =
       ReportGenerationConfig(ReportTrigger::kTriggerNone);
   pending_triggers_ = 0;
+  pending_signals_json_.reset();
+  // `Stop()` is also called when only status reporting is disabled, in which
+  // case signals-only reports may still be uploaded. Only clear the signals
+  // from the last successful upload when signals reporting is disabled too.
+  if (!AreSecurityReportsEnabled()) {
+    last_uploaded_signals_json_.reset();
+  }
   if (on_manual_report_uploaded_) {
     std::move(on_manual_report_uploaded_).Run();
   }
@@ -576,6 +588,16 @@ void ReportScheduler::OnReportGenerated(
       SecuritySignalsMode::kNoSignals) {
     CHECK(!report_uploader_->HasListener(this));
     report_uploader_->SetListener(this);
+
+    // Signals are only attached to profile reports, which consist of a single
+    // request. Keep a readable copy of what is about to be uploaded so that it
+    // can be surfaced for debugging once the upload succeeds.
+    if (!requests.empty() && active_report_generation_config_.report_type ==
+                                 ReportType::kProfileReport) {
+      pending_signals_json_ = GetSecuritySignalsInReport(
+          requests.front()->GetChromeProfileReportRequest(),
+          /*include_policy_summary=*/true);
+    }
   }
 
   if (!active_report_generation_config_.is_retrying) {
@@ -629,6 +651,10 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
         delegate_->GetPrefService()->SetString(
             kLastSignalsUploadSucceededConfig,
             active_report_generation_config_.ToString());
+        if (pending_signals_json_) {
+          last_uploaded_signals_json_ =
+              std::exchange(pending_signals_json_, std::nullopt);
+        }
       }
 
       UpdateLastUploadTimestampAndStartNextReport();
@@ -688,6 +714,7 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
                     report_type_suffix, signals_suffix}),
       base::TimeTicks::Now() - report_generation_start_time_);
 
+  pending_signals_json_.reset();
   active_report_generation_config_ =
       ReportGenerationConfig(ReportTrigger::kTriggerNone);
 

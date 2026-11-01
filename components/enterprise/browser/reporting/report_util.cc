@@ -4,10 +4,13 @@
 
 #include "components/enterprise/browser/reporting/report_util.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/common/signals_features.h"
@@ -164,10 +167,15 @@ std::unique_ptr<em::AntiVirusProduct> TranslateAvProduct(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-std::string GetSecuritySignalsInReport(
-    const em::ChromeProfileReportRequest& chrome_profile_report_request) {
-  base::DictValue signals_dict;
-  std::string signals_json;
+namespace {
+
+// Populates `signals_dict` with the security signals in
+// `chrome_profile_report_request`. Returns false if the report doesn't contain
+// a browser report for exactly one profile, in which case only the
+// device-level signals are populated.
+bool PopulateSecuritySignalsDict(
+    const em::ChromeProfileReportRequest& chrome_profile_report_request,
+    base::DictValue& signals_dict) {
   signals_dict.Set("Error", "No error found in report");
 
   if (chrome_profile_report_request.has_browser_device_identifier()) {
@@ -236,18 +244,14 @@ std::string GetSecuritySignalsInReport(
   }
 
   if (!chrome_profile_report_request.has_browser_report()) {
-    base::JSONWriter::WriteWithOptions(signals_dict, /*options=*/0,
-                                       &signals_json);
-    return signals_json;
+    return false;
   }
 
   auto browser_report = chrome_profile_report_request.browser_report();
   signals_dict.Set("browser_version", browser_report.browser_version());
 
   if (browser_report.chrome_user_profile_infos_size() != 1) {
-    base::JSONWriter::WriteWithOptions(signals_dict, /*options=*/0,
-                                       &signals_json);
-    return signals_json;
+    return false;
   }
 
   auto chrome_user_profile_info = browser_report.chrome_user_profile_infos(0);
@@ -312,12 +316,43 @@ std::string GetSecuritySignalsInReport(
     }
   }
 
-  base::JSONWriter::WriteWithOptions(
-      signals_dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signals_json);
-
-  return signals_json;
+  return true;
 }
 
+}  // namespace
+
+std::string GetSecuritySignalsInReport(
+    const em::ChromeProfileReportRequest& chrome_profile_report_request,
+    bool include_policy_summary) {
+  base::DictValue signals_dict;
+  bool is_complete =
+      PopulateSecuritySignalsDict(chrome_profile_report_request, signals_dict);
+  // Incomplete reports are serialized compactly. This format is part of the
+  // attestation content binding, so it must not change.
+  int options = is_complete ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0;
+
+  if (include_policy_summary &&
+      chrome_profile_report_request.has_browser_report()) {
+    int policy_count = 0;
+    for (const auto& profile_info :
+         chrome_profile_report_request.browser_report()
+             .chrome_user_profile_infos()) {
+      policy_count += profile_info.chrome_policies_size();
+    }
+    if (policy_count > 0) {
+      signals_dict.Set(
+          "chrome_policies",
+          base::StringPrintf("[%d %s collected but omitted for readability]",
+                             policy_count,
+                             policy_count == 1 ? "policy" : "policies"));
+      options = base::JSONWriter::OPTIONS_PRETTY_PRINT;
+    }
+  }
+
+  std::string signals_json;
+  base::JSONWriter::WriteWithOptions(signals_dict, options, &signals_json);
+  return signals_json;
+}
 
 int GetCurrentContentBindingsVersion() {
   return 1;

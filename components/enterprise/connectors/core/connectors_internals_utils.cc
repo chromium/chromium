@@ -9,7 +9,6 @@
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/time_formatting.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -219,42 +218,9 @@ connectors_internals::mojom::Int32ValuePtr ToMojomValue(
 
 std::string GetJsonForReportRequest(
     const enterprise_reporting::ReportRequest& request) {
-  auto proto_request = request.GetChromeProfileReportRequest();
-
-  int policy_count = 0;
-  if (proto_request.has_browser_report()) {
-    for (const auto& profile_info :
-         proto_request.browser_report().chrome_user_profile_infos()) {
-      policy_count += profile_info.chrome_policies_size();
-    }
-  }
-
-  if (proto_request.has_attestation_payload() &&
-      !proto_request.attestation_payload().attestation_blob().empty()) {
-    proto_request.mutable_attestation_payload()->set_attestation_blob(
-        "[attestation blob collected but omitted for readability]");
-  }
-
-  std::string signals_json =
-      enterprise_reporting::GetSecuritySignalsInReport(proto_request);
-
-  if (policy_count > 0) {
-    std::optional<base::Value> parsed_value =
-        base::JSONReader::Read(signals_json, base::JSON_PARSE_RFC);
-
-    if (parsed_value && parsed_value->is_dict()) {
-      parsed_value->GetDict().Set(
-          "chrome_policies",
-          base::StringPrintf(
-              "[%d policies collected but omitted for readability]",
-              policy_count));
-
-      base::JSONWriter::WriteWithOptions(
-          *parsed_value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signals_json);
-    }
-  }
-
-  return signals_json;
+  return enterprise_reporting::GetSecuritySignalsInReport(
+      request.GetChromeProfileReportRequest(),
+      /*include_policy_summary=*/true);
 }
 
 std::string GetStringFromTimestamp(base::Time timestamp) {
@@ -352,12 +318,24 @@ CreateSignalsReportingState(
   bool signals_report_enabled =
       report_scheduler && report_scheduler->AreSecurityReportsEnabled();
 
+  // Prefer showing exactly what was last uploaded, as some signals (e.g. client
+  // certificates) are only collected as part of an upload. Cached signals are
+  // not shown when signals reporting is disabled.
+  std::optional<std::string> signals_json;
+  auto signals_source = connectors_internals::mojom::SignalsSource::kNone;
+  if (signals_report_enabled &&
+      report_scheduler->GetLastUploadedSignalsJson()) {
+    signals_json = report_scheduler->GetLastUploadedSignalsJson();
+    signals_source =
+        connectors_internals::mojom::SignalsSource::kLastUploadedReport;
+  }
+
   return connectors_internals::mojom::SignalsReportingState::New(
       std::move(error_info), status_report_enabled, signals_report_enabled,
       std::move(last_upload_attempt_time_string),
       std::move(last_upload_success_time_string),
       std::move(last_signals_upload_config), can_collect_all_signals,
-      /*signals_json=*/std::nullopt);
+      std::move(signals_json), signals_source);
 }
 
 std::pair<std::optional<std::string>, std::optional<std::string>>
