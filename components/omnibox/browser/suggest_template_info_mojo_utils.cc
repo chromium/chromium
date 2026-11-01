@@ -8,11 +8,14 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/fusebox_action.mojom.h"
 #include "components/omnibox/browser/fusebox_action_mojo_utils.h"
+#include "third_party/omnibox_proto/formatted_string.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 
 namespace suggest_template_info {
@@ -34,20 +37,47 @@ mojom::ColorType ACMatchClassificationToColorType(int style) {
 // Converts `text` and its `classifications` to a FormattedString. Each
 // classification becomes one fragment. The MATCH style is converted to
 // `is_bolded`, and the other styles to a color.
+//
+// If `suggest_template_text` holds the same text, a fragment takes the color
+// of its fragment that starts at the same offset, if that has one. The parser
+// builds the classifications from those fragments, so their offsets line up.
+// The text has to match since dedupe and other changes to the match don't
+// update SuggestTemplateInfo.
 mojom::FormattedStringPtr CreateFormattedString(
     const std::u16string& text,
-    const ACMatchClassifications& classifications) {
+    const ACMatchClassifications& classifications,
+    const omnibox::FormattedString& suggest_template_text) {
+  static_assert(
+      static_cast<int32_t>(omnibox::FormattedString::ColorType_MAX) ==
+          static_cast<int32_t>(mojom::ColorType::kMaxValue),
+      "ColorType enum values must match between the proto and the mojom.");
+  base::flat_map<size_t, mojom::ColorType> suggest_template_colors;
+  if (base::UTF8ToUTF16(suggest_template_text.text()) == text) {
+    for (const auto& fragment : suggest_template_text.fragments()) {
+      if (fragment.has_start_index() &&
+          fragment.color() != omnibox::FormattedString::COLOR_UNKNOWN) {
+        suggest_template_colors.emplace(
+            fragment.start_index(),
+            static_cast<mojom::ColorType>(fragment.color()));
+      }
+    }
+  }
   return mojom::FormattedString::New(
       text,
       base::ToVector(
           classifications,
-          [](const ACMatchClassification& classification) {
+          [&](const ACMatchClassification& classification) {
             const bool is_bolded =
                 (classification.style & ACMatchClassification::MATCH) != 0;
-            return mojom::FormattedStringFragment::New(
-                classification.offset,
-                ACMatchClassificationToColorType(classification.style),
-                is_bolded);
+            // Use the ACMatchClassification as a fallback since it's built
+            // from the server values but contains a complete mapping.
+            const auto it = suggest_template_colors.find(classification.offset);
+            const mojom::ColorType color =
+                it != suggest_template_colors.end()
+                    ? it->second
+                    : ACMatchClassificationToColorType(classification.style);
+            return mojom::FormattedStringFragment::New(classification.offset,
+                                                       color, is_bolded);
           }),
       /*a11y_text=*/std::nullopt);
 }
@@ -133,13 +163,20 @@ mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
       swap ? match.description_class : match.contents_class;
   const ACMatchClassifications& secondary_text_class =
       swap ? match.contents_class : match.description_class;
+  const omnibox::SuggestTemplateInfo& match_suggest_template =
+      match.suggest_template ? *match.suggest_template
+                             : omnibox::SuggestTemplateInfo::default_instance();
   suggest_template->primary_text = CreateFormattedString(
-      swap ? match.description : match.contents, primary_text_class);
+      swap ? match.description : match.contents, primary_text_class,
+      swap ? match_suggest_template.secondary_text()
+           : match_suggest_template.primary_text());
   const std::u16string& secondary_text =
       swap ? match.contents : match.description;
   if (!secondary_text.empty()) {
     suggest_template->secondary_text =
-        CreateFormattedString(secondary_text, secondary_text_class);
+        CreateFormattedString(secondary_text, secondary_text_class,
+                              swap ? match_suggest_template.primary_text()
+                                   : match_suggest_template.secondary_text());
   }
   suggest_template->secondary_text_placement = GetSecondaryTextPlacement(match);
   suggest_template->image = GetImage(match);

@@ -8,9 +8,11 @@
 #include <cstdint>
 
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/fusebox_action.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/formatted_string.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "url/gurl.h"
@@ -23,6 +25,17 @@ omnibox::SuggestTemplateInfo CreateProtoWithPlacement(
   omnibox::SuggestTemplateInfo suggest_template;
   suggest_template.set_secondary_text_placement(placement);
   return suggest_template;
+}
+
+void AddFragment(omnibox::FormattedString* formatted_string,
+                 uint32_t start_index,
+                 omnibox::FormattedString::ColorType color,
+                 bool is_bolded = false) {
+  omnibox::FormattedString::FormattedStringFragment* fragment =
+      formatted_string->add_fragments();
+  fragment->set_start_index(start_index);
+  fragment->set_color(color);
+  fragment->set_is_bolded(is_bolded);
 }
 
 TEST(SuggestTemplateInfoMojoUtilsTest, UsesServerSecondaryTextPlacement) {
@@ -317,6 +330,107 @@ TEST(SuggestTemplateInfoMojoUtilsTest, KeepsClassificationOffsets) {
         CreateSuggestTemplateInfo(match);
     EXPECT_EQ(suggest_template->secondary_text->text, u"description");
     EXPECT_TRUE(suggest_template->secondary_text->fragments.empty());
+  }
+}
+
+TEST(SuggestTemplateInfoMojoUtilsTest, UsesServerColorsOnlyWhenTextMatches) {
+  omnibox::SuggestTemplateInfo suggest_template;
+  omnibox::FormattedString* server_text =
+      suggest_template.mutable_secondary_text();
+  server_text->set_text("Singer-songwriter");
+  AddFragment(server_text, 0,
+              omnibox::FormattedString::COLOR_SUGGEST_ACTION_HIGH,
+              /*is_bolded=*/true);
+  AddFragment(server_text, 6,
+              omnibox::FormattedString::COLOR_SUGGEST_HINT_TEXT);
+
+  // The server colors replace the classification colors. Bolding comes from
+  // the classifications.
+  {
+    AutocompleteMatch match;
+    match.description = u"Singer-songwriter";
+    match.description_class = {
+        {0, ACMatchClassification::MATCH | ACMatchClassification::DIM},
+        {6, ACMatchClassification::DIM}};
+    match.suggest_template = suggest_template;
+    mojom::SuggestTemplateInfoPtr result = CreateSuggestTemplateInfo(match);
+    const mojom::FormattedString& text = *result->secondary_text;
+    ASSERT_EQ(text.fragments.size(), 2u);
+    EXPECT_EQ(text.fragments[0]->start_index, 0u);
+    EXPECT_EQ(text.fragments[0]->color, mojom::ColorType::kSuggestActionHigh);
+    EXPECT_TRUE(text.fragments[0]->is_bolded);
+    EXPECT_EQ(text.fragments[1]->start_index, 6u);
+    EXPECT_EQ(text.fragments[1]->color, mojom::ColorType::kSuggestHintText);
+    EXPECT_FALSE(text.fragments[1]->is_bolded);
+  }
+  // A match whose text changed after parsing, e.g. during dedupe, keeps the
+  // classification colors.
+  {
+    AutocompleteMatch match;
+    match.description = u"Singer";
+    match.description_class = {{0, ACMatchClassification::DIM}};
+    match.suggest_template = suggest_template;
+    mojom::SuggestTemplateInfoPtr result = CreateSuggestTemplateInfo(match);
+    const mojom::FormattedString& text = *result->secondary_text;
+    ASSERT_EQ(text.fragments.size(), 1u);
+    EXPECT_EQ(text.fragments[0]->color, mojom::ColorType::kSuggestHintText);
+  }
+  // With `swap_contents_and_description`, the server colors travel with their
+  // text.
+  {
+    AutocompleteMatch match;
+    match.contents = u"Adele";
+    match.description = u"Singer-songwriter";
+    match.description_class = {
+        {0, ACMatchClassification::MATCH | ACMatchClassification::DIM},
+        {6, ACMatchClassification::DIM}};
+    match.swap_contents_and_description = true;
+    match.suggest_template = suggest_template;
+    mojom::SuggestTemplateInfoPtr result = CreateSuggestTemplateInfo(match);
+    const mojom::FormattedString& text = *result->primary_text;
+    ASSERT_EQ(text.fragments.size(), 2u);
+    EXPECT_EQ(text.fragments[0]->color, mojom::ColorType::kSuggestActionHigh);
+    EXPECT_EQ(text.fragments[1]->color, mojom::ColorType::kSuggestHintText);
+  }
+}
+
+TEST(SuggestTemplateInfoMojoUtilsTest,
+     UsesServerColorsAtClassificationOffsets) {
+  omnibox::SuggestTemplateInfo suggest_template;
+  omnibox::FormattedString* server_text =
+      suggest_template.mutable_primary_text();
+  server_text->set_text("sourdough bread");
+  AddFragment(server_text, 4, omnibox::FormattedString::COLOR_UNKNOWN,
+              /*is_bolded=*/true);
+  AddFragment(server_text, 10,
+              omnibox::FormattedString::COLOR_SUGGEST_ACTION_HIGH);
+
+  AutocompleteMatch match;
+  match.contents = u"sourdough bread";
+  // Classify like the parser does, which also adds a classification at 0.
+  match.contents_class = ClassifyFormattedString(*server_text);
+  match.suggest_template = suggest_template;
+
+  // The classification at 0 and the server fragment without a color keep the
+  // classification color.
+  mojom::SuggestTemplateInfoPtr result = CreateSuggestTemplateInfo(match);
+  struct Expected {
+    uint32_t start_index;
+    mojom::ColorType color;
+    bool is_bolded;
+  };
+  const auto kExpected = std::to_array<Expected>({
+      {0, mojom::ColorType::kSuggestQueryText, false},
+      {4, mojom::ColorType::kSuggestQueryText, true},
+      {10, mojom::ColorType::kSuggestActionHigh, false},
+  });
+  const mojom::FormattedString& text = *result->primary_text;
+  ASSERT_EQ(text.fragments.size(), kExpected.size());
+  for (size_t i = 0; i < kExpected.size(); ++i) {
+    SCOPED_TRACE(i);
+    EXPECT_EQ(text.fragments[i]->start_index, kExpected[i].start_index);
+    EXPECT_EQ(text.fragments[i]->color, kExpected[i].color);
+    EXPECT_EQ(text.fragments[i]->is_bolded, kExpected[i].is_bolded);
   }
 }
 
