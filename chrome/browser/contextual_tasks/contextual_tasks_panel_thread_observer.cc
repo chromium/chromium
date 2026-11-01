@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -50,6 +52,8 @@ ContextualTasksPanelThreadObserver::ContextualTasksPanelThreadObserver(
       // A `WebContents` moved from a tab may already be on a thread, which
       // `ContextualTasksTabNavigationObserver` added to its task.
       thread_id_(GetAiModeThreadId(web_contents->GetLastCommittedURL())),
+      last_thread_url_(thread_id_ ? web_contents->GetLastCommittedURL()
+                                  : GURL()),
       has_turn_(HasTurn(web_contents->GetLastCommittedURL())) {
   // Safe to use `base::Unretained(this)` because `this` owns the subscription.
   zero_state_subscription_ =
@@ -106,9 +110,10 @@ void ContextualTasksPanelThreadObserver::DidFinishNavigation(
     // current task, with its attached tabs, gets the thread.
     thread_id_ = thread_id;
   }
+  const GURL old_thread_url = std::exchange(last_thread_url_, url);
   UpdateAiModeThreadForTask(*service, task_id, *thread_id, url);
   if (task_id != *current_task_id) {
-    ChangeTask(*current_task_id, task_id);
+    ChangeTask(*current_task_id, task_id, old_thread_url);
   }
 }
 
@@ -129,8 +134,10 @@ void ContextualTasksPanelThreadObserver::OnZeroState() {
     return;
   }
   thread_id_.reset();
+  const GURL old_thread_url = std::exchange(last_thread_url_, GURL());
   has_turn_ = false;
-  ChangeTask(*current_task_id, service->CreateTask().GetTaskId());
+  ChangeTask(*current_task_id, service->CreateTask().GetTaskId(),
+             old_thread_url);
 }
 
 std::optional<base::Uuid>
@@ -154,7 +161,8 @@ ContextualTasksPanelThreadObserver::GetCurrentTaskId() {
 
 void ContextualTasksPanelThreadObserver::ChangeTask(
     const base::Uuid& old_task_id,
-    const base::Uuid& new_task_id) {
+    const base::Uuid& new_task_id,
+    const GURL& old_thread_url) {
   content::WebContents* contents = web_contents();
   // A `WebContents` moved from a tab keeps its full-tab task in
   // `ContextualTasksWebContentsUserData`, which would take precedence over the
@@ -168,6 +176,15 @@ void ContextualTasksPanelThreadObserver::ChangeTask(
   if (ContextualTasksUiService* ui_service =
           ContextualTasksUiServiceFactory::GetForBrowserContext(
               contents->GetBrowserContext())) {
+    // When a thread change in the side panel is scoped to the tab, the other
+    // tabs of `old_task_id` keep its thread in a new panel. Save the old thread
+    // URL as the task's initial URL so that the new panel loads it, without
+    // reopening thread history if it was open to pick the new thread.
+    if (ShouldScopeSidePanelStateToTab() && old_thread_url.is_valid()) {
+      ui_service->SetInitialUrlForTask(
+          old_task_id, net::AppendOrReplaceQueryParameter(
+                           old_thread_url, "atvm", std::nullopt));
+    }
     ui_service->OnTaskChanged(webui::GetBrowserWindowInterface(contents),
                               contents, old_task_id, new_task_id,
                               /*is_shown_in_tab=*/false);

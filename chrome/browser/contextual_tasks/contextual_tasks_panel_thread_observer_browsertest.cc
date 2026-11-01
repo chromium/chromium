@@ -62,7 +62,9 @@ class ContextualTasksPanelThreadObserverBrowserTest
  public:
   ContextualTasksPanelThreadObserverBrowserTest() {
     feature_list_.InitWithFeatures(
-        {kContextualTasks, kContextualTasksRearchitecture}, {});
+        {kContextualTasks, kContextualTasksRearchitecture,
+         kContextualTasksSidePanelTabState},
+        {});
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -408,6 +410,53 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPanelThreadObserverBrowserTest,
   EXPECT_NE(new_task_id, initial_task_id_);
   EXPECT_FALSE(user_data->task_id());
   EXPECT_EQ(user_data->GetEffectiveTaskId(), new_task_id);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPanelThreadObserverBrowserTest,
+                       ThreadSwitchSavesOldThreadUrlWhenScopedToTab) {
+  Navigate(std::string(kAiModeUrl) + "&mtid=t1");
+  // Opening thread history adds `atvm=1` on the current thread before the user
+  // selects another thread.
+  UpdateUrl(std::string(kAiModeUrl) + "&mtid=t1&mstk=turn2&atvm=1");
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(ui_service(),
+                SetInitialUrlForTask(
+                    initial_task_id_,
+                    GURL(std::string(kAiModeUrl) + "&mtid=t1&mstk=turn2")));
+    EXPECT_CALL(ui_service(), OnTaskChanged(browser(), web_contents_.get(),
+                                            Optional(initial_task_id_),
+                                            Optional(Ne(initial_task_id_)),
+                                            /*is_shown_in_tab=*/false));
+  }
+  UpdateUrl(std::string(kAiModeUrl) + "&mtid=t2");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPanelThreadObserverBrowserTest,
+                       NewChatSavesOldThreadUrlWhenScopedToTab) {
+  Navigate(std::string(kAiModeUrl) + "&mtid=t1&mstk=turn1");
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(ui_service(),
+                SetInitialUrlForTask(
+                    initial_task_id_,
+                    GURL(std::string(kAiModeUrl) + "&mtid=t1&mstk=turn1")));
+    EXPECT_CALL(ui_service(), OnTaskChanged(browser(), web_contents_.get(),
+                                            Optional(initial_task_id_),
+                                            Optional(Ne(initial_task_id_)),
+                                            /*is_shown_in_tab=*/false));
+  }
+  StartNewChat();
+  testing::Mock::VerifyAndClearExpectations(&ui_service());
+
+  // A subsequent turn without `mtid` (e.g. signed-out AI Mode) followed by
+  // "New chat" does not save an old thread URL from the previous task.
+  UpdateUrl(std::string(kAiModeUrl) + "&mstk=turn2");
+  EXPECT_CALL(ui_service(), SetInitialUrlForTask).Times(0);
+  EXPECT_CALL(ui_service(), OnTaskChanged).Times(1);
+  StartNewChat();
 }
 
 }  // namespace contextual_tasks
