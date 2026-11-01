@@ -796,7 +796,12 @@ void BrowserActions::InitializeSidePanelActions() {
                 actions::kActionItemPinnableKey,
                 static_cast<
                     std::underlying_type_t<actions::ActionPinnableState>>(
-                    actions::ActionPinnableState::kPinnable))
+                    (!contextual_tasks::
+                         IsContextualTasksEphemeralPinButtonRefactorEnabled() ||
+                     contextual_tasks::EntryPointEligibilityManager::
+                         IsPinningEligible(profile))
+                        ? actions::ActionPinnableState::kPinnable
+                        : actions::ActionPinnableState::kNotPinnable))
             .SetVisible(contextual_tasks::EntryPointEligibilityManager::
                             IsPinningEligible(profile))
             .Build());

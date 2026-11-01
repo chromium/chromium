@@ -250,6 +250,7 @@ source_set("impl") {
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:backend_logic_impl",
+      "//chrome/browser/ui/views/contextual_tasks",
       "//chrome/browser/ui/views/permissions:permission_prompt_observer",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/searchbox",

@@ -152,15 +152,20 @@ void SidePanelToolbarPinningController::UpdatePinState(
 
 bool SidePanelToolbarPinningController::ShouldShowActiveInToolbar(
     const SidePanelEntry* entry) {
-  if (entry && entry->key().id() == SidePanelEntryId::kContextualTasks &&
-      !contextual_tasks::IsContextualTasksPinningV2Enabled()) {
-    auto* contextual_tasks_controller =
-        contextual_tasks::ContextualTasksPanelController::From(&*browser_);
-    if (contextual_tasks_controller &&
-        contextual_tasks_controller->GetActiveEntrySource() ==
-            contextual_tasks::ContextualTasksPanelController::EntrySource::
-                kLensOverlay) {
+  if (entry && entry->key().id() == SidePanelEntryId::kContextualTasks) {
+    if (contextual_tasks::
+            IsContextualTasksEphemeralPinButtonRefactorEnabled()) {
       return true;
+    }
+    if (!contextual_tasks::IsContextualTasksPinningV2Enabled()) {
+      auto* contextual_tasks_controller =
+          contextual_tasks::ContextualTasksPanelController::From(&*browser_);
+      if (contextual_tasks_controller &&
+          contextual_tasks_controller->GetActiveEntrySource() ==
+              contextual_tasks::ContextualTasksPanelController::EntrySource::
+                  kLensOverlay) {
+        return true;
+      }
     }
   }
   return entry && (entry->should_show_ephemerally_in_toolbar() ||
