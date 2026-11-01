@@ -106,7 +106,10 @@ export function getHtml(this: TopToolbarElement) {
   </div>
 </div>
   <cr-lazy-render-lit id="accountMenu" .template="${() => html`
-    <contextual-tasks-account-menu></contextual-tasks-account-menu>`}">
+    <contextual-tasks-account-menu
+        .fullName="${this.accountFullName}"
+        .email="${this.accountEmail}">
+    </contextual-tasks-account-menu>`}">
   </cr-lazy-render-lit>
   <cr-lazy-render-lit id="sourcesMenu" .template="${() => html`
     <contextual-tasks-sources-menu .contextInfos="${this.contextInfos}">

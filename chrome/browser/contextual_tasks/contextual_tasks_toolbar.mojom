@@ -142,6 +142,12 @@ interface Page {
   // chrome://contextual-tasks/profile-avatar.png URL for the signed-in
   // account's avatar or the chrome://theme placeholder avatar URL).
   SetProfileAvatarUrl(url.mojom.Url avatar_url);
+
+  // Updates the Google account information shown in the toolbar account menu.
+  // Both strings are empty when there is no account to show (e.g. the user is
+  // signed in to Chrome or is signed out of Google on the web). `full_name`
+  // may also be empty if the account's name is not known yet.
+  SetAccountInfo(string full_name, string email);
 };
 // Observer interface (page) implemented by WebUI to receive push
 // updates from browser process.

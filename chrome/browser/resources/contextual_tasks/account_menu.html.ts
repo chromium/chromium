@@ -10,6 +10,7 @@ export function getHtml(this: AccountMenuElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
     <cr-action-menu id="menu">
+      <div id="accountInfo">${this.getAccountLabel_()}</div>
     </cr-action-menu>
   <!--_html_template_end_-->`;
   // clang-format on

@@ -31,6 +31,16 @@ export class AccountMenuElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      fullName: {type: String},
+      email: {type: String},
+    };
+  }
+
+  accessor fullName: string = '';
+  accessor email: string = '';
+
   private isUnboundedMenuEnabled_: boolean =
       loadTimeData.valueExists('contextualTasksUnboundedMenuEnabled') &&
       loadTimeData.getBoolean('contextualTasksUnboundedMenuEnabled');
@@ -47,6 +57,14 @@ export class AccountMenuElement extends CrLitElement {
 
   close() {
     this.$.menu.close();
+  }
+
+  protected getAccountLabel_(): string {
+    if (!this.fullName) {
+      return this.email;
+    }
+    return loadTimeData.getStringF(
+        'accountMenuNameAndEmail', this.fullName, this.email);
   }
 }
 

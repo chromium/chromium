@@ -1414,5 +1414,29 @@ suite('TopToolbarTest', () => {
       await microtasksFinished();
       assertFalse(accountMenu.$.menu.open);
     });
+
+    test('shows account name and email in account menu', async () => {
+      loadTimeData.overrideValues({accountMenuNameAndEmail: '$1 - $2'});
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      toolbarProxy.callbackRouterRemote.setAccountInfo(
+          'Jane Doe', 'janedoe@gmail.com');
+      await microtasksFinished();
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      profileIndicator.click();
+      await microtasksFinished();
+
+      const accountMenu = topToolbar.$.accountMenu.get();
+      const accountInfo =
+          accountMenu.shadowRoot.querySelector<HTMLElement>('#accountInfo');
+      assertTrue(!!accountInfo);
+      assertEquals('Jane Doe - janedoe@gmail.com', accountInfo.textContent);
+
+      toolbarProxy.callbackRouterRemote.setAccountInfo('', 'other@gmail.com');
+      await microtasksFinished();
+      assertEquals('other@gmail.com', accountInfo.textContent);
+    });
   });
 });
