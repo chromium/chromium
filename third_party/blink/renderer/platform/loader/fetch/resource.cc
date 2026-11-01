@@ -1100,14 +1100,6 @@ String Resource::GetMemoryDumpName() const {
                 InspectorId());
 }
 
-void Resource::SetCachePolicyBypassingCache() {
-  resource_request_.SetCacheMode(mojom::FetchCacheMode::kBypassCache);
-}
-
-void Resource::ClearRangeRequestHeader() {
-  resource_request_.ClearHttpHeaderField(http_names::kLowerRange);
-}
-
 void Resource::RevalidationSucceeded(
     const ResourceResponse& validating_response) {
   SECURITY_CHECK(redirect_chain_.empty());

@@ -39,7 +39,6 @@ class PLATFORM_EXPORT ClientHintsPreferences {
   ClientHintsPreferences();
 
   void UpdateFrom(const ClientHintsPreferences&);
-  void CombineWith(const ClientHintsPreferences&);
 
   // Parses <meta http-equiv="accept-ch"> or <meta name="accept-ch"> value
   // `header_value`, and updates `this` to enable the requested client hints.

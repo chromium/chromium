@@ -27,16 +27,6 @@ void ClientHintsPreferences::UpdateFrom(
   }
 }
 
-void ClientHintsPreferences::CombineWith(
-    const ClientHintsPreferences& preferences) {
-  for (const auto& elem : network::kClientHintToNameMap) {
-    const auto& type = elem.first;
-    if (preferences.ShouldSend(type)) {
-      SetShouldSend(type);
-    }
-  }
-}
-
 bool ClientHintsPreferences::UpdateFromMetaCH(const String& header_value,
                                               const KURL& url,
                                               Context* context,

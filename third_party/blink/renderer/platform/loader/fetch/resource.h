@@ -250,7 +250,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
     return std::make_pair(std::nullopt, std::nullopt);
   }
 
-  virtual bool HasNonDegenerateContentSize() const { return false; }
   virtual bool IsAboveSpeculativeDecodeSizeThreshold() const { return false; }
 
   // If this Resource is already finished when AddClient is called, the
@@ -559,9 +558,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   const HeapHashCountedSet<WeakMember<ResourceClient>>& Clients() const {
     return clients_;
   }
-
-  void SetCachePolicyBypassingCache();
-  void ClearRangeRequestHeader();
 
   SharedBuffer* Data() const { return data_.get(); }
   void ClearData();

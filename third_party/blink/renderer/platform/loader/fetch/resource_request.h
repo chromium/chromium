@@ -232,7 +232,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   void SetHTTPUserAgent(const AtomicString& http_user_agent) {
     SetHttpHeaderField(http_names::kUserAgent, http_user_agent);
   }
-  void ClearHTTPUserAgent();
 
   void SetHTTPAccept(const AtomicString& http_accept) {
     SetHttpHeaderField(http_names::kAccept, http_accept);

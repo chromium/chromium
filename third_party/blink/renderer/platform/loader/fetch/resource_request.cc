@@ -337,10 +337,6 @@ void ResourceRequestHead::ClearHTTPOrigin() {
   http_header_fields_.Remove(http_names::kOrigin);
 }
 
-void ResourceRequestHead::ClearHTTPUserAgent() {
-  http_header_fields_.Remove(http_names::kUserAgent);
-}
-
 void ResourceRequestBody::SetFormBody(
     scoped_refptr<EncodedFormData> form_body) {
   form_body_ = std::move(form_body);
