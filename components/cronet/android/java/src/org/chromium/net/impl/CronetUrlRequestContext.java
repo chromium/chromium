@@ -450,6 +450,21 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         return disableSharedBrotliFlagValue != null && disableSharedBrotliFlagValue.getBoolValue();
     }
 
+    @VisibleForTesting
+    public static final String DISABLE_SET_IDEMPOTENCY_FLAG_NAME = "Cronet_disable_set_idempotency";
+
+    @Override
+    boolean shouldDisableSetIdempotency() {
+        var disableSetIdempotencyFlagValue =
+                HttpFlagsForImpl.getHttpFlags(
+                                ContextUtils.getApplicationContext(),
+                                NativeCronetEngineBuilderImpl.getCronetSource())
+                        .flags()
+                        .get(DISABLE_SET_IDEMPOTENCY_FLAG_NAME);
+        return disableSetIdempotencyFlagValue != null
+                && disableSetIdempotencyFlagValue.getBoolValue();
+    }
+
     private static RequestContextConfigOptions createRequestContextConfigOptions(
             CronetEngineBuilderImpl engineBuilder, @Nullable String effectiveExperimentalOptions) {
         var flags =

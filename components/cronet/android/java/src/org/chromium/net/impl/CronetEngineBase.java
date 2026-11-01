@@ -149,6 +149,10 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
         return false;
     }
 
+    boolean shouldDisableSetIdempotency() {
+        return false;
+    }
+
     @IntDef({
         UrlRequest.Builder.REQUEST_PRIORITY_IDLE,
         UrlRequest.Builder.REQUEST_PRIORITY_LOWEST,

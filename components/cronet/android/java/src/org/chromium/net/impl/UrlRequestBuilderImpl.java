@@ -26,6 +26,7 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     private static final String ACCEPT_ENCODING = "Accept-Encoding";
     private static final String TAG = UrlRequestBuilderImpl.class.getSimpleName();
     private static Boolean sShouldDisableSharedBrotli;
+    private static Boolean sShouldDisableSetIdempotency;
 
     // All fields are temporary storage of ExperimentalUrlRequest configuration to be
     // copied to built ExperimentalUrlRequest.
@@ -137,6 +138,12 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
 
     @Override
     public UrlRequestBuilderImpl setIdempotency(@CronetEngineBase.Idempotency int idempotency) {
+        if (sShouldDisableSetIdempotency == null) {
+            sShouldDisableSetIdempotency = mCronetEngine.shouldDisableSetIdempotency();
+        }
+        if (sShouldDisableSetIdempotency) {
+            return this;
+        }
         mIdempotency = idempotency;
         return this;
     }
