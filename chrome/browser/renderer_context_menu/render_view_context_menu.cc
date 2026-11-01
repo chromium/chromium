@@ -509,6 +509,22 @@ ui::ImageModel GetLensContextMenuIcon() {
   );
 }
 
+// Returns the `ReadingListModel` for `browser_context` if it is loaded and
+// supports `url`, or `nullptr` otherwise.
+ReadingListModel* GetLoadedReadingListModelForUrl(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  if (!url.is_valid()) {
+    return nullptr;
+  }
+  ReadingListModel* model =
+      ReadingListModelFactory::GetForBrowserContext(browser_context);
+  if (!model || !model->loaded() || !model->IsUrlSupported(url)) {
+    return nullptr;
+  }
+  return model;
+}
+
 enum class UmaEnumIdLookupType {
   GeneralEnumId,
   ContextSpecificEnumId,
@@ -2252,7 +2268,8 @@ void RenderViewContextMenu::AppendCopyLinkLocationItem() {
                                   params_.link_url.SchemeIs(url::kMailToScheme)
                                       ? IDS_CONTENT_CONTEXT_COPYEMAILADDRESS
                                       : IDS_CONTENT_CONTEXT_COPYLINKLOCATION);
-  if (features::IsMenuSimplificationEnabled() && !params_.has_image_contents) {
+  if (features::IsMenuSimplificationEnabled() && !params_.has_image_contents &&
+      GetLoadedReadingListModelForUrl(browser_context_, params_.link_url)) {
     menu_model_.AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST,
         IDS_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST,
@@ -3657,7 +3674,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return params_.unfiltered_link_url.is_valid();
 
     case IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST:
-      return params_.link_url.is_valid();
+      return GetLoadedReadingListModelForUrl(browser_context_,
+                                             params_.link_url) != nullptr;
 
     case IDC_CONTENT_CONTEXT_COPYLINKTEXT:
       return true;
@@ -4063,18 +4081,18 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST: {
       ReadingListModel* model =
-          ReadingListModelFactory::GetForBrowserContext(browser_context_);
-      if (model) {
-        std::u16string title = params_.link_text;
-        if (title.empty()) {
-          title = base::UTF8ToUTF16(params_.link_url.spec());
-        }
-        model->AddOrReplaceEntry(
-            params_.link_url, base::UTF16ToUTF8(title),
-            reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
-            /*estimated_read_time=*/std::nullopt,
-            /*creation_time=*/std::nullopt);
+          GetLoadedReadingListModelForUrl(browser_context_, params_.link_url);
+      if (!model) {
+        break;
       }
+      std::u16string title = params_.link_text;
+      if (title.empty()) {
+        title = base::UTF8ToUTF16(params_.link_url.spec());
+      }
+      model->AddOrReplaceEntry(params_.link_url, base::UTF16ToUTF8(title),
+                               reading_list::EntrySource::ADDED_VIA_CURRENT_APP,
+                               /*estimated_read_time=*/std::nullopt,
+                               /*creation_time=*/std::nullopt);
       break;
     }
 

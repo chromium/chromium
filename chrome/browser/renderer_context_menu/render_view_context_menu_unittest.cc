@@ -16,9 +16,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -41,6 +43,7 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
@@ -91,11 +94,18 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/reading_list/core/fake_reading_list_model_storage.h"
+#include "components/reading_list/core/reading_list_entry.h"
+#include "components/reading_list/core/reading_list_model.h"
+#include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/spellcheck/common/spellcheck_features.h"
+#include "components/sync/base/storage_type.h"
+#include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -153,6 +163,10 @@ using extensions::MenuManagerFactory;
 using extensions::URLPatternSet;
 using send_tab_to_self::EntryPointDisplayReason;
 using send_tab_to_self::StubSendTabToSelfSyncService;
+using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::NotNull;
+using testing::UnorderedElementsAre;
 
 namespace {
 
@@ -242,6 +256,38 @@ class MockDlpRulesManager : public policy::DlpRulesManagerImpl {
       : DlpRulesManagerImpl(local_state, profile) {}
 };
 #endif
+
+// Installs a `ReadingListModelImpl` backed by `FakeReadingListModelStorage` on
+// `profile`, optionally completing its initial storage and sync metadata load.
+ReadingListModelImpl* InstallTestingReadingListModel(Profile* profile,
+                                                     bool load_model = true) {
+  base::WeakPtr<FakeReadingListModelStorage> storage_ptr;
+  auto* model = static_cast<ReadingListModelImpl*>(
+      ReadingListModelFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile,
+          base::BindLambdaForTesting(
+              [&storage_ptr](content::BrowserContext* context)
+                  -> std::unique_ptr<KeyedService> {
+                auto storage = std::make_unique<FakeReadingListModelStorage>();
+                storage_ptr = storage->AsWeakPtr();
+                return std::make_unique<ReadingListModelImpl>(
+                    std::move(storage), syncer::StorageType::kUnspecified,
+                    syncer::WipeModelUponSyncDisabledBehavior::kNever,
+                    base::DefaultClock::GetInstance());
+              })));
+  if (load_model) {
+    // Mark initial sync as done so `ClientTagBasedDataTypeProcessor::Put`
+    // actively validates entity data when an entry is added.
+    auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
+    sync_pb::DataTypeState state;
+    state.set_initial_sync_state(
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+    metadata_batch->SetDataTypeState(state);
+    EXPECT_TRUE(storage_ptr->TriggerLoadCompletion(
+        /*entries=*/{}, std::move(metadata_batch)));
+  }
+  return model;
+}
 
 }  // namespace
 
@@ -2184,8 +2230,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   ASSERT_EQ(initial_num_processes, mock_rph_factory().GetProcesses()->size());
 }
 
-BASE_FEATURE(kTestUnregisteredFeature,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestUnregisteredFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
 TEST_F(RenderViewContextMenuPrefsTest, GetIsNewFeatureAtValue) {
   // Set the profile creation time to be 100 days ago, to ensure that the
@@ -3339,6 +3384,172 @@ TEST_F(RenderViewContextMenuSendTabToSelfLinkTest,
   EXPECT_FALSE(menu->IsItemPresent(IDC_SEND_TAB_TO_SELF));
 }
 
+class RenderViewContextMenuReadingListLinkTest
+    : public RenderViewContextMenuMenuSimplificationTest {
+ public:
+  void SetUp() override {
+    RenderViewContextMenuMenuSimplificationTest::SetUp();
+    NavigateAndCommit(GURL("https://www.example.com"));
+  }
+
+  std::unique_ptr<TestRenderViewContextMenu> CreateLinkMenu(
+      const GURL& link_url,
+      const std::u16string& link_text = u"Example Link") {
+    content::ContextMenuParams params = CreateParams(MenuItem::LINK);
+    params.unfiltered_link_url = link_url;
+    params.link_url = link_url;
+    params.link_text = link_text;
+
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents()->GetPrimaryMainFrame(), params);
+    menu->set_protocol_handler_registry(protocol_handler_registry());
+    menu->Init();
+    return menu;
+  }
+};
+
+// Tests that `IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST` is hidden,
+// disabled, and a no-op when `ReadingListModelFactory` returns `nullptr`.
+TEST_F(RenderViewContextMenuReadingListLinkTest,
+       HiddenAndDisabledWhenModelIsNull) {
+  ReadingListModelFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
+  ASSERT_EQ(nullptr, ReadingListModelFactory::GetForBrowserContext(profile()));
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateLinkMenu(GURL("https://example.com/article"));
+
+  EXPECT_FALSE(
+      menu->IsItemPresent(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST));
+  EXPECT_FALSE(
+      menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST));
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST, 0);
+}
+
+// Tests that `IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST` is hidden,
+// disabled, and a no-op when the `ReadingListModel` has not finished loading
+// from storage.
+TEST_F(RenderViewContextMenuReadingListLinkTest,
+       HiddenAndDisabledWhenModelIsNotLoaded) {
+  ReadingListModelImpl* model =
+      InstallTestingReadingListModel(profile(), /*load_model=*/false);
+  ASSERT_THAT(model, NotNull());
+  ASSERT_FALSE(model->loaded());
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateLinkMenu(GURL("https://example.com/article"));
+
+  EXPECT_FALSE(
+      menu->IsItemPresent(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST));
+  EXPECT_FALSE(
+      menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST));
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST, 0);
+}
+
+// Tests that `IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST` is present and
+// enabled for valid HTTP and HTTPS URLs when the model is loaded, and executing
+// the command adds the entries with their link text.
+TEST_F(RenderViewContextMenuReadingListLinkTest,
+       AddsHttpAndHttpsLinksWhenModelIsLoaded) {
+  ReadingListModelImpl* model =
+      InstallTestingReadingListModel(profile(), /*load_model=*/true);
+  ASSERT_THAT(model, NotNull());
+  ASSERT_TRUE(model->loaded());
+  ASSERT_TRUE(model->IsTrackingSyncMetadata());
+
+  const GURL kHttpUrl("http://example.com/http-article");
+  const GURL kHttpsUrl("https://example.com/https-article");
+
+  std::unique_ptr<TestRenderViewContextMenu> http_menu =
+      CreateLinkMenu(kHttpUrl, u"HTTP Article");
+  EXPECT_TRUE(
+      http_menu->IsItemPresent(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST));
+  EXPECT_TRUE(http_menu->IsCommandIdEnabled(
+      IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST));
+  http_menu->ExecuteCommand(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST, 0);
+
+  std::unique_ptr<TestRenderViewContextMenu> https_menu =
+      CreateLinkMenu(kHttpsUrl, u"HTTPS Article");
+  EXPECT_TRUE(
+      https_menu->IsItemPresent(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST));
+  EXPECT_TRUE(https_menu->IsCommandIdEnabled(
+      IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST));
+  https_menu->ExecuteCommand(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST, 0);
+
+  EXPECT_THAT(model->GetKeys(), UnorderedElementsAre(kHttpUrl, kHttpsUrl));
+  scoped_refptr<const ReadingListEntry> http_entry =
+      model->GetEntryByURL(kHttpUrl);
+  ASSERT_THAT(http_entry, NotNull());
+  EXPECT_EQ("HTTP Article", http_entry->Title());
+
+  scoped_refptr<const ReadingListEntry> https_entry =
+      model->GetEntryByURL(kHttpsUrl);
+  ASSERT_THAT(https_entry, NotNull());
+  EXPECT_EQ("HTTPS Article", https_entry->Title());
+}
+
+// Tests that executing `IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST` falls
+// back to the URL spec as the entry title when `params.link_text` is empty.
+TEST_F(RenderViewContextMenuReadingListLinkTest,
+       FallsBackToUrlSpecWhenLinkTextIsEmpty) {
+  ReadingListModelImpl* model =
+      InstallTestingReadingListModel(profile(), /*load_model=*/true);
+  ASSERT_THAT(model, NotNull());
+  ASSERT_TRUE(model->loaded());
+
+  const GURL kLinkUrl("https://example.com/untitled");
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateLinkMenu(kLinkUrl, /*link_text=*/u"");
+
+  EXPECT_TRUE(
+      menu->IsItemPresent(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST));
+  EXPECT_TRUE(
+      menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST));
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST, 0);
+
+  EXPECT_THAT(model->GetKeys(), ElementsAre(kLinkUrl));
+  scoped_refptr<const ReadingListEntry> entry = model->GetEntryByURL(kLinkUrl);
+  ASSERT_THAT(entry, NotNull());
+  EXPECT_EQ(kLinkUrl.spec(), entry->Title());
+}
+
+// Tests that `IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST` is hidden,
+// disabled, and a no-op for invalid URLs or URLs with schemes not supported by
+// `ReadingListModel::IsUrlSupported` (such as `mailto:`, `javascript:`,
+// `tel:`, `file:`, `chrome:`, `data:`, and `about:`).
+TEST_F(RenderViewContextMenuReadingListLinkTest,
+       HiddenAndDisabledForUnsupportedLinkSchemes) {
+  ReadingListModelImpl* model =
+      InstallTestingReadingListModel(profile(), /*load_model=*/true);
+  ASSERT_THAT(model, NotNull());
+  ASSERT_TRUE(model->loaded());
+  ASSERT_TRUE(model->IsTrackingSyncMetadata());
+
+  const GURL kUnsupportedUrls[] = {
+      GURL(),
+      GURL("mailto:user@example.com"),
+      GURL("javascript:void(0)"),
+      GURL("tel:+1234567890"),
+      GURL("file:///tmp/index.html"),
+      GURL("chrome://settings/"),
+      GURL("data:text/plain,hello"),
+      GURL("about:blank"),
+  };
+
+  for (const GURL& url : kUnsupportedUrls) {
+    std::unique_ptr<TestRenderViewContextMenu> menu = CreateLinkMenu(url);
+    EXPECT_FALSE(
+        menu->IsItemPresent(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST))
+        << "Unexpectedly present for URL: " << url.possibly_invalid_spec();
+    EXPECT_FALSE(
+        menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST))
+        << "Unexpectedly enabled for URL: " << url.possibly_invalid_spec();
+    menu->ExecuteCommand(IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST, 0);
+  }
+
+  EXPECT_THAT(model->GetKeys(), IsEmpty());
+}
+
 namespace {
 
 class PlatformCommandTestContextMenu : public TestRenderViewContextMenu {
@@ -3401,6 +3612,7 @@ class RenderViewContextMenuOrderTest : public RenderViewContextMenuPrefsTest {
     translate_client->GetTranslateManager()
         ->GetLanguageState()
         ->LanguageDetermined("fr", true);
+    InstallTestingReadingListModel(profile(), /*load_model=*/true);
   }
 
   void TearDown() override {
@@ -3983,6 +4195,42 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest, LinkMenu_Order) {
                            IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
                            IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST,
                            kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
+// Tests that `IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST` is omitted from the
+// simplified link menu for `mailto:` and filtered `javascript:` links.
+TEST_F(RenderViewContextMenuSimplifiedOrderTest,
+       LinkMenu_MailtoAndFilteredLinkUrlOrder) {
+  {
+    content::ContextMenuParams mailto_params = CreateParams(MenuItem::LINK);
+    mailto_params.page_url = GURL("https://www.example.com/");
+    mailto_params.link_url = GURL("mailto:someone@example.com");
+    mailto_params.unfiltered_link_url = mailto_params.link_url;
+    std::unique_ptr<TestRenderViewContextMenu> menu =
+        CreateAndInitMenu(mailto_params);
+
+    EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+                ElementsAre(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                            IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                            IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+                            IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+                            kSeparatorId, IDC_CONTENT_CONTEXT_SAVELINKAS,
+                            IDC_CONTENT_CONTEXT_COPYLINKLOCATION, kSeparatorId,
+                            IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+  }
+
+  {
+    content::ContextMenuParams js_link_params = CreateParams(0);
+    js_link_params.page_url = GURL("https://www.example.com/");
+    js_link_params.link_url = GURL();
+    js_link_params.unfiltered_link_url = GURL("javascript:void(0)");
+    std::unique_ptr<TestRenderViewContextMenu> menu =
+        CreateAndInitMenu(js_link_params);
+
+    EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+                ElementsAre(IDC_CONTENT_CONTEXT_COPYLINKLOCATION, kSeparatorId,
+                            IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+  }
 }
 
 TEST_F(RenderViewContextMenuSimplifiedOrderTest,
