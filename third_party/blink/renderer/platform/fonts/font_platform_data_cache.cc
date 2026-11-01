@@ -77,7 +77,7 @@ const FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
        alternate_font_name == AlternateFontName::kLastResort);
 
   if (!match_alternate_font_name ||
-      creation_params.CreationType() != kCreateFontByFamily) {
+      creation_params.CreationType() != FontFaceCreationType::kFamily) {
     return nullptr;
   }
 

@@ -160,7 +160,7 @@ const FontPlatformData* FontCache::GetFontPlatformData(
   TRACE_EVENT0("fonts", "FontCache::GetFontPlatformData");
 
 #if !BUILDFLAG(IS_MAC)
-  if (creation_params.CreationType() == kCreateFontByFamily &&
+  if (creation_params.CreationType() == FontFaceCreationType::kFamily &&
       creation_params.Family() == font_family_names::kSystemUi) {
     return SystemFontPlatformData(font_description);
   }

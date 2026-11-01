@@ -410,7 +410,7 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
     AlternateFontName alternate_font_name) {
   TRACE_EVENT0("ui", "FontCache::CreateFontPlatformData");
 
-  DCHECK_EQ(creation_params.CreationType(), kCreateFontByFamily);
+  DCHECK_EQ(creation_params.CreationType(), FontFaceCreationType::kFamily);
   sk_sp<SkTypeface> typeface;
 
   std::string name;

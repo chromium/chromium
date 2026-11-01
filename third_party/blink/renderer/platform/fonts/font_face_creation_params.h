@@ -40,10 +40,7 @@
 
 namespace blink {
 
-enum FontFaceCreationType {
-  kCreateFontByFamily,
-  kCreateFontByFciIdAndTtcIndex
-};
+enum class FontFaceCreationType { kFamily, kFciIdAndTtcIndex };
 
 class FontFaceCreationParams {
   USING_FAST_MALLOC(FontFaceCreationParams);
@@ -66,18 +63,18 @@ class FontFaceCreationParams {
   FontFaceCreationParams(const std::string& filename,
                          int fontconfig_interface_id,
                          int ttc_index = 0)
-      : creation_type_(kCreateFontByFciIdAndTtcIndex),
+      : creation_type_(FontFaceCreationType::kFciIdAndTtcIndex),
         filename_(filename),
         fontconfig_interface_id_(fontconfig_interface_id),
         ttc_index_(ttc_index) {}
 
   FontFaceCreationType CreationType() const { return creation_type_; }
   const AtomicString& Family() const {
-    DCHECK_EQ(creation_type_, kCreateFontByFamily);
+    DCHECK_EQ(creation_type_, FontFaceCreationType::kFamily);
     return family_;
   }
   const std::string& Filename() const {
-    DCHECK_EQ(creation_type_, kCreateFontByFciIdAndTtcIndex);
+    DCHECK_EQ(creation_type_, FontFaceCreationType::kFciIdAndTtcIndex);
 #if defined(ADDRESS_SANITIZER)
     DCHECK(filename_.has_value());
     return *filename_;
@@ -87,16 +84,16 @@ class FontFaceCreationParams {
   }
 
   int FontconfigInterfaceId() const {
-    DCHECK_EQ(creation_type_, kCreateFontByFciIdAndTtcIndex);
+    DCHECK_EQ(creation_type_, FontFaceCreationType::kFciIdAndTtcIndex);
     return fontconfig_interface_id_;
   }
   int TtcIndex() const {
-    DCHECK_EQ(creation_type_, kCreateFontByFciIdAndTtcIndex);
+    DCHECK_EQ(creation_type_, FontFaceCreationType::kFciIdAndTtcIndex);
     return ttc_index_;
   }
 
   uint32_t GetHash() const {
-    if (creation_type_ == kCreateFontByFciIdAndTtcIndex) {
+    if (creation_type_ == FontFaceCreationType::kFciIdAndTtcIndex) {
       // Hashing the filename and ints in this way is sensitive to character
       // encoding and endianness. However, since the hash is not transferred
       // over a network or permanently stored and only used for the runtime of
@@ -123,7 +120,7 @@ class FontFaceCreationParams {
   }
 
  private:
-  FontFaceCreationType creation_type_ = kCreateFontByFamily;
+  FontFaceCreationType creation_type_ = FontFaceCreationType::kFamily;
   AtomicString family_;
 
   void SetFilename(std::string& filename) {

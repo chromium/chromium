@@ -280,7 +280,8 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   // TODO(fuchsia): Revisit this and other font code for Fuchsia.
 
-  if (creation_params.CreationType() == kCreateFontByFciIdAndTtcIndex) {
+  if (creation_params.CreationType() ==
+      FontFaceCreationType::kFciIdAndTtcIndex) {
     if (Platform::Current()->GetSandboxSupport()) {
       return CreateSkTypefaceFromFontConfigInterfaceIdAndTtcIndex(
           creation_params.FontconfigInterfaceId(), creation_params.TtcIndex());
@@ -327,8 +328,7 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
   // provides better emoji coverage and emoji sequence support than the firmware
   // Noto Color Emoji font.
   noto_color_emoji_from_gmscore =
-      (creation_params.CreationType() ==
-           FontFaceCreationType::kCreateFontByFamily &&
+      (creation_params.CreationType() == FontFaceCreationType::kFamily &&
        creation_params.Family() == kNotoColorEmojiCompat);
 #endif
   if (alternate_name == AlternateFontName::kLocalUniqueFace ||
