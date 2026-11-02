@@ -5,6 +5,8 @@
 #ifndef ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_VIEW_H_
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/accessible_pane_view.h"
@@ -18,6 +20,7 @@ namespace ash {
 
 class DividerHandlerView;
 class SplitViewDivider;
+class SystemDecoration;
 
 // A view that acts as the content view within a split view divider widget.
 // It hosts one child view: a handler view. Its responsibility is to update the
@@ -93,6 +96,8 @@ class SplitViewDividerView : public views::AccessiblePaneView,
   raw_ptr<SplitViewDivider> divider_;
 
   raw_ptr<DividerHandlerView> handler_view_ = nullptr;
+
+  std::unique_ptr<SystemDecoration> highlight_border_;
 
   base::WeakPtrFactory<SplitViewDividerView> weak_ptr_factory_{this};
 };

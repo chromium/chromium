@@ -8,6 +8,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/system_decoration.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
@@ -15,16 +16,15 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/layer_solid_color.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -45,7 +45,9 @@ class DividerHandlerView : public views::View {
   METADATA_HEADER(DividerHandlerView, views::View)
  public:
   explicit DividerHandlerView(bool is_horizontal)
-      : is_horizontal_(is_horizontal) {}
+      : is_horizontal_(is_horizontal) {
+    SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  }
   DividerHandlerView(const DividerHandlerView&) = delete;
   DividerHandlerView& operator=(const DividerHandlerView&) = delete;
   ~DividerHandlerView() override = default;
@@ -75,14 +77,13 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
       AddChildView(std::make_unique<DividerHandlerView>(horizontal));
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  SetPaintToLayer(ui::LAYER_TEXTURED);
-  layer()->SetFillsBoundsOpaquely(false);
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  SetBackground(
+      views::CreateLayerBasedSolidBackground(cros_tokens::kCrosSysSystemBase));
 
-  SetBackground(views::CreateSolidBackground(cros_tokens::kCrosSysSystemBase));
-
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      /*corner_radius=*/0,
-      views::HighlightBorder::Type::kHighlightBorderNoShadow));
+  highlight_border_ = SystemDecoration::CreateForView(
+      this, SystemDecoration::ShadowType::kNone,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   set_allow_deactivate_on_esc(true);
@@ -343,10 +344,10 @@ void SplitViewDividerView::RefreshDividerHandler() {
                              handler_long_side, handler_short_side);
   }
 
-  handler_view_->SetBackground(views::CreateRoundedRectBackground(
-      cros_tokens::kCrosSysOutline, should_enlarge
-                                        ? kDividerHandlerEnlargedCornerRadius
-                                        : kDividerHandlerCornerRadius));
+  handler_view_->SetBackground(views::CreateLayerBasedRoundedBackground(
+      cros_tokens::kCrosSysOutline,
+      gfx::RoundedCornersF(should_enlarge ? kDividerHandlerEnlargedCornerRadius
+                                          : kDividerHandlerCornerRadius)));
   handler_view_->SetVisible(true);
 }
 

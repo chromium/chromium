@@ -100,7 +100,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
   // Verify the snap group divider UI components on default state.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_default_state",
-      /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
+      /*revision_number=*/1, divider_widget, w1_widget, w2_widget));
 
   // Move the mouse to the position that is a off the center(divider handler
   // view).
@@ -111,7 +111,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
   // Verify the snap group divider UI components on mouse hover.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_hover_state",
-      /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
+      /*revision_number=*/1, divider_widget, w1_widget, w2_widget));
 }
 
 // Visual regression test partial split screen layout.
@@ -140,7 +140,7 @@ TEST_F(SnapGroupPixelTest, PartialSplit) {
   // layout.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_partial_split",
-      /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
+      /*revision_number=*/1, divider_widget, w1_widget, w2_widget));
 }
 
 // Visual regression test for `OverviewGroupItem`.
@@ -218,14 +218,14 @@ TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleView) {
   // Verify the visuals with secondary-snapped window gets focused.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("window_cycle_with_snap_group_secondary_focused"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 0,
       window_cycle_widget));
 
   // Verify the visuals with primary-snapped window gets focused.
   event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("window_cycle_with_snap_group_primary_focused"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 0,
       window_cycle_widget));
 
   // Verify the visuals after one of the windows in the group got destroyed
@@ -273,7 +273,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasicInPortrait) {
   // mode.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_default_state_in_portrait",
-      /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
+      /*revision_number=*/1, divider_widget, w1_widget, w2_widget));
 
   // Move the mouse to the position that is a off the center(divider handler
   // view).
@@ -285,7 +285,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasicInPortrait) {
   // mode.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_hover_state_in_portrait",
-      /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
+      /*revision_number=*/1, divider_widget, w1_widget, w2_widget));
 }
 
 // Visual regression test for `OverviewGroupItem` in portrait mode.
