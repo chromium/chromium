@@ -21,6 +21,7 @@
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/content/producer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -116,7 +117,8 @@ class PageContentCacheHandler;
 // For a detailed integration guide, comparison matrix, and usage examples,
 // see `components/page_content_annotations/content/pces_guide.md`.
 class PageContentExtractionService : public KeyedService,
-                                     public base::SupportsUserData {
+                                     public base::SupportsUserData,
+                                     public Producer<PageContent> {
  public:
   using GetExtractedPageContentAndEligibilityCallback =
       base::OnceCallback<void(std::optional<ExtractedPageContentResult>)>;
@@ -176,6 +178,10 @@ class PageContentExtractionService : public KeyedService,
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Producer<PageContent>:
+  base::CallbackListSubscription Subscribe(
+      ConsumerCallback<PageContent> callback) override;
 
   // Returns the reason why page content extraction is enabled. If
   // `is_on_demand` is true, also considers the on-demand observer-bypass
@@ -287,12 +293,16 @@ class PageContentExtractionService : public KeyedService,
   friend class AnnotatedPageContentRequest;
   friend class PageContentCacheBrowserTest;
 
+  // Producer<PageContent>:
+  void OnDemandChanged() override;
+
   AnnotatedPageContentRequest* GetAnnotatedPageContentRequestFromWebContents(
       content::WebContents* web_contents);
   AnnotatedPageContentRequest* GetAnnotatedPageContentRequestFromPage(
       content::Page& page);
 
   base::ObserverList<Observer> observers_;
+  SubscriberRegistry<PageContent> subscriber_registry_{*this};
 
   const bool is_page_content_cache_enabled_;
   const std::unique_ptr<PageContentCacheHandler> page_content_cache_handler_;

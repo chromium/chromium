@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "components/page_content_annotations/content/page_embeddings_service.h"
+#include "base/functional/bind.h"
 #include "components/page_content_annotations/core/on_device_category_classifier.h"
 #include "components/page_content_annotations/core/page_embeddings_common.h"
 #include "content/public/browser/page.h"
@@ -16,40 +16,36 @@
 namespace page_content_annotations {
 
 PageCategoryClassifierBridgeImpl::PageCategoryClassifierBridgeImpl(
-    PageEmbeddingsService& page_embeddings_service,
+    Producer<std::vector<PassageEmbedding>>& page_embeddings_producer,
     OnDeviceCategoryClassifier& category_classifier)
-    : page_embeddings_service_(page_embeddings_service),
+    : page_embeddings_producer_(page_embeddings_producer),
       category_classifier_(category_classifier) {}
 
 PageCategoryClassifierBridgeImpl::~PageCategoryClassifierBridgeImpl() = default;
 
 void PageCategoryClassifierBridgeImpl::SetDemandActive(bool active) {
   if (active) {
-    if (!scoped_observation_.IsObserving()) {
-      scoped_observation_.Observe(&*page_embeddings_service_);
+    if (!embeddings_subscription_) {
+      embeddings_subscription_ =
+          page_embeddings_producer_->Subscribe(base::BindRepeating(
+              &PageCategoryClassifierBridgeImpl::OnPageEmbeddingsAvailable,
+              base::Unretained(this)));
     }
   } else {
-    scoped_observation_.Reset();
+    embeddings_subscription_.reset();
   }
 }
 
-PageEmbeddingsService::UsageMode
-PageCategoryClassifierBridgeImpl::GetUsageMode() const {
-  return PageEmbeddingsService::UsageMode::kContinuous;
-}
-
 void PageCategoryClassifierBridgeImpl::OnPageEmbeddingsAvailable(
-    content::Page& page) {
-  std::vector<PassageEmbedding> embeddings =
-      page_embeddings_service_->GetEmbeddings(page);
-
+    content::Page& page,
+    const std::vector<PassageEmbedding>& embeddings) {
   std::optional<passage_embeddings::Embedding> title_url_embedding;
   std::vector<passage_embeddings::Embedding> passage_embeddings;
-  for (PassageEmbedding& embedding : embeddings) {
+  for (const PassageEmbedding& embedding : embeddings) {
     if (embedding.passage.second == EmbeddingPassageType::kTitleAndUrl) {
-      title_url_embedding = std::move(embedding.embedding);
+      title_url_embedding = embedding.embedding;
     } else if (embedding.passage.second == EmbeddingPassageType::kPageContent) {
-      passage_embeddings.push_back(std::move(embedding.embedding));
+      passage_embeddings.push_back(embedding.embedding);
     }
   }
 

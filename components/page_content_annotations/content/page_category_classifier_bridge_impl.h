@@ -5,10 +5,14 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CATEGORY_CLASSIFIER_BRIDGE_IMPL_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CATEGORY_CLASSIFIER_BRIDGE_IMPL_H_
 
+#include <optional>
+#include <vector>
+
+#include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
-#include "base/scoped_observation.h"
-#include "components/page_content_annotations/content/page_embeddings_service.h"
+#include "components/page_content_annotations/content/producer.h"
 #include "components/page_content_annotations/core/page_category_classifier_bridge.h"
+#include "components/page_content_annotations/core/page_embeddings_common.h"
 
 namespace content {
 class Page;
@@ -18,14 +22,12 @@ namespace page_content_annotations {
 
 class OnDeviceCategoryClassifier;
 
-// A bridge that observes the PageEmbeddingsService and forwards available
-// embeddings to the OnDeviceCategoryClassifier when demand is active.
-class PageCategoryClassifierBridgeImpl
-    : public PageCategoryClassifierBridge,
-      public PageEmbeddingsService::Observer {
+// A bridge that subscribes to a passage-embeddings producer and forwards
+// available embeddings to the OnDeviceCategoryClassifier when demand is active.
+class PageCategoryClassifierBridgeImpl : public PageCategoryClassifierBridge {
  public:
   PageCategoryClassifierBridgeImpl(
-      PageEmbeddingsService& page_embeddings_service,
+      Producer<std::vector<PassageEmbedding>>& page_embeddings_producer,
       OnDeviceCategoryClassifier& category_classifier);
   ~PageCategoryClassifierBridgeImpl() override;
   PageCategoryClassifierBridgeImpl(const PageCategoryClassifierBridgeImpl&) =
@@ -36,17 +38,16 @@ class PageCategoryClassifierBridgeImpl
   // PageCategoryClassifierBridge:
   void SetDemandActive(bool active) override;
 
-  // PageEmbeddingsService::Observer:
-  PageEmbeddingsService::UsageMode GetUsageMode() const override;
-  void OnPageEmbeddingsAvailable(content::Page& page) override;
-
  private:
-  const raw_ref<PageEmbeddingsService> page_embeddings_service_;
+  void OnPageEmbeddingsAvailable(
+      content::Page& page,
+      const std::vector<PassageEmbedding>& embeddings);
+
+  const raw_ref<Producer<std::vector<PassageEmbedding>>>
+      page_embeddings_producer_;
   const raw_ref<OnDeviceCategoryClassifier> category_classifier_;
 
-  base::ScopedObservation<PageEmbeddingsService,
-                          PageEmbeddingsService::Observer>
-      scoped_observation_{this};
+  std::optional<base::CallbackListSubscription> embeddings_subscription_;
 };
 
 }  // namespace page_content_annotations

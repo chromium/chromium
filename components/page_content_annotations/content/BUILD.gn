@@ -14,6 +14,14 @@ source_set("metrics") {
   deps = [ "//base" ]
 }
 
+source_set("producer") {
+  sources = [ "producer.h" ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
 source_set("content") {
   sources = [
     "annotate_page_content_request.cc",
@@ -34,6 +42,7 @@ source_set("content") {
 
   public_deps = [
     ":metrics",
+    ":producer",
     "//base",
     "//components/content_extraction/content/browser",
     "//components/feature_engagement/public",
@@ -89,6 +98,7 @@ source_set("page_embeddings") {
 
   public_deps = [
     ":content",
+    ":producer",
     "//base",
     "//components/keyed_service/core",
     "//components/passage_embeddings/core",
@@ -125,11 +135,24 @@ source_set("test_support") {
   ]
 }
 
+source_set("producer_unit_tests") {
+  testonly = true
+  sources = [ "producer_unittest.cc" ]
+  deps = [
+    ":producer",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "annotate_page_content_request_unittest.cc",
     "embeddings_candidate_generator_unittest.cc",
+    "page_category_classifier_bridge_impl_unittest.cc",
     "page_content_extraction_service_unittest.cc",
     "page_context_fetcher_unittest.cc",
     "page_embeddings_service_unittest.cc",
@@ -138,8 +161,13 @@ source_set("unit_tests") {
     ":content",
     ":metrics",
     ":page_embeddings",
+    ":producer",
+    ":producer_unit_tests",
+    "//base/test:test_support",
     "//components/feature_engagement/public:feature_constants",
     "//components/feature_engagement/test:test_support",
+    "//components/optimization_guide/core:prediction",
+    "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/browser:test_support",
     "//components/page_content_annotations/core",
@@ -151,6 +179,7 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//content/test:test_support",
     "//pdf:buildflags",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",

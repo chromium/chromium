@@ -4,6 +4,8 @@
 
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 
+#include <optional>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -236,6 +238,40 @@ TEST_F(PageContentExtractionServiceTest, OnNewNavigation_Metrics) {
     service.RemoveObserver(&observer1);
     service.RemoveObserver(&observer2);
     service.RemoveObserver(&observer3);
+  }
+
+  // Case 7: Subscribers count toward enablement and observer count metrics
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kAnnotatedPageContentExtraction);
+
+    EXPECT_FALSE(service.ShouldEnablePageContentExtraction(false));
+
+    TestObserver observer;
+    service.AddObserver(&observer);
+    std::optional<base::CallbackListSubscription> sub1 = service.Subscribe(
+        base::BindRepeating([](content::Page&, const PageContent&) {}));
+    std::optional<base::CallbackListSubscription> sub2 = service.Subscribe(
+        base::BindRepeating([](content::Page&, const PageContent&) {}));
+
+    EXPECT_TRUE(service.ShouldEnablePageContentExtraction(false));
+
+    service.OnNewNavigation(std::nullopt, web_contents(),
+                            /*is_same_document=*/false);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageContentExtraction.EnablementSourcePerNavigation",
+        2, 1);  // kObserverPresent
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageContentExtraction.ObserverCountPerNavigation", 3,
+        1);
+
+    sub1.reset();
+    sub2.reset();
+    service.RemoveObserver(&observer);
+    EXPECT_FALSE(service.ShouldEnablePageContentExtraction(false));
   }
 }
 

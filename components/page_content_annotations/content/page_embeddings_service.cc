@@ -232,42 +232,22 @@ PageEmbeddingsService::~PageEmbeddingsService() = default;
 void PageEmbeddingsService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 
-  if (!page_content_extraction_observation_.IsObserving()) {
-    page_content_extraction_observation_.Observe(
-        page_content_extraction_service_);
-  }
-
+  UpdatePageContentExtractionRegistration();
   UpdateTaskPriorities(GetActivePriority(observers_, temporary_priority_));
-
-  if (const UsageMode next_usage_mode = observer->GetUsageMode();
-      next_usage_mode > current_usage_mode_) {
-    if (next_usage_mode == kContinuous) {
-      // Compute embeddings eagerly for all foreground tabs, to ensure that they
-      // are available.
-      for (const auto& [web_contents, web_contents_state] :
-           web_contents_states_) {
-        if (web_contents_state.page &&
-            !web_contents_state.observer->IsWebContentsHidden() &&
-            std::holds_alternative<Pending>(
-                web_contents_state.embeddings_state)) {
-          ComputeEmbeddings(*web_contents_state.page);
-        }
-      }
-    }
-    current_usage_mode_ = next_usage_mode;
-  }
+  UpdateUsageMode();
 }
 
 void PageEmbeddingsService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 
-  if (observers_.empty() &&
-      page_content_extraction_observation_.IsObserving()) {
-    page_content_extraction_observation_.Reset();
-  }
-
+  UpdatePageContentExtractionRegistration();
   UpdateTaskPriorities(GetActivePriority(observers_, temporary_priority_));
-  current_usage_mode_ = GetActiveUsageMode(observers_);
+  UpdateUsageMode();
+}
+
+base::CallbackListSubscription PageEmbeddingsService::Subscribe(
+    ConsumerCallback<std::vector<PassageEmbedding>> callback) {
+  return subscriber_registry_.Subscribe(std::move(callback));
 }
 
 PageEmbeddingsService::ScopedPriority PageEmbeddingsService::RaisePriority(
@@ -344,8 +324,9 @@ PageEmbeddingsService::GetEmbedderMetadataProvider() {
   return embedder_metadata_provider_;
 }
 
-void PageEmbeddingsService::OnPageContentExtracted(content::Page& page,
-                                                   PageContent page_content) {
+void PageEmbeddingsService::OnPageContentExtracted(
+    content::Page& page,
+    const PageContent& page_content) {
   if (!IsPageContentValid(page_content)) {
     return;
   }
@@ -393,6 +374,46 @@ void PageEmbeddingsService::OnPageContentExtracted(content::Page& page,
   } else {
     state.embeddings_state = Unavailable{};
   }
+}
+
+void PageEmbeddingsService::OnDemandChanged() {
+  UpdatePageContentExtractionRegistration();
+  UpdateUsageMode();
+}
+
+void PageEmbeddingsService::UpdatePageContentExtractionRegistration() {
+  if (!page_content_extraction_service_ || !embedder_) {
+    return;
+  }
+  if (!observers_.empty() || subscriber_registry_.GetSubscriberCount() > 0) {
+    if (!page_content_extraction_subscription_) {
+      page_content_extraction_subscription_ =
+          page_content_extraction_service_->Subscribe(base::BindRepeating(
+              &PageEmbeddingsService::OnPageContentExtracted,
+              base::Unretained(this)));
+    }
+  } else {
+    page_content_extraction_subscription_.reset();
+  }
+}
+
+void PageEmbeddingsService::UpdateUsageMode() {
+  const UsageMode next_usage_mode = GetActiveUsageMode(
+      observers_, subscriber_registry_.GetSubscriberCount() > 0);
+  if (next_usage_mode > current_usage_mode_ && next_usage_mode == kContinuous) {
+    // Compute embeddings eagerly for all foreground tabs, to ensure that they
+    // are available.
+    for (const auto& [web_contents, web_contents_state] :
+         web_contents_states_) {
+      if (web_contents_state.page &&
+          !web_contents_state.observer->IsWebContentsHidden() &&
+          std::holds_alternative<Pending>(
+              web_contents_state.embeddings_state)) {
+        ComputeEmbeddings(*web_contents_state.page);
+      }
+    }
+  }
+  current_usage_mode_ = next_usage_mode;
 }
 
 void PageEmbeddingsService::ComputeEmbeddings(content::Page& page) {
@@ -503,12 +524,13 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
                        std::move(passage_types[i])),
         std::move(embeddings[i]));
   }
-  loc->second.embeddings_state =
-      Available{.embeddings = std::move(passage_embeddings)};
+  const Available& available = loc->second.embeddings_state.emplace<Available>(
+      Available{.embeddings = std::move(passage_embeddings)});
 
   for (Observer& observer : observers_) {
     observer.OnPageEmbeddingsAvailable(*page);
   }
+  subscriber_registry_.Notify(*page, available.embeddings);
 }
 
 void PageEmbeddingsService::OnRestoredPageContentFetched(
@@ -591,7 +613,11 @@ void PageEmbeddingsService::UpdateTaskPriorities(Priority priority) {
 
 // static
 PageEmbeddingsService::UsageMode PageEmbeddingsService::GetActiveUsageMode(
-    const base::ObserverList<Observer>& observers) {
+    const base::ObserverList<Observer>& observers,
+    bool has_subscribers) {
+  if (has_subscribers) {
+    return kContinuous;
+  }
   return std::transform_reduce(
       observers.begin(), observers.end(), kOnDemand,
       [](UsageMode u1, UsageMode u2) { return std::max(u1, u2); },

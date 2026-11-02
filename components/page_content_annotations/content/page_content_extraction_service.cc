@@ -180,6 +180,13 @@ void PageContentExtractionService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+base::CallbackListSubscription PageContentExtractionService::Subscribe(
+    ConsumerCallback<PageContent> callback) {
+  return subscriber_registry_.Subscribe(std::move(callback));
+}
+
+void PageContentExtractionService::OnDemandChanged() {}
+
 PageContentExtractionEnablementReason
 PageContentExtractionService::GetPageContentExtractionEnablementReason(
     bool is_on_demand) const {
@@ -188,7 +195,7 @@ PageContentExtractionService::GetPageContentExtractionEnablementReason(
     return PageContentExtractionEnablementReason::
         kAutomaticExtractionFeatureEnabled;
   }
-  if (!observers_.empty()) {
+  if (!observers_.empty() || subscriber_registry_.GetSubscriberCount() > 0) {
     return PageContentExtractionEnablementReason::kObserverRegistered;
   }
   if (is_on_demand &&
@@ -213,6 +220,7 @@ void PageContentExtractionService::OnPageContentExtracted(
   for (auto& observer : observers_) {
     observer.OnPageContentExtracted(page, page_content);
   }
+  subscriber_registry_.Notify(page, page_content);
 
   if (!is_page_content_cache_enabled_) {
     return;
@@ -360,7 +368,8 @@ void PageContentExtractionService::OnNewNavigation(
   if (!is_same_document) {
     bool feature_enabled = base::FeatureList::IsEnabled(
         page_content_annotations::features::kAnnotatedPageContentExtraction);
-    bool has_observers = !observers_.empty();
+    bool has_observers =
+        !observers_.empty() || subscriber_registry_.GetSubscriberCount() > 0;
 
     EnablementSource source = EnablementSource::kNone;
     if (feature_enabled && has_observers) {
@@ -376,7 +385,8 @@ void PageContentExtractionService::OnNewNavigation(
         source);
     base::UmaHistogramCounts100(
         "OptimizationGuide.PageContentExtraction.ObserverCountPerNavigation",
-        std::distance(observers_.begin(), observers_.end()));
+        std::distance(observers_.begin(), observers_.end()) +
+            subscriber_registry_.GetSubscriberCount());
   }
 
   content::Page& current_page = web_contents->GetPrimaryPage();

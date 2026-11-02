@@ -12,13 +12,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/content/producer.h"
 #include "components/page_content_annotations/core/page_embeddings_common.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "content/public/browser/page.h"
@@ -34,7 +35,7 @@ namespace page_content_annotations {
 class PageContentExtractionService;
 
 class PageEmbeddingsService : public KeyedService,
-                              public PageContentExtractionService::Observer {
+                              public Producer<std::vector<PassageEmbedding>> {
  public:
   // The priority to use when computing embeddings. Higher priorities imply more
   // performance overhead.
@@ -121,6 +122,10 @@ class PageEmbeddingsService : public KeyedService,
   virtual void AddObserver(Observer* observer);
   virtual void RemoveObserver(Observer* observer);
 
+  // Producer<std::vector<PassageEmbedding>>:
+  base::CallbackListSubscription Subscribe(
+      ConsumerCallback<std::vector<PassageEmbedding>> callback) override;
+
   ScopedPriority RaisePriority(Observer* observer, Priority priority);
 
   // In on demand mode PageEmbeddingsService computes embeddings lazily for the
@@ -150,9 +155,8 @@ class PageEmbeddingsService : public KeyedService,
   // Returns the provider for embedder metadata.
   passage_embeddings::EmbedderMetadataProvider* GetEmbedderMetadataProvider();
 
-  // PageContentExtractionService:
   void OnPageContentExtracted(content::Page& page,
-                              PageContent page_content) override;
+                              const PageContent& page_content);
 
  private:
   friend class PageEmbeddingsServiceTest;
@@ -165,6 +169,12 @@ class PageEmbeddingsService : public KeyedService,
   struct Unavailable;
 
   struct WebContentsState;
+
+  // Producer<std::vector<PassageEmbedding>>:
+  void OnDemandChanged() override;
+
+  void UpdatePageContentExtractionRegistration();
+  void UpdateUsageMode();
 
   // Computes embeddings for the page. Expects that the embeddings state is
   // Pending, i.e. we have already received passages for the page.
@@ -192,7 +202,8 @@ class PageEmbeddingsService : public KeyedService,
   void UpdateTaskPriorities(Priority priority);
 
   static UsageMode GetActiveUsageMode(
-      const base::ObserverList<Observer>& observers);
+      const base::ObserverList<Observer>& observers,
+      bool has_subscribers);
 
   const EmbeddingCandidatesGenerator candidates_generator_;
 
@@ -202,10 +213,11 @@ class PageEmbeddingsService : public KeyedService,
       embedder_metadata_provider_;
 
   raw_ptr<PageContentExtractionService> page_content_extraction_service_;
-  base::ScopedObservation<PageContentExtractionService, PageEmbeddingsService>
-      page_content_extraction_observation_{this};
+  std::optional<base::CallbackListSubscription>
+      page_content_extraction_subscription_;
 
   base::ObserverList<Observer> observers_;
+  SubscriberRegistry<std::vector<PassageEmbedding>> subscriber_registry_{*this};
   std::map<Observer*, Priority> temporary_priority_;
 
   Priority current_priority_ = kDefault;
