@@ -7,14 +7,19 @@ found in the LICENSE file.
 <ripple
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="@color/fusebox_popover_plus_button_ripple_color">
-  <item
-      android:id="@android:id/content"
-      android:width="@dimen/fusebox_popover_pill_button_bg_width"
-      android:height="@dimen/fusebox_popover_pill_button_bg_height"
-      android:gravity="center">
-    <shape android:shape="rectangle">
-      <solid android:color="?attr/colorSurfaceContainer" />
-      <corners android:radius="@dimen/fusebox_popover_pill_button_bg_corner_radius" />
-    </shape>
-  </item>
+
+    <item
+        android:id="@android:id/content"
+        android:width="@dimen/fusebox_popover_pill_button_bg_width"
+        android:height="@dimen/fusebox_popover_pill_button_bg_height"
+        android:gravity="center">
+
+        <shape android:shape="rectangle">
+            <solid android:color="@color/interactable_chip_bg_color"/>
+            <corners
+                android:radius="@dimen/fusebox_popover_pill_button_bg_corner_radius"/>
+        </shape>
+
+    </item>
+
 </ripple>
