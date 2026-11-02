@@ -273,7 +273,13 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     const auto* grid_lanes_data =
         To<GridLanesBreakTokenData>(GetBreakToken()->TokenData());
     total_intrinsic_block_size = grid_lanes_data->total_intrinsic_block_size;
-    grid_lanes = grid_lanes_data->grid_lanes;
+    // Vector assignment would share lane objects and mutate the incoming break
+    // token's state. Copy each lane, but keep item and placement trees shared.
+    grid_lanes.ReserveInitialCapacity(grid_lanes_data->grid_lanes.size());
+    for (const auto& lane : grid_lanes_data->grid_lanes) {
+      grid_lanes.push_back(lane ? MakeGarbageCollected<GridLaneData>(*lane)
+                                : nullptr);
+    }
     grid_layout_subtree = grid_lanes_data->grid_layout_subtree;
     layout_data = grid_layout_subtree->LayoutData();
     oof_children = grid_lanes_data->oof_children;
@@ -486,8 +492,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   if (has_block_fragmentation) {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<GridLanesBreakTokenData>(
-            grid_lanes, grid_layout_subtree, total_intrinsic_block_size,
-            oof_children));
+            std::move(grid_lanes), grid_layout_subtree,
+            total_intrinsic_block_size, oof_children));
   }
 
   container_builder_.HandleOofsAndSpecialDescendants();
@@ -709,10 +715,9 @@ void MarkBreakInsideInSpannedLanes(
 // Sets how far the unstarted items in every lane of `lane_span` are pushed down
 // in the block direction. An item's lanes all take the same value because the
 // items after it in each of those lanes follow that item.
-void SetItemOffsetAdjustmentInSpannedLanes(
-    const GridSpan& lane_span,
-    LayoutUnit item_offset_adjustment,
-    const GridLanesDataVector& grid_lanes) {
+void SetItemOffsetAdjustmentInSpannedLanes(const GridSpan& lane_span,
+                                           LayoutUnit item_offset_adjustment,
+                                           GridLanesDataVector& grid_lanes) {
   for (wtf_size_t lane_idx = lane_span.StartLine();
        lane_idx < lane_span.EndLine(); ++lane_idx) {
     grid_lanes[lane_idx]->item_offset_adjustment = item_offset_adjustment;
@@ -1005,7 +1010,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
 }
 
 void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
-    const GridLanesDataVector& grid_lanes,
+    GridLanesDataVector& grid_lanes,
     const GridLayoutSubtree& layout_subtree,
     LayoutUnit* total_intrinsic_block_size) {
   DCHECK(InvolvedInBlockFragmentation(container_builder_));
@@ -1066,12 +1071,12 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
   wtf_size_t previous_grid_lane_idx = kNotFound;
 
   for (auto entry = item_iterator.NextItem();
-       GridLanesItemData* grid_lanes_item = entry.grid_lanes_item;
+       const GridLanesItemData* grid_lanes_item = entry.grid_lanes_item;
        entry = item_iterator.NextItem()) {
     const wtf_size_t grid_lane_idx = entry.grid_lane_idx;
 
     CHECK_LT(grid_lane_idx, grid_lanes.size());
-    GridLaneData* lane_data = grid_lanes[grid_lane_idx];
+    const GridLaneData* lane_data = grid_lanes[grid_lane_idx];
     CHECK(lane_data);
 
     GridItemData& item = *grid_lanes_item->item;
@@ -1158,7 +1163,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
             lane_span, spanner_offset_adjustment, grid_lanes);
       }
 
-      offset.block_offset += lane_data->item_offset_adjustment;
+      offset.block_offset += grid_lanes[grid_lane_idx]->item_offset_adjustment;
 
       // TODO(almaher): Further adjustments will eventually be needed for rows.
     }
@@ -1221,11 +1226,8 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
           row_block_offset >= fragmentainer_space) {
         // If the previously processed row has a continuation, it will provide
         // the break token needed to resume this row in the next fragmentainer.
-        GridLaneData* previous_lane =
-            previous_grid_lane_idx != kNotFound
-                ? grid_lanes[previous_grid_lane_idx].Get()
-                : nullptr;
-        if (previous_lane && previous_lane->has_unfinished_items) {
+        if (previous_grid_lane_idx != kNotFound &&
+            grid_lanes[previous_grid_lane_idx]->has_unfinished_items) {
           break;
         }
       }
@@ -1250,7 +1252,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     const LogicalBoxFragment fragment(container_writing_direction,
                                       physical_fragment);
 
-    GridLanesItemPlacementData& grid_lanes_placement_data =
+    const GridLanesItemPlacementData& grid_lanes_placement_data =
         *grid_lanes_item->grid_lanes_placement_data;
 
     const bool is_at_block_end =
@@ -1258,10 +1260,11 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
         physical_fragment.GetBreakToken()->IsAtBlockEnd();
     LayoutUnit item_block_end = offset.block_offset + fragment.BlockSize();
     if (is_at_block_end) {
-      // Only add the block-end margin if the item has reached the end of its
-      // content. Then re-set it to avoid adding it more than once.
-      item_block_end += grid_lanes_placement_data.margin_block_end;
-      grid_lanes_placement_data.margin_block_end = LayoutUnit();
+      // Add the margin only when reaching the block-end for the first time.
+      // Overflow may keep fragmenting after the item's own box has finished.
+      if (!item_break_token || !item_break_token->IsAtBlockEnd()) {
+        item_block_end += grid_lanes_placement_data.margin_block_end;
+      }
     } else if (is_columns) {
       // A spanner occupies every lane it spans, so its break defers the rest of
       // the content in all of them.
@@ -1278,23 +1281,26 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     if (is_columns) {
       // TODO(almaher): Handle cloned block decorations here.
 
-      grid_lanes_placement_data.total_remaining_block_size -=
-          fragment.BlockSize();
-
       // Record the expansion when the item first reaches its block end, rather
       // than waiting until it has no break token, like flex does. If its
       // content overflows into the next fragmentainer, later items in its lanes
       // are still laid out in this one, so they need the expansion now to
       // avoid overlapping the item. An item resuming at its block end was
       // already accounted for in an earlier fragment.
-      if (grid_lanes_placement_data.total_remaining_block_size < LayoutUnit() &&
-          is_at_block_end &&
+      if (is_at_block_end &&
           !(item_break_token && item_break_token->IsAtBlockEnd())) {
-        const LayoutUnit expansion =
-            -grid_lanes_placement_data.total_remaining_block_size;
-        SetItemOffsetAdjustmentInSpannedLanes(
-            lane_span, lane_data->item_offset_adjustment + expansion,
-            grid_lanes);
+        const LayoutUnit consumed_block_size =
+            item_break_token ? item_break_token->ConsumedBlockSize()
+                             : LayoutUnit();
+        const LayoutUnit expansion = consumed_block_size +
+                                     fragment.BlockSize() -
+                                     grid_lanes_placement_data.total_block_size;
+        if (expansion > LayoutUnit()) {
+          SetItemOffsetAdjustmentInSpannedLanes(
+              lane_span,
+              grid_lanes[grid_lane_idx]->item_offset_adjustment + expansion,
+              grid_lanes);
+        }
       }
     }
     // TODO(almaher): Handle row expansion here, including cloned block-start
@@ -1330,7 +1336,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     if (entry.is_last_item_in_lane ||
         (!is_columns && !item_iterator.HasNextItemInLane(grid_lane_idx))) {
       if (!has_inflow_child_break_inside_lane[grid_lane_idx]) {
-        lane_data->has_unfinished_items = false;
+        grid_lanes[grid_lane_idx]->has_unfinished_items = false;
       }
 
       // TODO(almaher): Additional tracking needed for offset adjustments and
@@ -1464,7 +1470,7 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
         // For columns, the stacking axis is the block axis, so the stretched
         // size is the item's total block size before fragmentation.
         if (is_for_columns) {
-          grid_lanes_placement_data->total_remaining_block_size =
+          grid_lanes_placement_data->total_block_size =
               *grid_lanes_placement_data->stretch_size_in_stacking_axis;
         }
 
@@ -2045,8 +2051,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
             start_offset_in_stacking_axis;
 
         if (is_fragmentation_collection) {
-          grid_lanes_placement_data->total_remaining_block_size =
-              fragment.BlockSize();
+          grid_lanes_placement_data->total_block_size = fragment.BlockSize();
         } else {
           // Save the child index before `AddResult` appends it. Self-alignment
           // uses this index to update the child.

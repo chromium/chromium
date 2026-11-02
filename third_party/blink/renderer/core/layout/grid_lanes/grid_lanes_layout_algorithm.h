@@ -185,7 +185,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // unfragmented container; it is updated if column items expand as a result of
   // fragmentation.
   void PlaceGridLanesItemsForFragmentation(
-      const GridLanesDataVector& grid_lanes,
+      GridLanesDataVector& grid_lanes,
       const GridLayoutSubtree& layout_subtree,
       LayoutUnit* total_intrinsic_block_size);
 

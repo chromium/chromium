@@ -3344,6 +3344,79 @@ TEST_F(GridLanesLayoutAlgorithmTest, PopulateGridLanesBreakTokenData) {
   EXPECT_TRUE(grid_lanes[0]->item_data[1]->is_item_start);
 }
 
+TEST_F(GridLanesLayoutAlgorithmTest, SharePlacementDataAcrossFragments) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-template-columns: repeat(2, 100px);">
+      <div style="grid-column: span 2; height: 20px; margin-bottom: 5px;"></div>
+      <div style="grid-column: 1; height: 40px; break-inside: avoid;"></div>
+      <div style="grid-column: 2; height: 10px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+  const LayoutBox* box = GetLayoutBoxByElementId("grid-lanes");
+  ASSERT_GT(box->PhysicalFragmentCount(), 2u);
+  const auto* first = To<GridLanesBreakTokenData>(
+      box->GetPhysicalFragment(0)->GetBreakToken()->TokenData());
+  const auto* second = To<GridLanesBreakTokenData>(
+      box->GetPhysicalFragment(1)->GetBreakToken()->TokenData());
+
+  ASSERT_EQ(first->grid_lanes.size(), 2u);
+  ASSERT_EQ(second->grid_lanes.size(), 2u);
+  EXPECT_EQ(first->grid_layout_subtree, second->grid_layout_subtree);
+  for (wtf_size_t lane = 0; lane < grid_lanes.size(); ++lane) {
+    EXPECT_NE(first->grid_lanes[lane], second->grid_lanes[lane]);
+    EXPECT_EQ(first->grid_lanes[lane]->item_data,
+              second->grid_lanes[lane]->item_data);
+  }
+
+  EXPECT_TRUE(first->grid_lanes[1]->has_unfinished_items);
+  EXPECT_FALSE(second->grid_lanes[1]->has_unfinished_items);
+
+  const auto* spanner =
+      grid_lanes[0]->item_data[0]->grid_lanes_placement_data.Get();
+  EXPECT_EQ(spanner,
+            grid_lanes[1]->item_data[0]->grid_lanes_placement_data.Get());
+  EXPECT_EQ(spanner->margin_block_end, LayoutUnit(5));
+  EXPECT_EQ(spanner->total_block_size, LayoutUnit(20));
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, ShareExpansionDataAcrossFragments) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-template-columns: repeat(2, 100px);">
+      <div style="grid-column: span 2;">
+        <div style="height: 20px;"></div>
+        <div style="height: 20px; break-before: column;"></div>
+      </div>
+      <div style="grid-column: 1; height: 10px;"></div>
+      <div style="grid-column: 2; height: 10px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+  const LayoutBox* box = GetLayoutBoxByElementId("grid-lanes");
+  ASSERT_GT(box->PhysicalFragmentCount(), 2u);
+  const auto* first = To<GridLanesBreakTokenData>(
+      box->GetPhysicalFragment(0)->GetBreakToken()->TokenData());
+  const auto* second = To<GridLanesBreakTokenData>(
+      box->GetPhysicalFragment(1)->GetBreakToken()->TokenData());
+
+  ASSERT_EQ(first->grid_lanes.size(), 2u);
+  ASSERT_EQ(second->grid_lanes.size(), 2u);
+  for (wtf_size_t lane = 0; lane < 2; ++lane) {
+    EXPECT_NE(first->grid_lanes[lane], second->grid_lanes[lane]);
+    EXPECT_EQ(first->grid_lanes[lane]->item_data,
+              second->grid_lanes[lane]->item_data);
+    EXPECT_EQ(first->grid_lanes[lane]->item_offset_adjustment, LayoutUnit());
+    EXPECT_EQ(second->grid_lanes[lane]->item_offset_adjustment, LayoutUnit(10));
+  }
+  EXPECT_EQ(
+      grid_lanes[0]->item_data[0]->grid_lanes_placement_data->total_block_size,
+      LayoutUnit(40));
+}
+
 TEST_F(GridLanesLayoutAlgorithmTest, PopulateRowGridLanesBreakTokenData) {
   SetBodyInnerHTML(R"HTML(
     <div id="grid-lanes" style="display: grid-lanes; height: 200px;

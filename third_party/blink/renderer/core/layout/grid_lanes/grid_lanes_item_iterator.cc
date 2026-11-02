@@ -219,7 +219,7 @@ GridLanesItemIterator::Entry GridLanesItemIterator::NextItem() {
 GridLanesItemData* GridLanesItemIterator::FindNextItem(
     const BlockBreakToken* item_break_token) {
   while (grid_lane_idx_ < grid_lanes_.size()) {
-    GridLaneData* lane_data = grid_lanes_[grid_lane_idx_];
+    const GridLaneData* lane_data = grid_lanes_[grid_lane_idx_];
     if (lane_data && (iteration_mode_ == kStackingAxisReadingFlow ||
                       lane_data->has_unfinished_items || item_break_token)) {
       while (!grid_lanes_item_index_path_.empty()) {

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_BREAK_TOKEN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_BREAK_TOKEN_DATA_H_
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lane_data.h"
@@ -12,14 +14,14 @@
 namespace blink {
 
 struct GridLanesBreakTokenData final : BreakTokenAlgorithmData {
-  GridLanesBreakTokenData(const GridLanesDataVector& grid_lanes,
+  GridLanesBreakTokenData(GridLanesDataVector grid_lanes,
                           const GridLayoutSubtree* grid_layout_subtree,
                           LayoutUnit total_intrinsic_block_size,
                           const HeapVector<Member<LayoutBox>>& oof_children)
       : BreakTokenAlgorithmData(kGridLanesData),
         total_intrinsic_block_size(total_intrinsic_block_size),
         grid_layout_subtree(grid_layout_subtree),
-        grid_lanes(grid_lanes),
+        grid_lanes(std::move(grid_lanes)),
         oof_children(oof_children) {}
 
   // Traces references after the type tag is checked.
