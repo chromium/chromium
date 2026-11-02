@@ -92,6 +92,7 @@ void EventLoop::RunEndOfMicrotaskCheckpointTasks() {
     // execution was interrupted by the debugger. V8 expects that any pending
     // microtasks are discarded here. See https://crbug.com/1394714.
     pending_microtasks_.clear();
+    ++microtask_discard_count_;
   }
 
   if (delegate_) {

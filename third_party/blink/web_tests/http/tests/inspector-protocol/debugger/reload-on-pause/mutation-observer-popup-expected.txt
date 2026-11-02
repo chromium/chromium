@@ -1,0 +1,5 @@
+MutationObservers should keep firing after reloading while paused in a MutationObserver callback, with a same-origin popup open
+Paused in MutationObserver callback.
+Reloaded.
+MutationObserver fired.
+

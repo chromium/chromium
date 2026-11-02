@@ -84,6 +84,13 @@ class PLATFORM_EXPORT EventLoop final {
   // Run any pending tasks.
   void RunEndOfMicrotaskCheckpointTasks();
 
+  // Returns a counter that is incremented each time pending microtasks are
+  // discarded without being run. This happens when script execution is
+  // terminated during a microtask checkpoint (e.g. by DevTools, when reloading
+  // or terminating script while paused). Callers can compare values of this
+  // counter to detect that a microtask they enqueued was dropped.
+  uint64_t MicrotaskDiscardCount() const { return microtask_discard_count_; }
+
   // Runs pending microtasks until the queue is empty.
   void PerformMicrotaskCheckpoint();
 
@@ -129,6 +136,7 @@ class PLATFORM_EXPORT EventLoop final {
   WeakPersistent<Delegate> delegate_;
   const raw_ptr<v8::Isolate> isolate_;
   int microtasks_pause_count_ = 0;
+  uint64_t microtask_discard_count_ = 0;
   Deque<base::OnceClosure> pending_microtasks_;
   Vector<base::OnceClosure> end_of_checkpoint_tasks_;
   Persistent<v8::MicrotaskQueue> microtask_queue_;

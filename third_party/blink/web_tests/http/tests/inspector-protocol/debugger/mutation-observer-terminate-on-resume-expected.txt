@@ -1,0 +1,5 @@
+MutationObservers should keep firing after terminating script execution while paused in a MutationObserver callback
+Paused in MutationObserver callback.
+Resumed with termination.
+MutationObserver fired.
+

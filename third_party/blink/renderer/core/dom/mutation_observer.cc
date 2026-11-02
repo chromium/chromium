@@ -126,12 +126,25 @@ class MutationObserverAgentData
 
  private:
   void EnsureEnqueueMicrotask() {
-    if (active_mutation_observers_.empty() &&
-        active_slot_change_list_.empty() && focus_reset_documents_.empty()) {
-      GetSupplementable()->event_loop()->EnqueueMicrotask(
-          BindOnce(&MutationObserverAgentData::DeliverMutations,
-                   WrapWeakPersistent(this)));
+    scheduler::EventLoop* event_loop = GetSupplementable()->event_loop();
+    // If any of the lists are non-empty, a DeliverMutations microtask has
+    // already been enqueued. However, that microtask is dropped if script
+    // execution is terminated during a microtask checkpoint, e.g. when DevTools
+    // reloads or terminates script while paused. In that case, the lists can
+    // still contain entries (such as observers in other windows of the same
+    // agent, which get activated when DevTools resumes), and a new microtask
+    // must be enqueued, or no MutationObserver for this agent can fire again.
+    if ((!active_mutation_observers_.empty() ||
+         !active_slot_change_list_.empty() ||
+         !focus_reset_documents_.empty()) &&
+        event_loop->MicrotaskDiscardCount() ==
+            microtask_discard_count_at_enqueue_) {
+      return;
     }
+    microtask_discard_count_at_enqueue_ = event_loop->MicrotaskDiscardCount();
+    event_loop->EnqueueMicrotask(
+        BindOnce(&MutationObserverAgentData::DeliverMutations,
+                 WrapWeakPersistent(this)));
   }
 
   void DeliverMutations() {
@@ -168,6 +181,9 @@ class MutationObserverAgentData
   // Documents with a pending focus reset (see Document::
   // SetHasPendingFocusReset()).
   HeapVector<Member<Document>> focus_reset_documents_;
+  // The value of EventLoop::MicrotaskDiscardCount() when the last
+  // DeliverMutations microtask was enqueued.
+  uint64_t microtask_discard_count_at_enqueue_ = 0;
 };
 
 class MutationObserver::V8DelegateImpl final
