@@ -15,8 +15,10 @@ enum PrintJobCompletionStatus {
   kPrinted
 };
 
-// Enumeration of all the possible printer error codes. The order of these enums
-// must match that of chrome/browser/chromeos/printing/printer_error_codes.h
+// Enumeration of all the possible printer error codes.
+// `PrinterErrorCodeToMojom()` in
+// chrome/browser/ash/printing/print_management/print_job_info_mojom_conversions.cc
+// converts `chromeos::PrinterErrorCode` to this enum.
 enum PrinterErrorCode {
   kNoError,
   kPaperJam,

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/args.gni")
-import("//printing/buildflags/buildflags.gni")
 
 assert(is_chromeos)
 
@@ -28,6 +27,7 @@ static_library("print_management") {
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/settings_ui",
+    "//chromeos/printing",
     "//components/pref_registry",
     "//components/session_manager/core",
     "//components/user_manager",
@@ -46,10 +46,6 @@ static_library("print_management") {
     "//components/prefs",
     "//mojo/public/cpp/bindings",
   ]
-
-  if (use_cups) {
-    deps += [ "//chrome/browser/chromeos/printing" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -74,6 +70,7 @@ source_set("unit_tests") {
     "//chrome/browser/printing",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/printing",
     "//components/history/core/test",
     "//components/prefs:test_support",
     "//components/user_manager",
@@ -81,10 +78,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/message_center",
   ]
-
-  if (use_cups) {
-    deps += [ "//chrome/browser/chromeos/printing" ]
-  }
 }
 
 source_set("browser_tests") {

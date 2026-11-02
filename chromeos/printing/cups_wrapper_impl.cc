@@ -14,7 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/chromeos/printing/cups_wrapper.h"
+#include "chromeos/printing/cups_wrapper.h"
 #include "printing/backend/cups_printer.h"
 #include "url/gurl.h"
 
@@ -131,8 +131,9 @@ class CupsWrapperImpl : public CupsWrapper {
       auto result = std::make_unique<::printing::PrinterStatus>();
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
-      if (!cups_connection_->GetPrinterStatus(printer_id, result.get()))
+      if (!cups_connection_->GetPrinterStatus(printer_id, result.get())) {
         return nullptr;
+      }
       return result;
     }
 

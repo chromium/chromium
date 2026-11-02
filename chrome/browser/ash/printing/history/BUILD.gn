@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//printing/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos)
@@ -35,6 +34,7 @@ static_library("history") {
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/settings",
+    "//chromeos/printing",
     "//components/policy/proto",
     "//components/pref_registry",
     "//components/reporting/client:report_queue",
@@ -47,10 +47,6 @@ static_library("history") {
     "//content/public/browser",
     "//printing/mojom",
   ]
-
-  if (use_cups) {
-    deps += [ "//chrome/browser/chromeos/printing" ]
-  }
 
   public_deps = [ "//printing" ]
 }
@@ -79,6 +75,7 @@ source_set("unit_tests") {
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/settings",
+    "//chromeos/printing",
     "//components/prefs:test_support",
     "//components/reporting/client:report_queue",
     "//components/reporting/client:test_support",
@@ -88,10 +85,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/message_center",
   ]
-
-  if (use_cups) {
-    deps += [ "//chrome/browser/chromeos/printing" ]
-  }
 }
 
 static_library("test_support") {

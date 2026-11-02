@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/printing/test_cups_wrapper.h"
+#include "chromeos/printing/test_cups_wrapper.h"
 
 #include <utility>
 
@@ -30,8 +30,9 @@ void TestCupsWrapper::QueryCupsPrinterStatus(
         callback) {
   auto result = std::make_unique<::printing::PrinterStatus>();
   auto it = printer_reasons_.find(printer_id);
-  if (it != printer_reasons_.end())
+  if (it != printer_reasons_.end()) {
     result->reasons.push_back(it->second);
+  }
   std::move(callback).Run(std::move(result));
 }
 

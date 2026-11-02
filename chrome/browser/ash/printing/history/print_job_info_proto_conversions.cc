@@ -7,7 +7,7 @@
 #include <optional>
 #include <string>
 
-#include "chrome/browser/chromeos/printing/printer_error_codes.h"
+#include "chromeos/printing/printer_error_codes.h"
 #include "printing/mojom/print.mojom.h"
 
 namespace ash {

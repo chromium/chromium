@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PRINTING_CUPS_WRAPPER_H_
-#define CHROME_BROWSER_CHROMEOS_PRINTING_CUPS_WRAPPER_H_
+#ifndef CHROMEOS_PRINTING_CUPS_WRAPPER_H_
+#define CHROMEOS_PRINTING_CUPS_WRAPPER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "printing/backend/cups_connection.h"
 
 namespace chromeos {
 
 // A wrapper around the CUPS connection.
-class CupsWrapper {
+class COMPONENT_EXPORT(CHROMEOS_PRINTING) CupsWrapper {
  public:
   // Container for results from CUPS queries.
-  struct QueryResult {
+  struct COMPONENT_EXPORT(CHROMEOS_PRINTING) QueryResult {
     QueryResult();
     QueryResult(const QueryResult& other) = delete;
     QueryResult& operator=(const QueryResult& other) = delete;
@@ -54,4 +55,4 @@ class CupsWrapper {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PRINTING_CUPS_WRAPPER_H_
+#endif  // CHROMEOS_PRINTING_CUPS_WRAPPER_H_

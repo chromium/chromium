@@ -240,9 +240,9 @@ if (enable_printing) {
           ]
           deps += [
             "//chrome/browser/ash/printing/print_management",
-            "//chrome/browser/chromeos/printing",
             "//chrome/browser/web_applications",
             "//chrome/common/printing",
+            "//chromeos/printing",
             "//components/content_settings/browser",
             "//components/content_settings/core/browser",
             "//components/content_settings/core/common",
@@ -329,10 +329,10 @@ if (enable_printing) {
       if (is_chromeos && use_cups) {
         sources += [ "web_api/web_printing_browsertest.cc" ]
         deps += [
-          "//chrome/browser/chromeos/printing",
           "//chrome/browser/content_settings:content_settings_factory",
           "//chrome/browser/web_applications",
           "//chrome/browser/web_applications:web_applications_test_support",
+          "//chromeos/printing",
           "//components/content_settings/core/browser",
           "//printing/backend",
         ]

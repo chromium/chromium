@@ -6,15 +6,15 @@ their own native printers using CUPS.
 
 The Chrome client code which is responsible for handling UI events from this
 page is located at
-`chrome/browser/ui/webui/settings/ash/cups_printers_handler.cc`
+`chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.cc`
 
 The front-end code for this page is located at
-`chrome/browser/resources/settings/printing_page/`
+`chrome/browser/resources/ash/settings/os_printing_page/`
 
 ## Add Printer Dialogs
 
 There are 4 dialogs that are related to adding a printer. The code for these
-dialogs is located at `cups_add_printer_dialog.js`
+dialogs is located at `cups_add_printer_dialog.ts`
 
 ### Discovered Printers Dialog
 
@@ -53,7 +53,7 @@ the printer that a user attempted to add.
 
 Allows the user to edit an existing configured printer.
 
-The code for this dialog is located at `cups_edit_printer_dialog.js`
+The code for this dialog is located at `cups_edit_printer_dialog.ts`
 
 The following fields of the printer may be changed:
 
@@ -79,10 +79,10 @@ The CUPS browser proxy is responsible for sending messages from the UI in the
 settings page to the client code and retrieving results if necessary.
 
 The code for the browser proxy is located at
-`/printing_page/cups_printers_browser_proxy.js`
+`/os_printing_page/cups_printers_browser_proxy.ts`
 
 The following table contains message names as they appear in
-`cups_printers_browser_proxy.js` and their corresponding functions in
+`cups_printers_browser_proxy.ts` and their corresponding functions in
 `cups_printers_handler.cc`:
 
 Message Name                        | Function
@@ -108,7 +108,7 @@ Message Name                        | Function
 The following tables contain the different event listeners that exist within the
 frontend UI code and their corresponding event handler functions.
 
-### `cups_add_printer_dialog.js`
+### `cups_add_printer_dialog.ts`
 Event Name                           | Event Handler
 :----------------------------------- | :--------------------------------
 `on-printer-discovered`              | `onPrinterDiscovered_`
@@ -122,7 +122,7 @@ Event Name                           | Event Handler
 `open-manufacturer-model-dialog`     | `openManufacturerModelDialog_`
 `no-detected-printer`                | `onNoDetectedPrinter_`
 
-### `cups_printers.js`
+### `cups_printers.ts`
 
 Event Name                  | Event Handler
 :-------------------------- | :-----------------------------

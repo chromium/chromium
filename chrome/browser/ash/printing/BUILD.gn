@@ -152,10 +152,7 @@ static_library("printing") {
   ]
 
   if (use_cups) {
-    deps += [
-      "//chrome/browser/ash/printing/oauth2",
-      "//chrome/browser/chromeos/printing",
-    ]
+    deps += [ "//chrome/browser/ash/printing/oauth2" ]
   }
 
   if (enable_oop_printing) {

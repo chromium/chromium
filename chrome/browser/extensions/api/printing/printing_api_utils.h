@@ -12,8 +12,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chromeos/ash/experiences/extensions/common/api/printing.h"
+#include "chromeos/printing/printer_error_codes.h"
 
 namespace chromeos {
 class Printer;

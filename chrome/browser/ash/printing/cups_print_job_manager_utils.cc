@@ -13,7 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/printer_error_codes.h"
+#include "chromeos/printing/printer_error_codes.h"
 #include "components/device_event_log/device_event_log.h"
 #include "printing/backend/cups_jobs.h"
 #include "printing/printed_document.h"

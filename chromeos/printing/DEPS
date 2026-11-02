@@ -1,5 +1,7 @@
 include_rules = [
   "+components/printing/common",
+  "+printing/backend",
   "+printing/cups_printer_status_reason_ash.h",
   "+printing/mojom",
+  "+printing/printer_status.h",
 ]

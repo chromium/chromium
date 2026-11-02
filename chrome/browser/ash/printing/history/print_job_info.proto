@@ -93,7 +93,7 @@ message PrintJobInfo {
   }
 
   // The error code of the printer. These enums are 1:1 with that of
-  // chrome/browser/chromeos/printing/printer_error_codes.h.
+  // chromeos/printing/printer_error_codes.h.
   enum PrinterErrorCode {
     // Printer has no error.
     NO_ERROR = 0;

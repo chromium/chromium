@@ -1457,7 +1457,6 @@ source_set("extensions") {
         "//chrome/browser/ash/base",
         "//chrome/browser/ash/printing/print_management",
         "//chrome/browser/chromeos/extensions/printing_metrics",
-        "//chrome/browser/chromeos/printing",
         "//chrome/browser/pdf:pdf_pref_names",
         "//chrome/browser/ui/views/extensions/dialogs:print_job_confirmation_dialog",
         "//chromeos/printing",
@@ -2283,8 +2282,8 @@ source_set("unit_tests") {
         "//chrome/browser/ash/printing/history",
         "//chrome/browser/ash/printing/history:test_support",
         "//chrome/browser/ash/printing/print_management",
-        "//chrome/browser/chromeos/printing:test_support",
         "//chromeos/printing",
+        "//chromeos/printing:test_support",
       ]
     }
   }

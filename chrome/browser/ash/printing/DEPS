@@ -12,7 +12,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/chromeos/printing",
   "+chrome/browser/local_discovery",
   "+chrome/browser/policy",
   "+chrome/browser/printing",

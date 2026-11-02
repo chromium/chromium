@@ -3802,9 +3802,6 @@ source_set("browser") {
       "//ui/ozone",
       "//ui/wm/public",
     ]
-    if (use_cups) {
-      deps += [ "//chrome/browser/chromeos/printing" ]
-    }
     if (is_chrome_branded) {
       deps += [
         "//chrome/browser/nearby_sharing/internal/icons",

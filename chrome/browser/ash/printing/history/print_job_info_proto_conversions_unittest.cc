@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/printing/history/print_job_info_proto_conversions.h"
 
 #include "base/time/time_override.h"
-#include "chrome/browser/chromeos/printing/printer_error_codes.h"
+#include "chromeos/printing/printer_error_codes.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

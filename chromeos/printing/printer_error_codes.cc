@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/printing/printer_error_codes.h"
+#include "chromeos/printing/printer_error_codes.h"
 
 #include "printing/printer_status.h"
 

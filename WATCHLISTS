@@ -1102,7 +1102,6 @@
                   '|chrome/test/data/webui/settings/cups_printer_page_tests.js'\
                   '|chrome/browser/ui/webui/settings/ash/cups_printers_handler'\
                   '|chrome/browser/ash/printing/'\
-                  '|chrome/browser/chromeos/printing/'\
                   '|printing/',
     },
     'cursor': {

@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PRINTING_PRINTER_ERROR_CODES_H_
-#define CHROME_BROWSER_CHROMEOS_PRINTING_PRINTER_ERROR_CODES_H_
+#ifndef CHROMEOS_PRINTING_PRINTER_ERROR_CODES_H_
+#define CHROMEOS_PRINTING_PRINTER_ERROR_CODES_H_
+
+#include "base/component_export.h"
 
 namespace printing {
 struct PrinterStatus;
@@ -30,9 +32,10 @@ enum class PrinterErrorCode {
 
 // Extracts an PrinterErrorCode from PrinterStatus#reasons. Returns NO_ERROR if
 // there are no reasons which indicate an error.
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
 PrinterErrorCode PrinterErrorCodeFromPrinterStatusReasons(
     const ::printing::PrinterStatus& printer_status);
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PRINTING_PRINTER_ERROR_CODES_H_
+#endif  // CHROMEOS_PRINTING_PRINTER_ERROR_CODES_H_

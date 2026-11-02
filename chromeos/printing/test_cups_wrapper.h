@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PRINTING_TEST_CUPS_WRAPPER_H_
-#define CHROME_BROWSER_CHROMEOS_PRINTING_TEST_CUPS_WRAPPER_H_
+#ifndef CHROMEOS_PRINTING_TEST_CUPS_WRAPPER_H_
+#define CHROMEOS_PRINTING_TEST_CUPS_WRAPPER_H_
 
 #include "base/containers/flat_map.h"
-#include "chrome/browser/chromeos/printing/cups_wrapper.h"
+#include "chromeos/printing/cups_wrapper.h"
 
 namespace chromeos {
 
@@ -37,4 +37,4 @@ class TestCupsWrapper : public CupsWrapper {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PRINTING_TEST_CUPS_WRAPPER_H_
+#endif  // CHROMEOS_PRINTING_TEST_CUPS_WRAPPER_H_

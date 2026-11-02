@@ -10,9 +10,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
-#include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "chromeos/printing/printer_error_codes.h"
 
 namespace ash {
 

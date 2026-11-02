@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//printing/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
@@ -41,6 +42,8 @@ component("printing") {
     "printer_config_cache.h",
     "printer_configuration.cc",
     "printer_configuration.h",
+    "printer_error_codes.cc",
+    "printer_error_codes.h",
     "printer_translator.cc",
     "printer_translator.h",
     "remote_ppd_fetcher.cc",
@@ -52,6 +55,34 @@ component("printing") {
     "usb_printer_id.cc",
     "usb_printer_id.h",
   ]
+
+  if (use_cups) {
+    sources += [
+      "cups_wrapper.cc",
+      "cups_wrapper.h",
+      "cups_wrapper_impl.cc",
+    ]
+
+    # Public because cups_wrapper.h includes printing/backend/cups_connection.h.
+    public_deps += [ "//printing/backend" ]
+  }
+}
+
+if (use_cups) {
+  source_set("test_support") {
+    testonly = true
+
+    sources = [
+      "test_cups_wrapper.cc",
+      "test_cups_wrapper.h",
+    ]
+
+    deps = [
+      ":printing",
+      "//base",
+      "//printing:printing_base",
+    ]
+  }
 }
 
 source_set("unit_tests") {
