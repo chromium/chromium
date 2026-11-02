@@ -133,23 +133,28 @@ class PersonalContextEntityMetadataSyncBridge
     base::Time creation_time;
   };
 
-  // Applies a remote suppression to persistent storage and in-memory cache:
+  // Applies a remote entry to persistent storage and in-memory cache:
   // Encrypts `specifics` and writes it to `batch` under `storage_key`, and
-  // indexes the parsed `key` in `metadata_by_entry_`. Resolves conflicts if
-  // a suppression with the same key already exists under a different GUID.
-  // Returns `true` if `key` was not already suppressed, `false` otherwise.
+  // indexes the parsed `key` in `metadata_map`. Resolves conflicts if an entry
+  // with the same `key` already exists under a different GUID.
+  // Returns `true` if `key` was not already in `metadata_map`, `false`
+  // otherwise.
+  template <typename Key>
   bool ApplyRemoteEntry(
       const std::string& storage_key,
       const sync_pb::AutofillEntitySuppressionSpecifics& specifics,
-      EntitySuppressionKey key,
+      Key key,
+      base::flat_map<Key, EntryMetadata>& metadata_map,
       syncer::DataTypeStore::WriteBatch& batch);
 
-  // Deletes the oldest suppressions from `metadata_by_entry_`, local storage
-  // (via `batch`) and Sync until at most `kMaxSuppressions` remain. Of
-  // suppressions with equal creation times, the one with the smaller GUID is
-  // kept, so that all clients delete the same suppressions. Returns whether any
-  // suppression was deleted.
-  bool DeleteOldestSuppressionsAboveLimit(
+  // Deletes the oldest entries from `metadata_map`, local storage (via `batch`)
+  // and Sync until at most `max_entries` remain. Of entries with equal
+  // creation times, the one with the smaller GUID is kept, so that all clients
+  // delete the same entries. Returns whether any entry was deleted.
+  template <typename Key>
+  bool DeleteOldestEntriesAboveLimit(
+      base::flat_map<Key, EntryMetadata>& metadata_map,
+      size_t max_entries,
       syncer::DataTypeStore::WriteBatch& batch);
 
   void OnStoreCreated(base::RepeatingClosure barrier,
@@ -186,7 +191,8 @@ class PersonalContextEntityMetadataSyncBridge
   base::ObserverList<Observer> observers_;
 
   // In-memory mapping from `EntitySuppressionKey` to its metadata.
-  base::flat_map<EntitySuppressionKey, EntryMetadata> metadata_by_entry_;
+  base::flat_map<EntitySuppressionKey, EntryMetadata>
+      suppression_metadata_by_entry_;
 
   base::WeakPtrFactory<PersonalContextEntityMetadataSyncBridge>
       weak_ptr_factory_{this};
