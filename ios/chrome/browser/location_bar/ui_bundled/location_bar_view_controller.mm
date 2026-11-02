@@ -616,8 +616,6 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 }
 
 - (BOOL)canShowLargeContextualPanelEntrypoint {
-  // TODO(crbug.com/445786272): Add actual checks when implementing badge view
-  // loud moment blocking (check might need to be in the actual view).
   return !self.locationBarSteadyView.hidden;
 }
 
