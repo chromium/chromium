@@ -281,8 +281,8 @@ public class WebappNavigationTest {
     @Feature({"Webapps"})
     @Restriction(DeviceFormFactor.PHONE)
     @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @EnableFeatures({SHORT_EDGES_CUTOUT_MODE_STANDALONE, ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    public void testRegularLinkOffOriginShortEdgesCutoutMode_EdgeToEdgeEverywhere()
+    @EnableFeatures({SHORT_EDGES_CUTOUT_MODE_STANDALONE})
+    public void testRegularLinkOffOriginShortEdgesCutoutMode()
             throws Exception {
         WebappActivity activity = runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
         assertEquals(

@@ -64,8 +64,8 @@ public class WebappThemeColorShortEdgesCutoutTest {
     @Feature({"Webapps"})
     // The coordinated cutout path requires edge-to-edge everywhere, unsupported pre-R.
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-    @EnableFeatures({SHORT_EDGES_CUTOUT_MODE_STANDALONE, ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    public void testThemeColorTransitionsWithViewportFitChanges_EdgeToEdgeEverywhere()
+    @EnableFeatures({SHORT_EDGES_CUTOUT_MODE_STANDALONE})
+    public void testThemeColorTransitionsWithViewportFitChanges()
             throws Exception {
         String pageWithThemeColorUrl =
                 mActivityTestRule

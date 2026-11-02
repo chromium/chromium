@@ -18,7 +18,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -34,7 +34,6 @@ import java.util.concurrent.TimeoutException;
 /** Tests for splash screens with EXTRA_THEME_COLOR specified in the Intent. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 public class WebappSplashScreenThemeColorTest {
     @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
@@ -47,6 +46,8 @@ public class WebappSplashScreenThemeColorTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
             message = "crbug.com/428281150")
+    // TODO(crbug.com/428281344): Reads color from the window; does not work with e2e everywhere.
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     public void testThemeColorWhenSpecified() {
         // This is Color.Magenta with 50% opacity.
         final int intentThemeColor = Color.argb(0x80, 0xFF, 0, 0xFF);
