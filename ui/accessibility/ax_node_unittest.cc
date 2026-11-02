@@ -38,6 +38,57 @@ MATCHER_P(HasAXNodeID, ax_node_data, "") {
 
 using ::testing::ElementsAre;
 
+TEST(AXNodeTest, GetTextAnchor) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2, 4, 6, 7};
+  AXNodeData text;
+  text.id = 2;
+  text.role = ax::mojom::Role::kStaticText;
+  text.SetName("text");
+  text.child_ids = {3};
+  AXNodeData inline_box;
+  inline_box.id = 3;
+  inline_box.role = ax::mojom::Role::kInlineTextBox;
+  inline_box.SetName("text");
+  AXNodeData line_break;
+  line_break.id = 4;
+  line_break.role = ax::mojom::Role::kLineBreak;
+  line_break.SetName("\n");
+  line_break.child_ids = {5};
+  AXNodeData inline_break;
+  inline_break.id = 5;
+  inline_break.role = ax::mojom::Role::kInlineTextBox;
+  inline_break.SetName("\n");
+  AXNodeData field;
+  field.id = 6;
+  field.role = ax::mojom::Role::kTextField;
+  field.SetValue("value");
+  AXNodeData nontext_parent_inline = inline_box;
+  nontext_parent_inline.id = 7;
+
+  AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes = {root,         text,  inline_box,           line_break,
+                  inline_break, field, nontext_parent_inline};
+  AXTree tree;
+  ASSERT_TRUE(tree.Unserialize(update)) << tree.error();
+
+  EXPECT_EQ(nullptr, tree.root()->GetTextAnchor());
+  EXPECT_EQ(tree.GetFromId(2), tree.GetFromId(2)->GetTextAnchor());
+  EXPECT_EQ(tree.GetFromId(2), tree.GetFromId(3)->GetTextAnchor());
+  EXPECT_EQ(tree.GetFromId(4), tree.GetFromId(4)->GetTextAnchor());
+  EXPECT_EQ(tree.GetFromId(4), tree.GetFromId(5)->GetTextAnchor());
+  EXPECT_EQ(nullptr, tree.GetFromId(6)->GetTextAnchor());
+  EXPECT_EQ(nullptr, tree.GetFromId(7)->GetTextAnchor());
+
+  text.AddState(ax::mojom::State::kIgnored);
+  update.nodes = {text};
+  ASSERT_TRUE(tree.Unserialize(update)) << tree.error();
+  EXPECT_EQ(tree.GetFromId(2), tree.GetFromId(3)->GetTextAnchor());
+}
+
 TEST(AXNodeTest, TreeWalking) {
   // ++kRootWebArea
   // ++++kParagraph
