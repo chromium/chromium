@@ -129,7 +129,6 @@ struct SchedulerLoopQuarantineTestParamSmall {
   constexpr static QuarantineConfig kConfig = {
       .branch_capacity_in_bytes = 256,
       .enable_quarantine = true,
-      .enable_zapping = true,
       .max_quarantine_size = 1024,
   };
 };
@@ -138,7 +137,6 @@ struct SchedulerLoopQuarantineTestParamLarge {
   constexpr static QuarantineConfig kConfig = {
       .branch_capacity_in_bytes = 2048,
       .enable_quarantine = true,
-      .enable_zapping = true,
       .max_quarantine_size = 1024,
   };
 };
@@ -147,7 +145,6 @@ struct SchedulerLoopQuarantineTestParamSmallThreadBound {
   constexpr static QuarantineConfig kConfig = {
       .branch_capacity_in_bytes = 256,
       .enable_quarantine = true,
-      .enable_zapping = true,
       .max_quarantine_size = 1024,
   };
 };
@@ -156,7 +153,6 @@ struct SchedulerLoopQuarantineTestParamLargeThreadBound {
   constexpr static QuarantineConfig kConfig = {
       .branch_capacity_in_bytes = 2048,
       .enable_quarantine = true,
-      .enable_zapping = true,
       .max_quarantine_size = 1024,
   };
 };

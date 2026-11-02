@@ -93,7 +93,6 @@ struct SchedulerLoopQuarantineConfig {
   // Leak quarantined allocations at exit.
   bool leak_on_destruction = false;
   bool enable_quarantine = false;
-  bool enable_zapping = false;
   bool enable_task_controlled_purge = false;
   bool pause_in_between_tasks = false;
   bool exclude_non_ipc_tasks = false;
@@ -347,7 +346,6 @@ class SchedulerLoopQuarantineBranch {
   base::InsecureRandomGenerator random_ PA_GUARDED_BY(lock_);
 
   bool enable_quarantine_ = false;
-  bool enable_zapping_ = false;
   bool leak_on_destruction_ = false;
   bool enable_task_controlled_purge_ = false;
   bool pause_in_between_tasks_ = false;

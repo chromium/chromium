@@ -61,7 +61,6 @@ namespace {
 constexpr SchedulerLoopQuarantineConfig BrowserMainConfig() {
   SchedulerLoopQuarantineConfig config;
   config.enable_quarantine = true;
-  config.enable_zapping = true;
   config.enable_task_controlled_purge = true;
   config.branch_capacity_in_bytes = 512 * 1024;
   return config;

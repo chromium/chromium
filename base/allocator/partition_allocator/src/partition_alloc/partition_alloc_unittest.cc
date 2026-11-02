@@ -472,13 +472,11 @@ class PartitionAllocTest
         .branch_capacity_in_bytes = std::numeric_limits<size_t>::max(),
         .leak_on_destruction = true,
         .enable_quarantine = true,
-        .enable_zapping = true,
     };
     opts.scheduler_loop_quarantine_thread_local_config = {
         .branch_capacity_in_bytes = std::numeric_limits<size_t>::max(),
         .leak_on_destruction = false,
         .enable_quarantine = true,
-        .enable_zapping = true,
     };
     return opts;
   }

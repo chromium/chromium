@@ -62,7 +62,6 @@ constexpr int kJSONParserOptions =
 
 // JSON keys for parameters.
 constexpr char kKeyEnableQuarantine[] = "enable-quarantine";
-constexpr char kKeyEnableZapping[] = "enable-zapping";
 constexpr char kKeyLeakOnDestruction[] = "leak-on-destruction";
 constexpr char kKeyEnableTaskControlledPurge[] = "enable-task-controlled-purge";
 constexpr char kKeyPauseInBetweenTasks[] = "pause-in-between-tasks";
@@ -203,8 +202,6 @@ GetSchedulerLoopQuarantineConfiguration(
 
   config.enable_quarantine = config_entry->FindBool(kKeyEnableQuarantine)
                                  .value_or(config.enable_quarantine);
-  config.enable_zapping =
-      config_entry->FindBool(kKeyEnableZapping).value_or(config.enable_zapping);
   config.leak_on_destruction = config_entry->FindBool(kKeyLeakOnDestruction)
                                    .value_or(config.leak_on_destruction);
   config.enable_task_controlled_purge =

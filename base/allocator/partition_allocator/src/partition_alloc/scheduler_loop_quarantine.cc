@@ -173,7 +173,6 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
     UntaggedSlotStart slot_start,
     size_t bucket_index,
     size_t slot_size,
-    bool enable_zapping,
     std::optional<BatchFreeQueue<quarantine_target>>& queue,
     ThreadCache* tcache) {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
@@ -189,9 +188,9 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
     return;
   } else {
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-    // When `enable_zapping` is true, we assume below that the slot was zapped
-    // when entering the quarantine. Check that assumption.
-    if (enable_zapping) {
+    {
+      // We assume below that the slot was zapped when entering the quarantine.
+      // Check that assumption.
       unsigned char* object = slot_start.Tag().ToObject();
       auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, root);
       const size_t usable_size = root->GetSlotUsableSize(slot_span);
@@ -200,16 +199,12 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
       }
     }
 #endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-    // When `enable_zapping` is true, `Quarantine()` already zapped the entire
-    // usable slot with `kFreedByte` (`0xcd`), so poisoning the first cacheline
-    // again with `0xbadbad00` when inserting into the `ThreadCache` freelist is
-    // redundant.
+    // `Quarantine()` already zapped the entire usable slot with `kFreedByte`
+    // (`0xcd`), so poisoning the first cacheline again with `0xbadbad00` when
+    // inserting into the `ThreadCache` freelist is redundant.
     std::optional<size_t> slot_size_opt =
-        enable_zapping
-            ? tcache->MaybePutInCache<allow_clear_bucket, /*poison=*/false>(
-                  slot_start, bucket_index)
-            : tcache->MaybePutInCache<allow_clear_bucket, /*poison=*/true>(
-                  slot_start, bucket_index);
+        tcache->MaybePutInCache<allow_clear_bucket, /*poison=*/false>(
+            slot_start, bucket_index);
 
     if (slot_size_opt.has_value()) [[likely]] {
       PA_DCHECK(slot_size_opt.value() == slot_size);
@@ -286,7 +281,6 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Configure(
 
   root_ = &root;
   enable_quarantine_ = config.enable_quarantine;
-  enable_zapping_ = config.enable_zapping;
   leak_on_destruction_ = config.leak_on_destruction;
   purge_headroom_percent_ = static_cast<uint8_t>(
       std::min(config.purge_headroom_percent, kMaxPurgeHeadroomPercent));
@@ -471,11 +465,9 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
     PublishStats();
   }
 
-  if (enable_zapping_) {
-    internal::SecureMemset(
-        slot_start.ToObject(), internal::kFreedByte,
-        allocator_root_->GetSlotUsableSize(size_details, slot_span));
-  }
+  internal::SecureMemset(
+      slot_start.ToObject(), internal::kFreedByte,
+      allocator_root_->GetSlotUsableSize(size_details, slot_span));
 }
 
 template <bool thread_bound, QuarantineTarget quarantine_target>
@@ -550,13 +542,13 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
     if (avoid_tcache_overflow) {
       ReleaseDequarantinedSlot<kThreadBound, quarantine_target,
                                /*allow_clear_bucket=*/false>(
-          allocator_root_, slot_start.Untag(), bucket_index, slot_size,
-          enable_zapping_, queue, tcache_);
+          allocator_root_, slot_start.Untag(), bucket_index, slot_size, queue,
+          tcache_);
     } else {
       ReleaseDequarantinedSlot<kThreadBound, quarantine_target,
                                /*allow_clear_bucket=*/true>(
-          allocator_root_, slot_start.Untag(), bucket_index, slot_size,
-          enable_zapping_, queue, tcache_);
+          allocator_root_, slot_start.Untag(), bucket_index, slot_size, queue,
+          tcache_);
     }
   }
 

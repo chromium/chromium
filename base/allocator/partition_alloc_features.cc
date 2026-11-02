@@ -144,7 +144,6 @@ constinit const FeatureParam<std::string>
             "main":{
               "branch-capacity-in-bytes":524288,
               "enable-quarantine":true,
-              "enable-zapping":true,
               "leak-on-destruction":false
             }
           },
@@ -152,7 +151,6 @@ constinit const FeatureParam<std::string>
             "amsc":{
               "branch-capacity-in-bytes":524288,
               "enable-quarantine":true,
-              "enable-zapping":true,
               "leak-on-destruction":false
             }
           }
@@ -163,7 +161,6 @@ constinit const FeatureParam<std::string>
             "amsc":{
               "branch-capacity-in-bytes":524288,
               "enable-quarantine":true,
-              "enable-zapping":true,
               "leak-on-destruction":false
             }
           }
