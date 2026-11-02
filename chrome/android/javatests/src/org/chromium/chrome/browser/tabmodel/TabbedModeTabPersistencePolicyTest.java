@@ -212,7 +212,9 @@ public class TabbedModeTabPersistencePolicyTest {
                                             mActivityLifecycleDispatcher,
                                             mCipherFactory,
                                             ObservableSuppliers.createNonNull(false),
-                                            /* isFromRecreating= */ false);
+                                            /* isFromRecreating= */ false,
+                                            /* deferredStartupPostedSupplier= */ ObservableSuppliers
+                                                    .alwaysFalse());
                             tmpOrchestrator.createTabModels(
                                     new ChromeTabbedActivity(),
                                     mModalDialogManager,

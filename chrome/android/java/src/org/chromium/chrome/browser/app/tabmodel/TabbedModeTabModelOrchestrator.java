@@ -13,9 +13,11 @@ import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -77,6 +80,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private final boolean mTabMergingEnabled;
     private final Supplier<Boolean> mIsRecreatingSupplier;
     private final boolean mIsFromRecreating;
+    private final NonNullObservableSupplier<Boolean> mDeferredStartupPostedSupplier;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final CipherFactory mCipherFactory;
     private final TabArchiveSettings.Observer mTabArchiveSettingsObserver =
@@ -92,6 +96,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private @Nullable Destroyable mDeclutterLease;
     private @Nullable TabContentManager mTabContentManager;
     private @Nullable CallbackController mCallbackController = new CallbackController();
+    private @Nullable Callback<Boolean> mDeferredStartupObserver;
     private boolean mDeclutterTimerScheduled;
     private boolean mIsDestroyed;
     private @WindowId int mWindowId;
@@ -105,24 +110,29 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      * @param isRecreatingSupplier A supplier of whether the current activity is recreating.
      * @param isFromRecreating Whether the activity is launched from recreating.
+     * @param deferredStartupPostedSupplier A supplier of whether deferred startup has been posted
+     *     for the hosting activity.
      */
     public TabbedModeTabModelOrchestrator(
             boolean tabMergingEnabled,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             CipherFactory cipherFactory,
             Supplier<Boolean> isRecreatingSupplier,
-            boolean isFromRecreating) {
+            boolean isFromRecreating,
+            NonNullObservableSupplier<Boolean> deferredStartupPostedSupplier) {
         mTabMergingEnabled = tabMergingEnabled;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mCipherFactory = cipherFactory;
         mIsRecreatingSupplier = isRecreatingSupplier;
         mIsFromRecreating = isFromRecreating;
+        mDeferredStartupPostedSupplier = deferredStartupPostedSupplier;
     }
 
     @Override
     public @TabDestroyStatus int destroy() {
         if (mIsDestroyed) return TabDestroyStatus.NO_SHUTDOWN;
         mIsDestroyed = true;
+        removeDeferredStartupObserver();
 
         if (mCallbackController != null) {
             mCallbackController.destroy();
@@ -367,10 +377,46 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     // handled by observer events in the relevant UI which mirror the behavior in the tab
     // groups pane.
     private void createArchivedTabModelInDeferredTask(TabContentManager tabContentManager) {
+        ThreadUtils.assertOnUiThread();
+        if (mIsDestroyed) return;
+        if (!ChromeFeatureList.sDeferArchivedTabModelCreation.isEnabled()
+                || mDeferredStartupPostedSupplier.get()
+                || !isCurrentTabLoading()) {
+            scheduleArchivedTabModelDeferredTask(tabContentManager);
+            return;
+        }
+        assert mDeferredStartupObserver == null;
+        mDeferredStartupObserver =
+                (posted) -> {
+                    if (!posted) return;
+                    removeDeferredStartupObserver();
+                    scheduleArchivedTabModelDeferredTask(tabContentManager);
+                };
+        mDeferredStartupPostedSupplier.addSyncObserver(mDeferredStartupObserver);
+    }
+
+    private void scheduleArchivedTabModelDeferredTask(TabContentManager tabContentManager) {
+        ThreadUtils.assertOnUiThread();
+        if (mIsDestroyed || mCallbackController == null) return;
         DeferredStartupHandler.getInstance()
                 .addDeferredTask(
-                        () -> createAndInitArchivedTabModelOrchestrator(tabContentManager));
+                        mCallbackController.makeCancelable(
+                                () ->
+                                        createAndInitArchivedTabModelOrchestrator(
+                                                tabContentManager)));
         DeferredStartupHandler.getInstance().queueDeferredTasksOnIdleHandler();
+    }
+
+    private void removeDeferredStartupObserver() {
+        if (mDeferredStartupObserver != null) {
+            mDeferredStartupPostedSupplier.removeObserver(mDeferredStartupObserver);
+            mDeferredStartupObserver = null;
+        }
+    }
+
+    private boolean isCurrentTabLoading() {
+        Tab currentTab = getCurrentTab();
+        return currentTab != null && currentTab.isLoading();
     }
 
     @Override
@@ -388,8 +434,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     }
 
     private void createAndInitArchivedTabModelOrchestrator(TabContentManager tabContentManager) {
-        if (mActivityLifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
         ThreadUtils.assertOnUiThread();
+        if (mIsDestroyed || mActivityLifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
         assertCreated();
 
         assert tabContentManager != null;

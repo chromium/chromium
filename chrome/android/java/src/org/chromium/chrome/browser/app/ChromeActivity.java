@@ -64,10 +64,12 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Initializer;
@@ -427,7 +429,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private boolean mDeferredStartupQueued;
 
     /** Whether or not {@link #postDeferredStartupIfNeeded()} has already successfully run. */
-    private boolean mDeferredStartupPosted;
+    private final SettableNonNullObservableSupplier<Boolean> mDeferredStartupPostedSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private boolean mNativeInitialized;
     private boolean mRemoveWindowBackgroundDone;
@@ -3575,10 +3578,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
         mDeferredStartupQueued = false;
 
-        if (!mDeferredStartupPosted) {
-            mDeferredStartupPosted = true;
+        if (!mDeferredStartupPostedSupplier.get()) {
+            mDeferredStartupPostedSupplier.set(true);
             onDeferredStartup();
         }
+    }
+
+    /** Returns a {@link NonNullObservableSupplier} for whether deferred startup has been posted. */
+    protected NonNullObservableSupplier<Boolean> getDeferredStartupPostedSupplier() {
+        return mDeferredStartupPostedSupplier;
     }
 
     @Override
@@ -3767,7 +3775,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     public boolean deferredStartupPostedForTesting() {
-        return mDeferredStartupPosted;
+        return mDeferredStartupPostedSupplier.get();
     }
 
     public @Nullable DisplayAndroidObserver getDisplayAndroidObserverForTesting() {

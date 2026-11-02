@@ -3957,7 +3957,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         getLifecycleDispatcher(),
                         CipherLazyHolder.sCipherInstance,
                         () -> mIsRecreating,
-                        isFromRecreating());
+                        isFromRecreating(),
+                        getDeferredStartupPostedSupplier());
         mTabModelStartupInfoSupplier = ObservableSuppliers.createMonotonic();
         mTabModelOrchestrator.setStartupInfoObservableSupplier(mTabModelStartupInfoSupplier);
         return mTabModelOrchestrator;
