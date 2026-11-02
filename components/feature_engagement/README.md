@@ -549,6 +549,42 @@ well. Thus, for a feature to show, its own configuration and all of its
 groups' configurations must be met. Effectively, the strictest set of rules
 will apply.
 
+## Enterprise Policy (PromotionsEnabled)
+
+The `PromotionsEnabled` enterprise policy maps to the local-state boolean pref
+`prefs::kPromotionsEnabled` (`Pref.PROMOTIONS_ENABLED` in Java, defaulting to
+`true`). When the policy is disabled, `TrackerImpl` refuses to trigger
+In-Product Help promotions (`shouldTriggerHelpUi`,
+`shouldTriggerHelpUiWithSnooze`, and `wouldTriggerHelpUi` return `false`) and
+records `TriggerHelpUIResult.FAILURE_BLOCKED_BY_ENTERPRISE_POLICY` to
+`InProductHelp.ShouldTriggerHelpUI` and
+`InProductHelp.ShouldTriggerHelpUI.<IPH_Feature>`. On Desktop,
+`BrowserFeaturePromoController` similarly checks `prefs::kPromotionsEnabled`
+via `DoesEnterprisePolicyBlockPromotions()` for low-priority non-toast
+promotions while exempting medium- and high-priority legal notices, keyed
+notices, and actionable alerts.
+
+### Bypassing the policy check
+
+On Android, exemptions are defined centrally in
+`EnterprisePolicyBypassAllowlist.java` (`ALLOWLISTED_FEATURES`):
+
+*   **Eligibility**: A feature may only be added if it is required for critical
+    legal, regulatory, privacy, or security reasons, or is part of a flow the
+    user explicitly initiated.
+*   **Owner approval**: Adding an entry requires review and approval from User
+    Education owners (`chrome/browser/user_education/OWNERS` or
+    `components/feature_engagement/OWNERS`).
+*   **Presubmit enforcement**: `components/feature_engagement/PRESUBMIT.py`
+    rejects unconditional `return true;` in `EnterprisePolicyBypassAllowlist`
+    and requires any CL that adds features to the allowlist (or alters policy
+    enforcement in `TrackerImpl.java`) to include the following tag in the CL
+    description:
+
+```
+[UserEducation.BypassPolicyCheck]=<justification and link to approval>
+```
+
 ## Configuration Format
 
 Each In-Product Help feature must have its own feature configuration
