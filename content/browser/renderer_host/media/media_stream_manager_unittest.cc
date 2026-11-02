@@ -736,14 +736,18 @@ class MediaStreamManagerTest : public ::testing::Test {
 
   void SetVideoCaptureDevices(
       const std::vector<media::VideoCaptureDeviceInfo>& devices) {
-    ON_CALL(*video_capture_provider_, GetDeviceInfosAsync(_))
-        .WillByDefault(
+    ON_CALL(
+        *video_capture_provider_,
+        DoGetDeviceInfosAsync(media::mojom::VideoCaptureDeviceEnumerationMode::
+                                  kDevicesWithCapabilities,
+                              _))
+        .WillByDefault(testing::WithArg<1>(
             [devices](
                 VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
               std::move(result_callback)
                   .Run(media::mojom::DeviceEnumerationResult::kSuccess,
                        devices);
-            });
+            }));
   }
 
   void HandleAccessRequestResponse(

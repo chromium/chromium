@@ -311,6 +311,8 @@ class VideoCaptureManagerTest : public testing::Test {
 
     base::RunLoop run_loop;
     vcm_->EnumerateDevices(
+        media::mojom::VideoCaptureDeviceEnumerationMode::
+            kDevicesWithCapabilities,
         base::BindOnce(&VideoCaptureManagerTest::HandleEnumerationResult,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -523,6 +525,7 @@ TEST_F(VideoCaptureManagerTest, ConnectAndDisconnectDevices) {
   video_capture_device_factory_->SetToDefaultDevicesConfig(1);
   base::RunLoop run_loop;
   vcm_->EnumerateDevices(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
       base::BindOnce(&VideoCaptureManagerTest::HandleEnumerationResult,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
@@ -532,6 +535,7 @@ TEST_F(VideoCaptureManagerTest, ConnectAndDisconnectDevices) {
   video_capture_device_factory_->SetToDefaultDevicesConfig(3);
   base::RunLoop run_loop2;
   vcm_->EnumerateDevices(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
       base::BindOnce(&VideoCaptureManagerTest::HandleEnumerationResult,
                      base::Unretained(this), run_loop2.QuitClosure()));
   run_loop2.Run();
@@ -1268,9 +1272,11 @@ TEST_F(VideoCaptureManagerTest, DesktopCaptureDeviceClosedOnScreenlock) {
   // Simulate we add 1 fake display media device.
   video_capture_device_factory_->SetToDefaultDevicesConfig(1);
   base::RunLoop run_loop;
-  vcm_->EnumerateDevices(base::BindOnce(
-      &VideoCaptureManagerTest::HandleEnumerationResultAsDisplayMediaDevices,
-      base::Unretained(this), run_loop.QuitClosure()));
+  vcm_->EnumerateDevices(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      base::BindOnce(&VideoCaptureManagerTest::
+                         HandleEnumerationResultAsDisplayMediaDevices,
+                     base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
   ASSERT_EQ(devices_.size(), 1u);
 

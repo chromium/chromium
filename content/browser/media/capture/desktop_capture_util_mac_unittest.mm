@@ -62,7 +62,9 @@ class FakeVideoCaptureProvider : public VideoCaptureProvider {
   ~FakeVideoCaptureProvider() override = default;
 
   // VideoCaptureProvider implementation:
-  void GetDeviceInfosAsync(GetDeviceInfosCallback result_callback) override {}
+  void GetDeviceInfosAsync(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetDeviceInfosCallback result_callback) override {}
   std::unique_ptr<VideoCaptureDeviceLauncher> CreateDeviceLauncher() override {
     return nullptr;
   }

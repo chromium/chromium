@@ -144,6 +144,8 @@ class VideoCaptureBrowserTest
     ASSERT_TRUE(video_capture_manager_);
     video_capture_manager_->RegisterListener(&mock_stream_provider_listener_);
     video_capture_manager_->EnumerateDevices(
+        media::mojom::VideoCaptureDeviceEnumerationMode::
+            kDevicesWithCapabilities,
         base::BindOnce(&VideoCaptureBrowserTest::OnDeviceDescriptorsReceived,
                        base::Unretained(this), std::move(continuation)));
   }

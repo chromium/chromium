@@ -73,9 +73,10 @@ VideoCaptureProviderSwitcher::VideoCaptureProviderSwitcher(
 VideoCaptureProviderSwitcher::~VideoCaptureProviderSwitcher() = default;
 
 void VideoCaptureProviderSwitcher::GetDeviceInfosAsync(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     GetDeviceInfosCallback result_callback) {
   media_device_capture_provider_->GetDeviceInfosAsync(
-      std::move(result_callback));
+      enumeration_mode, std::move(result_callback));
 }
 
 std::unique_ptr<VideoCaptureDeviceLauncher>

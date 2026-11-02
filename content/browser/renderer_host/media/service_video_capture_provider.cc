@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/media/service_video_capture_provider.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -20,6 +21,7 @@
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/common/content_features.h"
 #include "gpu/config/gpu_info.h"
+#include "media/capture/video/video_capture_device_enumeration_mode_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -140,11 +142,13 @@ ServiceVideoCaptureProvider::~ServiceVideoCaptureProvider() {
 }
 
 void ServiceVideoCaptureProvider::GetDeviceInfosAsync(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     GetDeviceInfosCallback result_callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M154);
   emit_log_message_cb_.Run("ServiceVideoCaptureProvider::GetDeviceInfosAsync");
-  get_device_infos_pending_callbacks_.push_back(std::move(result_callback));
-  GetDeviceInfosAsyncForRetry();
+  pending_device_infos_requests_.push_back(
+      PendingDeviceInfosRequest{enumeration_mode, std::move(result_callback)});
+  GetDeviceInfosAsyncForRetry(enumeration_mode);
 }
 
 std::unique_ptr<VideoCaptureDeviceLauncher>
@@ -199,13 +203,25 @@ void ServiceVideoCaptureProvider::OnServiceStarted() {
 
 void ServiceVideoCaptureProvider::OnServiceStopped() {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M152);
-  if (!get_device_infos_pending_callbacks_.empty()) {
+  if (!pending_device_infos_requests_.empty()) {
     // The service stopped during a device info query.
     TRACE_EVENT_INSTANT0(
         TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
         "Video capture service has shut down. Retrying GetDeviceInfos.",
         TRACE_EVENT_SCOPE_PROCESS);
-    GetDeviceInfosAsyncForRetry();
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode =
+        media::GetDefaultVideoEnumerationMode();
+    if (std::ranges::any_of(
+            pending_device_infos_requests_,
+            [](const PendingDeviceInfosRequest& request) {
+              return request.enumeration_mode ==
+                     media::mojom::VideoCaptureDeviceEnumerationMode::
+                         kDevicesWithCapabilities;
+            })) {
+      enumeration_mode = media::mojom::VideoCaptureDeviceEnumerationMode::
+          kDevicesWithCapabilities;
+    }
+    GetDeviceInfosAsyncForRetry(enumeration_mode);
   }
 }
 
@@ -268,54 +284,68 @@ ServiceVideoCaptureProvider::LazyConnectToService() {
   return result;
 }
 
-void ServiceVideoCaptureProvider::GetDeviceInfosAsyncForRetry() {
+void ServiceVideoCaptureProvider::GetDeviceInfosAsyncForRetry(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M152);
   auto service_connection = LazyConnectToService();
   // Make sure that the callback gets invoked with an empty result in case
   // that the service drops the request.
   service_connection->source_provider()->GetSourceInfos(
-      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      enumeration_mode,
       mojo::WrapCallbackWithDropHandler(
           base::BindOnce(&ServiceVideoCaptureProvider::OnDeviceInfosReceived,
-                         weak_ptr_factory_.GetWeakPtr(), service_connection),
+                         weak_ptr_factory_.GetWeakPtr(), enumeration_mode,
+                         service_connection),
           base::BindOnce(
               &ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped,
               weak_ptr_factory_.GetWeakPtr(), service_connection)));
 }
 
 void ServiceVideoCaptureProvider::OnDeviceInfosReceived(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     scoped_refptr<RefCountedVideoSourceProvider> service_connection,
     GetSourceInfosResult result,
     const std::vector<media::VideoCaptureDeviceInfo>& infos) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M152);
-  for (GetDeviceInfosCallback& callback : get_device_infos_pending_callbacks_) {
-    media::mojom::DeviceEnumerationResult callback_result;
-    switch (result) {
-      case GetSourceInfosResult::kSuccess:
-        callback_result = media::mojom::DeviceEnumerationResult::kSuccess;
-        break;
-      case GetSourceInfosResult::kErrorDroppedRequest:
-        callback_result = media::mojom::DeviceEnumerationResult::
-            kErrorCaptureServiceDroppedRequest;
-        break;
-      default:
-        NOTREACHED() << "Invalid GetSourceInfosResult result " << result;
+  media::mojom::DeviceEnumerationResult callback_result;
+  switch (result) {
+    case GetSourceInfosResult::kSuccess:
+      callback_result = media::mojom::DeviceEnumerationResult::kSuccess;
+      break;
+    case GetSourceInfosResult::kErrorDroppedRequest:
+      callback_result = media::mojom::DeviceEnumerationResult::
+          kErrorCaptureServiceDroppedRequest;
+      break;
+    default:
+      NOTREACHED() << "Invalid GetSourceInfosResult result " << result;
+  }
+
+  std::vector<GetDeviceInfosCallback> satisfied_callbacks;
+  std::vector<PendingDeviceInfosRequest> remaining_requests;
+  for (PendingDeviceInfosRequest& request : pending_device_infos_requests_) {
+    if (media::CanEnumerationResultSatisfyRequest(enumeration_mode,
+                                                  request.enumeration_mode)) {
+      satisfied_callbacks.push_back(std::move(request.callback));
+    } else {
+      remaining_requests.push_back(std::move(request));
     }
+  }
+  pending_device_infos_requests_ = std::move(remaining_requests);
+  for (GetDeviceInfosCallback& callback : satisfied_callbacks) {
     std::move(callback).Run(callback_result, infos);
   }
-  get_device_infos_pending_callbacks_.clear();
 }
 
 void ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped(
     scoped_refptr<RefCountedVideoSourceProvider> service_connection) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M152);
   // After too many retries, we just return an empty list
-  for (GetDeviceInfosCallback& callback : get_device_infos_pending_callbacks_) {
-    std::move(callback).Run(
-        media::mojom::DeviceEnumerationResult::kErrorCaptureServiceCrash,
-        std::vector<media::VideoCaptureDeviceInfo>());
+  for (PendingDeviceInfosRequest& request : pending_device_infos_requests_) {
+    std::move(request.callback)
+        .Run(media::mojom::DeviceEnumerationResult::kErrorCaptureServiceCrash,
+             std::vector<media::VideoCaptureDeviceInfo>());
   }
-  get_device_infos_pending_callbacks_.clear();
+  pending_device_infos_requests_.clear();
 }
 
 void ServiceVideoCaptureProvider::OnLostConnectionToSourceProvider() {

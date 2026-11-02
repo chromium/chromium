@@ -8,6 +8,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_frame_receiver.h"
@@ -29,9 +30,19 @@ class CONTENT_EXPORT VideoCaptureProvider {
 
   virtual ~VideoCaptureProvider() {}
 
-  // The passed-in |result_callback| must guarantee that the called
-  // instance stays alive until |result_callback| is invoked.
-  virtual void GetDeviceInfosAsync(GetDeviceInfosCallback result_callback) = 0;
+  // `enumeration_mode` represents the level of video capture device
+  // enumeration requested. A result produced by a `kDevicesWithCapabilities`
+  // enumeration may be delivered to a `kDevicesOnly` request (implementations
+  // may coalesce requests). However, a result from a `kDevicesOnly`
+  // enumeration is never delivered to a `kDevicesWithCapabilities` request.
+  // The `result_callback` does not tell the caller which enumeration mode
+  // produced the result it receives.
+  //
+  // The passed-in `result_callback` must guarantee that the called
+  // instance stays alive until `result_callback` is invoked.
+  virtual void GetDeviceInfosAsync(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetDeviceInfosCallback result_callback) = 0;
 
   virtual std::unique_ptr<VideoCaptureDeviceLauncher>
   CreateDeviceLauncher() = 0;

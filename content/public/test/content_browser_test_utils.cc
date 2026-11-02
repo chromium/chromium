@@ -31,6 +31,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
+#include "media/capture/video/video_capture_device_enumeration_mode_util.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -152,6 +153,7 @@ void LookupAndLogNameAndIdOfFirstCamera() {
           [](MediaStreamManager* media_stream_manager,
              base::OnceClosure quit_closure) {
             media_stream_manager->video_capture_manager()->EnumerateDevices(
+                media::GetDefaultVideoEnumerationMode(),
                 base::BindOnce(
                     [](base::OnceClosure quit_closure,
                        media::mojom::DeviceEnumerationResult result,

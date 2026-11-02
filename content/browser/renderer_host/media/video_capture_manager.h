@@ -227,7 +227,9 @@ class CONTENT_EXPORT VideoCaptureManager
                               const media::VideoCaptureDeviceDescriptors&)>;
   // Asynchronously obtains descriptors for the available devices.
   // As a side-effect, updates |devices_info_cache_|.
-  void EnumerateDevices(EnumerationCallback client_callback);
+  void EnumerateDevices(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      EnumerationCallback client_callback);
 
   // VideoCaptureDeviceLaunchObserver implementation:
   void OnDeviceLaunched(VideoCaptureController* controller) override;
@@ -386,9 +388,11 @@ class CONTENT_EXPORT VideoCaptureManager
 
   base::ObserverList<media::VideoCaptureObserver> capture_observers_;
 
-  // Local cache of the enumerated DeviceInfos. GetDeviceSupportedFormats() will
-  // use this list if the device is not started, otherwise it will retrieve the
-  // active device capture format from the VideoCaptureController associated.
+  // Local cache of the enumerated DeviceInfos. After a `kDevicesOnly`
+  // enumeration, entries lack supported formats and camera control support.
+  // When `GetDeviceSupportedFormats()` reads this cache in that state, it
+  // returns true with an empty list. Then,
+  // `MediaDevicesManager::GetVideoInputFormats()` substitutes fallback formats.
   std::vector<media::VideoCaptureDeviceInfo> devices_info_cache_;
 
   // Closes video device capture sessions after a timeout. Idle timeout value

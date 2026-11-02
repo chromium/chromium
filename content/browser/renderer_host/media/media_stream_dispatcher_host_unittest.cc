@@ -395,8 +395,12 @@ class MediaStreamDispatcherHostTest : public RenderViewHostTestHarness {
 
     stub_video_device_ids_.emplace_back(kRegularVideoDeviceId1);
     stub_video_device_ids_.emplace_back(kDepthVideoDeviceId);
-    ON_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
-        .WillByDefault(
+    ON_CALL(
+        *mock_video_capture_provider_,
+        DoGetDeviceInfosAsync(media::mojom::VideoCaptureDeviceEnumerationMode::
+                                  kDevicesWithCapabilities,
+                              _))
+        .WillByDefault(testing::WithArg<1>(
             [this](
                 VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
               std::vector<media::VideoCaptureDeviceInfo> result;
@@ -408,7 +412,7 @@ class MediaStreamDispatcherHostTest : public RenderViewHostTestHarness {
               }
               std::move(result_callback)
                   .Run(media::mojom::DeviceEnumerationResult::kSuccess, result);
-            });
+            }));
 
     base::RunLoop run_loop;
     MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;

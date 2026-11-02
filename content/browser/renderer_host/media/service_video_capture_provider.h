@@ -48,7 +48,9 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   ~ServiceVideoCaptureProvider() override;
 
   // VideoCaptureProvider implementation.
-  void GetDeviceInfosAsync(GetDeviceInfosCallback result_callback) override;
+  void GetDeviceInfosAsync(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetDeviceInfosCallback result_callback) override;
   std::unique_ptr<VideoCaptureDeviceLauncher> CreateDeviceLauncher() override;
   void OpenNativeScreenCapturePicker(
       DesktopMediaID::Type type,
@@ -88,8 +90,18 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   [[nodiscard]] scoped_refptr<RefCountedVideoSourceProvider>
   LazyConnectToService();
 
-  void GetDeviceInfosAsyncForRetry();
+  // A pending GetDeviceInfosAsync() request. `enumeration_mode` is used to
+  // (a) pick the mode for the retry issued after the service stops
+  // (b) complete only the requests that a received result can satisfy
+  struct PendingDeviceInfosRequest {
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode;
+    GetDeviceInfosCallback callback;
+  };
+
+  void GetDeviceInfosAsyncForRetry(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode);
   void OnDeviceInfosReceived(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
       scoped_refptr<RefCountedVideoSourceProvider> service_connection,
       video_capture::mojom::VideoSourceProvider::GetSourceInfosResult result,
       const std::vector<media::VideoCaptureDeviceInfo>& infos);
@@ -109,7 +121,7 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   base::TimeTicks time_of_last_connect_;
   base::TimeTicks time_of_last_uninitialize_;
 
-  std::vector<GetDeviceInfosCallback> get_device_infos_pending_callbacks_;
+  std::vector<PendingDeviceInfosRequest> pending_device_infos_requests_;
 
   // We own this but it must operate on the UI thread.
   class ServiceProcessObserver;

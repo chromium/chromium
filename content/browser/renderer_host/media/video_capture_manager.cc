@@ -154,6 +154,7 @@ void VideoCaptureManager::UnregisterListener(
 }
 
 void VideoCaptureManager::EnumerateDevices(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     EnumerationCallback client_callback) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -162,9 +163,9 @@ void VideoCaptureManager::EnumerateDevices(
 
   // Pass a timer for UMA histogram collection.
   video_capture_provider_->GetDeviceInfosAsync(
-      base::BindPostTaskToCurrentDefault(
-          base::BindOnce(&VideoCaptureManager::OnDeviceInfosReceived, this,
-                         base::ElapsedTimer(), std::move(client_callback))));
+      enumeration_mode, base::BindPostTaskToCurrentDefault(base::BindOnce(
+                            &VideoCaptureManager::OnDeviceInfosReceived, this,
+                            base::ElapsedTimer(), std::move(client_callback))));
 }
 
 base::UnguessableToken VideoCaptureManager::Open(

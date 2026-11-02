@@ -21,7 +21,9 @@ class FakeVideoCaptureProvider : public VideoCaptureProvider {
   ~FakeVideoCaptureProvider() override;
 
   // VideoCaptureProvider implementation.
-  void GetDeviceInfosAsync(GetDeviceInfosCallback result_callback) override;
+  void GetDeviceInfosAsync(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetDeviceInfosCallback result_callback) override;
   std::unique_ptr<VideoCaptureDeviceLauncher> CreateDeviceLauncher() override;
   void OpenNativeScreenCapturePicker(
       DesktopMediaID::Type type,

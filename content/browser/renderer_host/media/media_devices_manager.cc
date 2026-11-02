@@ -1450,6 +1450,8 @@ void MediaDevicesManager::EnumerateSystemDevices(uint64_t request_id,
     case MediaDeviceType::kMediaVideoInput:
       ReportVideoEnumerationStart();
       video_capture_manager_->EnumerateDevices(
+          media::mojom::VideoCaptureDeviceEnumerationMode::
+              kDevicesWithCapabilities,
           base::BindOnce(&MediaDevicesManager::VideoInputDevicesEnumerated,
                          weak_factory_.GetWeakPtr(), request_id));
       break;

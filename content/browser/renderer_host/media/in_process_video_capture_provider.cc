@@ -36,6 +36,7 @@ InProcessVideoCaptureProvider::CreateInstanceForScreenCapture(
 }
 
 void InProcessVideoCaptureProvider::GetDeviceInfosAsync(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     GetDeviceInfosCallback result_callback) {
   NOTREACHED();
 }
