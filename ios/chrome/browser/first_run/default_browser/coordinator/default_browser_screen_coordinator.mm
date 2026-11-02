@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -79,9 +79,9 @@
 
   _profile = self.profile->GetOriginalProfile();
   _mediator = [[DefaultBrowserScreenMediator alloc]
-             initWithIdentityManager:IdentityManagerFactory::GetForProfile(
-                                         _profile)
-               authenticationService:AuthenticationServiceFactory::
+       initWithAuthenticationService:AuthenticationServiceFactory::
+                                         GetForProfile(_profile)
+               accountManagerService:ChromeAccountManagerServiceFactory::
                                          GetForProfile(_profile)
       deviceSwitcherResultDispatcher:segmentation_platform::
                                          SegmentationPlatformServiceFactory::

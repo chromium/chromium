@@ -8,9 +8,12 @@
 #import <optional>
 #import <string>
 #import <utility>
+#import <vector>
 
+#import "base/barrier_callback.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -24,8 +27,6 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
-#import "components/signin/public/base/consent_level.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_screen_consumer.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/public/provider/chrome/browser/switcher_info/switcher_info_api.h"
 
 namespace {
@@ -56,12 +58,90 @@ bool IsAndroidSwitcher(
              segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel);
 }
 
+// Resolves the segmentation `result` into a
+// `DefaultBrowserPromoSegmentationResult`.
+first_run::DefaultBrowserPromoSegmentationResult ResolveSegmentationResult(
+    const segmentation_platform::ClassificationResult& result) {
+  switch (result.status) {
+    case segmentation_platform::PredictionStatus::kNotReady:
+      return first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
+    case segmentation_platform::PredictionStatus::kFailed:
+      return first_run::DefaultBrowserPromoSegmentationResult::kFailed;
+    case segmentation_platform::PredictionStatus::kSucceeded:
+      if (result.ordered_labels.empty()) {
+        return first_run::DefaultBrowserPromoSegmentationResult::kFailed;
+      }
+      if (std::ranges::contains(
+              result.ordered_labels,
+              segmentation_platform::DeviceSwitcherModel::kNotSyncedLabel)) {
+        return first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
+      }
+      return IsAndroidSwitcher(result)
+                 ? first_run::DefaultBrowserPromoSegmentationResult::
+                       kAndroidSwitcher
+                 : first_run::DefaultBrowserPromoSegmentationResult::
+                       kNotAndroidSwitcher;
+  }
+}
+
+// Resolves the aggregated switcher info `results` across identities into a
+// `DefaultBrowserPromoSegmentationResult`.
+first_run::DefaultBrowserPromoSegmentationResult ResolveSwitcherInfoResult(
+    const std::vector<std::optional<ios::provider::SwitcherInfoResult>>&
+        results) {
+  bool has_not_switcher = false;
+  bool has_unknown = false;
+  for (const std::optional<ios::provider::SwitcherInfoResult>& result :
+       results) {
+    if (!result.has_value()) {
+      continue;
+    }
+    switch (result->switcher_status) {
+      case ios::provider::SwitcherStatus::kSwitcher:
+        return first_run::DefaultBrowserPromoSegmentationResult::
+            kAndroidSwitcher;
+      case ios::provider::SwitcherStatus::kNotSwitcher:
+        has_not_switcher = true;
+        break;
+      case ios::provider::SwitcherStatus::kUnknown:
+        has_unknown = true;
+        break;
+    }
+  }
+  if (has_not_switcher) {
+    return first_run::DefaultBrowserPromoSegmentationResult::
+        kNotAndroidSwitcher;
+  }
+  return has_unknown
+             ? first_run::DefaultBrowserPromoSegmentationResult::kNotReady
+             : first_run::DefaultBrowserPromoSegmentationResult::kFailed;
+}
+
+// Handles a single identity's `SwitcherInfoResult`, invoking
+// `on_switcher_found` immediately on a `kSwitcher` match and forwarding
+// `result` to `barrier_callback`.
+void OnIdentitySwitcherInfoResult(
+    base::OnceClosure on_switcher_found,
+    base::OnceCallback<void(std::optional<ios::provider::SwitcherInfoResult>)>
+        barrier_callback,
+    std::optional<ios::provider::SwitcherInfoResult> result) {
+  if (result.has_value() &&
+      result->switcher_status == ios::provider::SwitcherStatus::kSwitcher) {
+    std::move(on_switcher_found).Run();
+  }
+  std::move(barrier_callback).Run(std::move(result));
+}
+
 // Records the device switcher classification `result` and `elapsed` latency
 // histograms.
 void RecordDeviceSwitcherSignalMetrics(
     first_run::DefaultBrowserPromoSegmentationResult result,
-    bool is_success,
     base::TimeDelta elapsed) {
+  bool is_success =
+      result ==
+          first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher ||
+      result ==
+          first_run::DefaultBrowserPromoSegmentationResult::kNotAndroidSwitcher;
   base::UmaHistogramMediumTimes(
       is_success
           ? first_run::kDefaultBrowserPromoSegmentationLatencySuccessHistogram
@@ -78,10 +158,10 @@ void RecordDeviceSwitcherSignalMetrics(
   BOOL _firstScreenInFRESequence;
   // Local state pref service.
   raw_ptr<PrefService> _localState;
-  // Identity manager used to check primary account sign-in state.
-  raw_ptr<signin::IdentityManager> _identityManager;
-  // Authentication service providing the signed-in `SystemIdentity`.
+  // Authentication service for the profile.
   raw_ptr<AuthenticationService> _authenticationService;
+  // Account manager service providing on-device identities for the profile.
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Dispatcher providing device switcher segmentation classification results.
   raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
       _deviceSwitcherResultDispatcher;
@@ -98,14 +178,15 @@ void RecordDeviceSwitcherSignalMetrics(
 #pragma mark - Public
 
 - (instancetype)
-           initWithIdentityManager:(signin::IdentityManager*)identityManager
-             authenticationService:(AuthenticationService*)authenticationService
+     initWithAuthenticationService:(AuthenticationService*)authenticationService
+             accountManagerService:
+                 (ChromeAccountManagerService*)accountManagerService
     deviceSwitcherResultDispatcher:
         (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher {
   self = [super init];
   if (self) {
-    _identityManager = identityManager;
     _authenticationService = authenticationService;
+    _accountManagerService = accountManagerService;
     _deviceSwitcherResultDispatcher = dispatcher;
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
     _localState = GetApplicationContext()->GetLocalState();
@@ -119,8 +200,7 @@ void RecordDeviceSwitcherSignalMetrics(
 
 - (void)startPromoEvaluation {
   if (first_run::IsAnimatedDefaultBrowserPromoInFREEnabled() ||
-      !_identityManager ||
-      !_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      !_accountManagerService || !_accountManagerService->HasIdentities()) {
     [self notifyEvaluationFinishedWithAndroidSwitcherPromo:NO];
     return;
   }
@@ -146,8 +226,8 @@ void RecordDeviceSwitcherSignalMetrics(
   _disconnected = YES;
   _switcherInfoTimer.Stop();
   _localState = nullptr;
-  _identityManager = nullptr;
   _authenticationService = nullptr;
+  _accountManagerService = nullptr;
   _deviceSwitcherResultDispatcher = nullptr;
 }
 
@@ -200,9 +280,12 @@ void RecordDeviceSwitcherSignalMetrics(
     return;
   }
 
-  // The dispatcher can be null in tests where SegmentationPlatformService is
-  // unavailable.
-  if (!_deviceSwitcherResultDispatcher) {
+  // Segmentation classification relies on Sync DeviceInfo, which requires a
+  // signed-in primary account. The dispatcher can also be null in tests where
+  // SegmentationPlatformService is unavailable.
+  if (!_authenticationService ||
+      !_authenticationService->HasPrimaryIdentity() ||
+      !_deviceSwitcherResultDispatcher) {
     [self notifyEvaluationFinishedWithAndroidSwitcherPromo:NO];
     return;
   }
@@ -211,74 +294,19 @@ void RecordDeviceSwitcherSignalMetrics(
   __weak __typeof(self) weakSelf = self;
   _deviceSwitcherResultDispatcher->WaitForClassificationResult(
       kDeviceSwitcherSignalWaitTimeout,
-      base::BindOnce(
-          ^(const segmentation_platform::ClassificationResult& result) {
-            [weakSelf onSegmentationResult:result];
-          }));
+      base::BindOnce(^(
+          const segmentation_platform::ClassificationResult& result) {
+        [weakSelf completeSignalEvaluationWithResult:ResolveSegmentationResult(
+                                                         result)];
+      }));
 }
 
-// Handles the segmentation device switcher classification `result`, records
-// metrics, and notifies `delegate`.
-- (void)onSegmentationResult:
-    (const segmentation_platform::ClassificationResult&)result {
-  if (_disconnected || _evaluationCompleted) {
-    return;
-  }
-  base::TimeDelta elapsed = base::TimeTicks::Now() - _evaluationStartTime;
-
-  first_run::DefaultBrowserPromoSegmentationResult segmentationResult =
-      first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
-  BOOL isSuccess = NO;
-  switch (result.status) {
-    case segmentation_platform::PredictionStatus::kNotReady:
-      segmentationResult =
-          first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
-      break;
-    case segmentation_platform::PredictionStatus::kFailed:
-      segmentationResult =
-          first_run::DefaultBrowserPromoSegmentationResult::kFailed;
-      break;
-    case segmentation_platform::PredictionStatus::kSucceeded:
-      if (result.ordered_labels.empty()) {
-        segmentationResult =
-            first_run::DefaultBrowserPromoSegmentationResult::kFailed;
-      } else if (std::ranges::contains(
-                     result.ordered_labels,
-                     segmentation_platform::DeviceSwitcherModel::
-                         kNotSyncedLabel)) {
-        segmentationResult =
-            first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
-      } else if (IsAndroidSwitcher(result)) {
-        segmentationResult =
-            first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher;
-        isSuccess = YES;
-      } else {
-        segmentationResult = first_run::DefaultBrowserPromoSegmentationResult::
-            kNotAndroidSwitcher;
-        isSuccess = YES;
-      }
-      break;
-  }
-
-  RecordDeviceSwitcherSignalMetrics(segmentationResult, isSuccess, elapsed);
-  BOOL showAndroidSwitcherPromo =
-      segmentationResult ==
-      first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher;
-  [self notifyEvaluationFinishedWithAndroidSwitcherPromo:
-            showAndroidSwitcherPromo];
-}
-
-// Queries the switcher info signal for the signed-in user and notifies
-// `delegate` whether to present the Android switcher promo.
+// Queries the switcher info signal across on-device identities in the profile
+// and notifies `delegate` whether to present the Android switcher promo.
 - (void)evaluateSwitcherInfoSignal {
-  // `GetPrimaryIdentity()` resolves the primary account's Gaia ID via
-  // `ChromeAccountManagerService`, which can return `nil` if the system
-  // identity was removed from the device before `IdentityManager` finished
-  // clearing the primary account.
-  id<SystemIdentity> identity =
-      _authenticationService ? _authenticationService->GetPrimaryIdentity()
-                             : nil;
-  if (!identity) {
+  NSArray<id<SystemIdentity>>* identities =
+      _accountManagerService ? _accountManagerService->GetAllIdentities() : nil;
+  if (identities.count == 0) {
     [self notifyEvaluationFinishedWithAndroidSwitcherPromo:NO];
     return;
   }
@@ -287,52 +315,46 @@ void RecordDeviceSwitcherSignalMetrics(
   __weak __typeof(self) weakSelf = self;
   _switcherInfoTimer.Start(
       FROM_HERE, kDeviceSwitcherSignalWaitTimeout, base::BindOnce(^{
-        [weakSelf onSwitcherInfoResult:std::nullopt timedOut:YES];
+        [weakSelf
+            completeSignalEvaluationWithResult:
+                first_run::DefaultBrowserPromoSegmentationResult::kNotReady];
       }));
-  ios::provider::GetSwitcherInfo(
-      identity, base::BindOnce(^(
-                    std::optional<ios::provider::SwitcherInfoResult> result) {
-        [weakSelf onSwitcherInfoResult:std::move(result) timedOut:NO];
-      }));
+  base::RepeatingCallback<void(
+      std::optional<ios::provider::SwitcherInfoResult>)>
+      barrierCallback = base::BarrierCallback<
+          std::optional<ios::provider::SwitcherInfoResult>>(
+          identities.count,
+          base::BindOnce(^(
+              std::vector<std::optional<ios::provider::SwitcherInfoResult>>
+                  results) {
+            [weakSelf
+                completeSignalEvaluationWithResult:ResolveSwitcherInfoResult(
+                                                       results)];
+          }));
+  base::RepeatingClosure onSwitcherFound = base::BindRepeating(^{
+    [weakSelf
+        completeSignalEvaluationWithResult:
+            first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher];
+  });
+  for (id<SystemIdentity> identity in identities) {
+    ios::provider::GetSwitcherInfo(
+        identity, base::BindOnce(&OnIdentitySwitcherInfoResult, onSwitcherFound,
+                                 barrierCallback));
+  }
 }
 
-// Handles the switcher info `result` (or timeout), records metrics, and
-// notifies `delegate`.
-- (void)onSwitcherInfoResult:
-            (std::optional<ios::provider::SwitcherInfoResult>)result
-                    timedOut:(BOOL)timedOut {
+// Completes async device switcher signal evaluation with `result`, records
+// metrics, and notifies `delegate`.
+- (void)completeSignalEvaluationWithResult:
+    (first_run::DefaultBrowserPromoSegmentationResult)result {
   if (_disconnected || _evaluationCompleted) {
     return;
   }
   _switcherInfoTimer.Stop();
   base::TimeDelta elapsed = base::TimeTicks::Now() - _evaluationStartTime;
-
-  first_run::DefaultBrowserPromoSegmentationResult switcherInfoResult =
-      timedOut ? first_run::DefaultBrowserPromoSegmentationResult::kNotReady
-               : first_run::DefaultBrowserPromoSegmentationResult::kFailed;
-  BOOL isSuccess = NO;
-  if (!timedOut && result.has_value()) {
-    switch (result->switcher_status) {
-      case ios::provider::SwitcherStatus::kUnknown:
-        switcherInfoResult =
-            first_run::DefaultBrowserPromoSegmentationResult::kNotReady;
-        break;
-      case ios::provider::SwitcherStatus::kNotSwitcher:
-        switcherInfoResult = first_run::DefaultBrowserPromoSegmentationResult::
-            kNotAndroidSwitcher;
-        isSuccess = YES;
-        break;
-      case ios::provider::SwitcherStatus::kSwitcher:
-        switcherInfoResult =
-            first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher;
-        isSuccess = YES;
-        break;
-    }
-  }
-
-  RecordDeviceSwitcherSignalMetrics(switcherInfoResult, isSuccess, elapsed);
+  RecordDeviceSwitcherSignalMetrics(result, elapsed);
   BOOL showAndroidSwitcherPromo =
-      switcherInfoResult ==
+      result ==
       first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher;
   [self notifyEvaluationFinishedWithAndroidSwitcherPromo:
             showAndroidSwitcherPromo];

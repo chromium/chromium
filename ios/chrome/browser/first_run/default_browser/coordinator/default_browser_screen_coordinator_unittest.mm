@@ -93,16 +93,22 @@ class DefaultBrowserScreenCoordinatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  // Signs in with a fake identity.
-  void SignIn() {
+  // Adds `identity` to the device without signing in to Chrome.
+  void AddIdentityOnDevice(
+      id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1]) {
     if (!profile_) {
       ConfigureSegmentationLabels();
     }
-    FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
+  }
+
+  // Signs in with a fake identity.
+  void SignIn() {
+    FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+    AddIdentityOnDevice(identity);
     AuthenticationServiceFactory::GetForProfile(profile_)->SignIn(
         identity, signin_metrics::AccessPoint::kStartPage);
   }
@@ -218,9 +224,9 @@ TEST_F(DefaultBrowserScreenCoordinatorTest,
 
 // Tests that the standard static Default Browser promo is presented without
 // activating the Finch trial when the Android Switcher flag is enabled in a
-// study but the user is signed out.
+// study but there are no on-device accounts in the consumer profile.
 TEST_F(DefaultBrowserScreenCoordinatorTest,
-       PresentsStandardPromoWhenSignedOut) {
+       PresentsStandardPromoWhenNoIdentitiesOnDevice) {
   EnableVariation(
       first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
           kSegmentationSignal);
@@ -239,6 +245,31 @@ TEST_F(DefaultBrowserScreenCoordinatorTest,
       first_run::kAndroidSwitcherDefaultBrowserPromoInFRE);
   ASSERT_TRUE(trial);
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+}
+
+// Tests that when an on-device consumer account is present while signed out of
+// Chrome and the segmentation signal variation is enabled, the Finch trial is
+// activated and the standard static Default Browser promo is immediately
+// presented without waiting for segmentation classification.
+TEST_F(
+    DefaultBrowserScreenCoordinatorTest,
+    PresentsStandardPromoWhenSignedOutWithOnDeviceConsumerAccountInSegmentation) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSegmentationSignal);
+  ConfigureSegmentationLabels();
+  AddIdentityOnDevice();
+
+  [coordinator_ start];
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserScreenViewController class]]);
+  histogram_tester_.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram, 0);
+  base::FieldTrial* trial = base::FeatureList::GetFieldTrial(
+      first_run::kAndroidSwitcherDefaultBrowserPromoInFRE);
+  ASSERT_TRUE(trial);
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
 }
 
 // Tests that when the segmentation signal variation is enabled and the user is
@@ -425,10 +456,11 @@ TEST_F(
 }
 
 // Tests that when the switcher info signal variation is enabled in a study but
-// the user is signed out, the standard promo is presented without activating
-// the Finch trial.
-TEST_F(DefaultBrowserScreenCoordinatorTest,
-       PresentsStandardPromoWithoutActivatingTrialWhenSignedOutInSwitcherInfo) {
+// there are no on-device accounts in the consumer profile, the standard promo
+// is presented without activating the Finch trial.
+TEST_F(
+    DefaultBrowserScreenCoordinatorTest,
+    PresentsStandardPromoWithoutActivatingTrialWhenNoIdentitiesOnDeviceInSwitcherInfo) {
   EnableVariation(
       first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
           kSwitcherInfoSignal);
@@ -444,6 +476,93 @@ TEST_F(DefaultBrowserScreenCoordinatorTest,
       first_run::kAndroidSwitcherDefaultBrowserPromoInFRE);
   ASSERT_TRUE(trial);
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+}
+
+// Tests that when only a managed account is on the device, the consumer profile
+// has no identities and the standard promo is presented without activating the
+// Finch trial.
+TEST_F(
+    DefaultBrowserScreenCoordinatorTest,
+    PresentsStandardPromoWithoutActivatingTrialWhenOnlyManagedIdentityOnDevice) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+      .is_chrome_user = true});
+  AddIdentityOnDevice([FakeSystemIdentity fakeManagedIdentity]);
+
+  [coordinator_ start];
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserScreenViewController class]]);
+  histogram_tester_.ExpectTotalCount(
+      first_run::kDefaultBrowserPromoSegmentationResultHistogram, 0);
+  base::FieldTrial* trial = base::FeatureList::GetFieldTrial(
+      first_run::kAndroidSwitcherDefaultBrowserPromoInFRE);
+  ASSERT_TRUE(trial);
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+}
+
+// Tests that when an on-device consumer account is present while signed out of
+// Chrome and the SwitcherInfo API returns `kSwitcher`, the Android Switcher
+// promo is presented.
+TEST_F(
+    DefaultBrowserScreenCoordinatorTest,
+    PresentsAndroidSwitcherPromoWhenSignedOutWithOnDeviceConsumerAccountInSwitcherInfo) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+      .is_chrome_user = true});
+  AddIdentityOnDevice();
+
+  [coordinator_ start];
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return navigation_controller_.topViewController != nil; }));
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserAndroidSwitcherScreenViewController
+                          class]]);
+  ExpectSignalMetrics(
+      first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher,
+      /*is_success=*/true);
+}
+
+// Tests that when multiple on-device consumer accounts exist and a secondary
+// account returns `kSwitcher` while the first account returns `kNotSwitcher`,
+// the Android Switcher promo is presented.
+TEST_F(DefaultBrowserScreenCoordinatorTest,
+       PresentsAndroidSwitcherPromoFromSecondaryOnDeviceConsumerAccount) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSwitcherInfoSignal);
+  FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* identity2 = [FakeSystemIdentity fakeIdentity2];
+  ios::provider::test::SetSwitcherInfoResultForIdentity(
+      identity1,
+      ios::provider::SwitcherInfoResult{
+          .switcher_status = ios::provider::SwitcherStatus::kNotSwitcher,
+          .is_chrome_user = false});
+  ios::provider::test::SetSwitcherInfoResultForIdentity(
+      identity2,
+      ios::provider::SwitcherInfoResult{
+          .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+          .is_chrome_user = true});
+  AddIdentityOnDevice(identity1);
+  AddIdentityOnDevice(identity2);
+
+  [coordinator_ start];
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return navigation_controller_.topViewController != nil; }));
+
+  EXPECT_TRUE([navigation_controller_.topViewController
+      isMemberOfClass:[DefaultBrowserAndroidSwitcherScreenViewController
+                          class]]);
+  ExpectSignalMetrics(
+      first_run::DefaultBrowserPromoSegmentationResult::kAndroidSwitcher,
+      /*is_success=*/true);
 }
 
 // Tests that when the switcher info signal variation is enabled and the API

@@ -17,8 +17,6 @@ source_set("coordinator") {
     "//components/prefs",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
     "//components/web_resource",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/strings:ios_branded_strings",

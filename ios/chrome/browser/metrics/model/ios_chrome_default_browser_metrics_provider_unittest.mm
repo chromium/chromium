@@ -471,10 +471,11 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   }
 }
 
-// Tests that when no signed-in profile exists (even if device identities are
-// present), the `.SwitcherInfo.Unknown` variants are recorded.
+// Tests that when an on-device consumer identity exists in the personal profile
+// even when not signed into Chrome, `.SwitcherInfo.AndroidSwitcher` is recorded
+// when `GetSwitcherInfo` returns `kSwitcher`.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
-       RecordsSwitcherInfoUnknownVariantWhenNotSignedIn) {
+       RecordsSwitcherInfoAndroidSwitcherVariantWhenNotSignedIn) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
@@ -485,6 +486,68 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
       GetApplicationContext()->GetSystemIdentityManager())
       ->AddIdentity([FakeSystemIdentity fakeIdentity1]);
   AddProfileWithDeviceSwitcherLabels({});
+
+  IOSChromeDefaultBrowserMetricsProvider provider(
+      metrics::MetricsLogUploader::MetricServiceType::UMA);
+  provider.OnDidCreateMetricsLog();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  for (const char* histogram : kDefaultBrowserHistograms) {
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), false, 1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), 0);
+  }
+}
+
+// Tests that when there are no on-device identities in the personal profile,
+// the `.SwitcherInfo.Unknown` variants are recorded.
+TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
+       RecordsSwitcherInfoUnknownVariantWhenNoIdentitiesOnDevice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+      .is_chrome_user = true});
+  AddProfileWithDeviceSwitcherLabels({});
+
+  IOSChromeDefaultBrowserMetricsProvider provider(
+      metrics::MetricsLogUploader::MetricServiceType::UMA);
+  provider.OnDidCreateMetricsLog();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  for (const char* histogram : kDefaultBrowserHistograms) {
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SwitcherInfo.Unknown"}), false, 1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), 0);
+  }
+}
+
+// Tests that when only a managed identity exists on the device, the consumer
+// profile has no identities and the `.SwitcherInfo.Unknown` variants are
+// recorded.
+TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
+       RecordsSwitcherInfoUnknownVariantWhenOnlyManagedIdentityOnDevice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
+  ios::provider::test::SetSwitcherInfoResult(ios::provider::SwitcherInfoResult{
+      .switcher_status = ios::provider::SwitcherStatus::kSwitcher,
+      .is_chrome_user = true});
+  AddProfileWithDeviceSwitcherLabels({});
+  FakeSystemIdentity* managed_identity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity(managed_identity);
 
   IOSChromeDefaultBrowserMetricsProvider provider(
       metrics::MetricsLogUploader::MetricServiceType::UMA);

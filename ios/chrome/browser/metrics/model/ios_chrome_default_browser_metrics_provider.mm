@@ -218,8 +218,9 @@ void OnSwitcherInfoResults(
                          ResolveSwitcherInfoSignalStatus(results), samples);
 }
 
-// Queries `ios::provider::GetSwitcherInfo` across signed-in loaded profiles and
-// emits `.SwitcherInfo.{SignalStatus}` histograms upon completion.
+// Queries `ios::provider::GetSwitcherInfo` across on-device identities in
+// loaded profiles and emits `.SwitcherInfo.{SignalStatus}` histograms upon
+// completion.
 void RecordSwitcherInfoSignalHistograms(
     const DefaultBrowserHistogramSamples& samples) {
   std::vector<id<SystemIdentity>> identities;
@@ -227,12 +228,9 @@ void RecordSwitcherInfoSignalHistograms(
   if (application_context && application_context->GetProfileManager()) {
     for (ProfileIOS* profile :
          application_context->GetProfileManager()->GetLoadedProfiles()) {
-      AuthenticationService* authentication_service =
-          AuthenticationServiceFactory::GetForProfile(profile);
       ChromeAccountManagerService* account_manager_service =
           ChromeAccountManagerServiceFactory::GetForProfile(profile);
-      if (!authentication_service || !account_manager_service ||
-          !authentication_service->HasPrimaryIdentity()) {
+      if (!account_manager_service) {
         continue;
       }
       for (id<SystemIdentity> identity in account_manager_service

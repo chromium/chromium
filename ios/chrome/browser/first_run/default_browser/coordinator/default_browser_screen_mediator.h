@@ -8,14 +8,11 @@
 #import <Foundation/Foundation.h>
 
 class AuthenticationService;
+class ChromeAccountManagerService;
 
 namespace segmentation_platform {
 class DeviceSwitcherResultDispatcher;
 }  // namespace segmentation_platform
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
 
 @protocol DefaultBrowserScreenConsumer;
 @class DefaultBrowserScreenMediator;
@@ -46,11 +43,12 @@ class IdentityManager;
 // Whether the user tapped on the UMA link.
 @property(nonatomic, assign) BOOL UMALinkWasTapped;
 
-// Designated initializer with `identityManager`, `authenticationService`, and
-// segmentation `dispatcher`.
+// Designated initializer with `authenticationService`, `accountManagerService`,
+// and segmentation `dispatcher`.
 - (instancetype)
-           initWithIdentityManager:(signin::IdentityManager*)identityManager
-             authenticationService:(AuthenticationService*)authenticationService
+     initWithAuthenticationService:(AuthenticationService*)authenticationService
+             accountManagerService:
+                 (ChromeAccountManagerService*)accountManagerService
     deviceSwitcherResultDispatcher:
         (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
     NS_DESIGNATED_INITIALIZER;
