@@ -4,18 +4,16 @@
 
 #include "components/subscription_eligibility/ai_subscription_tier_names.h"
 
-#include <algorithm>
-#include <cstddef>
 #include <optional>
 #include <string>
-#include <string_view>
 
-#include "base/containers/fixed_flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "components/subscription_eligibility/ai_subscription_tier_name_types.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/internal/subscription_eligibility/ai_subscription_tier_names_branded.h"
@@ -26,29 +24,6 @@
 namespace subscription_eligibility {
 
 namespace {
-
-// An entry of `kAiTierShortNames` or `kAiTierFullNames`: {tier, name}.
-using TierName = decltype(kAiTierShortNames)::value_type;
-
-// Both maps must list the same tiers.
-static_assert(std::ranges::equal(kAiTierShortNames,
-                                 kAiTierFullNames,
-                                 {},
-                                 &TierName::first,
-                                 &TierName::first));
-
-// Returns the name of `tier` in `names`, or an empty string if `tier` is not
-// listed.
-template <size_t N>
-std::u16string GetName(
-    const base::fixed_flat_map<int, std::u16string_view, N>& names,
-    int tier) {
-  auto it = names.find(tier);
-  if (it == names.end()) {
-    return std::u16string();
-  }
-  return std::u16string(it->second);
-}
 
 // Returns the short name override for `tier`, or std::nullopt if the override
 // feature is disabled, the mapping is malformed or has no entry for `tier`.
@@ -80,7 +55,8 @@ std::u16string GetAiSubscriptionTierShortName(int tier) {
   if (std::optional<std::u16string> name = FindShortNameOverride(tier)) {
     return *name;
   }
-  return GetName(kAiTierShortNames, tier);
+  const AiTierName* tier_name = base::FindOrNull(kAiTierNames, tier);
+  return tier_name ? std::u16string(tier_name->short_name) : std::u16string();
 }
 
 std::u16string GetAiSubscriptionTierFullName(int tier) {
@@ -89,7 +65,8 @@ std::u16string GetAiSubscriptionTierFullName(int tier) {
   if (FindShortNameOverride(tier)) {
     return std::u16string();
   }
-  return GetName(kAiTierFullNames, tier);
+  const AiTierName* tier_name = base::FindOrNull(kAiTierNames, tier);
+  return tier_name ? std::u16string(tier_name->full_name) : std::u16string();
 }
 
 }  // namespace subscription_eligibility
