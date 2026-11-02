@@ -6,6 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/memory/ptr_util.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -16,15 +18,11 @@ using base::android::JavaRef;
 UrlFilterBridge::UrlFilterBridge(
     const base::RepeatingCallback<bool(const GURL&)>& url_filter)
     : url_filter_(url_filter),
-      j_bridge_(
-          Java_UrlFilterBridge_create(base::android::AttachCurrentThread(),
-                                      reinterpret_cast<uintptr_t>(this))) {}
+      j_bridge_(Java_UrlFilterBridge_create(
+          base::android::AttachCurrentThread(),
+          jni_zero::MakeUnique(base::WrapUnique(this)))) {}
 
 UrlFilterBridge::~UrlFilterBridge() = default;
-
-void UrlFilterBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 bool UrlFilterBridge::MatchesUrl(JNIEnv* env,
                                  const std::string& url_spec) const {

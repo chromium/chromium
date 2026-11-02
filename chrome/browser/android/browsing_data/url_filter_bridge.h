@@ -15,6 +15,7 @@ class GURL;
 // on Android.
 class UrlFilterBridge {
  public:
+  // Must be allocated with new; ownership passes to the Java object.
   explicit UrlFilterBridge(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter);
 
@@ -22,9 +23,6 @@ class UrlFilterBridge {
   UrlFilterBridge& operator=(const UrlFilterBridge&) = delete;
 
   ~UrlFilterBridge();
-
-  // Destroys this object.
-  void Destroy(JNIEnv* env);
 
   // Whether |jurl| is matched by this filter.
   bool MatchesUrl(JNIEnv* env, const std::string& url_spec) const;

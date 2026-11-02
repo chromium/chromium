@@ -5,10 +5,14 @@
 package org.chromium.chrome.browser.browsing_data;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A {@link UrlFilter} that delegates the matching to the native side.
@@ -18,40 +22,41 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class UrlFilterBridge implements UrlFilter {
-    private long mNativeUrlFilterBridge;
+    @JniType("::UrlFilterBridge")
+    interface NativeUrlFilterBridge extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativeUrlFilterBridge> mNativeUrlFilterBridge;
 
     @Override
     public boolean matchesUrl(String url) {
-        assert mNativeUrlFilterBridge != 0;
+        assert mNativeUrlFilterBridge != null;
         return UrlFilterBridgeJni.get().matchesUrl(mNativeUrlFilterBridge, url);
     }
 
     /** Destroys the native counterpart of this object. */
     public void destroy() {
-        assert mNativeUrlFilterBridge != 0;
-        UrlFilterBridgeJni.get().destroy(mNativeUrlFilterBridge);
-        mNativeUrlFilterBridge = 0;
+        assert mNativeUrlFilterBridge != null;
+        mNativeUrlFilterBridge.destroy();
+        mNativeUrlFilterBridge = null;
     }
 
     /**
-     * Called from C++ by |nativeUrlFilterBridge| to instantiate this class.
-     * Note that this is the only way to construct an UrlFilterBridge; the constructor is private.
+     * Called from C++ by |nativeUrlFilterBridge| to instantiate this class. Note that this is the
+     * only way to construct an UrlFilterBridge; the constructor is private.
      *
-     * @param nativeUrlFilterBridge The native counterpart that creates and owns this object.
+     * @param nativeUrlFilterBridge The native counterpart, owned by the returned object.
      */
     @CalledByNative
-    private static UrlFilterBridge create(long nativeUrlFilterBridge) {
+    static UrlFilterBridge create(JniUniquePtr<NativeUrlFilterBridge> nativeUrlFilterBridge) {
         return new UrlFilterBridge(nativeUrlFilterBridge);
     }
 
-    private UrlFilterBridge(long nativeUrlFilterBridge) {
+    private UrlFilterBridge(JniUniquePtr<NativeUrlFilterBridge> nativeUrlFilterBridge) {
         mNativeUrlFilterBridge = nativeUrlFilterBridge;
     }
 
     @NativeMethods
     interface Natives {
-        boolean matchesUrl(long nativeUrlFilterBridge, @JniType("std::string") String url);
-
-        void destroy(long nativeUrlFilterBridge);
+        boolean matchesUrl(JniPtr<NativeUrlFilterBridge> self, @JniType("std::string") String url);
     }
 }
