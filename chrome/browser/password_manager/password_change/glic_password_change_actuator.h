@@ -15,11 +15,8 @@
 #include "base/observer_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_filler.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/password_change_actuator.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,10 +34,6 @@ class GlicInstance;
 class GlicKeyedService;
 }  // namespace glic
 
-namespace password_manager {
-class PasswordFormManager;
-}  // namespace password_manager
-
 class Profile;
 
 // Actuator implementation that uses Gemini in Chrome (Glic) and Actor for
@@ -49,10 +42,9 @@ class GlicPasswordChangeActuator
     : public PasswordChangeActuator,
       public glic::mojom::ExperimentalTriggeringUpdatesHandler {
  public:
-  // Enumerates the verification task outcome returned by Glic.
+  // Enumerates the task outcome returned by Glic.
   enum class TaskResult {
     kPasswordChangeFinishedSuccessfully,
-    kPasswordFormFound,
     kFailedToFindChangePasswordForm,
     kFailedToChangePassword,
     kUserInterventionRequired,
@@ -88,12 +80,6 @@ class GlicPasswordChangeActuator
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
   void OnActorTaskStateChanged(actor::ActorTask& task);
-  void OnChangePasswordFormManagerFound(
-      ChangePasswordFormWaiter::Result result);
-  void OnChangePasswordFormFilled(
-      ChangePasswordFormFiller::FillingResult result);
-  void InvokeVerificationFlow(std::string post_submission_prompt);
-  void HandleMaybeSuccessfulPasswordChange();
   void CloseGlicSession();
   void ResetInternalState(actor::ActorTask::StoppedReason stop_reason);
   void NotifyStateChanged(PasswordChangeActuator::State new_state);
@@ -120,14 +106,8 @@ class GlicPasswordChangeActuator
   base::WeakPtr<glic::GlicInstance> glic_instance_;
   base::CallbackListSubscription tab_will_detach_subscription_;
 
-  std::optional<actor::TaskId> find_form_task_id_;
-  std::optional<actor::TaskId> verification_task_id_;
+  std::optional<actor::TaskId> task_id_;
   base::CallbackListSubscription actor_task_state_subscription_;
-
-  std::unique_ptr<ChangePasswordFormFiller> form_filler_;
-  std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
-
-  std::unique_ptr<password_manager::PasswordFormManager> saved_form_manager_;
 
   mojo::Receiver<glic::mojom::ExperimentalTriggeringUpdatesHandler>
       updates_receiver_{this};
