@@ -6306,7 +6306,7 @@
   {
     "name": "image-descriptions-alternative-routing",
     "owners": [ "rhalavati@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 159
+    "expiry_milestone": 169
   },
   {
     "name": "immersive-read-anything-print",
