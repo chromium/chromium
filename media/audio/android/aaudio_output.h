@@ -18,7 +18,6 @@
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/media_export.h"
 
 namespace media {
 
@@ -26,9 +25,8 @@ class AudioManagerAndroid;
 class AudioPullFifo;
 
 // Class which uses the AAudio library to playback output.
-class MEDIA_EXPORT AAudioOutputStream
-    : public MuteableAudioOutputStream,
-      public AAudioStreamWrapper::DataCallback {
+class AAudioOutputStream : public MuteableAudioOutputStream,
+                           public AAudioStreamWrapper::DataCallback {
  public:
   AAudioOutputStream(AudioManagerAndroid* manager,
                      const AudioParameters& params,
@@ -57,9 +55,6 @@ class MEDIA_EXPORT AAudioOutputStream
   void OnDeviceChange() override;
 
  private:
-  friend class AAudioOutputStreamTest;
-
-  void CreateAudioBusAndFifo();
   void RefillFifo(int frame_delay, AudioBus* destination);
   bool PullDataFromSource(base::TimeDelta delay,
                           base::TimeTicks delay_timestamp,
