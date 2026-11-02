@@ -30,8 +30,6 @@ class QuickDeleteBridge {
   QuickDeleteBridge& operator=(const QuickDeleteBridge&) = delete;
   ~QuickDeleteBridge();
 
-  void Destroy();
-
   void RestartCounterForTimePeriod(const int32_t time_period);
 
  private:

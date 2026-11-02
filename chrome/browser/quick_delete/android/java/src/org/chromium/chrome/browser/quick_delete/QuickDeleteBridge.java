@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -20,7 +25,10 @@ import org.chromium.chrome.browser.profiles.Profile;
  */
 @NullMarked
 class QuickDeleteBridge {
-    private long mNativeQuickDeleteBridge;
+    @JniType("::QuickDeleteBridge")
+    interface NativeQuickDeleteBridge extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativeQuickDeleteBridge> mNativeQuickDeleteBridge;
 
     /** Called when the lastVisitedDomain and domainCount are fetched. */
     private final DomainVisitsCallback mCallback;
@@ -52,9 +60,9 @@ class QuickDeleteBridge {
 
     /** Destroys this instance so no further calls can be executed. */
     public void destroy() {
-        if (mNativeQuickDeleteBridge != 0) {
-            QuickDeleteBridgeJni.get().destroy(mNativeQuickDeleteBridge);
-            mNativeQuickDeleteBridge = 0;
+        if (mNativeQuickDeleteBridge != null) {
+            mNativeQuickDeleteBridge.destroy();
+            mNativeQuickDeleteBridge = null;
         }
     }
 
@@ -65,7 +73,7 @@ class QuickDeleteBridge {
      */
     public void restartCounterForTimePeriod(@TimePeriod int timePeriod) {
         QuickDeleteBridgeJni.get()
-                .restartCounterForTimePeriod(mNativeQuickDeleteBridge, timePeriod);
+                .restartCounterForTimePeriod(assumeNonNull(mNativeQuickDeleteBridge), timePeriod);
     }
 
     @CalledByNative
@@ -76,10 +84,9 @@ class QuickDeleteBridge {
 
     @NativeMethods
     interface Natives {
-        long init(QuickDeleteBridge self, @JniType("Profile*") @Nullable Profile profile);
+        JniUniquePtr<NativeQuickDeleteBridge> init(
+                QuickDeleteBridge self, @JniType("Profile*") @Nullable Profile profile);
 
-        void destroy(long nativeQuickDeleteBridge);
-
-        void restartCounterForTimePeriod(long nativeQuickDeleteBridge, int timePeriod);
+        void restartCounterForTimePeriod(JniPtr<NativeQuickDeleteBridge> self, int timePeriod);
     }
 }

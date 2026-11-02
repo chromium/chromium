@@ -99,6 +99,7 @@ public class QuickDeleteBridgeTest {
                 });
 
         callbackHelper.waitForCallback(0);
+        ThreadUtils.runOnUiThreadBlocking(() -> mQuickDeleteBridge.destroy());
     }
 
     private void visitUrls() {
