@@ -41,12 +41,6 @@
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testConsistencyPromoSigninHiddenWhenNoAccountsSignedIn)]) {
-    config.features_disabled.push_back(switches::kNoAccountWebSignin);
-  } else {
-    config.features_enabled.push_back(switches::kNoAccountWebSignin);
-  }
   if ([self
           isRunningTest:
               @selector(testPreferredAccountSelectedWithMultipleIdentities)] ||
@@ -83,17 +77,6 @@
   [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
 
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
-}
-
-// Tests that ConsistencyPromoSigninCoordinator is NOT surfaced when there are
-// noAccounts available and kNoAccountWebSignin is disabled.
-- (void)testConsistencyPromoSigninHiddenWhenNoAccountsSignedIn {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL url = self.testServer->GetURL("/echo");
-
-  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
-
-  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
 }
 
 // Tests that ConsistencyPromoSigninCoordinator is not shown after the last

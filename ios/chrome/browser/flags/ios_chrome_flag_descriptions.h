@@ -1520,12 +1520,6 @@ inline constexpr char kNextOldDesignName[] = "NextOldDesign";
 inline constexpr char kNextOldDesignDescription[] =
     "Enables the NextOldDesign feature.";
 
-inline constexpr char kNoAccountWebSigninName[] =
-    "Enable no account web sigin bottom sheet";
-inline constexpr char kNoAccountWebSigninDescription[] =
-    "Surfaces the web sign in bottom sheet when the user attempts to sign in "
-    "to the web.";
-
 inline constexpr char kNonModalSignInPromoName[] = "Non-modal sign-in promo";
 inline constexpr char kNonModalSignInPromoDescription[] =
     "Enables a non-modal sign-in promo that prompts users to sign in.";

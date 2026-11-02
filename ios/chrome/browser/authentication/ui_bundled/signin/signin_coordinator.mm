@@ -308,14 +308,14 @@ using signin_metrics::PromoAction;
                                        continuationProvider:
                                            (const ChangeProfileContinuationProvider&)
                                                continuationProvider {
-  return [ConsistencyPromoSigninCoordinator
-      coordinatorWithBaseViewController:viewController
-                                browser:browser
-                           contextStyle:contextStyle
-                            accessPoint:accessPoint
-                   confirmChangeProfile:confirmChangeProfile
-                   prepareChangeProfile:prepareChangeProfile
-                   continuationProvider:continuationProvider];
+  return [[ConsistencyPromoSigninCoordinator alloc]
+      initWithBaseViewController:viewController
+                         browser:browser
+                    contextStyle:contextStyle
+                     accessPoint:accessPoint
+            confirmChangeProfile:confirmChangeProfile
+            prepareChangeProfile:prepareChangeProfile
+            continuationProvider:continuationProvider];
 }
 
 + (SigninCoordinator*)

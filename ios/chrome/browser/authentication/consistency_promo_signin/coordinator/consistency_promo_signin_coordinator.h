@@ -39,17 +39,6 @@ enum class AccessPoint : int;
                                    (signin_metrics::AccessPoint)accessPoint
     NS_UNAVAILABLE;
 
-+ (instancetype)
-    coordinatorWithBaseViewController:(UIViewController*)viewController
-                              browser:(Browser*)browser
-                         contextStyle:(SigninContextStyle)contextStyle
-                          accessPoint:(signin_metrics::AccessPoint)accessPoint
-                 confirmChangeProfile:
-                     (SigninChangeProfileConfirmationBlock)confirmChangeProfile
-                 prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
-                 continuationProvider:(const ChangeProfileContinuationProvider&)
-                                          continuationProvider;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_CONSISTENCY_PROMO_SIGNIN_COORDINATOR_CONSISTENCY_PROMO_SIGNIN_COORDINATOR_H_

@@ -1034,9 +1034,6 @@ inline LayoutStateScenePassKey PassKey() {
                                          prepareChangeProfile:
                                              prepareChangeProfile
                                          continuationProvider:provider];
-  if (!_signinCoordinator) {
-    return;
-  }
   // Copy the URL so it can be safely captured in the block.
   GURL copiedURL = URL;
   [self startSigninCoordinatorWithCompletion:^(

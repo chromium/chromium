@@ -2692,9 +2692,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpstreamEnforceStrikeDelay)},
-    {"no-accounts-web-signin", flag_descriptions::kNoAccountWebSigninName,
-     flag_descriptions::kNoAccountWebSigninDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(switches::kNoAccountWebSignin)},
     {"assistant-aim-minimized-state",
      flag_descriptions::kAssistantAimMinimizedStateName,
      flag_descriptions::kAssistantAimMinimizedStateDescription,

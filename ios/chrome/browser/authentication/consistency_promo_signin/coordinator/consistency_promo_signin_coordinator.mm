@@ -14,7 +14,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/browser/web_signin_tracker.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -31,7 +30,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_slide_transition_animator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -110,46 +108,6 @@
     _prepareChangeProfile = [prepareChangeProfile copy];
   }
   return self;
-}
-
-+ (instancetype)
-    coordinatorWithBaseViewController:(UIViewController*)viewController
-                              browser:(Browser*)browser
-                         contextStyle:(SigninContextStyle)contextStyle
-                          accessPoint:(signin_metrics::AccessPoint)accessPoint
-                 confirmChangeProfile:
-                     (SigninChangeProfileConfirmationBlock)confirmChangeProfile
-                 prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
-                 continuationProvider:(const ChangeProfileContinuationProvider&)
-                                          continuationProvider {
-  if (!base::FeatureList::IsEnabled(switches::kNoAccountWebSignin)) {
-    ProfileIOS* profile = browser->GetProfile();
-    if (accessPoint == signin_metrics::AccessPoint::kWebSignin) {
-      signin::IdentityManager* identityManager =
-          IdentityManagerFactory::GetForProfile(profile);
-      ChromeAccountManagerService* accountManagerService =
-          ChromeAccountManagerServiceFactory::GetForProfile(profile);
-      bool hasIdentities =
-          [signin::GetIdentitiesOnDevice(identityManager, accountManagerService)
-              count] > 0;
-      if (!hasIdentities) {
-        RecordConsistencyPromoUserAction(
-            signin_metrics::AccountConsistencyPromoAction::
-                SUPPRESSED_NO_ACCOUNTS,
-            accessPoint);
-        return nil;
-      }
-    }
-  }
-
-  return [[ConsistencyPromoSigninCoordinator alloc]
-      initWithBaseViewController:viewController
-                         browser:browser
-                    contextStyle:contextStyle
-                     accessPoint:accessPoint
-            confirmChangeProfile:confirmChangeProfile
-            prepareChangeProfile:prepareChangeProfile
-            continuationProvider:continuationProvider];
 }
 
 - (void)dealloc {

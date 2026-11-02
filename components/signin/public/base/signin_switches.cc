@@ -825,10 +825,6 @@ BASE_FEATURE(kMigrateToSigninReauthCoordinator,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kNoAccountWebSignin, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_IOS)
-
 BASE_FEATURE(kNonDefaultGaiaOriginCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

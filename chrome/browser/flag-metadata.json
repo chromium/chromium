@@ -7199,14 +7199,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "no-accounts-web-signin",
-    "owners": [
-      "mlbipin@google.com",
-      "chrome-signin-mobile-team@google.com"
-    ],
-    "expiry_milestone": 165
-  },
-  {
     "name": "no-pause-media-on-headphone-unplug",
     "owners": [
       "philyan@chromium.org",

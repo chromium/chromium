@@ -180,11 +180,10 @@ class PrefRegistrySyncable;
                                         (const ChangeProfileContinuationProvider&)
                                             continuationProvider;
 
-// Returns a coordinator to display the account consistency promo with a list
-// of accounts available on the device for sign-in.
+// Returns a coordinator to display the account consistency promo, which offers
+// to sign in with an account available on the device, or to add an account if
+// none are available.
 // `viewController` presents the promo.
-// This method can return nil if sign-in is not authorized or if there is no
-// account on the device.
 // The owner must be aware that the authentication view may have disappeared
 // silently if `viewWillPersist` is NO.
 + (SigninCoordinator*)
