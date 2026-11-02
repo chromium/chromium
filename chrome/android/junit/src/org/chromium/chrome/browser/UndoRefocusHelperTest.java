@@ -7,6 +7,9 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,6 +41,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -49,6 +54,7 @@ import java.util.concurrent.TimeoutException;
  * percentage of tabs used.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
 public class UndoRefocusHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -89,12 +95,14 @@ public class UndoRefocusHelperTest {
 
         mUndoRefocusHelper =
                 new UndoRefocusHelper(mTabModelSelector, mLayoutManagerObservableSupplier, true);
-        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        RobolectricUtil.runAllBackgroundAndUi();
-        verify(mLayoutManagerImpl).addObserver(mLayoutStateObserverCaptor.capture());
+        if (!ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) {
+            verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+            RobolectricUtil.runAllBackgroundAndUi();
+            verify(mLayoutManagerImpl).addObserver(mLayoutStateObserverCaptor.capture());
 
-        when(mLayoutManagerImpl.isLayoutVisible(LayoutType.HUB)).thenReturn(false);
-        mLayoutStateObserverCaptor.getValue().onFinishedHiding(LayoutType.HUB);
+            when(mLayoutManagerImpl.isLayoutVisible(LayoutType.HUB)).thenReturn(false);
+            mLayoutStateObserverCaptor.getValue().onFinishedHiding(LayoutType.HUB);
+        }
     }
 
     private void initializeTabModel(int selectedIndex) {
@@ -872,6 +880,27 @@ public class UndoRefocusHelperTest {
         assertFalse(mLayoutManagerObservableSupplier.hasObservers());
         verify(mTabModel).removeObserver(mTabModelObserverCaptor.getValue());
         verify(mLayoutManagerImpl).removeObserver(mLayoutStateObserverCaptor.getValue());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
+    public void testNoOpWhenUndoReworkEnabled() {
+        TabModelSelector selector = mock(TabModelSelector.class);
+        TabModel tabModel = mock(TabModel.class);
+        when(selector.getModels()).thenReturn(List.of(tabModel));
+        MonotonicObservableSupplier<LayoutManagerImpl> layoutManagerSupplier =
+                ObservableSuppliers.createMonotonic(mLayoutManagerImpl);
+
+        UndoRefocusHelper helper =
+                new UndoRefocusHelper(selector, layoutManagerSupplier, /* isTablet= */ true);
+
+        assertFalse(layoutManagerSupplier.hasObservers());
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mLayoutManagerImpl, never()).addObserver(any());
+        verify(tabModel, never()).addObserver(any());
+        verify(selector, never()).getModels();
+
+        helper.destroy();
     }
 
     private Tab getMockedTab(int id) {

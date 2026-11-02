@@ -22,11 +22,13 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +145,21 @@ public interface TabModel extends TabList {
      * @param tabId The id of the {@link Tab} to undo.
      */
     void cancelTabClosure(@TabId int tabId);
+
+    /**
+     * Restores the closed tabs captured by {@code snapshot} when the user triggers undo.
+     *
+     * @param snapshot The closure snapshot captured at close time.
+     * @param reselect Whether to reselect a tab that was selected prior to closure.
+     * @return Restored tab IDs using the same indexing as {@code snapshot.tabs}, i.e. element
+     *     {@code i} is the restored ID of {@code snapshot.tabs.get(i)}, or {@link
+     *     Tab#INVALID_TAB_ID} if that tab could not be restored.
+     */
+    default int[] restoreClosedTabsForUndo(UndoClosureSnapshot snapshot, boolean reselect) {
+        int[] result = new int[snapshot.tabs.size()];
+        Arrays.fill(result, Tab.INVALID_TAB_ID);
+        return result;
+    }
 
     /**
      * Restores the most recent closure, bringing the tab(s) back into their original tab model or

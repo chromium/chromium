@@ -14,6 +14,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,10 +38,10 @@ public class UndoRefocusHelper {
 
     private @Nullable LayoutManagerImpl mLayoutManager;
     private @Nullable LayoutStateObserver mLayoutStateObserver;
-    private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
+    private @Nullable TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private int mSelectedTabIdWhenTabClosed = Tab.INVALID_TAB_ID;
     private boolean mTabSwitcherActive;
-    private Callback<LayoutManagerImpl> mLayoutManagerSupplierCallback;
+    private @Nullable Callback<LayoutManagerImpl> mLayoutManagerSupplierCallback;
     private final boolean mIsTablet;
     private final Set<Integer> mPendingClosureTabIds = new ArraySet<>();
     private final List<Set<Tab>> mTabsClosedTogether = new ArrayList<>();
@@ -62,13 +63,22 @@ public class UndoRefocusHelper {
         mTabSwitcherActive = false;
         mIsTablet = isTablet;
 
+        if (ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) {
+            return;
+        }
+
         observeTabModel();
         observeLayoutState();
     }
 
+    /** Unregisters any observers registered by this helper. */
     public void destroy() {
-        mTabModelSelectorTabModelObserver.destroy();
-        mLayoutManagerObservableSupplier.removeObserver(mLayoutManagerSupplierCallback);
+        if (mTabModelSelectorTabModelObserver != null) {
+            mTabModelSelectorTabModelObserver.destroy();
+        }
+        if (mLayoutManagerSupplierCallback != null) {
+            mLayoutManagerObservableSupplier.removeObserver(mLayoutManagerSupplierCallback);
+        }
         if (mLayoutManager != null) {
             assertNonNull(mLayoutStateObserver);
             mLayoutManager.removeObserver(mLayoutStateObserver);

@@ -25,8 +25,10 @@ import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.components.tabs.TabStripCollection;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -345,6 +347,13 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public void cancelTabClosure(int tabId) {
         mDelegateModel.cancelTabClosure(tabId);
+    }
+
+    @Override
+    public int[] restoreClosedTabsForUndo(UndoClosureSnapshot snapshot, boolean reselect) {
+        int[] result = new int[snapshot.tabs.size()];
+        Arrays.fill(result, Tab.INVALID_TAB_ID);
+        return result;
     }
 
     @Override

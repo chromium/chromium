@@ -5746,6 +5746,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_UNDO_BAR_CLOSED_MESSAGE" desc="Message shown when you close a combination of tabs and tab groups. See IDS_UNDO_BAR_TAB_GROUPS_AND_TABS_PART for TAB_GROUPS_AND_TABS_PART.">
         <ph name="TAB_GROUPS_AND_TABS_PART">%1$s<ex>5 tab groups, 3 tabs</ex></ph> closed
       </message>
+      <!-- TODO(crbug.com/557182836): Make translateable before enabling the feature by default. -->
+      <message name="IDS_UNDO_TAB_RESTORE_FAILED_MESSAGE" desc="Toast/snackbar message shown when undoing a closed tab fails because the tab could not be restored." translateable="false">
+        Can't restore tab
+      </message>
       <message name="IDS_CONFIRM_DELETE_MESSAGE" desc="Message shown or announced to get confirmation on whether a file should be deleted.">
         Do you want to delete <ph name="ITEM_TITLE">%1$s<ex>example.pdf</ex></ph>?
       </message>

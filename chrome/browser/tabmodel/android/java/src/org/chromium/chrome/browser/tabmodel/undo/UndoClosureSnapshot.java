@@ -10,6 +10,7 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabList;
 
 import java.lang.annotation.Retention;
@@ -163,6 +164,12 @@ public final class UndoClosureSnapshot {
      */
     public final @TabRestoreEntryId int entryId;
 
+    /** The UI surface from which the tab closure originated. */
+    public final @TabClosingSource int closingSource;
+
+    /** Optional callback invoked after the closed tabs are restored on undo. */
+    public final @Nullable Runnable undoRunnable;
+
     /**
      * Constructs an immutable snapshot.
      *
@@ -175,6 +182,8 @@ public final class UndoClosureSnapshot {
      * @param savedGroupTitle The title of the saved group, if applicable.
      * @param savedGroupTabCount The tab count of the saved group, if applicable.
      * @param entryId The TabRestoreService entry id.
+     * @param closingSource The UI surface from which the tab closure originated.
+     * @param undoRunnable Optional callback invoked after the closed tabs are restored on undo.
      */
     private UndoClosureSnapshot(
             @ClosureKind int kind,
@@ -185,7 +194,9 @@ public final class UndoClosureSnapshot {
             List<String> savedTabGroupSyncIds,
             @Nullable String savedGroupTitle,
             int savedGroupTabCount,
-            @TabRestoreEntryId int entryId) {
+            @TabRestoreEntryId int entryId,
+            @TabClosingSource int closingSource,
+            @Nullable Runnable undoRunnable) {
         this.kind = kind;
         this.tabs = Collections.unmodifiableList(new ArrayList<>(tabs));
         this.groups = Collections.unmodifiableMap(new HashMap<>(groups));
@@ -196,6 +207,8 @@ public final class UndoClosureSnapshot {
         this.savedGroupTitle = savedGroupTitle;
         this.savedGroupTabCount = savedGroupTabCount;
         this.entryId = entryId;
+        this.closingSource = closingSource;
+        this.undoRunnable = undoRunnable;
     }
 
     /**
@@ -207,6 +220,8 @@ public final class UndoClosureSnapshot {
      * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
      * @param isAllTabs Whether all tabs were closed.
      * @param entryId The TabRestoreService entry id.
+     * @param closingSource The UI surface from which the tab closure originated.
+     * @param undoRunnable Optional callback invoked after the closed tabs are restored on undo.
      * @return The immutable snapshot.
      */
     public static UndoClosureSnapshot forTabModel(
@@ -214,7 +229,9 @@ public final class UndoClosureSnapshot {
             Map<Token, GroupData> groups,
             boolean isTabGroupSyncEnabled,
             boolean isAllTabs,
-            @TabRestoreEntryId int entryId) {
+            @TabRestoreEntryId int entryId,
+            @TabClosingSource int closingSource,
+            @Nullable Runnable undoRunnable) {
         return new UndoClosureSnapshot(
                 ClosureKind.TAB_MODEL,
                 tabs,
@@ -224,7 +241,9 @@ public final class UndoClosureSnapshot {
                 /* savedTabGroupSyncIds= */ Collections.emptyList(),
                 /* savedGroupTitle= */ null,
                 /* savedGroupTabCount= */ 0,
-                entryId);
+                entryId,
+                closingSource,
+                undoRunnable);
     }
 
     /**
@@ -251,6 +270,8 @@ public final class UndoClosureSnapshot {
                 savedTabGroupSyncIds,
                 savedGroupTitle,
                 savedGroupTabCount,
-                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
+                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
+                /* closingSource= */ TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null);
     }
 }

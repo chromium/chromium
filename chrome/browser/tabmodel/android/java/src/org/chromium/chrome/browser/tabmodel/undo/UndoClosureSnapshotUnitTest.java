@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tabmodel.undo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -20,6 +22,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosureKind;
@@ -38,11 +41,12 @@ public class UndoClosureSnapshotUnitTest {
 
     @Test
     public void testConstruction() {
+        Runnable runnable = () -> {};
         UndoClosureSnapshot snapshot =
                 forTabModel(
                         List.of(
                                 new ClosedTab(
-                                        1,
+                                        /* id= */ 1,
                                         "Tab 1",
                                         GROUP_1,
                                         /* modelIndex= */ TabList.INVALID_TAB_INDEX,
@@ -58,7 +62,9 @@ public class UndoClosureSnapshotUnitTest {
                                         /* survivesInModel= */ false)),
                         /* isTabGroupSyncEnabled= */ true,
                         /* isAllTabs= */ false,
-                        /* entryId= */ 42);
+                        /* entryId= */ 42,
+                        /* closingSource= */ TabClosingSource.TABLET_TAB_STRIP,
+                        runnable);
 
         assertEquals(ClosureKind.TAB_MODEL, snapshot.kind);
         assertEquals(1, snapshot.tabs.size());
@@ -77,6 +83,8 @@ public class UndoClosureSnapshotUnitTest {
         assertFalse(groupData.survivesInModel);
 
         assertEquals(42, snapshot.entryId);
+        assertEquals(TabClosingSource.TABLET_TAB_STRIP, snapshot.closingSource);
+        assertSame(runnable, snapshot.undoRunnable);
     }
 
     @Test
@@ -85,7 +93,7 @@ public class UndoClosureSnapshotUnitTest {
                 forSavedGroups(
                         List.of(
                                 new ClosedTab(
-                                        1,
+                                        /* id= */ 1,
                                         "Tab 1",
                                         /* groupId= */ null,
                                         /* modelIndex= */ TabList.INVALID_TAB_INDEX,
@@ -103,6 +111,8 @@ public class UndoClosureSnapshotUnitTest {
         assertEquals("Saved 1", snapshot.savedGroupTitle);
         assertEquals(3, snapshot.savedGroupTabCount);
         assertEquals(TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID, snapshot.entryId);
+        assertEquals(TabClosingSource.UNKNOWN, snapshot.closingSource);
+        assertNull(snapshot.undoRunnable);
     }
 
     @Test
@@ -110,7 +120,7 @@ public class UndoClosureSnapshotUnitTest {
         List<ClosedTab> tabs = new ArrayList<>();
         tabs.add(
                 new ClosedTab(
-                        1,
+                        /* id= */ 1,
                         "Tab 1",
                         /* groupId= */ null,
                         /* modelIndex= */ TabList.INVALID_TAB_INDEX,
@@ -133,7 +143,9 @@ public class UndoClosureSnapshotUnitTest {
                         groups,
                         /* isTabGroupSyncEnabled= */ false,
                         /* isAllTabs= */ false,
-                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
+                        /* closingSource= */ TabClosingSource.UNKNOWN,
+                        /* undoRunnable= */ null);
 
         // Mutate original collections after construction.
         tabs.clear();

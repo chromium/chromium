@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
@@ -40,10 +41,15 @@ public final class UndoClosureSnapshotFactory {
      * @param tabs The tabs being closed.
      * @param isAllTabs Whether all tabs in the model are being closed.
      * @param isTabGroupSyncEnabled Whether tab group sync is enabled for the model's profile.
+     * @param closingSource The UI surface from which the tab closure originated.
      * @return The immutable snapshot representing the closure state.
      */
     public static UndoClosureSnapshot captureFromTabModel(
-            TabModel tabModel, List<Tab> tabs, boolean isAllTabs, boolean isTabGroupSyncEnabled) {
+            TabModel tabModel,
+            List<Tab> tabs,
+            boolean isAllTabs,
+            boolean isTabGroupSyncEnabled,
+            @TabClosingSource int closingSource) {
         List<ClosedTab> closedTabs = new ArrayList<>(tabs.size());
         Map<Token, GroupData> groups = new HashMap<>();
 
@@ -91,7 +97,9 @@ public final class UndoClosureSnapshotFactory {
                 groups,
                 isTabGroupSyncEnabled,
                 isAllTabs,
-                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
+                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
+                closingSource,
+                /* undoRunnable= */ null);
     }
 
     /**

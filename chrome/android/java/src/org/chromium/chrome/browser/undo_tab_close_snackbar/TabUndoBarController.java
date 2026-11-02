@@ -9,15 +9,18 @@ import android.content.Context;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshotFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 
@@ -44,6 +47,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class TabUndoBarController extends UndoBarController {
     private final TabModelObserver mTabModelObserver;
+    private @Nullable UndoClosureSnapshot mReselectableSnapshot;
 
     /**
      * Creates an instance of a {@link TabUndoBarController}.
@@ -80,6 +84,24 @@ public class TabUndoBarController extends UndoBarController {
                     }
 
                     @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        switch (type) {
+                            case TabSelectionType.FROM_USER,
+                                    TabSelectionType.FROM_OMNIBOX,
+                                    TabSelectionType.FROM_NEW,
+                                    TabSelectionType.FROM_UNDO ->
+                                    mReselectableSnapshot = null;
+                        }
+                    }
+
+                    @Override
+                    public void onDidActiveStateChange(TabModel tabModel, boolean active) {
+                        if (!active) {
+                            mReselectableSnapshot = null;
+                        }
+                    }
+
+                    @Override
                     public void tabClosureUndone(Tab tab) {
                         if (disableUndo(false)) return;
                         onTabsResolvedExternally(List.of(tab.getId()), /* undone= */ true);
@@ -108,6 +130,7 @@ public class TabUndoBarController extends UndoBarController {
                             List<Tab> tabs,
                             boolean isAllTabs,
                             @TabClosingSource int closingSource) {
+                        mReselectableSnapshot = null;
                         if (disableUndo(true)) return;
 
                         TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
@@ -117,14 +140,22 @@ public class TabUndoBarController extends UndoBarController {
                                         && profile.isNativeInitialized()
                                         && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
 
-                        queueUndoBar(
+                        UndoClosureSnapshot snapshot =
                                 UndoClosureSnapshotFactory.captureFromTabModel(
-                                        tabModel, tabs, isAllTabs, tabGroupSyncEnabled));
+                                        tabModel,
+                                        tabs,
+                                        isAllTabs,
+                                        tabGroupSyncEnabled,
+                                        closingSource);
+                        mReselectableSnapshot =
+                                mTabModelSelector.isIncognitoSelected() ? null : snapshot;
+                        queueUndoBar(snapshot);
                     }
 
                     @Override
                     public void allTabsClosureCommitted(boolean isIncognito) {
                         if (disableUndo(false)) return;
+                        mReselectableSnapshot = null;
                         clearEventQueue();
                         mSnackbarManageable
                                 .getSnackbarManager()
@@ -147,5 +178,42 @@ public class TabUndoBarController extends UndoBarController {
     public void destroy() {
         TabModel model = mTabModelSelector.getModel(false);
         if (model != null) model.removeObserver(mTabModelObserver);
+    }
+
+    /**
+     * Restores the closed tabs via {@link UndoClosureRestorer} when the rework flag is enabled, or
+     * falls back to cancelling pending closures.
+     */
+    @Override
+    protected void handleUndoAction(
+            UndoClosureSnapshot snapshot, Set<@TabId Integer> remainingTabIds) {
+        if (!ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) {
+            super.handleUndoAction(snapshot, remainingTabIds);
+            return;
+        }
+        // Reference equality is intended: only the exact snapshot instance most recently tracked
+        // for reselection is eligible.
+        boolean reselect =
+                snapshot == mReselectableSnapshot && !mTabModelSelector.isIncognitoSelected();
+        mReselectableSnapshot = null;
+        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
+        UndoClosureRestorer.restoreClosure(
+                tabModel, snapshot, reselect, mContext, mSnackbarManageable.getSnackbarManager());
+    }
+
+    /**
+     * Leaves the already-finalized closure untouched when the rework flag is enabled, or falls back
+     * to committing pending closures.
+     */
+    @Override
+    protected void handleDismissNoAction(
+            UndoClosureSnapshot snapshot, Set<@TabId Integer> remainingTabIds) {
+        if (!ChromeFeatureList.sUndoableTabClosureRework.isEnabled()) {
+            super.handleDismissNoAction(snapshot, remainingTabIds);
+            return;
+        }
+        if (snapshot == mReselectableSnapshot) {
+            mReselectableSnapshot = null;
+        }
     }
 }

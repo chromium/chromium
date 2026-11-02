@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.DetachReason;
 import org.chromium.components.tabs.TabStripCollection;
@@ -72,6 +73,7 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -578,6 +580,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
             mPendingTabClosureManager.cancelTabClosure(tabId);
         }
+    }
+
+    @Override
+    public int[] restoreClosedTabsForUndo(UndoClosureSnapshot snapshot, boolean reselect) {
+        int[] result = new int[snapshot.tabs.size()];
+        Arrays.fill(result, Tab.INVALID_TAB_ID);
+        return result;
     }
 
     @Override

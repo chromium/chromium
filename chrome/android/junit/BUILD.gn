@@ -466,7 +466,9 @@ if (is_android) {
       "src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedEntriesManagerTrackerImplUnitTest.java",
       "src/org/chromium/chrome/browser/recent_tabs/RecentlyClosedEntriesManagerUnitTest.java",
       "src/org/chromium/chrome/browser/shortcuts/BrowserCommandDelegateUnitTest.java",
+      "src/org/chromium/chrome/browser/undo_tab_close_snackbar/TabUndoBarControllerUnitTest.java",
       "src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarContentFactoryTest.java",
+      "src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoClosureRestorerUnitTest.java",
       "src/org/chromium/chrome/browser/usage_stats/UsageStatsServiceTest.java",
     ]
 

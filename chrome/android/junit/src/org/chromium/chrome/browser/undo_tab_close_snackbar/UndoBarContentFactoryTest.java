@@ -25,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
@@ -631,6 +632,8 @@ public class UndoBarContentFactoryTest {
                 groups,
                 isTabGroupSyncEnabled,
                 isAllTabs,
-                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
+                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
+                /* closingSource= */ TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null);
     }
 }

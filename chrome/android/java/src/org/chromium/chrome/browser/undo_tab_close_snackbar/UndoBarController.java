@@ -115,12 +115,12 @@ public abstract class UndoBarController
     }
 
     /**
-     * Records the undo histogram and calls {@link TabModel#cancelTabClosure(int)} for each of the
-     * bar's remaining tabs, i.e. those not already undone or committed outside of the bar. Does
-     * nothing if the bar is not tracked, which cannot happen in practice: {@link
+     * Records the undo histogram and delegates to {@link #handleUndoAction(UndoClosureSnapshot,
+     * Set)} for the bar's remaining tabs, i.e. those not already undone or committed outside of the
+     * bar. Does nothing if the bar is not tracked, which cannot happen in practice: {@link
      * SnackbarManager#canShowSnackbar()} gates both the tracking and {@link
      * SnackbarManager#showSnackbar}, and a bar whose tabs were all resolved outside of it is
-     * dismissed at once. Saved tab group sync IDs are ignored by this method.
+     * dismissed at once.
      *
      * @param actionData The {@link UndoBarContent} payload.
      */
@@ -131,17 +131,13 @@ public abstract class UndoBarController
         UndoBarEntry shownBar = mShownBars.remove(barContent);
         if (shownBar == null) return;
         RecordHistogram.recordSparseHistogram("Tab.CloseUndoBar.Undone", barContent.umaType);
-        // Tabs resolved outside of the bar may have been closed again under a new pending closure
-        // that this bar does not own, so only act on the remaining tabs.
-        for (@TabId int tabId : shownBar.mRemainingTabIds) {
-            cancelTabClosure(tabId);
-        }
+        handleUndoAction(shownBar.mSnapshot, shownBar.mRemainingTabIds);
     }
 
     /**
-     * Records the dismissal histogram and calls {@link TabModel#commitTabClosure(int)} for each of
-     * the bar's remaining tabs, i.e. those not already undone or committed outside of the bar.
-     * Saved tab group sync IDs are ignored by this method. Does nothing if the bar was dismissed
+     * Records the dismissal histogram and delegates to {@link
+     * #handleDismissNoAction(UndoClosureSnapshot, Set)} for the bar's remaining tabs, i.e. those
+     * not already undone or committed outside of the bar. Does nothing if the bar was dismissed
      * because all of its tabs were resolved externally, in which case {@link
      * #onTabsResolvedExternally} already handled the histogram.
      *
@@ -154,8 +150,39 @@ public abstract class UndoBarController
         // Untracked means onTabsResolvedExternally() dismissed it; never commit from that path.
         if (shownBar == null) return;
         RecordHistogram.recordSparseHistogram("Tab.CloseUndoBar.Dismissed", barContent.umaType);
-        // The entry was removed above, so the resulting commit events cannot modify mRemaining.
-        for (@TabId int tabId : shownBar.mRemainingTabIds) {
+        handleDismissNoAction(shownBar.mSnapshot, shownBar.mRemainingTabIds);
+    }
+
+    /**
+     * Executes the undo action for a tracked bar after the undo histogram has been recorded. By
+     * default, cancels pending closures for {@code remainingTabIds}, ignoring saved tab group sync
+     * IDs.
+     *
+     * @param snapshot The closure snapshot associated with the bar.
+     * @param remainingTabIds The IDs of the bar's tabs not yet resolved outside of the bar.
+     */
+    protected void handleUndoAction(
+            UndoClosureSnapshot snapshot, Set<@TabId Integer> remainingTabIds) {
+        // Tabs resolved outside of the bar may have been closed again under a new pending closure
+        // that this bar does not own, so only act on the remaining tabs.
+        for (@TabId int tabId : remainingTabIds) {
+            cancelTabClosure(tabId);
+        }
+    }
+
+    /**
+     * Executes the dismissal action for a tracked bar after the dismissal histogram has been
+     * recorded. By default, commits pending closures for {@code remainingTabIds}, ignoring saved
+     * tab group sync IDs.
+     *
+     * @param snapshot The closure snapshot associated with the bar.
+     * @param remainingTabIds The IDs of the bar's tabs not yet resolved outside of the bar.
+     */
+    protected void handleDismissNoAction(
+            UndoClosureSnapshot snapshot, Set<@TabId Integer> remainingTabIds) {
+        // The entry was removed before this call, so resulting commit events cannot modify
+        // remainingTabIds.
+        for (@TabId int tabId : remainingTabIds) {
             commitTabClosure(tabId);
         }
     }
@@ -258,13 +285,11 @@ public abstract class UndoBarController
 
     /**
      * Attempts to show the undo snackbar for the given snapshot. Tracking of the bar ends in one of
-     * three ways: undo is tapped ({@link #onAction}, which calls {@link
-     * TabModel#cancelTabClosure(int)} for the bar's remaining tabs, i.e. those not yet resolved
-     * outside of the bar); it is dismissed or times out ({@link #onDismissNoAction}, which calls
-     * {@link TabModel#commitTabClosure(int)} for the remaining tabs); or it is dismissed after all
-     * of its tabs were resolved outside of the bar, in which case nothing is committed; it records
-     * the external undo histogram if any of its tabs was undone outside of the bar, and the
-     * dismissal histogram otherwise.
+     * three ways: undo is tapped ({@link #onAction}, which delegates to {@link #handleUndoAction});
+     * it is dismissed or times out ({@link #onDismissNoAction}, which delegates to {@link
+     * #handleDismissNoAction}); or it is dismissed after all of its tabs were resolved outside of
+     * the bar, in which case nothing is committed; it records the external undo histogram if any of
+     * its tabs was undone outside of the bar, and the dismissal histogram otherwise.
      *
      * @param entry The bar's snapshot and tracking state.
      */

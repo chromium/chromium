@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 
 import java.util.List;
 
@@ -174,6 +175,11 @@ public class StubTabModel extends EmptyTabModel {
 
     @Override
     public TabUngrouper getTabUngrouper() {
+        throw error();
+    }
+
+    @Override
+    public int[] restoreClosedTabsForUndo(UndoClosureSnapshot snapshot, boolean reselect) {
         throw error();
     }
 
