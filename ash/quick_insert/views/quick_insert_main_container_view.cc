@@ -20,7 +20,6 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -54,12 +53,10 @@ QuickInsertMainContainerView::QuickInsertMainContainerView() {
 
   SetBackground(views::CreateRoundedRectBackground(
       kQuickInsertContainerBackgroundColor, kQuickInsertContainerBorderRadius));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kQuickInsertContainerBorderRadius,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  shadow_ =
-      SystemDecoration::CreateForView(this, kQuickInsertContainerShadowType);
-  shadow_->SetRoundedCorners(
+  decoration_ = SystemDecoration::CreateForView(
+      this, kQuickInsertContainerShadowType,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(
       gfx::RoundedCornersF(kQuickInsertContainerBorderRadius));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>())

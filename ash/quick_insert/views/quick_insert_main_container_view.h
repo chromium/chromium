@@ -65,7 +65,7 @@ class ASH_EXPORT QuickInsertMainContainerView
   void SetActivePage(QuickInsertPageView* page_view);
 
  private:
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 
   raw_ptr<QuickInsertSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<QuickInsertContentsView> contents_view_ = nullptr;

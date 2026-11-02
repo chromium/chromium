@@ -44,7 +44,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_types.h"
@@ -263,12 +262,10 @@ QuickInsertEmojiBarView::QuickInsertEmojiBarView(
   SetProperty(views::kElementIdentifierKey, kQuickInsertEmojiBarElementId);
   SetBackground(views::CreateRoundedRectBackground(
       kQuickInsertContainerBackgroundColor, kQuickInsertContainerBorderRadius));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kQuickInsertContainerBorderRadius,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  shadow_ =
-      SystemDecoration::CreateForView(this, kQuickInsertContainerShadowType);
-  shadow_->SetRoundedCorners(
+  decoration_ = SystemDecoration::CreateForView(
+      this, kQuickInsertContainerShadowType,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(
       gfx::RoundedCornersF(kQuickInsertContainerBorderRadius));
 
   auto* row =

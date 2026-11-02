@@ -82,7 +82,7 @@ class ASH_EXPORT QuickInsertEmojiBarView
   // such view.
   views::View* GetLeftmostItem();
 
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 
   // `delegate_` outlives `this`.
   raw_ptr<QuickInsertEmojiBarViewDelegate> delegate_;
