@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/ecdsa_utils.h"
@@ -767,6 +768,16 @@ TEST_P(UnexportableKeyTest, CertifySlowly) {
   ASSERT_TRUE(loaded_attestation_key);
   EXPECT_EQ(loaded_attestation_key->Algorithm(), attestation_key->Algorithm());
 }
+
+#if BUILDFLAG(IS_WIN)
+// With the kill switch disabled, Windows returns a TPM provider even on
+// machines without a TPM.
+TEST(UnexportableKeyProviderWinTest, ReturnsProviderWhenTpmCheckDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kUnexportableKeyProviderWinRequiresTpm);
+  EXPECT_TRUE(GetUnexportableKeyProvider({}));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 

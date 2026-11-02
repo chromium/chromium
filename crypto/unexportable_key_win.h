@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "crypto/crypto_export.h"
 #include "crypto/scoped_cng_types.h"
 #include "crypto/unexportable_key.h"
@@ -17,6 +18,11 @@ namespace crypto {
 // on success or an invalid handle on error.
 CRYPTO_EXPORT ScopedNCryptKey
 DuplicatePlatformKeyHandle(const UnexportableSigningKey& key);
+
+// Kill switch for returning no TPM provider on machines where TBS reports no
+// TPM. When disabled, `GetUnexportableKeyProviderWin()` always returns a
+// provider and doesn't load tbs.dll.
+CRYPTO_EXPORT BASE_DECLARE_FEATURE(kUnexportableKeyProviderWinRequiresTpm);
 
 // Returns an `UnexportableKeyProvider` that is backed by the Windows TPM, or
 // nullptr if the machine has no TPM. The first call loads tbs.dll to ask TBS

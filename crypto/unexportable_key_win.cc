@@ -57,6 +57,9 @@
 
 namespace crypto {
 
+BASE_FEATURE(kUnexportableKeyProviderWinRequiresTpm,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // Persistent ECC Storage Root Key (SRK) handle used as the parent key for
@@ -1587,7 +1590,8 @@ ScopedNCryptKey DuplicatePlatformKeyHandle(const UnexportableSigningKey& key) {
 
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin() {
   // Any TPM version counts. TPM 1.2 machines get an RSA-only provider.
-  if (!GetTpmVersion()) {
+  if (base::FeatureList::IsEnabled(kUnexportableKeyProviderWinRequiresTpm) &&
+      !GetTpmVersion()) {
     return nullptr;
   }
   return std::make_unique<UnexportableKeyProviderWin>(ProviderType::kTPM);
