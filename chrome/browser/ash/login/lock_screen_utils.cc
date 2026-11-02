@@ -10,13 +10,13 @@
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/input_method/ime_controller_client_impl.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 
 namespace ash::lock_screen_utils {
@@ -86,12 +86,12 @@ std::string GetUserLastInputMethodId(PrefService& local_state,
   }
 
   // Try profile prefs. For the ephemeral case known_user does not persist the
-  // data.
-  Profile* profile = Profile::FromBrowserContext(
-      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
-  if (profile && profile->GetPrefs()) {
+  // data. The prefs are null until the user's Profile has been created.
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  if (user && user->GetProfilePrefs()) {
     std::string input_method_id =
-        profile->GetPrefs()->GetString(prefs::kLastLoginInputMethod);
+        user->GetProfilePrefs()->GetString(prefs::kLastLoginInputMethod);
     if (!input_method_id.empty())
       return input_method_id;
   }
