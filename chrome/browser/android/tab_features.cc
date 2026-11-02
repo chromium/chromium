@@ -59,8 +59,6 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
-#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
-#include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
@@ -585,12 +583,6 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   task_tab_helper_ = GetUserDataFactory().CreateInstance<tasks::TaskTabHelper>(
       *tab, *tab, web_contents);
-
-  if (!profile->IsOffTheRecord() &&
-      HistoryEmbeddingsServiceFactory::GetForProfile(profile)) {
-    history_embeddings_tab_helper_ =
-        std::make_unique<HistoryEmbeddingsTabHelper>(web_contents);
-  }
 
   download_navigation_observer_ =
       std::make_unique<download::DownloadNavigationObserver>(
