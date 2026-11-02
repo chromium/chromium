@@ -3119,4 +3119,8 @@ public class RootUiCoordinator
     protected @Nullable OneshotSupplier<HubManager> getHubManagerSupplier() {
         return null;
     }
+
+    public void setScrimManagerForTesting(ScrimManager scrimManager) {
+        mScrimManagerSupplier.set(scrimManager);
+    }
 }

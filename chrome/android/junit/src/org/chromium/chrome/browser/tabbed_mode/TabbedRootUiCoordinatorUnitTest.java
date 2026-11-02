@@ -9,128 +9,173 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Answers.CALLS_REAL_METHODS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
-import org.robolectric.util.ReflectionHelpers;
+import org.robolectric.android.controller.ActivityController;
 
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.CallbackUtils;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityResultWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
+import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BooleanSupplier;
 
 /** Unit tests for {@link TabbedRootUiCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabbedRootUiCoordinatorUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock(answer = CALLS_REAL_METHODS)
-    private TabbedRootUiCoordinator mCoordinator;
-
+    @Mock private BrowserControlsManager mBrowserControlsManager;
+    @Mock private ActivityWindowAndroid mWindowAndroid;
+    @Mock private ActivityResultTracker mActivityResultTracker;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private AppMenuBlocker mAppMenuBlocker;
+    @Mock private FullscreenManager mFullscreenManager;
+    @Mock private TopInsetProvider mTopInsetProvider;
+    @Mock private AppMenuDelegate mAppMenuDelegate;
+    @Mock private StatusBarColorProvider mStatusBarColorProvider;
+    @Mock private IntentRequestTracker mIntentRequestTracker;
+    @Mock private InsetObserver mInsetObserver;
+    @Mock private BackPressManager mBackPressManager;
+    @Mock private EdgeToEdgeManager mEdgeToEdgeManager;
+    @Mock private VerticalTabsActionDelegate mVerticalTabsActionDelegate;
     @Mock private ScrimManager mScrimManager;
     @Mock private Profile mOriginalProfile;
     @Mock private Profile mCurrentProfile;
     @Mock private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock private InAppUpdateController mMockInAppUpdateController;
-    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private DeferredStartupHandler mDeferredStartupHandler;
+    @Mock private Tracker mTracker;
+
+    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
 
     private AppCompatActivity mActivity;
+    private TabbedRootUiCoordinator mCoordinator;
+
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
-    private final SettableMonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier =
-            ObservableSuppliers.createMonotonic();
+    private final AtomicBoolean mIsWarmOnResume = new AtomicBoolean(true);
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        ActivityController<TestActivity> activityController =
+                Robolectric.buildActivity(TestActivity.class);
+        activityController.get().setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = activityController.create().get();
+
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
+        when(mBrowserControlsManager.getBrowserVisibilityDelegate())
+                .thenReturn(
+                        new BrowserStateBrowserControlsVisibilityDelegate(
+                                ObservableSuppliers.alwaysFalse()));
+        when(mFullscreenManager.getPersistentFullscreenModeSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
         DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
         UpdateMenuItemHelper.setInstanceForTesting(mUpdateMenuItemHelper);
-        doReturn(mOriginalProfile).when(mCurrentProfile).getOriginalProfile();
+        TrackerFactory.setTrackerForTests(mTracker);
+
         mProfileSupplier.set(mCurrentProfile);
-    }
-
-    @After
-    public void tearDown() {
-        DeferredStartupHandler.setInstanceForTests(null);
-        UpdateMenuItemHelper.setInstanceForTesting(null);
-    }
-
-    private void initCoordinatorFields() {
-        initCoordinatorFields(
-                mActivity, mActivityLifecycleDispatcher, mSnackbarManagerSupplier, () -> true);
-    }
-
-    private void initCoordinatorFields(
-            @Nullable AppCompatActivity activity,
-            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
-            @Nullable MonotonicObservableSupplier<SnackbarManager> snackbarSupplier,
-            @Nullable BooleanSupplier isWarmOnResumeSupplier) {
-        mCoordinator.setActivityForTesting(activity);
-        ReflectionHelpers.setField(
-                mCoordinator, "mActivityLifecycleDispatcher", lifecycleDispatcher);
-        ReflectionHelpers.setField(mCoordinator, "mSnackbarManagerSupplier", snackbarSupplier);
-        ReflectionHelpers.setField(mCoordinator, "mProfileSupplier", mProfileSupplier);
-        ReflectionHelpers.setField(mCoordinator, "mIsWarmOnResumeSupplier", isWarmOnResumeSupplier);
+        mCoordinator = createCoordinator();
+        mCoordinator.setScrimManagerForTesting(mScrimManager);
     }
 
     /**
      * The loading fullscreen coordinator is created lazily on the first call to {@link
      * TabbedRootUiCoordinator#getLoadingFullscreenCoordinator()}. Its only client, the
      * collaboration controller delegate factory, can run after the coordinator was destroyed, and
-     * the coordinator must not be resurrected then: the activity is gone and the loading view stub
-     * was already consumed by the first inflation.
-     *
-     * <p>After {@link TabbedRootUiCoordinator#onDestroy()}, {@code mLoadingFullscreenCoordinator}
-     * and {@code mActivity} (nulled by {@link RootUiCoordinator#onDestroy()}) are both null. The
-     * real constructor requires the full activity graph, so those post-destroy field states are
-     * simulated via {@link RootUiCoordinator#destroyActivityForTesting()}.
+     * the coordinator must not be resurrected then because {@link RootUiCoordinator#onDestroy()}
+     * clears the activity reference.
      */
     @Test
     public void testGetLoadingFullscreenCoordinatorAfterDestroy() {
-        mCoordinator.destroyActivityForTesting();
+        AtomicInteger inflateCount = attachLoadingStub();
+
+        mCoordinator.onDestroy();
+
+        assertNull(mCoordinator.getLoadingFullscreenCoordinator());
+        assertEquals(0, inflateCount.get());
+    }
+
+    /**
+     * Once created, {@link TabbedRootUiCoordinator#onDestroy()} tears down the loading fullscreen
+     * coordinator and clears the activity so later requests withhold it rather than inflating the
+     * spent view stub again.
+     */
+    @Test
+    public void testGetLoadingFullscreenCoordinatorAfterDestroy_alreadyCreated() {
+        attachLoadingStub();
+        assertNotNull(mCoordinator.getLoadingFullscreenCoordinator());
+
+        mCoordinator.onDestroy();
+
         assertNull(mCoordinator.getLoadingFullscreenCoordinator());
     }
 
@@ -141,17 +186,7 @@ public class TabbedRootUiCoordinatorUnitTest {
      */
     @Test
     public void testGetLoadingFullscreenCoordinator_cachesResultAfterFirstCreation() {
-        AppCompatActivity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        FrameLayout root = new FrameLayout(activity);
-        ViewStub loadingStub = new ViewStub(activity);
-        loadingStub.setId(R.id.loading_stub);
-        AtomicInteger inflateCount = new AtomicInteger();
-        loadingStub.setOnInflateListener((stub, inflated) -> inflateCount.incrementAndGet());
-        root.addView(loadingStub);
-        activity.setContentView(root);
-
-        mCoordinator.setActivityForTesting(activity);
-        doReturn(mScrimManager).when(mCoordinator).getScrimManager();
+        AtomicInteger inflateCount = attachLoadingStub();
 
         LoadingFullscreenCoordinator first = mCoordinator.getLoadingFullscreenCoordinator();
         LoadingFullscreenCoordinator second = mCoordinator.getLoadingFullscreenCoordinator();
@@ -163,7 +198,7 @@ public class TabbedRootUiCoordinatorUnitTest {
 
     @Test
     public void testInAppUpdate_handleMenuOrKeyboardAction_updateMenuId_delegatesToHelper() {
-        initCoordinatorFields();
+        when(mCurrentProfile.getOriginalProfile()).thenReturn(mOriginalProfile);
         mCoordinator.setInAppUpdateControllerForTesting(mMockInAppUpdateController);
 
         boolean handled =
@@ -178,9 +213,6 @@ public class TabbedRootUiCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void
             testInAppUpdate_initObserversAndScheduleDeferredStartup_registersObserversAndAddsDeferredTask() {
-        initCoordinatorFields();
-
-        mCoordinator.initInAppUpdateObservers();
         mCoordinator.scheduleInAppUpdateDeferredStartup();
 
         assertNotNull(mCoordinator.getActivityResultObserverForTesting());
@@ -191,17 +223,14 @@ public class TabbedRootUiCoordinatorUnitTest {
         verify(mDeferredStartupHandler).addDeferredTask(any());
 
         // Verify idempotency: a second call does not queue another deferred task.
+        clearInvocations(mDeferredStartupHandler);
         mCoordinator.scheduleInAppUpdateDeferredStartup();
-        verify(mDeferredStartupHandler).addDeferredTask(any());
+        verify(mDeferredStartupHandler, never()).addDeferredTask(any());
     }
 
     @Test
     public void testInAppUpdate_activityResultObserver_forwardsResultToController() {
-        initCoordinatorFields();
         mCoordinator.setInAppUpdateControllerForTesting(mMockInAppUpdateController);
-
-        mCoordinator.initInAppUpdateObservers();
-
         ActivityResultWithNativeObserver observer =
                 mCoordinator.getActivityResultObserverForTesting();
         assertNotNull(observer);
@@ -220,41 +249,31 @@ public class TabbedRootUiCoordinatorUnitTest {
 
     @Test
     public void testInAppUpdate_resumeObserver_resumesWarmOnly() {
-        AtomicBoolean isWarm = new AtomicBoolean(false);
-        initCoordinatorFields(
-                mActivity, mActivityLifecycleDispatcher, mSnackbarManagerSupplier, isWarm::get);
         mCoordinator.setInAppUpdateControllerForTesting(mMockInAppUpdateController);
-
-        mCoordinator.initInAppUpdateObservers();
-
         PauseResumeWithNativeObserver observer = mCoordinator.getResumeObserverForTesting();
         assertNotNull(observer);
 
         // When cold/not warm on resume, controller.onResume() is not called.
-        isWarm.set(false);
+        mIsWarmOnResume.set(false);
         observer.onResumeWithNative();
         verify(mMockInAppUpdateController, never()).onResume();
 
         // When warm on resume, controller.onResume() is called.
-        isWarm.set(true);
+        mIsWarmOnResume.set(true);
         observer.onResumeWithNative();
         verify(mMockInAppUpdateController).onResume();
     }
 
     @Test
     public void testInAppUpdate_destroy_unregistersObserversAndCleansUpController() {
-        initCoordinatorFields();
         mCoordinator.setInAppUpdateControllerForTesting(mMockInAppUpdateController);
-
-        mCoordinator.initInAppUpdateObservers();
-
         ActivityResultWithNativeObserver activityResultObserver =
                 mCoordinator.getActivityResultObserverForTesting();
         PauseResumeWithNativeObserver resumeObserver = mCoordinator.getResumeObserverForTesting();
         assertNotNull(activityResultObserver);
         assertNotNull(resumeObserver);
 
-        mCoordinator.destroyInAppUpdate();
+        mCoordinator.onDestroy();
 
         verify(mActivityLifecycleDispatcher).unregister(activityResultObserver);
         verify(mActivityLifecycleDispatcher).unregister(resumeObserver);
@@ -267,9 +286,6 @@ public class TabbedRootUiCoordinatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testInAppUpdate_featureDisabled_noControllerCreated() {
-        initCoordinatorFields();
-
-        mCoordinator.initInAppUpdateObservers();
         mCoordinator.scheduleInAppUpdateDeferredStartup();
 
         assertNull(mCoordinator.getInAppUpdateControllerForTesting());
@@ -291,28 +307,22 @@ public class TabbedRootUiCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testInAppUpdate_deferredStartupAfterDestroy_doesNotThrowOrResurrectController() {
-        initCoordinatorFields();
-
         mCoordinator.scheduleInAppUpdateDeferredStartup();
+        verify(mDeferredStartupHandler).addDeferredTask(mRunnableCaptor.capture());
 
-        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mDeferredStartupHandler).addDeferredTask(runnableCaptor.capture());
-
-        // Simulate activity destruction before deferred startup task executes.
-        mCoordinator.destroyActivityForTesting();
-        mCoordinator.destroyInAppUpdate();
+        // Simulate coordinator destruction before deferred startup task executes.
+        mCoordinator.onDestroy();
 
         // Executing the deferred task must not throw NullPointerException or resurrect the
         // controller.
-        runnableCaptor.getValue().run();
+        mRunnableCaptor.getValue().run();
         assertNull(mCoordinator.getInAppUpdateControllerForTesting());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void testGetOrCreateInAppUpdateController_afterDestroy_returnsNull() {
-        mCoordinator.destroyActivityForTesting();
-        mCoordinator.setInAppUpdateControllerForTesting(null);
+        mCoordinator.onDestroy();
         assertNull(mCoordinator.getOrCreateInAppUpdateController());
     }
 
@@ -320,9 +330,6 @@ public class TabbedRootUiCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void
             testGetOrCreateInAppUpdateController_whenActivityFinishingOrDestroyed_returnsNull() {
-        initCoordinatorFields();
-        mCoordinator.setInAppUpdateControllerForTesting(null);
-
         // Active activity creates controller.
         assertNotNull(mCoordinator.getOrCreateInAppUpdateController());
 
@@ -330,5 +337,77 @@ public class TabbedRootUiCoordinatorUnitTest {
         mCoordinator.setInAppUpdateControllerForTesting(null);
         mActivity.finish();
         assertNull(mCoordinator.getOrCreateInAppUpdateController());
+    }
+
+    private TabbedRootUiCoordinator createCoordinator() {
+        return new TabbedRootUiCoordinator(
+                mActivity,
+                /* onOmniboxFocusChangedListener= */ null,
+                /* shareDelegateSupplier= */ ObservableSuppliers.alwaysNull(),
+                new ActivityTabProvider(),
+                mProfileSupplier,
+                /* bookmarkModelSupplier= */ ObservableSuppliers.alwaysNull(),
+                /* tabBookmarkerSupplier= */ ObservableSuppliers.alwaysNull(),
+                /* tabModelSelectorSupplier= */ ObservableSuppliers.alwaysNull(),
+                /* tabSwitcherSupplier= */ new OneshotSupplierImpl<>(),
+                /* incognitoTabSwitcherSupplier= */ new OneshotSupplierImpl<>(),
+                /* hubManagerSupplier= */ new OneshotSupplierImpl<>(),
+                /* intentMetadataOneshotSupplier= */ new OneshotSupplierImpl<>(),
+                /* layoutStateProviderOneshotSupplier= */ new OneshotSupplierImpl<>(),
+                mBrowserControlsManager,
+                mWindowAndroid,
+                mActivityResultTracker,
+                /* chromeAndroidTaskSupplier= */ new OneshotSupplierImpl<>(),
+                mActivityLifecycleDispatcher,
+                mMultiWindowModeStateDispatcher,
+                /* layoutManagerSupplier= */ ObservableSuppliers.alwaysNull(),
+                mMenuOrKeyboardActionController,
+                /* activityThemeColorSupplier= */ () -> Color.TRANSPARENT,
+                ObservableSuppliers.createNonNull(mModalDialogManager),
+                mAppMenuBlocker,
+                /* supportsAppMenuSupplier= */ () -> true,
+                /* tabCreatorManagerSupplier= */ ObservableSuppliers.alwaysNull(),
+                mFullscreenManager,
+                /* compositorViewHolderSupplier= */ ObservableSuppliers.alwaysNull(),
+                /* tabContentManagerSupplier= */ () -> null,
+                /* snackbarManagerSupplier= */ ObservableSuppliers.alwaysNull(),
+                /* edgeToEdgeSupplier= */ ObservableSuppliers.createMonotonic(),
+                mTopInsetProvider,
+                /* systemBarColorHelperSupplier= */ new OneshotSupplierImpl<>(),
+                ActivityType.TABBED,
+                /* isInOverviewModeSupplier= */ () -> false,
+                mAppMenuDelegate,
+                mStatusBarColorProvider,
+                /* ephemeralTabCoordinatorSupplier= */ ObservableSuppliers.createMonotonic(),
+                mIntentRequestTracker,
+                mInsetObserver,
+                /* backButtonShouldCloseTabFn= */ _ -> false,
+                /* sendToBackground= */ CallbackUtils.emptyCallback(),
+                /* initializeUiWithIncognitoColors= */ false,
+                mBackPressManager,
+                /* savedInstanceState= */ null,
+                /* persistentState= */ null,
+                /* multiInstanceManager= */ null,
+                /* manualFillingComponentSupplier= */ ObservableSuppliers.alwaysNull(),
+                mEdgeToEdgeManager,
+                /* bookmarkManagerOpenerSupplier= */ ObservableSuppliers.alwaysNull(),
+                /* xrSpaceModeObservableSupplier= */ ObservableSuppliers.alwaysFalse(),
+                /* inactivityTrackerSupplier= */ new OneshotSupplierImpl<>(),
+                /* bottomBarHostManager= */ null,
+                mVerticalTabsActionDelegate,
+                /* urlBarVisibleSupplier= */ () -> false,
+                /* onTabLayoutAvailable= */ CallbackUtils.emptyRunnable(),
+                mIsWarmOnResume::get);
+    }
+
+    private AtomicInteger attachLoadingStub() {
+        FrameLayout root = new FrameLayout(mActivity);
+        ViewStub loadingStub = new ViewStub(mActivity);
+        loadingStub.setId(R.id.loading_stub);
+        AtomicInteger inflateCount = new AtomicInteger();
+        loadingStub.setOnInflateListener((_, _) -> inflateCount.incrementAndGet());
+        root.addView(loadingStub);
+        mActivity.setContentView(root);
+        return inflateCount;
     }
 }
