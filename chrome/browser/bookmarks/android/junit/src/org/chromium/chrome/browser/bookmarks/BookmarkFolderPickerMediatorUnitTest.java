@@ -11,7 +11,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
@@ -34,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
@@ -236,6 +240,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
 
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock private BookmarkModel mBookmarkModel;
+    @Mock private BookmarkModelObserver mBookmarkModelObserver;
     @Mock private Runnable mFinishRunnable;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
     @Mock private Tracker mTracker;
@@ -719,6 +724,94 @@ public class BookmarkFolderPickerMediatorUnitTest {
         mFinishModelLoadCallback.run();
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
+    }
+
+    @Test
+    public void testMoveMultiple_coalescesRefreshIntoOnePost() {
+        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        BookmarkId id1 =
+                bookmarkModel.addBookmark(
+                        bookmarkModel.getMobileFolderId(),
+                        /* index= */ 0,
+                        "title1",
+                        new GURL("https://google.com"));
+        BookmarkId id2 =
+                bookmarkModel.addBookmark(
+                        bookmarkModel.getMobileFolderId(),
+                        /* index= */ 1,
+                        "title2",
+                        new GURL("https://google.com"));
+        BookmarkId targetFolderId =
+                bookmarkModel.addFolder(
+                        bookmarkModel.getMobileFolderId(), /* index= */ 2, "targetFolder");
+        remakeMediator(
+                BookmarkUtils.isDesktopBookmarksDialogEnabled(),
+                /* restoredFolderId= */ null,
+                bookmarkModel,
+                id1,
+                id2);
+
+        bookmarkModel.addObserver(mBookmarkModelObserver);
+        mMediator.populateFoldersForParentId(targetFolderId);
+        verify(mBookmarkModelObserver).bookmarkFolderViewed(targetFolderId);
+        clearInvocations(mBookmarkModelObserver);
+
+        mModel.get(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER).run();
+        verify(mFinishRunnable).run();
+        // Moving two bookmarks fires two model-changed notifications. bookmarkFolderViewed is the
+        // observable side effect of populateFoldersForParentId, i.e. the proxy for "rebuilt";
+        // nothing is rebuilt synchronously.
+        verify(mBookmarkModelObserver, never()).bookmarkFolderViewed(targetFolderId);
+
+        ShadowLooper.idleMainLooper();
+        verify(mBookmarkModelObserver, times(1)).bookmarkFolderViewed(targetFolderId);
+    }
+
+    @Test
+    public void testDestroy_cancelsPendingRefresh() {
+        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        BookmarkId movedId =
+                bookmarkModel.addBookmark(
+                        bookmarkModel.getMobileFolderId(),
+                        /* index= */ 0,
+                        "title",
+                        new GURL("https://google.com"));
+        remakeMediator(
+                BookmarkUtils.isDesktopBookmarksDialogEnabled(),
+                /* restoredFolderId= */ null,
+                bookmarkModel,
+                movedId);
+        bookmarkModel.addObserver(mBookmarkModelObserver);
+        clearInvocations(mBookmarkModelObserver);
+
+        bookmarkModel.addFolder(bookmarkModel.getMobileFolderId(), /* index= */ 0, "folder");
+        mMediator.destroy();
+
+        ShadowLooper.idleMainLooper();
+        verify(mBookmarkModelObserver, never()).bookmarkFolderViewed(any());
+        verify(mFinishRunnable, never()).run();
+    }
+
+    @Test
+    public void testBookmarkRemoved_finishesAfterPostedRefresh() {
+        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        BookmarkId movedId =
+                bookmarkModel.addBookmark(
+                        bookmarkModel.getMobileFolderId(),
+                        /* index= */ 0,
+                        "title",
+                        new GURL("https://google.com"));
+        remakeMediator(
+                BookmarkUtils.isDesktopBookmarksDialogEnabled(),
+                /* restoredFolderId= */ null,
+                bookmarkModel,
+                movedId);
+
+        bookmarkModel.deleteBookmark(movedId);
+        verify(mFinishRunnable, never()).run();
+
+        ShadowLooper.idleMainLooper();
+        verify(mFinishRunnable).run();
     }
 
     @Test

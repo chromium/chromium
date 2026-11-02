@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.base.CallbackController;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -46,6 +49,7 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowCoordinator;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowViewBinder;
+import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -114,6 +118,12 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
+    private @Nullable BookmarkImageFetcher mBookmarkImageFetcher;
+
+    private final CallbackController mCallbackController = new CallbackController();
+    private final PendingRunnable mPendingRefresh =
+            new PendingRunnable(
+                    TaskTraits.UI_DEFAULT, mCallbackController.makeCancelable(this::refresh));
 
     private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
             new BookmarkUiPrefs.Observer() {
@@ -128,11 +138,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
             new BookmarkModelObserver() {
                 @Override
                 public void bookmarkModelChanged() {
-                    if (mModel.doesBookmarkExist(mBookmarkId)) {
-                        updateViewContent(true);
-                    } else {
-                        finish();
-                    }
+                    // We often see/cause multiple bookmark changes at once. Route through
+                    // mPendingRefresh to group the updates.
+                    mPendingRefresh.post();
                 }
             };
 
@@ -204,18 +212,19 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
 
+        mBookmarkImageFetcher =
+                new BookmarkImageFetcher(
+                        profile,
+                        this,
+                        mModel,
+                        ImageFetcherFactory.createImageFetcher(
+                                ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey()),
+                        BookmarkViewUtils.getRoundedIconGenerator(
+                                this, BookmarkRowDisplayPref.VISUAL));
         mFolderSelectRowCoordinator =
                 new ImprovedBookmarkRowCoordinator(
                         this,
-                        new BookmarkImageFetcher(
-                                profile,
-                                this,
-                                mModel,
-                                ImageFetcherFactory.createImageFetcher(
-                                        ImageFetcherConfig.DISK_CACHE_ONLY,
-                                        profile.getProfileKey()),
-                                BookmarkViewUtils.getRoundedIconGenerator(
-                                        this, BookmarkRowDisplayPref.VISUAL)),
+                        mBookmarkImageFetcher,
                         mModel,
                         mBookmarkUiPrefs,
                         ShoppingServiceFactory.getForProfile(profile));
@@ -268,6 +277,17 @@ public class BookmarkEditActivity extends SnackbarActivity {
         updateFolderPickerRow(assumeNonNull(mBookmarkUiPrefs).getBookmarkRowDisplayPref());
     }
 
+    private void refresh() {
+        // The save/delete click paths call finish() right after mutating the model, so skip the
+        // lookup and view rebuild for a dialog that is already going away.
+        if (isFinishing()) return;
+        if (mModel.doesBookmarkExist(mBookmarkId)) {
+            updateViewContent(/* modelChanged= */ true);
+        } else {
+            finish();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!mIsDesktopDialog) {
@@ -301,15 +321,18 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private void saveBookmark() {
         if (mModel.doesBookmarkExist(mBookmarkId)) {
             BookmarkItem bookmarkItem = assumeNonNull(mModel.getBookmarkById(mBookmarkId));
+            final String originalTitle = bookmarkItem.getTitle();
             final GURL originalUrl = bookmarkItem.getUrl();
             final String title = mTitleEditText.getTrimmedText();
             final String url = mUrlEditText.getTrimmedText();
 
-            if (!mTitleEditText.isEmpty()) {
+            if (!mTitleEditText.isEmpty() && !TextUtils.equals(title, originalTitle)) {
                 mModel.setBookmarkTitle(mBookmarkId, title);
             }
 
-            if (!mUrlEditText.isEmpty() && bookmarkItem.isUrlEditable()) {
+            if (!mUrlEditText.isEmpty()
+                    && bookmarkItem.isUrlEditable()
+                    && !TextUtils.equals(url, originalUrl.getSpec())) {
                 GURL fixedUrl = UrlFormatter.fixupUrl(url);
                 if (fixedUrl.isValid() && !fixedUrl.equals(originalUrl)) {
                     mModel.setBookmarkUrl(mBookmarkId, fixedUrl);
@@ -365,11 +388,16 @@ public class BookmarkEditActivity extends SnackbarActivity {
                                     ? BookmarkEditOutcome.SAVED
                                     : BookmarkEditOutcome.DISMISSED));
         }
+        mCallbackController.destroy();
         mModel.removeObserver(mBookmarkModelObserver);
         if (mBookmarkUiPrefs != null) {
             mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
             mBookmarkUiPrefs.destroy();
             mBookmarkUiPrefs = null;
+        }
+        if (mBookmarkImageFetcher != null) {
+            mBookmarkImageFetcher.destroy();
+            mBookmarkImageFetcher = null;
         }
         if (mEdgeToEdgePadAdjuster != null) {
             mEdgeToEdgePadAdjuster.destroy();

@@ -9,9 +9,11 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -33,18 +35,18 @@ import java.util.Objects;
 /** Mediator for the folder picker activity. */
 @NullMarked
 class BookmarkFolderPickerMediator {
+    private final CallbackController mCallbackController = new CallbackController();
+    private final PendingRunnable mPendingRefresh =
+            new PendingRunnable(
+                    TaskTraits.UI_DEFAULT, mCallbackController.makeCancelable(this::refresh));
+
     private final BookmarkModelObserver mBookmarkModelObserver =
             new BookmarkModelObserver() {
                 @Override
                 public void bookmarkModelChanged() {
-                    if (mBookmarkModel.doAllBookmarksExist(mBookmarkIds)) {
-                        populateFoldersForParentId(
-                                mCurrentParentItem == null
-                                        ? assertNonNull(mOriginalParentId)
-                                        : mCurrentParentItem.getId());
-                    } else {
-                        mFinishRunnable.run();
-                    }
+                    // We often see/cause multiple bookmark changes at once. Route through
+                    // mPendingRefresh to group the updates.
+                    mPendingRefresh.post();
                 }
             };
 
@@ -201,8 +203,23 @@ class BookmarkFolderPickerMediator {
     }
 
     void destroy() {
+        mCallbackController.destroy();
         mBookmarkModel.removeObserver(mBookmarkModelObserver);
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
+        mQueryHandler.destroy();
+    }
+
+    private void refresh() {
+        if (mBookmarkModel.doAllBookmarksExist(mBookmarkIds)) {
+            populateFoldersForParentId(
+                    mCurrentParentItem == null
+                            ? assertNonNull(mOriginalParentId)
+                            : mCurrentParentItem.getId());
+        } else {
+            // A reading-list move re-ids the node, so this can run after onMoveClicked() already
+            // finished; mFinishRunnable is idempotent.
+            mFinishRunnable.run();
+        }
     }
 
     /** Returns the folder being shown, or null if the model hasn't loaded yet. */

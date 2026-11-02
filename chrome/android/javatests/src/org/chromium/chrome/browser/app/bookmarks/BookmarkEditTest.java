@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -210,6 +211,50 @@ public class BookmarkEditTest {
     @Test
     @MediumTest
     @Feature({"Bookmark"})
+    public void testOnStopSavesWithoutReinflatingRowOrNoOpModelChanges()
+            throws ExecutionException, TimeoutException {
+        Assert.assertEquals(
+                "Incorrect title.",
+                TITLE_A,
+                sBookmarkEditActivity.getTitleEditText().getEditText().getText().toString());
+        Assert.assertEquals(
+                "Incorrect url.",
+                URL_A,
+                sBookmarkEditActivity.getUrlEditText().getEditText().getText().toString());
+
+        View oldFolderSelectRow = sBookmarkEditActivity.getFolderSelectRowForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sBookmarkEditActivity.getTitleEditText().getEditText().setText(TITLE_B);
+                    sBookmarkEditActivity.getUrlEditText().getEditText().setText(URL_B);
+                    sBookmarkEditActivity.onStop();
+                });
+        // Checks that onStop() did not synchronously re-inflate the folder row; the coalesced
+        // model-changed refresh is drained separately below.
+        Assert.assertSame(
+                "Folder row should not be re-inflated on save.",
+                oldFolderSelectRow,
+                sBookmarkEditActivity.getFolderSelectRowForTesting());
+        // The coalesced refresh re-inflates the row once, after onStop() has returned.
+        CriteriaHelper.pollUiThread(
+                () -> sBookmarkEditActivity.getFolderSelectRowForTesting() != oldFolderSelectRow,
+                "Timed out waiting for the posted refresh to rebuild the folder row");
+
+        BookmarkItem bookmarkItem = getBookmarkItem(sBookmarkId);
+        Assert.assertEquals("Incorrect title after edit.", TITLE_B, bookmarkItem.getTitle());
+        Assert.assertEquals("Incorrect url after edit.", URL_B, bookmarkItem.getUrl().getSpec());
+
+        int modelChangedCount = sModelChangedCallback.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkEditActivity.onStop());
+        Assert.assertEquals(
+                "Unchanged bookmark should not trigger model changes on stop.",
+                modelChangedCount,
+                sModelChangedCallback.getCallCount());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Bookmark"})
     public void testEditEmptyInputRejected() throws ExecutionException, TimeoutException {
         Assert.assertEquals(
                 "Incorrect title.",
@@ -335,9 +380,9 @@ public class BookmarkEditTest {
         ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.deleteBookmark(sBookmarkId));
         sModelChangedCallback.waitForCallback(currentModelChangedCount);
 
-        Assert.assertTrue(
-                "BookmarkActivity should be finishing or destroyed.",
-                sBookmarkEditActivity.isFinishing() || sBookmarkEditActivity.isDestroyed());
+        CriteriaHelper.pollUiThread(
+                () -> sBookmarkEditActivity.isFinishing() || sBookmarkEditActivity.isDestroyed(),
+                "Timed out waiting for BookmarkEditActivity to finish");
     }
 
     @Test

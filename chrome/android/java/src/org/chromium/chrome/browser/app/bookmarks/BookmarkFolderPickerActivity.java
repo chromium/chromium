@@ -76,6 +76,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
 
     private @Nullable BookmarkFolderPickerCoordinator mCoordinator;
     private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
+    private @Nullable BookmarkImageFetcher mBookmarkImageFetcher;
     private boolean mOutcomeRecorded;
 
     /** The folder that was shown before recreation, if any. */
@@ -109,7 +110,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
             return;
         }
 
-        BookmarkImageFetcher bookmarkImageFetcher =
+        mBookmarkImageFetcher =
                 new BookmarkImageFetcher(
                         profile,
                         this,
@@ -148,7 +149,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                         mBookmarkUiPrefs,
                         new ImprovedBookmarkRowCoordinator(
                                 this,
-                                bookmarkImageFetcher,
+                                mBookmarkImageFetcher,
                                 bookmarkModel,
                                 mBookmarkUiPrefs,
                                 shoppingService),
@@ -302,6 +303,11 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         if (mBookmarkUiPrefs != null) {
             mBookmarkUiPrefs.destroy();
             mBookmarkUiPrefs = null;
+        }
+
+        if (mBookmarkImageFetcher != null) {
+            mBookmarkImageFetcher.destroy();
+            mBookmarkImageFetcher = null;
         }
 
         super.onDestroy();
