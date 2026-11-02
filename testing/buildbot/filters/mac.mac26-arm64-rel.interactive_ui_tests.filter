@@ -1,0 +1,7 @@
+# Test filter for interactive_ui_tests on mac26-arm64-rel (MacOS 26 ARM64)
+
+# TODO(b/580867054): On Mac-26 VMs (VirtualMac2,1), the virtual display's usable
+# work area height clamps BrowserWidget to ~681px, causing vertical (kStacked)
+# split-view resize tests that assume >=686px / 1000px window height to fail.
+-SplitTabLayout/MultiContentsViewUiTest.ResizesInSplitView/1
+-SplitTabLayout/MultiContentsViewUiTest.ResizesToMinSize/1

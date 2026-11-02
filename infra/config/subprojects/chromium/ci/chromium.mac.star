@@ -642,19 +642,15 @@ ci.thin_tester(
                 mixins = "mac_26_arm64",
                 remove_mixins = "mac_26_vm_optional",
             ),
-            # TODO(crbug.com/436628295): tests fails on VM when host OS
-            # is 26.4 while VM OS is 15.6.1
-            "interactive_ui_tests": targets.per_test_modification(
-                mixins = [
-                    targets.mixin(
-                        swarming = targets.swarming(
-                            shards = 16,
-                        ),
-                    ),
-                    "mac_26_arm64",
-                    "ci_only",
+            "interactive_ui_tests": targets.mixin(
+                # TODO(b/580867054): Remove filter once Mac VM display size is
+                # increased.
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac26-arm64-rel.interactive_ui_tests.filter",
                 ],
-                remove_mixins = "mac_26_vm_optional",
+                swarming = targets.swarming(
+                    shards = 16,
+                ),
             ),
             # TODO(crbug.com/500901289): tests are flaky on VM when host OS is 26+ while VM OS is 15.6.1
             "sync_integration_tests": targets.per_test_modification(
