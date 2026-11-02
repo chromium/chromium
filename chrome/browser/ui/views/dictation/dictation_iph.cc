@@ -103,13 +103,13 @@ HelpBubbleArrow GetDictationIphArrow(const ui::TrackedElement* anchor_element) {
                                        base::i18n::IsRTL());
 }
 
-bool CanRequestDictationHotkeyIph(
+bool CanRequestDictationIph(
     const std::optional<user_education::FeaturePromoData>& promo_data,
     base::Time now) {
   if (!promo_data || promo_data->show_count == 0) {
     return true;
   }
-  if (promo_data->show_count >= kMaxDictationHotkeyIphShows) {
+  if (promo_data->show_count >= kMaxDictationIphShows) {
     return false;
   }
   // User Education waits a full snooze duration after a snooze, but only

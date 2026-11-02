@@ -5,16 +5,21 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/dictation/dictation_iph.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_storage_service.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -182,6 +187,27 @@ IN_PROC_BROWSER_TEST_F(DictationIphControllerUiTest,
 IN_PROC_BROWSER_TEST_F(DictationIphControllerUiTest,
                        DoesNotShowWithoutMicrophone) {
   MediaCaptureDevicesDispatcher::GetInstance()->SetTestAudioCaptureDevices({});
+  RunTestSequence(
+      OpenTestPage(), ClickField(kTextarea),
+      WaitForShow(kDictationIphAnchorElementId), WaitForFieldType(),
+      CheckPromoRequested(feature_engagement::kIPHDictationFeature, false));
+}
+
+IN_PROC_BROWSER_TEST_F(DictationIphControllerUiTest, StopsAfterMaxShows) {
+  // The IPH was shown the maximum number of times, long enough ago that only
+  // the show cap stops it.
+  user_education::UserEducationStorageService& storage =
+      UserEducationServiceFactory::GetForBrowserContext(
+          chrome_test_utils::GetProfile(this))
+          ->user_education_storage_service();
+  user_education::FeaturePromoData data;
+  data.show_count = kMaxDictationIphShows;
+  data.snooze_count = kMaxDictationIphShows - 1;
+  data.first_show_time = storage.GetCurrentTime() - base::Days(30);
+  data.last_show_time = data.first_show_time;
+  data.last_snooze_time = data.last_show_time;
+  storage.SavePromoData(feature_engagement::kIPHDictationFeature, data);
+
   RunTestSequence(
       OpenTestPage(), ClickField(kTextarea),
       WaitForShow(kDictationIphAnchorElementId), WaitForFieldType(),

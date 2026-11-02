@@ -213,15 +213,9 @@ void DictationIphController::MaybeShowPromo(int retries_left,
     return;
   }
 
-  if (auto* const user_education = GetUserEducation()) {
-    key_presses_while_showing_ = 0;
-    // The body refers to the context menu item by name, which is branded.
-    user_education::FeaturePromoParams params(
-        feature_engagement::kIPHDictationFeature);
-    params.body_params =
-        l10n_util::GetStringUTF16(IDS_DICTATION_CONTEXT_MENU_STRING);
-    user_education->MaybeShowFeaturePromo(std::move(params));
-  }
+  // The body refers to the context menu item by name, which is branded.
+  RequestPromo(feature_engagement::kIPHDictationFeature,
+               l10n_util::GetStringUTF16(IDS_DICTATION_CONTEXT_MENU_STRING));
 }
 
 void DictationIphController::DidGetUserInteraction(
@@ -328,8 +322,8 @@ void DictationIphController::IgnorePromo() {
   // neither dismisses nor snoozes it. The user education framework only has
   // the last show time, so the IPH is blocked for
   // `user_education::features::GetAbortCooldown()` (4 hours) after this.
-  // See `FeaturePromoLifecycle::CanShowSnoozePromo()`. For the hotkey IPH,
-  // `CanRequestDictationHotkeyIph()` waits longer.
+  // See `FeaturePromoLifecycle::CanShowSnoozePromo()`. `CanRequestPromo()`
+  // waits longer.
   if (auto* const user_education = GetUserEducation()) {
     user_education->AbortFeaturePromo(feature_engagement::kIPHDictationFeature);
     user_education->AbortFeaturePromo(
@@ -377,25 +371,8 @@ void DictationIphController::OnSessionEnded(
   if (hotkey.IsEmpty()) {
     return;
   }
-  UserEducationService* const user_education_service =
-      UserEducationServiceFactory::GetForBrowserContext(profile);
-  BrowserUserEducationInterface* const user_education = GetUserEducation();
-  if (!user_education_service || !user_education) {
-    return;
-  }
-  const user_education::UserEducationStorageService& storage =
-      user_education_service->user_education_storage_service();
-  if (!CanRequestDictationHotkeyIph(
-          storage.ReadPromoData(feature_engagement::kIPHDictationHotkeyFeature),
-          storage.GetCurrentTime())) {
-    return;
-  }
-
-  user_education::FeaturePromoParams params(
-      feature_engagement::kIPHDictationHotkeyFeature);
-  params.body_params = hotkey.GetShortcutText();
-  key_presses_while_showing_ = 0;
-  user_education->MaybeShowFeaturePromo(std::move(params));
+  RequestPromo(feature_engagement::kIPHDictationHotkeyFeature,
+               hotkey.GetShortcutText());
 }
 
 bool DictationIphController::IsAnchorCurrent(
@@ -410,6 +387,32 @@ bool DictationIphController::IsAnchorCurrent(
   gfx::Rect field = anchor_->GetScreenBounds();
   field.Outset(kCaretSlop);
   return field.Contains(*caret);
+}
+
+bool DictationIphController::CanRequestPromo(
+    const base::Feature& iph_feature) const {
+  UserEducationService* const user_education_service =
+      UserEducationServiceFactory::GetForBrowserContext(
+          web_contents()->GetBrowserContext());
+  if (!user_education_service) {
+    return false;
+  }
+  const user_education::UserEducationStorageService& storage =
+      user_education_service->user_education_storage_service();
+  return CanRequestDictationIph(storage.ReadPromoData(iph_feature),
+                                storage.GetCurrentTime());
+}
+
+void DictationIphController::RequestPromo(const base::Feature& iph_feature,
+                                          std::u16string body) {
+  BrowserUserEducationInterface* const user_education = GetUserEducation();
+  if (!user_education || !CanRequestPromo(iph_feature)) {
+    return;
+  }
+  user_education::FeaturePromoParams params(iph_feature);
+  params.body_params = std::move(body);
+  key_presses_while_showing_ = 0;
+  user_education->MaybeShowFeaturePromo(std::move(params));
 }
 
 }  // namespace dictation

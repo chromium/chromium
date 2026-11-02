@@ -296,8 +296,8 @@ IN_PROC_BROWSER_TEST_F(DictationHotkeyIphUiTest, HotkeyClosesPromo) {
 IN_PROC_BROWSER_TEST_F(DictationHotkeyIphUiTest, StopsAfterMaxShows) {
   // clang-format off
   RunTestSequence(
-      SetPromoData(kMaxDictationHotkeyIphShows,
-                   /*snooze_count=*/kMaxDictationHotkeyIphShows - 1,
+      SetPromoData(kMaxDictationIphShows,
+                   /*snooze_count=*/kMaxDictationIphShows - 1,
                    base::Days(30)),
       InvokeTwiceInTextarea(),
       CheckPromoNotRequested());

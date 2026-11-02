@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "content/public/browser/global_dom_node_id.h"
@@ -110,6 +112,14 @@ class DictationIphController : public tabs::ContentsObservingTabFeature {
   // anchor only moves when focus changes, so the page may have scrolled or the
   // field may have moved or grown since.
   bool IsAnchorCurrent(content::RenderFrameHost& rfh) const;
+
+  // Returns whether `iph_feature` may be requested, given its stored promo
+  // data. See `CanRequestDictationIph()`.
+  bool CanRequestPromo(const base::Feature& iph_feature) const;
+
+  // Requests `iph_feature` with `body` as its body text, if it may be
+  // requested.
+  void RequestPromo(const base::Feature& iph_feature, std::u16string body);
 
   // Tracks the focused field. Only exists while a field is focused.
   std::unique_ptr<views::ViewSubregionAnchor> anchor_;
