@@ -15,6 +15,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
@@ -83,6 +84,17 @@ class ImageServiceImpl::SuggestEntityImageURLFetcher {
         search_terms_args, search_terms_data,
         base::BindOnce(&SuggestEntityImageURLFetcher::OnURLLoadComplete,
                        weak_factory_.GetWeakPtr()));
+
+    // No request is started if `template_url` has no valid suggestions URL.
+    // Still notify the caller. Post the callback, because it owns this fetcher
+    // (see FetchSuggestImage()).
+    if (!loader_) {
+      UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
+                                       PageImageServiceResult::kResponseMissing,
+                                       client_id_);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback_), GURL()));
+    }
   }
 
  private:
