@@ -1545,7 +1545,7 @@
 <translation id="7077143737582773186">‏کارت SD</translation>
 <translation id="7080145768121641840">‫<ph name="TAB_TITLE" />، زبانه بی‌صدای سنجاق‌شده انتخابی</translation>
 <translation id="7084115944294706056">انتخاب کردن جای نوار نشانی</translation>
-<translation id="7085332316435785646">‏انتخاب کنید که آیا سابقه Chrome برای تجربه‌های شخصی‌شده‌تر در سرویس‌های Google لحاظ شود یا نه</translation>
+<translation id="7085332316435785646">‏انتخاب کنید که آیا سابقه Chrome برای تجربه‌های شخصی‌سازی‌شده‌تر در سرویس‌های Google گنجانده شود یا نه</translation>
 <translation id="7087066066828635014">اعلان‌های نکته‌ها روشن شد</translation>
 <translation id="7088681679121566888">‏Chrome به‌روز است</translation>
 <translation id="7098100324909062850">‫<ph name="TAB_TITLE" />، زبانه ناشناس بی‌صدای چندانتخابی</translation>
@@ -1898,7 +1898,7 @@
 <translation id="8413795581997394485">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودن آن‌ها مشخص شده است از شما محافظت می‌کند. هنگامی که از سایتی بازدید می‌کنید، Chrome بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حافظ حریم خصوصی که نشانی IP شما را پنهان کرده است به Google ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شود.</translation>
 <translation id="8414396119627470038">ورود به سیستم <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419144699778179708">سابقه، ازجمله سابقه موجود در چارگوش جستجو حذف می‌شود</translation>
-<translation id="8419244640277402268">لحاظ شود</translation>
+<translation id="8419244640277402268">گنجاندن</translation>
 <translation id="8422250855136581222">برگه‌ای در این دستگاه بسته نمی‌شود</translation>
 <translation id="842386925677997438">‏ابزارهای ایمنی Chrome</translation>
 <translation id="8427875596167638501">برگه پیش‌نمایش نیمه‌باز است</translation>
