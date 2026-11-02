@@ -15,6 +15,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/execution_fence.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
@@ -179,4 +181,25 @@ TEST_F(ArcWallpaperServiceTest, GetEmptyWallpaper) {
 
   service_->GetWallpaper(base::DoNothing());
   content::RunAllTasksUntilIdle();
+}
+
+// Verifies that GetWallpaper() completes even while BEST_EFFORT tasks are
+// blocked by an execution fence (e.g. during Chrome startup before
+// AfterStartupTaskUtils unblocks BEST_EFFORT queues). Android SystemUI calls
+// GetWallpaper() synchronously during boot, so stalling it on BEST_EFFORT would
+// hang SystemUI and KeyguardService initialization (b/577511643).
+TEST_F(ArcWallpaperServiceTest, GetWallpaperDuringBestEffortFence) {
+  // Set up a valid wallpaper image via SetWallpaper() using the fake decoder.
+  service_->SetImageDecoderForTesting(std::make_unique<SuccessImageDecoder>());
+  test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
+  service_->SetWallpaper(/*data=*/{}, /*wallpaper_id=*/10);
+
+  // Block all BEST_EFFORT tasks to simulate Chrome's startup task deferral.
+  base::ScopedBestEffortExecutionFence best_effort_fence;
+
+  // GetWallpaper() should still complete and return non-empty PNG bytes because
+  // it posts work at USER_VISIBLE priority rather than BEST_EFFORT.
+  base::test::TestFuture<const std::vector<uint8_t>&> future;
+  service_->GetWallpaper(future.GetCallback());
+  EXPECT_FALSE(future.Get().empty());
 }

@@ -151,7 +151,7 @@ void ArcWallpaperService::GetWallpaper(GetWallpaperCallback callback) {
     image.SetReadOnly();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&EncodeImagePng, image), std::move(callback));
 }
 
