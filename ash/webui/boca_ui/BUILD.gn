@@ -149,6 +149,7 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/mojom",
     "//ui/views",
   ]
 }

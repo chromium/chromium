@@ -71,8 +71,8 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // If the |from| is kArc, then the new window is annotated a special tag,
   // so that on requesting to opening ARC app from the page, confirmation
   // dialog will be skipped.
-  // |Disposition| corresponds to the subset of |WindowOpenDisposition| that is
-  // supported by crosapi.
+  // |Disposition| corresponds to the subset of
+  // `ui::mojom::WindowOpenDisposition` that is supported by crosapi.
   enum class OpenUrlFrom {
     kUnspecified,
     kUserInteraction,

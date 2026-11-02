@@ -39,6 +39,7 @@ static_library("backend") {
     "//components/permissions",
     "//components/qr_code_generator",
     "//content/public/browser",
+    "//ui/base/mojom",
     "//ui/display",
     "//ui/gfx",
     "//ui/views",

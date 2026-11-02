@@ -26,6 +26,7 @@
 #include "partition_alloc/pointers/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 using ::testing::_;
@@ -59,7 +60,7 @@ class TabInfoCollectorTest : public InProcessBrowserTest {
     // Create a new tab and make sure the urls have loaded.
     for (const auto& url : urls) {
       ui_test_utils::NavigateToURLWithDisposition(
-          browser, url, WindowOpenDisposition::kNewForegroundTab,
+          browser, url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }
     return browser;
