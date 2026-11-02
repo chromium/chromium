@@ -313,7 +313,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // citadel checks which require UI thread data structures.
   bool CanCommitNewOrigin(ChildProcessId child_id, const url::Origin& origin);
 
-  // Helper for CanCommitNewOrigin() and CanCommitURL().
+  // Helper for CanCommitNewOrigin() and CanCommitURL(). Must be called on the
+  // UI thread.
   bool CanCommitMaybeOpaqueNewOrigin(ChildProcessId child_id,
                                      const GURL& url,
                                      bool url_is_precursor_of_opaque_origin);

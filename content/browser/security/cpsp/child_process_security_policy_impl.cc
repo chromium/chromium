@@ -3054,6 +3054,7 @@ bool ChildProcessSecurityPolicyImpl::CanCommitMaybeOpaqueNewOrigin(
     ChildProcessId child_id,
     const GURL& url,
     bool url_is_precursor_of_opaque_origin) {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   base::AutoLock lock(lock_);
 
   const ProcessState* process_state =
@@ -3117,16 +3118,12 @@ bool ChildProcessSecurityPolicyImpl::CanCommitMaybeOpaqueNewOrigin(
   std::string keep_alive_durations;
   std::string shutdown_delay_ref_count;
   std::string process_rfh_count;
-  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    if (auto* process = RenderProcessHostImpl::FromID(child_id)) {
-      keep_alive_durations = process->GetKeepAliveDurations();
-      shutdown_delay_ref_count =
-          base::NumberToString(process->GetShutdownDelayRefCount());
-      process_rfh_count =
-          base::NumberToString(process->GetRenderFrameHostCount());
-    }
-  } else {
-    keep_alive_durations = "no durations available: on IO thread.";
+  if (auto* process = RenderProcessHostImpl::FromID(child_id)) {
+    keep_alive_durations = process->GetKeepAliveDurations();
+    shutdown_delay_ref_count =
+        base::NumberToString(process->GetShutdownDelayRefCount());
+    process_rfh_count =
+        base::NumberToString(process->GetRenderFrameHostCount());
   }
 
   // Returning false here will often result in a renderer kill.  Set some crash
