@@ -193,12 +193,11 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
             TableType table_type,
             bool single_selection);
 
-  // Assigns a new model to the table view, detaching the old one if present.
-  // If |model| is NULL, the table view cannot be used after this call. This
-  // should be called in the containing view's destructor to avoid destruction
-  // issues when the model needs to be deleted before the table.
-  void SetModel(ui::TableModel* model);
   ui::TableModel* model() const { return model_; }
+
+  // This should be called in the containing view's destructor to avoid
+  // destruction issues when the model needs to be deleted before the table.
+  void ClearModel();
 
   void SetColumns(const std::vector<ui::TableColumn>& columns);
 
@@ -411,6 +410,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
     size_t min_column = 0;
     size_t max_column = 0;
   };
+
+  // Sets the model for the table view. `model` must not be null
+  void SetModel(ui::TableModel* model);
 
   void OnPaintImpl(gfx::Canvas* canvas);
 
@@ -784,7 +786,6 @@ VIEW_BUILDER_PROPERTY(std::optional<size_t>, ActiveVisibleColumnIndex)
 VIEW_BUILDER_PROPERTY(const std::vector<ui::TableColumn>&,
                       Columns,
                       std::vector<ui::TableColumn>)
-VIEW_BUILDER_PROPERTY(ui::TableModel*, Model)
 VIEW_BUILDER_PROPERTY(TableType, TableType)
 VIEW_BUILDER_PROPERTY(bool, SingleSelection)
 VIEW_BUILDER_PROPERTY(TableGrouper*, Grouper)

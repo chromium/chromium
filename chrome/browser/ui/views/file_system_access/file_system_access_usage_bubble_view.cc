@@ -346,7 +346,7 @@ class CollapsibleListView : public views::View {
 
   void ClearModel() {
     static_cast<views::TableView*>(table_view_parent_->contents())
-        ->SetModel(nullptr);
+        ->ClearModel();
   }
 
  private:

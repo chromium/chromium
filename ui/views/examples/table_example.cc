@@ -84,15 +84,17 @@ void TableExample::CreateExampleView(View* container) {
   Builder<View>(container)
       .AddChildren(
           TableView::CreateScrollViewBuilderWithTable(
-              Builder<TableView>()
+              Builder<TableView>(
+                  std::make_unique<TableView>(
+                      this,
+                      std::vector<ui::TableColumn>{
+                          TestTableColumn(0, u"Fruit", ui::TableColumn::LEFT,
+                                          1.0),
+                          TestTableColumn(1, u"Color"),
+                          TestTableColumn(2, u"Origin"),
+                          TestTableColumn(3, u"Price", ui::TableColumn::RIGHT)},
+                      TableType::kIconAndText, true))
                   .CopyAddressTo(&table_)
-                  .SetColumns(
-                      {TestTableColumn(0, u"Fruit", ui::TableColumn::LEFT, 1.0),
-                       TestTableColumn(1, u"Color"),
-                       TestTableColumn(2, u"Origin"),
-                       TestTableColumn(3, u"Price", ui::TableColumn::RIGHT)})
-                  .SetTableType(TableType::kIconAndText)
-                  .SetModel(this)
                   .SetGrouper(this)
                   .SetObserver(this))
               .SetProperty(kFlexBehaviorKey, full_flex),

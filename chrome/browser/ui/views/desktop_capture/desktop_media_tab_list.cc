@@ -387,7 +387,7 @@ DesktopMediaTabList::~DesktopMediaTabList() {
       "Media.Ui.GetDisplayMedia.BasicFlow.HighlightedTabDiscardStatus",
       highlighted_tabs);
 
-  table_->SetModel(nullptr);
+  table_->ClearModel();
   table_->set_observer(nullptr);
 }
 

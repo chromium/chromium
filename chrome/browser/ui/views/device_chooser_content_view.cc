@@ -158,7 +158,7 @@ DeviceChooserContentView::DeviceChooserContentView(
 DeviceChooserContentView::~DeviceChooserContentView() {
   chooser_controller_->set_view(nullptr);
   table_view_->set_observer(nullptr);
-  table_view_->SetModel(nullptr);
+  table_view_->ClearModel();
 }
 
 gfx::Size DeviceChooserContentView::GetMinimumSize() const {

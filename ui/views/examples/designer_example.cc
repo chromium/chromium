@@ -790,7 +790,7 @@ DesignerExample::DesignerExample() : ExampleBase("Designer") {}
 
 DesignerExample::~DesignerExample() {
   if (tracker_.view()) {
-    inspector_->SetModel(nullptr);
+    inspector_->ClearModel();
   }
 }
 
@@ -834,13 +834,14 @@ void DesignerExample::CreateExampleView(View* container) {
                                   base::Unretained(this)))
                               .SetText(u"Add"),
                           TableView::CreateScrollViewBuilderWithTable(
-                              Builder<TableView>()
+                              Builder<TableView>(
+                                  std::make_unique<TableView>(
+                                      this,
+                                      std::vector<ui::TableColumn>{
+                                          MakeColumn(0, u"Name", true),
+                                          MakeColumn(1, u"Value", false)},
+                                      views::TableType::kTextOnly, true))
                                   .CopyAddressTo(&inspector_)
-                                  .SetColumns({MakeColumn(0, u"Name", true),
-                                               MakeColumn(1, u"Value", false)})
-                                  .SetModel(this)
-                                  .SetTableType(views::TableType::kTextOnly)
-                                  .SetSingleSelection(true)
                                   .SetObserver(this))
                               .CopyAddressTo(&inspector_scroller_)
                               .SetPreferredSize(gfx::Size(250, 400)))))

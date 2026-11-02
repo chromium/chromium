@@ -117,7 +117,7 @@ class DeprecatedAppsDialogView::DeprecatedAppsTableModel
 };
 
 DeprecatedAppsDialogView::~DeprecatedAppsDialogView() {
-  deprecated_apps_table_view_->SetModel(nullptr);
+  deprecated_apps_table_view_->ClearModel();
 }
 
 // static

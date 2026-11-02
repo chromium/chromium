@@ -349,7 +349,7 @@ HungRendererDialogView::HungRendererDialogView(WebContents* web_contents)
 }
 
 HungRendererDialogView::~HungRendererDialogView() {
-  hung_pages_table_->SetModel(nullptr);
+  hung_pages_table_->ClearModel();
 }
 
 // static

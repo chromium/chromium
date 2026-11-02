@@ -289,36 +289,34 @@ void TableView::Init(ui::TableModel* model,
   SetColumns(columns);
   SetTableType(table_type);
   SetSingleSelection(single_selection);
-  SetModel(model);
+  if (model) {
+    SetModel(model);
+  }
 
   // TODO(crbug.com/517186137): Move mouse hover_layer_ to a separate child view
   // which will disable the paint clipping optimization, and revert back to
   // layer clipping.
 }
 
-// TODO(sky): this doesn't support arbitrarily changing the model, rename this
-// to ClearModel() or something.
 void TableView::SetModel(ui::TableModel* model) {
-  if (model == model_) {
-    return;
-  }
-
-  if (model_) {
-    model_->SetObserver(nullptr);
-  }
+  CHECK(model);
   model_ = model;
-  selection_model_.Clear();
-  if (model_) {
-    model_->SetObserver(this);
-
-    // Clears and creates a new virtual accessibility tree.
-    RebuildVirtualAccessibilityChildren();
-  } else {
-    ClearVirtualAccessibilityChildren();
-  }
+  model_->SetObserver(this);
+  // Clears and creates a new virtual accessibility tree.
+  RebuildVirtualAccessibilityChildren();
   // When the model changes, the rows have probably changed, so update the
   // focus ring.
   UpdateFocusRings();
+}
+
+void TableView::ClearModel() {
+  if (model_) {
+    model_->SetObserver(nullptr);
+    model_ = nullptr;
+    selection_model_.Clear();
+    ClearVirtualAccessibilityChildren();
+    UpdateFocusRings();
+  }
 }
 
 void TableView::SetColumns(const std::vector<ui::TableColumn>& columns) {
