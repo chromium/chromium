@@ -38,19 +38,20 @@ std::optional<std::string> BuildContainerAccessToken(
     EphemeralKeyFetcher::Result ephemeral_key_result) {
   CHECK(ephemeral_key_result.ephemeral_key);
 
-  const std::string container_key_bytes =
-      container_key_set.ToProto().SerializeAsString();
-  const std::optional<sync_pb::EncryptedData> encrypted_container_key =
+  sync_pb::TabContextContainerAccessToken::Payload payload;
+  *payload.mutable_container_key() = container_key_set.ToProto();
+
+  const std::string payload_bytes = payload.SerializeAsString();
+  const std::optional<sync_pb::EncryptedData> encrypted_payload =
       ephemeral_key_result.ephemeral_key->Encrypt(
-          base::as_byte_span(container_key_bytes));
-  if (!encrypted_container_key) {
+          base::as_byte_span(payload_bytes));
+  if (!encrypted_payload) {
     return std::nullopt;
   }
 
   sync_pb::TabContextContainerAccessToken token_proto;
   token_proto.set_name(std::move(ephemeral_key_result.name));
-  token_proto.set_encrypted_container_key(
-      encrypted_container_key->SerializeAsString());
+  token_proto.set_encrypted_payload(encrypted_payload->SerializeAsString());
   if (!ephemeral_key_result.expire_time.is_null()) {
     *token_proto.mutable_expire_time() =
         TimeToGoogleTimestampProto(ephemeral_key_result.expire_time);

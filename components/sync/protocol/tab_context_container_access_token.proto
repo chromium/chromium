@@ -11,11 +11,18 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/agile_encryption_keys.proto";
 import "google/protobuf/timestamp.proto";
 
-// Access token wrapping an encrypted container key and key name.
+// Access token wrapping an encrypted payload and key name.
 message TabContextContainerAccessToken {
+  // Plaintext structure serialized and encrypted into `encrypted_payload`
+  // using the ephemeral key identified by `name`.
+  message Payload {
+    optional AgileSymmetricKeySet container_key = 1;
+  }
+
   optional string name = 1;
-  optional bytes encrypted_container_key = 2;
+  optional bytes encrypted_payload = 2;
   optional google.protobuf.Timestamp expire_time = 3;
 }

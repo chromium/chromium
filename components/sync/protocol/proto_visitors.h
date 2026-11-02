@@ -1666,9 +1666,14 @@ VISIT_PROTO_FIELDS(const google::protobuf::Timestamp& proto) {
   visitor.Visit(proto, "nanos", proto.nanos());
 }
 
+VISIT_PROTO_FIELDS(
+    const sync_pb::TabContextContainerAccessToken::Payload& proto) {
+  VISIT(container_key);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::TabContextContainerAccessToken& proto) {
   VISIT(name);
-  VISIT_BYTES(encrypted_container_key);
+  VISIT_BYTES(encrypted_payload);
   VISIT(expire_time);
 }
 

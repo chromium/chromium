@@ -103,22 +103,21 @@ class FakeEphemeralKeyFetcher : public EphemeralKeyFetcher {
     if (!ephemeral_key_set) {
       return nullptr;
     }
-    sync_pb::EncryptedData encrypted_container_key;
-    if (!encrypted_container_key.ParseFromString(
-            token_proto.encrypted_container_key())) {
+    sync_pb::EncryptedData encrypted_payload;
+    if (!encrypted_payload.ParseFromString(token_proto.encrypted_payload())) {
       return nullptr;
     }
-    std::optional<std::vector<uint8_t>> decrypted_key_set_bytes =
-        ephemeral_key_set->Decrypt(encrypted_container_key);
-    if (!decrypted_key_set_bytes.has_value()) {
+    std::optional<std::vector<uint8_t>> decrypted_payload_bytes =
+        ephemeral_key_set->Decrypt(encrypted_payload);
+    if (!decrypted_payload_bytes.has_value()) {
       return nullptr;
     }
-    sync_pb::AgileSymmetricKeySet container_key_set_proto;
-    if (!container_key_set_proto.ParseFromArray(
-            decrypted_key_set_bytes->data(), decrypted_key_set_bytes->size())) {
+    sync_pb::TabContextContainerAccessToken::Payload payload;
+    if (!payload.ParseFromArray(decrypted_payload_bytes->data(),
+                                decrypted_payload_bytes->size())) {
       return nullptr;
     }
-    return syncer::AgileSymmetricKeySet::FromProto(container_key_set_proto);
+    return syncer::AgileSymmetricKeySet::FromProto(payload.container_key());
   }
 
   // Simulates server-side decryption: extracts the container key set from

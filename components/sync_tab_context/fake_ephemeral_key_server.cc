@@ -129,26 +129,25 @@ std::optional<std::string> FakeEphemeralKeyServer::DecryptContent(
     return std::nullopt;
   }
 
-  sync_pb::EncryptedData encrypted_container_key;
-  if (!encrypted_container_key.ParseFromString(
-          token_proto.encrypted_container_key())) {
+  sync_pb::EncryptedData encrypted_payload;
+  if (!encrypted_payload.ParseFromString(token_proto.encrypted_payload())) {
     return std::nullopt;
   }
 
-  const std::optional<std::vector<uint8_t>> decrypted_key_set_bytes =
-      ephemeral_key_set->Decrypt(encrypted_container_key);
-  if (!decrypted_key_set_bytes.has_value()) {
+  const std::optional<std::vector<uint8_t>> decrypted_payload_bytes =
+      ephemeral_key_set->Decrypt(encrypted_payload);
+  if (!decrypted_payload_bytes.has_value()) {
     return std::nullopt;
   }
 
-  sync_pb::AgileSymmetricKeySet container_key_set_proto;
-  if (!container_key_set_proto.ParseFromArray(
-          decrypted_key_set_bytes->data(), decrypted_key_set_bytes->size())) {
+  sync_pb::TabContextContainerAccessToken::Payload payload;
+  if (!payload.ParseFromArray(decrypted_payload_bytes->data(),
+                              decrypted_payload_bytes->size())) {
     return std::nullopt;
   }
 
   const std::unique_ptr<syncer::AgileSymmetricKeySet> container_key_set =
-      syncer::AgileSymmetricKeySet::FromProto(container_key_set_proto);
+      syncer::AgileSymmetricKeySet::FromProto(payload.container_key());
   if (!container_key_set) {
     return std::nullopt;
   }

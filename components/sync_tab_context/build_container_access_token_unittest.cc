@@ -57,16 +57,16 @@ TEST(BuildContainerAccessTokenTest,
   EXPECT_EQ(token_proto.expire_time().seconds(), 1700000000);
   EXPECT_EQ(token_proto.expire_time().nanos(), 123456000);
 
-  sync_pb::EncryptedData encrypted_container_key;
-  ASSERT_TRUE(encrypted_container_key.ParseFromString(
-      token_proto.encrypted_container_key()));
-  const std::optional<std::vector<uint8_t>> decrypted_container_key_bytes =
-      ephemeral_key_for_decryption->Decrypt(encrypted_container_key);
-  ASSERT_TRUE(decrypted_container_key_bytes.has_value());
-  const std::string decrypted_container_key_str(
-      decrypted_container_key_bytes->begin(),
-      decrypted_container_key_bytes->end());
-  EXPECT_EQ(decrypted_container_key_str,
+  sync_pb::EncryptedData encrypted_payload;
+  ASSERT_TRUE(
+      encrypted_payload.ParseFromString(token_proto.encrypted_payload()));
+  const std::optional<std::vector<uint8_t>> decrypted_payload_bytes =
+      ephemeral_key_for_decryption->Decrypt(encrypted_payload);
+  ASSERT_TRUE(decrypted_payload_bytes.has_value());
+  sync_pb::TabContextContainerAccessToken::Payload payload;
+  ASSERT_TRUE(payload.ParseFromArray(decrypted_payload_bytes->data(),
+                                     decrypted_payload_bytes->size()));
+  EXPECT_EQ(payload.container_key().SerializeAsString(),
             container_key_set->ToProto().SerializeAsString());
 }
 
