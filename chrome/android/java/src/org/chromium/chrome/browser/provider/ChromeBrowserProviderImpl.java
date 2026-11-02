@@ -19,7 +19,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.TabDiscardState;
 import org.chromium.chrome.browser.base.SplitCompatContentProvider;
+
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
 
 /**
  * This class provides access to user data stored in Chrome, such as bookmarks, most visited pages,
@@ -245,6 +249,12 @@ public class ChromeBrowserProviderImpl extends SplitCompatContentProvider.Impl {
             case URL_MATCH_API_HISTORY_CONTENT_ID -> BROWSER_CONTRACT_HISTORY_CONTENT_ITEM_TYPE;
             default -> throw new IllegalArgumentException(uri.toString());
         };
+    }
+
+    @Override
+    public void dump(FileDescriptor fd, PrintWriter writer, String[] args) {
+        writer.print(TabDiscardState.getTabDiscardsDump());
+        writer.flush();
     }
 
     private static Uri buildContentUri(String authority, String path) {

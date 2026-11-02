@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_android)
+
+source_set("discards") {
+  public = [ "tab_discards_dump_android.h" ]
+  sources = [ "tab_discards_dump_android.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/android:tabs_public",
+    "//chrome/browser/performance_manager",
+    "//chrome/browser/performance_manager:impl",
+    "//components/performance_manager",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_discards_dump_android_unittest.cc" ]
+
+  deps = [
+    ":discards",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/flags:flags_android",
+    "//chrome/browser/performance_manager:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//components/performance_manager",
+    "//components/performance_manager/test_support",
+    "//components/performance_manager/test_support:test_support_common",
+    "//content/public/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
