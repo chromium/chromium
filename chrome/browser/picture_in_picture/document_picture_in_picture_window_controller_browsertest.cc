@@ -4,6 +4,8 @@
 
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 
+#include <vector>
+
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -315,21 +317,21 @@ class DocumentPictureInPictureWindowControllerBrowserTest
     EXPECT_TRUE(WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
   }
 
-  bool IsOriginSet(BrowserView* browser_view) {
+  bool IsOriginSet(views::Widget* pip_widget) {
     // Document Picture In Picture windows are always positioned relative to the
     // bottom-right corner. Therefore we can assert that the origin is set
     // whenever it is not located at the top-left corner.
-    return browser_view->GetBounds().origin() != gfx::Point(0, 0);
+    return pip_widget->GetWindowBoundsInScreen().origin() != gfx::Point(0, 0);
   }
 
-  void CheckOriginSet(BrowserView* browser_view) {
+  void CheckOriginSet(views::Widget* pip_widget) {
     ui_test_utils::CheckWaiter(
         base::BindRepeating(
             &DocumentPictureInPictureWindowControllerBrowserTest::IsOriginSet,
-            base::Unretained(this), browser_view),
+            base::Unretained(this), pip_widget),
         true, base::Minutes(1))
         .Wait();
-    EXPECT_NE(browser_view->GetBounds().origin(), gfx::Point(0, 0));
+    EXPECT_NE(pip_widget->GetWindowBoundsInScreen().origin(), gfx::Point(0, 0));
   }
 
   const std::string GetPipWindowPageTitle(content::WebContents* web_contents) {
@@ -503,24 +505,6 @@ class DocumentPictureInPictureWindowControllerBoundsCacheTest
         pip_web_contents->GetTopLevelNativeWindow());
     CHECK(browser_view);
     browser_view->SetBounds(bounds);
-  }
-
-  bool IsOriginSet(views::Widget* pip_widget) {
-    // Document Picture In Picture windows are always positioned relative to
-    // the bottom-right corner. Therefore we can assert that the origin is set
-    // whenever it is not located at the top-left corner.
-    return pip_widget->GetWindowBoundsInScreen().origin() != gfx::Point(0, 0);
-  }
-
-  void CheckOriginSet(views::Widget* pip_widget) {
-    ui_test_utils::CheckWaiter(
-        base::BindRepeating(
-            &DocumentPictureInPictureWindowControllerBoundsCacheTest::
-                IsOriginSet,
-            base::Unretained(this), pip_widget),
-        true, base::Minutes(1))
-        .Wait();
-    EXPECT_NE(pip_widget->GetWindowBoundsInScreen().origin(), gfx::Point(0, 0));
   }
 };
 
@@ -1192,18 +1176,44 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBoundsCacheTest,
   EXPECT_EQ(pip_widget_3->GetWindowBoundsInScreen(), original_window_bounds);
 }
 
+// Parameters for the window margin tests: which Document PiP backend to run and
+// the requested window size.
+struct WindowMarginsParam {
+  bool standalone;
+  gfx::Size requested_size;
+};
+
 class DocumentPictureInPictureWindowControllerWindowSizeBrowserTest
     : public DocumentPictureInPictureWindowControllerBrowserTest,
-      public testing::WithParamInterface<gfx::Size> {};
+      public testing::WithParamInterface<WindowMarginsParam> {
+ protected:
+  bool UseStandaloneDocumentPip() const override {
+    return GetParam().standalone;
+  }
+};
+
+std::vector<WindowMarginsParam> GetWindowMarginsParams() {
+  std::vector<WindowMarginsParam> params;
+  for (const bool standalone : {false, true}) {
+    for (const gfx::Size& size :
+         {gfx::Size(1, 1), gfx::Size(22, 22), gfx::Size(300, 300),
+          gfx::Size(500, 500), gfx::Size(250, 670)}) {
+      params.push_back({standalone, size});
+    }
+  }
+  return params;
+}
 
 INSTANTIATE_TEST_SUITE_P(
     WindowSizes,
     DocumentPictureInPictureWindowControllerWindowSizeBrowserTest,
-    testing::Values(gfx::Size(1, 1),
-                    gfx::Size(22, 22),
-                    gfx::Size(300, 300),
-                    gfx::Size(500, 500),
-                    gfx::Size(250, 670)));
+    testing::ValuesIn(GetWindowMarginsParams()),
+    [](const testing::TestParamInfo<WindowMarginsParam>& info) {
+      return base::StrCat(
+          {info.param.standalone ? "Standalone" : "BrowserBacked", "_",
+           base::NumberToString(info.param.requested_size.width()), "x",
+           base::NumberToString(info.param.requested_size.height())});
+    });
 
 #if BUILDFLAG(IS_LINUX)
 // TODO(crbug.com/40923223): Fix and re-enable this test for Linux.
@@ -1225,19 +1235,20 @@ IN_PROC_BROWSER_TEST_P(
       screen->GetDisplayNearestWindow(native_window);
 
   // Create a Document PiP window with the given size.
-  LoadTabAndEnterPictureInPicture(browser(), GetParam());
+  LoadTabAndEnterPictureInPicture(browser(), GetParam().requested_size);
   auto* pip_web_contents = window_controller()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);
   WaitForPageLoad(pip_web_contents);
-  auto* browser_view = static_cast<BrowserView*>(
-      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
+  views::Widget* pip_widget = views::Widget::GetWidgetForNativeWindow(
+      pip_web_contents->GetTopLevelNativeWindow());
+  ASSERT_TRUE(pip_widget);
 
   // Wait for the window origin location to be set. This is needed to eliminate
   // test flakiness.
-  CheckOriginSet(browser_view);
+  CheckOriginSet(pip_widget);
 
   // Make sure that the right and bottom window margins are equal.
-  gfx::Rect window_bounds = browser_view->GetBounds();
+  gfx::Rect window_bounds = pip_widget->GetWindowBoundsInScreen();
   gfx::Rect work_area = display.work_area();
   int window_diff_width = work_area.right() - window_bounds.width();
   int window_diff_height = work_area.bottom() - window_bounds.height();
