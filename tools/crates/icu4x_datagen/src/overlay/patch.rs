@@ -498,14 +498,15 @@ mod tests {
     fn test_prepare_patched_overlay_applies_all_patches() {
         let root = crate::chromium_src_root();
         let patches_dir = root.join("third_party/rust/icu4x_data/patches");
-        let patches: Vec<PathBuf> = ["name_5_langs.patch", "locale1.patch"]
-            .into_iter()
-            .map(|name| {
-                let p = patches_dir.join(name);
-                assert!(p.is_file(), "Expected patch file {}", p.display());
-                p
-            })
-            .collect();
+        let patches: Vec<PathBuf> =
+            ["name_5_langs.patch", "locale1.patch", "google3-overlay.patch"]
+                .into_iter()
+                .map(|name| {
+                    let p = patches_dir.join(name);
+                    assert!(p.is_file(), "Expected patch file {}", p.display());
+                    p
+                })
+                .collect();
         let provider = SourceTags::default().source_data_provider();
         let fallbacker = LocaleFallbacker::try_new_unstable(&provider).unwrap();
         let overlay_dir = prepare_patched_overlay(&provider, fallbacker, &patches).unwrap();
@@ -543,6 +544,12 @@ mod tests {
         .unwrap();
         assert!(ko_tz.contains("북미 중부 시간"));
         assert!(ko_tz.contains("북미 로키 산맥 시간"));
+
+        let fractions =
+            std::fs::read_to_string(overlay_dir.path().join("currency/fractions/v1.json")).unwrap();
+        let json: serde_json::Value = serde_json::from_str(&fractions).unwrap();
+        assert_eq!(json["fractions"]["RSD"]["digits"], 0);
+        assert!(json["fractions"]["RSD"]["cash_digits"].is_null());
     }
 
     #[test]

@@ -57,6 +57,18 @@ standard `diff -ruN a/ b/` unified diff whose paths are relative to the
        baked data once `icu_time` is added, whereas the `datetime/` range hunks
        are active now.
 
+- `google3-overlay.patch`
+  - **Source / Upstream Equivalent**: `google3`
+    `//third_party/icu4x_data/overlay:export_overlay` /
+    `//third_party/icu/google/patches/cldr/`
+  - **Affected `ICU4X-json` Markers**: `currency/fractions/v1.json`
+  - **Description**: Applies `google3`'s CLDR currency fraction patch
+    `gh-00002-rsd_decimal_digits.patch` (`RSD` digits `2` -> `0`). Note that
+    `google3`'s region display-name alt-variant overrides (`FK`, `HK`, `MO`,
+    `PS`) live in ICU4C's `cldr-to-icu` converter configuration rather than raw
+    CLDR data, and are being added to ICU4X datagen (`AltVariantKind`) in
+    https://github.com/unicode-org/icu4x/pull/8640 (see
+    [`chromium-data.patch` Subpatches](#chromium-datapatch-subpatches)).
 ---
 
 ## Audit of `//third_party/icu/patches/`
@@ -247,3 +259,44 @@ alt-variant overrides are being added to ICU4X datagen upstream:
    ```
 3. Register the patch in `//tools/crates/icu4x_datagen/config.toml` under
    `patches = [...]` and regenerate `//third_party/rust/icu4x_data/src/data/`.
+---
+
+## Generating `google3-overlay.patch` from `google3`
+
+`google3-overlay.patch` captures `ICU4X-json` payload differences introduced by
+`google3`'s CLDR patches (`//third_party/icu/google/patches/cldr/`) relative to
+upstream CLDR. Because `//third_party/icu4x_data/overlay:export_overlay` diffs
+`SourceDataProvider::new_google3()` against unpatched CLDR, it captures CLDR
+XML/JSON patches directly; `google3` overrides configured inside ICU4C's
+`cldr-to-icu` converter (`g3-icu_tools_cldr_cldr-to-icu_config.xml.patch`
+`<altPath>` rules for `FK`, `HK`, `MO`, and `PS`) are handled via ICU4X
+`AltVariantKind` options (https://github.com/unicode-org/icu4x/pull/8640).
+
+To regenerate `google3-overlay.patch` using the `google3` overlay exporter tool
+(`//third_party/icu4x_data/overlay:export_overlay`):
+
+1. In a `google3` workspace, run
+   `//third_party/icu4x_data/overlay:export_overlay` to export the `ICU4X-json`
+   files that differ between `SourceDataProvider::new_google3()` and upstream
+   CLDR:
+   ```sh
+   blaze run --//i18n/icu4x:build_without_baked_data=true \
+     //third_party/icu4x_data/overlay:export_overlay -- \
+     --out /tmp/google3_icu4x_overlay/b
+   ```
+2. In your Chromium `src/` checkout, dump the corresponding unpatched
+   `ICU4X-json` files into `/tmp/google3_icu4x_overlay/a` (for each marker
+   exported into `/tmp/google3_icu4x_overlay/b`, e.g. `currency/fractions/v1`):
+   ```sh
+   python3 tools/crates/run_icu4x_datagen.py dump-json \
+     --json-dir /tmp/google3_icu4x_overlay/a \
+     --markers currency/fractions/v1
+   ```
+3. Remove any `.checksum` files and empty marker directories, then produce the
+   unified diff:
+   ```sh
+   find /tmp/google3_icu4x_overlay -name '*.checksum' -delete
+   find /tmp/google3_icu4x_overlay/b -type d -empty -delete
+   (cd /tmp/google3_icu4x_overlay && diff -ruN a b) \
+     > third_party/rust/icu4x_data/patches/google3-overlay.patch
+   ```

@@ -16,6 +16,7 @@
 patches = [
   "third_party/rust/icu4x_data/patches/name_5_langs.patch",
   "third_party/rust/icu4x_data/patches/locale1.patch",
+  "third_party/rust/icu4x_data/patches/google3-overlay.patch",
 ]
 
 [resource_filters]

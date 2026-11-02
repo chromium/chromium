@@ -1,0 +1,20 @@
+# Google3 ICU4X-json data overlay patch against CLDR 49.0.0.
+# Contains ICU4X-json changes from:
+#   - //third_party/icu/google/patches/cldr/gh-00002-rsd_decimal_digits.patch
+diff -ruN a/currency/fractions/v1.json b/currency/fractions/v1.json
+--- a/currency/fractions/v1.json
++++ b/currency/fractions/v1.json
+@@ -271,10 +271,10 @@
+       "cash_rounding": null
+     },
+     "RSD": {
+-      "digits": 2,
++      "digits": 0,
+       "rounding": "R1",
+-      "cash_digits": 0,
+-      "cash_rounding": "R1"
++      "cash_digits": null,
++      "cash_rounding": null
+     },
+     "RWF": {
+       "digits": 0,
