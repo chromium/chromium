@@ -20,7 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/data_model_util.h"
@@ -200,13 +200,14 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
     std::unique_ptr<PersonalContextEntityMetadataSyncBridge> bridge =
         CreateTestPersonalContextEntityMetadataSyncBridge();
     EXPECT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
-    suppression_manager_ =
-        std::make_unique<EntitySuppressionManager>(std::move(bridge));
+    entity_metadata_manager_ =
+        std::make_unique<PersonalContextEntityMetadataManager>(
+            std::move(bridge));
     access_manager_ =
         std::make_unique<AutofillAiPersonalContextAccessManagerImpl>(
             &mock_personal_context_service_, &mock_eligibility_service_,
             &pref_service_, &fake_device_info_sync_service_,
-            suppression_manager_.get());
+            entity_metadata_manager_.get());
     ON_CALL(mock_eligibility_service_, GetEligibilityState)
         .WillByDefault(Return(
             personal_context::PersonalContextEligibilityState::kEligible));
@@ -221,8 +222,8 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
     return *access_manager_;
   }
 
-  EntitySuppressionManager& suppression_manager() {
-    return *suppression_manager_;
+  PersonalContextEntityMetadataManager& entity_metadata_manager() {
+    return *entity_metadata_manager_;
   }
 
   syncer::FakeDeviceInfoSyncService& fake_device_info_sync_service() {
@@ -361,7 +362,8 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
   MockPersonalContextService mock_personal_context_service_;
   MockPersonalContextEligibilityService mock_eligibility_service_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
-  std::unique_ptr<EntitySuppressionManager> suppression_manager_;
+  std::unique_ptr<PersonalContextEntityMetadataManager>
+      entity_metadata_manager_;
   std::unique_ptr<AutofillAiPersonalContextAccessManagerImpl> access_manager_;
   MockAutofillAiPersonalContextAccessManagerObserver mock_observer_;
   base::ScopedObservation<AutofillAiPersonalContextAccessManagerImpl,
@@ -1608,7 +1610,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 }
 
 // Tests that prefetched personal context entities that are suppressed in the
-// `EntitySuppressionManager` are filtered out before notifying observers.
+// `PersonalContextEntityMetadataManager` are filtered out before notifying
+// observers.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchContext_SuppressedEntitiesAreFiltered) {
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
@@ -1624,7 +1627,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   order2->set_merchant_name("Merchant2");
   *order2->mutable_order_date() = TodayWithDelta();
 
-  suppression_manager().SuppressEntity(
+  entity_metadata_manager().SuppressEntity(
       *PersonalContextEntityToEntityInstance(response.entities(0)));
 
   EXPECT_CALL(mock_observer(),
@@ -1666,7 +1669,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
                   _, Optional(ElementsAre(HasAttributeWithValue(
                          AttributeTypeName::kOrderId, u"ORD2")))));
 
-  suppression_manager().SuppressEntity(
+  entity_metadata_manager().SuppressEntity(
       *PersonalContextEntityToEntityInstance(response.entities(0)));
 }
 
@@ -1689,7 +1692,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   EntityInstance order1_instance =
       *PersonalContextEntityToEntityInstance(response.entities(0));
-  suppression_manager().SuppressEntity(order1_instance);
+  entity_metadata_manager().SuppressEntity(order1_instance);
 
   EXPECT_CALL(mock_observer(), OnPrefetchContextComplete);
   PrefetchContextSync({kOrderType}, {}, response);
@@ -1705,7 +1708,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
               HasAttributeWithValue(AttributeTypeName::kOrderId, u"ORD1"),
               HasAttributeWithValue(AttributeTypeName::kOrderId, u"ORD2")))));
 
-  suppression_manager().UndoInSessionSuppressedEntity(order1_instance.guid());
+  entity_metadata_manager().UndoInSessionSuppressedEntity(
+      order1_instance.guid());
 }
 
 // Tests that OnEntitySuppressionsChanged is a no-op when the proto cache is
@@ -1716,7 +1720,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   EXPECT_CALL(mock_observer(), OnPrefetchContextComplete).Times(0);
 
   EntityInstance passport = test::GetPassportEntityInstance();
-  suppression_manager().SuppressEntity(passport);
+  entity_metadata_manager().SuppressEntity(passport);
 }
 
 class AutofillAiPersonalContextAccessManagerImplSpiiCacheTest
@@ -2539,7 +2543,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   suppressed_gmail->mutable_message_urls()->set_mobile_web_url(
       "https://mail.google.com/mail/mu/mp/#cv/Inbox/789");
   suppressed_gmail->set_subject("Suppressed Order");
-  suppression_manager().SuppressEntity(
+  entity_metadata_manager().SuppressEntity(
       *PersonalContextEntityToEntityInstance(suppressed_order));
   *response.add_entities() = std::move(suppressed_order);
 
@@ -2635,7 +2639,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   SetClockToDate("2025-06-01 12:00:00");
   personal_context::proto::ContextMemoryAmbientAutofillResponse response;
   *response.add_entities() = CreateOrderProto({.date = u"2025-06-01"});
-  ASSERT_TRUE(suppression_manager().SuppressEntity(
+  ASSERT_TRUE(entity_metadata_manager().SuppressEntity(
       *PersonalContextEntityToEntityInstance(response.entities(0))));
 
   EXPECT_CALL(mock_observer(),

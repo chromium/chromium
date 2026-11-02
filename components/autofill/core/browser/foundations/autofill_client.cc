@@ -201,13 +201,15 @@ AutofillClient::GetAutofillAiPersonalContextAccessManager() const {
       ->GetAutofillAiPersonalContextAccessManager();
 }
 
-EntitySuppressionManager* AutofillClient::GetEntitySuppressionManager() {
+PersonalContextEntityMetadataManager*
+AutofillClient::GetPersonalContextEntityMetadataManager() {
   return nullptr;
 }
 
-const EntitySuppressionManager* AutofillClient::GetEntitySuppressionManager()
-    const {
-  return const_cast<AutofillClient*>(this)->GetEntitySuppressionManager();
+const PersonalContextEntityMetadataManager*
+AutofillClient::GetPersonalContextEntityMetadataManager() const {
+  return const_cast<AutofillClient*>(this)
+      ->GetPersonalContextEntityMetadataManager();
 }
 
 AutofillAiModelCache* AutofillClient::GetAutofillAiModelCache() {

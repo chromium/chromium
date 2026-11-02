@@ -259,7 +259,7 @@ AutofillAiPersonalContextAccessManagerImpl::
             personal_context_eligibility_service,
         PrefService* pref_service,
         syncer::DeviceInfoSyncService* device_info_sync_service,
-        EntitySuppressionManager* suppression_manager)
+        PersonalContextEntityMetadataManager* entity_metadata_manager)
     : personal_context_service_(CHECK_DEREF(personal_context_service)),
       personal_context_eligibility_service_(
           CHECK_DEREF(personal_context_eligibility_service)),
@@ -267,8 +267,8 @@ AutofillAiPersonalContextAccessManagerImpl::
       device_info_sync_service_(device_info_sync_service) {
   eligibility_service_observation_.Observe(
       personal_context_eligibility_service);
-  if (suppression_manager) {
-    suppression_observation_.Observe(suppression_manager);
+  if (entity_metadata_manager) {
+    entity_metadata_observation_.Observe(entity_metadata_manager);
   }
   if (pref_service_) {
     pref_registrar_.Init(pref_service_);
@@ -651,8 +651,8 @@ void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
   // Also cache presence signals.
   std::vector<EntityInstance> entities;
   entities.reserve(parsed_entities.size());
-  const EntitySuppressionManager* suppression_manager =
-      suppression_observation_.GetSource();
+  const PersonalContextEntityMetadataManager* entity_metadata_manager =
+      entity_metadata_observation_.GetSource();
   size_t suppressed_count = 0;
   for (ParsedEntity& entity : parsed_entities) {
     if (const auto* signal =
@@ -672,7 +672,8 @@ void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
     }
 
     prefetched_proto_cache_.emplace(instance.guid(), std::move(entity.proto));
-    if (!suppression_manager || !suppression_manager->IsSuppressed(instance)) {
+    if (!entity_metadata_manager ||
+        !entity_metadata_manager->IsSuppressed(instance)) {
       const auto& payload =
           std::get<EntityInstance::PersonalContextRecordTypePayload>(
               instance.record_type_data());
@@ -901,8 +902,8 @@ void AutofillAiPersonalContextAccessManagerImpl::OnEntitySuppressionsChanged() {
 
   DenseSet<EntityType> cached_types;
   std::vector<EntityInstance> unsuppressed_entities;
-  const EntitySuppressionManager* suppression_manager =
-      suppression_observation_.GetSource();
+  const PersonalContextEntityMetadataManager* entity_metadata_manager =
+      entity_metadata_observation_.GetSource();
   for (const auto& [id, proto] : prefetched_proto_cache_) {
     std::optional<EntityInstance> converted =
         ConvertProtoToEntityInstance(proto, /*mask_spii=*/true);
@@ -911,7 +912,8 @@ void AutofillAiPersonalContextAccessManagerImpl::OnEntitySuppressionsChanged() {
     }
     EntityInstance entity = converted->CopyWithNewEntityId(id);
     cached_types.insert(entity.type());
-    if (!suppression_manager || !suppression_manager->IsSuppressed(entity)) {
+    if (!entity_metadata_manager ||
+        !entity_metadata_manager->IsSuppressed(entity)) {
       unsuppressed_entities.push_back(std::move(entity));
     }
   }

@@ -17,7 +17,7 @@
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
-#import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -615,11 +615,13 @@ TEST_F(ChromeAutofillClientIOSTest, OnActorTaskStateChange_ReparsesForms) {
   EXPECT_TRUE(client().IsTabInActorMode());
 }
 
-// Test that `GetEntitySuppressionManager` returns the manager for the profile.
-TEST_F(ChromeAutofillClientIOSTest, GetEntitySuppressionManager) {
+// Test that `GetPersonalContextEntityMetadataManager` returns the manager for
+// the profile.
+TEST_F(ChromeAutofillClientIOSTest, GetPersonalContextEntityMetadataManager) {
   base::test::ScopedFeatureList feature_list(
       features::kAutofillAmbientAutofillSuppression);
-  EntitySuppressionManager* manager = client().GetEntitySuppressionManager();
+  PersonalContextEntityMetadataManager* manager =
+      client().GetPersonalContextEntityMetadataManager();
   ASSERT_NE(manager, nullptr);
   EXPECT_NE(manager->GetSyncControllerDelegate(), nullptr);
 }

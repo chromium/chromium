@@ -34,7 +34,7 @@
 #endif
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -261,8 +261,9 @@ class MockAutofillClient : public TestAutofillClient {
     std::unique_ptr<PersonalContextEntityMetadataSyncBridge> bridge =
         CreateTestPersonalContextEntityMetadataSyncBridge();
     CHECK(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
-    suppression_manager_ =
-        std::make_unique<EntitySuppressionManager>(std::move(bridge));
+    entity_metadata_manager_ =
+        std::make_unique<PersonalContextEntityMetadataManager>(
+            std::move(bridge));
     set_payments_autofill_client(
         std::make_unique<MockPaymentsAutofillClient>(this));
     ON_CALL(*this, GetDeviceAuthAvailabilityChecker).WillByDefault([] {
@@ -321,8 +322,9 @@ class MockAutofillClient : public TestAutofillClient {
               (const HatsSurveyStringData&),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
-  EntitySuppressionManager* GetEntitySuppressionManager() override {
-    return suppression_manager_.get();
+  PersonalContextEntityMetadataManager*
+  GetPersonalContextEntityMetadataManager() override {
+    return entity_metadata_manager_.get();
   }
   MOCK_METHOD(IdentityCredentialDelegate*,
               GetIdentityCredentialDelegate,
@@ -380,7 +382,8 @@ class MockAutofillClient : public TestAutofillClient {
 #if BUILDFLAG(IS_IOS)
   FieldGlobalId last_queried_field_id_;
 #endif
-  std::unique_ptr<EntitySuppressionManager> suppression_manager_;
+  std::unique_ptr<PersonalContextEntityMetadataManager>
+      entity_metadata_manager_;
 };
 
 class TestCreditCardAccessManager : public CreditCardAccessManager {
@@ -4258,8 +4261,9 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
 
   EXPECT_FALSE(external_delegate().RemoveSuggestion(suggestion));
 
-  EXPECT_FALSE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
-      full_passport));
+  EXPECT_FALSE(
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          full_passport));
 }
 
 // Tests that calling `RemoveSuggestion` for a `kFillAutofillAi` suggestion
@@ -4294,7 +4298,8 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
 
   EXPECT_FALSE(external_delegate().RemoveSuggestion(suggestion));
   EXPECT_FALSE(
-      autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          passport));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -4316,14 +4321,16 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
   external_delegate().DidAcceptSuggestion(remove_suggestion,
                                           {.multi_index = {0}});
   ASSERT_FALSE(
-      autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          passport));
   ASSERT_FALSE(dialog_callback.is_null());
 
   EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification);
   base::HistogramTester histogram_tester;
   std::move(dialog_callback).Run(/*confirmed=*/true);
   EXPECT_TRUE(
-      autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          passport));
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.Suppression.ConfirmationDialogResult",
       EntitySuppressionConfirmationDialogResult::kAccepted, 1);
@@ -4398,7 +4405,8 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
   external_delegate().DidAcceptSuggestion(remove_suggestion,
                                           {.multi_index = {0}});
   EXPECT_FALSE(
-      autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          passport));
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.Suppression.ConfirmationDialogResult",
       EntitySuppressionConfirmationDialogResult::kCancelled, 1);
@@ -4419,12 +4427,14 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
 
   EXPECT_FALSE(external_delegate().RemoveSuggestion(suggestion));
   ASSERT_FALSE(
-      autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          passport));
   ASSERT_FALSE(dialog_callback.is_null());
 
   std::move(dialog_callback).Run(/*confirmed=*/true);
   EXPECT_TRUE(
-      autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          passport));
 }
 
 // Tests that the removal undo notification is shown after the user confirmed
@@ -4443,12 +4453,14 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
 
   ASSERT_FALSE(external_delegate().RemoveSuggestion(suggestion));
   ASSERT_TRUE(
-      autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          passport));
   ASSERT_FALSE(on_undo_clicked.is_null());
 
   std::move(on_undo_clicked).Run();
   EXPECT_FALSE(
-      autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          passport));
 }
 
 // Tests that the entity is not suppressed if the user confirms the dialog after
@@ -4470,7 +4482,8 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
   std::move(dialog_callback).Run(/*confirmed=*/true);
 
   EXPECT_FALSE(
-      autofill_client().GetEntitySuppressionManager()->IsSuppressed(passport));
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          passport));
 }
 #else
 // On Android, the keyboard accessory asks the user to confirm before it calls
@@ -4478,7 +4491,8 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
 // without the delegate, but the delegate behaves the same as on Android.
 
 // Tests that calling `RemoveSuggestion` for a `kFillAutofillAi` suggestion
-// suppresses the corresponding entity in `EntitySuppressionManager`.
+// suppresses the corresponding entity in
+// `PersonalContextEntityMetadataManager`.
 TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
        RemoveSuggestion_FillAutofillAi_SuppressesEntity) {
   EntityInstance full_passport = GetPassportEntityInstanceWithRandomGuid(
@@ -4491,8 +4505,9 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
 
   EXPECT_TRUE(external_delegate().RemoveSuggestion(suggestion));
 
-  EXPECT_TRUE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
-      full_passport));
+  EXPECT_TRUE(
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          full_passport));
 }
 
 // Tests that calling `RemoveSuggestion` for a `kFillAutofillAi` suggestion
@@ -4504,10 +4519,11 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
   autofill_client().GetEntityDataManager()->OnPrefetchContextComplete(
       personal_context_manager(), std::vector<EntityInstance>{full_passport});
   IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
-  autofill_client().GetEntitySuppressionManager()->SuppressEntity(
+  autofill_client().GetPersonalContextEntityMetadataManager()->SuppressEntity(
       full_passport);
-  ASSERT_TRUE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
-      full_passport));
+  ASSERT_TRUE(
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          full_passport));
 
   Suggestion suggestion(SuggestionType::kFillAutofillAi);
   suggestion.payload = Suggestion::AutofillAiPayload(full_passport.guid());
@@ -4515,8 +4531,9 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
   EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
       .Times(0);
   EXPECT_TRUE(external_delegate().RemoveSuggestion(suggestion));
-  EXPECT_TRUE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
-      full_passport));
+  EXPECT_TRUE(
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          full_passport));
 }
 
 // Tests that calling `RemoveSuggestion` for a `kFillAutofillAi` suggestion
@@ -4537,8 +4554,9 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
       .WillOnce(MoveArg<1>(&undo_completed));
   EXPECT_TRUE(external_delegate().RemoveSuggestion(suggestion));
 
-  EXPECT_TRUE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
-      full_passport));
+  EXPECT_TRUE(
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          full_passport));
   ASSERT_FALSE(undo_completed.is_null());
 
 #if BUILDFLAG(IS_ANDROID)
@@ -4548,8 +4566,9 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
                   AutofillSuggestionTriggerSource::kFormControlElementClicked));
 #endif  // BUILDFLAG(IS_ANDROID)
   std::move(undo_completed).Run();
-  EXPECT_FALSE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
-      full_passport));
+  EXPECT_FALSE(
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          full_passport));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -4567,8 +4586,9 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
   EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
       .Times(0);
   EXPECT_FALSE(external_delegate().RemoveSuggestion(suggestion));
-  EXPECT_FALSE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(
-      local_passport));
+  EXPECT_FALSE(
+      autofill_client().GetPersonalContextEntityMetadataManager()->IsSuppressed(
+          local_passport));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -602,7 +602,8 @@ ChromeAutofillClient::GetAutofillAiPersonalContextAccessManager() {
       GetProfile());
 }
 
-EntitySuppressionManager* ChromeAutofillClient::GetEntitySuppressionManager() {
+PersonalContextEntityMetadataManager*
+ChromeAutofillClient::GetPersonalContextEntityMetadataManager() {
   return EntitySuppressionManagerFactory::GetForProfile(GetProfile());
 }
 
@@ -1806,8 +1807,8 @@ void ChromeAutofillClient::ShowAutofillAiSuggestionRemovedNotification(
   // `on_undo_clicked` is not used here: toast action buttons are registered
   // once per `ToastId` in `ToastService`, so a toast cannot run a closure
   // passed at show time. Instead, the toast's Undo button undoes the
-  // suppression through `EntitySuppressionManager`, using the entity ID passed
-  // in `action_button_callback_data`.
+  // suppression through `PersonalContextEntityMetadataManager`, using the
+  // entity ID passed in `action_button_callback_data`.
   ToastController* toast_controller = GetToastController();
   if (!toast_controller) {
     return;

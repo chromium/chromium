@@ -19,7 +19,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
@@ -54,7 +54,7 @@ namespace autofill {
 class AutofillAiPersonalContextAccessManagerImpl
     : public AutofillAiPersonalContextAccessManager,
       public personal_context::PersonalContextEligibilityService::Observer,
-      public EntitySuppressionManager::Observer {
+      public PersonalContextEntityMetadataManager::Observer {
  public:
   // Represents the type of personal context network request sent to the server.
   enum class RequestType {
@@ -72,7 +72,7 @@ class AutofillAiPersonalContextAccessManagerImpl
           personal_context_eligibility_service,
       PrefService* pref_service,
       syncer::DeviceInfoSyncService* device_info_sync_service,
-      EntitySuppressionManager* suppression_manager);
+      PersonalContextEntityMetadataManager* entity_metadata_manager);
 
   AutofillAiPersonalContextAccessManagerImpl(
       const AutofillAiPersonalContextAccessManagerImpl&) = delete;
@@ -98,7 +98,7 @@ class AutofillAiPersonalContextAccessManagerImpl
       personal_context::PersonalContextEligibilityState new_state) override;
   void OnContextSourceDisabled() override;
 
-  // EntitySuppressionManager::Observer:
+  // PersonalContextEntityMetadataManager::Observer:
   void OnEntitySuppressionsChanged() override;
 
  private:
@@ -266,9 +266,9 @@ class AutofillAiPersonalContextAccessManagerImpl
       personal_context::PersonalContextEligibilityService::Observer>
       eligibility_service_observation_{this};
 
-  base::ScopedObservation<EntitySuppressionManager,
-                          EntitySuppressionManager::Observer>
-      suppression_observation_{this};
+  base::ScopedObservation<PersonalContextEntityMetadataManager,
+                          PersonalContextEntityMetadataManager::Observer>
+      entity_metadata_observation_{this};
 
   PrefChangeRegistrar pref_registrar_;
 

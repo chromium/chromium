@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 
 #include <algorithm>
 #include <utility>
@@ -15,26 +15,28 @@
 
 namespace autofill {
 
-EntitySuppressionManager::EntitySuppressionManager(
+PersonalContextEntityMetadataManager::PersonalContextEntityMetadataManager(
     std::unique_ptr<PersonalContextEntityMetadataSyncBridge> sync_bridge)
     : sync_bridge_(std::move(sync_bridge)) {
   CHECK(sync_bridge_);
   bridge_observation_.Observe(sync_bridge_.get());
 }
 
-EntitySuppressionManager::~EntitySuppressionManager() = default;
+PersonalContextEntityMetadataManager::~PersonalContextEntityMetadataManager() =
+    default;
 
-void EntitySuppressionManager::AddObserver(
-    EntitySuppressionManager::Observer* observer) {
+void PersonalContextEntityMetadataManager::AddObserver(
+    PersonalContextEntityMetadataManager::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void EntitySuppressionManager::RemoveObserver(
-    EntitySuppressionManager::Observer* observer) {
+void PersonalContextEntityMetadataManager::RemoveObserver(
+    PersonalContextEntityMetadataManager::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool EntitySuppressionManager::SuppressEntity(EntityInstance entity) {
+bool PersonalContextEntityMetadataManager::SuppressEntity(
+    EntityInstance entity) {
   if (!sync_bridge_->IsLoaded()) {
     return false;
   }
@@ -49,7 +51,7 @@ bool EntitySuppressionManager::SuppressEntity(EntityInstance entity) {
   return modified;
 }
 
-bool EntitySuppressionManager::UndoInSessionSuppressedEntity(
+bool PersonalContextEntityMetadataManager::UndoInSessionSuppressedEntity(
     const EntityInstance::EntityId& entity_id) {
   if (!sync_bridge_->IsLoaded()) {
     return false;
@@ -69,8 +71,9 @@ bool EntitySuppressionManager::UndoInSessionSuppressedEntity(
   return modified;
 }
 
-bool EntitySuppressionManager::ClearSuppressions(base::Time delete_begin,
-                                                 base::Time delete_end) {
+bool PersonalContextEntityMetadataManager::ClearSuppressions(
+    base::Time delete_begin,
+    base::Time delete_end) {
   if (!sync_bridge_->IsLoaded()) {
     return false;
   }
@@ -89,7 +92,7 @@ bool EntitySuppressionManager::ClearSuppressions(base::Time delete_begin,
   return true;
 }
 
-bool EntitySuppressionManager::IsSuppressed(
+bool PersonalContextEntityMetadataManager::IsSuppressed(
     const EntityInstance& entity) const {
   return std::ranges::any_of(GetEntitySuppressionEntries(entity),
                              [this](const EntitySuppressionEntry& entry) {
@@ -97,7 +100,7 @@ bool EntitySuppressionManager::IsSuppressed(
                              });
 }
 
-size_t EntitySuppressionManager::CountSuppressionsCreatedBetween(
+size_t PersonalContextEntityMetadataManager::CountSuppressionsCreatedBetween(
     base::Time begin,
     base::Time end) const {
   if (!sync_bridge_->IsLoaded()) {
@@ -106,13 +109,13 @@ size_t EntitySuppressionManager::CountSuppressionsCreatedBetween(
   return sync_bridge_->CountSuppressionsCreatedBetween(begin, end);
 }
 
-void EntitySuppressionManager::OnSuppressionsChanged() {
-  observers_.Notify(
-      &EntitySuppressionManager::Observer::OnEntitySuppressionsChanged);
+void PersonalContextEntityMetadataManager::OnSuppressionsChanged() {
+  observers_.Notify(&PersonalContextEntityMetadataManager::Observer::
+                        OnEntitySuppressionsChanged);
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
-EntitySuppressionManager::GetSyncControllerDelegate() {
+PersonalContextEntityMetadataManager::GetSyncControllerDelegate() {
   return sync_bridge_->GetControllerDelegate();
 }
 

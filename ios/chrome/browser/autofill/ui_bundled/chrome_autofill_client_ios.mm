@@ -272,8 +272,8 @@ EntityDataManager* ChromeAutofillClientIOS::GetEntityDataManager() {
   return IOSAutofillEntityDataManagerFactory::GetForProfile(profile_);
 }
 
-EntitySuppressionManager*
-ChromeAutofillClientIOS::GetEntitySuppressionManager() {
+PersonalContextEntityMetadataManager*
+ChromeAutofillClientIOS::GetPersonalContextEntityMetadataManager() {
   return IOSAutofillEntitySuppressionManagerFactory::GetForProfile(profile_);
 }
 

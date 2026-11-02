@@ -7,6 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 
 class KeyedService;
 class Profile;
@@ -16,8 +17,6 @@ class BrowserContext;
 }
 
 namespace autofill {
-
-class EntitySuppressionManager;
 
 // TODO(crbug.com/501036619): Remove EntitySuppressionManagerFactory from the
 // autofill namespace.

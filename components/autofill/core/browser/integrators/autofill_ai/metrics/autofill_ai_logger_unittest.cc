@@ -23,7 +23,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -116,8 +116,8 @@ class MockAutofillClient : public TestAutofillClient {
               GetMqlsUploadService,
               (),
               (override));
-  MOCK_METHOD(EntitySuppressionManager*,
-              GetEntitySuppressionManager,
+  MOCK_METHOD(PersonalContextEntityMetadataManager*,
+              GetPersonalContextEntityMetadataManager,
               (),
               (override));
 };
@@ -993,23 +993,25 @@ class AutofillAiPersonalContextSuppressionTest : public BaseAutofillAiTest {
     std::unique_ptr<PersonalContextEntityMetadataSyncBridge> bridge =
         CreateTestPersonalContextEntityMetadataSyncBridge();
     EXPECT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
-    suppression_manager_ =
-        std::make_unique<EntitySuppressionManager>(std::move(bridge));
-    ON_CALL(autofill_client(), GetEntitySuppressionManager)
-        .WillByDefault(Return(suppression_manager_.get()));
+    entity_metadata_manager_ =
+        std::make_unique<PersonalContextEntityMetadataManager>(
+            std::move(bridge));
+    ON_CALL(autofill_client(), GetPersonalContextEntityMetadataManager)
+        .WillByDefault(Return(entity_metadata_manager_.get()));
 
     // Recreate `AutofillAiManager` instance because its `AutofillAiLogger`
-    // member caches the current `EntitySuppressionManager` of `AutofillClient`
-    // upon construction.
+    // member caches the current `PersonalContextEntityMetadataManager` of
+    // `AutofillClient` upon construction.
     RecreateManager();
   }
 
   ~AutofillAiPersonalContextSuppressionTest() override {
-    // `suppression_manager_` is a member of this fixture and would be destroyed
-    // before `manager_` of the base fixture without this explicit reset.
-    // `AutofillAiLogger` caches a pointer to `suppression_manager_` and may
-    // dereference it in its destructor. In production, the
-    // `EntitySuppressionManager` is a keyed service that outlives the logger.
+    // `entity_metadata_manager_` is a member of this fixture and would be
+    // destroyed before `manager_` of the base fixture without this explicit
+    // reset. `AutofillAiLogger` caches a pointer to `entity_metadata_manager_`
+    // and may dereference it in its destructor. In production, the
+    // `PersonalContextEntityMetadataManager` is a keyed service that outlives
+    // the logger.
     manager_ptr().reset();
   }
 
@@ -1042,12 +1044,13 @@ class AutofillAiPersonalContextSuppressionTest : public BaseAutofillAiTest {
         {GetSuggestion(passport1), GetSuggestion(passport2),
          GetSuggestion(drivers_license)},
         /*ukm_source_id=*/{}, /*update_suggestions_callback=*/{});
-    suppression_manager_->SuppressEntity(passport1);
+    entity_metadata_manager_->SuppressEntity(passport1);
     return form;
   }
 
  private:
-  std::unique_ptr<EntitySuppressionManager> suppression_manager_;
+  std::unique_ptr<PersonalContextEntityMetadataManager>
+      entity_metadata_manager_;
 };
 
 // Tests that, at form submission, one suppression sample is emitted per unique
@@ -1079,7 +1082,8 @@ TEST_F(AutofillAiPersonalContextSuppressionTest, Abandoned) {
   // Regression test for crbug.com/574445214: the logger is destroyed while the
   // client is being destroyed, at which point the client must not be queried
   // for keyed services anymore (enforced by `CHECK`).
-  EXPECT_CALL(autofill_client(), GetEntitySuppressionManager).Times(0);
+  EXPECT_CALL(autofill_client(), GetPersonalContextEntityMetadataManager)
+      .Times(0);
   manager_ptr().reset();
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.Ai.Suppression.Passport.PersonalContext"),

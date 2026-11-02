@@ -42,7 +42,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -1875,7 +1875,7 @@ bool AutofillExternalDelegate::SuppressAutofillAiEntity(
       entity->record_type() != EntityInstance::RecordType::kPersonalContext) {
     return false;
   }
-  if (!manager_->client().GetEntitySuppressionManager()) {
+  if (!manager_->client().GetPersonalContextEntityMetadataManager()) {
     return false;
   }
 
@@ -1903,12 +1903,12 @@ bool AutofillExternalDelegate::SuppressAutofillAiEntity(
 bool AutofillExternalDelegate::SuppressEntityAndOfferUndo(
     EntityInstance entity,
     FieldGlobalId field_id) {
-  EntitySuppressionManager* suppression_manager =
-      manager_->client().GetEntitySuppressionManager();
-  if (!suppression_manager) {
+  PersonalContextEntityMetadataManager* entity_metadata_manager =
+      manager_->client().GetPersonalContextEntityMetadataManager();
+  if (!entity_metadata_manager) {
     return false;
   }
-  const bool newly_suppressed = suppression_manager->SuppressEntity(entity);
+  const bool newly_suppressed = entity_metadata_manager->SuppressEntity(entity);
   if (newly_suppressed) {
     LogEntitySuppressedWithSavedEntityPresent(
         entity.type(), manager_->client().GetEntityDataManager());
@@ -1918,15 +1918,15 @@ bool AutofillExternalDelegate::SuppressEntityAndOfferUndo(
                     weak_ptr_factory_.GetWeakPtr(), entity.guid(), field_id));
     return true;
   }
-  return suppression_manager->IsSuppressed(entity);
+  return entity_metadata_manager->IsSuppressed(entity);
 }
 
 void AutofillExternalDelegate::OnAutofillAiSuppressionUndone(
     EntityInstance::EntityId entity_id,
     FieldGlobalId field_id) {
-  if (EntitySuppressionManager* suppression_manager =
-          manager_->client().GetEntitySuppressionManager()) {
-    suppression_manager->UndoInSessionSuppressedEntity(entity_id);
+  if (PersonalContextEntityMetadataManager* entity_metadata_manager =
+          manager_->client().GetPersonalContextEntityMetadataManager()) {
+    entity_metadata_manager->UndoInSessionSuppressedEntity(entity_id);
   }
 #if BUILDFLAG(IS_ANDROID)
   manager_->driver().RendererShouldTriggerSuggestions(

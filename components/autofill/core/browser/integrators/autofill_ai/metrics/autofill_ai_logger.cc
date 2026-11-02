@@ -24,7 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -119,7 +119,8 @@ bool IsMergeConstraintField(EntityType entity_type,
 AutofillAiLogger::AutofillAiLogger(AutofillClient* client)
     : ukm_logger_(client),
       profile_metrics_service_(CHECK_DEREF(client->GetProfileMetricsService())),
-      entity_suppression_manager_(client->GetEntitySuppressionManager()) {}
+      entity_metadata_manager_(
+          client->GetPersonalContextEntityMetadataManager()) {}
 AutofillAiLogger::~AutofillAiLogger() {
   for (const auto& [form_id, states] : form_states_) {
     if (!submitted_forms_.contains(form_id)) {
@@ -415,12 +416,11 @@ void AutofillAiLogger::RecordPersonalContextSuppressionMetrics(
     FormGlobalId form_id) const {
   const base::flat_set<EntityInstance, EntityInstance::CompareByGuid>*
       entities = base::FindOrNull(personal_context_entities_shown_, form_id);
-  if (!entities || !entity_suppression_manager_) {
+  if (!entities || !entity_metadata_manager_) {
     return;
   }
   for (const EntityInstance& entity : *entities) {
-    const bool is_suppressed =
-        entity_suppression_manager_->IsSuppressed(entity);
+    const bool is_suppressed = entity_metadata_manager_->IsSuppressed(entity);
     profile_metrics_service_->UmaHistogramBoolean(
         base::StrCat({"Autofill.Ai.Suppression.",
                       EntityTypeToMetricsString(entity.type()),

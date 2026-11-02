@@ -32,7 +32,7 @@ class ProfileMetricsService;
 
 namespace autofill {
 
-class EntitySuppressionManager;
+class PersonalContextEntityMetadataManager;
 
 // A class that takes care of keeping track of metric-related states and user
 // interactions with forms.
@@ -220,7 +220,8 @@ class AutofillAiLogger {
   // queried for it anymore during its destruction, when this object's
   // destructor records metrics. May be null if the client does not support
   // entity suppression.
-  const raw_ptr<const EntitySuppressionManager> entity_suppression_manager_;
+  const raw_ptr<const PersonalContextEntityMetadataManager>
+      entity_metadata_manager_;
 };
 
 }  // namespace autofill
