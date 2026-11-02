@@ -8,7 +8,6 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/testing/fake_flatland.h>
 
-#include "base/compiler_specific.h"
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_publisher.h"
@@ -19,6 +18,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/ozone/platform/flatland/flatland_surface_factory.h"
 
 using ::scenic::FakeGraph;
@@ -210,12 +211,9 @@ class FlatlandSurfaceCanvasTest : public ::testing::Test {
     int frame_index =
         std::get<FakeImage>(*fake_flatland_.graph().root_transform->content)
             .vmo_index;
-    const char* image_data =
-        reinterpret_cast<const char*>(frames_[frame_index].mapping.memory());
-    size_t pixel_offset = y * image_stride_ + x * sizeof(SkColor);
-    auto result = *reinterpret_cast<const SkColor*>(
-        UNSAFE_TODO(image_data + pixel_offset));
-    return result;
+    const SkPixmap pixmap(SkImageInfo::MakeN32Premul(kImageSize, kImageSize),
+                          frames_[frame_index].mapping.data(), image_stride_);
+    return pixmap.getColor(x, y);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{

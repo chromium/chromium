@@ -7,6 +7,7 @@
 #include <fuchsia/sysmem2/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
@@ -15,7 +16,8 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "third_party/skia/include/core/SkColorType.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vsync_provider.h"
@@ -110,7 +112,7 @@ void FlatlandSurfaceCanvas::Frame::InitializeBuffer(
   SkSurfaceProps props;
   surface = SkSurfaces::WrapPixels(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      memory_mapping.memory(), stride, &props);
+      memory_mapping.data(), stride, &props);
   dirty_region.setRect(gfx::RectToSkIRect(gfx::Rect(size)));
 }
 
@@ -121,15 +123,12 @@ void FlatlandSurfaceCanvas::Frame::Reset() {
 }
 
 void FlatlandSurfaceCanvas::Frame::CopyDirtyRegionFrom(const Frame& frame) {
-  int stride = surface->width() * SkColorTypeBytesPerPixel(kN32_SkColorType);
+  SkPixmap dst_pixmap;
+  CHECK(surface->peekPixels(&dst_pixmap));
   for (SkRegion::Iterator i(dirty_region); !i.done(); i.next()) {
-    uint8_t* dst_ptr =
-        UNSAFE_TODO(static_cast<uint8_t*>(memory_mapping.memory()) +
-                    i.rect().x() * SkColorTypeBytesPerPixel(kN32_SkColorType) +
-                    i.rect().y() * stride);
-    frame.surface->readPixels(
-        SkImageInfo::MakeN32Premul(i.rect().width(), i.rect().height()),
-        dst_ptr, stride, i.rect().x(), i.rect().y());
+    SkPixmap dst_subset;
+    CHECK(dst_pixmap.extractSubset(&dst_subset, i.rect()));
+    frame.surface->readPixels(dst_subset, i.rect().x(), i.rect().y());
   }
   dirty_region.setEmpty();
 }
