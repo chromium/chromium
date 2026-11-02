@@ -309,6 +309,16 @@ gfx::Size SubmenuView::CalculatePreferredSize(
           std::max(max_complex_width, child->GetPreferredSize({}).width());
     }
   }
+  // Pinned items aren't in `children()`, but their titles are painted using
+  // this submenu's minor text column, so include them to avoid eliding.
+  for (const MenuItemView* item : GetMenuItems()) {
+    if (item->IsPinned() && item->GetVisible()) {
+      const auto& dimensions = item->GetDimensions();
+      max_simple_width = std::max(max_simple_width, dimensions.standard_width);
+      max_minor_text_width_ =
+          std::max(max_minor_text_width_, dimensions.minor_text_width);
+    }
+  }
   const auto& config = MenuConfig::instance();
   if (max_minor_text_width_ > 0) {
     max_minor_text_width_ += config.item_horizontal_padding;
