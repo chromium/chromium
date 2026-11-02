@@ -573,6 +573,67 @@ TEST_F(ResourceMultiBufferDataProviderTest, NoCrossOriginMediaLeaks) {
   StopWhenLoad();
 }
 
+// Verifies that when a same-origin URL (A) is already cached in `UrlIndex` as a
+// non-opaque (`kBasic`) response, a second cross-origin URL (C) redirecting to
+// A (which yields an opaque response) succeeds rather than failing playback.
+TEST_F(ResourceMultiBufferDataProviderTest,
+       CrossOriginRedirectToCachedUrlSucceeds) {
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+
+  constexpr char kOriginA[] = "http://localhost:18080/v1";
+  constexpr char kOriginC[] = "http://127.0.0.1:18081/redir";
+
+  // 1. Load `kOriginA` directly as a non-opaque response so it is cached in
+  // `url_index_`.
+  Initialize(kOriginA, 0);
+  url_data_->Use();
+  ASSERT_TRUE(loader_);
+  loader_->Start();
+
+  WebURL url_a{KURL(kOriginA)};
+  WebURLResponse response_a{url_a};
+  response_a.SetHttpStatusCode(kHttpPartialContent);
+  response_a.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                                WebString::FromUtf8("bytes 0-1000000/1000001"));
+  response_a.SetExpectedContentLength(1000001);
+  response_a.SetType(network::mojom::FetchResponseType::kBasic);
+  loader_->DidReceiveResponse(response_a);
+
+  scoped_refptr<UrlData> url_data_a = url_data_;
+  ASSERT_EQ(url_index_->GetByUrl(KURL(kOriginA), UrlData::CORS_UNSPECIFIED,
+                                 UrlData::kNormal, security_origin_),
+            url_data_a);
+  EXPECT_FALSE(url_data_a->is_cors_cross_origin());
+
+  // 2. Load `kOriginC`, which redirects cross-origin to `kOriginA` with an
+  // opaque response. It must succeed (redirecting to a non-null `UrlData`)
+  // rather than failing (`RedirectCallback(nullptr)`).
+  EXPECT_CALL(*this, RedirectCallback(testing::NotNull()))
+      .WillOnce(Invoke(this, &ResourceMultiBufferDataProviderTest::SetUrlData));
+
+  Initialize(kOriginC, 0);
+  url_data_->Use();
+  ASSERT_TRUE(loader_);
+  loader_->Start();
+
+  WebURLResponse redirect_response{KURL(kOriginC)};
+  ASSERT_TRUE(loader_->WillFollowRedirect(url_a, redirect_response));
+
+  WebURLResponse response_c{url_a};
+  response_c.SetHttpStatusCode(kHttpPartialContent);
+  response_c.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                                WebString::FromUtf8("bytes 0-1000000/1000001"));
+  response_c.SetExpectedContentLength(1000001);
+  response_c.SetType(network::mojom::FetchResponseType::kOpaque);
+  loader_->DidReceiveResponse(response_c);
+
+  ASSERT_TRUE(url_data_);
+  EXPECT_EQ(url_data_->data_origin(), KURL(kOriginA));
+  EXPECT_TRUE(url_data_->is_cors_cross_origin());
+  StopWhenLoad();
+}
+
 // Verifies that a same-origin redirect cannot be used to mix responses with
 // different data origins (e.g., via a Service Worker responding to the
 // redirected URL with a cross-origin response).
