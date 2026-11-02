@@ -62,6 +62,9 @@
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -921,6 +924,84 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   EXPECT_EQ(signin_metrics::Reason::kReauthentication,
             tab_helper->signin_reason());
   EXPECT_FALSE(tab_helper->IsChromeSigninInProgress());
+}
+
+class SigninViewControllerReauthSkipIdentifierBrowserTest
+    : public SigninViewControllerBrowserTest {
+ private:
+  // `kReauthSkipIdentifierPage` makes the reauth URL depend on the state of the
+  // cookie jar (see `GetSigninUrlForDiceSigninTab()`): /AddSession while the
+  // cookie jar is not fresh, /AccountChooser?ptc=1 once it is fresh and the
+  // account is signed out on the web.
+  // The feature was enabled in the crash reports of crbug.com/578356808.
+  base::test::ScopedFeatureList feature_list_{
+      switches::kReauthSkipIdentifierPage};
+};
+
+// Regression test for crbug.com/578356808: an NTP tab is reused for a reauth
+// flow while its `DiceTabHelper` still holds the signin URL of a previous,
+// aborted reauth flow with a different URL.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerReauthSkipIdentifierBrowserTest,
+                       ReuseNtpTabWithStaleDiceTabHelperState) {
+  AccountInfo account = SetPrimaryAccount();
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      account.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  const std::string email(account.GetEmail());
+
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* tab = tab_strip->GetActiveWebContents();
+
+  // First click on the profile menu reauth button, with a stale cookie jar.
+  // The NTP tab is overwritten.
+  signin_ui_util::ShowReauthForAccount(
+      GetProfile(), email,
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
+  ASSERT_EQ(1, tab_strip->count());
+  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(tab);
+  ASSERT_TRUE(tab_helper);
+  const GURL first_signin_url = tab_helper->signin_url();
+  EXPECT_TRUE(tab_helper->IsChromeSigninPage());
+
+  // The pending Gaia navigation is aborted by a reload of the NTP.
+  ASSERT_TRUE(tab->GetController().GetPendingEntry());
+  content::TestNavigationObserver reload_observer(tab);
+  tab->GetController().Reload(content::ReloadType::NORMAL,
+                              /*check_for_repost=*/false);
+  reload_observer.Wait();
+  EXPECT_FALSE(tab->GetController().GetPendingEntry());
+  EXPECT_NE(first_signin_url, tab->GetLastCommittedURL());
+  EXPECT_FALSE(tab_helper->IsChromeSigninPage());
+  // The state of the abandoned flow is not reset.
+  EXPECT_EQ(first_signin_url, tab_helper->signin_url());
+
+  // The cookie jar becomes fresh, which changes the reauth URL.
+  identity_test_env()->SetCookieAccounts(
+      {{email, account.GetGaiaId(), /*signed_out=*/true}});
+
+  // Second click on the reauth button, with a different signin URL. The same
+  // NTP tab is reused with the stale `DiceTabHelper`.
+  signin_ui_util::ShowReauthForAccount(
+      GetProfile(), email,
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
+
+  // The new reauth flow starts in the reused tab, replacing the stale state.
+  ASSERT_EQ(1, tab_strip->count());
+  ASSERT_EQ(tab, tab_strip->GetActiveWebContents());
+  ASSERT_EQ(tab_helper, DiceTabHelper::FromWebContents(tab));
+  const GURL second_signin_url = tab_helper->signin_url();
+  EXPECT_NE(first_signin_url, second_signin_url);
+
+  EXPECT_TRUE(tab_helper->IsChromeSigninPage());
+  // The tab is navigating to the new signin URL.
+  ASSERT_TRUE(tab->GetController().GetPendingEntry());
+  EXPECT_EQ(second_signin_url,
+            tab->GetController().GetPendingEntry()->GetURL());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

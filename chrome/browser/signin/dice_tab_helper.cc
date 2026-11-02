@@ -150,9 +150,11 @@ void DiceTabHelper::InitializeSigninFlow(
     OnSigninHeaderReceived on_signin_header_received_callback,
     ShowSigninErrorCallback show_signin_error_callback) {
   CHECK(signin_url.is_valid(), base::NotFatalUntil::M162);
-  // TODO(crbug.com/578357164): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(state_->signin_url.is_empty() || state_->signin_url == signin_url);
+  // The signin URL must not change while the tab is still the reusable signin
+  // page (see `IsChromeSigninPage()`). Once the tab navigated away from it,
+  // the previous state is stale and the tab can be reused for a new flow.
+  CHECK(!is_chrome_signin_page_ || state_->signin_url.is_empty() ||
+         state_->signin_url == signin_url, base::NotFatalUntil::M162);
 
   Reset();
   state_->redirect_url = redirect_url;
