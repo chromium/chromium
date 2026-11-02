@@ -11,6 +11,7 @@ source_set("bookmarkbar_preload") {
   public_deps = [
     "//base",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
   ]
 }
 
@@ -29,6 +30,7 @@ source_set("impl") {
     "//chrome/browser/search_engines",
     "//components/page_load_metrics/browser",
     "//components/search_engines",
+    "//components/tabs:public",
   ]
 }
 
@@ -44,6 +46,7 @@ source_set("unit_tests") {
     "//chrome/browser/preloading/prerender",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//components/tabs:test_support",
     "//content/test:test_support",
   ]
 }

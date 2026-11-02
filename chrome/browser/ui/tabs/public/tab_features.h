@@ -489,10 +489,6 @@ class TabFeatures {
   autofill::BubbleManager* SetBubbleManagerForTesting(
       std::unique_ptr<autofill::BubbleManager> bubble_manager);
 
-  BookmarkBarPreloadPipelineManager* bookmarkbar_preload_pipeline_manager() {
-    return bookmarkbar_preload_pipeline_manager_.get();
-  }
-
   site_engagement::SiteEngagementService::Helper* site_engagement_helper() {
     return site_engagement_helper_.get();
   }

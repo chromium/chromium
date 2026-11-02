@@ -998,7 +998,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }
 
   bookmarkbar_preload_pipeline_manager_ =
-      std::make_unique<BookmarkBarPreloadPipelineManager>(tab.GetContents());
+      GetUserDataFactory().CreateInstance<BookmarkBarPreloadPipelineManager>(
+          tab, tab, tab.GetContents());
 
   context_highlight_tab_feature_ =
       GetUserDataFactory().CreateInstance<ContextHighlightTabFeature>(tab, tab);
@@ -1726,7 +1727,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   if (bookmarkbar_preload_pipeline_manager_) {
     bookmarkbar_preload_pipeline_manager_.reset();
     bookmarkbar_preload_pipeline_manager_ =
-        std::make_unique<BookmarkBarPreloadPipelineManager>(new_contents);
+        GetUserDataFactory().CreateInstance<BookmarkBarPreloadPipelineManager>(
+            *tab, *tab, new_contents);
   }
 
   if (new_tab_page_preload_pipeline_manager_) {

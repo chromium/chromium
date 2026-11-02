@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
@@ -366,7 +365,7 @@ BookmarkButton::GetBookmarkBarPreloadPipelineManager() {
   if (!active_tab) {
     return nullptr;
   }
-  return active_tab->GetTabFeatures()->bookmarkbar_preload_pipeline_manager();
+  return BookmarkBarPreloadPipelineManager::From(active_tab);
 }
 
 BEGIN_METADATA(BookmarkButton)
