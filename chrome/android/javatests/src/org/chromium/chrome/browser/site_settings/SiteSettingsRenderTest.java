@@ -27,7 +27,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -90,9 +89,6 @@ public class SiteSettingsRenderTest {
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
-    public PermissionTestRule mPermissionTestRule =
-            new PermissionTestRule(mActivityTestRule.getActivityTestRule(), true);
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -106,9 +102,7 @@ public class SiteSettingsRenderTest {
 
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mAdvancedProtectionRule)
-                    .around(mActivityTestRule)
-                    .around(mPermissionTestRule);
+            RuleChain.outerRule(mAdvancedProtectionRule).around(mActivityTestRule);
 
     @Before
     public void setUp() throws TimeoutException {
