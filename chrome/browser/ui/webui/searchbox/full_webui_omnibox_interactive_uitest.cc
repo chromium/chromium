@@ -688,9 +688,26 @@ class FullWebUIOmniboxInteractiveTestBase
 
   // Sends a real Ctrl+`key` (Cmd+`key` on macOS) key press to the popup, e.g.
   // Ctrl/Cmd+A to select all.
+  //
+  // Waits for the popup widget to hold activation first. On macOS, AppKit
+  // routes key equivalents (Cmd+key) to the key window rather than to the
+  // window the event targets, and the popup only redispatches a Cmd+key the
+  // renderer doesn't handle (e.g. Cmd+C to the Edit menu's Copy) while its
+  // window is key. Unlike plain key presses, which reach the popup either way,
+  // a Cmd+key sent while the browser window holds key status is dropped (or
+  // acts on the page). The omnibox focus checks don't catch this: macOS keeps
+  // the popup's WebContents active, so its input still reports DOM focus, when
+  // the popup window isn't key (see `OmniboxPopupFullPresenter`).
   auto PressWebUIAcceleratorKey(ui::KeyboardCode key, int extra_flags = 0) {
-    return InAnyContext(SendKeyPress(
-        kPopupWebView, key, ui::EF_PLATFORM_ACCELERATOR | extra_flags));
+    return Steps(
+        PollUntil(
+            [this]() {
+              auto* widget = GetPopupWidget(browser());
+              return widget && widget->IsActive();
+            },
+            "WaitForPopupWidgetActive"),
+        InAnyContext(SendKeyPress(kPopupWebView, key,
+                                  ui::EF_PLATFORM_ACCELERATOR | extra_flags)));
   }
 
   // Adds `url` to history as a typed URL, so that typing a prefix of it inline
