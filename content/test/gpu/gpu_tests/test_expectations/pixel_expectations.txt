@@ -580,6 +580,10 @@ crbug.com/579027409 [ android android-sm-a137f no-passthrough ] Pixel_Video_Cont
 crbug.com/579027409 [ android android-sm-a236b no-passthrough ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 crbug.com/579027409 [ android android-sm-s911u1 no-passthrough ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
+# Flaky ServiceFontManager NOTREACHED crash on Mac Release builds
+crbug.com/579448963 [ mac no-asan release ] Pixel_WebGLGreenTriangle_NotInOverlay_AA_Alpha [ RetryOnFailure ]
+crbug.com/579448963 [ mac apple-angle-metal-renderer:-apple-m2 asan ] Pixel_WebGLGreenTriangle_NotInOverlay_AA_Alpha [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
