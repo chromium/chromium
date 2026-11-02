@@ -16,14 +16,6 @@ namespace actor {
 
 ToolDefinition::ToolDefinition(ToolId id,
                                std::string name,
-                               std::string description)
-    : ToolDefinition(id,
-                     std::move(name),
-                     std::move(description),
-                     base::DictValue()) {}
-
-ToolDefinition::ToolDefinition(ToolId id,
-                               std::string name,
                                std::string description,
                                base::DictValue parameters_json_schema)
     : id(id),

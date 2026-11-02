@@ -108,7 +108,6 @@ enum class ToolId {
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
 // building instances with `ToolDefinitionBuilder`.
 struct ToolDefinition {
-  ToolDefinition(ToolId id, std::string name, std::string description);
   ToolDefinition(ToolId id,
                  std::string name,
                  std::string description,

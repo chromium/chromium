@@ -4,7 +4,11 @@
 
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 
+#include <string>
+#include <type_traits>
+
 #include "base/values.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
 #include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "components/optimization_guide/proto/features/wire/tool_declaration.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,72 +18,88 @@ namespace {
 
 constexpr ToolId kUnrecognizedToolId = static_cast<ToolId>(999);
 
+static_assert(
+    !std::is_constructible_v<ToolDefinition, ToolId, std::string, std::string>);
+
 TEST(ToolDefinitionTest, StoresName) {
-  ToolDefinition def(kUnrecognizedToolId, "test_tool",
-                     "Sample tool description.");
+  ToolDefinition def = ToolDefinitionBuilder(kUnrecognizedToolId, "test_tool",
+                                             "Sample tool description.")
+                           .Build();
   EXPECT_EQ(def.name, "test_tool");
 }
 
 TEST(ToolDefinitionTest, ClonePreservesId) {
-  ToolDefinition def(kUnrecognizedToolId, "test_tool",
-                     "Sample tool description.");
+  ToolDefinition def = ToolDefinitionBuilder(kUnrecognizedToolId, "test_tool",
+                                             "Sample tool description.")
+                           .Build();
   EXPECT_EQ(def.Clone().id, kUnrecognizedToolId);
 }
 
 TEST(ToolDefinitionTest, ClonePreservesName) {
-  ToolDefinition def(kUnrecognizedToolId, "test_tool",
-                     "Sample tool description.");
+  ToolDefinition def = ToolDefinitionBuilder(kUnrecognizedToolId, "test_tool",
+                                             "Sample tool description.")
+                           .Build();
   EXPECT_EQ(def.Clone().name, "test_tool");
 }
 
 TEST(ToolDefinitionTest, ClonePreservesDescription) {
-  ToolDefinition def(kUnrecognizedToolId, "test_tool",
-                     "Sample tool description.");
+  ToolDefinition def = ToolDefinitionBuilder(kUnrecognizedToolId, "test_tool",
+                                             "Sample tool description.")
+                           .Build();
   EXPECT_EQ(def.Clone().description, "Sample tool description.");
 }
 
 TEST(ToolDefinitionTest, ClonePreservesParametersJsonSchema) {
-  ToolDefinition def(kUnrecognizedToolId, "test_tool",
-                     "Sample tool description.",
-                     base::DictValue().Set("type", "object"));
+  ToolDefinition def =
+      ToolDefinitionBuilder(kUnrecognizedToolId, "test_tool",
+                            "Sample tool description.")
+          .SetToolParameterSchema(
+              ToolSchemaBuilder().AddStringProperty("url", "Destination URL."))
+          .Build();
   EXPECT_EQ(def.Clone().parameters_json_schema, def.parameters_json_schema);
 }
 
 TEST(ToolDefinitionTest, ToProtoSetsName) {
-  ToolDefinition def(kUnrecognizedToolId, "test_tool",
-                     "Sample tool description.");
+  ToolDefinition def = ToolDefinitionBuilder(kUnrecognizedToolId, "test_tool",
+                                             "Sample tool description.")
+                           .Build();
   EXPECT_EQ(def.ToProto().name(), "test_tool");
 }
 
 TEST(ToolDefinitionTest, ToProtoSetsDescription) {
-  ToolDefinition def(kUnrecognizedToolId, "test_tool",
-                     "Sample tool description.");
+  ToolDefinition def = ToolDefinitionBuilder(kUnrecognizedToolId, "test_tool",
+                                             "Sample tool description.")
+                           .Build();
   EXPECT_EQ(def.ToProto().description(), "Sample tool description.");
 }
 
 TEST(ToolDefinitionTest, ToProtoSerializesParametersJsonSchema) {
-  ToolDefinition def(
-      kUnrecognizedToolId, "test_tool", "Sample tool description.",
-      base::DictValue()
-          .Set("type", "object")
-          .Set("properties",
-               base::DictValue().Set("url",
-                                     base::DictValue().Set("type", "string")))
-          .Set("required", base::ListValue().Append("url")));
+  ToolDefinition def =
+      ToolDefinitionBuilder(kUnrecognizedToolId, "test_tool",
+                            "Sample tool description.")
+          .SetToolParameterSchema(
+              ToolSchemaBuilder().AddStringProperty("url", "Destination URL."))
+          .Build();
   EXPECT_EQ(def.ToProto().parameters_json_schema(),
-            R"({"properties":{"url":{"type":"string"}},)"
-            R"("required":["url"],"type":"object"})");
-}
-
-TEST(ToolDefinitionTest, ToProtoOmitsParametersJsonSchemaForEmptyDict) {
-  ToolDefinition def(kUnrecognizedToolId, "test_tool",
-                     "Sample tool description.");
-  EXPECT_FALSE(def.ToProto().has_parameters_json_schema());
+            R"({"additionalProperties":false,)"
+            R"("properties":{"url":{"description":"Destination URL.",)"
+            R"("type":"string"}},"required":["url"],"type":"object"})");
 }
 
 TEST(ToolDefinitionTest, ToProtoOmitsParametersJsonSchemaForEmptyObjectSchema) {
-  ToolDefinition def(kUnrecognizedToolId, "test_tool",
-                     "Sample tool description.", ToolSchemaBuilder().Build());
+  ToolDefinition def = ToolDefinitionBuilder(kUnrecognizedToolId, "test_tool",
+                                             "Sample tool description.")
+                           .Build();
+  EXPECT_FALSE(def.ToProto().has_parameters_json_schema());
+}
+
+TEST(ToolDefinitionTest,
+     ToProtoOmitsParametersJsonSchemaWithoutPropertiesDict) {
+  ToolDefinition def =
+      ToolDefinitionBuilder(kUnrecognizedToolId, "test_tool",
+                            "Sample tool description.")
+          .SetToolParameterSchema(base::DictValue().Set("type", "object"))
+          .Build();
   EXPECT_FALSE(def.ToProto().has_parameters_json_schema());
 }
 
