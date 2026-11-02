@@ -2143,6 +2143,11 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
+  // Wait for the asynchronous URL check to finish and screenshot capture to
+  // start before closing the tab.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return web_contents()->IsBeingCaptured(); }));
+
   // Close the active tab while screenshot capture is in flight.
   tab_list()->CloseTab(captured_tab);
 

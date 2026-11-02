@@ -1352,6 +1352,35 @@ TEST_P(SafetyListManagerTest,
       ParseResult::kEntryFormatInvalid, 1);
 }
 
+TEST_P(SafetyListManagerTest, CallbacksAreAlwaysInvokedAsynchronously) {
+  SetSafetyLists(R"json({
+    "navigation_allowed": [{ "from": "a.com", "to": "b.com" }],
+    "payment_iframe_allowed": ["https://a.com"]
+  })json");
+
+  // First lookup triggers off-thread parsing and completes asynchronously.
+  base::test::TestFuture<Decision> first_find_future;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 first_find_future.GetCallback());
+  EXPECT_FALSE(first_find_future.IsReady());
+  EXPECT_EQ(first_find_future.Get(), Decision::kAllow);
+
+  // Subsequent lookups against already-parsed lists also complete
+  // asynchronously.
+  base::test::TestFuture<Decision> cached_find_future;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 cached_find_future.GetCallback());
+  EXPECT_FALSE(cached_find_future.IsReady());
+  EXPECT_EQ(cached_find_future.Get(), Decision::kAllow);
+
+  base::test::TestFuture<bool> cached_iframe_future;
+  manager().IsPaymentIframeOriginAllowed(
+      url::Origin::Create(GURL("https://a.com")),
+      cached_iframe_future.GetCallback());
+  EXPECT_FALSE(cached_iframe_future.IsReady());
+  EXPECT_TRUE(cached_iframe_future.Get());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, SafetyListManagerTest, testing::Bool());
 
 }  // namespace

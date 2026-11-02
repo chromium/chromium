@@ -557,8 +557,12 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
   // Neither must a new session, which finds the extracted content cached.
+  // Delivering cached content takes two task hops: `FetchPageContext` posts
+  // `MaybeNotifyPageContextFetched`, which posts the `SafetyListManager::Find`
+  // callback (`NotifyPageContextFetched`).
   ttc_service().EndSession();
   ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+  FlushMessageLoop();
   FlushMessageLoop();
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 

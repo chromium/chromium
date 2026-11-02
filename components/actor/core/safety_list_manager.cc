@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -346,7 +347,9 @@ void SafetyListManager::Find(const GURL& source,
 
     MaybeStartParse();
   } else {
-    std::move(callback).Run(FindSync(source, destination));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), FindSync(source, destination)));
   }
 }
 
@@ -362,7 +365,9 @@ void SafetyListManager::IsPaymentIframeOriginAllowed(
 
     MaybeStartParse();
   } else {
-    std::move(callback).Run(IsPaymentIframeOriginAllowedSync(origin));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  IsPaymentIframeOriginAllowedSync(origin)));
   }
 }
 

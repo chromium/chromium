@@ -28,6 +28,13 @@ class NoDestructor;
 
 namespace actor {
 
+// Manages actor safety lists (navigation allow/block rules and payment iframe
+// origin allowlists).
+//
+// All methods must be called on the same sequence (the main thread). Parsing of
+// raw JSON safety list data is performed off-thread on the thread pool, and all
+// lookup callbacks (`Find()` and `IsPaymentIframeOriginAllowed()`) are always
+// invoked asynchronously on the calling sequence.
 class SafetyListManager {
  public:
   // LINT.IfChange(ParseResult)
@@ -78,28 +85,30 @@ class SafetyListManager {
   SafetyListManager(SafetyListManager&&) = delete;
   SafetyListManager& operator=(SafetyListManager&&) = delete;
 
+  // Returns the process-wide singleton instance. Must be accessed on the same
+  // sequence across all calls.
   static SafetyListManager* GetInstance();
   static std::unique_ptr<SafetyListManager> CreateForTesting();
 
   // Looks up the most specific rule applying to a navigation from `source` to
-  // `destination`. If no such rule exists, invokes `callback` with
-  // `Decision::kNone`.
+  // `destination` and invokes `callback` asynchronously on the calling sequence
+  // with the resulting `Decision` (or `Decision::kNone` if no rule matches).
   //
   // If the safety lists have not yet been parsed but the data is available for
   // parsing, this triggers parsing off the main thread before resolving the
   // decision. If the safety lists have not yet been parsed and the data is not
   // available for parsing (and no parse is currently in progress), this invokes
-  // `callback` with `Decision::kNone`.
+  // `callback` asynchronously with `Decision::kNone`.
   void Find(const GURL& source, const GURL& destination, FindCallback callback);
 
   // Checks whether `origin` is in the payment iframe allowlist and invokes
-  // `callback` with the result.
+  // `callback` asynchronously on the calling sequence with the result.
   //
   // If the safety lists have not yet been parsed but the data is available for
   // parsing, this triggers parsing off the main thread before resolving the
   // lookup. If the safety lists have not yet been parsed and the data is not
   // available for parsing (and no parse is currently in progress), this invokes
-  // `callback` with `false`.
+  // `callback` asynchronously with `false`.
   void IsPaymentIframeOriginAllowed(
       const url::Origin& origin,
       PaymentIframeOriginAllowedCallback callback);
