@@ -5,6 +5,7 @@
 #include "chrome/renderer/password_manager/remote_actor_credential_sharing_extension.h"
 
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -15,9 +16,12 @@
 #include "content/public/renderer/render_thread.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/origin.h"
 #include "v8/include/v8-context.h"
@@ -46,6 +50,15 @@ bool ShouldExposeRemoteActorCredentialSharingJavascriptApi(
       origin);
 }
 
+bool IsSameSiteWithOpener(blink::WebLocalFrame* web_frame) {
+  if (!web_frame || !web_frame->Opener()) {
+    return false;
+  }
+  return net::SchemefulSite::IsSameSite(
+      url::Origin(web_frame->GetSecurityOrigin()),
+      url::Origin(web_frame->Opener()->GetSecurityOrigin()));
+}
+
 }  // namespace
 
 // static
@@ -60,6 +73,16 @@ RemoteActorCredentialSharingExtension::RemoteActorCredentialSharingExtension(
 
 RemoteActorCredentialSharingExtension::
     ~RemoteActorCredentialSharingExtension() = default;
+
+void RemoteActorCredentialSharingExtension::DidCreateNewDocument() {
+  remote_interface_.reset();
+  blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
+  blink::WebDocumentLoader* document_loader =
+      web_frame ? web_frame->GetDocumentLoader() : nullptr;
+  has_unconsumed_popup_activation_ =
+      IsSameSiteWithOpener(web_frame) && document_loader &&
+      document_loader->LastNavigationHadTransientUserActivation();
+}
 
 void RemoteActorCredentialSharingExtension::DidCreateScriptContext(
     v8::Local<v8::Context> context,
@@ -110,8 +133,12 @@ void RemoteActorCredentialSharingExtension::RequestAgentAuthentication(
   auto global_callback =
       std::make_unique<v8::Global<v8::Function>>(isolate, callback_function);
 
-  // Require a transient user gesture to execute the Mojo API call.
-  if (!web_frame->HasTransientUserActivation()) {
+  // Require a transient user gesture, or a one-time fallback if this document
+  // was opened in a popup with a same-site opener via a user-activated
+  // navigation.
+  if (!web_frame->HasTransientUserActivation() &&
+      (!std::exchange(has_unconsumed_popup_activation_, false) ||
+       !IsSameSiteWithOpener(web_frame))) {
     base::BindOnce(
         &RemoteActorCredentialSharingExtension::RunCompletionCallback,
         weak_ptr_factory_.GetWeakPtr(), std::move(global_callback),

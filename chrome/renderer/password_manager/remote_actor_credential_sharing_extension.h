@@ -31,6 +31,7 @@ class RemoteActorCredentialSharingExtension
       const RemoteActorCredentialSharingExtension&) = delete;
 
   // content::RenderFrameObserver:
+  void DidCreateNewDocument() override;
   void DidCreateScriptContext(v8::Local<v8::Context> context,
                               int32_t world_id) override;
   void OnDestruct() override;
@@ -51,6 +52,10 @@ class RemoteActorCredentialSharingExtension
 
   // Helper method to retrieve the remote mojo interface host.
   chrome::mojom::RemoteActorCredentialSharing& GetRemoteInterface();
+
+  // Whether this document was loaded in an opened window/popup via a
+  // user-activated navigation and has not yet consumed that initial activation.
+  bool has_unconsumed_popup_activation_ = false;
 
   mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing>
       remote_interface_;

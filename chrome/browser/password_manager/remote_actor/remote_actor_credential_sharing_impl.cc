@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_impl.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
@@ -28,6 +30,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/base/schemeful_site.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -187,9 +191,7 @@ bool RemoteActorCredentialSharingImpl::ValidateRequestPreconditions(
     return false;
   }
 
-  if (!target_frame.HasTransientUserActivation()) {
-    receiver_.ReportBadMessage(
-        "RemoteActorCredentialSharing: Request without user gesture");
+  if (!HasValidUserActivation()) {
     return false;
   }
 
@@ -211,6 +213,41 @@ bool RemoteActorCredentialSharingImpl::ValidateRequestPreconditions(
   }
 
   return true;
+}
+
+bool RemoteActorCredentialSharingImpl::HasValidUserActivation() {
+  // Transient activation is always enough.
+  if (render_frame_host().HasTransientUserActivation()) {
+    return true;
+  }
+
+  // Without transient activation, we'll determine whether we're in a popup
+  // with a same-site opener created through transient activation, and consume
+  // it to allow access to the API.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  bool is_new_popup =
+      web_contents && web_contents->GetOriginalWindowOpenDisposition() ==
+                          WindowOpenDisposition::kNewPopup;
+  content::RenderFrameHost* opener =
+      web_contents ? web_contents->GetOpener() : nullptr;
+  if (!opener || !is_new_popup ||
+      !net::SchemefulSite::IsSameSite(
+          render_frame_host().GetLastCommittedOrigin(),
+          opener->GetLastCommittedOrigin())) {
+    return false;
+  }
+
+  if (popup_activation_consumed_) {
+    return false;
+  }
+
+  if (render_frame_host().IsLastCrossDocumentNavigationStartedByUser()) {
+    popup_activation_consumed_ = true;
+    return true;
+  }
+
+  return false;
 }
 
 bool RemoteActorCredentialSharingImpl::IsAllowedByPolicy(Profile* profile) {
