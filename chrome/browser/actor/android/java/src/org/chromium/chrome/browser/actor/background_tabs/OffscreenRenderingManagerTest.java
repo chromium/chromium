@@ -146,6 +146,30 @@ public class OffscreenRenderingManagerTest {
     }
 
     @Test
+    public void testStopOffscreenRenderingTab_doesNotDestroyWhenWebContentsActive() {
+        when(mTab.getWebContents()).thenReturn(mWebContents1);
+        when(mWebContents2.getViewAndroidDelegate()).thenReturn(mViewAndroidDelegate);
+
+        // 1. Start offscreen rendering for a standalone WebContents (e.g. Glic).
+        mManager.startOffscreenRenderingForWebContents(mWebContents2, 800, 600);
+
+        // 2. Start offscreen rendering for a Tab.
+        mManager.startOffscreenRendering(mTab, 800, 600);
+
+        // 3. Stop offscreen rendering for the Tab.
+        mManager.stopOffscreenRendering(mTab);
+
+        // When a WebContents is still active, stopping the tab must NOT destroy the manager.
+        verify(mNativePtr, never()).destroy();
+
+        // 4. Stopping the last WebContents should now destroy the manager.
+        when(mWebContents2.getTopLevelNativeWindow()).thenReturn(mManager.getOffscreenWindow());
+        mManager.stopOffscreenRendering(mWebContents2);
+
+        verify(mNativePtr).destroy();
+    }
+
+    @Test
     public void testOffscreenWindowAndroidPermissionDelegate() {
         WindowAndroid window = mManager.getOffscreenWindow();
         assertNotNull(window);

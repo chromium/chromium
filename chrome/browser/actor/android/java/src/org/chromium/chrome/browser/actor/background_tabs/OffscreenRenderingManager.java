@@ -267,8 +267,9 @@ public class OffscreenRenderingManager {
         tab.stopOffscreenRendering();
         mOffscreenTabs.remove(tab);
 
-        // If this was the last tab, clean up the native manager and offscreen window.
-        if (mOffscreenTabs.isEmpty()) {
+        // If this was the last tab and there are no active standalone WebContents,
+        // clean up the native manager and offscreen window.
+        if (mOffscreenTabs.isEmpty() && mOffscreenWebContents.isEmpty()) {
             destroy();
         }
     }
