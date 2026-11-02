@@ -32,7 +32,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/pdf/pdf_pref_names.h"
+#include "chrome/browser/pdf/pdf_pref_names.h"  // nogncheck
 #include "chrome/browser/printing/pdf_to_emf_converter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
