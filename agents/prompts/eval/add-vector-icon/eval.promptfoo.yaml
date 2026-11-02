@@ -1,0 +1,50 @@
+description: >-
+  Verify the add-vector-icon skill guides fetching, converting, and registering
+  Chromium .icon vector icons.
+owner: dayeung@chromium.org
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - add-vector-icon
+tests:
+  - vars:
+      query: >-
+        What script in the add-vector-icon skill should I run to fetch a Google
+        Symbols icon and convert it to a Chromium .icon file?
+    assert:
+      - type: contains
+        value: "fetch_icon.py"
+  - vars:
+      query: >-
+        If an icon in Chrome Desktop UI is used at both 16px and 20px, in what
+        order must the CANVAS_DIMENSIONS blocks appear in the .icon file, and
+        what --sizes flag should I pass to fetch_icon.py?
+    assert:
+      - type: icontains
+        value: "descending"
+      - type: contains
+        value: "CANVAS_DIMENSIONS"
+  - vars:
+      query: >-
+        How should a filled variant of the account_circle Google Symbol be
+        named as a .icon file and what flag in fetch_icon.py fetches the filled
+        variant?
+    assert:
+      - type: contains
+        value: "account_circle_filled.icon"
+      - type: contains
+        value: "--fill"
+  - vars:
+      query: >-
+        Where should a newly created .icon file be registered so that Chromium's
+        build system compiles it into a C++ vector icon constant?
+    assert:
+      - type: contains
+        value: "BUILD.gn"
+      - type: contains
+        value: "aggregate_vector_icons"
