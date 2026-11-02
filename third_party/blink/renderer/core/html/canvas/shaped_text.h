@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -59,6 +60,31 @@ class CORE_EXPORT ShapedText final : public GarbageCollected<ShapedText> {
     float x_position_;
   };
 
+  // A minimal glyph cluster (as produced by the shaper), as an absolute
+  // [start, end) range in the text, with its horizontal position (not adjusted
+  // for textAlign) and advance. A glyph cluster can span several grapheme
+  // clusters, e.g. for ligatures.
+  struct ClusterData {
+    unsigned start = 0;
+    unsigned end = 0;
+    float x_position = 0.0f;
+    float width = 0.0f;
+  };
+
+  // Returns the minimal clusters intersecting [start, end). For out of range
+  // indexes, throws an IndexSizeError and returns an empty vector.
+  // `exception_state` may be null only when the range is known to be valid;
+  // out of range indexes then CHECK-fail. No range is valid for an empty text.
+  Vector<ClusterData> CollectClustersForRange(
+      uint32_t start,
+      uint32_t end,
+      ExceptionState* exception_state) const;
+
+  // Returns the union of the glyph bounds for [start, end), relative to the
+  // text origin (not adjusted for textAlign/textBaseline). Does not validate
+  // the range: callers must check it against the text length first.
+  gfx::RectF ComputeGlyphBoundsForRange(uint32_t start, uint32_t end) const;
+
   const Font* GetFont() const { return font_.Get(); }
   const String& GetText() const { return text_; }
   TextDirection Direction() const { return direction_; }
@@ -68,9 +94,6 @@ class CORE_EXPORT ShapedText final : public GarbageCollected<ShapedText> {
   }
   float TextAlignDx() const { return text_align_dx_; }
   const gfx::RectF& GlyphBounds() const { return glyph_bounds_; }
-  const HeapVector<RunWithOffset>& RunsWithOffset() const {
-    return runs_with_offset_;
-  }
 
   void Trace(Visitor*) const;
 

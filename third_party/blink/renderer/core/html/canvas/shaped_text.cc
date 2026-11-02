@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/html/canvas/shaped_text.h"
 
+#include <algorithm>
+
+#include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
@@ -20,9 +23,95 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
+
+namespace {
+
+// Appends the glyph clusters of a run that intersect the text-relative
+// [start, end) range to `clusters`, in logical order.
+void AppendRunClusters(const ShapedText::RunWithOffset& run_with_offset,
+                       uint32_t start,
+                       uint32_t end,
+                       Vector<ShapedText::ClusterData>& clusters) {
+  const unsigned offset = run_with_offset.character_offset_;
+  // Every cluster lies within its run, so a run outside the range has none.
+  if (offset + run_with_offset.num_characters_ <= start || end <= offset) {
+    return;
+  }
+
+  const wtf_size_t initial_clusters_index = clusters.size();
+  run_with_offset.shape_result_->ForEachGraphemeClusters(
+      StringView(run_with_offset.text_), run_with_offset.x_position_, 0,
+      run_with_offset.num_characters_, 0,
+      [](void* context, unsigned character_index, float total_advance,
+         unsigned graphemes_in_cluster, float cluster_advance,
+         CanvasRotationInVertical rotation) {
+        auto* clusters = static_cast<Vector<ShapedText::ClusterData>*>(context);
+        // The run-local `start` is made text-relative, and `end` is set, below.
+        clusters->push_back(ShapedText::ClusterData{.start = character_index,
+                                                    .end = character_index,
+                                                    .x_position = total_advance,
+                                                    .width = cluster_advance});
+      },
+      &clusters);
+
+  // Sort by start index, to produce logical order.
+  // TODO(fmalita): this is only reordering within a run, and because runs
+  // are processed in visual order the cumulative result is in visual order
+  // across runs, but logical order within each run - so multi-run RTL text is
+  // in neither order.
+  std::ranges::sort(base::span(clusters).subspan(initial_clusters_index), {},
+                    &ShapedText::ClusterData::start);
+
+  // Second pass:
+  //   1. compute the end index and make the start index text-relative
+  //   2. filter out clusters outside the range.
+  // TODO(fmalita): can we fold this into the initial pass?
+  wtf_size_t write_index = initial_clusters_index;
+  for (wtf_size_t i = initial_clusters_index; i < clusters.size(); i++) {
+    // Each cluster ends where the next one starts. The next cluster's
+    // `start` is still run-local at this point.
+    const unsigned local_end = i + 1 < clusters.size()
+                                   ? clusters[i + 1].start
+                                   : run_with_offset.num_characters_;
+    ShapedText::ClusterData cluster = clusters[i];
+    cluster.start += offset;
+    cluster.end = local_end + offset;
+    if (cluster.end <= start || end <= cluster.start) {
+      continue;
+    }
+
+    DCHECK_LE(write_index, i);
+    clusters[write_index++] = cluster;
+  }
+
+  clusters.Shrink(write_index);
+}
+
+// Returns true if [start, end) is within `text`. Otherwise, throws an
+// IndexSizeError and returns false. `exception_state` may be null only when the
+// range is known to be valid. Indexes less than 0 are rejected by
+// [EnforceRange] in the IDL bindings.
+bool CheckRange(const String& text,
+                uint32_t start,
+                uint32_t end,
+                ExceptionState* exception_state) {
+  if (start < text.length() && end <= text.length()) {
+    return true;
+  }
+  CHECK(exception_state);
+  const bool is_start = start >= text.length();
+  exception_state->ThrowDOMException(
+      DOMExceptionCode::kIndexSizeError,
+      ExceptionMessages::IndexExceedsMaximumBound(
+          is_start ? "start" : "end", is_start ? start : end, text.length()));
+  return false;
+}
+
+}  // namespace
 
 void ShapedText::Trace(Visitor* visitor) const {
   visitor->Trace(font_);
@@ -261,24 +350,9 @@ const HeapVector<Member<DOMRectReadOnly>> ShapedText::getSelectionRects(
   return selection_rects;
 }
 
-DOMRectReadOnly* ShapedText::getActualBoundingBox(
-    uint32_t start,
-    uint32_t end,
-    ExceptionState& exception_state) {
+gfx::RectF ShapedText::ComputeGlyphBoundsForRange(uint32_t start,
+                                                  uint32_t end) const {
   gfx::RectF bounding_box;
-
-  // Checks indexes that go over the maximum for the text. For indexes less than
-  // 0, an exception is thrown by [EnforceRange] in the idl binding.
-  if (start >= text_.length() || end > text_.length()) {
-    const bool is_start = start >= text_.length();
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
-        ExceptionMessages::IndexExceedsMaximumBound(is_start ? "start" : "end",
-                                                    is_start ? start : end,
-                                                    text_.length()));
-    return DOMRectReadOnly::FromRectF(bounding_box);
-  }
-
   for (const auto& run_with_offset : runs_with_offset_) {
     const unsigned int run_start_index = run_with_offset.character_offset_;
     const unsigned int run_end_index =
@@ -323,8 +397,35 @@ DOMRectReadOnly* ShapedText::getActualBoundingBox(
         },
         static_cast<void*>(&bounding_box));
   }
+  return bounding_box;
+}
+
+DOMRectReadOnly* ShapedText::getActualBoundingBox(
+    uint32_t start,
+    uint32_t end,
+    ExceptionState& exception_state) {
+  if (!CheckRange(text_, start, end, &exception_state)) {
+    return DOMRectReadOnly::FromRectF(gfx::RectF());
+  }
+
+  gfx::RectF bounding_box = ComputeGlyphBoundsForRange(start, end);
   bounding_box.Offset(-text_align_dx_, baseline_y_);
   return DOMRectReadOnly::FromRectF(bounding_box);
+}
+
+Vector<ShapedText::ClusterData> ShapedText::CollectClustersForRange(
+    uint32_t start,
+    uint32_t end,
+    ExceptionState* exception_state) const {
+  Vector<ClusterData> clusters;
+  if (!CheckRange(text_, start, end, exception_state)) {
+    return clusters;
+  }
+
+  for (const auto& run_with_offset : runs_with_offset_) {
+    AppendRunClusters(run_with_offset, start, end, clusters);
+  }
+  return clusters;
 }
 
 unsigned ShapedText::getIndexFromOffset(double x) {

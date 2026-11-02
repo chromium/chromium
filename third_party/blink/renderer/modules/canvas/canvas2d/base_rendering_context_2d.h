@@ -70,6 +70,7 @@ class DrawElementImageOptions;
 class ExceptionState;
 class ImageData;
 class ImageDataSettings;
+class ShapedText;
 class TextCluster;
 class TextClusterOptions;
 class TextMetrics;
@@ -221,6 +222,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   void strokeText(const String& text, double x, double y);
   void strokeText(const String& text, double x, double y, double max_width);
   TextMetrics* measureText(const String& text);
+  ShapedText* shapeText(const String& text);
   // Renders a TextCluster returned by TextMetrics::getTextClusters(). If
   // possible, the align, baseline, and font from the TextCluster will be used.
   // The x and y parameters are added to the values from the TextCluster to

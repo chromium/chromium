@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/html/canvas/element_image.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/html/canvas/shaped_text.h"
 #include "third_party/blink/renderer/core/html/canvas/text_cluster.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
@@ -1981,13 +1982,17 @@ void BaseRenderingContext2D::DrawTextInternal(
 }
 
 TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
+  return MakeGarbageCollected<TextMetrics>(*shapeText(text));
+}
+
+ShapedText* BaseRenderingContext2D::shapeText(const String& text) {
   // The style resolution required for fonts is not available in frame-less
   // documents.
   HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
 
   if (canvas) {
     if (!canvas->GetDocument().GetFrame()) {
-      return MakeGarbageCollected<TextMetrics>();
+      return MakeGarbageCollected<ShapedText>();
     }
 
     canvas->GetDocument().UpdateStyleAndLayoutTreeForElement(
@@ -2003,7 +2008,7 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
   TextDirection direction =
       ToTextDirection(state.GetDirection(), host, computed_style);
 
-  return MakeGarbageCollected<TextMetrics>(
+  return MakeGarbageCollected<ShapedText>(
       font, direction, state.GetTextBaseline(), state.GetTextAlign(), text,
       host->GetPlainTextPainter());
 }

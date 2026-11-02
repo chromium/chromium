@@ -43,20 +43,16 @@ namespace blink {
 
 class DOMRectReadOnly;
 class ExceptionState;
-class PlainTextPainter;
+class SimpleFontData;
 class TextClusterOptions;
 
 class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  TextMetrics();
-  TextMetrics(const Font* font,
-              const TextDirection& direction,
-              V8CanvasTextBaseline::Enum baseline,
-              V8CanvasTextAlign::Enum align,
-              const String& text,
-              PlainTextPainter& text_painter);
+  // Computes the metrics of the whole `shaped_text`, and keeps a reference to
+  // it for the shaping-based queries below.
+  explicit TextMetrics(ShapedText& shaped_text);
 
   double width() const { return width_; }
   double actualBoundingBoxLeft() const { return actual_bounding_box_left_; }
@@ -98,7 +94,9 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  void Update(const Font*, V8CanvasTextBaseline::Enum baseline);
+  void InitFromShapedText();
+  void PopulateVerticalMetrics(const SimpleFontData& font_data,
+                               const gfx::RectF& glyph_bounds);
 
   HeapVector<Member<TextCluster>> getTextClustersImpl(
       uint32_t start,
@@ -121,7 +119,7 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   Member<Baselines> baselines_;
 
   // Needed for selection rects, bounding boxes and caret position.
-  Member<ShapedText> shaped_text_;
+  const Member<ShapedText> shaped_text_;
 };
 
 }  // namespace blink

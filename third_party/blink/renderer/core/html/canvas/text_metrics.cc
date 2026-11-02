@@ -9,19 +9,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_text_cluster_options.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/text_cluster.h"
-#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
-#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -74,45 +65,38 @@ void TextMetrics::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-TextMetrics::TextMetrics()
-    : baselines_(Baselines::Create()),
-      shaped_text_(MakeGarbageCollected<ShapedText>()) {}
-
-TextMetrics::TextMetrics(const Font* font,
-                         const TextDirection& direction,
-                         const V8CanvasTextBaseline::Enum baseline,
-                         const V8CanvasTextAlign::Enum align,
-                         const String& text,
-                         PlainTextPainter& text_painter)
-    : baselines_(Baselines::Create()),
-      shaped_text_(MakeGarbageCollected<ShapedText>(font,
-                                                    direction,
-                                                    baseline,
-                                                    align,
-                                                    text,
-                                                    text_painter)) {
-  Update(font, baseline);
+TextMetrics::TextMetrics(ShapedText& shaped_text)
+    : baselines_(Baselines::Create()), shaped_text_(&shaped_text) {
+  InitFromShapedText();
 }
 
-void TextMetrics::Update(const Font* font,
-                         const V8CanvasTextBaseline::Enum baseline) {
-  const SimpleFontData* font_data = font->PrimaryFont();
-  if (!font_data)
+void TextMetrics::InitFromShapedText() {
+  if (!shaped_text_->GetFont()) {
     return;
+  }
+  const SimpleFontData* font_data = shaped_text_->GetFont()->PrimaryFont();
+  if (!font_data) {
+    return;
+  }
 
   width_ = shaped_text_->width();
   const gfx::RectF& glyph_bounds = shaped_text_->GlyphBounds();
   const float text_align_dx = shaped_text_->TextAlignDx();
+
   actual_bounding_box_left_ = -glyph_bounds.x() + text_align_dx;
   actual_bounding_box_right_ = glyph_bounds.right() - text_align_dx;
 
-  // y direction
-  const FontMetrics& font_metrics = font_data->GetFontMetrics();
+  PopulateVerticalMetrics(*font_data, glyph_bounds);
+}
+
+void TextMetrics::PopulateVerticalMetrics(const SimpleFontData& font_data,
+                                          const gfx::RectF& glyph_bounds) {
+  const FontMetrics& font_metrics = font_data.GetFontMetrics();
   const float ascent = font_metrics.FloatAscent(
       FontBaseline::kAlphabetic, FontMetrics::ApplyBaselineTable(true));
   const float descent = font_metrics.FloatDescent(
       FontBaseline::kAlphabetic, FontMetrics::ApplyBaselineTable(true));
-  baseline_y = GetFontBaseline(baseline, *font_data);
+  baseline_y = GetFontBaseline(shaped_text_->ContextTextBaseline(), font_data);
   font_bounding_box_ascent_ = ascent - baseline_y;
   font_bounding_box_descent_ = descent + baseline_y;
   actual_bounding_box_ascent_ = -glyph_bounds.y() - baseline_y;
@@ -120,7 +104,7 @@ void TextMetrics::Update(const Font* font,
   // TODO(kojii): We use normalized sTypoAscent/Descent here, but this should be
   // revisited when the spec evolves.
   const FontHeight normalized_typo_metrics =
-      font_data->NormalizedTypoAscentAndDescent();
+      font_data.NormalizedTypoAscentAndDescent();
   em_height_ascent_ = normalized_typo_metrics.ascent - baseline_y;
   em_height_descent_ = normalized_typo_metrics.descent + baseline_y;
 
@@ -195,14 +179,6 @@ float getTextBaselineDelta(float baseline,
   float new_baseline = TextMetrics::GetFontBaseline(text_baseline, font_data);
   return baseline - new_baseline;
 }
-
-struct TextClusterCallbackContext {
-  unsigned start_index_;
-  float x_position_;
-  float width_;
-
-  void Trace(Visitor* visitor) const {}
-};
 }  // namespace
 
 HeapVector<Member<TextCluster>> TextMetrics::getTextClusters(
@@ -224,20 +200,10 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     uint32_t end,
     const TextClusterOptions* options,
     ExceptionState* exception_state) {
-  HeapVector<Member<TextCluster>> minimal_clusters, clusters_for_range;
-  const String& text = shaped_text_->GetText();
-  const TextDirection direction = shaped_text_->Direction();
-  const float text_align_dx = shaped_text_->TextAlignDx();
-  const Font* font = shaped_text_->GetFont();
-  // Checks indexes that go over the maximum for the text. For indexes less than
-  // 0, an exception is thrown by [EnforceRange] in the idl binding.
-  if (start >= text.length() || end > text.length()) {
-    const bool is_start = start >= text.length();
-    CHECK(exception_state != nullptr);
-    exception_state->ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
-        ExceptionMessages::IndexExceedsMaximumBound(
-            is_start ? "start" : "end", is_start ? start : end, text.length()));
+  HeapVector<Member<TextCluster>> clusters_for_range;
+  Vector<ShapedText::ClusterData> clusters =
+      shaped_text_->CollectClustersForRange(start, end, exception_state);
+  if (clusters.empty()) {
     return clusters_for_range;
   }
 
@@ -253,59 +219,22 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     }
   }
 
-  for (const auto& run_with_offset : shaped_text_->RunsWithOffset()) {
-    HeapVector<TextClusterCallbackContext> clusters_for_run;
+  const String& text = shaped_text_->GetText();
+  const TextDirection direction = shaped_text_->Direction();
+  const float text_align_dx = shaped_text_->TextAlignDx();
+  const Font* font = shaped_text_->GetFont();
 
-    run_with_offset.shape_result_->ForEachGraphemeClusters(
-        StringView(run_with_offset.text_), run_with_offset.x_position_, 0,
-        run_with_offset.num_characters_, 0,
-        [](void* context, unsigned character_index, float total_advance,
-           unsigned graphemes_in_cluster, float cluster_advance,
-           CanvasRotationInVertical rotation) {
-          auto* clusters =
-              static_cast<HeapVector<TextClusterCallbackContext>*>(context);
-          TextClusterCallbackContext cluster = {.start_index_ = character_index,
-                                                .x_position_ = total_advance,
-                                                .width_ = cluster_advance};
-          clusters->push_back(cluster);
-        },
-        &clusters_for_run);
-
-    std::sort(clusters_for_run.begin(), clusters_for_run.end(),
-              [](TextClusterCallbackContext a, TextClusterCallbackContext b) {
-                return a.start_index_ < b.start_index_;
-              });
-
-    for (wtf_size_t i = 0; i < clusters_for_run.size(); i++) {
-      TextCluster* text_cluster;
-      if (i + 1 < clusters_for_run.size()) {
-        text_cluster = TextCluster::Create(
-            text, clusters_for_run[i].x_position_, 0,
-            clusters_for_run[i].start_index_,
-            clusters_for_run[i + 1].start_index_, cluster_text_align,
-            cluster_text_baseline, *this);
-      } else {
-        text_cluster = TextCluster::Create(
-            text, clusters_for_run[i].x_position_, 0,
-            clusters_for_run[i].start_index_, run_with_offset.num_characters_,
-            cluster_text_align, cluster_text_baseline, *this);
-      }
-      text_cluster->OffsetCharacters(run_with_offset.character_offset_);
-      text_cluster->OffsetPosition(
-          getTextAlignDelta(clusters_for_run[i].width_, cluster_text_align,
-                            direction),
-          getTextBaselineDelta(baseline_y, cluster_text_baseline,
-                               *font->PrimaryFont()));
-      text_cluster->OffsetPosition(-text_align_dx, 0);
-      minimal_clusters.push_back(text_cluster);
-    }
-  }
-
-  for (const auto& cluster : minimal_clusters) {
-    if (cluster->end() <= start or end <= cluster->start()) {
-      continue;
-    }
-    clusters_for_range.push_back(cluster);
+  clusters_for_range.reserve(clusters.size());
+  for (const auto& cluster : clusters) {
+    TextCluster* text_cluster = TextCluster::Create(
+        text, cluster.x_position, 0, cluster.start, cluster.end,
+        cluster_text_align, cluster_text_baseline, *this);
+    text_cluster->OffsetPosition(
+        getTextAlignDelta(cluster.width, cluster_text_align, direction),
+        getTextBaselineDelta(baseline_y, cluster_text_baseline,
+                             *font->PrimaryFont()));
+    text_cluster->OffsetPosition(-text_align_dx, 0);
+    clusters_for_range.push_back(text_cluster);
   }
   return clusters_for_range;
 }
