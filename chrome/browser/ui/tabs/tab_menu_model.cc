@@ -440,6 +440,10 @@ void TabMenuModel::Build(int index) {
       AddItem(TabStripModel::CommandToggleFocusGroup,
               l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_FOCUS_TABS,
                                                num_tabs));
+      const user_education::DisplayNewBadge show_badge =
+          UserEducationService::MaybeShowNewBadge(tab_strip_->profile(),
+                                                  features::kNonGroupFocus);
+      SetIsNewFeatureAt(GetItemCount() - 1, show_badge);
     }
 
     if (std::optional<size_t> focus_index =

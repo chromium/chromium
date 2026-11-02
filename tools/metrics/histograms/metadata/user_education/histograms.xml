@@ -52,6 +52,9 @@ chromium-metrics-reviews@google.com.
       summary="Lens Overlay entry points in app and web context menus."/>
   <variant name="NewBadgeTestFeature"
       summary="Used for testing purposes only."/>
+  <variant name="NonGroupFocus"
+      summary="Promotion for focusing on ungrouped tab(s) in the tab context
+               menu."/>
   <variant name="PasswordManualFallbackAvailable"
       summary="For passwords manual fallback; shown in the context menu."/>
   <variant name="ReadAnythingLineFocus"

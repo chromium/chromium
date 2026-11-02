@@ -38,14 +38,20 @@ class TabGroupFocusIphController : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
+                              std::optional<tab_groups::TabGroupId> old_group,
+                              std::optional<tab_groups::TabGroupId> new_group,
+                              tabs::TabInterface* tab,
+                              int index) override;
   void OnTabGroupAdded(const tab_groups::TabGroupId& group_id) override;
   void OnTabGroupFocusChanged(
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id) override;
 
  private:
-  void ScheduleMaybeShowPromo();
-  void MaybeShowPromo();
+  void MaybeScheduleGroupFocusPromo();
+  void ShowGroupFocusPromo();
+  void MaybeShowNonGroupPromo();
 
   base::OneShotTimer promo_timer_;
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;

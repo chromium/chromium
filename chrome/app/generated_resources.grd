@@ -11564,6 +11564,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_GROUPS_UNFOCUSING_IPH_BODY_SCREENREADER" is_accessibility_with_no_ui="true" desc="The screen reader text of the IPH pointing to the Unfocus button">
         Click the Unfocus button to bring your other tabs back
       </message>
+      <message name="IDS_TAB_GROUPS_NON_GROUP_FOCUSING_IPH_BODY" desc="The body text of the IPH suggesting that the user group related tabs while in non-group focus mode">
+        Right-click to group related tabs
+      </message>
+      <message name="IDS_TAB_GROUPS_NON_GROUP_FOCUSING_IPH_BODY_SCREENREADER" is_accessibility_with_no_ui="true" desc="The screen reader text of the IPH suggesting that the user group related tabs while in non-group focus mode">
+        Right-click the focus selection header in the tab strip to group related tabs
+      </message>
 
       <!-- Customize Chrome Tutorial Strings -->
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH" desc="The description of the IPH to start the customize chrome tutorial">

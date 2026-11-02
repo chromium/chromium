@@ -345,6 +345,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSplitViewHorizontalIndirectAccessFeature,
     &kIPHTabAudioMutingFeature,
     &kIPHTabGroupsFocusingFeature,
+    &kIPHTabGroupsNonGroupFocusingFeature,
     &kIPHTabGroupsSaveV2CloseGroupFeature,
     &kIPHTabGroupsSaveV2IntroFeature,
     &kIPHTabGroupsSharedTabChangedFeature,

@@ -163,6 +163,67 @@ TEST_F(TabGroupFocusIphControllerTest,
           testing::Ref(feature_engagement::kIPHTabGroupsUnfocusingFeature),
           FeaturePromoFeatureUsedAction::kClosePromoIfPresent))
       .Times(1);
+  EXPECT_CALL(*user_education(),
+              NotifyFeaturePromoFeatureUsed(
+                  testing::Ref(
+                      feature_engagement::kIPHTabGroupsNonGroupFocusingFeature),
+                  FeaturePromoFeatureUsedAction::kClosePromoIfPresent))
+      .Times(1);
 
   tab_strip_model()->ExitFocusMode();
+}
+
+TEST_F(TabGroupFocusIphControllerTest,
+       ShowsNonGroupPromoWhenEphemeralGroupReachesMinTabs) {
+  TabGroupFocusIphController controller(browser_window_interface());
+
+  const int min_tabs = features::kNonGroupFocusIphMinTabs.Get();
+  ASSERT_GE(min_tabs, 2);
+  AddTabs(min_tabs + 1);
+  tab_groups::TabGroupId group_id =
+      tab_strip_model()->AddToNewGroup({0}, /*is_ephemeral=*/true);
+
+  EXPECT_CALL(*user_education(), MaybeShowFeaturePromo(testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(*user_education(),
+              NotifyNewBadgeFeatureUsed(testing::Ref(features::kNonGroupFocus)))
+      .Times(1);
+  EXPECT_CALL(
+      *user_education(),
+      NotifyNewBadgeFeatureUsed(testing::Ref(features::kTabGroupsFocusing)))
+      .Times(0);
+  EXPECT_CALL(
+      *user_education(),
+      MaybeShowFeaturePromo(testing::Truly([](const auto& params) {
+        return &params.feature.get() ==
+               &feature_engagement::kIPHTabGroupsNonGroupFocusingFeature;
+      })))
+      .Times(0);
+
+  tab_strip_model()->EnterFocusMode(group_id);
+  // Grow the group to one tab below the threshold.
+  for (int i = 1; i < min_tabs - 1; ++i) {
+    tab_strip_model()->AddToExistingGroup({i}, group_id);
+  }
+  testing::Mock::VerifyAndClearExpectations(user_education());
+
+  EXPECT_CALL(
+      *user_education(),
+      MaybeShowFeaturePromo(testing::Truly([](const auto& params) {
+        return &params.feature.get() ==
+               &feature_engagement::kIPHTabGroupsNonGroupFocusingFeature;
+      })))
+      .Times(1);
+
+  tab_strip_model()->AddToExistingGroup({min_tabs - 1}, group_id);
+  testing::Mock::VerifyAndClearExpectations(user_education());
+
+  EXPECT_CALL(*user_education(),
+              NotifyFeaturePromoFeatureUsed(
+                  testing::Ref(
+                      feature_engagement::kIPHTabGroupsNonGroupFocusingFeature),
+                  FeaturePromoFeatureUsedAction::kClosePromoIfPresent))
+      .Times(1);
+
+  tab_strip_model()->PromoteEphemeralTabGroup(group_id);
 }

@@ -800,6 +800,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_TabGroupShareVersionUpdate"
       summary="notifying users that updating Chrome regains access to shared
                tab groups"/>
+  <variant name="IPH_TabGroupsNonGroupFocusingFeature"
+      summary="suggesting that the user group related tabs while in non-group
+               focus mode"/>
   <variant name="IPH_TabGroupsQuicklyComparePages"
       summary="(obsolete) long pressing a link to open in a tab group"/>
   <variant name="IPH_TabGroupsRemoteGroup"

@@ -569,6 +569,8 @@ DEFINE_VARIATION_PARAM(kIPHPriceTrackingInSidePanelFeature,
 DEFINE_VARIATION_PARAM(kIPHBackNavigationMenuFeature, "IPH_BackNavigationMenu");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsFocusingFeature,
                        "IPH_TabGroupsFocusingFeature");
+DEFINE_VARIATION_PARAM(kIPHTabGroupsNonGroupFocusingFeature,
+                       "IPH_TabGroupsNonGroupFocusingFeature");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsUnfocusingFeature,
                        "IPH_TabGroupsUnfocusingFeature");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsSaveV2IntroFeature,
@@ -964,6 +966,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHSplitViewHorizontalIndirectAccessFeature),
         VARIATION_ENTRY(kIPHTabAudioMutingFeature),
         VARIATION_ENTRY(kIPHTabGroupsFocusingFeature),
+        VARIATION_ENTRY(kIPHTabGroupsNonGroupFocusingFeature),
         VARIATION_ENTRY(kIPHTabGroupsSharedTabChangedFeature),
         VARIATION_ENTRY(kIPHTabGroupsSharedTabFeedbackFeature),
         VARIATION_ENTRY(kIPHTabGroupsUnfocusingFeature),

@@ -1117,7 +1117,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
                   *browser, browser);
     }
 
-    if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    if (browser->GetTabStripModel()->SupportsTabGroups() &&
+        base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
       tab_group_focus_iph_controller_ =
           GetUserDataFactory().CreateInstance<TabGroupFocusIphController>(
               *browser, browser);

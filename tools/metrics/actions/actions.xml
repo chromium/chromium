@@ -944,6 +944,8 @@ should be able to be added at any place in this file.
   <variant name="_TabGroupShareVersionUpdate"
       summary="For notifying users that updating Chrome regains access to
                shared tab groups."/>
+  <variant name="_TabGroupsNonGroupFocusingFeature"
+      summary="For the tab groups non-group focusing IPH feature."/>
   <variant name="_TabGroupsQuicklyComparePages"
       summary="For long press links to create tab groups."/>
   <variant name="_TabGroupsRemoteGroup" summary="For a synced tab group."/>

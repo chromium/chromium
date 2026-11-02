@@ -2189,6 +2189,19 @@ void MaybeRegisterChromeFeaturePromos(
               "Triggered the first time a user focuses on a tab group or "
               "tabs to point out the Unfocus button.")));
 
+  // kIPHTabGroupsNonGroupFocusingFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHTabGroupsNonGroupFocusingFeature,
+          kTabGroupHeaderElementId, IDS_TAB_GROUPS_NON_GROUP_FOCUSING_IPH_BODY,
+          IDS_TAB_GROUPS_NON_GROUP_FOCUSING_IPH_BODY_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrowCallback(base::BindRepeating(&GetTabGroupBubbleArrow))
+          .SetMetadata(
+              159, "kunaldaftari@google.com",
+              "Triggered when there are 3 or more tabs in an ephemeral "
+              "focused group to suggest creating a tab group.")));
+
   const ui::ElementIdentifier contextual_tasks_ephemeral_element_id =
       contextual_tasks::IsContextualTasksEphemeralPinButtonRefactorEnabled()
           ? kPinnedToolbarActionShowSidePanelContextualTasksElementId
@@ -2984,6 +2997,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       features::kTabGroupsFocusing,
       user_education::Metadata(159, "kunaldaftari@google.com",
                                "Shown on the Focus on group item in the "
+                               "tab context menu.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kNonGroupFocus,
+      user_education::Metadata(159, "kunaldaftari@google.com",
+                               "Shown on the Focus on tab(s) item in the "
                                "tab context menu.")));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

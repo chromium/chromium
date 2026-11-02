@@ -406,6 +406,7 @@ BASE_DECLARE_FEATURE(kTabGroupRibbon);
 bool IsTabGroupRibbonEnabled();
 
 BASE_DECLARE_FEATURE(kNonGroupFocus);
+BASE_DECLARE_FEATURE_PARAM(int, kNonGroupFocusIphMinTabs);
 
 BASE_DECLARE_FEATURE(kOmniboxResizingPrioritization);
 
