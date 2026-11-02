@@ -122,6 +122,7 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/resource_request.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
 namespace {
@@ -547,7 +548,8 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
                                postContent:
                                    (TemplateURLRef::PostContent*)postContent
                                 transition:(ui::PageTransition)transition
-                               disposition:(WindowOpenDisposition)disposition
+                               disposition:
+                                   (ui::mojom::WindowOpenDisposition)disposition
     destination_url_entered_without_scheme:
         (bool)destination_url_entered_without_scheme {
   if (url.SchemeIs(url::kJavaScriptScheme)) {

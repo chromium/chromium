@@ -46,6 +46,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 const char kURL1[] = "https://www.some.url.com";
 const char kURL2[] = "https://www.some.url2.com";
@@ -298,20 +299,22 @@ TEST_F(WebStateDelegateBrowserAgentTest, CloseWebState) {
 TEST_F(WebStateDelegateBrowserAgentTest, OpenURLNewTabs) {
   web::WebState* web_state = InsertNewWebState(GURL(kURL1));
   web::WebState::OpenURLParams fg_open_params(
-      GURL(kURL2), web::Referrer(), WindowOpenDisposition::kNewForegroundTab,
+      GURL(kURL2), web::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK, false);
   web::WebState* web_state2 =
       delegate()->OpenURLFromWebState(web_state, fg_open_params);
   EXPECT_EQ(browser_->GetWebStateList()->count(), 2);
-  // NEW_FOREGROUND_TAB should activate the newly added webstate.
+  // `kNewForegroundTab` should activate the newly added webstate.
   EXPECT_EQ(browser_->GetWebStateList()->GetActiveWebState(), web_state2);
 
   web::WebState::OpenURLParams bg_open_params(
-      GURL(kURL2), web::Referrer(), WindowOpenDisposition::kNewBackgroundTab,
+      GURL(kURL2), web::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui::PAGE_TRANSITION_LINK, false);
   delegate()->OpenURLFromWebState(web_state, bg_open_params);
   EXPECT_EQ(browser_->GetWebStateList()->count(), 3);
-  // NEW_BACKGROUND_TAB should *not* activate the newly added webstate, so
+  // `kNewBackgroundTab` should *not* activate the newly added webstate, so
   // web_state2 should still be active.
   EXPECT_EQ(browser_->GetWebStateList()->GetActiveWebState(), web_state2);
 }
@@ -321,7 +324,8 @@ TEST_F(WebStateDelegateBrowserAgentTest,
        OpenURLWithInternalScrollToTextFragment) {
   web::WebState* web_state = InsertNewWebState(GURL(kURL1));
   web::WebState::OpenURLParams open_params(
-      GURL(kURL2), web::Referrer(), WindowOpenDisposition::kNewForegroundTab,
+      GURL(kURL2), web::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK, false);
   open_params.internal_scroll_to_text_fragment = "start,end";
   web::WebState* web_state2 =
@@ -337,12 +341,13 @@ TEST_F(WebStateDelegateBrowserAgentTest,
 }
 
 // Tests that OpenURLFromWebState() doesn't create a new tab with the
-// CURRENT_TAB option.
+// `kCurrentTab` option.
 TEST_F(WebStateDelegateBrowserAgentTest, OpenURLCurrentTab) {
   InsertNewWebState(GURL(kURL1));
-  web::WebState::OpenURLParams open_params(GURL(kURL2), web::Referrer(),
-                                           WindowOpenDisposition::kCurrentTab,
-                                           ui::PAGE_TRANSITION_LINK, false);
+  web::WebState::OpenURLParams open_params(
+      GURL(kURL2), web::Referrer(),
+      ui::mojom::WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
+      false);
   EXPECT_EQ(browser_->GetWebStateList()->count(), 1);
 }
 
@@ -353,19 +358,21 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   auto standalone_web_state = std::make_unique<web::FakeWebState>();
   standalone_web_state->SetBrowserState(profile_.get());
   web::WebState::OpenURLParams fg_open_params(
-      GURL(kURL2), web::Referrer(), WindowOpenDisposition::kNewForegroundTab,
+      GURL(kURL2), web::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK, false);
   EXPECT_EQ(nullptr, delegate()->OpenURLFromWebState(standalone_web_state.get(),
                                                      fg_open_params));
 
   web::WebState::OpenURLParams bg_open_params(
-      GURL(kURL2), web::Referrer(), WindowOpenDisposition::kNewBackgroundTab,
+      GURL(kURL2), web::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui::PAGE_TRANSITION_LINK, false);
   EXPECT_EQ(nullptr, delegate()->OpenURLFromWebState(standalone_web_state.get(),
                                                      bg_open_params));
 
   web::WebState::OpenURLParams popup_open_params(
-      GURL(kURL2), web::Referrer(), WindowOpenDisposition::kNewPopup,
+      GURL(kURL2), web::Referrer(), ui::mojom::WindowOpenDisposition::kNewPopup,
       ui::PAGE_TRANSITION_LINK, false);
   EXPECT_EQ(nullptr, delegate()->OpenURLFromWebState(standalone_web_state.get(),
                                                      popup_open_params));

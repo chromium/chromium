@@ -89,6 +89,7 @@
 #import "net/base/apple/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
@@ -637,7 +638,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                                postContent:
                                    (TemplateURLRef::PostContent*)postContent
                                 transition:(ui::PageTransition)transition
-                               disposition:(WindowOpenDisposition)disposition
+                               disposition:
+                                   (ui::mojom::WindowOpenDisposition)disposition
     destination_url_entered_without_scheme:
         (bool)destination_url_entered_without_scheme {
   if (url.SchemeIs(url::kJavaScriptScheme)) {
@@ -659,8 +661,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     UrlLoadParams params = UrlLoadParams::InNewTab(web_params);
     params.disposition = disposition;
     params.in_incognito = isIncognito;
-    if (params.disposition == WindowOpenDisposition::kCurrentTab) {
-      params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    if (params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
+      params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     }
     UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   }

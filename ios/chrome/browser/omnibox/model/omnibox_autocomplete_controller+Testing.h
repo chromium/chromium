@@ -5,7 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_AUTOCOMPLETE_CONTROLLER_TESTING_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_AUTOCOMPLETE_CONTROLLER_TESTING_H_
 
-#include "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class AutocompleteController;
 
@@ -20,7 +21,7 @@ class AutocompleteController;
 
 - (void)openMatch:(AutocompleteMatch)match
              popupSelection:(OmniboxPopupSelection)selection
-      windowOpenDisposition:(WindowOpenDisposition)disposition
+      windowOpenDisposition:(ui::mojom::WindowOpenDisposition)disposition
             alternateNavURL:(const GURL&)alternateNavURL
                  pastedText:(const std::u16string&)pastedText
     matchSelectionTimestamp:(base::TimeTicks)matchSelectionTimestamp;

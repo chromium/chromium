@@ -6,12 +6,13 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/navigation/referrer.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
 UrlLoadParams UrlLoadParams::InCurrentTab(
     const web::NavigationManager::WebLoadParams& web_params) {
   UrlLoadParams params = UrlLoadParams();
-  params.disposition = WindowOpenDisposition::kCurrentTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   params.web_params = web_params;
   return params;
 }
@@ -19,7 +20,7 @@ UrlLoadParams UrlLoadParams::InCurrentTab(
 UrlLoadParams UrlLoadParams::InCurrentTab(const GURL& url,
                                           const GURL& virtual_url) {
   UrlLoadParams params = UrlLoadParams();
-  params.disposition = WindowOpenDisposition::kCurrentTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   params.web_params = web::NavigationManager::WebLoadParams(url);
   params.web_params.virtual_url = virtual_url;
   return params;
@@ -27,7 +28,7 @@ UrlLoadParams UrlLoadParams::InCurrentTab(const GURL& url,
 
 UrlLoadParams UrlLoadParams::InCurrentTab(const GURL& url) {
   UrlLoadParams params = UrlLoadParams();
-  params.disposition = WindowOpenDisposition::kCurrentTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   params.web_params = web::NavigationManager::WebLoadParams(url);
   return params;
 }
@@ -86,7 +87,7 @@ UrlLoadParams UrlLoadParams::FromOpenNewTabCommand(OpenNewTabCommand* command) {
 UrlLoadParams UrlLoadParams::SwitchToTab(
     const web::NavigationManager::WebLoadParams& web_params) {
   UrlLoadParams params = UrlLoadParams();
-  params.disposition = WindowOpenDisposition::kSwitchToTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kSwitchToTab;
   params.web_params = web_params;
   return params;
 }
@@ -100,6 +101,7 @@ UrlLoadParams::UrlLoadParams(const UrlLoadParams& other) = default;
 UrlLoadParams& UrlLoadParams::operator=(const UrlLoadParams& other) = default;
 
 void UrlLoadParams::SetInBackground(bool in_background) {
-  this->disposition = in_background ? WindowOpenDisposition::kNewBackgroundTab
-                                    : WindowOpenDisposition::kNewForegroundTab;
+  this->disposition = in_background
+                          ? ui::mojom::WindowOpenDisposition::kNewBackgroundTab
+                          : ui::mojom::WindowOpenDisposition::kNewForegroundTab;
 }

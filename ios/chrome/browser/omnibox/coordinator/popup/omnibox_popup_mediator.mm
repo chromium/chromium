@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_omnibox_consumer.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 /// Maximum number of suggest tile types we want to record. Anything beyond this
@@ -197,7 +198,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     [self.omniboxAutocompleteController
         selectMatchForOpening:match
                         inRow:row
-                       openIn:WindowOpenDisposition::kCurrentTab];
+                       openIn:ui::mojom::WindowOpenDisposition::kCurrentTab];
   } else {
     DUMP_WILL_BE_NOTREACHED()
         << "Suggestion type " << NSStringFromClass(suggestion.class)
@@ -279,7 +280,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       [self.omniboxAutocompleteController
           selectMatchForOpening:match
                           inRow:row
-                         openIn:WindowOpenDisposition::kSwitchToTab];
+                         openIn:ui::mojom::WindowOpenDisposition::kSwitchToTab];
     } else {
       if (AutocompleteMatch::IsSearchType(match.type)) {
         base::RecordAction(

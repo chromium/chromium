@@ -42,6 +42,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/common/ui/util",
     "//ios/web/public",
+    "//ui/base/mojom",
     "//url",
   ]
 }

@@ -14,6 +14,7 @@
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
+#import "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #import "ui/gfx/image/image.h"
 #import "ui/gfx/vector_icon_types.h"
 
@@ -64,10 +65,11 @@ class FakeOmniboxClient : public OmniboxClientIOS {
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;
-  void ProcessExtensionMatch(const std::u16string& text,
-                             const TemplateURL* template_url,
-                             const AutocompleteMatch& match,
-                             WindowOpenDisposition disposition) override;
+  void ProcessExtensionMatch(
+      const std::u16string& text,
+      const TemplateURL* template_url,
+      const AutocompleteMatch& match,
+      ui::mojom::WindowOpenDisposition disposition) override;
   void OnInputStateChanged() override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
@@ -99,7 +101,7 @@ class FakeOmniboxClient : public OmniboxClientIOS {
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       omnibox::AutocompleteMatchType match_type,
       base::TimeTicks match_selection_timestamp,

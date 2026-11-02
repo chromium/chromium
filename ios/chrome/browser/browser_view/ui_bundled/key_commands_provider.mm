@@ -57,6 +57,7 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
 using base::RecordAction;
@@ -353,7 +354,8 @@ using base::UserMetricsAction;
   }
 
   [_sceneHandler openURLInNewTab:[OpenNewTabCommand command]];
-  RestoreTab(entry->id, WindowOpenDisposition::kCurrentTab, _browser.get());
+  RestoreTab(entry->id, ui::mojom::WindowOpenDisposition::kCurrentTab,
+             _browser.get());
 }
 
 - (void)keyCommand_find {

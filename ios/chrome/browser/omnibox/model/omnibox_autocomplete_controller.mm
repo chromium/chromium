@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "third_party/omnibox_proto/groups.pb.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
@@ -162,7 +163,7 @@ using base::UserMetricsAction;
 
 - (void)openSelection:(OmniboxPopupSelection)selection
             timestamp:(base::TimeTicks)timestamp
-          disposition:(WindowOpenDisposition)disposition {
+          disposition:(ui::mojom::WindowOpenDisposition)disposition {
   if (!_autocompleteController) {
     return;
   }
@@ -188,7 +189,8 @@ using base::UserMetricsAction;
       matchSelectionTimestamp:timestamp];
 }
 
-- (void)openCurrentSelectionWithDisposition:(WindowOpenDisposition)disposition
+- (void)openCurrentSelectionWithDisposition:
+            (ui::mojom::WindowOpenDisposition)disposition
                                   timestamp:(base::TimeTicks)timestamp {
   [self openSelection:OmniboxPopupSelection(
                           OmniboxPopupSelection::kNoMatch,
@@ -318,7 +320,7 @@ using base::UserMetricsAction;
 - (void)selectMatchForOpening:(AutocompleteMatch&)match
      withCustomDestinationURL:(GURL)destinationURL
                         inRow:(NSUInteger)row
-                       openIn:(WindowOpenDisposition)disposition {
+                       openIn:(ui::mojom::WindowOpenDisposition)disposition {
   const auto matchSelectionTimestamp = base::TimeTicks();
   match.destination_url = destinationURL;
 
@@ -332,7 +334,7 @@ using base::UserMetricsAction;
 
 - (void)selectMatchForOpening:(const AutocompleteMatch&)match
                         inRow:(NSUInteger)row
-                       openIn:(WindowOpenDisposition)disposition {
+                       openIn:(ui::mojom::WindowOpenDisposition)disposition {
   const auto matchSelectionTimestamp = base::TimeTicks();
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
 
@@ -769,7 +771,7 @@ using base::UserMetricsAction;
 
 /// Opens a match created outside of autocomplete controller.
 - (void)openCustomMatch:(std::optional<AutocompleteMatch>)match
-            disposition:(WindowOpenDisposition)disposition
+            disposition:(ui::mojom::WindowOpenDisposition)disposition
      selectionTimestamp:(base::TimeTicks)timestamp {
   AutocompleteController* autocompleteController = self.autocompleteController;
   if (!autocompleteController || !match || !_omniboxTextModel) {
@@ -789,7 +791,7 @@ using base::UserMetricsAction;
 
 /// Asks the browser to load the popup's currently selected item, using the
 /// supplied disposition.  This may close the popup.
-- (void)acceptInputWithDisposition:(WindowOpenDisposition)disposition
+- (void)acceptInputWithDisposition:(ui::mojom::WindowOpenDisposition)disposition
                          timestamp:(base::TimeTicks)timestamp {
   // Get the URL and transition type for the selected entry.
   GURL alternate_nav_url;
@@ -837,7 +839,7 @@ using base::UserMetricsAction;
 ///     preserve it past the popup closure.
 - (void)openMatch:(AutocompleteMatch)match
              popupSelection:(OmniboxPopupSelection)selection
-      windowOpenDisposition:(WindowOpenDisposition)disposition
+      windowOpenDisposition:(ui::mojom::WindowOpenDisposition)disposition
             alternateNavURL:(const GURL&)alternateNavURL
                  pastedText:(const std::u16string&)pastedText
     matchSelectionTimestamp:(base::TimeTicks)matchSelectionTimestamp {
@@ -866,12 +868,12 @@ using base::UserMetricsAction;
   }
 
   // Also switch the window disposition for tab switch actions. The action
-  // itself will already open with SWITCH_TO_TAB disposition, but the change
+  // itself will already open with `kSwitchToTab` disposition, but the change
   // is needed earlier for metrics.
   bool isTabSwitchAction =
       action && action->ActionId() == OmniboxActionId::TAB_SWITCH;
   if (isTabSwitchAction) {
-    disposition = WindowOpenDisposition::kSwitchToTab;
+    disposition = ui::mojom::WindowOpenDisposition::kSwitchToTab;
   }
 
   TRACE_EVENT("omnibox", "OmniboxAutocompleteController::OpenMatch", "match",
@@ -922,7 +924,7 @@ using base::UserMetricsAction;
     action->Execute(context);
   }
 
-  if (disposition != WindowOpenDisposition::kNewBackgroundTab) {
+  if (disposition != ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
     // Skip the revert here to avoid changing the size of the multiline omnibox
     // when accepting input, changes will be reverted at endEditing
     // (crbug.com/458055336).
@@ -963,7 +965,7 @@ using base::UserMetricsAction;
 
 /// Creates a match with the clipboard URL and open it.
 - (void)openClipboardURL:(std::optional<GURL>)optionalURL
-             disposition:(WindowOpenDisposition)disposition
+             disposition:(ui::mojom::WindowOpenDisposition)disposition
                timestamp:(base::TimeTicks)timestamp {
   if (!optionalURL || !_autocompleteController) {
     return;
@@ -977,7 +979,7 @@ using base::UserMetricsAction;
 
 /// Creates a match with the clipboard text and open it.
 - (void)openClipboardText:(std::optional<std::u16string>)optionalText
-              disposition:(WindowOpenDisposition)disposition
+              disposition:(ui::mojom::WindowOpenDisposition)disposition
                 timestamp:(base::TimeTicks)timestamp {
   if (!optionalText || !_autocompleteController) {
     return;
@@ -990,7 +992,7 @@ using base::UserMetricsAction;
 
 /// Creates a match with the clipboard image and open it.
 - (void)openClipboardImage:(std::optional<gfx::Image>)optionalImage
-               disposition:(WindowOpenDisposition)disposition
+               disposition:(ui::mojom::WindowOpenDisposition)disposition
                  timestamp:(base::TimeTicks)timestamp {
   if (!optionalImage || !_autocompleteController) {
     return;
@@ -998,22 +1000,22 @@ using base::UserMetricsAction;
 
   __weak __typeof(self) weakSelf = self;
   _autocompleteController->clipboard_provider()->NewClipboardImageMatch(
-      optionalImage,
-      base::BindOnce(
-          [](OmniboxAutocompleteController* controller,
-             WindowOpenDisposition disposition, base::TimeTicks timestamp,
-             std::optional<AutocompleteMatch> optionalMatch) {
-            [controller openCustomMatch:optionalMatch
-                            disposition:disposition
-                     selectionTimestamp:timestamp];
-          },
-          weakSelf, disposition, timestamp));
+      optionalImage, base::BindOnce(
+                         [](OmniboxAutocompleteController* controller,
+                            ui::mojom::WindowOpenDisposition disposition,
+                            base::TimeTicks timestamp,
+                            std::optional<AutocompleteMatch> optionalMatch) {
+                           [controller openCustomMatch:optionalMatch
+                                           disposition:disposition
+                                    selectionTimestamp:timestamp];
+                         },
+                         weakSelf, disposition, timestamp));
 }
 
 /// Opens a clipboard match. Fetches the content of the clipboard and creates a
 /// new match with it.
 - (void)openClipboardMatch:(const AutocompleteMatch&)match
-               disposition:(WindowOpenDisposition)disposition
+               disposition:(ui::mojom::WindowOpenDisposition)disposition
         selectionTimestamp:(base::TimeTicks)timestamp {
   __weak __typeof__(self) weakSelf = self;
   ClipboardRecentContent* clipboardRecentContent =
@@ -1024,8 +1026,8 @@ using base::UserMetricsAction;
     case omnibox::AutocompleteMatchType::kClipboardUrl: {
       clipboardRecentContent->GetRecentURLFromClipboard(base::BindOnce(
           [](OmniboxAutocompleteController* controller,
-             WindowOpenDisposition disposition, base::TimeTicks timestamp,
-             std::optional<GURL> optionalURL) {
+             ui::mojom::WindowOpenDisposition disposition,
+             base::TimeTicks timestamp, std::optional<GURL> optionalURL) {
             [controller openClipboardURL:optionalURL
                              disposition:disposition
                                timestamp:timestamp];
@@ -1036,7 +1038,8 @@ using base::UserMetricsAction;
     case omnibox::AutocompleteMatchType::kClipboardText: {
       clipboardRecentContent->GetRecentTextFromClipboard(base::BindOnce(
           [](OmniboxAutocompleteController* controller,
-             WindowOpenDisposition disposition, base::TimeTicks timestamp,
+             ui::mojom::WindowOpenDisposition disposition,
+             base::TimeTicks timestamp,
              std::optional<std::u16string> optionalText) {
             [controller openClipboardText:optionalText
                               disposition:disposition
@@ -1051,7 +1054,8 @@ using base::UserMetricsAction;
       } else {
         clipboardRecentContent->GetRecentImageFromClipboard(base::BindOnce(
             [](OmniboxAutocompleteController* controller,
-               WindowOpenDisposition disposition, base::TimeTicks timestamp,
+               ui::mojom::WindowOpenDisposition disposition,
+               base::TimeTicks timestamp,
                std::optional<gfx::Image> optionalImage) {
               [controller openClipboardImage:optionalImage
                                  disposition:disposition

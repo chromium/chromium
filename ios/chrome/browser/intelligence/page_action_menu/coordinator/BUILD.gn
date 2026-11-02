@@ -67,6 +67,7 @@ source_set("coordinator") {
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
     "//ios/web/public/permissions",
+    "//ui/base/mojom",
   ]
 }
 

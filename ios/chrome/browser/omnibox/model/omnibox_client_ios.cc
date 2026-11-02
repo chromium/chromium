@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/gfx/image/image.h"
 
 bool OmniboxClientIOS::CurrentPageExists() const {
@@ -104,7 +105,7 @@ void OmniboxClientIOS::ProcessExtensionMatch(
     const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
-    WindowOpenDisposition disposition) {}
+    ui::mojom::WindowOpenDisposition disposition) {}
 
 void OmniboxClientIOS::OnUserPastedInOmniboxResultingInValidURL() {}
 

@@ -28,6 +28,7 @@
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/models/image_model.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "ui/gfx/image/image.h"
 
 namespace {
@@ -98,8 +99,9 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
         ios::HostContentSettingsMapFactory::GetForProfile(profile_));
     for (auto& popup : popups_) {
       web::WebState::OpenURLParams params(
-          popup.popup_url, popup.referrer, WindowOpenDisposition::kNewPopup,
-          ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */);
+          popup.popup_url, popup.referrer,
+          ui::mojom::WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK,
+          true /* is_renderer_initiated */);
       web_state_->OpenURL(params);
       host_content_map_settings->SetContentSettingCustomScope(
           ContentSettingsPattern::FromURL(popup.referrer.url),

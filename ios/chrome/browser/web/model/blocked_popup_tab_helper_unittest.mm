@@ -18,6 +18,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
 using web::WebState;
@@ -119,7 +120,7 @@ TEST_F(BlockedPopupTabHelperTest, AllowBlockedPopup) {
   EXPECT_EQ(target_url, params.url);
   EXPECT_EQ(source_url, params.referrer.url);
   EXPECT_EQ(web::ReferrerPolicyDefault, params.referrer.policy);
-  EXPECT_EQ(WindowOpenDisposition::kNewPopup, params.disposition);
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewPopup, params.disposition);
   EXPECT_TRUE(
       PageTransitionCoreTypeIs(params.transition, ui::PAGE_TRANSITION_LINK));
   EXPECT_TRUE(params.is_renderer_initiated);

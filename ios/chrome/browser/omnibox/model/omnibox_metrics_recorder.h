@@ -44,7 +44,7 @@ struct OmniboxTextModel;
            destinationURL:(GURL)destinationURL
                 inputText:(const std::u16string&)inputText
            popupSelection:(OmniboxPopupSelection)selection
-    windowOpenDisposition:(WindowOpenDisposition)disposition
+    windowOpenDisposition:(ui::mojom::WindowOpenDisposition)disposition
                  isAction:(BOOL)isAction
              isPastedText:(BOOL)isPastedText;
 

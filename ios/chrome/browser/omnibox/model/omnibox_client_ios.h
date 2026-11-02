@@ -191,10 +191,11 @@ class OmniboxClientIOS {
   // was created by `CreateOmniboxNavigationObserver()` for `match`; in some
   // embedding contexts, processing an extension keyword involves invoking
   // action on this observer.
-  virtual void ProcessExtensionMatch(const std::u16string& text,
-                                     const TemplateURL* template_url,
-                                     const AutocompleteMatch& match,
-                                     WindowOpenDisposition disposition);
+  virtual void ProcessExtensionMatch(
+      const std::u16string& text,
+      const TemplateURL* template_url,
+      const AutocompleteMatch& match,
+      ui::mojom::WindowOpenDisposition disposition);
 
   // Called to notify clients that the omnibox input state has changed.
   virtual void OnInputStateChanged() {}
@@ -300,7 +301,7 @@ class OmniboxClientIOS {
   virtual void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       omnibox::AutocompleteMatchType match_type,
       base::TimeTicks match_selection_timestamp,
@@ -326,9 +327,9 @@ class OmniboxClientIOS {
 
   // Navigates to `gurl` with the specified `disposition`. Used for handling
   // activations of the AI Mode page action icon.
-  virtual void OpenUrl(
-      GURL gurl,
-      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab) {}
+  virtual void OpenUrl(GURL gurl,
+                       ui::mojom::WindowOpenDisposition disposition =
+                           ui::mojom::WindowOpenDisposition::kCurrentTab) {}
 
   // Even though IPH suggestions aren't selectable like normal matches, they can
   // have a 'learn more' or next-steps link. `OpenIphLink()` allows opening

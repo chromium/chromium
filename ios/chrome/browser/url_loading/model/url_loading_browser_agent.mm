@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/chrome/browser/web/model/load_timing_tab_helper.h"
 #import "net/base/url_util.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -187,7 +188,8 @@ void UrlLoadingBrowserAgent::Load(const UrlLoadParams& params) {
   switch (params.load_strategy) {
     case UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB: {
       UrlLoadParams fixed_params = params;
-      fixed_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+      fixed_params.disposition =
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab;
       Dispatch(fixed_params);
       break;
     }
@@ -231,14 +233,14 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
 void UrlLoadingBrowserAgent::Dispatch(const UrlLoadParams& params) {
   // Then dispatch.
   switch (params.disposition) {
-    case WindowOpenDisposition::kNewBackgroundTab:
-    case WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
       LoadUrlInNewTab(params);
       break;
-    case WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
       LoadUrlInCurrentTab(params);
       break;
-    case WindowOpenDisposition::kSwitchToTab:
+    case ui::mojom::WindowOpenDisposition::kSwitchToTab:
       SwitchToTab(params);
       break;
     default:
@@ -296,7 +298,8 @@ void UrlLoadingBrowserAgent::LoadUrlInTab(const UrlLoadParams& params,
 
     if (!target_web_state) {
       UrlLoadParams fixed_params = params;
-      fixed_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+      fixed_params.disposition =
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab;
       fixed_params.in_incognito = profile->IsOffTheRecord();
       Load(fixed_params);
     } else {

@@ -187,6 +187,7 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "ui/base/page_transition_types.h"
 
 namespace {
@@ -769,7 +770,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     return;
   }
 
-  if (urlLoadParams.disposition == WindowOpenDisposition::kSwitchToTab) {
+  if (urlLoadParams.disposition ==
+      ui::mojom::WindowOpenDisposition::kSwitchToTab) {
     // Check if it's already the displayed tab and no switch is necessary
     if (currentWebState &&
         currentWebState->GetVisibleURL() == urlLoadParams.web_params.url) {
@@ -812,7 +814,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
   if (shouldOpenNewTab) {
     [targetBVC appendTabAddedCompletion:tabOpenedCompletion];
-    urlLoadParams.disposition = WindowOpenDisposition::kNewForegroundTab;
+    urlLoadParams.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     urlLoadParams.in_incognito = targetMode == ApplicationMode::INCOGNITO;
     UrlLoadingBrowserAgent::FromBrowser(targetInterface.browser)
         ->Load(urlLoadParams);
@@ -820,7 +823,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 
   // Otherwise, load `urlLoadParams` in the current tab.
-  urlLoadParams.disposition = WindowOpenDisposition::kCurrentTab;
+  urlLoadParams.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   UrlLoadingBrowserAgent::FromBrowser(targetInterface.browser)
       ->Load(urlLoadParams);
   if (tabOpenedCompletion) {
@@ -1008,7 +1011,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
       BOOL isURLEmpty = urlLoadParams.web_params.url.is_empty();
       BOOL isBrowserEmpty = targetInterface.browser->GetWebStateList()->empty();
       BOOL shouldAvoidNewTab =
-          (urlLoadParams.disposition == WindowOpenDisposition::kSwitchToTab) ||
+          (urlLoadParams.disposition ==
+           ui::mojom::WindowOpenDisposition::kSwitchToTab) ||
           (self.NTPActionAfterTabSwitcherDismissal == OPEN_LATEST_TAB);
 
       if (isURLEmpty && shouldAvoidNewTab && !isBrowserEmpty) {

@@ -12,6 +12,7 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -78,7 +79,7 @@ void InfoBarManagerImpl::WebStateDestroyed(web::WebState* web_state) {
 }
 
 void InfoBarManagerImpl::OpenURL(const GURL& url,
-                                 WindowOpenDisposition disposition,
+                                 ui::mojom::WindowOpenDisposition disposition,
                                  const std::string& text_fragment) {
   web::WebState::OpenURLParams params(url, web::Referrer(), disposition,
                                       ui::PAGE_TRANSITION_LINK,

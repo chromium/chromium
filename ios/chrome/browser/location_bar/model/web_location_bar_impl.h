@@ -5,7 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_WEB_LOCATION_BAR_IMPL_H_
 #define IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_WEB_LOCATION_BAR_IMPL_H_
 
-#include "ios/chrome/browser/location_bar/model/web_location_bar.h"
+#import "ios/chrome/browser/location_bar/model/web_location_bar.h"
+#import "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 @protocol LocationBarURLLoader;
 @protocol WebLocationBarDelegate;
@@ -28,7 +29,7 @@ class WebLocationBarImpl : public WebLocationBar {
   web::WebState* GetWebState() override;
   void OnNavigate(const GURL& destination_url,
                   TemplateURLRef::PostContent* post_content,
-                  WindowOpenDisposition disposition,
+                  ui::mojom::WindowOpenDisposition disposition,
                   ui::PageTransition transition,
                   bool destination_url_entered_without_scheme,
                   const AutocompleteMatch& match) override;

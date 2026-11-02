@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
 WebLocationBarImpl::WebLocationBarImpl(id<WebLocationBarDelegate> delegate)
@@ -21,12 +22,13 @@ web::WebState* WebLocationBarImpl::GetWebState() {
   return [delegate_ webState];
 }
 
-void WebLocationBarImpl::OnNavigate(const GURL& destination_url,
-                                    TemplateURLRef::PostContent* post_content,
-                                    WindowOpenDisposition disposition,
-                                    ui::PageTransition transition,
-                                    bool destination_url_entered_without_scheme,
-                                    const AutocompleteMatch& match) {
+void WebLocationBarImpl::OnNavigate(
+    const GURL& destination_url,
+    TemplateURLRef::PostContent* post_content,
+    ui::mojom::WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool destination_url_entered_without_scheme,
+    const AutocompleteMatch& match) {
   if (!destination_url.is_valid()) {
     return;
   }

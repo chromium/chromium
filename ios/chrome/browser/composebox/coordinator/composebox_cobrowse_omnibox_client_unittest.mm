@@ -14,6 +14,7 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 @interface FakeComposeboxOmniboxClientDelegate
     : NSObject <ComposeboxOmniboxClientDelegate>
@@ -91,8 +92,8 @@ TEST_F(ComposeboxCobrowseOmniboxClientTest, OnAutocompleteAccept) {
   match.type = omnibox::AutocompleteMatchType::kSearchWhatYouTyped;
 
   client_->OnAutocompleteAccept(
-      GURL("http://example.com"), nullptr, WindowOpenDisposition::kCurrentTab,
-      ui::PAGE_TRANSITION_TYPED,
+      GURL("http://example.com"), nullptr,
+      ui::mojom::WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
       base::TimeTicks::Now(), false, false, text, match, match);
 
@@ -111,8 +112,8 @@ TEST_F(ComposeboxCobrowseOmniboxClientTest,
   match.type = omnibox::AutocompleteMatchType::kSearchWhatYouTyped;
 
   client_->OnAutocompleteAccept(
-      GURL("http://example.com"), nullptr, WindowOpenDisposition::kCurrentTab,
-      ui::PAGE_TRANSITION_TYPED,
+      GURL("http://example.com"), nullptr,
+      ui::mojom::WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
       base::TimeTicks::Now(), false, false, text, match, match);
 

@@ -52,6 +52,7 @@ source_set("model") {
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/common",
     "//ios/web/public",
+    "//ui/base/mojom",
   ]
 }
 

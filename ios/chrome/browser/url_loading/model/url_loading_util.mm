@@ -20,6 +20,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/url_util.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
 bool IsURLAllowedInIncognito(const GURL& url) {
@@ -46,11 +47,11 @@ void LoadJavaScriptURL(const GURL& url,
 }
 
 void RestoreTab(const SessionID session_id,
-                WindowOpenDisposition disposition,
+                ui::mojom::WindowOpenDisposition disposition,
                 Browser* browser) {
   // iOS Chrome doesn't yet support restoring tabs to new windows.
   // TODO(crbug.com/40676931) : Support WINDOW restoration under multi-window.
-  DCHECK(disposition != WindowOpenDisposition::kNewWindow);
+  DCHECK(disposition != ui::mojom::WindowOpenDisposition::kNewWindow);
   LiveTabContextBrowserAgent* context =
       LiveTabContextBrowserAgent::FromBrowser(browser);
   // Passing a nil context into RestoreEntryById can result in the restore
@@ -66,7 +67,7 @@ void RestoreTab(const SessionID session_id,
 UrlLoadParams CreateOmniboxUrlLoadParams(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool destination_url_entered_without_scheme,
     bool is_incognito) {

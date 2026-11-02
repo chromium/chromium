@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ui/base/window_open_disposition.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 // Enum of ways of changing loading behavior, that can be passed around
 // opaquely, and set by using `UrlLoadParams::LoadStrategy`.
@@ -19,7 +19,7 @@ enum class UrlLoadStrategy {
 };
 
 // UrlLoadingService wrapper around web::NavigationManager::WebLoadParams,
-// WindowOpenDisposition and parameters from OpenNewTabCommand.
+// `ui::mojom::WindowOpenDisposition` and parameters from OpenNewTabCommand.
 // This is used when a URL is opened.
 struct UrlLoadParams {
  public:
@@ -55,8 +55,9 @@ struct UrlLoadParams {
       web::NavigationManager::WebLoadParams(GURL());
 
   // The disposition of the URL being opened. Defaults to
-  // `WindowOpenDisposition::kNewForegroundTab`.
-  WindowOpenDisposition disposition = WindowOpenDisposition::kNewForegroundTab;
+  // `ui::mojom::WindowOpenDisposition::kNewForegroundTab`.
+  ui::mojom::WindowOpenDisposition disposition =
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab;
 
   // Whether this requests opening in incognito or not. Defaults to `false`.
   bool in_incognito = false;
@@ -132,7 +133,7 @@ struct UrlLoadParams {
   }
 
   bool in_background() const {
-    return disposition == WindowOpenDisposition::kNewBackgroundTab;
+    return disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   }
 
   // Public for testing only.

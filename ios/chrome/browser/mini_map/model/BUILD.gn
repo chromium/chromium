@@ -23,6 +23,7 @@ source_set("model") {
     "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/mini_map:mini_map_api",
     "//net",
+    "//ui/base/mojom",
   ]
   public_deps = [
     "//components/prefs",

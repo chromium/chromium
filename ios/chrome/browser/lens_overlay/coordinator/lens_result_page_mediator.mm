@@ -44,6 +44,7 @@
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
 namespace {
@@ -491,7 +492,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     web::Referrer referrer(_webState->GetLastCommittedURL(),
                            web::ReferrerPolicyDefault);
     _webState->OpenURL(web::WebState::OpenURLParams(
-        URLToLoad, referrer, WindowOpenDisposition::kCurrentTab,
+        URLToLoad, referrer, ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui::PAGE_TRANSITION_LINK, false));
   }
 }
@@ -546,9 +547,9 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 - (web::WebState*)webState:(web::WebState*)webState
          openURLWithParams:(const web::WebState::OpenURLParams&)params {
   switch (params.disposition) {
-    case WindowOpenDisposition::kNewForegroundTab:
-    case WindowOpenDisposition::kNewBackgroundTab:
-    case WindowOpenDisposition::kNewPopup: {
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewPopup: {
       // `webState` is standalone and not part of any `WebStateList`, so
       // `_browserWebStateDelegate->OpenURLFromWebState` cannot be used to open
       // a new tab (it expects `webState` to be present in the `WebStateList` as

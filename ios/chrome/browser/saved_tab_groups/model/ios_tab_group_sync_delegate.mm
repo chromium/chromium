@@ -45,6 +45,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using tab_groups::utils::GetLocalTabGroupInfo;
 using tab_groups::utils::LocalTabGroupInfo;
@@ -513,7 +514,8 @@ void IOSTabGroupSyncDelegate::UpdateLocalWebState(
     local_update_observer_->IgnoreNavigationForWebState(web_state);
 
     web_state->OpenURL(web::WebState::OpenURLParams(
-        saved_tab.url(), web::Referrer(), WindowOpenDisposition::kCurrentTab,
+        saved_tab.url(), web::Referrer(),
+        ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));
     return;
   }

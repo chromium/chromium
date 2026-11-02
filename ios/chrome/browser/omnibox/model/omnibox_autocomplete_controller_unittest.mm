@@ -42,6 +42,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "ui/gfx/image/image.h"
 #import "ui/gfx/image/image_skia.h"
 #import "ui/gfx/image/image_unittest_util.h"
@@ -95,7 +96,7 @@ class MockFakeOmniboxClient : public FakeOmniboxClient {
               OnAutocompleteAccept,
               (const GURL&,
                TemplateURLRef::PostContent*,
-               WindowOpenDisposition,
+               ui::mojom::WindowOpenDisposition,
                ui::PageTransition,
                omnibox::AutocompleteMatchType,
                base::TimeTicks,
@@ -139,7 +140,7 @@ class MockFakeOmniboxClient : public FakeOmniboxClient {
 
 - (void)openMatch:(AutocompleteMatch)match
              popupSelection:(OmniboxPopupSelection)selection
-      windowOpenDisposition:(WindowOpenDisposition)disposition
+      windowOpenDisposition:(ui::mojom::WindowOpenDisposition)disposition
             alternateNavURL:(const GURL&)alternateNavURL
                  pastedText:(const std::u16string&)pastedText
     matchSelectionTimestamp:(base::TimeTicks)matchSelectionTimestamp {
@@ -246,7 +247,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     omnibox_text_model_->OnSetFocus();
     [controller_ openMatch:match
                  popupSelection:OmniboxPopupSelection(0)
-          windowOpenDisposition:WindowOpenDisposition::kCurrentTab
+          windowOpenDisposition:ui::mojom::WindowOpenDisposition::kCurrentTab
                 alternateNavURL:GURL()
                      pastedText:u""
         matchSelectionTimestamp:base::TimeTicks()];
@@ -385,9 +386,10 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenCreatedMatch) {
 
   // Open match that doesn't come from the autocomplete controller. Row is
   // higher than autocomplete_controller_->result().size().
-  [controller_ selectMatchForOpening:match
-                               inRow:10
-                              openIn:WindowOpenDisposition::kCurrentTab];
+  [controller_
+      selectMatchForOpening:match
+                      inRow:10
+                     openIn:ui::mojom::WindowOpenDisposition::kCurrentTab];
 
   // Expect the match to be opened without mutating autocomplete results.
   EXPECT_THAT(LastOpenedMatch(), IsSameAsMatch(match));
@@ -398,9 +400,10 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenCreatedMatch) {
 
   // Open match that doesn't come from the autocomplete controller. Row is
   // smaller than autocomplete_controller_->result().size().
-  [controller_ selectMatchForOpening:match
-                               inRow:1
-                              openIn:WindowOpenDisposition::kCurrentTab];
+  [controller_
+      selectMatchForOpening:match
+                      inRow:1
+                     openIn:ui::mojom::WindowOpenDisposition::kCurrentTab];
   // Expect the match to be opened without mutating autocomplete results.
   EXPECT_THAT(LastOpenedMatch(), IsSameAsMatch(match));
   EXPECT_EQ(autocomplete_controller_->result().size(), sample_matches.size());
@@ -420,9 +423,10 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardURLMatch) {
   clipboard_->SetClipboardURL(pasteboard_url, base::TimeDelta::Min());
 
   // Open the clipboard match.
-  [controller_ selectMatchForOpening:clipboard_match
-                               inRow:0
-                              openIn:WindowOpenDisposition::kCurrentTab];
+  [controller_
+      selectMatchForOpening:clipboard_match
+                      inRow:0
+                     openIn:ui::mojom::WindowOpenDisposition::kCurrentTab];
 
   // Expect the clipboard content to be loaded.
   EXPECT_EQ(LastOpenedMatch().destination_url, pasteboard_url);
@@ -442,9 +446,10 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardTextMatch) {
   clipboard_->SetClipboardText(pasteboard_text, base::TimeDelta::Min());
 
   // Open the clipboard match.
-  [controller_ selectMatchForOpening:clipboard_match
-                               inRow:0
-                              openIn:WindowOpenDisposition::kCurrentTab];
+  [controller_
+      selectMatchForOpening:clipboard_match
+                      inRow:0
+                     openIn:ui::mojom::WindowOpenDisposition::kCurrentTab];
 
   // Expect the clipboard content to be loaded.
   EXPECT_EQ(LastOpenedMatch().fill_into_edit, pasteboard_text);
@@ -469,9 +474,10 @@ TEST_F(OmniboxAutocompleteControllerTest, OpenClipboardImageMatch) {
   controller_.openSelectionClosure = open_selection_waiter.QuitClosure();
 
   // Open the clipboard match.
-  [controller_ selectMatchForOpening:clipboard_match
-                               inRow:0
-                              openIn:WindowOpenDisposition::kCurrentTab];
+  [controller_
+      selectMatchForOpening:clipboard_match
+                      inRow:0
+                     openIn:ui::mojom::WindowOpenDisposition::kCurrentTab];
 
   // Wait for the image match.
   open_selection_waiter.Run();
@@ -506,7 +512,7 @@ TEST_F(OmniboxAutocompleteControllerTest, AlternateNavHasHTTP) {
   omnibox_text_model_->UpdateUserText(u"http://abcd");
   [controller_ openMatch:match
                popupSelection:OmniboxPopupSelection(0)
-        windowOpenDisposition:WindowOpenDisposition::kCurrentTab
+        windowOpenDisposition:ui::mojom::WindowOpenDisposition::kCurrentTab
               alternateNavURL:alternate_nav_url
                    pastedText:u""
       matchSelectionTimestamp:base::TimeTicks()];
@@ -521,7 +527,7 @@ TEST_F(OmniboxAutocompleteControllerTest, AlternateNavHasHTTP) {
   omnibox_text_model_->UpdateUserText(u"abcd");
   [controller_ openMatch:match
                popupSelection:OmniboxPopupSelection(0)
-        windowOpenDisposition:WindowOpenDisposition::kCurrentTab
+        windowOpenDisposition:ui::mojom::WindowOpenDisposition::kCurrentTab
               alternateNavURL:alternate_nav_url
                    pastedText:u""
       matchSelectionTimestamp:base::TimeTicks()];

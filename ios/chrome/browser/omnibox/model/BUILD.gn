@@ -183,6 +183,7 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//third_party/omnibox_proto:omnibox_proto_gen",
     "//ui/base:test_support",
+    "//ui/base/mojom",
     "//ui/gfx:test_support",
   ]
 }

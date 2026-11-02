@@ -20,6 +20,7 @@ source_set("model") {
     "//base",
     "//components/infobars/core",
     "//ios/web/public",
+    "//ui/base/mojom",
   ]
 }
 

@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
-#include "ui/base/window_open_disposition.h"
 
 enum class UrlLoadStrategy;
 

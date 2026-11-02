@@ -30,6 +30,7 @@ source_set("test_support") {
     "test_web_location_bar.cc",
     "test_web_location_bar.h",
   ]
+  public_deps = [ "//ui/base/mojom" ]
   deps = [
     ":model",
     "//base",

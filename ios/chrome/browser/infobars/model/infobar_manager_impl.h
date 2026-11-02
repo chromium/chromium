@@ -9,6 +9,7 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+#import "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace web {
 class WebState;
@@ -43,7 +44,7 @@ class InfoBarManagerImpl : public infobars::InfoBarManager,
 
   // Opens a URL according to the specified `disposition`.
   void OpenURL(const GURL& url,
-               WindowOpenDisposition disposition,
+               ui::mojom::WindowOpenDisposition disposition,
                const std::string& text_fragment) override;
 
   // The WebState this instance is observing. Will be null after

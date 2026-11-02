@@ -50,6 +50,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
 using send_tab_to_self::FakeSendTabToSelfModel;
@@ -781,7 +782,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestTabWillLoadUrlBackgroundOnly) {
   UrlLoadParams fg_params =
       UrlLoadParams::InCurrentTab(GURL("http://www.test.com"));
   fg_params.send_tab_to_self_entry_guid = guid;
-  fg_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  fg_params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   EXPECT_FALSE(fg_params.in_background());
 
   UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())
@@ -794,7 +795,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestTabWillLoadUrlBackgroundOnly) {
   UrlLoadParams bg_params =
       UrlLoadParams::InCurrentTab(GURL("http://www.test.com"));
   bg_params.send_tab_to_self_entry_guid = guid;
-  bg_params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  bg_params.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   EXPECT_TRUE(bg_params.in_background());
 
   UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())

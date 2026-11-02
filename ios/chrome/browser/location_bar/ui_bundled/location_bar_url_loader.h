@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/search_engines/template_url.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
+#import "components/search_engines/template_url.h"
+#import "ui/base/mojom/window_open_disposition.mojom-forward.h"
+#import "ui/base/page_transition_types.h"
 
 class GURL;
 
@@ -19,7 +19,8 @@ class GURL;
                                postContent:
                                    (TemplateURLRef::PostContent*)postContent
                                 transition:(ui::PageTransition)transition
-                               disposition:(WindowOpenDisposition)disposition
+                               disposition:
+                                   (ui::mojom::WindowOpenDisposition)disposition
     destination_url_entered_without_scheme:
         (bool)destination_url_entered_without_scheme;
 @end

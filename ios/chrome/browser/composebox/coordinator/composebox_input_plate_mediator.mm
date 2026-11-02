@@ -122,6 +122,7 @@
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
 #import "third_party/omnibox_proto/tool_config.pb.h"
 #import "third_party/omnibox_proto/tool_mode.pb.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "ui/base/page_transition_types.h"
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
@@ -2040,7 +2041,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 
   UrlLoadParams params = CreateOmniboxUrlLoadParams(
-      URL, /*post_content=*/nullptr, WindowOpenDisposition::kCurrentTab,
+      URL, /*post_content=*/nullptr,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_GENERATED,
       /*destination_url_entered_without_scheme=*/false, _isIncognito);
 

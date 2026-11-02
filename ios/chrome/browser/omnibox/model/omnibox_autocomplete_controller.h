@@ -90,7 +90,7 @@ struct OmniboxTextModel;
 /// is not guaranteed to open a match or commit the omnibox.
 - (void)openSelection:(OmniboxPopupSelection)selection
             timestamp:(base::TimeTicks)timestamp
-          disposition:(WindowOpenDisposition)disposition;
+          disposition:(ui::mojom::WindowOpenDisposition)disposition;
 
 /// Opens the provided autocomplete `match` using a `customDestinationURL`.
 /// This method handles the logic for navigating to the specified URL.
@@ -99,11 +99,12 @@ struct OmniboxTextModel;
 - (void)selectMatchForOpening:(AutocompleteMatch&)match
      withCustomDestinationURL:(GURL)destinationURL
                         inRow:(NSUInteger)row
-                       openIn:(WindowOpenDisposition)disposition;
+                       openIn:(ui::mojom::WindowOpenDisposition)disposition;
 
 /// A simplified version of OpenSelection that opens the model's current
 /// selection.
-- (void)openCurrentSelectionWithDisposition:(WindowOpenDisposition)disposition
+- (void)openCurrentSelectionWithDisposition:
+            (ui::mojom::WindowOpenDisposition)disposition
                                   timestamp:(base::TimeTicks)timestamp;
 
 #pragma mark - OmniboxPopup event
@@ -115,7 +116,7 @@ struct OmniboxTextModel;
 /// Selects `match` for opening.
 - (void)selectMatchForOpening:(const AutocompleteMatch&)match
                         inRow:(NSUInteger)row
-                       openIn:(WindowOpenDisposition)disposition;
+                       openIn:(ui::mojom::WindowOpenDisposition)disposition;
 
 /// Prerenders `match` in `row` when highlighted on touch down.
 - (void)prerenderMatchForOpening:(const AutocompleteMatch&)match

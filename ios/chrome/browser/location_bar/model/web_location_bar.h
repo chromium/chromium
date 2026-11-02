@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_WEB_LOCATION_BAR_H_
 #define IOS_CHROME_BROWSER_LOCATION_BAR_MODEL_WEB_LOCATION_BAR_H_
 
-#include "components/search_engines/template_url.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
+#import "components/search_engines/template_url.h"
+#import "ui/base/mojom/window_open_disposition.mojom-forward.h"
+#import "ui/base/page_transition_types.h"
 
 class GURL;
 class LocationBarModel;
@@ -29,7 +29,7 @@ class WebLocationBar {
 
   virtual void OnNavigate(const GURL& destination_url,
                           TemplateURLRef::PostContent* post_content,
-                          WindowOpenDisposition disposition,
+                          ui::mojom::WindowOpenDisposition disposition,
                           ui::PageTransition transition,
                           bool destination_url_entered_without_scheme,
                           const AutocompleteMatch& match) = 0;

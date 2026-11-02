@@ -17,6 +17,7 @@
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "ui/base/page_transition_types.h"
 
 using WellKnownChangePasswordResult =
@@ -143,9 +144,9 @@ void WellKnownChangePasswordTabHelper::OnProcessingFinished(bool is_supported) {
 void WellKnownChangePasswordTabHelper::Redirect(const GURL& url) {
   // Making sure there was no other navigation started we could override.
   if (processing_state_ == kResponesReceived) {
-    web::WebState::OpenURLParams params(url, web::Referrer(),
-                                        WindowOpenDisposition::kCurrentTab,
-                                        ui::PAGE_TRANSITION_LINK, false);
+    web::WebState::OpenURLParams params(
+        url, web::Referrer(), ui::mojom::WindowOpenDisposition::kCurrentTab,
+        ui::PAGE_TRANSITION_LINK, false);
     web_state_->OpenURL(params);
   }
 }

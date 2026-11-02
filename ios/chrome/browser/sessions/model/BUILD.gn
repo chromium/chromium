@@ -244,6 +244,7 @@ source_set("fake") {
     "fake_tab_restore_service.h",
     "fake_tab_restore_service.mm",
   ]
+  public_deps = [ "//ui/base/mojom" ]
   deps = [
     "//base",
     "//components/sessions",

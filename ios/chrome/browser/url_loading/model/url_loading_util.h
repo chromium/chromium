@@ -33,7 +33,7 @@ void LoadJavaScriptURL(const GURL& url,
 // Restores the closed tab identified by `session_id`, using `disposition`,
 // into `browser`.
 void RestoreTab(const SessionID session_id,
-                WindowOpenDisposition disposition,
+                ui::mojom::WindowOpenDisposition disposition,
                 Browser* browser);
 
 // Returns a UrlLoadParams object populated with the given parameters.
@@ -44,7 +44,7 @@ void RestoreTab(const SessionID session_id,
 UrlLoadParams CreateOmniboxUrlLoadParams(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool destination_url_entered_without_scheme,
     bool is_incognito);

@@ -61,6 +61,7 @@
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "net/base/apple/url_conversions.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -423,8 +424,8 @@ void OpenLatestTab(SceneState* sceneState,
       base::BindOnce(&OpenLatestTabWithBrowser), browser->AsWeakPtr()));
 
   UrlLoadParams params;
-  // Use SWITCH_TO_TAB as a signal to avoid opening a new NTP if tabs exist.
-  params.disposition = WindowOpenDisposition::kSwitchToTab;
+  // Use `kSwitchToTab` as a signal to avoid opening a new NTP if tabs exist.
+  params.disposition = ui::mojom::WindowOpenDisposition::kSwitchToTab;
 
   id<TabOpening> tabOpener = sceneState.controller;
   [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:targetMode

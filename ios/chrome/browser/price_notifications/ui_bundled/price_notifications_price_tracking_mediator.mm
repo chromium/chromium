@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
 namespace {
@@ -150,7 +151,7 @@ using PriceNotificationItems =
 - (void)navigateToWebpageForItem:(PriceNotificationsTableViewItem*)item {
   DCHECK(item.tracking);
   [self navigateToWebpageForURL:item.entryURL
-                    disposition:WindowOpenDisposition::kCurrentTab];
+                    disposition:ui::mojom::WindowOpenDisposition::kCurrentTab];
   [self.handler hidePriceTrackedItems];
 }
 
@@ -452,7 +453,7 @@ using PriceNotificationItems =
 }
 
 - (void)navigateToWebpageForURL:(const GURL&)URL
-                    disposition:(WindowOpenDisposition)disposition {
+                    disposition:(ui::mojom::WindowOpenDisposition)disposition {
   if (!URL.SchemeIsHTTPOrHTTPS()) {
     return;
   }

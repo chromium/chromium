@@ -18,6 +18,7 @@
 #import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
 MiniMapTabHelper::MiniMapTabHelper(web::WebState* web_state)
@@ -194,7 +195,8 @@ void MiniMapTabHelper::CancelAndOpenURL(PolicyDecisionCallback callback,
                                         const GURL& url,
                                         ui::PageTransition transition_type) {
   web::WebState::OpenURLParams params(
-      url, web::Referrer(), WindowOpenDisposition::kCurrentTab, transition_type,
+      url, web::Referrer(), ui::mojom::WindowOpenDisposition::kCurrentTab,
+      transition_type,
       /*is_renderer_initiated=*/false);
   // Running `callback` with `PolicyDecision::Cancel()` must happen before
   // `OpenURL()` (so the cancelled navigation's pending item is discarded

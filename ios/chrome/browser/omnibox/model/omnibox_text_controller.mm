@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "net/base/apple/url_conversions.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -492,7 +493,8 @@ const char kOmniboxFocusResultedInNavigation[] =
     _omniboxClient->OnThumbnailOnlyAccept();
   } else {
     [self.omniboxAutocompleteController
-        openCurrentSelectionWithDisposition:WindowOpenDisposition::kCurrentTab
+        openCurrentSelectionWithDisposition:ui::mojom::WindowOpenDisposition::
+                                                kCurrentTab
                                   timestamp:base::TimeTicks()];
   }
 

@@ -534,7 +534,7 @@ TEST_F(AssistantAIMCoordinatorTest,
             fake_container_handler.lastAnimatedDetent.value());
   EXPECT_EQ(GURL(kAssistantAIMHelpCenterURL),
             url_loader->last_params.web_params.url);
-  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             url_loader->last_params.disposition);
 
   // Showing the keyboard again should re-present the consent alert.

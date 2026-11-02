@@ -10,6 +10,7 @@
 #import "components/sessions/core/live_tab.h"
 #import "components/sessions/core/tab_restore_types.h"
 #import "components/split_tabs/split_tab_id.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 

@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 @interface RecentTabsCoordinator () <HistorySyncPopupCoordinatorDelegate,
                                      RecentTabsPresentationDelegate,
@@ -305,10 +306,10 @@
       self.profile->IsOffTheRecord(), is_ntp,
       new_tab_page_uma::ACTION_OPENED_RECENTLY_CLOSED_ENTRY);
 
-  WindowOpenDisposition disposition =
+  ui::mojom::WindowOpenDisposition disposition =
       IsNTPWithoutHistory(activeWebState)
-          ? WindowOpenDisposition::kCurrentTab
-          : WindowOpenDisposition::kNewForegroundTab;
+          ? ui::mojom::WindowOpenDisposition::kCurrentTab
+          : ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   RestoreTab(sessionId, disposition, self.browser);
   [self showActiveRegularTabFromRecentTabs];
 }

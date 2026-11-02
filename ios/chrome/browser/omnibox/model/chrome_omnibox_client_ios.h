@@ -13,6 +13,7 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_client_ios.h"
+#import "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class Browser;
 class ProfileIOS;
@@ -61,10 +62,11 @@ class ChromeOmniboxClientIOS final : public OmniboxClientIOS {
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  void ProcessExtensionMatch(const std::u16string& text,
-                             const TemplateURL* template_url,
-                             const AutocompleteMatch& match,
-                             WindowOpenDisposition disposition) override;
+  void ProcessExtensionMatch(
+      const std::u16string& text,
+      const TemplateURL* template_url,
+      const AutocompleteMatch& match,
+      ui::mojom::WindowOpenDisposition disposition) override;
   void OnUserPastedInOmniboxResultingInValidURL() override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
@@ -81,7 +83,7 @@ class ChromeOmniboxClientIOS final : public OmniboxClientIOS {
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       omnibox::AutocompleteMatchType match_type,
       base::TimeTicks match_selection_timestamp,

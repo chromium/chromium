@@ -66,6 +66,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using variations::VariationsIdsProvider;
 
@@ -284,7 +285,8 @@ TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
 
   GURL url("https://www.google.com/");
   ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
-  WindowOpenDisposition disposition = WindowOpenDisposition::kSwitchToTab;
+  ui::mojom::WindowOpenDisposition disposition =
+      ui::mojom::WindowOpenDisposition::kSwitchToTab;
   [coordinator_ start];
   [coordinator_ loadGURLFromLocationBar:url
                                  postContent:nil
@@ -320,7 +322,8 @@ TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
 
   GURL url("https://www.nongoogle.com/");
   ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
-  WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab;
+  ui::mojom::WindowOpenDisposition disposition =
+      ui::mojom::WindowOpenDisposition::kCurrentTab;
   [coordinator_ start];
   [coordinator_ loadGURLFromLocationBar:url
                                  postContent:nil

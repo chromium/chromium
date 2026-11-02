@@ -8,6 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "ios/chrome/browser/location_bar/model/web_location_bar.h"
+#import "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class TestWebLocationBar final : public WebLocationBar {
  public:
@@ -20,7 +21,7 @@ class TestWebLocationBar final : public WebLocationBar {
   web::WebState* GetWebState() override;
   void OnNavigate(const GURL& destination_url,
                   TemplateURLRef::PostContent* post_content,
-                  WindowOpenDisposition disposition,
+                  ui::mojom::WindowOpenDisposition disposition,
                   ui::PageTransition transition,
                   bool destination_url_entered_without_scheme,
                   const AutocompleteMatch& match) override {}
