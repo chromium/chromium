@@ -180,6 +180,9 @@ class TabStripModelDelegate {
   virtual bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) = 0;
 
+  // Returns true if `tab` is allowed to be closed.
+  virtual bool IsTabClosable(const tabs::TabInterface* tab) const = 0;
+
   // Returns whether the delegate allows reloading of WebContents.
   virtual bool CanReload() const = 0;
 

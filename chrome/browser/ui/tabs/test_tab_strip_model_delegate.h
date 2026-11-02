@@ -72,6 +72,7 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) override;
   bool RunUnloadListenerBeforeClosing(content::WebContents* contents) override;
+  bool IsTabClosable(const tabs::TabInterface* tab) const override;
   bool CanReload() const override;
   void AddToReadLater(std::vector<content::WebContents*> web_contents) override;
   bool SupportsReadLater() override;
