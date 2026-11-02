@@ -67,6 +67,10 @@ class ConfirmInfoBarCreationAllowlist {
   friend class DevToolsWindow;
   friend class GlobalConfirmInfoBar;
 
+  // TODO(https://crbug.com/567121669): Remove the burndown lists below and
+  // GetPassKeyForMigration() once all desktop infobars are migrated to
+  // BrowserInfoBarManager.
+
   // Burndown List (Remaining Legacy Desktop Delegates):
   friend class AutomationInfoBarDelegate;
   friend class CollectedCookiesInfoBarDelegate;
@@ -105,6 +109,8 @@ class ConfirmInfoBarCreationAllowlist {
   static PassKey GetPassKey() { return PassKey(); }
 
   // For legacy callers in the burndown list pending migration/cleanup.
+  // TODO(https://crbug.com/567121669): Remove once the burndown lists above are
+  // empty.
   static PassKey GetPassKeyForMigration() { return PassKey(); }
 };
 
