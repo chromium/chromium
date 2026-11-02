@@ -59,6 +59,7 @@ enum class TransferMode { kWrite, kVerify };
 
 // Describes the optional data phase of a USB Mass Storage Bulk-Only Transport
 // (BOT) transaction:
+// - `std::monostate`: Idle placeholder when no transaction is in progress.
 // - `NoDataPhase`: Command has no data transfer phase
 //   (`dCBWDataTransferLength == 0`, `bmCBWFlags == 0x00`).
 // - `DataInPhase`: Device-to-host transfer of `length` bytes over bulk-IN
@@ -72,7 +73,8 @@ struct DataInPhase {
 struct DataOutPhase {
   base::raw_span<const uint8_t> data;
 };
-using DataPhase = std::variant<NoDataPhase, DataInPhase, DataOutPhase>;
+using DataPhase =
+    std::variant<std::monostate, NoDataPhase, DataInPhase, DataOutPhase>;
 
 struct Capacity10Response {
   uint32_t last_logical_block_address = 0;
@@ -163,6 +165,7 @@ class UsbBotTransport {
                           TransactionCallback callback) {
     CHECK(callback);
     CHECK(!callback_);
+    CHECK(!std::holds_alternative<std::monostate>(data_phase));
     tag_ = ++next_tag_;
     data_phase_ = data_phase;
     timeout_ms_ = static_cast<uint32_t>(timeout.InMilliseconds());
@@ -192,7 +195,7 @@ class UsbBotTransport {
  private:
   void OnCommandBlockSent(device::mojom::UsbTransferStatus status) {
     if (status != device::mojom::UsbTransferStatus::COMPLETED) {
-      data_phase_ = NoDataPhase{};
+      data_phase_ = std::monostate{};
       return std::move(callback_).Run(std::nullopt, {});
     }
     if (const auto* data_in = std::get_if<DataInPhase>(&data_phase_)) {
@@ -209,6 +212,7 @@ class UsbBotTransport {
                          base::Unretained(this)));
       return;
     }
+    CHECK(std::holds_alternative<NoDataPhase>(data_phase_));
     ReadCommandStatus();
   }
 
@@ -224,7 +228,7 @@ class UsbBotTransport {
     }
     if (status != device::mojom::UsbTransferStatus::COMPLETED &&
         status != device::mojom::UsbTransferStatus::SHORT_PACKET) {
-      data_phase_ = NoDataPhase{};
+      data_phase_ = std::monostate{};
       return std::move(callback_).Run(std::nullopt, {});
     }
     received_data_.assign(data.begin(), data.end());
@@ -232,7 +236,7 @@ class UsbBotTransport {
   }
 
   void OnDataOutSent(device::mojom::UsbTransferStatus status) {
-    data_phase_ = NoDataPhase{};
+    data_phase_ = std::monostate{};
     if (status == device::mojom::UsbTransferStatus::STALLED) {
       device_->ClearHalt(device::mojom::UsbTransferDirection::OUTBOUND,
                          endpoints_.endpoint_out,
@@ -248,14 +252,14 @@ class UsbBotTransport {
 
   void OnDataStallCleared(bool success) {
     if (!success) {
-      data_phase_ = NoDataPhase{};
+      data_phase_ = std::monostate{};
       return std::move(callback_).Run(std::nullopt, {});
     }
     ReadCommandStatus();
   }
 
   void ReadCommandStatus() {
-    data_phase_ = NoDataPhase{};
+    data_phase_ = std::monostate{};
     device_->GenericTransferIn(
         endpoints_.endpoint_in, kCommandStatusWrapperSize, timeout_ms_,
         base::BindOnce(&UsbBotTransport::OnCommandStatusReceived,
@@ -317,6 +321,7 @@ class UsbScsiCommandRunner {
                             CommandCallback callback) {
     CHECK(callback);
     CHECK(!callback_);
+    CHECK(!std::holds_alternative<std::monostate>(data_phase));
     scsi_command_ = std::move(scsi_command);
     data_phase_ = data_phase;
     attempts_left_ = attempts_left;
@@ -339,17 +344,17 @@ class UsbScsiCommandRunner {
   void OnCommandTransactionDone(std::optional<uint8_t> csw_status,
                                 std::vector<uint8_t> received_data) {
     if (!csw_status.has_value()) {
-      data_phase_ = NoDataPhase{};
+      data_phase_ = std::monostate{};
       return std::move(callback_).Run(false, {});
     }
     if (*csw_status == 0) {
-      data_phase_ = NoDataPhase{};
+      data_phase_ = std::monostate{};
       return std::move(callback_).Run(true, std::move(received_data));
     }
     // TODO(crbug.com/538632205): Perform Bulk-Only Mass Storage Reset and
     // ClearHalt recovery when `csw_status == 2` (Phase Error).
     if (*csw_status != 1) {
-      data_phase_ = NoDataPhase{};
+      data_phase_ = std::monostate{};
       return std::move(callback_).Run(false, {});
     }
     // Issue `REQUEST SENSE` (opcode 0x03) on `CHECK CONDITION` (status 1) to
@@ -374,12 +379,12 @@ class UsbScsiCommandRunner {
     // 0x70 for current errors or 0x71 for deferred errors), where the sense key
     // is in byte 2 (bits 0..3) and ASC / ASCQ are in bytes 12 and 13.
     if (csw_status != 0 || sense_data.size() < 14) {
-      data_phase_ = NoDataPhase{};
+      data_phase_ = std::monostate{};
       return std::move(callback_).Run(false, {});
     }
     const uint8_t response_code = sense_data[0] & 0x7F;
     if (response_code != 0x70 && response_code != 0x71) {
-      data_phase_ = NoDataPhase{};
+      data_phase_ = std::monostate{};
       return std::move(callback_).Run(false, {});
     }
     const uint8_t sense_key = sense_data[2] & 0x0F;
@@ -392,7 +397,7 @@ class UsbScsiCommandRunner {
         (sense_key == kScsiSenseKeyNotReady &&
          asc == kScsiAscLogicalUnitNotReady && ascq == kScsiAscqBecomingReady);
     if (!is_retryable || attempts_left_ <= 1) {
-      data_phase_ = NoDataPhase{};
+      data_phase_ = std::monostate{};
       return std::move(callback_).Run(false, {});
     }
     --attempts_left_;
