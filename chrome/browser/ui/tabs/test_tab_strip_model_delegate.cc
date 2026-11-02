@@ -110,11 +110,6 @@ bool TestTabStripModelDelegate::RunUnloadListenerBeforeClosing(
   return false;
 }
 
-bool TestTabStripModelDelegate::IsTabClosable(
-    const tabs::TabInterface* tab) const {
-  return true;
-}
-
 bool TestTabStripModelDelegate::CanReload() const {
   return true;
 }

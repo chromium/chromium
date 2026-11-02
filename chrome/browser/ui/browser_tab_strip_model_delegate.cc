@@ -334,11 +334,6 @@ bool BrowserTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
       contents);
 }
 
-bool BrowserTabStripModelDelegate::IsTabClosable(
-    const tabs::TabInterface* tab) const {
-  return UnloadController::From(browser_)->IsTabClosable(tab);
-}
-
 bool BrowserTabStripModelDelegate::CanReload() const {
   return chrome::CanReload(browser_);
 }

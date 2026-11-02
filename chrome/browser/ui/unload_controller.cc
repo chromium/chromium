@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/performance_manager/public/priority/priority.h"
@@ -247,24 +246,6 @@ bool UnloadController::RunUnloadListenerBeforeClosing(
     content::WebContents* web_contents) {
   return !force_skip_warning_user_on_close_ &&
          RunUnloadEventsHelper(web_contents);
-}
-
-bool UnloadController::IsTabClosable(const tabs::TabInterface* tab) const {
-  if (force_skip_warning_user_on_close_) {
-    return true;
-  }
-  if (!tab || !web_app::AppBrowserController::IsWebApp(browser_.get())) {
-    return true;
-  }
-  const webapps::AppId* app_id =
-      web_app::WebAppTabHelper::GetAppId(tab->GetContents());
-  if (!app_id) {
-    return true;
-  }
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebContents(tab->GetContents());
-  return !provider ||
-         !provider->policy_manager().IsPreventCloseEnabled(*app_id);
 }
 
 void UnloadController::BeforeUnloadFired(content::WebContents* web_contents,

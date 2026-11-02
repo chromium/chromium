@@ -422,6 +422,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/tabs/vertical",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/browser/web_applications",
       "//components/commerce/core:utils",
       "//components/content_settings/core/browser",
       "//components/feature_engagement/public",
@@ -430,6 +431,7 @@ if (!is_android) {
       "//components/reading_list/core",
       "//components/tab_groups",
       "//components/web_modal",
+      "//components/webapps/common",
     ]
   }
 
@@ -978,7 +980,6 @@ if (!is_android) {
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui:ui_features",
-      "//chrome/browser/ui:unload_controller",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/tabs/saved_tab_groups",
