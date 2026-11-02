@@ -41,6 +41,7 @@ source_set("icon") {
 # Omnibox Everywhere public interface headers.
 source_set("omnibox_everywhere") {
   public = [
+    "omnibox_everywhere_context_menu_controller.h",
     "omnibox_everywhere_controller.h",
     "omnibox_everywhere_feature_promo_controller.h",
     "omnibox_everywhere_fre_controller.h",
@@ -76,6 +77,7 @@ source_set("omnibox_everywhere") {
 # Omnibox Everywhere desktop implementation.
 source_set("impl") {
   sources = [
+    "omnibox_everywhere_context_menu_controller.cc",
     "omnibox_everywhere_controller.cc",
     "omnibox_everywhere_feature_promo_controller.cc",
     "omnibox_everywhere_fre_controller.cc",
@@ -162,6 +164,7 @@ if (is_mac || is_win) {
     testonly = true
     sources = [
       "//chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager_unittest.cc",
+      "omnibox_everywhere_context_menu_controller_unittest.cc",
       "omnibox_everywhere_controller_unittest.cc",
       "omnibox_everywhere_fre_controller_unittest.cc",
       "omnibox_everywhere_prefs_unittest.cc",

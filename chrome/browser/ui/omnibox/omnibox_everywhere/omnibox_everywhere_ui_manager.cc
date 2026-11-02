@@ -11,24 +11,19 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
-#include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/omnibox/clipboard_utils.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
@@ -49,48 +44,30 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/ntp_tiles/custom_links_manager.h"
 #include "components/ntp_tiles/most_visited_sites.h"
-#include "components/omnibox/browser/aim_eligibility_service.h"
-#include "components/omnibox/browser/autocomplete_classifier.h"
-#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/ai_mode_button_service.h"
-#include "components/search_engines/search_engines_switches.h"
-#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
-#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
-#include "third_party/blink/public/common/context_menu_data/edit_flags.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "ui/base/accelerators/accelerator.h"
-#include "ui/base/clipboard/clipboard.h"
-#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
-#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/text_elider.h"
-#include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
-#include "ui/views/controls/menu/menu_config.h"
-#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
@@ -126,7 +103,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/mac_window_util.h"
-#include "ui/base/cocoa/appkit_utils.h"
 #endif
 
 namespace omnibox_everywhere {
@@ -135,16 +111,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxEverywhereUIManager,
                                       kOmniboxEverywhereElementId);
 
 namespace {
-
-bool IsFuseboxEligible(Profile* profile) {
-  if (!profile) {
-    return false;
-  }
-  auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
-  return aim_eligibility_service &&
-         aim_eligibility_service->IsFuseboxEligible();
-}
 
 class OmniboxEverywhereFileSelectListener : public content::FileSelectListener {
  public:
@@ -309,7 +275,9 @@ OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
     ContentsWrapperFactory contents_wrapper_factory)
     : contents_wrapper_factory_(std::move(contents_wrapper_factory)),
       unhandled_keyboard_event_handler_(
-          std::make_unique<views::UnhandledKeyboardEventHandler>())
+          std::make_unique<views::UnhandledKeyboardEventHandler>()),
+      context_menu_controller_(
+          std::make_unique<OmniboxEverywhereContextMenuController>(*this))
 #if BUILDFLAG(IS_WIN)
       ,
       shortcut_helper_(base::ThreadPool::CreateCOMSTATaskRunner(
@@ -619,7 +587,7 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   auto web_view = std::make_unique<views::WebView>(profile_);
   web_view->SetProperty(views::kElementIdentifierKey,
                         kOmniboxEverywhereElementId);
-  web_view->set_context_menu_controller(this);
+  web_view->set_context_menu_controller(context_menu_controller_.get());
   // Allow the WebContents host to route unhandled accelerator keys through
   // the Views focus/accelerator system.
   web_view->set_allow_accelerators_deprecated(true);
@@ -789,10 +757,7 @@ void OmniboxEverywhereUIManager::Close() {
       ReleaseKeepAlives();
       return;
     }
-    if (is_context_menu_open_ && context_menu_runner_) {
-      context_menu_runner_->Cancel();
-      is_context_menu_open_ = false;
-    }
+    context_menu_controller_->Cancel();
 #if BUILDFLAG(IS_MAC)
     // On macOS, reset auxiliary collection behaviors before hiding so the
     // Window Server stops associating Chrome with the current Space. This
@@ -899,6 +864,8 @@ void OmniboxEverywhereUIManager::DestroyWidget() {
     if (auto* contents_view = widget_delegate_->GetContentsView()) {
       if (auto* web_view = views::AsViewClass<views::WebView>(contents_view)) {
         web_view->SetWebContents(nullptr);
+        // The widget is destroyed asynchronously and may outlive `this`.
+        web_view->set_context_menu_controller(nullptr);
       }
     }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -911,17 +878,10 @@ void OmniboxEverywhereUIManager::DestroyWidget() {
             },
             std::move(widget_), std::move(widget_delegate_)));
   }
-  if (context_menu_runner_) {
-    context_menu_runner_->Cancel();
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(context_menu_runner_));
-  }
-  ResetContextMenuModels();
-  last_context_menu_params_ = content::ContextMenuParams();
+  context_menu_controller_->Reset();
   is_file_chooser_open_ = false;
   is_drive_picker_open_ = false;
   is_hotkey_dropdown_open_ = false;
-  is_context_menu_open_ = false;
   is_demoted_ = false;
   is_screenshare_picker_open_ = false;
   is_screenshare_disclosure_open_ = false;
@@ -943,10 +903,7 @@ void OmniboxEverywhereUIManager::CancelPendingDeactivation() {
 void OmniboxEverywhereUIManager::CancelTransientUiState() {
   last_shown_time_.reset();
   CancelPendingDeactivation();
-  if (is_context_menu_open_ && context_menu_runner_) {
-    context_menu_runner_->Cancel();
-    is_context_menu_open_ = false;
-  }
+  context_menu_controller_->Cancel();
 }
 
 void OmniboxEverywhereUIManager::Shutdown() {
@@ -985,7 +942,8 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
   if (active) {
     CancelPendingDeactivation();
     const bool was_demoted = std::exchange(is_demoted_, false);
-    if (!HasOpenModalDialog() && !is_context_menu_open_ && web_contents()) {
+    if (!HasOpenModalDialog() && !context_menu_controller_->IsOpen() &&
+        web_contents()) {
       web_contents()->Focus();
     }
     if (was_demoted) {
@@ -993,7 +951,7 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     }
     return;
   }
-  if (!HasOpenModalDialog() && !is_context_menu_open_) {
+  if (!HasOpenModalDialog() && !context_menu_controller_->IsOpen()) {
     HandleWidgetDeactivated();
   }
 }
@@ -1001,8 +959,8 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
 void OmniboxEverywhereUIManager::OnWidgetVisibilityOnScreenChanged(
     views::Widget* widget,
     bool visible) {
-  if (!visible && !HasOpenModalDialog() && !is_context_menu_open_ &&
-      prefs::IsEphemeralModelEnabled()) {
+  if (!visible && !HasOpenModalDialog() &&
+      !context_menu_controller_->IsOpen() && prefs::IsEphemeralModelEnabled()) {
     Close();
   }
 }
@@ -1033,12 +991,6 @@ void OmniboxEverywhereUIManager::OnWidgetShowStateChanged(
 }
 
 void OmniboxEverywhereUIManager::OnContextMenuClosed() {
-  is_context_menu_open_ = false;
-  if (context_menu_runner_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(context_menu_runner_));
-  }
-  ResetContextMenuModels();
   if (widget_ && !widget_->IsActive() && !HasOpenModalDialog()) {
     HandleWidgetDeactivated();
   }
@@ -1087,7 +1039,7 @@ void OmniboxEverywhereUIManager::HandleWidgetDeactivated() {
 void OmniboxEverywhereUIManager::OnPendingDismissalPoll() {
   if (is_closing_ || !widget_ || !widget_->IsVisible() ||
       widget_->IsMinimized() || is_demoted_ || HasOpenModalDialog() ||
-      is_context_menu_open_) {
+      context_menu_controller_->IsOpen()) {
     pending_dismissal_timer_.Stop();
     is_drag_over_web_contents_ = false;
     return;
@@ -1254,7 +1206,7 @@ void OmniboxEverywhereUIManager::OnHotkeyDropdownClosed() {
 
 void OmniboxEverywhereUIManager::CheckDeactivationAfterHotkeyDropdownClosed() {
   if (widget_ && !widget_->IsActive() && !HasOpenModalDialog() &&
-      !is_context_menu_open_ && prefs::IsEphemeralModelEnabled()) {
+      !context_menu_controller_->IsOpen() && prefs::IsEphemeralModelEnabled()) {
     HandleWidgetDeactivated();
   }
 }
@@ -1540,256 +1492,17 @@ void OmniboxEverywhereUIManager::DraggableRegionsChanged(
   }
 }
 
-// WebUIContentsWrapper::Host:
-// Omnibox Everywhere is a standalone popup WebUI window without a default
-// browser-frame context menu controller. HandleContextMenu creates and displays
-// a lightweight context menu for standard text editing actions (Cut, Copy,
-// Paste, Select All) exclusively for editable controls (query input) or
-// selected text. Non-editable background/padding areas suppress the context
-// menu.
+// Shows the native right-click context menu for editable controls, selected
+// text and the widget background. See `OmniboxEverywhereContextMenuController`.
 bool OmniboxEverywhereUIManager::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   if (!widget_ || !widget_->GetContentsView()) {
     return true;
   }
-
-  bool can_read_clipboard =
-      params.is_editable && !ui::Clipboard::GetForCurrentThread()
-                                 ->IsMarkedByOriginatorAsConfidential();
-#if BUILDFLAG(IS_MAC)
-  if (ui::PasteMightBlockWithPrivacyAlert()) {
-    can_read_clipboard = false;
-  }
-#endif
-
-  if (can_read_clipboard) {
-    GetClipboardText(
-        /*notify_if_restricted=*/false,
-        base::BindOnce(&OmniboxEverywhereUIManager::ShowContextMenu,
-                       weak_factory_.GetWeakPtr(), params));
-  } else {
-    ShowContextMenu(params, /*clipboard_text=*/std::u16string());
-  }
+  context_menu_controller_->HandleContextMenu(params);
   return true;
 }
-
-void OmniboxEverywhereUIManager::ShowContextMenu(
-    const content::ContextMenuParams& params,
-    std::u16string clipboard_text) {
-  if (!widget_ || !widget_->GetContentsView()) {
-    return;
-  }
-
-  // Cancel and clean up any existing context menu before creating a new one.
-  if (context_menu_runner_) {
-    context_menu_runner_->Cancel();
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(context_menu_runner_));
-  }
-  ResetContextMenuModels();
-
-  last_context_menu_params_ = params;
-  context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-
-  // 1. Query input box / editable text
-  if (params.is_editable) {
-    BuildInputContextMenu(params, clipboard_text);
-    // 2. Highlighted text
-  } else if (!params.selection_text.empty()) {
-    BuildSelectionContextMenu(params);
-    // 3. Non-editable background / anywhere else on the widget
-  } else {
-    BuildBackgroundContextMenu(params);
-  }
-
-#if BUILDFLAG(IS_WIN)
-  AppendWindowControlsContextMenu();
-#endif  // BUILDFLAG(IS_WIN)
-
-  if (context_menu_model_->GetItemCount() == 0) {
-    return;
-  }
-
-  is_context_menu_open_ = true;
-  auto on_closed_callback =
-      base::BindRepeating(&OmniboxEverywhereUIManager::OnContextMenuClosed,
-                          weak_factory_.GetWeakPtr());
-  if (menu_runner_factory_) {
-    context_menu_runner_ =
-        menu_runner_factory_.Run(context_menu_model_.get(), on_closed_callback);
-  } else {
-    context_menu_runner_ = std::make_unique<views::MenuRunner>(
-        context_menu_model_.get(),
-        views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
-        on_closed_callback);
-  }
-
-  gfx::Point screen_point(params.x, params.y);
-  views::View::ConvertPointToScreen(widget_->GetContentsView(), &screen_point);
-
-  context_menu_runner_->RunMenuAt(
-      widget_.get(), nullptr, gfx::Rect(screen_point, gfx::Size()),
-      views::MenuAnchorPosition::kTopLeft, params.source_type);
-}
-
-void OmniboxEverywhereUIManager::ResetContextMenuModels() {
-  if (context_menu_model_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(context_menu_model_));
-  }
-#if BUILDFLAG(IS_MAC)
-  if (writing_direction_submenu_model_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(writing_direction_submenu_model_));
-  }
-#endif  // BUILDFLAG(IS_MAC)
-}
-
-void OmniboxEverywhereUIManager::BuildInputContextMenu(
-    const content::ContextMenuParams& params,
-    const std::u16string& clipboard_text) {
-  if (ui::IsEmojiPanelSupported()) {
-    context_menu_model_->AddItemWithStringId(kEmoji, IDS_CONTENT_CONTEXT_EMOJI);
-    context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  }
-
-  context_menu_model_->AddItemWithStringId(kUndo, IDS_APP_UNDO);
-  context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-
-  context_menu_model_->AddItemWithStringId(kCut, IDS_APP_CUT);
-  context_menu_model_->AddItemWithStringId(kCopy, IDS_APP_COPY);
-  context_menu_model_->AddItemWithStringId(kPaste, IDS_APP_PASTE);
-  context_menu_model_->AddItem(kPasteAndSearch,
-                               GetPasteAndGoMenuLabel(clipboard_text));
-  context_menu_model_->AddItemWithStringId(kDelete, IDS_APP_DELETE);
-  context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-
-  context_menu_model_->AddItemWithStringId(kSelectAll, IDS_APP_SELECT_ALL);
-  context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  AppendSettingsContextMenu();
-}
-
-void OmniboxEverywhereUIManager::BuildSelectionContextMenu(
-    const content::ContextMenuParams& params) {
-  if (params.is_editable) {
-    context_menu_model_->AddItemWithStringId(kUndo, IDS_APP_UNDO);
-    context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-    context_menu_model_->AddItemWithStringId(kCut, IDS_APP_CUT);
-  }
-  context_menu_model_->AddItemWithStringId(kCopy, IDS_APP_COPY);
-  if (params.is_editable) {
-    context_menu_model_->AddItemWithStringId(kPaste, IDS_APP_PASTE);
-    context_menu_model_->AddItemWithStringId(kDelete, IDS_APP_DELETE);
-  }
-  context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  context_menu_model_->AddItemWithStringId(kSelectAll, IDS_APP_SELECT_ALL);
-  context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  AppendSettingsContextMenu();
-}
-
-void OmniboxEverywhereUIManager::BuildBackgroundContextMenu(
-    const content::ContextMenuParams& params) {
-  AppendSettingsContextMenu();
-}
-
-void OmniboxEverywhereUIManager::AppendSettingsContextMenu() {
-  context_menu_model_->AddItemWithStringId(
-      kManageSearchEngines,
-      base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)
-          ? IDS_MANAGE_SEARCH_ENGINES_AND_SHORTCUTS
-          : IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH);
-
-  if (IsFuseboxEligible(profile_)) {
-    if (auto* service = AiModeButtonServiceFactory::GetForProfile(profile_)) {
-      if (const AiModeButtonUiConfig* config = service->GetCurrentConfig()) {
-        context_menu_model_->AddCheckItem(kAlwaysShowAiMode,
-                                          config->context_menu_label);
-      }
-    }
-  }
-
-#if BUILDFLAG(IS_MAC)
-  if (last_context_menu_params_.is_editable) {
-    writing_direction_submenu_model_ =
-        std::make_unique<ui::SimpleMenuModel>(this);
-    writing_direction_submenu_model_->AddCheckItemWithStringId(
-        kWritingDirectionDefault,
-        IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT);
-    writing_direction_submenu_model_->AddCheckItemWithStringId(
-        kWritingDirectionLtr, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR);
-    writing_direction_submenu_model_->AddCheckItemWithStringId(
-        kWritingDirectionRtl, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL);
-    context_menu_model_->AddSubMenuWithStringId(
-        kWritingDirectionMenu, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_MENU,
-        writing_direction_submenu_model_.get());
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
-  // Loomnibox settings.
-  context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  if (prefs::AreShortcutsAvailableForProfile(profile_)) {
-    context_menu_model_->AddCheckItemWithStringId(
-        kShowShortcuts, IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_TITLE);
-  }
-  context_menu_model_->AddItemWithStringId(
-      kCustomizeKeyboardShortcut,
-      IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT);
-  context_menu_model_->AddItemWithStringId(
-      kSettings, IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS);
-}
-
-std::u16string OmniboxEverywhereUIManager::GetPasteAndGoMenuLabel(
-    const std::u16string& clipboard_text) const {
-  if (!profile_ ||
-      ui::Clipboard::GetForCurrentThread()->IsMarkedByOriginatorAsConfidential()
-#if BUILDFLAG(IS_MAC)
-      || ui::PasteMightBlockWithPrivacyAlert()
-#endif
-      || clipboard_text.empty()) {
-    return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
-  }
-
-  constexpr size_t kMaxSelectionTextLength = 50;
-  std::u16string selection_text = gfx::TruncateString(
-      clipboard_text, kMaxSelectionTextLength, gfx::WORD_BREAK);
-
-  auto* classifier = AutocompleteClassifierFactory::GetForProfile(profile_);
-  if (!classifier) {
-    return l10n_util::GetStringFUTF16(IDS_PASTE_AND_SEARCH, selection_text);
-  }
-
-  AutocompleteMatch match;
-  classifier->Classify(clipboard_text, /*in_keyword_mode=*/false,
-                       /*allow_exact_keyword_match=*/true,
-                       metrics::OmniboxEventProto::OMNIBOX_EVERYWHERE, &match,
-                       nullptr);
-  if (AutocompleteMatch::IsSearchType(match.type)) {
-    return l10n_util::GetStringFUTF16(IDS_PASTE_AND_SEARCH, selection_text);
-  }
-
-  const gfx::FontList& font_list = views::MenuConfig::instance().font_list;
-  const float max_selection_pixel_width =
-      gfx::GetStringWidthF(selection_text, font_list);
-  const std::u16string url = url_formatter::ElideUrl(
-      match.destination_url, font_list, max_selection_pixel_width);
-  return l10n_util::GetStringFUTF16(IDS_PASTE_AND_GO, url);
-}
-
-#if BUILDFLAG(IS_WIN)
-// Window controls only apply to persistent mode. An ephemeral widget has no
-// taskbar entry to minimize to and is already dismissed on deactivation.
-void OmniboxEverywhereUIManager::AppendWindowControlsContextMenu() {
-  if (prefs::IsEphemeralModelEnabled()) {
-    return;
-  }
-  context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  context_menu_model_->AddItemWithStringId(
-      kMinimize, IDS_OMNIBOX_EVERYWHERE_CONTEXT_MENU_MINIMIZE);
-  context_menu_model_->AddItemWithStringId(
-      kClose, IDS_OMNIBOX_EVERYWHERE_CONTEXT_MENU_CLOSE);
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 // Forwards unhandled keyboard events from the renderer process (such as
 // keyboard shortcuts) to the Views FocusManager so that accelerators and focus
@@ -1801,314 +1514,27 @@ bool OmniboxEverywhereUIManager::HandleKeyboardEvent(
       event, widget_ ? widget_->GetFocusManager() : nullptr);
 }
 
-// ui::SimpleMenuModel::Delegate:
-// Supplies the platform-native emoji picker keyboard shortcut hint displayed
-// alongside the Emoji item in the right-click context menu (Win + . on Windows,
-// Cmd + Ctrl + Space on macOS).
-bool OmniboxEverywhereUIManager::GetAcceleratorForCommandId(
-    int command_id,
-    ui::Accelerator* accelerator) const {
-  if (command_id == kEmoji) {
-#if BUILDFLAG(IS_WIN)
-    *accelerator = ui::Accelerator(ui::VKEY_OEM_PERIOD, ui::EF_COMMAND_DOWN);
-    return true;
-#elif BUILDFLAG(IS_MAC)
-    *accelerator = ui::Accelerator(ui::VKEY_SPACE,
-                                   ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
-    return true;
-#else
-    return false;
-#endif
-  }
-  return false;
+views::Widget* OmniboxEverywhereUIManager::GetContextMenuHostWidget() {
+  return widget_.get();
 }
 
-// Dispatches standard text editing commands from the context menu to the
-// underlying WebContents. Explicitly focuses the WebContents beforehand so
-// that focus temporarily acquired by the context menu UI runner is returned
-// to the WebContents and its focused frame input handler.
-void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
-                                                int event_flags) {
+content::WebContents* OmniboxEverywhereUIManager::GetContextMenuWebContents() {
+  return web_contents();
+}
+
+Profile* OmniboxEverywhereUIManager::GetContextMenuProfile() {
+  return profile_;
+}
+
 #if BUILDFLAG(IS_WIN)
-  // Window controls act on the widget, not the page. Safe to run synchronously:
-  // `MenuRunnerImpl` clears `running_` before dispatching, so the re-entrant
-  // `Cancel()` in `Close()` is a no-op.
-  switch (command_id) {
-    case kMinimize:
-      Minimize();
-      return;
-    case kClose:
-      Close();
-      return;
-    default:
-      break;
-  }
+void OmniboxEverywhereUIManager::MinimizeFromContextMenu() {
+  Minimize();
+}
+
+void OmniboxEverywhereUIManager::CloseFromContextMenu() {
+  Close();
+}
 #endif  // BUILDFLAG(IS_WIN)
-
-  if (!web_contents()) {
-    return;
-  }
-  web_contents()->Focus();
-  switch (command_id) {
-    case kEmoji:
-      if (widget_) {
-        widget_->ShowEmojiPanel();
-      }
-      break;
-    case kUndo:
-      web_contents()->Undo();
-      break;
-    case kCut:
-      web_contents()->Cut();
-      break;
-    case kCopy:
-      web_contents()->Copy();
-      break;
-    case kPaste:
-      web_contents()->Paste();
-      break;
-    case kPasteAndSearch: {
-      GetClipboardText(
-          /*notify_if_restricted=*/true,
-          base::BindOnce(
-              [](base::WeakPtr<OmniboxEverywhereUIManager> self,
-                 Profile* profile, std::u16string clipboard_text) {
-                if (!self || !profile || clipboard_text.empty()) {
-                  return;
-                }
-                auto* classifier =
-                    AutocompleteClassifierFactory::GetForProfile(profile);
-                if (!classifier) {
-                  return;
-                }
-                AutocompleteMatch match;
-                classifier->Classify(
-                    clipboard_text, /*in_keyword_mode=*/false,
-                    /*allow_exact_keyword_match=*/true,
-                    metrics::OmniboxEventProto::OMNIBOX_EVERYWHERE, &match,
-                    nullptr);
-                if (match.destination_url.is_valid()) {
-                  if (auto* service =
-                          OmniboxEverywhereServiceFactory::GetForProfile(
-                              profile)) {
-                    service->OpenUrl(
-                        match.destination_url,
-                        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
-                        ui::PAGE_TRANSITION_GENERATED);
-                  }
-                }
-              },
-              weak_factory_.GetWeakPtr(), profile_));
-      break;
-    }
-    case kDelete:
-      web_contents()->Delete();
-      break;
-    case kSelectAll:
-      web_contents()->SelectAll();
-      break;
-    case kManageSearchEngines: {
-      auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
-      if (service) {
-        service->OpenUrl(chrome::GetSettingsUrl(chrome::kSearchEnginesSubPage),
-                         ui::mojom::WindowOpenDisposition::kNewForegroundTab,
-                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-      }
-      break;
-    }
-    case kAlwaysShowAiMode: {
-      if (profile_ && profile_->GetPrefs()) {
-        PrefService* prefs = profile_->GetPrefs();
-        prefs->SetBoolean(
-            prefs::kOmniboxEverywhereShowAiMode,
-            !prefs->GetBoolean(prefs::kOmniboxEverywhereShowAiMode));
-      }
-      break;
-    }
-    case kShowShortcuts:
-      if (profile_ && profile_->GetPrefs()) {
-        PrefService* prefs = profile_->GetPrefs();
-        const bool is_currently_visible =
-            prefs::IsOmniboxEverywhereShortcutsVisible(profile_);
-        prefs->SetInteger(
-            prefs::kOmniboxEverywhereShowShortcuts,
-            static_cast<int>(is_currently_visible
-                                 ? prefs::ShowShortcutsPrefValue::kDisabled
-                                 : prefs::ShowShortcutsPrefValue::kEnabled));
-      }
-      break;
-    // TODO(b/543460015): Differentiate settings and shortcut
-    // customize URLs once dedicated deep-link routing / subpage anchors land.
-    case kCustomizeKeyboardShortcut: {
-      auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
-      if (service) {
-        service->OpenUrl(chrome::GetSettingsUrl(chrome::kSearchSubPage),
-                         ui::mojom::WindowOpenDisposition::kNewForegroundTab,
-                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-      }
-      break;
-    }
-    case kSettings: {
-      auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
-      if (service) {
-        service->OpenUrl(chrome::GetSettingsUrl(chrome::kSearchSubPage),
-                         ui::mojom::WindowOpenDisposition::kNewForegroundTab,
-                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-      }
-      break;
-    }
-#if BUILDFLAG(IS_MAC)
-    case kWritingDirectionDefault:
-    case kWritingDirectionLtr:
-    case kWritingDirectionRtl: {
-      base::i18n::TextDirection direction =
-          base::i18n::TextDirection::UNKNOWN_DIRECTION;
-      if (command_id == kWritingDirectionRtl) {
-        direction = base::i18n::RIGHT_TO_LEFT;
-      } else if (command_id == kWritingDirectionLtr) {
-        direction = base::i18n::LEFT_TO_RIGHT;
-      }
-      content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
-      if (!rfh) {
-        rfh = web_contents()->GetPrimaryMainFrame();
-      }
-      if (rfh && rfh->IsRenderFrameLive()) {
-        rfh->GetRenderWidgetHost()->UpdateTextDirection(direction);
-        rfh->GetRenderWidgetHost()->NotifyTextDirection();
-      }
-      break;
-    }
-#endif  // BUILDFLAG(IS_MAC)
-    default:
-      NOTREACHED();
-  }
-}
-
-// Evaluates whether a context menu command should be enabled.
-// Note: When right-clicking an editable element without focusing it first,
-// Blink populates `ContextMenuParams::is_editable = true` but may not set
-// `ContextMenuDataEditFlags::kCanPaste` in `edit_flags` (as focus controller
-// has not yet focused the element). Therefore, Paste is enabled when either
-// kCanPaste edit flag is set or the element is editable. PasteAndSearch
-// requires a valid Profile with an active OmniboxEverywhereService. Cut / Copy
-// check for selected text in addition to Blink edit flags.
-bool OmniboxEverywhereUIManager::IsCommandIdEnabled(int command_id) const {
-#if BUILDFLAG(IS_WIN)
-  if (command_id == kMinimize || command_id == kClose) {
-    return widget_ != nullptr;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-  if (!web_contents()) {
-    return false;
-  }
-  switch (command_id) {
-    case kEmoji:
-      return ui::IsEmojiPanelSupported() && widget_ != nullptr &&
-             last_context_menu_params_.is_editable;
-    case kUndo:
-      return (last_context_menu_params_.edit_flags &
-              blink::ContextMenuDataEditFlags::kCanUndo) != 0;
-    case kCut:
-      return ((last_context_menu_params_.edit_flags &
-               blink::ContextMenuDataEditFlags::kCanCut) != 0) ||
-             (last_context_menu_params_.is_editable &&
-              !last_context_menu_params_.selection_text.empty());
-    case kCopy:
-      return ((last_context_menu_params_.edit_flags &
-               blink::ContextMenuDataEditFlags::kCanCopy) != 0) ||
-             !last_context_menu_params_.selection_text.empty();
-    case kPaste:
-      return ((last_context_menu_params_.edit_flags &
-               blink::ContextMenuDataEditFlags::kCanPaste) != 0) ||
-             last_context_menu_params_.is_editable;
-    case kPasteAndSearch:
-      return profile_ &&
-             (OmniboxEverywhereServiceFactory::GetForProfile(profile_) !=
-              nullptr) &&
-             !ui::Clipboard::GetForCurrentThread()
-                  ->IsMarkedByOriginatorAsConfidential();
-    case kDelete:
-      return ((last_context_menu_params_.edit_flags &
-               blink::ContextMenuDataEditFlags::kCanDelete) != 0) ||
-             !last_context_menu_params_.selection_text.empty();
-    case kSelectAll:
-      return true;
-    case kManageSearchEngines:
-      return profile_ && (OmniboxEverywhereServiceFactory::GetForProfile(
-                              profile_) != nullptr);
-    case kAlwaysShowAiMode:
-      return IsFuseboxEligible(profile_);
-    case kShowShortcuts:
-      return prefs::AreShortcutsAvailableForProfile(profile_);
-    case kCustomizeKeyboardShortcut:
-      return true;
-    case kSettings:
-      return true;
-#if BUILDFLAG(IS_MAC)
-    case kWritingDirectionMenu:
-      return true;
-    case kWritingDirectionDefault:
-      return (last_context_menu_params_.writing_direction_default &
-              blink::ContextMenuData::kCheckableMenuItemEnabled) != 0;
-    case kWritingDirectionLtr:
-      return (last_context_menu_params_.writing_direction_left_to_right &
-              blink::ContextMenuData::kCheckableMenuItemEnabled) != 0;
-    case kWritingDirectionRtl:
-      return (last_context_menu_params_.writing_direction_right_to_left &
-              blink::ContextMenuData::kCheckableMenuItemEnabled) != 0;
-#endif  // BUILDFLAG(IS_MAC)
-    default:
-      return false;
-  }
-}
-
-bool OmniboxEverywhereUIManager::IsCommandIdChecked(int command_id) const {
-#if BUILDFLAG(IS_MAC)
-  switch (command_id) {
-    case kWritingDirectionDefault:
-      return (last_context_menu_params_.writing_direction_default &
-              blink::ContextMenuData::kCheckableMenuItemChecked) != 0;
-    case kWritingDirectionLtr:
-      return (last_context_menu_params_.writing_direction_left_to_right &
-              blink::ContextMenuData::kCheckableMenuItemChecked) != 0;
-    case kWritingDirectionRtl:
-      return (last_context_menu_params_.writing_direction_right_to_left &
-              blink::ContextMenuData::kCheckableMenuItemChecked) != 0;
-    default:
-      break;
-  }
-#endif  // BUILDFLAG(IS_MAC)
-  if (command_id == kAlwaysShowAiMode) {
-    if (profile_ && profile_->GetPrefs()) {
-      return profile_->GetPrefs()->GetBoolean(
-          prefs::kOmniboxEverywhereShowAiMode);
-    }
-    return true;
-  }
-  if (command_id == kShowShortcuts) {
-    return prefs::IsOmniboxEverywhereShortcutsVisible(profile_);
-  }
-  return false;
-}
-
-void OmniboxEverywhereUIManager::ShowContextMenuForViewImpl(
-    views::View* source,
-    const gfx::Point& point,
-    ui::mojom::MenuSourceType source_type) {
-  if (!widget_ || !widget_->GetContentsView() || !web_contents() ||
-      !web_contents()->GetPrimaryMainFrame()) {
-    return;
-  }
-  gfx::Point point_in_contents = point;
-  views::View::ConvertPointFromScreen(widget_->GetContentsView(),
-                                      &point_in_contents);
-  content::ContextMenuParams params;
-  params.x = point_in_contents.x();
-  params.y = point_in_contents.y();
-  params.source_type = source_type;
-  params.is_editable = false;
-  HandleContextMenu(*web_contents()->GetPrimaryMainFrame(), params);
-}
 
 std::unique_ptr<WebUIContentsWrapper>
 OmniboxEverywhereUIManager::CreateContentsWrapper(Profile* profile) {
