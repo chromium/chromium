@@ -200,10 +200,10 @@ static void FontKerningValue(FontBuilder& b) {
 }
 
 static void FontOpticalSizingBase(FontDescription& d) {
-  d.SetFontOpticalSizing(kAutoOpticalSizing);
+  d.SetFontOpticalSizing(OpticalSizing::kAuto);
 }
 static void FontOpticalSizingValue(FontBuilder& b) {
-  b.SetFontOpticalSizing(kNoneOpticalSizing);
+  b.SetFontOpticalSizing(OpticalSizing::kNone);
 }
 
 static void FontFontSmoothingBase(FontDescription& d) {

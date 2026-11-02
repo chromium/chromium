@@ -1398,9 +1398,9 @@ CSSIdentifierValue* ComputedStyleUtils::ValueForFontOpticalSizing(
     const ComputedStyle& style) {
   OpticalSizing optical_sizing = style.GetFontDescription().FontOpticalSizing();
   switch (optical_sizing) {
-    case kAutoOpticalSizing:
+    case OpticalSizing::kAuto:
       return CSSIdentifierValue::Create(CSSValueID::kAuto);
-    case kNoneOpticalSizing:
+    case OpticalSizing::kNone:
       return CSSIdentifierValue::Create(CSSValueID::kNone);
     default:
       return CSSIdentifierValue::Create(CSSValueID::kAuto);
@@ -1617,7 +1617,7 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
   OpticalSizing optical_sizing = style.GetFontDescription().FontOpticalSizing();
 
   if (kerning != FontDescription::kAutoKerning ||
-      optical_sizing != kAutoOpticalSizing ||
+      optical_sizing != OpticalSizing::kAuto ||
       (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled() &&
        style.GetFontDescription().HasSizeAdjust()) ||
       variant_position != FontDescription::kNormalVariantPosition ||

@@ -411,7 +411,7 @@ class PLATFORM_EXPORT FontDescription {
     fields_.font_smoothing_ = smoothing;
   }
   void SetFontOpticalSizing(OpticalSizing font_optical_sizing) {
-    fields_.font_optical_sizing_ = font_optical_sizing;
+    fields_.font_optical_sizing_ = static_cast<uint32_t>(font_optical_sizing);
   }
   void SetFontPalette(scoped_refptr<const FontPalette> palette) {
     font_palette_ = std::move(palette);

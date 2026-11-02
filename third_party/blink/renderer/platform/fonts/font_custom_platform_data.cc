@@ -239,11 +239,11 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     }
 
     if (!explicit_opsz_configured) {
-      if (optical_sizing == kAutoOpticalSizing) {
+      if (optical_sizing == OpticalSizing::kAuto) {
         SkFontArguments::VariationPosition::Coordinate opsz_coordinate = {
             kOpszTag, SkFloatToScalar(adjusted_specified_size)};
         variation.push_back(opsz_coordinate);
-      } else if (optical_sizing == kNoneOpticalSizing) {
+      } else if (optical_sizing == OpticalSizing::kNone) {
         // Explicitly set default value to avoid automatic application of
         // optical sizing as it seems to happen on SkTypeface on Mac.
         std::optional<SkFontParameters::Variation::Axis> opsz_parameters =

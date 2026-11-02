@@ -144,8 +144,9 @@ const FontPlatformData* FontPlatformDataFromCTFont(
           : 0;
 
   // No variable font requested, return static font.
-  if (!valid_configured_axes && optical_sizing == kNoneOpticalSizing)
+  if (!valid_configured_axes && optical_sizing == OpticalSizing::kNone) {
     return make_typeface_fontplatformdata();
+  }
 
   if (!typeface)
     return nullptr;
@@ -170,7 +171,7 @@ const FontPlatformData* FontPlatformDataFromCTFont(
     // Set 'opsz' to specified size but allow having it overridden by
     // font-variation-settings in case it has 'opsz'. Do not use font size here,
     // but specified size in order to account for zoom.
-    if (coordinate.axis == kOpszTag && optical_sizing == kAutoOpticalSizing) {
+    if (coordinate.axis == kOpszTag && optical_sizing == OpticalSizing::kAuto) {
       if (VariableAxisChangeEffective(typeface.get(), coordinate.axis,
                                       specified_size)) {
         coordinate.value = SkFloatToScalar(specified_size);

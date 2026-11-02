@@ -8,9 +8,9 @@ namespace blink {
 
 String ToString(OpticalSizing font_optical_sizing) {
   switch (font_optical_sizing) {
-    case OpticalSizing::kAutoOpticalSizing:
+    case OpticalSizing::kAuto:
       return "Auto";
-    case OpticalSizing::kNoneOpticalSizing:
+    case OpticalSizing::kNone:
       return "None";
   }
   return "Unknown";

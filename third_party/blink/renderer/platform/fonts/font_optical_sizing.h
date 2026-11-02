@@ -9,7 +9,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-enum OpticalSizing { kAutoOpticalSizing, kNoneOpticalSizing };
+
+enum class OpticalSizing { kAuto, kNone };
 
 PLATFORM_EXPORT String ToString(OpticalSizing);
 }  // namespace blink

@@ -110,7 +110,7 @@ FontDescription::FontDescription() {
   fields_.variant_numeric_ = FontVariantNumeric().fields_as_unsigned_;
   fields_.variant_east_asian_ = 0;
   fields_.subpixel_ascent_descent_ = false;
-  fields_.font_optical_sizing_ = OpticalSizing::kAutoOpticalSizing;
+  fields_.font_optical_sizing_ = static_cast<uint32_t>(OpticalSizing::kAuto);
   fields_.has_size_adjust_descriptor_ = false;
   fields_.hash_category_ = kHashRegularValue;
   fields_.font_synthesis_weight_ = kAutoFontSynthesisWeight;
