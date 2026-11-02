@@ -36,3 +36,10 @@ include_rules = [
     "+ui/gl/gl_version_info.h",
     "+ui/gl/gpu_preference.h",
 ]
+
+specific_include_rules = {
+    ".*_test\\.cc": [
+        "+components/viz/test/test_context_provider.h",
+        "+gpu/config/gpu_finch_features.h",
+    ],
+}

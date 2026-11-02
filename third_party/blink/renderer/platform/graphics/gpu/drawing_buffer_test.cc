@@ -231,17 +231,17 @@ TEST_F(DrawingBufferTest, VerifySharedImagesReleasedAfterReleaseCallback) {
 
   // Produce resources.
   EXPECT_FALSE(drawing_buffer_->MarkContentsChanged());
-  drawing_buffer_->ClearFramebuffers(GL_STENCIL_BUFFER_BIT);
+  EXPECT_TRUE(drawing_buffer_->ClearFramebuffers(GL_STENCIL_BUFFER_BIT));
   VerifyStateWasRestored();
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource1,
                                                            &release_callback1));
   EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());
-  drawing_buffer_->ClearFramebuffers(GL_DEPTH_BUFFER_BIT);
+  EXPECT_TRUE(drawing_buffer_->ClearFramebuffers(GL_DEPTH_BUFFER_BIT));
   VerifyStateWasRestored();
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource2,
                                                            &release_callback2));
   EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());
-  drawing_buffer_->ClearFramebuffers(GL_COLOR_BUFFER_BIT);
+  EXPECT_TRUE(drawing_buffer_->ClearFramebuffers(GL_COLOR_BUFFER_BIT));
   VerifyStateWasRestored();
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource3,
                                                            &release_callback3));
@@ -784,6 +784,9 @@ class DrawingBufferDiscardBackBufferTestBase : public testing::Test {
 
   void SetupDrawingBuffer(DrawingBuffer::PreserveDrawingBuffer preserve_mode =
                               DrawingBuffer::kDiscard) {
+    if (drawing_buffer_) {
+      TearDown();
+    }
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
     InitializeSharedGpuContext(test_context_provider_.get());
 
@@ -894,7 +897,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundDrawReallocation) {
 
   // All draw calls are preceded with a buffer clear, which calls
   // EnsureBackColorBuffer(). Simulate the clear call.
-  drawing_buffer_->EnsureBuffers();
+  EXPECT_TRUE(drawing_buffer_->EnsureBuffers());
   // Draw calls then call MarkContentsChanged(). Ordering is enforced with a
   // CHECK().
   drawing_buffer_->MarkContentsChanged();
@@ -1000,26 +1003,93 @@ TEST_F(DrawingBufferDiscardBackBufferTest,
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
 }
 
+TEST_F(DrawingBufferDiscardBackBufferTest,
+       EnsureBuffersFailureLosesContextAndGuardsPendingState) {
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
+  drawing_buffer_->SetIsInHiddenPage(true);
+  EXPECT_FALSE(drawing_buffer_->HasBackColorBufferForTesting());
+
+  GLES2InterfaceForTests* gl = drawing_buffer_->ContextGLForTests();
+  const GLuint user_fbo = 999;
+  gl->BindFramebuffer(GL_FRAMEBUFFER, user_fbo);
+  drawing_buffer_->SharedImageInterfaceForTests()->SetFailSharedImageCreation(
+      true);
+
+  EXPECT_FALSE(drawing_buffer_->Bind(GL_FRAMEBUFFER));
+  EXPECT_EQ(1, gl->ForceLostContextCount());
+  EXPECT_FALSE(drawing_buffer_->HasBackColorBufferForTesting());
+  // Bind() must still unbind `user_fbo` and bind DrawingBuffer's default FBO.
+  GLint bound_fbo = 0;
+  gl->GetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &bound_fbo);
+  EXPECT_NE(0, bound_fbo);
+  EXPECT_NE(static_cast<GLint>(user_fbo), bound_fbo);
+
+  // Subsequent operations while `context_loss_pending_` is set must fail
+  // gracefully without crashing or posting duplicate context losses.
+  gl->BindFramebuffer(GL_FRAMEBUFFER, user_fbo);
+  EXPECT_FALSE(drawing_buffer_->Bind(GL_FRAMEBUFFER));
+  gl->GetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &bound_fbo);
+  EXPECT_NE(static_cast<GLint>(user_fbo), bound_fbo);
+  EXPECT_FALSE(drawing_buffer_->MarkContentsChanged());
+  EXPECT_FALSE(drawing_buffer_->Resize(gfx::Size(200, 200)));
+  drawing_buffer_->SetColorSpace(PredefinedColorSpace::kP3);
+  gfx::HDRMetadata hdr_metadata;
+  hdr_metadata.SetExtendedRangeWithHeadroom(1.f);
+  drawing_buffer_->SetHdrMetadata(hdr_metadata);
+  EXPECT_FALSE(drawing_buffer_->ResolveAndBindForReadAndDraw());
+  EXPECT_EQ(nullptr, drawing_buffer_->GetRGBAUnacceleratedStaticBitmapImage(
+                         kBackBuffer));
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+  EXPECT_FALSE(drawing_buffer_->PrepareTransferableResource(&resource,
+                                                            &release_callback));
+  drawing_buffer_->SetIsInHiddenPage(false);
+  drawing_buffer_->SetIsInHiddenPage(true);
+  EXPECT_EQ(1, gl->ForceLostContextCount());
+
+  // Also verify incomplete FBO after async client SharedImage creation discards
+  // `back_color_buffer_` and forces context loss.
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
+  drawing_buffer_->SetIsInHiddenPage(true);
+  drawing_buffer_->ContextGLForTests()->SetFramebufferStatus(0);
+  EXPECT_FALSE(drawing_buffer_->EnsureBuffers());
+  EXPECT_EQ(1, drawing_buffer_->ContextGLForTests()->ForceLostContextCount());
+  EXPECT_FALSE(drawing_buffer_->HasBackColorBufferForTesting());
+}
+
 class DrawingBufferDeleteBuffersInBackgroundTestBase : public testing::Test {
  protected:
-  explicit DrawingBufferDeleteBuffersInBackgroundTestBase(bool enable_feature)
+  explicit DrawingBufferDeleteBuffersInBackgroundTestBase(
+      bool enable_feature,
+      bool enable_discard_back_buffer = false)
       : feature_list_(
-            enable_feature
-                ? std::vector<
-                      base::test::
-                          FeatureRef>{::features::
-                                          kWebGLDeleteBuffersInBackground}
-                : std::vector<base::test::FeatureRef>{},
+            EnabledFeatures(enable_feature, enable_discard_back_buffer),
             enable_feature
                 ? std::vector<base::test::FeatureRef>{}
                 : std::vector<base::test::FeatureRef>{
                       ::features::kWebGLDeleteBuffersInBackground}) {}
+
+  static std::vector<base::test::FeatureRef> EnabledFeatures(
+      bool enable_feature,
+      bool enable_discard_back_buffer) {
+    std::vector<base::test::FeatureRef> features;
+    if (enable_feature) {
+      features.push_back(::features::kWebGLDeleteBuffersInBackground);
+    }
+    if (enable_discard_back_buffer) {
+      features.push_back(blink::features::kWebGLDiscardBackBuffer);
+    }
+    return features;
+  }
 
   void SetupDrawingBuffer(
       UseMultisampling use_multisampling,
       bool want_depth,
       bool want_stencil,
       DrawingBuffer::PreserveDrawingBuffer preserve = DrawingBuffer::kDiscard) {
+    if (drawing_buffer_) {
+      TearDown();
+    }
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
     InitializeSharedGpuContext(test_context_provider_.get());
 
@@ -1079,6 +1149,15 @@ class DrawingBufferDeleteBuffersInBackgroundDisabledTest
   DrawingBufferDeleteBuffersInBackgroundDisabledTest()
       : DrawingBufferDeleteBuffersInBackgroundTestBase(
             /*enable_feature=*/false) {}
+};
+
+class DrawingBufferDeleteAndDiscardBuffersInBackgroundTest
+    : public DrawingBufferDeleteBuffersInBackgroundTestBase {
+ public:
+  DrawingBufferDeleteAndDiscardBuffersInBackgroundTest()
+      : DrawingBufferDeleteBuffersInBackgroundTestBase(
+            /*enable_feature=*/true,
+            /*enable_discard_back_buffer=*/true) {}
 };
 
 TEST_F(DrawingBufferDeleteBuffersInBackgroundDisabledTest, FeatureDisabled) {
@@ -1161,6 +1240,55 @@ TEST_F(DrawingBufferDeleteBuffersInBackgroundTest,
   // content.
   EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
   EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
+}
+
+TEST_F(DrawingBufferDeleteBuffersInBackgroundTest,
+       EnsureBuffersFailuresLoseContextAndCleanUp) {
+  auto expect_failed_restore_loses_context = [&]() {
+    EXPECT_EQ(1, drawing_buffer_->ContextGLForTests()->ForceLostContextCount());
+    EXPECT_FALSE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+    EXPECT_FALSE(drawing_buffer_->HasDepthStencilBufferForTesting());
+    EXPECT_FALSE(drawing_buffer_->ResolveAndBindForReadAndDraw());
+  };
+
+  // 1. Non-multisampled depth/stencil incomplete FBO on foregrounding.
+  SetupDrawingBuffer(kDisableMultisampling, /*want_depth=*/true,
+                     /*want_stencil=*/true);
+  drawing_buffer_->SetIsInHiddenPage(true);
+  drawing_buffer_->ContextGLForTests()->SetFramebufferStatus(0);
+  drawing_buffer_->SetIsInHiddenPage(false);
+  expect_failed_restore_loses_context();
+
+  // 2. Multisample FBO incomplete (`fail_on_nth_call=1`) and read FBO
+  // incomplete (`fail_on_nth_call=2`).
+  for (int fail_call : {1, 2}) {
+    SetupDrawingBuffer(kEnableMultisampling, /*want_depth=*/true,
+                       /*want_stencil=*/true);
+    drawing_buffer_->SetIsInHiddenPage(true);
+    drawing_buffer_->ContextGLForTests()->SetFramebufferStatus(
+        GL_FRAMEBUFFER_UNSUPPORTED, fail_call);
+    EXPECT_FALSE(fail_call == 1
+                     ? drawing_buffer_->Bind(GL_FRAMEBUFFER)
+                     : drawing_buffer_->ClearFramebuffers(GL_COLOR_BUFFER_BIT));
+    expect_failed_restore_loses_context();
+  }
+}
+
+// MSAA GL_OUT_OF_MEMORY after EnsureBackColorBuffer() succeeds must also roll
+// back the newly reallocated `back_color_buffer_`.
+TEST_F(DrawingBufferDeleteAndDiscardBuffersInBackgroundTest,
+       MultisampleFailureRollsBackReallocatedBackBuffer) {
+  SetupDrawingBuffer(kEnableMultisampling, /*want_depth=*/true,
+                     /*want_stencil=*/true);
+  drawing_buffer_->SetIsInHiddenPage(true);
+  EXPECT_FALSE(drawing_buffer_->HasBackColorBufferForTesting());
+  drawing_buffer_->ContextGLForTests()->SetNextGLError(GL_OUT_OF_MEMORY);
+  EXPECT_FALSE(drawing_buffer_->EnsureBuffers());
+  EXPECT_FALSE(drawing_buffer_->HasBackColorBufferForTesting());
+  EXPECT_EQ(1, drawing_buffer_->ContextGLForTests()->ForceLostContextCount());
+  EXPECT_FALSE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_FALSE(drawing_buffer_->HasDepthStencilBufferForTesting());
+  EXPECT_FALSE(drawing_buffer_->ResolveAndBindForReadAndDraw());
 }
 
 TEST_F(DrawingBufferTest, SoftwareCompositorResourceRecycling) {

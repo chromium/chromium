@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/byte_size.h"
@@ -317,6 +318,9 @@ DrawingBuffer::~DrawingBuffer() {
 }
 
 bool DrawingBuffer::MarkContentsChanged() {
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return false;
+  }
   // IF the buffer had been discarded, it should have been recreated before
   // getting there.
   CHECK(!back_buffer_discarded_);
@@ -366,6 +370,9 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
   if (is_hidden_ == hidden)
     return;
   is_hidden_ = hidden;
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return;
+  }
   if (is_hidden_) {
     if (color_buffer_pool_) {
       TRACE_EVENT0("gpu", "ReleaseBuffers");
@@ -395,8 +402,8 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
       }
     }
   } else {
-    if (IsBackgroundBufferDiscardEnabled()) {
-      EnsureBuffers();
+    if (IsBackgroundBufferDiscardEnabled() && !EnsureBuffers()) {
+      return;
     }
   }
 
@@ -541,7 +548,7 @@ DrawingBuffer::CheckForDestructionResult
 DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
     DiscardBehavior discard_behavior) {
   DCHECK(state_restorer_);
-  if (destruction_in_progress_) {
+  if (destruction_in_progress_ || context_loss_pending_) {
     // It can be hit in the following sequence.
     // 1. WebGL draws something.
     // 2. The compositor begins the frame.
@@ -846,6 +853,9 @@ DrawingBuffer::CreateOrRecycleColorBuffer() {
 
 scoped_refptr<ExportedCanvasResource>
 DrawingBuffer::ExportLowLatencyCanvasResource() {
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return nullptr;
+  }
   gpu::SyncToken sync_token;
   if (contents_changed_) {
     ScopedStateRestorer scoped_state_restorer(this);
@@ -1116,6 +1126,9 @@ std::optional<gpu::SyncToken> DrawingBuffer::CopyToPlatformInternal(
     bool dst_is_unpremul_gl,
     SourceDrawingBuffer src_buffer,
     CopyFunctionRef copy_function) {
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return std::nullopt;
+  }
   ScopedStateRestorer scoped_state_restorer(this);
 
   gpu::gles2::GLES2Interface* src_gl = gl_;
@@ -1552,15 +1565,17 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
   return gl_->CheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 }
 
-void DrawingBuffer::ClearFramebuffers(GLbitfield clear_mask) {
+bool DrawingBuffer::ClearFramebuffers(GLbitfield clear_mask) {
   ScopedStateRestorer scoped_state_restorer(this);
-  ClearFramebuffersInternal(clear_mask, kClearAllFBOs);
+  return ClearFramebuffersInternal(clear_mask, kClearAllFBOs);
 }
 
-void DrawingBuffer::ClearFramebuffersInternal(GLbitfield clear_mask,
+bool DrawingBuffer::ClearFramebuffersInternal(GLbitfield clear_mask,
                                               ClearOption clear_option) {
   DCHECK(state_restorer_);
-  EnsureBuffers();
+  if (!EnsureBuffers()) {
+    return false;
+  }
   state_restorer_->SetFramebufferBindingDirty();
 
   GLenum prev_draw_buffer =
@@ -1582,6 +1597,7 @@ void DrawingBuffer::ClearFramebuffersInternal(GLbitfield clear_mask,
                                         GL_COLOR_ATTACHMENT0);
     gl_->Clear(clear_mask);
   }
+  return true;
 }
 
 void DrawingBuffer::ClearNewlyAllocatedFramebuffers(ClearOption clear_option) {
@@ -1608,7 +1624,10 @@ void DrawingBuffer::ClearNewlyAllocatedFramebuffers(ClearOption clear_option) {
     gl_->StencilMaskSeparate(GL_FRONT, 0xFFFFFFFF);
   }
 
-  ClearFramebuffersInternal(clear_mask, clear_option);
+  // Returns false when the buffers can't be reallocated, but we just allocated
+  // those. If the CHECK() below fails, this is the code invariants being
+  // incorrect, not a normal context loss or allocation failure.
+  CHECK(ClearFramebuffersInternal(clear_mask, clear_option));
 }
 
 gfx::Size DrawingBuffer::AdjustSize(const gfx::Size& desired_size,
@@ -1646,6 +1665,9 @@ bool DrawingBuffer::ResizeFramebufferInternal(GLenum requested_format,
                                               const gfx::Size& new_size) {
   DCHECK(state_restorer_);
   DCHECK(!new_size.IsEmpty());
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return false;
+  }
   bool needs_reallocate = false;
 
   gfx::Size adjusted_size = AdjustSize(new_size, size_, max_texture_size_);
@@ -1726,6 +1748,9 @@ void DrawingBuffer::SetColorSpace(PredefinedColorSpace predefined_color_space) {
       PredefinedColorSpaceToGfxColorSpace(predefined_color_space);
   DCHECK_NE(color_space, color_space_);
   color_space_ = color_space;
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return;
+  }
 
   ScopedStateRestorer scoped_state_restorer(this);
   if (!ReallocateDefaultFramebuffer(size_, /*only_reallocate_color=*/true)) {
@@ -1741,6 +1766,9 @@ void DrawingBuffer::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
     return;
   }
   hdr_metadata_ = hdr_metadata;
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return;
+  }
 
   ScopedStateRestorer scoped_state_restorer(this);
   if (!ReallocateDefaultFramebuffer(size_, /*only_reallocate_color=*/true)) {
@@ -1750,6 +1778,9 @@ void DrawingBuffer::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
 }
 
 bool DrawingBuffer::ResolveAndBindForReadAndDraw() {
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return false;
+  }
   // IF the buffer had been discarded, it should have been recreated before
   // getting there.
   CHECK(!back_buffer_discarded_);
@@ -1933,12 +1964,23 @@ bool DrawingBuffer::Multisample() const {
   return anti_aliasing_mode_ != kAntialiasingModeNone;
 }
 
-void DrawingBuffer::Bind(GLenum target) {
-  EnsureBuffers();
-  gl_->BindFramebuffer(target, WantExplicitResolve() ? multisample_fbo_ : fbo_);
+bool DrawingBuffer::Bind(GLenum target) {
+  bool ensured = EnsureBuffers();
+  if (!destruction_in_progress_) {
+    // Bind the DrawingBuffer's default FBO even when EnsureBuffers() fails so
+    // a previously bound user WebGLFramebuffer (or FBO 0) does not stay bound
+    // in GL while WebGLRenderingContextBase believes the default framebuffer is
+    // bound.
+    gl_->BindFramebuffer(target,
+                         WantExplicitResolve() ? multisample_fbo_ : fbo_);
+  }
+  return ensured;
 }
 
 void DrawingBuffer::RestoreDefaultFramebufferBinding(GLenum target) {
+  if (destruction_in_progress_) {
+    return;
+  }
   gl_->BindFramebuffer(target, WantExplicitResolve() ? multisample_fbo_ : fbo_);
 }
 
@@ -1949,6 +1991,9 @@ GLenum DrawingBuffer::StorageFormat() const {
 scoped_refptr<StaticBitmapImage>
 DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
     SourceDrawingBuffer source_buffer) {
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return nullptr;
+  }
   // Readback in native GL byte order (RGBA).
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   if (RuntimeEnabledFeatures::WebGLDrawingBufferStorageEnabled() &&
@@ -1967,6 +2012,9 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     GrSurfaceOrigin origin) {
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return nullptr;
+  }
   ScopedStateRestorer scoped_state_restorer(this);
 
   // The callers should only get there where another code path that
@@ -2277,41 +2325,62 @@ void DrawingBuffer::DiscardMSAADepthStencilBuffers() {
   gl_->Flush();
 }
 
-void DrawingBuffer::EnsureBuffers() {
-  if (destruction_in_progress_) {
-    return;
+bool DrawingBuffer::EnsureBuffers() {
+  if (destruction_in_progress_ || context_loss_pending_) {
+    return false;
   }
-  EnsureBackColorBuffer();
-  EnsureMSAADepthStencilBuffers();
+  const bool had_discarded_back_buffer = back_buffer_discarded_;
+  if (!EnsureBackColorBuffer() || !EnsureMSAADepthStencilBuffers()) {
+    if (had_discarded_back_buffer && back_color_buffer_) {
+      ScopedStateRestorer scoped_state_restorer(this);
+      DiscardBackBuffer();
+    }
+    // Can't allocate the buffers, meaning the context is unusable, trigger a
+    // context loss. Since it's asynchronous, mark it as pending immediately.
+    //
+    // Note: Previously, there were CHECK()s that buffer allocation worked, but
+    // field trials showed that crashes happened due to context loss, which is
+    // why it is now handled.
+    context_loss_pending_ = true;
+    if (client_) {
+      client_->DrawingBufferClientForceLostContextWithAutoRecovery(
+          "Failed to reallocate WebGL drawing buffer resources.");
+    }
+    return false;
+  }
+  return true;
 }
 
-void DrawingBuffer::EnsureBackColorBuffer() {
+bool DrawingBuffer::EnsureBackColorBuffer() {
   const bool may_discard_back_buffer =
       base::FeatureList::IsEnabled(blink::features::kWebGLDiscardBackBuffer);
   if (may_discard_back_buffer && back_buffer_discarded_ &&
       !back_color_buffer_) {
     ScopedStateRestorer scoped_state_restorer(this);
     back_color_buffer_ = CreateOrRecycleColorBuffer();
-    // We had a back buffer before, we can't allocate one now. We can't
-    // continue, so we could lose the context, but for now, just crash, if this
-    // shows up in crash reports, just lose the context. Crashing here makes
-    // state management simpler elsewhere, since we don't have to deal with the
-    // case where we tried and failed to recreate the buffer.
-    CHECK(back_color_buffer_);
+    if (!back_color_buffer_) {
+      return false;
+    }
     AttachColorBufferToReadFramebuffer();
+    if (gl_->CheckFramebufferStatus(GL_FRAMEBUFFER) !=
+        GL_FRAMEBUFFER_COMPLETE) {
+      DiscardBackBuffer();
+      return false;
+    }
     back_buffer_discarded_ = false;
   }
+  return true;
 }
 
-void DrawingBuffer::EnsureMSAADepthStencilBuffers() {
+bool DrawingBuffer::EnsureMSAADepthStencilBuffers() {
   if (!base::FeatureList::IsEnabled(
           ::features::kWebGLDeleteBuffersInBackground)) {
-    return;
+    return true;
   }
   bool need_multisample = WantExplicitResolve() && !multisample_renderbuffer_;
   bool need_depth_stencil = WantDepthOrStencil() && !depth_stencil_buffer_;
   if (!need_multisample && !need_depth_stencil) {
-    return;
+    return true;
   }
 
   ScopedStateRestorer scoped_state_restorer(this);
@@ -2319,10 +2388,10 @@ void DrawingBuffer::EnsureMSAADepthStencilBuffers() {
   scoped_state_restorer.SetRenderbufferBindingDirty();
   if (need_multisample) {
     gl_->GenRenderbuffers(1, &multisample_renderbuffer_);
-    // We had a multisample renderbuffer before, we can't allocate one now.
-    // Crashing here simplifies state management elsewhere, avoiding having to
-    // handle incomplete framebuffers after foregrounding.
-    CHECK(ReallocateMultisampleRenderbuffer(size_));
+    if (!ReallocateMultisampleRenderbuffer(size_)) {
+      DiscardMSAADepthStencilBuffers();
+      return false;
+    }
   }
   if (need_depth_stencil) {
     ReallocateDepthStencilRenderbuffer(size_);
@@ -2336,15 +2405,18 @@ void DrawingBuffer::EnsureMSAADepthStencilBuffers() {
   // state was mutated (detached) during background discard.
   if (WantExplicitResolve()) {
     gl_->BindFramebuffer(GL_FRAMEBUFFER, multisample_fbo_);
-    // If this CHECK() of the one below trigger in practice, consider reporting
-    // a context loss rather than crashing the page, as WebGL errors should be
-    // recoverable.
-    CHECK_EQ(gl_->CheckFramebufferStatus(GL_FRAMEBUFFER),
-             static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE));
+    if (gl_->CheckFramebufferStatus(GL_FRAMEBUFFER) !=
+        GL_FRAMEBUFFER_COMPLETE) {
+      DiscardMSAADepthStencilBuffers();
+      return false;
+    }
   }
   gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
-  CHECK_EQ(gl_->CheckFramebufferStatus(GL_FRAMEBUFFER),
-           static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE));
+  if (gl_->CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    DiscardMSAADepthStencilBuffers();
+    return false;
+  }
+  return true;
 }
 
 bool DrawingBuffer::WantExplicitResolve() {
@@ -2373,8 +2445,9 @@ DrawingBuffer::ScopedStateRestorer::~ScopedStateRestorer() {
   DCHECK_EQ(drawing_buffer_->state_restorer_, this);
   drawing_buffer_->state_restorer_ = previous_state_restorer_;
   Client* client = drawing_buffer_->client_;
-  if (!client)
+  if (!client || drawing_buffer_->destruction_in_progress_) {
     return;
+  }
 
   if (clear_state_dirty_) {
     client->DrawingBufferClientRestoreScissorTest();

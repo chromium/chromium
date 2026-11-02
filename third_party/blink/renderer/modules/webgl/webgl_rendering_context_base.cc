@@ -1840,7 +1840,9 @@ WebGLRenderingContextBase::ClearIfComposited(
     //
     // Note: we don't call MarkContentsChanged(), because it hasn't (there is
     // no new content to present yet).
-    GetDrawingBuffer()->EnsureBuffers();
+    if (!GetDrawingBuffer()->EnsureBuffers()) {
+      return kSkipped;
+    }
   }
 
   if (!GetDrawingBuffer()->BufferClearNeeded() ||
@@ -1900,16 +1902,21 @@ WebGLRenderingContextBase::ClearIfComposited(
         true, true, true,
         !GetDrawingBuffer()->DefaultBufferRequiresAlphaChannelToBePreserved());
   }
+  bool cleared = false;
   {
     ScopedDisableRasterizerDiscard scoped_disable(this,
                                                   rasterizer_discard_enabled_);
-    GetDrawingBuffer()->ClearFramebuffers(clear_mask);
+    cleared = GetDrawingBuffer()->ClearFramebuffers(clear_mask);
   }
 
   // Call the DrawingBufferClient method to restore scissor test, mask, and
   // clear values, because we dirtied them above.
   DrawingBufferClientRestoreScissorTest();
   DrawingBufferClientRestoreMaskAndClearValues();
+
+  if (!cleared) {
+    return kSkipped;
+  }
 
   GetDrawingBuffer()->SetBufferClearNeeded(false);
 
@@ -6410,7 +6417,12 @@ void WebGLRenderingContextBase::TexImageViaGPU(
               params.GetDestinationAlphaType(), params.GetDestinationOrigin(),
               gfx::Point(params.xoffset, params.yoffset), source_sub_rectangle,
               kBackBuffer)) {
-        NOTREACHED();
+        // Copy failure, source context is lost. Make sure to not leak the
+        // texture.
+        if (!possible_direct_copy) {
+          ContextGL()->DeleteTextures(1, &target_texture);
+        }
+        return;
       }
     }
   }
@@ -7984,11 +7996,29 @@ bool WebGLRenderingContextBase::
 
 void WebGLRenderingContextBase::
     DrawingBufferClientForceLostContextWithAutoRecovery(const char* reason) {
-  ForceLostContext(WebGLRenderingContextBase::kSyntheticLostContext,
-                   WebGLRenderingContextBase::kAuto);
+  if (isContextLost() || !drawing_buffer_) {
+    return;
+  }
   if (reason) {
     PrintWarningToConsole(reason);
   }
+  // Post context loss asynchronously rather than running ForceLostContext
+  // re-entrantly while DrawingBuffer / WebGLRenderingContextBase frames are
+  // still on the stack, matching CommandBufferProxyImpl's lost-context
+  // callback behavior.
+  GetContextTaskRunner()->PostTask(
+      FROM_HERE,
+      blink::BindOnce(
+          &WebGLRenderingContextBase::ForceLostContextFromDrawingBuffer,
+          WrapWeakPersistent(this), blink::RetainedRef(drawing_buffer_)));
+}
+
+void WebGLRenderingContextBase::ForceLostContextFromDrawingBuffer(
+    DrawingBuffer* failed_drawing_buffer) {
+  if (isContextLost() || drawing_buffer_.get() != failed_drawing_buffer) {
+    return;
+  }
+  ForceLostContext(kRealLostContext, kAuto);
 }
 
 void WebGLRenderingContextBase::DrawingBufferClientInitializeLayer(

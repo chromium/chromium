@@ -153,7 +153,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   void BeginDestruction();
 
   // Issues a glClear() on all framebuffers associated with this DrawingBuffer.
-  void ClearFramebuffers(GLbitfield clear_mask);
+  // Returns false for failure (context loss).
+  [[nodiscard]] bool ClearFramebuffers(GLbitfield clear_mask);
 
   // Indicates whether the DrawingBuffer internally allocated a packed
   // depth-stencil renderbuffer in the situation where the end user only asked
@@ -190,10 +191,12 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   void SetColorSpace(PredefinedColorSpace color_space);
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
 
-  // Bind the default framebuffer to |target|. |target| must be
+  // Bind the default framebuffer to `target`. `target` must be
   // GL_FRAMEBUFFER, GL_READ_FRAMEBUFFER, or GL_DRAW_FRAMEBUFFER.
-  void Bind(GLenum target);
-  // Restore the default framebuffer binding to |target| in the GL context
+  // Returns false if discarded buffers could not be reallocated (in which case
+  // context loss is forced).
+  bool Bind(GLenum target);
+  // Restore the default framebuffer binding to `target` in the GL context
   // without ensuring/reallocating discarded buffers.
   void RestoreDefaultFramebufferBinding(GLenum target = GL_FRAMEBUFFER);
   gfx::Size Size() const { return size_; }
@@ -217,8 +220,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Returns false if the contents had previously been marked as changed and
   // have not yet been resolved.
   bool MarkContentsChanged();
-  // Restore buffers if they have been discarded.
-  void EnsureBuffers();
+  // Restore buffers if they have been discarded. Returns false if reallocation
+  // failed (in which case context loss is forced).
+  [[nodiscard]] bool EnsureBuffers();
 
   void SetBufferClearNeeded(bool);
   void RequireExplicitBufferClear();
@@ -469,12 +473,12 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   void DiscardBackBuffer();
   void DiscardMSAADepthStencilBuffers();
 
-  void EnsureBackColorBuffer();
-  void EnsureMSAADepthStencilBuffers();
+  [[nodiscard]] bool EnsureBackColorBuffer();
+  [[nodiscard]] bool EnsureMSAADepthStencilBuffers();
 
   // The same as clearFramebuffers(), but leaves GL state dirty.
-  void ClearFramebuffersInternal(GLbitfield clear_mask,
-                                 ClearOption clear_option);
+  [[nodiscard]] bool ClearFramebuffersInternal(GLbitfield clear_mask,
+                                               ClearOption clear_option);
 
   // The same as reset(), but leaves GL state dirty.
   bool ResizeFramebufferInternal(GLenum requested_format,
@@ -683,6 +687,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   int sample_count_ = 0;
   int eqaa_storage_sample_count_ = 0;
   bool destruction_in_progress_ = false;
+  // Context loss is asynchronous, this is true when the context is lost, but
+  // its async task hasn't executed yet.
+  bool context_loss_pending_ = false;
   bool is_hidden_ = false;
   bool has_eqaa_support = false;
 

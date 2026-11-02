@@ -1994,6 +1994,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool IsPaintable() const final { return GetDrawingBuffer(); }
 
   void HoldReferenceToDrawingBuffer(DrawingBuffer*);
+  void ForceLostContextFromDrawingBuffer(DrawingBuffer* failed_drawing_buffer);
 
   static void InitializeWebGLContextLimits(
       WebGraphicsContext3DProvider* context_provider);
