@@ -46,6 +46,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             " 2) ChromeOS Enterprise robot (for commercial It2Me) "
             " 3) Chromoting robot (for remote access, aka Me2Me) "
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop-pa.googleapis.com"
           internal {
             contacts { owners: "//remoting/OWNERS" }
           }
