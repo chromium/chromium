@@ -6768,13 +6768,13 @@ TEST_F(EventLoggingIntegrationTest, SendsLogs) {
                                 UpdateService::Priority::kForeground, v1, v1));
   test_event_logging_server.ExpectOnce(
       {request::GetPathMatcher(test_event_logging_server.event_logging_path()),
-       base::BindRepeating([](const HttpRequest& request) {
+       base::BindRepeating([](const HttpRequest& request)
+                               -> testing::AssertionResult {
          enterprise_companion::telemetry_logger::proto::LogRequest log_request;
          if (!log_request.ParseFromString(request.decoded_content)) {
-           ADD_FAILURE() << "Failed to parse log request";
-           return false;
+           return testing::AssertionFailure() << "Failed to parse log request";
          }
-         return true;
+         return testing::AssertionSuccess();
        })},
       enterprise_companion::telemetry_logger::proto::LogResponse()
           .SerializeAsString(),

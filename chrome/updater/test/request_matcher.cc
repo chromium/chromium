@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -45,42 +46,44 @@ FormExpectations::~FormExpectations() = default;
 
 Matcher GetPathMatcher(const std::string& expected_path_regex) {
   return base::BindLambdaForTesting(
-      [expected_path_regex](const HttpRequest& request) {
+      [expected_path_regex](
+          const HttpRequest& request) -> testing::AssertionResult {
         if (!re2::RE2::FullMatch(request.relative_url, expected_path_regex)) {
-          ADD_FAILURE() << "Request path [" << request.relative_url
-                        << "], did not match expected path regex ["
-                        << expected_path_regex << "], request content: "
-                        << GetPrintableContent(request);
-          return false;
+          return testing::AssertionFailure()
+                 << "Request path [" << request.relative_url
+                 << "], did not match expected path regex ["
+                 << expected_path_regex
+                 << "], request content: " << GetPrintableContent(request);
         }
-        return true;
+        return testing::AssertionSuccess();
       });
 }
 
 Matcher GetHeaderMatcher(
     const base::flat_map<std::string, std::string> expected_headers) {
-  return base::BindLambdaForTesting([expected_headers](
-                                        const HttpRequest& request) {
-    for (const auto& [header_name, expected_header_regex] : expected_headers) {
-      re2::RE2::Options opt;
-      opt.set_case_sensitive(false);
-      HttpRequest::HeaderMap::const_iterator it =
-          request.headers.find(header_name);
-      if (it == request.headers.end()) {
-        ADD_FAILURE() << "Request header '" << header_name
-                      << "' not found, expected regex "
-                      << expected_header_regex;
-        return false;
-      } else if (!re2::RE2::FullMatch(it->second,
-                                      re2::RE2(expected_header_regex, opt))) {
-        ADD_FAILURE() << "Request header [" << it->first << " = '" << it->second
-                      << "], did not match expected regex ["
-                      << expected_header_regex << "]";
-        return false;
-      }
-    }
-    return true;
-  });
+  return base::BindLambdaForTesting(
+      [expected_headers](
+          const HttpRequest& request) -> testing::AssertionResult {
+        for (const auto& [header_name, expected_header_regex] :
+             expected_headers) {
+          re2::RE2::Options opt;
+          opt.set_case_sensitive(false);
+          HttpRequest::HeaderMap::const_iterator it =
+              request.headers.find(header_name);
+          if (it == request.headers.end()) {
+            return testing::AssertionFailure()
+                   << "Request header '" << header_name
+                   << "' not found, expected regex " << expected_header_regex;
+          } else if (!re2::RE2::FullMatch(
+                         it->second, re2::RE2(expected_header_regex, opt))) {
+            return testing::AssertionFailure()
+                   << "Request header [" << it->first << " = '" << it->second
+                   << "], did not match expected regex ["
+                   << expected_header_regex << "]";
+          }
+        }
+        return testing::AssertionSuccess();
+      });
 }
 
 Matcher GetUpdaterUserAgentMatcher(const base::Version& updater_version) {
@@ -93,23 +96,26 @@ Matcher GetUpdaterUserAgentMatcher(const base::Version& updater_version) {
 }
 
 Matcher GetTargetURLMatcher(GURL target_url) {
-  return base::BindLambdaForTesting([target_url](const HttpRequest& request) {
-    const std::string post_target = base::StrCat({"POST ", target_url.spec()});
-    if (!base::StartsWith(request.all_headers, post_target,
-                          base::CompareCase::INSENSITIVE_ASCII)) {
-      ADD_FAILURE() << "Request all_headers [" << request.all_headers
-                    << "] does not start with the expected [" << post_target
-                    << "]";
-      return false;
-    }
-    return GetHeaderMatcher({{"Host", target_url.GetHost()}}).Run(request);
-  });
+  return base::BindLambdaForTesting(
+      [target_url](const HttpRequest& request) -> testing::AssertionResult {
+        const std::string post_target =
+            base::StrCat({"POST ", target_url.spec()});
+        if (!base::StartsWith(request.all_headers, post_target,
+                              base::CompareCase::INSENSITIVE_ASCII)) {
+          return testing::AssertionFailure()
+                 << "Request all_headers [" << request.all_headers
+                 << "] does not start with the expected [" << post_target
+                 << "]";
+        }
+        return GetHeaderMatcher({{"Host", target_url.GetHost()}}).Run(request);
+      });
 }
 
 Matcher GetContentMatcher(
     const std::vector<std::string>& expected_content_regex_sequence) {
   return base::BindLambdaForTesting(
-      [expected_content_regex_sequence](const HttpRequest& request) {
+      [expected_content_regex_sequence](
+          const HttpRequest& request) -> testing::AssertionResult {
         std::string_view input(request.decoded_content);
         for (const std::string& regex : expected_content_regex_sequence) {
           re2::RE2::Options opt;
@@ -117,51 +123,54 @@ Matcher GetContentMatcher(
           if (re2::RE2::FindAndConsume(&input, re2::RE2(regex, opt))) {
             VLOG(3) << "Found regex: [" << regex << "]";
           } else {
-            ADD_FAILURE() << "Request content match failed. Expected regex: ["
-                          << regex << "] not found in content: ["
-                          << GetPrintableContent(request) << "]";
-            return false;
+            return testing::AssertionFailure()
+                   << "Request content match failed. Expected regex: [" << regex
+                   << "] not found in content: ["
+                   << GetPrintableContent(request) << "]";
           }
         }
-        return true;
+        return testing::AssertionSuccess();
       });
 }
 
 Matcher GetScopeMatcher(UpdaterScope scope) {
-  return base::BindLambdaForTesting([scope](const HttpRequest& request) {
-    const bool is_match = [&scope, &request] {
-      const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
-          request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-      if (!doc) {
-        return false;
-      }
-      const base::DictValue* object_request = doc->FindDict("request");
-      if (!object_request) {
-        return false;
-      }
-      std::optional<bool> ismachine = object_request->FindBool("ismachine");
-      if (!ismachine.has_value()) {
-        return false;
-      }
-      switch (scope) {
-        case UpdaterScope::kSystem:
-          return *ismachine;
-        case UpdaterScope::kUser:
-          return !*ismachine;
-      }
-    }();
-    if (!is_match) {
-      ADD_FAILURE() << "Request does not match scope [" << scope
-                    << "]: " << GetPrintableContent(request);
-    }
-    return is_match;
-  });
+  return base::BindLambdaForTesting(
+      [scope](const HttpRequest& request) -> testing::AssertionResult {
+        const bool is_match = [&scope, &request] {
+          const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
+              request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+          if (!doc) {
+            return false;
+          }
+          const base::DictValue* object_request = doc->FindDict("request");
+          if (!object_request) {
+            return false;
+          }
+          std::optional<bool> ismachine = object_request->FindBool("ismachine");
+          if (!ismachine.has_value()) {
+            return false;
+          }
+          switch (scope) {
+            case UpdaterScope::kSystem:
+              return *ismachine;
+            case UpdaterScope::kUser:
+              return !*ismachine;
+          }
+        }();
+        if (!is_match) {
+          return testing::AssertionFailure()
+                 << "Request does not match scope [" << scope
+                 << "]: " << GetPrintableContent(request);
+        }
+        return testing::AssertionSuccess();
+      });
 }
 
 Matcher GetAppPriorityMatcher(const std::string& app_id,
                               UpdateService::Priority priority) {
   return base::BindLambdaForTesting([app_id,
-                                     priority](const HttpRequest& request) {
+                                     priority](const HttpRequest& request)
+                                        -> testing::AssertionResult {
     const bool is_match = [&app_id, priority, &request] {
       const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
           request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
@@ -193,16 +202,17 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
       return priority != UpdateService::Priority::kForeground;
     }();
     if (!is_match) {
-      ADD_FAILURE() << "Request does not match app_id [" << app_id
-                    << "], priority [" << priority
-                    << "]: " << GetPrintableContent(request);
+      return testing::AssertionFailure()
+             << "Request does not match app_id [" << app_id << "], priority ["
+             << priority << "]: " << GetPrintableContent(request);
     }
-    return is_match;
+    return testing::AssertionSuccess();
   });
 }
 
 Matcher GetUpdaterEnableUpdatesMatcher() {
-  return base::BindLambdaForTesting([](const HttpRequest& request) {
+  return base::BindLambdaForTesting([](const HttpRequest& request)
+                                        -> testing::AssertionResult {
     const bool update_disabled = [&request] {
       const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
           request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
@@ -227,91 +237,92 @@ Matcher GetUpdaterEnableUpdatesMatcher() {
       return false;
     }();
     if (update_disabled) {
-      ADD_FAILURE() << R"(Update is wrongfully disabled for updater itself: )"
-                    << GetPrintableContent(request);
+      return testing::AssertionFailure()
+             << R"(Update is wrongfully disabled for updater itself: )"
+             << GetPrintableContent(request);
     }
-    return !update_disabled;
+    return testing::AssertionSuccess();
   });
 }
 
 Matcher GetMultipartContentMatcher(
-    const std::vector<FormExpectations>& form_expections) {
-  return base::BindLambdaForTesting([form_expections](
-                                        const HttpRequest& request) {
-    static constexpr char kMultifpartBoundaryPrefix[] =
-        "multipart/form-data; boundary=";
-    if (!request.headers.contains("Content-Type")) {
-      ADD_FAILURE() << "Content-Type header not found, which is expected "
-                    << "for multipart content.";
-      return false;
-    }
-
-    const std::string content_type = request.headers.at("Content-Type");
-    if (!content_type.starts_with(kMultifpartBoundaryPrefix)) {
-      ADD_FAILURE() << "Content-Type value is not the expected "
-                    << "[multipart/form-data].";
-      return false;
-    }
-
-    const std::string form_data_boundary = content_type.substr(
-        std::string_view(kMultifpartBoundaryPrefix).length());
-
-    re2::RE2::Options opt;
-    opt.set_case_sensitive(false);
-    std::string_view input(request.decoded_content);
-
-    for (const FormExpectations& form_expectation : form_expections) {
-      if (re2::RE2::FindAndConsume(&input, form_data_boundary)) {
-        VLOG(3) << "Advancing to next form in the multipart content.";
-      } else {
-        ADD_FAILURE() << "No boundary separator found between multipart forms.";
-        return false;
-      }
-
-      const std::string& form_name = form_expectation.name;
-      if (re2::RE2::FindAndConsume(
-              &input,
-              absl::StrFormat(R"(Content-Disposition: form-data; name="%s")",
-                              form_name.c_str()))) {
-        VLOG(3) << "Found form with name [" << form_name << "]";
-      } else {
-        ADD_FAILURE() << "Form [" << form_name << "] not found.";
-        return false;
-      }
-
-      for (const std::string& regex : form_expectation.regex_sequence) {
-        if (re2::RE2::FindAndConsume(&input, re2::RE2(regex, opt))) {
-          VLOG(3) << "Found regex: [" << regex << "]";
-        } else {
-          ADD_FAILURE() << "Form [" << form_name << "] match failed. "
-                        << "Expected regex: [" << regex << "] not found in "
-                        << "content: [" << GetPrintableContent(request) << "]";
-          return false;
+    const std::vector<FormExpectations>& form_expectations) {
+  return base::BindLambdaForTesting(
+      [form_expectations](
+          const HttpRequest& request) -> testing::AssertionResult {
+        static constexpr char kMultifpartBoundaryPrefix[] =
+            "multipart/form-data; boundary=";
+        if (!request.headers.contains("Content-Type")) {
+          return testing::AssertionFailure()
+                 << "Content-Type header not found, which is expected "
+                 << "for multipart content.";
         }
-      }
-    }
 
-    if (!re2::RE2::FindAndConsume(&input, form_data_boundary)) {
-      ADD_FAILURE() << "Multipart data should end with boundary separator.";
-      return false;
-    }
+        const std::string content_type = request.headers.at("Content-Type");
+        if (!content_type.starts_with(kMultifpartBoundaryPrefix)) {
+          return testing::AssertionFailure()
+                 << "Content-Type value is not the expected "
+                 << "[multipart/form-data].";
+        }
 
-    return true;
-  });
+        const std::string form_data_boundary = content_type.substr(
+            std::string_view(kMultifpartBoundaryPrefix).length());
+
+        re2::RE2::Options opt;
+        opt.set_case_sensitive(false);
+        std::string_view input(request.decoded_content);
+
+        for (const FormExpectations& form_expectation : form_expectations) {
+          if (re2::RE2::FindAndConsume(&input, form_data_boundary)) {
+            VLOG(3) << "Advancing to next form in the multipart content.";
+          } else {
+            return testing::AssertionFailure()
+                   << "No boundary separator found between multipart forms.";
+          }
+
+          const std::string& form_name = form_expectation.name;
+          if (re2::RE2::FindAndConsume(
+                  &input, absl::StrFormat(
+                              R"(Content-Disposition: form-data; name="%s")",
+                              form_name.c_str()))) {
+            VLOG(3) << "Found form with name [" << form_name << "]";
+          } else {
+            return testing::AssertionFailure()
+                   << "Form [" << form_name << "] not found.";
+          }
+
+          for (const std::string& regex : form_expectation.regex_sequence) {
+            if (re2::RE2::FindAndConsume(&input, re2::RE2(regex, opt))) {
+              VLOG(3) << "Found regex: [" << regex << "]";
+            } else {
+              return testing::AssertionFailure()
+                     << "Form [" << form_name << "] match failed. "
+                     << "Expected regex: [" << regex << "] not found in "
+                     << "content: [" << GetPrintableContent(request) << "]";
+            }
+          }
+        }
+
+        if (!re2::RE2::FindAndConsume(&input, form_data_boundary)) {
+          return testing::AssertionFailure()
+                 << "Multipart data should end with boundary separator.";
+        }
+
+        return testing::AssertionSuccess();
+      });
 }
 
 Matcher GetJSONContentMatcher(const base::DictValue& expected_target) {
-  // Capture `expected_target` by value, since the reference might be local
-  // to the test scope, but the matcher callback is used asynchronously.
+  // Clone `expected_target` because the matcher runs after the caller returns.
   return base::BindLambdaForTesting(
-      [target =
-           base::Value(expected_target.Clone())](const HttpRequest& request) {
+      [target = base::Value(expected_target.Clone())](
+          const HttpRequest& request) -> testing::AssertionResult {
         std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
             request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
         if (!doc) {
-          ADD_FAILURE() << "Could not parse decoded content as a JSON dict: "
-                        << GetPrintableContent(request);
-          return false;
+          return testing::AssertionFailure()
+                 << "Could not parse decoded content as a JSON dict: "
+                 << GetPrintableContent(request);
         }
 
         base::Value doc_value(std::move(*doc));
@@ -319,13 +330,13 @@ Matcher GetJSONContentMatcher(const base::DictValue& expected_target) {
                           [](const std::string& a, const std::string& b) {
                             return base::EqualsCaseInsensitiveASCII(a, b);
                           })) {
-          ADD_FAILURE() << "Expected JSON subset: [" << target.DebugString()
-                        << "] not found in (parsed) request content: ["
-                        << doc_value.DebugString() << "]";
-          return false;
+          return testing::AssertionFailure()
+                 << "Expected JSON subset: [" << target.DebugString()
+                 << "] not found in (parsed) request content: ["
+                 << doc_value.DebugString() << "]";
         }
 
-        return true;
+        return testing::AssertionSuccess();
       });
 }
 

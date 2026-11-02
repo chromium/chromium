@@ -4,10 +4,9 @@
 
 #include "chrome/updater/test/server.h"
 
-#include <algorithm>
-#include <iterator>
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,13 +25,16 @@
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/test/request_matcher.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "third_party/zlib/google/compression_utils.h"
+#include "url/gurl.h"
 
 namespace updater::test {
 namespace {
@@ -85,12 +87,16 @@ ScopedServer::ScopedServer(scoped_refptr<IntegrationTestCommands> commands) {
 
 ScopedServer::~ScopedServer() {
   for (const auto& request_matcher_group : request_matcher_groups_) {
-    // Forces `request_matcher` to log to help debugging, unless the
-    // matcher matches the empty request.
-    ADD_FAILURE() << "Unmet expectation: ";
-    std::ranges::for_each(request_matcher_group, [](request::Matcher matcher) {
-      matcher.Run(HttpRequest());
-    });
+    // Probes each matcher with an empty request to collect failure messages.
+    std::vector<std::string> unmet_reasons;
+    for (const request::Matcher& matcher : request_matcher_group) {
+      if (testing::AssertionResult result = matcher.Run(HttpRequest());
+          !result) {
+        unmet_reasons.push_back(result.message());
+      }
+    }
+    ADD_FAILURE() << "Unmet expectation:\n  "
+                  << base::JoinString(unmet_reasons, "\n  ");
   }
 }
 
@@ -125,14 +131,14 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
   }
-  if (!std::ranges::all_of(request_matcher_groups_.front(),
-                           [&request](request::Matcher matcher) {
-                             return matcher.Run(request);
-                           })) {
-    VLOG(0) << "Request did not match.";
-    ADD_FAILURE() << "Unmatched " << DebugStringForReq(request);
-    response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
-    return response;
+  for (const request::Matcher& matcher : request_matcher_groups_.front()) {
+    if (testing::AssertionResult result = matcher.Run(request); !result) {
+      VLOG(0) << "Request did not match.";
+      ADD_FAILURE() << "Unmatched " << DebugStringForReq(request) << "\n  "
+                    << result.message();
+      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+      return response;
+    }
   }
 
   if (request.relative_url.starts_with(download_path()) &&
