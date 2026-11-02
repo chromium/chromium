@@ -125,5 +125,19 @@ TEST_F(MediaControlTrackSelectorListElementTest,
               ElementsAre("Track #1", "Track #2", "Track #3"));
 }
 
+TEST_F(MediaControlTrackSelectorListElementTest,
+       FallsBackToTrackNumberWhenTrackIdsAreNonNumeric) {
+  ScopedTestingPlatformSupport<LocalePlatformSupport> support;
+
+  MediaElement().audioTracks().Add(MakeGarbageCollected<AudioTrack>(
+      "track-a", AudioTrack::MainKeyword(), /*label=*/g_empty_atom,
+      /*language=*/g_empty_atom, /*enabled=*/true, /*exclusive=*/true));
+  MediaElement().audioTracks().Add(MakeGarbageCollected<AudioTrack>(
+      "track-b", AudioTrack::MainKeyword(), /*label=*/g_empty_atom,
+      /*language=*/g_empty_atom, /*enabled=*/false, /*exclusive=*/true));
+
+  EXPECT_THAT(GetAudioTrackLabels(), ElementsAre("Track #1", "Track #2"));
+}
+
 }  // namespace
 }  // namespace blink

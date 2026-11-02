@@ -38,15 +38,16 @@ template <typename TrackType>
 String GetKind(TrackType* track) {
   return track->kind();
 }
-String GetID(TrackBase* track, Locale& locale) {
-  return locale.QueryString(IDS_MEDIA_TRACK_IDENTIFIER_VERBOSE_TITLE_NUMBERED,
-                            locale.ConvertToLocalizedNumber(track->id()));
+String GetTrackNumber(uint32_t track_number, Locale& locale) {
+  return locale.QueryString(
+      IDS_MEDIA_TRACK_IDENTIFIER_VERBOSE_TITLE_NUMBERED,
+      locale.ConvertToLocalizedNumber(String::Number(track_number)));
 }
 
 // Given an ordered list of functions of type (TrackType*)->String,
 // this function will apply each function to the list of tracks and return the
 // first result where all the results are non-empty and unique, falling back to
-// track IDs if none qualify.
+// 1-based track numbers if none qualify.
 template <typename TrackType>
 std::vector<String> GetPreferenceList(
     const TrackListBase<TrackType>& tracks,
@@ -71,7 +72,7 @@ std::vector<String> GetPreferenceList(
   std::vector<String> extracted;
   extracted.reserve(tracks.length());
   for (uint32_t i = 0; i < tracks.length(); i++) {
-    extracted.push_back(GetID(tracks.AnonymousIndexedGetter(i), locale));
+    extracted.push_back(GetTrackNumber(i + 1, locale));
   }
   return extracted;
 }
