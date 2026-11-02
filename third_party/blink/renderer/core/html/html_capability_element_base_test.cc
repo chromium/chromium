@@ -1182,6 +1182,30 @@ TEST_F(HTMLCapabilityElementBaseSimTest, InheritedVerticalWritingModeIsReset) {
       << " text=" << text_rect.ToString();
 }
 
+TEST_F(HTMLCapabilityElementBaseSimTest, InheritedSVGMarkersAreReset) {
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
+  main_resource.Complete(R"HTML(
+    <body>
+      <div id="container" style="marker-start: url(#m1); marker-mid: url(#m2); marker-end: url(#m3);">
+        <usermedia id="camera" type="camera"></usermedia>
+      </div>
+    </body>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* permission_element = To<HTMLCapabilityElementBase>(
+      GetDocument().QuerySelector(AtomicString("usermedia")));
+  ASSERT_TRUE(permission_element);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  const ComputedStyle* style = permission_element->GetComputedStyle();
+  ASSERT_TRUE(style);
+  EXPECT_EQ(nullptr, style->MarkerStartResource());
+  EXPECT_EQ(nullptr, style->MarkerMidResource());
+  EXPECT_EQ(nullptr, style->MarkerEndResource());
+}
+
 TEST_F(HTMLCapabilityElementBaseSimTest, FontSizeCanDisableElement) {
   GetDocument().GetSettings()->SetDefaultFontSize(12);
   auto* permission_element = CreatePermissionElement(GetDocument(), "camera");

@@ -990,6 +990,12 @@ void HTMLCapabilityElementBase::AdjustStyle(ComputedStyleBuilder& builder) {
   builder.ResetTextCombine();
   builder.UpdateFontOrientation();
 
+  // Reset inherited SVG marker properties so ancestors cannot attach arbitrary
+  // <marker> graphics onto the internal permission icon's SVG path vertices.
+  builder.SetMarkerStartResource(nullptr);
+  builder.SetMarkerMidResource(nullptr);
+  builder.SetMarkerEndResource(nullptr);
+
   // To prevent CSS :visited history leaks and ensure the button remains
   // fully legible and active in all states, we force the element to pretend
   // it is not inside a visited link. This automatically makes all
