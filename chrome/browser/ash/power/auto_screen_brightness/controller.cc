@@ -11,11 +11,10 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/gaussian_trainer.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/model_config_loader_impl.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/modeller_impl.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_prefs/user_prefs.h"
-#include "content/public/browser/browser_context.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace power {
@@ -63,10 +62,12 @@ void Controller::InitializeComponents() {
   const session_manager::Session* const primary_session =
       session_manager::SessionManager::Get()->GetPrimarySession();
   CHECK(primary_session, base::NotFatalUntil::M163);
-  content::BrowserContext* const browser_context =
-      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+  user_manager::User* const user =
+      user_manager::UserManager::Get()->FindUserAndModify(
           primary_session->account_id());
-  CHECK(browser_context, base::NotFatalUntil::M163);
+  CHECK(user, base::NotFatalUntil::M163);
+  const std::optional<base::FilePath> user_path = user->GetPath();
+  CHECK(user_path, base::NotFatalUntil::M163);
 
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
@@ -85,13 +86,13 @@ void Controller::InitializeComponents() {
   CHECK(user_activity_detector, base::NotFatalUntil::M160);
 
   modeller_ = std::make_unique<ModellerImpl>(
-      browser_context->GetPath(), als_reader_.get(), brightness_monitor_.get(),
+      *user_path, als_reader_.get(), brightness_monitor_.get(),
       model_config_loader_.get(), user_activity_detector,
       std::make_unique<GaussianTrainer>());
 
   adapter_ = std::make_unique<Adapter>(
-      user_prefs::UserPrefs::Get(browser_context), als_reader_.get(),
-      brightness_monitor_.get(), modeller_.get(), model_config_loader_.get());
+      user->GetProfilePrefs(), als_reader_.get(), brightness_monitor_.get(),
+      modeller_.get(), model_config_loader_.get());
   adapter_->Init();
 }
 
