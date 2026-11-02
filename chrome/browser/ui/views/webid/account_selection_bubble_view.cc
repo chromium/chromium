@@ -352,8 +352,8 @@ void AccountSelectionBubbleView::ShowFailureDialog(
                           base::Unretained(owner_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
       l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE), idp_metadata,
-      // TODO (kylixrd@): Shouldn't the following be a localizable string?
-      /*extra_accessible_text=*/u"Opens in a new tab");
+      /*extra_accessible_text=*/
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_OPENS_IN_NEW_TAB));
   row->AddChildView(std::move(button));
   AddChildView(std::move(row));
 
