@@ -4461,11 +4461,28 @@ const FeatureEntry::FeatureVariation kRefreshTokenBindingUpgradeVariations[] = {
     {"(Live Launch)", kRefreshTokenBindingUpgradeLiveLaunch, nullptr},
 };
 
-const FeatureEntry::FeatureParam kMagiChromePasskeySignInAutofill[] = {
-    {"flow_type", "autofill"}};
+// Mirrors the enabled arms of the MagiChromePasskeySignIn Finch study.
+const FeatureEntry::FeatureParam
+    kMagiChromePasskeySignInIdentifierDropdownWithQR[] = {
+        {"flow_type", "autofill"},
+        {"magichrome_fre_exp_branch", "6"}};
+const FeatureEntry::FeatureParam
+    kMagiChromePasskeySignInPromoPhoneNoBodyTextRmGuest[] = {
+        {"magichrome_fre_exp_branch", "7"}};
+const FeatureEntry::FeatureParam
+    kMagiChromePasskeySignInPromoPhoneNoBodyTextRmGuestQRHint[] = {
+        {"magichrome_fre_exp_branch", "8"}};
+const FeatureEntry::FeatureParam kMagiChromePasskeySignInRemoveGuest[] = {
+    {"magichrome_fre_exp_branch", "9"}};
 
 const FeatureEntry::FeatureVariation kMagiChromePasskeySignInVariations[] = {
-    {"Autofill flow", kMagiChromePasskeySignInAutofill, nullptr},
+    {"IdentifierDropdownWithQR",
+     kMagiChromePasskeySignInIdentifierDropdownWithQR, nullptr},
+    {"PromoPhoneNoBodyText+RmGuest",
+     kMagiChromePasskeySignInPromoPhoneNoBodyTextRmGuest, nullptr},
+    {"PromoPhoneNoBodyText+RmGuest+QRHint",
+     kMagiChromePasskeySignInPromoPhoneNoBodyTextRmGuestQRHint, nullptr},
+    {"RemoveGuest", kMagiChromePasskeySignInRemoveGuest, nullptr},
 };
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
