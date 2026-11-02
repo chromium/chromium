@@ -193,6 +193,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Removes the entity with the given `uuid`.
 + (void)removeEntityWithUUID:(NSString*)uuid;
 
+// Deletes all entities modified since the given `time`.
++ (void)removeEntityModifiedSince:(NSDate*)time;
+
 // Saves a Passport entity with test data. Returns YES if the entity was saved.
 + (BOOL)savePassportEntity;
 

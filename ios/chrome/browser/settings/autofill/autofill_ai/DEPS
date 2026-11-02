@@ -1,3 +1,13 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/net/model",
+  # keep-sorted end
 ]
+
+specific_include_rules = {
+  "autofill_ai_settings_egtest\\.mm": [
+    # keep-sorted start
+    "+components/personal_context/core/personal_context_debug_features.h",
+    # keep-sorted end
+  ],
+}

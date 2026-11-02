@@ -10,13 +10,18 @@ source_set("test_support") {
     "autofill_ai_settings_test_util.mm",
   ]
   deps = [
+    "//base",
     "//components/autofill/core/browser",
+    "//components/strings",
     "//ios/chrome/browser/settings/autofill/autofill_ai/public",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/autofill:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("eg2_tests") {
@@ -25,18 +30,25 @@ source_set("eg2_tests") {
   sources = [ "autofill_ai_settings_egtest.mm" ]
   deps = [
     ":test_support",
+    "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/personal_context/core:features",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
     "//ios/chrome/browser/settings/autofill/autofill_ai/public",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/autofill:constants",
-    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

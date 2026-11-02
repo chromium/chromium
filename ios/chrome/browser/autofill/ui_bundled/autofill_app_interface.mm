@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "base/uuid.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -768,6 +769,15 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
   }
   entityDataManager->RemoveEntityInstance(
       autofill::EntityInstance::EntityId(base::SysNSStringToUTF8(uuid)));
+}
+
++ (void)removeEntityModifiedSince:(NSDate*)time {
+  autofill::EntityDataManager* entityDataManager = [self entityDataManager];
+  if (!entityDataManager) {
+    return;
+  }
+  entityDataManager->RemoveEntityInstancesModifiedBetween(
+      base::Time::FromNSDate(time), base::Time::Max());
 }
 
 + (BOOL)savePassportEntity {

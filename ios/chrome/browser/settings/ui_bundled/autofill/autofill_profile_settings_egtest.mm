@@ -4,28 +4,16 @@
 
 #import <XCTest/XCTest.h>
 
-#import "base/ios/ios_util.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
-#import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
-#import "components/autofill/core/common/autofill_debug_features.h"
-#import "components/autofill/core/common/autofill_features.h"
-#import "components/autofill/ios/common/features.h"
-#import "components/personal_context/core/personal_context_debug_features.h"
 #import "components/policy/policy_constants.h"
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
-#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/settings/autofill/autofill_ai/test/autofill_ai_settings_test_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -37,10 +25,8 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "ui/strings/grit/ui_strings.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
-using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::NavigationBarEditButton;
 using chrome_test_util::SearchBar;
@@ -59,38 +45,6 @@ constexpr base::TimeDelta kSnackbarAppearanceTimeout = base::Seconds(5);
 
 NSString* const kProfileLabel = @"John H. Doe, 666 Erebus St.";
 NSString* const kHomeProfileLabel = @"John H. Doe, 666 Erebus St., Home";
-
-// Constants for testing adding an entity using the add menu.
-NSString* const kPassportEntityType = @"Passport";
-NSString* const kPassportNumberAttributeName = @"Number";
-NSString* const kPassportNameAttributeName = @"Name";
-NSString* const kPassportNumber = @"LR1234567";
-NSString* const kPassportName = @"John Doe";
-
-// Constants for testing the edit button by adding an redress entity.
-NSString* const kFirstRedressName = @"Entity 1";
-NSString* const kSecondRedressName = @"Entity 2";
-NSString* const kFirstRedressNumber = @"111";
-NSString* const kSecondRedressNumber = @"222";
-
-// Constants for adding a vehicle entity.
-NSString* const kVehicleMake = @"Audi";
-NSString* const kVehiclePlateNumber = @"654321";
-
-// Helper function to get the title for the identity documents section.
-NSString* IdentitySectionTitle() {
-  return l10n_util::GetNSString(IDS_AUTOFILL_IDENTITY_DOCS_TITLE);
-}
-
-// Helper function to get the title for the profiles section.
-NSString* ProfilesSectionTitle() {
-  return l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES);
-}
-
-// Helper function to get the title for the travels section.
-NSString* TravelSectionTitle() {
-  return l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE);
-}
 
 // Matcher for a country entry with the given accessibility label.
 id<GREYMatcher> CountryEntry(NSString* label) {
@@ -120,10 +74,10 @@ id<GREYMatcher> EditCellButton() {
   return grey_accessibilityID(kAutofillEditButtonCellId);
 }
 
-// Matcher for the navigation bar title of the "Adresses and more" page.
-id<GREYMatcher> AddressesAndMoreNavBarTitle() {
+// Matcher for the navigation bar title of the "Contact info" page.
+id<GREYMatcher> ContactInfoNavBarTitle() {
   return grey_allOf(
-      grey_text(l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE)),
+      grey_text(l10n_util::GetNSString(IDS_AUTOFILL_CONTACT_INFO_TITLE)),
       grey_kindOfClass([UILabel class]),
       grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
 }
@@ -153,57 +107,6 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   [AutofillAppInterface clearProfilesStore];
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(kYourSavedInfoSettingsPageIos);
-
-  if ([self isRunningTest:@selector(testToggleEnhancedAutofillSwitch)] ||
-      [self isRunningTest:@selector(testAddAndDeleteEntityUsingMenu)] ||
-      [self isRunningTest:@selector(testVerificationSwitchReauthFailure)] ||
-      [self isRunningTest:@selector(testVerificationSwitchReauthSuccess)] ||
-      [self isRunningTest:@selector(testEditButtonEnablesOnAddingEntity)] ||
-      [self isRunningTest:@selector(testAutoExitEditModeOnDeletion)] ||
-      [self isRunningTest:@selector(
-                              testDeleteLastEntityInSectionRemovesSection)] ||
-      [self isRunningTest:@selector(testSimultaneousRowAndSectionDeletion)] ||
-      [self isRunningTest:@selector(testToggleSuggestionsFromGeminiSwitch)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAiWithDataSchema);
-  }
-
-  if ([self isRunningTest:@selector(testAddAndDeleteEntityUsingMenu)] ||
-      [self isRunningTest:@selector(testSimultaneousRowAndSectionDeletion)]) {
-    config.features_enabled.push_back(
-        autofill::features::debug::kAutofillAiForceOptIn);
-  }
-
-  if ([self isRunningTest:@selector(testVerificationSwitchReauthFailure)] ||
-      [self isRunningTest:@selector(testVerificationSwitchReauthSuccess)] ||
-      [self isRunningTest:@selector(testToggleSuggestionsFromGeminiSwitch)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAiReauthRequired);
-  }
-
-  if ([self isRunningTest:@selector(testToggleToolbarAddButtonByPolicy)] ||
-      [self isRunningTest:@selector(testToggleToolbarAddButtonBySwitch)]) {
-    config.features_disabled.push_back(
-        autofill::features::kAutofillAiWithDataSchema);
-  }
-
-  if ([self isRunningTest:@selector(testToggleSuggestionsFromGeminiSwitch)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAmbientAutofill);
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAiAvailableByDefault);
-    config.features_enabled_and_params.push_back(
-        {personal_context::features::debug::
-             kPersonalContextForceEnablementState,
-         {{"state", "2"}}});
-  }
-
-  return config;
-}
-
 - (void)tearDownHelper {
   [AutofillAppInterface clearProfilesStore];
   [super tearDownHelper];
@@ -213,21 +116,20 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 - (void)openAutofillProfilesSettings {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
-  // The Addresses page can be pushed after EarlGrey already reports the app as
-  // idle, so wait for it explicitly before interacting with it.
+      tapSettingsMenuButton:grey_accessibilityID(
+                                kSettingsAutofillAndPasswordsCellId)];
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      grey_accessibilityID(kAutofillProfileTableViewID)];
+                      chrome_test_util::AddressesAndMoreButton()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AddressesAndMoreButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::SettingsProfileMatcher()];
 }
 
 // Helper to open the settings page for the Autofill profile with `label`.
 - (void)openEditProfile:(NSString*)label {
   [self openAutofillProfilesSettings];
-
-  // Scroll to the bottom to ensure the profile cell is not obscured by Autofill
-  // AI sections.
-  [self
-      scrollDownWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];
@@ -306,90 +208,6 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
           IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR,
           countOfrrors)),
       grey_sufficientlyVisible(), nil);
-}
-
-// Adds a vehicle entity via the UI.
-- (void)addVehicleEntityViaUI {
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      performAction:grey_tap()];
-
-  // Tap the "Vehicle" menu item.
-  id<GREYMatcher> vehicleMenuItem =
-      grey_allOf(grey_accessibilityLabel(base::SysUTF16ToNSString(
-                     autofill::EntityType(autofill::EntityTypeName::kVehicle)
-                         .GetNameForI18n())),
-                 grey_accessibilityTrait(UIAccessibilityTraitButton),
-                 grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:vehicleMenuItem]
-      performAction:grey_tap()];
-
-  // Fill "Make".
-  [[EarlGrey
-      selectElementWithMatcher:
-          [AutofillAISettingsTestUtil
-              textFieldForType:autofill::AttributeTypeName::kVehicleMake]]
-      performAction:grey_replaceText(kVehicleMake)];
-
-  // Fill "License plate".
-  [[EarlGrey selectElementWithMatcher:
-                 [AutofillAISettingsTestUtil
-                     textFieldForType:autofill::AttributeTypeName::
-                                          kVehiclePlateNumber]]
-      performAction:grey_replaceText(kVehiclePlateNumber)];
-
-  // Save the entity.
-  id<GREYMatcher> saveButton = chrome_test_util::ButtonWithAccessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_SAVE_ENTITY_IN_SETTINGS_BUTTON_TEXT));
-  [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
-}
-
-// Helper to sign in, open Autofill profiles settings, and save initial test
-// entities.
-- (void)setUpSettingsWithTestEntities {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [self openAutofillProfilesSettings];
-
-  [AutofillAppInterface saveExampleProfile];
-  [AutofillAppInterface savePassportEntity];
-  [AutofillAppInterface saveVehicleEntity];
-
-  // Verify that profile, travel and identity document entities are visible.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(TravelSectionTitle())]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(ProfilesSectionTitle())]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(IdentitySectionTitle())]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Helper to enter edit mode, select and delete `rowsToDelete`.
-- (void)deleteEntityRows:(NSArray<NSString*>*)rowsToDelete {
-  // Switch to edit mode.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      performAction:grey_tap()];
-
-  for (NSString* rowLabel in rowsToDelete) {
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(rowLabel),
-                                            grey_sufficientlyVisible(), nil)]
-        performAction:grey_tap()];
-  }
-
-  // Tap the "Delete" button in the bottom toolbar.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          SettingsBottomToolbarDeleteButton()]
-      performAction:grey_tap()];
-
-  // Tap the confirm button in the action sheet.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-                     IDS_IOS_DELETE_ACTION_TITLE)] performAction:grey_tap()];
-  WaitForActivityOverlayToDisappear();
 }
 
 // Test that the page for viewing Autofill profile details is accessible.
@@ -515,137 +333,6 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       assertWithMatcher:grey_enabled()];
 }
 
-// Checks that a new entity (passport) can be added, saved, and deleted using
-// the add menu.
-- (void)testAddAndDeleteEntityUsingMenu {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  [self openAutofillProfilesSettings];
-
-  // Verify the "Add" button is visible.
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:SettingsToolbarAddButton()];
-
-  // Tap the "Add" button.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      performAction:grey_tap()];
-
-  // Tap the "Passport" menu item.
-  id<GREYMatcher> passportMenuItem =
-      grey_allOf(grey_accessibilityLabel(kPassportEntityType),
-                 grey_accessibilityTrait(UIAccessibilityTraitButton),
-                 grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:passportMenuItem]
-      performAction:grey_tap()];
-
-  // Fill "Number".
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPassportNumberAttributeName)]
-      performAction:grey_replaceText(kPassportNumber)];
-
-  // Fill "Name".
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPassportNameAttributeName)]
-      performAction:grey_replaceText(kPassportName)];
-
-  // Save the entity.
-  id<GREYMatcher> saveButton = chrome_test_util::ButtonWithAccessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_SAVE_ENTITY_IN_SETTINGS_BUTTON_TEXT));
-  [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
-
-  // Verify the entity appears in the list.
-  id<GREYMatcher> entityCell = grey_allOf(
-      grey_accessibilityLabel(kPassportName), grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:entityCell]
-      assertWithMatcher:grey_notNil()];
-
-  // Swipe to delete the entity.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(kPassportName)]
-      performAction:chrome_test_util::SwipeToShowDeleteButton()];
-
-  // Tap the "Delete" button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   ButtonWithAccessibilityLabel(@"Delete"),
-                                   grey_not(grey_accessibilityTrait(
-                                       UIAccessibilityTraitNotEnabled)),
-                                   nil)] performAction:grey_tap()];
-
-  // Tap the confirm button.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-                     IDS_IOS_DELETE_ACTION_TITLE)] performAction:grey_tap()];
-  WaitForActivityOverlayToDisappear();
-
-  // Verify the entity has been deleted.
-  ConditionBlock wait_for_disappearance = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(kPassportName)]
-        assertWithMatcher:grey_notVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(
-          base::test::ios::kWaitForUIElementTimeout, wait_for_disappearance),
-      @"Passport cell did not disappear.");
-}
-
-// Tests that deleting the last entity in a section removes the section.
-- (void)testDeleteLastEntityInSectionRemovesSection {
-  [self setUpSettingsWithTestEntities];
-
-  NSString* passportName =
-      base::SysUTF16ToNSString(autofill::test::PassportEntityOptions().name);
-  [self deleteEntityRows:@[ passportName ]];
-
-  // Verify that the "Identity Docs" section should be gone, while the other two
-  // sections (Travel and Profiles) should remain.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(TravelSectionTitle())]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(IdentitySectionTitle())]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(ProfilesSectionTitle())]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests mixed deletion of a section and a row.
-- (void)testSimultaneousRowAndSectionDeletion {
-  [self setUpSettingsWithTestEntities];
-
-  // Add a second vehicle via UI to have a multi-row section.
-  [self addVehicleEntityViaUI];
-
-  // Scroll to the bottom of the page to make sure that all the entities are
-  // visible.
-  [self
-      scrollDownWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)];
-
-  NSString* passportName =
-      base::SysUTF16ToNSString(autofill::test::PassportEntityOptions().name);
-
-  [self deleteEntityRows:@[ passportName, kVehicleMake ]];
-
-  // Verify that the "Identity Docs" section should be gone, while the other two
-  // sections (Travel and Profiles) should remain.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(TravelSectionTitle())]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(IdentitySectionTitle())]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(ProfilesSectionTitle())]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
 // Checks that the toolbar "Add" button's enabled state changes based on the
 // AutofillAddressEnabled Enterprise Policy.
 - (void)testToggleToolbarAddButtonByPolicy {
@@ -726,68 +413,6 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   // mode.
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that adding a new entity (Redress) will enable the edit button.
-- (void)testEditButtonEnablesOnAddingEntity {
-  [SigninEarlGrey
-      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
-  [self openAutofillProfilesSettings];
-  // Verify the Edit button is initially disabled.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_not(grey_interactable())];
-
-  NSString* uuid = [AutofillAppInterface
-      saveRedressNumberEntityWithName:kFirstRedressName
-                               number:kFirstRedressNumber];
-  // Verify the Edit button is now enabled.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Clean up the created entity.
-  [AutofillAppInterface removeEntityWithUUID:uuid];
-}
-
-// Tests that the editing mode is exited upon deletion of an entity.
-- (void)testAutoExitEditModeOnDeletion {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [self openAutofillProfilesSettings];
-
-  // Add 2 entities so that 1 remains after deletion.
-  NSString* firstEntityUuid = [AutofillAppInterface
-      saveRedressNumberEntityWithName:kFirstRedressName
-                               number:kFirstRedressNumber];
-  NSString* secondEntityUuid = [AutofillAppInterface
-      saveRedressNumberEntityWithName:kSecondRedressName
-                               number:kSecondRedressNumber];
-
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      performAction:grey_tap()];
-
-  // Scroll to the bottom of the page to make sure that both entities are
-  // visible.
-  [self
-      scrollDownWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)];
-
-  // Delete one entity.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(kFirstRedressName)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          SettingsBottomToolbarDeleteButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-                     IDS_IOS_DELETE_ACTION_TITLE)] performAction:grey_tap()];
-  WaitForActivityOverlayToDisappear();
-
-  // Verify that we automatically exited edit mode.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Clean up the created entities.
-  [AutofillAppInterface removeEntityWithUUID:firstEntityUuid];
-  [AutofillAppInterface removeEntityWithUUID:secondEntityUuid];
 }
 
 // Checks that the confirmation action sheet is shown when an autofill profile
@@ -881,21 +506,21 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
 
-  // Wait for the "Addresses and more" page before exiting the Settings menu
-  // using the navigation back button. This is to avoid a racing condition where
-  // the back button matcher is determined before the settings page actually
-  // changed which ends up picking a matcher for the previous page instead of
-  // the new page to be loaded.
+  // Wait for the "Contact info" page before exiting the Settings menu using the
+  // navigation back button. This is to avoid a racing condition where the back
+  // button matcher is determined before the settings page actually changed
+  // which ends up picking a matcher for the previous page instead of the new
+  // page to be loaded.
   ConditionBlock wait_for_appearance = ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:AddressesAndMoreNavBarTitle()]
+    [[EarlGrey selectElementWithMatcher:ContactInfoNavBarTitle()]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
   };
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1),
                                                           wait_for_appearance),
-             @"\"Addresses and more\" page did not appear.");
+             @"\"Contact info\" page did not appear.");
 
   [self exitSettingsMenu];
 }
@@ -1266,213 +891,6 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
       assertWithMatcher:grey_nil()];
 
   [SigninEarlGrey signOut];
-}
-
-// Tests that the Enhanced Autofill switch can be toggled.
-- (void)testToggleEnhancedAutofillSwitch {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  [self openAutofillProfilesSettings];
-
-  // Tap on the Enhanced Autofill item to open the sub-page.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kEnhancedAutofillTableViewId)]
-      performAction:grey_tap()];
-
-  id<GREYMatcher> switchMatcher =
-      grey_accessibilityID(kEnhancedAutofillSwitchViewId);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:switchMatcher];
-
-  // Verify initially OFF.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   kEnhancedAutofillSwitchViewId,
-                                   /*is_toggled_on=*/NO, /*is_enabled=*/YES)]
-      assertWithMatcher:grey_notNil()];
-
-  // Toggle ON.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kEnhancedAutofillSwitchViewId)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
-
-  // Go back to the main settings page.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
-      performAction:grey_tap()];
-
-  // Verify that the detail text is "On".
-  id<GREYMatcher> labelMatcher = grey_accessibilityLabel(l10n_util::GetNSString(
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiOnlineModelToggleNewTitle)
-          ? IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE_V2
-          : IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE));
-  id<GREYMatcher> valueOnMatcher =
-      grey_accessibilityValue(l10n_util::GetNSString(IDS_IOS_SETTING_ON));
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_allOf(grey_accessibilityID(kEnhancedAutofillTableViewId),
-                     labelMatcher, valueOnMatcher, nil)];
-
-  // Tap again to enter sub-page.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kEnhancedAutofillTableViewId)]
-      performAction:grey_tap()];
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:switchMatcher];
-
-  // Toggle OFF.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kEnhancedAutofillSwitchViewId)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-
-  // Go back.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
-      performAction:grey_tap()];
-
-  // Verify that the detail text is "Off".
-  id<GREYMatcher> valueOffMatcher =
-      grey_accessibilityValue(l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_allOf(grey_accessibilityID(kEnhancedAutofillTableViewId),
-                     labelMatcher, valueOffMatcher, nil)];
-
-  [self exitSettingsMenu];
-  [SigninEarlGrey signOut];
-}
-
-// Tests that toggling the Suggestions from Gemini switch in the subpage updates
-// the detail text on the main Autofill settings page.
-- (void)testToggleSuggestionsFromGeminiSwitch {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity
-                 withCapabilities:@{
-                   @(kCanUseModelExecutionFeaturesName) : @YES,
-                   @(kCanContextuallyUseGeminiInChromeCapabilityName) : @YES,
-                 }];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  [self openAutofillProfilesSettings];
-
-  // Verify initial detail text is "On".
-  id<GREYMatcher> labelMatcher = grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE));
-  id<GREYMatcher> valueOnMatcher =
-      grey_accessibilityValue(l10n_util::GetNSString(IDS_IOS_SETTING_ON));
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(
-                                       kSuggestionsFromGeminiTableViewId),
-                                   labelMatcher, valueOnMatcher, nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap on the Suggestions from Gemini item to open the sub-page.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSuggestionsFromGeminiTableViewId)]
-      performAction:grey_tap()];
-
-  id<GREYMatcher> switchMatcher =
-      grey_accessibilityID(kSuggestionsFromGeminiSwitchViewId);
-  [[EarlGrey selectElementWithMatcher:switchMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Verify initially ON.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   kSuggestionsFromGeminiSwitchViewId,
-                                   /*is_toggled_on=*/YES, /*is_enabled=*/YES)]
-      assertWithMatcher:grey_notNil()];
-
-  // Toggle OFF.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSuggestionsFromGeminiSwitchViewId)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-
-  // Go back to the main settings page.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
-      performAction:grey_tap()];
-
-  // Verify that the detail text is now "Off".
-  id<GREYMatcher> valueOffMatcher =
-      grey_accessibilityValue(l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(
-                                       kSuggestionsFromGeminiTableViewId),
-                                   labelMatcher, valueOffMatcher, nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap again to enter sub-page.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSuggestionsFromGeminiTableViewId)]
-      performAction:grey_tap()];
-
-  // Toggle ON.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSuggestionsFromGeminiSwitchViewId)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
-
-  // Go back.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
-      performAction:grey_tap()];
-
-  // Verify that the detail text is "On".
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(
-                                       kSuggestionsFromGeminiTableViewId),
-                                   labelMatcher, valueOnMatcher, nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  [self exitSettingsMenu];
-  [SigninEarlGrey signOut];
-}
-
-// Tests that the verification switch does not change if reauthentication fails.
-- (void)testVerificationSwitchReauthFailure {
-  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kFailure];
-  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
-
-  [AutofillAppInterface saveExampleProfile];
-  [self openAutofillProfilesSettings];
-
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   kAutofillVerificationSwitchTableViewId,
-                                   /*is_toggled_on=*/YES,
-                                   /*is_enabled=*/YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   kAutofillVerificationSwitchTableViewId,
-                                   /*is_toggled_on=*/YES,
-                                   /*is_enabled=*/YES)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the verification switch changes if reauthentication succeeds.
-- (void)testVerificationSwitchReauthSuccess {
-  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
-  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
-
-  [AutofillAppInterface saveExampleProfile];
-  [self openAutofillProfilesSettings];
-
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   kAutofillVerificationSwitchTableViewId,
-                                   /*is_toggled_on=*/YES,
-                                   /*is_enabled=*/YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   kAutofillVerificationSwitchTableViewId,
-                                   /*is_toggled_on=*/NO,
-                                   /*is_enabled=*/YES)]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

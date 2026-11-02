@@ -5,7 +5,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -94,17 +93,14 @@ id<GREYMatcher> EditProfileBottomSheet() {
 // Helper to open the address settings page.
 void OpenAddressSettings() {
   [ChromeEarlGreyUI openSettingsMenu];
-  if ([ChromeEarlGrey isYourSavedInfoSettingsPageIosEnabled]) {
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:grey_accessibilityID(
-                                  kSettingsAutofillAndPasswordsCellId)];
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::AddressesAndMoreButton()]
-        performAction:grey_tap()];
-  } else {
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
-  }
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(
+                                kSettingsAutofillAndPasswordsCellId)];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::AddressesAndMoreButton()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AddressesAndMoreButton()]
+      performAction:grey_tap()];
   // The Addresses page can be pushed after EarlGrey already reports the app as
   // idle, so wait for it explicitly before interacting with its toolbar.
   [ChromeEarlGrey
