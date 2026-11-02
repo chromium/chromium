@@ -210,6 +210,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // Overridden from ui::EventProcessor:
   ui::EventTarget* GetRootForEvent(ui::Event* event) override;
   void OnEventProcessingStarted(ui::Event* event) override;
+  void OnEventTargetNotFound(ui::Event* event) override;
 
   // Overridden from ui::EventDispatcherDelegate.
   bool CanDispatchToTarget(ui::EventTarget* target) override;
@@ -332,6 +333,10 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
       event_metrics_monitor_;
 
   bool in_shutdown_ = false;
+
+  // The window whose touches OnEventTargetNotFound() is cancelling, after an
+  // untargeted touch release or cancel that was locked to it.
+  base::WeakPtr<Window> touch_cancel_window_;
 
   // Used to schedule reposting an event.
   base::WeakPtrFactory<WindowEventDispatcher> repost_event_factory_{this};
