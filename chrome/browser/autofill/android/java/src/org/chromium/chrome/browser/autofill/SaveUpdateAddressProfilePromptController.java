@@ -8,19 +8,29 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.AutofillProfile;
 
 /** JNI wrapper for C++ SaveUpdateAddressProfilePromptController. */
 @JNINamespace("autofill")
 @NullMarked
 final class SaveUpdateAddressProfilePromptController {
-    private long mNativeSaveUpdateAddressProfilePromptController;
+    @JniType("::autofill::SaveUpdateAddressProfilePromptController")
+    interface NativeSaveUpdateAddressProfilePromptController extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeSaveUpdateAddressProfilePromptController>
+            mNativeSaveUpdateAddressProfilePromptController;
 
     private SaveUpdateAddressProfilePromptController(
-            long nativeSaveUpdateAddressProfilePromptController) {
+            JniRawPtr<NativeSaveUpdateAddressProfilePromptController>
+                    nativeSaveUpdateAddressProfilePromptController) {
         mNativeSaveUpdateAddressProfilePromptController =
                 nativeSaveUpdateAddressProfilePromptController;
     }
@@ -28,39 +38,44 @@ final class SaveUpdateAddressProfilePromptController {
     @CalledByNative
     @VisibleForTesting
     static SaveUpdateAddressProfilePromptController create(
-            long nativeSaveUpdateAddressProfilePromptController) {
+            JniRawPtr<NativeSaveUpdateAddressProfilePromptController>
+                    nativeSaveUpdateAddressProfilePromptController) {
         return new SaveUpdateAddressProfilePromptController(
                 nativeSaveUpdateAddressProfilePromptController);
     }
 
     @CalledByNative
-    private void onNativeDestroyed() {
-        mNativeSaveUpdateAddressProfilePromptController = 0;
+    @VisibleForTesting
+    void onNativeDestroyed() {
+        if (mNativeSaveUpdateAddressProfilePromptController != null) {
+            mNativeSaveUpdateAddressProfilePromptController.release();
+            mNativeSaveUpdateAddressProfilePromptController = null;
+        }
     }
 
     public void onPromptDismissed() {
-        if (mNativeSaveUpdateAddressProfilePromptController != 0) {
+        if (mNativeSaveUpdateAddressProfilePromptController != null) {
             SaveUpdateAddressProfilePromptControllerJni.get()
                     .onPromptDismissed(mNativeSaveUpdateAddressProfilePromptController);
         }
     }
 
     public void onUserAccepted() {
-        if (mNativeSaveUpdateAddressProfilePromptController != 0) {
+        if (mNativeSaveUpdateAddressProfilePromptController != null) {
             SaveUpdateAddressProfilePromptControllerJni.get()
                     .onUserAccepted(mNativeSaveUpdateAddressProfilePromptController);
         }
     }
 
     public void onUserDeclined() {
-        if (mNativeSaveUpdateAddressProfilePromptController != 0) {
+        if (mNativeSaveUpdateAddressProfilePromptController != null) {
             SaveUpdateAddressProfilePromptControllerJni.get()
                     .onUserDeclined(mNativeSaveUpdateAddressProfilePromptController);
         }
     }
 
     public void onUserEdited(AutofillProfile profile) {
-        if (mNativeSaveUpdateAddressProfilePromptController != 0) {
+        if (mNativeSaveUpdateAddressProfilePromptController != null) {
             SaveUpdateAddressProfilePromptControllerJni.get()
                     .onUserEdited(mNativeSaveUpdateAddressProfilePromptController, profile);
         }
@@ -68,13 +83,14 @@ final class SaveUpdateAddressProfilePromptController {
 
     @NativeMethods
     interface Natives {
-        void onPromptDismissed(long nativeSaveUpdateAddressProfilePromptController);
+        void onPromptDismissed(JniPtr<NativeSaveUpdateAddressProfilePromptController> self);
 
-        void onUserAccepted(long nativeSaveUpdateAddressProfilePromptController);
+        void onUserAccepted(JniPtr<NativeSaveUpdateAddressProfilePromptController> self);
 
-        void onUserDeclined(long nativeSaveUpdateAddressProfilePromptController);
+        void onUserDeclined(JniPtr<NativeSaveUpdateAddressProfilePromptController> self);
 
         void onUserEdited(
-                long nativeSaveUpdateAddressProfilePromptController, AutofillProfile profile);
+                JniPtr<NativeSaveUpdateAddressProfilePromptController> self,
+                AutofillProfile profile);
     }
 }

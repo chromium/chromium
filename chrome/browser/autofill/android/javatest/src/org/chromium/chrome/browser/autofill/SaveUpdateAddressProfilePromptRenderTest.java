@@ -14,6 +14,7 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -111,7 +112,8 @@ public class SaveUpdateAddressProfilePromptRenderTest {
 
         mPromptController =
                 SaveUpdateAddressProfilePromptController.create(
-                        NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER);
+                        JniRawPtr.createForTesting(
+                                NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER));
 
         SaveUpdateAddressProfilePromptControllerJni.setInstanceForTesting(mPromptControllerJni);
         AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
@@ -128,6 +130,7 @@ public class SaveUpdateAddressProfilePromptRenderTest {
     @After
     public void tearDown() throws Exception {
         runOnUiThreadBlocking(mPrompt::dismiss);
+        mPromptController.onNativeDestroyed();
     }
 
     @AfterClass

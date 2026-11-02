@@ -28,6 +28,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -273,7 +274,7 @@ base::android::ScopedJavaLocalRef<jobject>
 SaveUpdateAddressProfilePromptController::GetJavaObject() {
   if (!java_object_) {
     java_object_ = Java_SaveUpdateAddressProfilePromptController_create(
-        base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
+        base::android::AttachCurrentThread(), jni_zero::MakeRaw(this));
   }
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);
 }

@@ -18,6 +18,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,6 +62,10 @@ public class SaveUpdateAddressProfilePromptTest {
     @Mock private SyncService mSyncService;
 
     private Activity mActivity;
+    private JniRawPtr<
+                    SaveUpdateAddressProfilePromptController
+                            .NativeSaveUpdateAddressProfilePromptController>
+            mNativeController;
     private SaveUpdateAddressProfilePromptController mPromptController;
     private FakeModalDialogManager mModalDialogManager;
     private SaveUpdateAddressProfilePrompt mPrompt;
@@ -73,9 +79,9 @@ public class SaveUpdateAddressProfilePromptTest {
 
         mActivity = Robolectric.setupActivity(BlankUiTestActivity.class);
 
-        mPromptController =
-                SaveUpdateAddressProfilePromptController.create(
-                        NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER);
+        mNativeController =
+                JniRawPtr.createForTesting(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER);
+        mPromptController = SaveUpdateAddressProfilePromptController.create(mNativeController);
         SaveUpdateAddressProfilePromptControllerJni.setInstanceForTesting(mPromptControllerJni);
         AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
         when(mAutofillProfileBridgeJni.getRequiredFields(anyString()))
@@ -86,6 +92,11 @@ public class SaveUpdateAddressProfilePromptTest {
                             FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
                             FieldType.ADDRESS_HOME_ZIP
                         });
+    }
+
+    @After
+    public void tearDown() {
+        mPromptController.onNativeDestroyed();
     }
 
     private void createAndShowPrompt(@SaveUpdateAddressProfilePromptMode int promptMode) {
@@ -120,10 +131,8 @@ public class SaveUpdateAddressProfilePromptTest {
         assertNotNull(mModalDialogManager.getShownDialogModel());
         mModalDialogManager.clickPositiveButton();
         assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mPromptControllerJni, times(1))
-                .onUserAccepted(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER));
-        verify(mPromptControllerJni, times(1))
-                .onPromptDismissed(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER));
+        verify(mPromptControllerJni, times(1)).onUserAccepted(eq(mNativeController));
+        verify(mPromptControllerJni, times(1)).onPromptDismissed(eq(mNativeController));
     }
 
     @Test
@@ -133,10 +142,8 @@ public class SaveUpdateAddressProfilePromptTest {
         assertNotNull(mModalDialogManager.getShownDialogModel());
         mModalDialogManager.clickNegativeButton();
         assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mPromptControllerJni, times(1))
-                .onUserDeclined(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER));
-        verify(mPromptControllerJni, times(1))
-                .onPromptDismissed(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER));
+        verify(mPromptControllerJni, times(1)).onUserDeclined(eq(mNativeController));
+        verify(mPromptControllerJni, times(1)).onPromptDismissed(eq(mNativeController));
     }
 
     @Test
@@ -147,8 +154,7 @@ public class SaveUpdateAddressProfilePromptTest {
         mPrompt.dismiss();
         assertNull(mModalDialogManager.getShownDialogModel());
         // Check that callback was still called when the dialog is dismissed.
-        verify(mPromptControllerJni, times(1))
-                .onPromptDismissed(eq(NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER));
+        verify(mPromptControllerJni, times(1)).onPromptDismissed(eq(mNativeController));
     }
 
     @Test
