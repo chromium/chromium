@@ -66,7 +66,7 @@ TEST_F(AssistantAIMHeaderViewTest, ButtonsHaveAccessibilityLabels) {
       {kAssistantAIMBackButtonAccessibilityIdentifier,
        l10n_util::GetNSString(IDS_IOS_ICON_ARROW_BACK)},
       {kAssistantAIMCloseButtonAccessibilityIdentifier,
-       l10n_util::GetNSString(IDS_IOS_ICON_CLOSE)},
+       l10n_util::GetNSString(IDS_IOS_AIM_CLOSE_BUTTON_ACCESSIBILITY_LABEL)},
       {kAssistantAIMHistoryButtonAccessibilityIdentifier,
        l10n_util::GetNSString(
            IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP)},
@@ -253,7 +253,7 @@ TEST_F(AssistantAIMHeaderViewTest, ButtonsShowLargeContentViewer) {
       {kAssistantAIMBackButtonAccessibilityIdentifier,
        l10n_util::GetNSString(IDS_IOS_ICON_ARROW_BACK)},
       {kAssistantAIMCloseButtonAccessibilityIdentifier,
-       l10n_util::GetNSString(IDS_IOS_ICON_CLOSE)},
+       l10n_util::GetNSString(IDS_IOS_AIM_CLOSE_BUTTON_ACCESSIBILITY_LABEL)},
       {kAssistantAIMHistoryButtonAccessibilityIdentifier,
        l10n_util::GetNSString(
            IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP)},

@@ -458,6 +458,9 @@
       <message name="IDS_IOS_AGE_MISMATCH_SUBTITLE_PART2" desc="Second part of the explanatory body copy in a full-screen notice. Suggests checking the age in the Apple Account if the user is not a child. Align ‘you may want to check the age` phrasing with TC ID 2620449093380639180.">
         If you're not a child, you may want to check the age in the Apple Account on this device. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
+      <message name="IDS_IOS_AIM_CLOSE_BUTTON_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="The accessibility label for the close button in the AI Mode header. [iOS only]">
+        Close AI Mode
+      </message>
       <message name="IDS_IOS_AIM_CLOSE_SNACKBAR_TITLE" desc="Title of the AIM assistant close confirmation snackbar.">
         Thread closed
       </message>
