@@ -17,7 +17,6 @@ enum ReportingDestination {
   kBuyer,
   kSeller,
   kComponentSeller,
-  kSharedStorageSelectUrl,
   kDirectSeller,
 };
 
@@ -25,8 +24,8 @@ enum ReportingDestination {
 // should have. (In the future, the concept of a "mode" will be removed, and
 // replaced with individual fields controlling each functionality.)
 // The mode is a function of the API that creates the config. Protected Audience
-// and Shared Storage use kOpaqueAds mode, and the WebIDL FencedFrameConfig()
-// constructor uses kDefault mode.
+// uses kOpaqueAds mode, and the WebIDL FencedFrameConfig() constructor uses
+// kDefault mode.
 // https://github.com/WICG/fenced-frame/blob/master/explainer/modes.md
 enum DeprecatedFencedFrameMode {
   kDefault = 0,
@@ -124,8 +123,8 @@ struct ParentPermissionsInfo {
 struct FencedFrameConfig {
   // This is the actual URL that will be loaded into the fenced frame when
   // navigated to. It can be opaque because for the current use cases (Protected
-  // Audience, shared storage), we never want to expose anything about the
-  // actual resource beyond its existence, to the embedder of a fenced frame.
+  // Audience), we never want to expose anything about the actual resource
+  // beyond its existence, to the embedder of a fenced frame.
   PotentiallyOpaqueURL? mapped_url;
 
   PotentiallyOpaqueSize? container_size;
@@ -153,12 +152,12 @@ struct FencedFrameConfig {
   // concept of a mode to stick around in the future.
   DeprecatedFencedFrameMode mode;
 
-  // APIs like Protected Audience and Shared Storage require specific features
-  // to be enabled in the loaded frame. If an embedder is allowed to set
-  // arbitrary permissions on a fenced frame, it can be used as a fingerprinting
-  // channel. Instead, each API sets a list of feature permissions that a fenced
-  // frame needs to enable to be allowed to load. Only used for fenced frames
-  // with a fixed permissions policy.
+  // APIs like Protected Audience require specific features to be enabled in
+  // the loaded frame. If an embedder is allowed to set arbitrary permissions
+  // on a fenced frame, it can be used as a fingerprinting channel. Instead,
+  // each API sets a list of feature permissions that a fenced frame needs to
+  // enable to be allowed to load. Only used for fenced frames with a fixed
+  // permissions policy.
   array<network.mojom.PermissionsPolicyFeature> effective_enabled_permissions;
 
   // Fenced frames with a flexible permissions policy are allowed to inherit

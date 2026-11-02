@@ -415,8 +415,7 @@ bool HeadlessContentBrowserClient::
 
 bool HeadlessContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
-    const url::Origin& destination_origin,
-    content::PrivacySandboxInvokingAPI invoking_api) {
+    const url::Origin& destination_origin) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(switches::kForceReportingDestinationAttested);
 }

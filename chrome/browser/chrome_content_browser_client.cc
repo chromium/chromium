@@ -3754,29 +3754,14 @@ bool ChromeContentBrowserClient::AllowWorkerWriteToClipboard(
 
 bool ChromeContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
-    const url::Origin& destination_origin,
-    content::PrivacySandboxInvokingAPI invoking_api) {
+    const url::Origin& destination_origin) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   CHECK(privacy_sandbox_settings, base::NotFatalUntil::M163);
 
-  privacy_sandbox::PrivacySandboxAttestationsGatedAPI gated_api;
-  switch (invoking_api) {
-    case content::PrivacySandboxInvokingAPI::kProtectedAudience:
-      gated_api = privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-          kProtectedAudience;
-      break;
-    case content::PrivacySandboxInvokingAPI::kSharedStorage:
-      gated_api =
-          privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kSharedStorage;
-      break;
-    default:
-      NOTREACHED();
-  }
-
   return privacy_sandbox_settings->IsEventReportingDestinationAttested(
-      destination_origin, gated_api);
+      destination_origin);
 }
 
 bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(

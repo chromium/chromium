@@ -38,7 +38,6 @@ enum ReportingDestination {
   kBuyer,
   kSeller,
   kComponentSeller,
-  kSharedStorageSelectUrl,
   kDirectSeller,
 };
 

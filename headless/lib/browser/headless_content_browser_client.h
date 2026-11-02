@@ -84,8 +84,7 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
-      const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api) override;
+      const url::Origin& destination_origin) override;
 
   void ConfigureNetworkContextParams(
       content::BrowserContext* context,

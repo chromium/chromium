@@ -48,7 +48,6 @@
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
-#include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/browser/process_selection_deferring_condition.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -1094,11 +1093,10 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns whether |destination_origin| can receive beacons sent through
   // window.fence.reportEvent() or automatic beacons. The reporting destination
-  // is required to be attested for its invoking API.
+  // is required to be attested for Protected Audience.
   virtual bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
-      const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api);
+      const url::Origin& destination_origin);
 
   // Returns whether cookies should be allowed for requests to `url`, fetched
   // from contexts whose storage is keyed on `storage_key`.

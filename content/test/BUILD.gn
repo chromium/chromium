@@ -2687,7 +2687,6 @@ test("content_unittests") {
     "../browser/download/save_package_unittest.cc",
     "../browser/embedder_isolation_info_unittest.cc",
     "../browser/eye_dropper_chooser_impl_unittest.cc",
-    "../browser/fenced_frame/fenced_frame_reporter_unittest.cc",
     "../browser/fenced_frame/fenced_frame_url_mapping_unittest.cc",
     "../browser/fenced_frame/redacted_fenced_frame_config_mojom_traits_unittest.cc",
     "../browser/field_trial_synchronizer_unittest.cc",

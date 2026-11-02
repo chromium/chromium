@@ -801,8 +801,7 @@ std::string WebTestContentBrowserClient::GetAcceptLangs(
 
 bool WebTestContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     BrowserContext* browser_context,
-    const url::Origin& destination_origin,
-    PrivacySandboxInvokingAPI invoking_api) {
+    const url::Origin& destination_origin) {
   return true;
 }
 

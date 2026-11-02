@@ -47,8 +47,6 @@ EnumTraits<blink::mojom::ReportingDestination,
       return blink::mojom::ReportingDestination::kSeller;
     case blink::FencedFrame::ReportingDestination::kComponentSeller:
       return blink::mojom::ReportingDestination::kComponentSeller;
-    case blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl:
-      return blink::mojom::ReportingDestination::kSharedStorageSelectUrl;
     case blink::FencedFrame::ReportingDestination::kDirectSeller:
       return blink::mojom::ReportingDestination::kDirectSeller;
   }
@@ -95,8 +93,6 @@ EnumTraits<blink::mojom::ReportingDestination,
       return blink::FencedFrame::ReportingDestination::kSeller;
     case blink::mojom::ReportingDestination::kComponentSeller:
       return blink::FencedFrame::ReportingDestination::kComponentSeller;
-    case blink::mojom::ReportingDestination::kSharedStorageSelectUrl:
-      return blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl;
     case blink::mojom::ReportingDestination::kDirectSeller:
       return blink::FencedFrame::ReportingDestination::kDirectSeller;
   }

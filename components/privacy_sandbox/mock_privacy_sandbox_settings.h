@@ -17,12 +17,10 @@ class MockPrivacySandboxSettings
   ~MockPrivacySandboxSettings() override;
 
   // PrivacySandboxSettings:
-  MOCK_METHOD(
-      bool,
-      IsEventReportingDestinationAttested,
-      (const url::Origin&,
-       privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api),
-      (override, const));
+  MOCK_METHOD(bool,
+              IsEventReportingDestinationAttested,
+              (const url::Origin&),
+              (override, const));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(bool, AreRelatedWebsiteSetsEnabled, (), (override, const));

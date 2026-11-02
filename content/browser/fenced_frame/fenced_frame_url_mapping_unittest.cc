@@ -7,15 +7,12 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/fenced_frame_test_utils.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "url/gurl.h"
@@ -29,18 +26,6 @@ namespace {
 class FencedFrameURLMappingTest : public RenderViewHostTestHarness {
  public:
   FencedFrameURLMappingTest() = default;
-
-  // Creates a dummy FencedFrameReporter that will never used to send any
-  // reports. Tests only check for pointer equality, so the configuration of the
-  // FencedFrameReporter does not matter.
-  scoped_refptr<FencedFrameReporter> CreateSharedStorageReporter() {
-    return FencedFrameReporter::CreateForSharedStorage(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            nullptr),
-        /*browser_context=*/browser_context(),
-        /*reporting_url_declarer_origin=*/std::nullopt,
-        /*reporting_url_map=*/FencedFrameReporter::ReportingUrlMap());
-  }
 
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
@@ -97,24 +82,6 @@ TEST_F(FencedFrameURLMappingTest, HasCorrectFormat) {
   EXPECT_EQ(spec.at(32), '-');
 
   EXPECT_TRUE(blink::IsValidUrnUuidURL(urn_uuid.value()));
-}
-
-// Test that reporting metadata gets saved successfully.
-TEST_F(FencedFrameURLMappingTest, ReportingMetadataSuccess) {
-  FencedFrameURLMapping fenced_frame_url_mapping;
-  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
-      CreateSharedStorageReporter();
-  GURL test_url("https://foo.test");
-  std::optional<GURL> urn_uuid =
-      fenced_frame_url_mapping.AddFencedFrameURLForTesting(
-          test_url, fenced_frame_reporter);
-  EXPECT_TRUE(urn_uuid.has_value());
-  EXPECT_TRUE(urn_uuid->is_valid());
-  TestFencedFrameURLMappingResultObserver observer;
-  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid.value(),
-                                                      &observer);
-  EXPECT_TRUE(observer.mapping_complete_observed());
-  EXPECT_EQ(fenced_frame_reporter.get(), observer.fenced_frame_reporter());
 }
 
 // Test that number of urn mappings limit is enforced.

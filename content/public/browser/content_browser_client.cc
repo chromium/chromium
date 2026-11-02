@@ -670,8 +670,7 @@ bool ContentBrowserClient::AllowWorkerWriteToClipboard(
 
 bool ContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
-    const url::Origin& destination_origin,
-    content::PrivacySandboxInvokingAPI invoking_api) {
+    const url::Origin& destination_origin) {
   return false;
 }
 

@@ -43,8 +43,7 @@ class ContentBrowserTestTpcBlockingBrowserClient
 
   bool IsPrivacySandboxReportingDestinationAttested(
       BrowserContext* browser_context,
-      const url::Origin& destination_origin,
-      PrivacySandboxInvokingAPI invoking_api) override;
+      const url::Origin& destination_origin) override;
 
   TpcBlockingBrowserClient& impl() { return impl_; }
 

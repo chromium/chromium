@@ -72,8 +72,7 @@ void PrivacySandboxSettingsImpl::Shutdown() {
 }
 
 bool PrivacySandboxSettingsImpl::IsEventReportingDestinationAttested(
-    const url::Origin& destination_origin,
-    privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api) const {
+    const url::Origin& destination_origin) const {
   return false;
 }
 

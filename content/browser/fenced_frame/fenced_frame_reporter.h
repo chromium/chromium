@@ -21,7 +21,6 @@
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -97,32 +96,12 @@ class CONTENT_EXPORT FencedFrameReporter
   void AddObserverForTesting(ObserverForTesting* observer);
   void RemoveObserverForTesting(const ObserverForTesting* observer);
 
-  // Creates a FencedFrameReporter that only maps kSharedStorageSelectUrl
-  // destinations, using the passed in map.
-  //
-  // `url_loader_factory` is used to send all reports, and must not be null.
-  //
-  // `browser_context` is used to check attestations before sending out the
-  // beacons.
-  //
-  // `reporting_url_declarer_origin` is used to set the request initiator on
-  // outgoing beacon network requests. The initiator is the entity that chose
-  // the destination URLs in order to prevent CSRF.
-  //
-  // `main_frame_origin` is the main frame of the page where Shared Storage
-  // was called.
-  static scoped_refptr<FencedFrameReporter> CreateForSharedStorage(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      BrowserContext* browser_context,
-      const std::optional<url::Origin>& reporting_url_declarer_origin,
-      ReportingUrlMap reporting_url_map,
-      const url::Origin& main_frame_origin = url::Origin());
-
-  // Don't use this constructor directly, but use factory methods instead.
-  // See factory methods for details.
+  // Note: All factory methods have been removed along with Protected Audience
+  // and Shared Storage fenced frame reporting, so `FencedFrameReporter` can no
+  // longer be instantiated. The class itself will be removed as part of general
+  // fenced frame cleanup.
   FencedFrameReporter(
       base::PassKey<FencedFrameReporter> pass_key,
-      PrivacySandboxInvokingAPI invoking_api,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       BrowserContext* browser_context,
       const url::Origin& main_frame_origin);
@@ -319,8 +298,6 @@ class CONTENT_EXPORT FencedFrameReporter
   // * 3rd party cookie permission check for credentialed automatic beacons
   const url::Origin main_frame_origin_;
 
-  // Which API created this fenced frame reporter instance.
-  PrivacySandboxInvokingAPI invoking_api_;
 
   base::ObserverList<ObserverForTesting> observers_;
 

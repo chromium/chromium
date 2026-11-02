@@ -50,8 +50,6 @@ TEST_F(PrivacySandboxAttestationsParserTest, OneSitePerAPIProto) {
 
   std::string site1 = "https://a.com";
   std::string site2 = "https://b.com";
-  std::string site4 = "https://d.com";
-  std::string site5 = "https://e.com";
 
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation1;
   attestation1.add_attested_apis(TOPICS);
@@ -59,12 +57,8 @@ TEST_F(PrivacySandboxAttestationsParserTest, OneSitePerAPIProto) {
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation2;
   attestation2.add_attested_apis(PROTECTED_AUDIENCE);
 
-  PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation5;
-  attestation5.add_attested_apis(SHARED_STORAGE);
-
   (*proto.mutable_site_attestations())[site1] = attestation1;
   (*proto.mutable_site_attestations())[site2] = attestation2;
-  (*proto.mutable_site_attestations())[site5] = attestation5;
 
   std::string serialized_proto;
   proto.SerializeToString(&serialized_proto);
@@ -72,7 +66,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, OneSitePerAPIProto) {
   std::optional<PrivacySandboxAttestationsMap> optional_map =
       ParseAttestationsFromString(serialized_proto);
   ASSERT_TRUE(optional_map.has_value());
-  ASSERT_TRUE(optional_map->size() == 3UL);
+  ASSERT_TRUE(optional_map->size() == 2UL);
 
   const PrivacySandboxAttestationsGatedAPISet& site1apis =
       (*optional_map)[net::SchemefulSite(GURL(site1))];
@@ -84,12 +78,6 @@ TEST_F(PrivacySandboxAttestationsParserTest, OneSitePerAPIProto) {
   ASSERT_TRUE(
       site2apis.Has(PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
   ASSERT_TRUE(site2apis.size() == 1UL);
-
-  const PrivacySandboxAttestationsGatedAPISet& site5apis =
-      (*optional_map)[net::SchemefulSite(GURL(site5))];
-  ASSERT_TRUE(
-      site5apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
-  ASSERT_TRUE(site5apis.size() == 1UL);
 }
 
 // Multiple attested APIs per site should work. Unknown APIs should be ignored.
@@ -106,7 +94,6 @@ TEST_F(PrivacySandboxAttestationsParserTest, MultipleAPIsPerSiteProto) {
   // Add an explicitly out of range value. (This static_cast is undefined...)
   attestation1.add_attested_apis(
       static_cast<PrivacySandboxAttestationsGatedAPIProto>(192));
-  attestation1.add_attested_apis(SHARED_STORAGE);
 
   (*proto.mutable_site_attestations())[site1] = attestation1;
 
@@ -123,15 +110,13 @@ TEST_F(PrivacySandboxAttestationsParserTest, MultipleAPIsPerSiteProto) {
   ASSERT_TRUE(site1apis.Has(PrivacySandboxAttestationsGatedAPI::kTopics));
   ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
-  ASSERT_TRUE(
-      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
-  ASSERT_TRUE(site1apis.size() == 3UL);
+  ASSERT_TRUE(site1apis.size() == 2UL);
 }
 
 // Test basic functionality of `all_apis` and `sites_attested_for_all_apis`.
 // Let "all APIs" be Topics and Protected Audience.
-// Have two sites attested for "all APIs", and one site attested for Shared
-// Storage only.
+// Have two sites attested for "all APIs", and one site attested for Protected
+// Audience only.
 TEST_F(PrivacySandboxAttestationsParserTest, AllAPIsProto) {
   PrivacySandboxAttestationsProto proto;
   ASSERT_TRUE(proto.site_attestations_size() == 0);
@@ -148,7 +133,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, AllAPIsProto) {
   proto.add_sites_attested_for_all_apis(site2);
 
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation3;
-  attestation3.add_attested_apis(SHARED_STORAGE);
+  attestation3.add_attested_apis(PROTECTED_AUDIENCE);
   (*proto.mutable_site_attestations())[site3] = attestation3;
 
   std::string serialized_proto;
@@ -176,7 +161,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, AllAPIsProto) {
   const PrivacySandboxAttestationsGatedAPISet& site3apis =
       (*optional_map)[net::SchemefulSite(GURL(site3))];
   ASSERT_TRUE(
-      site3apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
+      site3apis.Has(PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
   ASSERT_TRUE(site3apis.size() == 1UL);
 }
 
@@ -196,7 +181,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, RepeatedSiteProto) {
   proto.add_sites_attested_for_all_apis(site1);
 
   PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation3;
-  attestation3.add_attested_apis(SHARED_STORAGE);
+  attestation3.add_attested_apis(PROTECTED_AUDIENCE);
   (*proto.mutable_site_attestations())[site1] = attestation3;
 
   std::string serialized_proto;
@@ -223,14 +208,13 @@ TEST_F(PrivacySandboxAttestationsParserTest, InvalidAllAPIsProto) {
   PrivacySandboxAttestationsProto proto;
   ASSERT_TRUE(proto.site_attestations_size() == 0);
 
-  // Pretend that there are 3 APIs in the set of "all APIs".
+  // Pretend that there are 2 APIs in the set of "all APIs".
   proto.add_all_apis(TOPICS);
   // Add the default out of range value.
   proto.add_all_apis(UNKNOWN);
   proto.add_all_apis(PROTECTED_AUDIENCE);
   // Add an explicitly out of range value. (This static_cast is undefined...)
   proto.add_all_apis(static_cast<PrivacySandboxAttestationsGatedAPIProto>(192));
-  proto.add_all_apis(SHARED_STORAGE);
 
   std::string site1 = "https://a.com";
   proto.add_sites_attested_for_all_apis(site1);
@@ -248,9 +232,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, InvalidAllAPIsProto) {
   ASSERT_TRUE(site1apis.Has(PrivacySandboxAttestationsGatedAPI::kTopics));
   ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
-  ASSERT_TRUE(
-      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
-  ASSERT_TRUE(site1apis.size() == 3UL);
+  ASSERT_TRUE(site1apis.size() == 2UL);
 }
 
 void ParseAttestationsFromStringDoesNotCrash(
