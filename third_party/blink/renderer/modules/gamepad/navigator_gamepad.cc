@@ -357,47 +357,48 @@ void NavigatorGamepad::SampleAndCompareGamepadState() {
   }
 
   base::AutoReset<bool> processing_events_reset(&processing_events_, true);
-  if (GetPage() && GetPage()->IsPageVisible() && StartUpdatingIfAttached()) {
-    // Allocate a buffer to hold the new gamepad state, if needed.
-    if (gamepads_back_.size() == 0) {
-      gamepads_back_.resize(device::Gamepads::kItemsLengthCap);
-    }
-    SampleGamepads();
+  if (StartUpdatingIfAttached()) {
+    if (GetPage()->IsPageVisible()) {
+      // Allocate a buffer to hold the new gamepad state, if needed.
+      if (gamepads_back_.size() == 0)
+        gamepads_back_.resize(device::Gamepads::kItemsLengthCap);
+      SampleGamepads();
 
-    // Compare the new sample with the previous sample and record which
-    // gamepad events should be dispatched. Swap buffers if the gamepad
-    // state changed. We must swap buffers before dispatching events to
-    // ensure |gamepads_| holds the correct data when getGamepads is called
-    // from inside a gamepad event listener.
-    bool should_compare_all_axes = false;
-    bool should_compare_all_buttons = false;
+      // Compare the new sample with the previous sample and record which
+      // gamepad events should be dispatched. Swap buffers if the gamepad
+      // state changed. We must swap buffers before dispatching events to
+      // ensure |gamepads_| holds the correct data when getGamepads is called
+      // from inside a gamepad event listener.
+      bool should_compare_all_axes = false;
+      bool should_compare_all_buttons = false;
 
-    if (has_input_changed_event_listener_) {
-      // Only compare all axes/buttons if a raw input change event listener is
-      // present. This avoids unnecessary comparisons when no listener is
-      // attached.
-      should_compare_all_axes = true;
-      should_compare_all_buttons = true;
-    }
-
-    GamepadStateCompareResult compare_result = GamepadComparisons::Compare(
-        gamepads_, gamepads_back_, should_compare_all_axes,
-        should_compare_all_buttons);
-
-    if (compare_result.IsDifferent()) {
-      std::swap(gamepads_, gamepads_back_);
-      is_gamepads_back_exposed_ = is_gamepads_exposed_;
-      is_gamepads_exposed_ = false;
-
-      for (uint32_t i = 0; i < device::Gamepads::kItemsLengthCap; ++i) {
-        MaybeDispatchGamepadEvents(i, compare_result);
+      if (has_input_changed_event_listener_) {
+        // Only compare all axes/buttons if a raw input change event listener is
+        // present. This avoids unnecessary comparisons when no listener is
+        // attached.
+        should_compare_all_axes = true;
+        should_compare_all_buttons = true;
       }
 
-      // Clear |gamepads_back_| if it was ever exposed to the page so it can
-      // be garbage collected when no active references remain. If it was
-      // never exposed, retain the buffer so it can be reused.
-      if (is_gamepads_back_exposed_) {
-        gamepads_back_.clear();
+      GamepadStateCompareResult compare_result = GamepadComparisons::Compare(
+          gamepads_, gamepads_back_, should_compare_all_axes,
+          should_compare_all_buttons);
+
+      if (compare_result.IsDifferent()) {
+        std::swap(gamepads_, gamepads_back_);
+        is_gamepads_back_exposed_ = is_gamepads_exposed_;
+        is_gamepads_exposed_ = false;
+
+        for (uint32_t i = 0; i < device::Gamepads::kItemsLengthCap; ++i) {
+          MaybeDispatchGamepadEvents(i, compare_result);
+        }
+
+        // Clear |gamepads_back_| if it was ever exposed to the page so it can
+        // be garbage collected when no active references remain. If it was
+        // never exposed, retain the buffer so it can be reused.
+        if (is_gamepads_back_exposed_) {
+          gamepads_back_.clear();
+        }
       }
     }
   }
