@@ -282,8 +282,8 @@ class ComposeboxQueryController
     }
 
     // Gets a pointer to the viewport request ID for this request for testing.
-    lens::LensOverlayRequestId* GetViewportRequestIdForTesting() const {
-      return viewport_request_id_.get();
+    const lens::LensOverlayRequestId* GetViewportRequestIdForTesting() const {
+      return viewport_request_id ? &*viewport_request_id : nullptr;
     }
 
    private:
@@ -293,11 +293,6 @@ class ComposeboxQueryController
 
     // Whether this file upload was explicitly cancelled.
     bool is_cancelled_ = false;
-
-    // The request ID for the viewport associated with this request, if it is
-    // different from the request ID. Set by StartFileUploadFlow() when
-    // use_separate_request_ids_for_viewport_images_ is true.
-    std::unique_ptr<lens::LensOverlayRequestId> viewport_request_id_;
 
     // Caches the latest search URL request ID generated for this file,
     // allowing stateless recontextualization updates to maintain sequence

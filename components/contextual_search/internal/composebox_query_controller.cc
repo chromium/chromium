@@ -667,8 +667,8 @@ ComposeboxQueryController::GetRequestIdForViewportImage(
   if (!file_info || !file_info->request_id.has_value()) {
     return lens::LensOverlayRequestId();
   }
-  if (file_info->viewport_request_id_) {
-    return *file_info->viewport_request_id_;
+  if (file_info->viewport_request_id.has_value()) {
+    return *file_info->viewport_request_id;
   }
   return file_info->request_id.value();
 }
@@ -834,7 +834,7 @@ void ComposeboxQueryController::CreateSearchUrl(
 
         has_image_upload |= RequestIdHasImage(*file_info->request_id);
 
-        if (file_info->viewport_request_id_) {
+        if (file_info->viewport_request_id.has_value()) {
           has_image_upload = true;
         }
         // Find the last file, preferring non-unresolved url uploads so that
@@ -1117,7 +1117,7 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
           file_token == *create_client_to_aim_request_info->overlay_token;
       lens::LensOverlayRequestId file_request_id = *file_info->request_id;
       if (is_region_interaction && is_overlay_token &&
-          !file_info->viewport_request_id_) {
+          !file_info->viewport_request_id.has_value()) {
         file_request_id.set_media_type(
             lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
       }
@@ -1134,9 +1134,9 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
       // `use_separate_request_ids_for_viewport_images_` is enabled), attach a
       // second LensImageQueryData entry for the viewport image upload request.
       lens::LensImageQueryData* viewport_query_data = nullptr;
-      if (file_info->viewport_request_id_) {
+      if (file_info->viewport_request_id.has_value()) {
         viewport_query_data =
-            add_lens_image_query_data(*file_info->viewport_request_id_);
+            add_lens_image_query_data(*file_info->viewport_request_id);
       }
 
       // Only force interaction data for region searches when the overlay is
@@ -1350,8 +1350,8 @@ void ComposeboxQueryController::StartFileUploadFlow(
         // Extract the previous viewport request ID so recontextualization
         // turns can increment the viewport stream's sequence_id and
         // image_sequence_id while preserving its uuid and context_id.
-        if (info->viewport_request_id_) {
-          previous_viewport_request_id = *info->viewport_request_id_;
+        if (info->viewport_request_id.has_value()) {
+          previous_viewport_request_id = *info->viewport_request_id;
         } else if (info->viewport_request_id_for_updates.has_value()) {
           // The previous turn was a page-only update that carried forward an
           // earlier turn's viewport request ID.
@@ -1461,13 +1461,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
         current_file_info.request_id->media_type() !=
             lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE) {
       if (previous_viewport_request_id.has_value()) {
-        current_file_info.viewport_request_id_ =
-            request_id_generator_.CreateNextRequestIdForUpdate(
+        current_file_info.viewport_request_id =
+            *request_id_generator_.CreateNextRequestIdForUpdate(
                 std::make_unique<lens::LensOverlayRequestId>(
                     *previous_viewport_request_id),
                 lens::RequestIdUpdateMode::kFullImageRequest);
-        current_file_info.viewport_request_id_->set_has_chrome_tab_data(true);
-        current_file_info.viewport_request_id_->set_is_implicit_upload(
+        current_file_info.viewport_request_id->set_has_chrome_tab_data(true);
+        current_file_info.viewport_request_id->set_is_implicit_upload(
             current_file_info.is_implicit_upload);
       } else {
         // Viewport images always come from tab data.
@@ -1478,8 +1478,8 @@ void ComposeboxQueryController::StartFileUploadFlow(
             current_file_info.is_implicit_upload);
         request_id_generator_.SetDriveId(std::nullopt);
         // Create a new request id for the viewport image upload request.
-        current_file_info.viewport_request_id_ =
-            request_id_generator_.GetNextRequestId(
+        current_file_info.viewport_request_id =
+            *request_id_generator_.GetNextRequestId(
                 lens::RequestIdUpdateMode::kMultiContextUploadRequest,
                 lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
       }
@@ -1734,10 +1734,10 @@ ComposeboxQueryController::CreateContextualInputs(
         !info->input_data->drive_id->empty()) {
       contextual_input->set_drive_id(*info->input_data->drive_id);
     }
-    if (info->viewport_request_id_) {
+    if (info->viewport_request_id.has_value()) {
       auto* viewport_contextual_input = contextual_inputs->add_inputs();
       viewport_contextual_input->mutable_request_id()->CopyFrom(
-          *info->viewport_request_id_);
+          *info->viewport_request_id);
       if (send_upload_type && info->input_data &&
           info->input_data->upload_type.has_value()) {
         viewport_contextual_input->set_upload_type(
@@ -2173,8 +2173,8 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
         file_info->request_id->mutable_routing_info()->CopyFrom(
             server_response.routing_info());
       }
-      if (file_info->viewport_request_id_) {
-        file_info->viewport_request_id_->mutable_routing_info()->CopyFrom(
+      if (file_info->viewport_request_id.has_value()) {
+        file_info->viewport_request_id->mutable_routing_info()->CopyFrom(
             server_response.routing_info());
       }
       if (file_info->viewport_request_id_for_updates.has_value()) {

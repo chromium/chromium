@@ -1002,7 +1002,8 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
 
   // Read the Lens state now, since it may change while contextualizing.
   std::optional<base::UnguessableToken> overlay_token = GetLensOverlayToken();
-  std::optional<lens::AddedContext> lens_added_context = GetLensAddedContext();
+  std::vector<lens::AddedContext> lens_added_contexts =
+      GetLensAddedContexts(overlay_token);
 
   QueryContextualizer::ContextualizeParams params;
   // Without a task (e.g. full-tab AI Mode in zero state),
@@ -1022,7 +1023,7 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
       base::BindOnce(
           &ContextualTasksWebContentsUserData::OnSubmitQueryContextualized,
           weak_ptr_factory_.GetWeakPtr(), std::string(query_text),
-          std::move(lens_added_context), overlay_token));
+          std::move(lens_added_contexts), overlay_token));
   submit_pending_ = true;
   query_contextualizer_->Contextualize(std::move(params));
 }
@@ -1075,18 +1076,19 @@ std::vector<int32_t> ContextualTasksWebContentsUserData::GetPendingDelayedTabs(
 
 void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
     std::string query_text,
-    std::optional<lens::AddedContext> lens_added_context,
+    std::vector<lens::AddedContext> lens_added_contexts,
     std::optional<base::UnguessableToken> overlay_token) {
   if (!submit_pending_) {
     return;
   }
   submit_pending_ = false;
 
+  const bool has_lens_added_context = !lens_added_contexts.empty();
   lens::ClientToSearchMessage response_message;
   auto* on_submit_response =
       response_message.mutable_on_submit_query_response();
-  if (lens_added_context) {
-    *on_submit_response->add_added_contexts() = std::move(*lens_added_context);
+  for (auto& lens_added_context : lens_added_contexts) {
+    *on_submit_response->add_added_contexts() = std::move(lens_added_context);
   }
   auto* session_handle = GetOrCreateContextualSessionHandle();
   if (session_handle) {
@@ -1109,11 +1111,17 @@ void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
   PostSearchMessage(response_message);
 
   if (session_handle) {
+    std::vector<base::UnguessableToken> submitted_tokens;
+    if (has_lens_added_context && overlay_token.has_value() &&
+        !std::ranges::contains(session_handle->GetSubmittedContextTokens(),
+                               *overlay_token)) {
+      submitted_tokens.push_back(*overlay_token);
+    }
     // The page owns the query text, so no query length metrics are recorded
     // here. This moves the uploaded tabs into the session's persisted tabs so
     // they are tracked across turns and are not re-added on the next
     // submission.
-    session_handle->MarkQuerySubmitted(/*file_tokens=*/{},
+    session_handle->MarkQuerySubmitted(std::move(submitted_tokens),
                                        /*query_text_length=*/std::nullopt);
   }
 
@@ -1770,7 +1778,8 @@ ContextualTasksWebContentsUserData::GetExistingContextualSessionHandle() const {
 std::optional<base::UnguessableToken>
 ContextualTasksWebContentsUserData::GetLensOverlayToken() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* controller = GetLensSearchController()) {
+  auto* controller = GetLensSearchController();
+  if (controller && !controller->IsClosing()) {
     auto* overlay = controller->lens_overlay_controller();
     if (!overlay || !overlay->HasRegionSelection()) {
       return std::nullopt;
@@ -2454,33 +2463,28 @@ void ContextualTasksWebContentsUserData::
       implicit_tab_count);
 }
 
-std::optional<lens::AddedContext>
-ContextualTasksWebContentsUserData::GetLensAddedContext() {
+std::vector<lens::AddedContext>
+ContextualTasksWebContentsUserData::GetLensAddedContexts(
+    std::optional<base::UnguessableToken>& overlay_token) {
 #if !BUILDFLAG(IS_ANDROID)
-  auto model = GetOrCreateInputStateModel();
-  if (!model || !model->lens_crop().has_value()) {
-    return std::nullopt;
-  }
-
   auto* controller = GetLensSearchController();
-  if (!controller || !controller->IsCurrentTabSameOrigin()) {
-    return std::nullopt;
+  if (!controller || controller->IsClosing() ||
+      !controller->IsCurrentTabSameOrigin()) {
+    return {};
   }
 
   auto* overlay = controller->lens_overlay_controller();
-  auto* query_controller = controller->lens_overlay_query_controller();
-  if (!overlay || !overlay->HasRegionSelection() || !query_controller) {
-    return std::nullopt;
+  if (!overlay || !overlay->HasRegionSelection()) {
+    return {};
   }
 
   auto* session_handle = GetOrCreateContextualSessionHandle();
   if (!session_handle) {
-    return std::nullopt;
+    return {};
   }
 
   // Identify the context file corresponding to the region crop across uploaded
   // and submitted context files.
-  std::optional<base::UnguessableToken> overlay_token = GetLensOverlayToken();
   const contextual_search::FileInfo* file_info = nullptr;
   std::vector<contextual_search::FileInfo> uploaded_files =
       session_handle->GetUploadedContextFileInfos();
@@ -2491,15 +2495,16 @@ ContextualTasksWebContentsUserData::GetLensAddedContext() {
 
   if (overlay_token.has_value()) {
     for (const auto& info : uploaded_files) {
-      if (info.file_token == *overlay_token) {
+      if (info.file_token == *overlay_token && !info.is_superceded &&
+          info.request_id.has_value()) {
         file_info = &info;
         break;
       }
     }
-  }
-  if (!file_info) {
+  } else {
     for (const auto& info : uploaded_files) {
-      if (info.is_implicit_upload && info.input_data &&
+      if (!info.is_superceded && info.request_id.has_value() &&
+          info.is_implicit_upload && info.input_data &&
           info.input_data->upload_type ==
               lens::LensOverlayContextualInputUploadType::
                   CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY) {
@@ -2509,29 +2514,56 @@ ContextualTasksWebContentsUserData::GetLensAddedContext() {
     }
   }
 
-  if (!file_info || !file_info->request_id.has_value()) {
-    return std::nullopt;
+  if (!file_info) {
+    return {};
   }
 
   if (!overlay_token.has_value()) {
     overlay_token = file_info->file_token;
   }
 
-  lens::AddedContext added;
-
-  // Search session ID.
+  auto* query_controller = controller->lens_overlay_query_controller();
   std::string search_session_id = session_handle->search_session_id();
-  if (search_session_id.empty()) {
+  if (search_session_id.empty() && query_controller) {
     search_session_id = query_controller->search_session_id();
   }
-  added.set_search_session_id(search_session_id);
 
-  // Request ID.
-  *added.mutable_request_id() = *file_info->request_id;
-  added.mutable_request_id()->set_media_type(
-      lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  lens::LensOverlayContextualInputUploadType upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
+  if (file_info->input_data && file_info->input_data->upload_type.has_value()) {
+    upload_type = file_info->input_data->upload_type.value();
+  }
 
-  // Visual Search Interaction Data.
+  auto build_added_context = [&](const lens::LensOverlayRequestId& request_id) {
+    lens::AddedContext added;
+    added.set_search_session_id(search_session_id);
+    *added.mutable_request_id() = request_id;
+    added.set_contextual_input_upload_type(upload_type);
+    return added;
+  };
+
+  std::vector<lens::AddedContext> added_contexts;
+  lens::LensOverlayRequestId file_request_id = *file_info->request_id;
+  if (!file_info->viewport_request_id.has_value()) {
+    file_request_id.set_media_type(
+        lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  }
+  added_contexts.push_back(build_added_context(file_request_id));
+
+  // When separate viewport request IDs are enabled, attach a second
+  // AddedContext entry for the viewport image upload request so the webpage/PDF
+  // context (`file_info->request_id`) and the region crop
+  // (`file_info->viewport_request_id`) are both sent, matching
+  // `ComposeboxQueryController::CreateClientToAimRequest()`.
+  if (file_info->viewport_request_id.has_value()) {
+    added_contexts.push_back(
+        build_added_context(*file_info->viewport_request_id));
+  }
+
+  // Visual Search Interaction Data attaches to the viewport entry when separate
+  // viewport request IDs are used, since the region crop applies to the
+  // viewport image.
   std::optional<lens::LensOverlayVisualSearchInteractionData>
       visual_search_interaction_data;
   if (overlay_token.has_value()) {
@@ -2539,7 +2571,7 @@ ContextualTasksWebContentsUserData::GetLensAddedContext() {
         session_handle->GetVisualSearchInteractionData(*overlay_token,
                                                        std::nullopt);
   }
-  if (!visual_search_interaction_data.has_value()) {
+  if (!visual_search_interaction_data.has_value() && query_controller) {
     visual_search_interaction_data =
         query_controller->GetVisualSearchInteractionData();
   }
@@ -2548,26 +2580,13 @@ ContextualTasksWebContentsUserData::GetLensAddedContext() {
         overlay->selected_region(), overlay->initial_screenshot());
   }
   if (visual_search_interaction_data.has_value()) {
-    *added.mutable_visual_search_interaction_data() =
+    *added_contexts.back().mutable_visual_search_interaction_data() =
         std::move(*visual_search_interaction_data);
   }
 
-  // Contextual input upload type.
-  lens::LensOverlayContextualInputUploadType upload_type =
-      lens::LensOverlayContextualInputUploadType::
-          CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
-  if (file_info->input_data && file_info->input_data->upload_type.has_value()) {
-    upload_type = file_info->input_data->upload_type.value();
-  }
-  added.set_contextual_input_upload_type(upload_type);
-
-  if (!added.has_request_id()) {
-    return std::nullopt;
-  }
-
-  return added;
+  return added_contexts;
 #else
-  return std::nullopt;
+  return {};
 #endif
 }
 

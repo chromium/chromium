@@ -172,6 +172,10 @@ struct FileInfo {
   // controller when the file upload is started.
   std::optional<lens::LensOverlayRequestId> request_id;
 
+  // The request ID for the viewport image associated with this request, if
+  // separate viewport request IDs are enabled.
+  std::optional<lens::LensOverlayRequestId> viewport_request_id;
+
   // The raw response bodies from the upload requests.
   std::vector<std::string> response_bodies;
 

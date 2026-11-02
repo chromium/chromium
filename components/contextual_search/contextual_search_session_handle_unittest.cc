@@ -4549,4 +4549,54 @@ TEST_F(ContextualSearchSessionHandleTest, HasPdfContext) {
   local_handle->ClearSubmittedContextTokens();
   EXPECT_TRUE(local_handle->HasPdfContext());
 }
+
+TEST_F(ContextualSearchSessionHandleTest,
+       GetContextFileInfos_PreservesViewportRequestId) {
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+
+  auto local_handle =
+      service_->CreateSessionForTesting(std::move(mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  const base::UnguessableToken token = local_handle->CreateContextToken();
+  FileInfo info;
+  info.file_token = token;
+  lens::LensOverlayRequestId page_req_id;
+  page_req_id.set_uuid(111);
+  page_req_id.set_context_id(888);
+  page_req_id.set_media_type(
+      lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
+  info.request_id = page_req_id;
+
+  lens::LensOverlayRequestId viewport_req_id;
+  viewport_req_id.set_uuid(222);
+  viewport_req_id.set_context_id(888);
+  viewport_req_id.set_media_type(
+      lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  info.viewport_request_id = viewport_req_id;
+
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(token))
+      .WillRepeatedly(testing::Return(&info));
+
+  std::vector<FileInfo> uploaded = local_handle->GetUploadedContextFileInfos();
+  ASSERT_EQ(uploaded.size(), 1u);
+  ASSERT_TRUE(uploaded[0].request_id.has_value());
+  EXPECT_EQ(uploaded[0].request_id->uuid(), 111u);
+  ASSERT_TRUE(uploaded[0].viewport_request_id.has_value());
+  EXPECT_EQ(uploaded[0].viewport_request_id->uuid(), 222u);
+  EXPECT_EQ(uploaded[0].viewport_request_id->media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+
+  local_handle->MarkQuerySubmitted(/*file_tokens=*/{},
+                                   /*query_text_length=*/std::nullopt);
+  std::vector<FileInfo> submitted =
+      local_handle->GetSubmittedContextFileInfos();
+  ASSERT_EQ(submitted.size(), 1u);
+  ASSERT_TRUE(submitted[0].viewport_request_id.has_value());
+  EXPECT_EQ(submitted[0].viewport_request_id->uuid(), 222u);
+}
+
 }  // namespace contextual_search

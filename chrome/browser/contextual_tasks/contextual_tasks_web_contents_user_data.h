@@ -366,7 +366,7 @@ class ContextualTasksWebContentsUserData
   // uploaded the tabs for the submitted query.
   void OnSubmitQueryContextualized(
       std::string query_text,
-      std::optional<lens::AddedContext> lens_added_context,
+      std::vector<lens::AddedContext> lens_added_contexts,
       std::optional<base::UnguessableToken> overlay_token);
   void OnPageChanged(bool is_zero_state);
   // Runs `on_tab_context_updated_cb` on every bound extension frame.
@@ -375,7 +375,8 @@ class ContextualTasksWebContentsUserData
       lens::ClientToSearchMessage* response_message,
       contextual_search::ContextualSearchSessionHandle* session_handle,
       const std::optional<base::UnguessableToken>& overlay_token);
-  std::optional<lens::AddedContext> GetLensAddedContext();
+  std::vector<lens::AddedContext> GetLensAddedContexts(
+      std::optional<base::UnguessableToken>& overlay_token);
   const ExtensionFrameInfo* FindTargetExtensionFrame() const;
   void DispatchSerializedSearchMessage(
       const std::vector<uint8_t>& message_bytes);
