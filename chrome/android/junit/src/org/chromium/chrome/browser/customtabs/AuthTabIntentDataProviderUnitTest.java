@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM;
@@ -22,6 +24,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 
+import androidx.browser.auth.AuthTabColorSchemeParams;
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -253,5 +256,71 @@ public class AuthTabIntentDataProviderUnitTest {
                 originalProvider.getAuthRedirectPath(), restoredProvider.getAuthRedirectPath());
         assertEquals(originalProvider.getCustomTabMode(), restoredProvider.getCustomTabMode());
         assertEquals(originalProvider.getActivityType(), restoredProvider.getActivityType());
+        assertEquals(
+                originalProvider.getColorProvider().getToolbarColor(),
+                restoredProvider.getColorProvider().getToolbarColor());
+    }
+
+    @Test
+    public void testReconstructFromSavedDataHolder_colorSchemeParams() {
+        AuthTabColorSchemeParams lightParams =
+                new AuthTabColorSchemeParams.Builder()
+                        .setToolbarColor(0xFF112233)
+                        .setNavigationBarColor(0xFF445566)
+                        .setNavigationBarDividerColor(0xFF778899)
+                        .build();
+        AuthTabColorSchemeParams darkParams =
+                new AuthTabColorSchemeParams.Builder()
+                        .setToolbarColor(0xFF000001)
+                        .setNavigationBarColor(0xFF000002)
+                        .build();
+        Intent colorIntent =
+                new AuthTabIntent.Builder()
+                        .setColorSchemeParams(COLOR_SCHEME_LIGHT, lightParams)
+                        .setColorSchemeParams(COLOR_SCHEME_DARK, darkParams)
+                        .build()
+                        .intent;
+        mIntent.putExtras(colorIntent.getExtras());
+
+        AuthTabIntentDataProvider originalProvider =
+                new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
+        assertNotNull(holder);
+
+        Parcel parcel = Parcel.obtain();
+        CustomTabIntentDataHolder restoredHolder;
+        try {
+            holder.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            restoredHolder = CustomTabIntentDataHolder.CREATOR.createFromParcel(parcel);
+        } finally {
+            parcel.recycle();
+        }
+
+        AuthTabIntentDataProvider restoredLight =
+                new AuthTabIntentDataProvider(
+                        new Intent(), mActivity, COLOR_SCHEME_LIGHT, restoredHolder);
+        AuthTabIntentDataProvider restoredDark =
+                new AuthTabIntentDataProvider(
+                        new Intent(), mActivity, COLOR_SCHEME_DARK, restoredHolder);
+
+        assertEquals(0xFF112233, restoredLight.getColorProvider().getToolbarColor());
+        assertEquals(
+                Integer.valueOf(0xFF445566),
+                restoredLight.getColorProvider().getNavigationBarColor());
+        assertEquals(
+                Integer.valueOf(0xFF778899),
+                restoredLight.getColorProvider().getNavigationBarDividerColor());
+        assertTrue(restoredLight.getColorProvider().hasCustomToolbarColor());
+
+        assertEquals(0xFF000001, restoredDark.getColorProvider().getToolbarColor());
+        assertEquals(
+                Integer.valueOf(0xFF000002),
+                restoredDark.getColorProvider().getNavigationBarColor());
+        assertNull(restoredDark.getColorProvider().getNavigationBarDividerColor());
+
+        assertEquals(
+                originalProvider.getColorProvider().getToolbarColor(),
+                restoredLight.getColorProvider().getToolbarColor());
     }
 }

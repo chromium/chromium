@@ -9,12 +9,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Network;
 import android.os.Binder;
 import android.os.Bundle;
@@ -23,7 +25,9 @@ import android.os.Parcel;
 import android.view.WindowManager;
 import android.widget.RemoteViews;
 
+import androidx.browser.auth.AuthTabColorSchemeParams;
 import androidx.browser.auth.AuthTabIntent;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.trusted.ScreenOrientation;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.DefaultMode;
@@ -106,6 +110,33 @@ public class CustomTabIntentDataHolderUnitTest {
         assertNull(restored.mAuthRedirectScheme);
         assertNull(restored.mAuthRedirectHost);
         assertNull(restored.mAuthRedirectPath);
+        assertNull(restored.mLightColorSchemeParams.toolbarColor);
+        assertNull(restored.mLightColorSchemeParams.secondaryToolbarColor);
+        assertNull(restored.mLightColorSchemeParams.navigationBarColor);
+        assertNull(restored.mLightColorSchemeParams.navigationBarDividerColor);
+        assertNull(restored.mDarkColorSchemeParams.toolbarColor);
+        assertNull(restored.mDarkColorSchemeParams.secondaryToolbarColor);
+        assertNull(restored.mDarkColorSchemeParams.navigationBarColor);
+        assertNull(restored.mDarkColorSchemeParams.navigationBarDividerColor);
+        assertNull(restored.mLightAuthTabColorSchemeParams.getToolbarColor());
+        assertNull(restored.mLightAuthTabColorSchemeParams.getNavigationBarColor());
+        assertNull(restored.mLightAuthTabColorSchemeParams.getNavigationBarDividerColor());
+        assertNull(restored.mDarkAuthTabColorSchemeParams.getToolbarColor());
+        assertNull(restored.mDarkAuthTabColorSchemeParams.getNavigationBarColor());
+        assertNull(restored.mDarkAuthTabColorSchemeParams.getNavigationBarDividerColor());
+        assertEquals(Color.TRANSPARENT, restored.mInitialBackgroundColor);
+        assertSame(
+                restored.mLightColorSchemeParams,
+                restored.getColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT));
+        assertSame(
+                restored.mDarkColorSchemeParams,
+                restored.getColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK));
+        assertSame(
+                restored.mLightAuthTabColorSchemeParams,
+                restored.getAuthTabColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT));
+        assertSame(
+                restored.mDarkAuthTabColorSchemeParams,
+                restored.getAuthTabColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK));
     }
 
     @Test
@@ -201,6 +232,28 @@ public class CustomTabIntentDataHolderUnitTest {
                         .setAuthRedirectScheme("myscheme")
                         .setAuthRedirectHost("auth.example.com")
                         .setAuthRedirectPath("/callback")
+                        .setLightColorSchemeParams(
+                                new CustomTabColorSchemeParams.Builder()
+                                        .setToolbarColor(0xFF112233)
+                                        .setSecondaryToolbarColor(0xFF445566)
+                                        .setNavigationBarColor(0xFF778899)
+                                        .setNavigationBarDividerColor(0xFFAABBCC)
+                                        .build())
+                        .setDarkColorSchemeParams(
+                                new CustomTabColorSchemeParams.Builder()
+                                        .setToolbarColor(0xFF000001)
+                                        .build())
+                        .setLightAuthTabColorSchemeParams(
+                                new AuthTabColorSchemeParams.Builder()
+                                        .setToolbarColor(0xFF223344)
+                                        .setNavigationBarColor(0xFF556677)
+                                        .setNavigationBarDividerColor(0xFF8899AA)
+                                        .build())
+                        .setDarkAuthTabColorSchemeParams(
+                                new AuthTabColorSchemeParams.Builder()
+                                        .setToolbarColor(0xFF000002)
+                                        .build())
+                        .setInitialBackgroundColor(0xFF123456)
                         .build();
 
         CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
@@ -268,6 +321,41 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals("myscheme", restored.mAuthRedirectScheme);
         assertEquals("auth.example.com", restored.mAuthRedirectHost);
         assertEquals("/callback", restored.mAuthRedirectPath);
+        assertEquals(Integer.valueOf(0xFF112233), restored.mLightColorSchemeParams.toolbarColor);
+        assertEquals(
+                Integer.valueOf(0xFF445566),
+                restored.mLightColorSchemeParams.secondaryToolbarColor);
+        assertEquals(
+                Integer.valueOf(0xFF778899), restored.mLightColorSchemeParams.navigationBarColor);
+        assertEquals(
+                Integer.valueOf(0xFFAABBCC),
+                restored.mLightColorSchemeParams.navigationBarDividerColor);
+        assertEquals(Integer.valueOf(0xFF000001), restored.mDarkColorSchemeParams.toolbarColor);
+        assertNull(restored.mDarkColorSchemeParams.secondaryToolbarColor);
+        assertNull(restored.mDarkColorSchemeParams.navigationBarColor);
+        assertNull(restored.mDarkColorSchemeParams.navigationBarDividerColor);
+        assertEquals(
+                Integer.valueOf(0xFF000001),
+                restored.getColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK).toolbarColor);
+        assertEquals(
+                Integer.valueOf(0xFF223344),
+                restored.mLightAuthTabColorSchemeParams.getToolbarColor());
+        assertEquals(
+                Integer.valueOf(0xFF556677),
+                restored.mLightAuthTabColorSchemeParams.getNavigationBarColor());
+        assertEquals(
+                Integer.valueOf(0xFF8899AA),
+                restored.mLightAuthTabColorSchemeParams.getNavigationBarDividerColor());
+        assertEquals(
+                Integer.valueOf(0xFF000002),
+                restored.mDarkAuthTabColorSchemeParams.getToolbarColor());
+        assertNull(restored.mDarkAuthTabColorSchemeParams.getNavigationBarColor());
+        assertNull(restored.mDarkAuthTabColorSchemeParams.getNavigationBarDividerColor());
+        assertEquals(
+                Integer.valueOf(0xFF000002),
+                restored.getAuthTabColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK)
+                        .getToolbarColor());
+        assertEquals(0xFF123456, restored.mInitialBackgroundColor);
     }
 
     @Test

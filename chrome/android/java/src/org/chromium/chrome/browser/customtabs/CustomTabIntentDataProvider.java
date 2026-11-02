@@ -745,13 +745,25 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 openInBrowserState = CustomTabsButtonState.BUTTON_STATE_OFF;
             }
             builder.setOpenInBrowserState(openInBrowserState);
+            builder.setLightColorSchemeParams(
+                    CustomTabColorProviderImpl.getColorSchemeParams(
+                            intent, CustomTabsIntent.COLOR_SCHEME_LIGHT));
+            builder.setDarkColorSchemeParams(
+                    CustomTabColorProviderImpl.getColorSchemeParams(
+                            intent, CustomTabsIntent.COLOR_SCHEME_DARK));
+            builder.setInitialBackgroundColor(
+                    CustomTabColorProviderImpl.retrieveInitialBackgroundColor(intent));
 
             mDataHolder = builder.build();
         }
 
-        // ColorProvider is not stored in CustomTabIntentDataHolder because the colorScheme can
-        // change when the Activity is recreated (e.g. when the system dark/light theme changes).
-        mColorProvider = new CustomTabColorProviderImpl(intent, context, colorScheme);
+        // Color scheme params for both schemes live in the holder; the ColorProvider is re-derived
+        // for the colorScheme in use because it can change on Activity recreation.
+        mColorProvider =
+                new CustomTabColorProviderImpl(
+                        mDataHolder.getColorSchemeParams(colorScheme),
+                        context,
+                        mDataHolder.mInitialBackgroundColor);
 
         if (getUiType() == CustomTabsUiType.POPUP) {
             mShareState = CustomTabsIntent.SHARE_STATE_OFF;

@@ -46,7 +46,9 @@ public class AuthTabColorProviderUnitTest {
     public void testReturnsDefaults() {
         Intent intent = new AuthTabIntent.Builder().build().intent;
         AuthTabColorProvider provider =
-                new AuthTabColorProvider(intent, mActivity, COLOR_SCHEME_LIGHT);
+                new AuthTabColorProvider(
+                        AuthTabColorProvider.getColorSchemeParams(intent, COLOR_SCHEME_LIGHT),
+                        mActivity);
         int color = ChromeColors.getDefaultThemeColor(mActivity, /* isIncognito= */ false);
         assertEquals("Wrong toolbar color", color, provider.getToolbarColor());
         assertEquals("Wrong bottom bar color", color, provider.getBottomBarColor());
@@ -77,7 +79,9 @@ public class AuthTabColorProviderUnitTest {
                         .build()
                         .intent;
         AuthTabColorProvider provider =
-                new AuthTabColorProvider(intent, mActivity, COLOR_SCHEME_LIGHT);
+                new AuthTabColorProvider(
+                        AuthTabColorProvider.getColorSchemeParams(intent, COLOR_SCHEME_LIGHT),
+                        mActivity);
         assertTrue(
                 "Should have a custom toolbar color specified.", provider.hasCustomToolbarColor());
         assertEquals("Wrong opaque toolbar color", 0xffff0000, provider.getToolbarColor());
@@ -108,7 +112,9 @@ public class AuthTabColorProviderUnitTest {
                         .build()
                         .intent;
         AuthTabColorProvider provider =
-                new AuthTabColorProvider(intent, mActivity, COLOR_SCHEME_DARK);
+                new AuthTabColorProvider(
+                        AuthTabColorProvider.getColorSchemeParams(intent, COLOR_SCHEME_DARK),
+                        mActivity);
         assertTrue(
                 "Should have a custom toolbar color specified.", provider.hasCustomToolbarColor());
         assertEquals("Wrong opaque toolbar color", 0xffff0000, provider.getToolbarColor());

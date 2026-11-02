@@ -33,7 +33,8 @@ import org.chromium.url.GURL;
  *
  * <p>Lifecycle: is activity-scoped, i.e. one instance per CustomTabActivity instance. Must be
  * re-created when color scheme changes, which happens automatically since color scheme change leads
- * to activity re-creation.
+ * to activity re-creation ({@link CustomTabIntentDataHolder} stores both schemes and the color
+ * provider is re-derived).
  */
 @NullMarked
 public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider {
@@ -111,11 +112,19 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
                             : CustomTabProfileType.REGULAR);
             builder.setIsCloseButtonEnabled(true);
             builder.setCloseButtonIcon(retrieveCloseButtonIconBitmap(intent, context));
+            builder.setLightAuthTabColorSchemeParams(
+                    AuthTabColorProvider.getColorSchemeParams(
+                            intent, CustomTabsIntent.COLOR_SCHEME_LIGHT));
+            builder.setDarkAuthTabColorSchemeParams(
+                    AuthTabColorProvider.getColorSchemeParams(
+                            intent, CustomTabsIntent.COLOR_SCHEME_DARK));
 
             mDataHolder = builder.build();
         }
 
-        mColorProvider = new AuthTabColorProvider(intent, context, colorScheme);
+        mColorProvider =
+                new AuthTabColorProvider(
+                        mDataHolder.getAuthTabColorSchemeParams(colorScheme), context);
         mCloseButtonIcon =
                 mDataHolder.mCloseButtonIcon != null
                         ? new TintedDrawable(context, mDataHolder.mCloseButtonIcon)

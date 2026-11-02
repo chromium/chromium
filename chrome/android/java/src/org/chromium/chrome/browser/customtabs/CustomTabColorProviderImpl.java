@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 
+import androidx.annotation.ColorInt;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -34,7 +35,8 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
     private final @Nullable Integer mNavigationBarDividerColor;
     private final int mInitialBackgroundColor;
 
-    private static CustomTabColorSchemeParams getColorSchemeParams(Intent intent, int colorScheme) {
+    /** Used by CustomTabIntentDataProvider to populate CustomTabIntentDataHolder. */
+    static CustomTabColorSchemeParams getColorSchemeParams(Intent intent, int colorScheme) {
         if (colorScheme == COLOR_SCHEME_SYSTEM) {
             assert false
                     : "Color scheme passed to IntentDataProvider should not be "
@@ -51,17 +53,19 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
     }
 
     /**
-     * The colorScheme parameter specifies which color scheme the Custom Tab should use.
-     * It can currently be either {@link CustomTabsIntent#COLOR_SCHEME_LIGHT} or
-     * {@link CustomTabsIntent#COLOR_SCHEME_DARK}.
-     * If Custom Tab was launched with {@link CustomTabsIntent#COLOR_SCHEME_SYSTEM}, colorScheme
-     * must reflect the current system setting. When the system setting changes, a new
-     * CustomTabIntentDataProvider object must be created.
+     * Creates a {@link CustomTabColorProviderImpl} from pre-parsed color scheme params and initial
+     * background color.
+     *
+     * @param params {@link CustomTabColorSchemeParams} already resolved for the color scheme in
+     *     use.
+     * @param context The {@link Context}.
+     * @param initialBackgroundColor The initial background color, already opaque or {@link
+     *     Color#TRANSPARENT}.
      */
-    public CustomTabColorProviderImpl(Intent intent, Context context, int colorScheme) {
-        assert intent != null;
-        assert context != null;
-        CustomTabColorSchemeParams params = getColorSchemeParams(intent, colorScheme);
+    public CustomTabColorProviderImpl(
+            CustomTabColorSchemeParams params,
+            Context context,
+            @ColorInt int initialBackgroundColor) {
         mHasCustomToolbarColor = (params.toolbarColor != null);
         mToolbarColor = retrieveToolbarColor(params, context, mHasCustomToolbarColor);
         mBottomBarColor = retrieveBottomBarColor(params, mToolbarColor);
@@ -70,7 +74,7 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
                         ? null
                         : ColorUtils.getOpaqueColor(params.navigationBarColor);
         mNavigationBarDividerColor = params.navigationBarDividerColor;
-        mInitialBackgroundColor = retrieveInitialBackgroundColor(intent);
+        mInitialBackgroundColor = initialBackgroundColor;
     }
 
     /** Returns the color passed from the client app. */
@@ -93,10 +97,11 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
     }
 
     /**
-     * Returns the color to initialize the background of the Custom Tab with.
-     * If no valid color is set, Color.TRANSPARENT is returned.
+     * Returns the color to initialize the background of the Custom Tab with. If no valid color is
+     * set, Color.TRANSPARENT is returned. Used by CustomTabIntentDataProvider to populate
+     * CustomTabIntentDataHolder.
      */
-    private static int retrieveInitialBackgroundColor(Intent intent) {
+    static int retrieveInitialBackgroundColor(Intent intent) {
         int defaultColor = Color.TRANSPARENT;
         int color =
                 IntentUtils.safeGetIntExtra(

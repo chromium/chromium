@@ -14,7 +14,6 @@ import android.graphics.Color;
 import androidx.annotation.ColorInt;
 import androidx.browser.auth.AuthTabColorSchemeParams;
 import androidx.browser.auth.AuthTabIntent;
-import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -34,7 +33,8 @@ public class AuthTabColorProvider implements ColorProvider {
     private final @Nullable Integer mNavigationBarColor;
     private final @Nullable Integer mNavigationBarDividerColor;
 
-    private static AuthTabColorSchemeParams getColorSchemeParams(Intent intent, int colorScheme) {
+    /** Used by {@link AuthTabIntentDataProvider} to populate {@code CustomTabIntentDataHolder}. */
+    static AuthTabColorSchemeParams getColorSchemeParams(Intent intent, int colorScheme) {
         if (colorScheme == COLOR_SCHEME_SYSTEM) {
             assert false
                     : "Color scheme passed to IntentDataProvider should not be "
@@ -50,9 +50,7 @@ public class AuthTabColorProvider implements ColorProvider {
         }
     }
 
-    public AuthTabColorProvider(
-            Intent intent, Context context, @CustomTabsIntent.ColorScheme int colorScheme) {
-        AuthTabColorSchemeParams params = getColorSchemeParams(intent, colorScheme);
+    public AuthTabColorProvider(AuthTabColorSchemeParams params, Context context) {
         mHasCustomToolbarColor = params.getToolbarColor() != null;
         mToolbarColor = retrieveToolbarColor(params, context);
         mBottomBarColor = mToolbarColor;

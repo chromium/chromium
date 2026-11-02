@@ -2557,13 +2557,29 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     public void testReconstructFromSavedDataHolder() {
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        CustomTabColorSchemeParams light =
+                new CustomTabColorSchemeParams.Builder()
+                        .setToolbarColor(0xFF112233)
+                        .setSecondaryToolbarColor(0xFF445566)
+                        .setNavigationBarColor(0xFF778899)
+                        .setNavigationBarDividerColor(0xFFAABBCC)
+                        .build();
+        CustomTabColorSchemeParams dark =
+                new CustomTabColorSchemeParams.Builder().setToolbarColor(0xFF000001).build();
+
+        Intent intent =
+                new CustomTabsIntent.Builder()
+                        .setDefaultColorSchemeParams(light)
+                        .setColorSchemeParams(COLOR_SCHEME_DARK, dark)
+                        .build()
+                        .intent;
         setIsTrustedCustomTab(intent);
         intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
         intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false);
         intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 300);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_BACKGROUND_COLOR, 0xFF123456);
 
         CustomTabIntentDataProvider originalProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
@@ -2584,6 +2600,10 @@ public class CustomTabIntentDataProviderTest {
         CustomTabIntentDataProvider restoredProvider =
                 new CustomTabIntentDataProvider(
                         new Intent(), mContext, COLOR_SCHEME_LIGHT, restoredHolder);
+        CustomTabIntentDataProvider restoredLight = restoredProvider;
+        CustomTabIntentDataProvider restoredDark =
+                new CustomTabIntentDataProvider(
+                        new Intent(), mContext, COLOR_SCHEME_DARK, restoredHolder);
         assertEquals(originalProvider.getSession(), restoredProvider.getSession());
         assertEquals(
                 originalProvider.getClientPackageName(), restoredProvider.getClientPackageName());
@@ -2598,6 +2618,29 @@ public class CustomTabIntentDataProviderTest {
         assertEquals(
                 originalProvider.getInitialActivityHeight(),
                 restoredProvider.getInitialActivityHeight());
+
+        // Colors (LIGHT + DARK + initial background).
+        assertEquals(0xFF112233, restoredLight.getColorProvider().getToolbarColor());
+        assertEquals(0xFF445566, restoredLight.getColorProvider().getBottomBarColor());
+        assertEquals(
+                Integer.valueOf(0xFF778899),
+                restoredLight.getColorProvider().getNavigationBarColor());
+        assertEquals(
+                Integer.valueOf(0xFFAABBCC),
+                restoredLight.getColorProvider().getNavigationBarDividerColor());
+        assertTrue(restoredLight.getColorProvider().hasCustomToolbarColor());
+        assertEquals(0xFF123456, restoredLight.getColorProvider().getInitialBackgroundColor());
+        assertEquals(0xFF000001, restoredDark.getColorProvider().getToolbarColor());
+        assertEquals(0xFF123456, restoredDark.getColorProvider().getInitialBackgroundColor());
+        assertEquals(
+                originalProvider.getColorProvider().getToolbarColor(),
+                restoredLight.getColorProvider().getToolbarColor());
+        assertEquals(
+                originalProvider.getColorProvider().getBottomBarColor(),
+                restoredLight.getColorProvider().getBottomBarColor());
+        assertEquals(
+                originalProvider.getColorProvider().getInitialBackgroundColor(),
+                restoredLight.getColorProvider().getInitialBackgroundColor());
     }
 
     @Test
