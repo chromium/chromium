@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator+testing.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_query_contextualizer_delegate_bridge.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
@@ -274,6 +275,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                      PageContextWrapper*,
                      base::UnguessableTokenHash>
       _pageContextWrappers;
+  // Optional factory overriding `PageContextWrapper` creation in tests.
+  PageContextWrapperFactoryCallback _pageContextWrapperFactory;
   std::unordered_map<base::UnguessableToken,
                      web::WebStateID,
                      base::UnguessableTokenHash>
@@ -1257,15 +1260,21 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                         .SetDefaultRichExtraction(use_apc_v2)
                                         .Build();
 
-  PageContextWrapper* pageContextWrapper = [[PageContextWrapper alloc]
-        initWithWebState:webState
-                  config:config
-      completionCallback:base::BindOnce(^(
-                             PageContextWrapperCallbackResponse response) {
-        [weakSelf didExtractPageContext:std::move(response)
-                               webState:weakWebState.get()
-                             identifier:identifier];
-      })];
+  PageContextWrapper* pageContextWrapper = [self
+      newPageContextWrapperForWebState:webState
+                                config:config
+                    completionCallback:
+                        base::BindOnce(
+                            [](__typeof(self) strongSelf,
+                               base::WeakPtr<web::WebState> weakWebState,
+                               base::UnguessableToken identifier,
+                               PageContextWrapperCallbackResponse response) {
+                              [strongSelf
+                                  didExtractPageContext:std::move(response)
+                                               webState:weakWebState.get()
+                                             identifier:identifier];
+                            },
+                            weakSelf, weakWebState, identifier)];
 
   pageContextWrapper.shouldGetAnnotatedPageContent = YES;
   pageContextWrapper.shouldGetSnapshot = YES;
@@ -1276,6 +1285,31 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   // devices or bots.
   [pageContextWrapper
       populatePageContextFieldsAsyncWithTimeout:kPageContextTimeout];
+}
+
+// Creates a `PageContextWrapper` for `webState`, using
+// `_pageContextWrapperFactory` when set for tests. Named with the `new` prefix
+// (`NS_RETURNS_RETAINED`) so ARC returns a +1 owned reference without placing
+// the wrapper in the caller's autorelease pool.
+- (PageContextWrapper*)
+    newPageContextWrapperForWebState:(web::WebState*)webState
+                              config:(PageContextWrapperConfig)config
+                  completionCallback:(base::OnceCallback<void(
+                                          PageContextWrapperCallbackResponse)>)
+                                         completionCallback {
+  if (_pageContextWrapperFactory) {
+    // `RepeatingCallback::Run` returns an autoreleased Objective-C pointer.
+    // Drain the pool so `_pageContextWrappers` is the sole owner of the
+    // wrapper and erasing its entry immediately cancels extraction.
+    @autoreleasepool {
+      return _pageContextWrapperFactory.Run(webState, config,
+                                            std::move(completionCallback));
+    }
+  }
+  return [[PageContextWrapper alloc]
+        initWithWebState:webState
+                  config:config
+      completionCallback:std::move(completionCallback)];
 }
 
 // Handles the result of fetching cached page context for `webState`.
@@ -2895,6 +2929,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 #pragma mark - Testing
+
+- (void)setPageContextWrapperFactoryForTesting:
+    (PageContextWrapperFactoryCallback)factory {
+  _pageContextWrapperFactory = std::move(factory);
+}
 
 - (BOOL)isWebStateIDRemoved:(web::WebStateID)webStateID {
   return _removedWebStateIDs.contains(webStateID);
