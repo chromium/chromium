@@ -53,6 +53,18 @@ std::unique_ptr<HttpCacheDataRemover> HttpCacheDataRemover::CreateAndStart(
     base::Time delete_begin,
     base::Time delete_end,
     HttpCacheDataRemoverCallback done_callback) {
+  return CreateAndStart(
+      url_request_context->http_transaction_factory()->GetCache(),
+      std::move(url_filter), delete_begin, delete_end,
+      std::move(done_callback));
+}
+
+std::unique_ptr<HttpCacheDataRemover> HttpCacheDataRemover::CreateAndStart(
+    net::HttpCache* http_cache,
+    mojom::ClearDataFilterPtr url_filter,
+    base::Time delete_begin,
+    base::Time delete_end,
+    HttpCacheDataRemoverCallback done_callback) {
   // Store data from `url_filter` needed by ClearNoVarySearchCache() before we
   // move `url_filter` into HttpCacheDataRemover.
   base::flat_set<url::Origin> origins;
@@ -74,8 +86,6 @@ std::unique_ptr<HttpCacheDataRemover> HttpCacheDataRemover::CreateAndStart(
       new HttpCacheDataRemover(std::move(url_filter), delete_begin, delete_end,
                                std::move(done_callback)));
 
-  net::HttpCache* http_cache =
-      url_request_context->http_transaction_factory()->GetCache();
   if (!http_cache) {
     // Some contexts might not have a cache, in which case we are done.
     // Notify by posting a task to avoid reentrency.
@@ -149,6 +159,11 @@ void HttpCacheDataRemover::CacheRetrieved(
 }
 
 void HttpCacheDataRemover::ClearHttpCacheDone(int rv) {
+  // Drop the backend pointer before notifying: the callback typically
+  // destroys `this`, and may also release the last reference to whatever
+  // owns the cache, so keeping a raw_ptr to the backend past this point
+  // risks it dangling.
+  backend_ = nullptr;
   std::move(done_callback_).Run(this);
 }
 

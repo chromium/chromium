@@ -85,6 +85,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "net/url_request/url_request_http_transaction_factory_override.h"
 #include "services/network/accept_ch_frame_interceptor.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/devtools_durable_msg_writer.h"
@@ -540,6 +541,16 @@ URLLoader::URLLoader(
 
   throttling_token_ = network::ScopedThrottlingToken::MaybeCreate(
       url_request_->net_log().source().id, request.throttling_profile_id);
+
+  // Route through isolated session's delayed sockets if one exists for
+  // this request's throttling profile and URL.
+  if (auto handle = request.throttling_profile_id
+                        ? context.GetIsolatedTransactionFactory(
+                              *request.throttling_profile_id, request.url)
+                        : nullptr) {
+    net::HttpTransactionFactoryOverride::Set(url_request_.get(),
+                                             std::move(handle));
+  }
 
   if (keepalive_ && keepalive_statistics_recorder_) {
     keepalive_statistics_recorder_->OnLoadStarted(

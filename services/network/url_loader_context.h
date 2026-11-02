@@ -11,8 +11,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom-forward.h"
+#include "url/gurl.h"
+
+namespace base {
+class UnguessableToken;
+}
 
 namespace net {
+class HttpTransactionFactoryHandle;
 class URLRequestContext;
 }  // namespace net
 
@@ -53,6 +59,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoaderContext {
   virtual bool DataUseUpdatesEnabled() = 0;
   virtual scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
   GetDeviceBoundSessionAccessObserverSharedRemote() const = 0;
+
+  // Returns a ref-counted handle to the HttpTransactionFactory for the
+  // isolated throttling session serving `throttling_profile_id` and `url`,
+  // or nullptr if none exists. `url` selects among any URL-scoped sessions
+  // configured for the profile; a profile with a single session serving all
+  // URLs ignores it. The handle keeps the factory alive for the duration of
+  // in-flight requests even if the session is destroyed.
+  virtual scoped_refptr<net::HttpTransactionFactoryHandle>
+  GetIsolatedTransactionFactory(
+      const base::UnguessableToken& throttling_profile_id,
+      const GURL& url) const = 0;
 
  protected:
   // `protected` destructor = can only destruct via concrete implementations

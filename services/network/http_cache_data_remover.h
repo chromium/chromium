@@ -23,6 +23,7 @@ class Backend;
 }
 
 namespace net {
+class HttpCache;
 class URLRequestContext;
 }
 
@@ -42,6 +43,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HttpCacheDataRemover {
   // interface and might be slow.
   static std::unique_ptr<HttpCacheDataRemover> CreateAndStart(
       net::URLRequestContext* url_request_context,
+      mojom::ClearDataFilterPtr url_filter,
+      base::Time delete_begin,
+      base::Time delete_end,
+      HttpCacheDataRemoverCallback done_callback);
+
+  // As above, but operates directly on `http_cache` (which may be null, in
+  // which case the remover completes immediately). Used for caches that are
+  // not reachable through a URLRequestContext, e.g. the isolated in-memory
+  // caches backing socket-layer network throttling sessions.
+  static std::unique_ptr<HttpCacheDataRemover> CreateAndStart(
+      net::HttpCache* http_cache,
       mojom::ClearDataFilterPtr url_filter,
       base::Time delete_begin,
       base::Time delete_end,

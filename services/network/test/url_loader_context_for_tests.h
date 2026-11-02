@@ -59,6 +59,10 @@ class URLLoaderContextForTests : public URLLoaderContext {
       const override;
   orb::PerFactoryState& GetMutableOrbState() override;
   bool DataUseUpdatesEnabled() override;
+  scoped_refptr<net::HttpTransactionFactoryHandle>
+  GetIsolatedTransactionFactory(
+      const base::UnguessableToken& throttling_profile_id,
+      const GURL& url) const override;
 
  private:
   mojom::URLLoaderFactoryParams factory_params_;

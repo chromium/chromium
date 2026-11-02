@@ -88,6 +88,10 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   bool DataUseUpdatesEnabled() override;
   scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
   GetDeviceBoundSessionAccessObserverSharedRemote() const override;
+  scoped_refptr<net::HttpTransactionFactoryHandle>
+  GetIsolatedTransactionFactory(
+      const base::UnguessableToken& throttling_profile_id,
+      const GURL& url) const override;
 
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an
   // optimization.

@@ -1451,6 +1451,39 @@ interface NetworkContext {
                        mojo_base.mojom.UnguessableToken throttling_client_id,
                        array<MatchedNetworkConditions> conditions);
 
+  // Applies network delay at the socket layer. Unlike SetNetworkConditions
+  // (which throttles at the URLLoader level), this creates or updates an
+  // isolated throttling session for a specific throttling profile (DevTools
+  // session). Requests carrying this throttling_profile_id will use an isolated
+  // HttpNetworkSession with socket-level delay instead of the primary session.
+  //
+  // `latency` is the simulated round-trip time applied at the socket layer.
+  // Unlike the legacy NetworkConditions latency (a one-time delay injected
+  // before response delivery), socket RTT compounds across every network
+  // round trip: TCP handshake, TLS negotiation, and each HTTP request/
+  // response exchange all pay it, as on a real link.
+  //
+  // Throughputs are in bytes per second; values <= 0 mean that direction is
+  // unconstrained. Calls with invalid values (negative or infinite latency,
+  // non-finite throughput) are ignored, leaving existing conditions
+  // unchanged.
+  //
+  // A request uses the conditions in effect when it started, for its whole
+  // lifetime: calling this again (or ClearSocketLayerNetworkConditions)
+  // affects only requests started afterwards; in-flight requests finish
+  // under their captured conditions.
+  SetSocketLayerNetworkConditions(
+      mojo_base.mojom.UnguessableToken throttling_profile_id,
+      mojo_base.mojom.TimeDelta latency,
+      double download_throughput_bytes_per_second,
+      double upload_throughput_bytes_per_second);
+
+  // Removes the isolated throttling session for a throttling profile.
+  // In-flight requests finish under their captured conditions; requests
+  // started afterwards use the primary, unthrottled session.
+  ClearSocketLayerNetworkConditions(
+      mojo_base.mojom.UnguessableToken throttling_profile_id);
+
   // Updates the Accept-Language header to be used for requests.
   SetAcceptLanguage(string new_accept_language);
 

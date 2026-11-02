@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketFactory final {
  public:
   explicit WebSocketFactory(NetworkContext* context);
 
+  NetworkContext* context() { return context_; }
+
   WebSocketFactory(const WebSocketFactory&) = delete;
   WebSocketFactory& operator=(const WebSocketFactory&) = delete;
 

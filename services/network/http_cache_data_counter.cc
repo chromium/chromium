@@ -97,9 +97,22 @@ void HttpCacheDataCounter::GotBackend(
 
 void HttpCacheDataCounter::PostResult(bool is_upper_limit,
                                       int64_t result_or_error) {
+  // Post through a WeakPtr rather than moving `callback_` into the task.
+  // Moving it out would make the result undeliverable-but-uncancellable:
+  // destroying `this` (e.g. `http_cache_data_counters_.clear()` in
+  // ~NetworkContext) could not stop the already-posted task, contrary to
+  // this class's documented contract. That matters because callers bind
+  // state into `callback_` - NetworkContext::ComputeHttpCacheSize() binds
+  // `base::Unretained(this)` - so an escaping task would invoke a destroyed
+  // NetworkContext.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), this, is_upper_limit,
-                                result_or_error));
+      FROM_HERE, base::BindOnce(&HttpCacheDataCounter::RunCallback,
+                                GetWeakPtr(), is_upper_limit, result_or_error));
+}
+
+void HttpCacheDataCounter::RunCallback(bool is_upper_limit,
+                                       int64_t result_or_error) {
+  std::move(callback_).Run(this, is_upper_limit, result_or_error);
 }
 
 }  // namespace network

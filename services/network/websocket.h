@@ -45,6 +45,7 @@ class Location;
 }  // namespace base
 
 namespace net {
+class HttpTransactionFactoryHandle;
 class IOBuffer;
 class IsolationInfo;
 class SSLInfo;
@@ -230,6 +231,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
 
   std::optional<WebSocketThrottler::PendingConnection>
       pending_connection_tracker_;
+
+  // Keeps the isolated throttling session alive for the whole connection:
+  // the handshake URLRequest (the only other holder) is destroyed on
+  // upgrade, while the connection keeps using a socket handed out by the
+  // session's pool - which CHECKs that all sockets are returned before the
+  // session is destroyed. Declared before `channel_` so that destruction
+  // (reverse declaration order) tears down the channel - returning its
+  // socket to the pool - before this handle releases the session.
+  //
+  // Resolved in the constructor, not when the handshake URLRequest is
+  // created, so that a profile update during the per-renderer throttling
+  // delay (`delay_`) cannot retarget or unthrottle this connection.
+  scoped_refptr<net::HttpTransactionFactoryHandle>
+      isolated_transaction_factory_handle_;
 
   // The channel we use to send events to the network.
   std::unique_ptr<net::WebSocketChannel> channel_;

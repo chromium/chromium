@@ -100,6 +100,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_error_job.h"
+#include "net/url_request/url_request_http_transaction_factory_override.h"
 #include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_redirect_job.h"
 #include "net/url_request/websocket_handshake_userdata_key.h"
@@ -671,10 +672,14 @@ void URLRequestHttpJob::StartTransactionInternal() {
 
   int rv = OK;
 
-  // Notify NetworkQualityEstimator.
+  // Notify NetworkQualityEstimator, except for requests running under
+  // simulated network conditions: their observations would contaminate the
+  // global network-quality estimate.
   NetworkQualityEstimator* network_quality_estimator =
       request()->context()->network_quality_estimator();
-  if (network_quality_estimator) {
+  if (network_quality_estimator &&
+      !HttpTransactionFactoryOverride::DisablesNetworkQualityEstimation(
+          request_)) {
     network_quality_estimator->NotifyStartTransaction(*request_);
   }
 
@@ -684,10 +689,15 @@ void URLRequestHttpJob::StartTransactionInternal() {
                                           base::Unretained(this)));
     auth_credentials_ = AuthCredentials();
   } else {
-    DCHECK(request_->context()->http_transaction_factory());
-    transaction_ =
-        request_->context()->http_transaction_factory()->CreateTransaction(
-            priority_);
+    // Use an override factory if one is attached to the request (e.g., for
+    // per-tab socket pool isolation). Otherwise, use the context's default.
+    HttpTransactionFactory* factory =
+        HttpTransactionFactoryOverride::Get(request_);
+    if (!factory) {
+      factory = request_->context()->http_transaction_factory();
+    }
+    DCHECK(factory);
+    transaction_ = factory->CreateTransaction(priority_);
     CHECK(transaction_);
 
     if (request_info_.url.SchemeIsWSOrWSS()) {
@@ -2074,10 +2084,13 @@ void URLRequestHttpJob::DoneWithRequest(CompletionCause reason) {
   }
   done_ = true;
 
-  // Notify NetworkQualityEstimator.
+  // Notify NetworkQualityEstimator, except for requests running under
+  // simulated network conditions (see NotifyStartTransaction above).
   NetworkQualityEstimator* network_quality_estimator =
       request()->context()->network_quality_estimator();
-  if (network_quality_estimator) {
+  if (network_quality_estimator &&
+      !HttpTransactionFactoryOverride::DisablesNetworkQualityEstimation(
+          request())) {
     network_quality_estimator->NotifyRequestCompleted(*request());
   }
 
@@ -2103,10 +2116,14 @@ HttpResponseHeaders* URLRequestHttpJob::GetResponseHeaders() const {
 void URLRequestHttpJob::NotifyURLRequestDestroyed() {
   awaiting_callback_ = false;
 
-  // Notify NetworkQualityEstimator.
+  // Notify NetworkQualityEstimator, except for requests running under
+  // simulated network conditions (never registered; see
+  // NotifyStartTransaction above).
   NetworkQualityEstimator* network_quality_estimator =
       request()->context()->network_quality_estimator();
-  if (network_quality_estimator) {
+  if (network_quality_estimator &&
+      !HttpTransactionFactoryOverride::DisablesNetworkQualityEstimation(
+          request())) {
     network_quality_estimator->NotifyURLRequestDestroyed(*request());
   }
 }

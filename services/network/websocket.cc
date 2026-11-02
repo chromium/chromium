@@ -41,6 +41,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_http_transaction_factory_override.h"
 #include "net/websockets/websocket_basic_stream.h"
 #include "net/websockets/websocket_channel.h"
 #include "net/websockets/websocket_errors.h"
@@ -48,6 +49,7 @@
 #include "net/websockets/websocket_handshake_request_info.h"
 #include "net/websockets/websocket_handshake_response_info.h"
 #include "services/network/local_network_access_checker.h"
+#include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/local_network_access_check_result.h"
@@ -207,6 +209,17 @@ void WebSocket::WebSocketEventHandler::OnCreateURLRequest(
     impl_->frame_interceptor_ = std::make_unique<WebSocketInterceptor>(
         url_request->net_log().source().id, url_request->url(),
         impl_->throttling_profile_id_);
+    // Route the handshake - and the connection it establishes - through the
+    // profile's isolated delayed-socket session when socket-layer network
+    // conditions are configured, matching URLLoader-created requests. The
+    // handle was resolved in the WebSocket constructor (see the member
+    // comment) so that a profile update during the per-renderer throttling
+    // delay cannot move this connection to a different session than the one
+    // that was configured when CreateWebSocket() was called.
+    if (impl_->isolated_transaction_factory_handle_) {
+      net::HttpTransactionFactoryOverride::Set(
+          url_request, impl_->isolated_transaction_factory_handle_);
+    }
   }
 
   // If the request is to a URL that we can determine is an LNA request from
@@ -604,6 +617,18 @@ WebSocket::WebSocket(
                         base::SingleThreadTaskRunner::GetCurrentDefault()),
       throttling_profile_id_(throttling_profile_id) {
   DCHECK(handshake_client_);
+  // Resolve the isolated throttling session now rather than in
+  // OnCreateURLRequest(), so this connection uses the session that was
+  // configured when it was requested. WebSocketPerProcessThrottler can delay
+  // the handshake by seconds (see `delay_` below), and a profile update or
+  // clear during that window would otherwise silently retarget - or
+  // unthrottle - the connection. This matches URLLoader, which captures its
+  // handle in its constructor.
+  if (throttling_profile_id_) {
+    isolated_transaction_factory_handle_ =
+        factory_->context()->GetIsolatedTransactionFactory(
+            *throttling_profile_id_, url_);
+  }
   // |delay| should be zero if this connection is not throttled.
   DCHECK(pending_connection_tracker_.has_value() || delay.is_zero());
   if (auth_handler_) {

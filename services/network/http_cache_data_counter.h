@@ -61,6 +61,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HttpCacheDataCounter {
   void GotBackend(std::pair<int, raw_ptr<disk_cache::Backend>>);
   void PostResult(bool is_upper_limit, int64_t result_or_error);
 
+  // Runs `callback_`. Posted by PostResult() through a WeakPtr so that
+  // destroying `this` cancels a result that has been posted but not yet
+  // delivered, as the class contract above promises.
+  void RunCallback(bool is_upper_limit, int64_t result_or_error);
+
   base::WeakPtr<HttpCacheDataCounter> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

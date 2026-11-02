@@ -66,4 +66,11 @@ bool URLLoaderContextForTests::DataUseUpdatesEnabled() {
   return false;
 }
 
+scoped_refptr<net::HttpTransactionFactoryHandle>
+URLLoaderContextForTests::GetIsolatedTransactionFactory(
+    const base::UnguessableToken& throttling_profile_id,
+    const GURL& url) const {
+  return nullptr;
+}
+
 }  // namespace network

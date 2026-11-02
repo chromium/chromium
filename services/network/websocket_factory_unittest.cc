@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,6 +14,8 @@
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -69,7 +72,8 @@ class TestNetLogObserver : public net::NetLog::ThreadSafeObserver {
   std::vector<net::NetLogEntry> entries_;
 };
 
-class StubWebSocketHandshakeClient : public mojom::WebSocketHandshakeClient {
+class StubWebSocketHandshakeClient : public mojom::WebSocketHandshakeClient,
+                                     public mojom::WebSocketClient {
  public:
   explicit StubWebSocketHandshakeClient(
       mojo::PendingReceiver<mojom::WebSocketHandshakeClient> receiver)
@@ -81,11 +85,55 @@ class StubWebSocketHandshakeClient : public mojom::WebSocketHandshakeClient {
     handshake_request_future_.SetValue(std::move(request));
   }
 
-  void OnConnectionEstablished(mojo::PendingRemote<mojom::WebSocket>,
-                               mojo::PendingReceiver<mojom::WebSocketClient>,
-                               mojom::WebSocketHandshakeResponsePtr,
-                               mojo::ScopedDataPipeConsumerHandle,
-                               mojo::ScopedDataPipeProducerHandle) override {}
+  void OnConnectionEstablished(
+      mojo::PendingRemote<mojom::WebSocket> websocket,
+      mojo::PendingReceiver<mojom::WebSocketClient> client_receiver,
+      mojom::WebSocketHandshakeResponsePtr,
+      mojo::ScopedDataPipeConsumerHandle readable,
+      mojo::ScopedDataPipeProducerHandle writable) override {
+    // Keep the connection endpoints so the caller can exchange frames and
+    // so the connection stays genuinely open (dropping these would close
+    // it).
+    websocket_.Bind(std::move(websocket));
+    client_receiver_.Bind(std::move(client_receiver));
+    readable_ = std::move(readable);
+    writable_ = std::move(writable);
+    connection_established_future_.SetValue();
+  }
+
+  // mojom::WebSocketClient (only the pieces the tests need):
+  void OnDataFrame(bool fin,
+                   mojom::WebSocketMessageType type,
+                   uint64_t data_length) override {
+    data_frame_future_.SetValue(data_length);
+  }
+  void OnDropChannel(bool was_clean,
+                     uint16_t code,
+                     const std::string& reason) override {}
+  void OnClosingHandshake() override {}
+
+  // Sends `message` and returns the echoed payload read back from the
+  // connection, verifying the connection is genuinely live.
+  std::string SendAndReceiveEcho(std::string_view message) {
+    websocket_->StartReceiving();
+    size_t written = 0;
+    if (writable_->WriteData(base::as_byte_span(message),
+                             MOJO_WRITE_DATA_FLAG_NONE,
+                             written) != MOJO_RESULT_OK) {
+      return {};
+    }
+    websocket_->SendMessage(mojom::WebSocketMessageType::TEXT, message.size());
+    const uint64_t echoed_length = data_frame_future_.Take();
+    std::string echoed(echoed_length, '\0');
+    size_t read = 0;
+    if (readable_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                            base::as_writable_byte_span(echoed),
+                            read) != MOJO_RESULT_OK) {
+      return {};
+    }
+    echoed.resize(read);
+    return echoed;
+  }
 
   void OnFailure(const std::string&, int32_t, int32_t) override {}
 
@@ -93,10 +141,21 @@ class StubWebSocketHandshakeClient : public mojom::WebSocketHandshakeClient {
     return handshake_request_future_.Take();
   }
 
+  // Returns true once the WebSocket connection is fully established.
+  bool WaitForConnectionEstablished() {
+    return connection_established_future_.Wait();
+  }
+
  private:
   mojo::Receiver<mojom::WebSocketHandshakeClient> receiver_;
+  mojo::Remote<mojom::WebSocket> websocket_;
+  mojo::Receiver<mojom::WebSocketClient> client_receiver_{this};
+  mojo::ScopedDataPipeConsumerHandle readable_;
+  mojo::ScopedDataPipeProducerHandle writable_;
   base::test::TestFuture<mojom::WebSocketHandshakeRequestPtr>
       handshake_request_future_;
+  base::test::TestFuture<void> connection_established_future_;
+  base::test::TestFuture<uint64_t> data_frame_future_;
 };
 
 mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
@@ -123,8 +182,9 @@ class WebSocketFactoryTest : public testing::Test {
   StubWebSocketHandshakeClient* CreateWebSocket(
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
-      const OriginatingProcessId& process_id =
-          OriginatingProcessId::browser()) {
+      const OriginatingProcessId& process_id = OriginatingProcessId::browser(),
+      const std::optional<base::UnguessableToken>& throttling_profile_id =
+          std::nullopt) {
     mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client;
     // Keep all handshake clients alive to prevent WebSocket cleanup
     stub_handshake_clients_.push_back(
@@ -139,8 +199,7 @@ class WebSocketFactoryTest : public testing::Test {
         /*client_security_state=*/nullptr, /*options=*/0,
         TRAFFIC_ANNOTATION_FOR_TESTS, std::move(handshake_client),
         mojo::NullRemote(), mojo::NullRemote(), mojo::NullRemote(),
-        /*throttling_profile_id=*/std::nullopt,
-        network::GetTestNetworkRestrictionsId(),
+        throttling_profile_id, network::GetTestNetworkRestrictionsId(),
         mojom::IPAddressSpace::kUnknown, net::handles::kInvalidNetworkHandle);
     return stub_handshake_clients_.back().get();
   }
@@ -253,6 +312,99 @@ class WebSocketFactoryHandshakeTest : public WebSocketFactoryTest {
  protected:
   net::EmbeddedTestServer test_server_;
 };
+
+// Verifies that clearing (or updating) socket-layer conditions while a
+// WebSocket connection established under that profile is still open does
+// not crash: the connection holds a socket handed out by the isolated
+// session's pool, whose destructor CHECKs that all sockets were returned,
+// so the session must stay alive until the connection is done.
+TEST_F(WebSocketFactoryHandshakeTest,
+       ClearingConditionsWithOpenWebSocketDoesNotCrash) {
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  network_context_->SetSocketLayerNetworkConditions(
+      profile_id, base::Milliseconds(1), /*download=*/0.0, /*upload=*/0.0);
+
+  StubWebSocketHandshakeClient* client =
+      CreateWebSocket(net::test_server::GetWebSocketURL(test_server_, "/echo"),
+                      {}, OriginatingProcessId::browser(), profile_id);
+  ASSERT_TRUE(client->WaitForConnectionEstablished());
+
+  // The handshake URLRequest is gone (destroyed on upgrade); the WebSocket
+  // itself must be keeping the isolated session alive now.
+  network_context_->ClearSocketLayerNetworkConditions(profile_id);
+  network_context_->SetSocketLayerNetworkConditions(
+      profile_id, base::Milliseconds(2), /*download=*/0.0, /*upload=*/0.0);
+  network_context_->ClearSocketLayerNetworkConditions(profile_id);
+
+  // The connection must still be genuinely live across the retirements:
+  // exchange a frame with the echo server.
+  EXPECT_EQ(client->SendAndReceiveEcho("hello"), "hello");
+}
+
+// Verifies that destroying the NetworkContext while a profiled WebSocket
+// connection is still open does not crash: ~NetworkContext must tear down
+// its WebSockets before the isolated sessions, and each WebSocket must
+// destroy its channel (returning the socket to the session's pool, which
+// CHECKs all sockets were returned) before releasing its session handle.
+TEST_F(WebSocketFactoryHandshakeTest,
+       ContextTeardownWithOpenWebSocketDoesNotCrash) {
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  network_context_->SetSocketLayerNetworkConditions(
+      profile_id, base::Milliseconds(1), /*download=*/0.0, /*upload=*/0.0);
+
+  // Route through the NetworkContext's own internal WebSocketFactory (as
+  // production does) so the teardown ordering inside ~NetworkContext is
+  // what gets exercised.
+  const GURL url = net::test_server::GetWebSocketURL(test_server_, "/echo");
+  mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client;
+  StubWebSocketHandshakeClient stub(
+      handshake_client.InitWithNewPipeAndPassReceiver());
+  network_context_->CreateWebSocket(
+      url, /*requested_protocols=*/{}, net::StorageAccessApiStatus::kNone,
+      net::IsolationInfo(), /*additional_headers=*/{},
+      OriginatingProcessId::browser(), url::Origin::Create(url),
+      /*client_security_state=*/nullptr, /*options=*/0,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      std::move(handshake_client), mojo::NullRemote(), mojo::NullRemote(),
+      mojo::NullRemote(), profile_id, network::GetTestNetworkRestrictionsId(),
+      mojom::IPAddressSpace::kUnknown, net::handles::kInvalidNetworkHandle);
+  ASSERT_TRUE(stub.WaitForConnectionEstablished());
+
+  // Retire the session while the connection is open: the WebSocket's handle
+  // reference is now the only thing keeping it alive, which is the fragile
+  // teardown ordering (the handle must not release the session before the
+  // channel returns its socket).
+  network_context_->ClearSocketLayerNetworkConditions(profile_id);
+  // Confirm the connection is genuinely live (not merely handshaked) before
+  // tearing the context down under it.
+  EXPECT_EQ(stub.SendAndReceiveEcho("hello"), "hello");
+
+  // The fixture's standalone factory references the context; drop it first,
+  // then destroy the context with the connection still open.
+  factory_ = nullptr;
+  network_context_ = nullptr;
+}
+
+// Verifies that a WebSocket carrying a throttling_profile_id routes its
+// handshake (and the connection it establishes) through the profile's
+// isolated delayed-socket session. With a 300ms simulated RTT the TCP
+// connect pays one full RTT and the upgrade request/response exchange
+// another, so the handshake cannot complete in under ~600ms; without the
+// routing it completes in milliseconds. (Delay timers never fire early, so
+// the lower-bound assertion is deterministic.)
+TEST_F(WebSocketFactoryHandshakeTest, SocketLayerConditionsApplyToWebSockets) {
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  constexpr base::TimeDelta kRtt = base::Milliseconds(300);
+  network_context_->SetSocketLayerNetworkConditions(
+      profile_id, kRtt, /*download=*/0.0, /*upload=*/0.0);
+
+  const base::TimeTicks start = base::TimeTicks::Now();
+  StubWebSocketHandshakeClient* client =
+      CreateWebSocket(net::test_server::GetWebSocketURL(test_server_, "/echo"),
+                      {}, OriginatingProcessId::browser(), profile_id);
+  ASSERT_TRUE(client->WaitForConnectionEstablished());
+  EXPECT_GE(base::TimeTicks::Now() - start, kRtt + kRtt / 2);
+}
 
 // Verifies that the handshake request reported to a client with raw headers
 // access includes credential headers attached by the network stack.

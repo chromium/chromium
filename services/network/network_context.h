@@ -20,6 +20,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/hashing_lru_cache.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -49,6 +50,7 @@
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_server_properties.h"
 #include "net/net_buildflags.h"
 #include "net/reporting/reporting_target_type.h"
 #include "net/storage_access_api/status.h"
@@ -85,6 +87,7 @@
 #include "services/network/url_request_context_owner.h"
 #include "services/network/web_bundle/web_bundle_manager.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "net/reporting/reporting_cache_observer.h"
@@ -101,6 +104,10 @@ class UnguessableToken;
 
 namespace net {
 class CertVerifier;
+class DelayedClientSocketFactory;
+class HttpCache;
+class HttpNetworkSession;
+class HttpTransactionFactoryHandle;
 class HostPortPair;
 class IsolationInfo;
 class NetworkAnonymizationKey;
@@ -360,6 +367,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const base::UnguessableToken& throttling_profile_id,
       const base::UnguessableToken& throttling_client_id,
       std::vector<mojom::MatchedNetworkConditionsPtr> conditions) override;
+
+  void SetSocketLayerNetworkConditions(
+      const base::UnguessableToken& throttling_profile_id,
+      base::TimeDelta latency,
+      double download_throughput_bytes_per_second,
+      double upload_throughput_bytes_per_second) override;
+  void ClearSocketLayerNetworkConditions(
+      const base::UnguessableToken& throttling_profile_id) override;
+
+  scoped_refptr<net::HttpTransactionFactoryHandle>
+  GetIsolatedTransactionFactory(
+      const base::UnguessableToken& throttling_profile_id,
+      const GURL& url);
   void SetAcceptLanguage(const std::string& new_accept_language) override;
   void SetEnableReferrers(bool enable_referrers) override;
 #if BUILDFLAG(IS_CT_SUPPORTED)
@@ -656,9 +676,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   bool HasCookieAccessForDeviceBoundSession(
       const net::device_bound_sessions::CookieAccessCheckParams& params);
 
+  // Number of retired isolated throttling sessions still alive (i.e. still
+  // referenced by in-flight requests' factory handles).
+  size_t GetRetiredIsolatedSessionCountForTesting() const {
+    return retired_isolated_sessions_.size();
+  }
+
   void OnLogicalFilterAdded(const net::HttpCache::InvalidationFilter& filter,
                             base::OnceClosure callback = base::OnceClosure());
   void OnLogicalFilterRemoved(const net::HttpCache::InvalidationFilter& filter);
+
+  // Removes a logical invalidation filter from every isolated throttling
+  // session's cache (active and retired). Removal of a filter a cache never
+  // received (e.g. a session created after installation) is a no-op.
+  void RemoveInvalidationFilterFromIsolatedCaches(
+      const net::HttpCache::InvalidationFilter& filter);
 
   void SetTLS13EarlyDataEnabled(bool enabled);
 
@@ -853,6 +885,44 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     kTlsCertificate
   };
 
+  // An isolated socket-layer throttling session. Each session has its own
+  // socket factory, HttpNetworkSession (with independent socket pools), and
+  // an in-memory HttpCache wrapping an HttpNetworkLayer. The in-memory cache
+  // ensures normal HTTP caching semantics within the session, but starts
+  // cold — it does not share cached entries with the primary session or
+  // other isolated sessions.
+  //
+  // Ref-counted so that in-flight requests keep the session alive even
+  // after it's removed from `isolated_sessions_` (e.g., when throttling is
+  // disabled while requests are pending). The HttpTransactionFactoryHandle
+  // holds a ref, and each URLRequest's override holds a ref to the handle.
+  struct IsolatedSession : public base::RefCounted<IsolatedSession> {
+    IsolatedSession();
+
+    // Declaration order matters: `session` holds raw pointers into
+    // `socket_factory` and `http_server_properties`, and `cache` /
+    // `transaction_factory` wrap `session`, so members must be destroyed
+    // bottom-up (reverse declaration order).
+    std::unique_ptr<net::DelayedClientSocketFactory> socket_factory;
+    // Isolated sessions get their own HttpServerProperties so that
+    // simulation-induced failures (e.g. QUIC timeouts under simulated
+    // delay) cannot mark alternative services broken for the primary
+    // session, and vice versa.
+    std::unique_ptr<net::HttpServerProperties> http_server_properties;
+    std::unique_ptr<net::HttpNetworkSession> session;
+    // The transaction factory stack. When the context has HTTP caching
+    // enabled, `cache` wraps the stack and `transaction_factory` is null;
+    // otherwise `transaction_factory` is the top of the stack and `cache`
+    // is null.
+    std::unique_ptr<net::HttpTransactionFactory> transaction_factory;
+    std::unique_ptr<net::HttpCache> cache;
+    scoped_refptr<net::HttpTransactionFactoryHandle> factory_handle;
+
+   private:
+    friend class base::RefCounted<IsolatedSession>;
+    ~IsolatedSession();
+  };
+
   // To be called back from CookieManager on settings change.
   void OnCookieManagerSettingsChanged();
 
@@ -976,6 +1046,26 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       bool enforced);
 
   uint32_t GetLoaderCount(const OriginatingProcessId& process_id) const;
+
+  // Returns every live isolated session: active (in `isolated_sessions_`)
+  // and retired (kept alive by in-flight requests). Sessions are returned
+  // as refptrs so that a fan-out operation which reentrantly drops a
+  // session's last external handle reference - e.g. CloseAllConnections()
+  // aborting a request, which tears down its URLLoader - cannot destroy a
+  // session while the iteration is still using it.
+  std::vector<scoped_refptr<IsolatedSession>> GetAllIsolatedSessions();
+
+  // Moves the session for `it` into `retired_isolated_sessions_`. The
+  // session's handle stays functional, so in-flight requests continue under
+  // their captured conditions; the session is freed as soon as its last
+  // handle reference drains (which may be within this very call).
+  void RetireIsolatedSession(
+      std::map<base::UnguessableToken, scoped_refptr<IsolatedSession>>::iterator
+          it);
+
+  // Runs when the last reference to an isolated session's factory handle is
+  // released; drops the (retired) session's tracking entries, freeing it.
+  void OnIsolatedSessionHandleDestroyed(scoped_refptr<IsolatedSession> session);
 
   const raw_ptr<NetworkService> network_service_;
 
@@ -1280,6 +1370,37 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // The variations headers to be used for the network context. These can be
   // updated from those passed via the initial params.
   variations::mojom::VariationsHeadersPtr variations_headers_;
+
+  // Isolated throttling sessions (see IsolatedSession), keyed by
+  // throttling_profile_id.
+  std::map<base::UnguessableToken, scoped_refptr<IsolatedSession>>
+      isolated_sessions_;
+
+  // Sessions retired by a conditions update or clear but kept alive because
+  // in-flight requests still hold refs to their factory handle. Tracked so
+  // context-wide maintenance (cache/auth/cert clearing, DisableQuic,
+  // connection closing) and ~NetworkContext still reach them; each entry is
+  // removed by OnIsolatedSessionHandleDestroyed() the moment its last
+  // in-flight handle reference is released.
+  std::vector<scoped_refptr<IsolatedSession>> retired_isolated_sessions_;
+
+  // The still-live factory handles of retired sessions (raw pointers, keyed
+  // by session; entries are erased by OnIsolatedSessionHandleDestroyed()
+  // just before a handle dies). Lets ~NetworkContext Reset() handles that
+  // in-flight requests still hold, since retired sessions no longer
+  // reference their handle themselves.
+  std::map<IsolatedSession*, net::HttpTransactionFactoryHandle*>
+      retired_isolated_session_handles_;
+
+  // QUIC hints applied via AddQuicHints(), replayed into isolated sessions
+  // created afterwards (hints are typically pushed at startup, before
+  // DevTools enables throttling). Cleared alongside the primary
+  // HttpServerProperties in ClearNetworkingHistoryBetween(). It has the same
+  // capacity as the primary HttpServerProperties' own LRU, so hints the
+  // primary has already evicted are not replayed into new isolated sessions.
+  base::HashingLRUCacheSet<
+      std::pair<url::SchemeHostPort, net::NetworkAnonymizationKey>>
+      quic_hints_{net::HttpServerProperties::kMaxServerInfoEntries};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
