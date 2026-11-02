@@ -1789,6 +1789,9 @@ targets.legacy_basic_suite(
                 "external/wpt/webrtc-stats",
                 "external/wpt/webrtc-svc",
             ],
+            swarming = targets.swarming(
+                shards = 4,
+            ),
         ),
     },
 )

@@ -3114,6 +3114,9 @@
           'external/wpt/webrtc-stats',
           'external/wpt/webrtc-svc',
         ],
+        'swarming': {
+          'shards': 4,
+        },
       },
     },
 
