@@ -193,6 +193,8 @@ class AnchorPositionScrollData
 
   void AddDependentAnchor(const Node* node) { dependent_anchors_.insert(node); }
 
+  void NotifyScrollEnd(CompositorElementId scroll_element_id);
+
  private:
   enum class SnapshotDiff { kNone, kScrollersOrFallbackPosition, kOffsetOnly };
 
@@ -215,6 +217,8 @@ class AnchorPositionScrollData
   Member<AnchorPositionVisibilityObserver> position_visibility_observer_;
 
   HeapHashSet<WeakMember<const Node>> dependent_anchors_;
+
+  bool needs_scroll_end_relayout_ = false;
 };
 
 template <>

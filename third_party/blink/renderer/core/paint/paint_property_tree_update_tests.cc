@@ -2174,6 +2174,11 @@ TEST_P(PaintPropertyTreeUpdateTest, UpdatesInLockedDisplayHandledCorrectly) {
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
+  // This tests the scroll translation update that happens while scrolling.
+  // Disable relayout on scroll end, since scrollByForTesting() completes the
+  // scroll immediately, which would otherwise relayout the anchored element at
+  // the new scroll offset and reset the translation.
+  ScopedAnchorPositionRelayoutOnScrollEndForTest relayout_on_scroll_end(false);
   SetBodyInnerHTML(R"HTML(
     <div id="spacer" style="height: 1000px"></div>
     <div id="anchor" style="

@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
@@ -260,6 +261,204 @@ TEST_F(AnchorPositionScrollDataTest, ScrollContentSizeChange) {
   UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(AnimationScheduled());
+}
+
+TEST_F(AnchorPositionScrollDataTest, RelayoutOnScrollEnd) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #cb {
+        position: relative;
+        width: 300px;
+        height: 300px;
+      }
+      #scroller {
+        overflow: scroll;
+        width: 300px;
+        height: 300px;
+      }
+      #spacer { height: 1000px; }
+      #anchor {
+        anchor-name: --a;
+        margin-top: 100px;
+        width: 50px;
+        height: 50px;
+      }
+      #anchored {
+        position: absolute;
+        position-anchor: --a;
+        position-area: bottom;
+        align-self: stretch;
+        width: 50px;
+      }
+    </style>
+    <div id="cb">
+      <div id="scroller">
+        <div id="anchor"></div>
+        <div id="spacer"></div>
+      </div>
+      <div id="anchored"></div>
+    </div>
+  )HTML");
+
+  Element* anchored = GetElementById("anchored");
+  ASSERT_TRUE(anchored->GetLayoutBox());
+  // Initially at scrollTop = 0, anchor bottom is at 150, so bottom
+  // position-area height in the 300px scroller is 150px.
+  EXPECT_EQ(LayoutUnit(150), anchored->GetLayoutBox()->LogicalHeight());
+
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
+  scroller->GetScrollableArea()->SetScrollOffset(
+      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  scroller->GetScrollableArea()->OnScrollFinished(/*enqueue_scrollend=*/true);
+
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+
+  // At scrollTop = 50, anchor bottom is at 100 in the scrollport, so the
+  // bottom position-area height grows to 200px on scrollend relayout.
+  EXPECT_EQ(LayoutUnit(200), anchored->GetLayoutBox()->LogicalHeight());
+}
+
+// Even a simple fixed-size anchored element whose position is a pure
+// translation of the scroll offset gets relaid out on scroll end, but not
+// before.
+TEST_F(AnchorPositionScrollDataTest, RelayoutOnScrollEndSimpleTranslation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #cb {
+        position: relative;
+        width: 300px;
+        height: 300px;
+      }
+      #scroller {
+        overflow: scroll;
+        width: 300px;
+        height: 300px;
+      }
+      #spacer { height: 1000px; }
+      #anchor {
+        anchor-name: --a;
+        margin-top: 100px;
+        width: 50px;
+        height: 50px;
+      }
+      #anchored {
+        position: absolute;
+        position-anchor: --a;
+        top: anchor(bottom);
+        width: 50px;
+        height: 50px;
+      }
+    </style>
+    <div id="cb">
+      <div id="scroller">
+        <div id="anchor"></div>
+        <div id="spacer"></div>
+      </div>
+      <div id="anchored"></div>
+    </div>
+  )HTML");
+
+  Element* anchored = GetElementById("anchored");
+  ASSERT_TRUE(anchored->GetLayoutBox());
+  // Initially at scrollTop = 0, anchor bottom is at 150.
+  EXPECT_EQ(LayoutUnit(150), anchored->GetLayoutBox()->PhysicalLocation().top);
+
+  // Simulate a compositor scroll update, which (unlike an instant programmatic
+  // scroll) does not finish the scroll.
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
+  scroller->GetScrollableArea()->SetScrollOffset(
+      ScrollOffset(0, 50), mojom::blink::ScrollType::kCompositor,
+      cc::ScrollSourceType::kNone);
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+
+  // While scrolling, the scroll offset is handled by translation and the
+  // layout position is unchanged.
+  EXPECT_EQ(LayoutUnit(150), anchored->GetLayoutBox()->PhysicalLocation().top);
+
+  scroller->GetScrollableArea()->OnScrollFinished(/*enqueue_scrollend=*/true);
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+
+  // Once scrolling ends, the element is relaid out at the current scroll
+  // offset, where the anchor bottom is at 100.
+  EXPECT_EQ(LayoutUnit(100), anchored->GetLayoutBox()->PhysicalLocation().top);
+}
+
+TEST_F(AnchorPositionScrollDataTest, ScrollableOverflowDuringAndAfterScroll) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller1 {
+        width: 200px;
+        height: 200px;
+        position: relative;
+        overflow: scroll;
+      }
+      #scroller2 {
+        width: 100px;
+        height: 100px;
+        overflow: scroll;
+      }
+      #anchor {
+        anchor-name: --a;
+        height: 20px;
+      }
+      #positioned {
+        position: absolute;
+        position-anchor: --a;
+        left: anchor(left);
+        top: anchor(bottom);
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="scroller1">
+      <div style="height: 100px"></div>
+      <div id="scroller2">
+        <div style="height: 230px"></div>
+        <div id="anchor"></div>
+        <div style="height: 230px"></div>
+      </div>
+      <div style="height: 100px"></div>
+      <div id="positioned"></div>
+    </div>
+  )HTML");
+
+  Element* scroller1 = GetElementById("scroller1");
+  auto* scroller2 =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller2"));
+  EXPECT_EQ(450, scroller1->scrollHeight());
+
+  // While compositor scrolling is in progress, the scroll translation does not
+  // change the outer scroller's scrollHeight.
+  scroller2->GetScrollableArea()->SetScrollOffset(
+      ScrollOffset(0, 50), mojom::blink::ScrollType::kCompositor,
+      cc::ScrollSourceType::kNone);
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(450, scroller1->scrollHeight());
+
+  // Once scrolling finishes, #positioned relayouts and updates scrollHeight.
+  scroller2->GetScrollableArea()->OnScrollFinished(/*enqueue_scrollend=*/true);
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(400, scroller1->scrollHeight());
+
+  scroller2->GetScrollableArea()->SetScrollOffset(
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kCompositor,
+      cc::ScrollSourceType::kNone);
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(400, scroller1->scrollHeight());
+
+  scroller2->GetScrollableArea()->OnScrollFinished(/*enqueue_scrollend=*/true);
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(350, scroller1->scrollHeight());
 }
 
 }  // namespace blink

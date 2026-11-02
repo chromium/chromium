@@ -6697,6 +6697,20 @@ void Document::EnqueueScrollEndEventForNode(Node* target) {
           : Event::Create(event_type_names::kScrollend);
   scroll_end_event->SetTarget(target);
   scripted_animation_controller_->EnqueuePerFrameEvent(scroll_end_event);
+
+  if (RuntimeEnabledFeatures::AnchorPositionRelayoutOnScrollEndEnabled() &&
+      GetFrame()) {
+    const LayoutBox* box = nullptr;
+    if (const auto* element = DynamicTo<Element>(target)) {
+      box = element->GetLayoutBoxForScrolling();
+    } else if (target->IsDocumentNode()) {
+      box = GetLayoutView();
+    }
+    if (box && box->GetScrollableArea()) {
+      GetFrame()->NotifyScrollEndForAnchorPositioning(
+          box->GetScrollableArea()->GetScrollElementId());
+    }
+  }
 }
 
 void Document::EnqueueScrollSnapChangeEvent(Node* target,

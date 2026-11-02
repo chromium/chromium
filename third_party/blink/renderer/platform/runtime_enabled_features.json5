@@ -641,6 +641,12 @@
       status: "stable",
     },
     {
+      // https://crbug.com/543008837: Ensure anchor-positioned elements are
+      // consistent with a full relayout once scrolling stops.
+      name: "AnchorPositionRelayoutOnScrollEnd",
+      status: "stable",
+    },
+    {
       name: "AndroidDownloadableFontsMatching",
       base_feature: "none",
       public: true,

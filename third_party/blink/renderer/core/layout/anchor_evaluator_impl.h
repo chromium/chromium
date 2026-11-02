@@ -147,7 +147,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       const AnchorSpecifierValue&,
       const DefaultAnchorData&);
   PhysicalRect CalculateAnchorRectWithScrollOffset(
-      const PhysicalAnchorReference&);
+      const PhysicalAnchorReference&,
+      const DefaultAnchorData&);
 
   void UpdateAccessibilityAnchor(const LayoutObject* anchor);
 

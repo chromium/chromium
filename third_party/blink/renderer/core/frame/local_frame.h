@@ -961,6 +961,8 @@ class CORE_EXPORT LocalFrame final
   // This is called after all other position-visibility conditions have been
   // checked.
   void CheckPositionAnchorsForChainedVisibilityChanges();
+  void NotifyScrollEndForAnchorPositioning(
+      CompositorElementId scroll_element_id);
 
   using BlockingDetailsList = Vector<mojom::blink::BlockingDetailsPtr>;
   static BlockingDetailsList ConvertFeatureAndLocationToMojomStruct(

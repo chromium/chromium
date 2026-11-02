@@ -372,8 +372,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
   const LayoutUnit axis_size = is_y_axis ? containing_block_rect.Height()
                                          : containing_block_rect.Width();
 
-  const PhysicalRect anchor_rect =
-      CalculateAnchorRectWithScrollOffset(*anchor_reference);
+  const PhysicalRect anchor_rect = CalculateAnchorRectWithScrollOffset(
+      *anchor_reference, default_anchor_data);
   if (std::optional<LayoutUnit> result = ResolveAnchorValue(
           anchor_rect, anchor_value, percentage, axis_size,
           container_writing_direction_,
@@ -415,8 +415,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     return std::nullopt;
   }
 
-  PhysicalRect anchor_rect =
-      CalculateAnchorRectWithScrollOffset(*anchor_reference);
+  PhysicalRect anchor_rect = CalculateAnchorRectWithScrollOffset(
+      *anchor_reference, default_anchor_data);
   return ResolveAnchorSizeValue(anchor_rect.size, anchor_size_value,
                                 container_writing_direction_.GetWritingMode(),
                                 query_box_->Style().GetWritingMode());
@@ -451,7 +451,8 @@ const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorForEvaluation(
 }
 
 PhysicalRect AnchorEvaluatorImpl::CalculateAnchorRectWithScrollOffset(
-    const PhysicalAnchorReference& anchor_reference) {
+    const PhysicalAnchorReference& anchor_reference,
+    const DefaultAnchorData& default_anchor_data) {
   PhysicalRect result = anchor_reference.TransformedBoundingRect();
 
   // Update the anchor rect based on remembered (or current) scroll offsets.
@@ -482,6 +483,26 @@ PhysicalRect AnchorEvaluatorImpl::CalculateAnchorRectWithScrollOffset(
         .scroll_offset_for_range_adjustment =
             adjustment_data.accumulated_range_adjustment_offset};
   }();
+
+  // Scroll is only compensated per axis for anchors that share the default
+  // anchor's nearest scroll container in that axis (see
+  // ShouldUseScrollAdjustmentFor). For other axes, ignore the scroll offset so
+  // that the result doesn't depend on the scroll offset at the time of layout.
+  // Otherwise, e.g. a relayout on scroll end (which clears the remembered
+  // scroll offsets) would start applying scroll offsets that are not
+  // compensated for.
+  if (!ShouldUseScrollAdjustmentFor(anchor_reference.GetLayoutObject(),
+                                    PhysicalAxis::kHorizontal,
+                                    default_anchor_data)) {
+    scroll_offsets.scroll_offset_for_layout.left = LayoutUnit();
+    scroll_offsets.scroll_offset_for_range_adjustment.left = LayoutUnit();
+  }
+  if (!ShouldUseScrollAdjustmentFor(anchor_reference.GetLayoutObject(),
+                                    PhysicalAxis::kVertical,
+                                    default_anchor_data)) {
+    scroll_offsets.scroll_offset_for_layout.top = LayoutUnit();
+    scroll_offsets.scroll_offset_for_range_adjustment.top = LayoutUnit();
+  }
 
   result.Move(-scroll_offsets.scroll_offset_for_layout);
 
