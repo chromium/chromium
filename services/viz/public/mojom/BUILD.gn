@@ -6,7 +6,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   generate_blink = true
-  generate_java = true
   sources = [
     "compositing/animation.mojom",
     "compositing/begin_frame_args.mojom",
@@ -662,7 +661,6 @@ mojom("mojom") {
 
 mojom("surfaces") {
   generate_blink = true
-  generate_java = true
   sources = [
     "compositing/frame_sink_id.mojom",
     "compositing/local_surface_id.mojom",
