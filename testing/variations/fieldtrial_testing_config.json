@@ -6262,23 +6262,6 @@
             ]
         }
     ],
-    "DeviceBoundSessionsForGoogle": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithPrewarmer",
-                    "enable_features": [
-                        "DeviceBoundSessionsDsePrewarmer",
-                        "DeviceBoundSessionsForRestrictedSites",
-                        "EnableOAuthMultiloginStandardCookiesBinding"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeviceBoundSessionsMtlsDogfood": [
         {
             "platforms": [

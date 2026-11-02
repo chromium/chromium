@@ -11,7 +11,13 @@ namespace features {
 // This feature enables preemptive refreshes for device bound sessions
 // registered in the same site as the default search engine when the user is not
 // actively navigating.
-BASE_FEATURE(kDeviceBoundSessionsDsePrewarmer, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDeviceBoundSessionsDsePrewarmer,
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // See `DsePrewarmerLifetime` for the description of the modes.
 constexpr base::FeatureParam<DsePrewarmerLifetime>::Option

@@ -358,7 +358,9 @@ TEST_F(BoundSessionHeaderModificationDelegateImplTest,
 TEST_F(BoundSessionHeaderModificationDelegateImplTest,
        StandardRegistrationAllowsGoogleRegistration) {
   base::test::ScopedFeatureList feature_list(
-      net::features::kDeviceBoundSessions);
+      /*enabled_features=*/{net::features::kDeviceBoundSessions},
+      /*disabled_features=*/{
+          net::features::kDeviceBoundSessionsForRestrictedSites});
   const GURL response_url("https://accounts.google.com");
   const std::string registration_path = "startsession";
   TestResponseAdapter gaia_response_adapter(response_url);

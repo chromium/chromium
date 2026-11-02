@@ -896,20 +896,28 @@ TEST(RegistrationFetcherParamTest, RestrictedRegistration) {
       SchemefulSite(GURL("https://other-restricted.example.test"))};
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       CreateHeaders("startsession", "(ES256 RS256)", "c1", "auth");
-  std::vector<RegistrationFetcherParam> params =
-      RegistrationFetcherParam::CreateIfValid(
-          registration_request, response_headers.get(), restricted_sites);
-  EXPECT_EQ(params.size(), 0U);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kDeviceBoundSessionsForRestrictedSites);
+    std::vector<RegistrationFetcherParam> params =
+        RegistrationFetcherParam::CreateIfValid(
+            registration_request, response_headers.get(), restricted_sites);
+    EXPECT_EQ(params.size(), 0U);
+  }
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kDeviceBoundSessionsForRestrictedSites);
-  params = RegistrationFetcherParam::CreateIfValid(
-      registration_request, response_headers.get(), restricted_sites);
-  ASSERT_EQ(params.size(), 1U);
-  const auto& param = params[0];
-  EXPECT_EQ(param.registration_endpoint(),
-            GURL("https://restricted.example.test/startsession"));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kDeviceBoundSessionsForRestrictedSites);
+    std::vector<RegistrationFetcherParam> params =
+        RegistrationFetcherParam::CreateIfValid(
+            registration_request, response_headers.get(), restricted_sites);
+    ASSERT_EQ(params.size(), 1U);
+    const auto& param = params[0];
+    EXPECT_EQ(param.registration_endpoint(),
+              GURL("https://restricted.example.test/startsession"));
+  }
 }
 
 TEST(RegistrationFetcherParamTest, AikRequired) {
