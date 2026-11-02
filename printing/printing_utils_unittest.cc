@@ -56,6 +56,7 @@ TEST(PrintingUtilsTest, SimplifyDocumentTitle) {
   EXPECT_EQ("C__foo_", Simplify("C:/foo/"));
   EXPECT_EQ("a_b_c", Simplify("a<b\"c"));
   EXPECT_EQ("d_e_f_", Simplify("d*e?f~"));
+  EXPECT_EQ("g_h_i_j_", Simplify("g(h)i{j}"));
   EXPECT_EQ("", Simplify("\n\r\n\r\t\r"));
 }
 
