@@ -591,6 +591,10 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   request.credentials_mode = CalculateCredentialsMode(link);
   request.is_outermost_main_frame =
       request_for_navigation.is_outermost_main_frame;
+  // Preloads are part of the navigation's page load, so they share its DevTools
+  // throttling profile. DevTools network emulation then applies to them as it
+  // does to the navigation and the document's own requests.
+  request.throttling_profile_id = request_for_navigation.throttling_profile_id;
 
   blink::network_utils::SetAcceptHeader(request.headers, request.destination);
 

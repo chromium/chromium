@@ -214,6 +214,37 @@ TEST_F(NavigationEarlyHintsManagerTest, SimpleResponse) {
   EXPECT_FALSE(it->second.was_canceled);
 }
 
+// Tests that preloads inherit the navigation's DevTools throttling profile, so
+// that DevTools network emulation treats them like the navigation and the
+// document's own requests.
+TEST_F(NavigationEarlyHintsManagerTest, PreloadInheritsThrottlingProfileId) {
+  network::mojom::URLResponseHeadPtr head = CreatePreloadResponseHead();
+  network::URLLoaderCompletionStatus status;
+  status.decoded_body_length = base::ByteSize(kPreloadBody.size());
+  status.error_code = net::OK;
+  loader_factory().AddResponse(GURL(kPreloadPath), std::move(head),
+                               kPreloadBody, status);
+
+  std::optional<base::UnguessableToken> preload_throttling_profile_id;
+  loader_factory().SetInterceptor(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& resource_request) {
+        preload_throttling_profile_id = resource_request.throttling_profile_id;
+      }));
+
+  const base::UnguessableToken throttling_profile_id =
+      base::UnguessableToken::Create();
+  network::ResourceRequest navigation_request =
+      CreateNavigationResourceRequest();
+  navigation_request.throttling_profile_id = throttling_profile_id;
+  early_hints_manager().HandleEarlyHints(CreateEarlyHintWithPreload(),
+                                         navigation_request);
+
+  PreloadedResources preloads = WaitForPreloadedResources();
+  ASSERT_EQ(preloads.size(), 1UL);
+  EXPECT_THAT(preload_throttling_profile_id,
+              testing::Optional(throttling_profile_id));
+}
+
 TEST_F(NavigationEarlyHintsManagerTest, EmptyBody) {
   // Set up an empty response which simulates coming from network.
   network::mojom::URLResponseHeadPtr head = CreatePreloadResponseHead();

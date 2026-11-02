@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
@@ -860,6 +861,40 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, DevtoolsEventsForEarlyHint) {
     EXPECT_TRUE(from_early_hints_value->is_bool());
     EXPECT_TRUE(from_early_hints_value->GetBool());
   }
+}
+
+// Tests that DevTools network emulation applies to Early Hints preloads, as it
+// does to the navigation itself.
+IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest,
+                       DevToolsNetworkEmulationAppliesToPreload) {
+  ResponseEntry entry = CreateEmptyPageEntryWithHintedScript();
+  RegisterResponse(entry);
+  shell()->LoadURL(GURL("about:blank"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  Attach();
+  // Emulate being offline for the hinted script only, so that the navigation
+  // still succeeds while the preload fails.
+  GURL preloaded_url = net::QuicSimpleTestServer::GetFileURL(kHintedScriptPath);
+  base::DictValue conditions;
+  conditions.Set("urlPattern", preloaded_url.spec());
+  conditions.Set("latency", 0);
+  conditions.Set("downloadThroughput", -1);
+  conditions.Set("uploadThroughput", -1);
+  conditions.Set("offline", true);
+  base::ListValue matched_conditions;
+  matched_conditions.Append(std::move(conditions));
+  base::DictValue params;
+  params.Set("matchedNetworkConditions", std::move(matched_conditions));
+  SendCommandSync("Network.emulateNetworkConditionsByRule", std::move(params));
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), net::QuicSimpleTestServer::GetFileURL(kEmptyPagePath)));
+  PreloadedResources preloads = WaitForPreloadedResources();
+  auto it = preloads.find(preloaded_url);
+  ASSERT_TRUE(it != preloads.end());
+  ASSERT_TRUE(it->second.error_code.has_value());
+  EXPECT_EQ(it->second.error_code.value(), net::ERR_INTERNET_DISCONNECTED);
 }
 
 class NavigationEarlyHintsAddressSpaceTest : public NavigationEarlyHintsTest {
