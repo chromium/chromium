@@ -17,7 +17,9 @@
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/strings/to_string.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/types/expected.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/ttc/app/public/error_codes.h"
@@ -30,6 +32,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 namespace {
 
@@ -42,6 +45,36 @@ std::string SessionLifecycleToString(TTCSessionLifecycle lifecycle) {
       return "live";
     case TTCSessionLifecycle::kFinished:
       return "finished";
+  }
+}
+
+// Returns whether `response` contains a valid `AnnotatedPageContent` payload.
+bool HasAnnotatedPageContent(
+    const PageContextWrapperCallbackResponse& response) {
+  return response.has_value() && response.value() &&
+         response.value()->has_annotated_page_content();
+}
+
+// Returns whether `response` failed because the page's context is not eligible
+// to be shared with the backend (unsupported scheme/MIME type, unsafe page, or
+// force-detached context).
+bool IsPageContextIneligible(
+    const PageContextWrapperCallbackResponse& response) {
+  if (response.has_value()) {
+    return false;
+  }
+  switch (response.error()) {
+    case PageContextWrapperError::kPageNotExtractableError:
+    case PageContextWrapperError::kPageUnsafeError:
+    case PageContextWrapperError::kForceDetachError:
+      return true;
+    case PageContextWrapperError::kGenericError:
+    case PageContextWrapperError::kAPCError:
+    case PageContextWrapperError::kScreenshotError:
+    case PageContextWrapperError::kPDFDataError:
+    case PageContextWrapperError::kTimeout:
+    case PageContextWrapperError::kInnerTextError:
+      return false;
   }
 }
 
@@ -137,12 +170,13 @@ void TtcSessionController::OnVoiceFocusedWebStateChanged(
     page_context_monitor_->Disconnect();
     page_context_monitor_.reset();
   }
-  // TODO(b/555804152): Signal to the backend when page context is invalidated
-  // or cannot be extracted for the focused WebState.
-  if (web_state) {
-    page_context_monitor_ =
-        std::make_unique<TtcPageContextMonitor>(*web_state, this);
+  if (!web_state) {
+    conversation_->SendContextUpdate(GURL(), /*title=*/std::string(),
+                                     /*apc=*/{});
+    return;
   }
+  page_context_monitor_ =
+      std::make_unique<TtcPageContextMonitor>(*web_state, this);
 }
 
 #pragma mark - TtcPageContextMonitor::Delegate
@@ -150,26 +184,42 @@ void TtcSessionController::OnVoiceFocusedWebStateChanged(
 void TtcSessionController::OnPageContextFetched(
     PageContextWrapperCallbackResponse response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (lifecycle_ != TTCSessionLifecycle::kLive || !response.has_value()) {
+  if (lifecycle_ != TTCSessionLifecycle::kLive) {
     return;
   }
-  const optimization_guide::proto::PageContext* page_context =
-      response.value().get();
-  if (!page_context || !page_context->has_annotated_page_content()) {
+  if (!HasAnnotatedPageContent(response)) {
+    web::WebState* web_state = GetVoiceFocusedWebState();
+    if (!web_state) {
+      return;
+    }
+    // Send a tab-only update with empty `AnnotatedPageContent` so the backend
+    // clears stale page content from the previous page. Only share the origin
+    // when the page's context is not eligible to be shared.
+    const GURL& committed_url = web_state->GetLastCommittedURL();
+    if (IsPageContextIneligible(response)) {
+      conversation_->SendContextUpdate(
+          url::Origin::Create(committed_url).GetURL(),
+          /*title=*/std::string(), /*apc=*/{});
+      return;
+    }
+    conversation_->SendContextUpdate(
+        committed_url, base::UTF16ToUTF8(web_state->GetTitle()), /*apc=*/{});
     return;
   }
+  const optimization_guide::proto::PageContext& page_context =
+      *response.value();
   const optimization_guide::proto::AnnotatedPageContent& apc =
-      page_context->annotated_page_content();
+      page_context.annotated_page_content();
   const optimization_guide::proto::FrameData& main_frame_data =
       apc.main_frame_data();
   // Fall back to top-level `PageContext` metadata when `main_frame_data`
   // fields are empty.
   const std::string& main_frame_url = main_frame_data.url();
   const GURL url =
-      main_frame_url.empty() ? GURL(page_context->url()) : GURL(main_frame_url);
+      main_frame_url.empty() ? GURL(page_context.url()) : GURL(main_frame_url);
   const std::string& main_frame_title = main_frame_data.title();
   const std::string& title =
-      main_frame_title.empty() ? page_context->title() : main_frame_title;
+      main_frame_title.empty() ? page_context.title() : main_frame_title;
   conversation_->SendContextUpdate(url, title, apc);
 }
 

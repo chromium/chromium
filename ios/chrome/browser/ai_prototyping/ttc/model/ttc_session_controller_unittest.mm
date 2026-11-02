@@ -635,6 +635,9 @@ TEST_F(TtcSessionControllerTest,
       .Times(1);
   SimulateMonitorExtraction(controller, first_url, "First Tab");
 
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(GURL(), std::string(), testing::_))
+      .Times(1);
   CloseAllWebStates(*browser.GetWebStateList(),
                     WebStateList::ClosingReason::kDefault);
   controller.Disconnect();
@@ -683,6 +686,7 @@ TEST_F(TtcSessionControllerTest,
   const GURL second_url("https://example.com/second");
   web::FakeWebState* second_tab_ptr =
       InsertActiveEligibleTab(browser, profile.get(), second_url);
+  second_tab_ptr->SetTitle(u"Second Tab");
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), second_tab_ptr);
 
   EXPECT_CALL(*mock_backend_ptr,
@@ -690,14 +694,35 @@ TEST_F(TtcSessionControllerTest,
       .Times(1);
   SimulateMonitorExtraction(controller, second_url, "Second Tab");
 
-  // Error responses and responses without `AnnotatedPageContent` must not
-  // forward context updates to the backend.
-  EXPECT_CALL(*mock_backend_ptr, SendContextUpdate).Times(0);
+  // Extraction errors and responses without `AnnotatedPageContent` forward a
+  // tab-only context update (empty `AnnotatedPageContent`) so the backend drops
+  // any stale page context from the previous page.
+  const auto is_empty_apc = testing::Truly(
+      [](const optimization_guide::proto::AnnotatedPageContent& apc) {
+        return apc.ByteSizeLong() == 0;
+      });
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(second_url, "Second Tab", is_empty_apc))
+      .Times(2);
   controller.OnPageContextFetched(
       base::unexpected(PageContextWrapperError::kGenericError));
   auto empty_context =
       std::make_unique<optimization_guide::proto::PageContext>();
   controller.OnPageContextFetched(base::ok(std::move(empty_context)));
+
+  // Non-extractable, unsafe, and force-detached pages strip the URL to its
+  // origin and omit the title.
+  for (PageContextWrapperError error :
+       {PageContextWrapperError::kPageNotExtractableError,
+        PageContextWrapperError::kPageUnsafeError,
+        PageContextWrapperError::kForceDetachError}) {
+    SCOPED_TRACE(static_cast<int>(error));
+    EXPECT_CALL(*mock_backend_ptr,
+                SendContextUpdate(GURL("https://example.com/"), std::string(),
+                                  is_empty_apc))
+        .Times(1);
+    controller.OnPageContextFetched(base::unexpected(error));
+  }
 
   // Falls back to `PageContext` URL and title when `main_frame_data` fields are
   // empty.
@@ -712,10 +737,20 @@ TEST_F(TtcSessionControllerTest,
       .Times(1);
   controller.OnPageContextFetched(base::ok(std::move(fallback_context)));
 
-  // Closing all tabs clears the controller's focused `WebState`.
+  // Closing all tabs clears the controller's focused `WebState` and sends an
+  // empty context update to clear stale page context in the backend.
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(GURL(), std::string(), is_empty_apc))
+      .Times(1);
   CloseAllWebStates(*browser.GetWebStateList(),
                     WebStateList::ClosingReason::kDefault);
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), nullptr);
+
+  // When no `WebState` is focused, error responses must not send a context
+  // update.
+  EXPECT_CALL(*mock_backend_ptr, SendContextUpdate).Times(0);
+  controller.OnPageContextFetched(
+      base::unexpected(PageContextWrapperError::kGenericError));
 
   controller.Disconnect();
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), nullptr);
