@@ -231,6 +231,27 @@ TEST_F(PrivacyOverlayWinTest,
   std::wstring sharing_text;
   EXPECT_TRUE(GetWindowTextString(sharing_text_hwnd, &sharing_text));
   EXPECT_NE(sharing_text.find(L"user@domain"), std::wstring::npos);
+
+  // Verify the Disconnect button dialog is horizontally centered on its target
+  // monitor and positioned vertically below the centered backdrop text.
+  HMONITOR monitor =
+      MonitorFromWindow(windows.button_hwnd, MONITOR_DEFAULTTONEAREST);
+  MONITORINFO monitor_info = {sizeof(monitor_info)};
+  RECT button_rect = {};
+  ASSERT_TRUE(GetMonitorInfo(monitor, &monitor_info));
+  ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &button_rect));
+
+  int button_width = button_rect.right - button_rect.left;
+  int monitor_width =
+      monitor_info.rcMonitor.right - monitor_info.rcMonitor.left;
+  int monitor_height =
+      monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top;
+  int expected_left =
+      monitor_info.rcMonitor.left + (monitor_width - button_width) / 2;
+  int center_y = monitor_info.rcMonitor.top + monitor_height / 2;
+  EXPECT_EQ(button_rect.left, expected_left);
+  EXPECT_GT(button_rect.top, center_y);
+  EXPECT_LE(button_rect.bottom, monitor_info.rcMonitor.bottom);
 }
 
 TEST_F(PrivacyOverlayWinTest,

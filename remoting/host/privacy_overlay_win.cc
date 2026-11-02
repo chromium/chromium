@@ -143,6 +143,11 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // inserting them into `backdrop_dpi_cache_` if not yet present.
   const BackdropDpiResources& GetBackdropResourcesForDpi(UINT dpi);
 
+  // Measures the wrapped pixel height of `sharing_with_text_` for a monitor of
+  // `monitor_width` and `dpi` so `PositionDisconnectButton()` can place the
+  // floating button below multi-line wrapped text without overlapping it.
+  int MeasureSharingTextHeight(int monitor_width, UINT dpi);
+
   // Draws the background and contrasting rounded border of the Disconnect
   // button dialog into `hdc`.
   void PaintButtonDialog(HWND hwnd, HDC hdc);
@@ -150,6 +155,10 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // Recreates or resizes per-monitor privacy overlay backdrop windows across
   // all active physical displays.
   bool UpdateBackdrops();
+
+  // Positions and DPI-scales the Disconnect button window on the monitor
+  // containing `screen_point`.
+  void PositionDisconnectButton(POINT screen_point);
 
   // Hides and restores click-through (`WS_EX_TRANSPARENT`) on the Disconnect
   // button window.
@@ -179,6 +188,14 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
 
   // The floating Disconnect button dialog created from `IDD_DISCONNECT`.
   HWND hwnd_ = nullptr;
+
+  // The monitor on which `hwnd_` is currently positioned and its cached screen
+  // rectangle.
+  // TODO(crbug.com/451238243): Read `active_button_monitor_rect_` in
+  // `ActivateDisconnectButton()` in the follow-up CL that hooks up
+  // `LocalInputMonitor`.
+  HMONITOR active_button_monitor_ = nullptr;
+  RECT active_button_monitor_rect_ = {0, 0, 0, 0};
 
   // The DPI for which `hwnd_`'s current size, font, border pen, and rounded
   // region were computed.
@@ -487,6 +504,10 @@ bool PrivacyOverlayWin::BeginOverlay() {
     return false;
   }
 
+  POINT cursor_pos = {0, 0};
+  GetCursorPos(&cursor_pos);
+
+  PositionDisconnectButton(cursor_pos);
   DeactivateDisconnectButton();
   return true;
 }
@@ -511,6 +532,8 @@ void PrivacyOverlayWin::EndOverlay() {
       DestroyWindow(backdrop_hwnd);
     }
   }
+  active_button_monitor_ = nullptr;
+  active_button_monitor_rect_ = {0, 0, 0, 0};
   active_button_dpi_ = 0;
 
   backdrop_dpi_cache_.clear();
@@ -622,6 +645,42 @@ PrivacyOverlayWin::GetBackdropResourcesForDpi(UINT dpi) {
   return inserted_it->second;
 }
 
+int PrivacyOverlayWin::MeasureSharingTextHeight(int monitor_width, UINT dpi) {
+  int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
+  int default_height = ScaleForDpi(kBaseBodyFontSize, dpi) + spacing;
+  if (sharing_with_text_.empty() || monitor_width <= 0) {
+    return default_height;
+  }
+
+  const BackdropDpiResources& resources = GetBackdropResourcesForDpi(dpi);
+  if (!resources.body_font.is_valid()) {
+    return default_height;
+  }
+
+  base::win::ScopedGetDC screen_dc(hwnd_);
+  if (!screen_dc) {
+    return default_height;
+  }
+
+  int max_text_width = std::max(
+      1, (monitor_width * kMaxTextWidthNumerator) / kMaxTextWidthDenominator);
+  RECT calc_rect = {0, 0, max_text_width, 0};
+  UINT draw_text_flags = DT_CENTER | DT_WORDBREAK | DT_EDITCONTROL |
+                         DT_EXTERNALLEADING | DT_NOPREFIX | DT_CALCRECT;
+  if (is_rtl_) {
+    draw_text_flags |= DT_RTLREADING;
+  }
+
+  base::win::ScopedSelectObject select_font(screen_dc,
+                                            resources.body_font.get());
+  if (DrawTextW(screen_dc, sharing_with_text_.c_str(), -1, &calc_rect,
+                draw_text_flags)) {
+    return std::max(default_height,
+                    static_cast<int>(calc_rect.bottom - calc_rect.top));
+  }
+  return default_height;
+}
+
 void PrivacyOverlayWin::PaintButtonDialog(HWND hwnd, HDC hdc) {
   RECT rect;
   if (!GetClientRect(hwnd, &rect)) {
@@ -636,8 +695,9 @@ void PrivacyOverlayWin::PaintButtonDialog(HWND hwnd, HDC hdc) {
 
   FillRect(hdc, &rect, bg_brush);
 
-  UINT dpi = active_button_dpi_ > 0 ? active_button_dpi_
-                                    : GetMonitorDpi(nullptr, hwnd);
+  UINT dpi = active_button_dpi_ > 0
+                 ? active_button_dpi_
+                 : GetMonitorDpi(active_button_monitor_, hwnd);
   int border_width = std::max(1, ScaleForDpi(kBaseButtonBorderWidth, dpi));
   int border_radius = ScaleForDpi(kBaseWindowBorderRadius, dpi);
 
@@ -660,6 +720,11 @@ void PrivacyOverlayWin::PaintButtonDialog(HWND hwnd, HDC hdc) {
 
 bool PrivacyOverlayWin::UpdateBackdrops() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Invalidate the cached active button monitor so `PositionDisconnectButton()`
+  // recomputes the button coordinates for updated monitor geometry or DPI.
+  active_button_monitor_ = nullptr;
+  active_button_monitor_rect_ = {0, 0, 0, 0};
 
   std::vector<RECT> monitor_rects = GetActiveMonitorRects();
   if (monitor_rects.empty()) {
@@ -741,6 +806,56 @@ bool PrivacyOverlayWin::UpdateBackdrops() {
   }
 
   return true;
+}
+
+void PrivacyOverlayWin::PositionDisconnectButton(POINT screen_point) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!hwnd_) {
+    return;
+  }
+
+  HMONITOR monitor = MonitorFromPoint(screen_point, MONITOR_DEFAULTTONEAREST);
+  UINT dpi = GetMonitorDpi(monitor, hwnd_);
+  if (monitor && monitor == active_button_monitor_ &&
+      dpi == active_button_dpi_) {
+    return;
+  }
+
+  UpdateButtonLayoutForDpi(dpi);
+
+  MONITORINFO monitor_info = {sizeof(monitor_info)};
+  RECT window_rect;
+  if (!GetMonitorInfo(monitor, &monitor_info) ||
+      !GetWindowRect(hwnd_, &window_rect)) {
+    return;
+  }
+
+  active_button_monitor_ = monitor;
+  active_button_monitor_rect_ = monitor_info.rcMonitor;
+
+  int window_width = window_rect.right - window_rect.left;
+  int window_height = window_rect.bottom - window_rect.top;
+  int monitor_width =
+      monitor_info.rcMonitor.right - monitor_info.rcMonitor.left;
+  int monitor_height =
+      monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top;
+
+  int left = monitor_info.rcMonitor.left + (monitor_width - window_width) / 2;
+  int center_y = monitor_info.rcMonitor.top + monitor_height / 2;
+  int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
+  int min_offset = ScaleForDpi(kBaseButtonTopOffset, dpi);
+  int text_offset = MeasureSharingTextHeight(monitor_width, dpi) + spacing;
+  int top = center_y + std::max(min_offset, text_offset);
+
+  // Clamp `top` so the button never clips off the bottom of the monitor.
+  int max_top = std::max(static_cast<int>(monitor_info.rcMonitor.top),
+                         static_cast<int>(monitor_info.rcMonitor.bottom) -
+                             window_height - spacing);
+  top = std::min(top, max_top);
+
+  SetExpectedPosition(left, top);
+  SetWindowPos(hwnd_, HWND_TOPMOST, left, top, 0, 0,
+               SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 void PrivacyOverlayWin::DeactivateDisconnectButton() {
