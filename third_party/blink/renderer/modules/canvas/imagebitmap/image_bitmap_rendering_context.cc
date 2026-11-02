@@ -326,11 +326,10 @@ void ImageBitmapRenderingContext::ResourceReleasedGpu(
     scoped_refptr<StaticBitmapImage> image,
     const gpu::SyncToken& token,
     bool lost_resource) {
-  if (image && image->IsValid()) {
-    DCHECK(image->IsTextureBacked());
-    if (token.HasData()) {
-      image->UpdateSyncToken(token);
-    }
+  CHECK(image);
+  DCHECK(image->IsTextureBacked());
+  if (token.HasData()) {
+    image->UpdateSyncToken(token);
   }
 }
 
