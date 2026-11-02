@@ -17,6 +17,8 @@ if (is_android) {
       "browser_command_delegate_android.cc",
       "browser_command_delegate_android.h",
       "browser_navigator_android.cc",
+      "browser_shortcut_manager_android.cc",
+      "browser_shortcut_manager_android.h",
       "chrome_http_auth_handler.cc",
       "chrome_http_auth_handler.h",
       "chrome_javascript_app_modal_dialog_android.cc",

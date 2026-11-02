@@ -1,0 +1,62 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.shortcuts;
+
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.base.lifetime.LifetimeAssert;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.AcceleratorManager;
+import org.chromium.ui.base.WindowAndroid;
+
+/**
+ * Registers browser keyboard shortcuts on a window's {@link AcceleratorManager} and routes matched
+ * commands through {@link BrowserCommandDelegate}.
+ */
+@NullMarked
+public class BrowserShortcutManager {
+    private final @Nullable LifetimeAssert mLifetimeAssert;
+    private long mNativeBrowserShortcutManagerAndroid;
+
+    /**
+     * Creates a shortcut manager and registers browser accelerators on {@code windowAndroid}.
+     *
+     * <p>The caller must attach an {@link AcceleratorManager} to {@code windowAndroid} before
+     * constructing this manager, and must call {@link #destroy()} before destroying that {@link
+     * AcceleratorManager}.
+     *
+     * @param windowAndroid The window whose {@link AcceleratorManager} receives shortcut targets.
+     * @param commandDelegate The delegate that evaluates and executes matched browser commands.
+     */
+    public BrowserShortcutManager(
+            WindowAndroid windowAndroid, BrowserCommandDelegate commandDelegate) {
+        mNativeBrowserShortcutManagerAndroid =
+                BrowserShortcutManagerJni.get().init(windowAndroid, commandDelegate);
+        mLifetimeAssert = LifetimeAssert.create(this);
+    }
+
+    /**
+     * Unregisters accelerators and destroys the native {@code BrowserShortcutManagerAndroid}. Must
+     * be called before the window's {@link AcceleratorManager} is destroyed.
+     */
+    public void destroy() {
+        if (mNativeBrowserShortcutManagerAndroid != 0) {
+            BrowserShortcutManagerJni.get().destroy(mNativeBrowserShortcutManagerAndroid);
+            mNativeBrowserShortcutManagerAndroid = 0;
+            LifetimeAssert.destroy(mLifetimeAssert);
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        long init(
+                @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
+                BrowserCommandDelegate commandDelegate);
+
+        void destroy(long nativeBrowserShortcutManagerAndroid);
+    }
+}

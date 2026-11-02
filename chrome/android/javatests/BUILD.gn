@@ -2187,6 +2187,7 @@ android_library("chrome_unit_test_java_various") {
     "src/org/chromium/chrome/browser/payments/ui/CurrencyFormatterTest.java",
     "src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettingsRenderTest.java",
     "src/org/chromium/chrome/browser/share/ShareUrlTest.java",
+    "src/org/chromium/chrome/browser/shortcuts/BrowserShortcutManagerTest.java",
     "src/org/chromium/chrome/browser/tab/state/PersistedTabDataTest.java",
     "src/org/chromium/chrome/browser/tabmodel/RestoreMigrateTest.java",
     "src/org/chromium/chrome/browser/toolbar/HomeButtonTest.java",
