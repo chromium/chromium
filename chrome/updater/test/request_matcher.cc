@@ -178,7 +178,8 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
       }
       for (const base::Value& app : *app_list) {
         if (const auto* dict = app.GetIfDict()) {
-          if (const auto* appid = dict->FindString("appid"); *appid == app_id) {
+          if (const auto* appid = dict->FindString("appid");
+              appid && *appid == app_id) {
             if (const auto* install_source =
                     dict->FindString("installsource")) {
               static constexpr auto kInstallSources =
@@ -216,7 +217,7 @@ Matcher GetUpdaterEnableUpdatesMatcher() {
       for (const base::Value& app : *app_list) {
         if (const auto* dict = app.GetIfDict()) {
           if (const auto* appid = dict->FindString("appid");
-              *appid == kUpdaterAppId) {
+              appid && *appid == kUpdaterAppId) {
             if (const auto* update_check = dict->FindDict("updatecheck")) {
               return update_check->FindBool("updatedisabled").value_or(false);
             }
