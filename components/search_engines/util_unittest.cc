@@ -4,7 +4,9 @@
 
 #include "components/search_engines/util.h"
 
+#include <map>
 #include <string>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -132,6 +134,26 @@ TEST_F(SearchEngineUtilTest, IsAimURL) {
 
   // Missing udm=50 should be rejected.
   EXPECT_FALSE(IsAimURL(GURL("https://www.google.com/search?q=test")));
+}
+
+// The AIM URL keeps a single `udm` when the params already have `udm=50` (e.g.
+// from a tool), since its own `udm=50` is only a fallback.
+TEST_F(SearchEngineUtilTemplateUrlTest, GetUrlForAim_KeepsSingleUdm) {
+  TemplateURLService* service = &template_url_service();
+
+  for (const auto& params : std::vector<std::map<std::string, std::string>>{
+           {}, {{"udm", "50"}}, {{"rc", "1"}, {"udm", "50"}}}) {
+    GURL url = GetUrlForAim(service, omnibox::ChromeAimEntryPoint(0),
+                            base::Time::Now(), u"test", std::nullopt, params);
+    int udm_count = 0;
+    for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
+      if (it.GetKey() == "udm") {
+        ++udm_count;
+        EXPECT_EQ(it.GetValue(), "50") << url;
+      }
+    }
+    EXPECT_EQ(udm_count, 1) << url;
+  }
 }
 
 TEST_F(SearchEngineUtilTemplateUrlTest, GetUrlForAim_QsubtsFlag) {

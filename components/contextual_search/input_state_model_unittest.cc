@@ -1128,6 +1128,47 @@ TEST_F(InputStateModelTest, GetAdditionalQueryParams_NemDropsUdm) {
                                             testing::Pair("nem", "143")));
 }
 
+// A tool and the model (or the no-model default) can both set `udm=50`; the
+// params keep a single `udm`.
+TEST_F(InputStateModelTest, GetAdditionalQueryParams_DuplicateUdmMerges) {
+  auto* canvas_config = config_.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  auto* canvas_rc_param = canvas_config->add_aim_url_params();
+  canvas_rc_param->set_param_key("rc");
+  canvas_rc_param->set_param_value("1");
+  auto* canvas_udm_param = canvas_config->add_aim_url_params();
+  canvas_udm_param->set_param_key("udm");
+  canvas_udm_param->set_param_value("50");
+
+  auto* regular_config = config_.add_model_configs();
+  regular_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  auto* regular_param = regular_config->add_aim_url_params();
+  regular_param->set_param_key("udm");
+  regular_param->set_param_value("50");
+
+  // Recreate the model with the new config.
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  input_state_model_->SetPrefService(&pref_service_);
+
+  // Canvas's `udm=50` and the no-model default `udm=50`.
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("rc", "1"),
+                                            testing::Pair("udm", "50")));
+
+  // Canvas's `udm=50` and the model's `udm=50`.
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("rc", "1"),
+                                            testing::Pair("udm", "50")));
+}
+
 TEST_F(InputStateModelCompatibilityTest, PolicyDisablesInputs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
