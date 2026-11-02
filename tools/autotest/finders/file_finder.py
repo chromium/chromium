@@ -15,6 +15,7 @@ from utils.command_error import CommandError
 
 _COMMON_EXTENSIONS = (
   '.java',
+  '.kt',
   '.cc',
   '.mm',
   '.h',
@@ -107,7 +108,7 @@ def IsTestFile(file_path: str) -> const.TestValidity:
     test_macro_regex = const.CXX_GTEST_TEST_DEFINITION_MACRO_REGEX
   elif file_path.endswith('.rs'):
     test_macro_regex = const.RUST_GTEST_TEST_DEFINITION_MACRO_REGEX
-  elif file_path.endswith('.java'):
+  elif file_path.endswith(('.java', '.kt')):
     test_macro_regex = const.JUNIT_TEST_ANNOTATION_REGEX
   else:
     return const.TestValidity.MAYBE_A_TEST
@@ -387,7 +388,9 @@ def FindMatchingTestFiles(
   if len(exact) >= 1:
     # Given "Foo", don't ask to disambiguate ModFoo.java vs Foo.java.
     more_exact: list[str] = [
-      p for p in exact if os.path.basename(p) in (target, f'{target}.java')
+      p
+      for p in exact
+      if os.path.basename(p) in (target, f'{target}.java', f'{target}.kt')
     ]
     if len(more_exact) == 1:
       test_files = more_exact
@@ -500,13 +503,13 @@ def _FindRelatedTestFiles(
       check_exts = ['.rs']
       split_pattern = r'_'  # snake_case
       separator = '_'
-    case '.java':
-      test_exts = ['.java']
-      check_exts = ['.java']
+    case '.java' | '.kt':
+      test_exts = ['.java', '.kt']
+      check_exts = ['.java', '.kt']
       split_pattern = r'(?=[A-Z])'  # PascalCase
       separator = ''
     case _:
-      # Only C++, Java, and Rust code files are supported.
+      # Only C++, Java, Kotlin, and Rust code files are supported.
       return []
 
   candidates = _GetPotentiallyRelatedTestFiles(

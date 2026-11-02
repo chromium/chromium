@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 def BuildTestFilter(filenames: list[str], line: int | None) -> str:
-  java_files: list[str] = [f for f in filenames if f.endswith('.java')]
+  java_files: list[str] = [f for f in filenames if f.endswith(('.java', '.kt'))]
   # TODO(crbug.com/434009870): Support EarlGrey tests, which don't use
   # Googletest's macros or pascal case naming convention.
   native_files: list[str] = [

@@ -166,7 +166,10 @@ template("_androidx_prebuilt") {
         "androidx/compose/ui/graphics/vector/compat/XmlVectorParser*",
       ]
     } else if (target_name == "androidx_compose_ui_ui_java") {
-      public_deps = [ ":compose_ui_overrides_java" ]
+      public_deps = [
+        ":androidx_compose_ui_ui_geometry_android_java",
+        ":compose_ui_overrides_java",
+      ]
     } else if (filter_include([ target_name ], [ "androidx_xr_*" ]) != []) {
       proguard_configs = [ "androidx_xr.flags" ]
 

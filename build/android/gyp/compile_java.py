@@ -642,6 +642,7 @@ def _RunCompiler(
                 CreateJarFile(
                     options.filtered_jar,
                     classes_dir,
+                    extra_classes_jar=options.kotlin_jar_path,
                     filter_func=lambda p: not filter_func(p),
                 )
 

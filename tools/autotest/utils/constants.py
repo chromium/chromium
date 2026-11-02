@@ -141,11 +141,13 @@ PREF_MAPPING_FILE_PATTERN: str = (
 PREF_MAPPING_FILE_NAME_GLOB: str = (
   '*components/policy/test/data/pref_mapping/*.json'
 )
-GTEST_FILE_NAME_GLOB: str = '*{test,tests}*.{cc,mm,java,rs}'
+GTEST_FILE_NAME_GLOB: str = '*{test,tests}*.{cc,mm,java,kt,rs}'
 
 # Regex version of `(PREF_MAPPING_FILE_GLOB) | (GTEST_FILE_GLOB)`
 TEST_FILE_NAME_REGEX: re.Pattern[str] = re.compile(
-  r'.*(?:tests?.*\.(?:cc|mm|rs)|Test\.java|' + PREF_MAPPING_FILE_PATTERN + ')$',
+  r'.*(?:tests?.*\.(?:cc|mm|rs)|Test\.(?:java|kt)|'
+  + PREF_MAPPING_FILE_PATTERN
+  + ')$',
   flags=re.IGNORECASE,
 )
 

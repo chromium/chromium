@@ -151,6 +151,9 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
             throws IllegalAccessException, InvocationTargetException, JSONException {
         JSONObject result = new JSONObject();
         for (Annotation a : annotations) {
+            if (a.annotationType().getName().equals("kotlin.Metadata")) {
+                continue;
+            }
             JSONObject aJSON = (JSONObject) asJSON(a);
             String aType = aJSON.keys().next();
             result.put(aType, aJSON.get(aType));

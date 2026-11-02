@@ -205,6 +205,7 @@ def main(argv):
         '-no-stdlib',
         # Avoid depending on the bundled Kotlin reflect libs.
         '-no-reflect',
+        '-Xemit-jvm-type-annotations',
     ]
     if args.compiler_plugin_jar:
         kotlinc_cmd += [
