@@ -402,9 +402,9 @@ bool AcceleratedStaticBitmapImage::IsValid() const {
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-AcceleratedStaticBitmapImage::ContextProviderWrapper() const {
-  return texture_backing_ ? skia_context_provider_wrapper_
-                          : context_provider_wrapper_;
+AcceleratedStaticBitmapImage::SkiaContextProviderWrapper() const {
+  CHECK(texture_backing_);
+  return skia_context_provider_wrapper_;
 }
 
 void AcceleratedStaticBitmapImage::CreateImageFromMailboxIfNeeded() {

@@ -270,19 +270,24 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   // an accelerated snapshot.
   auto source_paint_image = source->PaintImageForCurrentFrame();
   const auto source_orientation = GetSourceOrientation(source, options);
-  if (source_paint_image.IsTextureBacked() &&
-      source->ContextProviderWrapper()) {
-    if (auto image = AcceleratedStaticBitmapImage::CreateFromRaster(
-            gfx::Size(dest_size.width(), dest_size.height()), dest_format,
-            dest_alpha_type, dest_color_space, dest_hdr_metadata,
-            source->ContextProviderWrapper(),
-            gpu::Intersection(source->GetSharedImage()->usage(),
-                              AcceleratedStaticBitmapImage::kAllowedReadUsages),
-            [&](cc::PaintCanvas& canvas) {
-              BlitToCanvas(canvas, source_paint_image, source_orientation,
-                           SkRect::Make(source_rect), dest_size, options);
-            })) {
-      return image;
+  if (source_paint_image.IsTextureBacked()) {
+    CHECK(source->IsTextureBacked());
+    auto* accelerated_source =
+        static_cast<AcceleratedStaticBitmapImage*>(source.get());
+
+    if (auto provider = accelerated_source->SkiaContextProviderWrapper()) {
+      if (auto image = AcceleratedStaticBitmapImage::CreateFromRaster(
+              gfx::Size(dest_size.width(), dest_size.height()), dest_format,
+              dest_alpha_type, dest_color_space, dest_hdr_metadata, provider,
+              gpu::Intersection(
+                  source->GetSharedImage()->usage(),
+                  AcceleratedStaticBitmapImage::kAllowedReadUsages),
+              [&](cc::PaintCanvas& canvas) {
+                BlitToCanvas(canvas, source_paint_image, source_orientation,
+                             SkRect::Make(source_rect), dest_size, options);
+              })) {
+        return image;
+      }
     }
   }
 

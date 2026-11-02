@@ -65,7 +65,6 @@ namespace blink {
 enum class C2PAManifestStatus;
 class GraphicsContext;
 class Image;
-class WebGraphicsContext3DProviderWrapper;
 class DarkModeImageCache;
 
 struct ImageTilingInfo;
@@ -337,11 +336,6 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
                            const SkMatrix& local_matrix,
                            const gfx::RectF& src_rect,
                            const ImageDrawOptions& draw_options);
-
-  virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-  ContextProviderWrapper() const {
-    return nullptr;
-  }
 
   PaintImage::Id paint_image_id() const { return stable_image_id_; }
 
