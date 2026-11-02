@@ -94,7 +94,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
-import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -142,10 +141,10 @@ public class LaunchIntentDispatcherTest {
     @Mock IntentHandler.Natives mIntentHandlerNativeMock;
     @Mock ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerNativeMock;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
-    @Mock private ForegroundServiceUtils mForegroundServiceUtils;
     @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
     @Mock private Profile mProfile;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
+    @Mock private ActorKeyedService mActorKeyedService;
 
     private TestActivity mActivity;
 
@@ -156,10 +155,10 @@ public class LaunchIntentDispatcherTest {
         IntentHandlerJni.setInstanceForTesting(mIntentHandlerNativeMock);
 
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
-        ForegroundServiceUtils.setInstanceForTesting(mForegroundServiceUtils);
         ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -813,8 +812,6 @@ public class LaunchIntentDispatcherTest {
 
     private static final String GLIC_EXTERNAL_TRIGGERING_ACTION =
             GlicIntentConstants.ACTION_EXTERNAL_TRIGGERING;
-    private static final String START_ACTOR_FOREGROUND_SERVICE =
-            "org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE";
 
     @Test
     public void testDispatchGlicExternalTrigger_WrongAction() {
@@ -824,7 +821,7 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
         verifyNoInteractions(mExternalAuthUtils);
-        verifyNoInteractions(mForegroundServiceUtils);
+        verify(mActorKeyedService, never()).addExternalTriggerPendingTask();
     }
 
     @Test
@@ -837,7 +834,7 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         assertEquals(Activity.RESULT_CANCELED, shadowOf(mActivity).getResultCode());
-        verifyNoInteractions(mForegroundServiceUtils);
+        verify(mActorKeyedService, never()).addExternalTriggerPendingTask();
     }
 
     @Test
@@ -853,7 +850,7 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         assertEquals(Activity.RESULT_CANCELED, shadowOf(mActivity).getResultCode());
-        verifyNoInteractions(mForegroundServiceUtils);
+        verify(mActorKeyedService, never()).addExternalTriggerPendingTask();
     }
 
     @Test
@@ -870,7 +867,7 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
-        verifyNoInteractions(mForegroundServiceUtils);
+        verify(mActorKeyedService, never()).addExternalTriggerPendingTask();
 
         Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(launchedIntent);
@@ -884,7 +881,8 @@ public class LaunchIntentDispatcherTest {
     }
 
     @Test
-    public void testDispatchGlicExternalTrigger_ConsentNotRequired_StartsService() {
+    public void
+            testDispatchGlicExternalTrigger_ConsentNotRequired_AddsExternalTriggerPendingTask() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
         shadowOf(mActivity).setCallingPackage("com.google.android.apps.googlequicksearchbox");
@@ -898,14 +896,7 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
-
-        ArgumentCaptor<Intent> serviceIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mForegroundServiceUtils).startForegroundService(serviceIntentCaptor.capture());
-        Intent serviceIntent = serviceIntentCaptor.getValue();
-        assertEquals(START_ACTOR_FOREGROUND_SERVICE, serviceIntent.getAction());
-        assertEquals(
-                org.chromium.chrome.browser.actor.ActorForegroundService.class.getName(),
-                serviceIntent.getComponent().getClassName());
+        verify(mActorKeyedService).addExternalTriggerPendingTask();
     }
 
     @Test
@@ -923,7 +914,7 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
-        verifyNoInteractions(mForegroundServiceUtils);
+        verify(mActorKeyedService, never()).addExternalTriggerPendingTask();
 
         Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(launchedIntent);
@@ -950,7 +941,7 @@ public class LaunchIntentDispatcherTest {
         int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(mActivity, intent);
 
         assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
-        verifyNoInteractions(mForegroundServiceUtils);
+        verify(mActorKeyedService, never()).addExternalTriggerPendingTask();
     }
 
     private static Intent createGlicInterruptIntent(String conversationId) {
@@ -1008,7 +999,7 @@ public class LaunchIntentDispatcherTest {
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
         verify(controller).createTrustedBringTabToFrontIntent(task);
-        verifyNoInteractions(mForegroundServiceUtils);
+        verify(mActorKeyedService, never()).addExternalTriggerPendingTask();
 
         Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertTrue(IntentHandler.wasIntentSenderChrome(launchedIntent));
@@ -1041,12 +1032,12 @@ public class LaunchIntentDispatcherTest {
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         assertEquals(Activity.RESULT_CANCELED, shadowOf(mActivity).getResultCode());
         assertNull(shadowOf(mActivity).getNextStartedActivity());
-        verifyNoInteractions(mForegroundServiceUtils);
+        verify(actorKeyedService, never()).addExternalTriggerPendingTask();
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
-    public void testDispatchGlicExternalTrigger_WithConversationId_RoutingDisabled_StartsService() {
+    public void testDispatchGlicExternalTrigger_RoutingDisabled_AddsExternalTriggerPendingTask() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         Intent intent = createGlicInterruptIntent("conv_123");
         setUpTrustedGlicCaller();
@@ -1057,7 +1048,7 @@ public class LaunchIntentDispatcherTest {
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
         assertNull(shadowOf(mActivity).getNextStartedActivity());
-        verify(mForegroundServiceUtils).startForegroundService(any());
+        verify(mActorKeyedService).addExternalTriggerPendingTask();
     }
 
     @Test
@@ -1070,7 +1061,7 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
-        verifyNoInteractions(mForegroundServiceUtils);
+        verify(mActorKeyedService, never()).addExternalTriggerPendingTask();
 
         Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(launchedIntent);
@@ -1432,7 +1423,7 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
         assertEquals(Activity.RESULT_OK, shadowOf(mActivity).getResultCode());
-        verifyNoInteractions(mForegroundServiceUtils);
+        verify(mActorKeyedService, never()).addExternalTriggerPendingTask();
 
         Intent launchedIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(launchedIntent);

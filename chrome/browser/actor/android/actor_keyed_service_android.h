@@ -39,6 +39,7 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   void StopTask(int32_t task_id, int32_t stop_reason);
 
   int32_t GetPendingTasksCount();
+  void AddExternalTriggerPendingTask(int64_t timeout_ms);
   void AddPendingTask(const std::string& context_id);
   void RemovePendingTask(const std::string& context_id);
 

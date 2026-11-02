@@ -84,6 +84,9 @@ class ActorKeyedServiceTest : public testing::Test {
   }
 
   void RunTasksUntilIdle() { task_environment_.RunUntilIdle(); }
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
 
  protected:
   base::CallbackListSubscription user_confirmation_dialog_subscription_;
@@ -460,6 +463,127 @@ TEST_F(ActorKeyedServiceTest, PendingTaskRemovedOnFailureAndCancellation) {
   actor_service->OnMessageTriggerTaskStopped("cancel-msg");
   EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
   EXPECT_FALSE(actor_service->HasPendingTask("cancel-msg"));
+}
+
+TEST_F(ActorKeyedServiceTest, ExternalTriggerTimesOutWhenNoTaskArrives) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+
+  size_t last_notified_count = 99;
+  int added_callback_count = 0;
+  base::CallbackListSubscription count_subscription =
+      actor_service->AddPendingTaskCountChangedCallback(
+          base::BindLambdaForTesting(
+              [&](size_t count) { last_notified_count = count; }));
+  base::CallbackListSubscription added_subscription =
+      actor_service->AddPendingTaskAddedCallback(base::BindLambdaForTesting(
+          [&](const std::string&) { ++added_callback_count; }));
+
+  actor_service->AddExternalTriggerPendingTask(base::Minutes(2));
+  EXPECT_TRUE(actor_service->HasExternalTriggerPendingTaskForTesting());
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+  EXPECT_EQ(1u, last_notified_count);
+  EXPECT_EQ(0, added_callback_count);
+
+  // Advance by 1 minute: external trigger is still within its 2-minute window.
+  FastForwardBy(base::Minutes(1));
+  EXPECT_TRUE(actor_service->HasExternalTriggerPendingTaskForTesting());
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+
+  // Advance to 2 minutes: external trigger expires and drops pending count to
+  // 0 so the foreground service stops cleanly.
+  FastForwardBy(base::Minutes(1));
+  EXPECT_FALSE(actor_service->HasExternalTriggerPendingTaskForTesting());
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
+  EXPECT_EQ(0u, last_notified_count);
+  EXPECT_EQ(0, added_callback_count);
+}
+
+TEST_F(ActorKeyedServiceTest,
+       ExternalTriggerHandsOffAtomicallyToFcmPendingTaskWithoutTimeout) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+
+  std::vector<size_t> observed_counts;
+  std::vector<std::string> provisioned_contexts;
+  base::CallbackListSubscription count_subscription =
+      actor_service->AddPendingTaskCountChangedCallback(
+          base::BindLambdaForTesting(
+              [&](size_t count) { observed_counts.push_back(count); }));
+  base::CallbackListSubscription added_subscription =
+      actor_service->AddPendingTaskAddedCallback(base::BindLambdaForTesting(
+          [&](const std::string& id) { provisioned_contexts.push_back(id); }));
+
+  // External Gemini intent arrives at t = 0s.
+  actor_service->AddExternalTriggerPendingTask(base::Minutes(2));
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+  EXPECT_THAT(observed_counts, testing::ElementsAre(1u));
+  EXPECT_TRUE(provisioned_contexts.empty());
+  EXPECT_FALSE(actor_service->HasPendingTask("fcm-context-1"));
+
+  // FCM TriggerActuationRequest arrives at t = 5s: pending count stays at 1
+  // without dropping to 0, and the external trigger timeout is cancelled.
+  FastForwardBy(base::Seconds(5));
+  actor_service->AddPendingTask("fcm-context-1");
+  EXPECT_FALSE(actor_service->HasExternalTriggerPendingTaskForTesting());
+  EXPECT_TRUE(actor_service->HasPendingTask("fcm-context-1"));
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+  EXPECT_THAT(observed_counts, testing::ElementsAre(1u));
+  EXPECT_THAT(provisioned_contexts, testing::ElementsAre("fcm-context-1"));
+
+  // Even if WebUI loading + server planning exceeds 2 minutes, the FCM pending
+  // task remains alive until explicitly resolved by Glic/server.
+  FastForwardBy(base::Minutes(3));
+  EXPECT_TRUE(actor_service->HasPendingTask("fcm-context-1"));
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+
+  actor_service->RemovePendingTask("fcm-context-1");
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
+  EXPECT_THAT(observed_counts, testing::ElementsAre(1u, 0u));
+}
+
+TEST_F(ActorKeyedServiceTest,
+       RepeatedExternalTriggerRefreshesTimeoutWithoutDoubleCounting) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+
+  actor_service->AddExternalTriggerPendingTask(base::Minutes(2));
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+
+  // Re-trigger at t = 45s resets the 2-minute window without double counting.
+  FastForwardBy(base::Seconds(45));
+  actor_service->AddExternalTriggerPendingTask(base::Minutes(2));
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+
+  // Still pending at t = 120s (75s into second trigger).
+  FastForwardBy(base::Seconds(75));
+  EXPECT_TRUE(actor_service->HasExternalTriggerPendingTaskForTesting());
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+
+  // Expires cleanly at t = 165s (120s after second trigger).
+  FastForwardBy(base::Seconds(45));
+  EXPECT_FALSE(actor_service->HasExternalTriggerPendingTaskForTesting());
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
+}
+
+TEST_F(ActorKeyedServiceTest,
+       DirectCreateTaskClearsExternalTriggerPendingTask) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+
+  actor_service->AddExternalTriggerPendingTask(base::Minutes(2));
+  EXPECT_TRUE(actor_service->HasExternalTriggerPendingTaskForTesting());
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+
+  TaskId task_id = actor_service->CreateTaskWithOptions(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
+      /*delegate=*/nullptr, ui_state_manager());
+  EXPECT_FALSE(actor_service->HasExternalTriggerPendingTaskForTesting());
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
+  EXPECT_EQ(1u, actor_service->GetActiveTasksCount());
+
+  actor_service->StopTask(task_id, ActorTask::StoppedReason::kTaskComplete);
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
 }
 
 }  // namespace
