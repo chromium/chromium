@@ -10,7 +10,7 @@ export function getHtml(this: HistoryCrossDeviceSigninPromoElement) {
   return html`<!--_html_template_start_-->
 <div id="promo" role="dialog">
   <cr-icon-button id="close" iron-icon="cr:close"
-      aria-label="${this.i18n('historyEmbeddingsPromoClose')}"
+      aria-label="${this.i18n('historyPromoClose')}"
       @click="${this.onCloseClick_}">
   </cr-icon-button>
 

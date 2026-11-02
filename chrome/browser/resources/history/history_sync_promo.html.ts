@@ -13,7 +13,7 @@ export function getHtml(this: HistorySyncPromoElement) {
 ${this.shown_ ? html`
   <div id="promo" role="dialog">
     <cr-icon-button id="close" iron-icon="cr:close"
-        aria-label="$i18n{historyEmbeddingsPromoClose}"
+        aria-label="$i18n{historyPromoClose}"
         @click="${this.onCloseClick_}">
     </cr-icon-button>
 
