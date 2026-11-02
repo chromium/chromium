@@ -22,13 +22,16 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "ui/gfx/native_ui_types.h"
 
 class BrowserWindow;
 class BrowserWindowInterface;
 class Profile;
 class SkBitmap;
+
+namespace blink {
+class Manifest;
+}  // namespace blink
 
 namespace base {
 class FilePath;
@@ -280,7 +283,7 @@ class WebAppUiManager {
       content::WebContents* initiating_web_contents,
       base::WeakPtr<content::Page> initiating_page,
       std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
-      blink::mojom::ManifestPtr manifest,
+      blink::Manifest manifest,
       const GURL& manifest_url,
       const GURL& requesting_page_url,
       InstallCallback callback) = 0;

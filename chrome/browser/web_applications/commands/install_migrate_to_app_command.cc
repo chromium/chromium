@@ -35,7 +35,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
 
@@ -108,7 +107,7 @@ void InstallMigrateToAppCommand::OnUrlLoaded(
 }
 
 void InstallMigrateToAppCommand::OnManifestFetched(
-    blink::mojom::ManifestPtr manifest,
+    std::optional<blink::Manifest> manifest,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode installable_status) {
   GetMutableDebugValue().Set("installable_status",
@@ -120,9 +119,9 @@ void InstallMigrateToAppCommand::OnManifestFetched(
   }
 
   // Verify manifest id matches expected target_manifest_id_.
-  if (manifest->id != target_manifest_id_) {
+  if (manifest->id() != target_manifest_id_) {
     GetMutableDebugValue().Set("manifest_id_mismatch", true);
-    GetMutableDebugValue().Set("actual_manifest_id", manifest->id.spec());
+    GetMutableDebugValue().Set("actual_manifest_id", manifest->id().spec());
     CompleteAndSelfDestruct(CommandResult::kFailure,
                             InstallMigrateToAppResult::kManifestIdMismatch);
     return;
@@ -130,8 +129,8 @@ void InstallMigrateToAppCommand::OnManifestFetched(
 
   // Verify migrate_from field is present and matches source_manifest_id_.
   bool migrate_from_match = false;
-  for (const auto& migrate_from : manifest->migrate_from) {
-    if (migrate_from->id == source_manifest_id_) {
+  for (const auto& migrate_from : manifest->migrate_from()) {
+    if (migrate_from.id == source_manifest_id_) {
       migrate_from_match = true;
       break;
     }
@@ -166,22 +165,21 @@ void InstallMigrateToAppCommand::OnAppLockAcquired() {
   GetMutableDebugValue().Set(
       "migrate_to_app_install_state",
       install_state.has_value() ? base::ToString(*install_state) : "nullopt");
-  auto converted_manifest = blink::ManifestFromMojom(*manifest_);
-  CHECK(converted_manifest.has_value());
+  CHECK(manifest_.has_value());
   if (install_state.has_value()) {
     update_job_ = ManifestUpdateJob::CreateAndStart(
         *profile_, shared_web_contents_with_app_lock_.get(),
         shared_web_contents_with_app_lock_.get(),
         &shared_web_contents_with_app_lock_->shared_web_contents(),
         GetMutableDebugValue().EnsureDict("ManifestUpdateJob"),
-        std::move(*converted_manifest), data_retriever_.get(),
+        std::move(*manifest_), data_retriever_.get(),
         &WebAppProvider::GetForWebApps(profile_)->clock(),
         base::BindOnce(&InstallMigrateToAppCommand::OnUpdateJobFinished,
                        weak_factory_.GetWeakPtr()),
         ManifestUpdateJob::Options());
   } else {
     install_job_ = MigrationTargetInstallJob::CreateAndStart(
-        std::move(*converted_manifest),
+        std::move(*manifest_),
         shared_web_contents_with_app_lock_->shared_web_contents().GetWeakPtr(),
         profile_, data_retriever_.get(),
         GetMutableDebugValue().EnsureDict("MigrationTargetInstallJob"),

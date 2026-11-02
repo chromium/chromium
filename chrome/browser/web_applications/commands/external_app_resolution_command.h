@@ -30,6 +30,7 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -105,13 +106,13 @@ class ExternalAppResolutionCommand
   // Regular installation path:
   void OnGetWebAppInstallInfoInCommand(
       std::unique_ptr<WebAppInstallInfo> web_app_info);
-  void OnDidPerformInstallableCheck(blink::mojom::ManifestPtr opt_manifest,
+  void OnDidPerformInstallableCheck(std::optional<blink::Manifest> opt_manifest,
                                     bool valid_manifest_for_web_app,
                                     webapps::InstallableStatusCode error_code);
 
   // Installation flow followed by path where the `WebAppInstallInfo` is
-  // generated from the `opt_manifest`.
-  void RetrieveWebAppInfoFromManifest(blink::mojom::ManifestPtr opt_manifest);
+  // generated from the `manifest`.
+  void RetrieveWebAppInfoFromManifest(blink::Manifest manifest);
   void OnWebAppInstallInfoParsedFromManifest(
       std::unique_ptr<WebAppInstallInfo> install_info);
 

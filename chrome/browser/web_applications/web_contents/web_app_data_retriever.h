@@ -24,8 +24,11 @@
 #include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-forward.h"
+
+namespace blink {
+class Manifest;
+}  // namespace blink
 
 namespace content {
 class WebContents;
@@ -58,10 +61,8 @@ class WebAppDataRetriever : content::WebContentsObserver {
   // first specific error encountered.
   // If |error_code| is |webapps::InstallableStatusCode::NO_ERROR_DETECTED| then
   // |valid_manifest_for_web_app| must be true.
-  // If manifest is present then it is non-empty.
-  // |manifest_url| is empty if manifest is empty.
   using CheckInstallabilityCallback =
-      base::OnceCallback<void(blink::mojom::ManifestPtr opt_manifest,
+      base::OnceCallback<void(std::optional<blink::Manifest> opt_manifest,
                               bool valid_manifest_for_web_app,
                               webapps::InstallableStatusCode)>;
 

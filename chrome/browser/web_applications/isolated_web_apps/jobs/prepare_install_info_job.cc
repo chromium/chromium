@@ -170,7 +170,7 @@ void PrepareInstallInfoJob::OnLoadInstallUrl(
 }
 
 void PrepareInstallInfoJob::CheckInstallabilityAndRetrieveManifest(
-    base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback) {
+    base::OnceCallback<void(blink::Manifest)> next_step_callback) {
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents_.get(),
       base::BindOnce(
@@ -179,8 +179,8 @@ void PrepareInstallInfoJob::CheckInstallabilityAndRetrieveManifest(
 }
 
 void PrepareInstallInfoJob::OnCheckInstallabilityAndRetrieveManifest(
-    base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback,
-    blink::mojom::ManifestPtr opt_manifest,
+    base::OnceCallback<void(blink::Manifest)> next_step_callback,
+    std::optional<blink::Manifest> opt_manifest,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
   if (error_code != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
@@ -197,29 +197,27 @@ void PrepareInstallInfoJob::OnCheckInstallabilityAndRetrieveManifest(
     return;
   }
 
-  if (opt_manifest->manifest_url.is_empty()) {
+  if (opt_manifest->manifest_url().is_empty()) {
     ReportFailure(Error::kAppIsNotInstallable, "Manifest URL is empty.");
     return;
   }
 
-  CHECK(!blink::IsEmptyManifest(opt_manifest));
-
-  std::move(next_step_callback).Run(std::move(opt_manifest));
+  std::move(next_step_callback).Run(std::move(*opt_manifest));
 }
 
 void PrepareInstallInfoJob::ValidateManifestAndGetVersion(
     base::OnceCallback<void(IwaVersion)> next_step_callback,
-    blink::mojom::ManifestPtr manifest) {
-  const GURL& manifest_url = manifest->manifest_url;
+    blink::Manifest manifest) {
+  const GURL& manifest_url = manifest.manifest_url();
 
-  if (!manifest->version.has_value()) {
+  if (!manifest.version().has_value()) {
     ReportFailure(Error::kCantValidateManifest,
                   "Manifest `version` is not present. manifest_url: " +
                       manifest_url.possibly_invalid_spec());
     return;
   }
 
-  std::string version_string = base::UTF16ToUTF8(*manifest->version);
+  std::string version_string = base::UTF16ToUTF8(*manifest.version());
 
   auto iwa_version_result = IwaVersion::Create(version_string);
   if (!iwa_version_result.has_value()) {
@@ -253,7 +251,7 @@ void PrepareInstallInfoJob::ValidateManifestAndGetVersion(
   // application and do not include other information in order to be able to
   // identify Isolated Web Apps by origin because there is always only 1 app per
   // origin.
-  std::string encoded_id = manifest->id.GetPath();
+  std::string encoded_id = manifest.id().GetPath();
   if (encoded_id != "/") {
     ReportFailure(
         Error::kCantValidateManifest,
@@ -262,10 +260,10 @@ void PrepareInstallInfoJob::ValidateManifestAndGetVersion(
   }
 
   url::Origin origin = url_info_.origin();
-  if (manifest->scope != origin.GetURL()) {
+  if (manifest.scope() != origin.GetURL()) {
     ReportFailure(Error::kCantValidateManifest,
                   base::StrCat({"Scope should resolve to the origin. scope: ",
-                                manifest->scope.possibly_invalid_spec(),
+                                manifest.scope().possibly_invalid_spec(),
                                 ", origin: ", origin.Serialize()}));
     return;
   }
@@ -279,12 +277,11 @@ void PrepareInstallInfoJob::ParseInstallInfoFromManifest(
     const IwaVersion parsed_version) {
   WebAppInstallInfoConstructOptions construct_options;
   construct_options.fail_all_if_any_fail = true;
-  auto converted_manifest = blink::ManifestFromMojom(*manifest_);
-  CHECK(converted_manifest.has_value());
+  CHECK(manifest_.has_value());
 
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
-          *converted_manifest, *data_retriever_.get(),
+          *manifest_, *data_retriever_.get(),
           /*background_installation=*/false,
           webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER,
           web_contents_->GetWeakPtr(), [](IconUrlSizeSet& icon_url_size_set) {},

@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
@@ -271,8 +272,10 @@ TEST_F(ClearBrowsingDataCommandTest, ClearMigrationApps) {
 
   base::test::TestFuture<WebAppInstallFromMigrateFromFieldResult>
       install_future;
+  auto converted_manifest = blink::ManifestFromMojom(*manifest);
+  ASSERT_TRUE(converted_manifest.has_value());
   fake_provider().scheduler().ScheduleWebAppInstallFromMigrateFromField(
-      web_contents()->GetWeakPtr(), std::move(manifest),
+      web_contents()->GetWeakPtr(), std::move(*converted_manifest),
       install_future.GetCallback());
 
   EXPECT_EQ(install_future.Get(),

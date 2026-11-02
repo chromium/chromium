@@ -93,8 +93,8 @@ struct PlayStoreIntent {
 // the details necessary to redirect the user to the app's listing in the Play
 // Store.
 std::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
-    const blink::mojom::Manifest& manifest) {
-  for (const auto& app : manifest.related_applications) {
+    const blink::Manifest& manifest) {
+  for (const auto& app : manifest.related_applications()) {
     std::string id = base::UTF16ToUTF8(app.id.value_or(std::u16string()));
     if (!base::EqualsASCII(app.platform.value_or(std::u16string()),
                            kChromeOsPlayPlatform)) {
@@ -136,18 +136,17 @@ static bool& ShouldBypassVisibilityChecks() {
 // Fallback to using `kMinimumScreenshotSizeInPx` if there are no sizes
 // specified in the manifest for the screenshots, or if the size has been set to
 // `any`, which gets parsed as (0, 0).
-int ComputeIdealScreenshotSize(
-    const blink::mojom::ManifestScreenshotPtr& screenshot) {
-  return screenshot->image.sizes.empty() || screenshot->image.sizes[0].IsEmpty()
+int ComputeIdealScreenshotSize(const blink::Manifest::Screenshot& screenshot) {
+  return screenshot.image.sizes.empty() || screenshot.image.sizes[0].IsEmpty()
              ? webapps::kMinimumScreenshotSizeInPx
-             : std::max(screenshot->image.sizes[0].width(),
-                        screenshot->image.sizes[0].height());
+             : std::max(screenshot.image.sizes[0].width(),
+                        screenshot.image.sizes[0].height());
 }
 
 bool IsValidScreenshotForDownload(
-    const blink::mojom::ManifestScreenshotPtr& screenshot) {
-  return screenshot->form_factor ==
-         blink::mojom::ManifestScreenshot::FormFactor::kWide;
+    const blink::Manifest::Screenshot& screenshot) {
+  return screenshot.form_factor ==
+         blink::Manifest::Screenshot::FormFactor::kWide;
 }
 
 }  // namespace
@@ -402,13 +401,13 @@ void FetchManifestAndInstallCommand::FetchManifest() {
 }
 
 void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
-    blink::mojom::ManifestPtr opt_manifest,
+    std::optional<blink::Manifest> opt_manifest,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
   valid_manifest_for_crafted_web_app_ = valid_manifest_for_web_app;
   GetMutableDebugValue().Set(
       "manifest_url",
-      opt_manifest ? opt_manifest->manifest_url.possibly_invalid_spec() : "");
+      opt_manifest ? opt_manifest->manifest_url().possibly_invalid_spec() : "");
   GetMutableDebugValue().Set("valid_manifest_for_web_app",
                              valid_manifest_for_web_app);
   GetMutableDebugValue().Set("installable_error_code",
@@ -428,14 +427,14 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
     case FallbackBehavior::kCraftedManifestOnly:
       if (!valid_manifest_for_web_app) {
         LOG(WARNING) << "Did not install "
-                     << (opt_manifest->manifest_url.is_valid()
-                             ? opt_manifest->manifest_url.spec()
+                     << (opt_manifest->manifest_url().is_valid()
+                             ? opt_manifest->manifest_url().spec()
                              : web_contents()->GetLastCommittedURL().spec())
                      << " because it didn't have a manifest for web app";
         Abort(webapps::InstallResultCode::kNotValidManifestForWebApp);
         return;
       }
-      CHECK(!opt_manifest->icons.empty())
+      CHECK(!opt_manifest->icons().empty())
           << "kValidManifestIgnoreDisplay guarantees a manifest icon.";
       skip_page_favicons_on_initial_download_ = true;
       break;
@@ -451,11 +450,11 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
 
   GetMutableDebugValue().Set("skip_page_favicons_on_initial_download",
                              skip_page_favicons_on_initial_download_);
-  CHECK(opt_manifest->start_url.is_valid());
+  CHECK(opt_manifest->start_url().is_valid());
   opt_manifest_ = std::move(opt_manifest);
   StartPreloadingScreenshots();
   std::optional<webapps::ManifestId> manifest_id =
-      webapps::ManifestId::Create(opt_manifest_->id);
+      webapps::ManifestId::Create(opt_manifest_->id());
   CHECK(manifest_id.has_value());
 
   app_lock_ = std::make_unique<AppLock>();
@@ -541,12 +540,9 @@ void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
     fallback_info = web_app_info_->Clone();
   }
 
-  auto converted_manifest = blink::ManifestFromMojom(*opt_manifest_);
-  CHECK(converted_manifest.has_value());
-
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
-          *converted_manifest, *data_retriever_.get(),
+          *opt_manifest_, *data_retriever_.get(),
           /*background_installation=*/false, install_surface_, web_contents_,
           [](IconUrlSizeSet&) {}, GetMutableDebugValue(),
           base::BindOnce(&FetchManifestAndInstallCommand::
@@ -786,7 +782,7 @@ void FetchManifestAndInstallCommand::MeasureUserInstalledAppHistograms(
 void FetchManifestAndInstallCommand::StartPreloadingScreenshots() {
   CHECK(opt_manifest_);
   int count_screenshots = 0;
-  for (const auto& screenshot : opt_manifest_->screenshots) {
+  for (const auto& screenshot : opt_manifest_->screenshots()) {
     if (!IsValidScreenshotForDownload(screenshot)) {
       continue;
     }
@@ -794,7 +790,7 @@ void FetchManifestAndInstallCommand::StartPreloadingScreenshots() {
     // Filter out too large screenshots earlier, so that the number of "spots"
     // to be used in the detailed install dialog is accurately identified.
     bool should_skip_large_screenshot = false;
-    for (const gfx::Size& size : screenshot->image.sizes) {
+    for (const gfx::Size& size : screenshot.image.sizes) {
       if (size.width() > webapps::kMaximumScreenshotSizeInPx ||
           size.height() > webapps::kMaximumScreenshotSizeInPx) {
         should_skip_large_screenshot = true;
@@ -815,25 +811,25 @@ void FetchManifestAndInstallCommand::StartPreloadingScreenshots() {
     int ideal_size = ComputeIdealScreenshotSize(screenshot);
     gfx::Size size_to_use = (ideal_size == webapps::kMinimumScreenshotSizeInPx)
                                 ? gfx::Size(ideal_size, ideal_size)
-                                : screenshot->image.sizes[0];
+                                : screenshot.image.sizes[0];
     screenshot_sizes_.push_back(size_to_use);
 
     // Suppress console warnings by the `ManifestIconDownloader` if installation
     // is triggered for a chrome:// url.
     bool suppress_warnings =
-        screenshot->image.src.SchemeIs(content::kChromeUIScheme);
+        screenshot.image.src.SchemeIs(content::kChromeUIScheme);
 
     // Do not pass in a maximum icon size so that screenshots larger than
     // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
     // `ManifestIconDownloader::Download`. Screenshots with size larger than
     // kMaximumScreenshotSizeInPx are already filtered out at this point.
     content::ManifestIconDownloader::Download(
-        web_contents(), screenshot->image.src, ideal_size,
+        web_contents(), screenshot.image.src, ideal_size,
         webapps::kMinimumScreenshotSizeInPx,
         /*maximum_icon_size_in_px=*/0,
         base::BindOnce(&FetchManifestAndInstallCommand::OnScreenshotFetched,
                        weak_ptr_factory_.GetWeakPtr(), count_screenshots - 1,
-                       screenshot->label),
+                       screenshot.label),
         /*square_only=*/false, content::GlobalRenderFrameHostId(),
         suppress_warnings);
   }

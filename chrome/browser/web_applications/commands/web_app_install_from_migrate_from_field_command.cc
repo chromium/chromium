@@ -50,11 +50,11 @@ WebAppInstallFromMigrateFromFieldResult MapJobResult(
 WebAppInstallFromMigrateFromFieldCommand::
     WebAppInstallFromMigrateFromFieldCommand(
         base::WeakPtr<content::WebContents> web_contents,
-        blink::mojom::ManifestPtr manifest,
+        blink::Manifest manifest,
         WebAppInstallFromMigrateFromFieldCallback callback)
     : WebAppCommand<AppLock, WebAppInstallFromMigrateFromFieldResult>(
           "WebAppInstallFromMigrateFromFieldCommand",
-          AppLockDescription(GenerateAppIdFromManifest(*manifest)),
+          AppLockDescription(GenerateAppIdFromManifest(manifest)),
           base::BindOnce([](WebAppInstallFromMigrateFromFieldResult result) {
             base::UmaHistogramEnumeration(
                 "WebApp.InstallFromMigrateFromField.Result", result);
@@ -82,13 +82,13 @@ void WebAppInstallFromMigrateFromFieldCommand::StartWithLock(
   }
 
   bool source_installed = false;
-  for (const auto& migrate_from : manifest_->migrate_from) {
+  for (const auto& migrate_from : manifest_.migrate_from()) {
     // Allow all installed apps, even source apps installed by policy that is
     // not allowed to migrate, to also install the destination app but keep it
     // hidden from the user, so as to populate the pending migration metadata
     // in the source app.
     std::optional<webapps::ManifestId> manifest_id =
-        webapps::ManifestId::Create(migrate_from->id);
+        webapps::ManifestId::Create(migrate_from.id);
     if (!manifest_id.has_value()) {
       continue;
     }
@@ -112,12 +112,9 @@ void WebAppInstallFromMigrateFromFieldCommand::StartWithLock(
 
   data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
 
-  auto converted_manifest = blink::ManifestFromMojom(*manifest_);
-  CHECK(converted_manifest.has_value());
-
   job_ = MigrationTargetInstallJob::CreateAndStart(
-      std::move(*converted_manifest), web_contents_, profile,
-      data_retriever_.get(), &GetMutableDebugValue(), lock_.get(), lock_.get(),
+      std::move(manifest_), web_contents_, profile, data_retriever_.get(),
+      &GetMutableDebugValue(), lock_.get(), lock_.get(),
       base::BindOnce(&WebAppInstallFromMigrateFromFieldCommand::OnJobFinished,
                      weak_factory_.GetWeakPtr()));
 }

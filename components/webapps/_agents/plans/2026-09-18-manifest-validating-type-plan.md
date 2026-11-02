@@ -80,7 +80,7 @@ To keep each CL small and independently reviewable:
   `WebappsClient`, and Android `ShortcutInfo` / `WebAPK`**
 - [x] **Milestone 10: Migrate `content::PageManifestManager`,
   `ParseManifestFromStringJob`, and `//chrome/browser/web_applications/jobs/`**
-- [ ] **Milestone 11: Migrate `WebAppDataRetriever`, `PrepareInstallInfoJob`,
+- [x] **Milestone 11: Migrate `WebAppDataRetriever`, `PrepareInstallInfoJob`,
   `WebAppCommandScheduler`, UI, and Commands**
 - [ ] **Milestone 12: Migrate `FakeWebContentsManager`, `IsolatedWebAppBuilder`,
   and WebApp Unit/Browser Tests**

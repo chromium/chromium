@@ -58,7 +58,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
 
@@ -156,7 +155,7 @@ void ManifestSilentUpdateCommand::SetStage(
 }
 
 void ManifestSilentUpdateCommand::OnManifestFetchedAcquireAppLock(
-    blink::mojom::ManifestPtr opt_manifest,
+    std::optional<blink::Manifest> opt_manifest,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode installable_status) {
   CHECK_EQ(stage_, ManifestSilentUpdateCommandStage::kFetchingNewManifestData);
@@ -182,25 +181,25 @@ void ManifestSilentUpdateCommand::OnManifestFetchedAcquireAppLock(
       *opt_manifest, web_contents_->GetLastCommittedURL());
   GetMutableDebugValue().Set("manifest_is_default", manifest_is_default);
   GetMutableDebugValue().Set(
-      "manifest_url", opt_manifest->manifest_url.possibly_invalid_spec());
+      "manifest_url", opt_manifest->manifest_url().possibly_invalid_spec());
   GetMutableDebugValue().Set("manifest_id",
-                             opt_manifest->id.possibly_invalid_spec());
+                             opt_manifest->id().possibly_invalid_spec());
   GetMutableDebugValue().Set("manifest_start_url",
-                             opt_manifest->start_url.possibly_invalid_spec());
+                             opt_manifest->start_url().possibly_invalid_spec());
 
   if (installable_status != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
     CompleteCommandAndSelfDestruct(
         FROM_HERE, ManifestSilentUpdateCheckResult::kInvalidManifest);
     return;
   }
-  if (opt_manifest->icons.empty()) {
+  if (opt_manifest->icons().empty()) {
     CompleteCommandAndSelfDestruct(
         FROM_HERE, ManifestSilentUpdateCheckResult::kInvalidManifest);
     return;
   }
 
   std::optional<webapps::ManifestId> manifest_id =
-        webapps::ManifestId::Create(opt_manifest->id);
+      webapps::ManifestId::Create(opt_manifest->id());
   if (!manifest_id.has_value()) {
     CompleteCommandAndSelfDestruct(
         FROM_HERE, ManifestSilentUpdateCheckResult::kInvalidManifest);
@@ -214,11 +213,10 @@ void ManifestSilentUpdateCommand::OnManifestFetchedAcquireAppLock(
   command_manager()->lock_manager().UpgradeAndAcquireLock(
       std::move(lock_), *app_lock_, {app_id_},
       base::BindOnce(&ManifestSilentUpdateCommand::OnAppLockAcquired,
-                     GetWeakPtr(), std::move(opt_manifest)));
+                     GetWeakPtr(), std::move(*opt_manifest)));
 }
 
-void ManifestSilentUpdateCommand::OnAppLockAcquired(
-    blink::mojom::ManifestPtr manifest) {
+void ManifestSilentUpdateCommand::OnAppLockAcquired(blink::Manifest manifest) {
   if (IsWebContentsDestroyed()) {
     CompleteCommandAndSelfDestruct(
         FROM_HERE, ManifestSilentUpdateCheckResult::kWebContentsWasDestroyed);
@@ -234,15 +232,11 @@ void ManifestSilentUpdateCommand::OnAppLockAcquired(
   options.previous_time_for_silent_icon_update =
       previous_time_for_silent_icon_update_;
 
-  auto converted_manifest = blink::ManifestFromMojom(*manifest);
-  CHECK(converted_manifest.has_value());
-
   manifest_update_job_ = ManifestUpdateJob::CreateAndStart(
       *Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
       app_lock_.get(), app_lock_.get(), web_contents_.get(),
       GetMutableDebugValue().EnsureDict("manifest_update_job"),
-      std::move(*converted_manifest), data_retriever_.get(),
-      &app_lock_->clock(),
+      std::move(manifest), data_retriever_.get(), &app_lock_->clock(),
       base::BindOnce(&ManifestSilentUpdateCommand::OnUpdateJobCompleted,
                      GetWeakPtr()),
       std::move(options));

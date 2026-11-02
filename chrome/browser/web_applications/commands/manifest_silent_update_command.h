@@ -21,7 +21,7 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace content {
 class WebContents;
@@ -85,11 +85,11 @@ class ManifestSilentUpdateCommand
   void SetStage(ManifestSilentUpdateCommandStage stage);
 
   void OnManifestFetchedAcquireAppLock(
-      blink::mojom::ManifestPtr opt_manifest,
+      std::optional<blink::Manifest> opt_manifest,
       bool valid_manifest_for_web_app,
       webapps::InstallableStatusCode installable_status);
 
-  void OnAppLockAcquired(blink::mojom::ManifestPtr manifest);
+  void OnAppLockAcquired(blink::Manifest manifest);
   void OnUpdateJobCompleted(ManifestUpdateJobResultWithTimestamp result_info);
 
   void CompleteCommandAndSelfDestruct(

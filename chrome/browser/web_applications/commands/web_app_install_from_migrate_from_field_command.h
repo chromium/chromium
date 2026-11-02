@@ -13,7 +13,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/scheduler/web_app_install_from_migrate_from_field_result.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace content {
 class Page;
@@ -35,7 +35,7 @@ class WebAppInstallFromMigrateFromFieldCommand
  public:
   WebAppInstallFromMigrateFromFieldCommand(
       base::WeakPtr<content::WebContents> web_contents,
-      blink::mojom::ManifestPtr manifest,
+      blink::Manifest manifest,
       WebAppInstallFromMigrateFromFieldCallback callback);
   ~WebAppInstallFromMigrateFromFieldCommand() override;
 
@@ -51,7 +51,7 @@ class WebAppInstallFromMigrateFromFieldCommand
   void OnJobFinished(MigrationTargetInstallJobResult result);
 
   base::WeakPtr<content::WebContents> web_contents_;
-  blink::mojom::ManifestPtr manifest_;
+  blink::Manifest manifest_;
 
   std::unique_ptr<AppLock> lock_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;

@@ -79,8 +79,7 @@ void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
 
   if (!manifest.migrate_from().empty()) {
     provider_->scheduler().ScheduleWebAppInstallFromMigrateFromField(
-        web_contents.GetWeakPtr(), blink::ManifestToMojom(manifest),
-        base::DoNothing());
+        web_contents.GetWeakPtr(), manifest, base::DoNothing());
 
     WebAppTabHelper* tab_helper =
         WebAppTabHelper::FromWebContents(&web_contents);

@@ -118,7 +118,7 @@ void FetchInstallabilityForChromeManagement::OnUrlLoadedCheckInstallability(
 }
 
 void FetchInstallabilityForChromeManagement::OnWebAppInstallabilityChecked(
-    blink::mojom::ManifestPtr opt_manifest,
+    std::optional<blink::Manifest> opt_manifest,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
   if (IsWebContentsDestroyed()) {

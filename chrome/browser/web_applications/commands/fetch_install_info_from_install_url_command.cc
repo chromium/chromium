@@ -133,7 +133,7 @@ void FetchInstallInfoFromInstallUrlCommand::OnGetWebAppInstallInfo(
 void FetchInstallInfoFromInstallUrlCommand::
     OnManifestRetrievedMaybeFetchInstallInfo(
         std::unique_ptr<WebAppInstallInfo> web_app_info,
-        blink::mojom::ManifestPtr opt_manifest,
+        std::optional<blink::Manifest> opt_manifest,
         bool valid_manifest_for_web_app,
         webapps::InstallableStatusCode error_code) {
   CHECK(web_app_info);
@@ -149,14 +149,11 @@ void FetchInstallInfoFromInstallUrlCommand::
   // create a WebAppInstallInfo from it.
   if (opt_manifest) {
     WebAppInstallInfoConstructOptions construct_options;
-    construct_options.download_page_favicons = opt_manifest->icons.empty();
-
-    auto converted_manifest = blink::ManifestFromMojom(*opt_manifest);
-    CHECK(converted_manifest.has_value());
+    construct_options.download_page_favicons = opt_manifest->icons().empty();
 
     manifest_to_install_info_job_ =
         ManifestToWebAppInstallInfoJob::CreateAndStart(
-            *converted_manifest, *data_retriever_.get(),
+            *opt_manifest, *data_retriever_.get(),
             /*background_installation=*/true,
             webapps::WebappInstallSource::SUB_APP,
             lock_->shared_web_contents().GetWeakPtr(), [](IconUrlSizeSet&) {},
@@ -165,7 +162,6 @@ void FetchInstallInfoFromInstallUrlCommand::
                 &FetchInstallInfoFromInstallUrlCommand::OnInstallInfoFetched,
                 weak_ptr_factory_.GetWeakPtr()),
             construct_options, web_app_info->Clone());
-
     return;
   }
 

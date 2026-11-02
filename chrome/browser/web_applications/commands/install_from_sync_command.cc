@@ -241,7 +241,7 @@ void InstallFromSyncCommand::OnGetWebAppInstallInfo(
 
 void InstallFromSyncCommand::OnDidPerformInstallableCheck(
     std::unique_ptr<WebAppInstallInfo> page_info,
-    blink::mojom::ManifestPtr opt_manifest,
+    std::optional<blink::Manifest> opt_manifest,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
   if (!opt_manifest) {
@@ -255,12 +255,9 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
   // forever.
   // TODO(crbug.com/40226606): Allow favicons without waiting for them to
   // be updated on the page.
-  auto converted_manifest = blink::ManifestFromMojom(*opt_manifest);
-  CHECK(converted_manifest.has_value());
-
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
-          *converted_manifest, *data_retriever_.get(),
+          *opt_manifest, *data_retriever_.get(),
           /*background_installation=*/true, webapps::WebappInstallSource::SYNC,
           lock_->shared_web_contents().GetWeakPtr(), [](IconUrlSizeSet&) {},
           GetMutableDebugValue(),

@@ -284,7 +284,7 @@ TEST_F(WebInstallServiceImplTest, CurrentDocument_CrossOriginManifestId) {
   base::HistogramTester histograms;
   // Set up a manifest whose id is from a different origin.
   GURL cross_origin_id("https://evil.com/some_id");
-  auto manifest = CreateManifest(GURL(kDocumentUrl), cross_origin_id);
+  auto manifest = CreateManifest(cross_origin_id, cross_origin_id);
   SetupPageWithManifest(GURL(kDocumentUrl), std::move(manifest));
 
   BindService();

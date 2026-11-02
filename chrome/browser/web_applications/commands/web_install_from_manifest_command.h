@@ -15,7 +15,7 @@
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -53,7 +53,7 @@ class WebInstallFromManifestCommand
  public:
   WebInstallFromManifestCommand(
       Profile& profile,
-      blink::mojom::ManifestPtr manifest,
+      blink::Manifest manifest,
       const GURL& manifest_url,
       base::WeakPtr<content::WebContents> initiating_web_contents,
       base::WeakPtr<content::Page> initiating_page,
@@ -90,7 +90,7 @@ class WebInstallFromManifestCommand
   void MeasureUserInstalledAppHistogram(webapps::InstallResultCode code);
 
   raw_ref<Profile> profile_;
-  blink::mojom::ManifestPtr manifest_;
+  blink::Manifest manifest_;
   GURL manifest_url_;
   // The WebContents that initiated the install. Used to show the install
   // dialog. Also used to detect cross-document navigations.

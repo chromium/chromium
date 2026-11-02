@@ -429,8 +429,11 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfManifestIsInvalid) {
   InstallIwa(update_info());
   ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   auto& page_state = CreateDefaultPageState();
+  page_state.manifest_before_default_processing->start_url =
+      page_state.manifest_before_default_processing->start_url.Resolve(
+          "/foo/index.html");
   page_state.manifest_before_default_processing->scope =
-      GURL("https://example.com/foo/");
+      page_state.manifest_before_default_processing->start_url.Resolve("/foo/");
 
   auto result = ApplyPendingUpdate();
   EXPECT_THAT(result,

@@ -474,8 +474,10 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   auto url_info = InstallIwa();
   auto update_bundle = WriteUpdateBundleToDisk();
   auto& page_state = update_bundle->FakeInstallPageState(profile());
+  page_state.manifest_before_default_processing->start_url =
+      url_info.origin().GetURL().Resolve("/foo/index.html");
   page_state.manifest_before_default_processing->scope =
-      GURL("https://example.com/foo/");
+      url_info.origin().GetURL().Resolve("/foo/");
 
   const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
 

@@ -104,6 +104,7 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
@@ -727,7 +728,7 @@ void WebAppCommandScheduler::RunIconDiagnosticsForApp(
 }
 
 void WebAppCommandScheduler::InstallAppFromManifest(
-    blink::mojom::ManifestPtr manifest,
+    blink::Manifest manifest,
     const GURL& manifest_url,
     base::WeakPtr<content::WebContents> initiating_web_contents,
     base::WeakPtr<content::Page> initiating_page,
@@ -884,7 +885,7 @@ void WebAppCommandScheduler::UpdateValidatedOriginAssociations(
 
 void WebAppCommandScheduler::ScheduleWebAppInstallFromMigrateFromField(
     base::WeakPtr<content::WebContents> web_contents,
-    blink::mojom::ManifestPtr manifest,
+    blink::Manifest manifest,
     WebAppInstallFromMigrateFromFieldCallback callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(

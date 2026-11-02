@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -98,7 +99,7 @@ class InstallFromSyncCommand
 
   void OnDidPerformInstallableCheck(
       std::unique_ptr<WebAppInstallInfo> page_info,
-      blink::mojom::ManifestPtr opt_manifest,
+      std::optional<blink::Manifest> opt_manifest,
       bool valid_manifest_for_web_app,
       webapps::InstallableStatusCode error_code);
 

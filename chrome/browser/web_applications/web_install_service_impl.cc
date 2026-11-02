@@ -671,7 +671,7 @@ void WebInstallServiceImpl::OnDidCheckInstallabilityForCurrentDocumentInstall(
     InstallFromManifestCallbackWithMetrics callback_with_metrics,
     base::WeakPtr<WebAppDataRetriever> data_retriever,
     std::optional<GURL> linked_manifest_url,
-    blink::mojom::ManifestPtr manifest,
+    std::optional<blink::Manifest> manifest,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
   // Remove the data retriever from the set now that the callback has completed.
@@ -712,7 +712,7 @@ void WebInstallServiceImpl::OnDidCheckInstallabilityForCurrentDocumentInstall(
 
   // The Web Install API currently requires that the manifest is from the same
   // trusted origin as the current document to prevent origin spoofing.
-  if (!origin().IsSameOriginWith(manifest->id)) {
+  if (!origin().IsSameOriginWith(manifest->id())) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kInstallCommandFailed,
              blink::mojom::WebInstallServiceResult::kDataError);
@@ -721,7 +721,7 @@ void WebInstallServiceImpl::OnDidCheckInstallabilityForCurrentDocumentInstall(
 
   // The Web Install API no-argument signature requires the manifest to have a
   // developer-specified id to prevent multiple installs of the same app.
-  if (!manifest->has_custom_id) {
+  if (!manifest->has_custom_id()) {
     if (!IsInitiatingPageGoneOrChanged() && linked_manifest_url &&
         linked_manifest_url->is_valid() &&
         origin().IsSameOriginWith(url::Origin::Create(*linked_manifest_url))) {
@@ -769,7 +769,7 @@ void WebInstallServiceImpl::OnDidCheckInstallabilityForCurrentDocumentInstall(
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   CHECK(provider);
   std::optional<webapps::ManifestId> computed_manifest_id =
-      webapps::ManifestId::Create(manifest->id);
+      webapps::ManifestId::Create(manifest->id());
   CHECK(computed_manifest_id);
 
   std::optional<webapps::AppId> installed_app_id =
@@ -1109,9 +1109,8 @@ void WebInstallServiceImpl::ContinueManifestInstall(
 
   provider->ui_manager().TriggerInstallDialogForManifestInstall(
       content::WebContents::FromRenderFrameHost(&render_frame_host()),
-      initiating_page_, std::move(install_tracker),
-      blink::ManifestToMojom(manifest), options->manifest_url,
-      last_committed_url_,
+      initiating_page_, std::move(install_tracker), manifest,
+      options->manifest_url, last_committed_url_,
       base::BindOnce(&WebInstallServiceImpl::OnAppInstalledFromManifest,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback_with_metrics)));

@@ -19,9 +19,39 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
+
+namespace {
+
+std::optional<blink::Manifest> ToBlinkManifest(
+    const blink::mojom::Manifest* mojom_manifest) {
+  if (!mojom_manifest || blink::IsEmptyManifest(*mojom_manifest)) {
+    return std::nullopt;
+  }
+  blink::mojom::ManifestPtr copy = mojom_manifest->Clone();
+  if (!copy->start_url.is_valid()) {
+    copy->start_url = GURL("https://example.com/start");
+  }
+  if (!copy->id.is_valid() ||
+      !url::IsSameOriginWith(copy->start_url, copy->id)) {
+    copy->id = copy->start_url.GetWithoutRef();
+  }
+  if (!copy->scope.is_valid() ||
+      !url::IsSameOriginWith(copy->start_url, copy->scope)) {
+    copy->scope = copy->start_url.GetWithoutFilename();
+  }
+  auto converted = blink::ManifestFromMojom(*copy);
+  if (converted.has_value()) {
+    return std::move(*converted);
+  }
+  return std::nullopt;
+}
+
+}  // namespace
 
 FakeDataRetriever::FakeDataRetriever() = default;
 
@@ -44,9 +74,12 @@ void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     CheckInstallabilityCallback callback,
     std::optional<webapps::InstallableParams> params) {
+  std::optional<blink::Manifest> opt_manifest =
+      ToBlinkManifest(manifest_.get());
+  const bool valid_manifest_for_web_app = opt_manifest.has_value();
   completion_callback_ =
-      base::BindOnce(std::move(callback), manifest_.Clone(),
-                     /*valid_manifest_for_web_app=*/true, error_code_);
+      base::BindOnce(std::move(callback), std::move(opt_manifest),
+                     valid_manifest_for_web_app, error_code_);
   ScheduleCompletionCallback();
 }
 

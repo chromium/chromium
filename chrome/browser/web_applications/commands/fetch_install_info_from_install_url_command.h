@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace webapps {
 class WebAppUrlLoader;
@@ -60,7 +61,7 @@ class FetchInstallInfoFromInstallUrlCommand
   // retrieve icons and progress.
   void OnManifestRetrievedMaybeFetchInstallInfo(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
-      blink::mojom::ManifestPtr opt_manifest,
+      std::optional<blink::Manifest> opt_manifest,
       bool valid_manifest_for_web_app,
       webapps::InstallableStatusCode error_code);
   void OnIconsRetrievedForNoManifest(

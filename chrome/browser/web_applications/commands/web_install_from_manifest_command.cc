@@ -34,7 +34,6 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace {
 constexpr webapps::WebappInstallSource kInstallSource =
@@ -45,7 +44,7 @@ namespace web_app {
 
 WebInstallFromManifestCommand::WebInstallFromManifestCommand(
     Profile& profile,
-    blink::mojom::ManifestPtr manifest,
+    blink::Manifest manifest,
     const GURL& manifest_url,
     base::WeakPtr<content::WebContents> initiating_web_contents,
     base::WeakPtr<content::Page> initiating_page,
@@ -109,7 +108,7 @@ void WebInstallFromManifestCommand::StartWithLock(
 
   // The Web Install API only installs crafted apps, which must declare at least
   // one icon in their manifest.
-  if (manifest_->icons.empty()) {
+  if (manifest_.icons().empty()) {
     Abort(webapps::InstallResultCode::kNoValidIconsInManifest);
     return;
   }
@@ -119,12 +118,9 @@ void WebInstallFromManifestCommand::StartWithLock(
 
   // Convert manifest to WebAppInstallInfo and download icons via the shared
   // web contents (about:blank context — no user session cookies).
-  auto converted_manifest = blink::ManifestFromMojom(*manifest_);
-  CHECK(converted_manifest.has_value());
-
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
-          *converted_manifest, *data_retriever_.get(),
+          manifest_, *data_retriever_.get(),
           /*background_installation=*/true, kInstallSource,
           web_contents_lock_->shared_web_contents().GetWeakPtr(),
           [](IconUrlSizeSet& icon_url_size_set) {}, GetMutableDebugValue(),
@@ -164,8 +160,8 @@ void WebInstallFromManifestCommand::OnWebAppInstallInfoCreatedShowDialog(
 
   // Upgrade lock to include app lock for finalization.
   std::optional<webapps::ManifestId> opt_manifest_id =
-      webapps::ManifestId::Create(manifest_->id);
-  // `manifest_->id` is guaranteed valid: it derives from `manifest_url_`
+      webapps::ManifestId::Create(manifest_.id());
+  // `manifest_.id()` is guaranteed valid: it derives from `manifest_url_`
   // which is validated as an HTTPS/localhost URL, and then used as the
   // document_url during parsing.
   CHECK(opt_manifest_id.has_value());
@@ -283,7 +279,7 @@ void WebInstallFromManifestCommand::OnAppInstalled(
   const GURL manifest_id =
       shared_web_contents_with_app_lock_->registrar().GetComputedManifestId(
           app_id);
-  CHECK(manifest_->id == manifest_id);
+  CHECK(manifest_.id() == manifest_id);
 
   CompleteAndSelfDestruct(CommandResult::kSuccess, app_id, code);
 }

@@ -25,6 +25,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
@@ -65,8 +66,11 @@ TEST_F(WebAppInstallFromMigrateFromFieldCommandTest, NoSourceAppInstalled) {
   webapps::AppId target_app_id = GenerateAppIdFromManifest(*manifest);
 
   base::test::TestFuture<WebAppInstallFromMigrateFromFieldResult> future;
+  auto converted_manifest = blink::ManifestFromMojom(*manifest);
+  ASSERT_TRUE(converted_manifest.has_value());
   provider().scheduler().ScheduleWebAppInstallFromMigrateFromField(
-      web_contents()->GetWeakPtr(), std::move(manifest), future.GetCallback());
+      web_contents()->GetWeakPtr(), std::move(*converted_manifest),
+      future.GetCallback());
 
   EXPECT_EQ(future.Get(),
             WebAppInstallFromMigrateFromFieldResult::kNoSourceAppInstalled);
@@ -92,8 +96,11 @@ TEST_F(WebAppInstallFromMigrateFromFieldCommandTest, SuccessInstalled) {
   webapps::AppId target_app_id = GenerateAppIdFromManifest(*manifest);
 
   base::test::TestFuture<WebAppInstallFromMigrateFromFieldResult> future;
+  auto converted_manifest_2 = blink::ManifestFromMojom(*manifest);
+  ASSERT_TRUE(converted_manifest_2.has_value());
   provider().scheduler().ScheduleWebAppInstallFromMigrateFromField(
-      web_contents()->GetWeakPtr(), std::move(manifest), future.GetCallback());
+      web_contents()->GetWeakPtr(), std::move(*converted_manifest_2),
+      future.GetCallback());
 
   EXPECT_EQ(future.Get(),
             WebAppInstallFromMigrateFromFieldResult::kSuccessInstalled);

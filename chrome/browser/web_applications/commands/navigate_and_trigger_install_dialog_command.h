@@ -16,7 +16,7 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -62,7 +62,7 @@ class NavigateAndTriggerInstallDialogCommand
   bool IsWebContentsDestroyed();
 
   void OnUrlLoaded(webapps::WebAppUrlLoaderResult result);
-  void OnInstallabilityChecked(blink::mojom::ManifestPtr opt_manifest,
+  void OnInstallabilityChecked(std::optional<blink::Manifest> opt_manifest,
                                bool valid_manifest_for_web_app,
                                webapps::InstallableStatusCode error_code);
   void OnAppLockGranted();

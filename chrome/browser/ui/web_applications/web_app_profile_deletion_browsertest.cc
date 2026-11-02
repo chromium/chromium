@@ -34,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
@@ -366,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
   std::unique_ptr<content::WebContents> deleting_web_contents =
       CreateWebContentsScheduledForDeletion();
 
-  base::test::TestFuture<blink::mojom::ManifestPtr, bool,
+  base::test::TestFuture<std::optional<blink::Manifest>, bool,
                          webapps::InstallableStatusCode>
       installability_future;
   data_retriever.CheckInstallabilityAndRetrieveManifest(
@@ -385,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
   std::unique_ptr<content::WebContents> deleting_web_contents =
       CreateWebContentsScheduledForDeletion();
 
-  base::test::TestFuture<blink::mojom::ManifestPtr, bool,
+  base::test::TestFuture<std::optional<blink::Manifest>, bool,
                          webapps::InstallableStatusCode>
       installability_future;
   data_retriever.CheckInstallabilityAndRetrieveManifest(

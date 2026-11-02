@@ -15,7 +15,7 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -70,7 +70,7 @@ class InstallMigrateToAppCommand
 
  private:
   void OnUrlLoaded(webapps::WebAppUrlLoaderResult result);
-  void OnManifestFetched(blink::mojom::ManifestPtr manifest,
+  void OnManifestFetched(std::optional<blink::Manifest> manifest,
                          bool valid_manifest_for_web_app,
                          webapps::InstallableStatusCode installable_status);
   void OnAppLockAcquired();
@@ -82,7 +82,7 @@ class InstallMigrateToAppCommand
   const webapps::ManifestId target_manifest_id_;
   const GURL target_install_url_;
 
-  blink::mojom::ManifestPtr manifest_;
+  std::optional<blink::Manifest> manifest_;
 
   const raw_ptr<Profile> profile_;
 

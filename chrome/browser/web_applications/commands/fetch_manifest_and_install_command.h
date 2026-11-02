@@ -30,7 +30,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace content {
@@ -100,7 +100,7 @@ class FetchManifestAndInstallCommand
   void OnGetWebAppInstallInfo(
       std::unique_ptr<WebAppInstallInfo> fallback_web_app_info);
   void FetchManifest();
-  void OnDidPerformInstallableCheck(blink::mojom::ManifestPtr opt_manifest,
+  void OnDidPerformInstallableCheck(std::optional<blink::Manifest> opt_manifest,
                                     bool valid_manifest_for_web_app,
                                     webapps::InstallableStatusCode error_code);
 
@@ -169,7 +169,7 @@ class FetchManifestAndInstallCommand
   bool dialog_shown_ = false;
 
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
-  blink::mojom::ManifestPtr opt_manifest_;
+  std::optional<blink::Manifest> opt_manifest_;
   bool valid_manifest_for_crafted_web_app_ = false;
   IconUrlSizeSet icons_from_manifest_;
   bool skip_page_favicons_on_initial_download_ = false;

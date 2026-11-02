@@ -14,6 +14,10 @@
 class BrowserWindowInterface;
 class Profile;
 
+namespace blink {
+class Manifest;
+}  // namespace blink
+
 namespace content {
 class Page;
 class WebContents;
@@ -63,7 +67,7 @@ void CreateWebAppForManifestInstall(
     content::WebContents* initiating_web_contents,
     base::WeakPtr<content::Page> initiating_page,
     std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
-    blink::mojom::ManifestPtr manifest,
+    blink::Manifest manifest,
     const GURL& manifest_url,
     const GURL& requesting_page_url,
     WebAppInstalledCallback installed_callback);
