@@ -461,6 +461,7 @@ source_set("save_and_fill_view_desktop") {
   deps = [
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/views/extensions:security_dialog_tracker",
     "//components/tabs:public",
     "//content/public/browser",
   ]
@@ -738,6 +739,7 @@ source_set("browser_tests") {
     "omnibox_autofill_bubble_view_browsertest.cc",
     "payments_churned_users_bubble_views_browsertest.cc",
     "payments_window_user_consent_dialog_browsertest.cc",
+    "save_and_fill_view_desktop_browsertest.cc",
     "save_card_bubble_views_browsertest.cc",
     "select_bnpl_issuer_dialog_browsertest.cc",
     "wallet_reminder_notice_bubble_view_browsertest.cc",
@@ -754,6 +756,7 @@ source_set("browser_tests") {
     ":payments_churned_users_bubble_view",
     ":payments_view_util",
     ":payments_window_user_consent_dialog_view",
+    ":save_and_fill_view_desktop",
     ":save_card_bubble_views",
     ":save_card_manage_cards_bubble_views",
     ":select_bnpl_issuer_dialog",
@@ -782,6 +785,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/test:dialog",
     "//chrome/browser/ui/views/autofill/popup:popup_cell_utils",
+    "//chrome/browser/ui/views/extensions:security_dialog_tracker",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/location_bar",
