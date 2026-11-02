@@ -16,8 +16,12 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/memory_limit.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
@@ -1020,6 +1024,127 @@ TEST_F(TransactionalLevelDBTransactionTest,
   // there is no key before it, it should be invalid.
   s = it->Prev();
   ASSERT_FALSE(it->IsValid());
+}
+
+// Exercises the UAF in `TransactionalLevelDBIterator::Seek(other->Key())` at
+// the normal cache size (`kTestingMaxOpenCursors = 3`). When the iterator LRU
+// cache is full and `source_it` is the least-recently-used active iterator,
+// calling `clone_it->Seek(source_it->Key())` evaluates `source_it->Key()`
+// (returning a `std::string_view` into `source_it`'s underlying LevelDB buffer)
+// before `clone_it->WillUseDBIterator()` inserts `clone_it` into the LRU and
+// evicts `source_it`, freeing the buffer backing the `std::string_view`.
+TEST_F(TransactionalLevelDBTransactionTest,
+       SeekWithKeyFromEvictedIteratorAtNormalCacheSize) {
+  SetUpRealDatabase();
+  SetupLevelDBDatabase();
+
+  // Use 50-byte keys (whose internal keys are 58 bytes, placing both the
+  // 50-byte user key allocation in `AppendInternalKey` and the 58-byte internal
+  // key allocation in `Block::Iter::key_` in the 64-byte PartitionAlloc bucket)
+  // and compact to an SSTable so that `source_it->Key()` is backed by a
+  // heap-allocated buffer owned by `source_it`'s `leveldb::Iterator`.
+  const std::string key1("b-long-key-exceeding-sso-buffer-capacity-000000001");
+  const std::string key2("b-long-key-exceeding-sso-buffer-capacity-000000002");
+  const std::string key3("b-long-key-exceeding-sso-buffer-capacity-000000003");
+  const std::string value("value");
+
+  Put(key1, value);
+  Put(key2, value);
+  Put(key3, value);
+  db()->CompactAll();
+
+  std::unique_ptr<TransactionalLevelDBTransaction> transaction =
+      CreateTransaction();
+  leveldb::Status s;
+
+  std::unique_ptr<TransactionalLevelDBIterator> source_it =
+      transaction->CreateIterator(s);
+  ASSERT_TRUE(s.ok());
+  std::unique_ptr<TransactionalLevelDBIterator> other_it1 =
+      transaction->CreateIterator(s);
+  ASSERT_TRUE(s.ok());
+  std::unique_ptr<TransactionalLevelDBIterator> other_it2 =
+      transaction->CreateIterator(s);
+  ASSERT_TRUE(s.ok());
+
+  // Fill the LRU cache (capacity `kTestingMaxOpenCursors = 3`) so that
+  // `source_it` is still active (`!IsEvicted()`) in reverse mode (`saved_key_`)
+  // and sits at the LRU tail.
+  ASSERT_TRUE(source_it->SeekToLast().ok());
+  ASSERT_TRUE(source_it->IsValid());
+  ASSERT_EQ(source_it->Key(), key3);
+  ASSERT_TRUE(other_it1->Seek(key1).ok());
+  ASSERT_TRUE(other_it2->Seek(key2).ok());
+  ASSERT_FALSE(source_it->IsEvicted());
+
+  // Clone `source_it` the same way `BackingStore::Cursor::CloneIterator` does:
+  // `clone_it->Seek(std::string(source_it->Key()))` evicts `source_it` inside
+  // `WillUseDBIterator()` before `iterator_->Seek()` consumes the key slice.
+  std::unique_ptr<TransactionalLevelDBIterator> clone_it =
+      transaction->CreateIterator(s);
+  ASSERT_TRUE(s.ok());
+  s = clone_it->Seek(std::string(source_it->Key()));
+  EXPECT_TRUE(s.ok());
+  EXPECT_TRUE(source_it->IsEvicted());
+  ASSERT_TRUE(clone_it->IsValid());
+  EXPECT_EQ(clone_it->Key(), key3);
+}
+
+class TransactionalLevelDBTransactionMemoryConsumerTest
+    : public TransactionalLevelDBTransactionTest {
+ protected:
+  base::test::ScopedFeatureList feature_list_{base::kLRUCacheMemoryConsumer};
+  base::TestMemoryConsumerRegistry test_registry_;
+};
+
+// Exercises the same scenario when `kLRUCacheMemoryConsumer` is enabled and
+// `MemoryCoordinator` sets the memory limit to 0%. Because `LRUCacheBase`
+// scales `max_size()` down to 1,
+// `clone_it->Seek(std::string(source_it->Key()))` calls `ShrinkToSize(0)` and
+// evicts `source_it` even when `source_it` is the only open, most-recently-used
+// iterator.
+TEST_F(TransactionalLevelDBTransactionMemoryConsumerTest,
+       SeekWithKeyFromEvictedIteratorUnderZeroMemoryLimit) {
+  SetUpRealDatabase();
+  SetupLevelDBDatabase();
+
+  // `NotifyUpdateMemoryLimitAsync` posts to the main thread behind
+  // `iterator_lru_`'s async registration task and replies after the limit
+  // update task has been queued on the consumer sequence, so `RunUntilQuit()`
+  // deterministically waits until `iterator_lru_.max_size()` becomes 1.
+  test_registry_.NotifyUpdateMemoryLimitAsync(base::MemoryLimit::FromPercent(0),
+                                              task_env_.QuitClosure());
+  task_env_.RunUntilQuit();
+
+  const std::string key1("b-long-key-exceeding-sso-buffer-capacity-000000001");
+  const std::string value("value");
+  Put(key1, value);
+  db()->CompactAll();
+
+  std::unique_ptr<TransactionalLevelDBTransaction> transaction =
+      CreateTransaction();
+  leveldb::Status s;
+
+  // Position `source_it` so it is active and at the MRU front of
+  // `iterator_lru_`.
+  std::unique_ptr<TransactionalLevelDBIterator> source_it =
+      transaction->CreateIterator(s);
+  ASSERT_TRUE(s.ok());
+  ASSERT_TRUE(source_it->SeekToLast().ok());
+  ASSERT_TRUE(source_it->IsValid());
+  ASSERT_EQ(source_it->Key(), key1);
+  ASSERT_FALSE(source_it->IsEvicted());
+
+  // With `max_size() == 1`, seeking a second iterator immediately evicts the
+  // MRU `source_it` during `clone_it->Seek(std::string(source_it->Key()))`.
+  std::unique_ptr<TransactionalLevelDBIterator> clone_it =
+      transaction->CreateIterator(s);
+  ASSERT_TRUE(s.ok());
+  s = clone_it->Seek(std::string(source_it->Key()));
+  EXPECT_TRUE(s.ok());
+  EXPECT_TRUE(source_it->IsEvicted());
+  ASSERT_TRUE(clone_it->IsValid());
+  EXPECT_EQ(clone_it->Key(), key1);
 }
 
 }  // namespace

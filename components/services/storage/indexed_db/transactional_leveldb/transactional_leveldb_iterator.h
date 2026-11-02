@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_TRANSACTIONAL_LEVELDB_TRANSACTIONAL_LEVELDB_ITERATOR_H_
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <tuple>
 #include <vector>
@@ -44,7 +45,12 @@ class TransactionalLevelDBIterator {
 
   virtual bool IsValid() const;
   virtual leveldb::Status SeekToLast();
-  virtual leveldb::Status Seek(std::string_view target);
+  // Takes `const std::string&` rather than `std::string_view` to prevent
+  // callers from passing a view returned by another iterator's `Key()` or
+  // `Value()`. `Seek` inserts `this` into the database's iterator LRU cache
+  // before seeking, which can evict that other iterator and free the buffer
+  // backing its `std::string_view`.
+  virtual leveldb::Status Seek(const std::string& target);
   virtual leveldb::Status Next();
   virtual leveldb::Status Prev();
   // The returned std::string_view can be invalidated when

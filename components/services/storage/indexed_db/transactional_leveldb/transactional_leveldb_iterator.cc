@@ -90,7 +90,7 @@ leveldb::Status TransactionalLevelDBIterator::SeekToLast() {
   return WrappedIteratorStatus();
 }
 
-leveldb::Status TransactionalLevelDBIterator::Seek(std::string_view target) {
+leveldb::Status TransactionalLevelDBIterator::Seek(const std::string& target) {
   DCHECK(db_);
   CheckState();
 

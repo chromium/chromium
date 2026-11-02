@@ -1317,7 +1317,7 @@ Status BackingStore::UpgradeBlobEntriesToV4(
           *metadata.id, store_id_metadata_pair.first);
       std::string max_key = BlobEntryKey::EncodeStopKeyForObjectStore(
           *metadata.id, store_id_metadata_pair.first);
-      status = iterator->Seek(std::string_view(min_key));
+      status = iterator->Seek(min_key);
       if (status.IsNotFound()) {
         status = Status::OK();
         continue;
@@ -1400,7 +1400,7 @@ Status BackingStore::ValidateBlobFiles() {
           *metadata.id, store_id_metadata_pair.first);
       std::string max_key = BlobEntryKey::EncodeStopKeyForObjectStore(
           *metadata.id, store_id_metadata_pair.first);
-      status = iterator->Seek(std::string_view(min_key));
+      status = iterator->Seek(min_key);
       if (status.IsNotFound()) {
         status = Status::OK();
         continue;
@@ -3270,7 +3270,7 @@ BackingStore::Cursor::CloneIterator(const BackingStore::Cursor* other) {
   }
 
   if (other->iterator_->IsValid()) {
-    s = it->Seek(other->iterator_->Key());
+    s = it->Seek(std::string(other->iterator_->Key()));
     // TODO(cmumford): Handle this error (crbug.com/363397)
     CHECK(it->IsValid(), base::NotFatalUntil::M158);
   }

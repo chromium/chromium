@@ -245,7 +245,7 @@ class LevelDBTraceIterator : public TransactionalLevelDBIterator {
     seek_to_last_tracer_.log_call();
     return TransactionalLevelDBIterator::SeekToLast();
   }
-  leveldb::Status Seek(std::string_view target) override {
+  leveldb::Status Seek(const std::string& target) override {
     seek_tracer_.log_call();
     return TransactionalLevelDBIterator::Seek(target);
   }
@@ -293,7 +293,7 @@ class LevelDBTestIterator : public TransactionalLevelDBIterator {
   ~LevelDBTestIterator() override = default;
 
  private:
-  leveldb::Status Seek(std::string_view target) override {
+  leveldb::Status Seek(const std::string& target) override {
     if (fail_method_ != FailMethod::SEEK ||
         ++current_call_num_ != fail_on_call_num_)
       return TransactionalLevelDBIterator::Seek(target);
