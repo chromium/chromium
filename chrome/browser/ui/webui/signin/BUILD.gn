@@ -84,10 +84,9 @@ source_set("signin_utils_impl") {
 }
 
 source_set("signin") {
-  sources = [ "signin_web_dialog_ui.h" ]
+  sources = []
 
   public_deps = [
-    ":login_ui_service",
     "//base",
     "//chrome/browser/enterprise",
     "//chrome/browser/signin",
@@ -125,6 +124,7 @@ source_set("signin") {
       "signin_policy_fetch_tracker.h",
     ]
     public_deps += [
+      ":signin_ui_error",
       ":signin_utils",
       "//chrome/browser/sync",
       "//chrome/browser/ui/webui",
@@ -145,7 +145,7 @@ source_set("signin") {
 }
 
 source_set("signin_impl") {
-  sources = [ "signin_web_dialog_ui.cc" ]
+  sources = []
 
   deps = [
     ":signin",
@@ -207,7 +207,6 @@ source_set("signin_impl") {
     ]
 
     deps += [
-      ":login_ui_service",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/sync",
@@ -229,42 +228,6 @@ source_set("signin_impl") {
       "//chrome/browser/ui/views/profiles:profile_picker_view",
     ]
   }
-}
-
-source_set("login_ui_service") {
-  sources = [
-    "login_ui_service.h",
-    "login_ui_service_factory.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//chrome/browser/profiles:profile",
-    "//components/keyed_service/core",
-  ]
-
-  if (!is_chromeos) {
-    public_deps += [ ":signin_ui_error" ]
-  }
-}
-
-source_set("login_ui_service_impl") {
-  sources = [
-    "login_ui_service.cc",
-    "login_ui_service_factory.cc",
-  ]
-
-  deps = [
-    ":login_ui_service",
-    "//base",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_manager",
-    "//chrome/browser/signin:signin_promo",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/navigator",
-    "//chrome/browser/ui/signin",
-  ]
 }
 
 # "inline_login_*" code is only available on Windows and ChromeOS, since the
@@ -389,7 +352,6 @@ if (!is_chromeos) {
     ]
 
     deps = [
-      ":login_ui_service",
       ":profile",
       ":signin_ui_error",
       ":signin_utils",

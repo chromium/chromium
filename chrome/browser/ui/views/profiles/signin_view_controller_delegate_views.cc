@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -137,8 +136,7 @@ SigninViewControllerDelegateViews::CreateHistorySyncOptInWebView(
       CreateDialogWebView(browser,
                           HistorySyncOptinUI::AppendHistorySyncOptinQueryParams(
                               url, launch_context),
-                          /*dialog_height=*/0, kModalDialogWidth,
-                          InitializeSigninWebDialogUI(false));
+                          /*dialog_height=*/0, kModalDialogWidth);
   CHECK(web_view);
   auto* helper = ColorProviderBrowserHelper::From(browser);
   if (helper && helper->color_provider_source()) {
@@ -163,9 +161,9 @@ std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateSigninErrorWebView(
     BrowserWindowInterface* browser,
     const SigninUIError& error) {
-  auto web_view = CreateDialogWebView(
-      browser, GURL(chrome::kChromeUISigninErrorURL), kSigninErrorDialogHeight,
-      std::nullopt, InitializeSigninWebDialogUI(false));
+  auto web_view =
+      CreateDialogWebView(browser, GURL(chrome::kChromeUISigninErrorURL),
+                          kSigninErrorDialogHeight, std::nullopt);
   CHECK(web_view);
   web_view->SetProperty(views::kElementIdentifierKey,
                         SigninViewController::kSigninErrorViewId);
@@ -194,8 +192,7 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
   }
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, url, ProfileCustomizationUI::kPreferredHeight,
-      ProfileCustomizationUI::kPreferredWidth,
-      InitializeSigninWebDialogUI(false));
+      ProfileCustomizationUI::kPreferredWidth);
 
   ProfileCustomizationUI* web_ui = web_view->GetWebContents()
                                        ->GetWebUI()
@@ -219,8 +216,7 @@ SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
   // dynamically based on its contents, so the initial height does not matter.
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, GURL(chrome::kChromeUISignoutConfirmationURL),
-      /*dialog_height=*/0, kModalDialogWidth,
-      InitializeSigninWebDialogUI(false));
+      /*dialog_height=*/0, kModalDialogWidth);
   web_view->SetProperty(
       views::kElementIdentifierKey,
       SigninViewController::kSignoutConfirmationDialogViewElementId);
@@ -459,18 +455,10 @@ SigninViewControllerDelegateViews::CreateDialogWebView(
     BrowserWindowInterface* browser,
     const GURL& url,
     int dialog_height,
-    std::optional<int> opt_width,
-    InitializeSigninWebDialogUI initialize_signin_web_dialog_ui) {
+    std::optional<int> opt_width) {
   int dialog_width = opt_width.value_or(kModalDialogWidth);
   views::WebView* web_view = new views::WebView(browser->GetProfile());
   web_view->LoadInitialURL(url);
-
-  if (initialize_signin_web_dialog_ui) {
-    SigninWebDialogUI* web_dialog_ui = static_cast<SigninWebDialogUI*>(
-        web_view->GetWebContents()->GetWebUI()->GetController());
-    web_dialog_ui->InitializeMessageHandlerWithBrowser(browser);
-  }
-
   web_view->SetPreferredSize(gfx::Size(dialog_width, dialog_height));
 
   return std::unique_ptr<views::WebView>(web_view);

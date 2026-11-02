@@ -308,7 +308,6 @@ source_set("impl") {
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/webauthn",
-      "//chrome/browser/ui/webui/signin:login_ui_service",
       "//components/autofill/core/browser",
       "//components/desktop_to_mobile_promos",
       "//components/password_manager/core/browser/features:password_features",

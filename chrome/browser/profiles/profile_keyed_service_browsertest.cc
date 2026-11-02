@@ -886,7 +886,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ListFamilyMembersService",
     "LocalOrSyncableBookmarkSyncServiceFactory",
     "LoginDetectionKeyedService",
-    "LoginUIServiceFactory",
     "MDnsAPI",
     "ManagedBookmarkService",
     "ManagedConfigurationAPI",
@@ -1171,10 +1170,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
   if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
       features::kLazyKeyedServiceInstantiationSafeBrowsing.Get()) {
     guest_active_services.erase("SafeBrowsingTailoredSecurityService");
-  }
-  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
-      features::kLazyKeyedServiceInstantiationCommerceAndUI.Get()) {
-    guest_active_services.erase("LoginUIServiceFactory");
   }
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&

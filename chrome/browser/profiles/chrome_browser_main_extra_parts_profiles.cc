@@ -280,7 +280,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/browser/universal_optout/universal_optout_service_factory.h"
@@ -1121,9 +1120,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   LocalOrSyncableBookmarkSyncServiceFactory::GetInstance();
   login_detection::LoginDetectionKeyedServiceFactory::GetInstance();
-#if !BUILDFLAG(IS_ANDROID)
-  LoginUIServiceFactory::GetInstance();
-#endif
   LogoServiceFactory::GetInstance();
   LookalikeUrlServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

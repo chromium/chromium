@@ -1425,7 +1425,6 @@ if (!is_android) {
       "//chrome/browser/ui/views/tabs/dragging",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_modal:browser_window_modal_dialog_delegate",
-      "//chrome/browser/ui/webui/signin:login_ui_service",
       "//chrome/browser/ui/window_feature_controller",
       "//chrome/browser/ui/window_sizer",
       "//chrome/common",
