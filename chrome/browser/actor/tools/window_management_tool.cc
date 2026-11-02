@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/sessions/core/session_id.h"
@@ -135,10 +136,6 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
                                        /*from_user_gesture=*/false);
       params.initial_show_state = ::ui::mojom::WindowShowState::kNormal;
       BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
-      browser_did_become_active_subscription_ =
-          browser->RegisterDidBecomeActive(base::BindRepeating(
-              &WindowManagementTool::OnBrowserDidBecomeActive,
-              base::Unretained(this)));
       content::WebContents* web_contents =
           chrome::AddAndReturnTabAt(browser, GURL(url::kAboutBlankURL),
                                     /*index=*/-1, /*foreground=*/true);
@@ -150,6 +147,7 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
         return;
       }
       created_actor_surface_handle_ = ActorSurfaceHandle::From(web_contents);
+      FinishWhenWindowActive(*browser);
       browser->GetWindow()->Show();
       break;
     }
@@ -167,18 +165,18 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
                                     "The target window could not be found."));
         return;
       }
+      // An already-active window won't report an activation, so finish now.
+      // Check before requesting activation: on Android, IsActive() reports
+      // the pending state once an activation has been requested.
+      if (browser->GetWindow()->IsActive()) {
+        OnInvokeFinished(MakeOkResult());
+        break;
+      }
+      FinishWhenWindowActive(*browser);
 #if BUILDFLAG(IS_ANDROID)
-      // Android's BrowserWindowInterface doesn't report activation changes,
-      // and bringing a task to the front is asynchronous in the OS, so finish
-      // once the request has been made rather than waiting for the window to
-      // become active.
+      // Unlike Show(), Activate() also brings a minimized task to the front.
       browser->GetWindow()->Activate();
-      OnInvokeFinished(MakeOkResult());
 #else
-      browser_did_become_active_subscription_ =
-          browser->RegisterDidBecomeActive(base::BindRepeating(
-              &WindowManagementTool::OnBrowserDidBecomeActive,
-              base::Unretained(this)));
       browser->GetWindow()->Show();
 #endif
       break;
@@ -309,9 +307,17 @@ void WindowManagementTool::OnBrowserDidClose(BrowserWindowInterface* browser) {
   }
 }
 
-void WindowManagementTool::OnBrowserDidBecomeActive(
-    BrowserWindowInterface* browser) {
-  OnInvokeFinished(MakeOkResult());
+void WindowManagementTool::FinishWhenWindowActive(
+    BrowserWindowInterface& browser) {
+  awaited_active_window_id_ = browser.GetSessionID();
+  browser_collection_observation_.Observe(
+      ProfileBrowserCollection::GetForProfile(browser.GetProfile()));
+}
+
+void WindowManagementTool::OnBrowserActivated(BrowserWindowInterface* browser) {
+  if (awaited_active_window_id_ == browser->GetSessionID()) {
+    OnInvokeFinished(MakeOkResult());
+  }
 }
 
 void WindowManagementTool::OnInvokeFinished(mojom::ActionResultPtr result) {
@@ -319,7 +325,8 @@ void WindowManagementTool::OnInvokeFinished(mojom::ActionResultPtr result) {
     PostResponseTask(std::move(callback_), std::move(result));
   }
   browser_did_close_subscription_ = {};
-  browser_did_become_active_subscription_ = {};
+  browser_collection_observation_.Reset();
+  awaited_active_window_id_.reset();
 }
 
 ActorSurfaceHandle WindowManagementTool::GetTargetActorSurface() const {

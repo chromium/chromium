@@ -331,6 +331,27 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, ActivateWindow) {
             GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
 
+// Ensure ActivateWindow succeeds for a window that is already active.
+IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
+                       ActivateWindow_AlreadyActive) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support programmatic window activation";
+  }
+#endif
+  BrowserWindowInterface* window =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  ASSERT_TRUE(window);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeActivateWindowRequest(window->GetSessionID().id());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(window, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+}
+
 // Ensure EnterFullscreen enters fullscreen for a specific window ID and is a
 // no-op if already in fullscreen.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, EnterFullscreen) {
