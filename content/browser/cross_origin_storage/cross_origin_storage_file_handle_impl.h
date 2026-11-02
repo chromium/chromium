@@ -22,6 +22,7 @@
 namespace content {
 
 class ChromeBlobStorageContext;
+struct CrossOriginStorageOpenResult;
 class CrossOriginStorageRegistry;
 class CrossOriginStorageStagingWriter;
 class FileSystemAccessManagerImpl;
@@ -111,6 +112,8 @@ class CONTENT_EXPORT CrossOriginStorageFileHandleImpl
       CreateFileWriterCallback callback,
       base::SequenceBound<CrossOriginStorageStagingWriter> staging_writer);
   void OnWriteCommitted();
+  void OnOpenedForRead(AsBlobCallback callback,
+                       CrossOriginStorageOpenResult result);
   void IsSameEntryImpl(IsSameEntryCallback callback,
                        FileSystemAccessTransferTokenImpl* other);
 

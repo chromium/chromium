@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/bind.h"
+#include "base/uuid.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cross_origin_storage/cross_origin_storage_file_writer_impl.h"
 #include "content/browser/cross_origin_storage/cross_origin_storage_registry.h"
@@ -18,6 +19,10 @@
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "storage/browser/blob/blob_data_builder.h"
+#include "storage/browser/blob/blob_data_handle.h"
+#include "storage/browser/blob/blob_impl.h"
+#include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
@@ -25,6 +30,37 @@
 
 namespace content {
 
+namespace {
+
+constexpr char kBlobContentType[] = "application/octet-stream";
+
+void CreateBlobOnIOThread(scoped_refptr<ChromeBlobStorageContext> blob_context,
+                          mojo::PendingReceiver<blink::mojom::Blob> receiver,
+                          base::FilePath path,
+                          std::string uuid,
+                          uint64_t size) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!blob_context || !blob_context->context()) {
+    return;
+  }
+
+  auto builder = std::make_unique<storage::BlobDataBuilder>(uuid);
+  builder->set_content_type(kBlobContentType);
+  if (size > 0) {
+    builder->AppendFile(path, /*offset=*/0, size,
+                        /*expected_modification_time=*/base::Time());
+  }
+
+  std::unique_ptr<storage::BlobDataHandle> handle =
+      blob_context->context()->AddFinishedBlob(std::move(builder));
+  if (!handle) {
+    return;
+  }
+  storage::BlobImpl::Create(std::move(handle), std::move(receiver));
+}
+
+}  // namespace
 CrossOriginStorageFileHandleImpl::CrossOriginStorageFileHandleImpl(
     base::WeakPtr<CrossOriginStorageRegistry> registry,
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
@@ -92,13 +128,18 @@ void CrossOriginStorageFileHandleImpl::AsBlob(AsBlobCallback callback) {
     return;
   }
 
-  // TODO(crbug.com/547302825): Wire up reading committed blobs.
-  std::move(callback).Run(
-      file_system_access_error::FromStatus(
-          blink::mojom::FileSystemAccessStatus::kOperationFailed,
-          "Reading committed Cross-Origin Storage files is not yet "
-          "implemented."),
-      base::File::Info(), nullptr);
+  if (!registry_ || !blob_storage_context_) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kOperationFailed),
+        base::File::Info(), nullptr);
+    return;
+  }
+
+  registry_->OpenForRead(
+      hash_, origin_, /*update_access_time=*/false,
+      base::BindOnce(&CrossOriginStorageFileHandleImpl::OnOpenedForRead,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CrossOriginStorageFileHandleImpl::CreateFileWriter(
@@ -163,6 +204,50 @@ void CrossOriginStorageFileHandleImpl::OnStagingWriterCreated(
 void CrossOriginStorageFileHandleImpl::OnWriteCommitted() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   may_read_ = true;
+}
+
+void CrossOriginStorageFileHandleImpl::OnOpenedForRead(
+    AsBlobCallback callback,
+    CrossOriginStorageOpenResult result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (result.status != CrossOriginStorageStatus::kSuccess) {
+    std::move(callback).Run(
+        file_system_access_error::FromFileError(
+            result.status == CrossOriginStorageStatus::kNotFound
+                ? base::File::FILE_ERROR_NOT_FOUND
+                : base::File::FILE_ERROR_FAILED),
+        base::File::Info(), nullptr);
+    return;
+  }
+
+  if (result.size < 0) {
+    std::move(callback).Run(
+        file_system_access_error::FromFileError(base::File::FILE_ERROR_FAILED),
+        base::File::Info(), nullptr);
+    return;
+  }
+
+  mojo::PendingRemote<blink::mojom::Blob> blob_remote;
+  mojo::PendingReceiver<blink::mojom::Blob> blob_receiver =
+      blob_remote.InitWithNewPipeAndPassReceiver();
+  std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&CreateBlobOnIOThread, blob_storage_context_,
+                                std::move(blob_receiver), result.path, uuid,
+                                static_cast<uint64_t>(result.size)));
+
+  base::File::Info info;
+  info.size = result.size;
+  info.is_directory = false;
+  // Do not expose the on-disk modification timestamp across origins.
+  info.last_modified = base::Time::UnixEpoch();
+
+  std::move(callback).Run(
+      file_system_access_error::Ok(), info,
+      blink::mojom::SerializedBlob::New(uuid, kBlobContentType, result.size,
+                                        std::move(blob_remote)));
 }
 
 void CrossOriginStorageFileHandleImpl::Move(

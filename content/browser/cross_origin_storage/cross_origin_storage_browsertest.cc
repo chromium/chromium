@@ -40,10 +40,11 @@ namespace content {
 namespace {
 
 // Cross-Origin Storage is exposed only to secure contexts, so these tests run
-// against an HTTPS server. CERT_TEST_NAMES covers a.test and b.test, which
-// stand in for unrelated sites sharing the cache.
+// against an HTTPS server. CERT_TEST_NAMES covers a.test, b.test and c.test,
+// which stand in for unrelated sites sharing the cache.
 constexpr char kOriginA[] = "a.test";
 constexpr char kOriginB[] = "b.test";
+constexpr char kOriginC[] = "c.test";
 
 // Digests below were produced with:
 //   printf '%s' '<content>' | sha256sum
@@ -99,6 +100,24 @@ std::string RequestReadHandleScript(const std::string& digest) {
             {algorithm: 'SHA-256', value: ')",
                        digest, R"('});
         return 'ok';
+      } catch (e) {
+        return e.name;
+      }
+    })()
+  )"});
+}
+
+// Returns script that reads `digest` back via `getFileHandle` + `getFile()`
+// and resolves to its text, or to the name of the rejection.
+std::string RequestFileTextScript(const std::string& digest) {
+  return base::StrCat({R"(
+    (async () => {
+      try {
+        const handle = await navigator.crossOriginStorage.getFileHandle(
+            {algorithm: 'SHA-256', value: ')",
+                       digest, R"('});
+        const file = await handle.getFile();
+        return await file.text();
       } catch (e) {
         return e.name;
       }
@@ -220,8 +239,8 @@ class CrossOriginStorageBrowserTest : public ContentBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
-// A written resource whose bytes match the declared digest commits to `blobs/`
-// and leaves `staging/` empty.
+// A written resource whose bytes match the declared digest commits to `blobs/`,
+// leaves `staging/` empty, and is readable back in full via `handle.getFile()`.
 IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
                        WriteAndRequestFileHandle) {
   ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
@@ -230,6 +249,37 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
                          WriteContentScript(kContent, kContentDigest, "'*'")));
   EXPECT_TRUE(BlobExistsOnDisk(kContentDigest));
   EXPECT_TRUE(StagingIsEmpty());
+
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+}
+
+// The returned FileSystemFileHandle and File are named after the digest,
+// report the stored size, provide "application/octet-stream" MIME type, and
+// sanitize lastModified to Unix epoch 0.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       RequestFileHandleAttributes) {
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+
+  ASSERT_EQ("ok", EvalJs(shell(),
+                         WriteContentScript(kContent, kContentDigest, "'*'")));
+
+  auto result = EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      const handle = await navigator.crossOriginStorage.getFileHandle(
+          {algorithm: 'SHA-256', value: ')",
+                                              kContentDigest, R"('});
+      const file = await handle.getFile();
+      return [handle.name, file.name, file.size, file.type, file.lastModified];
+    })()
+  )"}));
+  const auto& list = result.ExtractList();
+  ASSERT_EQ(5u, list.size());
+  EXPECT_EQ(kContentDigest, list[0].GetString());
+  EXPECT_EQ(kContentDigest, list[1].GetString());
+  EXPECT_EQ(static_cast<int>(std::string_view(kContent).size()),
+            list[2].GetInt());
+  EXPECT_EQ("application/octet-stream", list[3].GetString());
+  EXPECT_EQ(0, list[4].GetInt());
 }
 
 // Content that does not hash to the declared digest must be rejected on
@@ -315,8 +365,121 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
   )"})));
 }
 
+// The cache is unpartitioned: content stored by one site with '*' sharing is
+// readable by an unrelated site.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest, CrossOriginRead) {
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  ASSERT_EQ("ok",
+            EvalJs(shell(), WriteContentScript(kSharedContent,
+                                               kSharedContentDigest, "'*'")));
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ(kSharedContent,
+            EvalJs(shell(), RequestFileTextScript(kSharedContentDigest)));
+}
+
+// Content shared with a specific origin is not disclosable to others and
+// rejects with NotFoundError per the WICG spec (§3.1 & §8.4).
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       CrossOriginReadNotAllowed) {
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  const std::string allowed_origin =
+      https_server()->GetOrigin(kOriginC).Serialize();
+  ASSERT_EQ("ok",
+            EvalJs(shell(), WriteContentScript(
+                                kContent, kContentDigest,
+                                base::StrCat({"['", allowed_origin, "']"}))));
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ("NotFoundError",
+            EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginC));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+}
+
+// The storing origin can always read back what it stored, even when the
+// sharing scope names only other origins.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest, StoringOriginCanRead) {
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  const std::string allowed_origin =
+      https_server()->GetOrigin(kOriginC).Serialize();
+  ASSERT_EQ("ok",
+            EvalJs(shell(), WriteContentScript(
+                                kContent, kContentDigest,
+                                base::StrCat({"['", allowed_origin, "']"}))));
+
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+}
+
+// Read-only handles returned by `getFileHandle(hash)` (without
+// `create: true`) must reject `createWritable()` and `remove()` so a renderer
+// can never modify or delete a shared resource on disk.
+// Calling `getFile()` on a `{create: true}` handle before writing must also
+// reject with NotAllowedError so `{create: true}` is not an existence oracle.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       ReadHandleIsReadOnlyAndCreateHandleIsNotOracle) {
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  ASSERT_EQ("ok", EvalJs(shell(),
+                         WriteContentScript(kContent, kContentDigest, "'*'")));
+
+  // 1. A `{create: true}` handle on another origin cannot read existing bytes
+  // before writing and verifying them itself.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ("NotAllowedError",
+            EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      try {
+        const createHandle =
+            await navigator.crossOriginStorage.getFileHandle(
+                {algorithm: 'SHA-256', value: ')",
+                                          kContentDigest, R"('},
+                {create: true});
+        await createHandle.getFile();
+        return 'ok';
+      } catch (e) {
+        return e.name;
+      }
+    })()
+  )"})));
+
+  // 2. A `{create: false}` read handle cannot call `createWritable()`.
+  EXPECT_EQ("NotAllowedError",
+            EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      try {
+        const readHandle =
+            await navigator.crossOriginStorage.getFileHandle(
+                {algorithm: 'SHA-256', value: ')",
+                                          kContentDigest, R"('});
+        await readHandle.createWritable();
+        return 'ok';
+      } catch (e) {
+        return e.name;
+      }
+    })()
+  )"})));
+
+  // 3. A `{create: false}` read handle cannot call `remove()`.
+  EXPECT_EQ("NotAllowedError",
+            EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      try {
+        const readHandle =
+            await navigator.crossOriginStorage.getFileHandle(
+                {algorithm: 'SHA-256', value: ')",
+                                          kContentDigest, R"('});
+        await readHandle.remove();
+        return 'ok';
+      } catch (e) {
+        return e.name;
+      }
+    })()
+  )"})));
+}
+
 // Storing the same content twice is deduplicated rather than duplicated on
-// disk, and leaves staging empty.
+// disk, leaves staging empty, and both storing origins retain access.
 IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest, WriteDeduplicates) {
   ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
   ASSERT_EQ("ok",
@@ -330,6 +493,79 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest, WriteDeduplicates) {
 
   EXPECT_TRUE(BlobExistsOnDisk(kSharedContentDigest));
   EXPECT_TRUE(StagingIsEmpty());
+  EXPECT_EQ(kSharedContent,
+            EvalJs(shell(), RequestFileTextScript(kSharedContentDigest)));
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  EXPECT_EQ(kSharedContent,
+            EvalJs(shell(), RequestFileTextScript(kSharedContentDigest)));
+}
+
+// A same-site origin (`sub.a.test`) can read an entry stored by `a.test` even
+// when no `origins` sharing list was specified.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest, SameSiteCanRead) {
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  ASSERT_EQ("ok", EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      try {
+        const handle = await navigator.crossOriginStorage.getFileHandle(
+            {algorithm: 'SHA-256', value: ')",
+                                                kContentDigest, R"('},
+            {create: true});
+        const writable = await handle.createWritable();
+        await writable.write(')",
+                                                kContent, R"(');
+        await writable.close();
+        return 'ok';
+      } catch (e) {
+        return e.name;
+      }
+    })()
+  )"})));
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost("sub.a.test"));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ("NotFoundError",
+            EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+}
+
+// Visibility grants are additive and never downgrade earlier grants when the
+// same content is stored again with a different `origins` list.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       VisibilityUpgradePreservesAllowedOrigins) {
+  const std::string origin_b = https_server()->GetOrigin(kOriginB).Serialize();
+  const std::string origin_c = https_server()->GetOrigin(kOriginC).Serialize();
+
+  // Origin A stores with `origins: [origin_b]`.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  ASSERT_EQ("ok", EvalJs(shell(), WriteContentScript(
+                                      kSharedContent, kSharedContentDigest,
+                                      base::StrCat({"['", origin_b, "']"}))));
+
+  // Origin B stores the same hash with `origins: [origin_c]`.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  ASSERT_EQ("ok", EvalJs(shell(), WriteContentScript(
+                                      kSharedContent, kSharedContentDigest,
+                                      base::StrCat({"['", origin_c, "']"}))));
+
+  // Both Origin B and Origin C have read access, while an unlisted origin
+  // (`d.test`) is still denied.
+  EXPECT_EQ(kSharedContent,
+            EvalJs(shell(), RequestFileTextScript(kSharedContentDigest)));
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginC));
+  EXPECT_EQ(kSharedContent,
+            EvalJs(shell(), RequestFileTextScript(kSharedContentDigest)));
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost("d.test"));
+  EXPECT_EQ("NotFoundError",
+            EvalJs(shell(), RequestFileTextScript(kSharedContentDigest)));
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  EXPECT_EQ(kSharedContent,
+            EvalJs(shell(), RequestFileTextScript(kSharedContentDigest)));
 }
 
 // Random-access writes (`seek()` and `truncate()`) trigger on-disk rehashing on
@@ -386,6 +622,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
   )"})));
   EXPECT_TRUE(BlobExistsOnDisk(kContentDigest));
   EXPECT_TRUE(StagingIsEmpty());
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
 }
 
 // Aborting an in-progress write (`writable.abort()`) deletes the staging file
@@ -479,6 +718,11 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
   )"})));
   EXPECT_TRUE(BlobExistsOnDisk(kContentDigest));
   EXPECT_TRUE(StagingIsEmpty());
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ(kSharedContent,
+            EvalJs(shell(), RequestFileTextScript(kSharedContentDigest)));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
 }
 
 // Per WICG § 4.3, `createWritable({keepExistingData: true})` must produce a
@@ -757,6 +1001,23 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
                                                 kContent, R"(');
         await writable.close();
 
+        // The handle that was written through becomes readable.
+        const postedFile = await posted.getFile();
+        if ((await postedFile.text()) !== ')",
+                                                kContent, R"(') {
+          return 'posted getFile content did not match';
+        }
+
+        // The pre-clone handle was not written through and remains unreadable.
+        try {
+          await handle.getFile();
+          return 'expected pre-clone handle to remain unreadable';
+        } catch (e) {
+          if (e.name !== 'NotAllowedError') {
+            return `unexpected error on pre-clone handle getFile: ${e.name}`;
+          }
+        }
+
         return 'ok';
       } catch (e) {
         return e.name;
@@ -826,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
 }
 
 // Writing an empty (0-byte) file with matching SHA-256 digest commits to
-// `blobs/` and leaves `staging/` empty.
+// `blobs/`, leaves `staging/` empty, and is readable back via `getFile()`.
 IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest, WriteEmptyFileAndCommit) {
   ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
 
@@ -847,6 +1108,22 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest, WriteEmptyFileAndCommit) {
   )"})));
   EXPECT_TRUE(BlobExistsOnDisk(kEmptyContentDigest));
   EXPECT_TRUE(StagingIsEmpty());
+
+  EXPECT_EQ("", EvalJs(shell(), RequestFileTextScript(kEmptyContentDigest)));
+
+  auto result = EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      const handle = await navigator.crossOriginStorage.getFileHandle(
+          {algorithm: 'SHA-256', value: ')",
+                                              kEmptyContentDigest, R"('});
+      const file = await handle.getFile();
+      return [file.size, await file.text()];
+    })()
+  )"}));
+  const auto& list = result.ExtractList();
+  ASSERT_EQ(2u, list.size());
+  EXPECT_EQ(0, list[0].GetInt());
+  EXPECT_EQ("", list[1].GetString());
 }
 
 // Calling `createWritable()` on a read-only handle (`is_writable_ == false`)
@@ -907,13 +1184,11 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest, GetFileAfterWriteCommit) {
                                                 kContent, R"(');
         await writable.close();
 
-        try {
-          await handle.getFile();
-          return 'expected getFile after commit to reject with AbortError';
-        } catch (e) {
-          if (e.name !== 'AbortError') {
-            return `unexpected error after commit: ${e.name}`;
-          }
+        const file = await handle.getFile();
+        const text = await file.text();
+        if (text !== ')",
+                                                kContent, R"(') {
+          return `unexpected content after commit: ${text}`;
         }
 
         return 'ok';

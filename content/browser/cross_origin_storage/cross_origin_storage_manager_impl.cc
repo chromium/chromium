@@ -258,11 +258,11 @@ CrossOriginStorageManagerImpl::HandleGetFileHandle(
     return std::nullopt;
   }
 
-  // TODO(crbug.com/547302825): Wire up the read path (`create: false`) in the
-  // follow-up CL.
-  std::move(callback).Run(
-      file_system_access_error::FromFileError(base::File::FILE_ERROR_NOT_FOUND),
-      mojo::NullRemote());
+  registry_->OpenForRead(
+      *parsed_hash, origin, /*update_access_time=*/true,
+      base::BindOnce(&CrossOriginStorageManagerImpl::OnOpenedForRead,
+                     weak_factory_.GetWeakPtr(), *parsed_hash,
+                     std::move(callback)));
   return std::nullopt;
 }
 
@@ -280,6 +280,36 @@ void CrossOriginStorageManagerImpl::GetFileHandle(
       mojo::ReportBadMessage(*bad_message);
     }
   }
+}
+
+void CrossOriginStorageManagerImpl::OnOpenedForRead(
+    CrossOriginStorageHash hash,
+    GetFileHandleCallback callback,
+    CrossOriginStorageOpenResult result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (result.status != CrossOriginStorageStatus::kSuccess) {
+    std::move(callback).Run(
+        file_system_access_error::FromFileError(
+            result.status == CrossOriginStorageStatus::kNotFound
+                ? base::File::FILE_ERROR_NOT_FOUND
+                : base::File::FILE_ERROR_FAILED),
+        mojo::NullRemote());
+    return;
+  }
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
+      file_handle_remote;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<CrossOriginStorageFileHandleImpl>(
+          registry_, blob_storage_context_, file_system_access_manager_,
+          std::move(hash), storage_key_.origin(),
+          CrossOriginStorageAccessSpec::AllowedOrigins({}),
+          /*is_writable=*/false, /*may_read=*/true),
+      file_handle_remote.InitWithNewPipeAndPassReceiver());
+
+  std::move(callback).Run(file_system_access_error::Ok(),
+                          std::move(file_handle_remote));
 }
 
 }  // namespace content

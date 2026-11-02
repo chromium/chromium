@@ -85,6 +85,10 @@ class CONTENT_EXPORT CrossOriginStorageManagerImpl
                      GetFileHandleCallback callback) override;
 
  private:
+  void OnOpenedForRead(CrossOriginStorageHash hash,
+                       GetFileHandleCallback callback,
+                       CrossOriginStorageOpenResult result);
+
   const base::WeakPtr<CrossOriginStorageRegistry> registry_;
   const scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
   const base::WeakPtr<FileSystemAccessManagerImpl> file_system_access_manager_;
@@ -93,6 +97,8 @@ class CONTENT_EXPORT CrossOriginStorageManagerImpl
   const blink::StorageKey storage_key_;
 
   mojo::ReceiverSet<blink::mojom::CrossOriginStorageManager> receivers_;
+
+  base::WeakPtrFactory<CrossOriginStorageManagerImpl> weak_factory_{this};
 };
 
 }  // namespace content
