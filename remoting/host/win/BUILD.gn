@@ -13,7 +13,10 @@ import("//remoting/host/installer/win/host_payload_files.gni")
 group("all") {
   testonly = true
 
-  deps = [ ":remoting_console" ] + remoting_win_host_binary_deps
+  deps = [
+           ":remoting_console",
+           "//remoting/host/installer/win/setup:remoting_setup",
+         ] + remoting_win_host_binary_deps
 }
 
 # Reference this manifest to indicate that a process is per-monitor DPI aware.

@@ -130,6 +130,19 @@ source_set("setup_lib") {
   ]
 }
 
+executable("remoting_setup") {
+  configs += [ "//build/config/win:windowed" ]
+
+  sources = [ "setup_main.cc" ]
+
+  deps = [
+    ":setup_lib",
+    "//base",
+    "//remoting/base:logging",
+    "//remoting/host/win:elevated_exe_manifest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
