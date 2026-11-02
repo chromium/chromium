@@ -154,10 +154,10 @@ mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
   // Resolve `swap_contents_and_description` here so the UI can always render
   // `contents` as the primary text and `description` as the secondary text.
   // NOTE: We read in the contents and description from the class on purpose
-  // instead of the SuggestTemplateInfo proto fields. This is because the
-  // SuggestTemplateInfo fields aren't updated during the match deduping
-  // process and for other transformations that happen to the match during
-  // the autocomplete lifecycle.
+  // instead of the SuggestTemplateInfo proto fields. Dedupe keeps those in sync
+  // with the text (see `AutocompleteMatch::UpgradeMatchWithPropertiesFrom()`),
+  // but other transformations that happen to the match during the autocomplete
+  // lifecycle don't, e.g. the location signaling match's description.
   const bool swap = match.swap_contents_and_description;
   const ACMatchClassifications& primary_text_class =
       swap ? match.description_class : match.contents_class;

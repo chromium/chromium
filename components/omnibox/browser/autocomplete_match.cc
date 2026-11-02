@@ -142,6 +142,52 @@ int GetDeduplicationProviderPreferenceScore(
   return it != kProviderPrefMap.end() ? it->second : 0;
 }
 
+// Returns the template for a match that takes its text from a preferred
+// duplicate: the duplicate's `presentation_source`, with the fields that
+// describe what the match does restored from its own `suggest_template`.
+// Keep in sync with suggest_template_info.proto:
+// - Restored from `suggest_template`: default_search_parameters,
+//   action_suggestions, fusebox_action, entity_id and website_uri.
+// - From `presentation_source`, since they describe how the text is displayed:
+//   style, type_icon, primary_text, secondary_text, image,
+//   secondary_text_placement, wrap_secondary_text and wrap_primary_text. So do
+//   fields added later and unknown fields, since the proto mostly grows in
+//   presentation.
+std::optional<omnibox::SuggestTemplateInfo> ReplaceSuggestTemplatePresentation(
+    std::optional<omnibox::SuggestTemplateInfo> suggest_template,
+    const std::optional<omnibox::SuggestTemplateInfo>& presentation_source) {
+  omnibox::SuggestTemplateInfo result =
+      presentation_source.value_or(omnibox::SuggestTemplateInfo());
+  result.clear_default_search_parameters();
+  result.clear_action_suggestions();
+  result.clear_fusebox_action();
+  result.clear_entity_id();
+  result.clear_website_uri();
+  if (suggest_template) {
+    result.mutable_default_search_parameters()->swap(
+        *suggest_template->mutable_default_search_parameters());
+    result.mutable_action_suggestions()->Swap(
+        suggest_template->mutable_action_suggestions());
+    if (suggest_template->has_fusebox_action()) {
+      result.mutable_fusebox_action()->Swap(
+          suggest_template->mutable_fusebox_action());
+    }
+    if (suggest_template->has_entity_id()) {
+      result.set_entity_id(suggest_template->entity_id());
+    }
+    if (suggest_template->has_website_uri()) {
+      result.set_website_uri(suggest_template->website_uri());
+    }
+  }
+  // Don't keep a template with nothing left in it. ByteSizeLong() also counts
+  // unknown fields, so a template with only unknown fields is kept. Like the
+  // fields not listed above, they come from `presentation_source`.
+  if (result.ByteSizeLong() == 0) {
+    return std::nullopt;
+  }
+  return result;
+}
+
 int GetOrderForActionType(scoped_refptr<OmniboxAction> action) {
   // Sort: Call -> Directions -> Reviews -> Tab Switch.
   auto* action_in_suggest = OmniboxActionInSuggest::FromAction(action.get());
@@ -2033,6 +2079,20 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     image_dominant_color = duplicate_match.image_dominant_color;
     image_url = duplicate_match.image_url;
     icon_url = duplicate_match.icon_url;
+
+    // So should the template describing how to display it, since the text
+    // above may come from the duplicate's template. What the template does,
+    // e.g. its search parameters, stays with this match. Some presentation
+    // implies behavior, e.g. the AIM sparkle icon goes with udm=50, so this is
+    // only right for matches that act the same. That's intentionally left to
+    // the dedupe key (see `AutocompleteResult::GetMatchComparisonFields()`),
+    // which e.g. keeps AIM suggestions from deduping with other matches by
+    // default.
+    // TODO(crbug.com/579936021): Support deduping matches with behavioral
+    //  differences so the presentation taken here always fits what the winning
+    //  match is supposed to do.
+    suggest_template = ReplaceSuggestTemplatePresentation(
+        std::move(suggest_template), duplicate_match.suggest_template);
 
     // Prefer to keep the original `type` for more helpful metric logging.
     // However, searches and non-searches have different ranking & text display

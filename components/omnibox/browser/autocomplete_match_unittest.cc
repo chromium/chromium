@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -610,6 +611,140 @@ TEST_F(AutocompleteMatchTest, UpgradeMatchWithPropertiesFrom) {
   EXPECT_EQ(history_match.type, omnibox::AutocompleteMatchType::kHistoryTitle);
   EXPECT_EQ(history_match.contents, u"propagate");
   EXPECT_EQ(history_match.inline_autocompletion, u"preserve");
+}
+
+// The template presentation should travel with the suggestion text bestowed by
+// a preferred duplicate, while the template's other fields stay put.
+TEST_F(AutocompleteMatchTest, UpgradeMatchWithPropertiesFromSuggestTemplate) {
+  scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::kBookmark);
+  scoped_refptr<FakeAutocompleteProvider> history_provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::kHistoryQuick);
+  scoped_refptr<FakeAutocompleteProvider> search_provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::kSearch);
+  scoped_refptr<FakeAutocompleteProvider> shortcuts_provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::kShortcuts);
+
+  // Every field of the server template, split into the fields that describe
+  // how the suggestion is displayed...
+  omnibox::SuggestTemplateInfo presentation;
+  presentation.set_style(omnibox::SuggestTemplateInfo::ANNOTATED);
+  presentation.set_type_icon(omnibox::SuggestTemplateInfo::TRENDING);
+  presentation.mutable_primary_text()->set_text("weather");
+  presentation.mutable_secondary_text()->set_text("Sunny");
+  presentation.mutable_image()->set_url("https://example.com/sunny.png");
+  presentation.set_secondary_text_placement(
+      omnibox::SuggestTemplateInfo::BELOW_PRIMARY_TEXT);
+  presentation.set_wrap_secondary_text(true);
+  presentation.set_wrap_primary_text(true);
+  // ...and the fields that describe what it does.
+  omnibox::SuggestTemplateInfo behavior;
+  (*behavior.mutable_default_search_parameters())["foo"] = "bar";
+  behavior.add_action_suggestions()->set_action_type(
+      omnibox::SuggestTemplateInfo::TemplateAction::DIRECTIONS);
+  behavior.mutable_fusebox_action()->set_query_action_override(
+      omnibox::SuggestTemplateInfo::FuseboxAction::QUERY_ACTION_PASTE);
+  behavior.set_entity_id("/m/weather");
+  behavior.set_website_uri("https://weather.example.com");
+  omnibox::SuggestTemplateInfo server_template = presentation;
+  server_template.MergeFrom(behavior);
+
+  auto create_server_match = [&](int relevance) {
+    AutocompleteMatch match(search_provider.get(), relevance, false,
+                            omnibox::AutocompleteMatchType::kSearchSuggest);
+    match.contents = u"weather";
+    match.description = u"Sunny";
+    match.suggest_template = server_template;
+    return match;
+  };
+  auto create_shortcut_match = [&] {
+    AutocompleteMatch match(shortcuts_provider.get(), 1000, true,
+                            omnibox::AutocompleteMatchType::kSearchHistory);
+    match.contents = u"weather";
+    return match;
+  };
+
+  // A shortcut winning over a server suggestion takes its text, along with
+  // the template presentation, but not what the template does.
+  {
+    AutocompleteMatch shortcut_match = create_shortcut_match();
+    AutocompleteMatch server_match = create_server_match(800);
+    shortcut_match.UpgradeMatchWithPropertiesFrom(server_match);
+    EXPECT_EQ(shortcut_match.description, u"Sunny");
+    ASSERT_TRUE(shortcut_match.suggest_template);
+    EXPECT_THAT(*shortcut_match.suggest_template,
+                base::test::EqualsProto(presentation));
+    EXPECT_TRUE(shortcut_match.HasCustomDescription());
+  }
+
+  // A server suggestion winning over a bookmark takes its text, so its own
+  // template presentation no longer applies. What the template does stays.
+  {
+    AutocompleteMatch server_match = create_server_match(1000);
+    AutocompleteMatch bookmark_match(
+        bookmark_provider.get(), 800, true,
+        omnibox::AutocompleteMatchType::kBookmarkTitle);
+    bookmark_match.contents = u"Weather - Google Search";
+    server_match.UpgradeMatchWithPropertiesFrom(bookmark_match);
+    EXPECT_EQ(server_match.contents, u"Weather - Google Search");
+    ASSERT_TRUE(server_match.suggest_template);
+    EXPECT_THAT(*server_match.suggest_template,
+                base::test::EqualsProto(behavior));
+
+    // Without any other fields, the template is dropped altogether.
+    server_match = create_server_match(1000);
+    server_match.suggest_template = presentation;
+    server_match.UpgradeMatchWithPropertiesFrom(bookmark_match);
+    EXPECT_FALSE(server_match.suggest_template);
+  }
+
+  // When both matches have a template, the presentation is replaced rather
+  // than merged, and the match keeps only what its own template does.
+  {
+    omnibox::SuggestTemplateInfo shortcut_behavior;
+    (*shortcut_behavior.mutable_default_search_parameters())["udm"] = "99";
+    shortcut_behavior.mutable_fusebox_action()->set_query_action_override(
+        omnibox::SuggestTemplateInfo::FuseboxAction::QUERY_ACTION_HINT);
+    AutocompleteMatch shortcut_match = create_shortcut_match();
+    shortcut_match.contents = u"weather today";
+    shortcut_match.suggest_template = shortcut_behavior;
+    shortcut_match.suggest_template->set_type_icon(
+        omnibox::SuggestTemplateInfo::HISTORY);
+    shortcut_match.suggest_template->mutable_primary_text()->set_text(
+        "weather today");
+    // The server suggestion has no fusebox action of its own.
+    AutocompleteMatch server_match = create_server_match(800);
+    server_match.suggest_template->clear_fusebox_action();
+    shortcut_match.UpgradeMatchWithPropertiesFrom(server_match);
+    omnibox::SuggestTemplateInfo expected = presentation;
+    expected.MergeFrom(shortcut_behavior);
+    ASSERT_TRUE(shortcut_match.suggest_template);
+    EXPECT_THAT(*shortcut_match.suggest_template,
+                base::test::EqualsProto(expected));
+  }
+
+  // A match without a template doesn't get one from a duplicate without one.
+  {
+    AutocompleteMatch shortcut_match = create_shortcut_match();
+    AutocompleteMatch server_match = create_server_match(800);
+    server_match.suggest_template.reset();
+    shortcut_match.UpgradeMatchWithPropertiesFrom(server_match);
+    EXPECT_EQ(shortcut_match.description, u"Sunny");
+    EXPECT_FALSE(shortcut_match.suggest_template);
+  }
+
+  // The template is unaffected by duplicates from providers that aren't
+  // preferred.
+  {
+    AutocompleteMatch server_match = create_server_match(800);
+    AutocompleteMatch history_match(
+        history_provider.get(), 1000, true,
+        omnibox::AutocompleteMatchType::kHistoryTitle);
+    server_match.UpgradeMatchWithPropertiesFrom(history_match);
+    ASSERT_TRUE(server_match.suggest_template);
+    EXPECT_THAT(*server_match.suggest_template,
+                base::test::EqualsProto(server_template));
+  }
 }
 
 TEST_F(AutocompleteMatchTest, MergeScoringSignals) {
