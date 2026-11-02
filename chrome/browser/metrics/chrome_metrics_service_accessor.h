@@ -64,6 +64,7 @@ class GlicSyntheticTrialManager;
 namespace metrics {
 class ChromeOSPerUserMetricsBrowserTestBase;
 class UkmConsentParamBrowserTest;
+class UkmPolicyBrowserTest;
 class CrOSPreChoiceMetricsManagerTest;
 }  // namespace metrics
 
@@ -201,6 +202,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ForceFieldTrialsBrowserTest;
   friend class MetricsReportingStateTest;
   friend class metrics::UkmConsentParamBrowserTest;
+  friend class metrics::UkmPolicyBrowserTest;
   friend class ClonedInstallClientIdResetBrowserTest;
   friend class metrics::ChromeOSPerUserMetricsBrowserTestBase;
   friend class SampledOutClientIdSavedBrowserTest;
