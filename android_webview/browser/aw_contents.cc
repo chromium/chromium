@@ -1590,24 +1590,16 @@ AwContents::PrerenderInfo::~PrerenderInfo() {
 
 void AwContents::PrerenderInfo::OnLifecycleStateChanged(
     content::PrerenderLifecycleStatus status) {
+  // Empty vector - to be swapped with any callbacks that need execution.
+  std::vector<base::OnceClosure> status_callbacks;
   switch (status) {
     case content::PrerenderLifecycleStatus::kActivated:
-      for (auto& cb : activation_callbacks) {
-        if (cb) {
-          std::move(cb).Run();
-        }
-      }
-      activation_callbacks.clear();
+      std::swap(activation_callbacks, status_callbacks);
       break;
     case content::PrerenderLifecycleStatus::kHttpBadResponse:
     case content::PrerenderLifecycleStatus::kStop:
     case content::PrerenderLifecycleStatus::kOtherFailure:
-      for (auto& cb : error_callbacks) {
-        if (cb) {
-          std::move(cb).Run();
-        }
-      }
-      error_callbacks.clear();
+      std::swap(error_callbacks, status_callbacks);
       break;
     case content::PrerenderLifecycleStatus::kHTTPSuccessResponse:
       // WebView does not need to react to headers received successfully.
@@ -1615,6 +1607,15 @@ void AwContents::PrerenderInfo::OnLifecycleStateChanged(
     case content::PrerenderLifecycleStatus::kCancelled:
       break;
   }
+
+  // Run the captured callbacks (if any).
+  for (auto& cb : status_callbacks) {
+    if (cb) {
+      std::move(cb).Run();
+    }
+  }
+  // Do not touch `this` after running callbacks, as they may have caused
+  // the object to be deleted.
 }
 
 int64_t AwContents::StartPrerendering(
