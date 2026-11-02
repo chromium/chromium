@@ -47,19 +47,6 @@ proto_test_extras("oak_proto_test_extras") {
   extras_deps = [ ":oak_proto_extras" ]
 }
 
-proto_library("proto_attestation_reference_value_proto") {
-  sources = [ "chromium/proto/attestation/reference_value.proto" ]
-
-  deps = [
-    ":oak_proto",
-    "//third_party/protobuf:duration_proto",
-    "//third_party/protobuf:timestamp_proto",
-  ]
-
-  proto_in_dir = "chromium"
-  cc_generator_options = "lite"
-}
-
 config("oak_session_tls_config") {
   include_dirs = [ "src" ]
 

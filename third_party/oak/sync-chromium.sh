@@ -12,7 +12,6 @@ FILES=(
   "proto/attestation/endorsement.proto"
   "proto/attestation/eventlog.proto"
   "proto/attestation/evidence.proto"
-  "proto/attestation/reference_value.proto"
   "proto/attestation/tcb_version.proto"
   "proto/crypto/certificate.proto"
   "proto/crypto/crypto.proto"

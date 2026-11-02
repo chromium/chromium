@@ -166,13 +166,11 @@ message TaskAssignment {
   }
 
   message ConfidentialAggregationInfo {
-    // The `fcp.confidentialcompute.DataAccessPolicy` that will apply to client
-    // contributions.
-    Resource data_access_policy = 1;
+    reserved 1;
 
-    // the serialized fcp.confidentialcompute.SignedEndorsements that authorize
-    // the `data_access_policy`.  The client will verify that these
-    // SignedEndorsements are valid and sufficient for contribution.
+    // The serialized fcp.confidentialcompute.SignedEndorsements that describes
+    // the pipeline configuration endorsements. The client will verify that
+    // these endorsements are valid and sufficient for contribution.
     Resource signed_endorsements = 2;
   }
 

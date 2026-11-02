@@ -68,7 +68,6 @@ proto_library("confidential_compute_proto") {
 
   deps = [
     "//third_party/oak:oak_proto",
-    "//third_party/oak:proto_attestation_reference_value_proto",
     "//third_party/protobuf:timestamp_proto",
   ]
 
@@ -128,10 +127,7 @@ proto_library("federatedcompute_proto") {
     "//third_party/protobuf:duration_proto",
   ]
 
-  import_dirs = [
-    "//third_party/oak/chromium",
-    "//third_party/federated_compute/third_party/googleapis/src",
-  ]
+  import_dirs = [ "//third_party/federated_compute/third_party/googleapis/src" ]
 
   proto_in_dir = "chromium"
   cc_generator_options = "lite"
@@ -159,7 +155,6 @@ proto_library("client_proto") {
   ]
 
   deps = [
-    ":confidential_compute_proto",
     ":federatedcompute_proto",
     "//third_party/federated_compute/third_party/googleapis:google_longrunning_operations_proto",
     "//third_party/federated_compute/third_party/googleapis:google_rpc_code_proto",
@@ -174,7 +169,6 @@ proto_library("client_proto") {
   import_dirs = [
     "chromium",
     "//third_party/federated_compute/third_party/googleapis/src",
-    "//third_party/oak/chromium",
   ]
 
   proto_in_dir = "src"
@@ -184,7 +178,7 @@ proto_library("client_proto") {
 proto_library("access_policy_endorsement_options_proto") {
   sources = [ "chromium/fcp/protos/confidentialcompute/access_policy_endorsement_options.proto" ]
 
-  deps = [ ":client_proto" ]
+  deps = [ ":confidential_compute_proto" ]
 
   import_dirs = [
     "chromium",
