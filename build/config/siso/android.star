@@ -42,7 +42,7 @@ def __filegroups(ctx):
     return fg
 
 def __step_config(ctx, step_config):
-    remote_run = config.get(ctx, "googlechrome")  # Turn this to False when you do file access trace.
+    remote_all = config.get(ctx, "googlechrome")  # Turn this to False when you do file access trace.
 
     # Run static analysis steps locally when build server is enabled.
     # android_static_analysis = "build_server" by default.
@@ -55,7 +55,11 @@ def __step_config(ctx, step_config):
             remote_run_static_analysis = True
         if gn_args.get("enable_kythe_annotations") == "true":
             # Remote Kythe annotations isn't supported.
-            remote_run = False
+            remote_all = False
+
+    # These actions are fast enough that running them locally on developer
+    # workstations is faster than running them remotely.
+    remote_run = remote_all and (config.get(ctx, "remote-android") or config.get(ctx, "default-remote") or config.get(ctx, "builder"))
 
     step_config["rules"].extend([
         # See also https://chromium.googlesource.com/chromium/src/build/+/HEAD/android/docs/java_toolchain.md
@@ -238,7 +242,7 @@ def __step_config(ctx, step_config):
             "name": "android/trace_event_bytecode_rewriter",
             "command_prefix": platform.python_bin + " ../../build/android/gyp/trace_event_bytecode_rewriter.py",
             "handler": "android_trace_event_bytecode_rewriter",
-            "remote": remote_run,
+            "remote": remote_all,
             # The GN action declares only an empty .stamp output that
             # downstream proguard steps depend on.
             "restat_content": False,
@@ -271,7 +275,7 @@ def __step_config(ctx, step_config):
                 "*.pak",
                 "*.sql",
             ],
-            "remote": remote_run,
+            "remote": remote_all,
             "restat_content": True,
             "platform_ref": "large",
             "timeout": "10m",

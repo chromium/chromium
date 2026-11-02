@@ -26,6 +26,9 @@ __KNOWN_CONFIG_OPTIONS = [
     # TODO: b/333033551 - check performance with/without remote on cog.
     "disable-remote-on-cog",
 
+    # Run Android build steps remotely on developer builds.
+    "remote-android",
+
     # TODO: b/308405411 - Enable this config for all builders.
     "remote-devtools-frontend-typescript",
 
@@ -74,7 +77,7 @@ def __get(ctx, key):
         # disable race strategy as "builder".
         # enable "remote-*" on cog
         # TODO: b/308405411 - enable "remote-devtools-frontend-typescript"
-        if key in ("builder", "cog", "remote-link"):
+        if key in ("builder", "cog", "remote-android", "remote-link"):
             return True
     return False
 
