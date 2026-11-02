@@ -13,9 +13,11 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_form_event_logger.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/android_autofill/browser/autofill_type_util.h"
+#include "components/android_autofill/browser/card_value_validation.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
@@ -345,7 +347,8 @@ void AndroidAutofillManager::FillOrPreviewForm(
     // The renderer doesn't fill such fields, and therefore they can be removed
     // from here to reduce IPC traffic and avoid accidental filling.
     return !field.is_autofilled_according_to_renderer() ||
-           field.value().empty();
+           field.value().empty() ||
+           (!field.is_focusable() && !field.IsSelectElement());
   });
 
   absl::flat_hash_map<FieldGlobalId, FieldType> field_type_map;
@@ -354,6 +357,19 @@ void AndroidAutofillManager::FillOrPreviewForm(
     // The security policy is slightly weaker on WebView because it has no
     // visibility on the types filled into the fields.
     field_type_map.emplace(field.global_id(), UNKNOWN_TYPE);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame)) {
+    if (const FormStructure* form_structure = FindCachedFormById(form_id)) {
+      // The service, not Autofill, chose the values. So the policy only gets
+      // Autofill's predicted types for cardholder name and expiration date
+      // values that pass strict checks.
+      for (const auto& [field_id, type] :
+           GetPlausibleNonSensitiveCreditCardTypes(*form_structure, fields,
+                                                   triggered_origin)) {
+        field_type_map[field_id] = type;
+      }
+    }
   }
 
   driver().ApplyFormAction(mojom::FormActionType::kFill, action_persistence,

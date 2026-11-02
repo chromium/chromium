@@ -7,9 +7,16 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "url/origin.h"
 
 namespace autofill {
+
+class FormFieldData;
+class FormStructure;
 
 // Returns whether `value`, which an Android Autofill service filled into a
 // field that Autofill classified as `type`, looks like a value of `type`.
@@ -34,6 +41,30 @@ namespace autofill {
 bool IsPlausibleNonSensitiveCreditCardValue(FieldType type,
                                             std::u16string_view value,
                                             bool is_select_element);
+
+// Returns the types that the iframe security policy should get, instead of
+// UNKNOWN_TYPE, when a fill triggered from `triggered_origin` fills
+// `filled_fields` of `form`.
+//
+// Returns an empty map if `triggered_origin` is `form`'s main-frame origin,
+// since the security policy already allows filling all main-frame fields in
+// that case without consulting field types.
+//
+// Otherwise, returns a type for those `filled_fields` that
+// - are in `form`'s main-frame origin,
+// - Autofill classified as a cardholder name or expiration date, and
+// - got a value that passes `IsPlausibleNonSensitiveCreditCardValue()`. For
+//   <select> elements, the texts of the options with that value must pass,
+//   too, since the service may have picked the option by its text.
+//
+// At most one month, one year and one expiration date field get a type (the
+// first in `filled_fields`), so that at most one short block of a card number
+// that is split across several fields can pass the policy.
+absl::flat_hash_map<FieldGlobalId, FieldType>
+GetPlausibleNonSensitiveCreditCardTypes(
+    const FormStructure& form,
+    base::span<const FormFieldData> filled_fields,
+    const url::Origin& triggered_origin);
 
 }  // namespace autofill
 

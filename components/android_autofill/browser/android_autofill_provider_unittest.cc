@@ -5,6 +5,7 @@
 #include "components/android_autofill/browser/android_autofill_provider.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/android/android_info.h"
 #include "base/containers/span.h"
@@ -12,6 +13,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
@@ -51,7 +54,10 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::AnyOf;
 using ::testing::AtLeast;
+using ::testing::Contains;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
@@ -60,6 +66,7 @@ using ::testing::Mock;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Optional;
+using ::testing::Pair;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Return;
@@ -2869,6 +2876,226 @@ TEST_F(AndroidAutofillProviderTestHidingLogic,
   AskForValuesToFill(sub_frame_);
   EXPECT_CALL(provider_bridge(), Reset);
   NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
+}
+
+class MockContentAutofillDriver : public ContentAutofillDriver {
+ public:
+  using ContentAutofillDriver::ContentAutofillDriver;
+
+  MOCK_METHOD(
+      base::flat_set<FieldGlobalId>,
+      ApplyFormAction,
+      (mojom::FormActionType action_type,
+       mojom::ActionPersistence action_persistence,
+       base::span<const FormFieldData> data,
+       const FillId& fill_id,
+       bool supports_refill,
+       const url::Origin& triggered_origin,
+       (const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map)),
+      (override));
+};
+
+// Tests the types that FillOrPreviewForm passes to the iframe security policy
+// for a card form whose card number and CVC are in a payment service
+// provider's origin and whose cardholder name and expiration date are in the
+// merchant's main frame origin, when the user fills from the card number.
+//
+// Unlike `AndroidAutofillProviderTest`, this fixture injects a mock driver,
+// which requires the driver injector to be created before the manager
+// injector (`WithTestAutofillClientDriverManager` cannot be used because
+// `AndroidAutofillManager` casts `driver()` to `ContentAutofillDriver`).
+class AndroidAutofillManagerSecurityPolicyTypesTest
+    : public content::RenderViewHostTestHarness {
+ public:
+  static constexpr int kName = 0;
+  static constexpr int kNumber = 1;
+  static constexpr int kMonth = 2;
+  static constexpr int kYear = 3;
+  static constexpr int kCvc = 4;
+
+  AndroidAutofillManagerSecurityPolicyTypesTest()
+      : content::RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL("https://merchant.test"));
+    // Pins the current year to 2026, so that the expiration year "30" is
+    // plausible.
+    base::Time now;
+    ASSERT_TRUE(base::Time::FromLocalExploded(
+        {.year = 2026, .month = 6, .day_of_month = 15, .hour = 12}, &now));
+    task_environment()->AdvanceClock(now - base::Time::Now());
+
+    FormData form;
+    form.set_renderer_id(test::MakeFormRendererId());
+    form.set_url(GURL("https://merchant.test/checkout.html"));
+    form.set_main_frame_origin(main_origin_);
+    form.set_fields(
+        {CreateTestFormField("Name on card", "name", "",
+                             FormControlType::kInputText, "cc-name"),
+         CreateTestFormField("Card number", "number", "",
+                             FormControlType::kInputText, "cc-number"),
+         CreateTestFormField("Expiration month", "month", "",
+                             FormControlType::kInputText, "cc-exp-month"),
+         CreateTestFormField("Expiration year", "year", "",
+                             FormControlType::kInputText, "cc-exp-year"),
+         CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText,
+                             "cc-csc")});
+    form_ = CreateFormDataForFrame(
+        std::move(form), LocalFrameToken(main_rfh()->GetFrameToken().value()));
+    for (int i : {kName, kMonth, kYear}) {
+      test_api(form_).field(i).set_origin(main_origin_);
+    }
+    for (int i : {kNumber, kCvc}) {
+      test_api(form_).field(i).set_origin(iframe_origin_);
+    }
+    manager().OnFormsSeen({form_}, /*removed_forms=*/{},
+                          AutofillManagerTestApi::pass_key());
+  }
+
+  // Fills all fields with card values, with `name` as the cardholder name, as
+  // if by the Autofill service, and returns the types that FillOrPreviewForm
+  // passes to the security policy.
+  absl::flat_hash_map<FieldGlobalId, FieldType> FillAndGetTypes(
+      std::u16string_view name = u"Jane Doe",
+      std::optional<url::Origin> triggered_origin = std::nullopt) {
+    FormData filled_form = form_;
+    FillAllFields(filled_form, name);
+    return ApplyFillAndGetTypes(filled_form,
+                                triggered_origin.value_or(iframe_origin_));
+  }
+
+  void FillAllFields(FormData& filled_form,
+                     std::u16string_view name = u"Jane Doe") {
+    auto fill = [&](int i, std::u16string_view value) {
+      test_api(filled_form).field(i).set_value(std::u16string(value));
+      test_api(filled_form)
+          .field(i)
+          .set_is_autofilled_according_to_renderer(true);
+    };
+    fill(kName, name);
+    fill(kNumber, u"4111111111111111");
+    fill(kMonth, u"12");
+    fill(kYear, u"30");
+    fill(kCvc, u"123");
+  }
+
+  absl::flat_hash_map<FieldGlobalId, FieldType> ApplyFillAndGetTypes(
+      const FormData& filled_form,
+      const url::Origin& triggered_origin) {
+    absl::flat_hash_map<FieldGlobalId, FieldType> types;
+    EXPECT_CALL(driver(), ApplyFormAction)
+        .WillOnce(
+            DoAll(SaveArg<6>(&types), Return(base::flat_set<FieldGlobalId>())));
+    manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, filled_form,
+                                triggered_origin);
+    return types;
+  }
+
+  FieldGlobalId field_id(int i) const { return form_.fields()[i].global_id(); }
+  const FormData& form() const { return form_; }
+  const url::Origin& main_origin() const { return main_origin_; }
+  const url::Origin& iframe_origin() const { return iframe_origin_; }
+
+ private:
+  TestAndroidAutofillManager& manager() {
+    return *autofill_manager_injector_[main_rfh()];
+  }
+  MockContentAutofillDriver& driver() {
+    return *autofill_driver_injector_[main_rfh()];
+  }
+
+  test::AutofillUnitTestEnvironment autofill_environment_;
+  TestAutofillClientInjector<TestContentAutofillClient>
+      autofill_client_injector_;
+  TestAutofillDriverInjector<NiceMock<MockContentAutofillDriver>>
+      autofill_driver_injector_;
+  TestAutofillManagerInjector<TestAndroidAutofillManager>
+      autofill_manager_injector_;
+  const url::Origin main_origin_ =
+      url::Origin::Create(GURL("https://merchant.test"));
+  const url::Origin iframe_origin_ =
+      url::Origin::Create(GURL("https://psp.test"));
+  FormData form_;
+};
+
+// Tests that without kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame, the
+// security policy gets UNKNOWN_TYPE for all fields.
+TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
+       UnknownTypesWithoutFeature) {
+  EXPECT_THAT(FillAndGetTypes(),
+              UnorderedElementsAre(Pair(field_id(kName), UNKNOWN_TYPE),
+                                   Pair(field_id(kNumber), UNKNOWN_TYPE),
+                                   Pair(field_id(kMonth), UNKNOWN_TYPE),
+                                   Pair(field_id(kYear), UNKNOWN_TYPE),
+                                   Pair(field_id(kCvc), UNKNOWN_TYPE)));
+}
+
+// Tests that with kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame, the
+// security policy gets the predicted types of the cardholder name and
+// expiration date in the main frame, and UNKNOWN_TYPE for the other fields.
+TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
+       PredictedTypesForMainFrameNameAndExpiryWithFeature) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  EXPECT_THAT(FillAndGetTypes(),
+              UnorderedElementsAre(
+                  Pair(field_id(kName), CREDIT_CARD_NAME_FULL),
+                  Pair(field_id(kNumber), UNKNOWN_TYPE),
+                  Pair(field_id(kMonth), CREDIT_CARD_EXP_MONTH),
+                  Pair(field_id(kYear), AnyOf(CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                                              CREDIT_CARD_EXP_4_DIGIT_YEAR)),
+                  Pair(field_id(kCvc), UNKNOWN_TYPE)));
+}
+
+// Tests that with kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame, a
+// value that doesn't look like a cardholder name, e.g. a card number, still
+// gets UNKNOWN_TYPE.
+TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
+       UnknownTypeForImplausibleNameWithFeature) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  EXPECT_THAT(FillAndGetTypes(/*name=*/u"4111111111111111"),
+              Contains(Pair(field_id(kName), UNKNOWN_TYPE)));
+}
+
+// Tests that FillOrPreviewForm drops unfocusable non-<select> fields before
+// passing them to the driver, while keeping unfocusable <select> elements.
+TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
+       DropsUnfocusableNonSelectFields) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  FormData filled_form = form();
+  FillAllFields(filled_form);
+  test_api(filled_form).field(kName).set_is_focusable(false);
+  test_api(filled_form).field(kMonth).set_is_focusable(false);
+  test_api(filled_form)
+      .field(kMonth)
+      .set_form_control_type(FormControlType::kSelectOne);
+  test_api(filled_form)
+      .field(kMonth)
+      .set_options({{.value = u"12", .text = u"12"}});
+
+  EXPECT_THAT(ApplyFillAndGetTypes(filled_form, iframe_origin()),
+              UnorderedElementsAre(
+                  Pair(field_id(kNumber), UNKNOWN_TYPE),
+                  Pair(field_id(kMonth), CREDIT_CARD_EXP_MONTH),
+                  Pair(field_id(kYear), AnyOf(CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                                              CREDIT_CARD_EXP_4_DIGIT_YEAR)),
+                  Pair(field_id(kCvc), UNKNOWN_TYPE)));
+}
+
+// Tests that a fill triggered from the main frame itself leaves all field types
+// as UNKNOWN_TYPE, since the router's security policy already permits filling
+// main-frame fields on same-origin triggers without consulting
+// `field_type_map`.
+TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
+       SameOriginFillLeavesUnknownTypes) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  EXPECT_THAT(FillAndGetTypes(/*name=*/u"Jane Doe", main_origin()),
+              Contains(Pair(field_id(kName), UNKNOWN_TYPE)));
 }
 
 }  // namespace

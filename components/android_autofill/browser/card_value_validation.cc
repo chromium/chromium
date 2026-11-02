@@ -5,12 +5,18 @@
 #include "components/android_autofill/browser/card_value_validation.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -70,6 +76,49 @@ bool IsPlausibleExpirationDate(std::u16string_view value) {
              /*allow_4_digits=*/true);
 }
 
+// The parts of an expiration date. At most one field per part gets a type in
+// each fill.
+enum class ExpirationPart {
+  kMonth,
+  kYear,
+  kDate,
+  kMaxValue = kDate,
+};
+
+// Returns the part of the expiration date that a field of `type` holds, or
+// `std::nullopt` if `type` isn't an expiration date type. Names aren't limited,
+// since they can't contain digits.
+std::optional<ExpirationPart> GetExpirationPart(FieldType type) {
+  switch (type) {
+    case CREDIT_CARD_EXP_MONTH:
+      return ExpirationPart::kMonth;
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+      return ExpirationPart::kYear;
+    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+      return ExpirationPart::kDate;
+    default:
+      return std::nullopt;
+  }
+}
+
+// Returns whether the <select> element `field` has an option with
+// `field.value()`, and all such options have a text that is a plausible value
+// of `type`. The service only sees the options' texts, so it may have picked
+// the option by a text that the main frame controls.
+bool HasOnlyPlausibleOptionTexts(const FormFieldData& field, FieldType type) {
+  return std::ranges::any_of(field.options(),
+                             [&](const SelectOption& option) {
+                               return option.value == field.value();
+                             }) &&
+         std::ranges::all_of(field.options(), [&](const SelectOption& option) {
+           return option.value != field.value() ||
+                  IsPlausibleNonSensitiveCreditCardValue(
+                      type, option.text, /*is_select_element=*/true);
+         });
+}
+
 }  // namespace
 
 bool IsPlausibleNonSensitiveCreditCardValue(FieldType type,
@@ -95,6 +144,54 @@ bool IsPlausibleNonSensitiveCreditCardValue(FieldType type,
     default:
       return false;
   }
+}
+
+absl::flat_hash_map<FieldGlobalId, FieldType>
+GetPlausibleNonSensitiveCreditCardTypes(
+    const FormStructure& form,
+    base::span<const FormFieldData> filled_fields,
+    const url::Origin& triggered_origin) {
+  // `AutofillDriverRouter::IsSafeToFill()` only consults `field_type_map` when
+  // a cross-origin frame fills a main-frame field.
+  if (triggered_origin == form.main_frame_origin()) {
+    return {};
+  }
+  absl::flat_hash_map<FieldGlobalId, FieldType> types;
+  DenseSet<ExpirationPart> seen_expiration_parts;
+  for (const FormFieldData& filled_field : filled_fields) {
+    // `IsSafeToFill()` only consults `field_type_map` for main-frame fields,
+    // and skipping subframe fields keeps them from consuming a
+    // `seen_expiration_parts` slot.
+    if (filled_field.origin() != form.main_frame_origin()) {
+      continue;
+    }
+    // Skip fields that aren't in the parsed `FormStructure` (e.g. added since
+    // parsing), as Autofill hasn't classified them.
+    const AutofillField* field = form.GetFieldById(filled_field.global_id());
+    if (!field) {
+      continue;
+    }
+    // Reject values (or matching <select> option texts) that don't look like
+    // the cardholder name or expiration type Autofill classified the field as.
+    const FieldType type = field->Type().GetCreditCardType();
+    if (!IsPlausibleNonSensitiveCreditCardValue(
+            type, filled_field.value(), filled_field.IsSelectElement()) ||
+        (filled_field.IsSelectElement() &&
+         !HasOnlyPlausibleOptionTexts(filled_field, type))) {
+      continue;
+    }
+    // Allow at most one filled field per expiration part across the whole form
+    // (including across sections, where `FormStructureRationalizer` preserves
+    // multiple card sections) so a card number split across several fields by
+    // the service can't pass as multiple expiration fields.
+    if (std::optional<ExpirationPart> part = GetExpirationPart(type)) {
+      if (!seen_expiration_parts.insert(*part).second) {
+        continue;
+      }
+    }
+    types.emplace(filled_field.global_id(), type);
+  }
+  return types;
 }
 
 }  // namespace autofill

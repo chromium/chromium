@@ -41,6 +41,13 @@ BASE_FEATURE(kAndroidAutofillLazyFrameworkWrapper,
 BASE_FEATURE(kAndroidAutofillImprovedVisibilityDetection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the iframe security policy gets Chrome's predicted type, rather
+// than UNKNOWN_TYPE, for filled cardholder name and expiration date fields in
+// the main frame whose values look like such values. Like in Chrome, this lets
+// them be filled when the user fills from a cross-origin payment iframe.
+BASE_FEATURE(kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the native autofill provider is updated when the web contents
 // change.
 BASE_FEATURE(kAndroidAutofillUpdateContextForWebContents,

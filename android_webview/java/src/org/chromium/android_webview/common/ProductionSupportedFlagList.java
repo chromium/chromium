@@ -258,6 +258,11 @@ public final class ProductionSupportedFlagList {
                 "Enable improved visibility detection form fields sent to the Android "
                         + "Autofill framework."),
         Flag.baseFeature(
+                "AndroidAutofillFillNonSensitiveCardFieldsInMainFrame",
+                "When filling from a cross-origin payment iframe, lets cardholder name and"
+                        + " expiration date fields in the main frame be filled if their values"
+                        + " pass strict checks."),
+        Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT_NAME,
                 "Enable updating autofill field origin on select control change."),
         Flag.baseFeature(

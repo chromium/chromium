@@ -4,17 +4,33 @@
 
 #include "components/android_autofill/browser/card_value_validation.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/check.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
+#include "components/autofill/core/common/autofill_test_util.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 namespace {
+
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 class CardValueValidationTest : public testing::Test {
  public:
@@ -148,6 +164,212 @@ TEST_F(CardValueValidationTest, OtherTypes) {
   EXPECT_FALSE(IsPlausible(CREDIT_CARD_TYPE, u"Visa"));
   EXPECT_FALSE(IsPlausible(NAME_FULL, u"Jane Doe"));
   EXPECT_FALSE(IsPlausible(UNKNOWN_TYPE, u"12"));
+}
+
+class GetPlausibleNonSensitiveCreditCardTypesTest
+    : public CardValueValidationTest {
+ protected:
+  // Returns the types for a fill of all fields of `form`, whose fields Autofill
+  // classified as `types`.
+  absl::flat_hash_map<FieldGlobalId, FieldType> GetTypes(
+      const FormData& form,
+      const std::vector<FieldType>& types,
+      std::optional<url::Origin> triggered_origin = std::nullopt) {
+    FormStructure form_structure(form);
+    test_api(form_structure).SetFieldTypes(types);
+    return GetPlausibleNonSensitiveCreditCardTypes(
+        form_structure, form.fields(),
+        triggered_origin.value_or(iframe_origin_));
+  }
+
+  const url::Origin main_origin_ =
+      url::Origin::Create(GURL("https://merchant.test"));
+  const url::Origin iframe_origin_ =
+      url::Origin::Create(GURL("https://psp.test"));
+
+ private:
+  test::AutofillUnitTestEnvironment autofill_environment_;
+};
+
+// Tests that only the cardholder name and expiration date fields in the main
+// frame's origin get a type.
+TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, MainFrameNameAndExpiry) {
+  FormData form = test::GetFormData(
+      {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
+                  {.value = u"4111111111111111", .origin = iframe_origin_},
+                  {.value = u"12", .origin = main_origin_},
+                  {.value = u"30", .origin = main_origin_},
+                  {.value = u"123", .origin = iframe_origin_},
+                  {.value = u"Jane Doe", .origin = iframe_origin_}},
+       .main_frame_origin = main_origin_});
+  EXPECT_THAT(
+      GetTypes(form, {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                      CREDIT_CARD_VERIFICATION_CODE, CREDIT_CARD_NAME_FULL}),
+      UnorderedElementsAre(
+          Pair(form.fields()[0].global_id(), CREDIT_CARD_NAME_FULL),
+          Pair(form.fields()[2].global_id(), CREDIT_CARD_EXP_MONTH),
+          Pair(form.fields()[3].global_id(), CREDIT_CARD_EXP_2_DIGIT_YEAR)));
+}
+
+// Tests that card numbers, CVCs and other types in the main frame don't get a
+// type.
+TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, OtherTypesInMainFrame) {
+  FormData form = test::GetFormData(
+      {.fields = {{.value = u"4111111111111111", .origin = main_origin_},
+                  {.value = u"123", .origin = main_origin_},
+                  {.value = u"Jane Doe", .origin = main_origin_}},
+       .main_frame_origin = main_origin_});
+  EXPECT_THAT(GetTypes(form, {CREDIT_CARD_NUMBER, CREDIT_CARD_VERIFICATION_CODE,
+                              NAME_FULL}),
+              IsEmpty());
+}
+
+// Tests that fields whose values don't look like their type don't get a type.
+TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, ImplausibleValues) {
+  FormData form = test::GetFormData(
+      {.fields = {{.value = u"4111111111111111", .origin = main_origin_},
+                  {.value = u"2030", .origin = main_origin_},
+                  {.value = u"2030",
+                   .form_control_type = FormControlType::kSelectOne,
+                   .origin = main_origin_,
+                   .select_options = {{{.value = u"2030", .text = u"2030"}}}}},
+       .main_frame_origin = main_origin_});
+  // A 4-digit year only gets a type in a <select> element.
+  EXPECT_THAT(
+      GetTypes(form, {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                      CREDIT_CARD_EXP_4_DIGIT_YEAR}),
+      UnorderedElementsAre(
+          Pair(form.fields()[2].global_id(), CREDIT_CARD_EXP_4_DIGIT_YEAR)));
+}
+
+// Tests that fills triggered from the main frame itself return an empty map.
+TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
+       SameOriginTriggerReturnsEmpty) {
+  FormData form = test::GetFormData(
+      {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
+                  {.value = u"12", .origin = main_origin_},
+                  {.value = u"30", .origin = main_origin_}},
+       .main_frame_origin = main_origin_});
+  EXPECT_THAT(GetTypes(form,
+                       {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
+                        CREDIT_CARD_EXP_2_DIGIT_YEAR},
+                       main_origin_),
+              IsEmpty());
+}
+
+// Tests that field properties are checked on `filled_fields` rather than on the
+// potentially outdated `FormStructure`.
+TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
+       ChecksFilledFieldsInsteadOfCachedFormStructure) {
+  FormData cached_form = test::GetFormData(
+      {.fields = {{.origin = main_origin_},
+                  {.origin = iframe_origin_},
+                  {.form_control_type = FormControlType::kSelectOne,
+                   .origin = main_origin_,
+                   .select_options = {{{.value = u"12",
+                                        .text = u"December"}}}}},
+       .main_frame_origin = main_origin_});
+  FormStructure form_structure(cached_form);
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NAME_LAST,
+                      CREDIT_CARD_EXP_MONTH});
+
+  FormData filled_form = cached_form;
+  test_api(filled_form).field(0).set_origin(iframe_origin_);
+  test_api(filled_form).field(0).set_value(u"Jane");
+  test_api(filled_form).field(1).set_origin(main_origin_);
+  test_api(filled_form).field(1).set_value(u"Doe");
+  test_api(filled_form).field(2).set_options({{.value = u"12", .text = u"12"}});
+  test_api(filled_form).field(2).set_value(u"12");
+
+  EXPECT_THAT(
+      GetPlausibleNonSensitiveCreditCardTypes(
+          form_structure, filled_form.fields(), iframe_origin_),
+      UnorderedElementsAre(
+          Pair(filled_form.fields()[1].global_id(), CREDIT_CARD_NAME_LAST),
+          Pair(filled_form.fields()[2].global_id(), CREDIT_CARD_EXP_MONTH)));
+}
+
+// Tests that at most one month, one year and one expiration date field get a
+// type, while names aren't limited.
+TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
+       AtMostOneFieldPerExpiryType) {
+  FormData form = test::GetFormData(
+      {.fields = {{.value = u"Jane", .origin = main_origin_},
+                  {.value = u"Doe", .origin = main_origin_},
+                  {.value = u"13", .origin = main_origin_},
+                  {.value = u"12", .origin = main_origin_},
+                  {.value = u"11", .origin = main_origin_},
+                  {.value = u"30", .origin = main_origin_},
+                  {.value = u"31", .origin = main_origin_},
+                  {.value = u"12/30", .origin = main_origin_},
+                  {.value = u"11/31", .origin = main_origin_}},
+       .main_frame_origin = main_origin_});
+  // The first month fails the check, so the second one gets the type.
+  EXPECT_THAT(
+      GetTypes(form,
+               {CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NAME_LAST,
+                CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_MONTH,
+                CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                CREDIT_CARD_EXP_4_DIGIT_YEAR, CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}),
+      UnorderedElementsAre(
+          Pair(form.fields()[0].global_id(), CREDIT_CARD_NAME_FIRST),
+          Pair(form.fields()[1].global_id(), CREDIT_CARD_NAME_LAST),
+          Pair(form.fields()[3].global_id(), CREDIT_CARD_EXP_MONTH),
+          Pair(form.fields()[5].global_id(), CREDIT_CARD_EXP_2_DIGIT_YEAR),
+          Pair(form.fields()[7].global_id(),
+               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)));
+}
+
+// Tests that a <select> element only gets a type if it has an option with the
+// filled value and all such options have a plausible text, since the service
+// may have picked the option by its text.
+TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, SelectOptionTexts) {
+  struct TestCase {
+    FieldType type;
+    std::u16string value;
+    std::vector<SelectOption> options;
+    bool gets_type;
+  };
+  const TestCase kTestCases[] = {
+      {CREDIT_CARD_EXP_MONTH, u"12", {{.value = u"12", .text = u"12"}}, true},
+      {CREDIT_CARD_EXP_4_DIGIT_YEAR,
+       u"2030",
+       {{.value = u"2030", .text = u"2030"}},
+       true},
+      // Month names aren't plausible months.
+      {CREDIT_CARD_EXP_MONTH,
+       u"12",
+       {{.value = u"12", .text = u"December"}},
+       false},
+      // A crafted option may pair a CVC text with a plausible value.
+      {CREDIT_CARD_EXP_4_DIGIT_YEAR,
+       u"2030",
+       {{.value = u"2030", .text = u"1234"}},
+       false},
+      {CREDIT_CARD_EXP_4_DIGIT_YEAR,
+       u"2030",
+       {{.value = u"2030", .text = u"2030"},
+        {.value = u"2030", .text = u"123"}},
+       false},
+      {CREDIT_CARD_EXP_4_DIGIT_YEAR,
+       u"2030",
+       {{.value = u"2031", .text = u"2031"}},
+       false},
+  };
+  for (size_t i = 0; const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Test case " << i++);
+    FormData form = test::GetFormData(
+        {.fields = {{.value = test_case.value,
+                     .form_control_type = FormControlType::kSelectOne,
+                     .origin = main_origin_,
+                     .select_options = test_case.options}},
+         .main_frame_origin = main_origin_});
+    EXPECT_EQ(GetTypes(form, {test_case.type}).size(),
+              test_case.gets_type ? 1u : 0u);
+  }
 }
 
 }  // namespace

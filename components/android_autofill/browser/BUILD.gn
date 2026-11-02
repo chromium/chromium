@@ -154,10 +154,12 @@ static_library("browser") {
   ]
   public_deps = [ "//components/autofill/core/browser" ]
   deps = [
+    ":features",
     "//base",
     "//components/autofill/content/browser",
     "//components/password_manager/core/browser/form_parsing",
     "//content/public/browser",
+    "//url",
   ]
 }
 
@@ -185,6 +187,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }
 
