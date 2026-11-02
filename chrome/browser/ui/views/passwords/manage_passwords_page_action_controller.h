@@ -7,13 +7,17 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace page_actions {
 class PageActionController;
 }  // namespace page_actions
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 class ManagePasswordsUIController;
 
@@ -26,7 +30,10 @@ class ActionItem;
 // visibility, icon, and tooltip accordingly.
 class ManagePasswordsPageActionController {
  public:
-  explicit ManagePasswordsPageActionController(
+  DECLARE_USER_DATA(ManagePasswordsPageActionController);
+
+  ManagePasswordsPageActionController(
+      tabs::TabInterface& tab_interface,
       page_actions::PageActionController& page_action_controller);
   ~ManagePasswordsPageActionController();
 
@@ -34,6 +41,10 @@ class ManagePasswordsPageActionController {
       const ManagePasswordsPageActionController&) = delete;
   ManagePasswordsPageActionController& operator=(
       const ManagePasswordsPageActionController&) = delete;
+
+  // Returns the controller associated with `tab`, or nullptr if `tab` is null
+  // or no controller has been attached to it.
+  static ManagePasswordsPageActionController* From(tabs::TabInterface* tab);
 
   // Fetches the current password state and updates the page action icon.
   // `state`: The current password_manager::ui::State.
@@ -48,5 +59,7 @@ class ManagePasswordsPageActionController {
 
  private:
   const raw_ref<page_actions::PageActionController> page_action_controller_;
+  ui::ScopedUnownedUserData<ManagePasswordsPageActionController>
+      scoped_unowned_user_data_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_PAGE_ACTION_CONTROLLER_H_

@@ -57,7 +57,6 @@
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tab_dialogs.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -1288,18 +1287,13 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
   if (!tab_interface) {
     return;
   }
-  tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
-  // During tab teardown, TabFeatures is destroyed before WebContents.
-  // Destroying other tab features (like ReadAnything) can trigger
-  // visibility changes on the WebContents, which calls this method
-  // when TabFeatures is already gone.
-  if (!tab_features) {
-    return;
-  }
   // Retrieve the controller responsible for managing the page action's
   // visibility and state.
   ManagePasswordsPageActionController* const controller =
-      tab_features->manage_passwords_page_action_controller();
+      ManagePasswordsPageActionController::From(tab_interface);
+  if (!controller) {
+    return;
+  }
   // Get the action item associated with the passwords UI.
   actions::ActionItem* passwords_action_item =
       actions::ActionManager::Get().FindAction(

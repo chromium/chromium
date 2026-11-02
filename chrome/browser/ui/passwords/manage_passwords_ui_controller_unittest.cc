@@ -243,7 +243,7 @@ TestManagePasswordsUIController::TestManagePasswordsUIController(
     content::WebContents* contents,
     password_manager::PasswordManagerClient* client)
     : ManagePasswordsUIController(tab, contents),
-      manage_passwords_page_action_controller_(page_action_controller_) {
+      manage_passwords_page_action_controller_(tab, page_action_controller_) {
   passwords_action_item_ = actions::ActionItem::Builder()
                                .SetActionId(kActionShowPasswordsBubbleOrPage)
                                .Build();

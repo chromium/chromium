@@ -583,8 +583,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   tab_dialogs_ = TabDialogs::Create(tab, tab.GetContents());
   if (page_action_controller_->ActionExists(kActionShowPasswordsBubbleOrPage)) {
     manage_passwords_page_action_controller_ =
-        std::make_unique<ManagePasswordsPageActionController>(
-            *page_action_controller_);
+        GetUserDataFactory()
+            .CreateInstance<ManagePasswordsPageActionController>(
+                tab, tab, *page_action_controller_);
   }
 
   if (page_action_controller_->ActionExists(kActionShowCookieControls)) {

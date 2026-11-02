@@ -4,21 +4,19 @@
 
 #include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
 
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace {
 
@@ -29,6 +27,8 @@ const gfx::VectorIcon& GetVectorIconForState() {
 }
 
 }  // namespace
+
+DEFINE_USER_DATA(ManagePasswordsPageActionController);
 
 // static
 std::u16string
@@ -78,11 +78,20 @@ ManagePasswordsPageActionController::GetManagePasswordsTooltipText(
 }
 
 ManagePasswordsPageActionController::ManagePasswordsPageActionController(
+    tabs::TabInterface& tab_interface,
     page_actions::PageActionController& page_action_controller)
-    : page_action_controller_(page_action_controller) {}
+    : page_action_controller_(page_action_controller),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+}
 
 ManagePasswordsPageActionController::~ManagePasswordsPageActionController() =
     default;
+
+// static
+ManagePasswordsPageActionController* ManagePasswordsPageActionController::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void ManagePasswordsPageActionController::UpdateVisibility(
     password_manager::ui::State state,
