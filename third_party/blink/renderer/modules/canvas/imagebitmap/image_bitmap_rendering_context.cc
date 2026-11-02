@@ -258,7 +258,7 @@ bool ImageBitmapRenderingContext::PrepareTransferableResource(
     scoped_refptr<StaticBitmapImage> image_for_compositor =
         ImageBitmapRenderingContext::MakeAccelerated(
             image_, SharedGpuContext::ContextProviderWrapper());
-    if (!image_for_compositor || !image_for_compositor->ContextProvider()) {
+    if (!image_for_compositor) {
       return false;
     }
 

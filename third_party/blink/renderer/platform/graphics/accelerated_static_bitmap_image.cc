@@ -311,11 +311,6 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   if (!IsValid())
     return false;
 
-  // This method should only be used for cross-context copying, otherwise it's
-  // wasting overhead.
-  DCHECK(mailbox_ref_->is_cross_thread() ||
-         dest_gl != ContextProvider()->ContextGL());
-
   // Create a texture that |destProvider| knows about and copy from it.
   auto source_si_texture = shared_image_->CreateGLTexture(dest_gl);
   auto source_scoped_si_access = source_si_texture->BeginAccess(
@@ -404,12 +399,6 @@ bool AcceleratedStaticBitmapImage::IsValid() const {
   }
 
   return !!context_provider_wrapper_;
-}
-
-WebGraphicsContext3DProvider* AcceleratedStaticBitmapImage::ContextProvider()
-    const {
-  auto context = ContextProviderWrapper();
-  return context ? &(context->ContextProvider()) : nullptr;
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>

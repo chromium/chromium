@@ -65,7 +65,6 @@ namespace blink {
 enum class C2PAManifestStatus;
 class GraphicsContext;
 class Image;
-class WebGraphicsContext3DProvider;
 class WebGraphicsContext3DProviderWrapper;
 class DarkModeImageCache;
 
@@ -339,12 +338,6 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
                            const gfx::RectF& src_rect,
                            const ImageDrawOptions& draw_options);
 
-  // Use ContextProvider() for immediate use only, use
-  // ContextProviderWrapper() to obtain a retainable reference. Note:
-  // Implemented only in sub-classes that use the GPU.
-  virtual WebGraphicsContext3DProvider* ContextProvider() const {
-    return nullptr;
-  }
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   ContextProviderWrapper() const {
     return nullptr;
