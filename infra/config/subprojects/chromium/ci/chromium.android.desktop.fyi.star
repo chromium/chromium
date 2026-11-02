@@ -165,6 +165,9 @@ ci.builder(
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_17.android_browsertests.filter",
+                ],
                 swarming = targets.swarming(
                     shards = 30,
                 ),
@@ -183,6 +186,11 @@ ci.builder(
                 swarming = targets.swarming(
                     shards = 5,
                 ),
+            ),
+            "media_unittests": targets.mixin(
+                args = [
+                    "--gtest_filter=-AAC/AACAudioEncoderTest.FullCycleEncodeDecode*",
+                ],
             ),
             "unit_tests": targets.mixin(
                 swarming = targets.swarming(

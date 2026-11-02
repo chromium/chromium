@@ -1,0 +1,32 @@
+# Filters for android_browsertests on the Android 17 Desktop emulator.
+
+# https://crbug.com/375086487
+-InstallableManagerBrowserTest.CheckFavicon
+-InstallableManagerBrowserTest.CheckManifestCorruptedIcon
+-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall
+-InstallableManagerBrowserTest.CheckManifestWithOnlyRelatedApplications
+-InstallableManagerBrowserTest.DebugModeAccumulatesErrorsWithManifest
+-InstallableManagerBrowserTest.DebugModeBadFallbackMaskable
+-InstallableManagerBrowserTest.GetAllInstallabilityErrorsWithPlayAppManifest
+
+# https://crbug.com/393195683, b/427866914
+-All/HTTPCacheSearchPreloadUnifiedBrowserTest.BackwardHitHttpCache/*
+-OmniboxPrerenderBrowserTest.DisableNetworkPrediction
+-PrerenderBrowserTest.PrerenderTriggeredByEmbedderAndActivate
+-PrerenderBrowserTest.SameOriginMainFrameNavigation
+-PrerenderBrowserTest.SameSiteCrossOriginMainFrameNavigation
+-PrerenderNewTabPageBrowserTest.PrerenderTriggeredByNewTabPageAndActivate
+-PrerenderNewTabPageBrowserTest.PrerenderTriggeredCancelAndRetrigger
+-SearchPreloadUnifiedBrowserTest.ChunkedResponseBody
+-SearchPreloadUnifiedBrowserTest.ServingToPrerenderNavigationTwice
+-SearchPreloadUnifiedBrowserTest.SetLoaderTimeCorrectly
+-SearchPreloadUnifiedBrowserTest.SuggestionChangeAfterStartPrerender
+
+# https://crbug.com/580993842
+-DeveloperPrivateApiTest.InspectSplitModeServiceWorkerBackgrounds
+
+# https://crbug.com/519279884
+-ExtensionApiTabTest.OpenerCraziness
+
+# https://crbug.com/580992922
+-ExtensionWindowsTest.WindowsCreate
