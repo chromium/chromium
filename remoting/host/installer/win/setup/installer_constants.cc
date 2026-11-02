@@ -27,4 +27,22 @@ base::FilePath GetDefaultInstallDir() {
 #endif
 }
 
+base::FilePath GetDefaultHostConfigPath() {
+  base::FilePath common_app_data_dir;
+  if (!base::PathService::Get(base::DIR_COMMON_APP_DATA,
+                              &common_app_data_dir)) {
+    LOG(ERROR) << "Failed to resolve DIR_COMMON_APP_DATA";
+    return {};
+  }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return common_app_data_dir.Append(FILE_PATH_LITERAL("Google"))
+      .Append(FILE_PATH_LITERAL("Chrome Remote Desktop"))
+      .Append(kHostConfigFileName);
+#else
+  return common_app_data_dir.Append(FILE_PATH_LITERAL("Chromoting"))
+      .Append(kHostConfigFileName);
+#endif
+}
+
 }  // namespace remoting::installer

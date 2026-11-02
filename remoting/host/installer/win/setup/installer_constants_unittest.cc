@@ -14,4 +14,10 @@ TEST(InstallerConstantsTest, GetDefaultInstallDir_NotEmpty) {
   EXPECT_FALSE(install_dir.empty());
 }
 
+TEST(InstallerConstantsTest, GetDefaultHostConfigPath_NotEmpty) {
+  base::FilePath config_path = GetDefaultHostConfigPath();
+  EXPECT_FALSE(config_path.empty());
+  EXPECT_EQ(config_path.BaseName().value(), kHostConfigFileName);
+}
+
 }  // namespace remoting::installer

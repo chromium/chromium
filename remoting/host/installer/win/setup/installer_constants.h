@@ -14,7 +14,6 @@ namespace remoting::installer {
 // Command-line switches for remoting_setup.exe.
 inline constexpr char kInstallSwitch[] = "install";
 inline constexpr char kUninstallSwitch[] = "uninstall";
-inline constexpr char kUpdateSwitch[] = "update";
 
 // Omaha App ID for Chrome Remote Desktop Host.
 inline constexpr wchar_t kOmahaAppId[] =
@@ -50,13 +49,14 @@ inline constexpr wchar_t kUrlForwarderName[] = L"Chromoting URL Forwarder";
 inline constexpr wchar_t kUrlForwarderProgId[] = L"ChromotingUrlForwarder";
 #endif
 
-// Executable and library names.
+// Executable, library, and configuration file names.
 inline constexpr wchar_t kHostBinaryName[] = L"remoting_host.exe";
 inline constexpr wchar_t kCoreBinaryName[] = L"remoting_core.dll";
 inline constexpr wchar_t kCurtainBinaryName[] = L"remoting_curtain.exe";
 inline constexpr wchar_t kRemoteSecurityKeyBinaryName[] =
     L"remote_security_key.exe";
 inline constexpr wchar_t kRemoteOpenUrlBinaryName[] = L"remote_open_url.exe";
+inline constexpr wchar_t kHostConfigFileName[] = L"host.json";
 
 // Windows EventLog source name.
 inline constexpr wchar_t kEventSourceName[] = L"chromoting";
@@ -84,6 +84,10 @@ inline constexpr wchar_t kOldFileExtension[] = L".old";
 // Returns the target installation directory for Chrome Remote Desktop
 // (e.g. C:\Program Files\Google\Chrome Remote Desktop).
 base::FilePath GetDefaultInstallDir();
+
+// Returns the persistent host configuration file path for Chrome Remote Desktop
+// (e.g. C:\ProgramData\Google\Chrome Remote Desktop\host.json).
+base::FilePath GetDefaultHostConfigPath();
 
 }  // namespace remoting::installer
 
