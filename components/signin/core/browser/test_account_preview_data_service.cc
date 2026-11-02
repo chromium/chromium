@@ -35,6 +35,12 @@ void TestAccountPreviewDataService::GetPreviewPreferenceForAccount(
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void TestAccountPreviewDataService::GetPreferredAccountForSigninAsync(
+    base::OnceCallback<void(std::optional<AccountPreviewPreference>)> callback,
+    base::TimeDelta timeout) {
+  GetPreferredAccountForSigninAsync(std::move(callback));
+}
+
+void TestAccountPreviewDataService::GetPreferredAccountForSigninAsync(
     base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
         callback) {
   if (defer_preferred_account_requests_) {

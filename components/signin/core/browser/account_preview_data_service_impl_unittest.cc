@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -1161,7 +1162,8 @@ TEST_F(AccountPreviewDataServiceTest,
   // synchronously without triggering a new fetch.
   base::HistogramTester histograms;
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreferredAccountForSigninAsync(future.GetCallback());
+  base::TimeDelta timeout = base::Seconds(10);
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback(), timeout);
   ASSERT_TRUE(future.IsReady());
   EXPECT_THAT(future.Get(),
               testing::Optional(testing::Field(
@@ -1182,7 +1184,8 @@ TEST_F(AccountPreviewDataServiceTest,
 
   base::HistogramTester histograms;
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreferredAccountForSigninAsync(future.GetCallback());
+  base::TimeDelta timeout = base::Seconds(10);
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback(), timeout);
   EXPECT_FALSE(future.IsReady());
 
   MockSuccessfulFetch(&test_url_loader_factory_);
@@ -1402,6 +1405,78 @@ TEST_F(AccountPreviewDataServiceTest,
               testing::Optional(testing::Field(
                   &AccountPreviewPreference::gaia_id, account.GetGaiaId())));
 }
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSigninAsyncReturnsNulloptOnTimeout) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnableAccountPreviewPreferredAccountFRE};
+
+  // Hold the fetch started to let the timer expire.
+  network_delay_helper_->SetNetworkCallsDelayed(true);
+  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+      "user@gmail.com", ConsentLevel::kSignin);
+
+  base::HistogramTester histograms;
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+  base::TimeDelta timeout = base::Seconds(5);
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback(), timeout);
+  EXPECT_FALSE(future.IsReady());
+  task_environment_.FastForwardBy(timeout);
+  // Timeout should cause the future to resolve with nullopt.
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(), std::nullopt);
+  // Complete the fetch to check that result is not lost after timeout.
+  AllDataAvailableWaiter waiter(service_.get());
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  network_delay_helper_->SetNetworkCallsDelayed(false);
+  waiter.Wait();
+  EXPECT_THAT(service_->GetPreferredAccountForSignin(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account.GetGaiaId())));
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.AllFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::
+          kPreferredAccountMissingForFRE,
+      1);
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.SuccessfulFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::
+          kPreferredAccountMissingForFRE,
+      1);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSigninAsyncMultipleRequests) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnableAccountPreviewPreferredAccountFRE};
+
+  network_delay_helper_->SetNetworkCallsDelayed(true);
+  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+      "user@gmail.com", ConsentLevel::kSignin);
+
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> short_future;
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> long_future;
+  service_->GetPreferredAccountForSigninAsync(short_future.GetCallback(),
+                                              base::Seconds(2));
+  service_->GetPreferredAccountForSigninAsync(long_future.GetCallback(),
+                                              base::Seconds(10));
+  EXPECT_FALSE(short_future.IsReady());
+  EXPECT_FALSE(long_future.IsReady());
+
+  // Advance past the shorter timeout: only the first request times out.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_TRUE(short_future.IsReady());
+  EXPECT_EQ(std::nullopt, short_future.Get());
+  EXPECT_FALSE(long_future.IsReady());
+
+  // Complete the fetch before the longer timeout expires.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  network_delay_helper_->SetNetworkCallsDelayed(false);
+  EXPECT_THAT(long_future.Get(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account.GetGaiaId())));
+}
+
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 TEST_F(AccountPreviewDataServiceTest,

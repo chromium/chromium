@@ -11,10 +11,12 @@
 
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
@@ -223,6 +225,23 @@ void WriteAccountPreviewPreferenceToPrefs(
 
 }  // namespace
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+struct AccountPreviewDataServiceImpl::PendingPreferredAccountRequest {
+  explicit PendingPreferredAccountRequest(
+      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+          callback)
+      : callback(std::move(callback)) {}
+  PendingPreferredAccountRequest(const PendingPreferredAccountRequest&) =
+      delete;
+  PendingPreferredAccountRequest& operator=(
+      const PendingPreferredAccountRequest&) = delete;
+  ~PendingPreferredAccountRequest() = default;
+
+  base::OnceCallback<void(std::optional<AccountPreviewPreference>)> callback;
+  base::OneShotTimer timeout_timer;
+};
+#endif
+
 AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     SigninClient* signin_client,
     IdentityManager* identity_manager,
@@ -326,8 +345,8 @@ void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void AccountPreviewDataServiceImpl::GetPreferredAccountForSigninAsync(
-    base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
-        callback) {
+    base::OnceCallback<void(std::optional<AccountPreviewPreference>)> callback,
+    base::TimeDelta timeout) {
   if (!base::FeatureList::IsEnabled(
           switches::kEnableAccountPreviewPreferredAccountFRE) ||
       !identity_manager_ ||
@@ -342,8 +361,44 @@ void AccountPreviewDataServiceImpl::GetPreferredAccountForSigninAsync(
     return;
   }
 
-  pending_preferred_account_requests_.push_back(std::move(callback));
+  auto request =
+      std::make_unique<PendingPreferredAccountRequest>(std::move(callback));
+  request->timeout_timer.Start(
+      FROM_HERE, timeout,
+      base::BindOnce(&AccountPreviewDataServiceImpl::
+                         OnPendingPreferredAccountRequestTimedOut,
+                     weak_ptr_factory_.GetWeakPtr(), request.get()));
+  pending_preferred_account_requests_.push_back(std::move(request));
   EnsureAllAccountsFetched(FetchTriggerCause::kPreferredAccountMissingForFRE);
+}
+
+void AccountPreviewDataServiceImpl::GetPreferredAccountForSigninAsync(
+    base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+        callback) {
+  GetPreferredAccountForSigninAsync(
+      std::move(callback),
+      switches::kAccountPreviewPreferredAccountFREFetchTimeout.Get());
+}
+
+void AccountPreviewDataServiceImpl::OnPendingPreferredAccountRequestTimedOut(
+    PendingPreferredAccountRequest* request) {
+  auto it = std::ranges::find_if(pending_preferred_account_requests_,
+                                 base::MatchesUniquePtr(request));
+  CHECK(it != pending_preferred_account_requests_.end());
+  auto pending_request = std::move(*it);
+  pending_preferred_account_requests_.erase(it);
+  std::move(pending_request->callback).Run(std::nullopt);
+}
+
+void AccountPreviewDataServiceImpl::ResolvePendingPreferredAccountRequests(
+    std::optional<AccountPreviewPreference> preference) {
+  auto requests = std::exchange(pending_preferred_account_requests_, {});
+  for (auto& request : requests) {
+    request->timeout_timer.Stop();
+  }
+  for (auto& request : requests) {
+    std::move(request->callback).Run(preference);
+  }
 }
 #endif
 
@@ -951,12 +1006,7 @@ void AccountPreviewDataServiceImpl::OnAllAccountsFetchCanceled() {
 void AccountPreviewDataServiceImpl::FinalizeAllAccountsFetch() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (!pending_preferred_account_requests_.empty()) {
-    std::optional<AccountPreviewPreference> preference =
-        GetPreferredAccountForSignin();
-    for (auto& callback :
-         std::exchange(pending_preferred_account_requests_, {})) {
-      std::move(callback).Run(preference);
-    }
+    ResolvePendingPreferredAccountRequests(GetPreferredAccountForSignin());
   }
 #endif
 
@@ -1131,10 +1181,7 @@ void AccountPreviewDataServiceImpl::ClearMemoryData() {
   deferred_external_app_account_update_callback_.Reset();
 #endif
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  for (auto& callback :
-       std::exchange(pending_preferred_account_requests_, {})) {
-    std::move(callback).Run(/*preference=*/std::nullopt);
-  }
+  ResolvePendingPreferredAccountRequests(/*preference=*/std::nullopt);
 #endif
 }
 

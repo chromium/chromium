@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_preview_data.h"
@@ -121,7 +122,17 @@ class AccountPreviewDataService : public KeyedService {
   //
   // `callback` is run with `std::nullopt` if
   // `kEnableAccountPreviewPreferredAccountFRE` is disabled, if sign-in is
-  // disallowed, or when the service shuts down.
+  // disallowed, if the computation does not complete within `timeout`, or when
+  // the service shuts down.
+  virtual void GetPreferredAccountForSigninAsync(
+      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+          callback,
+      base::TimeDelta timeout) = 0;
+
+  // Same as above, using `kAccountPreviewPreferredAccountFREFetchTimeout` as
+  // the default timeout.
+  // TODO(crbug.com/580844796): Remove this method after migrating both
+  // platforms to the timeout overload.
   virtual void GetPreferredAccountForSigninAsync(
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) = 0;

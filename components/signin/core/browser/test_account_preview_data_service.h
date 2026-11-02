@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -34,6 +35,12 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  void GetPreferredAccountForSigninAsync(
+      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+          callback,
+      base::TimeDelta timeout) override;
+  // TODO(crbug.com/580844796): Remove this method after migrating both
+  // platforms to the timeout overload.
   void GetPreferredAccountForSigninAsync(
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
@@ -73,7 +80,9 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
   // If `set_defer_preferred_account_requests(true)` is set,
   // `GetPreferredAccountForSigninAsync()` stores the callbacks instead of
   // immediately invoking them with `preferred_account_for_signin_`, which
-  // simulates an ongoing preferred account computation.
+  // simulates an ongoing preferred account computation (ignoring `timeout`).
+  // Call `RunPendingPreferredAccountRequests(std::nullopt)` to simulate a
+  // timeout.
   void set_defer_preferred_account_requests(bool defer) {
     defer_preferred_account_requests_ = defer;
   }

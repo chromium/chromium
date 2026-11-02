@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -56,6 +57,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
     kExternalAppAccountUpdated = 4,
     kPrimaryAccountSet = 5,
     kPrimaryAccountCleared = 6,
+    // TODO(crbug.com/580845583): Rename to more generic name.
     kPreferredAccountMissingForFRE = 7,
     kMaxValue = kPreferredAccountMissingForFRE,
   };
@@ -88,6 +90,10 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  void GetPreferredAccountForSigninAsync(
+      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
+          callback,
+      base::TimeDelta timeout) override;
   void GetPreferredAccountForSigninAsync(
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
@@ -238,9 +244,15 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       identity_manager_observation_{this};
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  struct PendingPreferredAccountRequest;
+  // Called when a preferred account request times out.
+  void OnPendingPreferredAccountRequestTimedOut(
+      PendingPreferredAccountRequest* request);
+  void ResolvePendingPreferredAccountRequests(
+      std::optional<AccountPreviewPreference> preference);
   // Requests originating from `GetPreferredAccountForSigninAsync()` that
   // wait for the preferred account computation to complete.
-  std::vector<base::OnceCallback<void(std::optional<AccountPreviewPreference>)>>
+  std::vector<std::unique_ptr<PendingPreferredAccountRequest>>
       pending_preferred_account_requests_;
 #endif
 

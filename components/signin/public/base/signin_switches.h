@@ -396,6 +396,7 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccountFRE);
 // Maximum duration the FRE waits for an ongoing preferred account computation
 // to update the selected account.
+// TODO(crbug.com/580849527): Rename to more generic name.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kAccountPreviewPreferredAccountFREFetchTimeout);
