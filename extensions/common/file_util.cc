@@ -195,10 +195,22 @@ base::FilePath InstallExtension(const base::FilePath& unpacked_source_dir,
   // may still be lost.
   FlushFilesInDir(crx_temp_source, FlushOneOrAllFiles::kAllFiles);
 
-  // The target version_dir does not exists yet, so base::Move() is using
-  // rename() on POSIX systems. It is atomic in the sense that it will
-  // either complete successfully or in the event of data loss be reverted.
-  if (!base::Move(crx_temp_source, version_dir)) {
+  // `crx_temp_source` is on the same file system as `version_dir` (see
+  // GetInstallTempDir()) and `version_dir` does not exist yet, so a plain
+  // rename() is enough. It is atomic in the sense that it will either complete
+  // successfully or in the event of data loss be reverted.
+  //
+  // On POSIX, don't use base::Move(). If rename() fails, it falls back to a
+  // base::CopyDirectory() that follows symlinks. The staging directory may be
+  // writable by a less privileged process (e.g. the network service on macOS),
+  // so that fallback could copy an arbitrary directory into the profile.
+#if BUILDFLAG(IS_POSIX)
+  const bool moved =
+      base::ReplaceFile(crx_temp_source, version_dir, /*error=*/nullptr);
+#else
+  const bool moved = base::Move(crx_temp_source, version_dir);
+#endif
+  if (!moved) {
     LOG(ERROR) << "Installing extension from : " << crx_temp_source.value()
                << " into : " << version_dir.value() << " failed.";
     return base::FilePath();

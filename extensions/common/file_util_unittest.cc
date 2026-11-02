@@ -402,6 +402,35 @@ TEST_F(FileUtilTest, InstallExtensionRejectsSymlinkTempDir) {
   EXPECT_TRUE(base::DirectoryExists(src));
 }
 
+#if BUILDFLAG(IS_POSIX)
+// Verifies that on POSIX, InstallExtension does not fall back to
+// base::CopyDirectory when the final rename() into `version_dir` fails.
+TEST_F(FileUtilTest, InstallExtensionDoesNotFallBackToCopyOnPosix) {
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+
+  base::FilePath profile_dir = temp.GetPath().AppendASCII("Default");
+  base::FilePath extensions_dir = profile_dir.AppendASCII("TestExtensions");
+  base::FilePath extension_dir = extensions_dir.AppendASCII(kExtensionId);
+  ASSERT_TRUE(base::CreateDirectory(extension_dir));
+
+  // A dangling symlink at `1.0_0` is picked as `version_dir` (base::PathExists
+  // follows symlinks) and makes the final rename() fail.
+  base::FilePath dangling_version_dir = extension_dir.AppendASCII("1.0_0");
+  ASSERT_TRUE(base::CreateSymbolicLink(temp.GetPath().AppendASCII("missing"),
+                                       dangling_version_dir));
+
+  base::FilePath src = temp.GetPath().AppendASCII("src");
+  ASSERT_TRUE(base::CreateDirectory(src));
+
+  base::FilePath installed_path =
+      file_util::InstallExtension(src, kExtensionId, "1.0", extensions_dir);
+  EXPECT_TRUE(installed_path.empty());
+  EXPECT_TRUE(base::IsLink(dangling_version_dir));
+  EXPECT_FALSE(base::DirectoryExists(dangling_version_dir));
+}
+#endif  // BUILDFLAG(IS_POSIX)
+
 TEST_F(FileUtilTest, LoadExtensionWithMetadataFolder) {
   RunUnderscoreDirectoriesTest({"_metadata"});
 }
