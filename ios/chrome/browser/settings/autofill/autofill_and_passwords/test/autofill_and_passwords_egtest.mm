@@ -96,9 +96,11 @@
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Tap on Autofill and Passwords row.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsAutofillAndPasswordsCellId)]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:grey_accessibilityID(
+                                kSettingsAutofillAndPasswordsCellId)];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::AutofillAndPasswordsTableViewMatcher()];
 }
 
 // Helper to open a settings subpage, verify expected matchers are visible, and
@@ -356,6 +358,61 @@
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:travelTitleMatcher];
 
   // Pop back to Autofill and Passwords screen.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
+      performAction:grey_tap()];
+}
+
+// Tests that failing local authentication when opening Password Manager from
+// the Autofill and Passwords page redirects back to the Autofill and Passwords
+// page rather than the main Settings page, and allows retrying Password
+// Manager.
+- (void)testPasswordManagerFailedReauthRedirectsToAutofillAndPasswords {
+  [ReauthenticationAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+
+  [self openAutofillAndPasswordsSettings];
+
+  // Tap on Password Manager row.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kSettingsPasswordsCellId)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsPasswordsCellId)]
+      performAction:grey_tap()];
+
+  // Password Manager should be covered until successful reauthentication.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::PasswordsTableViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Deliver the failed reauthentication result.
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Verify the user is returned to the Autofill and Passwords page rather than
+  // the main Settings page.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::AutofillAndPasswordsTableViewMatcher()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify retrying Password Manager from the Autofill and Passwords page
+  // succeeds without extra navigation.
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:YES];
+
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kSettingsPasswordsCellId)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSettingsPasswordsCellId)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::PasswordsTableViewMatcher()];
+
+  // Pop back to Autofill and Passwords screen for clean teardown.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
       performAction:grey_tap()];

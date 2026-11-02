@@ -20,9 +20,6 @@ enum class AutofillSettingsReferrer;
 - (void)autofillAndPasswordsCoordinatorDidRemove:
     (AutofillAndPasswordsCoordinator*)coordinator;
 
-// Called when the password manager is dismissed after failed reauthentication.
-- (void)dismissPasswordManagerAfterFailedReauthentication;
-
 @end
 
 // Coordinator for the Autofill and Passwords settings page.

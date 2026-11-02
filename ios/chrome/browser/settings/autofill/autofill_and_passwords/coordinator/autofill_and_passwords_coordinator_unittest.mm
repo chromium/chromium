@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -13,6 +14,7 @@
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_table_view_controller.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/password_manager_reauthentication_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
@@ -28,6 +30,7 @@
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -74,7 +77,11 @@ class AutofillAndPasswordsCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:mock_snackbar_commands_
                      forProtocol:@protocol(SnackbarCommands)];
 
-    navigation_controller_ = [[UINavigationController alloc] init];
+    UIViewController* root_view_controller = [[UIViewController alloc] init];
+    navigation_controller_ = [[UINavigationController alloc]
+        initWithRootViewController:root_view_controller];
+    scoped_window_.Get().rootViewController = navigation_controller_;
+    [scoped_window_.Get() makeKeyAndVisible];
 
     coordinator_ = [[AutofillAndPasswordsCoordinator alloc]
         initWithBaseNavigationController:navigation_controller_
@@ -87,8 +94,35 @@ class AutofillAndPasswordsCoordinatorTest : public PlatformTest {
   void TearDown() override {
     [coordinator_ stop];
     coordinator_ = nil;
+    scoped_window_.Get().rootViewController = nil;
     navigation_controller_ = nil;
     PlatformTest::TearDown();
+  }
+
+  // Waits until `view_controller` is attached to a window and any navigation
+  // transition on `navigation_controller_` has completed.
+  [[nodiscard]] bool WaitForNavigationTransition(
+      UIViewController* view_controller) {
+    UINavigationController* navigation_controller = navigation_controller_;
+    return base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForUIElementTimeout, true, ^bool() {
+          return view_controller.viewIfLoaded.window != nil &&
+                 navigation_controller.transitionCoordinator == nil;
+        });
+  }
+
+  // Starts `coordinator_`, waits for its view controller to finish pushing,
+  // and returns the pushed AutofillAndPasswordsTableViewController.
+  AutofillAndPasswordsTableViewController* StartCoordinator() {
+    [coordinator_ start];
+    AutofillAndPasswordsTableViewController*
+        autofill_and_passwords_view_controller = base::apple::ObjCCastStrict<
+            AutofillAndPasswordsTableViewController>(
+            navigation_controller_.topViewController);
+    EXPECT_NE(nil, autofill_and_passwords_view_controller);
+    EXPECT_TRUE(
+        WaitForNavigationTransition(autofill_and_passwords_view_controller));
+    return autofill_and_passwords_view_controller;
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -99,6 +133,7 @@ class AutofillAndPasswordsCoordinatorTest : public PlatformTest {
   id<BrowserCommands> mock_browser_commands_;
   id<SettingsCommands> mock_settings_commands_;
   id<SnackbarCommands> mock_snackbar_commands_;
+  ScopedKeyWindow scoped_window_;
   UINavigationController* navigation_controller_;
   AutofillAndPasswordsCoordinator* coordinator_;
 };
@@ -106,24 +141,105 @@ class AutofillAndPasswordsCoordinatorTest : public PlatformTest {
 // Tests that selecting Suggestions from Gemini registers the user action.
 TEST_F(AutofillAndPasswordsCoordinatorTest,
        SuggestionsFromGeminiActionRecorded) {
-  [coordinator_ start];
+  AutofillAndPasswordsTableViewController*
+      autofill_and_passwords_view_controller = StartCoordinator();
+  ASSERT_NE(nil, autofill_and_passwords_view_controller);
 
   base::UserActionTester user_action_tester;
 
-  AutofillAndPasswordsTableViewController* viewController =
-      static_cast<AutofillAndPasswordsTableViewController*>(
-          navigation_controller_.topViewController);
-  ASSERT_NE(nil, viewController);
-
+  ASSERT_TRUE([coordinator_
+      conformsToProtocol:@protocol(
+                             AutofillAndPasswordsTableViewControllerDelegate)]);
   id<AutofillAndPasswordsTableViewControllerDelegate> delegate =
       static_cast<id<AutofillAndPasswordsTableViewControllerDelegate>>(
           coordinator_);
   [delegate
       autofillAndPasswordsTableViewControllerDidSelectSuggestionsFromGemini:
-          viewController];
+          autofill_and_passwords_view_controller];
 
   EXPECT_EQ(
       1,
       user_action_tester.GetActionCount(
           "PersonalContext.Settings.EntryPoint.AutofillAndPasswordsSettings"));
+}
+
+// Tests that dismissing Password Manager after failed reauthentication pops the
+// navigation stack back to the Autofill and Passwords page rather than the root
+// Settings page.
+TEST_F(AutofillAndPasswordsCoordinatorTest,
+       DismissPasswordManagerAfterFailedReauthenticationPopsToAutofillPage) {
+  AutofillAndPasswordsTableViewController*
+      autofill_and_passwords_view_controller = StartCoordinator();
+  ASSERT_NE(nil, autofill_and_passwords_view_controller);
+  ASSERT_EQ(2u, navigation_controller_.viewControllers.count);
+
+  // Simulate Password Manager and reauthentication view controllers pushed on
+  // top of the Autofill and Passwords page.
+  UIViewController* password_manager_view_controller =
+      [[UIViewController alloc] init];
+  UIViewController* reauthentication_view_controller =
+      [[UIViewController alloc] init];
+  [navigation_controller_ pushViewController:password_manager_view_controller
+                                    animated:NO];
+  [navigation_controller_ pushViewController:reauthentication_view_controller
+                                    animated:NO];
+  ASSERT_EQ(4u, navigation_controller_.viewControllers.count);
+  ASSERT_TRUE(WaitForNavigationTransition(reauthentication_view_controller));
+
+  ASSERT_TRUE([coordinator_
+      conformsToProtocol:@protocol(PasswordManagerReauthenticationDelegate)]);
+  id<PasswordManagerReauthenticationDelegate> reauthentication_delegate =
+      static_cast<id<PasswordManagerReauthenticationDelegate>>(coordinator_);
+  [reauthentication_delegate dismissPasswordManagerAfterFailedReauthentication];
+
+  UINavigationController* navigation_controller = navigation_controller_;
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, true, ^bool() {
+        return navigation_controller.topViewController ==
+                   autofill_and_passwords_view_controller &&
+               navigation_controller.viewControllers.count == 2u &&
+               navigation_controller.transitionCoordinator == nil;
+      }));
+}
+
+// Tests that dismissing Password Manager after failed reauthentication also
+// dismisses any modally presented child view controller while returning to the
+// Autofill and Passwords page.
+TEST_F(
+    AutofillAndPasswordsCoordinatorTest,
+    DismissPasswordManagerAfterFailedReauthenticationDismissesPresentedView) {
+  AutofillAndPasswordsTableViewController*
+      autofill_and_passwords_view_controller = StartCoordinator();
+  ASSERT_NE(nil, autofill_and_passwords_view_controller);
+
+  UIViewController* password_manager_view_controller =
+      [[UIViewController alloc] init];
+  [navigation_controller_ pushViewController:password_manager_view_controller
+                                    animated:NO];
+  ASSERT_EQ(3u, navigation_controller_.viewControllers.count);
+  ASSERT_TRUE(WaitForNavigationTransition(password_manager_view_controller));
+
+  UIViewController* presented_view_controller = [[UIViewController alloc] init];
+  [password_manager_view_controller
+      presentViewController:presented_view_controller
+                   animated:NO
+                 completion:nil];
+  ASSERT_EQ(presented_view_controller,
+            navigation_controller_.topViewController.presentedViewController);
+
+  ASSERT_TRUE([coordinator_
+      conformsToProtocol:@protocol(PasswordManagerReauthenticationDelegate)]);
+  id<PasswordManagerReauthenticationDelegate> reauthentication_delegate =
+      static_cast<id<PasswordManagerReauthenticationDelegate>>(coordinator_);
+  [reauthentication_delegate dismissPasswordManagerAfterFailedReauthentication];
+
+  UINavigationController* navigation_controller = navigation_controller_;
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, true, ^bool() {
+        return presented_view_controller.presentingViewController == nil &&
+               navigation_controller.topViewController ==
+                   autofill_and_passwords_view_controller &&
+               navigation_controller.transitionCoordinator == nil;
+      }));
+  EXPECT_EQ(2u, navigation_controller_.viewControllers.count);
 }

@@ -10,6 +10,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
+// Accessibility identifier for the Autofill and Passwords table view.
+extern NSString* const kAutofillAndPasswordsTableViewIdentifier;
+
 @class AutofillAndPasswordsTableViewController;
 @class SigninPromoViewConfigurator;
 @protocol SigninPromoViewDelegate;

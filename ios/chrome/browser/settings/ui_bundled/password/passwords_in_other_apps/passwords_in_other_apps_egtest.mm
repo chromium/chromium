@@ -275,10 +275,10 @@ void OpensPasswordsInOtherApps() {
 
   [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
-  // The Password Manager UI should have been dismissed leaving Settings
-  // visible.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+  // The Password Manager UI should have been dismissed leaving Autofill and
+  // Passwords visible.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AutofillAndPasswordsTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsViewMatcher()]
       assertWithMatcher:grey_notVisible()];

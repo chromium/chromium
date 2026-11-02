@@ -936,6 +936,10 @@ id<GREYMatcher> SafetyCheckTableViewMatcher() {
   return [ChromeMatchersAppInterface safetyCheckTableViewMatcher];
 }
 
+id<GREYMatcher> AutofillAndPasswordsTableViewMatcher() {
+  return [ChromeMatchersAppInterface autofillAndPasswordsTableViewMatcher];
+}
+
 id<GREYMatcher> AlertAction(NSString* title) {
   return grey_allOf(
       grey_accessibilityID([title stringByAppendingString:@"AlertAction"]),

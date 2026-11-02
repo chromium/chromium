@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_view_ios.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/recent_tabs/public/recent_tabs_constants.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_table_view_controller.h"
 #import "ios/chrome/browser/settings/autofill/payments/ui/autofill_add_credit_card_view_controller.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/google_services/public/google_services_settings_constants.h"
@@ -1761,6 +1762,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)safetyCheckTableViewMatcher {
   return grey_accessibilityID(
       SafetyCheckTableViewController.accessibilityIdentifier);
+}
+
++ (id<GREYMatcher>)autofillAndPasswordsTableViewMatcher {
+  return grey_accessibilityID(kAutofillAndPasswordsTableViewIdentifier);
 }
 
 + (id<GREYMatcher>)toolbarButtonWithID:(NSString*)buttonID {

@@ -95,6 +95,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":coordinator",
+    "//base",
     "//base/test:test_support",
     "//components/account_settings",
     "//components/account_settings:test_support",
@@ -114,6 +115,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/ui:autofill_and_passwords",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator",
+    "//ios/chrome/browser/settings/ui_bundled/password/reauthentication:reauthentication_delegate",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",

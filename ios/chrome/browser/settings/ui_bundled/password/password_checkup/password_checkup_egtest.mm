@@ -23,8 +23,8 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::AutofillAndPasswordsTableViewMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabel;
-using chrome_test_util::SettingsCollectionView;
 using password_manager_test_utils::DeleteCredential;
 using password_manager_test_utils::GetInteractionForPasswordIssueEntry;
 using password_manager_test_utils::kDefaultPassword;
@@ -352,13 +352,14 @@ NSString* LeakedPasswordDescription() {
 
   [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
-  // Password Manager UI should be dismissed leaving the Settings UI Visible.
+  // Password Manager UI should be dismissed leaving the Autofill and Passwords
+  // UI visible.
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:ReauthenticationController()];
   [[EarlGrey selectElementWithMatcher:PasswordCheckupTableView()]
       assertWithMatcher:grey_notVisible()];
 
-  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+  [[EarlGrey selectElementWithMatcher:AutofillAndPasswordsTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -997,14 +998,15 @@ NSString* LeakedPasswordDescription() {
 
   [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
-  // Password Manager UI should have been dismissed leaving Settings visible.
+  // Password Manager UI should have been dismissed leaving Autofill and
+  // Passwords visible.
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:ReauthenticationController()];
   [[EarlGrey
       selectElementWithMatcher:WeakPasswordIssuesPageTitle(/*issue_count=*/1)]
       assertWithMatcher:grey_notVisible()];
 
-  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+  [[EarlGrey selectElementWithMatcher:AutofillAndPasswordsTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

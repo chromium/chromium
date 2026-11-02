@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/password_manager_reauthentication_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
@@ -70,6 +71,7 @@ enum class YourSavedInfoDataCategory {
     AutofillCreditCardCoordinatorDelegate,
     AutofillSettingsCoordinatorDelegate,
     IdentityDocsCoordinatorDelegate,
+    PasswordManagerReauthenticationDelegate,
     PasswordsCoordinatorDelegate,
     SigninPromoViewMediatorDelegate,
     TravelInfoCoordinatorDelegate,
@@ -161,10 +163,7 @@ enum class YourSavedInfoDataCategory {
 
 - (void)stop {
   [self stopSigninCoordinator];
-
-  _passwordsCoordinator.delegate = nil;
-  [_passwordsCoordinator stop];
-  _passwordsCoordinator = nil;
+  [self stopPasswordsCoordinator];
 
   _identityDocsCoordinator.delegate = nil;
   [_identityDocsCoordinator stop];
@@ -226,9 +225,12 @@ enum class YourSavedInfoDataCategory {
 
 - (void)autofillAndPasswordsTableViewControllerDidSelectPasswords:
     (AutofillAndPasswordsTableViewController*)controller {
-  if (_passwordsCoordinator) {
+  if (self.baseNavigationController.topViewController != controller) {
     return;
   }
+
+  // Stop the coordinator before restarting it, if it exists.
+  [self stopPasswordsCoordinator];
 
   base::RecordAction(base::UserMetricsAction("Options_ShowPasswordManager"));
   base::UmaHistogramEnumeration("PasswordManager.ManagePasswordsReferrer",
@@ -394,15 +396,36 @@ enum class YourSavedInfoDataCategory {
 
 #pragma mark - PasswordsCoordinatorDelegate
 
-- (void)dismissPasswordManagerAfterFailedReauthentication {
-  [self.delegate dismissPasswordManagerAfterFailedReauthentication];
-}
-
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
   CHECK_EQ(_passwordsCoordinator, coordinator);
-  _passwordsCoordinator.delegate = nil;
-  [_passwordsCoordinator stop];
-  _passwordsCoordinator = nil;
+  [self stopPasswordsCoordinator];
+}
+
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  UINavigationController* navigationController = self.baseNavigationController;
+  if (!_viewController ||
+      ![navigationController.viewControllers containsObject:_viewController]) {
+    return;
+  }
+
+  // Pop everything up to the Autofill and Passwords page.
+  // When there is content presented, don't animate the dismissal of the view
+  // controllers in the navigation controller to prevent revealing passwords
+  // when the presented content is the one covered by the reauthentication UI.
+  UIViewController* topViewController = navigationController.topViewController;
+  UIViewController* presentedViewController =
+      topViewController.presentedViewController;
+
+  [navigationController popToViewController:_viewController
+                                   animated:presentedViewController == nil];
+
+  [presentedViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+
+  [self stopPasswordsCoordinator];
 }
 
 #pragma mark - TravelInfoCoordinatorDelegate
@@ -483,6 +506,13 @@ enum class YourSavedInfoDataCategory {
     [_signinCoordinator stop];
     _signinCoordinator = nil;
   }
+}
+
+// Stops `_passwordsCoordinator` and sets it to nil.
+- (void)stopPasswordsCoordinator {
+  _passwordsCoordinator.delegate = nil;
+  [_passwordsCoordinator stop];
+  _passwordsCoordinator = nil;
 }
 
 @end

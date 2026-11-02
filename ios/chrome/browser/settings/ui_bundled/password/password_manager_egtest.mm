@@ -64,12 +64,12 @@
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using chrome_test_util::AutofillAndPasswordsTableViewMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::PasswordsTableViewMatcher;
-using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsNavigationBar;
 using chrome_test_util::SwipeActionDeleteButton;
@@ -840,12 +840,13 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 
   [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
-  // Password Manager should be dismissed leaving the Settings UI visible.
+  // Password Manager should be dismissed leaving the Autofill and Passwords UI
+  // visible.
   CheckVisibilityOfElement(/*matcher=*/AddPasswordSaveButton(),
                            /*is_visible=*/false);
   CheckVisibilityOfElement(/*matcher=*/ReauthenticationController(),
                            /*is_visible=*/false);
-  CheckVisibilityOfElement(/*matcher=*/SettingsCollectionView(),
+  CheckVisibilityOfElement(/*matcher=*/AutofillAndPasswordsTableViewMatcher(),
                            /*is_visible=*/true);
 }
 
@@ -1818,18 +1819,16 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
   [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
 
-  // Settings UI should be covered by Password Manager UI.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+  // Autofill and Passwords UI should be covered by Password Manager UI.
+  [[EarlGrey selectElementWithMatcher:AutofillAndPasswordsTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
   // Trigger local authentication by backgrounding the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
-  // Failed auth should dismiss the whole Password Manager leaving the Settings
-  // UI visible.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+  // Failed auth should dismiss the whole Password Manager leaving the Autofill
+  // and Passwords UI visible.
+  [[EarlGrey selectElementWithMatcher:AutofillAndPasswordsTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -2276,14 +2275,15 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 
   [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
 
-  // The Password Manager UI should be gone leaving the Settings UI visible.
+  // The Password Manager UI should be gone leaving the Autofill and Passwords
+  // UI visible.
   CheckVisibilityOfElement(/*matcher=*/PasswordSettingsTableView(),
                            /*is_visible=*/false);
   CheckVisibilityOfElement(/*matcher=*/PasswordsTableViewMatcher(),
                            /*is_visible=*/false);
   CheckVisibilityOfElement(/*matcher=*/ReauthenticationController(),
                            /*is_visible=*/false);
-  CheckVisibilityOfElement(/*matcher=*/SettingsCollectionView(),
+  CheckVisibilityOfElement(/*matcher=*/AutofillAndPasswordsTableViewMatcher(),
                            /*is_visible=*/true);
 }
 
@@ -2407,11 +2407,11 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
   [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
-  // Failed auth should dismiss the Password Manager, the Settings menu is
-  // displayed.
+  // Failed auth should dismiss the Password Manager, leaving the Autofill and
+  // Passwords page displayed.
   [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:SettingsCollectionView()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      AutofillAndPasswordsTableViewMatcher()];
 
   // Check password manager visit metric.
   CheckPasswordManagerVisitMetricCount(0);
@@ -2448,9 +2448,8 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
                    chrome_test_util::AlertItemWithAccessibilityLabelId(IDS_OK)]
         performAction:grey_tap()];
 
-    // Check for the Settings page after Password Manager is gone.
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+    // Check for the Autofill and Passwords page after Password Manager is gone.
+    [[EarlGrey selectElementWithMatcher:AutofillAndPasswordsTableViewMatcher()]
         assertWithMatcher:grey_sufficientlyVisible()];
   }
 
@@ -2492,9 +2491,8 @@ TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
                    chrome_test_util::AlertItemWithAccessibilityLabelId(IDS_OK)]
         performAction:grey_tap()];
 
-    // Check for the Settings page after Password Manager is gone.
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+    // Check for the Autofill and Passwords page after Password Manager is gone.
+    [[EarlGrey selectElementWithMatcher:AutofillAndPasswordsTableViewMatcher()]
         assertWithMatcher:grey_sufficientlyVisible()];
   }
 }

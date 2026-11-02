@@ -896,6 +896,9 @@
 // Returns a matcher to password table view.
 + (id<GREYMatcher>)passwordsTableViewMatcher;
 
+// Returns a matcher to autofill and passwords table view.
++ (id<GREYMatcher>)autofillAndPasswordsTableViewMatcher;
+
 // Returns a matcher for the button to accept the generated password.
 + (id<GREYMatcher>)useSuggestedPasswordMatcher;
 

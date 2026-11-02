@@ -22,6 +22,9 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+NSString* const kAutofillAndPasswordsTableViewIdentifier =
+    @"AutofillAndPasswordsTableViewIdentifier";
+
 @implementation AutofillAndPasswordsTableViewController {
   // Presenter for the Level Up Payment Methods walkthrough IPH.
   BubbleViewControllerPresenter* _levelUpPaymentMethodsWalkthroughIPHPresenter;
@@ -72,6 +75,8 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.tableView.accessibilityIdentifier =
+      kAutofillAndPasswordsTableViewIdentifier;
   [self loadModel];
 }
 
