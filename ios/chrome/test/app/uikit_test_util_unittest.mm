@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "testing/gtest/include/gtest/gtest-spi.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -61,7 +62,10 @@ TEST_F(UIKitTestUtilTest, FindViewByIdReturnsFirstMatchWhenDuplicatesExist) {
   second_child.accessibilityIdentifier = @"duplicate_id";
   [root addSubview:second_child];
 
-  EXPECT_EQ(FindViewById(root, @"duplicate_id"), first_child);
+  EXPECT_EQ(FindViewById(root, @"duplicate_id", /*expect_uniqueness=*/false),
+            first_child);
+  EXPECT_NONFATAL_FAILURE(FindViewById(root, @"duplicate_id"),
+                          "at most 1 matching subview");
 }
 
 // Tests that `FindViewByClass` returns the first matching view of the given
@@ -77,7 +81,11 @@ TEST_F(UIKitTestUtilTest, FindViewByClass) {
   [container addSubview:button1];
   [root addSubview:button2];
 
-  EXPECT_EQ(FindViewByClass<UIButton>(root), button1);
+  EXPECT_EQ(FindViewByClass<UIButton>(container), button1);
+  EXPECT_EQ(FindViewByClass<UIButton>(root, /*expect_uniqueness=*/false),
+            button1);
+  EXPECT_NONFATAL_FAILURE(FindViewByClass<UIButton>(root),
+                          "at most 1 matching subview");
   EXPECT_EQ(FindViewByClass<UILabel>(root), nil);
 
   NSArray<UIButton*>* buttons = FindViewsByClass<UIButton>(root);
@@ -100,6 +108,35 @@ TEST_F(UIKitTestUtilTest, FindLabelWithText) {
 
   EXPECT_EQ(FindLabelWithText(root, @"Hello World"), label);
   EXPECT_EQ(FindLabelWithText(root, @"Other"), nil);
+}
+
+// Tests that `FindViewWithPredicate` and `FindLabelWithText` enforce uniqueness
+// by default when multiple views match, and return the first match when
+// `expect_uniqueness` is false.
+TEST_F(UIKitTestUtilTest, ExpectUniquenessOnPredicateAndLabelHelpers) {
+  UIView* root = [[UIView alloc] initWithFrame:CGRectZero];
+  UILabel* first_label = [[UILabel alloc] initWithFrame:CGRectZero];
+  first_label.text = @"Duplicate";
+  [root addSubview:first_label];
+
+  UILabel* second_label = [[UILabel alloc] initWithFrame:CGRectZero];
+  second_label.text = @"Duplicate";
+  [root addSubview:second_label];
+
+  BOOL (^is_label)(UIView*) = ^BOOL(UIView* candidate) {
+    return [candidate isKindOfClass:[UILabel class]];
+  };
+
+  EXPECT_EQ(FindViewWithPredicate<UILabel>(root, is_label,
+                                           /*expect_uniqueness=*/false),
+            first_label);
+  EXPECT_NONFATAL_FAILURE(FindViewWithPredicate<UILabel>(root, is_label),
+                          "at most 1 matching subview");
+
+  EXPECT_EQ(FindLabelWithText(root, @"Duplicate", /*expect_uniqueness=*/false),
+            first_label);
+  EXPECT_NONFATAL_FAILURE(FindLabelWithText(root, @"Duplicate"),
+                          "at most 1 matching subview");
 }
 
 }  // namespace

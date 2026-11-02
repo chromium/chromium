@@ -18,31 +18,6 @@ namespace chrome_test_util {
 // for testing.
 UIWindowScene* GetAnyWindowScene();
 
-// Recursively searches `view` and its subviews for the first view for which
-// `predicate` returns YES. Returns nil if not found. Both `view` and
-// `predicate` must not be nil. Checks that the returned view is of type `T`.
-template <typename T = UIView>
-T* FindViewWithPredicate(UIView* view, BOOL (^predicate)(UIView*)) {
-  EXPECT_NE(view, nil);
-  EXPECT_NE(predicate, nil);
-  if (predicate(view)) {
-    T* found = base::apple::ObjCCast<T>(view);
-    EXPECT_NE(found, nil)
-        << base::SysNSStringToUTF8(view.description) << " should be of type "
-        << base::SysNSStringToUTF8(NSStringFromClass([T class]))
-        << "* but is of type "
-        << base::SysNSStringToUTF8(NSStringFromClass([view class])) << "*";
-    return found;
-  }
-  for (UIView* subview in view.subviews) {
-    T* found = FindViewWithPredicate<T>(subview, predicate);
-    if (found) {
-      return found;
-    }
-  }
-  return nil;
-}
-
 // Recursively searches `view` and its subviews for all views for which
 // `predicate` returns YES. Both `view` and `predicate` must not be nil. Checks
 // that all matching views are of type `T`.
@@ -72,27 +47,63 @@ NSMutableArray<T*>* FindViewsWithPredicate(
   return found_views;
 }
 
-// Recursively searches `view` and its subviews for a view with the given
-// `accessibility_id`. Returns nil if not found. Both `view` and
-// `accessibility_id` must not be nil. Checks that the returned view is of type
-// `T`.
+// Recursively searches `view` and its subviews for a view for which
+// `predicate` returns YES. Returns the first matching view, or nil if not
+// found. Both `view` and `predicate` must not be nil. Checks that all matching
+// views are of type `T`. If `expect_uniqueness` is true, expects at most one
+// view to match `predicate` (reporting failures at `location`).
 template <typename T = UIView>
-T* FindViewById(UIView* view, NSString* accessibility_id) {
-  EXPECT_NE(view, nil);
-  EXPECT_NE(accessibility_id, nil);
-  return FindViewWithPredicate<T>(view, ^BOOL(UIView* candidate) {
-    return [candidate.accessibilityIdentifier isEqualToString:accessibility_id];
-  });
+T* FindViewWithPredicate(UIView* view,
+                         BOOL (^predicate)(UIView*),
+                         bool expect_uniqueness = true,
+                         const base::Location& location = FROM_HERE) {
+  NSArray<T*>* found_views = FindViewsWithPredicate<T>(view, predicate);
+  if (expect_uniqueness) {
+    EXPECT_LE(found_views.count, 1u)
+        << "View " << base::SysNSStringToUTF8(view.description)
+        << " was expected to have at most 1 matching subview of type "
+        << base::SysNSStringToUTF8(NSStringFromClass([T class])) << ", but "
+        << found_views.count << " were found.\n"
+        << location.ToString();
+  }
+  return found_views.firstObject;
 }
 
-// Recursively searches `view` and its subviews for the first view that is an
-// instance of `T` (or a subclass). Returns nil if not found. `view`
-// must not be nil.
+// Recursively searches `view` and its subviews for a view with the given
+// `accessibility_id`. Returns the first matching view, or nil if not found.
+// Both `view` and `accessibility_id` must not be nil. Checks that all matching
+// views are of type `T`. If `expect_uniqueness` is true, expects at most one
+// matching view (reporting failures at `location`).
+template <typename T = UIView>
+T* FindViewById(UIView* view,
+                NSString* accessibility_id,
+                bool expect_uniqueness = true,
+                const base::Location& location = FROM_HERE) {
+  EXPECT_NE(view, nil);
+  EXPECT_NE(accessibility_id, nil);
+  return FindViewWithPredicate<T>(
+      view,
+      ^BOOL(UIView* candidate) {
+        return [candidate.accessibilityIdentifier
+            isEqualToString:accessibility_id];
+      },
+      expect_uniqueness, location);
+}
+
+// Recursively searches `view` and its subviews for a view that is an instance
+// of `T` (or a subclass). Returns the first matching view, or nil if not
+// found. `view` must not be nil. If `expect_uniqueness` is true, expects at
+// most one matching view (reporting failures at `location`).
 template <typename T>
-T* FindViewByClass(UIView* view) {
-  return FindViewWithPredicate<T>(view, ^BOOL(UIView* candidate) {
-    return [candidate isKindOfClass:[T class]];
-  });
+T* FindViewByClass(UIView* view,
+                   bool expect_uniqueness = true,
+                   const base::Location& location = FROM_HERE) {
+  return FindViewWithPredicate<T>(
+      view,
+      ^BOOL(UIView* candidate) {
+        return [candidate isKindOfClass:[T class]];
+      },
+      expect_uniqueness, location);
 }
 
 // Recursively searches `view` and its subviews for all views that are instances
@@ -135,8 +146,13 @@ void ExpectUniqueSubview(UIView* view,
 }
 
 // Recursively searches `view` and its subviews for a UILabel with the given
-// `text`. Returns nil if not found. Both `view` and `text` must not be nil.
-UILabel* FindLabelWithText(UIView* view, NSString* text);
+// `text`. Returns the first matching label, or nil if not found. Both `view`
+// and `text` must not be nil. If `expect_uniqueness` is true, expects at most
+// one matching label (reporting failures at `location`).
+UILabel* FindLabelWithText(UIView* view,
+                           NSString* text,
+                           bool expect_uniqueness = true,
+                           const base::Location& location = FROM_HERE);
 
 }  // namespace chrome_test_util
 

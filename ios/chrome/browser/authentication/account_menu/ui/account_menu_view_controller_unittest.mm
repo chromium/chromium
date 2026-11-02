@@ -186,7 +186,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
     view_controller_.mutator = mutator_;
     navigation_controller_ = [[UINavigationController alloc]
         initWithRootViewController:view_controller_];
-    [view_controller_ viewDidLoad];
+    [view_controller_ loadViewIfNeeded];
   }
 
   void ViewControllerWithEllipsisMenuHidden() {
@@ -198,7 +198,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
     view_controller_.mutator = mutator_;
     navigation_controller_ = [[UINavigationController alloc]
         initWithRootViewController:view_controller_];
-    [view_controller_ viewDidLoad];
+    [view_controller_ loadViewIfNeeded];
   }
 
   void TearDown() override {
