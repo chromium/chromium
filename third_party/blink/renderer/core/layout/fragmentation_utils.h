@@ -587,6 +587,7 @@ ConstraintSpace CreateConstraintSpaceForFragmentainer(
     LogicalSize percentage_resolution_size,
     bool balance_columns,
     BreakAppeal min_break_appeal,
+    LayoutUnit block_start_annotation_space,
     const BoxFragmentBuilder* = nullptr);
 
 // Calculate the container builder and constraint space for a multicol.

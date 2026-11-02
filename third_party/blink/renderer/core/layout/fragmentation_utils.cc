@@ -1452,6 +1452,7 @@ ConstraintSpace CreateConstraintSpaceForFragmentainer(
     LogicalSize percentage_resolution_size,
     bool balance_columns,
     BreakAppeal min_break_appeal,
+    LayoutUnit block_start_annotation_space,
     const BoxFragmentBuilder* container_builder) {
   ConstraintSpaceBuilder space_builder(
       parent_space, parent_space.GetWritingDirection(), /* is_new_fc */ true);
@@ -1462,6 +1463,9 @@ ConstraintSpace CreateConstraintSpaceForFragmentainer(
   space_builder.SetShouldPropagateChildBreakValues();
   space_builder.SetFragmentainerBlockSize(fragmentainer_size.block_size);
   space_builder.SetIsAnonymous(true);
+  if (RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled()) {
+    space_builder.SetBlockStartAnnotationSpace(block_start_annotation_space);
+  }
   if (fragmentation_type == kFragmentColumn) {
     space_builder.SetIsInColumnBfc();
   }

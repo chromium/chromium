@@ -3347,8 +3347,8 @@ ConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
 
   return CreateConstraintSpaceForFragmentainer(
       GetConstraintSpace(), GetFragmentainerType(), fragmentainer_size,
-      percentage_resolution_size, /* balance_columns */ false,
-      min_break_appeal);
+      percentage_resolution_size, /* balance_columns */ false, min_break_appeal,
+      /* block_start_annotation_space */ LayoutUnit());
 }
 
 // Compute in which fragmentainer the OOF element will start its layout and

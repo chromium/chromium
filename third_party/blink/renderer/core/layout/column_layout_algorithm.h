@@ -120,6 +120,7 @@ class CORE_EXPORT ColumnLayoutAlgorithm
                                  LayoutUnit line_offset,
                                  LayoutUnit miminum_column_block_size,
                                  bool has_wrapped,
+                                 LayoutUnit block_start_annotation_space,
                                  MarginStrut*);
 
   // Lay out a column spanner. The return value will tell whether to break

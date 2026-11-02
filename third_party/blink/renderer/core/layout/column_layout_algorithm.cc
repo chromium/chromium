@@ -596,7 +596,7 @@ const PhysicalBoxFragment& ColumnLayoutAlgorithm::CreateEmptyColumn(
   ConstraintSpace child_space = CreateConstraintSpaceForFragmentainer(
       parent_space, kFragmentColumn, column_size,
       /*percentage_resolution_size=*/column_size, /*balance_columns=*/false,
-      kBreakAppealLastResort);
+      kBreakAppealLastResort, /*block_start_annotation_space=*/LayoutUnit());
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(child_space, node, break_token);
   LayoutAlgorithmParams params(node, fragment_geometry, child_space);
@@ -838,9 +838,17 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
       }
     }
 
+    LayoutUnit block_start_annotation_space;
+    if (RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled() &&
+        GetConstraintSpace().ContainsAnnotations() &&
+        !IsBreakInside(GetBreakToken()) &&
+        line_offset == BorderScrollbarPadding().block_start) {
+      block_start_annotation_space = Padding().block_start;
+    }
+
     const LayoutResult* new_result =
         LayoutLine(next_column_token, line_offset, minimum_column_block_size,
-                   !is_first_row, margin_strut);
+                   !is_first_row, block_start_annotation_space, margin_strut);
 
     if (!new_result) {
       // An outer fragmentainer break was inserted before this line.
@@ -901,6 +909,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     LayoutUnit line_offset,
     LayoutUnit minimum_column_block_size,
     bool has_wrapped,
+    LayoutUnit block_start_annotation_space,
     MarginStrut* margin_strut) {
   LogicalSize column_size(ColumnInlineSize(), remaining_content_block_size_);
   if (!Style().HasAutoColumnHeight()) {
@@ -1032,7 +1041,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
           GetConstraintSpace(), kFragmentColumn, column_size,
           ColumnPercentageResolutionSize(), balance_columns,
           min_break_appeal.value_or(kBreakAppealLastResort),
-          &container_builder_);
+          block_start_annotation_space, &container_builder_);
 
       FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
           child_space, Node(), GetBreakToken());
@@ -1163,7 +1172,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
             // ourselves recursively.
             return LayoutLine(next_column_token, line_offset,
                               minimum_column_block_size, has_wrapped,
-                              margin_strut);
+                              block_start_annotation_space, margin_strut);
           }
         }
       }
