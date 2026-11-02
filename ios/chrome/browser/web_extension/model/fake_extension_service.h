@@ -26,7 +26,7 @@ class FakeExtensionService final : public ExtensionService {
 
   // ExtensionService:
   void Initialize(web::UniversalOptOutState state) override;
-  web::ExtensionController* GetExtensionController() const override;
+  web::ExtensionController* GetExtensionController() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool HasGPCLoadError() const override;

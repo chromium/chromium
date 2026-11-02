@@ -31,8 +31,10 @@ class ExtensionService : public KeyedService {
   // preference observers, and initiates loading of extensions if enabled.
   virtual void Initialize(web::UniversalOptOutState opt_out_state) = 0;
 
-  // Returns the `web::ExtensionController` owned by this service.
-  virtual web::ExtensionController* GetExtensionController() const
+  // Returns the `web::ExtensionController` owned by this service. If a startup
+  // load is still in progress or failed, this also updates the GPC load error
+  // state and records attachment metrics.
+  virtual web::ExtensionController* GetExtensionController()
       API_AVAILABLE(ios(18.4)) = 0;
 
   virtual void AddObserver(Observer* observer) = 0;

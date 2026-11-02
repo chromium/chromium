@@ -9452,6 +9452,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.WebExtension.AttachDelay" units="ms"
+    expires_after="2027-09-20">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <summary>
+    The delay between the start of extension loading at startup and when the
+    WKWebExtensionController is first attached to the WKWebViewConfiguration.
+    Recorded once when the extension controller is first retrieved if an
+    extension load was started at startup.
+  </summary>
+</histogram>
+
 <histogram name="IOS.WebExtension.LoadDelay" units="ms"
     expires_after="2027-09-20">
   <owner>olivierrobin@chromium.org</owner>
@@ -9459,6 +9471,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     The delay taken to load the web extension. Recorded when the extension
     finishes loading in ExtensionService.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WebExtension.LoadedWhenControllerAttached"
+    enum="BooleanLoaded" expires_after="2027-09-20">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <summary>
+    Whether the web extension was loaded when the WKWebExtensionController was
+    attached to the WKWebViewConfiguration. Recorded once when the extension
+    controller is first retrieved if an extension load was started at startup.
   </summary>
 </histogram>
 

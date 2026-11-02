@@ -12,6 +12,8 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/universal_optout/features.h"
@@ -38,7 +40,9 @@ ExtensionServiceImpl::~ExtensionServiceImpl() {
 
 void ExtensionServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_loading_ = false;
+  is_monitoring_loading_ = false;
+  extension_load_started_at_startup_ = false;
+  get_extension_controller_called_ = false;
   has_gpc_load_error_ = false;
   loading_timer_.Stop();
   delay_timer_.Stop();
@@ -87,8 +91,42 @@ void ExtensionServiceImpl::Initialize(web::UniversalOptOutState state) {
   }
 }
 
-web::ExtensionController* ExtensionServiceImpl::GetExtensionController() const {
+web::ExtensionController* ExtensionServiceImpl::GetExtensionController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!get_extension_controller_called_) {
+    get_extension_controller_called_ = true;
+    const bool is_silent =
+        universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
+    if (extension_load_started_at_startup_ &&
+        experimental_flags::IsWebExtensionLoadDelayDefault()) {
+      const web::BuiltInExtension extension =
+          is_silent ? web::BuiltInExtension::kGPCTest
+                    : web::BuiltInExtension::kGPC;
+      const bool is_loaded =
+          !delay_timer_.IsRunning() && extension_controller_ &&
+          extension_controller_->IsBuiltInExtensionLoaded(extension);
+      base::UmaHistogramBoolean("IOS.WebExtension.LoadedWhenControllerAttached",
+                                is_loaded);
+      base::UmaHistogramTimes(
+          "IOS.WebExtension.AttachDelay",
+          base::TimeTicks::Now() - initialization_start_time_);
+    }
+    // If the GPC extension is still loading when the controller is first
+    // retrieved (to be attached to `WKWebViewConfiguration`), mark a load
+    // error. If loading later succeeds, `OnExtensionLoaded` clears the error.
+    if (is_monitoring_loading_) {
+      is_monitoring_loading_ = false;
+      const bool is_opt_out_enabled = pref_service_->GetBoolean(
+          universal_optout::prefs::kUniversalOptOutEnabled);
+      const bool is_gpc_loaded =
+          !delay_timer_.IsRunning() && extension_controller_ &&
+          extension_controller_->IsBuiltInExtensionLoaded(
+              web::BuiltInExtension::kGPC);
+      if (!is_silent && is_opt_out_enabled && !is_gpc_loaded) {
+        SetHasGPCLoadError(true);
+      }
+    }
+  }
   return extension_controller_.get();
 }
 
@@ -137,16 +175,32 @@ base::CallbackListSubscription ExtensionServiceImpl::RunWhenReady(
 
 void ExtensionServiceImpl::LoadExtension(web::BuiltInExtension extension) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!extension_controller_ || is_loading_ || delay_timer_.IsRunning() ||
+  if (!extension_controller_ || is_monitoring_loading_ ||
+      delay_timer_.IsRunning() ||
       extension_controller_->IsBuiltInExtensionLoaded(extension)) {
     return;
   }
-  is_loading_ = true;
+  is_monitoring_loading_ = true;
   extension_load_start_time_ = base::TimeTicks::Now();
+  // Wrap the timeout callback in two `PostTask` hops. If the main thread
+  // blocked for longer than `kExtensionLoadingTimeout` before spinning the
+  // run loop, both the native `WKWebExtension` completion (dispatched on the
+  // main queue) and `loading_timer_` may become ready in the same run loop
+  // turn. Because `BuiltInWebExtension::CreateWKWebExtension` wraps its
+  // completion in one `BindPostTask`, using two `PostTask` hops here ensures
+  // that an already-ready extension load completion executes and cancels
+  // `loading_timer_` (or clears `is_monitoring_loading_`) before
+  // `OnExtensionLoadTimeout` runs.
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
   loading_timer_.Start(
       FROM_HERE, kExtensionLoadingTimeout,
-      base::BindOnce(&ExtensionServiceImpl::OnExtensionLoadTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), extension));
+      base::BindPostTask(
+          task_runner,
+          base::BindPostTask(
+              task_runner,
+              base::BindOnce(&ExtensionServiceImpl::OnExtensionLoadTimeout,
+                             weak_ptr_factory_.GetWeakPtr(), extension))));
 
   const base::TimeDelta delay = experimental_flags::GetWebExtensionLoadDelay();
 
@@ -193,7 +247,7 @@ void ExtensionServiceImpl::OnExtensionLoadedWithDelay(
 void ExtensionServiceImpl::OnExtensionLoaded(web::BuiltInExtension extension,
                                              bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_loading_ = false;
+  is_monitoring_loading_ = false;
   loading_timer_.Stop();
   delay_timer_.Stop();
   if (!extension_load_start_time_.is_null()) {
@@ -229,12 +283,17 @@ void ExtensionServiceImpl::OnExtensionLoaded(web::BuiltInExtension extension,
 void ExtensionServiceImpl::OnExtensionLoadTimeout(
     web::BuiltInExtension extension) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_loading_ = false;
-  if (extension == web::BuiltInExtension::kGPC) {
-    const bool is_opt_out_enabled = pref_service_->GetBoolean(
-        universal_optout::prefs::kUniversalOptOutEnabled);
-    if (is_opt_out_enabled) {
-      SetHasGPCLoadError(true);
+  if (!is_monitoring_loading_) {
+    return;
+  }
+  if (get_extension_controller_called_) {
+    is_monitoring_loading_ = false;
+    if (extension == web::BuiltInExtension::kGPC) {
+      const bool is_opt_out_enabled = pref_service_->GetBoolean(
+          universal_optout::prefs::kUniversalOptOutEnabled);
+      if (is_opt_out_enabled) {
+        SetHasGPCLoadError(true);
+      }
     }
   }
   if (is_ready_) {
@@ -245,13 +304,11 @@ void ExtensionServiceImpl::OnExtensionLoadTimeout(
 
 void ExtensionServiceImpl::NotifyReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!initialization_start_time_.is_null()) {
-    if (experimental_flags::IsWebExtensionLoadDelayDefault()) {
-      base::UmaHistogramTimes(
-          "IOS.WebExtension.ReadyDelay",
-          base::TimeTicks::Now() - initialization_start_time_);
-    }
-    initialization_start_time_ = base::TimeTicks();
+  if (!initialization_start_time_.is_null() &&
+      experimental_flags::IsWebExtensionLoadDelayDefault()) {
+    base::UmaHistogramTimes(
+        "IOS.WebExtension.ReadyDelay",
+        base::TimeTicks::Now() - initialization_start_time_);
   }
   is_ready_ = true;
   ready_callbacks_.Notify();

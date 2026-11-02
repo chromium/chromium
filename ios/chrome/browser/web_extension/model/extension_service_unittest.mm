@@ -9,7 +9,9 @@
 #import <utility>
 
 #import "base/callback_list.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -62,6 +64,12 @@ class API_AVAILABLE(ios(18.4)) FakeExtensionController
     if (load_callback_) {
       std::move(load_callback_).Run(success);
     }
+  }
+
+  void CompleteLoadAsync(bool success) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&FakeExtensionController::CompleteLoad,
+                                  base::Unretained(this), success));
   }
 
   int load_call_count() const { return load_call_count_; }
@@ -185,10 +193,10 @@ API_AVAILABLE(ios(18.4)) {
   service.Initialize(web::UniversalOptOutState::kEnabled);
 
   EXPECT_FALSE(service.IsReady());
-  ASSERT_EQ(service.GetExtensionController(), raw_fake_controller);
   EXPECT_TRUE(raw_fake_controller->HasPendingLoad());
   EXPECT_EQ(raw_fake_controller->last_loaded_extension(),
             web::BuiltInExtension::kGPC);
+  ASSERT_EQ(service.GetExtensionController(), raw_fake_controller);
 }
 
 // Tests that ExtensionService is ready immediately when initialized with a
@@ -239,7 +247,6 @@ API_AVAILABLE(ios(18.4)) {
   service.Initialize(web::UniversalOptOutState::kEnabled);
 
   EXPECT_FALSE(service.IsReady());
-  ASSERT_EQ(service.GetExtensionController(), raw_fake_controller);
   EXPECT_TRUE(raw_fake_controller->HasPendingLoad());
   EXPECT_EQ(raw_fake_controller->last_loaded_extension(),
             web::BuiltInExtension::kGPC);
@@ -254,6 +261,8 @@ API_AVAILABLE(ios(18.4)) {
 
   EXPECT_TRUE(service.IsReady());
   EXPECT_TRUE(future.IsReady());
+  ASSERT_EQ(service.GetExtensionController(), raw_fake_controller);
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_TRUE(raw_fake_controller->IsBuiltInExtensionLoaded(
       web::BuiltInExtension::kGPC));
 
@@ -261,6 +270,10 @@ API_AVAILABLE(ios(18.4)) {
   histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.LoadDelay",
                                           base::Milliseconds(150), 1);
   histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.ReadyDelay",
+                                          base::Milliseconds(150), 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.WebExtension.LoadedWhenControllerAttached", true, 1);
+  histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.AttachDelay",
                                           base::Milliseconds(150), 1);
 }
 
@@ -278,7 +291,6 @@ API_AVAILABLE(ios(18.4)) {
   service.Initialize(web::UniversalOptOutState::kEnabled);
 
   EXPECT_FALSE(service.IsReady());
-  ASSERT_EQ(service.GetExtensionController(), raw_fake_controller);
   EXPECT_TRUE(raw_fake_controller->HasPendingLoad());
 
   base::test::TestFuture<void> future;
@@ -291,21 +303,38 @@ API_AVAILABLE(ios(18.4)) {
 
   EXPECT_TRUE(service.IsReady());
   EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(service.HasGPCLoadError());
+
+  // Attaching the controller while extension is still not loaded sets the error
+  // flag.
+  ASSERT_EQ(service.GetExtensionController(), raw_fake_controller);
+  EXPECT_TRUE(service.HasGPCLoadError());
 
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.ReadyDelay",
                                           base::Seconds(2), 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.WebExtension.LoadedWhenControllerAttached", false, 1);
+  histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.AttachDelay",
+                                          base::Seconds(2), 1);
 
   // Complete load after timeout and verify that the actual load delay and
-  // success are recorded.
+  // success are recorded, and the error flag is cleared.
   task_environment_.FastForwardBy(base::Milliseconds(500));
   raw_fake_controller->CompleteLoad(/*success=*/true);
   EXPECT_TRUE(service.IsReady());
+  EXPECT_FALSE(service.HasGPCLoadError());
+  // Subsequent calls to GetExtensionController do not re-log the histogram.
+  EXPECT_EQ(service.GetExtensionController(), raw_fake_controller);
   histogram_tester.ExpectUniqueSample("IOS.WebExtension.LoadSuccess", true, 1);
   histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.LoadDelay",
                                           base::Milliseconds(2500), 1);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.WebExtension.LoadedWhenControllerAttached", false, 1);
+  histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.AttachDelay",
+                                          base::Seconds(2), 1);
 }
 
 // Tests that ExtensionService cancels the timeout timer if loading finishes
@@ -339,6 +368,39 @@ API_AVAILABLE(ios(18.4)) {
   // Fast forward another 2 seconds and verify ready state remains true.
   task_environment_.FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(service.IsReady());
+}
+
+// Tests that when the extension load completion and the loading timeout timer
+// become ready in the same run loop turn (e.g., if the main thread was blocked
+// for longer than the timeout), the extension load completion is processed
+// before the timeout callback.
+TEST_F(ExtensionServiceTest,
+       TestLoadCompletionInSameRunLoopTurnRunsBeforeTimeout)
+API_AVAILABLE(ios(18.4)) {
+  SetOptedIn(true);
+
+  auto fake_controller = std::make_unique<FakeExtensionController>();
+  FakeExtensionController* raw_fake_controller = fake_controller.get();
+
+  ExtensionServiceImpl service(pref_service_, std::move(fake_controller));
+  service.Initialize(web::UniversalOptOutState::kEnabled);
+
+  // Advance mock clock past the 2-second timeout without running tasks,
+  // simulating the main thread being blocked before the run loop spins.
+  task_environment_.AdvanceClock(base::Seconds(3));
+
+  // Queue the load completion with a `PostTask`, matching
+  // `BuiltInWebExtension::CreateWKWebExtension` behavior.
+  raw_fake_controller->CompleteLoadAsync(/*success=*/true);
+
+  base::test::TestFuture<void> future;
+  base::CallbackListSubscription subscription =
+      service.RunWhenReady(future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(service.IsReady());
+  EXPECT_TRUE(raw_fake_controller->IsBuiltInExtensionLoaded(
+      web::BuiltInExtension::kGPC));
 }
 
 // Tests that ExtensionService listens to the pref and loads or unloads the
@@ -675,13 +737,15 @@ API_AVAILABLE(ios(18.4)) {
   service.RemoveObserver(&observer);
 }
 
-// Tests that timing out when loading an extension sets HasGPCLoadError to true
-// and notifies observers.
-TEST_F(ExtensionServiceTest, TestLoadTimeoutSetsLoadError)
+// Tests that timing out when loading an extension at startup does not set
+// HasGPCLoadError until the ExtensionController is retrieved while the
+// extension is still not loaded.
+TEST_F(ExtensionServiceTest, TestLoadTimeoutSetsLoadErrorOnAttachWhenNotLoaded)
 API_AVAILABLE(ios(18.4)) {
   SetOptedIn(true);
 
   auto fake_controller = std::make_unique<FakeExtensionController>();
+  FakeExtensionController* raw_fake_controller = fake_controller.get();
 
   ExtensionServiceImpl service(pref_service_, std::move(fake_controller));
   TestExtensionServiceObserver observer;
@@ -692,9 +756,16 @@ API_AVAILABLE(ios(18.4)) {
   EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
 
-  // Fast forward past the 10-second loading timeout.
+  // Fast forward past the 2-second loading timeout.
   task_environment_.FastForwardBy(base::Seconds(10));
 
+  // Timeout alone at startup does not set the error flag.
+  EXPECT_FALSE(service.HasGPCLoadError());
+  EXPECT_EQ(observer.call_count(), 0);
+
+  // Retrieving the ExtensionController when it is attached to the
+  // WKWebViewConfiguration while the extension is not loaded sets the error.
+  EXPECT_EQ(service.GetExtensionController(), raw_fake_controller);
   EXPECT_TRUE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 1);
   EXPECT_TRUE(observer.last_has_gpc_load_error());
@@ -704,6 +775,51 @@ API_AVAILABLE(ios(18.4)) {
   EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 2);
   EXPECT_FALSE(observer.last_has_gpc_load_error());
+
+  service.RemoveObserver(&observer);
+}
+
+// Tests that if the extension finishes loading after the startup timeout but
+// before the ExtensionController is retrieved, HasGPCLoadError is not set and
+// IOS.WebExtension.LoadedWhenControllerAttached is recorded as true.
+TEST_F(ExtensionServiceTest,
+       TestLoadCompletesAfterTimeoutBeforeAttachDoesNotSetLoadError)
+API_AVAILABLE(ios(18.4)) {
+  base::HistogramTester histogram_tester;
+  SetOptedIn(true);
+
+  auto fake_controller = std::make_unique<FakeExtensionController>();
+  FakeExtensionController* raw_fake_controller = fake_controller.get();
+
+  ExtensionServiceImpl service(pref_service_, std::move(fake_controller));
+  TestExtensionServiceObserver observer;
+  service.AddObserver(&observer);
+
+  service.Initialize(web::UniversalOptOutState::kEnabled);
+
+  // Fast forward past the 2-second loading timeout.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_TRUE(service.IsReady());
+  EXPECT_FALSE(service.HasGPCLoadError());
+  EXPECT_EQ(observer.call_count(), 0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.WebExtension.LoadedWhenControllerAttached", 0);
+  histogram_tester.ExpectTotalCount("IOS.WebExtension.AttachDelay", 0);
+
+  // Extension finishes loading before GetExtensionController() is called.
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  raw_fake_controller->CompleteLoad(/*success=*/true);
+  EXPECT_FALSE(service.HasGPCLoadError());
+  EXPECT_EQ(observer.call_count(), 0);
+
+  // Attaching the controller now does not set the error flag and records true.
+  EXPECT_EQ(service.GetExtensionController(), raw_fake_controller);
+  EXPECT_FALSE(service.HasGPCLoadError());
+  EXPECT_EQ(observer.call_count(), 0);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.WebExtension.LoadedWhenControllerAttached", true, 1);
+  histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.AttachDelay",
+                                          base::Milliseconds(2300), 1);
 
   service.RemoveObserver(&observer);
 }
@@ -725,6 +841,7 @@ API_AVAILABLE(ios(18.4)) {
   service.Initialize(web::UniversalOptOutState::kEligible);
 
   EXPECT_TRUE(service.IsReady());
+  EXPECT_EQ(service.GetExtensionController(), raw_fake_controller);
   EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
 
@@ -832,6 +949,7 @@ API_AVAILABLE(ios(18.4)) {
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 0);
+  histogram_tester.ExpectTotalCount("IOS.WebExtension.AttachDelay", 0);
 
   service.RemoveObserver(&observer);
 }
@@ -874,6 +992,7 @@ API_AVAILABLE(ios(18.4)) {
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 0);
+  histogram_tester.ExpectTotalCount("IOS.WebExtension.AttachDelay", 0);
 
   service.RemoveObserver(&observer);
 }
@@ -913,12 +1032,14 @@ API_AVAILABLE(ios(18.4)) {
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 0);
+  histogram_tester.ExpectTotalCount("IOS.WebExtension.AttachDelay", 0);
 
   service.RemoveObserver(&observer);
 }
 
-// Tests that simulating a 5-second delay times out at 2 seconds and then clears
-// the load error when loading completes at 5 seconds.
+// Tests that simulating a 5-second delay times out at 2 seconds, sets the load
+// error when the controller is attached, and then clears the load error when
+// loading completes at 5 seconds.
 TEST_F(ExtensionServiceTest, TestLoadDelay5sPassTimesOutThenRecovers)
 API_AVAILABLE(ios(18.4)) {
   base::HistogramTester histogram_tester;
@@ -940,6 +1061,12 @@ API_AVAILABLE(ios(18.4)) {
   // At 2 seconds, the loading timeout should trigger.
   task_environment_.FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(service.IsReady());
+  EXPECT_FALSE(service.HasGPCLoadError());
+  EXPECT_EQ(observer.call_count(), 0);
+
+  // Attaching the controller while the simulated delay is still active sets the
+  // load error.
+  EXPECT_EQ(service.GetExtensionController(), raw_fake_controller);
   EXPECT_TRUE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 1);
   EXPECT_TRUE(observer.last_has_gpc_load_error());
@@ -952,12 +1079,14 @@ API_AVAILABLE(ios(18.4)) {
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 0);
+  histogram_tester.ExpectTotalCount("IOS.WebExtension.AttachDelay", 0);
 
   service.RemoveObserver(&observer);
 }
 
-// Tests that simulating a 5-second delay with failure times out at 2 seconds
-// and then fails at 5 seconds.
+// Tests that simulating a 5-second delay with failure times out at 2 seconds,
+// sets the load error when the controller is attached, and remains in error
+// when the load fails at 5 seconds.
 TEST_F(ExtensionServiceTest, TestLoadDelay5sFailTimesOutAndFails)
 API_AVAILABLE(ios(18.4)) {
   base::HistogramTester histogram_tester;
@@ -978,6 +1107,11 @@ API_AVAILABLE(ios(18.4)) {
   // At 2 seconds, the loading timeout should trigger.
   task_environment_.FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(service.IsReady());
+  EXPECT_FALSE(service.HasGPCLoadError());
+  EXPECT_EQ(observer.call_count(), 0);
+
+  // Attaching the controller sets the load error.
+  EXPECT_EQ(service.GetExtensionController(), raw_fake_controller);
   EXPECT_TRUE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 1);
   EXPECT_TRUE(observer.last_has_gpc_load_error());
@@ -990,6 +1124,7 @@ API_AVAILABLE(ios(18.4)) {
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 0);
+  histogram_tester.ExpectTotalCount("IOS.WebExtension.AttachDelay", 0);
 
   service.RemoveObserver(&observer);
 }
@@ -1031,6 +1166,7 @@ API_AVAILABLE(ios(18.4)) {
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 0);
+  histogram_tester.ExpectTotalCount("IOS.WebExtension.AttachDelay", 0);
 
   service.RemoveObserver(&observer);
 }

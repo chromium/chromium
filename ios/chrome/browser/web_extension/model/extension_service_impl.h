@@ -50,7 +50,7 @@ class ExtensionServiceImpl final : public ExtensionService {
 
   // ExtensionService:
   void Initialize(web::UniversalOptOutState state) override;
-  web::ExtensionController* GetExtensionController() const override
+  web::ExtensionController* GetExtensionController() override
       API_AVAILABLE(ios(18.4));
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -116,8 +116,11 @@ class ExtensionServiceImpl final : public ExtensionService {
   // Whether the extension started loading at startup.
   bool extension_load_started_at_startup_ = false;
 
-  // Whether an extension is currently being loaded.
-  bool is_loading_ = false;
+  // Whether `GetExtensionController()` has already been called.
+  bool get_extension_controller_called_ = false;
+
+  // Whether the service is currently monitoring an active extension load.
+  bool is_monitoring_loading_ = false;
 
   // List of callbacks waiting for the service to be ready.
   base::OnceClosureList ready_callbacks_;
