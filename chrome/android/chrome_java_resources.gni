@@ -417,6 +417,7 @@ chrome_java_resources = [
   "java/res/layout/account_chooser_dialog_item.xml",
   "java/res/layout/account_chooser_dialog_title.xml",
   "java/res/layout/account_management_account_row.xml",
+  "java/res/layout/account_management_account_row_with_ai_tier_ring.xml",
   "java/res/layout/auto_pip_permission_dialog.xml",
   "java/res/layout/auto_sign_in_first_run_dialog.xml",
   "java/res/layout/autofill_ai_loading_dialog.xml",

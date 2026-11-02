@@ -1208,6 +1208,29 @@ public class ProfileDataCacheUnitTest {
                 IMAGE_SIZE, mProfileDataCache.getPlaceholderImage().getIntrinsicWidth());
     }
 
+    @Test
+    public void testIsAiTierRingEnabled() {
+        Assert.assertTrue(createWithAiTierRing().isAiTierRingEnabled());
+        // Created in setUp().
+        Assert.assertFalse(mProfileDataCache.isAiTierRingEnabled());
+    }
+
+    @Test
+    public void testGetAiTierRingPadding() {
+        int ringSpacing =
+                RuntimeEnvironment.getApplication()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.ai_tier_ring_spacing);
+        Assert.assertEquals(
+                RING_THICKNESS + ringSpacing, createWithAiTierRing().getAiTierRingPadding());
+        Assert.assertEquals(
+                0,
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                                RuntimeEnvironment.getApplication().getApplicationContext(),
+                                mAccountManagerTestRule.getIdentityManager())
+                        .getAiTierRingPadding());
+    }
+
     private ProfileDataCache createWithAiTierRing() {
         return ProfileDataCache.createWithAiTierRing(
                 RuntimeEnvironment.getApplication().getApplicationContext(),

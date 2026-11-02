@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
@@ -68,6 +69,8 @@ public class SignInPreference extends Preference
     private boolean mViewEnabled;
     private boolean mIsShowingSigninPromo;
     private boolean mShowAlertIcon;
+    // Whether the icon is the account's avatar, rather than the signed-out or managed icon.
+    private boolean mIconIsAvatar;
 
     private Profile mProfile;
     private PrefService mPrefService;
@@ -86,7 +89,6 @@ public class SignInPreference extends Preference
     /** Constructor for inflating from XML. */
     public SignInPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setLayoutResource(R.layout.account_management_account_row);
         setViewId(R.id.account_management_account_row);
         mIsShowingSigninPromo = false;
     }
@@ -106,10 +108,20 @@ public class SignInPreference extends Preference
                     signinCoordinatorSupplier) {
         mProfile = profile;
         mProfileDataCache = profileDataCache;
+        // Called before the preference's view is created, see MainSettings#onCreatePreferences.
+        // TODO(crbug.com/576944682): Keep only the ring layout after flag cleanup.
+        setLayoutResource(
+                mProfileDataCache.isAiTierRingEnabled()
+                        ? R.layout.account_management_account_row_with_ai_tier_ring
+                        : R.layout.account_management_account_row);
         mAccountManagerFacade = accountManagerFacade;
         mSigninCoordinatorSupplier = signinCoordinatorSupplier;
         mPrefService = UserPrefs.get(mProfile);
-        mSyncService = SyncServiceFactory.getForProfile(mProfile);
+        // TODO(crbug.com/576944682): Remove the SyncService after flag cleanup. With the AI tier
+        // ring, the cache tracks the sync error and notifies this preference when it changes.
+        if (!mProfileDataCache.isAiTierRingEnabled()) {
+            mSyncService = SyncServiceFactory.getForProfile(mProfile);
+        }
         mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
     }
 
@@ -121,6 +133,8 @@ public class SignInPreference extends Preference
         mSigninManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
         if (mSyncService != null) {
+            // Only without the AI tier ring, see initialize().
+            assert !mProfileDataCache.isAiTierRingEnabled();
             mSyncService.addSyncStateChangedListener(this);
         }
 
@@ -185,6 +199,7 @@ public class SignInPreference extends Preference
         setFragment(null);
         setTitle(R.string.signin_settings_title);
         setSummary(R.string.settings_signin_disabled_by_administrator);
+        mIconIsAvatar = false;
         setIcon(R.drawable.ic_business_small_with_bg);
         setViewEnabledAndShowAlertIcon(/* enabled= */ false, /* alertIconVisible= */ false);
         setOnPreferenceClickListener(
@@ -204,6 +219,7 @@ public class SignInPreference extends Preference
         setSummary(R.string.signin_settings_subtitle);
 
         setFragment(null);
+        mIconIsAvatar = false;
         setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.account_circle_with_bg));
         setViewEnabledAndShowAlertIcon(/* enabled= */ true, /* alertIconVisible= */ false);
         OnPreferenceClickListener clickListener =
@@ -260,14 +276,20 @@ public class SignInPreference extends Preference
                 SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                         profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
         setFragment(ManageSyncSettings.class.getName());
+        mIconIsAvatar = true;
         setIcon(profileData.getImage());
-        setViewEnabledAndShowAlertIcon(
-                /* enabled= */ true,
-                /* alertIconVisible= */ SyncSettingsUtils.getSyncError(mProfile)
-                        != UserActionableError.NONE);
+        setViewEnabledAndShowAlertIcon(/* enabled= */ true, /* alertIconVisible= */ hasSyncError());
         setOnPreferenceClickListener(null);
 
         mWasGenericSigninPromoDisplayed = false;
+    }
+
+    private boolean hasSyncError() {
+        // TODO(crbug.com/576944682): Keep only the cache's error after flag cleanup.
+        if (mProfileDataCache.isAiTierRingEnabled()) {
+            return mProfileDataCache.hasIdentityError();
+        }
+        return SyncSettingsUtils.getSyncError(mProfile) != UserActionableError.NONE;
     }
 
     @Override
@@ -302,6 +324,15 @@ public class SignInPreference extends Preference
 
         ImageView alertIcon = (ImageView) holder.findViewById(R.id.alert_icon);
         alertIcon.setVisibility(mShowAlertIcon ? View.VISIBLE : View.GONE);
+
+        // TODO(crbug.com/576944682): Remove the non-ring path once EnableAiSubscriptionAvatarRing
+        // and AiSubscriptionAvatarRingFollowup are cleaned up.
+        if (mProfileDataCache.isAiTierRingEnabled()) {
+            // The avatar image already includes the ring padding. The signed-out and managed
+            // icons get it as view padding, so they look the same as without the ring.
+            @Px int padding = mIconIsAvatar ? 0 : mProfileDataCache.getAiTierRingPadding();
+            holder.findViewById(android.R.id.icon).setPadding(padding, padding, padding, padding);
+        }
     }
 
     // SyncService.SyncStateChangedListener implementation.

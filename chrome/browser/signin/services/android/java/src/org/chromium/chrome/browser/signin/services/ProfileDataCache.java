@@ -254,6 +254,23 @@ public class ProfileDataCache
     }
 
     /**
+     * @return Whether this cache was created with the AI tier ring enabled. If so, the generated
+     *     images include the space for the ring, even when no ring is drawn.
+     */
+    public boolean isAiTierRingEnabled() {
+        return mAiTierRingEnabled;
+    }
+
+    /**
+     * @return The space, in pixels, between each edge of the generated images and the avatar, which
+     *     is left for the AI tier ring and its spacing, or 0 if this cache was created without the
+     *     AI tier ring. Views can use it to keep the avatar where it would be without the ring.
+     */
+    public @Px int getAiTierRingPadding() {
+        return mTotalPadding;
+    }
+
+    /**
      * Gets the list of cached accounts that are synchronized with the device accounts.
      *
      * <p>Accounts data are populated from {@link IdentityManager}. To observe changes to accounts,

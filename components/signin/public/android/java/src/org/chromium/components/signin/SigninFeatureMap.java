@@ -64,6 +64,18 @@ public final class SigninFeatureMap extends FeatureMap {
     }
 
     /**
+     * Returns whether the AI tier ring is enabled on the settings account surfaces: the Main
+     * Settings account row and the Account page card. Their layouts and avatar sizes depend on it.
+     *
+     * <p>Needs both {@link SigninFeatures#ENABLE_AI_SUBSCRIPTION_AVATAR_RING} and {@link
+     * SigninFeatures#AI_SUBSCRIPTION_AVATAR_RING_FOLLOWUP}.
+     */
+    public boolean isAiTierRingInSettingsEnabled() {
+        return isEnabledInNative(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
+                && isEnabledInNative(SigninFeatures.AI_SUBSCRIPTION_AVATAR_RING_FOLLOWUP);
+    }
+
+    /**
      * @return the singleton SigninFeatureMap.
      */
     public static SigninFeatureMap getInstance() {

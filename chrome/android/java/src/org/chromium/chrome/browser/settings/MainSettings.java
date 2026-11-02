@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherIm
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityServiceFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
@@ -378,12 +380,27 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.main_preferences);
 
+        Profile profile = getProfile();
         IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(getProfile());
+                IdentityServicesProvider.get().getIdentityManager(profile);
         assert identityManager != null;
-        ProfileDataCache profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                        getContext(), identityManager);
+        ProfileDataCache profileDataCache;
+        if (SigninFeatureMap.getInstance().isAiTierRingInSettingsEnabled()) {
+            Resources resources = getResources();
+            profileDataCache =
+                    ProfileDataCache.createWithAiTierRing(
+                            getContext(),
+                            identityManager,
+                            SubscriptionEligibilityServiceFactory.getForProfile(profile),
+                            SyncServiceFactory.getForProfile(profile),
+                            resources.getDimensionPixelSize(
+                                    R.dimen.user_picture_size_with_ai_tier_ring),
+                            resources.getDimensionPixelSize(R.dimen.ai_tier_ring_thickness_large));
+        } else {
+            profileDataCache =
+                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                            getContext(), identityManager);
+        }
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)) {

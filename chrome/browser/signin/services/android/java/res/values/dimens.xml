@@ -5,12 +5,11 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- User Picture Dimensions -->
     <dimen name="user_picture_size">40dp</dimen>
     <!-- user_picture_size + 2 * (ai_tier_ring_thickness_large + ai_tier_ring_spacing) -->
-    <!-- TODO(crbug.com/522145863): Remove tools:ignore once used. -->
-    <dimen name="user_picture_size_with_ai_tier_ring" tools:ignore="UnusedResources">50dp</dimen>
+    <dimen name="user_picture_size_with_ai_tier_ring">50dp</dimen>
     <dimen name="badge_position_x">26dp</dimen>
     <dimen name="badge_position_y">20dp</dimen>
     <dimen name="badge_border_size">1.3dp</dimen>
@@ -33,6 +32,5 @@ found in the LICENSE file.
     <!-- AI tier ring thickness for avatars up to 24dp -->
     <dimen name="ai_tier_ring_thickness_small">2dp</dimen>
     <!-- AI tier ring thickness for avatars larger than 24dp -->
-    <!-- TODO(crbug.com/522145863): Remove tools:ignore once used. -->
-    <dimen name="ai_tier_ring_thickness_large" tools:ignore="UnusedResources">3dp</dimen>
+    <dimen name="ai_tier_ring_thickness_large">3dp</dimen>
 </resources>
