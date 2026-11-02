@@ -72,7 +72,8 @@ void VirtualFileRequestServiceProvider::HandleReadRequest(
   base::ScopedFD pipe_write_end;
   dbus::MessageReader reader(method_call);
   if (!reader.PopString(&id) || !reader.PopInt64(&offset) ||
-      !reader.PopInt64(&size) || !reader.PopFileDescriptor(&pipe_write_end)) {
+      !reader.PopInt64(&size) || !reader.PopFileDescriptor(&pipe_write_end) ||
+      (offset < 0) || (size < 0)) {
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(
             method_call, DBUS_ERROR_INVALID_ARGS, std::string()));

@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -36,8 +37,8 @@ FileStreamForwarder::FileStreamForwarder(
     ResultCallback callback)
     : context_(context),
       url_(url),
-      offset_(offset),
-      remaining_size_(size),
+      offset_((offset >= 0) ? offset : 0),
+      remaining_size_((size >= 0) ? size : 0),
       fd_dest_(std::move(fd_dest)),
       callback_(std::move(callback)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -87,14 +88,17 @@ void FileStreamForwarder::Start() {
 
 void FileStreamForwarder::DoRead() {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK_GE(remaining_size_, 0, base::NotFatalUntil::M160);
   if (remaining_size_ == 0) {
     NotifyCompleted(true);
     return;
   }
-  const int result = stream_reader_->Read(
-      buf_, std::min<int64_t>(buf_->size(), remaining_size_),
-      base::BindOnce(&FileStreamForwarder::OnReadCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+  const int size = base::saturated_cast<int>(
+      std::min<int64_t>(static_cast<int64_t>(buf_->size()), remaining_size_));
+  const int result =
+      stream_reader_->Read(buf_, size,
+                           base::BindOnce(&FileStreamForwarder::OnReadCompleted,
+                                          weak_ptr_factory_.GetWeakPtr()));
   if (result != net::ERR_IO_PENDING) {
     // Read result is returned synchronously.
     OnReadCompleted(result);
