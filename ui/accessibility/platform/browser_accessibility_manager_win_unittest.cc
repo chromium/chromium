@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -29,6 +30,7 @@
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
+#include "ui/accessibility/platform/uia_registrar_win.h"
 
 namespace {
 
@@ -50,6 +52,68 @@ class TestFragmentRootDelegate : public ui::AXFragmentRootDelegateWin {
   bool IsAXFragmentRootAControlElement() override { return true; }
 
   raw_ptr<ui::BrowserAccessibilityManager> browser_accessibility_manager_;
+};
+
+// Intercepts platform event dispatch in BrowserAccessibilityManagerWin, via
+// SetPlatformEventCallbackForTesting(), so tests can simulate synchronous
+// re-entrancy or tree mutation when an event is raised. While installed, no
+// event reaches the OS.
+class TestBrowserAccessibilityManagerWin
+    : public ui::BrowserAccessibilityManagerWin {
+ public:
+  using EventCallback =
+      base::RepeatingCallback<void(LONG, ui::BrowserAccessibility*)>;
+
+  TestBrowserAccessibilityManagerWin(
+      const ui::AXTreeUpdate& initial_tree,
+      ui::AXNodeIdDelegate& node_id_delegate,
+      ui::AXPlatformTreeManagerDelegate* delegate)
+      : ui::BrowserAccessibilityManagerWin(initial_tree,
+                                           node_id_delegate,
+                                           delegate) {
+    // Unretained is safe: the callback is owned by `this`.
+    SetPlatformEventCallbackForTesting(base::BindRepeating(
+        &TestBrowserAccessibilityManagerWin::OnPlatformEvent,
+        base::Unretained(this)));
+  }
+
+  void SetWinEventCallback(EventCallback callback) {
+    win_event_callback_ = std::move(callback);
+  }
+  void SetUiaEventCallback(EventCallback callback) {
+    uia_event_callback_ = std::move(callback);
+  }
+  void SetUiaPropertyCallback(EventCallback callback) {
+    uia_property_callback_ = std::move(callback);
+  }
+
+ private:
+  void OnPlatformEvent(PlatformEventTypeForTesting type,
+                       LONG id,
+                       ui::BrowserAccessibility* node) {
+    // Copy the callback: running it may destroy `this`.
+    EventCallback callback;
+    switch (type) {
+      case PlatformEventTypeForTesting::kWinEvent:
+        callback = win_event_callback_;
+        break;
+      case PlatformEventTypeForTesting::kUiaEvent:
+        callback = uia_event_callback_;
+        break;
+      case PlatformEventTypeForTesting::kUiaPropertyChanged:
+        callback = uia_property_callback_;
+        break;
+      case PlatformEventTypeForTesting::kUiaStructureChanged:
+        break;
+    }
+    if (callback) {
+      callback.Run(id, node);
+    }
+  }
+
+  EventCallback win_event_callback_;
+  EventCallback uia_event_callback_;
+  EventCallback uia_property_callback_;
 };
 
 }  // namespace
@@ -939,6 +1003,415 @@ TEST_F(BrowserAccessibilityManagerWinTest,
   EXPECT_EQ("reentrant description",
             manager->GetFromID(2)->GetStringAttribute(
                 ax::mojom::StringAttribute::kDescription));
+}
+
+// Synchronous platform event dispatch during FinalizeAccessibilityEvents may
+// re-entrantly destroy the manager; remaining queued events must not be
+// dispatched on a destroyed manager. The tests below destroy the manager while
+// finalizing each kind of queued event.
+//
+// The pending-event sets are unordered, so each test queues a single node and
+// checks that TestComplete, which is raised last, is not raised.
+
+// Destroying the manager while finalizing `aria_properties_events_`.
+TEST_F(BrowserAccessibilityManagerWinTest,
+       FinalizeAriaPropertiesEventsHandlesManagerDestruction) {
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+  const LONG test_complete_event =
+      UiaRegistrarWin::GetInstance().GetTestCompleteEventId();
+
+  {
+    AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kRootWebArea;
+    root.child_ids = {2};
+
+    AXNodeData button;
+    button.id = 2;
+    button.role = ax::mojom::Role::kButton;
+
+    auto manager = std::make_unique<TestBrowserAccessibilityManagerWin>(
+        MakeAXTreeUpdateForTesting(root, button), node_id_delegate_,
+        test_browser_accessibility_delegate_.get());
+
+    std::vector<AXNodeID> fired_nodes;
+    bool test_complete_fired = false;
+    manager->SetUiaPropertyCallback(base::BindLambdaForTesting(
+        [&](LONG uia_property, BrowserAccessibility* node) {
+          if (uia_property == UIA_AriaPropertiesPropertyId) {
+            fired_nodes.push_back(node->GetId());
+            manager.reset();
+          }
+        }));
+    manager->SetUiaEventCallback(base::BindLambdaForTesting(
+        [&](LONG uia_event, BrowserAccessibility* node) {
+          if (uia_event == test_complete_event) {
+            test_complete_fired = true;
+          }
+        }));
+
+    button.AddBoolAttribute(ax::mojom::BoolAttribute::kBusy, true);
+    AXUpdatesAndEvents bundle;
+    bundle.updates.emplace_back();
+    bundle.updates[0].nodes = {button};
+    bundle.events.emplace_back(root.id, ax::mojom::Event::kEndOfTest);
+    EXPECT_TRUE(manager->OnAccessibilityEvents(bundle));
+    EXPECT_FALSE(manager);
+    EXPECT_THAT(fired_nodes, testing::ElementsAre(2));
+    EXPECT_FALSE(test_complete_fired);
+  }
+}
+
+// Destroying the manager while finalizing `selection_changed_nodes_` and
+// `text_changed_nodes_`.
+TEST_F(BrowserAccessibilityManagerWinTest,
+       FinalizeTextEventsHandlesManagerDestruction) {
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+  const LONG test_complete_event =
+      UiaRegistrarWin::GetInstance().GetTestCompleteEventId();
+
+  {
+    AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kRootWebArea;
+    root.child_ids = {2, 3};
+
+    AXNodeData static_text;
+    static_text.id = 2;
+    static_text.role = ax::mojom::Role::kStaticText;
+    static_text.SetName("hello");
+
+    AXNodeData text_field;
+    text_field.id = 3;
+    text_field.role = ax::mojom::Role::kTextField;
+    text_field.SetValue("a");
+
+    // `selection_changed_nodes_` (UIA_Text_TextSelectionChangedEventId).
+    auto manager = std::make_unique<TestBrowserAccessibilityManagerWin>(
+        MakeAXTreeUpdateForTesting(root, static_text, text_field),
+        node_id_delegate_, test_browser_accessibility_delegate_.get());
+
+    std::vector<AXNodeID> fired_selection_nodes;
+    bool test_complete_fired = false;
+    manager->SetUiaEventCallback(base::BindLambdaForTesting(
+        [&](LONG uia_event, BrowserAccessibility* node) {
+          if (uia_event == UIA_Text_TextSelectionChangedEventId) {
+            fired_selection_nodes.push_back(node->GetId());
+            manager.reset();
+          } else if (uia_event == test_complete_event) {
+            test_complete_fired = true;
+          }
+        }));
+
+    // `root` (ID 1) has no text field ancestor, so only `root` is queued.
+    AXUpdatesAndEvents sel_bundle;
+    sel_bundle.updates.emplace_back();
+    sel_bundle.updates[0].has_tree_data = true;
+    sel_bundle.updates[0].tree_data = manager->GetTreeData();
+    sel_bundle.updates[0].tree_data.sel_anchor_object_id = 1;
+    sel_bundle.updates[0].tree_data.sel_anchor_offset = 0;
+    sel_bundle.updates[0].tree_data.sel_focus_object_id = 1;
+    sel_bundle.updates[0].tree_data.sel_focus_offset = 1;
+    sel_bundle.events.emplace_back(root.id, ax::mojom::Event::kEndOfTest);
+    EXPECT_TRUE(manager->OnAccessibilityEvents(sel_bundle));
+    EXPECT_FALSE(manager);
+    EXPECT_THAT(fired_selection_nodes, testing::ElementsAre(1));
+    EXPECT_FALSE(test_complete_fired);
+
+    // `text_changed_nodes_` (UIA_Text_TextChangedEventId).
+    manager = std::make_unique<TestBrowserAccessibilityManagerWin>(
+        MakeAXTreeUpdateForTesting(root, static_text, text_field),
+        node_id_delegate_, test_browser_accessibility_delegate_.get());
+
+    std::vector<AXNodeID> fired_text_nodes;
+    test_complete_fired = false;
+    manager->SetUiaEventCallback(base::BindLambdaForTesting(
+        [&](LONG uia_event, BrowserAccessibility* node) {
+          if (uia_event == UIA_Text_TextChangedEventId) {
+            fired_text_nodes.push_back(node->GetId());
+            manager.reset();
+          } else if (uia_event == test_complete_event) {
+            test_complete_fired = true;
+          }
+        }));
+
+    // `text_field` (ID 3) is its own text pattern provider, so only it is
+    // queued.
+    AXNodeData changed_text_field = text_field;
+    changed_text_field.SetValue("a2");
+
+    AXUpdatesAndEvents text_bundle;
+    text_bundle.updates.emplace_back();
+    text_bundle.updates[0].nodes = {changed_text_field};
+    text_bundle.events.emplace_back(root.id, ax::mojom::Event::kEndOfTest);
+    EXPECT_TRUE(manager->OnAccessibilityEvents(text_bundle));
+    EXPECT_FALSE(manager);
+    EXPECT_THAT(fired_text_nodes, testing::ElementsAre(3));
+    EXPECT_FALSE(test_complete_fired);
+  }
+}
+
+// Destroying the manager while finalizing `ia2_selection_events_` and
+// `uia_selection_events_`.
+TEST_F(BrowserAccessibilityManagerWinTest,
+       FinalizeSelectionItemEventsHandlesManagerDestruction) {
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+
+  {
+    AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kRootWebArea;
+    root.child_ids = {2};
+
+    AXNodeData list_box;
+    list_box.id = 2;
+    list_box.role = ax::mojom::Role::kListBox;
+    list_box.AddState(ax::mojom::State::kMultiselectable);
+    list_box.child_ids = {3, 4};
+
+    AXNodeData option1;
+    option1.id = 3;
+    option1.role = ax::mojom::Role::kListBoxOption;
+    option1.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+
+    AXNodeData option2;
+    option2.id = 4;
+    option2.role = ax::mojom::Role::kListBoxOption;
+    option2.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+
+    AXNodeData selected_option1 = option1;
+    selected_option1.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                                      true);
+    AXNodeData selected_option2 = option2;
+    selected_option2.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                                      true);
+
+    // `ia2_selection_events_` (EVENT_OBJECT_SELECTIONADD).
+    auto manager = std::make_unique<TestBrowserAccessibilityManagerWin>(
+        MakeAXTreeUpdateForTesting(root, list_box, option1, option2),
+        node_id_delegate_, test_browser_accessibility_delegate_.get());
+
+    std::vector<AXNodeID> fired_ia2_nodes;
+    manager->SetWinEventCallback(base::BindLambdaForTesting(
+        [&](LONG win_event, BrowserAccessibility* node) {
+          if (win_event == EVENT_OBJECT_SELECTIONADD) {
+            fired_ia2_nodes.push_back(node->GetId());
+            manager.reset();
+          }
+        }));
+
+    AXUpdatesAndEvents ia2_bundle;
+    ia2_bundle.updates.emplace_back();
+    ia2_bundle.updates[0].nodes = {selected_option1, selected_option2};
+    EXPECT_TRUE(manager->OnAccessibilityEvents(ia2_bundle));
+    EXPECT_FALSE(manager);
+    EXPECT_THAT(fired_ia2_nodes, testing::ElementsAre(3));
+
+    // `uia_selection_events_`
+    // (UIA_SelectionItem_ElementAddedToSelectionEventId).
+    manager = std::make_unique<TestBrowserAccessibilityManagerWin>(
+        MakeAXTreeUpdateForTesting(root, list_box, option1, option2),
+        node_id_delegate_, test_browser_accessibility_delegate_.get());
+
+    std::vector<AXNodeID> fired_uia_nodes;
+    manager->SetUiaEventCallback(base::BindLambdaForTesting(
+        [&](LONG uia_event, BrowserAccessibility* node) {
+          if (uia_event == UIA_SelectionItem_ElementAddedToSelectionEventId) {
+            fired_uia_nodes.push_back(node->GetId());
+            manager.reset();
+          }
+        }));
+
+    AXUpdatesAndEvents uia_bundle;
+    uia_bundle.updates.emplace_back();
+    uia_bundle.updates[0].nodes = {selected_option1, selected_option2};
+    EXPECT_TRUE(manager->OnAccessibilityEvents(uia_bundle));
+    EXPECT_FALSE(manager);
+    EXPECT_THAT(fired_uia_nodes, testing::ElementsAre(3));
+  }
+}
+
+// Destroying the manager while raising ElementSelected on the only selected
+// child of a single-selection container must skip the following
+// SelectionItemIsSelected property change.
+TEST_F(BrowserAccessibilityManagerWinTest,
+       FinalizeOnlySelectedChildHandlesManagerDestruction) {
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+
+  {
+    AXNodeData root;
+    root.id = 1;
+    root.role = ax::mojom::Role::kRootWebArea;
+    root.child_ids = {2};
+
+    AXNodeData list_box;
+    list_box.id = 2;
+    list_box.role = ax::mojom::Role::kListBox;
+    list_box.child_ids = {3, 4};
+
+    AXNodeData option1;
+    option1.id = 3;
+    option1.role = ax::mojom::Role::kListBoxOption;
+    option1.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+
+    AXNodeData option2;
+    option2.id = 4;
+    option2.role = ax::mojom::Role::kListBoxOption;
+    option2.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+
+    auto manager = std::make_unique<TestBrowserAccessibilityManagerWin>(
+        MakeAXTreeUpdateForTesting(root, list_box, option1, option2),
+        node_id_delegate_, test_browser_accessibility_delegate_.get());
+
+    std::vector<AXNodeID> selected_nodes;
+    bool is_selected_property_fired = false;
+    manager->SetUiaEventCallback(base::BindLambdaForTesting(
+        [&](LONG uia_event, BrowserAccessibility* node) {
+          if (uia_event == UIA_SelectionItem_ElementSelectedEventId) {
+            selected_nodes.push_back(node->GetId());
+            manager.reset();
+          }
+        }));
+    manager->SetUiaPropertyCallback(base::BindLambdaForTesting(
+        [&](LONG uia_property, BrowserAccessibility* node) {
+          if (uia_property == UIA_SelectionItemIsSelectedPropertyId) {
+            is_selected_property_fired = true;
+          }
+        }));
+
+    option1.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+    AXUpdatesAndEvents bundle;
+    bundle.updates.emplace_back();
+    bundle.updates[0].nodes = {option1};
+    EXPECT_TRUE(manager->OnAccessibilityEvents(bundle));
+    EXPECT_FALSE(manager);
+    EXPECT_THAT(selected_nodes, testing::ElementsAre(3));
+    EXPECT_FALSE(is_selected_property_fired);
+  }
+}
+
+// Defense in depth: in production the tree can't change during a raise
+// without the manager being destroyed, since a nested OnAccessibilityEvents()
+// is a CHECK failure on Windows. Queued nodes are still looked up again by ID
+// before each raise, so a node deleted in the meantime is skipped while the
+// remaining nodes still receive their events.
+TEST_F(BrowserAccessibilityManagerWinTest,
+       FinalizeAccessibilityEventsSkipsDeletedNodes) {
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+  const LONG test_complete_event =
+      UiaRegistrarWin::GetInstance().GetTestCompleteEventId();
+
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2, 3};
+
+  AXNodeData button;
+  button.id = 2;
+  button.role = ax::mojom::Role::kButton;
+
+  AXNodeData text_field;
+  text_field.id = 3;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.SetValue("a");
+
+  auto manager = std::make_unique<TestBrowserAccessibilityManagerWin>(
+      MakeAXTreeUpdateForTesting(root, button, text_field), node_id_delegate_,
+      test_browser_accessibility_delegate_.get());
+
+  std::vector<AXNodeID> fired_aria_property_nodes;
+  manager->SetUiaPropertyCallback(base::BindLambdaForTesting(
+      [&](LONG uia_property, BrowserAccessibility* node) {
+        if (uia_property != UIA_AriaPropertiesPropertyId) {
+          return;
+        }
+        fired_aria_property_nodes.push_back(node->GetId());
+        // `aria_properties_events_` is finalized first, so delete `text_field`
+        // (ID 3) while it is still queued in `text_changed_nodes_`.
+        AXNodeData updated_root = root;
+        updated_root.child_ids = {2};
+        AXTreeUpdate remove_text_field_update;
+        remove_text_field_update.root_id = 1;
+        remove_text_field_update.nodes = {updated_root};
+        ASSERT_TRUE(manager->ax_tree()->Unserialize(remove_text_field_update));
+        ASSERT_EQ(nullptr, manager->GetFromID(3));
+      }));
+
+  std::vector<AXNodeID> fired_text_changed_nodes;
+  std::vector<AXNodeID> fired_test_complete_nodes;
+  manager->SetUiaEventCallback(base::BindLambdaForTesting(
+      [&](LONG uia_event, BrowserAccessibility* node) {
+        if (uia_event == UIA_Text_TextChangedEventId) {
+          fired_text_changed_nodes.push_back(node->GetId());
+        } else if (uia_event == test_complete_event) {
+          fired_test_complete_nodes.push_back(node->GetId());
+        }
+      }));
+
+  button.AddBoolAttribute(ax::mojom::BoolAttribute::kBusy, true);
+  AXNodeData changed_text_field = text_field;
+  changed_text_field.SetValue("a2");
+  AXUpdatesAndEvents bundle;
+  bundle.updates.emplace_back();
+  bundle.updates[0].nodes = {button, changed_text_field};
+  bundle.events.emplace_back(root.id, ax::mojom::Event::kEndOfTest);
+  EXPECT_TRUE(manager->OnAccessibilityEvents(bundle));
+  EXPECT_THAT(fired_aria_property_nodes, testing::ElementsAre(2));
+  EXPECT_THAT(fired_text_changed_nodes, testing::IsEmpty());
+  EXPECT_THAT(fired_test_complete_nodes, testing::ElementsAre(1));
+}
+
+// Ignored-changed nodes are tracked by ID, which is only unique within a tree.
+// A node from another frame's tree with the same ID must not be treated as
+// ignored-changed.
+TEST_F(BrowserAccessibilityManagerWinTest,
+       IsIgnoredChangedNodeOnlyMatchesOwnTree) {
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+  AXNodeData button;
+  button.id = 2;
+  button.role = ax::mojom::Role::kButton;
+
+  auto manager = std::make_unique<TestBrowserAccessibilityManagerWin>(
+      MakeAXTreeUpdateForTesting(root, button), node_id_delegate_,
+      test_browser_accessibility_delegate_.get());
+
+  auto other_delegate = std::make_unique<TestAXPlatformTreeManagerDelegate>();
+  other_delegate->is_root_frame_ = false;
+  other_delegate->accelerated_widget_ = gfx::kMockAcceleratedWidget;
+  std::unique_ptr<BrowserAccessibilityManager> other_manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(root, button), node_id_delegate_,
+          other_delegate.get()));
+
+  bool checked = false;
+  manager->SetWinEventCallback(base::BindLambdaForTesting(
+      [&](LONG win_event, BrowserAccessibility* node) {
+        if (win_event != EVENT_OBJECT_HIDE || node->GetId() != 2) {
+          return;
+        }
+        checked = true;
+        EXPECT_TRUE(manager->IsIgnoredChangedNode(manager->GetFromID(2)));
+        EXPECT_FALSE(
+            manager->IsIgnoredChangedNode(other_manager->GetFromID(2)));
+      }));
+
+  button.AddState(ax::mojom::State::kIgnored);
+  AXUpdatesAndEvents bundle;
+  bundle.updates.emplace_back();
+  bundle.updates[0].nodes = {button};
+  EXPECT_TRUE(manager->OnAccessibilityEvents(bundle));
+  EXPECT_TRUE(checked);
 }
 
 }  // namespace ui

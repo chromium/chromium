@@ -642,36 +642,44 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // the currently-focused node. We do this so that screen readers are made
   // aware of changes in the tree which might be relevant to subsequent events
   // on the focused node, such as the focused node being a descendant of a
-  // reparented node or a newly-shown dialog box. `raw_ptr` mitigates
-  // crbug.com/549740754.
-  raw_ptr<BrowserAccessibility> focus = GetFocus();
+  // reparented node or a newly-shown dialog box.
   std::vector<AXEventGenerator::TargetedEvent> deferred_events;
-  for (const auto& targeted_event : event_generator()) {
-    if (!ShouldFireGeneratedEvent(targeted_event.event_params->event)) {
-      continue;
-    }
-
-    BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
-    DCHECK(event_target) << "No event target for " << targeted_event.node_id;
-
-    event_target = RetargetBrowserAccessibilityForEvents(
-        event_target, RetargetEventType::RetargetEventTypeGenerated);
-    if (!event_target)
-      continue;  // Drop the event if RetargetForEvents() returns nullptr.
-    if (!CanFireGeneratedEventOnTarget(targeted_event.event_params->event,
-                                       event_target)) {
-      continue;
-    }
-
-    // IsDescendantOf() also returns true in the case of equality.
-    if (focus && focus != event_target && focus->IsDescendantOf(event_target)) {
-      FireGeneratedEvent(targeted_event.event_params->event,
-                         event_target->node());
-      if (!alive) {
-        return true;
+  {
+    // `raw_ptr` mitigates crbug.com/549740754.
+    raw_ptr<BrowserAccessibility> focus = GetFocus();
+    for (const auto& targeted_event : event_generator()) {
+      if (!ShouldFireGeneratedEvent(targeted_event.event_params->event)) {
+        continue;
       }
-    } else {
-      deferred_events.push_back(targeted_event);
+
+      BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
+      DCHECK(event_target) << "No event target for " << targeted_event.node_id;
+
+      event_target = RetargetBrowserAccessibilityForEvents(
+          event_target, RetargetEventType::RetargetEventTypeGenerated);
+      if (!event_target) {
+        continue;  // Drop the event if RetargetForEvents() returns nullptr.
+      }
+      if (!CanFireGeneratedEventOnTarget(targeted_event.event_params->event,
+                                         event_target)) {
+        continue;
+      }
+
+      // IsDescendantOf() also returns true in the case of equality.
+      if (focus && focus != event_target &&
+          focus->IsDescendantOf(event_target)) {
+        // Clear `focus` before synchronous event dispatch, which may destroy
+        // `this` or the focused node's manager.
+        focus = nullptr;
+        FireGeneratedEvent(targeted_event.event_params->event,
+                           event_target->node());
+        if (!alive) {
+          return true;
+        }
+        focus = GetFocus();
+      } else {
+        deferred_events.push_back(targeted_event);
+      }
     }
   }
 

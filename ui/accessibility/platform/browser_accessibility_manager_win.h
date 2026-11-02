@@ -9,11 +9,10 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
@@ -98,6 +97,27 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
   void SetLocationChangeEventCallbackForTesting(
       const LocationChangeEventCallbackForTesting& callback);
 
+  // For testing only. When set, FireWinAccessibilityEvent,
+  // FireUiaAccessibilityEvent, FireUiaPropertyChangedEvent and
+  // FireUiaStructureChangedEvent call `callback` instead of raising the
+  // platform event, so tests can simulate synchronous re-entrancy (e.g.
+  // destroying the manager) during a raise. The callback replaces the whole
+  // method, including its filtering (ShouldFireEventForNode, ignored state,
+  // listener checks). `id` is the WinEvent, UIA event, UIA property or
+  // StructureChangeType, depending on `type`.
+  enum class PlatformEventTypeForTesting {
+    kWinEvent,
+    kUiaEvent,
+    kUiaPropertyChanged,
+    kUiaStructureChanged,
+  };
+  using PlatformEventCallbackForTesting =
+      base::RepeatingCallback<void(PlatformEventTypeForTesting type,
+                                   LONG id,
+                                   BrowserAccessibility* node)>;
+  void SetPlatformEventCallbackForTesting(
+      PlatformEventCallbackForTesting callback);
+
   gfx::Rect GetViewBoundsInScreenCoordinates() const override;
 
   // Do event pre-processing
@@ -119,8 +139,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
 
  private:
   struct SelectionEvents {
-    std::vector<raw_ptr<BrowserAccessibility, VectorExperimental>> added;
-    std::vector<raw_ptr<BrowserAccessibility, VectorExperimental>> removed;
+    std::vector<AXNodeID> added;
+    std::vector<AXNodeID> removed;
     SelectionEvents();
     ~SelectionEvents();
   };
@@ -167,38 +187,39 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
   // want to fire UIA_AriaPropertiesPropertyId once for that node, we use the
   // set here to keep track of the unique nodes that had aria property changes,
   // so we only fire the event once for every node.
-  std::set<raw_ptr<BrowserAccessibility, SetExperimental>>
-      aria_properties_events_;
+  absl::flat_hash_set<AXNodeID> aria_properties_events_;
 
   // Since there could be duplicate selection changed events on a node raised
   // from both EventType::DOCUMENT_SELECTION_CHANGED and
   // EventType::TEXT_SELECTION_CHANGED, we keep track of the unique
   // nodes so we only fire the event once for every node.
-  std::set<raw_ptr<BrowserAccessibility, SetExperimental>>
-      selection_changed_nodes_;
+  absl::flat_hash_set<AXNodeID> selection_changed_nodes_;
 
   // Since there could be duplicate text changed events on a node raised from
   // both FireSourceEvent and FireGeneratedEvent, we use the set here to keep
   // track of the unique nodes that had UIA_Text_TextChangedEventId, so we only
   // fire the event once for every node.
-  std::set<raw_ptr<BrowserAccessibility, SetExperimental>> text_changed_nodes_;
+  absl::flat_hash_set<AXNodeID> text_changed_nodes_;
 
   // When the ignored state changes for a node, we only want to fire the
   // events relevant to the ignored state change (e.g. show / hide).
   // This set keeps track of what nodes should suppress superfluous events.
-  std::set<raw_ptr<BrowserAccessibility, SetExperimental>>
-      ignored_changed_nodes_;
+  absl::flat_hash_set<AXNodeID> ignored_changed_nodes_;
 
   // Keep track of selection changes so we can optimize UIA event firing.
-  // Pointers are only stored for the duration of |OnAccessibilityEvents|, and
-  // the map is cleared in |FinalizeAccessibilityEvents|.
+  // Node IDs are only stored for the duration of `OnAccessibilityEvents()`,
+  // and the map is cleared in `FinalizeAccessibilityEvents()` (or discarded
+  // with the manager, if a platform event raised there destroys it).
+  //
+  // All of the pending-event containers above and below hold node IDs from
+  // this manager's tree only; IDs are only unique within a tree.
   SelectionEventsMap ia2_selection_events_;
   SelectionEventsMap uia_selection_events_;
 
   // Deferred kEndOfTest node. The TestComplete UIA event is fired at the end
   // of FinalizeAccessibilityEvents, after all other finalized events, so that
   // the UIA event recorder doesn't shut down before receiving them.
-  raw_ptr<BrowserAccessibility> end_of_test_node_ = nullptr;
+  AXNodeID end_of_test_node_id_ = kInvalidAXNodeID;
 
   // Cached tab for the JAWS kSelection workaround. See kWindowActivated
   // handling in FireSourceEvent for details. Uses AXNodeID so GetFromID()
@@ -207,6 +228,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
 
   LocationChangeEventCallbackForTesting
       location_change_event_callback_for_testing_;
+
+  PlatformEventCallbackForTesting platform_event_callback_for_testing_;
 };
 
 }  // namespace ui
