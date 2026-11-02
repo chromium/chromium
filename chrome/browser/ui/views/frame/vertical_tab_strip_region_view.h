@@ -205,6 +205,7 @@ class VerticalTabStripRegionView final
   bool ShouldShowResizeArea() const;
 
   void OnExpandOnHoverEnabledChanged(bool enabled);
+  void HandlePaintAsActiveChanged();
   void UpdateExpandOnHoverState(std::optional<bool> hovered = std::nullopt);
   void OnMouseVelocityHeuristicInterval();
   void CalculateMouseVelocityForExpandOnHover();
@@ -292,6 +293,9 @@ class VerticalTabStripRegionView final
   // The mouse exit event debounce timer.
   base::OneShotTimer mouse_exit_timer_;
 
+  // Debounces transient active -> inactive -> active blips (e.g. during child
+  // popup/bubble focus handoffs) before collapsing expand-on-hover.
+  base::OneShotTimer paint_as_active_timer_;
   base::CallbackListSubscription paint_as_active_subscription_;
 };
 
