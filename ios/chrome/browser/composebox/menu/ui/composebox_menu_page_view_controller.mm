@@ -683,6 +683,8 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   }
 
   if (item.type == ComposeboxMenuItemType::kAttachmentSharedTabs) {
+    cell.accessibilityValue =
+        [NSString stringWithFormat:@"%lu", item.favicons.count];
     [accessories addObject:[[UICellAccessoryDisclosureIndicator alloc] init]];
     // TODO(crbug.com/568743843): Update `ComposeboxFaviconsAccordionView` badge
     // background and border colors so the overflow badge contrasts with the
@@ -703,6 +705,8 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     // disclosure indicator.
     customViewAccessory.reservedLayoutWidth = 0;
     [accessories addObject:customViewAccessory];
+  } else {
+    cell.accessibilityValue = nil;
   }
   cell.accessories = accessories;
   cell.accessibilityIdentifier =

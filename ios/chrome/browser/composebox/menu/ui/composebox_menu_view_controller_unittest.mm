@@ -392,4 +392,140 @@ TEST_F(ComposeboxMenuViewControllerTest,
   EXPECT_EQ(cell.largeContentImage, nil);
 }
 
+// Tests that the Shared Tabs cell keeps the "Shared tabs" accessibility label
+// and exposes the shared tab count in `accessibilityValue`.
+TEST_F(ComposeboxMenuViewControllerTest,
+       SharedTabsCellExposesTabCountInAccessibilityValue) {
+  ComposeboxMenuViewController* view_controller =
+      [[ComposeboxMenuViewController alloc] init];
+  view_controller.view.frame =
+      CGRectMake(0, 0, kIPhoneScreenWidth, kTestViewHeight);
+
+  ComposeboxUIInputState* input_state = [[ComposeboxUIInputState alloc] init];
+  input_state.uiConfig = [ComposeboxUIConfig localFallbackUIConfig];
+  input_state.sharedTabs = @[
+    [[ComposeboxMenuSharedTab alloc]
+                initWithURL:GURL("https://first.example.org")
+                      title:@"First Tab"
+        inputItemIdentifier:base::UnguessableToken::Create()
+                    favicon:nil],
+    [[ComposeboxMenuSharedTab alloc]
+                initWithURL:GURL("https://second.example.org")
+                      title:@"Second Tab"
+        inputItemIdentifier:base::UnguessableToken::Create()
+                    favicon:nil],
+    [[ComposeboxMenuSharedTab alloc]
+                initWithURL:GURL("https://third.example.org")
+                      title:@"Third Tab"
+        inputItemIdentifier:base::UnguessableToken::Create()
+                    favicon:nil],
+  ];
+
+  [view_controller setUIInputState:input_state];
+  [view_controller.view layoutIfNeeded];
+  UICollectionView* collection_view = CollectionViewForMenu(view_controller);
+  ASSERT_TRUE(collection_view);
+  [collection_view layoutIfNeeded];
+
+  ASSERT_EQ(collection_view.numberOfSections, 1);
+  ASSERT_EQ([collection_view numberOfItemsInSection:0], 1);
+  ComposeboxMenuListCell* cell =
+      base::apple::ObjCCast<ComposeboxMenuListCell>([collection_view
+          cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
+  ASSERT_TRUE(cell);
+  EXPECT_TRUE(cell.isAccessibilityElement);
+  EXPECT_NSEQ(cell.accessibilityLabel,
+              l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_SHARED_TABS));
+  EXPECT_NSEQ(cell.accessibilityValue, @"3");
+}
+
+// Tests that updating the shared tabs list updates the Shared Tabs cell's
+// `accessibilityValue`.
+TEST_F(ComposeboxMenuViewControllerTest,
+       SharedTabsCellUpdatesAccessibilityValueWhenTabCountChanges) {
+  ComposeboxMenuViewController* view_controller =
+      [[ComposeboxMenuViewController alloc] init];
+  view_controller.view.frame =
+      CGRectMake(0, 0, kIPhoneScreenWidth, kTestViewHeight);
+
+  ComposeboxMenuSharedTab* first_tab = [[ComposeboxMenuSharedTab alloc]
+              initWithURL:GURL("https://first.example.org")
+                    title:@"First Tab"
+      inputItemIdentifier:base::UnguessableToken::Create()
+                  favicon:nil];
+  ComposeboxMenuSharedTab* second_tab = [[ComposeboxMenuSharedTab alloc]
+              initWithURL:GURL("https://second.example.org")
+                    title:@"Second Tab"
+      inputItemIdentifier:base::UnguessableToken::Create()
+                  favicon:nil];
+
+  ComposeboxUIInputState* input_state = [[ComposeboxUIInputState alloc] init];
+  input_state.uiConfig = [ComposeboxUIConfig localFallbackUIConfig];
+  input_state.sharedTabs = @[ first_tab, second_tab ];
+
+  [view_controller setUIInputState:input_state];
+  [view_controller.view layoutIfNeeded];
+  UICollectionView* collection_view = CollectionViewForMenu(view_controller);
+  ASSERT_TRUE(collection_view);
+  [collection_view layoutIfNeeded];
+  ComposeboxMenuListCell* initial_cell =
+      base::apple::ObjCCast<ComposeboxMenuListCell>([collection_view
+          cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
+  ASSERT_TRUE(initial_cell);
+  ASSERT_NSEQ(initial_cell.accessibilityValue, @"2");
+
+  input_state.sharedTabs = @[ first_tab ];
+  [view_controller setUIInputState:input_state];
+  [collection_view layoutIfNeeded];
+
+  ComposeboxMenuListCell* updated_cell =
+      base::apple::ObjCCast<ComposeboxMenuListCell>([collection_view
+          cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
+  ASSERT_TRUE(updated_cell);
+  EXPECT_NSEQ(updated_cell.accessibilityValue, @"1");
+}
+
+// Tests that reconfiguring the menu from Shared Tabs to a non-shared-tabs list
+// item clears `accessibilityValue` on `ComposeboxMenuListCell`.
+TEST_F(ComposeboxMenuViewControllerTest,
+       ReconfiguredListCellClearsSharedTabsAccessibilityValue) {
+  ComposeboxMenuViewController* view_controller =
+      [[ComposeboxMenuViewController alloc] init];
+  view_controller.view.frame =
+      CGRectMake(0, 0, kIPhoneScreenWidth, kTestViewHeight);
+
+  ComposeboxUIInputState* input_state = [[ComposeboxUIInputState alloc] init];
+  input_state.uiConfig = [ComposeboxUIConfig localFallbackUIConfig];
+  input_state.sharedTabs = @[ [[ComposeboxMenuSharedTab alloc]
+              initWithURL:GURL("https://first.example.org")
+                    title:@"First Tab"
+      inputItemIdentifier:base::UnguessableToken::Create()
+                  favicon:nil] ];
+
+  [view_controller setUIInputState:input_state];
+  [view_controller.view layoutIfNeeded];
+  UICollectionView* collection_view = CollectionViewForMenu(view_controller);
+  ASSERT_TRUE(collection_view);
+  [collection_view layoutIfNeeded];
+  ComposeboxMenuListCell* shared_tabs_cell =
+      base::apple::ObjCCast<ComposeboxMenuListCell>([collection_view
+          cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
+  ASSERT_TRUE(shared_tabs_cell);
+  ASSERT_NSEQ(shared_tabs_cell.accessibilityValue, @"1");
+
+  input_state.sharedTabs = @[];
+  [view_controller setUIInputState:input_state];
+  [collection_view layoutIfNeeded];
+
+  input_state.allowedTools = {ComposeboxMode::kImageGeneration};
+  [view_controller setUIInputState:input_state];
+  [collection_view layoutIfNeeded];
+
+  ComposeboxMenuListCell* tool_cell =
+      base::apple::ObjCCast<ComposeboxMenuListCell>([collection_view
+          cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
+  ASSERT_TRUE(tool_cell);
+  EXPECT_EQ(tool_cell.accessibilityValue, nil);
+}
+
 }  // namespace
