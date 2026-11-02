@@ -22,6 +22,7 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/protos/perfetto/common/trace_stats.gen.h"
@@ -73,11 +74,11 @@ void ReadJsonTraceData(
 
 }  // namespace
 
-static int64_t JNI_TracingControllerAndroidImpl_Init(
+static jni_zero::JniUniquePtr<TracingControllerAndroid>
+JNI_TracingControllerAndroidImpl_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
-  TracingControllerAndroid* profiler = new TracingControllerAndroid(env, obj);
-  return reinterpret_cast<intptr_t>(profiler);
+  return jni_zero::MakeUnique<TracingControllerAndroid>(env, obj);
 }
 
 TracingControllerAndroid::TracingControllerAndroid(
@@ -86,10 +87,6 @@ TracingControllerAndroid::TracingControllerAndroid(
     : weak_java_object_(env, obj) {}
 
 TracingControllerAndroid::~TracingControllerAndroid() {}
-
-void TracingControllerAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 bool TracingControllerAndroid::StartTracing(
     JNIEnv* env,

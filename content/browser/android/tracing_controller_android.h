@@ -26,7 +26,7 @@ class TracingControllerAndroid {
   TracingControllerAndroid(const TracingControllerAndroid&) = delete;
   TracingControllerAndroid& operator=(const TracingControllerAndroid&) = delete;
 
-  void Destroy(JNIEnv* env);
+  ~TracingControllerAndroid();
 
   bool StartTracing(JNIEnv* env,
                     const base::android::JavaRef<jstring>& categories,
@@ -49,7 +49,6 @@ class TracingControllerAndroid {
   static base::FilePath GenerateTracingFilePath(std::string_view basename);
 
  private:
-  ~TracingControllerAndroid();
   void OnTracingStopped(
       const base::android::ScopedJavaGlobalRef<jobject>& callback);
   void OnKnownCategoriesReceived(
