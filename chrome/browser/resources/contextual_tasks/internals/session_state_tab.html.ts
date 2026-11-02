@@ -370,9 +370,309 @@ ${this.webContentsDebugStates_.map(wc => html`
 
     <div class="debug-subsection">
       <h3 class="subsection-title">b) Session Handle Data</h3>
-      <p class="empty-state-text">
-        Session handle data inspection will be displayed here.
-      </p>
+      ${!wc.sessionHandleState ? html`
+        <p class="empty-state-text">
+          No ContextualSearchSessionHandle attached.
+        </p>
+      ` : html`
+        <div class="kv-grid">
+          <div class="kv-group">
+            <h4>Session Metadata</h4>
+            <div class="kv-item">
+              <span class="kv-label">session_id</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.sessionId}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">search_session_id</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.searchSessionId || 'None'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">current_url</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.currentUrl || 'None'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">invocation_source</span>
+              <span class="mono-pill">
+                ${wc.sessionHandleState.invocationSource}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">is_contextual_lens_session</span>
+              <span class="badge ${
+                  wc.sessionHandleState.isContextualLensSession ?
+                      'badge-ok' :
+                      'badge-neutral'}">
+                ${wc.sessionHandleState.isContextualLensSession ?
+                    'Yes' :
+                    'No'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">auth_user_index</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.authUserIndex}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">has_submitted_context</span>
+              <span class="badge ${
+                  wc.sessionHandleState.hasSubmittedContext ?
+                      'badge-ok' :
+                      'badge-neutral'}">
+                ${wc.sessionHandleState.hasSubmittedContext ? 'Yes' : 'No'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Smart Tab Sharing / Toggled</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.smartTabSharingActive ?
+                    'true' :
+                    'false'} /
+                ${wc.sessionHandleState
+                      .smartTabSharingToggledSinceLastTurn ?
+                    'true' :
+                    'false'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">STS Toggled Removed IDs</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.stsToggledRemovedContextIds.length >
+                        0 ?
+                    wc.sessionHandleState.stsToggledRemovedContextIds
+                        .join(', ') :
+                    '[]'}
+              </span>
+            </div>
+          </div>
+
+          <div class="kv-group">
+            <h4>Context Tokens &amp; Persisted State</h4>
+            <div class="kv-item">
+              <span class="kv-label">Uploaded Context Tokens</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.uploadedContextTokens.length > 0 ?
+                    wc.sessionHandleState.uploadedContextTokens.join(', ') :
+                    '[]'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Submitted Context Tokens</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.submittedContextTokens.length > 0 ?
+                    wc.sessionHandleState.submittedContextTokens
+                        .join(', ') :
+                    '[]'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Active Submitted Tokens</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.activeSubmittedContextTokens
+                            .length > 0 ?
+                    wc.sessionHandleState.activeSubmittedContextTokens
+                        .join(', ') :
+                    '[]'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Persisted Tab IDs</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.persistedTabIds.length > 0 ?
+                    wc.sessionHandleState.persistedTabIds.join(', ') :
+                    '[]'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Pending Delayed Tab IDs</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.pendingDelayedTabIds.length > 0 ?
+                    wc.sessionHandleState.pendingDelayedTabIds.join(', ') :
+                    '[]'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Deselected Tabs</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.deselectedTabs.length > 0 ?
+                    wc.sessionHandleState.deselectedTabs
+                        .map(t => `#${t.tabId} (${t.title || t.url})`)
+                        .join(', ') :
+                    '[]'}
+              </span>
+            </div>
+          </div>
+
+          <div class="kv-group">
+            <h4>Task Thread &amp; Turn History</h4>
+            <div class="kv-item">
+              <span class="kv-label">Thread Type / Server ID</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.threadType || 'None'} /
+                ${wc.sessionHandleState.threadServerId || 'None'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Thread Title</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.threadTitle || 'None'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Conversation Turn ID</span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.threadConversationTurnId || 'None'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">
+                Previous Turns
+                (${wc.sessionHandleState.previousTurns.length})
+              </span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.previousTurns.length > 0 ?
+                    wc.sessionHandleState.previousTurns.join(' | ') :
+                    '[]'}
+              </span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">
+                Task URL Resources
+                (${wc.sessionHandleState.urlResources.length})
+              </span>
+              <span class="mono-value">
+                ${wc.sessionHandleState.urlResources.length > 0 ?
+                    wc.sessionHandleState.urlResources
+                        .map(
+                            r => `[${r.resourceType}] tab=${r.tabId} ctx=${
+                                r.contextId} ${r.title || r.url}`)
+                        .join('; ') :
+                    '[]'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        ${wc.sessionHandleState.attachedTabs.length > 0 ||
+          wc.sessionHandleState.restoredTabs.length > 0 ? html`
+          <h4 class="table-heading">
+            TabContextState (Attached:
+            ${wc.sessionHandleState.attachedTabs.length},
+            Restored: ${wc.sessionHandleState.restoredTabs.length})
+          </h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Bucket</th>
+                <th>Tab ID</th>
+                <th>Title / URL</th>
+                <th>Context Token</th>
+                <th>Request ID</th>
+                <th>Flags</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${wc.sessionHandleState.attachedTabs.map(tab => html`
+                <tr>
+                  <td>Attached</td>
+                  <td>${tab.tabId}</td>
+                  <td title="${tab.url}">${tab.title || tab.url}</td>
+                  <td>${tab.contextToken}</td>
+                  <td>${tab.requestId || 'None'}</td>
+                  <td>
+                    ${[
+                      tab.uploaded && 'Uploaded',
+                      tab.submitted && 'Submitted',
+                      tab.pendingDelayedUpload && 'Delayed',
+                      tab.restoredFromAim && 'Restored',
+                    ].filter(Boolean).join(' ') || 'None'}
+                  </td>
+                </tr>
+              `)}
+              ${wc.sessionHandleState.restoredTabs.map(tab => html`
+                <tr>
+                  <td>Restored</td>
+                  <td>${tab.tabId}</td>
+                  <td title="${tab.url}">${tab.title || tab.url}</td>
+                  <td>${tab.contextToken}</td>
+                  <td>${tab.requestId || 'None'}</td>
+                  <td>
+                    ${[
+                      tab.uploaded && 'Uploaded',
+                      tab.submitted && 'Submitted',
+                      tab.pendingDelayedUpload && 'Delayed',
+                      tab.restoredFromAim && 'Restored',
+                    ].filter(Boolean).join(' ') || 'None'}
+                  </td>
+                </tr>
+              `)}
+            </tbody>
+          </table>
+        ` : ''}
+
+        ${wc.sessionHandleState.uploadedFiles.length > 0 ||
+          wc.sessionHandleState.submittedFiles.length > 0 ? html`
+          <h4 class="table-heading">
+            Context FileInfos (Uploaded:
+            ${wc.sessionHandleState.uploadedFiles.length},
+            Submitted: ${wc.sessionHandleState.submittedFiles.length})
+          </h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Set</th>
+                <th>Token</th>
+                <th>Name / Tab</th>
+                <th>MIME / Size</th>
+                <th>Status / Error</th>
+                <th>Request ID / Flags</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${wc.sessionHandleState.uploadedFiles.map(f => html`
+                <tr>
+                  <td>Uploaded</td>
+                  <td>${f.fileToken}</td>
+                  <td title="${f.tabUrl}">
+                    ${f.fileName || f.tabTitle || f.tabUrl}
+                    (tab: ${f.tabSessionId})
+                  </td>
+                  <td>${f.mimeType} (${f.fileSizeBytes}B)</td>
+                  <td>${f.uploadStatus} / ${f.uploadErrorType}</td>
+                  <td>
+                    ${f.requestId || 'None'}
+                    ${f.isImplicitUpload ? '[Implicit] ' : ''}
+                    ${f.isSuperceded ? '[Superceded]' : ''}
+                  </td>
+                </tr>
+              `)}
+              ${wc.sessionHandleState.submittedFiles.map(f => html`
+                <tr>
+                  <td>Submitted</td>
+                  <td>${f.fileToken}</td>
+                  <td title="${f.tabUrl}">
+                    ${f.fileName || f.tabTitle || f.tabUrl}
+                    (tab: ${f.tabSessionId})
+                  </td>
+                  <td>${f.mimeType} (${f.fileSizeBytes}B)</td>
+                  <td>${f.uploadStatus} / ${f.uploadErrorType}</td>
+                  <td>
+                    ${f.requestId || 'None'}
+                    ${f.isImplicitUpload ? '[Implicit] ' : ''}
+                    ${f.isSuperceded ? '[Superceded]' : ''}
+                  </td>
+                </tr>
+              `)}
+            </tbody>
+          </table>
+        ` : ''}
+      `}
     </div>
   </div>
 `)}
