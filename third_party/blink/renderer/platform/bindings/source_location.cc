@@ -103,7 +103,9 @@ SourceLocation::SourceLocation(
       column_number_(column_number),
       char_position_(-1),
       stack_trace_(std::move(stack_trace)),
-      script_id_(script_id) {}
+      script_id_(script_id),
+      is_opaque_(stack_trace_ && !stack_trace_->isEmpty() &&
+                 stack_trace_->isTopScriptOpaque()) {}
 
 SourceLocation::~SourceLocation() = default;
 

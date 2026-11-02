@@ -23,7 +23,7 @@ LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
 // static
 LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
     SourceLocation* location) {
-  return location->IsUnknown()
+  return (location->IsUnknown() || location->IsOpaque())
              ? ReportLocation{}
              : ReportLocation{location->Url(), location->LineNumber(),
                               location->ColumnNumber()};

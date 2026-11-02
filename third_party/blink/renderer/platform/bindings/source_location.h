@@ -57,6 +57,7 @@ class PLATFORM_EXPORT SourceLocation final : public GarbageCollected<SourceLocat
   bool IsUnknown() const {
     return url_.IsNull() && !script_id_ && !line_number_;
   }
+  bool IsOpaque() const { return is_opaque_; }
   const String& Url() const { return url_; }
   const String& Function() const { return function_; }
   unsigned LineNumber() const { return line_number_; }
@@ -103,6 +104,7 @@ class PLATFORM_EXPORT SourceLocation final : public GarbageCollected<SourceLocat
   int char_position_;
   std::unique_ptr<v8_inspector::V8StackTrace> stack_trace_;
   int script_id_;
+  bool is_opaque_ = false;
 };
 
 // Zero lineNumber and columnNumber mean unknown. Captures current stack

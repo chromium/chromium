@@ -9,6 +9,9 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -107,6 +110,56 @@ TEST(LocationReportBodyTest, ExtensionURLsAreIdentified) {
   EXPECT_FALSE(
       TestLocationReportBody(kAboutBlankUrl, 1, 1).IsExtensionSource());
   EXPECT_FALSE(TestLocationReportBody(kHttpsUrl, 1, 1).IsExtensionSource());
+}
+
+TEST(LocationReportBodyTest, OpaqueScriptLocationIsDropped) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope(KURL("https://example.com/"));
+  v8::Isolate* isolate = scope.GetIsolate();
+  v8::Local<v8::Context> context = scope.GetContext();
+
+  Persistent<TestLocationReportBody> captured_body;
+  v8::Local<v8::Function> capture_fn =
+      v8::Function::New(
+          context,
+          [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+            auto* storage = static_cast<Persistent<TestLocationReportBody>*>(
+                info.DataV2().As<v8::External>()->Value(
+                    v8::kExternalPointerTypeTagDefault));
+            *storage = MakeGarbageCollected<TestLocationReportBody>();
+          },
+          v8::External::New(isolate, &captured_body,
+                            v8::kExternalPointerTypeTagDefault))
+          .ToLocalChecked();
+  context->Global()
+      ->Set(context, V8AtomicString(isolate, "captureReport"), capture_fn)
+      .Check();
+
+  // 1. Non-opaque script (e.g. same-origin or CORS-enabled cross-origin):
+  // location is preserved.
+  ClassicScript::Create(
+      "\ncaptureReport();", KURL("https://cdn.example.net/cors.js"),
+      KURL("https://example.com/"), ScriptFetchOptions(),
+      ScriptSourceLocationType::kUnknown, SanitizeScriptErrors::kDoNotSanitize)
+      ->RunScriptOnScriptState(scope.GetScriptState());
+  ASSERT_TRUE(captured_body);
+  EXPECT_EQ("https://cdn.example.net/cors.js", captured_body->sourceFile());
+  EXPECT_EQ(2u, captured_body->lineNumber());
+  EXPECT_EQ(1u, captured_body->columnNumber());
+
+  // 2. Opaque script (even with a same-origin pre-redirect URL and a
+  // //# sourceURL= directive): location is dropped.
+  captured_body = nullptr;
+  ClassicScript::Create(
+      "\ncaptureReport();\n//# sourceURL=webpack:///./src/index.js",
+      KURL("https://example.com/redirect-to-cross-origin.js"),
+      KURL("https://example.com/"), ScriptFetchOptions(),
+      ScriptSourceLocationType::kUnknown, SanitizeScriptErrors::kSanitize)
+      ->RunScriptOnScriptState(scope.GetScriptState());
+  ASSERT_TRUE(captured_body);
+  EXPECT_TRUE(captured_body->sourceFile().IsNull());
+  EXPECT_EQ(std::nullopt, captured_body->lineNumber());
+  EXPECT_EQ(std::nullopt, captured_body->columnNumber());
 }
 
 }  // namespace
