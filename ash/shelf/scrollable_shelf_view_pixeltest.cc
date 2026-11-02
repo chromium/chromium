@@ -52,7 +52,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("overflow"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 14 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 3,
       GetPrimaryShelf()->GetWindow()));
 
   ASSERT_TRUE(scrollable_shelf_view()->right_arrow());
@@ -64,7 +64,7 @@ TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("overflow_end"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 14 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 3,
       GetPrimaryShelf()->GetWindow()));
 }
 
@@ -72,13 +72,13 @@ TEST_P(ScrollableShelfViewPixelRTLTest, LeftRightShelfAlignment) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("left_shelf_alignment"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 3,
       GetPrimaryShelf()->GetWindow()));
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("right_shelf_alignment"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 3,
       GetPrimaryShelf()->GetWindow()));
 }
 
@@ -130,7 +130,7 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   // Verify the shelf context menu and the shelf.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("shelf_context_menu"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 30 : 4,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 31 : 5,
       GetPrimaryShelf()
           ->shelf_widget()
           ->shelf_view_for_testing()

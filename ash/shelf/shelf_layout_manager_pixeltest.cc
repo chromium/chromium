@@ -84,7 +84,7 @@ TEST_P(ShelfLayoutManagerPixelRTLTest, AutohideShelfVisibility) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("shelf_show_with_auto_hide"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 17 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 18 : 3,
       shelf->GetWindow(), shelf->hotseat_widget()));
 }
 

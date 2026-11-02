@@ -109,8 +109,7 @@ class ShelfBackgroundView : public views::View {
     // The background is purely decorative; events in the empty shelf area
     // should be handled as before by the widget and its layout manager.
     SetCanProcessEventsWithinSubtree(false);
-    SetBackground(
-        views::CreateRoundedRectBackground(background_color_, corner_radius_));
+    SetBackground(views::CreateSolidBackground(background_color_));
   }
 
   ShelfBackgroundView(const ShelfBackgroundView&) = delete;
@@ -147,7 +146,8 @@ class ShelfBackgroundView : public views::View {
     });
 
     if (changed) {
-      UpdateBackground();
+      // `corner_radius_` is used to paint the highlight border.
+      SchedulePaint();
     }
   }
 
@@ -155,8 +155,7 @@ class ShelfBackgroundView : public views::View {
 
  private:
   void UpdateBackground() {
-    SetBackground(
-        views::CreateRoundedRectBackground(background_color_, corner_radius_));
+    SetBackground(views::CreateSolidBackground(background_color_));
     SchedulePaint();
   }
 
