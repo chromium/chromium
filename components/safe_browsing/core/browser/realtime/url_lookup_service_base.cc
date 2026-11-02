@@ -810,9 +810,9 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
                                         : network_context_getter_.Run();
 
   bool should_resolve_dns =
-      base::FeatureList::IsEnabled(kSafeBrowsingWaitForDnsForRealTimeLookup) &&
       network_context && url.is_valid() && request->referrer_chain_size() > 0 &&
-      request->referrer_chain(0).ip_addresses_size() == 0;
+      request->referrer_chain(0).ip_addresses_size() == 0 &&
+      base::FeatureList::IsEnabled(kSafeBrowsingWaitForDnsForRealTimeLookup);
 
   int num_tasks =
       (should_fetch_local_ips ? 1 : 0) + (should_resolve_dns ? 1 : 0);
