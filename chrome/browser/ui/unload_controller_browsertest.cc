@@ -4,18 +4,28 @@
 
 #include "chrome/browser/ui/unload_controller.h"
 
+#include <memory>
+
 #include "ash/constants/web_app_id_constants.h"
+#include "base/auto_reset.h"
+#include "base/callback_list.h"
 #include "base/json/json_reader.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -30,6 +40,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_item.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -44,6 +56,7 @@
 #include "content/public/test/slow_download_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -153,6 +166,114 @@ IN_PROC_BROWSER_TEST_P(
   UnloadController* unload_controller = UnloadController::From(browser);
   EXPECT_EQ(BrowserWindowInterface::ClosingStatus::kPermitted,
             unload_controller->GetBrowserClosingStatus());
+}
+
+// Regression test for crbug.com/449247662:
+// Verifies that forced browser shutdown (`ShouldIgnoreUnloadHandlers()`)
+// forcibly closes `PreventClose` web app tabs via `UnloadController` and
+// `TabStripModelDelegate::IsTabClosable()` before destroying the `Browser`.
+IN_PROC_BROWSER_TEST_P(
+    UnloadControllerPreventCloseTest,
+    CloseAllBrowsersIgnoreUnloadHandlersWithPreventClosePWA) {
+  const absl::Cleanup policy_cleanup = [this] {
+    SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
+  };
+
+  Profile* const test_profile = profile();
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::PANEL_VIEW, KeepAliveRestartOption::DISABLED);
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+      ScopedProfileKeepAlive::TryAcquire(
+          test_profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  ASSERT_TRUE(profile_keep_alive);
+
+  InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
+  SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
+                                   kPreventCloseEnabledForCalculator,
+                                   kCalculatorForceInstalled);
+
+  BrowserWindowInterface* const app_browser =
+      LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/true);
+  ASSERT_TRUE(app_browser);
+
+  {
+    base::AutoReset<browser_shutdown::ShutdownType> shutdown_type =
+        browser_shutdown::SetShutdownTypeForTesting(
+            browser_shutdown::ShutdownType::kEndSession);
+    chrome::CloseAllBrowsers();
+  }
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
+
+  // Reopen a browser before releasing `keep_alive` so app exit runs on the
+  // test harness's `QuitBrowsers()` `RunLoop`.
+  SetBrowser(CreateBrowser(test_profile));
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+
+// Verifies that closing a `PreventClose` web app window with
+// `set_force_skip_warning_user_on_close(true)` forcibly closes its tabs and
+// schedules browser deletion.
+IN_PROC_BROWSER_TEST_P(UnloadControllerPreventCloseTest,
+                       ForceCloseWindowWithPreventClosePWA) {
+  const absl::Cleanup policy_cleanup = [this] {
+    SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
+  };
+
+  InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
+  SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
+                                   kPreventCloseEnabledForCalculator,
+                                   kCalculatorForceInstalled);
+
+  BrowserWindowInterface* const app_browser =
+      LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/true);
+  ASSERT_TRUE(app_browser);
+
+  bool did_close = false;
+  base::CallbackListSubscription did_close_subscription =
+      app_browser->RegisterBrowserDidClose(base::BindLambdaForTesting(
+          [&did_close](BrowserWindowInterface*) { did_close = true; }));
+
+  ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
+  UnloadController::From(app_browser)
+      ->set_force_skip_warning_user_on_close(true);
+  app_browser->GetWindow()->Close();
+
+  EXPECT_EQ(0, app_browser->GetTabStripModel()->count());
+  EXPECT_TRUE(app_browser->IsDeleteScheduled());
+  EXPECT_TRUE(did_close);
+  destroyed_observer.Wait();
+}
+
+// Verifies that synchronously destroying a `PreventClose` web app browser
+// whose tabs are still open forcibly closes its tabs via
+// `UnloadController::OnWindowClosing()` while `BrowserWindowFeatures` are still
+// valid and emits the browser-did-close notification.
+IN_PROC_BROWSER_TEST_P(UnloadControllerPreventCloseTest,
+                       SynchronouslyDestroyBrowserWithPreventClosePWA) {
+  const absl::Cleanup policy_cleanup = [this] {
+    SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
+  };
+
+  InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
+  SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
+                                   kPreventCloseEnabledForCalculator,
+                                   kCalculatorForceInstalled);
+
+  BrowserWindowInterface* const app_browser =
+      LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/true);
+  ASSERT_TRUE(app_browser);
+  ASSERT_EQ(1, app_browser->GetTabStripModel()->count());
+
+  bool did_close = false;
+  base::CallbackListSubscription did_close_subscription =
+      app_browser->RegisterBrowserDidClose(base::BindLambdaForTesting(
+          [&did_close](BrowserWindowInterface*) { did_close = true; }));
+
+  BrowserManagerService::SynchronouslyDestroyBrowser(app_browser);
+
+  EXPECT_TRUE(did_close);
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 INSTANTIATE_TEST_SUITE_P(

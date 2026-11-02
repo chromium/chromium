@@ -25,6 +25,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 class UnloadController : public WebContentsCollection::Observer,
                          public TabStripModelObserver {
  public:
@@ -242,6 +246,9 @@ class UnloadController : public WebContentsCollection::Observer,
   bool ShouldRunUnloadListenerBeforeClosing(content::WebContents* web_contents);
 
   bool RunUnloadListenerBeforeClosing(content::WebContents* web_contents);
+
+  // Returns true if `tab` is allowed to be closed.
+  bool IsTabClosable(const tabs::TabInterface* tab) const;
 
   void BeforeUnloadFired(content::WebContents* web_contents,
                          bool proceed,
