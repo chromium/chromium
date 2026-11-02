@@ -163,16 +163,25 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutChildren() {
   const BlockBreakToken* content_break_token = nullptr;
   bool has_seen_all_children = false;
   if (const auto* token = GetBreakToken()) {
-    const auto child_tokens = token->ChildBreakTokens();
-    if (base::checked_cast<wtf_size_t>(child_tokens.size())) {
-      const BlockBreakToken* child_token =
-          To<BlockBreakToken>(child_tokens[0].Get());
-      if (child_token) {
-        DCHECK(!child_token->InputNode().IsRenderedLegend());
-        content_break_token = child_token;
+    for (const BreakToken* child_token : token->ChildBreakTokens()) {
+      const auto* block_break_token = To<BlockBreakToken>(child_token);
+      if (block_break_token->InputNode().IsOutOfFlowPositioned()) {
+        // Resumed OOFs are found directly under the fieldset, if the OOF is
+        // inside the rendered legend, and the fieldset is the containing block
+        // for such OOFs. (In all other cases, the OOFs will be contained by the
+        // anonymous child wrapper box, which inherits the containment strength
+        // from the fieldset). Even though the legend is monolithic, that
+        // doesn't affect any OOF descendants if their containing block is on
+        // the outside.
+        container_builder_.AddOutOfFlowChildCandidate(
+            block_break_token->InputNode(), LogicalStaticPosition(),
+            block_break_token);
+        continue;
       }
-      // There shouldn't be any additional break tokens.
-      DCHECK_EQ(child_tokens.size(), 1u);
+      DCHECK(!block_break_token->InputNode().IsRenderedLegend());
+      // Should only be here once.
+      DCHECK(!content_break_token);
+      content_break_token = block_break_token;
     }
     if (token->HasSeenAllChildren()) {
       container_builder_.SetHasSeenAllChildren();
