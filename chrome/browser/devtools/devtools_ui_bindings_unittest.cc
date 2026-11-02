@@ -1569,7 +1569,7 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   const base::DictValue* initial_aiv2_arch =
       initial_config.FindDict("devToolsAiV2Architecture");
   ASSERT_TRUE(initial_aiv2_arch);
-  EXPECT_FALSE(initial_aiv2_arch->FindBool("enabled").value_or(true));
+  EXPECT_TRUE(initial_aiv2_arch->FindBool("enabled").value_or(false));
 
   const base::DictValue* initial_instrumentation_breakpoints =
       initial_config.FindDict("devToolsInstrumentationBreakpoints");
