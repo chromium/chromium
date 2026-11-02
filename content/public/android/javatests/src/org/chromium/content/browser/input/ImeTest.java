@@ -757,6 +757,7 @@ public class ImeTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
+    @DisabledTest(message = "https://crbug.com/580803463")
     public void testSelectActionBarClearedOnTappingInput() throws Exception {
         mRule.commitText("Sample_Text", 1);
         DOMUtils.longPressNode(mRule.getWebContents(), "input_text");
@@ -1055,6 +1056,7 @@ public class ImeTest {
     @Test
     @SmallTest
     @Feature({"TextInput", "Main"})
+    @DisabledTest(message = "https://crbug.com/580803463")
     public void testRepeatBackspaceKeycode() throws Throwable {
         mRule.focusElement("textarea");
 
@@ -1479,6 +1481,7 @@ public class ImeTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
+    @DisabledTest(message = "https://crbug.com/580803463")
     public void testPastePopupShowAndHide() throws Throwable {
         mRule.commitText("hello", 1);
         mRule.waitAndVerifyUpdateSelection(0, 5, 5, -1, -1);
@@ -1515,6 +1518,7 @@ public class ImeTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
+    @DisabledTest(message = "https://crbug.com/580803463")
     public void testSelectionClearedOnKeyEvent() throws Throwable {
         mRule.commitText("Sample_Text", 1);
         mRule.waitAndVerifyUpdateSelection(0, 11, 11, -1, -1);

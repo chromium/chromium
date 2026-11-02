@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -115,6 +116,7 @@ public class ImeInputVKApiTest {
     @Test
     @MediumTest
     @Feature({"VKGeometryChange", "Main"})
+    @DisabledTest(message = "https://crbug.com/580803463")
     public void testKeyboardGeometryChangeEventWithInsertText() throws Throwable {
         mRule.assertWaitForKeyboardStatus(true);
 
