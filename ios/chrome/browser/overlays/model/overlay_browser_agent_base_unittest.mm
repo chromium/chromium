@@ -83,7 +83,6 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
     browser_->GetWebStateList()->InsertWebState(
         std::make_unique<web::FakeWebState>(),
         WebStateList::InsertionParams::Automatic().Activate());
-    web_state_ = browser_->GetWebStateList()->GetActiveWebState();
   }
 
   ~OverlayBrowserAgentBaseTest() override {
@@ -96,12 +95,16 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
         ->mock_callback_receiver();
   }
 
-  // Returns `web_state_`'s request queue.
+  // Returns the active WebState's request queue.
   OverlayRequestQueue* queue() {
-    return OverlayRequestQueue::FromWebState(web_state_, kModality);
+    web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+    if (!web_state) {
+      return nullptr;
+    }
+    return OverlayRequestQueue::FromWebState(web_state, kModality);
   }
 
-  // Cancels all requests in `web_state_`'s queue.
+  // Cancels all requests in the active WebState's queue.
   void CancelRequests() { queue()->CancelAllRequests(); }
 
  protected:
@@ -109,7 +112,6 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
   std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
-  raw_ptr<web::WebState, DanglingUntriaged> web_state_ = nullptr;
   FakeOverlayPresentationContext presentation_context_;
 };
 
