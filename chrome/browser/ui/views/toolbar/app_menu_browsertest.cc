@@ -68,6 +68,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
+#include "components/zoom/zoom_controller.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
@@ -76,6 +78,8 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -90,6 +94,22 @@ using testing::Contains;
 using testing::Eq;
 using testing::Pointee;
 using testing::Property;
+
+class AXAlertObserver : public views::AXUpdateObserver {
+ public:
+  AXAlertObserver() { observation_.Observe(views::AXUpdateNotifier::Get()); }
+  void OnViewEvent(views::View* view, ax::mojom::Event event_type) override {
+    if (event_type == ax::mojom::Event::kAlert) {
+      ++alert_count_;
+    }
+  }
+  int alert_count() const { return alert_count_; }
+
+ private:
+  int alert_count_ = 0;
+  base::ScopedObservation<views::AXUpdateNotifier, views::AXUpdateObserver>
+      observation_{this};
+};
 
 class AppMenuBrowserTest : public UiBrowserTest {
  public:
@@ -408,6 +428,38 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, FullscreenButtonStateInFullscreen) {
                               return value.starts_with(u"Exit full screen");
                             }))),
           Property(&views::View::GetEnabled, Eq(true))))));
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ZoomAlertOnlyOnActiveZoomChange) {
+  AXAlertObserver alert_observer;
+
+  app_menu_test_accessor().ShowMenu(views::MenuRunner::NO_FLAGS);
+  views::View* zoom_view = AppMenu::GetZoomAppMenuViewForTest(
+      app_menu_test_accessor().GetRootMenuItemView());
+  ASSERT_NE(zoom_view, nullptr);
+
+  // Opening the menu should not fire an alert on construction.
+  EXPECT_EQ(alert_observer.alert_count(), 0);
+
+  // A zoom change on another host/scheme in the profile should not fire an
+  // alert because the active tab's zoom percentage is unchanged.
+  content::HostZoomMap* host_zoom_map =
+      content::HostZoomMap::GetDefaultForBrowserContext(
+          browser()->GetProfile());
+  host_zoom_map->SetZoomLevelForHostAndScheme("https", "other.example.com",
+                                              2.0);
+  EXPECT_EQ(alert_observer.alert_count(), 0);
+
+  // A zoom change on the active tab should fire an alert.
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_NE(active_contents, nullptr);
+  zoom::ZoomController* zoom_controller =
+      zoom::ZoomController::FromWebContents(active_contents);
+  ASSERT_NE(zoom_controller, nullptr);
+  zoom_controller->SetZoomLevel(host_zoom_map->GetDefaultZoomLevel() + 1.0);
+
+  EXPECT_EQ(alert_observer.alert_count(), 1);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
