@@ -545,13 +545,6 @@ gfx::Rect CalculateHighlightLayerBounds(const gfx::PointF& center_point,
                    highlight_layer_radius * 2, highlight_layer_radius * 2);
 }
 
-void SetHighlightBorder(views::View* view,
-                        int corner_radius,
-                        views::HighlightBorder::Type type) {
-  view->SetBorder(
-      std::make_unique<views::HighlightBorder>(corner_radius, type));
-}
-
 chromeos::FrameHeader* GetWindowFrameHeader(aura::Window* window) {
   CHECK(window);
 

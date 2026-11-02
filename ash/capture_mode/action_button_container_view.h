@@ -64,7 +64,7 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
     std::u16string_view GetErrorMessageForTesting() const;
 
    private:
-    std::unique_ptr<SystemDecoration> shadow_;
+    std::unique_ptr<SystemDecoration> decoration_;
 
     raw_ptr<views::Label> error_label_ = nullptr;
 

@@ -59,6 +59,13 @@ TEST_F(ActionButtonViewTest, ShadowBoundsAlignedWithButton) {
   ASSERT_TRUE(shadow);
   EXPECT_EQ(shadow->GetLayer()->parent(), action_button->layer()->parent());
   EXPECT_EQ(shadow->GetContentBounds(), button_bounds);
+
+  SystemDecoration* highlight_border =
+      action_button->highlight_border_for_testing();
+  ASSERT_TRUE(highlight_border);
+  EXPECT_EQ(highlight_border->GetLayer()->parent(), action_button->layer());
+  EXPECT_EQ(highlight_border->GetContentBounds(),
+            action_button->GetLocalBounds());
 }
 
 }  // namespace

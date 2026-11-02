@@ -16,7 +16,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/highlight_border.h"
 
 class PrefService;
 
@@ -221,12 +220,6 @@ bool IsEventTargetedOnWidget(const ui::LocatedEvent& event,
 ASH_EXPORT gfx::Rect CalculateHighlightLayerBounds(
     const gfx::PointF& center_point,
     int highlight_layer_radius);
-
-// Sets a highlight border to the `view` with given rounded corner radius and
-// type.
-void SetHighlightBorder(views::View* view,
-                        int corner_radius,
-                        views::HighlightBorder::Type type);
 
 // Returns the frame header of the given `window` if any, nullptr otherwise.
 ASH_EXPORT chromeos::FrameHeader* GetWindowFrameHeader(aura::Window* window);

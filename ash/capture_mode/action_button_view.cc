@@ -10,7 +10,6 @@
 
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "ash/style/system_decoration.h"
@@ -28,12 +27,10 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -79,9 +76,6 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
 
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kActionButtonRadius));
-  capture_mode_util::SetHighlightBorder(
-      this, kActionButtonRadius,
-      views::HighlightBorder::Type::kHighlightBorderNoShadow);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kActionButtonRadius);
 
@@ -96,6 +90,13 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
   shadow_ =
       SystemDecoration::Create(SystemDecoration::ShadowType::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kActionButtonRadius));
+
+  highlight_border_ = SystemDecoration::Create(
+      SystemDecoration::ShadowType::kNone,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  highlight_border_->SetRoundedCorners(
+      gfx::RoundedCornersF(kActionButtonRadius));
+  layer()->Add(highlight_border_->GetLayer());
 
   if (icon) {
     image_view_ = AddChildView(
@@ -123,15 +124,17 @@ void ActionButtonView::AddedToWidget() {
   parent->Add(shadow_layer);
   parent->StackAtBottom(shadow_layer);
 
-  // Make the shadow observe the color provider source change to update the
-  // colors.
+  // Make the shadow and highlight border observe the color provider source
+  // change to update the colors.
   shadow_->ObserveColorProviderSource(GetWidget());
+  highlight_border_->ObserveColorProviderSource(GetWidget());
 }
 
 void ActionButtonView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // The shadow layer is a sibling of this view's layer, and should have the
   // same bounds.
   shadow_->SetContentBounds(layer()->bounds());
+  highlight_border_->SetContentBounds(GetLocalBounds());
 }
 
 void ActionButtonView::AddLayerToRegion(ui::Layer* layer,
