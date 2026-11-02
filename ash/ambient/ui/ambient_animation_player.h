@@ -5,10 +5,15 @@
 #ifndef ASH_AMBIENT_UI_AMBIENT_ANIMATION_PLAYER_H_
 #define ASH_AMBIENT_UI_AMBIENT_ANIMATION_PLAYER_H_
 
+#include <optional>
+
+#include "ash/ambient/ui/ambient_animation_frame_rate_schedule.h"
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/lottie/animation.h"
+#include "ui/lottie/animation_observer.h"
 
 namespace views {
 class AnimatedImageView;
@@ -40,7 +45,13 @@ class AmbientAnimationProgressTracker;
 // [0, D]
 // [0, D]
 // ...
-class ASH_EXPORT AmbientAnimationPlayer {
+//
+// In addition to cycle restart markers, the lottie animation may optionally
+// have frame rate throttling markers ("_CrOS_Marker_Throttled_<fps>fps"). While
+// playing, AmbientAnimationPlayer throttles the AnimatedImageView to the frame
+// rate specified in the current section of the animation. Once this class is
+// destroyed, the frame rate is restored to the default.
+class ASH_EXPORT AmbientAnimationPlayer : public lottie::AnimationObserver {
  public:
   // Starts playing the |animated_image_view| immediately upon construction.
   explicit AmbientAnimationPlayer(
@@ -48,12 +59,26 @@ class ASH_EXPORT AmbientAnimationPlayer {
       AmbientAnimationProgressTracker* progress_tracker);
   AmbientAnimationPlayer(const AmbientAnimationPlayer&) = delete;
   AmbientAnimationPlayer& operator=(const AmbientAnimationPlayer&) = delete;
-  ~AmbientAnimationPlayer();
+  ~AmbientAnimationPlayer() override;
 
  private:
+  // lottie::AnimationObserver implementation:
+  void AnimationFramePainted(const lottie::Animation* animation,
+                             float) override;
+
+  AmbientAnimationFrameRateScheduleIterator FindCurrentSection() const;
+  void ThrottleFrameRateForCurrentSection();
+  // Throttles the animation to `frame_interval`, which must be positive if set
+  // (zero is not valid). `std::nullopt` restores the default frame rate.
+  void ThrottleFrameRate(std::optional<base::TimeDelta> frame_interval);
+
   const raw_ptr<views::AnimatedImageView> animated_image_view_;
   const raw_ptr<AmbientAnimationProgressTracker> progress_tracker_;
   base::TimeDelta cycle_restart_timestamp_;
+  AmbientAnimationFrameRateSchedule schedule_;
+  AmbientAnimationFrameRateScheduleIterator current_section_;
+  base::ScopedObservation<lottie::Animation, lottie::AnimationObserver>
+      animation_observation_{this};
 };
 
 }  // namespace ash

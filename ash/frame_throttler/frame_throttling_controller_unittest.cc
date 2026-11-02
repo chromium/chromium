@@ -105,13 +105,10 @@ TEST_F(FrameThrottlingControllerTest, ManualThrottling) {
   std::unique_ptr<aura::Window> window_2 = CreateWindowWithAppType();
   window_2->SetEmbedFrameSinkId({2, 2});
 
-  // 10 Hz is lower than the default, but there are no other windows actively
-  // being throttled, so 10 Hz should be used.
-  controller_.StartThrottling({window_1.get(), window_2.get()},
-                              base::Hertz(10));
+  controller_.StartThrottling({window_1.get(), window_2.get()});
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(frame_sink_manager_impl_.throttled_interval(),
-              Eq(base::Hertz(10)));
+              Eq(base::Hertz(kDefaultThrottleFps)));
   EXPECT_THAT(
       frame_sink_manager_impl_.throttled_frame_sink_ids(),
       UnorderedElementsAre(viz::FrameSinkId({1, 1}), viz::FrameSinkId({2, 2})));
@@ -158,8 +155,7 @@ TEST_F(FrameThrottlingControllerTest, ManualAndCompositingBasedThrottling) {
   std::unique_ptr<aura::Window> manual_window = CreateWindowWithAppType();
   manual_window->SetEmbedFrameSinkId(kManualWindowFrameSinkId);
 
-  // 10 Hz is lower than the default frame rate, so it should be rejected.
-  controller_.StartThrottling({manual_window.get()}, base::Hertz(10));
+  controller_.StartThrottling({manual_window.get()});
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(frame_sink_manager_impl_.throttled_interval(),
@@ -168,17 +164,8 @@ TEST_F(FrameThrottlingControllerTest, ManualAndCompositingBasedThrottling) {
               UnorderedElementsAre(kBrowserWindowFrameSinkId,
                                    kManualWindowFrameSinkId));
 
-  // 30 Hz is higher than the default frame rate, so it should be respected.
-  controller_.StartThrottling({manual_window.get()}, base::Hertz(30));
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_THAT(frame_sink_manager_impl_.throttled_interval(),
-              Eq(base::Hertz(30)));
-  EXPECT_THAT(frame_sink_manager_impl_.throttled_frame_sink_ids(),
-              UnorderedElementsAre(kBrowserWindowFrameSinkId,
-                                   kManualWindowFrameSinkId));
-
-  // The frame rate should return to default after manual window is removed.
+  // The browser window should still be throttled after the manual window is
+  // removed.
   controller_.EndThrottling();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(frame_sink_manager_impl_.throttled_interval(),

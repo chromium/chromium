@@ -12,7 +12,6 @@
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_topic_queue_animation_delegate.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
-#include "ash/ambient/ui/ambient_animation_frame_rate_controller.h"
 #include "ash/ambient/ui/ambient_animation_view.h"
 #include "ash/shell.h"
 #include "base/check.h"
@@ -36,8 +35,7 @@ AmbientAnimationUiLauncher::AmbientAnimationUiLauncher(
                             animation_->GetImageAssetMetadata()),
                         std::make_unique<AmbientTopicQueueAnimationDelegate>(
                             animation_->GetImageAssetMetadata())),
-      current_ui_settings_(current_ui_settings),
-      frame_rate_controller_(Shell::Get()->frame_throttling_controller()) {}
+      current_ui_settings_(current_ui_settings) {}
 
 AmbientAnimationUiLauncher::~AmbientAnimationUiLauncher() = default;
 
@@ -67,8 +65,7 @@ std::unique_ptr<views::View> AmbientAnimationUiLauncher::CreateView() {
   return std::make_unique<AmbientAnimationView>(
       view_delegate_, &progress_tracker_,
       AmbientAnimationStaticResources::Create(current_ui_settings_,
-                                              /*serializable=*/true),
-      &frame_rate_controller_);
+                                              /*serializable=*/true));
 }
 
 void AmbientAnimationUiLauncher::Finalize() {

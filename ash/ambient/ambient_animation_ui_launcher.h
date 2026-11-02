@@ -13,7 +13,6 @@
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
-#include "ash/ambient/ui/ambient_animation_frame_rate_controller.h"
 #include "ash/ambient/ui/ambient_animation_progress_tracker.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -55,7 +54,6 @@ class AmbientAnimationUiLauncher : public AmbientUiLauncher,
   AmbientPhotoController photo_controller_;
   AmbientUiSettings current_ui_settings_;
   AmbientAnimationProgressTracker progress_tracker_;
-  AmbientAnimationFrameRateController frame_rate_controller_;
   base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
       ambient_backend_model_observer_{this};
   ScopedSessionObserver session_observer_{this};

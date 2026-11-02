@@ -81,6 +81,17 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
     additional_translation_ = std::move(additional_translation);
   }
 
+  // Limits how often a new animation frame is painted while playing. The
+  // animation keeps advancing in real time, but a new frame is scheduled at
+  // most once per `frame_interval` (rounded to the nearest compositor tick),
+  // which must be positive when set. `std::nullopt` (the default) paints a new
+  // frame on every compositor tick. Takes effect on the next tick if the
+  // animation is already playing.
+  void SetFrameInterval(std::optional<base::TimeDelta> frame_interval);
+  std::optional<base::TimeDelta> GetFrameInterval() const {
+    return frame_interval_;
+  }
+
   State state() const { return state_; }
 
   lottie::Animation* GetAnimatedImageForTesting() {
@@ -114,6 +125,9 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
   // The most recent timestamp at which a paint was scheduled for this view.
   base::TimeTicks previous_timestamp_;
 
+  // See SetFrameInterval().
+  std::optional<base::TimeDelta> frame_interval_;
+
   // The underlying lottie animation.
   std::unique_ptr<lottie::Animation> animated_image_;
 
@@ -128,6 +142,7 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, AnimatedImageView, ImageViewBase)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<lottie::Animation>, AnimatedImage)
 VIEW_BUILDER_PROPERTY(gfx::Vector2d, AdditionalTranslation)
+VIEW_BUILDER_PROPERTY(std::optional<base::TimeDelta>, FrameInterval)
 END_VIEW_BUILDER
 
 }  // namespace views

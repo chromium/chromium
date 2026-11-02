@@ -29,7 +29,6 @@
 #include "ash/ambient/model/ambient_topic_queue_animation_delegate.h"
 #include "ash/ambient/model/ambient_topic_queue_slideshow_delegate.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
-#include "ash/ambient/ui/ambient_animation_frame_rate_controller.h"
 #include "ash/ambient/ui/ambient_animation_progress_tracker.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"

@@ -4,13 +4,17 @@
 
 #include "ui/views/controls/animated_image_view.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/gtest_util.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/test/skia_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -157,6 +161,146 @@ TEST_F(AnimatedImageViewTest, PlayBeforeWidget) {
   widget_.SetContentsView(std::move(animated_view));
   view()->SetUseDefaultFillLayout(true);
   widget_.Show();
+}
+
+// An AnimatedImageView that counts how many times a paint has been scheduled.
+class PaintCountingAnimatedImageView : public AnimatedImageView {
+ public:
+  int paint_count() const { return paint_count_; }
+  void reset_paint_count() { paint_count_ = 0; }
+
+  // Simulates compositor ticks at |tick_interval|, starting at |start| and
+  // returning the timestamp of the last tick.
+  base::TimeTicks Tick(base::TimeTicks start,
+                       base::TimeDelta tick_interval,
+                       int num_ticks) {
+    base::TimeTicks timestamp = start;
+    for (int i = 0; i < num_ticks; ++i) {
+      timestamp += tick_interval;
+      static_cast<ui::CompositorAnimationObserver*>(this)->OnAnimationStep(
+          timestamp);
+    }
+    return timestamp;
+  }
+
+ private:
+  // AnimatedImageView:
+  void OnDidSchedulePaint(const gfx::Rect& r) override {
+    AnimatedImageView::OnDidSchedulePaint(r);
+    ++paint_count_;
+  }
+
+  int paint_count_ = 0;
+};
+
+class AnimatedImageViewFrameIntervalTest : public AnimatedImageViewTest {
+ protected:
+  static constexpr base::TimeDelta kTickInterval = base::Hertz(60);
+
+  void SetUp() override {
+    AnimatedImageViewTest::SetUp();
+    widget_.GetCompositor()->FrameIntervalUpdated(kTickInterval);
+    widget_.SetContentsView(std::make_unique<PaintCountingAnimatedImageView>());
+    view()->SetAnimatedImage(CreateAnimationWithSize(kDefaultSize));
+    view()->Play();
+    view()->reset_paint_count();
+  }
+
+  PaintCountingAnimatedImageView* view() {
+    return static_cast<PaintCountingAnimatedImageView*>(
+        widget_.GetContentsView());
+  }
+};
+
+TEST_F(AnimatedImageViewFrameIntervalTest, PaintsEveryTickByDefault) {
+  EXPECT_FALSE(view()->GetFrameInterval().has_value());
+  view()->Tick(base::TimeTicks() + base::Seconds(1), kTickInterval, 30);
+  EXPECT_EQ(30, view()->paint_count());
+}
+
+TEST_F(AnimatedImageViewFrameIntervalTest, ThrottlesToFrameInterval) {
+  // 20 fps at 60 Hz ticks should paint on every third tick. The first tick
+  // after Play() always paints.
+  view()->SetFrameInterval(base::Hertz(20));
+  view()->Tick(base::TimeTicks() + base::Seconds(1), kTickInterval, 31);
+  EXPECT_EQ(11, view()->paint_count());
+}
+
+TEST_F(AnimatedImageViewFrameIntervalTest, ToleratesTickJitter) {
+  view()->SetFrameInterval(base::Hertz(20));
+  // Ticks slightly shorter than 1/60s must still paint on every third tick
+  // instead of every fourth.
+  view()->Tick(base::TimeTicks() + base::Seconds(1),
+               kTickInterval - base::Microseconds(100), 31);
+  EXPECT_EQ(11, view()->paint_count());
+}
+
+TEST_F(AnimatedImageViewFrameIntervalTest, ToleranceUsesCompositorRefreshRate) {
+  view()->SetFrameInterval(base::Hertz(20));
+
+  // At 120Hz (~8.33ms per frame, ~4.17ms tolerance), a single delayed tick 44ms
+  // after the last paint is still closer to 5 frames than 6 frames (50ms) and
+  // should not schedule a paint yet, whereas the next 120Hz tick does.
+  widget_.GetCompositor()->FrameIntervalUpdated(base::Hertz(120));
+  base::TimeTicks timestamp =
+      view()->Tick(base::TimeTicks() + base::Seconds(1), base::Hertz(120), 1);
+  ASSERT_EQ(1, view()->paint_count());
+  view()->reset_paint_count();
+  timestamp = view()->Tick(timestamp, base::Milliseconds(44), 1);
+  EXPECT_EQ(0, view()->paint_count());
+  view()->Tick(timestamp, base::Hertz(120), 1);
+  EXPECT_EQ(1, view()->paint_count());
+
+  // At 60Hz (~16.67ms per frame, ~8.33ms tolerance), 44ms elapsed is within
+  // half a compositor frame of 50ms and should schedule a paint even if
+  // individual ticks were shorter.
+  view()->Stop();
+  view()->Play();
+  view()->reset_paint_count();
+  widget_.GetCompositor()->FrameIntervalUpdated(base::Hertz(60));
+  timestamp =
+      view()->Tick(base::TimeTicks() + base::Seconds(2), base::Hertz(60), 1);
+  ASSERT_EQ(1, view()->paint_count());
+  view()->reset_paint_count();
+  view()->Tick(timestamp, base::Microseconds(8800), 5);
+  EXPECT_EQ(1, view()->paint_count());
+}
+
+TEST_F(AnimatedImageViewFrameIntervalTest, FrameIntervalChangeWhilePlaying) {
+  view()->SetFrameInterval(base::Hertz(20));
+  base::TimeTicks timestamp =
+      view()->Tick(base::TimeTicks() + base::Seconds(1), kTickInterval, 31);
+  EXPECT_EQ(11, view()->paint_count());
+
+  view()->reset_paint_count();
+  view()->SetFrameInterval(base::Hertz(30));
+  timestamp = view()->Tick(timestamp, kTickInterval, 30);
+  EXPECT_EQ(15, view()->paint_count());
+
+  view()->reset_paint_count();
+  view()->SetFrameInterval(std::nullopt);
+  view()->Tick(timestamp, kTickInterval, 30);
+  EXPECT_EQ(30, view()->paint_count());
+}
+
+TEST_F(AnimatedImageViewFrameIntervalTest, RejectsNonPositiveFrameInterval) {
+  EXPECT_CHECK_DEATH(view()->SetFrameInterval(base::TimeDelta()));
+  EXPECT_CHECK_DEATH(view()->SetFrameInterval(base::Milliseconds(-1)));
+}
+
+TEST_F(AnimatedImageViewFrameIntervalTest, FirstTickAfterPlayPaints) {
+  view()->SetFrameInterval(base::Hertz(20));
+  base::TimeTicks timestamp =
+      view()->Tick(base::TimeTicks() + base::Seconds(1), kTickInterval, 1);
+  EXPECT_EQ(1, view()->paint_count());
+
+  view()->Stop();
+  view()->Play();
+  view()->reset_paint_count();
+  // Restarting resets the cadence, so the next tick paints even though it is
+  // less than a frame interval after the previous paint.
+  view()->Tick(timestamp, kTickInterval, 1);
+  EXPECT_EQ(1, view()->paint_count());
 }
 
 }  // namespace
