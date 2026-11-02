@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
@@ -53,6 +54,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tear down called once per test.
 - (void)tearDownHelper {
+  [ChromeCoordinatorAppInterface reset];
   [super tearDownHelper];
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
@@ -64,7 +66,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchBarShownOnRoot {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
 
   // Verify the search bar is shown.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
@@ -76,7 +78,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchBarShownOnMobileBookmarks {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Verify the search bar is shown.
@@ -89,7 +91,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchResults {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Verify we have our 3 items.
@@ -154,7 +156,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchWithNoResults {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search 'zz', tapping first to provide focus.
@@ -183,7 +185,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchScrimShownWhenSearchBoxEnabled {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
@@ -235,7 +237,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchTapOnScrimCancelsSearchController {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
@@ -268,7 +270,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchLongPressOnScrimCancelsSearchController {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
@@ -305,7 +307,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchCancelRestoresNodeBookmarks {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search, tapping first to provide focus.
@@ -351,7 +353,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchHidesNavigationBar {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Focus Search.
@@ -382,7 +384,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchLongPressEditOnURL {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search.
@@ -420,7 +422,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchLongPressEditOnFolder {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   NSString* existingFolderTitle = @"Folder 1.1";
@@ -468,7 +470,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchUrlCanBeSwipedToDelete {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search.
@@ -489,7 +491,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchFolderCanBeSwipedToDelete {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search.
@@ -510,7 +512,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testDisablesSearchOnEditMode {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Verify search bar is enabled.
@@ -539,7 +541,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchDisablesNewFolderButtonOnNavigationBar {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search and hide keyboard.
@@ -568,7 +570,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchEditModeEditOnSingleURL {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search and hide keyboard.
@@ -623,7 +625,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchEditModeDeleteOnMultipleURL {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search and hide keyboard.
@@ -772,7 +774,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchEditPossibleOnRoot {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
@@ -845,7 +847,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)testSearchFolders {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Go down Folder 1 / Folder 2 / Folder 3.
