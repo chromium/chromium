@@ -59,8 +59,9 @@ class SyncSessionsWebContentsRouterTest
 
 #if !BUILDFLAG(IS_ANDROID)
   void CreateDelegate() {
-    delegate_ =
-        std::make_unique<BrowserSyncedTabDelegate>(tab_, web_contents());
+    delegate_ = std::make_unique<BrowserSyncedTabDelegate>(
+        tab_, web_contents(), /*task_tab_helper=*/nullptr,
+        /*supervised_user_navigation_observer=*/nullptr);
   }
 #endif
 
