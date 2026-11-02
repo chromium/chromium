@@ -276,7 +276,7 @@ TEST_F(RecentlyClosedTabsBridgeTest, ClearAllRecentlyUsedClosedEntries) {
   EXPECT_EQ(tab_restore_service_->entries().size(), 3U);
 
   // Trigger clear all entries.
-  bridge_->ClearRecentlyClosedEntries(nullptr);
+  bridge_->ClearRecentlyClosedEntries();
 
   // Verify the entries in the TabRestoreService are cleared.
   EXPECT_EQ(tab_restore_service_->entries().size(), 0U);
@@ -296,7 +296,7 @@ TEST_F(RecentlyClosedTabsBridgeTest, ClearLeastRecentlyUsedClosedEntries) {
   EXPECT_EQ(tab_restore_service_->entries().size(), 3U);
 
   // Trigger clear 2 least recently used entries.
-  bridge_->ClearLeastRecentlyUsedClosedEntries(nullptr, 2);
+  bridge_->ClearLeastRecentlyUsedClosedEntries(2);
 
   // Verify only 1 entry remaining in the TabRestoreService.
   EXPECT_EQ(tab_restore_service_->entries().size(), 1U);
@@ -320,7 +320,7 @@ TEST_F(RecentlyClosedTabsBridgeTest,
   EXPECT_EQ(tab_restore_service_->entries().size(), 3U);
 
   // Trigger clear 4 least recently used entries.
-  bridge_->ClearLeastRecentlyUsedClosedEntries(nullptr, 4);
+  bridge_->ClearLeastRecentlyUsedClosedEntries(4);
 
   // Verify the entries in the TabRestoreService are cleared.
   EXPECT_EQ(tab_restore_service_->entries().size(), 0U);

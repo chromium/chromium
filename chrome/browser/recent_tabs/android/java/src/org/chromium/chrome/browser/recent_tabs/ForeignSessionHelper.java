@@ -194,12 +194,9 @@ public class ForeignSessionHelper {
 
     /**
      * @return The list of synced foreign sessions. If it fails to get them for some reason will
-     * return an empty list.
+     *     return an empty list.
      */
     public List<ForeignSession> getForeignSessions() {
-        if (!isTabSyncEnabled()) {
-            return Collections.emptyList();
-        }
         List<ForeignSession> result = new ArrayList<>();
         boolean received =
                 ForeignSessionHelperJni.get()
@@ -213,12 +210,9 @@ public class ForeignSessionHelper {
 
     /**
      * @return The list of synced foreign sessions that are from a mobile or tablet device. If it
-     * fails to get them for some reason will return an empty list.
+     *     fails to get them for some reason will return an empty list.
      */
     public List<ForeignSession> getMobileAndTabletForeignSessions() {
-        if (!isTabSyncEnabled()) {
-            return Collections.emptyList();
-        }
         List<ForeignSession> result = new ArrayList<>();
         boolean received =
                 ForeignSessionHelperJni.get()

@@ -222,9 +222,8 @@ void ForeignSessionHelper::TriggerSessionSync() {
 }
 
 void ForeignSessionHelper::SetOnForeignSessionCallback(
-    JNIEnv* env,
     const JavaRef<jobject>& callback) {
-  callback_.Reset(env, callback);
+  callback_.Reset(callback);
 }
 
 void ForeignSessionHelper::FireForeignSessionCallback() {

@@ -50,7 +50,6 @@ class ForeignSessionHelper {
   bool IsTabSyncEnabled();
   void TriggerSessionSync();
   void SetOnForeignSessionCallback(
-      JNIEnv* env,
       const base::android::JavaRef<jobject>& callback);
   bool GetForeignSessions(JNIEnv* env,
                           const base::android::JavaRef<jobject>& result);

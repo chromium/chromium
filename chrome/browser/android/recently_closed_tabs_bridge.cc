@@ -314,8 +314,7 @@ bool RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
   return true;
 }
 
-bool RecentlyClosedTabsBridge::OpenRecentlyClosedTab(JNIEnv* env,
-                                                     TabModel* model,
+bool RecentlyClosedTabsBridge::OpenRecentlyClosedTab(TabModel* model,
                                                      int32_t tab_session_id,
                                                      int32_t j_disposition) {
   if (!tab_restore_service_) {
@@ -390,7 +389,7 @@ bool RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(JNIEnv* env,
   return !restored_tabs.value_or({}).empty();
 }
 
-void RecentlyClosedTabsBridge::ClearRecentlyClosedEntries(JNIEnv* env) {
+void RecentlyClosedTabsBridge::ClearRecentlyClosedEntries() {
   EnsureTabRestoreService();
   if (tab_restore_service_) {
     tab_restore_service_->ClearEntries();
@@ -398,7 +397,6 @@ void RecentlyClosedTabsBridge::ClearRecentlyClosedEntries(JNIEnv* env) {
 }
 
 void RecentlyClosedTabsBridge::ClearLeastRecentlyUsedClosedEntries(
-    JNIEnv* env,
     int32_t num_to_remove) {
   EnsureTabRestoreService();
   if (tab_restore_service_) {
@@ -450,11 +448,10 @@ void RecentlyClosedTabsBridge::RestoreAndroidTabGroups(
 }
 
 static jni_zero::JniUniquePtr<RecentlyClosedTabsBridge>
-JNI_RecentlyClosedBridge_Init(JNIEnv* env,
-                              const JavaRef<jobject>& jbridge,
+JNI_RecentlyClosedBridge_Init(const JavaRef<jobject>& jbridge,
                               Profile* profile) {
   return jni_zero::MakeUnique<RecentlyClosedTabsBridge>(
-      ScopedJavaGlobalRef<jobject>(env, jbridge), profile);
+      ScopedJavaGlobalRef<jobject>(jbridge), profile);
 }
 
 }  // namespace recent_tabs
