@@ -158,6 +158,8 @@ ActorOneTimeTokenFillingServiceRetrieveOtp MapError(
       return kGmailOtpBackendMessageAuthenticationFailed;
     case OneTimeTokenRetrievalError::kSubscriptionExpired:
       return kRetrievalTimeout;
+    case OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch:
+      return kGmailOtpSenderDomainMismatch;
   }
 }
 

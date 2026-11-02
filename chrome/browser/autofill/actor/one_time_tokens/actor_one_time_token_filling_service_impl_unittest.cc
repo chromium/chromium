@@ -479,6 +479,28 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Timeout) {
       ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 0);
 }
 
+// Tests that `RetrieveOtp` logs `kGmailOtpSenderDomainMismatch` when the
+// retriever reports a sender-domain mismatch.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       RetrieveOtp_GmailOtpSenderDomainMismatchRecordsMetric) {
+  NavigateAndCommit(GURL("https://example.com"));
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future;
+  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        future.GetCallback());
+
+  gmail_otp_backend().ProcessCallbacks(base::unexpected(
+      OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch));
+  EXPECT_EQ(future.Get().error(),
+            OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch);
+  histogram_tester_.ExpectBucketCount(
+      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kGmailOtpSenderDomainMismatch,
+      1);
+}
+
 // Tests that `RetrieveOtp` fails gracefully when the tab is null.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_TabNull) {
   base::test::TestFuture<

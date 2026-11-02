@@ -125,6 +125,13 @@ class GmailOtpRetriever {
   // Answers all sender domain checks of this retrieval.
   GmailOtpSenderDomainMatcher sender_domain_matcher_;
   size_t pending_sender_domain_checks_ = 0;
+  // Whether a token delivered via the subscription was rejected for a
+  // sender-domain mismatch. Rejected cached tokens don't count because they
+  // predate the request. Subscription-delivered tokens can also be up to 3
+  // minutes old (see
+  // `OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch`), so this is a
+  // best-effort signal.
+  bool has_sender_domain_mismatch_ = false;
   std::optional<OneTimeTokenRetrievalError> error_;
   ExpiringSubscription subscription_;
   ResultCallback retrieve_otp_callback_;

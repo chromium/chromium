@@ -569,6 +569,9 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
         code = mojom::ActionResultCode::kOtpServiceUnavailable;
         message = "OTP filling service is not available.";
         break;
+      // A sender-domain mismatch is still a timeout for the model: no OTP from
+      // an allowed sender arrived in time.
+      case kGmailOtpSenderDomainMismatch:
       case kSubscriptionExpired:
         code = mojom::ActionResultCode::kOtpRetrievalTimeout;
         message = "OTP retrieval timed out.";

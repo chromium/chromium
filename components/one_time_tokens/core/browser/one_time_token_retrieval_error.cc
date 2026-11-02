@@ -67,6 +67,8 @@ std::ostream& operator<<(std::ostream& os, OneTimeTokenRetrievalError error) {
     case OneTimeTokenRetrievalError::
         kGmailOtpBackendMessageAuthenticationFailed:
       return os << "kGmailOtpBackendMessageAuthenticationFailed";
+    case OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch:
+      return os << "kGmailOtpSenderDomainMismatch";
   }
   return os << static_cast<int>(error);
 }

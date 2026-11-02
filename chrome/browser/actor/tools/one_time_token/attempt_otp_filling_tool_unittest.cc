@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -683,14 +684,26 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorFilling) {
       AttemptOtpFillingToolEvent::kFillingOtpError, 1);
 }
 
-// `Invoke()` fails with `OneTimeTokenRetrievalError::kUnknown` when retrieving
-// the OTP fails.
-TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorRetrievingGmailOtp) {
+struct RetrieveOtpErrorTestCase {
+  std::string_view test_name;
+  one_time_tokens::OneTimeTokenRetrievalError error;
+  mojom::ActionResultCode expected_code;
+  std::string_view expected_message;
+  AttemptOtpFillingToolEvent expected_event;
+};
+
+class AttemptOtpFillingToolRetrieveOtpErrorTest
+    : public AttemptOtpFillingToolTest,
+      public testing::WithParamInterface<RetrieveOtpErrorTestCase> {};
+
+// `Invoke()` maps an OTP retrieval error to the result returned to the model
+// and records a single ToolInvocation sample.
+TEST_P(AttemptOtpFillingToolRetrieveOtpErrorTest, Invoke_RetrievalError) {
+  const RetrieveOtpErrorTestCase& test_case = GetParam();
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>(base::unexpected(
-          one_time_tokens::OneTimeTokenRetrievalError::kUnknown)));
+      .WillOnce(RunOnceCallback<4>(base::unexpected(test_case.error)));
   PageTarget target(gfx::Point(10, 10));
   AttemptOtpFillingTool tool = CreateTool({target});
   SetAutofillGmailOtpFillingEnabled(prefs(), true);
@@ -700,37 +713,40 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorRetrievingGmailOtp) {
   tool.Invoke(future.GetCallback());
 
   ActionResultPtr action_result = future.Take();
-  EXPECT_EQ(kOtpRetrievalError, action_result->code);
-  EXPECT_EQ("An error occurred during OTP retrieval: 0",
-            action_result->message);
-  histogram_tester_.ExpectBucketCount(
-      kAttemptOtpFillingToolHistogram,
-      AttemptOtpFillingToolEvent::kOtpRetrievalError, 1);
+  EXPECT_EQ(test_case.expected_code, action_result->code);
+  EXPECT_EQ(test_case.expected_message, action_result->message);
+  histogram_tester_.ExpectUniqueSample(kAttemptOtpFillingToolHistogram,
+                                       test_case.expected_event, 1);
 }
 
-// `Invoke()` fails with `kOtpRetrievalTimeout` when the OTP retrieval times
-// out.
-TEST_F(AttemptOtpFillingToolTest, Invoke_TimeoutRetrievingGmailOtp) {
-  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
-      .WillOnce(Return(CreateValidLoginContext()));
-  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>(base::unexpected(
-          one_time_tokens::OneTimeTokenRetrievalError::kSubscriptionExpired)));
-  PageTarget target(gfx::Point(10, 10));
-  AttemptOtpFillingTool tool = CreateTool({target});
-  SetAutofillGmailOtpFillingEnabled(prefs(), true);
-  SetupSuccessfulTimeOfUseValidation(tool, target);
-
-  TestFuture<ActionResultPtr> future;
-  tool.Invoke(future.GetCallback());
-
-  ActionResultPtr action_result = future.Take();
-  EXPECT_EQ(mojom::ActionResultCode::kOtpRetrievalTimeout, action_result->code);
-  EXPECT_EQ("OTP retrieval timed out.", action_result->message);
-  histogram_tester_.ExpectBucketCount(
-      kAttemptOtpFillingToolHistogram,
-      AttemptOtpFillingToolEvent::kOtpRetrievalError, 1);
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AttemptOtpFillingToolRetrieveOtpErrorTest,
+    testing::Values(
+        RetrieveOtpErrorTestCase{
+            .test_name = "Unknown",
+            .error = one_time_tokens::OneTimeTokenRetrievalError::kUnknown,
+            .expected_code = kOtpRetrievalError,
+            .expected_message = "An error occurred during OTP retrieval: 0",
+            .expected_event = AttemptOtpFillingToolEvent::kOtpRetrievalError},
+        RetrieveOtpErrorTestCase{
+            .test_name = "SubscriptionExpired",
+            .error = one_time_tokens::OneTimeTokenRetrievalError::
+                kSubscriptionExpired,
+            .expected_code = mojom::ActionResultCode::kOtpRetrievalTimeout,
+            .expected_message = "OTP retrieval timed out.",
+            .expected_event = AttemptOtpFillingToolEvent::kOtpRetrievalError},
+        // A sender-domain mismatch is reported to the model as a timeout.
+        RetrieveOtpErrorTestCase{
+            .test_name = "GmailOtpSenderDomainMismatch",
+            .error = one_time_tokens::OneTimeTokenRetrievalError::
+                kGmailOtpSenderDomainMismatch,
+            .expected_code = mojom::ActionResultCode::kOtpRetrievalTimeout,
+            .expected_message = "OTP retrieval timed out.",
+            .expected_event = AttemptOtpFillingToolEvent::kOtpRetrievalError}),
+    [](const testing::TestParamInfo<RetrieveOtpErrorTestCase>& info) {
+      return std::string(info.param.test_name);
+    });
 
 TEST_F(AttemptOtpFillingToolTest,
        Validate_OptInPermissionCallbackNullResponse) {

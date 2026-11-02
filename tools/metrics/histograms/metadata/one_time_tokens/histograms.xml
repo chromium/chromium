@@ -100,6 +100,10 @@ found in the LICENSE file.
     ActorOneTimeTokenFillingService. Recorded at the start of RetrieveOtp
     invocations, and when retrieval outcomes or error conditions (e.g. cache
     hits, mock OTPs, or superseded callbacks) are determined.
+    GmailOtpSenderDomainMismatch is recorded when the subscription timed out
+    after at least one token delivered via the subscription was rejected for
+    sender-domain mismatch. Subscription delivery can include emails received up
+    to 3 minutes before the request.
   </summary>
 </histogram>
 
