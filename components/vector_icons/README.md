@@ -12,7 +12,9 @@ Some of the `.icon` files have multiple variants of the same icon (contained wit
 
 ## Converting an SVG to .icon format
 
-**Note: If you are a Google employee, please reference [go/chromium-icon-viewer](http://go/chromium-icon-viewer) or [go/chrome-gm3-icons](http://go/chrome-gm3-icons) to ensure standardized icon sizes and weights.**
+**Note: If you are a Google employee, use the [`add-vector-icon`](../../agents/skills/add-vector-icon/SKILL.md) skill to automate fetching Google Symbols SVGs with standardized sizes and weights, converting them to `.icon` format, and registering them in `BUILD.gn` (replacing the manual steps below). For manual icon workflows and additional details, see [go/chrome-gm3-icons](http://go/chrome-gm3-icons).**
+
+### Manual conversion
 
 [This tool](http://evanstade.github.io/skiafy/) generates `.icon` file output from SVGs. (If you want to contribute improvements, [here's the project](https://github.com/evanstade/skiafy).)
 
