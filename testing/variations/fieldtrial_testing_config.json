@@ -7051,6 +7051,7 @@
             ],
             "experiments": [
                 {
+                    "//0": "AccountPreviewPreferredAccountSingleAccountPromoFetchTimeout is deprecated in M157+ (moved to EnableAccountPreviewPreferredAccountIntercept), but kept here to match the Finch config targeting M155-M156.",
                     "name": "Enabled",
                     "params": {
                         "AccountPreviewPreferredAccountSingleAccountPromoFetchTimeout": "0s"
@@ -7106,6 +7107,23 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableAccountPreviewPreferredAccount"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EnableAccountPreviewPreferredAccountIntercept": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAccountPreviewPreferredAccountIntercept"
                     ]
                 }
             ]

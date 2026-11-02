@@ -1168,8 +1168,11 @@ class DiceWebSigninInterceptorSigninBubbleWithAccountPreviewBrowserTest
     : public DiceWebSigninInterceptorSigninBubbleBrowserTest {
  public:
   DiceWebSigninInterceptorSigninBubbleWithAccountPreviewBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        switches::kEnableAccountPreviewPreferredAccount);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {switches::kEnableAccountPreviewPreferredAccount,
+         switches::kEnableAccountPreviewPreferredAccountIntercept},
+        /*disabled_features=*/{});
   }
 
  private:

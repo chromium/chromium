@@ -1612,10 +1612,13 @@ class DiceBrowserSigninInterceptionWithAccountPreviewTest
   DiceBrowserSigninInterceptionWithAccountPreviewTest() {
     // Long fetch timeout so that the bubble is only shown when the test
     // releases the preview callback.
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kEnableAccountPreviewPreferredAccount,
-        {{"AccountPreviewPreferredAccountSingleAccountPromoFetchTimeout",
-          "60s"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{switches::kEnableAccountPreviewPreferredAccount, {}},
+         {switches::kEnableAccountPreviewPreferredAccountIntercept,
+          {{switches::kAccountPreviewPreferredAccountInterceptFetchTimeout.name,
+            "60s"}}}},
+        /*disabled_features=*/{});
   }
 
   void SetUpInProcessBrowserTestFixture() override {

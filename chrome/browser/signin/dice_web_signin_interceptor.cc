@@ -1454,7 +1454,9 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
       case WebSigninInterceptor::SigninInterceptionType::kChromeSignin: {
         if (!base::FeatureList::IsEnabled(
-                switches::kEnableAccountPreviewPreferredAccount)) {
+                switches::kEnableAccountPreviewPreferredAccount) ||
+            !base::FeatureList::IsEnabled(
+                switches::kEnableAccountPreviewPreferredAccountIntercept)) {
           break;
         }
 
@@ -1474,9 +1476,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
         state_->interception_bubble_callback_ = std::move(callback);
         state_->account_preview_timeout_timer_.Start(
             FROM_HERE,
-            switches::
-                kAccountPreviewPreferredAccountSingleAccountPromoFetchTimeout
-                    .Get(),
+            switches::kAccountPreviewPreferredAccountInterceptFetchTimeout
+                .Get(),
             base::BindOnce(
                 &DiceWebSigninInterceptor::OnAccountPreviewPreferenceReceived,
                 weak_factory_.GetWeakPtr(), bubble_parameters,

@@ -2599,8 +2599,11 @@ class DiceWebSigninInterceptorTestWithAccountPreview
           WebSigninInterceptor::SigninInterceptionType> {
  public:
   DiceWebSigninInterceptorTestWithAccountPreview() {
-    feature_list_.InitAndEnableFeature(
-        switches::kEnableAccountPreviewPreferredAccount);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {switches::kEnableAccountPreviewPreferredAccount,
+         switches::kEnableAccountPreviewPreferredAccountIntercept},
+        /*disabled_features=*/{});
   }
 
   WebSigninInterceptor::SigninInterceptionType GetInterceptionType() const {
@@ -2770,8 +2773,7 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
 
   EXPECT_TRUE(raw_fake_service->has_pending_callback());
   task_environment()->FastForwardBy(
-      switches::kAccountPreviewPreferredAccountSingleAccountPromoFetchTimeout
-          .Get());
+      switches::kAccountPreviewPreferredAccountInterceptFetchTimeout.Get());
 
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
   histogram_tester.ExpectUniqueSample(
@@ -2784,9 +2786,8 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
        InterceptBubbleWithAccountPreviewDataZeroTimeout) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      switches::kEnableAccountPreviewPreferredAccount,
-      {{switches::kAccountPreviewPreferredAccountSingleAccountPromoFetchTimeout
-            .name,
+      switches::kEnableAccountPreviewPreferredAccountIntercept,
+      {{switches::kAccountPreviewPreferredAccountInterceptFetchTimeout.name,
         "0s"}});
 
   base::HistogramTester histogram_tester;
@@ -2930,6 +2931,112 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
   raw_fake_service->TriggerCallback(pref_b);
 
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
+}
+
+TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
+       InterceptBubbleWithAccountPreviewDataPreferredAccountDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewPreferredAccount);
+
+  base::HistogramTester histogram_tester;
+  auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
+  fake_service->set_defer_callbacks(true);
+  signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
+  AccountPreviewDataServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting([&fake_service](content::BrowserContext*)
+                                     -> std::unique_ptr<KeyedService> {
+        return std::move(fake_service);
+      }));
+
+  AccountInfo primary_account_info = SetUpPrimaryAccountIfNeeded();
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      GetInterceptionType(),
+      /*intercepted_account=*/account_info,
+      /*primary_account=*/primary_account_info,
+      /*profile_highlight_color=*/SkColor(),
+      /*show_link_data_option=*/false,
+      /*show_managed_disclaimer=*/false,
+      /*account_preview_preference=*/std::nullopt);
+
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true, /*is_chrome_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+
+  // `kEnableAccountPreviewPreferredAccountIntercept` has no effect if
+  // `kEnableAccountPreviewPreferredAccount` is disabled.
+  EXPECT_FALSE(raw_fake_service->has_pending_callback());
+
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  histogram_tester.ExpectTotalCount("Signin.Intercept.AccountPreview.TimedOut",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.AccountPreview.ResponseTime", 0);
+}
+
+TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
+       InterceptBubbleWithAccountPreviewDataInterceptDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewPreferredAccountIntercept);
+
+  base::HistogramTester histogram_tester;
+  auto fake_service = std::make_unique<signin::TestAccountPreviewDataService>();
+  fake_service->set_defer_callbacks(true);
+  signin::TestAccountPreviewDataService* raw_fake_service = fake_service.get();
+  AccountPreviewDataServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting([&fake_service](content::BrowserContext*)
+                                     -> std::unique_ptr<KeyedService> {
+        return std::move(fake_service);
+      }));
+
+  AccountInfo primary_account_info = SetUpPrimaryAccountIfNeeded();
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      GetInterceptionType(),
+      /*intercepted_account=*/account_info,
+      /*primary_account=*/primary_account_info,
+      /*profile_highlight_color=*/SkColor(),
+      /*show_link_data_option=*/false,
+      /*show_managed_disclaimer=*/false,
+      /*account_preview_preference=*/std::nullopt);
+
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true, /*is_chrome_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+
+  EXPECT_FALSE(raw_fake_service->has_pending_callback());
+
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+  histogram_tester.ExpectTotalCount("Signin.Intercept.AccountPreview.TimedOut",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.AccountPreview.ResponseTime", 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(

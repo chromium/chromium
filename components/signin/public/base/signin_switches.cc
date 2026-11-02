@@ -428,11 +428,6 @@ BASE_FEATURE_PARAM(size_t,
                    &kEnableAccountPreviewPreferredAccount,
                    6);
 #endif
-BASE_FEATURE_PARAM(
-    base::TimeDelta,
-    kAccountPreviewPreferredAccountSingleAccountPromoFetchTimeout,
-    &kEnableAccountPreviewPreferredAccount,
-    base::Seconds(1));
 
 // Controls followup features for preferred account preview (new promos, and
 // updated strings). This flag has no effect if
@@ -446,6 +441,18 @@ BASE_FEATURE(kEnableAccountPreviewPreferredAccountFRE,
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kAccountPreviewPreferredAccountFREFetchTimeout,
                    &kEnableAccountPreviewPreferredAccountFRE,
+                   base::Seconds(1));
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Controls whether preferred account preview personalization is enabled for
+// sign-in interceptions. This flag has no effect if
+// `kEnableAccountPreviewPreferredAccount` is not enabled.
+BASE_FEATURE(kEnableAccountPreviewPreferredAccountIntercept,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAccountPreviewPreferredAccountInterceptFetchTimeout,
+                   &kEnableAccountPreviewPreferredAccountIntercept,
                    base::Seconds(1));
 #endif
 
