@@ -70,7 +70,8 @@ public class TrackerImpl implements Tracker {
     private long mNativePtr;
 
     // Whether the PromotionsEnabled enterprise policy currently blocks promotions. Defaults to
-    // false; flag-guarded by kUserEducationFramework in TrackerFactory.
+    // false; flag-guarded by kUserEducationFramework and kUserEducationEnterprisePolicy in
+    // TrackerFactory.
     private BooleanSupplier mEnterprisePolicyBlocksPromotionsSupplier =
             SupplierUtils.alwaysFalseBooleanSupplier();
 

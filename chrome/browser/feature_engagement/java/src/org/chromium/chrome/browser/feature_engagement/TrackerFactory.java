@@ -42,7 +42,8 @@ public final class TrackerFactory {
         // PromotionsEnabled.yaml when ready to launch.
         tracker.setEnterprisePolicyBlocksPromotionsSupplier(
                 () -> {
-                    if (!ChromeFeatureList.sUserEducationFramework.isEnabled()) {
+                    if (!ChromeFeatureList.sUserEducationFramework.isEnabled()
+                            || !ChromeFeatureList.sUserEducationEnterprisePolicy.isEnabled()) {
                         return false;
                     }
                     PrefService localState = LocalStatePrefs.get();

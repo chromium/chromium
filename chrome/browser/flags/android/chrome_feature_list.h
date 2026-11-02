@@ -360,6 +360,7 @@ BASE_DECLARE_FEATURE(kUseWebUiNtp3PDSE);
 BASE_DECLARE_FEATURE(kUseWebUiNtpAndroid);
 BASE_DECLARE_FEATURE(kUserEducationAggressivelyCooldownIphs);
 BASE_DECLARE_FEATURE(kUserEducationBlueBubbleCooldownGroup);
+BASE_DECLARE_FEATURE(kUserEducationEnterprisePolicy);
 BASE_DECLARE_FEATURE(kUserEducationFramework);
 BASE_DECLARE_FEATURE(kUserEducationInterruptiveCooldownGroup);
 BASE_DECLARE_FEATURE(kVerifyStartupSigninState);

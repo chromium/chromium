@@ -939,6 +939,7 @@ public abstract class ChromeFeatureList {
             "UserEducationAggressivelyCooldownIphs";
     public static final String USER_EDUCATION_BLUE_BUBBLE_COOLDOWN_GROUP =
             "UserEducationBlueBubbleCooldownGroup";
+    public static final String USER_EDUCATION_ENTERPRISE_POLICY = "UserEducationEnterprisePolicy";
     public static final String USER_EDUCATION_FRAMEWORK = "UserEducationFramework";
     public static final String USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP =
             "UserEducationInterruptiveCooldownGroup";
@@ -1924,6 +1925,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(USER_EDUCATION_AGGRESSIVELY_COOLDOWN_IPHS, false);
     public static final MutableFlagWithSafeDefault sUserEducationBlueBubbleCooldownGroup =
             newMutableFlagWithSafeDefault(USER_EDUCATION_BLUE_BUBBLE_COOLDOWN_GROUP, false);
+    public static final MutableFlagWithSafeDefault sUserEducationEnterprisePolicy =
+            newMutableFlagWithSafeDefault(USER_EDUCATION_ENTERPRISE_POLICY, false);
     public static final MutableFlagWithSafeDefault sUserEducationFramework =
             newMutableFlagWithSafeDefault(USER_EDUCATION_FRAMEWORK, false);
     public static final MutableFlagWithSafeDefault sUserEducationInterruptiveCooldownGroup =

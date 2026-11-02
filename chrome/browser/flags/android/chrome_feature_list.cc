@@ -568,6 +568,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUseWebUiNtpAndroid,
     &kUserEducationAggressivelyCooldownIphs,
     &kUserEducationBlueBubbleCooldownGroup,
+    &kUserEducationEnterprisePolicy,
     &kUserEducationFramework,
     &kUserEducationInterruptiveCooldownGroup,
     &kVerifyStartupSigninState,
@@ -1041,6 +1042,7 @@ BASE_FEATURE(kUseWebUiNtp3PDSE, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseWebUiNtpAndroid, BUILDFLAG(IS_DESKTOP_ANDROID) ? base::FEATURE_ENABLED_BY_DEFAULT : base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUserEducationAggressivelyCooldownIphs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUserEducationBlueBubbleCooldownGroup, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUserEducationEnterprisePolicy, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUserEducationFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUserEducationInterruptiveCooldownGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 // Verify sign-in state on startup.
