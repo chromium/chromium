@@ -246,7 +246,9 @@ void DeleteAppFolderFromFileThread(const base::FilePath& path) {
             (!base::PathExists(path) || base::DirectoryExists(path)),
         base::NotFatalUntil::M160);
   const bool deleted = base::DeletePathRecursively(path);
-  CHECK(deleted, base::NotFatalUntil::M160);
+  // TODO(crbug.com/577892368): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(deleted);
 }
 
 // TODO(crbug.com/40497410): Due to shutdown procedure dependency,
