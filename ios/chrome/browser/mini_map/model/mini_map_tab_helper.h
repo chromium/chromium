@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_MINI_MAP_MODEL_MINI_MAP_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_MINI_MAP_MODEL_MINI_MAP_TAB_HELPER_H_
 
+#import <optional>
+
+#import "base/memory/weak_ptr.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
@@ -48,6 +51,18 @@ class MiniMapTabHelper : public web::WebStateUserData<MiniMapTabHelper>,
   // Whether the navigation to `url` should be intercepted.
   bool ShouldInterceptRequest(NSURL* url, ui::PageTransition page_transition);
 
+  // Presents the mini map native preview for `url`.
+  void PresentMiniMapNativePreview(const GURL& url);
+
+  // Cancels `callback` and opens `url` with `transition_type` if `this` and
+  // `web_state()` are still valid.
+  void CancelAndOpenURL(PolicyDecisionCallback callback,
+                        const GURL& url,
+                        ui::PageTransition transition_type);
+
+  // Opens `params` in `web_state()` if it is still valid.
+  void OpenURL(web::WebState::OpenURLParams params);
+
   // Whether the web_state is currently on Google SRP.
   bool is_on_google_srp_ = false;
 
@@ -64,7 +79,9 @@ class MiniMapTabHelper : public web::WebStateUserData<MiniMapTabHelper>,
   GURL pending_treatment_url_;
 
   // The transition type for the pending treatment URL.
-  ui::PageTransition pending_transition_type_;
+  std::optional<ui::PageTransition> pending_transition_type_;
+
+  base::WeakPtrFactory<MiniMapTabHelper> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_MINI_MAP_MODEL_MINI_MAP_TAB_HELPER_H_

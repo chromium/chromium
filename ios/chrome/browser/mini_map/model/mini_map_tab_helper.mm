@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/mini_map/model/mini_map_tab_helper.h"
 
+#import <utility>
+
+#import "base/functional/bind.h"
 #import "base/strings/string_util.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/google/core/common/google_util.h"
 #import "ios/chrome/browser/mini_map/model/mini_map_service.h"
 #import "ios/chrome/browser/mini_map/model/mini_map_service_factory.h"
@@ -64,61 +68,51 @@ void MiniMapTabHelper::ShouldAllowRequest(NSURLRequest* request,
   }
 
   const GURL request_url = net::GURLWithNSURL(request.URL);
+  GURL modified_url =
+      ios::provider::URLByAppendingCampaignTokenIfNeeded(request_url);
+  if (modified_url == request_url) {
+    modified_url =
+        net::AppendQueryParameter(request_url, "utm_campaign", "as-npt-bling");
+  }
 
   // User Disabled in Settings (Opt-out):
   if (!mini_map_service_->IsMiniMapEnabled()) {
-    GURL modified_url =
-        ios::provider::URLByAppendingCampaignTokenIfNeeded(request_url);
-    if (modified_url == request_url) {
-      modified_url = net::AppendQueryParameter(request_url, "utm_campaign",
-                                               "as-npt-bling");
-    }
-
-    std::move(callback).Run(PolicyDecision::Cancel());
-
-    web::WebState::OpenURLParams params(modified_url, web::Referrer(),
-                                        WindowOpenDisposition::kCurrentTab,
-                                        request_info.transition_type,
-                                        /*is_renderer_initiated=*/false);
-    web_state()->OpenURL(params);
+    CancelAndOpenURL(std::move(callback), modified_url,
+                     request_info.transition_type);
     return;
   }
 
   // Save fallback URL, defer navigation, and present Native Preview sheet.
-  if (policy_callback_) {
-    std::move(policy_callback_).Run(PolicyDecision::Allow());
-  }
-
-  GURL pending_url =
-      ios::provider::URLByAppendingCampaignTokenIfNeeded(request_url);
-  if (pending_url == request_url) {
-    pending_url =
-        net::AppendQueryParameter(request_url, "utm_campaign", "as-npt-bling");
-  }
-  pending_treatment_url_ = pending_url;
+  PolicyDecisionCallback previous_callback = std::move(policy_callback_);
+  pending_treatment_url_ = modified_url;
   pending_transition_type_ = request_info.transition_type;
   policy_callback_ = std::move(callback);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&MiniMapTabHelper::PresentMiniMapNativePreview,
+                                weak_ptr_factory_.GetWeakPtr(), modified_url));
+
+  if (previous_callback) {
+    std::move(previous_callback).Run(PolicyDecision::Allow());
+  }
 }
 
 void MiniMapTabHelper::OnMiniMapSuccess() {
+  pending_treatment_url_ = GURL();
+  pending_transition_type_.reset();
   if (policy_callback_) {
     std::move(policy_callback_).Run(PolicyDecision::Cancel());
   }
-  pending_treatment_url_ = GURL();
-  pending_transition_type_ = ui::PageTransition::PAGE_TRANSITION_LINK;
 }
 
 void MiniMapTabHelper::OnMiniMapFailure() {
-  if (policy_callback_) {
-    std::move(policy_callback_).Run(PolicyDecision::Cancel());
-    web::WebState::OpenURLParams params(pending_treatment_url_, web::Referrer(),
-                                        WindowOpenDisposition::kCurrentTab,
-                                        pending_transition_type_,
-                                        /*is_renderer_initiated=*/false);
-    web_state()->OpenURL(params);
-  }
+  GURL url = std::move(pending_treatment_url_);
   pending_treatment_url_ = GURL();
-  pending_transition_type_ = ui::PageTransition::PAGE_TRANSITION_LINK;
+  std::optional<ui::PageTransition> transition_type =
+      std::exchange(pending_transition_type_, std::nullopt);
+  if (policy_callback_ && transition_type.has_value()) {
+    CancelAndOpenURL(std::move(policy_callback_), url, *transition_type);
+  }
 }
 
 void MiniMapTabHelper::WebStateDestroyed() {
@@ -189,19 +183,31 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
     return false;
   }
 
-  if (!mini_map_service_->IsMiniMapEnabled()) {
-    // Intercept the request to add the UTM campaign parameter.
-    // Early return to prevent mini map from opening.
-    return true;
-  }
-
-  GURL modified_url =
-      ios::provider::URLByAppendingCampaignTokenIfNeeded(target_url);
-  if (modified_url == target_url) {
-    modified_url =
-        net::AppendQueryParameter(target_url, "utm_campaign", "as-npt-bling");
-  }
-  [mini_map_handler_
-      presentMiniMapNativePreviewForURL:net::NSURLWithGURL(modified_url)];
   return true;
+}
+
+void MiniMapTabHelper::PresentMiniMapNativePreview(const GURL& url) {
+  [mini_map_handler_ presentMiniMapNativePreviewForURL:net::NSURLWithGURL(url)];
+}
+
+void MiniMapTabHelper::CancelAndOpenURL(PolicyDecisionCallback callback,
+                                        const GURL& url,
+                                        ui::PageTransition transition_type) {
+  web::WebState::OpenURLParams params(
+      url, web::Referrer(), WindowOpenDisposition::kCurrentTab, transition_type,
+      /*is_renderer_initiated=*/false);
+  // Running `callback` with `PolicyDecision::Cancel()` must happen before
+  // `OpenURL()` (so the cancelled navigation's pending item is discarded
+  // first), and may synchronously close the WebState and destroy `this`.
+  // Chain `OpenURL()` via a WeakPtr so `this` is not accessed if destroyed.
+  base::BindOnce(std::move(callback), PolicyDecision::Cancel())
+      .Then(base::BindOnce(&MiniMapTabHelper::OpenURL,
+                           weak_ptr_factory_.GetWeakPtr(), params))
+      .Run();
+}
+
+void MiniMapTabHelper::OpenURL(web::WebState::OpenURLParams params) {
+  if (web_state()) {
+    web_state()->OpenURL(params);
+  }
 }

@@ -6,7 +6,9 @@
 
 #import <memory>
 
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/search_engines/template_url_service.h"
@@ -190,25 +192,30 @@ class MiniMapTabHelperTest : public PlatformTest {
     __block bool callback_called = false;
     __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
         web::WebStatePolicyDecider::PolicyDecision::Allow();
-    base::RunLoop run_loop;
     auto callback =
         base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
           policy_decision = decision;
           callback_called = true;
-        }).Then(run_loop.QuitClosure());
+        }).Then(task_environment_.QuitClosure());
     tab_helper_->ShouldAllowRequest([NSURLRequest requestWithURL:url],
                                     request_info, std::move(callback));
 
     if (!callback_called) {
-      // The request was intercepted and the callback deferred.
-      if (simulate_success) {
-        tab_helper_->OnMiniMapSuccess();
-      } else {
-        tab_helper_->OnMiniMapFailure();
-      }
+      // The request was intercepted and the callback deferred. Post the
+      // resolution so it runs after the posted `PresentMiniMapNativePreview`
+      // task.
+      MiniMapTabHelper* tab_helper = tab_helper_;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(^{
+            if (simulate_success) {
+              tab_helper->OnMiniMapSuccess();
+            } else {
+              tab_helper->OnMiniMapFailure();
+            }
+          }));
     }
 
-    run_loop.Run();
+    task_environment_.RunUntilQuit();
     EXPECT_TRUE(callback_called);
     return policy_decision.ShouldAllowNavigation();
   }
@@ -412,6 +419,9 @@ TEST_F(MiniMapTabHelperTest, TestReentrancy) {
   profile_->GetSyncablePrefs()->SetBoolean(prefs::kIosMiniMapShowNativeMap,
                                            true);
   google_maps_installed_ = false;
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidBecomeActiveNotification
+                    object:nil];
 
   const web::WebStatePolicyDecider::RequestInfo request_info(
       ui::PageTransition::PAGE_TRANSITION_LINK, /*target_frame_is_main*/ true,
@@ -441,7 +451,7 @@ TEST_F(MiniMapTabHelperTest, TestReentrancy) {
       base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
         decision2 = decision;
         callback2_called = true;
-      });
+      }).Then(task_environment_.QuitClosure());
 
   tab_helper_->ShouldAllowRequest(
       [NSURLRequest requestWithURL:[NSURL URLWithString:kGoogleMapsLink2]],
@@ -454,8 +464,13 @@ TEST_F(MiniMapTabHelperTest, TestReentrancy) {
   // The second callback should NOT be called yet (deferred).
   EXPECT_FALSE(callback2_called);
 
-  // Now resolve the second one
-  tab_helper_->OnMiniMapSuccess();
+  // Now resolve the second one after the posted preview tasks run.
+  MiniMapTabHelper* tab_helper = tab_helper_;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        tab_helper->OnMiniMapSuccess();
+      }));
+  task_environment_.RunUntilQuit();
   EXPECT_TRUE(callback2_called);
   EXPECT_FALSE(decision2.ShouldAllowNavigation());
 
@@ -558,6 +573,246 @@ TEST_F(MiniMapTabHelperTest, NoBypassWhenGoogleMapsInstalledAndFlagDisabled) {
   // Interception is skipped when Google Maps is installed and flag is off.
   EXPECT_TRUE(res);
   EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+}
+
+// Tests that when `presentMiniMapNativePreviewForURL:` synchronously calls
+// `OnMiniMapSuccess()`, the current navigation's policy decision callback is
+// immediately resolved as canceled.
+TEST_F(MiniMapTabHelperTest, SynchronousMiniMapSuccessDuringPresent) {
+  NSString* const kGoogleMapsLink =
+      @"https://www.google.com/maps/foo?valid=true";
+  NSString* const kExpectedLink =
+      @"https://www.google.com/maps/foo?valid=true&utm_campaign=as-npt-bling";
+
+  MiniMapTabHelper* tab_helper = tab_helper_;
+  OCMExpect(
+      [mini_map_commands_handler_
+          presentMiniMapNativePreviewForURL:[NSURL
+                                                URLWithString:kExpectedLink]])
+      .andDo(^(NSInvocation* invocation) {
+        tab_helper->OnMiniMapSuccess();
+      });
+
+  web_state_.SetCurrentURL(
+      net::GURLWithNSURL([NSURL URLWithString:kGoogleSRPPage]));
+  web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  profile_->GetSyncablePrefs()->SetBoolean(prefs::kIosMiniMapShowNativeMap,
+                                           true);
+  google_maps_installed_ = false;
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidBecomeActiveNotification
+                    object:nil];
+
+  const web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_LINK, /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false, /*user_initiated=*/true,
+      /*user_tapped_recently=*/true);
+
+  __block bool callback_called = false;
+  __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+  auto callback =
+      base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+        policy_decision = decision;
+        callback_called = true;
+      }).Then(task_environment_.QuitClosure());
+
+  tab_helper_->ShouldAllowRequest(
+      [NSURLRequest requestWithURL:[NSURL URLWithString:kGoogleMapsLink]],
+      request_info, std::move(callback));
+
+  EXPECT_FALSE(callback_called);
+  task_environment_.RunUntilQuit();
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(policy_decision.ShouldAllowNavigation());
+  EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+}
+
+// Tests that synchronously destroying the WebState inside the policy decision
+// callback does not cause a use-after-free in the opt-out arm,
+// `OnMiniMapSuccess()`, or `OnMiniMapFailure()`.
+TEST_F(MiniMapTabHelperTest, WebStateDestroyedInPolicyCallback) {
+  NSString* const kGoogleMapsLink =
+      @"https://www.google.com/maps/foo?valid=true";
+  NSString* const kExpectedLink =
+      @"https://www.google.com/maps/foo?valid=true&utm_campaign=as-npt-bling";
+  const web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_LINK, /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false, /*user_initiated=*/true,
+      /*user_tapped_recently=*/true);
+
+  auto create_web_state = [&]() {
+    auto web_state = std::make_unique<TestFakeWebState>();
+    web_state->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
+    web_state->SetBrowserState(profile_.get());
+    web_state->WasShown();
+    MiniMapTabHelper::CreateForWebState(web_state.get());
+    web_state->SetCurrentURL(
+        net::GURLWithNSURL([NSURL URLWithString:kGoogleSRPPage]));
+    web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+    return web_state;
+  };
+
+  google_maps_installed_ = false;
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidBecomeActiveNotification
+                    object:nil];
+
+  // Case 1: Opt-out arm destroys WebState inside `PolicyDecision::Cancel()`.
+  {
+    profile_->GetSyncablePrefs()->SetBoolean(prefs::kIosMiniMapShowNativeMap,
+                                             false);
+    std::unique_ptr<TestFakeWebState> local_web_state = create_web_state();
+    MiniMapTabHelper* helper =
+        MiniMapTabHelper::FromWebState(local_web_state.get());
+    helper->SetMiniMapCommands(mini_map_commands_handler_);
+
+    bool callback_called = false;
+    auto callback = base::BindOnce(
+        [](std::unique_ptr<TestFakeWebState>* ws_slot, bool* called,
+           web::WebStatePolicyDecider::PolicyDecision decision) {
+          *called = true;
+          EXPECT_FALSE(decision.ShouldAllowNavigation());
+          ws_slot->reset();
+        },
+        &local_web_state, &callback_called);
+
+    helper->ShouldAllowRequest(
+        [NSURLRequest requestWithURL:[NSURL URLWithString:kGoogleMapsLink]],
+        request_info, std::move(callback));
+    EXPECT_TRUE(callback_called);
+    EXPECT_FALSE(local_web_state);
+  }
+
+  // Case 2: Synchronous `OnMiniMapSuccess()` destroys WebState inside
+  // `PolicyDecision::Cancel()`.
+  {
+    profile_->GetSyncablePrefs()->SetBoolean(prefs::kIosMiniMapShowNativeMap,
+                                             true);
+    std::unique_ptr<TestFakeWebState> local_web_state = create_web_state();
+    MiniMapTabHelper* helper =
+        MiniMapTabHelper::FromWebState(local_web_state.get());
+    helper->SetMiniMapCommands(mini_map_commands_handler_);
+
+    OCMExpect(
+        [mini_map_commands_handler_
+            presentMiniMapNativePreviewForURL:[NSURL
+                                                  URLWithString:kExpectedLink]])
+        .andDo(^(NSInvocation* invocation) {
+          helper->OnMiniMapSuccess();
+        });
+
+    bool callback_called = false;
+    auto callback =
+        base::BindOnce(
+            [](std::unique_ptr<TestFakeWebState>* ws_slot, bool* called,
+               web::WebStatePolicyDecider::PolicyDecision decision) {
+              *called = true;
+              EXPECT_FALSE(decision.ShouldAllowNavigation());
+              ws_slot->reset();
+            },
+            &local_web_state, &callback_called)
+            .Then(task_environment_.QuitClosure());
+
+    helper->ShouldAllowRequest(
+        [NSURLRequest requestWithURL:[NSURL URLWithString:kGoogleMapsLink]],
+        request_info, std::move(callback));
+    task_environment_.RunUntilQuit();
+    EXPECT_TRUE(callback_called);
+    EXPECT_FALSE(local_web_state);
+    EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+  }
+
+  // Case 3: `OnMiniMapFailure()` destroys WebState inside
+  // `PolicyDecision::Cancel()`.
+  {
+    profile_->GetSyncablePrefs()->SetBoolean(prefs::kIosMiniMapShowNativeMap,
+                                             true);
+    std::unique_ptr<TestFakeWebState> local_web_state = create_web_state();
+    MiniMapTabHelper* helper =
+        MiniMapTabHelper::FromWebState(local_web_state.get());
+    helper->SetMiniMapCommands(mini_map_commands_handler_);
+
+    base::RepeatingClosure quit_present = task_environment_.QuitClosure();
+    OCMExpect(
+        [mini_map_commands_handler_
+            presentMiniMapNativePreviewForURL:[NSURL
+                                                  URLWithString:kExpectedLink]])
+        .andDo(^(NSInvocation* invocation) {
+          quit_present.Run();
+        });
+
+    bool callback_called = false;
+    auto callback = base::BindOnce(
+        [](std::unique_ptr<TestFakeWebState>* ws_slot, bool* called,
+           web::WebStatePolicyDecider::PolicyDecision decision) {
+          *called = true;
+          EXPECT_FALSE(decision.ShouldAllowNavigation());
+          ws_slot->reset();
+        },
+        &local_web_state, &callback_called);
+
+    helper->ShouldAllowRequest(
+        [NSURLRequest requestWithURL:[NSURL URLWithString:kGoogleMapsLink]],
+        request_info, std::move(callback));
+    task_environment_.RunUntilQuit();
+    EXPECT_FALSE(callback_called);
+
+    helper->OnMiniMapFailure();
+    EXPECT_TRUE(callback_called);
+    EXPECT_FALSE(local_web_state);
+    EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+  }
+
+  // Case 4: Second intercepted request resolves previous `policy_callback_`
+  // with `PolicyDecision::Allow()`, which destroys the WebState, cancels the
+  // second request's callback via `~MiniMapTabHelper()`, and cancels any
+  // pending preview presentation task.
+  {
+    profile_->GetSyncablePrefs()->SetBoolean(prefs::kIosMiniMapShowNativeMap,
+                                             true);
+    std::unique_ptr<TestFakeWebState> local_web_state = create_web_state();
+    MiniMapTabHelper* helper =
+        MiniMapTabHelper::FromWebState(local_web_state.get());
+    helper->SetMiniMapCommands(mini_map_commands_handler_);
+
+    bool callback1_called = false;
+    auto callback1 = base::BindOnce(
+        [](std::unique_ptr<TestFakeWebState>* ws_slot, bool* called,
+           web::WebStatePolicyDecider::PolicyDecision decision) {
+          *called = true;
+          EXPECT_TRUE(decision.ShouldAllowNavigation());
+          ws_slot->reset();
+        },
+        &local_web_state, &callback1_called);
+
+    helper->ShouldAllowRequest(
+        [NSURLRequest requestWithURL:[NSURL URLWithString:kGoogleMapsLink]],
+        request_info, std::move(callback1));
+    EXPECT_FALSE(callback1_called);
+
+    bool callback2_called = false;
+    auto callback2 = base::BindOnce(
+        [](bool* called, web::WebStatePolicyDecider::PolicyDecision decision) {
+          *called = true;
+          EXPECT_FALSE(decision.ShouldAllowNavigation());
+        },
+        &callback2_called);
+
+    helper->ShouldAllowRequest(
+        [NSURLRequest requestWithURL:[NSURL URLWithString:kGoogleMapsLink]],
+        request_info, std::move(callback2));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, task_environment_.QuitClosure());
+    task_environment_.RunUntilQuit();
+    EXPECT_TRUE(callback1_called);
+    EXPECT_TRUE(callback2_called);
+    EXPECT_FALSE(local_web_state);
+    EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+  }
 }
 
 #pragma mark - MiniMapTabHelperBypassEnabledTest
