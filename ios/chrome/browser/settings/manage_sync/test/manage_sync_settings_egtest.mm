@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_egtest_utils.h"
 #import "ios/chrome/browser/settings/bulk_upload/public/bulk_upload_constants.h"
 #import "ios/chrome/browser/settings/google_services/public/google_services_settings_constants.h"
@@ -256,11 +257,10 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGrey connectFakeSyncServerNetwork];
 }
 
-// TODO(crbug.com/355133719): Remove FLAKY_ from this test.
 // Tests the unsynced data dialog shows when there are unsynced readinglist
 // entries. Also verifies that the user is still signed in when the dialog
 // Cancel button is tapped.
-- (void)FLAKY_testUnsyncedDataDialogShowsInCaseOfUnsyncedReadingListEntry {
+- (void)testUnsyncedDataDialogShowsInCaseOfUnsyncedReadingListEntry {
   // TODO(crbug.com/41494658): Test fails on iPhone device and simulator.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPhone.");
@@ -269,12 +269,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  [ChromeEarlGrey disconnectFakeSyncServerNetwork];
-
-  reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
-      GURL("https://example.com"), fakeIdentity.userEmail);
-
   [SigninEarlGreyUI openSyncSettings];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
@@ -283,10 +277,21 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                           /*enabled=*/YES)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
+  [ChromeEarlGrey disconnectFakeSyncServerNetwork];
+
+  GREYAssertNil([ReadingListAppInterface
+                    addEntryWithURL:[NSURL URLWithString:@"https://example.com"]
+                              title:@"example"
+                               read:NO],
+                @"Unable to add Reading List item");
+
   [SigninEarlGreyUI tapSignOutFromSyncSettings];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AlertItemWithAccessibilityLabelId(
-                     IDS_CANCEL)] performAction:grey_tap()];
+  id<GREYMatcher> cancelButtonMatcher =
+      chrome_test_util::AlertItemWithAccessibilityLabelId(IDS_CANCEL);
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:cancelButtonMatcher];
+  [[EarlGrey selectElementWithMatcher:cancelButtonMatcher]
+      performAction:grey_tap()];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
