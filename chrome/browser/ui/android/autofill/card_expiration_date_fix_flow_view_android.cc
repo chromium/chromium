@@ -7,10 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -38,10 +40,6 @@ void CardExpirationDateFixFlowViewAndroid::OnUserDismiss(JNIEnv* env) {
   controller_->OnDismissed();
 }
 
-void CardExpirationDateFixFlowViewAndroid::PromptDismissed(JNIEnv* env) {
-  delete this;
-}
-
 void CardExpirationDateFixFlowViewAndroid::Show() {
   if (!web_contents_->GetNativeView() ||
       !web_contents_->GetNativeView()->GetWindowAndroid()) {
@@ -51,8 +49,8 @@ void CardExpirationDateFixFlowViewAndroid::Show() {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   java_object_.Reset(Java_AutofillExpirationDateFixFlowBridge_create(
-      env, reinterpret_cast<intptr_t>(this), controller_->GetTitleText(),
-      controller_->GetSaveButtonLabel(),
+      env, jni_zero::MakeUnique(base::WrapUnique(this)),
+      controller_->GetTitleText(), controller_->GetSaveButtonLabel(),
       ResourceMapper::MapToJavaDrawableId(controller_->GetIconId()),
       controller_->GetCardLabel()));
 

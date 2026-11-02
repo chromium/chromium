@@ -32,18 +32,18 @@ class CardExpirationDateFixFlowViewAndroid
   CardExpirationDateFixFlowViewAndroid& operator=(
       const CardExpirationDateFixFlowViewAndroid&) = delete;
 
+  ~CardExpirationDateFixFlowViewAndroid() override;
+
   void OnUserAccept(JNIEnv* env,
                     const std::u16string& month,
                     const std::u16string& year);
   void OnUserDismiss(JNIEnv* env);
-  void PromptDismissed(JNIEnv* env);
 
   // CardExpirationDateFixFlowView implementation.
   void Show() override;
   void ControllerGone() override;
 
  private:
-  ~CardExpirationDateFixFlowViewAndroid() override;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

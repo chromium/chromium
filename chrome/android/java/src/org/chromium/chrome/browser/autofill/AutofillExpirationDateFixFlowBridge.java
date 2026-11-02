@@ -8,7 +8,10 @@ import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
@@ -24,7 +27,8 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 @NullMarked
 final class AutofillExpirationDateFixFlowBridge
         implements AutofillExpirationDateFixFlowPromptDelegate {
-    private long mNativeCardExpirationDateFixFlowViewAndroid;
+    private final JniUniquePtr<NativeCardExpirationDateFixFlowViewAndroid>
+            mNativeCardExpirationDateFixFlowViewAndroid;
     private final String mTitle;
     private final String mConfirmButtonLabel;
     private final int mIconId;
@@ -32,7 +36,8 @@ final class AutofillExpirationDateFixFlowBridge
     private @Nullable AutofillExpirationDateFixFlowPrompt mExpirationDateFixFlowPrompt;
 
     private AutofillExpirationDateFixFlowBridge(
-            long nativeCardExpirationDateFixFlowViewAndroid,
+            JniUniquePtr<NativeCardExpirationDateFixFlowViewAndroid>
+                    nativeCardExpirationDateFixFlowViewAndroid,
             String title,
             String confirmButtonLabel,
             int iconId,
@@ -46,7 +51,8 @@ final class AutofillExpirationDateFixFlowBridge
 
     @CalledByNative
     private static AutofillExpirationDateFixFlowBridge create(
-            long nativeCardExpirationDateFixFlowViewAndroid,
+            JniUniquePtr<NativeCardExpirationDateFixFlowViewAndroid>
+                    nativeCardExpirationDateFixFlowViewAndroid,
             @JniType("std::u16string") String title,
             @JniType("std::u16string") String confirmButtonLabel,
             int iconId,
@@ -61,9 +67,7 @@ final class AutofillExpirationDateFixFlowBridge
 
     @Override
     public void onPromptDismissed() {
-        AutofillExpirationDateFixFlowBridgeJni.get()
-                .promptDismissed(mNativeCardExpirationDateFixFlowViewAndroid);
-        mNativeCardExpirationDateFixFlowViewAndroid = 0;
+        mNativeCardExpirationDateFixFlowViewAndroid.destroy();
     }
 
     @Override
@@ -107,15 +111,16 @@ final class AutofillExpirationDateFixFlowBridge
         }
     }
 
+    @JniType("::autofill::CardExpirationDateFixFlowViewAndroid")
+    interface NativeCardExpirationDateFixFlowViewAndroid extends JniTypeToken {}
+
     @NativeMethods
     interface Natives {
-        void promptDismissed(long nativeCardExpirationDateFixFlowViewAndroid);
-
         void onUserAccept(
-                long nativeCardExpirationDateFixFlowViewAndroid,
+                JniPtr<NativeCardExpirationDateFixFlowViewAndroid> self,
                 @JniType("std::u16string") String month,
                 @JniType("std::u16string") String year);
 
-        void onUserDismiss(long nativeCardExpirationDateFixFlowViewAndroid);
+        void onUserDismiss(JniPtr<NativeCardExpirationDateFixFlowViewAndroid> self);
     }
 }
