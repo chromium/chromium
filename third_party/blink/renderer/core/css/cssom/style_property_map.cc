@@ -444,10 +444,6 @@ void StylePropertyMap::append(
     const String& property_name,
     const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
     ExceptionState& exception_state) {
-  if (values.empty()) {
-    return;
-  }
-
   const CSSPropertyID property_id =
       CssPropertyID(execution_context, property_name);
 
@@ -467,6 +463,10 @@ void StylePropertyMap::append(
 
   if (!property.IsRepeated()) {
     exception_state.ThrowTypeError("Property does not support multiple values");
+    return;
+  }
+
+  if (values.empty()) {
     return;
   }
 
