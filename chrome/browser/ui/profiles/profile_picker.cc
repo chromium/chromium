@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -230,7 +229,6 @@ StartupProfileMode ProfilePicker::GetStartupMode() {
 
   bool pref_enabled = g_browser_process->local_state()->GetBoolean(
       prefs::kBrowserShowProfilePickerOnStartup);
-  base::UmaHistogramBoolean("ProfilePicker.AskOnStartup", pref_enabled);
   if (pref_enabled) {
     return StartupProfileMode::kProfilePicker;
   }

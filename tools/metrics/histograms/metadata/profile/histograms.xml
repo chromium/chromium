@@ -916,17 +916,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ProfilePicker.AskOnStartup" enum="BooleanEnabled"
-    expires_after="2024-02-25">
-  <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the state of the &quot;Ask on startup&quot; user preference that
-    controls whether the profile picker should be shown on startup. Recorded on
-    startup of Chrome.
-  </summary>
-</histogram>
-
 <histogram name="ProfilePicker.AskOnStartupChanged" enum="BooleanEnabled"
     expires_after="2023-04-23">
   <owner>msalama@chromium.org</owner>
