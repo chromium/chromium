@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -3176,14 +3177,28 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private boolean hideHairlineForIncognitoNtp() {
+        // The hairline is hidden on the incognito NTP so that a top-anchored toolbar blends
+        // seamlessly into the page content directly below it. When the toolbar is bottom-anchored
+        // the hairline separates the page content from the omnibox instead, so it should remain
+        // visible, consistent with every other page.
         return isIncognitoBranded()
+                && !isToolbarBottomAnchored()
                 && UrlUtilities.isNtpUrl(getToolbarDataProvider().getCurrentGurl());
     }
 
     private boolean hideHairlineForInterstitial() {
-        return getToolbarDataProvider() != null
-                && getToolbarDataProvider().getTab() != null
-                && getToolbarDataProvider().getTab().isShowingErrorPage();
+        Tab tab = getToolbarDataProvider() != null ? getToolbarDataProvider().getTab() : null;
+        if (tab == null || !tab.isShowingErrorPage()) return false;
+        // Native pages (e.g. chrome://history, chrome://bookmarks) are drawn by an Android View
+        // overlaid on the WebContents. On Android these chrome:// URLs have no WebUI, so the
+        // underlying navigation commits as an error page that is never visible to the user. Only
+        // treat the error page as an interstitial when it is actually what's being shown.
+        return !tab.isNativePage();
+    }
+
+    private boolean isToolbarBottomAnchored() {
+        return mBrowserControlsStateProvider != null
+                && mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM;
     }
 
     private @VisualState int computeVisualState() {

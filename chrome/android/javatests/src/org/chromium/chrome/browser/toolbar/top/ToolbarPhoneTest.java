@@ -104,6 +104,7 @@ import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -848,6 +849,63 @@ public class ToolbarPhoneTest {
                             0);
                     mToolbar.onUrlFocusChange(true);
                     assertTrue(mToolbar.isAnimationRunningForTesting());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testHairlineShownOnNativePageWithErrorPageUnderneath() {
+        // chrome://history is a native page on Android. The WebContents underneath it commits an
+        // error page (there is no history WebUI on Android), which must not hide the hairline.
+        mActivityTestRule.loadUrl(UrlConstants.HISTORY_URL);
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getActivityTab().isNativePage());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mToolbar.updateHairlineVisibility();
+                    assertTrue(mToolbar.shouldDrawHairline());
+                    assertEquals(View.VISIBLE, mToolbar.getToolbarHairline().getVisibility());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testHairlineOnIncognitoNtp_dependsOnToolbarPosition() {
+        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ true);
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getActivityTab().isIncognitoBranded());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowserControlsManager browserControlsManager =
+                            mActivityTestRule.getActivity().getBrowserControlsManager();
+                    // Top-anchored: the incognito NTP intentionally blends into the toolbar.
+                    assertEquals(
+                            ControlsPosition.TOP, browserControlsManager.getControlsPosition());
+                    mToolbar.updateHairlineVisibility();
+                    assertFalse(mToolbar.shouldDrawHairline());
+
+                    // Bottom-anchored: the hairline separates page content from the omnibox.
+                    browserControlsManager.setControlsPosition(
+                            ControlsPosition.BOTTOM,
+                            0,
+                            0,
+                            0,
+                            browserControlsManager.getTopControlsHeight(),
+                            0,
+                            0);
+                    mToolbar.updateHairlineVisibility();
+                    assertTrue(mToolbar.shouldDrawHairline());
+                    assertEquals(View.VISIBLE, mToolbar.getToolbarHairline().getVisibility());
+
+                    browserControlsManager.setControlsPosition(
+                            ControlsPosition.TOP,
+                            browserControlsManager.getBottomControlsHeight(),
+                            0,
+                            0,
+                            0,
+                            0,
+                            0);
                 });
     }
 }
