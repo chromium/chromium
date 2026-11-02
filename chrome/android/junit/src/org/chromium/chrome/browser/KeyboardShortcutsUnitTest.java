@@ -192,6 +192,64 @@ public class KeyboardShortcutsUnitTest {
         verify(mController).onMenuOrKeyboardAction(eq(R.id.show_menu), eq(false));
     }
 
+    @Test
+    public void testReloadTab_F5_TriggersReload() {
+        // Setup.
+        KeyEvent event = createKeyEvent(KeyEvent.KEYCODE_F5, /* metaState= */ 0);
+
+        // Act.
+        boolean handled = onKeyDown(event);
+
+        // Verify.
+        assertTrue(handled);
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.reload_menu_id), eq(false));
+    }
+
+    @Test
+    public void testReloadTab_ShiftF5_TriggersReloadBypassingCache() {
+        // Setup.
+        KeyEvent event = createKeyEvent(KeyEvent.KEYCODE_F5, KeyEvent.META_SHIFT_ON);
+
+        // Act.
+        boolean handled = onKeyDown(event);
+
+        // Verify.
+        assertTrue(handled);
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.reload_ignoring_cache), eq(false));
+        verify(mController, never()).onMenuOrKeyboardAction(eq(R.id.reload_menu_id), eq(false));
+    }
+
+    @Test
+    public void testClearBrowsingData_CtrlShiftBackspace_TriggersQuickDelete() {
+        // Setup.
+        KeyEvent event =
+                createKeyEvent(
+                        KeyEvent.KEYCODE_DEL, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+
+        // Act.
+        boolean handled = onKeyDown(event);
+
+        // Verify.
+        assertTrue(handled);
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.quick_delete_menu_id), eq(false));
+    }
+
+    @Test
+    public void testClearBrowsingData_CtrlShiftForwardDelete_TriggersQuickDelete() {
+        // Setup.
+        KeyEvent event =
+                createKeyEvent(
+                        KeyEvent.KEYCODE_FORWARD_DEL,
+                        KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+
+        // Act.
+        boolean handled = onKeyDown(event);
+
+        // Verify.
+        assertTrue(handled);
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.quick_delete_menu_id), eq(false));
+    }
+
     private static KeyEvent createKeyEvent(int keyCode, int metaState) {
         return new KeyEvent(
                 SystemClock.uptimeMillis(),
@@ -216,8 +274,12 @@ public class KeyboardShortcutsUnitTest {
     }
 
     private boolean onKeyDown(int keyCode, int metaState) {
+        return onKeyDown(createKeyEvent(keyCode, metaState));
+    }
+
+    private boolean onKeyDown(KeyEvent event) {
         return KeyboardShortcuts.onKeyDown(
-                createKeyEvent(keyCode, metaState),
+                event,
                 /* isCurrentTabVisible= */ true,
                 /* tabSwitchingEnabled= */ true,
                 mTabModelSelector,

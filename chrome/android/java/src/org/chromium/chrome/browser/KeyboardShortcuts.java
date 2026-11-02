@@ -471,7 +471,6 @@ public class KeyboardShortcuts {
                 R.string.keyboard_shortcut_reload_page,
                 R.string.keyboard_shortcut_tab_group_header,
                 new KeyCombo[] {
-                    new KeyCombo(KeyEvent.KEYCODE_F5, KeyEvent.META_SHIFT_ON),
                     new KeyCombo(KeyEvent.KEYCODE_F5, NO_MODIFIER),
                     new KeyCombo(KeyEvent.KEYCODE_REFRESH, NO_MODIFIER)
                 });
@@ -482,6 +481,7 @@ public class KeyboardShortcuts {
                 R.string.keyboard_shortcut_tab_group_header,
                 new KeyCombo[] {
                     new KeyCombo(KeyEvent.KEYCODE_F5, KeyEvent.META_CTRL_ON),
+                    new KeyCombo(KeyEvent.KEYCODE_F5, KeyEvent.META_SHIFT_ON),
                     new KeyCombo(KeyEvent.KEYCODE_REFRESH, KeyEvent.META_CTRL_ON),
                     new KeyCombo(KeyEvent.KEYCODE_REFRESH, KeyEvent.META_SHIFT_ON)
                 });
@@ -657,7 +657,12 @@ public class KeyboardShortcuts {
                 new KeyCombo(
                         KeyEvent.KEYCODE_DEL, (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
                 R.string.keyboard_shortcut_clear_browsing_data,
-                R.string.keyboard_shortcut_chrome_feature_group_header);
+                R.string.keyboard_shortcut_chrome_feature_group_header,
+                new KeyCombo[] {
+                    new KeyCombo(
+                            KeyEvent.KEYCODE_FORWARD_DEL,
+                            (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON))
+                });
 
         // Top controls.
         new KeyboardShortcutDefinition(

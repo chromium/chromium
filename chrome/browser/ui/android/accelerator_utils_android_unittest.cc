@@ -33,10 +33,14 @@ TEST(AcceleratorUtilsAndroidTest,
 
   EXPECT_TRUE(
       IsChromeAccelerator(ui::Accelerator(ui::VKEY_T, ui::EF_CONTROL_DOWN)));
-  // Ctrl+Shift+ForwardDelete (VKEY_DELETE) is only in accelerator_table.cc, not
-  // KeyboardShortcuts.java (which only maps KEYCODE_DEL / VKEY_BACK).
-  EXPECT_FALSE(IsChromeAccelerator(ui::Accelerator(
+  // Ctrl+Shift+ForwardDelete (VKEY_DELETE) is an alternate CLEAR_BROWSING_DATA
+  // shortcut in KeyboardShortcuts.java (KEYCODE_FORWARD_DEL).
+  EXPECT_TRUE(IsChromeAccelerator(ui::Accelerator(
       ui::VKEY_DELETE, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)));
+  // Shift+Escape (IDC_TASK_MANAGER_SHORTCUT) is only in accelerator_table.cc,
+  // not KeyboardShortcuts.java (which only maps Ctrl+Escape).
+  EXPECT_FALSE(
+      IsChromeAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN)));
   EXPECT_FALSE(IsChromeAccelerator(
       ui::Accelerator(ui::VKEY_Y, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)));
 }
