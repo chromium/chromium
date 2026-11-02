@@ -80,8 +80,9 @@ class DigitalIdentityMultiStepDialog {
   // or a placeholder color if the dialog wrapper has been destroyed.
   base::RepeatingCallback<ui::ColorVariant()> GetBackgroundColorCallback();
 
+  ui::ColorVariant GetBackgroundColor() const;
+
  private:
-  ui::ColorVariant GetBackgroundColor();
   DigitalIdentityMultiStepDialogDelegate* GetWidgetDelegate();
 
   // The web contents the dialog is modal to.

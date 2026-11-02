@@ -404,7 +404,7 @@ DigitalIdentityMultiStepDialog::GetBackgroundColorCallback() {
       weak_ptr_factory_.GetWeakPtr());
 }
 
-ui::ColorVariant DigitalIdentityMultiStepDialog::GetBackgroundColor() {
+ui::ColorVariant DigitalIdentityMultiStepDialog::GetBackgroundColor() const {
   return ui::kColorBubbleBackground;
 }
 

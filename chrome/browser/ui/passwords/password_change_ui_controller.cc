@@ -341,9 +341,7 @@ CreateOfferChangePasswordDialogWithPrivateInference(
             std::make_unique<views::ThemeTrackingAnimatedImageView>(
                 IDR_PASSWORD_CHANGE_PRIVATE_INFERENCE_LOTTIE,
                 IDR_PASSWORD_CHANGE_PRIVATE_INFERENCE_DARK_LOTTIE,
-                base::BindRepeating(
-                    &views::BubbleDialogDelegate::background_color,
-                    base::Unretained(host)));
+                host->background_color());
         animation_view->GetViewAccessibility().SetIsIgnored(true);
         auto* animation_view_ptr = animation_view.get();
         frame_view->SetHeaderView(std::move(animation_view));

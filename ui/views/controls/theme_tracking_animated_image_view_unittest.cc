@@ -14,6 +14,8 @@
 #include "base/strings/strcat.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_variant.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -51,6 +53,7 @@ class ThemeTrackingAnimatedImageViewTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
     widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+    SetIsDarkMode(false);
 
     const std::string kLightLottieData =
         base::StrCat({kLottiePrefix, kLightLottieRawData});
@@ -76,17 +79,13 @@ class ThemeTrackingAnimatedImageViewTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  ui::ColorVariant GetSimulatedBackgroundColor() const {
-    return is_dark_ ? SK_ColorBLACK : SK_ColorWHITE;
-  }
-
  protected:
   bool IsDarkMode() const { return is_dark_; }
   void SetIsDarkMode(bool is_dark) {
     is_dark_ = is_dark;
-    if (view()) {
-      view()->OnThemeChanged();
-    }
+    widget_->SetColorModeOverride(
+        is_dark ? ui::ColorProviderKey::ColorMode::kDark
+                : ui::ColorProviderKey::ColorMode::kLight);
   }
 
   void SetView(std::unique_ptr<ThemeTrackingAnimatedImageView> view) {
@@ -109,10 +108,7 @@ class ThemeTrackingAnimatedImageViewTest : public ViewsTestBase {
 
 TEST_F(ThemeTrackingAnimatedImageViewTest, ShouldUpdateWithThemeChanges) {
   SetView(std::make_unique<ThemeTrackingAnimatedImageView>(
-      kLightLottieId, kDarkLottieId,
-      base::BindRepeating(
-          &ThemeTrackingAnimatedImageViewTest::GetSimulatedBackgroundColor,
-          base::Unretained(this))));
+      kLightLottieId, kDarkLottieId, ui::kColorDialogBackground));
 
   ASSERT_FALSE(IsDarkMode());
   EXPECT_EQ(view()->GetAnimatedImageForTesting()->skottie()->raw_data(),
@@ -123,6 +119,20 @@ TEST_F(ThemeTrackingAnimatedImageViewTest, ShouldUpdateWithThemeChanges) {
             ToIntVector(kDarkLottieRawData));
 
   SetIsDarkMode(false);
+  EXPECT_EQ(view()->GetAnimatedImageForTesting()->skottie()->raw_data(),
+            ToIntVector(kLightLottieRawData));
+}
+
+TEST_F(ThemeTrackingAnimatedImageViewTest, ShouldWorkWithPhysicalSkColor) {
+  SetView(std::make_unique<ThemeTrackingAnimatedImageView>(
+      kLightLottieId, kDarkLottieId, SK_ColorBLACK));
+
+  EXPECT_EQ(view()->GetAnimatedImageForTesting()->skottie()->raw_data(),
+            ToIntVector(kDarkLottieRawData));
+
+  SetView(std::make_unique<ThemeTrackingAnimatedImageView>(
+      kLightLottieId, kDarkLottieId, SK_ColorWHITE));
+
   EXPECT_EQ(view()->GetAnimatedImageForTesting()->skottie()->raw_data(),
             ToIntVector(kLightLottieRawData));
 }

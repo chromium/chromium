@@ -11,10 +11,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 
 namespace views {
@@ -22,19 +22,17 @@ namespace views {
 ThemeTrackingAnimatedImageView::ThemeTrackingAnimatedImageView(
     int light_animation_lottie_id,
     int dark_animation_lottie_id,
-    base::RepeatingCallback<ui::ColorVariant()> get_background_color_callback)
+    ui::ColorVariant background_color)
     : light_animation_lottie_id_(light_animation_lottie_id),
       dark_animation_lottie_id_(dark_animation_lottie_id),
-      get_background_color_callback_(std::move(get_background_color_callback)) {
-}
+      background_color_(background_color) {}
 
 ThemeTrackingAnimatedImageView::~ThemeTrackingAnimatedImageView() = default;
 
 void ThemeTrackingAnimatedImageView::OnThemeChanged() {
   AnimatedImageView::OnThemeChanged();
-  const bool is_dark =
-      color_utils::IsDark(get_background_color_callback_.Run().ResolveToSkColor(
-          GetColorProvider()));
+  const bool is_dark = color_utils::IsDark(
+      background_color_.ResolveToSkColor(GetColorProvider()));
   UpdateAnimatedImage(is_dark ? dark_animation_lottie_id_
                               : light_animation_lottie_id_);
 }
