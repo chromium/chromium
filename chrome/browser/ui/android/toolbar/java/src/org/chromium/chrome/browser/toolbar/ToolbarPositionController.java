@@ -880,8 +880,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      *
      * @param systemTopInset The system's top inset, i.e., the height of the Status bar. It is
      *     always bigger than 0.
-     * @param consumeTopInset Determines if the toolbar should utilize this top inset, extending
-     *     across the full height of both the status bar and itself.
+     * @param consumeTopInset Whether the system's top inset is being consumed for top edge-to-edge
+     *     drawing (per {@link TopInsetProvider.Observer}). Whether the toolbar itself adds internal
+     *     top padding also depends on whether the top scalp layer is handling the inset (see {@link
+     *     EdgeToEdgeController#tabShouldDrawFullTopEdgeToEdge()}).
      * @param layoutType The current active layout type from {@link LayoutType}.
      * @return Whether the layout is changed.
      */
@@ -897,13 +899,24 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 && layoutType != LayoutType.TOOLBAR_SWIPE) {
             return false;
         }
+        // When top edge-to-edge is enabled, consumeTopInset is also true on opted-in web pages
+        // (e.g. viewport-fit=cover), where the top scalp layer sits above the toolbar and handles
+        // the status bar inset via mControlContainer.topMargin. Only add internal toolbar top
+        // padding when there is no top scalp (tabShouldDrawFullTopEdgeToEdge(), e.g. NTP with
+        // customized background).
+        boolean shouldToolbarConsumeTopInset =
+                consumeTopInset
+                        && (!EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                                || (mEdgeToEdgeController != null
+                                        && mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge()));
+
         // Exits early if the top padding doesn't need adjusting.
         if (NtpCustomizationUtils.shouldSkipTopInsetsChange(
-                mTopInset, systemTopInset, consumeTopInset)) {
+                mTopInset, systemTopInset, shouldToolbarConsumeTopInset)) {
             return false;
         }
 
-        mTopInset = consumeTopInset ? systemTopInset : 0;
+        mTopInset = shouldToolbarConsumeTopInset ? systemTopInset : 0;
         mToolbarLayout.onToEdgeChange(mTopInset);
         if (mEnableLogs) {
             Log.i(TAG, "The top padding to add on the toolbar is %d.", mTopInset);

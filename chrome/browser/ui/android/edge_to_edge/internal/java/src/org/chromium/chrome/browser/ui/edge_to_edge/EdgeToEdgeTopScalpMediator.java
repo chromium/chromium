@@ -139,7 +139,7 @@ class EdgeToEdgeTopScalpMediator
         mModel.set(IS_VISIBLE, isVisible());
 
         if (heightChanged || visibilityChanged || isDrawingToTopEdgeChanged) {
-            mTopControlsStacker.requestLayerUpdatePost(/* requireAnimate= */ false);
+            mTopControlsStacker.requestLayerUpdateSync(/* requireAnimate= */ false);
         }
     }
 
