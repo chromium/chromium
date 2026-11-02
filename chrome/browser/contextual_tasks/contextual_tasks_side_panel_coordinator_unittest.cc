@@ -59,6 +59,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_controller.h"
@@ -68,6 +69,9 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -4444,6 +4448,222 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       "ContextualTasks.Navigation.HttpResponseCode.ExcludeZeroStateLoads", 0);
   histogram_tester.ExpectTotalCount("ContextualTasks.Navigation.NetErrorCode",
                                     0);
+}
+
+namespace {
+
+signin::AccountsInCookieJarInfo MakeAccountsInCookieJarInfo(bool signed_in) {
+  gaia::ListedAccount account;
+  account.email = "user@example.com";
+  account.gaia_id = GaiaId("12345");
+  account.valid = true;
+  account.signed_out = !signed_in;
+  return signin::AccountsInCookieJarInfo(/*accounts_are_fresh=*/true,
+                                         {account});
+}
+
+}  // namespace
+
+class ContextualTasksSidePanelCoordinatorWebSignOutTest
+    : public ContextualTasksSidePanelCoordinatorTest {
+ protected:
+  // Shows the panel for `task_` with a thread loaded, and returns its
+  // `WebContents`.
+  content::WebContents* ShowPanelWithThread() {
+    ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+        .WillByDefault(Return(task_));
+    ON_CALL(*mock_ui_service(), GetInitialUrlForTask(task_.GetTaskId()))
+        .WillByDefault(Return(kThreadUrl));
+    coordinator_->Show(
+        /*transition_from_tab=*/false,
+        omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+        /*use_no_animation=*/true);
+    return GetWebContentsForTaskForTesting(task_.GetTaskId());
+  }
+
+  MockContextualTasksUiService* mock_ui_service() {
+    return static_cast<MockContextualTasksUiService*>(
+        ContextualTasksUiServiceFactory::GetForBrowserContext(profile_.get()));
+  }
+
+  const GURL kThreadUrl = GURL("https://www.google.com/search?udm=50&q=hello");
+  const ContextualTask task_{base::Uuid::GenerateRandomV4()};
+  base::test::ScopedFeatureList feature_list_{
+      kContextualTasksSidePanelRearchitecture};
+};
+
+TEST_F(ContextualTasksSidePanelCoordinatorWebSignOutTest,
+       ResetsCachedWebContentsToZeroStateAfterWebSignOut) {
+  content::WebContents* panel_contents = ShowPanelWithThread();
+  ASSERT_TRUE(panel_contents);
+
+  coordinator_->OnAccountsInCookieUpdated(
+      MakeAccountsInCookieJarInfo(/*signed_in=*/true),
+      GoogleServiceAuthError::AuthErrorNone());
+  EXPECT_EQ(GetWebContentsForTaskForTesting(task_.GetTaskId()), panel_contents);
+
+  // Signing out moves the panel to a new task in zero state.
+  ContextualTask new_task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*mock_controller_, CreateTask()).WillOnce(Return(new_task));
+  ON_CALL(*mock_ui_service(), GetDefaultAiPageUrlForTask(new_task.GetTaskId()))
+      .WillByDefault(
+          Return(GURL("https://www.google.com/search?udm=50&aep=46")));
+  coordinator_->OnAccountsInCookieUpdated(
+      MakeAccountsInCookieJarInfo(/*signed_in=*/false),
+      GoogleServiceAuthError::AuthErrorNone());
+
+  EXPECT_EQ(GetWebContentsForTaskForTesting(new_task.GetTaskId()),
+            panel_contents);
+  EXPECT_FALSE(GetWebContentsForTaskForTesting(task_.GetTaskId()));
+  EXPECT_EQ(
+      panel_contents->GetController().GetPendingEntry()->GetURL(),
+      ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+          GURL("https://www.google.com/search?udm=50&aep=46"), panel_contents));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorWebSignOutTest,
+       DoesNotResetCachedWebContentsWhenStillSignedOut) {
+  content::WebContents* panel_contents = ShowPanelWithThread();
+  ASSERT_TRUE(panel_contents);
+
+  EXPECT_CALL(*mock_controller_, CreateTask()).Times(0);
+  coordinator_->OnAccountsInCookieUpdated(
+      MakeAccountsInCookieJarInfo(/*signed_in=*/false),
+      GoogleServiceAuthError::AuthErrorNone());
+  coordinator_->OnAccountsInCookieUpdated(
+      MakeAccountsInCookieJarInfo(/*signed_in=*/false),
+      GoogleServiceAuthError::AuthErrorNone());
+  EXPECT_EQ(GetWebContentsForTaskForTesting(task_.GetTaskId()), panel_contents);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorWebSignOutTest,
+       DoesNotResetCachedWebContentsForStaleCookieJar) {
+  content::WebContents* panel_contents = ShowPanelWithThread();
+  ASSERT_TRUE(panel_contents);
+
+  EXPECT_CALL(*mock_controller_, CreateTask()).Times(0);
+  coordinator_->OnAccountsInCookieUpdated(
+      MakeAccountsInCookieJarInfo(/*signed_in=*/true),
+      GoogleServiceAuthError::AuthErrorNone());
+  coordinator_->OnAccountsInCookieUpdated(
+      signin::AccountsInCookieJarInfo(/*accounts_are_fresh=*/false, {}),
+      GoogleServiceAuthError::AuthErrorNone());
+  EXPECT_EQ(GetWebContentsForTaskForTesting(task_.GetTaskId()), panel_contents);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorWebSignOutTest,
+       ResetsPendingPanelRebuildToZeroStateAfterWebSignOut) {
+  base::test::ScopedFeatureList tab_state_feature(
+      kContextualTasksSidePanelTabState);
+  TrackTabAssociations();
+  existing_tasks_.insert(task_.GetTaskId());
+  ON_CALL(*mock_ui_service(), GetInitialUrlForTask(_))
+      .WillByDefault([this](const base::Uuid& id) {
+        return mock_ui_service()
+            ->ContextualTasksUiService::GetInitialUrlForTask(id);
+      });
+
+  coordinator_->OnAccountsInCookieUpdated(
+      MakeAccountsInCookieJarInfo(/*signed_in=*/true),
+      GoogleServiceAuthError::AuthErrorNone());
+
+  const GURL saved_thread_url("https://g.ai/search?udm=50&mtid=thread1");
+  tabs::TabInterface* restored_tab = CreateMockTab();
+  SetTabRestoreData(restored_tab, task_.GetTaskId(), saved_thread_url);
+  coordinator_->OnTabAdded(*tab_list_, restored_tab, /*index=*/1);
+  const SessionID restored_tab_id =
+      sessions::SessionTabHelper::IdForTab(restored_tab->GetContents());
+  ASSERT_EQ(tab_to_task_[restored_tab_id], task_.GetTaskId());
+  ASSERT_FALSE(GetWebContentsForTaskForTesting(task_.GetTaskId()));
+
+  ContextualTask new_task(base::Uuid::GenerateRandomV4());
+  existing_tasks_.insert(new_task.GetTaskId());
+  EXPECT_CALL(*mock_controller_, CreateTask()).WillOnce(Return(new_task));
+  const GURL zero_state_url("https://g.ai/search?udm=50&aep=46");
+  ON_CALL(*mock_ui_service(), GetDefaultAiPageUrlForTask(new_task.GetTaskId()))
+      .WillByDefault(Return(zero_state_url));
+  coordinator_->OnAccountsInCookieUpdated(
+      MakeAccountsInCookieJarInfo(/*signed_in=*/false),
+      GoogleServiceAuthError::AuthErrorNone());
+
+  EXPECT_EQ(tab_to_task_[restored_tab_id], new_task.GetTaskId());
+  EXPECT_EQ(mock_ui_service()->GetCreationUrlForTask(new_task.GetTaskId()),
+            zero_state_url);
+
+  SetActiveTab(restored_tab);
+  coordinator_->OnActiveTabChanged(*tab_list_, restored_tab);
+  EXPECT_FALSE(GetWebContentsForTaskForTesting(task_.GetTaskId()));
+  content::WebContents* rebuilt_contents =
+      GetWebContentsForTaskForTesting(new_task.GetTaskId());
+  ASSERT_TRUE(rebuilt_contents);
+  ASSERT_TRUE(rebuilt_contents->GetController().GetPendingEntry());
+  std::string mtid;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      rebuilt_contents->GetController().GetPendingEntry()->GetURL(), "mtid",
+      &mtid));
+  EXPECT_TRUE(ShouldBeOpen());
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorWebSignOutTest,
+       ResetsSharedTabScopedTaskToZeroStateAfterWebSignOut) {
+  base::test::ScopedFeatureList tab_state_feature(
+      kContextualTasksSidePanelTabState);
+  TrackTabAssociations();
+  ON_CALL(*mock_controller_, DisassociateTabFromTask(_, _))
+      .WillByDefault([this](const base::Uuid& task_id, SessionID tab_id) {
+        if (auto it = tab_to_task_.find(tab_id);
+            it != tab_to_task_.end() && it->second == task_id) {
+          tab_to_task_.erase(it);
+        }
+      });
+
+  existing_tasks_.insert(task_.GetTaskId());
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  tabs::TabInterface* background_tab = CreateMockTab();
+  const SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  const SessionID background_tab_id =
+      sessions::SessionTabHelper::IdForTab(background_tab->GetContents());
+  tab_to_task_[active_tab_id] = task_.GetTaskId();
+  tab_to_task_[background_tab_id] = task_.GetTaskId();
+
+  ON_CALL(*mock_ui_service(), GetInitialUrlForTask(task_.GetTaskId()))
+      .WillByDefault(Return(kThreadUrl));
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/true);
+  content::WebContents* panel_contents =
+      GetWebContentsForTaskForTesting(task_.GetTaskId());
+  ASSERT_TRUE(panel_contents);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      panel_contents,
+      GURL("https://www.google.com/search?udm=50&mtid=thread1&q=hello"));
+
+  coordinator_->OnAccountsInCookieUpdated(
+      MakeAccountsInCookieJarInfo(/*signed_in=*/true),
+      GoogleServiceAuthError::AuthErrorNone());
+
+  ContextualTask new_task(base::Uuid::GenerateRandomV4());
+  existing_tasks_.insert(new_task.GetTaskId());
+  EXPECT_CALL(*mock_controller_, CreateTask()).WillOnce(Return(new_task));
+  ON_CALL(*mock_ui_service(), GetDefaultAiPageUrlForTask(new_task.GetTaskId()))
+      .WillByDefault(
+          Return(GURL("https://www.google.com/search?udm=50&aep=46")));
+  coordinator_->OnAccountsInCookieUpdated(
+      MakeAccountsInCookieJarInfo(/*signed_in=*/false),
+      GoogleServiceAuthError::AuthErrorNone());
+
+  EXPECT_EQ(tab_to_task_[active_tab_id], new_task.GetTaskId());
+  EXPECT_EQ(tab_to_task_[background_tab_id], new_task.GetTaskId());
+  EXPECT_FALSE(GetWebContentsForTaskForTesting(task_.GetTaskId()));
+  EXPECT_EQ(GetWebContentsForTaskForTesting(new_task.GetTaskId()),
+            panel_contents);
+
+  SetActiveTab(background_tab);
+  coordinator_->OnActiveTabChanged(*tab_list_, background_tab);
+  EXPECT_EQ(coordinator_->GetActiveWebContents(), panel_contents);
+  EXPECT_FALSE(GetWebContentsForTaskForTesting(task_.GetTaskId()));
 }
 
 }  // namespace contextual_tasks
