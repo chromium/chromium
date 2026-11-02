@@ -72,7 +72,11 @@ void NavigateToURLAndWaitForFinish(Shell* window, const GURL& url) {
 
 char kSetUpMediaSessionScript[] =
     "navigator.mediaSession.playbackState = \"playing\";\n"
-    "navigator.mediaSession.metadata = new MediaMetadata({ title: \"foo\" });";
+    "navigator.mediaSession.metadata = new MediaMetadata({ title: \"foo\" });\n"
+    "navigator.mediaSession.setActionHandler(\"previoustrack\", _ => {});";
+
+char kClearActionHandlerScript[] =
+    "navigator.mediaSession.setActionHandler(\"previoustrack\", null);";
 
 char kSetUpWebRTCMediaSessionScript[] =
     "navigator.mediaSession.playbackState = \"playing\";\n"
@@ -133,7 +137,14 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
         media_session::mojom::MediaSessionAction::kSeekForward);
     expected_actions.insert(
         media_session::mojom::MediaSessionAction::kSeekBackward);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kPreviousTrack);
 
+    observer.WaitForExpectedActions(expected_actions);
+
+    ASSERT_TRUE(ExecJs(shell(), kClearActionHandlerScript));
+    expected_actions.erase(
+        media_session::mojom::MediaSessionAction::kPreviousTrack);
     observer.WaitForExpectedActions(expected_actions);
   }
 
@@ -180,16 +191,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
 // observers to wait for the message to be processed on the MediaSessionObserver
 // side.
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-// crbug.com/927234.
-#define MAYBE_ResetServiceWhenNavigatingAway \
-  DISABLED_ResetServiceWhenNavigatingAway
-#else
-#define MAYBE_ResetServiceWhenNavigatingAway ResetServiceWhenNavigatingAway
-#endif
 IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
-                       MAYBE_ResetServiceWhenNavigatingAway) {
+                       ResetServiceWhenNavigatingAway) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
@@ -208,9 +211,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_EQ(GetService(), nullptr);
 }
 
-// crbug.com/927234.
 IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
-                       DISABLED_DontResetServiceForSameDocumentNavigation) {
+                       DontResetServiceForSameDocumentNavigation) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
