@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.recent_tabs;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -31,7 +34,10 @@ import java.util.List;
  */
 @NullMarked
 public class ForeignSessionHelper {
-    private long mNativeForeignSessionHelper;
+    @JniType("::ForeignSessionHelper")
+    interface NativeForeignSessionHelper extends JniTypeToken {}
+
+    private final JniUniquePtr<NativeForeignSessionHelper> mNativeForeignSessionHelper;
 
     /** Callback interface for getting notified when foreign session sync is updated. */
     public interface ForeignSessionCallback {
@@ -162,9 +168,7 @@ public class ForeignSessionHelper {
      * Clean up the C++ side of this class. After the call, this class instance shouldn't be used.
      */
     public void destroy() {
-        assert mNativeForeignSessionHelper != 0;
-        ForeignSessionHelperJni.get().destroy(mNativeForeignSessionHelper);
-        mNativeForeignSessionHelper = 0;
+        mNativeForeignSessionHelper.destroy();
     }
 
     /**
@@ -315,37 +319,36 @@ public class ForeignSessionHelper {
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("Profile*") Profile profile);
+        JniUniquePtr<NativeForeignSessionHelper> init(@JniType("Profile*") Profile profile);
 
-        void destroy(long nativeForeignSessionHelper);
+        boolean isTabSyncEnabled(JniPtr<NativeForeignSessionHelper> self);
 
-        boolean isTabSyncEnabled(long nativeForeignSessionHelper);
-
-        void triggerSessionSync(long nativeForeignSessionHelper);
+        void triggerSessionSync(JniPtr<NativeForeignSessionHelper> self);
 
         void setOnForeignSessionCallback(
-                long nativeForeignSessionHelper, ForeignSessionCallback callback);
+                JniPtr<NativeForeignSessionHelper> self, ForeignSessionCallback callback);
 
         boolean getForeignSessions(
-                long nativeForeignSessionHelper, List<ForeignSession> resultSessions);
+                JniPtr<NativeForeignSessionHelper> self, List<ForeignSession> resultSessions);
 
         boolean getMobileAndTabletForeignSessions(
-                long nativeForeignSessionHelper, List<ForeignSession> resultSessions);
+                JniPtr<NativeForeignSessionHelper> self, List<ForeignSession> resultSessions);
 
         boolean openForeignSessionTab(
-                long nativeForeignSessionHelper,
+                JniPtr<NativeForeignSessionHelper> self,
                 @JniType("TabAndroid*") Tab tab,
                 @JniType("std::string") String sessionTag,
                 int tabId,
                 int disposition);
 
         void deleteForeignSession(
-                long nativeForeignSessionHelper, @JniType("std::string") String sessionTag);
+                JniPtr<NativeForeignSessionHelper> self, @JniType("std::string") String sessionTag);
 
-        void setInvalidationsForSessionsEnabled(long nativeForeignSessionHelper, boolean enabled);
+        void setInvalidationsForSessionsEnabled(
+                JniPtr<NativeForeignSessionHelper> self, boolean enabled);
 
         int openForeignSessionTabsAsBackgroundTabs(
-                long nativeForeignSessionHelper,
+                JniPtr<NativeForeignSessionHelper> self,
                 @JniType("TabAndroid*") Tab tab,
                 @JniType("std::vector<int32_t>") int[] tabIds,
                 @JniType("std::string") String sessionTag);

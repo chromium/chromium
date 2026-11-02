@@ -31,6 +31,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/android/gurl_android.h"
 
@@ -180,10 +181,9 @@ bool ForeignSessionHelper::ShouldSkipSession(
   return true;
 }
 
-static int64_t JNI_ForeignSessionHelper_Init(Profile* profile) {
-  ForeignSessionHelper* foreign_session_helper =
-      new ForeignSessionHelper(profile);
-  return reinterpret_cast<intptr_t>(foreign_session_helper);
+static jni_zero::JniUniquePtr<ForeignSessionHelper> JNI_ForeignSessionHelper_Init(
+    Profile* profile) {
+  return jni_zero::MakeUnique<ForeignSessionHelper>(profile);
 }
 
 ForeignSessionHelper::ForeignSessionHelper(Profile* profile)
@@ -203,10 +203,6 @@ ForeignSessionHelper::ForeignSessionHelper(Profile* profile)
 }
 
 ForeignSessionHelper::~ForeignSessionHelper() = default;
-
-void ForeignSessionHelper::Destroy() {
-  delete this;
-}
 
 bool ForeignSessionHelper::IsTabSyncEnabled() {
   sync_sessions::SessionSyncService* service =

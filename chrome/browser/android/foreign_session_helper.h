@@ -47,7 +47,6 @@ class ForeignSessionHelper {
 
   ~ForeignSessionHelper();
 
-  void Destroy();
   bool IsTabSyncEnabled();
   void TriggerSessionSync();
   void SetOnForeignSessionCallback(

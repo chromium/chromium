@@ -16,7 +16,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -101,7 +100,7 @@ public class RestoreTabsTest {
         mForeignSessionHelperJniSpy = Mockito.spy(ForeignSessionHelperJni.get());
         org.chromium.chrome.browser.recent_tabs.ForeignSessionHelperJni.setInstanceForTesting(
                 mForeignSessionHelperJniSpy);
-        doReturn(true).when(mForeignSessionHelperJniSpy).isTabSyncEnabled(anyLong());
+        doReturn(true).when(mForeignSessionHelperJniSpy).isTabSyncEnabled(any());
 
         mBottomSheetController =
                 mActivityTestRule
@@ -188,7 +187,7 @@ public class RestoreTabsTest {
                             return true;
                         })
                 .when(mForeignSessionHelperJniSpy)
-                .getMobileAndTabletForeignSessions(anyLong(), anyList());
+                .getMobileAndTabletForeignSessions(any(), anyList());
 
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
     }
@@ -483,6 +482,6 @@ public class RestoreTabsTest {
                             return true;
                         })
                 .when(mForeignSessionHelperJniSpy)
-                .getMobileAndTabletForeignSessions(anyLong(), anyList());
+                .getMobileAndTabletForeignSessions(any(), anyList());
     }
 }
