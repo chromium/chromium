@@ -650,6 +650,19 @@ void ContextualTasksSidePanelCoordinator::Show(
   }
 
   CloseLensSessionIfActive(active_tab_interface, entry_point, entry_source);
+
+  // Track whether this open session is reopening a previously collapsed panel
+  // for a task that already existed before this call via a toolbar button: the
+  // pinned button continuing an existing thread under Pinning v2, or the
+  // ephemeral button, which only ever reopens an existing task. Fresh
+  // zero-state opens, other entry points, and threads selected from thread
+  // history are excluded.
+  const bool is_reopened_via_toolbar_button =
+      is_continuing_existing_thread ||
+      (entry_source == ContextualTasksPanelController::EntrySource::
+                           kEphemeralToolbarButton &&
+       existing_task.has_value() && !is_opening_in_zero_state_);
+
   if (!existing_task) {
     // If no task is found, create a new task and associate it with the active
     // tab.
@@ -669,6 +682,8 @@ void ContextualTasksSidePanelCoordinator::Show(
     if (it != task_id_to_web_contents_cache_.end()) {
       it->second->entry_source = entry_source;
       it->second->entry_point = entry_point;
+      it->second->is_reopened_via_toolbar_button =
+          is_reopened_via_toolbar_button;
       it->second->last_active_time_ticks = base::TimeTicks::Now();
       it->second->open_time_ticks =
           open_time_ticks.value_or(base::TimeTicks::Now());
@@ -1247,6 +1262,18 @@ ContextualTasksSidePanelCoordinator::GetActiveEntrySource() const {
   return ContextualTasksPanelController::EntrySource::kOther;
 }
 
+bool ContextualTasksSidePanelCoordinator::
+    IsActiveSessionReopenedViaToolbarButton() const {
+  if (content::WebContents* active_web_contents = GetActiveWebContents()) {
+    for (const auto& it : task_id_to_web_contents_cache_) {
+      if (it.second->web_contents.get() == active_web_contents) {
+        return it.second->is_reopened_via_toolbar_button;
+      }
+    }
+  }
+  return false;
+}
+
 bool ContextualTasksSidePanelCoordinator::IsOnboardingTooltipVisible() const {
 #if !BUILDFLAG(IS_ANDROID)
   return onboarding_controller_->IsBubbleShowing();
@@ -1462,6 +1489,12 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     if (it != task_id_to_web_contents_cache_.end()) {
       existing_new_task_link_clicks = it->second->link_click_count;
       MaybeDetachWebContents(it->second->web_contents.get());
+    }
+    if (old_task_id && *old_task_id != new_task_id) {
+      // Switching to a different task (e.g. picking a thread from thread
+      // history or starting a new chat in the panel) means the active session
+      // is no longer the thread that was reopened via a toolbar button.
+      cache_item->is_reopened_via_toolbar_button = false;
     }
     if (split_from_old_task) {
       cache_item->link_click_count = existing_new_task_link_clicks;
