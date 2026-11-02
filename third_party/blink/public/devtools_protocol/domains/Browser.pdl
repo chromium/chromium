@@ -64,7 +64,6 @@ domain Browser
       smartCard
       speakerSelection
       storageAccess
-      topLevelStorageAccess
       videoCapture
       vr
       wakeLockScreen

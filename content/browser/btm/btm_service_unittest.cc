@@ -705,8 +705,6 @@ TEST_F(BtmServiceStateRemovalTest,
   feature_list.InitWithFeaturesAndParameters(enabled_features, {});
 
   GURL storage_access_grant_url("https://storage-access-granted.com");
-  GURL top_level_storage_access_grant_url(
-      "https://top-level-storage-access-granted.com");
   GURL no_grant_url("https://no-storage-access-grant.com");
   GURL redirect_url_1("https://redirect-1.com");
   GURL redirect_url_2("https://redirect-2.com");
@@ -721,11 +719,6 @@ TEST_F(BtmServiceStateRemovalTest,
       ContentSettingsPattern::FromString("[*.]" +
                                          storage_access_grant_url.host()),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString(
-          "[*.]" + top_level_storage_access_grant_url.host()),
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
   */
   int stateful_bounce_count = 0;
   BtmServiceImpl::StatefulBounceCallback increment_bounce =
@@ -737,11 +730,10 @@ TEST_F(BtmServiceStateRemovalTest,
   // grant.
   RecordBounce(redirect_url_1.spec(), storage_access_grant_url.spec(),
                no_grant_url.spec(), bounce, true, increment_bounce);
-  // Record a bounce through redirect_url_1 that ends on a URL with a top-level
-  // SA grant.
+  // Record a bounce through redirect_url_1 that ends on a URL with an SA
+  // grant.
   RecordBounce(redirect_url_1.spec(), no_grant_url.spec(),
-               top_level_storage_access_grant_url.spec(), bounce, true,
-               increment_bounce);
+               storage_access_grant_url.spec(), bounce, true, increment_bounce);
   // Record a bounce through redirect_url_2 that does not start or
   // end on a URL with an SA grant.
   RecordBounce(redirect_url_2.spec(), no_grant_url.spec(), no_grant_url.spec(),

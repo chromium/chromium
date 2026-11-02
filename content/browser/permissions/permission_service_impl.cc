@@ -63,9 +63,6 @@ bool ValidatePermissionDescriptor(
              descriptor->name == PermissionName::CLIPBOARD_WRITE;
     case blink::mojom::PermissionDescriptorExtension::Tag::kCameraDevice:
       return descriptor->name == PermissionName::VIDEO_CAPTURE;
-    case blink::mojom::PermissionDescriptorExtension::Tag::
-        kTopLevelStorageAccess:
-      return descriptor->name == PermissionName::TOP_LEVEL_STORAGE_ACCESS;
     case blink::mojom::PermissionDescriptorExtension::Tag::kFullscreen:
       return descriptor->name == PermissionName::FULLSCREEN;
   }
@@ -516,39 +513,13 @@ void PermissionServiceImpl::RequestPermissionsInternal(
     PermissionRequestDescription request_description,
     InternalRequestPermissionsCallback callback) {
   const auto& permissions = request_description.permissions;
-  if (!permissions.empty() &&
-      PermissionUtil::IsDomainOverride(permissions[0])) {
-    if (!PermissionUtil::ValidateDomainOverride(request_description.permissions,
-                                                context_->render_frame_host(),
-                                                permissions[0])) {
-      // To prevent crash in the top-level storage access permission request
-      // used by rSAFor. See https://crbug.com/332235257 for more details.
-      std::move(callback).Run(std::vector<PermissionResult>(
-          permissions.size(),
-          PermissionResult(PermissionStatus::DENIED,
-                           PermissionStatusSource::UNSPECIFIED,
-                           CONTENT_SETTING_BLOCK)));
-      return;
-    }
-    const url::Origin& requesting_origin =
-        PermissionUtil::ExtractDomainOverride(permissions[0]);
-    request_description.requesting_origin = requesting_origin.GetURL();
-    int pending_request_id =
-        CreatePendingRequest(permissions, std::move(callback));
-    PermissionControllerImpl::FromBrowserContext(browser_context)
-        ->RequestPermissionsFromCurrentDocument(
-            context_->render_frame_host(), std::move(request_description),
-            base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
-                           weak_factory_.GetWeakPtr(), pending_request_id));
-  } else {
-    int pending_request_id =
-        CreatePendingRequest(permissions, std::move(callback));
-    PermissionControllerImpl::FromBrowserContext(browser_context)
-        ->RequestPermissionsFromCurrentDocument(
-            context_->render_frame_host(), std::move(request_description),
-            base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
-                           weak_factory_.GetWeakPtr(), pending_request_id));
-  }
+  int pending_request_id =
+      CreatePendingRequest(permissions, std::move(callback));
+  PermissionControllerImpl::FromBrowserContext(browser_context)
+      ->RequestPermissionsFromCurrentDocument(
+          context_->render_frame_host(), std::move(request_description),
+          base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
+                         weak_factory_.GetWeakPtr(), pending_request_id));
 }
 
 int PermissionServiceImpl::CreatePendingRequest(
@@ -693,22 +664,6 @@ PermissionResult PermissionServiceImpl::GetPermissionResult(
   if (!type) {
     ReceivedBadMessage();
     return PermissionResult(PermissionStatus::DENIED);
-  }
-  if (PermissionUtil::IsDomainOverride(permission) &&
-      context_->render_frame_host()) {
-    BrowserContext* browser_context = context_->GetBrowserContext();
-
-    std::vector<blink::mojom::PermissionDescriptorPtr>
-        permisison_descriptor_ptr_array;
-    permisison_descriptor_ptr_array.emplace_back(permission->Clone());
-    if (browser_context && PermissionUtil::ValidateDomainOverride(
-                               permisison_descriptor_ptr_array,
-                               context_->render_frame_host(), permission)) {
-      return PermissionControllerImpl::FromBrowserContext(browser_context)
-          ->GetPermissionResultForEmbeddedRequester(
-              permission, context_->render_frame_host(),
-              PermissionUtil::ExtractDomainOverride(permission));
-    }
   }
 
   return GetPermissionResultForCurrentContext(permission);

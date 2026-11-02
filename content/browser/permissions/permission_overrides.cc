@@ -52,15 +52,9 @@ PermissionOverrides::PermissionKey::MakeScopeData(
   // STORAGE_ACCESS_GRANT has a permission key of type (site, site) tuple as
   // defined by the spec:
   // https://privacycg.github.io/storage-access/#permissions-integration
-  // TOP_LEVEL_STORAGE_ACCESS has a permission key of type (origin, site) tuple
-  // as defined by the spec:
-  // https://privacycg.github.io/requestStorageAccessFor/#permissions-integration
   switch (type) {
     case blink::PermissionType::STORAGE_ACCESS_GRANT:
       return std::make_pair(net::SchemefulSite(*requesting_origin),
-                            net::SchemefulSite(*embedding_origin));
-    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS:
-      return std::make_pair(*requesting_origin,
                             net::SchemefulSite(*embedding_origin));
     default:
       // All other permission types use the top-level origin as the "permission
@@ -237,12 +231,6 @@ PermissionOverrides::PermissionKey::CreateContentSettingsPatterns() const {
             return std::make_pair(
                 ContentSettingsPattern::FromURLToSchemefulSitePattern(
                     key.first.GetURL()),
-                ContentSettingsPattern::FromURLToSchemefulSitePattern(
-                    key.second.GetURL()));
-          },
-          [](const std::pair<url::Origin, net::SchemefulSite>& key) {
-            return std::make_pair(
-                ContentSettingsPattern::FromURLNoWildcard(key.first.GetURL()),
                 ContentSettingsPattern::FromURLToSchemefulSitePattern(
                     key.second.GetURL()));
           }),

@@ -1596,8 +1596,6 @@ void WebTestControlHost::SetPermission(const std::string& name,
     type = blink::PermissionType::NFC;
   } else if (name == "storage-access") {
     type = blink::PermissionType::STORAGE_ACCESS_GRANT;
-  } else if (name == "top-level-storage-access") {
-    type = blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS;
   } else {
     NOTREACHED();
   }

@@ -2044,8 +2044,6 @@
     },
     'related_website_sets': {
       'filepath': 'first_party_sets|' \
-                  'top_level_storage_access_api|' \
-                  'top-level-storage-access-api|' \
                   'storage_access_api|' \
                   'storage-access-api'
     },

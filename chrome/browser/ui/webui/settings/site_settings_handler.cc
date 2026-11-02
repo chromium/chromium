@@ -191,14 +191,6 @@ constexpr ContentSettingsType kChooserDataContentSettingsTypes[] = {
     ContentSettingsType::USB_CHOOSER_DATA,
 };
 
-// Content types related to the double-patterned storage access settings.
-// Entries in this array will be included in the results from HandleGetAllSites
-// in addition to all the single-patterned settings.
-constexpr ContentSettingsType kStorageAccessSettingsTypes[] = {
-    ContentSettingsType::STORAGE_ACCESS,
-    ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-};
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class AllSitesAction2 {
@@ -1269,15 +1261,13 @@ void SiteSettingsHandler::HandleGetAllSites(const base::ListValue& args) {
 
   // Include any storage access permissions; list the primary (embedded) site
   // using a representative URL.
-  for (auto content_type : kStorageAccessSettingsTypes) {
-    auto exceptions = map->GetSettingsForOneType(content_type);
-    for (const auto& e : exceptions) {
-      if (e.primary_pattern != ContentSettingsPattern::Wildcard()) {
-        auto origin =
-            url::Origin::Create(e.primary_pattern.ToRepresentativeUrl());
-        InsertOriginIntoGroup(&all_sites_map_, origin);
-        origin_permission_set_.insert(origin);
-      }
+  for (const auto& e :
+       map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS)) {
+    if (e.primary_pattern != ContentSettingsPattern::Wildcard()) {
+      auto origin =
+          url::Origin::Create(e.primary_pattern.ToRepresentativeUrl());
+      InsertOriginIntoGroup(&all_sites_map_, origin);
+      origin_permission_set_.insert(origin);
     }
   }
 
@@ -1754,10 +1744,8 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
     // TODO(crbug.com/356170740) Refactor to eliminate the need for listing
     // content settings in here.
     if (setting == CONTENT_SETTING_DEFAULT &&
-        (scoping_type == content_settings::WebsiteSettingsInfo::
-                             REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE ||
-         scoping_type == content_settings::WebsiteSettingsInfo::
-                             REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE)) {
+        scoping_type == content_settings::WebsiteSettingsInfo::
+                            REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE) {
       // In order to correctly set the reload infobanner on pages that have
       // embedded content from the origin being reset, we need to keep track of
       // any associated secondary patterns before we change anything.

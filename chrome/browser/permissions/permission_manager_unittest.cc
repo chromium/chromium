@@ -360,8 +360,8 @@ TEST_F(PermissionManagerPwcTest,
                                 content::PermissionStatusSource::UNSPECIFIED));
 
   base::test::TestFuture<const std::vector<content::PermissionResult>&> future;
-  content::PermissionRequestDescription description(
-      mic_descriptor.Clone(), /*user_gesture=*/true, test_url());
+  content::PermissionRequestDescription description(mic_descriptor.Clone(),
+                                                    /*user_gesture=*/true);
 
   permission_controller()->RequestPermissionsFromCurrentDocument(
       pwc_main_rfh(), description, future.GetCallback());
@@ -369,31 +369,6 @@ TEST_F(PermissionManagerPwcTest,
   const std::vector<content::PermissionResult>& results = future.Get();
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(PermissionStatus::GRANTED, results[0].status);
-}
-
-TEST_F(PermissionManagerPwcTest,
-       RequestPermissions_OriginMismatch_DoesNotOverride) {
-  auto mic_descriptor = content::PermissionDescriptorUtil::
-      CreatePermissionDescriptorForPermissionType(
-          blink::PermissionType::AUDIO_CAPTURE);
-
-  delegate()->set_result(
-      content::PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                content::PermissionStatusSource::UNSPECIFIED));
-
-  base::test::TestFuture<const std::vector<content::PermissionResult>&> future;
-  GURL mismatched_url("https://mismatch.example.com");
-  content::PermissionRequestDescription description(
-      mic_descriptor.Clone(), /*user_gesture=*/true, mismatched_url);
-
-  permission_controller()->RequestPermissionsFromCurrentDocument(
-      pwc_main_rfh(), description, future.GetCallback());
-
-  // Because requesting_origin does not match the PWC RFH's last committed
-  // origin, the PWC override does not apply.
-  const std::vector<content::PermissionResult>& results = future.Get();
-  ASSERT_EQ(1u, results.size());
-  EXPECT_NE(PermissionStatus::GRANTED, results[0].status);
 }
 
 class PermissionManagerPwcGeolocationTest
@@ -448,8 +423,8 @@ TEST_P(PermissionManagerPwcGeolocationTest,
                                 content::PermissionStatusSource::UNSPECIFIED));
 
   base::test::TestFuture<const std::vector<content::PermissionResult>&> future;
-  content::PermissionRequestDescription description(
-      geo_descriptor.Clone(), /*user_gesture=*/true, test_url());
+  content::PermissionRequestDescription description(geo_descriptor.Clone(),
+                                                    /*user_gesture=*/true);
 
   permission_controller()->RequestPermissionsFromCurrentDocument(
       pwc_main_rfh(), description, future.GetCallback());

@@ -112,7 +112,6 @@ class LastRequestResultCache {
 
     switch (permission) {
       case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-      case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
         break;
       // Other permissions are not cached.
       default:
@@ -142,7 +141,6 @@ class LastRequestResultCache {
         blink::PermissionDescriptorToPermissionType(permission_descriptor);
     switch (permission) {
       case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-      case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
         break;
       // Other permissions are not cached.
       default:
@@ -309,7 +307,7 @@ void AwPermissionManager::RequestPermissionsFromCurrentDocument(
   }
 
   const GURL& embedding_origin = LastCommittedMainOrigin(render_frame_host);
-  const GURL& requesting_origin = request_description.requesting_origin;
+  const GURL& requesting_origin = LastCommittedOrigin(render_frame_host);
 
   auto pending_request = std::make_unique<PendingRequest>(
       permissions, requesting_origin, embedding_origin,
@@ -416,7 +414,6 @@ void AwPermissionManager::RequestPermissionsFromCurrentDocument(
       case PermissionType::AUTOMATIC_FULLSCREEN:
       case PermissionType::WEB_APP_INSTALLATION:
       case PermissionType::STORAGE_ACCESS_GRANT:
-      case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
         pending_request_raw->SetPermissionResult(
@@ -599,7 +596,6 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::WEB_PRINTING:
     case blink::PermissionType::WINDOW_MANAGEMENT:
     case blink::PermissionType::STORAGE_ACCESS_GRANT:
-    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       return PermissionStatus::DENIED;
   }
   NOTREACHED() << "Unhandled permission type: "
@@ -666,20 +662,6 @@ content::PermissionResult AwPermissionManager::GetPermissionResultForWorker(
   return ToPermissionResult(
       permission_descriptor,
       GetPermissionStatus(permission_descriptor, worker_origin, worker_origin));
-}
-
-content::PermissionResult
-AwPermissionManager::GetPermissionResultForEmbeddedRequester(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    content::RenderFrameHost* render_frame_host,
-    const url::Origin& requesting_origin) {
-  return ToPermissionResult(
-      permission_descriptor,
-      GetPermissionStatusInternal(
-          permission_descriptor, requesting_origin.GetURL(),
-          permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-              render_frame_host->GetMainFrame()),
-          content::WebContents::FromRenderFrameHost(render_frame_host)));
 }
 
 void AwPermissionManager::CancelPermissionRequest(int request_id) {
@@ -750,7 +732,6 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::VR:
       case PermissionType::AR:
       case PermissionType::STORAGE_ACCESS_GRANT:
-      case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       case PermissionType::CAMERA_PAN_TILT_ZOOM:
       case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:
@@ -861,6 +842,12 @@ int AwPermissionManager::GetRenderProcessID(
 int AwPermissionManager::GetRenderFrameID(
     content::RenderFrameHost* render_frame_host) {
   return render_frame_host->GetRoutingID();
+}
+
+GURL AwPermissionManager::LastCommittedOrigin(
+    content::RenderFrameHost* render_frame_host) {
+  return permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+      render_frame_host);
 }
 
 GURL AwPermissionManager::LastCommittedMainOrigin(

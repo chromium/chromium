@@ -64,7 +64,6 @@ chromium-metrics-reviews@google.com.
   <variant name="SecurityKeyAttestation"/>
   <variant name="Sensors"/>
   <variant name="StorageAccess"/>
-  <variant name="TopLevelStorageAccess"/>
   <variant name="U2fApiRequest"/>
   <variant name="VideoCapture"/>
   <variant name="VR"/>
@@ -101,7 +100,6 @@ chromium-metrics-reviews@google.com.
   <variant name="SecurityKeyAttestation"/>
   <variant name="Sensors"/>
   <variant name="StorageAccess"/>
-  <variant name="TopLevelStorageAccess"/>
   <variant name="U2fApiRequest"/>
   <variant name="VideoCapture"/>
   <variant name="VR"/>
@@ -232,8 +230,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Sensors" summary="Sensors permission"/>
   <variant name=".SmartCard" summary="Smart card connection permission"/>
   <variant name=".StorageAccess" summary="Storage Access API permission"/>
-  <variant name=".TopLevelStorageAccess"
-      summary="Top-level Storage Access API permission"/>
   <variant name=".VideoCapture" summary="Camera permission"/>
   <variant name=".VR" summary="VR permission"/>
   <variant name=".WebAppInstallation"
@@ -283,8 +279,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Sensors" summary="Sensors permission actions"/>
   <variant name=".StorageAccess"
       summary="Storage Access API permission actions"/>
-  <variant name=".TopLevelStorageAccess"
-      summary="Top-level Storage Access API permission actions"/>
   <variant name=".VideoCapture" summary="Camera permission actions"/>
   <variant name=".VR" summary="VR permission actions"/>
   <variant name=".WebAppInstallation"
@@ -306,7 +300,6 @@ chromium-metrics-reviews@google.com.
   <variant name="MidiSysEx"/>
   <variant name="ProtectedMedia"/>
   <variant name="StorageAccess"/>
-  <variant name="TopLevelStorageAccess"/>
   <variant name="VideoCapture"/>
   <variant name="VR"/>
   <variant name="WakeLockScreen"/>
@@ -1953,16 +1946,6 @@ chromium-metrics-reviews@google.com.
     <variant name="NoGesture"/>
     <variant name="Unknown"/>
   </token>
-</histogram>
-
-<histogram name="Permissions.Query.TopLevelStorageAccess" enum="BooleanEnabled"
-    expires_after="2027-03-21">
-  <owner>selya@google.com</owner>
-  <owner>mtaylor@chromium.org</owner>
-  <summary>
-    Records if the permission being queried is
-    &quot;top-level-storage-access&quot; permission.
-  </summary>
 </histogram>
 
 <histogram

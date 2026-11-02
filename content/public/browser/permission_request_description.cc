@@ -8,17 +8,13 @@ namespace content {
 
 PermissionRequestDescription::PermissionRequestDescription(
     std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
-    bool user_gesture,
-    const GURL& requesting_origin)
-    : permissions(std::move(permissions)),
-      user_gesture(user_gesture),
-      requesting_origin(requesting_origin) {}
+    bool user_gesture)
+    : permissions(std::move(permissions)), user_gesture(user_gesture) {}
 
 PermissionRequestDescription::PermissionRequestDescription(
     blink::mojom::PermissionDescriptorPtr permission,
-    bool user_gesture,
-    const GURL& requesting_origin)
-    : user_gesture(user_gesture), requesting_origin(requesting_origin) {
+    bool user_gesture)
+    : user_gesture(user_gesture) {
   permissions.push_back(std::move(permission));
 }
 
@@ -38,7 +34,6 @@ PermissionRequestDescription::PermissionRequestDescription(
     permissions.push_back(permission.Clone());
   }
   user_gesture = other.user_gesture;
-  requesting_origin = other.requesting_origin;
   if (other.embedded_permission_request_descriptor) {
     embedded_permission_request_descriptor =
         other.embedded_permission_request_descriptor.Clone();
@@ -56,7 +51,6 @@ PermissionRequestDescription::~PermissionRequestDescription() = default;
 bool PermissionRequestDescription::operator==(
     const PermissionRequestDescription& other) const {
   return user_gesture == other.user_gesture &&
-         requesting_origin == other.requesting_origin &&
          permissions == other.permissions &&
          embedded_permission_request_descriptor ==
              other.embedded_permission_request_descriptor;

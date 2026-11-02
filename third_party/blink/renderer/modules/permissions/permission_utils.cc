@@ -134,8 +134,6 @@ String PermissionNameToString(PermissionName name) {
       return "local_fonts";
     case PermissionName::DISPLAY_CAPTURE:
       return "display_capture";
-    case PermissionName::TOP_LEVEL_STORAGE_ACCESS:
-      return "top-level-storage-access";
     case PermissionName::CAPTURED_SURFACE_CONTROL:
       return "captured-surface-control";
     case PermissionName::SPEAKER_SELECTION:

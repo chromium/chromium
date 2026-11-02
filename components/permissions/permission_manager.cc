@@ -270,22 +270,23 @@ void PermissionManager::RequestPermissionsInternal(
                               request_local_id);
 
   const PermissionRequestID request_id(render_frame_host, request_local_id);
-  const GURL embedding_origin = GetEmbeddingOrigin(
-      render_frame_host, request_description.requesting_origin);
+  const GURL requesting_origin =
+      render_frame_host->GetLastCommittedOrigin().GetURL();
+  const GURL embedding_origin =
+      GetEmbeddingOrigin(render_frame_host, requesting_origin);
   for (size_t i = 0; i < request_description.permissions.size(); ++i) {
     const ContentSettingsType permission =
         PermissionUtil::PermissionTypeToContentSettingsType(
             blink::PermissionDescriptorToPermissionType(
                 request_description.permissions[i]));
     const GURL canonical_requesting_origin = PermissionUtil::GetCanonicalOrigin(
-        permission, request_description.requesting_origin, embedding_origin);
+        permission, requesting_origin, embedding_origin);
 
     auto response_callback = std::make_unique<PermissionResponseCallback>(
         weak_factory_.GetWeakPtr(), request_local_id, i);
 
     if (auto override_result = GetPermissionResultOverride(
-            render_frame_host, request_description.requesting_origin,
-            permission)) {
+            render_frame_host, requesting_origin, permission)) {
       if (override_result->status != blink::mojom::PermissionStatus::GRANTED) {
         response_callback->OnPermissionsRequestResponse(*override_result);
         continue;
@@ -306,9 +307,9 @@ void PermissionManager::RequestPermissionsInternal(
     }
 
     PermissionContextBase* context = GetPermissionContext(permission);
-    if (!context || PermissionUtil::IsPermissionBlockedInPartition(
-                        permission, request_description.requesting_origin,
-                        render_frame_host->GetProcess())) {
+    if (!context ||
+        PermissionUtil::IsPermissionBlockedInPartition(
+            permission, requesting_origin, render_frame_host->GetProcess())) {
       response_callback->OnPermissionsRequestResponse(content::PermissionResult(
           PermissionStatus::DENIED,
           content::PermissionStatusSource::FEATURE_POLICY));
@@ -506,23 +507,6 @@ content::PermissionResult PermissionManager::GetPermissionResultForWorker(
                                      /*render_frame_host=*/nullptr,
                                      worker_origin, worker_origin,
                                      /*should_include_device_status=*/false);
-}
-
-content::PermissionResult
-PermissionManager::GetPermissionResultForEmbeddedRequester(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    content::RenderFrameHost* render_frame_host,
-    const url::Origin& requesting_origin) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  const GURL embedding_origin =
-      GetEmbeddingOrigin(render_frame_host, requesting_origin.GetURL());
-
-  return GetPermissionStatusInternal(
-      permission_descriptor,
-      /*render_process_host=*/nullptr, render_frame_host,
-      requesting_origin.GetURL(), embedding_origin,
-      /*should_include_device_status=*/false);
 }
 
 bool PermissionManager::IsPermissionOverridable(

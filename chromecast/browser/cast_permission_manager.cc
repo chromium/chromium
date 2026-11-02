@@ -155,7 +155,8 @@ void CastPermissionManager::RequestPermissionsFromCurrentDocument(
   std::vector<content::PermissionResult> permission_results;
   for (const auto& permission : request_description.permissions) {
     permission_results.emplace_back(GetPermissionStatusInternal(
-        permission, render_frame_host, request_description.requesting_origin));
+        permission, render_frame_host,
+        render_frame_host->GetLastCommittedOrigin().GetURL()));
   }
   std::move(callback).Run(permission_results);
 }
@@ -197,15 +198,6 @@ content::PermissionResult CastPermissionManager::GetPermissionResultForWorker(
     const GURL& worker_origin) {
   return content::PermissionResult(
       GetPermissionStatus(permission_descriptor, worker_origin, worker_origin));
-}
-
-content::PermissionResult
-CastPermissionManager::GetPermissionResultForEmbeddedRequester(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    content::RenderFrameHost* render_frame_host,
-    const url::Origin& requesting_origin) {
-  return content::PermissionResult(GetPermissionStatusInternal(
-      permission_descriptor, render_frame_host, requesting_origin.GetURL()));
 }
 
 }  // namespace shell

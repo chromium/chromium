@@ -178,8 +178,6 @@ PermissionRequest::GetDialogAnnotatedMessageText(
                   requesting_origin_string_formatted,
                   embedding_origin_string_formatted)),
           /*bolded_ranges=*/{});
-    case RequestType::kTopLevelStorageAccess:
-      NOTREACHED();
     case RequestType::kVrSession:
       message_id = IDS_VR_INFOBAR_TEXT;
       break;
@@ -473,7 +471,6 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       NOTREACHED();
 #endif
     case RequestType::kStorageAccess:
-    case RequestType::kTopLevelStorageAccess:
       message_id = IDS_STORAGE_ACCESS_PERMISSION_FRAGMENT;
       break;
     case RequestType::kVrSession:

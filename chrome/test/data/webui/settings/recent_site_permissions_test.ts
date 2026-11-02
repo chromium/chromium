@@ -53,9 +53,7 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
     // explicit assertions are included.
     const origin = 'https://bar.com';
     for (const contentSettingType of Object.values(ContentSettingsTypes)) {
-      if (contentSettingType === ContentSettingsTypes.STORAGE_ACCESS ||
-          contentSettingType ===
-              ContentSettingsTypes.TOP_LEVEL_STORAGE_ACCESS) {
+      if (contentSettingType === ContentSettingsTypes.STORAGE_ACCESS) {
         // Skip permission types that are not single origin; in the actual
         // implementation, getRecentSitePermissions only lists single origin
         // permissions.

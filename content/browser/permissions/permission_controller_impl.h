@@ -208,11 +208,6 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void ResetPermission(blink::PermissionType permission,
                        const url::Origin& origin) override;
 
-  PermissionResult GetPermissionResultForEmbeddedRequester(
-      const blink::mojom::PermissionDescriptorPtr& permission,
-      RenderFrameHost* render_frame_host,
-      const url::Origin& requesting_origin);
-
   using SubscriptionsStatusMap =
       base::flat_map<SubscriptionsMap::KeyType, PermissionResult>;
 

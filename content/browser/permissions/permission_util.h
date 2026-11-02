@@ -35,26 +35,6 @@ class PermissionUtil {
   CONTENT_EXPORT static GURL GetLastCommittedOriginAsURL(
       content::RenderFrameHost* render_frame_host);
 
-  // Determines whether the passed-in descriptor indicates a domain override is
-  // being used. The override mechanism is currently only used by one permission
-  // type, specifically storage access requests on behalf of another domain.
-  CONTENT_EXPORT static bool IsDomainOverride(
-      const blink::mojom::PermissionDescriptorPtr& descriptor);
-
-  // For a descriptor that indicates a domain override is used, retrieve it as
-  // an origin. The override mechanism is currently only used by one permission
-  // type, specifically storage access requests on behalf of another domain.
-  CONTENT_EXPORT static const url::Origin& ExtractDomainOverride(
-      const blink::mojom::PermissionDescriptorPtr& descriptor);
-
-  // For a domain override, determines whether it is valid. The override
-  // mechanism is currently only used by one permission type, specifically
-  // storage access requests on behalf of another domain.
-  CONTENT_EXPORT static bool ValidateDomainOverride(
-      const std::vector<blink::mojom::PermissionDescriptorPtr>& types,
-      RenderFrameHost* rfh,
-      const blink::mojom::PermissionDescriptorPtr& descriptor);
-
   // Returns true if the given descriptor is a capability that combines the
   // browser's permission status with a device-level status (and, therefore,
   // can be retrieved through `GetCombinedPermissionAndDeviceStatus(...)`).

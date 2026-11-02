@@ -33,7 +33,6 @@ enum class RequestType {
   kCapturedSurfaceControl,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kClipboard,
-  kTopLevelStorageAccess,
   kDiskQuota,
   kFileSystemAccess,
   kGeolocation,

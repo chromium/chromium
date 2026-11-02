@@ -100,7 +100,6 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::HAND_TRACKING:
       case ContentSettingsType::SMART_CARD_DATA:
       case ContentSettingsType::STORAGE_ACCESS:
-      case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
       case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       case ContentSettingsType::WINDOW_MANAGEMENT:
       case ContentSettingsType::LOCAL_FONTS:
@@ -215,7 +214,8 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
        i != static_cast<int>(blink::PermissionType::NUM); ++i) {
     // PermissionType entries are marked deprecated by commenting them out.
     // Skip these now-invalid values here.
-    if (i == 2 || i == 11 || i == 13 || i == 14 || i == 15 || i == 32) {
+    if (i == 2 || i == 11 || i == 13 || i == 14 || i == 15 || i == 32 ||
+        i == 33) {
       continue;
     }
     switch (static_cast<blink::PermissionType>(i)) {
@@ -246,7 +246,6 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case blink::PermissionType::WINDOW_MANAGEMENT:
       case blink::PermissionType::LOCAL_FONTS:
       case blink::PermissionType::DISPLAY_CAPTURE:
-      case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       case blink::PermissionType::CAPTURED_SURFACE_CONTROL:
       case blink::PermissionType::SMART_CARD:
       case blink::PermissionType::WEB_PRINTING:

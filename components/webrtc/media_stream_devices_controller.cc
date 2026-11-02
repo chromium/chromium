@@ -173,8 +173,7 @@ void MediaStreamDevicesController::RequestPermissions(
   }
 
   content::PermissionRequestDescription permission_request_description{
-      std::move(permission_types), request.user_gesture,
-      request.security_origin};
+      std::move(permission_types), request.user_gesture};
   permission_request_description.requested_audio_capture_device_ids =
       requested_audio_capture_device_ids;
   permission_request_description.requested_video_capture_device_ids =

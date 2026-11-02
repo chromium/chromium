@@ -31,7 +31,7 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using url::Origin;
 
-constexpr size_t kPermissionsCount = 40;
+constexpr size_t kPermissionsCount = 39;
 
 // Collects all permission statuses for the given input.
 base::flat_map<blink::PermissionType, PermissionStatus> GetAll(
@@ -338,32 +338,6 @@ TEST_P(PermissionOverridesTest, CreateContentSettingsForTypeTwoSites) {
                       content_settings::ProviderType::kNone, false)));
 }
 
-TEST_P(PermissionOverridesTest, CreateContentSettingsForTypeOriginSite) {
-  PermissionOverrides overrides;
-  Origin first_origin = Origin::Create(GURL("https://sub.foo.com/"));
-  net::SchemefulSite first_site(first_origin);
-  Origin second_origin = Origin::Create(GURL("https://sub.bar.com/"));
-  net::SchemefulSite second_site(second_origin);
-
-  overrides.Set(first_origin, second_origin,
-                PermissionType::TOP_LEVEL_STORAGE_ACCESS,
-                PermissionStatus::GRANTED);
-
-  auto content_settings = overrides.CreateContentSettingsForType(
-      PermissionType::TOP_LEVEL_STORAGE_ACCESS);
-  ASSERT_THAT(
-      content_settings,
-      ElementsAre(ContentSettingPatternSource(
-          ContentSettingsPattern::FromURLNoWildcard(first_origin.GetURL()),
-          ContentSettingsPattern::FromURLToSchemefulSitePattern(
-              second_origin.GetURL()),
-          base::Value(CONTENT_SETTING_ALLOW),
-          content_settings::ProviderType::kNone, false)));
-
-  EXPECT_FALSE(
-      content_settings[0].primary_pattern.Matches(first_site.GetURL()));
-}
-
 TEST_P(PermissionOverridesTest, GrantPermissions_SetsSomeBlocksRest) {
   PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=all"));
@@ -646,44 +620,6 @@ TEST_P(PermissionOverridesTest, StorageAccess_DeniedStatusHidden) {
                             PermissionType::GEOLOCATION),
               Optional(ExpectedPermissionResult(PermissionType::GEOLOCATION,
                                                 PermissionStatus::DENIED)));
-}
-
-TEST_P(PermissionOverridesTest,
-       TopLevelStorageAccess_DifferentRequestingOriginSameEmbeddingSite) {
-  PermissionOverrides overrides;
-  Origin requesting_origin_1 =
-      Origin::Create(GURL("https://foo.requesting.com/"));
-  Origin requesting_origin_2 =
-      Origin::Create(GURL("https://baz.requesting.com/"));
-  Origin embedding_origin_1 =
-      Origin::Create(GURL("https://bar.embedding.com/"));
-  Origin embedding_origin_2 =
-      Origin::Create(GURL("https://qux.embedding.com/"));
-
-  overrides.Set(requesting_origin_1, embedding_origin_1,
-                PermissionType::TOP_LEVEL_STORAGE_ACCESS,
-                PermissionStatus::GRANTED);
-  EXPECT_THAT(overrides.Get(requesting_origin_1, embedding_origin_1,
-                            PermissionType::TOP_LEVEL_STORAGE_ACCESS),
-              Optional(ExpectedPermissionResult(
-                  PermissionType::TOP_LEVEL_STORAGE_ACCESS,
-                  PermissionStatus::GRANTED)));
-
-  // Show that different embedding origins with the same site returns the
-  // correct status.
-  // TOP_LEVEL_STORAGE_ACCESS's embedding origin is keyed as a schemeful site,
-  // so 'bar.embedding.com' and 'qux.embedding.com' resolve to the same
-  // embedding site.
-  EXPECT_THAT(overrides.Get(requesting_origin_1, embedding_origin_2,
-                            PermissionType::TOP_LEVEL_STORAGE_ACCESS),
-              Optional(ExpectedPermissionResult(
-                  PermissionType::TOP_LEVEL_STORAGE_ACCESS,
-                  PermissionStatus::GRANTED)));
-
-  // Show that a different requesting origin for the same embedding site
-  // should not have the same key.
-  EXPECT_FALSE(overrides.Get(requesting_origin_2, embedding_origin_1,
-                             PermissionType::TOP_LEVEL_STORAGE_ACCESS));
 }
 
 INSTANTIATE_TEST_SUITE_P(ApproximateGeolocationPermission,

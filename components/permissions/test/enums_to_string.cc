@@ -50,7 +50,6 @@ std::string_view ToString(permissions::RequestType request_type) {
           {RequestType::kCapturedSurfaceControl, "CapturedSurfaceControl"},
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
           {RequestType::kClipboard, "Clipboard"},
-          {RequestType::kTopLevelStorageAccess, "TopLevelStorageAccess"},
           {RequestType::kDiskQuota, "DiskQuota"},
           {RequestType::kFileSystemAccess, "FileSystemAccess"},
           {RequestType::kGeolocation, "Geolocation"},

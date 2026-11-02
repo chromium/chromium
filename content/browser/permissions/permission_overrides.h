@@ -102,8 +102,7 @@ class CONTENT_EXPORT PermissionOverrides {
     using PermissionScope =
         std::variant<GlobalKey,
                      url::Origin,
-                     std::pair<net::SchemefulSite, net::SchemefulSite>,
-                     std::pair<url::Origin, net::SchemefulSite>>;
+                     std::pair<net::SchemefulSite, net::SchemefulSite>>;
 
     static PermissionScope MakeScopeData(
         base::optional_ref<const url::Origin> requesting_origin,

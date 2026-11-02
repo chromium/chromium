@@ -62,10 +62,6 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
       return blink::scheduler::WebSchedulerTrackedFeature::
           kRequestedBackgroundWorkPermission;
     case PermissionType::STORAGE_ACCESS_GRANT:
-    // These two permissions are in the process of being split; they share logic
-    // for now. TODO(crbug.com/40246640): split and consolidate as much as
-    // possible.
-    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       return blink::scheduler::WebSchedulerTrackedFeature::
           kRequestedStorageAccessGrant;
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
@@ -546,17 +542,6 @@ void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
         blink::PermissionDescriptorToPermissionType(permission));
   }
 
-  // For most permission requests, the requesting origin is empty and should be
-  // set to the last committed origin of the render frame host. The only
-  // exception is for ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS permission
-  // that allows to request permission from an arbitrary origin. In this case,
-  // the requesting origin is set to the origin will be overridden by the
-  // caller. It happens in PermissionServiceImpl::RequestPermissionsInternal().
-  // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/permissions/permission_service_impl.cc;l=372;drc=505712460e7450306d9bec1c7306bf97140d45c8
-  if (request_description.requesting_origin.is_empty()) {
-    request_description.requesting_origin =
-        render_frame_host->GetLastCommittedOrigin().GetURL();
-  }
   std::vector<OverrideResult> override_results = OverridePermissions(
       request_description, render_frame_host, permission_overrides_);
 
@@ -759,45 +744,6 @@ PermissionControllerImpl::GetPermissionResultForOriginWithoutContext(
 
   return delegate->GetPermissionResultForOriginWithoutContext(
       permission_descriptor, requesting_origin, embedding_origin);
-}
-
-PermissionResult
-PermissionControllerImpl::GetPermissionResultForEmbeddedRequester(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    RenderFrameHost* render_frame_host,
-    const url::Origin& requesting_origin) {
-  auto permission_type =
-      blink::PermissionDescriptorToPermissionType(permission_descriptor);
-
-  // This API is suited only for `TOP_LEVEL_STORAGE_ACCESS`. Do not use it for
-  // other permissions unless discussed with `permissions-core@`.
-  DCHECK(permission_type == blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS);
-
-  if (permission_type != blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS) {
-    return PermissionResult(PermissionStatus::DENIED);
-  }
-
-  std::optional<PermissionResult> permission_result = permission_overrides_.Get(
-      requesting_origin,
-      render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
-      permission_type);
-  if (permission_result) {
-    return permission_result.value();
-  }
-
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (!delegate) {
-    return PermissionResult(PermissionStatus::DENIED);
-  }
-
-  if (VerifyContextOfCurrentDocument(permission_type, render_frame_host)
-          .status == PermissionStatus::DENIED) {
-    return PermissionResult(PermissionStatus::DENIED);
-  }
-
-  return delegate->GetPermissionResultForEmbeddedRequester(
-      permission_descriptor, render_frame_host, requesting_origin);
 }
 
 PermissionStatus PermissionControllerImpl::GetCombinedPermissionAndDeviceStatus(

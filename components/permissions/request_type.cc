@@ -71,7 +71,6 @@ int GetIconIdAndroid(RequestType type) {
     case RequestType::kProtectedMediaIdentifier:
       return IDR_ANDROID_PERMISSION_PROTECTED_MEDIA;
     case RequestType::kStorageAccess:
-    case RequestType::kTopLevelStorageAccess:
       return IDR_ANDROID_STORAGE_ACCESS;
     case RequestType::kWindowManagement:
       return IDR_ANDROID_INFOBAR_WINDOW_MANAGEMENT;
@@ -189,7 +188,6 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
                  : vector_icons::kPrinterOldIcon;
 #endif
     case RequestType::kStorageAccess:
-    case RequestType::kTopLevelStorageAccess:
       return ::features::IsRoundedIconsEnabled()
                  ? vector_icons::kVr180Create2dIcon
                  : vector_icons::kStorageAccessOldIcon;
@@ -358,8 +356,6 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kLocalNetwork;
     case ContentSettingsType::LOOPBACK_NETWORK:
       return RequestType::kLoopbackNetwork;
-    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      return RequestType::kTopLevelStorageAccess;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       return RequestType::kFileSystemAccess;
 #if BUILDFLAG(ENABLE_SMART_CARD)
@@ -458,8 +454,6 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 #endif
     case RequestType::kWindowManagement:
       return ContentSettingsType::WINDOW_MANAGEMENT;
-    case RequestType::kTopLevelStorageAccess:
-      return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case RequestType::kWebAppInstallation:
       return ContentSettingsType::WEB_APP_INSTALLATION;
@@ -589,8 +583,6 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #endif
     case permissions::RequestType::kStorageAccess:
       return "storage_access";
-    case permissions::RequestType::kTopLevelStorageAccess:
-      return "top_level_storage_access";
     case permissions::RequestType::kVrSession:
       return "vr_session";
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)

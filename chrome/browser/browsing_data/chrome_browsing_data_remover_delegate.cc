@@ -1548,28 +1548,20 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS
   if (remove_mask & content::BrowsingDataRemover::
                         DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS) {
-    for (ContentSettingsType type_to_clear :
-         {ContentSettingsType::STORAGE_ACCESS,
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS}) {
-      host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-          type_to_clear, [&](const ContentSettingPatternSource& setting) {
-            return setting.metadata.decided_by_related_website_sets() &&
-                   std::ranges::any_of(
-                       filter_builder->GetOrigins(),
-                       [&](const url::Origin& origin) -> bool {
-                         // TopLevelStorageAccessPermissionContext creates
-                         // grants using (origin, site) patterns. We explicitly
-                         // use the primary pattern's site here to ensure any
-                         // permission granted to subdomains of an RWS site are
-                         // properly cleared.
-                         return net::SchemefulSite(setting.primary_pattern
-                                                       .ToRepresentativeUrl())
-                                    .IsSameSiteWith(origin) ||
-                                setting.secondary_pattern.Matches(
-                                    origin.GetURL());
-                       });
-          });
-    }
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::STORAGE_ACCESS,
+        [&](const ContentSettingPatternSource& setting) {
+          return setting.metadata.decided_by_related_website_sets() &&
+                 std::ranges::any_of(
+                     filter_builder->GetOrigins(),
+                     [&](const url::Origin& origin) -> bool {
+                       return net::SchemefulSite(
+                                  setting.primary_pattern.ToRepresentativeUrl())
+                                  .IsSameSiteWith(origin) ||
+                              setting.secondary_pattern.Matches(
+                                  origin.GetURL());
+                     });
+        });
   }
 
   if (remove_mask & constants::DATA_TYPE_SEARCH_ENGINE_CHOICE) {

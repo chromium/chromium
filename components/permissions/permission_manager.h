@@ -126,10 +126,6 @@ class PermissionManager : public KeyedService,
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  content::PermissionResult GetPermissionResultForEmbeddedRequester(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-      content::RenderFrameHost* render_frame_host,
-      const url::Origin& requesting_origin) override;
   bool IsPermissionOverridable(
       blink::PermissionType permission,
       base::optional_ref<const url::Origin> requesting_origin,

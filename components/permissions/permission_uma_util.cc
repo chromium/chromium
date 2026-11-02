@@ -151,8 +151,6 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "HandTracking";
     case RequestTypeForUma::PERMISSION_STORAGE_ACCESS:
       return "StorageAccess";
-    case RequestTypeForUma::PERMISSION_TOP_LEVEL_STORAGE_ACCESS:
-      return "TopLevelStorageAccess";
     case RequestTypeForUma::PERMISSION_CAMERA_PAN_TILT_ZOOM:
       return "CameraPanTiltZoom";
     case RequestTypeForUma::PERMISSION_WINDOW_MANAGEMENT:
@@ -674,8 +672,6 @@ std::string GetPermissionStringForUma(
       return "HandTracking";
     case ContentSettingsType::STORAGE_ACCESS:
       return "StorageAccess";
-    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      return "TopLevelStorageAccess";
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       return "CameraPanTiltZoom";
     case ContentSettingsType::WINDOW_MANAGEMENT:

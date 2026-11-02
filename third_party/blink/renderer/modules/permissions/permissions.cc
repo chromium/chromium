@@ -32,11 +32,6 @@
 
 namespace blink {
 namespace {
-void RecordTopLevelStorageAccessQueryMetrics(bool is_top_level_storage_access) {
-  base::UmaHistogramBoolean("Permissions.Query.TopLevelStorageAccess",
-                            is_top_level_storage_access);
-}
-
 bool ArePermissionDescriptorsEquivalent(
     const mojom::blink::PermissionDescriptor& left,
     const mojom::blink::PermissionDescriptor& right) {
@@ -110,9 +105,6 @@ ScriptPromise<PermissionStatus> Permissions::query(
       ParsePermissionDescriptor(script_state, raw_permission, exception_state);
   if (exception_state.HadException())
     return EmptyPromise();
-
-  RecordTopLevelStorageAccessQueryMetrics(
-      descriptor->name == PermissionName::TOP_LEVEL_STORAGE_ACCESS);
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PermissionStatus>>(

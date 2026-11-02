@@ -170,7 +170,6 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::SPEAKER_SELECTION, "speaker-selection"},
     {ContentSettingsType::AUTOMATIC_FULLSCREEN, "automatic-fullscreen"},
     {ContentSettingsType::KEYBOARD_LOCK, "keyboard-lock"},
-    {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, "top-level-storage-access"},
     {ContentSettingsType::WEB_APP_INSTALLATION, "web-app-installation"},
     {ContentSettingsType::SMART_CARD_GUARD, "smart-card-readers"},
     {ContentSettingsType::SMART_CARD_DATA, kSmartCardChooserDataGroupType},
@@ -601,7 +600,6 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
 #endif
       ContentSettingsType::SOUND,
       ContentSettingsType::STORAGE_ACCESS,
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
       ContentSettingsType::USB_GUARD,
       ContentSettingsType::VR,
       ContentSettingsType::WINDOW_MANAGEMENT,

@@ -67,7 +67,6 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::WINDOW_MANAGEMENT:
     case PermissionType::LOCAL_FONTS:
     case PermissionType::DISPLAY_CAPTURE:
-    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
     case PermissionType::CAPTURED_SURFACE_CONTROL:
     case PermissionType::SMART_CARD:
     case PermissionType::WEB_PRINTING:
@@ -185,20 +184,6 @@ PermissionResult ShellPermissionManager::GetPermissionResultForWorker(
     const GURL& worker_origin) {
   return PermissionResult(
       GetPermissionStatus(permission_descriptor, worker_origin, worker_origin));
-}
-
-PermissionResult
-ShellPermissionManager::GetPermissionResultForEmbeddedRequester(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    content::RenderFrameHost* render_frame_host,
-    const url::Origin& overridden_origin) {
-  if (render_frame_host->IsNestedWithinFencedFrame()) {
-    return PermissionResult(blink::mojom::PermissionStatus::DENIED);
-  }
-  return PermissionResult(GetPermissionStatus(
-      permission_descriptor, overridden_origin.GetURL(),
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-          render_frame_host->GetMainFrame())));
 }
 
 }  // namespace content

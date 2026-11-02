@@ -2322,7 +2322,8 @@ Called by update_net_error_codes.py.-->
   <int value="91"
       label="Federated identity identity-provider-sign-in-status API"/>
   <int value="92" label="Unused site permissions"/>
-  <int value="93" label="Top-level Storage Access"/>
+  <int value="93"
+      label="(Obsolete) Top-level Storage Access [Removed in M159]"/>
   <int value="94" label="Federated identity auto re-authn"/>
   <int value="95" label="Federated identity IdP Registration API"/>
   <int value="96" label="Anti-abuse"/>
@@ -24246,7 +24247,8 @@ Called by update_net_error_codes.py.-->
   <int value="28" label="(Obsolete) PERMISSION_FILE_HANDLING. Removed in M98."/>
   <int value="29"
       label="(Obsolete) PERMISSION_U2F_API_REQUEST. Removed in M117."/>
-  <int value="30" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
+  <int value="30"
+      label="(Obsolete) PERMISSION_TOP_LEVEL_STORAGE_ACCESS. Removed in M159."/>
   <int value="31" label="PERMISSION_MIDI"/>
   <int value="32" label="PERMISSION_FILE_SYSTEM_ACCESS"/>
   <int value="33" label="CAPTURED_SURFACE_CONTROL"/>
@@ -24309,7 +24311,8 @@ Called by update_net_error_codes.py.-->
   <int value="30" label="PERMISSION_LOCAL_FONTS"/>
   <int value="31" label="PERMISSION_DISPLAY_CAPTURE"/>
   <int value="32" label="(Obsolete) PERMISSION_FILE_HANDLING. Removed in M98."/>
-  <int value="33" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
+  <int value="33"
+      label="(Obsolete) PERMISSION_TOP_LEVEL_STORAGE_ACCESS. Removed in M159."/>
   <int value="34" label="PERMISSION_CAPTURED_SURFACE_CONTROL"/>
   <int value="35" label="PERMISSION_SMART_CARD"/>
   <int value="36" label="PERMISSION_WEB_PRINTING"/>

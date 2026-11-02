@@ -153,6 +153,10 @@ class AwPermissionManagerForTesting : public AwPermissionManager {
     delegate()->EnqueueResponse(origin, type, grant);
   }
 
+  void SetRequestingOrigin(const GURL& requesting_origin) {
+    requesting_origin_ = requesting_origin;
+  }
+
  private:
   AwBrowserPermissionRequestDelegateForTesting* delegate() {
     if (!delegate_) {
@@ -171,6 +175,11 @@ class AwPermissionManagerForTesting : public AwPermissionManager {
     return kRenderFrameIDForTesting;
   }
 
+  GURL LastCommittedOrigin(
+      content::RenderFrameHost* render_frame_host) override {
+    return requesting_origin_;
+  }
+
   GURL LastCommittedMainOrigin(
       content::RenderFrameHost* render_frame_host) override {
     return GURL(kEmbeddingOrigin);
@@ -184,6 +193,7 @@ class AwPermissionManagerForTesting : public AwPermissionManager {
     return delegate();
   }
 
+  GURL requesting_origin_;
   std::unique_ptr<AwBrowserPermissionRequestDelegateForTesting> delegate_;
   MockContextPermissionDelegate context_delegate_;
 };
@@ -231,12 +241,13 @@ class AwPermissionManagerTest : public testing::Test {
       base::OnceCallback<void(
           const std::vector<content::PermissionResult>& status)> callback) {
     CHECK(manager);
+    manager->SetRequestingOrigin(requesting_origin);
     manager->RequestPermissionsFromCurrentDocument(
         rfh,
         content::PermissionRequestDescription(
             content::PermissionDescriptorUtil::
                 CreatePermissionDescriptorForPermissionTypes(permissions),
-            user_gesture, requesting_origin),
+            user_gesture),
         std::move(callback));
   }
 

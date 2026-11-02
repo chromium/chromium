@@ -49,10 +49,6 @@ class ShellPermissionManager : public PermissionControllerDelegate {
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  PermissionResult GetPermissionResultForEmbeddedRequester(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-      content::RenderFrameHost* render_frame_host,
-      const url::Origin& overridden_origin) override;
 };
 
 }  // namespace content

@@ -98,47 +98,6 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
   return origin.GetURL();
 }
 
-bool PermissionUtil::IsDomainOverride(
-    const PermissionDescriptorPtr& descriptor) {
-  return descriptor->extension &&
-         descriptor->extension->is_top_level_storage_access();
-}
-
-const url::Origin& PermissionUtil::ExtractDomainOverride(
-    const PermissionDescriptorPtr& descriptor) {
-  const blink::mojom::TopLevelStorageAccessPermissionDescriptorPtr&
-      override_descriptor =
-          descriptor->extension->get_top_level_storage_access();
-  return override_descriptor->requestedOrigin;
-}
-
-bool PermissionUtil::ValidateDomainOverride(
-    const std::vector<blink::mojom::PermissionDescriptorPtr>& types,
-    RenderFrameHost* rfh,
-    const blink::mojom::PermissionDescriptorPtr& descriptor) {
-  if (types.size() > 1) {
-    // Requests with domain overrides must be requested individually.
-    return false;
-  }
-  if (!rfh || !rfh->IsInPrimaryMainFrame()) {
-    // Requests with domain overrides must be requested from a top-level
-    // browsing context.
-    return false;
-  }
-
-  const url::Origin& overridden_origin =
-      PermissionUtil::ExtractDomainOverride(descriptor);
-
-  if (rfh->GetLastCommittedOrigin().IsSameOriginWith(overridden_origin)) {
-    // In case `overridden_origin` equals
-    // `render_frame_host->GetLastCommittedOrigin()` then you should use
-    // `GetPermissionStatusForCurrentDocument`.
-    return false;
-  }
-
-  return true;
-}
-
 bool PermissionUtil::IsDevicePermission(
     const blink::mojom::PermissionDescriptorPtr& descriptor) {
   return descriptor->name == blink::mojom::PermissionName::VIDEO_CAPTURE ||

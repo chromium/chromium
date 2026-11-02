@@ -1167,7 +1167,7 @@ TEST_P(GeolocationPermissionContextTests,
               content::PermissionDescriptorUtil::
                   CreatePermissionDescriptorForPermissionType(
                       blink::PermissionType::GEOLOCATION),
-              /*user_gesture=*/true, requesting_frame),
+              /*user_gesture=*/true),
           requesting_frame, requesting_frame, 0);
 
   content::PermissionResult override_result(
@@ -1207,7 +1207,7 @@ TEST_P(GeolocationPermissionContextTests,
               content::PermissionDescriptorUtil::
                   CreatePermissionDescriptorForPermissionType(
                       blink::PermissionType::GEOLOCATION),
-              /*user_gesture=*/true, requesting_frame),
+              /*user_gesture=*/true),
           requesting_frame, requesting_frame, 0);
 
   content::PermissionResult override_result(

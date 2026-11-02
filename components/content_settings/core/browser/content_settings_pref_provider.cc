@@ -130,10 +130,8 @@ void PrefProvider::RegisterProfilePrefs(
       kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
   registry->RegisterDictionaryPref(kObsoletePrivateNetworkChooserDataPref);
   registry->RegisterDictionaryPref(kObsoleteTpcdHeuristicsGrantsPref);
-  // TODO(https://crbug.com/561405994): Register
-  // `kObsoleteTopLevelStorageAccessExceptionsPref` here once
-  // `ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS` is removed from
-  // `ContentSettingsRegistry`.
+  registry->RegisterDictionaryPref(
+      kObsoleteTopLevelStorageAccessExceptionsPref);
 #if !BUILDFLAG(IS_IOS)
   registry->RegisterDictionaryPref(kObsoleteTpcdTrialExceptionsPref);
   registry->RegisterDictionaryPref(kObsoleteTopLevelTpcdTrialExceptionsPref);

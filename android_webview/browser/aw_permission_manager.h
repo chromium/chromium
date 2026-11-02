@@ -61,10 +61,6 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  content::PermissionResult GetPermissionResultForEmbeddedRequester(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-      content::RenderFrameHost* render_frame_host,
-      const url::Origin& requesting_origin) override;
   void SetOriginCanReadEnumerateDevicesAudioLabels(const url::Origin& origin,
                                                    bool audio);
   void SetOriginCanReadEnumerateDevicesVideoLabels(const url::Origin& origin,
@@ -85,6 +81,7 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
 
   virtual int GetRenderProcessID(content::RenderFrameHost* render_frame_host);
   virtual int GetRenderFrameID(content::RenderFrameHost* render_frame_host);
+  virtual GURL LastCommittedOrigin(content::RenderFrameHost* render_frame_host);
   virtual GURL LastCommittedMainOrigin(
       content::RenderFrameHost* render_frame_host);
   virtual AwBrowserPermissionRequestDelegate* GetDelegate(int render_process_id,

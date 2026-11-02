@@ -63,10 +63,6 @@ class WebTestPermissionManager
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  PermissionResult GetPermissionResultForEmbeddedRequester(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-      content::RenderFrameHost* render_frame_host,
-      const url::Origin& overridden_origin) override;
   void OnPermissionStatusChangeSubscriptionAdded(
       content::PermissionController::SubscriptionId subscription_id) override;
 
@@ -152,8 +148,6 @@ class WebTestPermissionManager
   // specific statuses to be returned in the absence of another value.
   DefaultPermissionStatusMap default_permission_status_ = {
       {blink::PermissionType::STORAGE_ACCESS_GRANT,
-       blink::mojom::PermissionStatus::ASK},
-      {blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS,
        blink::mojom::PermissionStatus::ASK},
   };
 

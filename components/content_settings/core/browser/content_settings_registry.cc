@@ -504,17 +504,6 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
-  Register(ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-           "top-level-storage-access", CONTENT_SETTING_ASK,
-           WebsiteSettingsInfo::UNSYNCABLE,
-           /*allowlisted_primary_schemes=*/{},
-           /*valid_settings=*/
-           {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
-           WebsiteSettingsRegistry::ALL_PLATFORMS,
-           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
-
   Register(ContentSettingsType::CAMERA_PAN_TILT_ZOOM, "camera-pan-tilt-zoom",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
            /*allowlisted_primary_schemes=*/{},

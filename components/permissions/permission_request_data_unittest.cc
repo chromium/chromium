@@ -71,7 +71,7 @@ TEST_F(PermissionRequestDataTest, GeolocationApproximateAccuracy) {
   permissions.push_back(descriptor.Clone());
 
   content::PermissionRequestDescription request_description(
-      std::move(permissions), /*user_gesture=*/true, origin);
+      std::move(permissions), /*user_gesture=*/true);
 
   PermissionRequestData request_data(id, request_description, origin);
 
@@ -94,7 +94,7 @@ TEST_F(PermissionRequestDataTest, GeolocationPreciseAccuracy) {
   permissions.push_back(std::move(descriptor));
 
   content::PermissionRequestDescription request_description(
-      std::move(permissions), /*user_gesture=*/true, origin);
+      std::move(permissions), /*user_gesture=*/true);
 
   PermissionRequestData request_data(id, request_description, origin);
 

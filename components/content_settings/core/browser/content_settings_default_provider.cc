@@ -172,10 +172,7 @@ void DefaultProvider::RegisterProfilePrefs(
 #endif  // !BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kObsoleteFederatedIdentityDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoletePrivateNetworkGuardDefaultPref, 0);
-  // TODO(https://crbug.com/561405994): Register
-  // `kObsoleteTopLevelStorageAccessDefaultPref` here once
-  // `ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS` is removed from
-  // `ContentSettingsRegistry`.
+  registry->RegisterIntegerPref(kObsoleteTopLevelStorageAccessDefaultPref, 0);
 
 #if !BUILDFLAG(IS_IOS)
   // TODO(https://crbug.com/367181093): clean this up.

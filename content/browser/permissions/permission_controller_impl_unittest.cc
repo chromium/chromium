@@ -362,7 +362,7 @@ TEST_P(PermissionControllerImplTestWithApproxLocation,
                         content::PermissionDescriptorUtil::
                             CreatePermissionDescriptorForPermissionTypes(
                                 test_case.delegated_permissions),
-                        /*user_gesture*/ true, GURL(kTestUrl)),
+                        /*user_gesture*/ true),
                     testing::_))
             .WillByDefault(forward_callbacks);
       } else {
@@ -373,7 +373,7 @@ TEST_P(PermissionControllerImplTestWithApproxLocation,
                             content::PermissionDescriptorUtil::
                                 CreatePermissionDescriptorForPermissionTypes(
                                     test_case.delegated_permissions),
-                            /*user_gesture*/ true, GURL(kTestUrl)),
+                            /*user_gesture*/ true),
                         testing::_))
             .WillOnce(forward_callbacks);
       }

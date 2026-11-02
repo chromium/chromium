@@ -899,7 +899,7 @@ TEST_F(PermissionSubscriptionTest,
           GetPermissionController(),
           content::PermissionDescriptorUtil::
               CreatePermissionDescriptorForPermissionType(
-                  PermissionType::TOP_LEVEL_STORAGE_ACCESS),
+                  PermissionType::LOCAL_FONTS),
           /*render_process_host=*/nullptr, main_rfh(), url(),
           /*should_include_device_status=*/false,
           base::BindRepeating(&PermissionSubscriptionTest::OnPermissionChange,

@@ -4980,28 +4980,15 @@ class ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest
   ContentSettingPatternSource GetExpectedSetting(
       std::string_view primaryUrl,
       std::string_view secondaryUrl) {
-    switch (GetContentSettingsType()) {
-      case ContentSettingsType::STORAGE_ACCESS:
-        return ContentSettingPatternSource(
-            ContentSettingsPattern::FromURLToSchemefulSitePattern(
-                GURL(primaryUrl)),  // e.g. https://[*.]example.com
-            ContentSettingsPattern::FromURLToSchemefulSitePattern(
-                GURL(secondaryUrl)),  // e.g. https://[*.]testsite.com
-            content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-            content_settings::ProviderType::kPrefProvider, /*incognito=*/false,
-            GetMetadata());
-      case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-        return ContentSettingPatternSource(
-            ContentSettingsPattern::FromURLNoWildcard(
-                GURL(primaryUrl)),  // e.g. https://subdomain.example.com:112
-            ContentSettingsPattern::FromURLToSchemefulSitePattern(
-                GURL(secondaryUrl)),
-            content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-            content_settings::ProviderType::kPrefProvider, /*incognito=*/false,
-            GetMetadata());
-      default:
-        NOTREACHED();
-    }
+    CHECK_EQ(GetContentSettingsType(), ContentSettingsType::STORAGE_ACCESS);
+    return ContentSettingPatternSource(
+        ContentSettingsPattern::FromURLToSchemefulSitePattern(
+            GURL(primaryUrl)),  // e.g. https://[*.]example.com
+        ContentSettingsPattern::FromURLToSchemefulSitePattern(
+            GURL(secondaryUrl)),  // e.g. https://[*.]testsite.com
+        content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+        content_settings::ProviderType::kPrefProvider, /*incognito=*/false,
+        GetMetadata());
   }
 };
 
@@ -5050,13 +5037,11 @@ TEST_P(ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest,
-    testing::Combine(
-        testing::Bool(),  // IsDecidedByRelatedWebsiteSets.
-        testing::Values(ContentSettingsType::STORAGE_ACCESS,
-                        ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
-        testing::Values(FilterOrigins::kByPrimaryUrl,
-                        FilterOrigins::kBySecondaryUrl,
-                        FilterOrigins::kByBothUrls)));
+    testing::Combine(testing::Bool(),  // IsDecidedByRelatedWebsiteSets.
+                     testing::Values(ContentSettingsType::STORAGE_ACCESS),
+                     testing::Values(FilterOrigins::kByPrimaryUrl,
+                                     FilterOrigins::kBySecondaryUrl,
+                                     FilterOrigins::kByBothUrls)));
 
 // Regression test for https://crbug.com/502363986.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
@@ -5072,24 +5057,15 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   content_settings::ContentSettingConstraints rws_constraints;
   rws_constraints.set_lifetime(base::Days(30));
   rws_constraints.set_decided_by_related_website_sets(true);
-  settings_map->SetContentSettingDefaultScope(
-      kRequestedSubdomain, kTopLevel,
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
-      rws_constraints);
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(kRequestedSubdomain),
       ContentSettingsPattern::FromURLToSchemefulSitePattern(kTopLevel),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
       rws_constraints);
 
-  // 1 wildcard setting each, plus 1 specific setting each.
+  // 1 wildcard setting, plus 1 specific setting.
   ASSERT_EQ(
       settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS)
-          .size(),
-      2u);
-  ASSERT_EQ(
-      settings_map
-          ->GetSettingsForOneType(ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS)
           .size(),
       2u);
 
@@ -5105,11 +5081,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       content::BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS,
       std::move(filter_builder));
 
-  EXPECT_EQ(
-      settings_map
-          ->GetSettingsForOneType(ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS)
-          .size(),
-      1u);
   EXPECT_EQ(
       settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS)
           .size(),

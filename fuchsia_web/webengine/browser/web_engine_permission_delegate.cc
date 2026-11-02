@@ -40,8 +40,7 @@ void WebEnginePermissionDelegate::RequestPermissionsFromCurrentDocument(
   frame->permission_controller()->RequestPermissions(
       blink::PermissionDescriptorToPermissionTypes(
           request_description.permissions),
-      url::Origin::Create(request_description.requesting_origin),
-      std::move(callback));
+      render_frame_host->GetLastCommittedOrigin(), std::move(callback));
 }
 
 blink::mojom::PermissionStatus WebEnginePermissionDelegate::GetPermissionStatus(
@@ -109,17 +108,4 @@ WebEnginePermissionDelegate::GetPermissionResultForWorker(
   // workers don't have embedders.
   return content::PermissionResult(
       GetPermissionStatus(permission_descriptor, worker_origin, worker_origin));
-}
-
-content::PermissionResult
-WebEnginePermissionDelegate::GetPermissionResultForEmbeddedRequester(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    content::RenderFrameHost* render_frame_host,
-    const url::Origin& overridden_origin) {
-  FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
-  DCHECK(frame);
-  return content::PermissionResult(
-      frame->permission_controller()->GetPermissionState(
-          blink::PermissionDescriptorToPermissionType(permission_descriptor),
-          overridden_origin));
 }

@@ -298,10 +298,6 @@ enum ContentSettingsType {
   // feature.
   REVOKED_UNUSED_SITE_PERMISSIONS,
 
-  // Similar to STORAGE_ACCESS, but applicable at the page-level rather than
-  // being specific to a frame.
-  TOP_LEVEL_STORAGE_ACCESS,
-
   // Setting to indicate whether user has opted in to allowing auto re-authn via
   // the FedCM API.
   FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,

@@ -88,8 +88,6 @@ std::string GetPermissionString(PermissionType permission) {
       return "LocalFonts";
     case PermissionType::DISPLAY_CAPTURE:
       return "DisplayCapture";
-    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
-      return "TopLevelStorageAccess";
     case PermissionType::CAPTURED_SURFACE_CONTROL:
       return "CapturedSurfaceControl";
     case PermissionType::WEB_PRINTING:
@@ -154,8 +152,6 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return network::mojom::PermissionsPolicyFeature::kWebPrinting;
     case PermissionType::STORAGE_ACCESS_GRANT:
       return network::mojom::PermissionsPolicyFeature::kStorageAccessAPI;
-    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
-      return network::mojom::PermissionsPolicyFeature::kStorageAccessAPI;
     case PermissionType::WINDOW_MANAGEMENT:
       return network::mojom::PermissionsPolicyFeature::kWindowManagement;
     case PermissionType::LOCAL_FONTS:
@@ -205,7 +201,7 @@ const std::vector<PermissionType>& GetAllPermissionTypes() {
         const int NUM_TYPES = static_cast<int>(PermissionType::NUM);
         std::vector<PermissionType> all_types;
         // Note: Update this if the set of removed entries changes.
-        constexpr int kRemovedEntries[] = {2, 11, 13, 14, 15, 32};
+        constexpr int kRemovedEntries[] = {2, 11, 13, 14, 15, 32, 33};
 
         // The PermissionType enum starts from 1.
         all_types.reserve(NUM_TYPES - 1 - std::size(kRemovedEntries));
@@ -333,8 +329,6 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::LOCAL_FONTS;
     case PermissionName::DISPLAY_CAPTURE:
       return PermissionType::DISPLAY_CAPTURE;
-    case PermissionName::TOP_LEVEL_STORAGE_ACCESS:
-      return PermissionType::TOP_LEVEL_STORAGE_ACCESS;
     case PermissionName::CAPTURED_SURFACE_CONTROL:
       return PermissionType::CAPTURED_SURFACE_CONTROL;
     case PermissionName::SPEAKER_SELECTION:

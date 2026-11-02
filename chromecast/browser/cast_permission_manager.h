@@ -52,10 +52,6 @@ class CastPermissionManager : public content::PermissionControllerDelegate {
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  content::PermissionResult GetPermissionResultForEmbeddedRequester(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-      content::RenderFrameHost* render_frame_host,
-      const url::Origin& requesting_origin) override;
 };
 
 }  // namespace shell

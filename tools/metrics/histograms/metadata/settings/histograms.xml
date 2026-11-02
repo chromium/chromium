@@ -105,7 +105,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <variant name="SecurityKeyAttestation"/>
   <variant name="Sensors"/>
   <variant name="StorageAccess"/>
-  <variant name="TopLevelStorageAccess"/>
   <variant name="U2fApiRequest"/>
   <variant name="VideoCapture"/>
   <variant name="VR"/>

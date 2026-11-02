@@ -69,8 +69,7 @@ PermissionDelegationMode GetPermissionDelegationMode(
   if (permission == ContentSettingsType::NOTIFICATIONS) {
     return PermissionDelegationMode::kUndelegated;
   }
-  if (permission == ContentSettingsType::STORAGE_ACCESS ||
-      permission == ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) {
+  if (permission == ContentSettingsType::STORAGE_ACCESS) {
     return PermissionDelegationMode::kDoubleKeyed;
   }
   return PermissionDelegationMode::kDelegated;
@@ -218,8 +217,6 @@ RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
 #endif
     case RequestType::kWindowManagement:
       return RequestTypeForUma::PERMISSION_WINDOW_MANAGEMENT;
-    case RequestType::kTopLevelStorageAccess:
-      return RequestTypeForUma::PERMISSION_TOP_LEVEL_STORAGE_ACCESS;
     case RequestType::kFileSystemAccess:
       return RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -336,9 +333,6 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
       break;
     case ContentSettingsType::STORAGE_ACCESS:
       *out = PermissionType::STORAGE_ACCESS_GRANT;
-      break;
-    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      *out = PermissionType::TOP_LEVEL_STORAGE_ACCESS;
       break;
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       *out = PermissionType::CAMERA_PAN_TILT_ZOOM;
@@ -560,8 +554,6 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingsTypeSafe(
       return ContentSettingsType::SMART_CARD_DATA;
     case PermissionType::STORAGE_ACCESS_GRANT:
       return ContentSettingsType::STORAGE_ACCESS;
-    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
-      return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
       return ContentSettingsType::CAMERA_PAN_TILT_ZOOM;
     case PermissionType::WINDOW_MANAGEMENT:

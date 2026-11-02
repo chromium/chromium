@@ -71,12 +71,4 @@ HeadlessPermissionManager::GetPermissionResultForWorker(
   return content::PermissionResult(blink::mojom::PermissionStatus::ASK);
 }
 
-content::PermissionResult
-HeadlessPermissionManager::GetPermissionResultForEmbeddedRequester(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    content::RenderFrameHost* render_frame_host,
-    const url::Origin& overridden_origin) {
-  return content::PermissionResult(blink::mojom::PermissionStatus::ASK);
-}
-
 }  // namespace headless

@@ -1358,7 +1358,6 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
       break;
   }
 
-  GURL requesting_origin = origin().GetURL();
   // User gesture requirement is enforced in NavigatorWebInstall::InstallImpl.
   permission_controller->RequestPermissionsFromCurrentDocument(
       &render_frame_host(),
@@ -1366,7 +1365,7 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
           content::PermissionDescriptorUtil::
               CreatePermissionDescriptorForPermissionType(
                   blink::PermissionType::WEB_APP_INSTALLATION),
-          /*user_gesture=*/true, requesting_origin),
+          /*user_gesture=*/true),
       std::move(callback));
 }
 

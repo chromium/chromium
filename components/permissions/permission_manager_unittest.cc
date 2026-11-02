@@ -180,7 +180,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
         std::move(content::PermissionRequestDescription(
             content::PermissionDescriptorUtil::
                 CreatePermissionDescriptorForPermissionType(type),
-            /*user_gesture=*/true, rfh->GetLastCommittedOrigin().GetURL())),
+            /*user_gesture=*/true)),
         base::BindOnce(
             [](base::OnceCallback<void(content::PermissionResult)> callback,
                const std::vector<content::PermissionResult>& result) {
@@ -200,7 +200,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
         content::PermissionRequestDescription(
             content::PermissionDescriptorUtil::
                 CreatePermissionDescriptorForPermissionType(type),
-            /*user_gesture=*/true, rfh->GetLastCommittedOrigin().GetURL()),
+            /*user_gesture=*/true),
         base::BindOnce(
             [](base::OnceCallback<void(content::PermissionResult)> callback,
                const std::vector<content::PermissionResult>& result) {
@@ -896,7 +896,7 @@ TEST_F(PermissionManagerTest,
        GetPermissionContextForNotAddedPermissionContext) {
   PermissionContextBase* context =
       GetPermissionManager()->GetPermissionContextForTesting(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
+          ContentSettingsType::LOCAL_FONTS);
 
   // Context is null because it is not added to PermissionContextMap.
   EXPECT_TRUE(!context);
