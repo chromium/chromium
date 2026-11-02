@@ -37,9 +37,9 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
@@ -48,7 +48,8 @@ namespace {
 void GotoNewTabPage(content::WebContents* web_contents) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          chrome::ChromeUINewTabURLAsGURL(), WindowOpenDisposition::kCurrentTab,
+          chrome::ChromeUINewTabURLAsGURL(),
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }

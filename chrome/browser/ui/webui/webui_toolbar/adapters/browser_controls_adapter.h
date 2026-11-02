@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_ADAPTERS_BROWSER_CONTROLS_ADAPTER_H_
 
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace browser_controls_api {
@@ -19,13 +19,14 @@ class BrowserControlsAdapter {
  public:
   virtual ~BrowserControlsAdapter() = default;
 
-  virtual void Reload(bool bypass_cache, WindowOpenDisposition disposition) = 0;
+  virtual void Reload(bool bypass_cache,
+                      ui::mojom::WindowOpenDisposition disposition) = 0;
   virtual void Stop() = 0;
-  virtual void Back(WindowOpenDisposition disposition) = 0;
-  virtual void Forward(WindowOpenDisposition disposition) = 0;
+  virtual void Back(ui::mojom::WindowOpenDisposition disposition) = 0;
+  virtual void Forward(ui::mojom::WindowOpenDisposition disposition) = 0;
   virtual void BackButtonHovered() = 0;
   virtual void CreateNewSplitTab() = 0;
-  virtual void NavigateHome(WindowOpenDisposition disposition) = 0;
+  virtual void NavigateHome(ui::mojom::WindowOpenDisposition disposition) = 0;
   virtual void Navigate(const GURL& url) = 0;
   virtual void NavigateText(const std::string& text) = 0;
   // These should probably be pulled to their own adapter.

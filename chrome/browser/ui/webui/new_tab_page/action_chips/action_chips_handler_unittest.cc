@@ -52,8 +52,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -816,7 +816,7 @@ TEST_F(ActionChipsHandlerTest, NavigateToAimOpensCorrectUrl) {
                           searchbox::mojom::ActionModifiers::New());
 
   ASSERT_TRUE(delegate.last_open_url_params());
-  EXPECT_EQ(WindowOpenDisposition::kCurrentTab,
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kCurrentTab,
             delegate.last_open_url_params()->disposition);
   EXPECT_TRUE(
       ui::PageTransitionCoreTypeIs(delegate.last_open_url_params()->transition,
@@ -851,7 +851,7 @@ TEST_F(ActionChipsHandlerTest, NavigateToAimWithDisposition) {
 
   ASSERT_TRUE(delegate.last_open_url_params());
   // A middle click without modifiers maps to NEW_BACKGROUND_TAB.
-  EXPECT_EQ(WindowOpenDisposition::kNewBackgroundTab,
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
             delegate.last_open_url_params()->disposition);
 
   web_contents()->SetDelegate(nullptr);

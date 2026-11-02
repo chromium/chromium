@@ -25,6 +25,7 @@
 #include "content/public/common/referrer.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 // WebUIContentsWrapper wraps a WebContents that hosts a top chrome WebUI.
 // This class notifies the Host when it should be shown or hidden via ShowUI()
@@ -81,7 +82,7 @@ class WebUIContentsWrapper
         content::WebContents* source,
         std::unique_ptr<content::WebContents> new_contents,
         const GURL& target_url,
-        WindowOpenDisposition disposition,
+        ui::mojom::WindowOpenDisposition disposition,
         const blink::mojom::WindowFeatures& window_features,
         bool user_gesture,
         bool* was_blocked);
@@ -132,7 +133,7 @@ class WebUIContentsWrapper
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;

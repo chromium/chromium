@@ -27,7 +27,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace ash {
 
@@ -250,7 +250,7 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
         Do([]() {
           ASSERT_FALSE(GlobalBrowserCollection::GetInstance()->IsEmpty());
           chrome::Reload(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
-                         WindowOpenDisposition::kCurrentTab);
+                         ui::mojom::WindowOpenDisposition::kCurrentTab);
         }),
         WaitForHide(kSettingsWebContentsId),
         WaitForShow(kSettingsWebContentsId),

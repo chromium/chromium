@@ -39,7 +39,7 @@
 #include "components/tabs/public/tab_handle_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace context_hub {
@@ -497,7 +497,8 @@ void ContextHubTabProviderDesktop::OpenTopic(
   // Navigate() resolves the target window itself: for a new foreground tab it
   // reuses a tabbed browser for this profile, or creates one if none is open.
   NavigateParams navigate_params(profile_, url, ui::PAGE_TRANSITION_LINK);
-  navigate_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  navigate_params.disposition =
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&navigate_params);
 }
 

@@ -28,7 +28,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/webui/webui_util.h"
 
 TabsFromOtherDevicesUIConfig::TabsFromOtherDevicesUIConfig()
@@ -104,7 +104,7 @@ void TabsFromOtherDevicesSidePanelUI::CreateForeignSessionPageHandler(
           web_ui()->GetWebContents(),
           base::BindRepeating([](content::WebContents* source_web_contents,
                                  const ::sessions::SessionTab& tab,
-                                 WindowOpenDisposition disposition) {
+                                 ui::mojom::WindowOpenDisposition disposition) {
             SessionRestore::RestoreForeignSessionTab(source_web_contents, tab,
                                                      disposition);
           }),

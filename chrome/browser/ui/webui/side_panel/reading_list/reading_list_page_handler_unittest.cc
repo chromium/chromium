@@ -23,7 +23,6 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -215,11 +214,12 @@ TEST_F(TestReadingListPageHandlerTest, OpenURLOnNTP) {
   handler()->SetActiveTabURL(GURL("chrome://newtab/"));
   EXPECT_CALL(
       *mock_browser_window(),
-      OpenURL(testing::AllOf(
-                  testing::Field(&content::OpenURLParams::url, GURL(kTabUrl3)),
-                  testing::Field(&content::OpenURLParams::disposition,
-                                 WindowOpenDisposition::kCurrentTab)),
-              testing::_))
+      OpenURL(
+          testing::AllOf(
+              testing::Field(&content::OpenURLParams::url, GURL(kTabUrl3)),
+              testing::Field(&content::OpenURLParams::disposition,
+                             ui::mojom::WindowOpenDisposition::kCurrentTab)),
+          testing::_))
       .Times(1);
 
   handler()->OpenURL(GURL(kTabUrl3), GetClickModifiers());
@@ -243,11 +243,12 @@ TEST_F(TestReadingListPageHandlerTest, OpenURLNotOnNTP) {
   handler()->SetActiveTabURL(GURL("http://www.google.com"));
   EXPECT_CALL(
       *mock_browser_window(),
-      OpenURL(testing::AllOf(
-                  testing::Field(&content::OpenURLParams::url, GURL(kTabUrl3)),
-                  testing::Field(&content::OpenURLParams::disposition,
-                                 WindowOpenDisposition::kCurrentTab)),
-              testing::_))
+      OpenURL(
+          testing::AllOf(
+              testing::Field(&content::OpenURLParams::url, GURL(kTabUrl3)),
+              testing::Field(&content::OpenURLParams::disposition,
+                             ui::mojom::WindowOpenDisposition::kCurrentTab)),
+          testing::_))
       .Times(1);
 
   handler()->OpenURL(GURL(kTabUrl3), GetClickModifiers());

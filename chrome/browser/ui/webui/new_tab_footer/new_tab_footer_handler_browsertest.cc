@@ -31,7 +31,6 @@
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {

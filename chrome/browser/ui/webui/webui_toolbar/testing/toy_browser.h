@@ -11,7 +11,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace browser_controls_api {
@@ -22,7 +22,7 @@ namespace testing {
 
 struct ToyBrowserCommand {
   int command_id;
-  WindowOpenDisposition disposition;
+  ui::mojom::WindowOpenDisposition disposition;
 };
 
 class ToyBrowserControlsAdapter;

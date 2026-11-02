@@ -63,7 +63,6 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/view.h"
@@ -668,7 +667,7 @@ void BookmarksPageHandler::OpenBookmark(
                              browser_window_interface_->GetProfile()));
   }
 
-  WindowOpenDisposition open_location = ui::DispositionFromClick(
+  ui::mojom::WindowOpenDisposition open_location = ui::DispositionFromClick(
       click_modifiers->middle_button, click_modifiers->alt_key,
       click_modifiers->ctrl_key, click_modifiers->meta_key,
       click_modifiers->shift_key);

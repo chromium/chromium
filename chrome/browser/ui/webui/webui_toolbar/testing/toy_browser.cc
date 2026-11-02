@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace browser_controls_api::testing {
 
@@ -16,7 +16,8 @@ class ToyBrowserControlsAdapter : public BrowserControlsAdapter {
   explicit ToyBrowserControlsAdapter(ToyBrowser* toy_browser)
       : toy_browser_(toy_browser) {}
 
-  void Reload(bool bypass_cache, WindowOpenDisposition disposition) override {
+  void Reload(bool bypass_cache,
+              ui::mojom::WindowOpenDisposition disposition) override {
     toy_browser_->received_commands_.push_back({
         .command_id = bypass_cache ? IDC_RELOAD_BYPASSING_CACHE : IDC_RELOAD,
         .disposition = disposition,
@@ -26,17 +27,17 @@ class ToyBrowserControlsAdapter : public BrowserControlsAdapter {
   void Stop() override {
     toy_browser_->received_commands_.push_back(
         {.command_id = IDC_STOP,
-         .disposition = WindowOpenDisposition::kCurrentTab});
+         .disposition = ui::mojom::WindowOpenDisposition::kCurrentTab});
   }
 
-  void Back(WindowOpenDisposition disposition) override {
+  void Back(ui::mojom::WindowOpenDisposition disposition) override {
     toy_browser_->received_commands_.push_back({
         .command_id = IDC_BACK,
         .disposition = disposition,
     });
   }
 
-  void Forward(WindowOpenDisposition disposition) override {
+  void Forward(ui::mojom::WindowOpenDisposition disposition) override {
     toy_browser_->received_commands_.push_back({
         .command_id = IDC_FORWARD,
         .disposition = disposition,
@@ -49,7 +50,7 @@ class ToyBrowserControlsAdapter : public BrowserControlsAdapter {
 
   void CreateNewSplitTab() override { toy_browser_->is_split_tab_ = true; }
 
-  void NavigateHome(WindowOpenDisposition disposition) override {
+  void NavigateHome(ui::mojom::WindowOpenDisposition disposition) override {
     toy_browser_->received_commands_.push_back(
         {.command_id = IDC_HOME, .disposition = disposition});
   }

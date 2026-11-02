@@ -43,7 +43,6 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
@@ -98,7 +97,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
       case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: {
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                url_, WindowOpenDisposition::kNewBackgroundTab,
+                url_, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
@@ -107,7 +106,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
       case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW: {
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                url_, WindowOpenDisposition::kNewWindow,
+                url_, ui::mojom::WindowOpenDisposition::kNewWindow,
                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
@@ -116,7 +115,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
       case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD: {
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                url_, WindowOpenDisposition::kOffTheRecord,
+                url_, ui::mojom::WindowOpenDisposition::kOffTheRecord,
                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
         browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
@@ -192,7 +191,7 @@ void ReadingListPageHandler::OpenURL(
   }
 
   // Open in active tab if the user is on the NTP.
-  WindowOpenDisposition open_location = ui::DispositionFromClick(
+  ui::mojom::WindowOpenDisposition open_location = ui::DispositionFromClick(
       click_modifiers->middle_button, click_modifiers->alt_key,
       click_modifiers->ctrl_key, click_modifiers->meta_key,
       click_modifiers->shift_key);

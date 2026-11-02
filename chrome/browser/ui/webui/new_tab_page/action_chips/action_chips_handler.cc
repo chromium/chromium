@@ -39,8 +39,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/gurl.h"
 #include "url/mojom/url.mojom.h"
@@ -285,7 +285,7 @@ void ActionChipsHandler::NavigateToAim(
       lens::LensOverlayInvocationSource::kNtpActionChips,
       /*additional_params=*/{});
 
-  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+  const ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, modifiers->alt_key,
       modifiers->ctrl_key, modifiers->meta_key, modifiers->shift_key);
 

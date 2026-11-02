@@ -22,7 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace views {
 
@@ -51,7 +51,7 @@ class MockHost : public WebUIContentsWrapper::Host {
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override {
@@ -267,7 +267,7 @@ TEST_F(WebUIContentsWrapperTest, HostNotifiedOnAddNewContents) {
       nullptr /* source */,
       std::unique_ptr<content::WebContents>() /* new_contents */,
       GURL() /* target_url */,
-      WindowOpenDisposition::kCurrentTab /* disposition */,
+      ui::mojom::WindowOpenDisposition::kCurrentTab /* disposition */,
       blink::mojom::WindowFeatures() /* window_features */,
       false /* user_gesture */, &blocked /* was_blocked */);
   EXPECT_EQ(1, host.add_new_contents_called());
@@ -277,7 +277,7 @@ TEST_F(WebUIContentsWrapperTest, HostNotifiedOnAddNewContents) {
       nullptr /* source */,
       std::unique_ptr<content::WebContents>() /* new_contents */,
       GURL() /* target_url */,
-      WindowOpenDisposition::kCurrentTab /* disposition */,
+      ui::mojom::WindowOpenDisposition::kCurrentTab /* disposition */,
       blink::mojom::WindowFeatures() /* window_features */,
       false /* user_gesture */, &blocked /* was_blocked */);
   EXPECT_EQ(1, host.add_new_contents_called());

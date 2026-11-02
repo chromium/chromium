@@ -98,6 +98,7 @@
 #include "net/base/url_util.h"  // nogncheck
 #endif
 #include "components/sessions/content/session_tab_helper.h"  // nogncheck
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 namespace {
@@ -1416,10 +1417,11 @@ void ContextHubPageHandler::OpenTopic(
   }
 
   if (web_contents_) {
-    content::OpenURLParams params(url, content::Referrer(),
-                                  WindowOpenDisposition::kNewForegroundTab,
-                                  ui::PAGE_TRANSITION_LINK,
-                                  /*is_renderer_initiated=*/false);
+    content::OpenURLParams params(
+        url, content::Referrer(),
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+        ui::PAGE_TRANSITION_LINK,
+        /*is_renderer_initiated=*/false);
     web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
   }
 #endif

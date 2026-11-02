@@ -50,9 +50,9 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/base/ip_endpoint.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
 
 using content::DevToolsAgentHost;
@@ -560,7 +560,7 @@ void InspectMessageHandler::CreateNativeUIInspectionSession(
   content::WebContents* front_end = inspect_ui->GetDelegate()->OpenURLFromTab(
       inspect_ui,
       content::OpenURLParams::CreateBrowserInitiated(
-          gurl, WindowOpenDisposition::kNewForegroundTab,
+          gurl, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
   // When the front-end is started, disable the launch button.
@@ -744,7 +744,7 @@ void InspectUI::InspectBrowserWithCustomFrontend(const std::string& source_id,
   WebContents* front_end = inspect_ui->GetDelegate()->OpenURLFromTab(
       inspect_ui,
       content::OpenURLParams::CreateBrowserInitiated(
-          frontend_url, WindowOpenDisposition::kNewForegroundTab,
+          frontend_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 

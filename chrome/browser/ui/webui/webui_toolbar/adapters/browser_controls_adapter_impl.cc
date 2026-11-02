@@ -25,8 +25,8 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -43,22 +43,25 @@ BrowserControlsAdapterImpl::BrowserControlsAdapterImpl(
 
 BrowserControlsAdapterImpl::~BrowserControlsAdapterImpl() {}
 
-void BrowserControlsAdapterImpl::Reload(bool bypass_cache,
-                                        WindowOpenDisposition disposition) {
+void BrowserControlsAdapterImpl::Reload(
+    bool bypass_cache,
+    ui::mojom::WindowOpenDisposition disposition) {
   command_updater_->ExecuteCommandWithDisposition(
       bypass_cache ? IDC_RELOAD_BYPASSING_CACHE : IDC_RELOAD, disposition);
 }
 
 void BrowserControlsAdapterImpl::Stop() {
   command_updater_->ExecuteCommandWithDisposition(
-      IDC_STOP, WindowOpenDisposition::kCurrentTab);
+      IDC_STOP, ui::mojom::WindowOpenDisposition::kCurrentTab);
 }
 
-void BrowserControlsAdapterImpl::Back(WindowOpenDisposition disposition) {
+void BrowserControlsAdapterImpl::Back(
+    ui::mojom::WindowOpenDisposition disposition) {
   command_updater_->ExecuteCommandWithDisposition(IDC_BACK, disposition);
 }
 
-void BrowserControlsAdapterImpl::Forward(WindowOpenDisposition disposition) {
+void BrowserControlsAdapterImpl::Forward(
+    ui::mojom::WindowOpenDisposition disposition) {
   command_updater_->ExecuteCommandWithDisposition(IDC_FORWARD, disposition);
 }
 
@@ -72,7 +75,7 @@ void BrowserControlsAdapterImpl::BackButtonHovered() {
     return;
   }
   contents->BackNavigationLikely(chrome_preloading_predictor::kBackButtonHover,
-                                 WindowOpenDisposition::kCurrentTab);
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab);
 }
 
 void BrowserControlsAdapterImpl::CreateNewSplitTab() {
@@ -81,7 +84,7 @@ void BrowserControlsAdapterImpl::CreateNewSplitTab() {
 }
 
 void BrowserControlsAdapterImpl::NavigateHome(
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   command_updater_->ExecuteCommandWithDisposition(IDC_HOME, disposition);
 }
 
@@ -162,7 +165,7 @@ void BrowserControlsAdapterImpl::OpenDroppedUrl(
     const GURL& url,
     bool drag_originated_from_renderer) {
   content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::kCurrentTab,
+                                ui::mojom::WindowOpenDisposition::kCurrentTab,
                                 ui::PAGE_TRANSITION_LINK,
                                 /*is_renderer_initiated=*/false);
   // A drag that started in a web page carries data controlled by that page, so

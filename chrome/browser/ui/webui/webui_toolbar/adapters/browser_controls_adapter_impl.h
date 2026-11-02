@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class CommandUpdater;
 class BrowserWindowInterface;
@@ -27,13 +28,14 @@ class BrowserControlsAdapterImpl : public BrowserControlsAdapter,
   ~BrowserControlsAdapterImpl() override;
 
   // BrowserControlsAdapter:
-  void Reload(bool bypass_cache, WindowOpenDisposition disposition) override;
+  void Reload(bool bypass_cache,
+              ui::mojom::WindowOpenDisposition disposition) override;
   void Stop() override;
-  void Back(WindowOpenDisposition disposition) override;
-  void Forward(WindowOpenDisposition disposition) override;
+  void Back(ui::mojom::WindowOpenDisposition disposition) override;
+  void Forward(ui::mojom::WindowOpenDisposition disposition) override;
   void BackButtonHovered() override;
   void CreateNewSplitTab() override;
-  void NavigateHome(WindowOpenDisposition disposition) override;
+  void NavigateHome(ui::mojom::WindowOpenDisposition disposition) override;
   void Navigate(const GURL& url) override;
   void NavigateText(const std::string& text) override;
   webui_toolbar::TabSplitStatus ComputeSplitTabStatus() override;

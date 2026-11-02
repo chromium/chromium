@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 // Mock implementation of the
@@ -231,7 +231,7 @@ class MockCommandUpdater : public CommandUpdater {
   MOCK_METHOD(bool,
               ExecuteCommandWithDispositionAndContext,
               (int id,
-               WindowOpenDisposition disposition,
+               ui::mojom::WindowOpenDisposition disposition,
                std::optional<actions::ActionInvocationContext> context,
                base::TimeTicks time_stamp),
               (override));

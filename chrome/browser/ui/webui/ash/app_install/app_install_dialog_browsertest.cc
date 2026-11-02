@@ -38,7 +38,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace ash::app_install {
 
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
   const GURL app_url(app_install_server()->GetUrl("/web_apps/basic.html"));
 
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser(), app_url, 1, WindowOpenDisposition::kCurrentTab,
+      browser(), app_url, 1, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::TestNavigationObserver navigation_observer_dialog(

@@ -16,7 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace browser_controls_api {
@@ -61,7 +61,7 @@ class BrowserControlsAdapterImplTest : public ChromeRenderViewHostTestHarness {
 // how the adapter handles every drop on the toolbar.
 MATCHER_P(OpensInCurrentTab, url, "") {
   return arg.url == url &&
-         arg.disposition == WindowOpenDisposition::kCurrentTab;
+         arg.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab;
 }
 
 // Matches `content::OpenURLParams` whose initiator is an opaque origin, as set
