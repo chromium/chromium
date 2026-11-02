@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">ইতিহাস ও ওয়েবসাইটের ডেটা মুছুন</translation>
 <translation id="3190558889382726167">পাসওয়ার্ড সংরক্ষিত</translation>
 <translation id="3190736958609431397">ট্র্যাক করার বিকল্প বন্ধ করুন</translation>
+<translation id="3192820089569442694">আপনার ডেটা অপ্ট-আউট সংক্রান্ত অনুরোধে কোনও সমস্যা হয়েছে</translation>
 <translation id="3208260410153224535">আপনার প্রতিষ্ঠান সাইন-ইন করার সুবিধা বন্ধ করে দিয়েছে। নতুন বুকমার্ক, পাসওয়ার্ড ও আরও অনেক কিছু শুধুমাত্র এই ডিভাইসে সেভ হবে।</translation>
 <translation id="3211969308836412674">সাইট আনপিন করুন</translation>
 <translation id="3213807041830307252">আপনার ক্যামেরা ও ফটো গ্যালারি ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন।</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Google Lens সম্পর্কে আরও জানুন</translation>
 <translation id="3449029510150690417">নাম ও রং যোগ দিয়ে আপনার নতুন ট্যাব গ্রুপ তৈরি করুন</translation>
 <translation id="345348365500626747">ঠিকানা পাওয়া গেছে</translation>
+<translation id="3453878468834191501">আপনি নতুন চ্যাট শুরু করলে, বর্তমান ট্যাবটি Gemini-র সাথে শেয়ার করা হয়। <ph name="BEGIN_LINK" />AI ও গোপনীয়তা সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">কোনও পৃষ্ঠা সম্পর্কে জিজ্ঞাসা করতে, উচ্চস্বরে ব্রেনস্টর্ম করতে এবং কথোপকথন চালাতে Gemini-র সাথে Live-এ যান।</translation>
 <translation id="3462768334899086950">এর অর্থ হল, সেভ না করা ফাইল ও বর্তমান ট্যাব আপনি হারিয়ে ফেলবেন</translation>
 <translation id="3464194322481586217">দাম ট্র্যাক করা যায়নি।</translation>
@@ -1627,6 +1629,7 @@
 <translation id="6078236141387574983">শিটের উচ্চতা আবার অ্যাডজাস্ট করুন</translation>
 <translation id="6084848228346514841">ট্যাব বেছে নিন</translation>
 <translation id="6089212833343035912">Google Password Manager-এর পিন</translation>
+<translation id="6090690847556987004">এই সেটিংয়ে কোনও সমস্যা হয়েছে। Chrome ও iOS আপডেট করুন, তারপর আবার চেষ্টা করতে আপনার ডিভাইস রিস্টার্ট করুন। এই সমস্যা চলতে থাকলে, আপনার iPhone-এ এই সেটিং কাজ নাও করতে পারে।</translation>
 <translation id="6090760257419195752">বাতিল করা সতর্কতা</translation>
 <translation id="6094325891006032858">উন্নত Safe Browsing চালু করুন</translation>
 <translation id="6096965253650248286"><ph name="COUNT" />টি ট্যাব পাওয়া গেছে</translation>
@@ -2123,6 +2126,7 @@
 <translation id="7557508262441527045">সাইন-আউট করুন</translation>
 <translation id="7561196759112975576">সবসময়</translation>
 <translation id="7561982940498449837">মেনু বন্ধ করুন</translation>
+<translation id="7562347727679121642">আপনার সার্চে ছবি যোগ করুন</translation>
 <translation id="7566349809380613217"><ph name="GROUP_TITLE" /> খুলুন, <ph name="NUMBER_OF_TABS" />টি শেয়ার করা গ্রুপ, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">বুকমার্ক লুকানো আছে</translation>
 <translation id="7575664680938145959">একবার ট্যাপ করেই খুলুন</translation>
@@ -2670,6 +2674,7 @@
 <translation id="9203951165704618409">কাস্টমাইজ করা ব্রাউজিং অভিজ্ঞতা পেতে আপনার অ্যাড্রেস বার উপর থেকে নিচে পরিবর্তন করুন।</translation>
 <translation id="9205189991633470489">ছদ্মবেশী লক</translation>
 <translation id="9206887540681440657">গতিবেগ</translation>
+<translation id="9218088788182688902">এই সেটিংয়ে কোনও সমস্যা হয়েছে। Chrome ও iPadOS আপডেট করুন, তারপর আবার চেষ্টা করতে আপনার ডিভাইস রিস্টার্ট করুন। এই সমস্যা হতে থাকলে, আপনার iPad-এ এই সেটিং কাজ নাও করতে পারে।</translation>
 <translation id="9218430445555521422">ডিফল্ট হিসেবে সেট করুন</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219154867334666734">ট্যাব সার্চ করুন…</translation>

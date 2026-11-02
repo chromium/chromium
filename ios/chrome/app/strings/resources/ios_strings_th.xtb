@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">ล้างประวัติการเข้าชมและข้อมูลเว็บไซต์</translation>
 <translation id="3190558889382726167">บันทึกรหัสผ่านแล้ว</translation>
 <translation id="3190736958609431397">ยกเลิกการติดตาม</translation>
+<translation id="3192820089569442694">เกิดข้อผิดพลาดกับคำขอเลือกไม่ใช้ข้อมูลของคุณ</translation>
 <translation id="3208260410153224535">องค์กรปิดการลงชื่อเข้าใช้ไว้ บุ๊กมาร์ก รหัสผ่านใหม่ และข้อมูลอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="3211969308836412674">เลิกปักหมุดเว็บไซต์</translation>
 <translation id="3213807041830307252">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้องและแกลเลอรีรูปภาพ</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">ดูข้อมูลเพิ่มเติมเกี่ยวกับ Google Lens</translation>
 <translation id="3449029510150690417">สร้างกลุ่มแท็บใหม่โดยตั้งชื่อและสีให้กลุ่มแท็บ</translation>
 <translation id="345348365500626747">พบที่อยู่</translation>
+<translation id="3453878468834191501">ระบบจะแชร์แท็บปัจจุบันกับ Gemini เมื่อคุณเริ่มแชทใหม่ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับ AI และความเป็นส่วนตัว<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">ใช้ฟีเจอร์ Live กับ Gemini เพื่อถามเกี่ยวกับหน้าเว็บ ระดมความคิดออกมา และพูดคุยโต้ตอบ</translation>
 <translation id="3462768334899086950">การดำเนินการนี้หมายความว่าคุณจะเสียไฟล์ที่ยังไม่ได้บันทึกและแท็บปัจจุบัน</translation>
 <translation id="3464194322481586217">ติดตามราคาไม่ได้</translation>
@@ -1626,6 +1628,7 @@
 <translation id="6078236141387574983">ปรับความสูงของชีตใหม่</translation>
 <translation id="6084848228346514841">เลือกแท็บ</translation>
 <translation id="6089212833343035912">PIN ของเครื่องมือจัดการรหัสผ่านบน Google</translation>
+<translation id="6090690847556987004">เกิดข้อผิดพลาดกับการตั้งค่านี้ โปรดอัปเดต Chrome และ iOS จากนั้นรีสตาร์ทอุปกรณ์เพื่อลองอีกครั้ง หากข้อผิดพลาดนี้ยังคงเกิดขึ้น iPhone ของคุณอาจไม่รองรับการตั้งค่านี้</translation>
 <translation id="6090760257419195752">คำเตือนที่ถูกปิด</translation>
 <translation id="6094325891006032858">เปิด Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="6096965253650248286">พบ <ph name="COUNT" /> แท็บ</translation>
@@ -2122,6 +2125,7 @@
 <translation id="7557508262441527045">ออกจากระบบแล้ว</translation>
 <translation id="7561196759112975576">ทุกครั้ง</translation>
 <translation id="7561982940498449837">ปิดเมนู</translation>
+<translation id="7562347727679121642">เพิ่มรูปภาพในการค้นหา</translation>
 <translation id="7566349809380613217">เปิด <ph name="GROUP_TITLE" />, กลุ่มที่แชร์ <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">บุ๊กมาร์กซ่อนอยู่</translation>
 <translation id="7575664680938145959">เปิดด้วยการแตะเพียงครั้งเดียว</translation>
@@ -2669,6 +2673,7 @@
 <translation id="9203951165704618409">เปลี่ยนแถบที่อยู่จากด้านบนเป็นด้านล่างเพื่อประสบการณ์การท่องเว็บที่ปรับแต่งได้</translation>
 <translation id="9205189991633470489">การล็อกโหมดไม่ระบุตัวตน</translation>
 <translation id="9206887540681440657">ความเร็ว</translation>
+<translation id="9218088788182688902">เกิดข้อผิดพลาดกับการตั้งค่านี้ โปรดอัปเดต Chrome และ iPadOS จากนั้นรีสตาร์ทอุปกรณ์เพื่อลองอีกครั้ง หากข้อผิดพลาดนี้ยังคงเกิดขึ้น iPad ของคุณอาจไม่รองรับการตั้งค่านี้</translation>
 <translation id="9218430445555521422">ตั้งเป็นค่าเริ่มต้น</translation>
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="9219154867334666734">ค้นหาแท็บ…</translation>

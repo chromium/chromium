@@ -5791,7 +5791,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5392864580775235956">Ychwanegu a golygu llun</translation>
 <translation id="5393330235977997602">Dewisiadau PIN</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Dolen}zero{# dolen}two{# ddolen}few{# dolen}many{# dolen}other{# dolen}}</translation>
-<translation id="5394400188854257119">5 munud</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">Wrthi'n cadw yn eich cyfrif...</translation>
 <translation id="5397656531674854099">Defnyddiwch eich grwpiau tabiau ar eich ffôn</translation>
@@ -6019,6 +6018,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5558129378926964177">Chwyddo&amp;</translation>
 <translation id="5558594314398017686">OS diofyn (pan fydd ar gael)</translation>
 <translation id="5559311991468302423">Dileu cyfeiriad</translation>
+<translation id="5559646482656763170">Diweddaru pan nad yw'n cael ei ddefnyddio</translation>
 <translation id="555968128798542113">Gall y wefan hon reoli ac ailraglennu eich dyfeisiau MIDI.</translation>
 <translation id="5559768063688681413">Dim argraffwyr wedi'u cadw</translation>
 <translation id="55601339223879446">Addasu ffiniau eich bwrdd gwaith o fewn y sgrîn</translation>
@@ -6520,6 +6520,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Agor pob un mewn &amp;ffenest newydd}=1{Agor mewn &amp;ffenest newydd}two{Agor pob un ({COUNT}) mewn &amp;ffenest newydd}few{Agor pob un ({COUNT}) mewn &amp;ffenest newydd}many{Agor pob un ({COUNT}) mewn &amp;ffenest newydd}other{Agor pob un ({COUNT}) mewn &amp;ffenest newydd}}</translation>
 <translation id="5964247741333118902">Cynnwys wedi'i fewnblannu</translation>
 <translation id="5965607173855879702">Wrthi'n dileu data...</translation>
+<translation id="5966067139745999860">Wedi symud <ph name="SHORTCUT_TITLE" /> i safle <ph name="SHORTCUT_POSITION" /> o <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Mae data gwefan yn cael eu dileu o'ch dyfais pan fyddwch yn cau pob ffenestr</translation>
 <translation id="5968022600320704045">Dim canlyniadau chwilio</translation>
 <translation id="5968400720580217226">Dull AI</translation>
@@ -7185,6 +7186,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6488266788670893993">Ni all <ph name="BRAND" /> wirio eich cyfrineiriau yn erbyn achosion o dorri data. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
 <translation id="648927581764831596">Dim ar gael</translation>
 <translation id="6490471652906364588">Dyfais USB-C (porth de)</translation>
+<translation id="6491890991754498129">Agor &amp;Gyda...</translation>
 <translation id="649396225532207613">Gall y ffeil hon niweidio eich cyfrifon rhwydwaith personol a chymdeithasol</translation>
 <translation id="6493991254603208962">Disgleirdeb i lawr</translation>
 <translation id="6494327278868541139">Dangos manylion gwell amddiffyniad</translation>
@@ -8225,7 +8227,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7273110280511444812">atodwyd ddiwethaf ar <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Rhwystro <ph name="HOST" /> rhag rheoli ac ailraglennu eich dyfeisiau MIDI bob amser</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> nes ei fod yn llawn</translation>
-<translation id="7274453646377524248">Bydd eich holl dabiau a ffenestri sydd ar agor yn ailagor yn awtomatig.</translation>
 <translation id="7275950084263610253">Caniateir iddo gael mynediad at ddyfeisiau eraill ar eich rhwydwaith lleol</translation>
 <translation id="727595954130325265">Siopa Nawr</translation>
 <translation id="727952162645687754">Gwall lawrlwytho</translation>
@@ -9010,7 +9011,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7871691770940645922">Sgrîn Rhithwir Braille</translation>
 <translation id="787268756490971083">Diffodd</translation>
 <translation id="7872758299142009420">Gormod o grwpiau sydd wedi'u nythu: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Diweddaru pan fyddaf yn camu i ffwrdd</translation>
 <translation id="7876027585589532670">Methu â golygu llwybr byr</translation>
 <translation id="7876243839304621966">Tynnu pob un</translation>
 <translation id="7877126887274043657">Trwsio Problem &amp;Cysoni</translation>
@@ -10067,6 +10067,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8666268818656583275">Bydd gan fysellau F nawr yr un ymddygiad â bysellau rhes uchaf y system</translation>
 <translation id="8666321716757704924">Cafwyd caniatâd eto ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Mae gennych gyfrineiriau y gellir eu gwella</translation>
+<translation id="8667543835349994431">Agor &amp;gyda...</translation>
 <translation id="8668378421690365723">Mae'n bosib na fydd eich dyfais yn gweithio'n iawn mwyach, ac mae'n bosib y bydd yn profi problemau diogelwch a pherfformiad.</translation>
 <translation id="8669284339312441707">Cynhesach</translation>
 <translation id="8670537393737592796">I ddychwelyd yma'n gyflym, gosodwch <ph name="APP_NAME" /> drwy glicio'r botwm gosod</translation>
@@ -10175,6 +10176,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8738418093147087440">Chwilio yn ôl gwledydd, iaith, neu enwau mewnbwn</translation>
 <translation id="8741944563400125534">Canllaw gosod Mynediad Switsh</translation>
 <translation id="8743357966416354615">Amgylchedd Datblygu a Reolir (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Llywio i <ph name="URL" /> yn lle hynny?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Adolygwch y newid URL i wneud yn siŵr eich bod yn gyfforddus ag ef cyn diweddaru.</translation>
 <translation id="8745034592125932220">Ni chaniateir i gadw data i'ch dyfais</translation>

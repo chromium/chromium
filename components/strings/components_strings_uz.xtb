@@ -1205,6 +1205,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3030331669969285614">Bu parametrlar muhim oʻzgartirishlarni bloklaydi yoki bekor qiladi. Ularning amal qilish muddati cheklangan.</translation>
 <translation id="3033200136993730761">Uy manzilingiz Google xizmatlarida, jumladan Qidiruvda mos natijalarni hamda Google Xaritalarda marshrutlarni olish kabi amallarni bajarishga yordam beradi. Manzillarni <ph name="BEGIN_LINK" /><ph name="ACCOUNT" /> Google hisobingiz<ph name="END_LINK" /> orqali tahrirlashingiz yoki oʻchirishingiz mumkin.</translation>
 <translation id="3033777742142108756">Hozircha harakat va yorugʻlik sensorlaridan foydalanish ruxsati berilgan</translation>
+<translation id="3034219227076811559">Chrome ichida Google Qidiruv</translation>
 <translation id="3034526003882782781">Varaqlash va zum ruxsat etilgan</translation>
 <translation id="3037177537145227281">Narxni kuzatyapsiz</translation>
 <translation id="3037605927509011580">Ana xolos!</translation>
@@ -3217,6 +3218,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6342069812937806050">Hozirgina</translation>
 <translation id="6342171901363060580">Bu sayt HTTPS protokolda ishlamasligi va Inkognito rejimida ochilgani uchun bu ogohlantiruv chiqarildi. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Qanday boriladi</translation>
+<translation id="6345664705388712774">Qidiruv soʻrovingizga rasm qoʻshing</translation>
 <translation id="6348220984832452017">Joriy oʻzgarishlar</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ilovasini oʻrnatish</translation>
 <translation id="6350739641326887427">Pix kodidan nusxa olib oʻtirmasdan, oson toʻlang. <ph name="BEGIN_LINK1" />Ishlash tartibi<ph name="END_LINK1" /></translation>
@@ -3649,7 +3651,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="7083258188081898530">Tarnov 9</translation>
 <translation id="70846382339153529">OpenDocument matni</translation>
 <translation id="7086090958708083563">Foydalanuvchi hisobot yuklanishini talab qilgan</translation>
-<translation id="7087807086191250928">Gemini xatolar qilishi mumkin. Asl manbani koʻrish va maʼlumotlar toʻgʻriligiga ishonch hosil qilish uchun bildirgini bosib turing.</translation>
+<translation id="7087807086191250928">Gemini xato qilishi mumkin. Asl manbani koʻrish va maʼlumotlar toʻgʻriligiga ishonch hosil qilish uchun bildirgini bosib turing.</translation>
 <translation id="7089745480771070611">Yon panelda ochiladi</translation>
 <translation id="7090698782953528257">Matematik tenglamani vizuallashtirish va egri chiziq shaklini koʻrish uchun funksiya grafigini chizishda yordam ber</translation>
 <translation id="7092087596499105699">Tashkilotingizning shaxsiy veb-ilovalariga xavfsiz kirishingizni taʼminlash uchun administratoringiz maxsus xavfsiz darvoza konnektorini sozlagan. Ruxsatni tasdiqlash uchun ish profilingizdagi maʼlumotlardan foydalanishi mumkin.</translation>
@@ -4317,6 +4319,7 @@ Batafsil axborot:
 <translation id="8199437620497683918">Optik disk (yaltiroq)</translation>
 <translation id="8202097416529803614">Buyurtma ma’lumotlari</translation>
 <translation id="8202370299023114387">Ziddiyat</translation>
+<translation id="8203105157044679380">Google Qidiruv paneli</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">Chop etiladigan sahifalar kontenti va printer axboroti tahlil qilinishi uchun Google Cloud yoki tashqi xizmatlarga yuboriladi. Masalan, tarkibida maxfiy yoki zararli axborotlar mavjudligini aniqlash uchun tekshirilishi mumkin. Ular sizning administratoringiz uchun ham ochiq boʻlishi va kompaniya qoidalari asosida saqlanishi mumkin.</translation>
 <translation id="8210490490377416373">Qoida nomini tanlang</translation>

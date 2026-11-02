@@ -1206,6 +1206,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3030331669969285614">Te zastavice preprečijo ali razveljavijo spremembo, ki povzroči težave, in so na voljo samo omejen čas.</translation>
 <translation id="3033200136993730761">Domači naslov vam lahko pomaga opraviti različne stvari v Googlovih storitvah, na primer pridobiti ustreznejše rezultate iskanja in navodila za pot v Google Zemljevidih. Naslov lahko uredite ali izbrišete <ph name="BEGIN_LINK" />v računu Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Tipala gibanja in svetlobe so za zdaj dovoljena</translation>
+<translation id="3034219227076811559">Iskanje Google v Chromu</translation>
 <translation id="3034526003882782781">Pomikanje in povečava/pomanjšava sta dovoljena</translation>
 <translation id="3037177537145227281">Spremljanje cene</translation>
 <translation id="3037605927509011580">Ti šment!</translation>
@@ -3223,6 +3224,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6342069812937806050">Pravkar</translation>
 <translation id="6342171901363060580">To opozorilo je prikazano, ker spletno mesto ne podpira protokola HTTPS in uporabljate anonimni način. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Navodila za pot</translation>
+<translation id="6345664705388712774">Dodajte slike v iskanje</translation>
 <translation id="6348220984832452017">Aktivne različice</translation>
 <translation id="6349101878882523185">Namestite <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Plačujte brez kopiranja in lepljenja kode Pix. <ph name="BEGIN_LINK1" />Prikaz delovanja<ph name="END_LINK1" /></translation>
@@ -4324,6 +4326,7 @@ Dodatne podrobnosti:
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
 <translation id="8202097416529803614">Povzetek naročila</translation>
 <translation id="8202370299023114387">Spor</translation>
+<translation id="8203105157044679380">Podokno Iskanja Google</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">Vsebina natisnjenih strani in podatki o tiskalniku so poslani v Google Cloud ali drugim ponudnikom v analizo. Lahko je na primer pregledana glede tega, ali vsebuje občutljive podatke, in shranjena glede na pravilnike podjetja ter vidna vašemu skrbniku.</translation>
 <translation id="8210490490377416373">Izberite ime pravilnika</translation>

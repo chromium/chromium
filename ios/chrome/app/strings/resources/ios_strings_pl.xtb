@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Wyczyść historię i dane witryn</translation>
 <translation id="3190558889382726167">Hasło zostało zapisane</translation>
 <translation id="3190736958609431397">Wyłącz śledzenie</translation>
+<translation id="3192820089569442694">Coś poszło nie tak z Twoją prośbą o rezygnację z wykorzystywania danych</translation>
 <translation id="3208260410153224535">Twoja organizacja wyłączyła logowanie się. Nowe zakładki, hasła i inne ustawienia będą zapisywane tylko na tym urządzeniu.</translation>
 <translation id="3211969308836412674">Odepnij witrynę</translation>
 <translation id="3213807041830307252">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu i galerii zdjęć.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Więcej informacji o Obiektywie Google</translation>
 <translation id="3449029510150690417">Utwórz nową grupę kart, nadając jej nazwę i kolor</translation>
 <translation id="345348365500626747">Adres znaleziony</translation>
+<translation id="3453878468834191501">Gdy rozpoczynasz nowy czat, bieżąca karta jest udostępniana Gemini. <ph name="BEGIN_LINK" />Więcej informacji o AI i prywatności<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Rozmawiaj w trybie Live z Gemini, aby zadawać pytania o stronę, przeprowadzać burzę mózgów i prowadzić dyskusje.</translation>
 <translation id="3462768334899086950">Oznacza to, że utracisz niezapisany plik i bieżące karty</translation>
 <translation id="3464194322481586217">Wystąpił błąd monitorowania ceny.</translation>
@@ -1626,6 +1628,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6078236141387574983">Dostosuj wysokość arkusza</translation>
 <translation id="6084848228346514841">Wybierz karty</translation>
 <translation id="6089212833343035912">Kod PIN Menedżera haseł Google</translation>
+<translation id="6090690847556987004">Podczas konfigurowania tego ustawienia coś poszło nie tak. Zaktualizuj Chrome i iOS, a następnie uruchom ponownie urządzenie i spróbuj jeszcze raz. Jeśli ten błąd będzie się powtarzał, Twój iPhone może nie obsługiwać tego ustawienia.</translation>
 <translation id="6090760257419195752">Zamknięte ostrzeżenia</translation>
 <translation id="6094325891006032858">Włącz Ulepszone Bezpieczne przeglądanie</translation>
 <translation id="6096965253650248286">Znaleziono <ph name="COUNT" /></translation>
@@ -2122,6 +2125,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="7557508262441527045">Wylogowano</translation>
 <translation id="7561196759112975576">Zawsze</translation>
 <translation id="7561982940498449837">Zamknij menu</translation>
+<translation id="7562347727679121642">Dodaj obraz do wyszukiwania</translation>
 <translation id="7566349809380613217">Otwórz: <ph name="GROUP_TITLE" />, udostępniona grupa <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Zakładki są ukryte</translation>
 <translation id="7575664680938145959">Otwieranie jednym kliknięciem</translation>
@@ -2669,6 +2673,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="9203951165704618409">Przenieś pasek adresu z góry na dół, aby spersonalizować przeglądanie.</translation>
 <translation id="9205189991633470489">Blokada trybu incognito</translation>
 <translation id="9206887540681440657">Szybkość</translation>
+<translation id="9218088788182688902">Podczas konfigurowania tego ustawienia coś poszło nie tak. Zaktualizuj Chrome i iPadOS, a następnie uruchom ponownie urządzenie i spróbuj jeszcze raz. Jeśli ten błąd będzie się powtarzał, iPad może nie obsługiwać tego ustawienia.</translation>
 <translation id="9218430445555521422">Ustaw jako opcję domyślną</translation>
 <translation id="9219103736887031265">Grafika</translation>
 <translation id="9219154867334666734">Wyszukaj karty…</translation>

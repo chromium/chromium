@@ -5792,7 +5792,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5392864580775235956">Tilføj og rediger et billede</translation>
 <translation id="5393330235977997602">Valgmuligheder for pinkode</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}other{# links}}</translation>
-<translation id="5394400188854257119">5 minutter</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">Gemmer på din konto...</translation>
 <translation id="5397656531674854099">Brug dine fanegrupper på din telefon</translation>
@@ -6020,6 +6019,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5558129378926964177">Zoom &amp;ind</translation>
 <translation id="5558594314398017686">OS-standard (når den er tilgængelig)</translation>
 <translation id="5559311991468302423">Slet adresse</translation>
+<translation id="5559646482656763170">Opdater ved inaktivitet</translation>
 <translation id="555968128798542113">Dette website kan styre og omprogrammere dine MIDI-enheder</translation>
 <translation id="5559768063688681413">Ingen gemte printere</translation>
 <translation id="55601339223879446">Tilpas grænserne for dit skrivebord inden for skærmvisningen</translation>
@@ -6521,6 +6521,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Åbn alle i &amp;nyt vindue}=1{Åbn i &amp;nyt vindue}one{Åbn ({COUNT}) i &amp;nyt vindue}other{Åbn alle ({COUNT}) i &amp;nyt vindue}}</translation>
 <translation id="5964247741333118902">Indlejret indhold</translation>
 <translation id="5965607173855879702">Sletter data...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> er flyttet til position <ph name="SHORTCUT_POSITION" /> af <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Websitedata slettes fra din enhed, når du lukker alle vinduer</translation>
 <translation id="5968022600320704045">Ingen søgeresultater</translation>
 <translation id="5968400720580217226">AI-tilstand</translation>
@@ -7186,6 +7187,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> kan ikke tjekke dine adgangskoder i forbindelse med brud på datasikkerheden. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="648927581764831596">Ingen tilgængelig</translation>
 <translation id="6490471652906364588">USB-C-enhed (højre port)</translation>
+<translation id="6491890991754498129">Åbn med…</translation>
 <translation id="649396225532207613">Denne fil kan skade dine personlige konti og dine konti på sociale netværk</translation>
 <translation id="6493991254603208962">Lysstyrke ned</translation>
 <translation id="6494327278868541139">Vis oplysninger om forbedret beskyttelse</translation>
@@ -8221,7 +8223,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7273110280511444812">senest tilknyttet den <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Bloker altid <ph name="HOST" /> fra at styre og omprogrammere dine MIDI-enheder</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – fuldt opladet om <ph name="TIME" /></translation>
-<translation id="7274453646377524248">Alle dine åbne faner og vinduer åbnes automatisk igen.</translation>
 <translation id="7275950084263610253">Har tilladelse til at tilgå andre enheder på dit lokale netværk</translation>
 <translation id="727595954130325265">Shop nu</translation>
 <translation id="727952162645687754">Downloadfejl</translation>
@@ -9006,7 +9007,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7871691770940645922">Virtuelt display til blindskrift</translation>
 <translation id="787268756490971083">Fra</translation>
 <translation id="7872758299142009420">Der er for mange indlejrede grupper: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Opdater, når jeg er inaktiv</translation>
 <translation id="7876027585589532670">Genvejen kan ikke redigeres</translation>
 <translation id="7876243839304621966">Fjern alt</translation>
 <translation id="7877126887274043657">Løs &amp;synkroniseringsproblem</translation>
@@ -10063,6 +10063,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8666268818656583275">F-tasterne fungerer nu som systemtasterne i øverste række</translation>
 <translation id="8666321716757704924">Der er igen givet tilladelser for <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Du har adgangskoder, der kan forbedres</translation>
+<translation id="8667543835349994431">Åbn med…</translation>
 <translation id="8668378421690365723">Din enhed fungerer muligvis ikke længere korrekt, og du kan opleve problemer med sikkerheden og ydeevnen.</translation>
 <translation id="8669284339312441707">Varm</translation>
 <translation id="8670537393737592796">Installer <ph name="APP_NAME" /> ved at klikke på knappen til installation, så du hurtigt kan vende tilbage hertil</translation>
@@ -10171,6 +10172,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8738418093147087440">Søg efter lande, sprog eller navne på indtastningsmetode</translation>
 <translation id="8741944563400125534">Konfigurationsvejledning til Kontaktadgang</translation>
 <translation id="8743357966416354615">Administreret udviklingsmiljø (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Vil du i stedet gå til <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Gennemgå ændringen af webadressen for at sikre, at du er tilfreds med den, før du opdaterer.</translation>
 <translation id="8745034592125932220">Har ikke tilladelse til at gemme data på din enhed</translation>

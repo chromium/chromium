@@ -58,7 +58,7 @@
 <translation id="1090629319939036170">Menú de RV</translation>
 <translation id="1091463901118115503">Seguir leyendo</translation>
 <translation id="1091779689406092804">capturas de pantalla</translation>
-<translation id="1095093219235104018">Buscar y completar con Gemini</translation>
+<translation id="1095093219235104018">Encontrar y completar con Gemini</translation>
 <translation id="1096545575934602868">Esta campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se descartarán las restantes.</translation>
 <translation id="1099928364755383720">modo de pantalla en pantalla automático</translation>
 <translation id="1100782917270858593">Botón Reanudar exploración, presiona Intro para reanudar tu exploración y ver actividad pertinente en tu historial de Chrome</translation>
@@ -1206,6 +1206,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3030331669969285614">Estas funciones experimentales evitan o revierten un cambio rotundo y solo estarán disponibles por un tiempo limitado.</translation>
 <translation id="3033200136993730761">Tu dirección de casa puede ayudarte a realizar tareas en los servicios de Google, como obtener resultados de la Búsqueda más relevantes y direcciones en Google Maps. Puedes editar o borrar tu dirección <ph name="BEGIN_LINK" />en tu Cuenta de Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Se permiten los sensores de movimiento y de luz por ahora</translation>
+<translation id="3034219227076811559">Búsqueda de Google en Chrome</translation>
 <translation id="3034526003882782781">Se permiten el desplazamiento y el zoom</translation>
 <translation id="3037177537145227281">Se está haciendo el seguimiento de precios</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
@@ -3224,6 +3225,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6342069812937806050">Recién</translation>
 <translation id="6342171901363060580">Se muestra esta advertencia porque este sitio no admite HTTPS y estás en modo Incógnito. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Instrucciones</translation>
+<translation id="6345664705388712774">Agregar imágenes a la búsqueda</translation>
 <translation id="6348220984832452017">Variaciones activas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Paga sin copiar ni pegar el código de Pix. <ph name="BEGIN_LINK1" />Ver cómo funciona<ph name="END_LINK1" /></translation>
@@ -4325,6 +4327,7 @@ Detalles adicionales:
 <translation id="8199437620497683918">Disco óptico (brillante)</translation>
 <translation id="8202097416529803614">Resumen del pedido</translation>
 <translation id="8202370299023114387">Conflicto</translation>
+<translation id="8203105157044679380">Panel de la Búsqueda de Google</translation>
 <translation id="8208363704094329105">300 × 400 mm</translation>
 <translation id="8208629719488976364">El contenido de las páginas que imprimes y la información sobre tu impresora se envían a Google Cloud o a terceros para su análisis. Por ejemplo, es posible que se analice en busca de datos sensibles y se almacene según las políticas de la empresa, y que sea visible para el administrador.</translation>
 <translation id="8210490490377416373">Seleccionar el nombre de la política</translation>

@@ -58,7 +58,7 @@
 <translation id="1090629319939036170">VR Menüsü</translation>
 <translation id="1091463901118115503">Okumaya devam edin</translation>
 <translation id="1091779689406092804">ekran görüntülerini</translation>
-<translation id="1095093219235104018">Gemini ile Bulun ve Tamamlayın</translation>
+<translation id="1095093219235104018">Gemini ile bul ve doldur</translation>
 <translation id="1096545575934602868">Bu alanda en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir. Diğer tüm girişler silinecektir.</translation>
 <translation id="1099928364755383720">otomatik pencere içinde pencere</translation>
 <translation id="1100782917270858593">Arama yolculuğunuzu devam ettirin düğmesi, arama yolculuğunuzu devam ettirerek Chrome geçmişinizdeki alakalı etkinlikleri görmek için Enter'a basın</translation>
@@ -1206,6 +1206,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3030331669969285614">Zarar veren bir değişikliği önleyen ya da geri alan bu flag'ler yalnızca sınırlı bir süre boyunca kullanılabilir.</translation>
 <translation id="3033200136993730761">Ev adresiniz, Google hizmetlerinde işlerinizi halletmenize yardımcı olabilir. Örneğin, daha alakalı Arama sonuçları ve Google Haritalar'da daha doğru yol tarifleri alabilirsiniz. Adresinizi <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="ACCOUNT" />)<ph name="END_LINK" /> düzenleyebilir veya silebilirsiniz.</translation>
 <translation id="3033777742142108756">Şu anda hareket ve ışık sensörlerine izin veriliyor</translation>
+<translation id="3034219227076811559">Chrome'da Google Arama</translation>
 <translation id="3034526003882782781">Kaydırma ve yakınlaştırmaya izin veriliyor</translation>
 <translation id="3037177537145227281">Fiyat takip ediliyor</translation>
 <translation id="3037605927509011580">Hay aksi!</translation>
@@ -3223,6 +3224,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6342069812937806050">Az önce</translation>
 <translation id="6342171901363060580">Bu site HTTPS'yi desteklemediği ve Gizli modda olduğunuz için bu uyarıyı görüyorsunuz. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Yol tarifi</translation>
+<translation id="6345664705388712774">Aramanıza resim ekleyin</translation>
 <translation id="6348220984832452017">Etkin Varyasyonlar</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> uygulamasını yükle</translation>
 <translation id="6350739641326887427">Pix kodunu kopyalayıp yapıştırmadan ödeme yapın. <ph name="BEGIN_LINK1" />İşleyiş şeklini öğrenin<ph name="END_LINK1" />.</translation>
@@ -4324,6 +4326,7 @@ Ek ayrıntılar:
 <translation id="8199437620497683918">Optik Disk (Parlak)</translation>
 <translation id="8202097416529803614">Sipariş özeti</translation>
 <translation id="8202370299023114387">Çakışma</translation>
+<translation id="8203105157044679380">Google Arama paneli</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">Yazdırdığınız sayfaların içeriği ve yazıcınızla ilgili bilgiler analiz edilmek üzere Google Cloud'a veya üçüncü taraflara gönderilir. Örneğin, hassas veriler içerip içermediği kontrol edilir ve şirket politikalarına bağlı olarak saklanıp yöneticiniz tarafından görülebilir.</translation>
 <translation id="8210490490377416373">Politika adı seçin</translation>

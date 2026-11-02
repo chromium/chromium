@@ -1206,6 +1206,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3030331669969285614">Te oznake sprečavaju ili vraćaju rizičnu promenu i biće dostupne samo u ograničenom periodu.</translation>
 <translation id="3033200136993730761">Kućna adresa može da vam pomogne da obavljate stvari u Google uslugama, poput relevantnijih rezultata Pretrage i putanje u Google mapama. Možete da izmenite ili izbrišete adresu na <ph name="BEGIN_LINK" />Google nalogu <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Za sada su senzori pokreta i svetlosti dozvoljeni</translation>
+<translation id="3034219227076811559">Google pretraga u Chrome-u</translation>
 <translation id="3034526003882782781">Skrolovanje i zumiranje je dozvoljeno</translation>
 <translation id="3037177537145227281">Prati se cena</translation>
 <translation id="3037605927509011580">O, ne!</translation>
@@ -3222,6 +3223,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="6342069812937806050">Malopre</translation>
 <translation id="6342171901363060580">Ovo upozorenje vam se prikazuje jer ovaj sajt ne podržava HTTPS, a vi ste u režimu bez arhiviranja. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Putanja</translation>
+<translation id="6345664705388712774">Dodajte slike u pretragu</translation>
 <translation id="6348220984832452017">Aktivne varijacije</translation>
 <translation id="6349101878882523185">Instalirajte <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Plaćajte bez kopiranja i lepljenja Pix koda. <ph name="BEGIN_LINK1" />Evo kako to funkcioniše<ph name="END_LINK1" /></translation>
@@ -4323,6 +4325,7 @@ Dodatni detalji:
 <translation id="8199437620497683918">Optički disk (sjajan)</translation>
 <translation id="8202097416529803614">Rezime porudžbine</translation>
 <translation id="8202370299023114387">Neusaglašenost</translation>
+<translation id="8203105157044679380">Okno Google pretrage</translation>
 <translation id="8208363704094329105">300×400 mm</translation>
 <translation id="8208629719488976364">Sadržaj stranica koje štampate i informacije o štampaču se šalju u Google Cloud ili trećim stranama na analizu. Na primer, možda će biti skeniran u potrazi za osetljivim podacima i može da se čuva na osnovu smernica preduzeća i može da bude vidljiv administratoru.</translation>
 <translation id="8210490490377416373">Izaberite naziv smernica</translation>

@@ -30,7 +30,6 @@
 <translation id="1194807384646768652">O Chrome bloqueou o download porque o tipo de arquivo não é transferido com frequência e pode ser perigoso</translation>
 <translation id="1197860368385086056">Na próxima vez que você abrir o Chrome no seu <ph name="DEVICE_TYPE" />, vai aparecer uma mensagem para ativar os alertas de monitoramento de preços.</translation>
 <translation id="1203500561924088507">Agradecemos por fazer a instalação. É necessário reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
-<translation id="122321322139970942">Uma <ph name="IMPORTANT_UPDATE" /> está pendente. Para manter sua navegação segura, o Chrome será atualizado na próxima vez que o sistema ficar inativo por <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Para acessar seus favoritos e muito mais em todos os seus dispositivos, faça login no Chrome</translation>
 <translation id="1278833599417554002">Reinicializar para atualizar o &amp;Chrome</translation>
 <translation id="1289911795790071537">Abrir a pesquisa com o Chrome</translation>
@@ -525,9 +524,9 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="5940385492829620908">Sua Web, seus favoritos e demais conteúdo do Chrome estão aqui.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Fazer do Google Chrome o navegador padrão</translation>
+<translation id="5944731887996253728">O Chrome será atualizado quando a tela não estiver em uso</translation>
 <translation id="5947104538377036631">Atalho do Chrome</translation>
 <translation id="5960071705175224773">Suas configurações foram alteradas por um app desconhecido</translation>
-<translation id="5960404530854194706">O Chrome será atualizado quando você estiver ausente</translation>
 <translation id="5980111191913430208">Extensões, apps e temas de fontes desconhecidas podem danificar o dispositivo. O Chrome recomenda a instalação apenas pela <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Fazendo o download… <ph name="HOURS" /> hora(s) restante(s)</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{Seu admin exige que você reinicie o Chrome para que uma atualização seja feita. Há uma janela isolada ou de navegação anônima aberta. Ela não será reaberta após a reinicialização.}one{Seu admin exige que você reinicie o Chrome para que uma atualização seja feita. Há # janela isolada ou de navegação anônima aberta em todos os perfis. Ela não será reaberta após a reinicialização.}other{Seu admin exige que você reinicie o Chrome para que uma atualização seja feita. Há # janelas isoladas e de navegação anônima abertas em todos os perfis. Elas não serão reabertas após a reinicialização.}}</translation>
@@ -614,7 +613,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6556755379298048869">Pesquise usando um atalho do teclado.</translation>
 <translation id="6585124893636629274">Fechar o Gemini no Chrome</translation>
 <translation id="659498884637196217">No Gerenciador de senhas do Google deste dispositivo</translation>
-<translation id="660312897435669152">O Chrome quer fazer uma atualização</translation>
 <translation id="6612152958212564387">Você não está enviando estatísticas de uso e relatórios de erros ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Mantenha senhas, favoritos e histórico sincronizados em todos os dispositivos definindo o Chrome como navegador padrão.</translation>
 <translation id="6631524303639368205">Continue de onde você parou: o Chrome restaurou as guias da sua última sessão. Para desativar essa opção, acesse as</translation>
@@ -829,6 +827,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="8367950957770994118">Abra o Gemini no Chrome com rapidez sempre que precisar</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8370748943308169953">QR code para fazer login no Chrome como <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558">Uma <ph name="IMPORTANT_UPDATE" /> está pronta. Você pode reiniciar agora ou configurar o Chrome para atualizar na próxima vez que a tela ficar ligada e sem uso por <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">Painel lateral da Pesquisa Google</translation>
 <translation id="8377158135256176353">Ativar/desativar o Gemini no Chrome Canary</translation>
 <translation id="8380754585531979907">Use o teclado para navegar entre o Gemini e a guia aberta no Chrome.</translation>
@@ -872,6 +871,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8669527147644353129">Auxiliar do Google Chrome</translation>
 <translation id="8679801911857917785">Controla também qual página deve ser exibida quando você inicia o Chrome.</translation>
 <translation id="8689408573494410517">O botão "Pesquisa Google no painel lateral" na barra de ferramentas tem um novo ícone. Clique nele para fazer perguntas enquanto navega com a Pesquisa Google no painel lateral.</translation>
+<translation id="8699232386626916686">Atualize o Chrome para manter a segurança</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8712767363896337380">Falta pouco para a atualização terminar. Reinicie o Chrome para concluir.</translation>
 <translation id="8717554232729236539">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Você também terá acesso à sua Lista de Leitura e muito mais do <ph name="DEVICE" />.</translation>

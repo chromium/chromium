@@ -24,7 +24,6 @@
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
 <translation id="1186645291482254714">Hinnajälgimise märguanded Chromiumiga telefonis</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>
-<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> on ootel. Sirvimise turvalisuse tagamiseks värskendatakse Chromiumi järgmine kord, kui olete <ph name="IDLE_DURATION" /> inaktiivne.</translation>
 <translation id="1232234696885483911">Kui avate pildiotsingu, saadetakse lehe pealkiri, URL ja sisu (sh PDF-id) automaatselt serverisse. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Kui olete sisse logitud, siis saate Chromiumis kasutada oma paroole ja oma Google'i konto teisi võimalusi. Selle muutmiseks avage valik „Teie konto Chromiumis“.</translation>
 <translation id="1244381985120794049">Kuva Gemini Chromiumis Maci menüüribal</translation>
@@ -247,7 +246,6 @@
 <translation id="3286538390144397061">Taaskäivitada kohe</translation>
 <translation id="328888136576916638">Google API võtmed on puudu. Teatud Chromiumi funktsioonid keelatakse.</translation>
 <translation id="3296368748942286671">Jätka taustarakenduste käitamist pärast Chromiumi sulgemist</translation>
-<translation id="3300632735252839402">Chromiumit värskendatakse, kui olete eemal.</translation>
 <translation id="3313189106987092621">Chromium hoiatab teid enne mis tahes saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="3316771292331273802">Kõikide Chromiumi akende sulgemise korral logitakse teid välja enamikust saitidest, v.a Google’i kontolt, kui olete Chromiumis sisse logitud. Kui soovite lubada saitidel ennast meelde jätta, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">otsinguala parem ülanurk: <ph name="RIGHT" />% paremal, <ph name="TOP" />% üleval</translation>
@@ -256,7 +254,6 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Kas lülituda olemasolevale Chromiumi profiilile?</translation>
 <translation id="3412460710772753638">Selle seadme paroolihalduris</translation>
-<translation id="3425452599984451640">Chromium soovib värskendada</translation>
 <translation id="3427159664004296878">Seadmes <ph name="DEVICE" /> oma järjehoidjatele ja muule sisule juurdepääsemiseks logige sisse Chromiumi.</translation>
 <translation id="3438772217992559640">Otsi sellelt vahelehelt pildiotsinguga</translation>
 <translation id="3455907671758333080">Laiendage Chromiumiga telefonis täiustatud ohutut sirvimist</translation>
@@ -322,6 +319,7 @@
 <translation id="4135244987012252068">Oma brauserile uue ilme andmiseks saate Chromiumi kohandada.</translation>
 <translation id="4147856324248078748">K&amp;ohandage oma Chromiumit</translation>
 <translation id="4148957013307229264">Installimine ...</translation>
+<translation id="4197500750628721662">Turvalisuse tagamiseks värskendage Chromiumi</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – võrku sisselogimine – Chromium</translation>
 <translation id="4208652172235621272"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete kõigis seadmetes juurde oma lugemisloendile ja muule.</translation>
 <translation id="421369550622382712">Avastage Chromiumi jaoks suurepäraseid rakendusi, mänge, laiendusi ja teemasid.</translation>
@@ -459,6 +457,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="5596063723521813107">{COUNT,plural, =1{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie isoleeritud akent ei avata uuesti.}other{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5605834417512968703">Valige midagi, mida pildiotsinguga otsida, või vajutage pildiotsingust väljumiseks paoklahvi</translation>
+<translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> on valmis. Võite kohe uuesti käivitada või seadistada Chromiumi värskendama järgmine kord, kui teie ekraan jääb sisselülitatuks ja seda ei kasutata <ph name="IDLE_DURATION" />.</translation>
 <translation id="5618818588972826921">Valige pildiotsinguga otsimiseks mis tahes tekst või pilt või vajutage pildiotsingust väljumiseks paoklahvi</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromiumi värskendus on saadaval}=1{Chromiumi värskendus on saadaval}other{Chromiumi värskendus on # päeva saadaval olnud}}</translation>
 <translation id="5643865575100044307">Saidiandmed kustutatakse alati seadmest, kui Chromiumi sulgete</translation>
@@ -515,6 +514,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="6192070012454216182">Otsige ja esitage küsimusi kõikjal, isegi kui Chromium on minimeeritud. Lubab Chromiumil taustal töötada.</translation>
 <translation id="6212496753309875659">Arvutis on juba Chromiumi uuem versioon. Kui tarkvara ei tööta, siis desinstallige Chromium ja proovige uuesti.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium käivitatakse kohe uuesti}=1{Chromium käivitatakse uuesti 1 sekundi pärast}other{Chromium käivitatakse uuesti # sekundi pärast}}</translation>
+<translation id="6232046770428574552">Chromiumit värskendatakse, kui teie ekraani ei kasutata.</translation>
 <translation id="6241367896540709610">Chromium vajab failide allalaadimiseks juurdepääsu salvestusruumile</translation>
 <translation id="6245734527075554892">Kontrollib URL-e Chromiumi talletatud ohtlike saitide loendi alusel.</translation>
 <translation id="6248213926982192922">Määra Chromium vaikebrauseriks</translation>

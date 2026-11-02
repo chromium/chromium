@@ -684,6 +684,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1523279371236772909">Consulté le mois dernier</translation>
 <translation id="1523978563989812243">Moteurs de synthèse vocale</translation>
 <translation id="1524563461097350801">Non, merci</translation>
+<translation id="1524903662136734524">Ajouter un fichier à partir de Disque</translation>
 <translation id="1525740877599838384">Utiliser uniquement le réseau Wi-Fi pour déterminer l'emplacement</translation>
 <translation id="1526274304859009691">Connectez-vous pour récupérer vos extensions et plus encore à partir de <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Document sans titre</translation>
@@ -2692,6 +2693,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3032204772252313646">Sous-titres automatiques</translation>
 <translation id="3032272345862007156">Thème d'IA <ph name="INDEX" /> récent</translation>
 <translation id="3033167916029856961">Le mode Ne pas déranger est activé</translation>
+<translation id="3034219227076811559">Recherche Google dans Chrome</translation>
 <translation id="3036546437875325427">Activer le flash</translation>
 <translation id="3036602651971781493">Les sites peuvent utiliser un service de protection du contenu pour faire jouer du contenu protégé par des droits d'auteur ou vérifier quel navigateur vous utilisez</translation>
 <translation id="3036907164806060573">Rêve</translation>
@@ -3210,6 +3212,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3437072258256045988">Gérez votre activité dans les applis Gemini</translation>
 <translation id="3437397693214267762">Consultez votre calendrier Outlook et vos fichiers SharePoint et OneDrive</translation>
 <translation id="3437494162908353428">Les outils pour les développeurs ne sont pas autorisés pour cette URL.</translation>
+<translation id="3437498061222607130">Vous êtes connecté à Recherche avec votre compte <ph name="USER_EMAIL" /></translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Toujours autoriser <ph name="HOST" /> à accéder à votre microphone</translation>
 <translation id="3439970425423980614">Ouverture du PDF en mode aperçu en cours…</translation>
@@ -5038,6 +5041,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4823484602432206655">Lire et modifier les paramètres de l’utilisateur et de l'appareil</translation>
 <translation id="4824037980212326045">Sauvegarder et restaurer le contenu Linux</translation>
 <translation id="4824263260587281352">Modifier la combinaison de touches <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Compte Google : <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Annuler la synchronisation?</translation>
 <translation id="4825462365587146530">Apprenez-en plus sur le Chrome Root Store dans un nouvel onglet.</translation>
 <translation id="4825532258163983651">Impossible de supprimer la clé d'accès</translation>
@@ -5774,7 +5778,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5392864580775235956">Ajoutez et modifiez une image</translation>
 <translation id="5393330235977997602">Options de NIP</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lien}one{# lien}other{# liens}}</translation>
-<translation id="5394400188854257119">5 minutes</translation>
 <translation id="5394529681046491727">Wi-Fi direct</translation>
 <translation id="5395353843367783642">Enregistrement dans votre compte en cours…</translation>
 <translation id="5397656531674854099">Utilisez vos groupes d'onglets sur votre téléphone</translation>
@@ -6002,6 +6005,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5558129378926964177">Zoom &amp;avant</translation>
 <translation id="5558594314398017686">Système d'exploitation par défaut (le cas échéant)</translation>
 <translation id="5559311991468302423">Supprimer l'adresse</translation>
+<translation id="5559646482656763170">Mettre à jour lorsque l'appareil n'est pas utilisé</translation>
 <translation id="555968128798542113">Ce site peut contrôler et reprogrammer vos appareils MIDI</translation>
 <translation id="5559768063688681413">Aucune imprimante enregistrée</translation>
 <translation id="55601339223879446">Ajustez les limites de votre bureau dans l'affichage</translation>
@@ -6503,6 +6507,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
 <translation id="5964247741333118902">Contenu intégré</translation>
 <translation id="5965607173855879702">Suppression des données en cours…</translation>
+<translation id="5966067139745999860">Déplacement de <ph name="SHORTCUT_TITLE" /> en position <ph name="SHORTCUT_POSITION" /> sur <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Les données relatives aux sites sont supprimées de votre appareil lorsque vous fermez toutes les fenêtres</translation>
 <translation id="5968022600320704045">Aucun résultat de recherche</translation>
 <translation id="5968400720580217226">Mode IA</translation>
@@ -7168,6 +7173,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> ne peut pas vérifier si vos mots de passe vous protègent d'une violation de données. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="648927581764831596">Aucun</translation>
 <translation id="6490471652906364588">Appareil USB-C (port de droite)</translation>
+<translation id="6491890991754498129">Ouvrir &amp;avec…</translation>
 <translation id="649396225532207613">Ce fichier peut endommager vos comptes personnels et de réseaux sociaux</translation>
 <translation id="6493991254603208962">Diminuer la luminosité</translation>
 <translation id="6494327278868541139">Afficher les renseignements sur la protection renforcée</translation>
@@ -7901,6 +7907,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7030304022046916278">Il envoie des URL à la navigation sécurisée pour les vérifier</translation>
 <translation id="7030695672997239647">Faites un clic droit sur un onglet et sélectionnez « Ajouter un onglet au groupe », puis « Nouveau groupe »</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> : connecté à un port série</translation>
+<translation id="7032334023419126809">Compte Google : <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">L'entrée doit comporter au maximum 62 caractères</translation>
 <translation id="7033731598469029604">Navigation automatique</translation>
 <translation id="70356134210715500">Obtenir vos clés d'accès</translation>
@@ -8201,7 +8208,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7273110280511444812">date de la dernière connexion : <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Toujours empêcher <ph name="HOST" /> de contrôler et de reprogrammer vos appareils MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % - <ph name="TIME" /> avant le chargement complet</translation>
-<translation id="7274453646377524248">Tous vos onglets et toutes vos fenêtres ouverts se rouvriront automatiquement.</translation>
 <translation id="7275950084263610253">Autorisé à accéder à d'autres appareils sur votre réseau local</translation>
 <translation id="727595954130325265">Magasiner maintenant</translation>
 <translation id="727952162645687754">Erreur de téléchargement</translation>
@@ -8986,7 +8992,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7871691770940645922">Affichage braille virtuel</translation>
 <translation id="787268756490971083">Désactivé</translation>
 <translation id="7872758299142009420">Trop de groupes imbriqués : <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Mettre à jour quand je m'éloigne</translation>
 <translation id="7876027585589532670">Impossible de modifier le raccourci</translation>
 <translation id="7876243839304621966">Tout supprimer</translation>
 <translation id="7877126887274043657">Résoudre le problème de &amp;synchronisation</translation>
@@ -9434,6 +9439,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8199300056570174101">(Service) réseau et propriétés de l’appareil</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8202827109322349110">Ouvrir dans l'éditeur de base</translation>
+<translation id="8203105157044679380">Panneau Recherche Google</translation>
 <translation id="8203152941016626022">Nom de l'appareil pour le partage à proximité</translation>
 <translation id="8203732864715032075">Vous envoyer des notifications et mémoriser cet ordinateur par défaut pour les messages. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Clic droit</translation>
@@ -10042,6 +10048,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8666268818656583275">Les touches F auront désormais le comportement en tant que touches de la rangée supérieure du système</translation>
 <translation id="8666321716757704924">Autorisations à nouveau autorisées pour <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Vous avez des mots de passe qui peuvent être améliorés</translation>
+<translation id="8667543835349994431">Ouvrir &amp;avec…</translation>
 <translation id="8668378421690365723">Votre appareil pourrait ne plus fonctionner correctement et pourrait rencontrer des problèmes de sécurité et de performance.</translation>
 <translation id="8669284339312441707">Plus chaud</translation>
 <translation id="8670537393737592796">Pour revenir ici rapidement, installez <ph name="APP_NAME" /> en cliquant sur le bouton d'installation</translation>
@@ -10149,6 +10156,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8738418093147087440">Rechercher par pays, par langue ou par nom d'entrée</translation>
 <translation id="8741944563400125534">Guide de configuration de Switch Access</translation>
 <translation id="8743357966416354615">Environnement de développement géré (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Voulez-vous plutôt naviguer vers <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Examinez la modification de l'URL pour vous assurer qu'elle vous convient avant de procéder à la mise à jour.</translation>
 <translation id="8745034592125932220">Non autorisé à enregistrer des données sur votre appareil</translation>
@@ -10245,6 +10253,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8818152010000655963">Fond d'écran</translation>
 <translation id="8818988764764862764">Fenêtre déplacée vers la gauche</translation>
 <translation id="8819510664278523111">L'EID de votre appareil est <ph name="EID_NUMBER" />, l'IIEM de votre appareil est <ph name="IMEI_NUMBER" /> et le numéro de série de votre appareil est <ph name="SERIAL_NUMBER" />. Ces numéros peuvent être utilisés pour aider à activer le service.</translation>
+<translation id="8819762137851963556">Trouver le curseur de la souris</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8821045908425223359">Configurer automatiquement une adresse IP</translation>
 <translation id="8821206216942230957">Votre compte n'a pas accès à Gemini dans Chrome</translation>

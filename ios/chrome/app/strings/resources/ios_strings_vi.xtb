@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Xoá nhật ký và dữ liệu trang web</translation>
 <translation id="3190558889382726167">Đã lưu mật khẩu</translation>
 <translation id="3190736958609431397">Bỏ theo dõi</translation>
+<translation id="3192820089569442694">Đã xảy ra lỗi với yêu cầu không sử dụng dữ liệu của bạn</translation>
 <translation id="3208260410153224535">Tổ chức của bạn đã tắt tính năng đăng nhập. Dấu trang, mật khẩu mới và các nội dung khác sẽ chỉ được lưu vào thiết bị này.</translation>
 <translation id="3211969308836412674">Bỏ ghim trang web</translation>
 <translation id="3213807041830307252">Mua sắm, dịch văn bản và nhận dạng đối tượng mà bạn nhìn thấy bằng camera và thư viện ảnh của bạn.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Tìm hiểu thêm về Google Ống kính</translation>
 <translation id="3449029510150690417">Tạo nhóm thẻ mới bằng cách đặt tên và màu cho nhóm thẻ</translation>
 <translation id="345348365500626747">Đã tìm thấy địa chỉ</translation>
+<translation id="3453878468834191501">Thẻ hiện tại sẽ được chia sẻ với Gemini khi bạn bắt đầu một cuộc trò chuyện mới. <ph name="BEGIN_LINK" />Tìm hiểu thêm về AI và quyền riêng tư<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Nói chuyện với Gemini bằng tính năng Live để hỏi về một trang, cùng lên ý tưởng và trò chuyện hai chiều.</translation>
 <translation id="3462768334899086950">Điều này có nghĩa là bạn sẽ mất tệp chưa lưu và các thẻ hiện tại</translation>
 <translation id="3464194322481586217">Không thể theo dõi giá này.</translation>
@@ -1626,6 +1628,7 @@
 <translation id="6078236141387574983">Điều chỉnh lại chiều cao của trang</translation>
 <translation id="6084848228346514841">Chọn các thẻ</translation>
 <translation id="6089212833343035912">Mã PIN của Trình quản lý mật khẩu của Google</translation>
+<translation id="6090690847556987004">Đã xảy ra lỗi với chế độ cài đặt này. Hãy cập nhật Chrome và iOS, sau đó khởi động lại thiết bị để thử lại. Nếu lỗi này vẫn tiếp diễn, có thể iPhone của bạn không hỗ trợ chế độ cài đặt này.</translation>
 <translation id="6090760257419195752">Cảnh báo đã đóng</translation>
 <translation id="6094325891006032858">Bật chế độ Duyệt web an toàn có tăng cường bảo vệ</translation>
 <translation id="6096965253650248286">Đã tìm thấy <ph name="COUNT" /> thẻ</translation>
@@ -2122,6 +2125,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7557508262441527045">Đã đăng xuất</translation>
 <translation id="7561196759112975576">Luôn luôn</translation>
 <translation id="7561982940498449837">Đóng trình đơn</translation>
+<translation id="7562347727679121642">Thêm hình ảnh vào nội dung tìm kiếm</translation>
 <translation id="7566349809380613217">Mở <ph name="GROUP_TITLE" />, nhóm được chia sẻ gồm <ph name="NUMBER_OF_TABS" /> thẻ, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Dấu trang đang bị ẩn</translation>
 <translation id="7575664680938145959">Mở bằng một lần nhấn</translation>
@@ -2669,6 +2673,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="9203951165704618409">Chuyển thanh địa chỉ từ trên cùng xuống dưới cùng để có trải nghiệm duyệt web phù hợp với nhu cầu riêng.</translation>
 <translation id="9205189991633470489">Khoá Chế độ ẩn danh</translation>
 <translation id="9206887540681440657">Tốc độ</translation>
+<translation id="9218088788182688902">Đã xảy ra lỗi với chế độ cài đặt này. Hãy cập nhật Chrome và iPadOS, sau đó khởi động lại thiết bị để thử lại. Nếu lỗi này vẫn tiếp diễn, có thể iPad của bạn không hỗ trợ chế độ cài đặt này.</translation>
 <translation id="9218430445555521422">Đặt làm mặc định</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>
 <translation id="9219154867334666734">Tìm thẻ…</translation>

@@ -1206,6 +1206,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3030331669969285614">Disse flaggene forhindrer eller tilbakestiller en funksjonsbrytende endring og er bare tilgjengelige i en begrenset periode.</translation>
 <translation id="3033200136993730761">Hjemmeadressen din kan hjelpe deg med å få ting gjort i Google-tjenester, for eksempel ved at du får mer relevante søkeresultater og veibeskrivelser i Google Maps. Du kan endre eller slette adressen i <ph name="BEGIN_LINK" />Google-kontoen din <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Bevegelses- og lyssensorer er tillatt for øyeblikket</translation>
+<translation id="3034219227076811559">Google Søk i Chrome</translation>
 <translation id="3034526003882782781">Rulling og zooming er tillatt</translation>
 <translation id="3037177537145227281">Sporer prisen</translation>
 <translation id="3037605927509011580">Æsj!</translation>
@@ -3223,6 +3224,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6342069812937806050">Akkurat nå</translation>
 <translation id="6342171901363060580">Du ser denne advarselen fordi dette nettstedet ikke støtter HTTPS og du er i inkognitomodus. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Veibeskrivelser</translation>
+<translation id="6345664705388712774">Legg til bilder i søket</translation>
 <translation id="6348220984832452017">Aktive variasjoner</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Betal uten å kopiere og lime inn Pix-koden. <ph name="BEGIN_LINK1" />Se hvordan det fungerer<ph name="END_LINK1" /></translation>
@@ -4323,6 +4325,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8199437620497683918">Optisk disk (glans)</translation>
 <translation id="8202097416529803614">Bestillingssammendrag</translation>
 <translation id="8202370299023114387">Konflikt</translation>
+<translation id="8203105157044679380">Google Søk-panelet</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">Innholdet på sidene du skriver ut, og informasjon om skriveren, sendes til Google Cloud eller tredjeparter for analyse. Dataene kan for eksempel bli skannet for sensitive data, og de kan bli lagret i henhold til bedriftens retningslinjer og være synlige for administratoren din.</translation>
 <translation id="8210490490377416373">Velg retningslinjenavn</translation>

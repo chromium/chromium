@@ -32,7 +32,6 @@
 <translation id="1194807384646768652">Chrome bloqueou esta descarga porque este tipo de ficheiro non se descarga con frecuencia e pode ser perigoso</translation>
 <translation id="1197860368385086056">A próxima vez que abras Chrome no teu dispositivo (<ph name="DEVICE_TYPE" />), verás unha solicitude para activar as alertas de seguimento de prezos.</translation>
 <translation id="1203500561924088507">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o navegador.</translation>
-<translation id="122321322139970942">Hai unha <ph name="IMPORTANT_UPDATE" /> pendente. Para que poidas navegar de forma segura, Chrome actualizarase a próxima vez que esteas sen actividade durante <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Para poder acceder aos teus marcadores e a outros datos en todos os teus dispositivos, inicia sesión en Chrome</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1289911795790071537">Abrir busca con Chrome</translation>
@@ -535,7 +534,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5941830788786076944">Converter Google Chrome no navegador predeterminado</translation>
 <translation id="5947104538377036631">Atallo de Chrome</translation>
 <translation id="5960071705175224773">Unha aplicación descoñecida cambiou a túa configuración</translation>
-<translation id="5960404530854194706">Chrome actualizarase cando non esteas usando o dispositivo</translation>
 <translation id="5980111191913430208">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chromium recomenda que os instales só desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Descargando… Tempo restante: <ph name="HOURS" /> h</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{A persoa que che administra a conta esixe que reinicies Chrome para aplicar unha actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A persoa que che administra a conta esixe que reinicies Chrome para aplicar unha actualización. Hai # ventás no modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
@@ -622,7 +620,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6556755379298048869">Fai buscas cun atallo de teclado.</translation>
 <translation id="6585124893636629274">Pechar Gemini en Chrome</translation>
 <translation id="659498884637196217">No xestor de contrasinais de Google neste dispositivo</translation>
-<translation id="660312897435669152">Chrome quere actualizarse</translation>
 <translation id="6612152958212564387">Non estás enviando estatísticas de uso nin informes de fallos a Google. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Define Chrome como o navegador predeterminado para manter os contrasinais, os marcadores e o historial perfectamente sincronizados en todos os dispositivos.</translation>
 <translation id="6631524303639368205">Retoma a actividade onde a deixaches: Chrome restaurou as pestanas da última sesión. Podes desactivar esta opción en</translation>

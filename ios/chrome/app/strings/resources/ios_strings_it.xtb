@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Cancella dati siti web e cronologia</translation>
 <translation id="3190558889382726167">Password salvata</translation>
 <translation id="3190736958609431397">Annulla monitoraggio</translation>
+<translation id="3192820089569442694">Si è verificato un problema con la tua richiesta di revoca del consenso all'uso dei dati</translation>
 <translation id="3208260410153224535">La tua organizzazione ha disattivato l'accesso. I nuovi preferiti, le nuove password e altri dati verranno salvati solo su questo dispositivo.</translation>
 <translation id="3211969308836412674">Stacca sito</translation>
 <translation id="3213807041830307252">Acquista, traduci e identifica ciò che vedi usando la fotocamera e la galleria fotografica.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Scopri di più su Google Lens</translation>
 <translation id="3449029510150690417">Crea il tuo nuovo gruppo di schede assegnandogli un nome e un colore</translation>
 <translation id="345348365500626747">Indirizzo rilevato</translation>
+<translation id="3453878468834191501">La scheda corrente viene condivisa con Gemini quando avvii una nuova chat. <ph name="BEGIN_LINK" />Scopri di più sull'AI e sulla privacy<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Usa Live con Gemini per fare domande su una pagina, raccogliere idee ad alta voce e avere una vera e propria conversazione.</translation>
 <translation id="3462768334899086950">Perderai i dati non salvati.</translation>
 <translation id="3464194322481586217">Impossibile monitorare il prezzo.</translation>
@@ -1626,6 +1628,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6078236141387574983">Modifica l'altezza del foglio</translation>
 <translation id="6084848228346514841">Seleziona schede</translation>
 <translation id="6089212833343035912">PIN del Gestore delle password di Google</translation>
+<translation id="6090690847556987004">Si è verificato un problema con questa impostazione. Aggiorna Chrome e iOS, quindi riavvia il dispositivo per riprovare. Se il problema persiste, l'iPhone potrebbe non supportare questa impostazione.</translation>
 <translation id="6090760257419195752">Avvisi ignorati</translation>
 <translation id="6094325891006032858">Attiva Navigazione sicura avanzata</translation>
 <translation id="6096965253650248286">Risultati trovati: <ph name="COUNT" /></translation>
@@ -2122,6 +2125,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7557508262441527045">Account disconnesso</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
+<translation id="7562347727679121642">Aggiungi un'immagine alla ricerca</translation>
 <translation id="7566349809380613217">Apri <ph name="GROUP_TITLE" />, gruppo condiviso di <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">I preferiti sono nascosti</translation>
 <translation id="7575664680938145959">Apertura con un tocco</translation>
@@ -2669,6 +2673,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="9203951165704618409">Sposta la barra degli indirizzi dall'alto verso il basso per un'esperienza di navigazione personalizzata.</translation>
 <translation id="9205189991633470489">Blocco delle schede Incognito</translation>
 <translation id="9206887540681440657">Velocità</translation>
+<translation id="9218088788182688902">Si è verificato un problema con questa impostazione. Aggiorna Chrome e iPadOS, quindi riavvia il dispositivo per riprovare. Se il problema persiste, l'iPad potrebbe non supportare questa impostazione.</translation>
 <translation id="9218430445555521422">Imposta come predefinito</translation>
 <translation id="9219103736887031265">Immagini</translation>
 <translation id="9219154867334666734">Cerca tra le schede…</translation>

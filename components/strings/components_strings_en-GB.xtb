@@ -1206,6 +1206,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3030331669969285614">These flags prevent or revert a breaking change and will only be available for a limited time.</translation>
 <translation id="3033200136993730761">Your home address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK" />in your Google Account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Motion and light sensors allowed for now</translation>
+<translation id="3034219227076811559">Google Search in Chrome</translation>
 <translation id="3034526003882782781">Scroll and zoom allowed</translation>
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
@@ -3223,6 +3224,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6342069812937806050">Just now</translation>
 <translation id="6342171901363060580">You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Directions</translation>
+<translation id="6345664705388712774">Add images to your search</translation>
 <translation id="6348220984832452017">Active variations</translation>
 <translation id="6349101878882523185">Install <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Pay without copying and pasting Pix code. <ph name="BEGIN_LINK1" />See how it works<ph name="END_LINK1" /></translation>
@@ -4324,6 +4326,7 @@ Additional details:
 <translation id="8199437620497683918">Optical disc (glossy)</translation>
 <translation id="8202097416529803614">Order summary</translation>
 <translation id="8202370299023114387">Conflict</translation>
+<translation id="8203105157044679380">Google Search panel</translation>
 <translation id="8208363704094329105">300 mm x 400 mm</translation>
 <translation id="8208629719488976364">The content of pages you print and information about your printer is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data and might be stored based on company policies and visible to your administrator.</translation>
 <translation id="8210490490377416373">Select policy name</translation>

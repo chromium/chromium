@@ -4319,7 +4319,7 @@ Gegevensoverdracht met Takeout moet ook aanstaan voor een goede werking van de a
 <translation id="370314752761795411"><ph name="PRODUCT_NAME" /> starten met <ph name="MS_WIN_NAME" /></translation>
 <translation id="3711895659073496551">Onderbreken</translation>
 <translation id="3712861436661566358">Profielscheiding afdwingen</translation>
-<translation id="3715589988915487768">Hiermee wordt een lijst met Provisioning Domains (PvD's) ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om proxyconfiguraties dynamisch op te halen.
+<translation id="3715589988915487768">Hiermee wordt een lijst met inrichtingsdomeinen (PvD's) ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om proxyconfiguraties dynamisch op te halen.
 
 Met dit beleid kun je een lijst met domeinnamen of resource-URI's instellen die inrichtingsdomeinen vertegenwoordigen, zoals gedefinieerd in RFC 8801 ('Discovering Provisioning Domain Names and Data'). Voor elke PvD lost de browser de bijbehorende json-configuratie op door een HTTPS-verzoek te doen naar het bekende eindpuntpad: https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd.
 

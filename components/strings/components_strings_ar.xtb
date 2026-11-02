@@ -1206,6 +1206,7 @@
 <translation id="3030331669969285614">تمنع هذه الميزات التجريبية حدوث أي تغيير قد يؤدي إلى عطل أو أو تُبطله، ولن تتوفّر إلا لفترة محدودة.</translation>
 <translation id="3033200136993730761">‏يمكن أن يساعدك عنوان منزلك في إنجاز المزيد على مختلف خدمات Google، كالحصول على نتائج بحث واتجاهات في "خرائط Google" أكثر صلة باهتماماتك. ويمكنك تعديل عنوانك أو حذفه<ph name="BEGIN_LINK" /> في حسابك على Google ‏(<ph name="ACCOUNT" />)‏<ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">تم السماح باستخدام أدوات استشعار الإضاءة والحركة في الوقت الحالي</translation>
+<translation id="3034219227076811559">‏"بحث Google" في Chrome</translation>
 <translation id="3034526003882782781">يُسمح بالانتقال للأعلى أو للأسفل في المحتوى وتكبيره أو تصغيره</translation>
 <translation id="3037177537145227281">تتبُّع السعر</translation>
 <translation id="3037605927509011580">عذرًا!</translation>
@@ -3223,6 +3224,7 @@
 <translation id="6342069812937806050">الآن</translation>
 <translation id="6342171901363060580">‏يظهر لك هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS أثناء استخدامك لوضع التصفّح المتخفي. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">بدء الاتجاهات</translation>
+<translation id="6345664705388712774">إضافة صور إلى طلب البحث</translation>
 <translation id="6348220984832452017">الأنماط المتنوّعة المفعَّلة</translation>
 <translation id="6349101878882523185">تثبيت "<ph name="APP_NAME" />"</translation>
 <translation id="6350739641326887427">‏يمكنك الدفع بدون نسخ رمز Pix ولصقه. <ph name="BEGIN_LINK1" />إليك طريقة العمل<ph name="END_LINK1" /></translation>
@@ -4324,6 +4326,7 @@
 <translation id="8199437620497683918">قرص ضوئي (لامع)</translation>
 <translation id="8202097416529803614">ملخص الطلب</translation>
 <translation id="8202370299023114387">تعارض</translation>
+<translation id="8203105157044679380">‏لوحة "بحث Google"</translation>
 <translation id="8208363704094329105">300 × 400 ملم</translation>
 <translation id="8208629719488976364">‏إنّ محتوى الصفحات التي تطبعها والمعلومات المتعلّقة بطابعتك يتم إرساله إلى Google Cloud أو جهات خارجية لتحليله. على سبيل المثال، قد يتم فحص هذا المحتوى بحثًا عن بيانات حسّاسة وتخزينه استنادًا إلى سياسات الشركة، وقد يظهر للمشرف.</translation>
 <translation id="8210490490377416373">اختيار اسم السياسة</translation>

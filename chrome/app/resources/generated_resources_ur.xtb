@@ -684,6 +684,7 @@
 <translation id="1523279371236772909">پچھلے مہینے میں دیکھا گیا</translation>
 <translation id="1523978563989812243">ٹیکسٹ ٹو اسپیچ کے انجنز</translation>
 <translation id="1524563461097350801">نہیں شکریہ</translation>
+<translation id="1524903662136734524">‏‫Drive سے شامل کریں</translation>
 <translation id="1525740877599838384">‏مقام کا تعین کرنے کے لیے صرف Wi-Fi کا استعمال کریں</translation>
 <translation id="1526274304859009691">‫<ph name="DEVICE" /> سے اپنی ایکسٹینشنز وغیرہ حاصل کرنے کیلئے سائن ان کریں</translation>
 <translation id="1526560967942511387">بلا عنوان دستاویز</translation>
@@ -2690,6 +2691,7 @@
 <translation id="3032204772252313646">خودکار کیپشنز</translation>
 <translation id="3032272345862007156">‏حالیہ AI تھیم <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">ڈسٹرب نہ کریں کو فعال کیا گیا</translation>
+<translation id="3034219227076811559">‏‫Chrome میں Google تلاش</translation>
 <translation id="3036546437875325427">‏Flash کو فعال کریں</translation>
 <translation id="3036602651971781493">سائٹس کاپی رائٹ کے ذریعے تحفظ یافتہ مواد کو چلانے کے لیے مواد کے تحفظ کی سروس کا استعمال کر سکتی ہیں یا یہ چیک کر سکتی ہیں کہ آپ کون سا براؤزر استعمال کر رہے ہیں</translation>
 <translation id="3036907164806060573">خواب</translation>
@@ -3206,6 +3208,7 @@
 <translation id="3437072258256045988">‏اپنی Gemini Apps کی سرگرمی کا نظم کریں</translation>
 <translation id="3437397693214267762">‏اپنا Outlook کیلنڈر اور SharePoint اور OneDrive کی فائلز دیکھیں</translation>
 <translation id="3437494162908353428">‏اس URL کے لیے DevTools کی اجازت نہیں ہے۔</translation>
+<translation id="3437498061222607130">آپ اپنے <ph name="USER_EMAIL" /> اکاؤنٹ کے ساتھ تلاش میں سائن ان ہیں</translation>
 <translation id="3438633801274389918">ننجا</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> کو اپنے مائیکرو فون تک ہمیشہ رسائی حاصل کرنے کی اجازت دیں</translation>
 <translation id="3439970425423980614">‏PDF کو پیش منظر میں کھولا جا رہا ہے</translation>
@@ -5034,6 +5037,7 @@
 <translation id="4823484602432206655">صارف اور آلہ کی ترتیبات پڑھیں اور انہیں تبدیل کریں</translation>
 <translation id="4824037980212326045">‏Linux کا بیک اپ اور بحالی</translation>
 <translation id="4824263260587281352">کلید کا مجموعہ <ph name="KEY_COMBINATION" /> تبدیل کریں</translation>
+<translation id="4824320026281030716">‏‫Google اکاؤنٹ: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">مطابقت پذیری منسوخ کریں؟</translation>
 <translation id="4825462365587146530">‏نئے ٹیب میں Chrome روٹ اسٹور کے بارے میں مزید جانیں</translation>
 <translation id="4825532258163983651">پاس کی کو حذف نہیں کیا جا سکتا</translation>
@@ -5770,7 +5774,6 @@
 <translation id="5392864580775235956">تصویر شامل کریں اور اس میں ترمیم کریں</translation>
 <translation id="5393330235977997602">‏‫PIN کے اختیارات</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{لنک}other{# لنکس}}</translation>
-<translation id="5394400188854257119">‫5 منٹ</translation>
 <translation id="5394529681046491727">‏Wi-Fi ڈائریکٹ</translation>
 <translation id="5395353843367783642">آپ کے اکاؤنٹ میں محفوظ کیا جا رہا ہے...</translation>
 <translation id="5397656531674854099">اپنے فون پر اپنے ٹیب گروپس کا استعمال کریں</translation>
@@ -5997,6 +6000,7 @@
 <translation id="5558129378926964177">زوم &amp;ان کریں</translation>
 <translation id="5558594314398017686">‏OS ڈیفالٹ (جب دستیاب ہو)</translation>
 <translation id="5559311991468302423">پتہ حذف کریں</translation>
+<translation id="5559646482656763170">استعمال میں نہ ہونے پر اپ ڈیٹ کریں</translation>
 <translation id="555968128798542113">‏یہ سائٹ آپ کے MIDI آلات کو کنٹرول اور دوبارہ پروگرام کر سکتی ہے</translation>
 <translation id="5559768063688681413">کوئی محفوظ شدہ پرنٹر نہیں</translation>
 <translation id="55601339223879446">ڈسپلے کے اندر اپنے ڈیسک ٹاپ کی حدود کو ایڈجسٹ کریں</translation>
@@ -6498,6 +6502,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{سبھی کو &amp;نئی ونڈو میں کھولیں}=1{&amp;نئی ونڈو میں کھولیں}other{سبھی ({COUNT}) کو &amp;نئی ونڈو میں کھولیں}}</translation>
 <translation id="5964247741333118902">سرایت کردہ مواد</translation>
 <translation id="5965607173855879702">ڈیٹا حذف ہو رہا ہے...</translation>
+<translation id="5966067139745999860">‫<ph name="SHORTCUT_TITLE" /> کو <ph name="TOTAL_SHORTCUTS" /> میں سے <ph name="SHORTCUT_POSITION" /> پوزیشن پر منتقل کیا گیا۔</translation>
 <translation id="5966511985653515929">آپ کے تمام ونڈوز کو بند کرنے پر آپ کے آلے سے سائٹ کا ڈیٹا ہٹایا جاتا ہے</translation>
 <translation id="5968022600320704045">تلاش کا کوئی نتیجہ نہیں ہے</translation>
 <translation id="5968400720580217226">‏‫AI وضع</translation>
@@ -7163,6 +7168,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" /> ڈیٹا کی خلاف ورزیوں کے لیے آپ کے پاس ورڈز کی جانچ نہیں کر سکتا۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
 <translation id="648927581764831596">کوئی دستیاب نہیں ہے</translation>
 <translation id="6490471652906364588">‏USB-C آلہ (دایاں پورٹ)</translation>
+<translation id="6491890991754498129">اس کے ساتھ کھولیں...</translation>
 <translation id="649396225532207613">یہ فائل آپ کے ذاتی اور سوشل نیٹ ورک اکاؤنٹس کو نقصان پہنچا سکتی ہے</translation>
 <translation id="6493991254603208962">چمک کم کریں</translation>
 <translation id="6494327278868541139">بہتر کردہ تحفظ کی تفصیلات دکھائیں</translation>
@@ -7894,6 +7900,7 @@
 <translation id="7030304022046916278">‏چیک کرنے کے لیے URLs کو محفوظ براؤزنگ کو بھیجتا ہے</translation>
 <translation id="7030695672997239647">ٹیب پر دایاں کلک کریں اور "گروپ میں ٹیب شامل کریں" کو منتخب کریں اور پھر "نیا گروپ" منتخب کریں</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - سیریل پورٹ منسلک ہے</translation>
+<translation id="7032334023419126809">‏‫Google اکاؤنٹ: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">ان پٹ میں زیادہ سے زیادہ 62 حروف ہونے چاہئیں</translation>
 <translation id="7033731598469029604">آٹو براؤز</translation>
 <translation id="70356134210715500">اپنی پاس کیز حاصل کریں</translation>
@@ -8194,7 +8201,6 @@
 <translation id="7273110280511444812">آخری بار منسلک کرنے کی تاریخ <ph name="DATE" /></translation>
 <translation id="7273894023751806510">‏<ph name="HOST" /> کو اپنے MIDI آلات کو کنٹرول اور دوبارہ پروگرام کرنے سے ہمیشہ مسدود کریں</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> مکمل ہو جانے تک</translation>
-<translation id="7274453646377524248">آپ کے تمام کھلے ٹیبز اور ونڈوز خودکار طور پر دوبارہ کھل جائیں گے۔</translation>
 <translation id="7275950084263610253">آپ کے مقامی نیٹ ورک پر موجود دیگر آلات تک رسائی کی اجازت حاصل ہے</translation>
 <translation id="727595954130325265">ابھی خریدیں</translation>
 <translation id="727952162645687754">ڈاؤن لوڈ میں خرابی</translation>
@@ -8979,7 +8985,6 @@
 <translation id="7871691770940645922">ورچوئل بریل ڈسپلے</translation>
 <translation id="787268756490971083">آف</translation>
 <translation id="7872758299142009420">بہت سارے نیسٹ کردہ گروپس: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">میرے دور ہونے پر اپ ڈیٹ کریں</translation>
 <translation id="7876027585589532670">شارٹ کٹ میں ترمیم نہیں ہو سکتی</translation>
 <translation id="7876243839304621966">سبھی ہٹائیں</translation>
 <translation id="7877126887274043657">&amp;مطابقت پذیری کا مسئلہ حل کریں</translation>
@@ -9427,6 +9432,7 @@
 <translation id="8199300056570174101">نیٹ ورک (سروس) اور آلہ کی خصوصیات</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8202827109322349110">بنیادی ایڈیٹر میں کھولیں</translation>
+<translation id="8203105157044679380">‏‫Google تلاش پینل</translation>
 <translation id="8203152941016626022">قریبی آلات کے ساتھ اشتراک کے آلے کا نام</translation>
 <translation id="8203732864715032075">آپ کو اطلاعات بھیجتی ہے اور "پیغامات" کیلئے اس کمپیوٹر کو یاد رکھنے پر ڈیفالٹ کرتی ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">دائیں طرف کلک کریں</translation>
@@ -10035,6 +10041,7 @@
 <translation id="8666268818656583275">‏F کلیدوں کا رویہ اب سسٹم کی سرفہرست قطار کی کلیدوں جیسا ہوگا</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> کے لیے اجازتوں کو دوبارہ اجازت مل گئی</translation>
 <translation id="8667261224612332309">آپ کے پاس ایسے پاس ورڈز ہیں جنہیں بہتر بنایا جا سکتا ہے</translation>
+<translation id="8667543835349994431">اس کے ساتھ کھولیں...</translation>
 <translation id="8668378421690365723">ہو سکتا ہے کہ آپ کا آلہ اب ٹھیک سے کام نہ کرے اور اسے سیکیورٹی اور کارکردگی کے مسائل کا سامنا کرنا پڑے۔</translation>
 <translation id="8669284339312441707">گرم</translation>
 <translation id="8670537393737592796">فوری طور پر یہاں واپس آنے کے لیے، 'انسٹال کریں' بٹن پر کلک کر کے <ph name="APP_NAME" /> انسٹال کریں</translation>
@@ -10143,6 +10150,7 @@
 <translation id="8738418093147087440">ممالک، زبان یا ان پٹ ناموں کے لحاظ سے تلاش کریں</translation>
 <translation id="8741944563400125534">سوئچ رسائی کی سیٹ اپ گائیڈ</translation>
 <translation id="8743357966416354615">ایک نظم کردہ ڈیولپمنٹ ماحول (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">اس کے بجائے <ph name="URL" /> پر نیویگیٹ کریں؟</translation>
 <translation id="8744641000906923997">روماجی</translation>
 <translation id="8744913471985800082">‏اپ ڈیٹ کرنے سے پہلے یہ یقینی بنانے کے لیے URL کی تبدیلی کا جائزہ لیں کہ آپ اس کے ساتھ سہولت بخش ہیں۔</translation>
 <translation id="8745034592125932220">آپ کے آلے میں ڈیٹا محفوظ کرنے کی اجازت نہیں ہے</translation>
@@ -10239,6 +10247,7 @@
 <translation id="8818152010000655963">وال پیپر</translation>
 <translation id="8818988764764862764">ونڈو بائیں طرف منتقل ہو گئی</translation>
 <translation id="8819510664278523111">‏آپ کے آلے کی EID <ph name="EID_NUMBER" /> ہے، آلے کی IMEI <ph name="IMEI_NUMBER" /> ہے اور آلے کا سیریل نمبر <ph name="SERIAL_NUMBER" /> ہے۔ سروس کو فعال کرنے میں مدد کیلئے ان نمبرز کا استعمال کیا جا سکتا ہے۔</translation>
+<translation id="8819762137851963556">ماؤس کرسر تلاش کریں</translation>
 <translation id="8820817407110198400">بُک مارکس</translation>
 <translation id="8821045908425223359">‏خودکار طور پر IP پتہ کو کنفیگر کریں</translation>
 <translation id="8821206216942230957">‏آپ کے اکاؤنٹ کو Chrome میں Gemini تک رسائی حاصل نہیں ہے</translation>

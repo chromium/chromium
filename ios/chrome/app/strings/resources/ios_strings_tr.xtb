@@ -39,7 +39,7 @@
 <translation id="108485301461714610">Google Arama AI Modu ve bağlı uygulamalar</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> açılamadı</translation>
 <translation id="1086486568852410168">Google Lens ile ara</translation>
-<translation id="1095093219235104018">Gemini ile Bulun ve Tamamlayın</translation>
+<translation id="1095093219235104018">Gemini ile bul ve doldur</translation>
 <translation id="1096992026380844478">Senkronizasyon ayarlarınız, son yedeğinize bağlı olarak geri yüklenecek. <ph name="BEGIN_LINK" />Neleri senkronize edebileceğinizi görün<ph name="END_LINK" />.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="1110772719190051587">Kilidi Face ID ile açın</translation>
@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Geçmişi ve web sitesi verilerini temizle</translation>
 <translation id="3190558889382726167">Şifre kaydedildi</translation>
 <translation id="3190736958609431397">Takibi bırak</translation>
+<translation id="3192820089569442694">Veri kapsamı dışında kalma isteğinizle ilgili bir hata oluştu</translation>
 <translation id="3208260410153224535">Kuruluşunuz oturum açmayı devre dışı bıraktı. Yeni yer işaretleri, şifreler ve diğer öğeler yalnızca bu cihaza kaydedilecek.</translation>
 <translation id="3211969308836412674">Sitenin sabitlemesini kaldır</translation>
 <translation id="3213807041830307252">Gördüklerinizi satın almak, çevirmek ve tanımlamak için kameranızı ve fotoğraf galerinizi kullanın.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Google Lens hakkında daha fazla bilgi</translation>
 <translation id="3449029510150690417">Adını belirleyip rengini seçerek yeni sekme grubunuzu oluşturun.</translation>
 <translation id="345348365500626747">Adres bulundu</translation>
+<translation id="3453878468834191501">Yeni bir sohbet başlattığınızda geçerli sekme Gemini ile paylaşılır. <ph name="BEGIN_LINK" />Yapay zeka ve gizlilik hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="3459644598174926977">Bir sayfa hakkında soru sormak, sesli olarak beyin fırtınası yapmak ve karşılıklı konuşmak için Gemini ile Live'a geçin.</translation>
 <translation id="3462768334899086950">Bu durumda, kaydedilmemiş dosyanızı ve mevcut sekmelerinizi kaybedersiniz</translation>
 <translation id="3464194322481586217">Fiyat takip edilemedi.</translation>
@@ -1626,6 +1628,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6078236141387574983">Sayfanın yüksekliğini yeniden ayarlayın</translation>
 <translation id="6084848228346514841">Sekme Seçin</translation>
 <translation id="6089212833343035912">Google Şifre Yöneticisi PIN'i</translation>
+<translation id="6090690847556987004">Bu ayarla ilgili bir hata oluştu. Chrome ve iOS'i güncelleyip cihazınızı yeniden başlattıktan sonra tekrar deneyin. Bu hata devam ederse iPhone'unuz bu ayarı desteklemiyor olabilir.</translation>
 <translation id="6090760257419195752">Yok sayılan uyarılar</translation>
 <translation id="6094325891006032858">Gelişmiş Güvenli Tarama'yı açın</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> adet bulundu</translation>
@@ -2122,6 +2125,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7557508262441527045">Oturum kapatıldı</translation>
 <translation id="7561196759112975576">Her zaman</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
+<translation id="7562347727679121642">Aramanıza resim ekleyin</translation>
 <translation id="7566349809380613217"><ph name="NUMBER_OF_TABS" /> içeren <ph name="GROUP_TITLE" /> adlı paylaşılan grubu (<ph name="CREATION_TEXT" />) aç</translation>
 <translation id="7567579665882069209">Yer işaretleri gizlendi</translation>
 <translation id="7575664680938145959">Tek Dokunuşla Açma</translation>
@@ -2669,6 +2673,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="9203951165704618409">Özelleştirilmiş bir göz atma deneyimi için yukarıda olan adres çubuğunuzu aşağıda olacak şekilde değiştirin.</translation>
 <translation id="9205189991633470489">Gizli mod kilidi</translation>
 <translation id="9206887540681440657">Hız</translation>
+<translation id="9218088788182688902">Bu ayarla ilgili bir hata oluştu. Chrome ve iPadOS'i güncelleyip cihazınızı yeniden başlattıktan sonra tekrar deneyin. Bu hata devam ederse iPad'iniz bu ayarı desteklemiyor olabilir.</translation>
 <translation id="9218430445555521422">Varsayılan olarak ayarla</translation>
 <translation id="9219103736887031265">Resimler</translation>
 <translation id="9219154867334666734">Sekme Ara…</translation>

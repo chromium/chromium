@@ -684,6 +684,7 @@
 <translation id="1523279371236772909">ગયા મહિને જોઈ હતી</translation>
 <translation id="1523978563989812243">ટેક્સ્ટ ટૂ સ્પીચ એન્જિન</translation>
 <translation id="1524563461097350801">ના, આભાર</translation>
+<translation id="1524903662136734524">Driveમાંથી ઉમેરો</translation>
 <translation id="1525740877599838384">સ્થાન નક્કી કરવા માટે માત્ર વાઇ-ફાઇનો ઉપયોગ કરો</translation>
 <translation id="1526274304859009691"><ph name="DEVICE" />માંથી તમારા એક્સ્ટેન્શન અને બીજું ઘણું મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="1526560967942511387">નામ વિનાનો દસ્તાવેજ</translation>
@@ -2691,6 +2692,7 @@
 <translation id="3032204772252313646">ઑટો કૅપ્શન</translation>
 <translation id="3032272345862007156">તાજેતરની AI થીમ <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">'ખલેલ પાડશો નહીં' સુવિધા ચાલુ કરી</translation>
+<translation id="3034219227076811559">Chromeમાં Google Search</translation>
 <translation id="3036546437875325427">ફ્લૅશ ચાલુ કરો</translation>
 <translation id="3036602651971781493">સાઇટ કૉપિરાઇટ દ્વારા સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે કન્ટેન્ટ સુરક્ષા સેવાનો ઉપયોગ કરી શકે છે અથવા તમે કયા બ્રાઉઝરનો ઉપયોગ કરી રહ્યાં છો તે ચેક કરી શકે છે</translation>
 <translation id="3036907164806060573">સ્વપ્નિલ</translation>
@@ -3209,6 +3211,7 @@
 <translation id="3437072258256045988">તમારી Gemini ઍપ ઍક્ટિવિટી મેનેજ કરો</translation>
 <translation id="3437397693214267762">તમારા Outlook Calendar અને SharePoint અને OneDrive ફાઇલો જુઓ</translation>
 <translation id="3437494162908353428">આ URL માટે DevToolsને મંજૂરી નથી.</translation>
+<translation id="3437498061222607130">તમે તમારા <ph name="USER_EMAIL" /> એકાઉન્ટ વડે Searchમાં સાઇન ઇન કર્યું છે</translation>
 <translation id="3438633801274389918">નીન્જા</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> ને હંમેશા તમારા માઇક્રોફોનને ઍક્સેસ કરવાની મંજૂરી આપો</translation>
 <translation id="3439970425423980614">PDFને પ્રીવ્યૂમાં ખોલી રહ્યાં છે</translation>
@@ -5037,6 +5040,7 @@
 <translation id="4823484602432206655">વપરાશકર્તા અને ડિવાઇસ સેટિંગ વાંચો અને બદલો</translation>
 <translation id="4824037980212326045">Linux બૅકઅપ લો અને રિસ્ટોર કરો</translation>
 <translation id="4824263260587281352">કી કૉમ્બિનેશન બદલો <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Google એકાઉન્ટ: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">સિંક કરવાનું રદ કરીએ?</translation>
 <translation id="4825462365587146530">નવા ટૅબમાં Chrome Root Store વિશે વધુ જાણો.</translation>
 <translation id="4825532258163983651">પાસકી ડિલીટ કરી શકાતી નથી</translation>
@@ -5775,7 +5779,6 @@
 <translation id="5392864580775235956">છબી ઉમેરો અને તેમાં ફેરફાર કરો</translation>
 <translation id="5393330235977997602">પિનના વિકલ્પો</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{લિંક}one{# લિંક}other{# લિંક}}</translation>
-<translation id="5394400188854257119">5 મિનિટ</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">તમારા એકાઉન્ટમાં સાચવી રહ્યાં છીએ...</translation>
 <translation id="5397656531674854099">તમારા ફોન પર તમારા ટૅબના ગ્રૂપનો ઉપયોગ કરો</translation>
@@ -6003,6 +6006,7 @@
 <translation id="5558129378926964177">Zoom &amp;In</translation>
 <translation id="5558594314398017686">OS ડિફૉલ્ટ (ઉપલબ્ધ હોય ત્યારે)</translation>
 <translation id="5559311991468302423">ઍડ્રેસ ડિલીટ કરો</translation>
+<translation id="5559646482656763170">ઉપયોગમાં ન હોય ત્યારે અપડેટ કરો</translation>
 <translation id="555968128798542113">આ સાઇટ તમારા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરી શકે છે</translation>
 <translation id="5559768063688681413">કોઈ સાચવેલા પ્રિન્ટર નથી</translation>
 <translation id="55601339223879446">ડિસ્પ્લેની અંદર તમારા ડેસ્કટૉપની સીમાઓ ગોઠવો</translation>
@@ -6506,6 +6510,7 @@ USB ડિવાઇસ</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{તમામ URLને &amp;નવી વિન્ડોમાં ખોલો}=1{&amp;નવી વિન્ડોમાં ખોલો}one{તમામ ({COUNT}) URLને &amp;નવી વિન્ડોમાં ખોલો}other{તમામ ({COUNT}) URLને &amp;નવી વિન્ડોમાં ખોલો}}</translation>
 <translation id="5964247741333118902">શામેલ કરેલું કન્ટેન્ટ</translation>
 <translation id="5965607173855879702">ડેટા ડિલીટ કરી રહ્યાં છીએ...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" />ને <ph name="TOTAL_SHORTCUTS" />માંથી <ph name="SHORTCUT_POSITION" /> નંબરના સ્થાન પર ખસેડ્યું.</translation>
 <translation id="5966511985653515929">જ્યારે તમે બધી વિન્ડો બંધ કરો, ત્યારે તમારા ડિવાઇસમાંથી સાઇટનો ડેટા ડિલીટ કરવામાં આવે છે</translation>
 <translation id="5968022600320704045">કોઈ શોધ પરિણામ નથી</translation>
 <translation id="5968400720580217226">AI મોડ</translation>
@@ -7171,6 +7176,7 @@ USB ડિવાઇસ</translation>
 <translation id="6488266788670893993">ડેટા ઉલ્લંઘનો માટે, <ph name="BRAND" /> તમારા પાસવર્ડ ચેક કરી શકતા નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="648927581764831596">કંઈપણ ઉપલબ્ધ નથી</translation>
 <translation id="6490471652906364588">USB-C ઉપકરણ (જમણું પોર્ટ)</translation>
+<translation id="6491890991754498129">આના &amp;વડે ખોલો...</translation>
 <translation id="649396225532207613">આ ફાઇલ તમારા વ્યક્તિગત તેમજ સોશિયલ નેટવર્ક એકાઉન્ટને નુકસાન પહોંચાડી શકે છે</translation>
 <translation id="6493991254603208962">તેજસ્વીતા ઘટાડો</translation>
 <translation id="6494327278868541139">વધારાની સુરક્ષાની વિગતો બતાવો</translation>
@@ -7905,6 +7911,7 @@ USB ડિવાઇસ</translation>
 <translation id="7030304022046916278">URLs ચેક કરવા માટે તેમને Safe Browsing પર મોકલે છે</translation>
 <translation id="7030695672997239647">કોઈ ટૅબ પર રાઇટ ક્લિક કરીને પહેલાં "ગ્રૂપમાં ટૅબ ઉમેરો" પસંદ કરો અને પછી "નવું ગ્રૂપ" પસંદ કરો</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - સિરીઅલ પોર્ટ કનેક્ટ કર્યું</translation>
+<translation id="7032334023419126809">Google એકાઉન્ટ: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">ઇનપુટ વધુમાં વધુ 62 અક્ષરનું હોવું આવશ્યક છે</translation>
 <translation id="7033731598469029604">ઑટો બ્રાઉઝ</translation>
 <translation id="70356134210715500">તમારી પાસકી મેળવો</translation>
@@ -8205,7 +8212,6 @@ USB ડિવાઇસ</translation>
 <translation id="7273110280511444812"><ph name="DATE" /> ના રોજ છેલ્લે જોડેલું</translation>
 <translation id="7273894023751806510"><ph name="HOST" />ને હંમેશાં તમારા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાથી બ્લૉક કરો</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> પૂર્ણ ન થાય ત્યાં સુધી</translation>
-<translation id="7274453646377524248">તમારા બધા ખુલ્લા ટૅબ અને વિન્ડો ઑટોમૅટિક રીતે ફરીથી ખુલશે.</translation>
 <translation id="7275950084263610253">તમારા સ્થાનિક નેટવર્ક પરના અન્ય ડિવાઇસ ઍક્સેસ કરવાની મંજૂરી છે</translation>
 <translation id="727595954130325265">હમણાં ખરીદો</translation>
 <translation id="727952162645687754">ડાઉનલોડ ભૂલ</translation>
@@ -8990,7 +8996,6 @@ USB ડિવાઇસ</translation>
 <translation id="7871691770940645922">વર્ચ્યુઅલ બ્રેઇલ ડિસ્પ્લે</translation>
 <translation id="787268756490971083">બંધ</translation>
 <translation id="7872758299142009420">વધુ પડતા નેસ્ટ કરેલાં ગ્રૂપ છે: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">જ્યારે હું દૂર જાઉં ત્યારે અપડેટ કરો</translation>
 <translation id="7876027585589532670">શૉર્ટકટમાં ફેરફાર કરી શકાતો નથી</translation>
 <translation id="7876243839304621966">બધું દૂર કરો</translation>
 <translation id="7877126887274043657">સમસ્યાને ઠીક કરો &amp;સિંક કરો</translation>
@@ -9433,6 +9438,7 @@ USB ડિવાઇસ</translation>
 <translation id="8199300056570174101">નેટવર્ક (સેવા) અને ઉપકરણના ગુણધર્મો</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8202827109322349110">બેસિક એડિટરમાં ખોલો</translation>
+<translation id="8203105157044679380">Google Search પૅનલ</translation>
 <translation id="8203152941016626022">'નજીકના શેર' ડિવાઇસનું નામ</translation>
 <translation id="8203732864715032075">તમને નોટિફિકેશન મોકલે અને મેસેજ માટે ડિફૉલ્ટ તરીકે આ કમ્પ્યુટરને યાદ રાખે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">રાઇટ ક્લિક કરો</translation>
@@ -10041,6 +10047,7 @@ USB ડિવાઇસ</translation>
 <translation id="8666268818656583275">F કી હવે સિસ્ટમની સૌથી ઉપરની પંક્તિમાં આવેલી કી જેવી વર્તણૂક કરશે</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" />ને ફરી પરવાનગીઓ આપવામાં આવી</translation>
 <translation id="8667261224612332309">તમારી પાસે એવા પાસવર્ડ છે જેને બહેતર બનાવી શકાય છે</translation>
+<translation id="8667543835349994431">આના &amp;વડે ખોલો...</translation>
 <translation id="8668378421690365723">તમારું ડિવાઇસ હવે કદાચ યોગ્ય રીતે કામ કરશે નહીં અને સુરક્ષા તથા પર્ફોર્મન્સ સંબંધિત સમસ્યાઓ આવી શકે છે.</translation>
 <translation id="8669284339312441707">વૉર્મર</translation>
 <translation id="8670537393737592796">અહીં ઝડપથી પરત ફરવા માટે, 'ઇન્સ્ટૉલ કરો' બટન પર ક્લિક કરીને <ph name="APP_NAME" /> ઇન્સ્ટૉલ કરો</translation>
@@ -10149,6 +10156,7 @@ USB ડિવાઇસ</translation>
 <translation id="8738418093147087440">દેશ, ભાષા કે ઇનપુટના નામ મુજબ શોધો</translation>
 <translation id="8741944563400125534">સ્વિચ ઍક્સેસનું સેટઅપ કરવા માટે ગાઇડ</translation>
 <translation id="8743357966416354615">મેનેજ કરવામાં આવેલું ડેવલપમેન્ટ એન્વાયરન્મેન્ટ (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">તેના બદલે <ph name="URL" /> પર નૅવિગેટ કરીએ?</translation>
 <translation id="8744641000906923997">રોમાજી</translation>
 <translation id="8744913471985800082">અપડેટ કરતા પહેલાં URLમાં થયેલા ફેરફારનો રિવ્યૂ કરો જેથી ખાતરી કરી શકાય કે તમને તે અનુકૂળ લાગે છે.</translation>
 <translation id="8745034592125932220">તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી નથી</translation>
@@ -10245,6 +10253,7 @@ USB ડિવાઇસ</translation>
 <translation id="8818152010000655963">વૉલપેપર</translation>
 <translation id="8818988764764862764">વિન્ડોને ડાબી બાજુ ખસેડવામાં આવી</translation>
 <translation id="8819510664278523111">તમારા ડિવાઇસનો EID <ph name="EID_NUMBER" />, ડિવાઇસનો IMEI <ph name="IMEI_NUMBER" /> અને ડિવાઇસનો અનુક્રમ નંબર <ph name="SERIAL_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ કરી શકાય છે.</translation>
+<translation id="8819762137851963556">માઉસનું કર્સર શોધો</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8821045908425223359">IP સરનામું ઑટોમૅટિક રીતે ગોઠવો</translation>
 <translation id="8821206216942230957">તમારું એકાઉન્ટ Gemini in Chromeનો ઍક્સેસ ધરાવતું નથી</translation>

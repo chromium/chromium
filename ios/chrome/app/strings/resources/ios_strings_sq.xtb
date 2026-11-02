@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Pastro të dhënat e historikut dhe të uebsajteve</translation>
 <translation id="3190558889382726167">Fjalëkalimi u ruajt</translation>
 <translation id="3190736958609431397">Anulo monitorimin</translation>
+<translation id="3192820089569442694">Ndodhi një gabim me kërkesën tënde për tërheqjen e të dhënave</translation>
 <translation id="3208260410153224535">Organizata jote ka e çaktivizuar identifikimin. Faqeshënuesit e rinj, fjalëkalimet etj. do të ruhen vetëm në këtë pajisje.</translation>
 <translation id="3211969308836412674">Zhgozhdo sajtin</translation>
 <translation id="3213807041830307252">Kërko për të blerë, përkthe dhe identifiko ato që shikon duke përdorur kamerën dhe galerinë e fotografive.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Mëso më shumë rreth "Lentes së Google"</translation>
 <translation id="3449029510150690417">Krijo grupin e ri të skedave duke i dhënë një emër dhe ngjyrë</translation>
 <translation id="345348365500626747">Adresa u gjet</translation>
+<translation id="3453878468834191501">Skeda aktuale ndahet me Gemini kur ti fillon një bisedë të re. <ph name="BEGIN_LINK" />Mëso më shumë rreth IA-së dhe privatësisë<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Kalo drejtpërdrejt me Gemini për të pyetur për një faqe, për të gjeneruar ide me zë të lartë dhe për të biseduar.</translation>
 <translation id="3462768334899086950">Kjo do të thotë që do të humbasësh skedarin e paruajtur dhe skedat aktuale</translation>
 <translation id="3464194322481586217">Çmimi nuk mund të monitorohej.</translation>
@@ -1626,6 +1628,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6078236141387574983">Rregullo përsëri lartësinë e fletës</translation>
 <translation id="6084848228346514841">Zgjidh skedat</translation>
 <translation id="6089212833343035912">Kodi PIN i "Menaxherit të fjalëkalimeve të Google"</translation>
+<translation id="6090690847556987004">Ndodhi një gabim me këtë cilësim. Përditëso Chrome dhe iOS dhe më pas rinis pajisjen për të provuar përsëri. Nëse kjo vazhdon të ndodhë, pajisja jote iPhone mund të mos e mbështesë këtë cilësim.</translation>
 <translation id="6090760257419195752">Paralajmërimet e hequra</translation>
 <translation id="6094325891006032858">Aktivizo "Shfletimin e sigurt të përmirësuar"</translation>
 <translation id="6096965253650248286">U gjetën: <ph name="COUNT" /></translation>
@@ -2122,6 +2125,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="7557508262441527045">Ke dalë</translation>
 <translation id="7561196759112975576">Gjithmonë</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
+<translation id="7562347727679121642">Shto imazhin në kërkimin tënd</translation>
 <translation id="7566349809380613217">Hap grupin "<ph name="GROUP_TITLE" />", grup i ndarë me <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Faqeshënuesit janë të fshehur</translation>
 <translation id="7575664680938145959">Hapja me një trokitje</translation>
@@ -2669,6 +2673,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="9203951165704618409">Kaloje shiritin e adresave nga kreu në fund të ekranit për një përvojë të personalizuar të shfletimit.</translation>
 <translation id="9205189991633470489">Kyçja e modalitetit "i fshehtë"</translation>
 <translation id="9206887540681440657">Shpejtësia</translation>
+<translation id="9218088788182688902">Ndodhi një gabim me këtë cilësim. Përditëso Chrome dhe iPadOS dhe më pas rinis pajisjen për të provuar përsëri. Nëse kjo vazhdon të ndodhë, pajisja jote iPad mund të mos e mbështesë këtë cilësim.</translation>
 <translation id="9218430445555521422">Cakto si parazgjedhje</translation>
 <translation id="9219103736887031265">Imazhet</translation>
 <translation id="9219154867334666734">Kërko te skedat…</translation>

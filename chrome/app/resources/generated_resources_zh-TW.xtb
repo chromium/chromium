@@ -684,6 +684,7 @@
 <translation id="1523279371236772909">過去一個月看過</translation>
 <translation id="1523978563989812243">文字轉語音的引擎</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
+<translation id="1524903662136734524">從雲端硬碟新增</translation>
 <translation id="1525740877599838384">僅使用 Wi-Fi 判斷所在位置</translation>
 <translation id="1526274304859009691">登入即可存取<ph name="DEVICE" />中的擴充功能和其他資料</translation>
 <translation id="1526560967942511387">未命名文件</translation>
@@ -2690,6 +2691,7 @@
 <translation id="3032204772252313646">自動產生字幕</translation>
 <translation id="3032272345862007156">最近的 AI 主題 <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">「零打擾」模式已啟用</translation>
+<translation id="3034219227076811559">Chrome 的 Google 搜尋</translation>
 <translation id="3036546437875325427">啟用 Flash</translation>
 <translation id="3036602651971781493">網站可能會透過內容保護服務，播放受著作權保護的內容，或檢查你使用的瀏覽器</translation>
 <translation id="3036907164806060573">夢幻</translation>
@@ -3205,6 +3207,7 @@
 <translation id="3437072258256045988">管理 Gemini 系列應用程式活動記錄</translation>
 <translation id="3437397693214267762">查看 Outlook 行事曆、SharePoint 和 OneDrive 檔案</translation>
 <translation id="3437494162908353428">開發人員工具不適用於這個網址。</translation>
+<translation id="3437498061222607130">你已使用 <ph name="USER_EMAIL" /> 帳戶登入 Google 搜尋</translation>
 <translation id="3438633801274389918">忍者</translation>
 <translation id="3439153939049640737">一律允許 <ph name="HOST" /> 存取你的麥克風</translation>
 <translation id="3439970425423980614">正在預覽中開啟 PDF</translation>
@@ -5029,6 +5032,7 @@
 <translation id="4823484602432206655">讀取及變更使用者和裝置設定</translation>
 <translation id="4824037980212326045">Linux 備份與還原</translation>
 <translation id="4824263260587281352">變更按鍵組合　<ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Google 帳戶：<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">取消同步處理？</translation>
 <translation id="4825462365587146530">在新分頁中進一步瞭解 Chrome Root Store。</translation>
 <translation id="4825532258163983651">無法刪除密碼金鑰</translation>
@@ -5765,7 +5769,6 @@
 <translation id="5392864580775235956">新增及編輯圖片</translation>
 <translation id="5393330235977997602">PIN 碼選項</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{連結}other{# 個連結}}</translation>
-<translation id="5394400188854257119">5 分鐘</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">正在儲存至你的帳戶...</translation>
 <translation id="5397656531674854099">在手機上使用分頁群組</translation>
@@ -5993,6 +5996,7 @@
 <translation id="5558129378926964177">放大(&amp;I)</translation>
 <translation id="5558594314398017686">OS 預設選項 (如果有的話)</translation>
 <translation id="5559311991468302423">刪除地址</translation>
+<translation id="5559646482656763170">在閒置時更新</translation>
 <translation id="555968128798542113">這個網站可以控制 MIDI 裝置及重設程式</translation>
 <translation id="5559768063688681413">沒有已儲存的印表機</translation>
 <translation id="55601339223879446">調整顯示畫面中的桌面邊界</translation>
@@ -6491,6 +6495,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="5964247741333118902">嵌入的內容</translation>
 <translation id="5965607173855879702">正在刪除資料…</translation>
+<translation id="5966067139745999860">已將「<ph name="SHORTCUT_TITLE" />」移到第 <ph name="SHORTCUT_POSITION" /> 個位置 (共 <ph name="TOTAL_SHORTCUTS" /> 個)。</translation>
 <translation id="5966511985653515929">當你關閉所有視窗時，系統會刪除裝置上的網站資料</translation>
 <translation id="5968022600320704045">找不到相符的搜尋結果</translation>
 <translation id="5968400720580217226">AI 模式</translation>
@@ -7156,6 +7161,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" />無法檢查你的密碼是否在資料侵害事件中外洩，請檢查網際網路連線。</translation>
 <translation id="648927581764831596">沒有可用的裝置</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
+<translation id="6491890991754498129">選擇開啟工具(&amp;W)...</translation>
 <translation id="649396225532207613">這個檔案可能會危害你的個人和社群網路帳戶</translation>
 <translation id="6493991254603208962">調低亮度</translation>
 <translation id="6494327278868541139">顯示強化防護功能詳細資料</translation>
@@ -7888,6 +7894,7 @@
 <translation id="7030304022046916278">系統會將網址傳送給安全瀏覽功能進行檢查</translation>
 <translation id="7030695672997239647">在分頁標籤上按一下滑鼠右鍵，然後依序選取「將分頁加入群組」和「新群組」</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 已連線至序列埠</translation>
+<translation id="7032334023419126809">Google 帳戶：<ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">輸入內容長度上限為 62 個半形字元</translation>
 <translation id="7033731598469029604">自動瀏覽</translation>
 <translation id="70356134210715500">取得密碼金鑰</translation>
@@ -8187,7 +8194,6 @@
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
 <translation id="7273894023751806510">一律禁止 <ph name="HOST" /> 控制 MIDI 裝置及重設程式</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" />後充飽</translation>
-<translation id="7274453646377524248">所有開啟的分頁和視窗都會自動重新開啟。</translation>
 <translation id="7275950084263610253">允許存取區域網路上的其他裝置</translation>
 <translation id="727595954130325265">立即選購</translation>
 <translation id="727952162645687754">下載錯誤</translation>
@@ -8972,7 +8978,6 @@
 <translation id="7871691770940645922">虛擬點字顯示</translation>
 <translation id="787268756490971083">關閉</translation>
 <translation id="7872758299142009420">巢狀群組過多：<ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">在我離開時更新</translation>
 <translation id="7876027585589532670">無法編輯捷徑</translation>
 <translation id="7876243839304621966">全部移除</translation>
 <translation id="7877126887274043657">修正同步功能問題(&amp;S)</translation>
@@ -9420,6 +9425,7 @@
 <translation id="8199300056570174101">網路 (服務) 與裝置屬性</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8202827109322349110">在基本編輯器中開啟</translation>
+<translation id="8203105157044679380">Google 搜尋面板</translation>
 <translation id="8203152941016626022">鄰近分享裝置名稱</translation>
 <translation id="8203732864715032075">傳送通知給你，並預設記住這部電腦，以便在收到簡訊時傳送通知。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">按右鍵</translation>
@@ -10028,6 +10034,7 @@
 <translation id="8666268818656583275">功能鍵現在會執行系統最上排按鍵原本的行為。</translation>
 <translation id="8666321716757704924">已重新授權給 <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">你有密碼修改建議</translation>
+<translation id="8667543835349994431">選擇開啟工具(&amp;W)...</translation>
 <translation id="8668378421690365723">裝置可能無法再正常運作，而且可能會有安全性和效能問題。</translation>
 <translation id="8669284339312441707">暖色調</translation>
 <translation id="8670537393737592796">如要快速返回此處，請點選安裝按鈕來安裝「<ph name="APP_NAME" />」</translation>
@@ -10136,6 +10143,7 @@
 <translation id="8738418093147087440">依國家/地區、語言或輸入名稱搜尋</translation>
 <translation id="8741944563400125534">切換控制功能設定指南</translation>
 <translation id="8743357966416354615">受管理的開發環境 (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">要改為前往 <ph name="URL" /> 嗎？</translation>
 <translation id="8744641000906923997">羅馬字</translation>
 <translation id="8744913471985800082">請先查看網址變更，確認沒問題再更新。</translation>
 <translation id="8745034592125932220">不允許將資料儲存到你的裝置</translation>
@@ -10232,6 +10240,7 @@
 <translation id="8818152010000655963">桌布</translation>
 <translation id="8818988764764862764">視窗已向左移動</translation>
 <translation id="8819510664278523111">裝置 EID 為 <ph name="EID_NUMBER" />，裝置 IMEI 為 <ph name="IMEI_NUMBER" />，裝置序號為 <ph name="SERIAL_NUMBER" />。你可以使用這些號碼啟用服務。</translation>
+<translation id="8819762137851963556">尋找滑鼠游標</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8821045908425223359">自動設定 IP 位址</translation>
 <translation id="8821206216942230957">你的帳戶無法存取 Chrome 內建 Gemini</translation>

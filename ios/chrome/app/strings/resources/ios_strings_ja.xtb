@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">履歴と Web サイトデータを消去</translation>
 <translation id="3190558889382726167">パスワードを保存しました</translation>
 <translation id="3190736958609431397">トラッキングを停止</translation>
+<translation id="3192820089569442694">データのオプトアウト リクエストでエラーが発生しました</translation>
 <translation id="3208260410153224535">ログインは組織によってオフにされています。新しいブックマークやパスワードなどは、このデバイスにのみ保存されます。</translation>
 <translation id="3211969308836412674">サイトの固定を解除</translation>
 <translation id="3213807041830307252">カメラやフォト ギャラリーを使って、写っているものを購入、翻訳、特定できます。</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Google レンズの詳細</translation>
 <translation id="3449029510150690417">名前と色を指定して新しいタブグループを作成します</translation>
 <translation id="345348365500626747">住所が見つかりました</translation>
+<translation id="3453878468834191501">新しいチャットを開始すると、現在のタブが Gemini と共有されます。<ph name="BEGIN_LINK" />AI とプライバシーの詳細<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Gemini と Live で会話して、ページについての質問やブレインストーミングを声でやり取りできます。</translation>
 <translation id="3462768334899086950">未保存のファイルと現在のタブは失われます</translation>
 <translation id="3464194322481586217">価格をトラッキングできませんでした。</translation>
@@ -1626,6 +1628,7 @@
 <translation id="6078236141387574983">シートの高さを再調整する</translation>
 <translation id="6084848228346514841">タブを選択</translation>
 <translation id="6089212833343035912">Google パスワード マネージャーの PIN</translation>
+<translation id="6090690847556987004">この設定でエラーが発生しました。Chrome と iOS を更新してから、デバイスを再起動してもう一度お試しください。問題が解消しない場合は、お使いの iPhone がこの設定に対応していない可能性があります。</translation>
 <translation id="6090760257419195752">閉じた警告</translation>
 <translation id="6094325891006032858">セーフ ブラウジング保護強化機能を有効化</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> 件見つかりました</translation>
@@ -2122,6 +2125,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7557508262441527045">ログアウトしました</translation>
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="7561982940498449837">メニューを閉じる</translation>
+<translation id="7562347727679121642">検索に画像を追加</translation>
 <translation id="7566349809380613217"><ph name="GROUP_TITLE" /> を開く、<ph name="NUMBER_OF_TABS" /> の共有グループ、<ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">ブックマークは非表示になっています</translation>
 <translation id="7575664680938145959">ワンタップで開く</translation>
@@ -2669,6 +2673,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="9203951165704618409">アドレスバーの位置を上から下に変更して、ブラウジング環境をカスタマイズできます。</translation>
 <translation id="9205189991633470489">シークレット モードのロック</translation>
 <translation id="9206887540681440657">速度</translation>
+<translation id="9218088788182688902">この設定でエラーが発生しました。Chrome と iPadOS を更新してから、デバイスを再起動してもう一度お試しください。問題が解消しない場合は、お使いの iPad がこの設定に対応していない可能性があります。</translation>
 <translation id="9218430445555521422">デフォルトに設定</translation>
 <translation id="9219103736887031265">画像</translation>
 <translation id="9219154867334666734">タブを検索…</translation>

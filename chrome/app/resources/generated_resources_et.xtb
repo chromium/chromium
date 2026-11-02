@@ -5782,7 +5782,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5392864580775235956">Saate pildi lisada ja seda muuta.</translation>
 <translation id="5393330235977997602">PIN-koodi valikud</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# linki}}</translation>
-<translation id="5394400188854257119">5 minutit</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">Salvestamine teie kontole...</translation>
 <translation id="5397656531674854099">Vahelehegruppide kasutamine telefonis</translation>
@@ -6010,6 +6009,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5558129378926964177">Suum&amp;i</translation>
 <translation id="5558594314398017686">OS-i vaikeseade (kui on saadaval)</translation>
 <translation id="5559311991468302423">Kustuta aadress</translation>
+<translation id="5559646482656763170">Värskenda, kui seda ei kasutata</translation>
 <translation id="555968128798542113">See sait saab teie MIDI-seadmeid juhtida ja ümber programmeerida</translation>
 <translation id="5559768063688681413">Salvestatud printereid ei ole</translation>
 <translation id="55601339223879446">Töölaua piiride reguleerimine ekraani ulatuses</translation>
@@ -6511,6 +6511,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Ava kõik &amp;uues aknas}=1{Ava &amp;uues aknas}other{Ava kõik ({COUNT}) &amp;uues aknas}}</translation>
 <translation id="5964247741333118902">Manustatud sisu</translation>
 <translation id="5965607173855879702">Andmete kustutamine …</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> teisaldati kohale <ph name="SHORTCUT_POSITION" />, kohti on kokku <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Saidiandmed kustutatakse teie seadmest, kui sulgete kõik aknad</translation>
 <translation id="5968022600320704045">Otsingutulemused puuduvad</translation>
 <translation id="5968400720580217226">AI-režiim</translation>
@@ -7176,6 +7177,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> ei saanud kontrollida, kas teie paroolid on andmetega seotud rikkumistes ohtu sattunud. Kontrollige internetiühendust.</translation>
 <translation id="648927581764831596">Pole saadaval</translation>
 <translation id="6490471652906364588">C-tüüpi USB-seade (parempoolne port)</translation>
+<translation id="6491890991754498129">Ava &amp;rakendusega…</translation>
 <translation id="649396225532207613">See fail võib kahjustada teie isiklikke või sotsiaalvõrgustike kontosid</translation>
 <translation id="6493991254603208962">Vähendab heledust</translation>
 <translation id="6494327278868541139">Kuva täiustatud kaitse üksikasjad</translation>
@@ -8209,7 +8211,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7273110280511444812">viimati ühendatud kuupäeval <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Blokeeri hosti <ph name="HOST" /> jaoks alati minu MIDI-seadmete juhtimine ja ümberprogrammeerimine</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> täitumiseni</translation>
-<translation id="7274453646377524248">Kõik teie avatud vahelehed ja aknad avatakse automaatselt uuesti.</translation>
 <translation id="7275950084263610253">Juurdepääs teie kohaliku võrgu teistele seadmetele on lubatud.</translation>
 <translation id="727595954130325265">Ostke kohe</translation>
 <translation id="727952162645687754">Viga allalaadimisel</translation>
@@ -8994,7 +8995,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7871691770940645922">Virtuaalne punktkirjaekraan</translation>
 <translation id="787268756490971083">Väljas</translation>
 <translation id="7872758299142009420">Liiga palju pesastatud gruppe: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Värskenda, kui seadme juurest lahkun</translation>
 <translation id="7876027585589532670">Otseteed ei saa muuta</translation>
 <translation id="7876243839304621966">Eemalda kõik</translation>
 <translation id="7877126887274043657">&amp;Sünkroonimisprobleemi lahendamine</translation>
@@ -10051,6 +10051,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8666268818656583275">F-klahvid käituvad nüüd samamoodi nagu teie süsteemi ülemise rea klahvid</translation>
 <translation id="8666321716757704924">Veebisaidile <ph name="WEBSITE" /> on uuesti load antud</translation>
 <translation id="8667261224612332309">Teil on paroole, mida saab paremaks muuta</translation>
+<translation id="8667543835349994431">Ava &amp;rakendusega…</translation>
 <translation id="8668378421690365723">Teie seade ei pruugi enam korralikult töötada ning võib esineda turva- ja toimivusprobleeme.</translation>
 <translation id="8669284339312441707">Soojem</translation>
 <translation id="8670537393737592796">Kiirelt siia naasmiseks installige rakendus <ph name="APP_NAME" />, klõpsates installimisnupul</translation>
@@ -10159,6 +10160,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8738418093147087440">Otsi riikide, keele või sisendi nimede järgi</translation>
 <translation id="8741944563400125534">Lülitiga juurdepääsu seadistusjuhend</translation>
 <translation id="8743357966416354615">Hallatav arenduskeskkond (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Kas navigeerida selle asemel saidile <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Enne värskendamist vaadake URL-i muudatus üle, et veenduda, kas olete sellega nõus.</translation>
 <translation id="8745034592125932220">Pole lubatud teie seadmesse salvestada</translation>

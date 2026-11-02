@@ -1206,6 +1206,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3030331669969285614">Aquestes marques impedeixen o reverteixen un canvi conflictiu i només estaran disponibles durant un temps limitat.</translation>
 <translation id="3033200136993730761">L'adreça de casa et pot ajudar a enllestir tasques amb els serveis de Google, fent més rellevants els resultats de la Cerca i les indicacions a Google Maps, entre d'altres. Pots editar o suprimir l'adreça <ph name="BEGIN_LINK" />al teu Compte de Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Els sensors de moviment i de llum estan permesos ara mateix</translation>
+<translation id="3034219227076811559">Cerca de Google a Chrome</translation>
 <translation id="3034526003882782781">Es permet desplaçar-se i fer zoom</translation>
 <translation id="3037177537145227281">Estàs fent un seguiment del preu</translation>
 <translation id="3037605927509011580">Vaja!</translation>
@@ -3223,6 +3224,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6342069812937806050">Ara mateix</translation>
 <translation id="6342171901363060580">Estàs veient aquest advertiment perquè aquest lloc web no admet HTTPS i estàs en mode d'incògnit. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Indicacions</translation>
+<translation id="6345664705388712774">Afegeix imatges a la cerca</translation>
 <translation id="6348220984832452017">Variacions actives</translation>
 <translation id="6349101878882523185">Instal·la <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Paga sense copiar ni enganxar el codi Pix. <ph name="BEGIN_LINK1" />Mira com funciona<ph name="END_LINK1" /></translation>
@@ -4324,6 +4326,7 @@ Detalls addicionals:
 <translation id="8199437620497683918">Disc òptic (brillant)</translation>
 <translation id="8202097416529803614">Resum de la comanda</translation>
 <translation id="8202370299023114387">Conflicte</translation>
+<translation id="8203105157044679380">Tauler de la Cerca de Google</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">El contingut de les pàgines que imprimeixes i la informació sobre la impressora s'envien a Google Cloud o a tercers perquè l'analitzin. Per exemple, pot ser que s'analitzi per detectar-hi dades sensibles, que s'emmagatzemi d'acord amb les polítiques de l'empresa i que el teu administrador el pugui veure.</translation>
 <translation id="8210490490377416373">Selecciona el nom de la política</translation>

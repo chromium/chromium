@@ -1596,7 +1596,7 @@ Observações:
 
 O <ph name="PRODUCT_NAME" /> não aceita logon único usando <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> nos modos de navegação anônima ou de convidado.
 
-O <ph name="PRODUCT_NAME" /> só é compatível com o Logon Único usando o <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para os seguintes provedores de identidade: Microsoft, Okta e Ping.
+O <ph name="PRODUCT_NAME" /> só é compatível com o logon único usando o <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para os seguintes provedores de identidade: Microsoft, Okta e Ping.
 
 Esse recurso está disponível no <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="1943628907052340534">Não abrir o <ph name="PRODUCT_NAME" /> quando o usuário fizer login no <ph name="MS_WIN_NAME" /></translation>

@@ -29,7 +29,6 @@
 <translation id="1194807384646768652">Chrome hat diesen Download blockiert, weil der Dateityp normalerweise nicht heruntergeladen wird und gefährlich sein könnte</translation>
 <translation id="1197860368385086056">Wenn du Chrome das nächste Mal auf deinem Gerät (<ph name="DEVICE_TYPE" />) öffnest, wirst du daran erinnert, Benachrichtigungen zum Preis-Tracking zu aktivieren.</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
-<translation id="122321322139970942">Ein <ph name="IMPORTANT_UPDATE" /> steht noch aus. Damit du sicher im Internet surfen kannst, wird Chrome das nächste Mal aktualisiert, wenn du <ph name="IDLE_DURATION" /> lang inaktiv bist.</translation>
 <translation id="1226003169284463347">Wenn du auf allen deinen Geräten auf deine Lesezeichen und andere Daten zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="1278833599417554002">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="1289911795790071537">Suche mit Chrome öffnen</translation>
@@ -511,7 +510,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="5941830788786076944">Google Chrome als Standardbrowser festlegen</translation>
 <translation id="5947104538377036631">Chrome-Verknüpfung</translation>
 <translation id="5960071705175224773">Deine Einstellungen wurden von einer unbekannten App geändert</translation>
-<translation id="5960404530854194706">Chrome wird aktualisiert, wenn du nicht am Gerät bist</translation>
 <translation id="5980111191913430208">Erweiterungen, Apps und Designs aus unbekannten Quellen können Schäden auf deinem Gerät verursachen. Chrome empfiehlt, sie nur über den <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zu installieren.</translation>
 <translation id="6003112304606738118">Wird heruntergeladen… Noch <ph name="HOURS" /> Stunde(n)</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Ein Inkognito- oder isoliertes Fenster ist geöffnet. Es wird nach dem Neustart nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. # Inkognito- oder isolierte Fenster sind geöffnet. Sie werden nach dem Neustart nicht wieder geöffnet.}}</translation>
@@ -595,7 +593,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6556755379298048869">Mit einer Tastenkombination suchen.</translation>
 <translation id="6585124893636629274">Gemini in Chrome schließen</translation>
 <translation id="659498884637196217">Im Google Passwortmanager auf diesem Gerät</translation>
-<translation id="660312897435669152">Chrome möchte ein Update durchführen</translation>
 <translation id="6612152958212564387">Du sendest keine Nutzungsstatistiken und Absturzberichte an Google. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Wenn du Chrome als Standardbrowser festlegst, werden deine Passwörter, deine Lesezeichen und dein Verlauf auf allen Geräten synchronisiert.</translation>
 <translation id="6631524303639368205">Mach dort weiter, wo du aufgehört hast: Chrome hat deine Tabs aus der letzten Sitzung wiederhergestellt. Du kannst diese Funktion deaktivieren in</translation>

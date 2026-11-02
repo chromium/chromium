@@ -5772,7 +5772,6 @@
 <translation id="5392864580775235956">画像を追加、編集できます</translation>
 <translation id="5393330235977997602">PIN のオプション</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{リンク}other{# 件のリンク}}</translation>
-<translation id="5394400188854257119">5 分</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">アカウントに保存しています...</translation>
 <translation id="5397656531674854099">スマートフォンでタブグループを使用する</translation>
@@ -5999,6 +5998,7 @@
 <translation id="5558129378926964177">拡大(&amp;I)</translation>
 <translation id="5558594314398017686">OS のデフォルト（使用可能な場合）</translation>
 <translation id="5559311991468302423">住所を削除</translation>
+<translation id="5559646482656763170">使用していないときに更新</translation>
 <translation id="555968128798542113">このサイトでは MIDI デバイスの操作と再プログラムを行えます。</translation>
 <translation id="5559768063688681413">保存済みのプリンタはありません</translation>
 <translation id="55601339223879446">ディスプレイ内のデスクトップの境界線を調整します</translation>
@@ -6500,6 +6500,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="5964247741333118902">埋め込みコンテンツ</translation>
 <translation id="5965607173855879702">データを削除しています...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> を <ph name="TOTAL_SHORTCUTS" /> 件中の <ph name="SHORTCUT_POSITION" /> 番目に移動しました</translation>
 <translation id="5966511985653515929">すべてのウィンドウを閉じると、デバイスからサイトデータが削除されます</translation>
 <translation id="5968022600320704045">検索結果はありません</translation>
 <translation id="5968400720580217226">AI モード</translation>
@@ -7165,6 +7166,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" /> でパスワードがデータ侵害の被害にあっていないか確認することができません。インターネット接続を確認してみてください。</translation>
 <translation id="648927581764831596">使用できるものはありません</translation>
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
+<translation id="6491890991754498129">アプリで開く(&amp;W)...</translation>
 <translation id="649396225532207613">このファイルは、個人アカウントやソーシャル ネットワークのアカウントに危害を及ぼす可能性があります</translation>
 <translation id="6493991254603208962">明るさを下げる</translation>
 <translation id="6494327278868541139">保護強化機能の詳細を表示</translation>
@@ -8198,7 +8200,6 @@
 <translation id="7273110280511444812">前回接続した日: <ph name="DATE" /></translation>
 <translation id="7273894023751806510"><ph name="HOST" /> による MIDI デバイスの操作と再プログラムを常にブロックする</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - あと <ph name="TIME" />で充電完了</translation>
-<translation id="7274453646377524248">現在開いているすべてのタブとウィンドウは、自動的に再度開きます。</translation>
 <translation id="7275950084263610253">ローカル ネットワーク上の他のデバイスへのアクセスを許可するサイト</translation>
 <translation id="727595954130325265">今すぐ購入</translation>
 <translation id="727952162645687754">ダウンロード エラー</translation>
@@ -8982,7 +8983,6 @@
 <translation id="7871691770940645922">仮想点字ディスプレイ</translation>
 <translation id="787268756490971083">オフ</translation>
 <translation id="7872758299142009420">ネストされたグループの数が多すぎます: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">操作していないときにアップデート</translation>
 <translation id="7876027585589532670">ショートカットの編集はできません</translation>
 <translation id="7876243839304621966">すべて削除</translation>
 <translation id="7877126887274043657">同期の問題を修正(&amp;S)</translation>
@@ -10039,6 +10039,7 @@
 <translation id="8666268818656583275">F キーはシステムの最上段のキーと同じように動作します</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> にもう一度権限を許可しました</translation>
 <translation id="8667261224612332309">改善できるパスワードがあります</translation>
+<translation id="8667543835349994431">アプリで開く(&amp;W)...</translation>
 <translation id="8668378421690365723">お使いのデバイスが正しく動作しなくなり、セキュリティやパフォーマンス上の問題が発生する可能性があります。</translation>
 <translation id="8669284339312441707">暖色</translation>
 <translation id="8670537393737592796">このページにすぐにアクセスできるようにするには、インストール ボタンをクリックして <ph name="APP_NAME" /> をインストールしてください</translation>
@@ -10147,6 +10148,7 @@
 <translation id="8738418093147087440">国、言語、入力名で検索</translation>
 <translation id="8741944563400125534">スイッチ アクセス設定ガイド</translation>
 <translation id="8743357966416354615">管理対象の開発環境（<ph name="GENERAL_NAME" />）</translation>
+<translation id="8743685468297625220">代わりに <ph name="URL" /> に移動しますか？</translation>
 <translation id="8744641000906923997">ローマ字</translation>
 <translation id="8744913471985800082">更新する前に、URL の変更に問題がないことを確認してください。</translation>
 <translation id="8745034592125932220">デバイスへのデータの保存は許可されていません</translation>

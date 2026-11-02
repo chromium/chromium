@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Obriši historiju i podatke o web lokacijama</translation>
 <translation id="3190558889382726167">Lozinka je sačuvana</translation>
 <translation id="3190736958609431397">Prestani pratiti</translation>
+<translation id="3192820089569442694">Došlo je do greške sa zahtjevom za isključivanje podataka</translation>
 <translation id="3208260410153224535">Vaša organizacija je isključila prijavu. Nove oznake, lozinke i još mnogo toga će se pohranjivati samo na ovom uređaju.</translation>
 <translation id="3211969308836412674">Otkači web lokaciju</translation>
 <translation id="3213807041830307252">Kupujte, prevodite sadržaj i prepoznajte šta vidite pomoću kamere i galerije fotografija.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Saznajte više o Google Objektivu</translation>
 <translation id="3449029510150690417">Kreirajte novu grupu kartica davanjem naziv i boje za nju</translation>
 <translation id="345348365500626747">Pronađena je adresa</translation>
+<translation id="3453878468834191501">Trenutna kartica se dijeli s Geminijem kada pokrenete novi chat. <ph name="BEGIN_LINK" />Saznajte više o AI-ju i privatnosti<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Chatajte uživo s Geminijem da pitate o stranici, generirate ideje naglas i razgovarate.</translation>
 <translation id="3462768334899086950">To znači da ćete izgubiti nesačuvani fajl i trenutne kartice</translation>
 <translation id="3464194322481586217">Praćenje cijene nije uspjelo.</translation>
@@ -1626,6 +1628,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6078236141387574983">Prilagođavanje visine lista</translation>
 <translation id="6084848228346514841">Odaberite kartice</translation>
 <translation id="6089212833343035912">PIN za Google upravitelj lozinki</translation>
+<translation id="6090690847556987004">Došlo je do greške s ovom postavkom. Ažurirajte Chrome i iOS, a zatim ponovo pokrenite uređaj da pokušate ponovo. Ako se ovo nastavi događati, iPhone možda ne podržava ovu postavku.</translation>
 <translation id="6090760257419195752">Odbačena upozorenja</translation>
 <translation id="6094325891006032858">Uključite poboljšano Sigurno pregledanje</translation>
 <translation id="6096965253650248286">Pronađeno: <ph name="COUNT" /></translation>
@@ -2122,6 +2125,7 @@ Možete ponovo pokrenuti bilo kada.</translation>
 <translation id="7557508262441527045">Odjavljeni ste</translation>
 <translation id="7561196759112975576">Uvijek</translation>
 <translation id="7561982940498449837">Zatvori meni</translation>
+<translation id="7562347727679121642">Dodavanje slike u pretraživanje</translation>
 <translation id="7566349809380613217">Otvaranje grupe <ph name="GROUP_TITLE" />, <ph name="NUMBER_OF_TABS" /> u dijeljenoj grupi, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Oznake su sakrivene</translation>
 <translation id="7575664680938145959">Otvaranje jednim dodirom</translation>
@@ -2669,6 +2673,7 @@ Možete ponovo pokrenuti bilo kada.</translation>
 <translation id="9203951165704618409">Premjestite traku za adresu iz gornjeg u donji dio radi prilagođenog iskustva pregledanja.</translation>
 <translation id="9205189991633470489">Zaključavanje anonimnog načina rada</translation>
 <translation id="9206887540681440657">Brzina</translation>
+<translation id="9218088788182688902">Došlo je do greške s ovom postavkom. Ažurirajte Chrome i iPadOS, a zatim ponovo pokrenite uređaj da pokušate ponovo. Ako se ovo nastavi događati, iPad možda ne podržava ovu postavku.</translation>
 <translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219154867334666734">Pretražite kartice…</translation>

@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">इतिहास आणि वेबसाइट डेटा साफ करा</translation>
 <translation id="3190558889382726167">पासवर्ड सेव्ह केला</translation>
 <translation id="3190736958609431397">माग ठेवणे रद्द करा</translation>
+<translation id="3192820089569442694">तुमच्या डेटा निवड रद्द करण्याच्या विनंतीमध्ये काहीतरी चुकले</translation>
 <translation id="3208260410153224535">तुमच्या संस्थेने साइन इन करणे बंद केले आहे. नवीन बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी फक्त या डिव्हाइसवर सेव्ह केल्या जातील.</translation>
 <translation id="3211969308836412674">साइट अनपिन करा</translation>
 <translation id="3213807041830307252">तुम्ही पाहता त्या गोष्टींना तुमचा कॅमेरा आणि फोटो गॅलरी वापरून खरेदी करा, त्याचे भाषांतर करा व ओळखा.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Google Lens विषयी अधिक जाणून घ्या</translation>
 <translation id="3449029510150690417">तुमच्या नवीन टॅब गटाला नाव आणि रंग देऊन तो तयार करा</translation>
 <translation id="345348365500626747">पत्ता आढळला</translation>
+<translation id="3453878468834191501">तुम्ही नवीन चॅट सुरू करता, तेव्हा सद्य टॅब Gemini सोबत शेअर केला जातो. <ph name="BEGIN_LINK" />AI आणि गोपनीयता यांबद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">पेजबद्दल विचारण्यासाठी, मोठ्याने बोलून विचारविनिमय करण्यासाठी आणि संवाद साधण्यासाठी Gemini सह लाइव्ह जा.</translation>
 <translation id="3462768334899086950">याचा अर्थ असा, की तुम्ही तुमची अनसेव्ह केलेली फाइल आणि सद्य टॅब गमवाल</translation>
 <translation id="3464194322481586217">किमतीचा माग ठेवता आला नाही.</translation>
@@ -1626,6 +1628,7 @@
 <translation id="6078236141387574983">शीटची उंची पुन्हा अ‍ॅडजस्ट करा</translation>
 <translation id="6084848228346514841">टॅब निवडा</translation>
 <translation id="6089212833343035912">Google Password Manager पिन</translation>
+<translation id="6090690847556987004">या सेटिंगमध्ये काहीतरी चुकले. Chrome आणि iOS अपडेट करा, त्यानंतर पुन्हा प्रयत्न करण्यासाठी तुमचे डिव्हाइस रीस्टार्ट करा. हे होत राहिल्यास, तुमचा iPhone या सेटिंगला सपोर्ट करत नसू शकतो.</translation>
 <translation id="6090760257419195752">डिसमिस केलेल्या चेतावण्या</translation>
 <translation id="6094325891006032858">वर्धित सुरक्षित ब्राउझिंग सुरू करा</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> आढळले</translation>
@@ -2123,6 +2126,7 @@
 <translation id="7557508262441527045">साइन आउट केले आहे</translation>
 <translation id="7561196759112975576">नेहमी</translation>
 <translation id="7561982940498449837">मेनू बंद करा</translation>
+<translation id="7562347727679121642">तुमच्या शोधामध्ये इमेज जोडा</translation>
 <translation id="7566349809380613217"><ph name="GROUP_TITLE" /> उघडा, <ph name="NUMBER_OF_TABS" /> शेअर केलेला गट, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">बुकमार्क लपवलेले आहेत</translation>
 <translation id="7575664680938145959">एका टॅपमध्ये उघडा</translation>
@@ -2670,6 +2674,7 @@
 <translation id="9203951165704618409">कस्टमाइझ केलेल्या ब्राउझिंग अनुभवासाठी तुमचा ॲड्रेस बार वरपासून खालपर्यंत स्विच करा.</translation>
 <translation id="9205189991633470489">गुप्त मोड लॉक</translation>
 <translation id="9206887540681440657">वेग</translation>
+<translation id="9218088788182688902">या सेटिंगमध्ये काहीतरी चुकले. Chrome आणि iPadOS अपडेट करा, त्यानंतर पुन्हा प्रयत्न करण्यासाठी तुमचे डिव्हाइस रीस्टार्ट करा. हे घडत राहिल्यास, तुमचा iPad या सेटिंगला सपोर्ट करत नसू शकतो.</translation>
 <translation id="9218430445555521422">डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219154867334666734">टॅब शोधा…</translation>

@@ -1206,6 +1206,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3030331669969285614">Tieto experimentálne funkcie zabraňujú zmene spôsobujúcej chybu alebo ju vrátia späť a budú k dispozícii iba na obmedzený čas.</translation>
 <translation id="3033200136993730761">Adresa domova vám pomôže vykonávať akcie v službách Googlu, napríklad získať relevantnejšie výsledky vyhľadávania a trasy v Mapách Google. Môžete ju upraviť alebo odstrániť v <ph name="BEGIN_LINK" />účte Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Senzory pohybu a svetla sú zatiaľ povolené</translation>
+<translation id="3034219227076811559">Vyhľadávanie Google v Chrome</translation>
 <translation id="3034526003882782781">Posúvanie a priblíženie sú povolené</translation>
 <translation id="3037177537145227281">Cenu sledujete</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
@@ -3441,7 +3442,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6721164594124191969">Štítky (lesklé)</translation>
 <translation id="6726832600570791992">(32‑bitové emulované)</translation>
 <translation id="6727094998759448074">SRA4</translation>
-<translation id="672853333773293432">Prihlásili ste pomocou účtu</translation>
+<translation id="672853333773293432">Prihlásenie pomocou účtu</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
 <translation id="6738516213925468394">Vaše údaje boli <ph name="TIME" /> zašifrované pomocou <ph name="BEGIN_LINK" />prístupovej frázy synchronizácie<ph name="END_LINK" />. Synchronizácia sa spustí po jej zadaní.</translation>
 <translation id="6740851646645036700">Nateraz ste dosiahli limit pomoci s písaním. Skúste to znova neskôr.</translation>
@@ -4144,7 +4145,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7885670691503039914">Keď na ktoromkoľvek webe klesne cena, dostanete e‑mailové upozornenie. Táto stránka sa uloží do priečinka so záložkami <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7887683347370398519">Skontrolujte svoj kód CVC a skúste to znova</translation>
 <translation id="7887885240995164102">Spustiť obraz v obraze</translation>
-<translation id="7888219259712865185">Poskytovatelia e‑mailu, napríklad google.com, môžu overiť vašu e‑mailovú adresu, aby ste si nemuseli kontrolovať doručenú poštu</translation>
+<translation id="7888219259712865185">Poskytovatelia e‑mailu, napríklad google.com, môžu potvrdiť vašu e‑mailovú adresu, aby ste si nemuseli kontrolovať doručenú poštu</translation>
 <translation id="7888367499748383555">Žiadne poplatky a 0 % ročná percentuálna miera nákladov (v závislosti oprávnenosti)</translation>
 <translation id="7888575728750733395">Vykresľovacia intencia tlače</translation>
 <translation id="7890748547282909375">Ak chcete uložiť snímku obrazovky, prihláste sa do služby Microsoft OneDrive</translation>
@@ -4319,6 +4320,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8199437620497683918">Optický disk (lesklý)</translation>
 <translation id="8202097416529803614">Súhrn objednávky</translation>
 <translation id="8202370299023114387">Konflikt</translation>
+<translation id="8203105157044679380">Panel Vyhľadávania Google</translation>
 <translation id="8208363704094329105">300 × 400 mm</translation>
 <translation id="8208629719488976364">Obsah stránok, ktoré vytlačíte, a informácie o tlačiarni sa odosielajú na analýzu do služby Google Cloud alebo tretím stranám. V rámci nej môžu byť napríklad podrobené kontrole prítomnosti citlivých údajov, pričom môžu byť uložené podľa firemných pravidiel a viditeľné pre vášho správcu.</translation>
 <translation id="8210490490377416373">Vybrať názov pravidiel</translation>

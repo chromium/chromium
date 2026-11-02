@@ -684,6 +684,7 @@
 <translation id="1523279371236772909">Դիտել եք անցած ամիս</translation>
 <translation id="1523978563989812243">Տեքստի հնչեցման գործիքներ</translation>
 <translation id="1524563461097350801">Ոչ</translation>
+<translation id="1524903662136734524">Ավելացնել Drive-ից</translation>
 <translation id="1525740877599838384">Տեղորոշելու համար օգտագործել միայն Wi-Fi ցանցը</translation>
 <translation id="1526274304859009691">Մուտք գործեք՝ ձեր ընդլայնումները և այլ տվյալներ <ph name="DEVICE" /> օգտագործելու համար</translation>
 <translation id="1526560967942511387">Անանուն փաստաթուղթ</translation>
@@ -2688,6 +2689,7 @@
 <translation id="3032204772252313646">Ավտոմատ ենթագրեր</translation>
 <translation id="3032272345862007156">Արհեստական բանականության վերջերս ստեղծած թեմա <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">«Չանհանգստացնել» ռեժիմը միացված է</translation>
+<translation id="3034219227076811559">Google Որոնումը Chrome-ում</translation>
 <translation id="3036546437875325427">Միացնել Flash-ը</translation>
 <translation id="3036602651971781493">Կայքերը կարող են օգտագործել բովանդակության պաշտպանության ծառայություն՝ հեղինակային իրավունքով պաշտպանված բովանդակություն նվագարկելու համար կամ ստուգելու, թե ինչ դիտարկիչ եք օգտագործում</translation>
 <translation id="3036907164806060573">Անուրջ</translation>
@@ -3204,6 +3206,7 @@
 <translation id="3437072258256045988">Կառավարեք Gemini հավելվածների օգտագործման ձեր պատմությունը</translation>
 <translation id="3437397693214267762">Դիտեք ձեր Outlook Օրացույցը և SharePoint և OneDrive ֆայլերը</translation>
 <translation id="3437494162908353428">Ծրագրավորողի գործիքները թույլատրված չեն այս URL-ի համար։</translation>
+<translation id="3437498061222607130">Դուք մուտք եք գործել Որոնում ձեր <ph name="USER_EMAIL" /> հաշվով</translation>
 <translation id="3438633801274389918">Նինջա</translation>
 <translation id="3439153939049640737">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել խոսափողը</translation>
 <translation id="3439970425423980614">PDF-ը բացվում է Նախադիտման ռեժիմում</translation>
@@ -5032,6 +5035,7 @@
 <translation id="4823484602432206655">Կարդալ և փոփոխել օգտատիրոջ և սարքի կարգավորումները</translation>
 <translation id="4824037980212326045">Լինուքսի պահուստավորում և վերականգնում</translation>
 <translation id="4824263260587281352">Փոխել <ph name="KEY_COMBINATION" /> ստեղների համադրությունը</translation>
+<translation id="4824320026281030716">Google հաշիվ՝ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Չեղարկե՞լ համաժամացումը</translation>
 <translation id="4825462365587146530">Իմանալ ավելին Chrome Root Store-ի մասին նոր ներդիրում</translation>
 <translation id="4825532258163983651">Չհաջողվեց ջնջել մուտքի բանալին</translation>
@@ -5769,7 +5773,6 @@
 <translation id="5392864580775235956">Ինչպես պատկեր ավելացնել և խմբագրել</translation>
 <translation id="5393330235977997602">PIN կոդի ընտրանքներ</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Հղում}one{# հղում}other{# հղում}}</translation>
-<translation id="5394400188854257119">5 րոպե</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">Պահվում է ձեր հաշվում…</translation>
 <translation id="5397656531674854099">Օգտագործեք ձեր ներդիրների խմբերը հեռախոսում</translation>
@@ -5997,6 +6000,7 @@
 <translation id="5558129378926964177">Խոշո&amp;րացնել</translation>
 <translation id="5558594314398017686">Կանխադրված օպերացիոն համակարգը (եթե առկա է)</translation>
 <translation id="5559311991468302423">Հասցեի ջնջում</translation>
+<translation id="5559646482656763170">Թարմացնել, երբ չի օգտագործվում</translation>
 <translation id="555968128798542113">Այս կայքը կարող է կառավարել և վերածրագրավորել ձեր MIDI սարքերը</translation>
 <translation id="5559768063688681413">Պահված տպիչներ չկան</translation>
 <translation id="55601339223879446">Կարգավորեք աշխատասեղանի սահմանագծերը տվյալ էկրանում</translation>
@@ -6495,6 +6499,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}other{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}}</translation>
 <translation id="5964247741333118902">Զետեղված բովանդակություն</translation>
 <translation id="5965607173855879702">Տվյալները ջնջվում են...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> սալիկը տեղափոխվեց դիրք <ph name="SHORTCUT_POSITION" />՝ <ph name="TOTAL_SHORTCUTS" />-ից։</translation>
 <translation id="5966511985653515929">Երբ փակեք բոլոր պատուհանները, կայքերի տվյալները կհեռացվեն ձեր սարքից</translation>
 <translation id="5968022600320704045">Որոնման արդյունքներ չկան</translation>
 <translation id="5968400720580217226">ԱԲ ռեժիմ</translation>
@@ -7160,6 +7165,7 @@
 <translation id="6488266788670893993">«<ph name="BRAND" />» գործառույթը չի կարող ստուգել՝ արդյոք ձեր գաղտնաբառերը բացահայտվել են տվյալների արտահոսքի հետևանքով։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="648927581764831596">Ոչ մեկը մատչելի չէ</translation>
 <translation id="6490471652906364588">USB-C սարք (աջ միացք)</translation>
+<translation id="6491890991754498129">Բացել &amp;հավելվածով…</translation>
 <translation id="649396225532207613">Այս ֆայլը կարող է վնասել ձեր անձնական և սոցիալական ցանցերի հաշիվները</translation>
 <translation id="6493991254603208962">Նվազեցնել պայծառությունը</translation>
 <translation id="6494327278868541139">Ցույց տալ լրացուցիչ պաշտպանության մանրամասն նկարագրությունը</translation>
@@ -7893,6 +7899,7 @@
 <translation id="7030304022046916278">Ուղարկում է URL-ները Ապահով դիտարկմանը՝ դրանք ստուգելու համար։</translation>
 <translation id="7030695672997239647">Մկնիկի աջ կոճակով սեղմեք ներդիրի վրա և ընտրեք «Ավելացնել ներդիրը նոր խմբում», այնուհետև՝ «Նոր խումբ»</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Միացած է հերթական միացքին</translation>
+<translation id="7032334023419126809">Google հաշիվ՝ <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">Թույլատրվում է մուտքագրել առավելագույնը 62 նիշ</translation>
 <translation id="7033731598469029604">Ավտոմատ դիտարկում</translation>
 <translation id="70356134210715500">Կարգավորել մուտքի բանալիները</translation>
@@ -8193,7 +8200,6 @@
 <translation id="7273110280511444812">վերջին անգամ կցվել է <ph name="DATE" />-ին</translation>
 <translation id="7273894023751806510">Արգելել <ph name="HOST" /> կայքին ձեր MIDI սարքերի կառավարումն ու վերածրագրավորումը</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> մինչև լրիվ լիցքավորվելը</translation>
-<translation id="7274453646377524248">Բոլոր բաց ներդիրներն ու պատուհանները նորից ավտոմատ կբացվեն։</translation>
 <translation id="7275950084263610253">Ունեն ձեր լոկալ ցանցի մյուս սարքերի հասանելիություն</translation>
 <translation id="727595954130325265">Գնել</translation>
 <translation id="727952162645687754">Ներբեռնման սխալ</translation>
@@ -8978,7 +8984,6 @@
 <translation id="7871691770940645922">Բրայլյան վիրտուալ էկրան</translation>
 <translation id="787268756490971083">Անջատված է</translation>
 <translation id="7872758299142009420">Տեղակայված խմբերը չափազանց շատ են՝ <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Թարմացնել, երբ ես տեղում չլինեմ</translation>
 <translation id="7876027585589532670">Չհաջողվեց փոփոխել դյուրանցումը</translation>
 <translation id="7876243839304621966">Հեռացնել բոլորը</translation>
 <translation id="7877126887274043657">Շտկեք &amp;համաժամացման հետ կապված խնդիրը</translation>
@@ -9426,6 +9431,7 @@
 <translation id="8199300056570174101">Ցանցի (ծառայության) և սարքի կարգավորումներ</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8202827109322349110">Բացել հիմնական խմբագրիչում</translation>
+<translation id="8203105157044679380">Google Որոնման վահանակ</translation>
 <translation id="8203152941016626022">«Փոխանակում մոտակա սարքերի հետ» գործառույթով սարքի անվանումը</translation>
 <translation id="8203732864715032075">Ցուցադրել ծանուցումներ՝ հեռախոսում ստացած հաղորդագրությունների մասին։ <ph name="LINK_BEGIN" />Մանրամասն<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Աջ սեղմում</translation>
@@ -10034,6 +10040,7 @@
 <translation id="8666268818656583275">F ստեղներն այժմ կատարում են այն գործողությունները, որոնք կատարում են վերևի շարքի համակարգային ստեղները։</translation>
 <translation id="8666321716757704924">Թույլտվությունները <ph name="WEBSITE" /> կայքի համար նորից տրամադրվեցին</translation>
 <translation id="8667261224612332309">Դուք ունեք գաղտնաբառեր, որոնք կարելի է ուժեղացնել</translation>
+<translation id="8667543835349994431">Բացել &amp;հավելվածով…</translation>
 <translation id="8668378421690365723">Հնարավոր է՝ ձեր սարքն այլևս չաշխատի պատշաճ կերպով, և կարող են առաջանալ անվտանգության և արդյունավետության խնդիրներ։</translation>
 <translation id="8669284339312441707">Ջերմ</translation>
 <translation id="8670537393737592796">Այս էջն արագ բացելու համար տեղադրեք <ph name="APP_NAME" /> հավելվածը՝ սեղմելով «Տեղադրել» կոճակը</translation>
@@ -10142,6 +10149,7 @@
 <translation id="8738418093147087440">Որոնեք ըստ երկրների, լեզուների կամ ներածման մեթոդների</translation>
 <translation id="8741944563400125534">Switch Access-ի կարգավորման ուղեցույց</translation>
 <translation id="8743357966416354615">Մշակման կառավարվող միջավայր (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Անցնե՞լ <ph name="URL" /></translation>
 <translation id="8744641000906923997">Ռոմաձի</translation>
 <translation id="8744913471985800082">Նախքան թարմացումը ստուգեք URL-ի փոփոխությունը՝ համոզվելու, որ ամեն ինչ կարգին է։</translation>
 <translation id="8745034592125932220">Ձեր սարքում չի թույլատրվում տվյալներ պահել</translation>
@@ -10238,6 +10246,7 @@
 <translation id="8818152010000655963">Պաստառ</translation>
 <translation id="8818988764764862764">Պատուհանը տեղափոխվեց ձախ</translation>
 <translation id="8819510664278523111">Ձեր սարքի EID համարն է <ph name="EID_NUMBER" />, IMEI կոդն է <ph name="IMEI_NUMBER" />, և սերիական համարն է <ph name="SERIAL_NUMBER" />։ Դրանց միջոցով կարող եք ակտիվացնել ծառայությունը։</translation>
+<translation id="8819762137851963556">Գտնել մկնիկի նշորդը</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="8821045908425223359">IP հասցեն կարգավորել ավտոմատ</translation>
 <translation id="8821206216942230957">Ձեր հաշվին հասանելի չէ Gemini-ը Chrome-ում</translation>

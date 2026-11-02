@@ -684,6 +684,7 @@
 <translation id="1523279371236772909">ดูในเดือนที่ผ่านมา</translation>
 <translation id="1523978563989812243">เครื่องมือการอ่านออกเสียงข้อความ</translation>
 <translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
+<translation id="1524903662136734524">เพิ่มจากไดรฟ์</translation>
 <translation id="1525740877599838384">ใช้ Wi-Fi เพื่อระบุตำแหน่งเท่านั้น</translation>
 <translation id="1526274304859009691">ลงชื่อเข้าใช้เพื่อรับส่วนขยายและอื่นๆ จาก <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">เอกสารที่ไม่ระบุชื่อ</translation>
@@ -2690,6 +2691,7 @@
 <translation id="3032204772252313646">คําบรรยายแทนเสียงอัตโนมัติ</translation>
 <translation id="3032272345862007156">ธีม AI ล่าสุด <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">เปิดใช้โหมดห้ามรบกวนแล้ว</translation>
+<translation id="3034219227076811559">Google Search ใน Chrome</translation>
 <translation id="3036546437875325427">เปิดใช้ Flash</translation>
 <translation id="3036602651971781493">เว็บไซต์อาจใช้บริการปกป้องเนื้อหาเพื่อเล่นเนื้อหาที่มีลิขสิทธิ์คุ้มครองหรือตรวจสอบเบราว์เซอร์ที่คุณใช้</translation>
 <translation id="3036907164806060573">ความฝัน</translation>
@@ -3206,6 +3208,7 @@
 <translation id="3437072258256045988">จัดการกิจกรรมบนแอป Gemini</translation>
 <translation id="3437397693214267762">ดูปฏิทิน Outlook และไฟล์ SharePoint และ OneDrive</translation>
 <translation id="3437494162908353428">ไม่อนุญาตให้ใช้เครื่องมือสำหรับนักพัฒนาเว็บกับ URL นี้</translation>
+<translation id="3437498061222607130">คุณลงชื่อเข้าใช้ Search ด้วยบัญชี <ph name="USER_EMAIL" /></translation>
 <translation id="3438633801274389918">นินจา</translation>
 <translation id="3439153939049640737">อนุญาตให้ <ph name="HOST" /> เข้าถึงไมโครโฟนของคุณเสมอ</translation>
 <translation id="3439970425423980614">กำลังเปิด PDF ในหน้าตัวอย่าง</translation>
@@ -5034,6 +5037,7 @@
 <translation id="4823484602432206655">อ่านและเปลี่ยนการตั้งค่าผู้ใช้และอุปกรณ์</translation>
 <translation id="4824037980212326045">การสำรองและกู้คืนข้อมูลใน Linux</translation>
 <translation id="4824263260587281352">เปลี่ยนชุดแป้น <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">บัญชี Google: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">ยกเลิกการซิงค์ใช่ไหม</translation>
 <translation id="4825462365587146530">ดูข้อมูลเพิ่มเติมเกี่ยวกับ Chrome Root Store ในแท็บใหม่</translation>
 <translation id="4825532258163983651">ลบพาสคีย์ไม่ได้</translation>
@@ -5770,7 +5774,6 @@
 <translation id="5392864580775235956">เพิ่มและแก้ไขรูปภาพ</translation>
 <translation id="5393330235977997602">ตัวเลือก PIN</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ลิงก์}other{# ลิงก์}}</translation>
-<translation id="5394400188854257119">5 นาที</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">กำลังบันทึกในบัญชี...</translation>
 <translation id="5397656531674854099">ใช้กลุ่มแท็บในโทรศัพท์</translation>
@@ -5998,6 +6001,7 @@
 <translation id="5558129378926964177">ขยาย&amp;</translation>
 <translation id="5558594314398017686">ค่าเริ่มต้นของระบบปฏิบัติการ (หากมี)</translation>
 <translation id="5559311991468302423">ลบที่อยู่</translation>
+<translation id="5559646482656763170">อัปเดตเมื่อไม่ได้ใช้งาน</translation>
 <translation id="555968128798542113">เว็บไซต์นี้สามารถควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ได้</translation>
 <translation id="5559768063688681413">ไม่มีเครื่องพิมพ์ที่บันทึกไว้</translation>
 <translation id="55601339223879446">ปรับขอบของเดสก์ท็อปให้อยู่ในหน้าจอแสดงผล</translation>
@@ -6496,6 +6500,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{เปิดทั้งหมดใน&amp;หน้าต่างใหม่}=1{เปิดใน&amp;หน้าต่างใหม่}other{เปิดทั้งหมด ({COUNT}) ใน&amp;หน้าต่างใหม่}}</translation>
 <translation id="5964247741333118902">เนื้อหาที่ฝัง</translation>
 <translation id="5965607173855879702">กำลังลบข้อมูล...</translation>
+<translation id="5966067139745999860">ย้าย <ph name="SHORTCUT_TITLE" /> ไปยังตำแหน่งที่ <ph name="SHORTCUT_POSITION" /> จาก <ph name="TOTAL_SHORTCUTS" /> แล้ว</translation>
 <translation id="5966511985653515929">ระบบจะลบข้อมูลเว็บไซต์ออกจากอุปกรณ์เมื่อคุณปิดหน้าต่างทั้งหมด</translation>
 <translation id="5968022600320704045">ไม่พบผลการค้นหา</translation>
 <translation id="5968400720580217226">โหมด AI</translation>
@@ -7161,6 +7166,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" />ตรวจสอบรหัสผ่านจากการละเมิดข้อมูลไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="648927581764831596">ไม่มีให้ใช้งาน</translation>
 <translation id="6490471652906364588">อุปกรณ์ USB-C (พอร์ตด้านขวา)</translation>
+<translation id="6491890991754498129">เปิดด้&amp;วย...</translation>
 <translation id="649396225532207613">ไฟล์นี้อาจเป็นอันตรายต่อบัญชีส่วนบุคคลและบัญชีโซเชียลเน็ตเวิร์กของคุณ</translation>
 <translation id="6493991254603208962">ลดความสว่าง</translation>
 <translation id="6494327278868541139">แสดงรายละเอียดการปกป้องที่ปรับปรุงแล้ว</translation>
@@ -7893,6 +7899,7 @@
 <translation id="7030304022046916278">ส่ง URL ให้ Google Safe Browsing ตรวจสอบ</translation>
 <translation id="7030695672997239647">คลิกขวาที่แท็บแล้วเลือก "เพิ่มแท็บไปยังกลุ่ม" จากนั้นเลือก "กลุ่มใหม่"</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - เชื่อมต่อพอร์ตอนุกรมอยู่</translation>
+<translation id="7032334023419126809">บัญชี Google: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">ข้อมูลที่ป้อนต้องมีความยาวไม่เกิน 62 อักขระ</translation>
 <translation id="7033731598469029604">การท่องเว็บอัตโนมัติ</translation>
 <translation id="70356134210715500">รับพาสคีย์</translation>
@@ -8193,7 +8200,6 @@
 <translation id="7273110280511444812">แนบล่าสุดเมื่อวันที่ <ph name="DATE" /></translation>
 <translation id="7273894023751806510">บล็อก <ph name="HOST" /> ไม่ให้ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่เสมอ</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - อีก <ph name="TIME" /> จะชาร์จเต็ม</translation>
-<translation id="7274453646377524248">แท็บและหน้าต่างที่เปิดอยู่ทั้งหมดจะเปิดขึ้นอีกครั้งโดยอัตโนมัติ</translation>
 <translation id="7275950084263610253">ได้รับอนุญาตให้เข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายใน</translation>
 <translation id="727595954130325265">ซื้อเลย</translation>
 <translation id="727952162645687754">ข้อผิดพลาดในการดาวน์โหลด</translation>
@@ -8977,7 +8983,6 @@
 <translation id="7871691770940645922">แสดงผลอักษรเบรลล์เสมือน</translation>
 <translation id="787268756490971083">ปิด</translation>
 <translation id="7872758299142009420">มีกลุ่มที่ฝังอยู่มากเกินไป: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">อัปเดตเมื่อฉันไม่ได้ใช้งาน</translation>
 <translation id="7876027585589532670">แก้ไขทางลัดไม่ได้</translation>
 <translation id="7876243839304621966">ลบทั้งหมด</translation>
 <translation id="7877126887274043657">แก้ไขปัญหา&amp;การซิงค์</translation>
@@ -9425,6 +9430,7 @@
 <translation id="8199300056570174101">เครือข่าย (บริการ) และคุณสมบัติอุปกรณ์</translation>
 <translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8202827109322349110">เปิดในเครื่องมือแก้ไขพื้นฐาน</translation>
+<translation id="8203105157044679380">แผง Google Search</translation>
 <translation id="8203152941016626022">ชื่ออุปกรณ์ของการแชร์ใกล้เคียง</translation>
 <translation id="8203732864715032075">ส่งการแจ้งเตือนให้คุณและตั้งค่าเริ่มต้นให้ Messages จดจำคอมพิวเตอร์เครื่องนี้ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">คลิกขวา</translation>
@@ -10033,6 +10039,7 @@
 <translation id="8666268818656583275">ขณะนี้แป้น F จะทำงานเป็นแป้นแถวบนสุดของระบบ</translation>
 <translation id="8666321716757704924">อนุญาตสิทธิ์อีกครั้งแล้วสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">ควรปรับปรุงรหัสผ่าน</translation>
+<translation id="8667543835349994431">เปิดด้&amp;วย...</translation>
 <translation id="8668378421690365723">อุปกรณ์อาจทำงานไม่ถูกต้องอีกต่อไป และอาจมีปัญหาด้านความปลอดภัยและประสิทธิภาพ</translation>
 <translation id="8669284339312441707">อบอุ่น</translation>
 <translation id="8670537393737592796">หากต้องการกลับมาที่นี่อย่างรวดเร็ว ให้ติดตั้ง <ph name="APP_NAME" /> โดยคลิกปุ่มติดตั้ง</translation>
@@ -10141,6 +10148,7 @@
 <translation id="8738418093147087440">ค้นหาตามประเทศ ภาษา หรือชื่อการป้อนข้อมูล</translation>
 <translation id="8741944563400125534">คู่มือการตั้งค่าการเข้าถึงด้วยสวิตช์</translation>
 <translation id="8743357966416354615">สภาพแวดล้อมในการพัฒนาซอฟต์แวร์ที่มีการจัดการ (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">ไปที่ <ph name="URL" /> แทนไหม</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">โปรดตรวจสอบการเปลี่ยนแปลง URL เพื่อให้แน่ใจว่าคุณพอใจกับการเปลี่ยนแปลงดังกล่าวก่อนทำการอัปเดต</translation>
 <translation id="8745034592125932220">ไม่ได้รับอนุญาตให้บันทึกข้อมูลลงในอุปกรณ์</translation>
@@ -10237,6 +10245,7 @@
 <translation id="8818152010000655963">วอลเปเปอร์</translation>
 <translation id="8818988764764862764">หน้าต่างเลื่อนไปทางซ้าย</translation>
 <translation id="8819510664278523111">EID ของอุปกรณ์คือ <ph name="EID_NUMBER" />, IMEI ของอุปกรณ์คือ <ph name="IMEI_NUMBER" /> และหมายเลขซีเรียลของอุปกรณ์คือ <ph name="SERIAL_NUMBER" /> คุณใช้หมายเลขเหล่านี้เพื่อช่วยเปิดใช้งานบริการได้</translation>
+<translation id="8819762137851963556">ค้นหาเคอร์เซอร์เมาส์</translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="8821045908425223359">กำหนดค่าที่อยู่ IP โดยอัตโนมัติ</translation>
 <translation id="8821206216942230957">บัญชีของคุณไม่มีสิทธิ์เข้าถึง Gemini ใน Chrome</translation>

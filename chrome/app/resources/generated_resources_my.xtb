@@ -684,6 +684,7 @@
 <translation id="1523279371236772909">ယခင်လတွင် ကြည့်ထားသည်</translation>
 <translation id="1523978563989812243">စာ-မှ-စကား အင်ဂျင်များ</translation>
 <translation id="1524563461097350801">မလိုပါ</translation>
+<translation id="1524903662136734524">Drive မှ ထည့်ရန်</translation>
 <translation id="1525740877599838384">တည်နေရာ သိရှိနိုင်ရန် Wi-Fi ကိုသာ အသုံးပြုပါ</translation>
 <translation id="1526274304859009691"><ph name="DEVICE" /> မှ နောက်ဆက်တွဲနှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1526560967942511387">ခေါင်းစဉ်မဲ့ စာတမ်း</translation>
@@ -2702,6 +2703,7 @@
 <translation id="3032204772252313646">အလိုအလျောက်ထိုးသည့် စာတန်းများ</translation>
 <translation id="3032272345862007156">လတ်တလော AI အပြင်အဆင် <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">‘မနှောင့်ယှက်ရ’ ဖွင့်ထားသည်</translation>
+<translation id="3034219227076811559">Chrome ရှိ Google Search</translation>
 <translation id="3036546437875325427">ဖလက်ရှ်မီးကို ဖွင့်ရန်</translation>
 <translation id="3036602651971781493">ဝဘ်ဆိုက်များသည် မူပိုင်ခွင့်ဖြင့် ကာကွယ်ထားသော အကြောင်းအရာများကို ဖွင့်ရန် (သို့) သင်အသုံးပြုနေသော ဘရောင်ဇာကို စစ်ဆေးရန် အကြောင်းအရာ ကာကွယ်ရေး ဝန်ဆောင်မှုကို အသုံးပြုနိုင်သည်</translation>
 <translation id="3036907164806060573">အိပ်မက်</translation>
@@ -3220,6 +3222,7 @@
 <translation id="3437072258256045988">သင်၏ Gemini Apps အသုံးပြုမှုကို စီမံနိုင်သည်</translation>
 <translation id="3437397693214267762">သင်၏ Outlook Calendar၊ SharePoint နှင့် OneDrive ဖိုင်များကို ကြည့်ပါ</translation>
 <translation id="3437494162908353428">ဤ URL အတွက် ဆောဖ့်ဝဲတူးလ်များကို ခွင့်မပြုပါ။</translation>
+<translation id="3437498061222607130">Search သို့ သင်၏ <ph name="USER_EMAIL" /> အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ထားသည်</translation>
 <translation id="3438633801274389918">နင်ဂျာ</translation>
 <translation id="3439153939049640737"><ph name="HOST" />သင်၏ မိုက်ခရိုဖုန်းကို ရယူမှု အမြဲတမ်း ခွင်ပြုရန်</translation>
 <translation id="3439970425423980614">PDF ကို အစမ်းကြည့်ထဲ ဖွင့်ရန်</translation>
@@ -5047,6 +5050,7 @@
 <translation id="4823484602432206655">သုံးစွဲသူနှင့် စက်ကိရိယာ ဆက်တင်များအား ဖတ်ပြီး ပြောင်းရန်</translation>
 <translation id="4824037980212326045">Linux အရန်ကူးခြင်းနှင့် ပြန်လည်ရယူခြင်း</translation>
 <translation id="4824263260587281352"><ph name="KEY_COMBINATION" /> ကီးပေါင်းစည်းမှုကို ပြောင်းရန်</translation>
+<translation id="4824320026281030716">Google Account- <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">စင့်ခ်လုပ်ခြင်းကို ပယ်ဖျက်လိုပါသလား။</translation>
 <translation id="4825462365587146530">‘Chrome Root စတိုး’ အကြောင်း တဘ်အသစ်တွင် ပိုမိုလေ့လာရန်။</translation>
 <translation id="4825532258163983651">လျှို့ဝှက်ကီးကို ဖျက်၍မရပါ</translation>
@@ -5785,7 +5789,6 @@
 <translation id="5392864580775235956">ပုံထည့်ရန်နှင့် တည်းဖြတ်ရန်</translation>
 <translation id="5393330235977997602">ပင်နံပါတ် ရွေးစရာများ</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{လင့်ခ်}other{လင့်ခ် # ခု}}</translation>
-<translation id="5394400188854257119">၅ မိနစ်</translation>
 <translation id="5394529681046491727">တိုက်ရိုက် Wi-Fi</translation>
 <translation id="5395353843367783642">သင့်အကောင့်တွင် သိမ်းနေသည်…</translation>
 <translation id="5397656531674854099">သင့်ဖုန်းတွင် တဘ်အုပ်စုများ သုံးခြင်း</translation>
@@ -7910,6 +7913,7 @@
 <translation id="7030304022046916278">URL များကို စစ်ဆေးရန် ‘လုံခြုံစွာကြည့်ရှုခြင်း’ သို့ ပို့ပေးသည်</translation>
 <translation id="7030695672997239647">တဘ်ပေါ်တွင် ညာဘက်ခလုတ်ကို နှိပ်ပြီး “အုပ်စုသို့ တဘ်ထည့်ရန်” ကို ရွေးပြီးနောက် “အုပ်စုအသစ်” ကို ရွေးနိုင်သည်</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - အမှတ်စဉ်ပို့တ် ချိတ်ဆက်ထားသည်</translation>
+<translation id="7032334023419126809">Google Account- <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">စာထည့်သွင်းရာတွင် စာလုံးရေ ၆၂ လုံး အများဆုံးရှိရမည်</translation>
 <translation id="7033731598469029604">အော်တိုဘရောက်စ်</translation>
 <translation id="70356134210715500">သင့်လျှို့ဝှက်ကီးများ ရယူရန်</translation>
@@ -8210,7 +8214,6 @@
 <translation id="7273110280511444812">နောက်ဆုံး ပူးတွဲခဲ့<ph name="DATE" /></translation>
 <translation id="7273894023751806510"><ph name="HOST" /> ကို သင့် MIDI စက်များအား စီမံခြင်း၊ ပရိုဂရမ်ပြန်လုပ်ခြင်းတို့အတွက် အမြဲပိတ်ထားရန်</translation>
 <translation id="727441411541283857">ပြည့်လာမည့် အထိ<ph name="PERCENTAGE" /> % - <ph name="TIME" /></translation>
-<translation id="7274453646377524248">ဖွင့်ထားသော တဘ်နှင့် ဝင်းဒိုးအားလုံးကို အလိုအလျောက် ပြန်ဖွင့်ပါမည်။</translation>
 <translation id="7275950084263610253">သင့်အိမ်သုံးကွန်ရက်ရှိ အခြားစက်များကို သုံးခွင့်ပြုထားသည်</translation>
 <translation id="727595954130325265">ယခုပင် ဝယ်ယူရန်</translation>
 <translation id="727952162645687754">ဒေါင်းလုဒ် အမှား</translation>
@@ -8995,7 +8998,6 @@
 <translation id="7871691770940645922">မျက်မမြင်စာ ပြသမှုအတု</translation>
 <translation id="787268756490971083">ပိတ်</translation>
 <translation id="7872758299142009420">ထည့်သွင်းထားသော အုပ်စုများ အလွန်များနေသည်- <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">ကျွန်ုပ်မရှိချိန်တွင် အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="7876027585589532670">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်၍မရပါ</translation>
 <translation id="7876243839304621966">အားလုံး ဖယ်ရှား</translation>
 <translation id="7877126887274043657">&amp;စင့်ခ်လုပ်ခြင်းဆိုင်ရာ ပြဿနာ ဖြေရှင်းရန်</translation>
@@ -9443,6 +9445,7 @@
 <translation id="8199300056570174101">ကွန်ရက် (ဝန်ဆောင်မှု) နှင့် စက်ပစ္စည်း သတ်မှတ်ချက်များ</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8202827109322349110">အခြေခံတည်းဖြတ်စနစ်တွင် ဖွင့်ရန်</translation>
+<translation id="8203105157044679380">Google Search အကန့်</translation>
 <translation id="8203152941016626022">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ကိရိယာအမည်</translation>
 <translation id="8203732864715032075">သတိပေးချက်များကို သင့်ထံ ပို့ပြီး Messages အတွက် ဤကွန်ပျူတာကို ပုံသေမှတ်ထားပေးသည်။ <ph name="LINK_BEGIN" />ပိုမို လေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">ညာဘက်ခလုတ်ကို နှိပ်ရန်</translation>
@@ -10255,6 +10258,7 @@
 <translation id="8818152010000655963">နောက်ခံပုံ</translation>
 <translation id="8818988764764862764">ဝင်းဒိုးကို ဘယ်ဘက်သို့ ရွှေ့လိုက်သည်</translation>
 <translation id="8819510664278523111">သင့်စက် EID မှာ <ph name="EID_NUMBER" /> ဖြစ်၍ စက် IMEI မှာ <ph name="IMEI_NUMBER" /> ဖြစ်ပြီး စက်အမှတ်စဉ်မှာ <ph name="SERIAL_NUMBER" /> ဖြစ်သည်။ ဝန်ဆောင်မှုစတင်ရာ၌ ကူညီရန် ဤနံပါတ်များကို သုံးနိုင်သည်။</translation>
+<translation id="8819762137851963556">မောက်စ်ကာဆာ ရှာရန်</translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
 <translation id="8821045908425223359">အိုင်ပီလိပ်စာကို အလိုအလျောက် သတ်မှတ်ရန်</translation>
 <translation id="8821206216942230957">သင့်အကောင့်သည် Chrome ရှိ Gemini ကို သုံးခွင့်မရှိပါ</translation>

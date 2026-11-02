@@ -325,7 +325,7 @@
 <translation id="1925706052394657380">Open de instellingen voor <ph name="BEGIN_BOLD" />standaard-apps<ph name="END_BOLD" /> in iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Link ontvangen}other{{count} links ontvangen}}</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopiëren.</translation>
-<translation id="1942483019269000450">Gemini Google Wallet kan vragen je creditcardgegevens in te vullen om de taak voort te zetten</translation>
+<translation id="1942483019269000450">Gemini kan Google Wallet vragen je creditcardgegevens in te vullen om de taak voort te zetten</translation>
 <translation id="1943478190258551035">Menu → Instellingen</translation>
 <translation id="1944477975050820119">Krijg realtime suggesties waarmee je nieuwe manieren kunt vinden om te browsen met AI. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Inloggen met een beheerd account</translation>
@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Geschiedenis en websitegegevens wissen</translation>
 <translation id="3190558889382726167">Wachtwoord opgeslagen</translation>
 <translation id="3190736958609431397">Niet meer volgen</translation>
+<translation id="3192820089569442694">Er ging iets mis met je afmeldingsverzoek voor gegevens</translation>
 <translation id="3208260410153224535">Je organisatie heeft inloggen uitgezet. Items zoals nieuwe bookmarks en wachtwoorden worden alleen opgeslagen op dit apparaat.</translation>
 <translation id="3211969308836412674">Site losmaken</translation>
 <translation id="3213807041830307252">Winkel, vertaal en identificeer wat je ziet met je camera en fotogalerij.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Meer informatie over Google Lens</translation>
 <translation id="3449029510150690417">Maak een nieuwe tabbladgroep door deze een naam en kleur te geven</translation>
 <translation id="345348365500626747">Adres gevonden</translation>
+<translation id="3453878468834191501">Het huidige tabblad wordt gedeeld met Gemini als je een nieuwe chat start. <ph name="BEGIN_LINK" />Meer informatie over AI en privacy<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Ga Live met Gemini om vragen te stellen over een pagina, hardop te brainstormen en een gesprek te voeren.</translation>
 <translation id="3462768334899086950">Dit betekent dat je je niet-opgeslagen bestand en huidige tabbladen kwijtraakt</translation>
 <translation id="3464194322481586217">Kan de prijs niet volgen.</translation>
@@ -1626,6 +1628,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6078236141387574983">De hoogte van het blad aanpassen</translation>
 <translation id="6084848228346514841">Tabbladen selecteren</translation>
 <translation id="6089212833343035912">Pincode voor Google Wachtwoordmanager</translation>
+<translation id="6090690847556987004">Er is iets misgegaan met deze instelling. Update Chrome en iOS en start je apparaat opnieuw op om het nog een keer te proberen. Als dit blijft gebeuren, ondersteunt je iPhone deze instelling misschien niet.</translation>
 <translation id="6090760257419195752">Gesloten waarschuwingen</translation>
 <translation id="6094325891006032858">Zet de uitgebreide versie van Safe Browsing aan</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> gevonden</translation>
@@ -2122,6 +2125,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7557508262441527045">Uitgelogd</translation>
 <translation id="7561196759112975576">Altijd</translation>
 <translation id="7561982940498449837">Menu sluiten</translation>
+<translation id="7562347727679121642">Afbeelding toevoegen aan je zoekopdracht</translation>
 <translation id="7566349809380613217"><ph name="GROUP_TITLE" /> openen, gedeelde groep van <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Bookmarks zijn verborgen</translation>
 <translation id="7575664680938145959">Openen met één tik</translation>
@@ -2669,6 +2673,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="9203951165704618409">Verplaats de adresbalk van de bovenkant naar de onderkant voor een aangepaste browsefunctionaliteit.</translation>
 <translation id="9205189991633470489">Incognitovergrendeling</translation>
 <translation id="9206887540681440657">Snelheid</translation>
+<translation id="9218088788182688902">Er is iets misgegaan met deze instelling. Update Chrome en iPadOS en start je apparaat opnieuw op om het nog een keer te proberen. Als dit blijft gebeuren, ondersteunt je iPad deze instelling misschien niet.</translation>
 <translation id="9218430445555521422">Instellen als standaard</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="9219154867334666734">Tabbladen zoeken…</translation>

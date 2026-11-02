@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Tarixçəni və veb-sayt datasını silin</translation>
 <translation id="3190558889382726167">Yadda saxlanılmış Parol</translation>
 <translation id="3190736958609431397">İzləməyin</translation>
+<translation id="3192820089569442694">Datadan imtina sorğunuzla bağlı xəta oldu</translation>
 <translation id="3208260410153224535">Təşkilat girişi deaktiv edib. Yeni əlfəcin, parol və s. yalnız bu cihazda yadda saxlanacaq.</translation>
 <translation id="3211969308836412674">Saytın bərkidilməsini ləğv edin</translation>
 <translation id="3213807041830307252">Kamera və fotoqalereyadan istifadə edərək gördüklərinizi alın, tərcümə edin və müəyyənləşdirin.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Google Linza haqqında ətraflı məlumat əldə edin</translation>
 <translation id="3449029510150690417">Ad və rəng əlavə edərək yeni tab qrupunuzu yaradın</translation>
 <translation id="345348365500626747">Ünvan tapıldı</translation>
+<translation id="3453878468834191501">Yeni çata başladığınız zaman cari tab Gemini ilə paylaşılır. <ph name="BEGIN_LINK" />Sİ və məxfilik haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Səhifə haqqında sual vermək, yüksək səslə fikir mübadiləsi aparmaq və qarşılıqlı danışmaq üçün Gemini Live rejiminə keçin.</translation>
 <translation id="3462768334899086950">Bu o deməkdir ki, yadda saxlanılmamış faylınızı və cari tablarınızı itirəcəksiniz</translation>
 <translation id="3464194322481586217">Qiyməti izləmək mümkün olmadı.</translation>
@@ -1626,6 +1628,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6078236141387574983">Vərəqin hündürlüyünü yenidən tənzimləyin</translation>
 <translation id="6084848228346514841">Tablar seçin</translation>
 <translation id="6089212833343035912">Google Parol Meneceri PIN-i</translation>
+<translation id="6090690847556987004">Bu ayar ilə bağlı xəta oldu. Chrome və iOS-u güncəlləyin, sonra yenidən cəhd etmək üçün cihazınızı yenidən başladın. Bu xəta davam edərsə, iPhone-unuz bu ayarı dəstəkləməyə bilər.</translation>
 <translation id="6090760257419195752">Qapadılmış xəbərdarlıqlar</translation>
 <translation id="6094325891006032858">Qabaqcıl güvənli baxışı aktiv edin</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> nəticə tapıldı</translation>
@@ -2122,6 +2125,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7557508262441527045">Çıxılıb</translation>
 <translation id="7561196759112975576">Həmişə</translation>
 <translation id="7561982940498449837">Menyunu bağlayın</translation>
+<translation id="7562347727679121642">Axtarışa şəkil əlavə edin</translation>
 <translation id="7566349809380613217"><ph name="GROUP_TITLE" /> qrupunu açın, <ph name="NUMBER_OF_TABS" /> tabdan ibarət paylaşılan qrup, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Əlfəcinlər gizlədilib</translation>
 <translation id="7575664680938145959">Bir toxunuşla açın</translation>
@@ -2669,6 +2673,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="9203951165704618409">Fərdi baxış təcrübəsi üçün ünvan panelini yuxarıdan aşağıya gətirin.</translation>
 <translation id="9205189991633470489">Anonim tabların kilidlənməsi</translation>
 <translation id="9206887540681440657">Sürət</translation>
+<translation id="9218088788182688902">Bu ayar ilə bağlı xəta oldu. Chrome və iPadOS-u güncəlləyin, sonra yenidən cəhd etmək üçün cihazınızı yenidən başladın. Bu hal davam edərsə, iPad-iniz bu ayarı dəstəkləməyə bilər.</translation>
 <translation id="9218430445555521422">Defolt olaraq ayarlansın</translation>
 <translation id="9219103736887031265">Şəkillər</translation>
 <translation id="9219154867334666734">Tabları axtarın…</translation>

@@ -684,6 +684,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1523279371236772909">Visto durante el mes pasado</translation>
 <translation id="1523978563989812243">Motores para texto a voz</translation>
 <translation id="1524563461097350801">No, gracias</translation>
+<translation id="1524903662136734524">Agregar desde Drive</translation>
 <translation id="1525740877599838384">Usar solo Wi-Fi para determinar la ubicación</translation>
 <translation id="1526274304859009691">Accede para obtener tus extensiones y más de <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Documento sin título</translation>
@@ -2690,6 +2691,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3032204772252313646">Subtítulos automáticos</translation>
 <translation id="3032272345862007156">Tema de IA reciente: <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Se habilitó No interrumpir</translation>
+<translation id="3034219227076811559">Búsqueda de Google en Chrome</translation>
 <translation id="3036546437875325427">Habilitar Flash</translation>
 <translation id="3036602651971781493">Es posible que los sitios usen un servicio de protección de contenido para reproducir contenido protegido por derechos de autor o saber qué navegador estás usando</translation>
 <translation id="3036907164806060573">Sueño</translation>
@@ -3208,6 +3210,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3437072258256045988">Administra tu actividad en las Apps con Gemini</translation>
 <translation id="3437397693214267762">Consulta tus archivos de SharePoint y OneDrive, y el calendario de Outlook</translation>
 <translation id="3437494162908353428">No se permiten las Herramientas para desarrolladores en esta URL.</translation>
+<translation id="3437498061222607130">Accediste a la Búsqueda con tu cuenta <ph name="USER_EMAIL" /></translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Permitir siempre que <ph name="HOST" /> acceda al micrófono</translation>
 <translation id="3439970425423980614">Abriendo PDF en vista previa</translation>
@@ -5036,6 +5039,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4823484602432206655">Leer y cambiar la configuración del dispositivo y del usuario</translation>
 <translation id="4824037980212326045">Copia de seguridad y restablecimiento de Linux</translation>
 <translation id="4824263260587281352">Cambiar la combinación de teclas <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Cuenta de Google: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">¿Quieres cancelar la sincronización?</translation>
 <translation id="4825462365587146530">Obtén más información sobre Chrome Root Store en una pestaña nueva.</translation>
 <translation id="4825532258163983651">No se puede borrar la clave de acceso</translation>
@@ -5774,7 +5778,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5392864580775235956">Agrega y edita una imagen</translation>
 <translation id="5393330235977997602">Opciones de PIN</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Vínculo}other{# vínculos}}</translation>
-<translation id="5394400188854257119">5 minutos</translation>
 <translation id="5394529681046491727">Wi-Fi directo</translation>
 <translation id="5395353843367783642">Guardando en tu cuenta…</translation>
 <translation id="5397656531674854099">Usa tus grupos de pestañas en el teléfono</translation>
@@ -6002,6 +6005,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5558129378926964177">Acercar</translation>
 <translation id="5558594314398017686">SO predeterminado (cuando esté disponible)</translation>
 <translation id="5559311991468302423">Borrar dirección</translation>
+<translation id="5559646482656763170">Actualizar cuando no esté en uso</translation>
 <translation id="555968128798542113">Este sitio puede controlar y reprogramar tus dispositivos MIDI</translation>
 <translation id="5559768063688681413">No hay impresoras guardadas</translation>
 <translation id="55601339223879446">Ajustar los límites de tu escritorio en la pantalla</translation>
@@ -6503,6 +6507,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="5964247741333118902">Contenido incorporado</translation>
 <translation id="5965607173855879702">Borrando los datos…</translation>
+<translation id="5966067139745999860">Se movió <ph name="SHORTCUT_TITLE" /> a la posición <ph name="SHORTCUT_POSITION" /> de <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Los datos del sitio se borran de tu dispositivo cuando cierras todas las ventanas</translation>
 <translation id="5968022600320704045">La búsqueda no arrojó resultados.</translation>
 <translation id="5968400720580217226">Modo IA</translation>
@@ -7168,6 +7173,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> no puede revisar tus contraseñas para detectar una violación de la seguridad de los datos. Revisa la conexión a Internet.</translation>
 <translation id="648927581764831596">Ningún medio disponible</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
+<translation id="6491890991754498129">Abrir &amp;con…</translation>
 <translation id="649396225532207613">Este archivo puede dañar tus cuentas de redes sociales y personales</translation>
 <translation id="6493991254603208962">Disminuir brillo</translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
@@ -7900,6 +7906,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7030304022046916278">Envía las URL a la Navegación segura para revisarlas.</translation>
 <translation id="7030695672997239647">Haz clic con el botón derecho en una pestaña, selecciona "Agregar pestaña al grupo" y, luego, selecciona "Grupo nuevo"</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Puerto en serie conectado</translation>
+<translation id="7032334023419126809">Cuenta de Google: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">La entrada debe tener como máximo 62 caracteres.</translation>
 <translation id="7033731598469029604">Navegación automática</translation>
 <translation id="70356134210715500">Obtén tus llaves de acceso</translation>
@@ -8200,7 +8207,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7273110280511444812">conectado por última vez el <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Impedir siempre que <ph name="HOST" /> controle y reprograme tus dispositivos MIDI</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hasta completar la carga</translation>
-<translation id="7274453646377524248">Se volverán a abrir automáticamente todas las pestañas y ventanas que tengas abiertas.</translation>
 <translation id="7275950084263610253">Pueden acceder a otros dispositivos de tu red local</translation>
 <translation id="727595954130325265">Comprar ahora</translation>
 <translation id="727952162645687754">Error de descarga</translation>
@@ -8985,7 +8991,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7871691770940645922">Pantalla braille virtual</translation>
 <translation id="787268756490971083">No</translation>
 <translation id="7872758299142009420">Hay demasiados grupos anidados: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Actualizar cuando no use el dispositivo</translation>
 <translation id="7876027585589532670">No se puede editar el acceso directo.</translation>
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7877126887274043657">Solucionar un problema de &amp;sincronización</translation>
@@ -9433,6 +9438,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8199300056570174101">Propiedades de la red (servicio) y del dispositivo</translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8202827109322349110">Abrir en el editor básico</translation>
+<translation id="8203105157044679380">Panel de la Búsqueda de Google</translation>
 <translation id="8203152941016626022">Nombre del dispositivo de Compartir con Nearby</translation>
 <translation id="8203732864715032075">Te envía notificaciones y establece esta computadora como la opción predeterminada para la app de Mensajes. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Clic con botón derecho</translation>
@@ -10041,6 +10047,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8666268818656583275">Las teclas de función ahora tendrán el mismo comportamiento que las teclas de la fila superior del sistema</translation>
 <translation id="8666321716757704924">Se volvieron a otorgar permisos para <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Tienes contraseñas que se pueden mejorar</translation>
+<translation id="8667543835349994431">Abrir &amp;con…</translation>
 <translation id="8668378421690365723">Es posible que el dispositivo ya no funcione de manera adecuada y que tengas problemas de seguridad y rendimiento.</translation>
 <translation id="8669284339312441707">Cálido</translation>
 <translation id="8670537393737592796">Para volver a acceder a este sitio rápidamente, instala <ph name="APP_NAME" /> con el botón de instalación</translation>
@@ -10149,6 +10156,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8738418093147087440">Buscar por país, idioma o nombre de entrada</translation>
 <translation id="8741944563400125534">Guía de configuración de Accesibilidad con interruptores</translation>
 <translation id="8743357966416354615">Entorno de desarrollo administrado (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">¿Quieres navegar a <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Revisa el cambio de URL para asegurarte de que estás de acuerdo con él antes de aprobar la actualización.</translation>
 <translation id="8745034592125932220">No tiene permiso para guardar datos en tu dispositivo</translation>
@@ -10245,6 +10253,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8818152010000655963">Fondo de pantalla</translation>
 <translation id="8818988764764862764">La ventana se movió hacia la izquierda</translation>
 <translation id="8819510664278523111">El EID de tu dispositivo es <ph name="EID_NUMBER" />, el IMEI es <ph name="IMEI_NUMBER" /> y el número de serie es <ph name="SERIAL_NUMBER" />. Estos números se pueden usar para activar el servicio.</translation>
+<translation id="8819762137851963556">Encontrar el cursor del mouse</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8821045908425223359">Configurar una dirección IP de forma automática</translation>
 <translation id="8821206216942230957">Tu cuenta no tiene acceso a Gemini en Chrome</translation>

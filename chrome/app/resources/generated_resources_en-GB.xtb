@@ -685,6 +685,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1523279371236772909">Viewed in the past month</translation>
 <translation id="1523978563989812243">Text-to-speech engines</translation>
 <translation id="1524563461097350801">No, thanks</translation>
+<translation id="1524903662136734524">Add from Drive</translation>
 <translation id="1525740877599838384">Use only Wi-Fi to determine location</translation>
 <translation id="1526274304859009691">Sign in to get your extensions and more from <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Untitled Document</translation>
@@ -2703,6 +2704,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3032204772252313646">Auto captions</translation>
 <translation id="3032272345862007156">Recent AI theme <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Do Not Disturb enabled</translation>
+<translation id="3034219227076811559">Google Search in Chrome</translation>
 <translation id="3036546437875325427">Enable Flash</translation>
 <translation id="3036602651971781493">Sites may use a content protection service to play content that is protected by copyright or check which browser you're using</translation>
 <translation id="3036907164806060573">Dream</translation>
@@ -3221,6 +3223,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3437072258256045988">Manage your Gemini Apps activity</translation>
 <translation id="3437397693214267762">See your Outlook calendar, and SharePoint and OneDrive files</translation>
 <translation id="3437494162908353428">DevTools are not allowed for this URL.</translation>
+<translation id="3437498061222607130">You're signed in to Search with your <ph name="USER_EMAIL" /> account</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Always allow <ph name="HOST" /> to access your microphone</translation>
 <translation id="3439970425423980614">Opening PDF in Preview</translation>
@@ -5049,6 +5052,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4823484602432206655">Read and change user and device settings</translation>
 <translation id="4824037980212326045">Linux backup and restore</translation>
 <translation id="4824263260587281352">Change key combination <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Google Account: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Cancel sync?</translation>
 <translation id="4825462365587146530">Learn more about the Chrome Root Store in a new tab.</translation>
 <translation id="4825532258163983651">Can't delete passkey</translation>
@@ -5787,7 +5791,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5392864580775235956">Add and edit an image</translation>
 <translation id="5393330235977997602">PIN options</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# links}}</translation>
-<translation id="5394400188854257119">Five minutes</translation>
 <translation id="5394529681046491727">Wi-Fi direct</translation>
 <translation id="5395353843367783642">Saving in your account…</translation>
 <translation id="5397656531674854099">Use your tab groups on your phone</translation>
@@ -6015,6 +6018,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5558129378926964177">Zoom &amp;In</translation>
 <translation id="5558594314398017686">OS default (when available)</translation>
 <translation id="5559311991468302423">Delete address</translation>
+<translation id="5559646482656763170">Update when not in use</translation>
 <translation id="555968128798542113">This site can control and reprogramme your MIDI devices</translation>
 <translation id="5559768063688681413">No saved printers</translation>
 <translation id="55601339223879446">Adjust the boundaries of your desktop within the display</translation>
@@ -6516,6 +6520,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Open all in &amp;new window}=1{Open in &amp;new window}other{Open all ({COUNT}) in &amp;new window}}</translation>
 <translation id="5964247741333118902">Embedded content</translation>
 <translation id="5965607173855879702">Deleting data…</translation>
+<translation id="5966067139745999860">Moved <ph name="SHORTCUT_TITLE" /> to position <ph name="SHORTCUT_POSITION" /> of <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Site data is deleted from your device when you close all windows</translation>
 <translation id="5968022600320704045">No search results</translation>
 <translation id="5968400720580217226">AI Mode</translation>
@@ -7181,6 +7186,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> can’t check your passwords against data breaches. Try checking your Internet connection.</translation>
 <translation id="648927581764831596">None available</translation>
 <translation id="6490471652906364588">USB-C device (right port)</translation>
+<translation id="6491890991754498129">Open &amp;With...</translation>
 <translation id="649396225532207613">This file can harm your personal and social network accounts</translation>
 <translation id="6493991254603208962">Brightness down</translation>
 <translation id="6494327278868541139">Show enhanced protection details</translation>
@@ -7913,6 +7919,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7030304022046916278">Sends URLs to Safe Browsing to check them</translation>
 <translation id="7030695672997239647">Right-click on a tab and select 'Add tab to group' and then select 'New group'</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serial port connected</translation>
+<translation id="7032334023419126809">Google Account: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">Input must be at most 62 characters</translation>
 <translation id="7033731598469029604">Auto browse</translation>
 <translation id="70356134210715500">Get your passkeys</translation>
@@ -8213,7 +8220,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7273110280511444812">last attached on <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Always block <ph name="HOST" /> from controlling and reprogramming your MIDI devices</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> until full</translation>
-<translation id="7274453646377524248">All of your open tabs and windows will reopen automatically.</translation>
 <translation id="7275950084263610253">Allowed to access other devices on your local network</translation>
 <translation id="727595954130325265">Shop now</translation>
 <translation id="727952162645687754">Download error</translation>
@@ -8998,7 +9004,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7871691770940645922">Virtual Braille Display</translation>
 <translation id="787268756490971083">Off</translation>
 <translation id="7872758299142009420">Too many nested groups: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Update when I step away</translation>
 <translation id="7876027585589532670">Can't edit shortcut</translation>
 <translation id="7876243839304621966">Remove all</translation>
 <translation id="7877126887274043657">Fix &amp;Sync Issue</translation>
@@ -9446,6 +9451,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8199300056570174101">Network (Service) and Device properties</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8202827109322349110">Open in basic editor</translation>
+<translation id="8203105157044679380">Google Search panel</translation>
 <translation id="8203152941016626022">Nearby Share device name</translation>
 <translation id="8203732864715032075">Send you notifications and default to remembering this computer for Messages. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Right click</translation>
@@ -10054,6 +10060,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8666268818656583275">F keys will now have the behaviour as system top-row keys</translation>
 <translation id="8666321716757704924">Permissions allowed again for <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">You have passwords that can be improved</translation>
+<translation id="8667543835349994431">Open &amp;with...</translation>
 <translation id="8668378421690365723">Your device may no longer work properly and may experience security and performance issues.</translation>
 <translation id="8669284339312441707">Warmer</translation>
 <translation id="8670537393737592796">To get back here quickly, install <ph name="APP_NAME" /> by clicking the install button</translation>
@@ -10162,6 +10169,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8738418093147087440">Search by countries, language or input names</translation>
 <translation id="8741944563400125534">Switch Access setup guide</translation>
 <translation id="8743357966416354615">Managed development environment (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Navigate to <ph name="URL" /> instead?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Review the URL change to make sure that you're comfortable with it before updating.</translation>
 <translation id="8745034592125932220">Not allowed to save data to your device</translation>
@@ -10258,6 +10266,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8818988764764862764">Window moved to the left</translation>
 <translation id="8819510664278523111">Your device EID is <ph name="EID_NUMBER" /> , device IMEI is <ph name="IMEI_NUMBER" /> and device serial number is <ph name="SERIAL_NUMBER" />. These numbers can be used to help activate service.</translation>
+<translation id="8819762137851963556">Find mouse cursor</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821045908425223359">Configure IP address automatically</translation>
 <translation id="8821206216942230957">Your account doesn't have access to Gemini in Chrome</translation>

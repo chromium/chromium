@@ -1206,6 +1206,7 @@
 <translation id="3030331669969285614">這些標記用來防止或還原破壞性變更，且只能在限定期間內使用。</translation>
 <translation id="3033200136993730761">設定住宅地址可讓你透過不同 Google 服務處理大小事務，例如取得更切合需求的搜尋結果和「Google 地圖」路線指示。你可前往 <ph name="BEGIN_LINK" />Google 帳戶 (<ph name="ACCOUNT" />) <ph name="END_LINK" />編輯或刪除地址。</translation>
 <translation id="3033777742142108756">目前允許使用動作同光線感應器</translation>
+<translation id="3034219227076811559">Chrome 中的「Google 搜尋」</translation>
 <translation id="3034526003882782781">可以捲動同縮放</translation>
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037605927509011580">糟糕！</translation>
@@ -3222,6 +3223,7 @@
 <translation id="6342069812937806050">剛剛完成</translation>
 <translation id="6342171901363060580">此網站不支援 HTTPS，且你目前處於無痕模式，因此系統顯示此警告訊息。<ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">規劃路線</translation>
+<translation id="6345664705388712774">將圖片加入搜尋</translation>
 <translation id="6348220984832452017">使用中的變化版本</translation>
 <translation id="6349101878882523185">安裝「<ph name="APP_NAME" />」</translation>
 <translation id="6350739641326887427">無需複製並貼上 Pix 代碼即可付款。<ph name="BEGIN_LINK1" />查看運作方式<ph name="END_LINK1" /></translation>
@@ -4323,6 +4325,7 @@
 <translation id="8199437620497683918">光碟 (光面)</translation>
 <translation id="8202097416529803614">訂單摘要</translation>
 <translation id="8202370299023114387">衝突</translation>
+<translation id="8203105157044679380">「Google 搜尋」面板</translation>
 <translation id="8208363704094329105">300 x 400 毫米</translation>
 <translation id="8208629719488976364">你列印的頁面內容和打印機相關資料會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄文字，檢查是否含有敏感資料，並可能會根據公司政策儲存這些文字或向管理員顯示。</translation>
 <translation id="8210490490377416373">選取政策名稱</translation>

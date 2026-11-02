@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Golire istoric și Date site</translation>
 <translation id="3190558889382726167">Parola a fost salvată</translation>
 <translation id="3190736958609431397">Anulează urmărirea</translation>
+<translation id="3192820089569442694">A apărut o eroare la solicitarea de renunțare la date</translation>
 <translation id="3208260410153224535">Organizația a dezactivat conectarea. Marcajele, parolele și alte date noi vor fi salvate numai pe acest dispozitiv.</translation>
 <translation id="3211969308836412674">Anulează fixarea site-ului</translation>
 <translation id="3213807041830307252">Cumpără, tradu și identifică ceea ce vezi cu ajutorul camerei foto și al galeriei foto.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Află mai multe despre Google Lens</translation>
 <translation id="3449029510150690417">Creează un grup de file dându-i un nume și o culoare</translation>
 <translation id="345348365500626747">Adresa a fost găsită</translation>
+<translation id="3453878468834191501">Fila actuală este trimisă la Gemini când începi un chat nou. <ph name="BEGIN_LINK" />Află mai multe despre AI și confidențialitate<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Discută Live cu Gemini pentru a întreba despre o pagină, a căuta idei cu voce tare și a purta o conversație.</translation>
 <translation id="3462768334899086950">Prin urmare, vei pierde fișierul nesalvat și filele actuale</translation>
 <translation id="3464194322481586217">Nu s-a putut urmări prețul.</translation>
@@ -1626,6 +1628,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6078236141387574983">Ajustează din nou înălțimea foii</translation>
 <translation id="6084848228346514841">Selectează file</translation>
 <translation id="6089212833343035912">PIN-ul Managerului de parole Google</translation>
+<translation id="6090690847556987004">A apărut o eroare legată de această setare. Actualizează Chrome și iOS, apoi repornește dispozitivul pentru a încerca din nou. Dacă eroarea persistă, este posibil ca iPhone-ul să nu accepte această setare.</translation>
 <translation id="6090760257419195752">Avertismente respinse</translation>
 <translation id="6094325891006032858">Activează Navigarea sigură îmbunătățită</translation>
 <translation id="6096965253650248286">S-au găsit <ph name="COUNT" /></translation>
@@ -2122,6 +2125,7 @@ Poți reporni oricând.</translation>
 <translation id="7557508262441527045">Te-ai deconectat</translation>
 <translation id="7561196759112975576">Întotdeauna</translation>
 <translation id="7561982940498449837">Închide meniul</translation>
+<translation id="7562347727679121642">Adaugă o imagine la căutare</translation>
 <translation id="7566349809380613217">Deschide <ph name="GROUP_TITLE" />, grup comun de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Marcajele sunt ascunse</translation>
 <translation id="7575664680938145959">Deschidere cu o singură atingere</translation>
@@ -2669,6 +2673,7 @@ Poți reporni oricând.</translation>
 <translation id="9203951165704618409">Mută bara de adrese din partea de sus în partea de jos pentru o experiență de navigare personalizată.</translation>
 <translation id="9205189991633470489">Blocare incognito</translation>
 <translation id="9206887540681440657">Viteză</translation>
+<translation id="9218088788182688902">A apărut o eroare legată de această setare. Actualizează Chrome și iPadOS, apoi repornește dispozitivul pentru a încerca din nou. Dacă eroarea persistă, este posibil ca iPad-ul să nu accepte setarea.</translation>
 <translation id="9218430445555521422">Setează ca prestabilit</translation>
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="9219154867334666734">Caută file…</translation>

@@ -1206,6 +1206,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3030331669969285614">Šios žymos užkerta kelią gedimą sukeliančiam pakeitimui arba jį panaikina ir yra pasiekiamos tik ribotą laiką.</translation>
 <translation id="3033200136993730761">Namų adresas gali padėti atlikti užduotis „Google“ paslaugose, pvz., gauti aktualesnių paieškos rezultatų ir nuorodų „Google“ žemėlapiuose. Galite redaguoti arba ištrinti adresą <ph name="BEGIN_LINK" />„Google“ paskyroje <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Kol kas leidžiama naudoti judesio ir šviesos jutiklius</translation>
+<translation id="3034219227076811559">„Google“ paieška naršyklėje „Chrome“</translation>
 <translation id="3034526003882782781">Slinkimas ir mastelio keitimas leidžiamas</translation>
 <translation id="3037177537145227281">Kaina stebima</translation>
 <translation id="3037605927509011580">Oi!</translation>
@@ -3224,6 +3225,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6342069812937806050">Ką tik</translation>
 <translation id="6342171901363060580">Matote šį įspėjimą, nes ši svetainė nepalaiko HTTPS, o jūs naudojate inkognito režimą. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Nuorodos</translation>
+<translation id="6345664705388712774">Pridėti vaizdų prie paieškos</translation>
 <translation id="6348220984832452017">Aktyvūs variantai</translation>
 <translation id="6349101878882523185">Įdiegti <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Mokėkite nekopijuodami ir neįklijuodami „Pix“ kodo. <ph name="BEGIN_LINK1" />Kaip tai veikia<ph name="END_LINK1" /></translation>
@@ -4325,6 +4327,7 @@ Papildoma išsami informacija:
 <translation id="8199437620497683918">Optinis diskas (blizgus)</translation>
 <translation id="8202097416529803614">Užsakymo suvestinė</translation>
 <translation id="8202370299023114387">Konfliktas</translation>
+<translation id="8203105157044679380">„Google“ paieškos skydelis</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">Spausdinamų puslapių turinys ir informacija apie spausdintuvą siunčiami „Google Cloud“ arba trečiosioms šalims analizuoti. Pavyzdžiui, jie gali būti nuskaityti tikrinant, ar juose nėra neskelbtinų duomenų, ir saugomi atsižvelgiant į įmonės politiką bei matomi administratoriui.</translation>
 <translation id="8210490490377416373">Pasirinkite politikos pavadinimą</translation>

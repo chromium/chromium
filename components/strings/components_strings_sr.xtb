@@ -1206,6 +1206,7 @@
 <translation id="3030331669969285614">Те ознаке спречавају или враћају ризичну промену и биће доступне само у ограниченом периоду.</translation>
 <translation id="3033200136993730761">Кућна адреса може да вам помогне да обављате ствари у Google услугама, попут релевантнијих резултата Претраге и путање у Google мапама. Можете да измените или избришете адресу на <ph name="BEGIN_LINK" />Google налогу <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">За сада су сензори покрета и светлости дозвољени</translation>
+<translation id="3034219227076811559">Google претрага у Chrome-у</translation>
 <translation id="3034526003882782781">Скроловање и зумирање је дозвољено</translation>
 <translation id="3037177537145227281">Прати се цена</translation>
 <translation id="3037605927509011580">О, не!</translation>
@@ -3222,6 +3223,7 @@
 <translation id="6342069812937806050">Малопре</translation>
 <translation id="6342171901363060580">Ово упозорење вам се приказује јер овај сајт не подржава HTTPS, а ви сте у режиму без архивирања. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Путања</translation>
+<translation id="6345664705388712774">Додајте слике у претрагу</translation>
 <translation id="6348220984832452017">Активне варијације</translation>
 <translation id="6349101878882523185">Инсталирајте <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Плаћајте без копирања и лепљења Pix кода. <ph name="BEGIN_LINK1" />Ево како то функционише<ph name="END_LINK1" /></translation>
@@ -4323,6 +4325,7 @@
 <translation id="8199437620497683918">Оптички диск (сјајан)</translation>
 <translation id="8202097416529803614">Резиме поруџбине</translation>
 <translation id="8202370299023114387">Неусаглашеност</translation>
+<translation id="8203105157044679380">Окно Google претраге</translation>
 <translation id="8208363704094329105">300×400 mm</translation>
 <translation id="8208629719488976364">Садржај страница које штампате и информације о штампачу се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скениран у потрази за осетљивим подацима и може да се чува на основу смерница предузећа и може да буде видљив администратору.</translation>
 <translation id="8210490490377416373">Изаберите назив смерница</translation>

@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Clirio Hanes a Data Gwefan</translation>
 <translation id="3190558889382726167">Mae'r cyfrinair wedi'i gadw</translation>
 <translation id="3190736958609431397">Dadolrhain</translation>
+<translation id="3192820089569442694">Aeth rhywbeth o'i le gyda'ch cais optio allan o ddata</translation>
 <translation id="3208260410153224535">Mae eich sefydliad wedi diffodd mewngofnodi. Dim ond i'r ddyfais hon y bydd nodau tudalen, cyfrineiriau a rhagor sy'n newydd yn cael eu cadw.</translation>
 <translation id="3211969308836412674">Dad-binio'r wefan</translation>
 <translation id="3213807041830307252">Siopa, cyfieithu, a nodi'r hyn a welwch gan ddefnyddio'ch camera a'ch oriel luniau.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Dysgu rhagor am Google Lens</translation>
 <translation id="3449029510150690417">Creu eich grŵp tabiau newydd trwy roi enw a lliw iddo</translation>
 <translation id="345348365500626747">Canfuwyd y cyfeiriad</translation>
+<translation id="3453878468834191501">Mae'r tab presennol yn cael ei rannu â Gemini pan fyddwch yn dechrau sgwrs newydd. <ph name="BEGIN_LINK" />Dysgu rhagor am AI a phreifatrwydd<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Ewch yn Live gyda Gemini i ofyn am dudalen, taflu syniadau yn uchel, a siarad yn ôl ac ymlaen.</translation>
 <translation id="3462768334899086950">Mae hyn yn golygu y byddwch yn colli eich ffeil heb ei chadw a'ch tabiau cyfredol</translation>
 <translation id="3464194322481586217">Methu ag olrhain y pris.</translation>
@@ -1626,6 +1628,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6078236141387574983">Addaswch uchder y ddalen</translation>
 <translation id="6084848228346514841">Dewis Tabiau</translation>
 <translation id="6089212833343035912">PIN Rheolwr Cyfrineiriau Google</translation>
+<translation id="6090690847556987004">Aeth rhywbeth o'i le gyda'r gosodiad hwn. Diweddarwch Chrome ac iOS, yna ailgychwynnwch eich dyfais i roi cynnig arall arni. Os yw hyn yn parhau i ddigwydd, mae'n bosib na fydd eich iPhone yn cefnogi'r gosodiad hwn.</translation>
 <translation id="6090760257419195752">Rhybuddion a ddiystyrwyd</translation>
 <translation id="6094325891006032858">Troi Gwell Pori'n Ddiogel ymlaen</translation>
 <translation id="6096965253650248286">Canfuwyd <ph name="COUNT" /></translation>
@@ -2122,6 +2125,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="7557508262441527045">Rydych wedi'ch allgofnodi</translation>
 <translation id="7561196759112975576">Bob tro</translation>
 <translation id="7561982940498449837">Cau'r ddewislen</translation>
+<translation id="7562347727679121642">Ychwanegu llun at eich chwiliad</translation>
 <translation id="7566349809380613217">Agor <ph name="GROUP_TITLE" />, grŵp a rennir o <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Mae Nodau Tudalen wedi'u cuddio</translation>
 <translation id="7575664680938145959">Agor gydag Un Tap</translation>
@@ -2669,6 +2673,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="9203951165704618409">Newidiwch eich bar cyfeiriad o'r brig i'r gwaelod i gael profiad pori personol.</translation>
 <translation id="9205189991633470489">Clo anhysbys</translation>
 <translation id="9206887540681440657">Cyflymder</translation>
+<translation id="9218088788182688902">Aeth rhywbeth o'i le gyda'r gosodiad hwn. Diweddarwch Chrome ac iPadOS, yna ailgychwynnwch eich dyfais i roi cynnig arall arni. Os yw hyn yn parhau i ddigwydd, mae'n bosib nad yw eich iPad yn cefnogi'r gosodiad hwn.</translation>
 <translation id="9218430445555521422">Gosod fel diofyn</translation>
 <translation id="9219103736887031265">Lluniau</translation>
 <translation id="9219154867334666734">Chwilio Tabiau…</translation>

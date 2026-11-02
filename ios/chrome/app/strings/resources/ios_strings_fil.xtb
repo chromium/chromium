@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">I-clear ang History at Data ng Website</translation>
 <translation id="3190558889382726167">Nai-save ang password</translation>
 <translation id="3190736958609431397">Huwag subaybayan</translation>
+<translation id="3192820089569442694">Nagkaproblema sa iyong request sa pag-opt out sa data</translation>
 <translation id="3208260410153224535">Ini-off ng iyong organisasyon ang pag-sign in. Sa device na ito lang mase-save ang mga bagong bookmark, password, at higit pa.</translation>
 <translation id="3211969308836412674">I-unpin ang site</translation>
 <translation id="3213807041830307252">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera at gallery ng larawan.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Matuto pa ang tungkol sa Google Lens</translation>
 <translation id="3449029510150690417">Gawin ang iyong bagong grupo ng tab sa pamamagitan ng pagbibigay rito ng pangalan at kulay</translation>
 <translation id="345348365500626747">May nakitang address</translation>
+<translation id="3453878468834191501">Ise-share ang kasalukuyang tab sa Gemini kapag nagsimula ka ng bagong chat. <ph name="BEGIN_LINK" />Matuto pa tungkol sa AI at privacy<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Mag-live gamit ang Gemini para magtanong tungkol sa isang page, mag-brainstorm nang malakas, at makipag-usap.</translation>
 <translation id="3462768334899086950">Ibig sabihin, mawawala ang iyong hindi na-save na file at mga kasalukuyang tab</translation>
 <translation id="3464194322481586217">Hindi masubaybayan ang presyo.</translation>
@@ -1626,6 +1628,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6078236141387574983">I-adjust ulit ang taas ng sheet</translation>
 <translation id="6084848228346514841">Pumili ng Mga Tab</translation>
 <translation id="6089212833343035912">PIN ng Google Password Manager</translation>
+<translation id="6090690847556987004">Nagkaproblema sa setting na ito. I-update ang Chrome at iOS, pagkatapos ay i-restart ang iyong device para subukan ulit. Kung patuloy itong nangyayari, posibleng hindi sinusuportahan ng iyong iPhone ang setting na ito.</translation>
 <translation id="6090760257419195752">Mga na-dismiss na babala</translation>
 <translation id="6094325891006032858">I-on ang Pinahusay na Ligtas na Pag-browse</translation>
 <translation id="6096965253650248286">Nahanap ang <ph name="COUNT" /></translation>
@@ -2122,6 +2125,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7557508262441527045">Nag-sign out</translation>
 <translation id="7561196759112975576">Palagi</translation>
 <translation id="7561982940498449837">Isara ang menu</translation>
+<translation id="7562347727679121642">Magdagdag ng larawan sa iyong paghahanap</translation>
 <translation id="7566349809380613217">Buksan ang <ph name="GROUP_TITLE" />, naka-share na grupo ng <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Naka-hide ang mga bookmark</translation>
 <translation id="7575664680938145959">Isang Pag-tap para Buksan</translation>
@@ -2670,6 +2674,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="9203951165704618409">Ilipat ang iyong address bar sa ibaba mula sa itaas para sa naka-customize na experience sa pag-browse.</translation>
 <translation id="9205189991633470489">Pag-lock sa Incognito</translation>
 <translation id="9206887540681440657">Bilis</translation>
+<translation id="9218088788182688902">Nagkaproblema sa setting na ito. I-update ang Chrome at iPadOS, pagkatapos ay i-restart ang iyong device para subukan ulit. Kung patuloy itong nangyayari, posibleng hindi sinusuportahan ng iyong iPad ang setting na ito.</translation>
 <translation id="9218430445555521422">Itakda bilang default</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>
 <translation id="9219154867334666734">Maghanap sa Mga Tab…</translation>

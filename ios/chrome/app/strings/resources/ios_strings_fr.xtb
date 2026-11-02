@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Effacer l'historique et les données de sites</translation>
 <translation id="3190558889382726167">Mot de passe enregistré</translation>
 <translation id="3190736958609431397">Ne plus suivre</translation>
+<translation id="3192820089569442694">Un problème est survenu concernant votre demande de refus d'utilisation de vos données</translation>
 <translation id="3208260410153224535">Votre organisation a désactivé la connexion. Les nouveaux favoris, mots de passe, etc. ne seront enregistrés que sur cet appareil.</translation>
 <translation id="3211969308836412674">Retirer le site</translation>
 <translation id="3213807041830307252">Achetez, traduisez et identifiez ce que vous voyez à l'aide de votre appareil photo et de votre galerie photo.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">En savoir plus sur Google Lens</translation>
 <translation id="3449029510150690417">Créez votre groupe d'onglets en lui attribuant un nom et une couleur</translation>
 <translation id="345348365500626747">Adresse trouvée</translation>
+<translation id="3453878468834191501">L'onglet actuel est partagé avec Gemini lorsque vous démarrez une nouvelle discussion. <ph name="BEGIN_LINK" />En savoir plus sur l'IA et la confidentialité<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Lancez Live avec Gemini pour poser des questions sur une page, faire un brainstorming à voix haute et échanger de vive voix.</translation>
 <translation id="3462768334899086950">Vous perdrez votre fichier non enregistré et les onglets actuels</translation>
 <translation id="3464194322481586217">Impossible de suivre le prix.</translation>
@@ -1626,6 +1628,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6078236141387574983">Réajuster la hauteur de la feuille</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
 <translation id="6089212833343035912">Code du Gestionnaire de mots de passe de Google</translation>
+<translation id="6090690847556987004">Un problème est survenu avec ce paramètre. Mettez à jour Chrome et iOS, puis redémarrez votre appareil pour réessayer. Si le problème persiste, il est possible que votre iPhone ne prenne pas en charge ce paramètre.</translation>
 <translation id="6090760257419195752">Avertissements ignorés</translation>
 <translation id="6094325891006032858">Activez la navigation sécurisée avec protection renforcée</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> onglet(s) trouvé(s)</translation>
@@ -2122,6 +2125,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7557508262441527045">Déconnecté</translation>
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
+<translation id="7562347727679121642">Ajouter une image à votre recherche</translation>
 <translation id="7566349809380613217">Ouvrir <ph name="GROUP_TITLE" />, groupe partagé de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Les favoris sont masqués</translation>
 <translation id="7575664680938145959">Ouverture en un geste</translation>
@@ -2669,6 +2673,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="9203951165704618409">Déplacez la barre d'adresse du haut vers le bas pour une expérience de navigation personnalisée.</translation>
 <translation id="9205189991633470489">Verrouillage de la navigation privée</translation>
 <translation id="9206887540681440657">Vitesse</translation>
+<translation id="9218088788182688902">Un problème est survenu avec ce paramètre. Mettez à jour Chrome et iPadOS, puis redémarrez votre appareil pour réessayer. Si le problème persiste, il est possible que votre iPad ne prenne pas en charge ce paramètre.</translation>
 <translation id="9218430445555521422">Définir par défaut</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219154867334666734">Rechercher dans les onglets…</translation>

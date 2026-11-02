@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Išvalyti istoriją ir svetainės duomenis</translation>
 <translation id="3190558889382726167">Slaptažodis išsaugotas</translation>
 <translation id="3190736958609431397">Nebestebėti</translation>
+<translation id="3192820089569442694">Kažkas nepavyko pateikiant duomenų atsisakymo užklausą</translation>
 <translation id="3208260410153224535">Organizacija išjungė prisijungimą. Nauji slaptažodžiai, žymės ir kt. bus išsaugoti tik šiame įrenginyje.</translation>
 <translation id="3211969308836412674">Atsegti svetainę</translation>
 <translation id="3213807041830307252">Pirkite, verskite ir nustatykite, ką matote, naudodami fotoaparatą ir nuotraukų galeriją.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Sužinokite daugiau apie „Google Lens“</translation>
 <translation id="3449029510150690417">Sukurkite naują skirtukų grupę, pasirinkdami jos pavadinimą ir spalvą</translation>
 <translation id="345348365500626747">Rastas adresas</translation>
+<translation id="3453878468834191501">Pradėjus naują pokalbį, dabartinis skirtukas bendrinamas su „Gemini“. <ph name="BEGIN_LINK" />Sužinokite daugiau apie DI ir privatumą<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Įjunkite „Live with Gemini“ ir užduokite klausimų apie puslapį, garsiai generuokite idėjas ir kalbėkitės.</translation>
 <translation id="3462768334899086950">Tai reiškia, kad prarasite neišsaugotą failą ir dabartinius skirtukus</translation>
 <translation id="3464194322481586217">Nepavyko stebėti kainos.</translation>
@@ -1626,6 +1628,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6078236141387574983">Pakoreguokite lapo aukštį</translation>
 <translation id="6084848228346514841">Skirtukų pasirinkimas</translation>
 <translation id="6089212833343035912">„Google“ slaptažodžių tvarkyklės PIN kodas</translation>
+<translation id="6090690847556987004">Įvyko klaida, susijusi su šiuo nustatymu. Atnaujinkite „Chrome“ ir „iOS“, tada iš naujo paleiskite įrenginį ir bandykite dar kartą. Jei ši klaida kartojasi, gali būti, kad jūsų „iPhone“ nepalaiko šio nustatymo.</translation>
 <translation id="6090760257419195752">Perspėjimai, kurių atsisakyta</translation>
 <translation id="6094325891006032858">Įjunkite Sustiprintą saugų naršymą</translation>
 <translation id="6096965253650248286">Rasta: <ph name="COUNT" /></translation>
@@ -2122,6 +2125,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7557508262441527045">Atsijungta</translation>
 <translation id="7561196759112975576">Visada</translation>
 <translation id="7561982940498449837">Uždaryti meniu</translation>
+<translation id="7562347727679121642">Pridėti vaizdą prie paieškos</translation>
 <translation id="7566349809380613217">Atidaryti „<ph name="GROUP_TITLE" />“, bendrinamą <ph name="NUMBER_OF_TABS" /> skirt. grupę, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Žymės paslėptos</translation>
 <translation id="7575664680938145959">Atidarymas vienu palietimu</translation>
@@ -2669,6 +2673,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="9203951165704618409">Perjunkite adreso juostos poziciją iš viršutinės į apatinę, kad galėtumėte tinkinti naršymo funkcijas.</translation>
 <translation id="9205189991633470489">Inkognito režimo užraktas</translation>
 <translation id="9206887540681440657">Sparta</translation>
+<translation id="9218088788182688902">Įvyko klaida, susijusi su šiuo nustatymu. Atnaujinkite „Chrome“ ir „iPadOS“, tada iš naujo paleiskite įrenginį ir bandykite dar kartą. Jei ši klaida kartojasi, gali būti, kad jūsų „iPad“ nepalaiko šio nustatymo.</translation>
 <translation id="9218430445555521422">Nustatyti kaip numatytąjį</translation>
 <translation id="9219103736887031265">Vaizdai</translation>
 <translation id="9219154867334666734">Ieškoti skirtukų…</translation>

@@ -366,7 +366,7 @@
 <translation id="20485545164632846">жаңа элемент</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> аккаунт бірдей құпия сөз пайдаланып жүр</translation>
 <translation id="205013082884273671">Экрандағы кез келген нәрсені іздеңіз</translation>
-<translation id="2053311407685904414">Мекенжай таңдаңыз</translation>
+<translation id="2053311407685904414">Мекенжайды таңдаңыз</translation>
 <translation id="2054044186557130763"><ph name="NAME" /> <ph name="EMAIL" /> ретінде кіру, ұйымыңыз басқарады.</translation>
 <translation id="2059166748188874810">Қала әкімшілігі</translation>
 <translation id="2060638295449304809">Бұл мекенжай тек осы құрылғыға сақталады. Оны басқа құрылғыларыңызда пайдалану үшін Google аккаунтына (<ph name="USER_EMAIL" />) сақтаңыз.</translation>
@@ -467,7 +467,7 @@
 <translation id="2359043044084662842">Аудару</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2360196772093551345">Сайттың мобильдік нұсқасын сұрау</translation>
-<translation id="2360272811987888433">Аккаунтқа қолмен кіру</translation>
+<translation id="2360272811987888433">Қолмен кіру</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> аккаунтымен кірдіңіз. <ph name="USER_EMAIL" />. Параметрлерді ашады.</translation>
 <translation id="2367025302166767427">Ақпаратыңызды толтыру кезінде қате шықты</translation>
 <translation id="2371084566192454134">Қойындылар мен қойындылар топтары</translation>
@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Тарих пен веб-сайт деректерін өшіру</translation>
 <translation id="3190558889382726167">Құпия сөз сақталды</translation>
 <translation id="3190736958609431397">Бақылауды тоқтату</translation>
+<translation id="3192820089569442694">Деректерді пайдаланудан бас тарту туралы сұрауыңызды өңдеу кезінде бірдеңе дұрыс болмады.</translation>
 <translation id="3208260410153224535">Ұйымыңыз аккаунтқа кіруді өшірді. Жаңа бетбелгілер, құпия сөздер және т.б. тек осы құрылғыда сақталады.</translation>
 <translation id="3211969308836412674">Сайтты босату</translation>
 <translation id="3213807041830307252">Камера мен фотосуреттер галереясындағы нәрселерді сатып алуға, аударуға және анықтауға болады.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Google Lens туралы толық ақпарат</translation>
 <translation id="3449029510150690417">Жаңа қойындылар тобын жасап, атауын және түсін көрсетіңіз.</translation>
 <translation id="345348365500626747">Мекенжай табылды</translation>
+<translation id="3453878468834191501">Жаңа чат бастаған кезде, қазіргі қойынды Gemini-ға жіберіледі. <ph name="BEGIN_LINK" />Жасанды интеллект және құпиялық туралы толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Бет туралы сұрақ қою, идеяларды талқыға салу және еркін әңгімелесу үшін Gemini-мен Live чатына өтіңіз.</translation>
 <translation id="3462768334899086950">Бұл жағдайда сақталмаған файл мен ашық қойындылар жоғалады.</translation>
 <translation id="3464194322481586217">Бағаны бақылау мүмкін болмады.</translation>
@@ -1391,7 +1393,7 @@
 <translation id="5315029634103634221">Gemini — жасанды интеллект және ол қателесуі мүмкін. <ph name="BEGIN_LINK" />Google-ға жіберілетін тиісті деректер туралы қосымша ақпарат алыңыз.<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Импортталатын ешнәрсе жоқ</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> аккаунтына кіру</translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" /> сайтына кіріңіз</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5318298563956633672">Бұл өнімді бұрыннан бақылап жатырсыз.</translation>
 <translation id="5327248766486351172">Аты</translation>
@@ -1626,6 +1628,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="6078236141387574983">Парақ биіктігін қайта реттеңіз.</translation>
 <translation id="6084848228346514841">Қойындыларды таңдау</translation>
 <translation id="6089212833343035912">Google Password Manager PIN коды</translation>
+<translation id="6090690847556987004">Бұл параметрде бірдеңе дұрыс болмады. Chrome мен iOS-ті жаңартып, құрылғыны өшіріп қосыңыз да, әрекетті қайталаңыз. Бұл қате қайталана берсе, iPhone құрылғыңыз бұл параметрге қолдау көрсетпеуі мүмкін.</translation>
 <translation id="6090760257419195752">Жабылған ескертулер</translation>
 <translation id="6094325891006032858">Күшейтілген Safe Browsing қосыңыз</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> табылды</translation>
@@ -2122,6 +2125,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="7557508262441527045">Аккаунттан шыққансыз.</translation>
 <translation id="7561196759112975576">Әрқашан</translation>
 <translation id="7561982940498449837">Мәзірді жабу</translation>
+<translation id="7562347727679121642">Іздеу сұрауына сурет қосу</translation>
 <translation id="7566349809380613217">Ашық <ph name="GROUP_TITLE" />, <ph name="NUMBER_OF_TABS" /> ортақ тобы, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Бетбелгілер жасырылған.</translation>
 <translation id="7575664680938145959">Бір рет түртіп, ашыңыз</translation>
@@ -2669,6 +2673,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="9203951165704618409">Шолу тәжірибесін бейімдеу үшін мекенжай жолағын жоғарыдан төменге ауыстыруға болады.</translation>
 <translation id="9205189991633470489">Инкогнито құлпы</translation>
 <translation id="9206887540681440657">Жылдамдық</translation>
+<translation id="9218088788182688902">Бұл параметрде бірдеңе дұрыс болмады. Chrome мен iPadOS-ті жаңартыңыз, содан кейін құрылғыны өшіріп қосып, әрекетті қайталаңыз. Бұл қате қайталана берсе, iPad құрылғыңыз бұл параметрге қолдау көрсетпеуі мүмкін.</translation>
 <translation id="9218430445555521422">Әдепкі ретінде орнату</translation>
 <translation id="9219103736887031265">Кескіндер</translation>
 <translation id="9219154867334666734">Қойындыларды іздеу…</translation>

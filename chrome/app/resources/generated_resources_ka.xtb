@@ -684,6 +684,7 @@
 <translation id="1523279371236772909">ნანახია წინა თვეში</translation>
 <translation id="1523978563989812243">ტექსტის გახმოვანების ძრავები</translation>
 <translation id="1524563461097350801">არა, გმადლობთ</translation>
+<translation id="1524903662136734524">Drive-იდან დამატება</translation>
 <translation id="1525740877599838384">მდებარეობის დასადგენად მხოლოდ Wi-Fi ქსელის გამოყენება</translation>
 <translation id="1526274304859009691">გაიარეთ ავტორიზაცია, რომ მიიღოთ თქვენი გაფართოებები და სხვა მონაცემები <ph name="DEVICE" />-დან</translation>
 <translation id="1526560967942511387">უსათაურო დოკუმენტი</translation>
@@ -2690,6 +2691,7 @@
 <translation id="3032204772252313646">ავტოსუბტიტრები</translation>
 <translation id="3032272345862007156">ხელოვნური ინტელექტით შექმნილი ბოლოდროინდელი თემა <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">„არ შემაწუხოთ“ ჩართულია</translation>
+<translation id="3034219227076811559">Google Search Chrome-ში</translation>
 <translation id="3036546437875325427">Flash-ის ჩართვა</translation>
 <translation id="3036602651971781493">საიტებმა შეიძლება გამოიყენოს კონტენტის დაცვის სერვისი საავტორო უფლებებით დაცული მასალის დასაკრავად ან იმის შესამოწმებლად, თუ რომელ ბრაუზერს იყენებთ</translation>
 <translation id="3036907164806060573">სიზმარი</translation>
@@ -3208,6 +3210,7 @@
 <translation id="3437072258256045988">მართეთ თქვენი Gemini აპებში აქტივობა</translation>
 <translation id="3437397693214267762">იხილეთ თქვენი Outlook Calendar, SharePoint და OneDrive ფაილები</translation>
 <translation id="3437494162908353428">DevTools არ არის დაშვებული ამ URL-ისთვის.</translation>
+<translation id="3437498061222607130">შესული ხართ Search-ში თქვენი <ph name="USER_EMAIL" /> ანგარიშით</translation>
 <translation id="3438633801274389918">ნინძა</translation>
 <translation id="3439153939049640737">ყოველთვის მიეცი ნება <ph name="HOST" />-ს, მიიღოს წვდომა მიკროფონზე</translation>
 <translation id="3439970425423980614">PDF-ის გახსნა წინასწარ ხედში</translation>
@@ -5036,6 +5039,7 @@
 <translation id="4823484602432206655">მომხმარებელთა და მოწყობილობათა პარამეტრების წაკითხვა და შეცვლა</translation>
 <translation id="4824037980212326045">Linux-ის სარეზერვო ასლის შექმნა და აღდგენა</translation>
 <translation id="4824263260587281352">შეცვლის კლავიშების კომბინაცია <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Google ანგარიში: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">გსურთ სინქრონიზაციის გაუქმება?</translation>
 <translation id="4825462365587146530">შეიტყვეთ მეტი Chrome Root Store-ის შესახებ ახალ ჩანართში.</translation>
 <translation id="4825532258163983651">წვდომის გასაღების წაშლა ვერ მოხერხდა</translation>
@@ -5774,7 +5778,6 @@
 <translation id="5392864580775235956">სურათის დამატება და რედაქტირება</translation>
 <translation id="5393330235977997602">PIN-კოდის ვარიანტები</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ბმული}other{# ბმული}}</translation>
-<translation id="5394400188854257119">5 წუთის</translation>
 <translation id="5394529681046491727">Wi‑Fi Direct</translation>
 <translation id="5395353843367783642">ინახება თქვენს ანგარიშში...</translation>
 <translation id="5397656531674854099">გამოიყენეთ ჩანართების ჯგუფები თქვენს ტელეფონში</translation>
@@ -6002,6 +6005,7 @@
 <translation id="5558129378926964177">მასშტაბის &amp;გადიდება</translation>
 <translation id="5558594314398017686">ოპერაციული სისტემის ნაგულისხმევი (როცა ხელმისაწვდომია)</translation>
 <translation id="5559311991468302423">მისამართის წაშლა</translation>
+<translation id="5559646482656763170">განახლება, როცა არ გამოიყენება</translation>
 <translation id="555968128798542113">ამ საიტს შეუძლია თქვენი MIDI-მოწყობილობების მართვა და ხელახლა დაპროგრამება</translation>
 <translation id="5559768063688681413">შენახული პრინტერები არ არის</translation>
 <translation id="55601339223879446">ეკრანის ფარგლებში თქვენი დესკტოპის საზღვრების დარეგულირება</translation>
@@ -6503,6 +6507,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{ყველას ა&amp;ხალ ფანჯარაში გახსნა}=1{ა&amp;ხალ ფანჯარაში გახსნა}other{{COUNT}-ვეს ა&amp;ხალ ფანჯარაში გახსნა}}</translation>
 <translation id="5964247741333118902">ჩაშენებული კონტენტი</translation>
 <translation id="5965607173855879702">მონაცემების წაშლა...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> გადატანილია პოზიციაზე <ph name="SHORTCUT_POSITION" /> / <ph name="TOTAL_SHORTCUTS" />-დან.</translation>
 <translation id="5966511985653515929">საიტების მონაცემები წაიშლება თქვენი მოწყობილობიდან  ყველა ფანჯრის დახურვისას</translation>
 <translation id="5968022600320704045">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="5968400720580217226">ხელოვნური ინტელექტის რეჟიმი</translation>
@@ -7168,6 +7173,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" /> ვერ ამოწმებს, შეეხო თუ არა თქვენს პაროლებს პერსონალურ მონაცემთა გაჟონვის შემთხვევები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="648927581764831596">არ არის ხელმისაწვდომი</translation>
 <translation id="6490471652906364588">USB-C მოწყობილობა (მარჯვენა პორტი)</translation>
+<translation id="6491890991754498129">გახსნა &amp;აპით...</translation>
 <translation id="649396225532207613">ამ ფაილს შეუძლია თქვენი პერსონალური და სოციალური ქსელების ანგარიშების დაზიანება</translation>
 <translation id="6493991254603208962">სიკაშკაშის დაკლება</translation>
 <translation id="6494327278868541139">გაძლიერებული დაცვის დეტალების ჩვენება</translation>
@@ -7899,6 +7905,7 @@
 <translation id="7030304022046916278">URL-ები შესამოწმებლად გაეგზავნება Safe Browsing-ს</translation>
 <translation id="7030695672997239647">მარჯვენა ღილაკით დააწკაპუნეთ ჩანართზე, აირჩიეთ „ჩანართის დამატება ჯგუფში“, შემდეგ კი — „ახალი ჯგუფი“</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> — დაკავშირებულია თანმიმდევრული პორტი</translation>
+<translation id="7032334023419126809">Google ანგარიში: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">შენატანის სიგრძე უნდა იყოს მაქსიმუმ 62 სიმბოლო</translation>
 <translation id="7033731598469029604">ბრაუზერის ავტორეჟიმი</translation>
 <translation id="70356134210715500">მიიღეთ თქვენი წვდომის გასაღებები</translation>
@@ -8199,7 +8206,6 @@
 <translation id="7273110280511444812">ბოლო მიმაგრების დრო: <ph name="DATE" /></translation>
 <translation id="7273894023751806510">ყოველთვის დაიბლოკოს <ph name="HOST" />-ისთვის თქვენი MIDI-მოწყობილობების მართვისა და ხელახლა დაპროგრამების შესაძლებლობა</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% — სრულ დატენვამდე დარჩენილია <ph name="TIME" /></translation>
-<translation id="7274453646377524248">თქვენი ყველა გახსნილი ჩანართი და ფანჯარა ავტომატურად ხელახლა გაიხსნება.</translation>
 <translation id="7275950084263610253">ნებადართულია თქვენს ლოკალურ ქსელში ჩართულ სხვა მოწყობილობებზე წვდომა</translation>
 <translation id="727595954130325265">ახლა ყიდვა</translation>
 <translation id="727952162645687754">ჩამოტვირთვის შეცდომა</translation>
@@ -8983,7 +8989,6 @@
 <translation id="7871691770940645922">ბრაილის ვირტუალური ეკრანი</translation>
 <translation id="787268756490971083">გამორთული</translation>
 <translation id="7872758299142009420">ზედმეტად ბევრი ჩადგმული ჯგუფია: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">განახლდეს, როცა გავალ</translation>
 <translation id="7876027585589532670">მალსახმობის რედაქტირება ვერ ხერხდება</translation>
 <translation id="7876243839304621966">ყველაფრის წაშლა</translation>
 <translation id="7877126887274043657">&amp;სინქრონიზაციის პრობლემის მოგვარება</translation>
@@ -9431,6 +9436,7 @@
 <translation id="8199300056570174101">ქსელის (სერვისი) და მოწყობილობის მახასიათებლები</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8202827109322349110">საბაზისო რედაქტორში გახსნა</translation>
+<translation id="8203105157044679380">Google Search-ის პანელი</translation>
 <translation id="8203152941016626022">მახლობლად გაზიარების მოწყობილობის სახელი</translation>
 <translation id="8203732864715032075">თქვენთვის შეტყობინებების გამოგზავნა და ნაგულისხმევად ამ კომპიუტერის დამახსოვრება Messages-თვის. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">მარჯვენა დაწკაპუნება</translation>
@@ -10039,6 +10045,7 @@
 <translation id="8666268818656583275">F‑კლავიშებს ახლა სისტემის ზედა მწკრივის კლავიშების იდენტური ფუნქცია აქვს</translation>
 <translation id="8666321716757704924">ნებართვების ხელახლა დაიშვა <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="8667261224612332309">თქვენი ზოგიერთი პაროლის გაუმჯობესება შეიძლება</translation>
+<translation id="8667543835349994431">გახსნა &amp;აპით...</translation>
 <translation id="8668378421690365723">თქვენმა მოწყობილობამ, შესაძლოა, სათანადოდ აღარ იმუშაოს, უსაფრთხოებასა და წარმადობასთან დაკავშირებით კი გარკვეული პრობლემები შეგექმნათ.</translation>
 <translation id="8669284339312441707">უფრო თბილი</translation>
 <translation id="8670537393737592796">აქ უფრო სწრაფად რომ დაბრუნდეთ ხოლმე, დააინსტალირეთ <ph name="APP_NAME" /> — ამისთვის დააწკაპუნეთ ინსტალაციის ღილაკზე</translation>
@@ -10147,6 +10154,7 @@
 <translation id="8738418093147087440">მოიძიეთ ქვეყნების, ენის ან შეყვანის სახელების მიხედვით</translation>
 <translation id="8741944563400125534">გადამრთველით წვდომის დაყენების სახელმძღვანელო</translation>
 <translation id="8743357966416354615">შემუშავების მართული გარემო (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">გსურთ ამის ნაცვლად <ph name="URL" />-ზე გადასვლა?</translation>
 <translation id="8744641000906923997">რომაძი</translation>
 <translation id="8744913471985800082">სანამ განახლდება, გადახედეთ URL-ის ცვლილებას, რათა დარწმუნდეთ, რომ ცვლილება გაკმაყოფილებთ.</translation>
 <translation id="8745034592125932220">თქვენს მოწყობილობაზე მონაცემების შენახვა დაშვებული არ არის</translation>
@@ -10243,6 +10251,7 @@
 <translation id="8818152010000655963">ფონი</translation>
 <translation id="8818988764764862764">ფანჯარამ გადაინაცვლა მარცხნივ</translation>
 <translation id="8819510664278523111">თქვენი მოწყობილობის EID არის <ph name="EID_NUMBER" />, მისი IMEI არის <ph name="IMEI_NUMBER" />, ხოლო მისი სერიული ნომერია <ph name="SERIAL_NUMBER" />. აღნიშნული ნომრები დაგეხმარებათ სერვისის გააქტიურებაში.</translation>
+<translation id="8819762137851963556">მაუსის კურსორის პოვნა</translation>
 <translation id="8820817407110198400">სანიშნეები</translation>
 <translation id="8821045908425223359">IP მისამართის ავტომატური კონფიგურაცია</translation>
 <translation id="8821206216942230957">თქვენს ანგარიშს არ აქვს წვდომა Gemini-ზე Chrome-ში</translation>

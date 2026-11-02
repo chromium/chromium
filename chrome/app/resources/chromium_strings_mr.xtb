@@ -25,7 +25,6 @@
 <translation id="1185134272377778587">Chromium बद्दल</translation>
 <translation id="1186645291482254714">तुमच्या फोनवर Chromium सह किमतीचा माग ठेवण्याशी संबंधित अलर्ट मिळवा</translation>
 <translation id="1203500561924088507">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचा ब्राउझर रीस्टार्ट करणे आवश्यक आहे.</translation>
-<translation id="1222365723190436821"><ph name="IMPORTANT_UPDATE" /> प्रलंबित आहे. तुमचे ब्राउझिंग सुरक्षित ठेवण्यासाठी, तुम्ही पुढील वेळी <ph name="IDLE_DURATION" /> साठी इनॅक्टिव्ह असाल, तेव्हा Chromium अपडेट होईल.</translation>
 <translation id="1232234696885483911">तुम्ही इमेज शोध उघडता, तेव्हा PDFs सह पेजचे शीर्षक, URL आणि आशय आपोआप सर्व्हरला पाठवला जाईल. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">तुम्ही साइन इन केलेले असताना, Chromium मध्ये तुमच्या Google खाते मधून तुमचे पासवर्ड आणि आणखी बऱ्याच गोष्टी वापरू शकता. हे बदलण्यासाठी, “Chromium मधील तुमचे खाते” वर जा.</translation>
 <translation id="1244381985120794049">Mac मेनू बारमधील Chromium मधील Gemini दाखवा</translation>
@@ -248,7 +247,6 @@
 <translation id="3286538390144397061">त्वरित रीस्टार्ट करा</translation>
 <translation id="328888136576916638">Google API की गहाळ आहेत. Chromium ची काही कार्यक्षमता अक्षम केली जाईल.</translation>
 <translation id="3296368748942286671">Chromium बंद असताना पार्श्वभूमी ॲप्लिकेशन चालवणे सुरू ठेवा</translation>
-<translation id="3300632735252839402">तुम्ही इनॅक्टिव्ह असताना Chromium अपडेट होईल</translation>
 <translation id="3313189106987092621">असुरक्षित कनेक्शन वापरून कोणतीही साइट लोड करण्यापूर्वी Chromium तुम्हाला चेतावणी देईल</translation>
 <translation id="3316771292331273802">तुम्ही Chromium वर साइन इन केले असल्यास, सर्व Chromium विंडो बंद केल्यावर तुमचे Google खाते वगळता तुम्हाला बहुतांश साइटवरून साइन आउट केले जाईल. साइटना तुम्हाला लक्षात ठेवू देण्यासाठी, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">शोध क्षेत्राचा सर्वात वरचा उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, सर्वात वरती <ph name="TOP" />%</translation>
@@ -257,7 +255,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">सध्याच्या Chromium प्रोफाइलवर स्विच करायचे आहे का?</translation>
 <translation id="3412460710772753638">या डिव्हाइसवरील पासवर्ड मॅनेजर मध्ये</translation>
-<translation id="3425452599984451640">Chromium ला अपडेट करायचे आहे</translation>
 <translation id="3427159664004296878"><ph name="DEVICE" /> वरून तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी, Chromium मध्ये साइन इन करा</translation>
 <translation id="3438772217992559640">इमेज शोध वापरून हा टॅब शोधा</translation>
 <translation id="3455907671758333080">तुमच्या फोनवर Chromium वापरून वर्धित सुरक्षित ब्राउझिंगचा विस्तार करा</translation>
@@ -323,6 +320,7 @@
 <translation id="4135244987012252068">तुमच्या ब्राउझरला नवीन लुक देण्यासाठी Chromium कस्टमाइझ करा</translation>
 <translation id="4147856324248078748">तुमचे Chromium कस्टमाइझ करा</translation>
 <translation id="4148957013307229264">स्थापना करत आहे...</translation>
+<translation id="4197500750628721662">सुरक्षित राहण्यासाठी Chromium अपडेट करा</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chromium</translation>
 <translation id="4208652172235621272"><ph name="EXISTING_USER" /> यांनी आधीच साइन इन केले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, तुमच्या स्वतःच्या प्रोफाइलमधील Chromium मध्ये <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन करा. तुम्हाला तुमच्या सर्व डिव्हाइसवर तुमची वाचन सूची आणि आणखी बऱ्याच गोष्टीदेखील मिळतील.</translation>
 <translation id="421369550622382712">Chromium साठी उत्कृष्ट ॲप्स, गेम, विस्तार आणि थीम शोधा</translation>
@@ -460,6 +458,7 @@
 <translation id="5596063723521813107">{COUNT,plural, =1{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमची अलिप्त विंडो पुन्हा उघडणार नाही.}other{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमच्या # अलिप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5605834417512968703">इमेज शोध वापरून शोधण्यासाठी काहीही निवडा किंवा इमेज शोध मधून बाहेर पडण्यासाठी एस्केप प्रेस करा</translation>
+<translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> तयार आहे. तुम्ही आता पुन्हा लाँच करू शकता किंवा तुमची स्क्रीन सुरू राहिल्यावर आणि <ph name="IDLE_DURATION" /> साठी न वापरल्यास, पुढील वेळी अपडेट करण्यासाठी Chromium सेट करू शकता.</translation>
 <translation id="5618818588972826921">इमेज शोध वापरून शोधण्यासाठी कोणताही मजकूर किंवा इमेज निवडा अथवा इमेज शोध मधून बाहेर पडण्यासाठी एस्केप प्रेस करा</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium अपडेट उपलब्ध आहे}=1{Chromium अपडेट उपलब्ध आहे}other{Chromium अपडेट # दिवसांसाठी उपलब्ध आहे}}</translation>
 <translation id="5643865575100044307">तुम्ही Chromium बंद करता, तेव्हा नेहमी तुमच्या डिव्हाइसवरून साइट डेटा हटवा</translation>
@@ -516,6 +515,7 @@
 <translation id="6192070012454216182">Chromium लहान केलेले असतानादेखील, कुठूनही शोधा आणि प्रश्न विचारा. Chromium ला बॅकग्राउंडमध्ये रन होऊ देते.</translation>
 <translation id="6212496753309875659">या कॉंप्युटरवर आधीपासून Chromium ची अगदी अलीकडील आवृत्ती आहे. सॉफ्‍टवेअर काम करत नसल्‍यास, कृपया Chromium अनइंस्टॉल करा आणि पुन्‍हा प्रयत्‍न करा.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium आता पुन्हा लाँच होईल}=1{Chromium एका सेकंदामध्ये पुन्हा लाँच होईल}other{Chromium # सेकंदांमध्ये पुन्हा लाँच होईल}}</translation>
+<translation id="6232046770428574552">तुमची स्क्रीन वापरली जात नसताना Chromium अपडेट होईल</translation>
 <translation id="6241367896540709610">Chromium ला फाइल डाउनलोड करण्यासाठी स्टोरेज अ‍ॅक्सेस करण्याची परवानगी आवश्यक आहे</translation>
 <translation id="6245734527075554892">Chromium मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीसह URLs तपासते</translation>
 <translation id="6248213926982192922">Chromium ला डीफॉल्‍ट ब्राउझर बनवा</translation>

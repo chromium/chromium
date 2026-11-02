@@ -1206,6 +1206,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3030331669969285614">Te oznake sprječavaju ili poništavaju potencijalno štetne izmjene i bit će dostupne samo ograničeno vrijeme.</translation>
 <translation id="3033200136993730761">Pomoću kućne adrese možete obaviti zadatke na Googleovim uslugama, primjerice dobiti relevantnije rezultate pretraživanja i upute na Google kartama. Adresu možete urediti ili izbrisati <ph name="BEGIN_LINK" />na svom Google računu <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Senzori kretanja i svjetlosni senzori zasad su dopušteni</translation>
+<translation id="3034219227076811559">Google pretraživanje u Chromeu</translation>
 <translation id="3034526003882782781">Pomicanje i zumiranje je dopušteno</translation>
 <translation id="3037177537145227281">Praćenje cijene</translation>
 <translation id="3037605927509011580">O, ne!</translation>
@@ -3222,6 +3223,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6342069812937806050">Upravo sada</translation>
 <translation id="6342171901363060580">Upozorenje vam se prikazuje jer ova web-lokacija ne podržava HTTPS, a vi ste u anonimnom načinu. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Upute</translation>
+<translation id="6345664705388712774">Dodajte slike u pretraživanje</translation>
 <translation id="6348220984832452017">Aktivne varijacije</translation>
 <translation id="6349101878882523185">Instalirajte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Platite bez kopiranja i lijepljenja Pix koda. <ph name="BEGIN_LINK1" />Pogledajte kako to funkcionira<ph name="END_LINK1" /></translation>
@@ -4323,6 +4325,7 @@ Dodatne pojedinosti:
 <translation id="8199437620497683918">Optički disk (sjajno)</translation>
 <translation id="8202097416529803614">Sažetak narudžbe</translation>
 <translation id="8202370299023114387">Sukob</translation>
+<translation id="8203105157044679380">Ploča Google pretraživanja</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">Sadržaj stranica koje ispisujete i podaci o vašem pisaču šalju se Google Cloudu ili trećim stranama na analizu. Na primjer, može se pregledavati radi otkrivanja osjetljivih podataka, pohranjivati na temelju pravila tvrtke i biti vidljiv vašem administratoru.</translation>
 <translation id="8210490490377416373">Odaberite naziv pravila</translation>

@@ -30,7 +30,6 @@
 <translation id="1194807384646768652">Chrome har blokeret denne download, fordi filtypen normalt ikke downloades og kan være skadelig</translation>
 <translation id="1197860368385086056">Næste gang du åbner Chrome på din <ph name="DEVICE_TYPE" />, får du en meddelelse om at aktivere underretninger om prissporing.</translation>
 <translation id="1203500561924088507">Tak for installationen. Du skal genstarte browseren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
-<translation id="122321322139970942">Der afventer en <ph name="IMPORTANT_UPDATE" />. For at sikre, at du kan browse sikkert, opdateres Chrome, næste gang du er inaktiv i <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Log ind i Chrome for at få adgang til dine bogmærker m.m. på alle dine enheder</translation>
 <translation id="1278833599417554002">Genstart og opdater &amp;Chrome</translation>
 <translation id="1289911795790071537">Åbn søgning med Chrome</translation>
@@ -525,9 +524,9 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5940385492829620908">Dit webindhold, dine bogmærker og andre Chrome-ting kan findes her.</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941830788786076944">Gør Google Chrome til din standardbrowser</translation>
+<translation id="5944731887996253728">Chrome opdateres, når din skærm ikke er i brug</translation>
 <translation id="5947104538377036631">Chrome-genvej</translation>
 <translation id="5960071705175224773">Dine indstillinger blev ændret af en ukendt app</translation>
-<translation id="5960404530854194706">Chrome opdateres, når du ikke er aktiv</translation>
 <translation id="5980111191913430208">Udvidelser, apps og temaer fra ukendte kilder kan skade din enhed. Chrome anbefaler, at de kun installeres via <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Downloader… Der er <ph name="HOURS" /> timer tilbage</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Der er et åbent inkognitovindue eller isoleret vindue. Det åbnes ikke igen, når du har genstartet.}one{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Der er # inkognitovindue og isoleret vindue åbent på tværs af profilerne. De åbnes ikke igen, når du har genstartet.}other{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Der er # inkognitovinduer og isolerede vinduer åbne på tværs af profilerne. De åbnes ikke igen, når du har genstartet.}}</translation>
@@ -614,7 +613,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6556755379298048869">Søg med en tastaturgenvej.</translation>
 <translation id="6585124893636629274">Luk Gemini i Chrome</translation>
 <translation id="659498884637196217">I Google Adgangs­kode­admin­istrator på denne enhed</translation>
-<translation id="660312897435669152">Chrome vil opdatere</translation>
 <translation id="6612152958212564387">Du sender ikke brugsstatistik og nedbrudsrapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Hold dine adgangskoder, dine bogmærker og din historik perfekt synkroniseret på alle enheder ved at angive Chrome som din standardbrowser.</translation>
 <translation id="6631524303639368205">Fortsæt, hvor du slap: Chrome har gendannet dine faner fra din seneste session. Du kan deaktivere dette i</translation>
@@ -829,6 +827,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="8367950957770994118">Åbn hurtigt Gemini i Chrome, når du har brug for det</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="8370748943308169953">QR-kode til at logge ind i Chrome som <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558">En <ph name="IMPORTANT_UPDATE" /> er klar. Du kan genstarte nu eller indstille Chrome til at opdatere, næste gang din skærm forbliver tændt og ikke bruges i <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">Sidepanel i Google Søgning</translation>
 <translation id="8377158135256176353">Slå Gemini i Chrome Canary til/fra</translation>
 <translation id="8380754585531979907">Brug dit tastatur til at navigere mellem Gemini i Chrome og din åbne fane.</translation>
@@ -872,6 +871,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="8669527147644353129">Hjælp til Google Chrome</translation>
 <translation id="8679801911857917785">Den styrer også, hvilken side der vises, når du åbner Chrome.</translation>
 <translation id="8689408573494410517">Knappen "Google Søgning i sidepanelet" på værktøjslinjen har fået et nyt ikon. Klik på den for at stille spørgsmål, mens du browser, med Google Søgning i sidepanelet.</translation>
+<translation id="8699232386626916686">Opdater Chrome for at forblive beskyttet</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8712767363896337380">Næsten opdateret! Genstart Chrome for at fuldføre opdateringen.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se din læseliste og meget mere fra <ph name="DEVICE" />.</translation>

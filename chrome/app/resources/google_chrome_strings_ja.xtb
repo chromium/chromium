@@ -30,7 +30,6 @@
 <translation id="1194807384646768652">このダウンロードは Chrome でブロックされました。ファイル形式が一般的にダウンロードされるものではなく、危害を及ぼす可能性があります</translation>
 <translation id="1197860368385086056">次回 <ph name="DEVICE_TYPE" /> で Chrome を開いたときに、価格トラッキングのアラートを有効にするよう促すメッセージが表示されます。</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
-<translation id="122321322139970942"><ph name="IMPORTANT_UPDATE" />が保留中です。ブラウジングを保護するため、Chrome はあなたが <ph name="IDLE_DURATION" />間操作しなかったときにアップデートされます。</translation>
 <translation id="1226003169284463347">すべてのデバイスで同じブックマークやその他の設定を使用するには、Chrome にログインしてください</translation>
 <translation id="1278833599417554002">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="1289911795790071537">「Chrome で検索」を開く</translation>
@@ -522,9 +521,9 @@
 <translation id="5940385492829620908">ウェブ、ブックマーク、その他の Chrome データを好みに設定できます。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">Google Chrome を既定のブラウザにする</translation>
+<translation id="5944731887996253728">Chrome は、画面が使用されていないときに更新されます</translation>
 <translation id="5947104538377036631">Chrome のショートカット</translation>
 <translation id="5960071705175224773">不明なアプリによって設定が変更されました</translation>
-<translation id="5960404530854194706">Chrome は、あなたが操作していないときにアップデートされます</translation>
 <translation id="5980111191913430208">提供元不明の拡張機能、アプリ、テーマはデバイスに危害を及ぼす可能性があります。<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> で公開されているアイテムのみをインストールすることをおすすめします</translation>
 <translation id="6003112304606738118">ダウンロードしています... 残り <ph name="HOURS" /> 時間です</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{管理者が、アップデートを適用するために Chrome を再起動するよう求めています。シークレット ウィンドウまたはアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chrome を再起動するよう求めています。プロファイル全体で # 個のシークレット ウィンドウとアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}}</translation>
@@ -611,7 +610,6 @@
 <translation id="6556755379298048869">キーボード ショートカットを使用して検索します。</translation>
 <translation id="6585124893636629274">Gemini in Chrome を閉じる</translation>
 <translation id="659498884637196217">このデバイスの Google パスワード マネージャー</translation>
-<translation id="660312897435669152">Chrome のアップデートが予定されています</translation>
 <translation id="6612152958212564387">使用統計情報と障害レポートを Google に送信していません。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Chrome を既定のブラウザに設定すると、パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。</translation>
 <translation id="6631524303639368205">前回開いていたページを開く: Chrome で前回のセッションからタブが復元されました。この機能をオフにするには、</translation>
@@ -826,6 +824,7 @@
 <translation id="8367950957770994118">必要なときに Gemini in Chrome をすばやく開くことができます。</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8370748943308169953"><ph name="USER_NAME" /> として Chrome にログインするための QR コード</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> の準備ができました。今すぐ再起動するか、次回画面がオンのまま <ph name="IDLE_DURATION" /> 間使用されなかったときに Chrome を更新するように設定できます。</translation>
 <translation id="8376752431516546391">Google 検索サイドパネル</translation>
 <translation id="8377158135256176353">Gemini in Chrome Canary を切り替える</translation>
 <translation id="8380754585531979907">キーボードを使用して、Gemini in Chrome と開いているタブを切り替えます。</translation>
@@ -869,6 +868,7 @@
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">この拡張機能では、Chrome の起動時に表示されるページも制御されます。</translation>
 <translation id="8689408573494410517">ツールバーの [サイドパネルで Google 検索] ボタンのアイコンが新しくなりました。クリックすると、ブラウジング中にサイドパネルの Google 検索で質問できます。</translation>
+<translation id="8699232386626916686">セキュリティを確保するため Chrome を更新してください</translation>
 <translation id="8712637175834984815">理解しました</translation>
 <translation id="8712767363896337380">アップデートが適用されました。更新を完了するには Chrome を再起動してください。</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。<ph name="DEVICE" /> のリーディング リストなどを使用できます。</translation>

@@ -5788,7 +5788,6 @@
 <translation id="5392864580775235956">ఇమేజ్‌ను జోడించి, ఎడిట్ చేయండి</translation>
 <translation id="5393330235977997602">PIN ఆప్షన్‌లు</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{లింక్}other{# లింక్‌లు}}</translation>
-<translation id="5394400188854257119">5 నిమిషాలు</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">మీ ఖాతాలో సేవ్ చేస్తోంది...</translation>
 <translation id="5397656531674854099">మీ ఫోన్‌లో మీ ట్యాబ్ గ్రూప్‌లను ఉపయోగించండి</translation>
@@ -6016,6 +6015,7 @@
 <translation id="5558129378926964177">దగ్గరికి జూమ్ చేయి</translation>
 <translation id="5558594314398017686">OS ఆటోమేటిక్ సెట్టింగ్ (అందుబాటులో ఉన్నప్పుడు)</translation>
 <translation id="5559311991468302423">అడ్రస్‌ను తొలగించండి</translation>
+<translation id="5559646482656763170">ఉపయోగంలో లేనప్పుడు అప్‌డేట్ చేయండి</translation>
 <translation id="555968128798542113">మీ MIDI పరికరాలను ఈ సైట్ కంట్రోల్ చేసి, తిరిగి ప్రోగ్రామ్ చేయగలదు.</translation>
 <translation id="5559768063688681413">సేవ్ చేసిన ప్రింటర్‌లు ఏవీ లేవు</translation>
 <translation id="55601339223879446">డిస్‌ప్లేలో మీ డెస్క్‌టాప్ సరిహద్దులను సర్దుబాటు చేయండి</translation>
@@ -6517,6 +6517,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{అన్నింటినీ &amp;కొత్త విండోలో తెరువు}=1{&amp;కొత్త విండోలో తెరువు}other{అన్నింటినీ ({COUNT}) &amp;కొత్త విండోలో తెరువు}}</translation>
 <translation id="5964247741333118902">పొందుపరచబడిన కంటెంట్</translation>
 <translation id="5965607173855879702">డేటాను తొలగిస్తోంది...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" />, <ph name="TOTAL_SHORTCUTS" />‌లో <ph name="SHORTCUT_POSITION" />‌వ స్థానానికి మారింది.</translation>
 <translation id="5966511985653515929">మీరు విండోలన్నింటినీ మూసివేసినప్పుడు మీ పరికరం నుండి సైట్ డేటా తొలగించబడుతుంది</translation>
 <translation id="5968022600320704045">సెర్చ్ ఫలితాలు ఏవీ లేవు</translation>
 <translation id="5968400720580217226">AI మోడ్</translation>
@@ -7182,6 +7183,7 @@
 <translation id="6488266788670893993">మీ పాస్‌వర్డ్‌లు డేటా ఉల్లంఘనలలో బహిర్గతమయ్యాయో, లేదో <ph name="BRAND" /> చెక్ చేయలేదు. మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="648927581764831596">ఏవీ అందుబాటులో లేవు</translation>
 <translation id="6490471652906364588">USB-C పరికరం (కుడి పోర్ట్)</translation>
+<translation id="6491890991754498129">దీనితో తెరవండి...</translation>
 <translation id="649396225532207613">ఈ ఫైల్, మీ వ్యక్తిగత ఖాతాలకు, సోషల్ నెట్‌వర్క్ ఖాతాలకు హాని కలిగించవచ్చు</translation>
 <translation id="6493991254603208962">ప్రకాశాన్ని తగ్గిస్తుంది</translation>
 <translation id="6494327278868541139">మెరుగైన భద్రతా వివరాలను చూపించు</translation>
@@ -8215,7 +8217,6 @@
 <translation id="7273110280511444812"><ph name="DATE" />న చివరిగా జోడించబడింది</translation>
 <translation id="7273894023751806510">మీ MIDI పరికరాలను కంట్రోల్ చేసి, తిరిగి ప్రోగ్రామ్ చేయకుండా ఎల్లప్పుడూ <ph name="HOST" />‌ను బ్లాక్ చేయండి</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" />లో పూర్తి ఛార్జ్ అవుతుంది</translation>
-<translation id="7274453646377524248">మీరు తెరిచిన ట్యాబ్‌లు, విండోలన్నీ ఆటోమేటిక్‌గా మళ్లీ తెరుచుకుంటాయి.</translation>
 <translation id="7275950084263610253">మీ లోకల్ నెట్‌వర్క్‌లోని ఇతర డివైజ్‌లను యాక్సెస్ చేయడానికి అనుమతి ఉంది</translation>
 <translation id="727595954130325265">ఇప్పుడే షాపింగ్ చేయండి</translation>
 <translation id="727952162645687754">డౌన్‌లోడ్ చేయడంలో ఎర్ర‌ర్‌</translation>
@@ -9000,7 +9001,6 @@
 <translation id="7871691770940645922">వర్చువల్ బ్రెయిలీ డిస్‌ప్లే</translation>
 <translation id="787268756490971083">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="7872758299142009420">చాలా ఎక్కువ Nest చేయబడిన గ్రూప్‌లు: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">నేను దూరంగా ఉన్నప్పుడు అప్‌డేట్ చేయి</translation>
 <translation id="7876027585589532670">షార్ట్‌కట్‌ను ఎడిట్ చేయడం సాధ్యపడదు</translation>
 <translation id="7876243839304621966">అన్నీ తొలగించండి</translation>
 <translation id="7877126887274043657">సమస్యను పరిష్కరించి &amp;సింక్ చేయండి</translation>
@@ -10054,6 +10054,7 @@
 <translation id="8666268818656583275">F కీలు ఇప్పుడు సిస్టమ్ ఎగువ అడ్డు వరుసలో ఉన్న కీలకు ఉన్న అదే ప్రవర్తనను కనబరుస్తాయి</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" />‌కు అనుమతులు మళ్లీ మంజూరు చేయబడ్డాయి</translation>
 <translation id="8667261224612332309">మెరుగుపరచగల పాస్‌వర్డ్‌లను మీరు కలిగి ఉన్నారు</translation>
+<translation id="8667543835349994431">దీనితో తెరవండి...</translation>
 <translation id="8668378421690365723">మీ పరికరం ఇకపై సరిగ్గా పని చేయకపోవచ్చు, సెక్యూరిటీ, అలాగే పనితీరుకు సంబంధించిన సమస్యలను ఎదుర్కోవచ్చు.</translation>
 <translation id="8669284339312441707">తీక్షణమైనది</translation>
 <translation id="8670537393737592796">ఇక్కడికి త్వరగా తిరిగి రావడానికి, ఇన్‌స్టాల్ బటన్‌ను క్లిక్ చేయడం ద్వారా <ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి</translation>
@@ -10162,6 +10163,7 @@
 <translation id="8738418093147087440">దేశాలు, భాష లేదా ఇన్‌పుట్ పేర్ల ఆధారంగా సెర్చ్ చేయండి</translation>
 <translation id="8741944563400125534">Switch Access సెటప్ గైడ్</translation>
 <translation id="8743357966416354615">మేనేజ్ చేయబడిన డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్ (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">బదులుగా <ph name="URL" />‌కు నావిగేట్ చేయాలా?</translation>
 <translation id="8744641000906923997">రోమాజీ</translation>
 <translation id="8744913471985800082">అప్‌డేట్ చేసే ముందు అది మీకు తగిన విధంగానే ఉందని నిర్ధారించుకోవడానికి URL మార్పును రివ్యూ చేయండి.</translation>
 <translation id="8745034592125932220">మీ పరికరానికి డేటాను సేవ్ చేయడానికి అనుమతి లేదు</translation>

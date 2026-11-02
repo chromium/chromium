@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Slett logg og nettsteddata</translation>
 <translation id="3190558889382726167">Passordet er lagret</translation>
 <translation id="3190736958609431397">Slutt å spore</translation>
+<translation id="3192820089569442694">Noe gikk galt med forespørselen om bortvelging av data</translation>
 <translation id="3208260410153224535">Organisasjonen din har slått av pålogging. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
 <translation id="3211969308836412674">Løsne nettstedet</translation>
 <translation id="3213807041830307252">Kjøp, oversett og identifiser det du ser, ved bruk av kameraet og bildegalleriet.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Finn ut mer om Google Lens</translation>
 <translation id="3449029510150690417">Opprett en ny fanegruppe ved å gi den et navn og en farge</translation>
 <translation id="345348365500626747">Fant adressen</translation>
+<translation id="3453878468834191501">Den aktive fanen deles med Gemini når du starter en ny chat. <ph name="BEGIN_LINK" />Finn ut mer om AI og personvern<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Bruk Live-modus med Gemini for å stille spørsmål om siden, tenke høyt og snakke sammen.</translation>
 <translation id="3462768334899086950">Dette betyr at du vil miste den ulagrede filen og de nåværende fanene.</translation>
 <translation id="3464194322481586217">Kunne ikke spore prisen.</translation>
@@ -1626,6 +1628,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6078236141387574983">Juster høyden på arket</translation>
 <translation id="6084848228346514841">Velg faner</translation>
 <translation id="6089212833343035912">PIN-kode for Google Passordlagring</translation>
+<translation id="6090690847556987004">Noe gikk galt med denne innstillingen. Oppdater Chrome og iOS, og start enheten på nytt for å prøve igjen. Hvis dette fortsetter å skje, kan det hende at iPhonen ikke støtter denne innstillingen.</translation>
 <translation id="6090760257419195752">Avviste varsler</translation>
 <translation id="6094325891006032858">Slå på Safe Browsing med økt beskyttelse</translation>
 <translation id="6096965253650248286">Fant <ph name="COUNT" /></translation>
@@ -2122,6 +2125,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="7557508262441527045">Logget av</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7561982940498449837">Lukk menyen</translation>
+<translation id="7562347727679121642">Legg til et bilde i søket</translation>
 <translation id="7566349809380613217">Åpne <ph name="GROUP_TITLE" />, delt gruppe på <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Bokmerkene er skjult</translation>
 <translation id="7575664680938145959">Åpne med ett trykk</translation>
@@ -2669,6 +2673,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="9203951165704618409">Flytt adressefeltet fra toppen til bunnen for å tilpasse surfeopplevelsen.</translation>
 <translation id="9205189991633470489">Inkognitolås</translation>
 <translation id="9206887540681440657">Hastighet</translation>
+<translation id="9218088788182688902">Noe gikk galt med denne innstillingen. Oppdater Chrome og iPadOS, og start enheten på nytt for å prøve igjen. Hvis dette fortsetter å skje, kan det hende at iPaden ikke støtter denne innstillingen.</translation>
 <translation id="9218430445555521422">Angi som standard</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219154867334666734">Søk etter faner…</translation>

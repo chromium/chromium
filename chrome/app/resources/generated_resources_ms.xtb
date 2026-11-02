@@ -685,6 +685,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1523279371236772909">Dilihat pada bulan lalu</translation>
 <translation id="1523978563989812243">Enjin teks ke pertuturan</translation>
 <translation id="1524563461097350801">Tidak Perlu</translation>
+<translation id="1524903662136734524">Tambahkan daripada Drive</translation>
 <translation id="1525740877599838384">Gunakan Wi-Fi sahaja untuk menentukan lokasi</translation>
 <translation id="1526274304859009691">Log masuk untuk mendapatkan sambungan anda dan pelbagai lagi daripada <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Dokumen Tidak Bertajuk</translation>
@@ -2703,6 +2704,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3032204772252313646">Sari kata automatik</translation>
 <translation id="3032272345862007156">Tema AI <ph name="INDEX" /> terbaharu</translation>
 <translation id="3033167916029856961">Jangan Ganggu didayakan</translation>
+<translation id="3034219227076811559">Google Search dalam Chrome</translation>
 <translation id="3036546437875325427">Dayakan Flash</translation>
 <translation id="3036602651971781493">Laman mungkin menggunakan perkhidmatan perlindungan kandungan untuk memainkan kandungan yang dilindungi oleh hak cipta atau menyemak penyemak imbas yang anda gunakan</translation>
 <translation id="3036907164806060573">Mimpi</translation>
@@ -3221,6 +3223,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3437072258256045988">Urus aktiviti Apl Gemini anda</translation>
 <translation id="3437397693214267762">Lihat Kalendar Outlook serta fail SharePoint dan OneDrive anda</translation>
 <translation id="3437494162908353428">Alatan Pembangun tidak dibenarkan untuk URL ini.</translation>
+<translation id="3437498061222607130">Anda telah log masuk ke Search dengan akaun <ph name="USER_EMAIL" /> anda</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Sentiasa benarkan <ph name="HOST" /> mengakses mikrofon anda</translation>
 <translation id="3439970425423980614">Membuka PDF dalam Pratonton</translation>
@@ -5049,6 +5052,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4823484602432206655">Baca dan tukar pengguna dan tetapan peranti</translation>
 <translation id="4824037980212326045">Sandaran dan pemulihan Linux</translation>
 <translation id="4824263260587281352">Tukar gabungan kekunci <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Google Account: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Batalkan penyegerakan?</translation>
 <translation id="4825462365587146530">Ketahui lebih lanjut tentang Gedung Akar Chrome dalam tab baharu.</translation>
 <translation id="4825532258163983651">Tidak dapat memadamkan kunci laluan</translation>
@@ -5787,7 +5791,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5392864580775235956">Tambahkan dan edit imej</translation>
 <translation id="5393330235977997602">Pilihan PIN</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Pautan}other{# pautan}}</translation>
-<translation id="5394400188854257119">5 minit</translation>
 <translation id="5394529681046491727">Wi-Fi Langsung</translation>
 <translation id="5395353843367783642">Menyimpan dalam akaun anda...</translation>
 <translation id="5397656531674854099">Gunakan kumpulan tab anda pada telefon anda</translation>
@@ -6015,6 +6018,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5558129378926964177">Zum &amp;Masuk</translation>
 <translation id="5558594314398017686">Lalai OS (apabila tersedia)</translation>
 <translation id="5559311991468302423">Padamkan alamat</translation>
+<translation id="5559646482656763170">Kemas kinikan apabila tidak digunakan</translation>
 <translation id="555968128798542113">Laman ini boleh mengawal dan mengatur cara semula peranti MIDI anda</translation>
 <translation id="5559768063688681413">Tiada pencetak yang disimpan</translation>
 <translation id="55601339223879446">Laraskan sempadan desktop anda dalam lingkungan paparan</translation>
@@ -6516,6 +6520,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Buka semua dalam tetingkap &amp;baharu}=1{Buka dalam tetingkap &amp;baharu}other{Buka semua ({COUNT}) dalam tetingkap &amp;baharu}}</translation>
 <translation id="5964247741333118902">Kandungan terbenam</translation>
 <translation id="5965607173855879702">Memadamkan data...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> dialihkan kepada kedudukan <ph name="SHORTCUT_POSITION" /> daripada <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Data laman dipadamkan daripada peranti anda apabila anda menutup semua tetingkap</translation>
 <translation id="5968022600320704045">Tiada hasil carian</translation>
 <translation id="5968400720580217226">AI Mode</translation>
@@ -7181,6 +7186,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> tidak dapat menyemak kata laluan anda terhadap pelanggaran data. Cuba periksa sambungan Internet anda.</translation>
 <translation id="648927581764831596">Tiada yang tersedia</translation>
 <translation id="6490471652906364588">Peranti USB-C (port kanan)</translation>
+<translation id="6491890991754498129">Buka &amp;Dengan...</translation>
 <translation id="649396225532207613">Fail ini boleh membahayakan akaun peribadi dan rangkaian sosial anda</translation>
 <translation id="6493991254603208962">Kurangkan kecerahan</translation>
 <translation id="6494327278868541139">Paparkan butiran perlindungan dipertingkatkan</translation>
@@ -7913,6 +7919,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7030304022046916278">Menghantar URL kepada Penyemakan Imbas Selamat untuk semakan</translation>
 <translation id="7030695672997239647">Klik kanan pada tab dan pilih "Tambahkan Tab Pada Kumpulan”, kemudian pilih "Kumpulan Baharu"</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Port bersiri disambungkan</translation>
+<translation id="7032334023419126809">Google Account: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">Input mestilah tidak melebihi 62 aksara</translation>
 <translation id="7033731598469029604">Semak Imbas Automatik</translation>
 <translation id="70356134210715500">Dapatkan kunci laluan anda</translation>
@@ -8213,7 +8220,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7273110280511444812">kali terakhir dilampirkan pada <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Sentiasa sekat <ph name="HOST" /> daripada mengawal dan mengatur cara semula peranti MIDI anda</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hingga penuh</translation>
-<translation id="7274453646377524248">Semua tab dan tetingkap anda yang terbuka akan dibuka semula secara automatik.</translation>
 <translation id="7275950084263610253">Dibenarkan untuk mengakses peranti lain pada rangkaian setempat anda</translation>
 <translation id="727595954130325265">Beli Sekarang</translation>
 <translation id="727952162645687754">Ralat muat turun</translation>
@@ -8998,7 +9004,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7871691770940645922">Paparan Braille Maya</translation>
 <translation id="787268756490971083">Mati</translation>
 <translation id="7872758299142009420">Terlalu banyak kumpulan tersarang: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Kemas kinikan apabila saya tiada</translation>
 <translation id="7876027585589532670">Tidak dapat mengedit pintasan</translation>
 <translation id="7876243839304621966">Buangkan semua</translation>
 <translation id="7877126887274043657">Betulkan &amp;Masalah Penyegerakan</translation>
@@ -9446,6 +9451,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8199300056570174101">Sifat Rangkaian (Perkhidmatan) dan Peranti</translation>
 <translation id="8200772114523450471">Sambung semula</translation>
 <translation id="8202827109322349110">Buka dalam editor asas</translation>
+<translation id="8203105157044679380">Panel Google Search</translation>
 <translation id="8203152941016626022">Nama peranti Kongsi Berdekatan</translation>
 <translation id="8203732864715032075">Hantar pemberitahuan kepada anda dan tetapkan mengingati komputer ini untuk Messages sebagai pilihan lalai. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Klik kanan</translation>
@@ -10055,6 +10061,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8666268818656583275">Kini kekunci F memiliki gelagat sebagai kekunci baris atas sistem</translation>
 <translation id="8666321716757704924">Kebenaran dibenarkan sekali lagi untuk <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Beberapa kata laluan anda boleh ditingkatkan</translation>
+<translation id="8667543835349994431">Buka &amp;dengan...</translation>
 <translation id="8668378421690365723">Peranti anda mungkin tidak lagi berfungsi dengan betul dan mungkin mengalami masalah keselamatan dan prestasi.</translation>
 <translation id="8669284339312441707">Hangat</translation>
 <translation id="8670537393737592796">Untuk kembali ke sini dengan cepat, pasang <ph name="APP_NAME" /> dengan mengklik butang pasang</translation>
@@ -10163,6 +10170,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8738418093147087440">Cari mengikut negara, bahasa atau nama input</translation>
 <translation id="8741944563400125534">Panduan persediaan Akses Suis</translation>
 <translation id="8743357966416354615">Persekitaran Pembangunan Terurus (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Navigasi kepada <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Semak perubahan URL untuk memastikan anda selesa dengan perubahan tersebut sebelum dikemaskinikan.</translation>
 <translation id="8745034592125932220">Tidak dibenarkan menyimpan data pada peranti anda</translation>
@@ -10259,6 +10267,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8818152010000655963">Kertas dinding</translation>
 <translation id="8818988764764862764">Tetingkap dialihkan ke kiri</translation>
 <translation id="8819510664278523111">EID peranti anda ialah <ph name="EID_NUMBER" /> dan IMEI peranti ialah <ph name="IMEI_NUMBER" /> dan nombor siri peranti ialah <ph name="SERIAL_NUMBER" />. Nombor ini boleh digunakan untuk mengaktifkan perkhidmatan.</translation>
+<translation id="8819762137851963556">Temukan kursor tetikus</translation>
 <translation id="8820817407110198400">Penanda buku</translation>
 <translation id="8821045908425223359">Konfigurasikan alamat IP secara automatik</translation>
 <translation id="8821206216942230957">Akaun anda tidak mendapat akses kepada Gemini dalam Chrome</translation>

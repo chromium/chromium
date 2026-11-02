@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">इतिहास और वेबसाइट डेटा मिटाएं</translation>
 <translation id="3190558889382726167">पासवर्ड सेव किया गया</translation>
 <translation id="3190736958609431397">ट्रैक न करें</translation>
+<translation id="3192820089569442694">डेटा के इस्तेमाल से बाहर होने के आपके अनुरोध को प्रोसेस करते समय कोई गड़बड़ी हुई</translation>
 <translation id="3208260410153224535">आपके संगठन ने साइन इन करने की सुविधा बंद कर दी है. नए बुकमार्क, पासवर्ड वगैरह सिर्फ़ इस डिवाइस में सेव किए जाएंगे.</translation>
 <translation id="3211969308836412674">साइट को अनपिन करें</translation>
 <translation id="3213807041830307252">अपने कैमरे और फ़ोटो गैलरी का इस्तेमाल करें और जो चीज़ें दिख रही हैं उन्हें खरीदें, उनका अनुवाद करें या उनकी पहचान करें.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Google Lens के बारे में ज़्यादा जानें</translation>
 <translation id="3449029510150690417">अपना नया टैब ग्रुप बनाएं. इसके लिए, आपको ग्रुप को कोई नाम देना होगा और उसका रंग चुनना होगा</translation>
 <translation id="345348365500626747">पता मिल गया</translation>
+<translation id="3453878468834191501">नई चैट शुरू करने पर, मौजूदा टैब के कॉन्टेंट को Gemini के साथ शेयर किया जाता है. <ph name="BEGIN_LINK" />एआई और निजता के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">'Gemini से Live बातचीत करें' सुविधा का इस्तेमाल करके, किसी पेज के बारे में सवाल पूछें, नए आइडिया पर मिलकर सोच-विचार करें और Gemini के साथ बोलकर बातचीत करें.</translation>
 <translation id="3462768334899086950">इसका मतलब है कि सेव नहीं की गई फ़ाइल और मौजूदा टैब मिट जाएंगे</translation>
 <translation id="3464194322481586217">कीमत ट्रैक नहीं की जा सकी.</translation>
@@ -1626,6 +1628,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6078236141387574983">शीट की लंबाई को फिर से अडजस्ट करें</translation>
 <translation id="6084848228346514841">टैब चुनें</translation>
 <translation id="6089212833343035912">Google Password Manager का पिन</translation>
+<translation id="6090690847556987004">इस सेटिंग में कोई गड़बड़ी हुई. Chrome और iOS को अपडेट करें. इसके बाद, अपने डिवाइस को रीस्टार्ट करके फिर से कोशिश करें. अगर गड़बड़ी बनी रहती है, तो हो सकता है कि आपके iPhone पर यह सेटिंग काम न करती हो.</translation>
 <translation id="6090760257419195752">खारिज की गई चेतावनियां</translation>
 <translation id="6094325891006032858">बेहतर सुरक्षित ब्राउज़िंग की सुविधा चालू करें</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> मिले</translation>
@@ -2122,6 +2125,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7557508262441527045">साइन आउट किया जा चुका है</translation>
 <translation id="7561196759112975576">हमेशा</translation>
 <translation id="7561982940498449837">मेन्यू बंद करें</translation>
+<translation id="7562347727679121642">अपनी सर्च क्वेरी में इमेज जोड़ें</translation>
 <translation id="7566349809380613217"><ph name="GROUP_TITLE" /> खोलें, <ph name="NUMBER_OF_TABS" /> टैब वाला शेयर किया गया ग्रुप, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">बुकमार्क छिपे हुए हैं</translation>
 <translation id="7575664680938145959">एक टैप में लिंक खोलें</translation>
@@ -2669,6 +2673,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="9203951165704618409">पसंद के मुताबिक ब्राउज़िंग अनुभव पाने के लिए, पता बार को ऊपर से नीचे ले जाएं.</translation>
 <translation id="9205189991633470489">गुप्त मोड लॉक करें</translation>
 <translation id="9206887540681440657">रफ़्तार</translation>
+<translation id="9218088788182688902">इस सेटिंग में कोई गड़बड़ी हुई. Chrome और iPadOS को अपडेट करें. इसके बाद, अपने डिवाइस को रीस्टार्ट करके फिर से कोशिश करें. अगर गड़बड़ी बनी रहती है, तो हो सकता है कि आपके iPad पर यह सेटिंग काम न करती हो.</translation>
 <translation id="9218430445555521422">डिफ़ॉल्ट के तौर पर सेट करें</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219154867334666734">टैब में खोजें…</translation>

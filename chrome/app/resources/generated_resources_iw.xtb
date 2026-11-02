@@ -5781,7 +5781,6 @@
 <translation id="5392864580775235956">הוספה ועריכה של תמונה</translation>
 <translation id="5393330235977997602">אפשרויות קוד אימות</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{קישור}one{# קישורים}two{# קישורים}other{# קישורים}}</translation>
-<translation id="5394400188854257119">5 דקות</translation>
 <translation id="5394529681046491727">‏‫Wi-Fi ישיר</translation>
 <translation id="5395353843367783642">השמירה בחשבון מתבצעת…</translation>
 <translation id="5397656531674854099">שימוש בקבוצות כרטיסיות בטלפון</translation>
@@ -6706,6 +6705,7 @@
 <translation id="6124698108608891449">האתר הזה צריך הרשאות נוספות.</translation>
 <translation id="6125202119952209826">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">ירח</translation>
+<translation id="6125649408655762488">התמקדות בקבוצה</translation>
 <translation id="6126601353087978360">יש להזין את המשוב שלך כאן:</translation>
 <translation id="6127292407256937949">השמע פעיל. כיבוי השמע.</translation>
 <translation id="6127598727646973981">חיבורים מאובטחים</translation>
@@ -8206,7 +8206,6 @@
 <translation id="7273110280511444812">בוצע חיבור לאחרונה ב-<ph name="DATE" /></translation>
 <translation id="7273894023751806510">‏יש לחסום תמיד את האפשרות של <ph name="HOST" /> לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - ‏<ph name="TIME" /> עד טעינה מלאה</translation>
-<translation id="7274453646377524248">כל הכרטיסיות והחלונות הפתוחים ייפתחו מחדש באופן אוטומטי.</translation>
 <translation id="7275950084263610253">יש הרשאה להתחבר למכשירים אחרים ברשת המקומית</translation>
 <translation id="727595954130325265">לקנייה</translation>
 <translation id="727952162645687754">שגיאה בהורדה</translation>
@@ -8990,7 +8989,6 @@
 <translation id="7871691770940645922">תצוגת ברייל וירטואלית</translation>
 <translation id="787268756490971083">כבוי</translation>
 <translation id="7872758299142009420">יותר מדי קבוצות מקוננות: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">עדכון כשהמכשיר לא נמצא בשימוש</translation>
 <translation id="7876027585589532670">לא ניתן לערוך את קיצור הדרך</translation>
 <translation id="7876243839304621966">הסרת הכול</translation>
 <translation id="7877126887274043657">תיקון &amp;הבעיה בסנכרון</translation>

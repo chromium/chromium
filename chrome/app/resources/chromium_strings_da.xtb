@@ -24,7 +24,6 @@
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1186645291482254714">Få underretninger om prissporing med Chromium på din telefon</translation>
 <translation id="1203500561924088507">Tak for installationen. Du skal genstarte browseren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1222365723190436821">Der afventer en <ph name="IMPORTANT_UPDATE" />. For at sikre, at du kan browse sikkert, opdateres Chromium, næste gang du er inaktiv i <ph name="IDLE_DURATION" />.</translation>
 <translation id="1232234696885483911">Når du åbner Billedsøgning, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, automatisk til serveren. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chromium. Du kan ændre dette ved at gå til "Din konto i Chromium".</translation>
 <translation id="1244381985120794049">Vis Gemini i Chromium på Mac-menulinjen</translation>
@@ -247,7 +246,6 @@
 <translation id="3286538390144397061">Genstart nu</translation>
 <translation id="328888136576916638">Der mangler Google API-nøgler. Nogle funktioner i Chromium deaktiveres.</translation>
 <translation id="3296368748942286671">Fortsæt med at køre baggrundsapps, når Chromium er lukket</translation>
-<translation id="3300632735252839402">Chromium opdateres, når du er inaktiv</translation>
 <translation id="3313189106987092621">Chromium advarer dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="3316771292331273802">Du logges ud af de fleste websites, når du lukker alle Chromium-vinduer, med undtagelse af din Google-konto, hvis du er logget ind i Chromium. <ph name="SETTINGS_LINK" /> for at give websites tilladelse til at huske dig.</translation>
 <translation id="3352986031709923790">øverste højre hjørne af søgeområdet: højre <ph name="RIGHT" /> %, øverste <ph name="TOP" /> %</translation>
@@ -256,7 +254,6 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vil du skifte til den eksisterende Chromium-profil?</translation>
 <translation id="3412460710772753638">I Adgangs­kode­admin­istrator på denne enhed</translation>
-<translation id="3425452599984451640">Chromium vil opdatere</translation>
 <translation id="3427159664004296878">Log ind i Chromium for at få adgang til dine bogmærker m.m. fra <ph name="DEVICE" /></translation>
 <translation id="3438772217992559640">Søg på denne fane via billedsøgning</translation>
 <translation id="3455907671758333080">Udvid anvendelsen af Udvidet beskyttet browsing med Chromium på din telefon</translation>
@@ -322,6 +319,7 @@
 <translation id="4135244987012252068">Tilpas Chromium for at give din browser et nyt udseende</translation>
 <translation id="4147856324248078748">Tilpas Chromium</translation>
 <translation id="4148957013307229264">Installerer...</translation>
+<translation id="4197500750628721662">Opdater Chromium for at forblive beskyttet</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Login på netværk – Chromium</translation>
 <translation id="4208652172235621272"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se din læseliste og meget mere på alle dine enheder.</translation>
 <translation id="421369550622382712">Find fantastiske apps, spil, udvidelser og temaer til Chromium.</translation>
@@ -459,6 +457,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5596063723521813107">{COUNT,plural, =1{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dit isolerede vindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. # isoleret vindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. # isolerede vinduer åbnes ikke igen.}}</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5605834417512968703">Vælg det, du vil søge efter med billedsøgning, eller tryk på Escape for at lukke billedsøgning</translation>
+<translation id="5614149501995591823">En <ph name="IMPORTANT_UPDATE" /> er klar. Du kan genstarte nu eller indstille Chromium til at opdatere, næste gang din skærm forbliver tændt og ikke bruges i <ph name="IDLE_DURATION" />.</translation>
 <translation id="5618818588972826921">Vælg den tekst eller det billede, du vil søge efter med Billedsøgning, eller tryk på Escape for at lukke Billedsøgning</translation>
 <translation id="5623402015214259806">{0,plural, =0{Der er en tilgængelig Chromium-opdatering}=1{Der er en tilgængelig Chromium-opdatering}one{En Chromium-opdatering har været tilgængelig i # dag}other{En Chromium-opdatering har været tilgængelig i # dage}}</translation>
 <translation id="5643865575100044307">Slet altid websitedata fra din enhed, når du lukker Chromium</translation>
@@ -515,6 +514,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6192070012454216182">Søg og stil spørgsmål overalt, selvom Chromium er minimeret. Tillader, at Chromium kører i baggrunden.</translation>
 <translation id="6212496753309875659">Computeren har allerede en nyere version af Chromium. Hvis softwaren ikke virker, skal du afinstallere Chromium og prøve igen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium genstarter nu}=1{Chromium genstarter om 1 sekund}one{Chromium genstarter om # sekund}other{Chromium genstarter om # sekunder}}</translation>
+<translation id="6232046770428574552">Chromium opdateres, når din skærm ikke er i brug</translation>
 <translation id="6241367896540709610">Chromium skal have adgangstilladelse til lagerplads for at downloade filer</translation>
 <translation id="6245734527075554892">Webadresser tjekkes i forhold til en liste over usikre websites, der er gemt i Chromium</translation>
 <translation id="6248213926982192922">Gør Chromium til din standardbrowser</translation>

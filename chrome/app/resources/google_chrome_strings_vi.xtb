@@ -30,7 +30,6 @@
 <translation id="1194807384646768652">Chrome đã chặn tệp tải xuống này vì loại tệp này ít được tải xuống và có thể nguy hiểm</translation>
 <translation id="1197860368385086056">Lần tới, khi mở Chrome trên <ph name="DEVICE_TYPE" />, bạn sẽ thấy lời nhắc bật thông báo theo dõi giá.</translation>
 <translation id="1203500561924088507">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại trình duyệt trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
-<translation id="122321322139970942">Có một <ph name="IMPORTANT_UPDATE" /> đang chờ xử lý. Để đảm bảo an toàn cho hoạt động duyệt web của bạn, Chrome sẽ cập nhật vào lần tới khi bạn không hoạt động trong <ph name="IDLE_DURATION" />.</translation>
 <translation id="1226003169284463347">Để sử dụng dấu trang và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="1278833599417554002">Chạy lại để cập nhật &amp;Chrome</translation>
 <translation id="1289911795790071537">Mở tính năng tìm kiếm bằng Chrome</translation>
@@ -529,9 +528,9 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5940385492829620908">Web, dấu trang và các nội dung khác của bạn trên Chrome đều có ở đây.</translation>
 <translation id="5941711191222866238">Thu nhỏ</translation>
 <translation id="5941830788786076944">Chọn Google Chrome làm trình duyệt mặc định</translation>
+<translation id="5944731887996253728">Chrome sẽ cập nhật khi bạn không sử dụng màn hình</translation>
 <translation id="5947104538377036631">Lối tắt tới Chrome</translation>
 <translation id="5960071705175224773">Một ứng dụng lạ đã thay đổi chế độ cài đặt của bạn</translation>
-<translation id="5960404530854194706">Chrome sẽ cập nhật khi bạn rời đi</translation>
 <translation id="5980111191913430208">Các tiện ích, ứng dụng và giao diện không rõ nguồn gốc có thể làm hại thiết bị của bạn. Chrome đề xuất bạn chỉ nên cài đặt những mục nói trên qua <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Đang tải xuống... Còn <ph name="HOURS" /> giờ.</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
@@ -618,7 +617,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6556755379298048869">Tìm kiếm bằng phím tắt.</translation>
 <translation id="6585124893636629274">Đóng Gemini trong Chrome</translation>
 <translation id="659498884637196217">Trong Trình quản lý mật khẩu của Google trên thiết bị này</translation>
-<translation id="660312897435669152">Chrome cần cập nhật</translation>
 <translation id="6612152958212564387">Số liệu thống kê về việc sử dụng và báo cáo sự cố sẽ không được gửi cho Google. <ph name="BEGIN_LINK" />Quản lý<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Đặt Chrome làm trình duyệt mặc định để mật khẩu, dấu trang và nhật ký của bạn được đồng bộ hoá liền mạch trên mọi thiết bị.</translation>
 <translation id="6631524303639368205">Tiếp tục từ nơi bạn đã dừng lại: Chrome đã khôi phục các thẻ của bạn từ phiên trước đó. Bạn có thể tắt tính năng này trong phần</translation>
@@ -833,6 +831,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8367950957770994118">Nhanh chóng mở Gemini trong Chrome bất cứ khi nào bạn cần</translation>
 <translation id="8370517070665726704">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
 <translation id="8370748943308169953">Mã QR để đăng nhập vào Chrome bằng <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558">Đã có <ph name="IMPORTANT_UPDATE" />. Bạn có thể chạy lại ngay hoặc thiết lập để Chrome cập nhật vào lần tới khi màn hình của bạn vẫn bật và không được sử dụng trong <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">Bảng điều khiển bên của Google Tìm kiếm</translation>
 <translation id="8377158135256176353">Bật/tắt Gemini trong Chrome Canary</translation>
 <translation id="8380754585531979907">Dùng bàn phím để di chuyển giữa Gemini trong Chrome và thẻ đang mở.</translation>
@@ -876,6 +875,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8669527147644353129">Trình trợ giúp của Google Chrome</translation>
 <translation id="8679801911857917785">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chrome.</translation>
 <translation id="8689408573494410517">Nút "Google Tìm kiếm trong bảng điều khiển bên" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Google Tìm kiếm trong bảng điều khiển bên.</translation>
+<translation id="8699232386626916686">Cập nhật Chrome để đảm bảo an toàn</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8712767363896337380">Sắp xong rồi! Hãy chạy lại Chrome để hoàn tất quá trình cập nhật.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chrome trong hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể sử dụng danh sách đọc và nhiều nội dung khác trên <ph name="DEVICE" />.</translation>

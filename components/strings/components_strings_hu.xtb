@@ -1206,6 +1206,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3030331669969285614">Ezek a jelzők megakadályozzák vagy visszaállítják a kompatibilitástörő változást, és csak korlátozott ideig állnak rendelkezésre.</translation>
 <translation id="3033200136993730761">Az otthoni cím segítségével hatékonyabban végezheti el feladatait a Google-szolgáltatásokban, például relevánsabb keresési találatokat és útvonalterveket kaphat a Google Térképben. Címét <ph name="BEGIN_LINK" />Google-fiókjában (<ph name="ACCOUNT" />)<ph name="END_LINK" /> szerkesztheti vagy törölheti.</translation>
 <translation id="3033777742142108756">A mozgás- és fényérzékelők használata jelenleg engedélyezve van</translation>
+<translation id="3034219227076811559">Google Kereső a Chrome-ban</translation>
 <translation id="3034526003882782781">A görgetés és nagyítás engedélyezve van</translation>
 <translation id="3037177537145227281">Ár nyomon követése…</translation>
 <translation id="3037605927509011580">A manóba!</translation>
@@ -3220,6 +3221,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6342069812937806050">Éppen most</translation>
 <translation id="6342171901363060580">Azért látja ezt a figyelmeztetést, mert ez a webhely nem támogatja a HTTPS-t, és Ön inkognitó módban van. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Útvonalterv</translation>
+<translation id="6345664705388712774">Képek hozzáadása a kereséshez</translation>
 <translation id="6348220984832452017">Aktív változatok</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> telepítése</translation>
 <translation id="6350739641326887427">Fizethet a Pix-kód másolása és beillesztése nélkül. <ph name="BEGIN_LINK1" />Nézze meg, hogyan működik<ph name="END_LINK1" /></translation>
@@ -4321,6 +4323,7 @@ További részletek:
 <translation id="8199437620497683918">Optikai lemez (fényes)</translation>
 <translation id="8202097416529803614">Rendelés összegzése</translation>
 <translation id="8202370299023114387">Ütközés</translation>
+<translation id="8203105157044679380">Google Kereső panel</translation>
 <translation id="8208363704094329105">300 × 400 mm</translation>
 <translation id="8208629719488976364">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja az Ön által kinyomtatott oldalak tartalmát és a nyomtatójával kapcsolatos adatokat. Például előfordulhat, hogy bizalmas adatokat keresnek, a vállalati irányelvek alapján tárolják majd őket, illetve láthatók lesznek a rendszergazda számára.</translation>
 <translation id="8210490490377416373">Házirend nevének kiválasztása</translation>

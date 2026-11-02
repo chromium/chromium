@@ -5787,7 +5787,6 @@
 <translation id="5392864580775235956">ਕੋਈ ਚਿੱਤਰ ਸ਼ਾਮਲ ਕਰੋ ਅਤੇ ਉਸਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="5393330235977997602">ਪਿੰਨ ਦੇ ਵਿਕਲਪ</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ਲਿੰਕ}one{# ਲਿੰਕ}other{# ਲਿੰਕ}}</translation>
-<translation id="5394400188854257119">5 ਮਿੰਟ</translation>
 <translation id="5394529681046491727">ਵਾਈ‑ਫਾਈ ਡਾਇਰੈਕਟ</translation>
 <translation id="5395353843367783642">ਤੁਹਾਡੇ ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="5397656531674854099">ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਆਪਣੇ ਟੈਬ ਗਰੁੱਪਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
@@ -6015,6 +6014,7 @@
 <translation id="5558129378926964177">ਜ਼ੂਮ &amp;ਵਧਾਓ</translation>
 <translation id="5558594314398017686">OS ਪੂਰਵ-ਨਿਰਧਾਰਿਤ (ਉਪਲਬਧ ਹੋਣ 'ਤੇ)</translation>
 <translation id="5559311991468302423">ਪਤਾ ਹਟਾਓ</translation>
+<translation id="5559646482656763170">ਵਰਤੋਂ ਵਿੱਚ ਨਾ ਹੋਣ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="555968128798542113">ਇਹ ਸਾਈਟ ਤੁਹਾਡੇ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="5559768063688681413">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤਾ ਪ੍ਰਿੰਟਰ ਨਹੀਂ</translation>
 <translation id="55601339223879446">ਆਪਣੇ ਡੈਸਕਟਾਪ ਦੀਆਂ ਸੀਮਾਵਾਂ ਨੂੰ ਡਿਸਪਲੇ ਦੇ ਅੰਦਰ ਵਾਧ-ਘਾਟ ਕਰੋ</translation>
@@ -6516,6 +6516,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{ਸਾਰੇ &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}=1{&amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}other{ਸਾਰੇ ({COUNT}) &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}}</translation>
 <translation id="5964247741333118902">ਜੋੜੀ ਗਈ ਸਮੱਗਰੀ</translation>
 <translation id="5965607173855879702">ਡਾਟਾ ਮਿਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> ਨੂੰ <ph name="TOTAL_SHORTCUTS" /> ਵਿੱਚੋਂ <ph name="SHORTCUT_POSITION" /> ਸਥਿਤੀ 'ਤੇ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="5966511985653515929">ਸਾਰੀਆਂ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ 'ਤੇ, ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਸਾਈਟ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="5968022600320704045">ਕੋਈ ਖੋਜ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="5968400720580217226">AI ਮੋਡ</translation>
@@ -7181,6 +7182,7 @@
 <translation id="6488266788670893993">ਡਾਟਾ ਉਲੰਘਣਾਵਾਂ ਹੋਣ 'ਤੇ <ph name="BRAND" /> ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੇਖੋ।</translation>
 <translation id="648927581764831596">ਕੋਈ ਵੀ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="6490471652906364588">USB-C ਡਿਵਾਈਸ (ਸੱਜਾ ਪੋਰਟ)</translation>
+<translation id="6491890991754498129">ਇਸ ਨਾਲ ਖੋਲ੍ਹੋ...</translation>
 <translation id="649396225532207613">ਇਹ ਫ਼ਾਈਲ ਤੁਹਾਡੇ ਨਿੱਜੀ ਅਤੇ ਸੋਸ਼ਲ ਨੈੱਟਵਰਕ ਖਾਤਿਆਂ ਨੂੰ ਨੁਕਸਾਨ ਪਹੁੰਚਾ ਸਕਦੀ ਹੈ</translation>
 <translation id="6493991254603208962">ਚਮਕ ਘਟਾਓ</translation>
 <translation id="6494327278868541139">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
@@ -8214,7 +8216,6 @@
 <translation id="7273110280511444812">ਪਿਛਲੀ ਵਾਰ <ph name="DATE" /> ਤੇ ਅਟੈਚ ਕੀਤਾ</translation>
 <translation id="7273894023751806510"><ph name="HOST" /> ਨੂੰ ਹਮੇਸ਼ਾਂ ਆਪਣੇ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ਪੂਰੀ ਹੋਣ ਤੱਕ</translation>
-<translation id="7274453646377524248">ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਅਤੇ ਵਿੰਡੋਆਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮੁੜ-ਖੁੱਲ੍ਹ ਜਾਣਗੀਆਂ।</translation>
 <translation id="7275950084263610253">ਤੁਹਾਡੇ ਸਥਾਨਕ ਨੈੱਟਵਰਕ 'ਤੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="727595954130325265">ਹੁਣੇ ਖਰੀਦੋ</translation>
 <translation id="727952162645687754">ਡਾਊਨਲੋਡ ਗੜਬੜ</translation>
@@ -8999,7 +9000,6 @@
 <translation id="7871691770940645922">ਵਰਚੁਅਲ ਬ੍ਰੇਲ ਡਿਸਪਲੇ</translation>
 <translation id="787268756490971083">ਬੰਦ</translation>
 <translation id="7872758299142009420">ਬਹੁਤ ਜ਼ਿਆਦਾ ਗਰੁੱਪ ਜੋੜੇ ਗਏ ਹਨ: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">ਮੇਰੇ ਦੂਰ ਜਾਣ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="7876027585589532670">ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="7876243839304621966">ਸਾਰੇ ਹਟਾਓ</translation>
 <translation id="7877126887274043657">ਸਮੱਸਿਆ ਨੂੰ ਠੀਕ ਅਤੇ &amp;ਸਿੰਕ ਕਰੋ</translation>
@@ -10055,6 +10055,7 @@
 <translation id="8666268818656583275">ਹੁਣ F ਕੁੰਜੀਆਂ ਦਾ ਵਿਹਾਰ ਸਿਸਟਮ ਦੀ ਸਿਖਰਲੀ ਕਤਾਰ ਦੀਆਂ ਕੁੰਜੀਆਂ ਵਾਂਗ ਹੋਵੇਗਾ</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਦੁਬਾਰਾ ਆਗਿਆ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="8667261224612332309">ਤੁਹਾਡੇ ਕੋਲ ਅਜਿਹੇ ਪਾਸਵਰਡ ਹਨ ਜਿਨ੍ਹਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
+<translation id="8667543835349994431">ਇਸ ਨਾਲ ਖੋਲ੍ਹੋ...</translation>
 <translation id="8668378421690365723">ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਸ਼ਾਇਦ ਹੁਣ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਨਾ ਕਰੇ ਅਤੇ ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਆ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="8669284339312441707">ਵਧੇਰੇ ਗੂੜ੍ਹਾ</translation>
 <translation id="8670537393737592796">ਤੇਜ਼ੀ ਨਾਲ ਇੱਥੇ ਵਾਪਸ ਆਉਣ ਲਈ, ਸਥਾਪਤ ਕਰੋ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰਕੇ <ph name="APP_NAME" /> ਨੂੰ ਸਥਾਪਤ ਕਰੋ</translation>
@@ -10163,6 +10164,7 @@
 <translation id="8738418093147087440">ਦੇਸ਼ਾਂ, ਭਾਸ਼ਾਵਾਂ ਜਾਂ ਇਨਪੁੱਟ ਨਾਮਾਂ ਰਾਹੀਂ ਖੋਜੋ</translation>
 <translation id="8741944563400125534">ਸਵਿੱਚ ਪਹੁੰਚ ਲਈ ਸੈੱਟਅੱਪ ਗਾਈਡ</translation>
 <translation id="8743357966416354615">ਪ੍ਰਬੰਧਨ ਕੀਤੇ ਵਿਕਾਸਕਾਰ ਵਾਤਾਵਰਨ (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">ਕੀ ਇਸਦੀ ਬਜਾਏ <ph name="URL" /> 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">ਅੱਪਡੇਟ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਇਸ ਨਾਲ ਸਹਿਜ ਹੋ, URL ਤਬਦੀਲੀ ਦੀ ਸਮੀਖਿਆ ਕਰੋ।</translation>
 <translation id="8745034592125932220">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>

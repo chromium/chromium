@@ -5790,7 +5790,6 @@
 <translation id="5392864580775235956">ເພີ່ມ ແລະ ແກ້ໄຂຮູບ</translation>
 <translation id="5393330235977997602">ຕົວເລືອກ PIN</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ລິ້ງ}other{# ລິ້ງ}}</translation>
-<translation id="5394400188854257119">5 ນາທີ</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">ກຳລັງບັນທຶກໃນບັນຊີຂອງທ່ານ...</translation>
 <translation id="5397656531674854099">ໃຊ້ກຸ່ມແຖບຂອງທ່ານໃນໂທລະສັບຂອງທ່ານ</translation>
@@ -6017,6 +6016,7 @@
 <translation id="5558129378926964177">ຊູມເຂົ້າ</translation>
 <translation id="5558594314398017686">ຄ່າເລີ່ມຕົ້ນຂອງລະບົບປະຕິບັດການ (ຫາກມີ)</translation>
 <translation id="5559311991468302423">ລຶບທີ່ຢູ່</translation>
+<translation id="5559646482656763170">ອັບເດດເມື່ອບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="555968128798542113">ເວັບໄຊນີ້ສາມາດຄວບຄຸມ ແລະ ຕັ້ງໂປຣແກຣມໃໝ່ໃນອຸປະກອນ MIDI ຂອງທ່ານໄດ້</translation>
 <translation id="5559768063688681413">ບໍ່ມີເຄື່ອງພິມທີ່ບັນທຶກໄວ້</translation>
 <translation id="55601339223879446">ປັບຂອບເຂດເດັສທັອບຂອງທ່ານຢູ່ພາຍໃນຈໍສະແດງຜົນ</translation>
@@ -6518,6 +6518,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍໃໝ່}=1{ເປີດໃນ&amp;ໜ້າຈໍໃໝ່}other{ເປີດທັງໝົດ ({COUNT}) ໃນ&amp;ໜ້າຈໍໃໝ່}}</translation>
 <translation id="5964247741333118902">ເນື້ອຫາທີ່ຝັງໄວ້</translation>
 <translation id="5965607173855879702">ກຳລັງລຶບຂໍ້ມູນ...</translation>
+<translation id="5966067139745999860">ຍ້າຍ <ph name="SHORTCUT_TITLE" /> ໄປຫາຕຳແໜ່ງທີ <ph name="SHORTCUT_POSITION" /> ຈາກທັງໝົດ <ph name="TOTAL_SHORTCUTS" /> ແລ້ວ.</translation>
 <translation id="5966511985653515929">ລະບົບຈະລຶບຂໍ້ມູນເວັບໄຊອອກຈາກອຸປະກອນຂອງທ່ານເມື່ອທ່ານປິດໜ້າຈໍທັງໝົດ</translation>
 <translation id="5968022600320704045">ບໍ່​ມີ​ຜົນ​​ການ​ຊອກຫາ​</translation>
 <translation id="5968400720580217226">ໂໝດ AI</translation>
@@ -7183,6 +7184,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" /> ບໍ່ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານວ່າມີການຮົ່ວໄຫຼຂອງຂໍມູນຫຼືບໍ່ໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
 <translation id="648927581764831596">ບໍ່​ມີອັນໃດຢູ່</translation>
 <translation id="6490471652906364588">ອຸ​ປະ​ກອນ USB-C (ຊ່ອງ​ຂວາ)</translation>
+<translation id="6491890991754498129">ເປີດ &amp;ດ້ວຍ...</translation>
 <translation id="649396225532207613">ໄຟລ໌ນີ້ອາດເປັນອັນຕະລາຍກັບບັນຊີສ່ວນຕົວ ແລະ ບັນຊີເຄືອຂ່າຍສັງຄົມຂອງທ່ານ</translation>
 <translation id="6493991254603208962">ຄວາມສະຫວ່າງ​ລົງ</translation>
 <translation id="6494327278868541139">ສະແດງລາຍລະອຽດການປົກປ້ອງທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
@@ -8215,7 +8217,6 @@
 <translation id="7273110280511444812">ຄັດຕິດ​ຫຼ້າ​ສຸດ​ໃນ​ວັນ​ທີ <ph name="DATE" /></translation>
 <translation id="7273894023751806510">ບລັອກ <ph name="HOST" /> ບໍ່ໃຫ້ຄວບຄຸມ ແລະ ຕັ້ງໂປຣແກຣມໃໝ່ໃນອຸປະກອນ MIDI ຂອງທ່ານທຸກເທື່ອ</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ຈົນ​ກ່​ວາ​ຈະ​ເຕັມ</translation>
-<translation id="7274453646377524248">ແຖບ ແລະ ໜ້າຈໍທີ່ເປີດຢູ່ທັງໝົດຂອງທ່ານຈະເປີດຄືນໃໝ່ໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="7275950084263610253">ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າເຖິງອຸປະກອນອື່ນໆໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານ</translation>
 <translation id="727595954130325265">ຊື້ດຽວນີ້</translation>
 <translation id="727952162645687754">ດາວ​ໂຫລດ​ຜິດພາດ</translation>
@@ -8999,7 +9000,6 @@
 <translation id="7871691770940645922">ການສະແດງຜົນໜັງສືໂພງສະເໝືອນຈິງ</translation>
 <translation id="787268756490971083">ປິດ</translation>
 <translation id="7872758299142009420">ມີກຸ່ມຊ້ອນກັນຫຼາຍເກີນໄປ: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">ອັບເດດເມື່ອຂ້ອຍບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="7876027585589532670">ບໍ່ສາມາດແກ້ໄຂທາງລັດໄດ້</translation>
 <translation id="7876243839304621966">ເອົາ​ອອກທັງ​ຫມົດ</translation>
 <translation id="7877126887274043657">ແກ້ໄຂບັນຫາ&amp;ການຊິ້ງ</translation>
@@ -10056,6 +10056,7 @@
 <translation id="8666268818656583275">ຕອນນີ້ປຸ່ມ F ຈະເຮັດວຽກເປັນປຸ່ມແຖວເທິງສຸດຂອງລະບົບ</translation>
 <translation id="8666321716757704924">ອະນຸຍາດສິດການອະນຸຍາດອີກຄັ້ງສຳລັບ <ph name="WEBSITE" /> ແລ້ວ</translation>
 <translation id="8667261224612332309">ທ່ານມີລະຫັດຜ່ານທີ່ຄວນປັບປຸງ</translation>
+<translation id="8667543835349994431">ເປີດ &amp;ດ້ວຍ...</translation>
 <translation id="8668378421690365723">ອຸປະກອນຂອງທ່ານອາດບໍ່ເຮັດວຽກໄດ້ຕາມປົກກະຕິອີກຕໍ່ໄປ ແລະ ອາດພົບບັນຫາກ່ຽວກັບຄວາມປອດໄພ ແລະ ປະສິດທິພາບ.</translation>
 <translation id="8669284339312441707">ອຸ່ນກວ່າ</translation>
 <translation id="8670537393737592796">ເພື່ອກັບຄືນບ່ອນນີ້ໄດ້ຢ່າງວ່ອງໄວ, ກະລຸນາຕິດຕັ້ງ <ph name="APP_NAME" /> ໂດຍຄລິກໃສ່ປຸ່ມຕິດຕັ້ງ</translation>
@@ -10164,6 +10165,7 @@
 <translation id="8738418093147087440">ຊອກຫາຕາມປະເທດ, ພາສາ ຫຼື ຊື່ການປ້ອນຂໍ້ມູນ</translation>
 <translation id="8741944563400125534">ການແນະນຳການຕັ້ງຄ່າການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດ</translation>
 <translation id="8743357966416354615">ສະພາບແວດລ້ອມໃນການພັດທະນາຊອບແວທີ່ມີການຈັດການ (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">ນຳທາງໄປຫາ <ph name="URL" /> ແທນບໍ?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">ກວດສອບການປ່ຽນແປງ URL ເພື່ອໃຫ້ໝັ້ນໃຈວ່າທ່ານສະບາຍໃຈກັບການປ່ຽນແປງດັ່ງກ່າວກ່ອນທີ່ຈະອັບເດດ.</translation>
 <translation id="8745034592125932220">ບໍ່ໄດ້ອະນຸຍາດໃຫ້ບັນທຶກຂໍ້ມູນໃສ່ອຸປະກອນຂອງທ່ານ</translation>

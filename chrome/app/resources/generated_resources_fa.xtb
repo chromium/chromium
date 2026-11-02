@@ -685,6 +685,7 @@
 <translation id="1523279371236772909">در ماه گذشته مشاهده شده</translation>
 <translation id="1523978563989812243">موتورهای نوشتار به گفتار</translation>
 <translation id="1524563461097350801">نه، متشکرم</translation>
+<translation id="1524903662136734524">‏افزودن از Drive</translation>
 <translation id="1525740877599838384">‏فقط از Wi-Fi برای تعیین مکان استفاده شود</translation>
 <translation id="1526274304859009691">برای دریافت افزونه‌ها و سایر موارد از <ph name="DEVICE" />، به سیستم وارد شوید</translation>
 <translation id="1526560967942511387">سند بی‌عنوان</translation>
@@ -2702,6 +2703,7 @@
 <translation id="3032204772252313646">زیرنویس خودکار</translation>
 <translation id="3032272345862007156">مضمون هوش مصنوعی <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">«مزاحم نشوید» فعال است</translation>
+<translation id="3034219227076811559">‏«جستجوی Google» در Chrome</translation>
 <translation id="3036546437875325427">‏فعال کردن Flash</translation>
 <translation id="3036602651971781493">سایت‌ها ممکن است از سرویس محافظت محتوا برای پخش محتوای دارای حق نشر استفاده کنند یا مرورگری را که استفاده می‌کنید بررسی کنند</translation>
 <translation id="3036907164806060573">رؤیا</translation>
@@ -3220,6 +3222,7 @@
 <translation id="3437072258256045988">‏مدیریت «فعالیت برنامه‌های Gemini»</translation>
 <translation id="3437397693214267762">‏دیدن Outlook Calendar و SharePoint و فایل‌های OneDrive</translation>
 <translation id="3437494162908353428">‏‫DevTools برای این نشانی وب مجاز نیست.</translation>
+<translation id="3437498061222607130">با حساب <ph name="USER_EMAIL" /> به سیستم «جستجو» وارد شده‌اید</translation>
 <translation id="3438633801274389918">نینجا</translation>
 <translation id="3439153939049640737">همیشه اجازه دادن به <ph name="HOST" /> برای دسترسی به میکروفون شما</translation>
 <translation id="3439970425423980614">‏در حال باز کردن PDF در پیشنمایش</translation>
@@ -5048,6 +5051,7 @@
 <translation id="4823484602432206655">تغییر و خواندن تنظیمات کاربر و دستگاه</translation>
 <translation id="4824037980212326045">‏پشتیبان‌گیری و بازیابی Linux</translation>
 <translation id="4824263260587281352">تغییر ترکیب کلید <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">‏حساب Google: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">همگام‌سازی لغو شود؟</translation>
 <translation id="4825462365587146530">‏در زبانه جدید، درباره Chrome Root Store بیشتر بدانید.</translation>
 <translation id="4825532258163983651">گذرکلید حذف نشد</translation>
@@ -5786,7 +5790,6 @@
 <translation id="5392864580775235956">تصویری را اضافه و ویرایش کنید</translation>
 <translation id="5393330235977997602">گزینه‌های پین</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{پیوند}one{# پیوند}other{# پیوند}}</translation>
-<translation id="5394400188854257119">‫۵ دقیقه</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395353843367783642">درحال ذخیره کردن در حساب شما…</translation>
 <translation id="5397656531674854099">استفاده از گروه‌های زبانه در تلفن</translation>
@@ -6014,6 +6017,7 @@
 <translation id="5558129378926964177">&amp;بزرگنمایی</translation>
 <translation id="5558594314398017686">پیش‌فرض سیستم‌عامل (درصورت وجود)</translation>
 <translation id="5559311991468302423">حذف نشانی</translation>
+<translation id="5559646482656763170">به‌روزرسانی هنگام عدم استفاده</translation>
 <translation id="555968128798542113">‏این سایت می‌تواند دستگاه‌های MIDI؜ شما را کنترل و مجدداً برنامه‌ریزی کند</translation>
 <translation id="5559768063688681413">چاپگری ذخیره نشده است</translation>
 <translation id="55601339223879446">تنظیم محدوه دسک‌تاپ شما در صفحه نمایشگر</translation>
@@ -6515,6 +6519,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{باز کردن همه در پنجره جدید}=1{باز کردن در پنجره جدید}one{باز کردن همه ({COUNT}) در پنجره جدید}other{باز کردن همه ({COUNT}) در پنجره جدید}}</translation>
 <translation id="5964247741333118902">محتوای جاسازی‌شده</translation>
 <translation id="5965607173855879702">درحال حذف کردن داده‌ها…</translation>
+<translation id="5966067139745999860">‫<ph name="SHORTCUT_TITLE" /> به جایگاه <ph name="SHORTCUT_POSITION" /> از <ph name="TOTAL_SHORTCUTS" /> منتقل شد.</translation>
 <translation id="5966511985653515929">داده‌های سایت با بسته شدن همه پنجره‌ها از دستگاه حذف شود</translation>
 <translation id="5968022600320704045">بدون نتیجه جستجو</translation>
 <translation id="5968400720580217226">حالت هوشواره‌ای</translation>
@@ -7180,6 +7185,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" /> نمی‌تواند گذواژه‌های شما را دربرابر سرقت اطلاعات شبکه بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="648927581764831596">هیچ‌کدام در دسترس نیست</translation>
 <translation id="6490471652906364588">‏دستگاه USB-C (درگاه سمت راست)</translation>
+<translation id="6491890991754498129">باز کردن &amp;با…</translation>
 <translation id="649396225532207613">این فایل می‌تواند به حساب‌های شخصی و شبکه اجتماعی شما آسیب برساند</translation>
 <translation id="6493991254603208962">کم کردن روشنایی</translation>
 <translation id="6494327278868541139">نمایش جزئیات محافظت بهبودیافته</translation>
@@ -7914,6 +7920,7 @@
 <translation id="7030304022046916278">نشانی‌های وب را به «مرور ایمن» ارسال می‌کند تا بررسی شوند</translation>
 <translation id="7030695672997239647">روی یکی از زبانه‌ها کلیک راست کنید و «افزودن زبانه به گروه» و سپس «گروه جدید» را انتخاب کنید</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - متصل به درگاه سریال</translation>
+<translation id="7032334023419126809">‏حساب Google: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">ورودی باید حداکثر ۶۲ نویسه داشته باشد</translation>
 <translation id="7033731598469029604">مرور خودکار</translation>
 <translation id="70356134210715500">دریافت گذرکلیدها</translation>
@@ -8214,7 +8221,6 @@
 <translation id="7273110280511444812">آخرین اتصال در تاریخ <ph name="DATE" /></translation>
 <translation id="7273894023751806510">‏همیشه <ph name="HOST" /> مسدود شود تا نتواند دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />٪ - <ph name="TIME" /> تا شارژ کامل</translation>
-<translation id="7274453646377524248">همه زبانه‌ها و پنجره‌های باز شما به‌طور خودکار دوباره باز خواهند شد.</translation>
 <translation id="7275950084263610253">اجازه دسترسی به دستگاه‌های دیگر در شبکه محلی‌تان را دارد</translation>
 <translation id="727595954130325265">اکنون بخرید</translation>
 <translation id="727952162645687754">خطای بارگیری</translation>
@@ -8999,7 +9005,6 @@
 <translation id="7871691770940645922">نمایشگر مجازی بریل</translation>
 <translation id="787268756490971083">خاموش</translation>
 <translation id="7872758299142009420">گروه‌های تودرتو خیلی زیاد هستند: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">وقتی که از دستگاه دور می‌شوم آن را به‌روز کن.</translation>
 <translation id="7876027585589532670">نمی‌توان میان‌بر را ویرایش کرد</translation>
 <translation id="7876243839304621966">حذف همه</translation>
 <translation id="7877126887274043657">رفع مشکل همگام‌سازی</translation>
@@ -9447,6 +9452,7 @@
 <translation id="8199300056570174101">مشخصات دستگاه و شبکه (سرویس)</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8202827109322349110">باز کردن در ویرایشگر پایه</translation>
+<translation id="8203105157044679380">‏پانل «جستجوی Google»</translation>
 <translation id="8203152941016626022">نام دستگاه «هم‌رسانی با اطراف»</translation>
 <translation id="8203732864715032075">ارسال اعلان برای شما و به‌خاطرسپردن این رایانه به‌عنوان پیش‌فرض برای «پیام‌نگار». <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">کلیک راست</translation>
@@ -10055,6 +10061,7 @@
 <translation id="8666268818656583275">‏اکنون کلیدهای F عملکردی مشابه کلیدهای ردیف بالای سیستم خواهند داشت</translation>
 <translation id="8666321716757704924">اجازه‌ها دوباره به <ph name="WEBSITE" /> اعطا شد</translation>
 <translation id="8667261224612332309">گذرواژه‌هایی دارید که می‌توانید آن‌ها را بهبود ببخشید</translation>
+<translation id="8667543835349994431">باز کردن &amp;با…</translation>
 <translation id="8668378421690365723">ممکن است دستگاهتان دیگر به‌درستی کار نکند و احتمال دارد با مشکلات عملکردی و امنیتی مواجه شود.</translation>
 <translation id="8669284339312441707">گرم‌تر</translation>
 <translation id="8670537393737592796">برای اینکه سریع به اینجا برگردید، روی دکمه نصب کلیک کنید و برنامه <ph name="APP_NAME" /> را نصب کنید</translation>
@@ -10163,6 +10170,7 @@
 <translation id="8738418093147087440">جستجو براساس کشور، زبان، یا نام‌های ورودی</translation>
 <translation id="8741944563400125534">راهنمای راه‌اندازی «دسترسی کلیدی»</translation>
 <translation id="8743357966416354615">محیط توسعه نرم‌افزار تحت‌مدیریت (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">به‌جای آن به <ph name="URL" /> پیمایش شود؟</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">قبل‌از به‌روزرسانی، تغییر نشانی وب را بازبینی کنید تا مطمئن شوید با آن مشکلی ندارید.</translation>
 <translation id="8745034592125932220">نمی‌تواند در دستگاهتان داده ذخیره کند</translation>
@@ -10259,6 +10267,7 @@
 <translation id="8818152010000655963">کاغذ دیواری</translation>
 <translation id="8818988764764862764">پنجره به چپ منتقل شد</translation>
 <translation id="8819510664278523111">‏شماره EID دستگاه شما <ph name="EID_NUMBER" />، شماره IMEI آن <ph name="IMEI_NUMBER" />، و شماره سریال آن <ph name="SERIAL_NUMBER" /> است. می‌توان از این شماره‌ها برای کمک به فعال‌سازی سرویس استفاده کرد.</translation>
+<translation id="8819762137851963556">پیدا کردن مکان‌نمای موشواره</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="8821045908425223359">‏پیکربندی خودکار نشانی IP</translation>
 <translation id="8821206216942230957">‏حساب شما به «Gemini در Chrome» دسترسی ندارد</translation>

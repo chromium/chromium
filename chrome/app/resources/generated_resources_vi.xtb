@@ -5791,7 +5791,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5392864580775235956">Thêm và chỉnh sửa hình ảnh</translation>
 <translation id="5393330235977997602">Tuỳ chọn mã PIN</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Đường liên kết}other{# đường liên kết}}</translation>
-<translation id="5394400188854257119">5 phút</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395353843367783642">Đang lưu vào tài khoản của bạn...</translation>
 <translation id="5397656531674854099">Sử dụng nhóm thẻ trên điện thoại của bạn</translation>
@@ -6019,6 +6018,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5558129378926964177">Phóng &amp;to</translation>
 <translation id="5558594314398017686">Chế độ mặc định của hệ điều hành (nếu có)</translation>
 <translation id="5559311991468302423">Xoá địa chỉ</translation>
+<translation id="5559646482656763170">Cập nhật khi không sử dụng</translation>
 <translation id="555968128798542113">Trang web này có thể điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
 <translation id="5559768063688681413">Chưa lưu máy in nào</translation>
 <translation id="55601339223879446">Điều chỉnh các ranh giới của màn hình trong vòng hiển thị</translation>
@@ -6520,6 +6520,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Mở tất cả trong cửa sổ &amp;mới}=1{Mở trong cửa sổ &amp;mới}other{Mở tất cả ({COUNT}) trong cửa sổ &amp;mới}}</translation>
 <translation id="5964247741333118902">Nội dung được nhúng</translation>
 <translation id="5965607173855879702">Đang xoá dữ liệu...</translation>
+<translation id="5966067139745999860">Đã di chuyển <ph name="SHORTCUT_TITLE" /> sang vị trí <ph name="SHORTCUT_POSITION" /> trong <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Dữ liệu trang web sẽ bị xoá khỏi thiết bị của bạn khi bạn đóng tất cả cửa sổ</translation>
 <translation id="5968022600320704045">Không có kết quả tìm kiếm nào</translation>
 <translation id="5968400720580217226">Chế độ AI</translation>
@@ -7185,6 +7186,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> không thể kiểm tra mật khẩu để xem có bị rò rỉ dữ liệu hay không. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="648927581764831596">Không có</translation>
 <translation id="6490471652906364588">Thiết bị USB-C (cổng bên phải)</translation>
+<translation id="6491890991754498129">Mở &amp;bằng...</translation>
 <translation id="649396225532207613">Tệp này có thể gây hại cho tài khoản cá nhân và tài khoản mạng xã hội của bạn</translation>
 <translation id="6493991254603208962">Giảm độ sáng</translation>
 <translation id="6494327278868541139">Hiển thị thông tin chi tiết về phương thức bảo vệ nâng cao</translation>
@@ -8220,7 +8222,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7273110280511444812">được đính kèm lần cuối vào <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Luôn cấm <ph name="HOST" /> điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> cho đến khi pin đầy</translation>
-<translation id="7274453646377524248">Tất cả các thẻ và cửa sổ đang mở sẽ tự động mở lại.</translation>
 <translation id="7275950084263610253">Được phép truy cập vào các thiết bị khác trên mạng cục bộ của bạn</translation>
 <translation id="727595954130325265">Mua ngay</translation>
 <translation id="727952162645687754">Lỗi tải xuống</translation>
@@ -9005,7 +9006,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7871691770940645922">Màn hình chữ nổi ảo</translation>
 <translation id="787268756490971083">Đang tắt</translation>
 <translation id="7872758299142009420">Quá nhiều nhóm con: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Cập nhật khi tôi rời đi</translation>
 <translation id="7876027585589532670">Không thể chỉnh sửa lối tắt</translation>
 <translation id="7876243839304621966">Xoá tất cả</translation>
 <translation id="7877126887274043657">Khắc phục sự cố &amp;đồng bộ hoá</translation>
@@ -10062,6 +10062,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8666268818656583275">Giờ đây các phím F sẽ hoạt động như các phím hàng trên cùng của hệ thống</translation>
 <translation id="8666321716757704924">Đã cấp lại quyền cho <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Mật khẩu của bạn có thể cải thiện được</translation>
+<translation id="8667543835349994431">Mở &amp;bằng...</translation>
 <translation id="8668378421690365723">Thiết bị của bạn có thể không còn hoạt động bình thường và có thể gặp phải các vấn đề về hiệu suất và bảo mật.</translation>
 <translation id="8669284339312441707">Ấm hơn</translation>
 <translation id="8670537393737592796">Để quay lại đây nhanh chóng, hãy cài đặt <ph name="APP_NAME" /> bằng cách nhấp vào nút cài đặt</translation>
@@ -10170,6 +10171,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8738418093147087440">Tìm kiếm theo quốc gia, ngôn ngữ hoặc tên phương thức nhập</translation>
 <translation id="8741944563400125534">Hướng dẫn thiết lập tính năng Tiếp cận bằng công tắc</translation>
 <translation id="8743357966416354615">Môi trường phát triển được quản lý (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Bạn muốn truy cập <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Hãy xem xét thay đổi về URL để đảm bảo bạn hài lòng với thay đổi đó trước khi cập nhật.</translation>
 <translation id="8745034592125932220">Không được phép lưu dữ liệu vào thiết bị của bạn</translation>

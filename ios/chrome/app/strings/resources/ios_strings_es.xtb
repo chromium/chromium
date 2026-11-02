@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Borrar historial y datos de sitios web</translation>
 <translation id="3190558889382726167">Contraseña guardada</translation>
 <translation id="3190736958609431397">Dejar de seguir</translation>
+<translation id="3192820089569442694">Se ha producido un error con tu solicitud para dejar de compartir datos</translation>
 <translation id="3208260410153224535">Tu organización ha desactivado el inicio de sesión. Los marcadores, las contraseñas y otros elementos nuevos solo se guardarán en este dispositivo.</translation>
 <translation id="3211969308836412674">Desfijar sitio</translation>
 <translation id="3213807041830307252">Compra, traduce e identifica lo que ves con tu cámara y tu galería de fotos.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Más información sobre Google Lens</translation>
 <translation id="3449029510150690417">Crea tu nuevo grupo de pestañas dándole un nombre y un color</translation>
 <translation id="345348365500626747">Dirección encontrada</translation>
+<translation id="3453878468834191501">La pestaña actual se comparte con Gemini cuando inicias una conversación. <ph name="BEGIN_LINK" />Más información sobre IA y privacidad<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Usa Live para hacer preguntas sobre una página, explorar ideas en voz alta y hablar con Gemini.</translation>
 <translation id="3462768334899086950">Esto significa que perderás el archivo sin guardar y las pestañas actuales</translation>
 <translation id="3464194322481586217">No se ha podido hacer un seguimiento del precio.</translation>
@@ -1626,6 +1628,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6078236141387574983">Ajustar la altura de la hoja</translation>
 <translation id="6084848228346514841">Seleccionar pestañas</translation>
 <translation id="6089212833343035912">PIN del Gestor de Contraseñas de Google</translation>
+<translation id="6090690847556987004">No se ha podido aplicar este ajuste. Actualiza Chrome y iOS, y reinicia tu dispositivo para volver a intentarlo. Si este error sigue produciéndose, es posible que tu iPhone no admita este ajuste.</translation>
 <translation id="6090760257419195752">Advertencias ignoradas</translation>
 <translation id="6094325891006032858">Activa Navegación segura mejorada</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> encontradas</translation>
@@ -1657,7 +1660,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6169031022444660352">Para eliminar todas las credenciales guardadas, primero debes configurar un código de acceso en tu dispositivo.</translation>
 <translation id="6172428250974276014">Sí, mantener los datos separados (recomendado)</translation>
 <translation id="6173499589275053515">Contraseña guardada en tu cuenta de Google (<ph name="EMAIL" />)</translation>
-<translation id="6181969657494915430">Buscar en la pantalla</translation>
+<translation id="6181969657494915430">Buscar en pantalla</translation>
 <translation id="6182851675249594487">Tema de color personalizado</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Fecha de creación: <ph name="DATE" /></translation>
@@ -2122,6 +2125,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="7557508262441527045">Se ha cerrado la sesión</translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
+<translation id="7562347727679121642">Añade una imagen a tu búsqueda</translation>
 <translation id="7566349809380613217">Abrir <ph name="GROUP_TITLE" />, grupo compartido de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Los marcadores están ocultos</translation>
 <translation id="7575664680938145959">Abrir con un toque</translation>
@@ -2669,6 +2673,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="9203951165704618409">Mueve la barra de direcciones de la parte superior a la parte inferior para personalizar tu experiencia de navegación.</translation>
 <translation id="9205189991633470489">Bloqueo de pestañas de Incógnito</translation>
 <translation id="9206887540681440657">Velocidad</translation>
+<translation id="9218088788182688902">No se ha podido aplicar este ajuste. Actualiza Chrome y iPadOS, y reinicia el dispositivo para volver a intentarlo. Si este error sigue produciéndose, es posible que tu iPad no admita este ajuste.</translation>
 <translation id="9218430445555521422">Establecer como predeterminado</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="9219154867334666734">Buscar pestañas…</translation>

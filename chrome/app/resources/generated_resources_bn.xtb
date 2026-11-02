@@ -685,6 +685,7 @@
 <translation id="1523279371236772909">গত মাসে দেখা হয়েছে</translation>
 <translation id="1523978563989812243">টেক্সট-টু-স্পিচ ইঞ্জিন</translation>
 <translation id="1524563461097350801">না থাক</translation>
+<translation id="1524903662136734524">Drive থেকে যোগ করুন</translation>
 <translation id="1525740877599838384">লোকেশন নির্ধারণ করার জন্য ওয়াই-ফাই ব্যবহার করুন</translation>
 <translation id="1526274304859009691"><ph name="DEVICE" /> থেকে আপনার এক্সটেনশন ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="1526560967942511387">শিরোনামহীন ডকুমেন্ট</translation>
@@ -2703,6 +2704,7 @@
 <translation id="3032204772252313646">অটোমেটিক ক্যাপশন</translation>
 <translation id="3032272345862007156">সাম্প্রতিক AI থিম <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">'বিরক্ত করবে না মোড' চালু করা হয়েছে</translation>
+<translation id="3034219227076811559">Chrome-এ Google Search</translation>
 <translation id="3036546437875325427">Flash সক্ষম করুন</translation>
 <translation id="3036602651971781493">কপিরাইট দ্বারা সুরক্ষিত কন্টেন্ট চালাতে সাইট কন্টেন্ট সুরক্ষা পরিষেবা ব্যবহার করতে পারে অথবা আপনি কোন ব্রাউজার ব্যবহার করছেন তা চেক করতে পারে</translation>
 <translation id="3036907164806060573">স্বপ্ন</translation>
@@ -3221,6 +3223,7 @@
 <translation id="3437072258256045988">আপনার Gemini অ্যাপ অ্যাক্টিভিটি ম্যানেজ করুন</translation>
 <translation id="3437397693214267762">আপনার Outlook Calendar, Sharepoint এবং OneDrive ফাইল দেখুন</translation>
 <translation id="3437494162908353428">এই URL-এর জন্য DevTools ব্যবহারের অনুমতি নেই।</translation>
+<translation id="3437498061222607130">আপনি <ph name="USER_EMAIL" /> অ্যাকাউন্ট দিয়ে Search-এ সাইন-ইন করেছেন</translation>
 <translation id="3438633801274389918">নিনজা</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> কে সর্বদা আপনার মাইক্রোফোন অ্যাক্সেস করতে অনুমতি দিন</translation>
 <translation id="3439970425423980614">PDF-এর প্রিভিউ খোলা হচ্ছে</translation>
@@ -5049,6 +5052,7 @@
 <translation id="4823484602432206655">ব্যবহারকারী এবং ডিভাইস সেটিংস পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="4824037980212326045">Linux-এর ব্যাক-আপ এবং রিস্টোর করা</translation>
 <translation id="4824263260587281352">'কী'-এর কম্বিনেশন পরিবর্তন করুন <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Google অ্যাকাউন্ট: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">সিঙ্ক বাতিল করতে চান?</translation>
 <translation id="4825462365587146530">নতুন ট্যাবে Chrome Root Store সম্পর্কে আরও জানুন।</translation>
 <translation id="4825532258163983651">'পাসকী' মুছে ফেলা যাচ্ছে না</translation>
@@ -5787,7 +5791,6 @@
 <translation id="5392864580775235956">ছবি যোগ ও এডিট করুন</translation>
 <translation id="5393330235977997602">পিনের বিকল্প</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{লিঙ্ক}one{#টি লিঙ্ক}other{#টি লিঙ্ক}}</translation>
-<translation id="5394400188854257119">৫ মিনিট</translation>
 <translation id="5394529681046491727">ওয়াই-ফাই ডাইরেক্ট</translation>
 <translation id="5395353843367783642">আপনার অ্যাকাউন্টে সেভ করা হচ্ছে…</translation>
 <translation id="5397656531674854099">আপনার ফোনে ট্যাব গ্রুপ ব্যবহার করুন</translation>
@@ -6015,6 +6018,7 @@
 <translation id="5558129378926964177">বড়ো করুন</translation>
 <translation id="5558594314398017686">OS ডিফল্ট (উপলভ্য হলে)</translation>
 <translation id="5559311991468302423">ঠিকানা মুছুন</translation>
+<translation id="5559646482656763170">ব্যবহার না হওয়ার সময় আপডেট করুন</translation>
 <translation id="555968128798542113">এই সাইট আপনার MIDI ডিভাইস কন্ট্রোল ও এটি রিপ্রোগ্রাম করতে পারবে</translation>
 <translation id="5559768063688681413">সেভ করা কোনও প্রিন্টার নেই</translation>
 <translation id="55601339223879446">প্রদর্শনের মধ্যে আপনার ডেস্কটপ সীমানার সামঞ্জস্যবিধান করুন</translation>
@@ -6517,6 +6521,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{সবকটি &amp;নতুন উইন্ডোতে খুলুন}=1{&amp;নতুন উইন্ডোতে খুলুন}one{সবকটি ({COUNT}টি) &amp;নতুন উইন্ডোতে খুলুন}other{সবকটি ({COUNT}টি) &amp;নতুন উইন্ডোতে খুলুন}}</translation>
 <translation id="5964247741333118902">এম্বেড করা কন্টেন্ট</translation>
 <translation id="5965607173855879702">ডেটা মুছে দেওয়া হচ্ছে...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" />-কে <ph name="TOTAL_SHORTCUTS" />টির মধ্যে <ph name="SHORTCUT_POSITION" /> নম্বরে সরানো হয়েছে।</translation>
 <translation id="5966511985653515929">সব উইন্ডো বন্ধ করলে আপনার ডিভাইস থেকে সাইট ডেটা মুছে যায়</translation>
 <translation id="5968022600320704045">কোনও সার্চ ফলাফল নেই</translation>
 <translation id="5968400720580217226">AI মোড</translation>
@@ -7182,6 +7187,7 @@
 <translation id="6488266788670893993">ডেটার নিরাপত্তা লঙ্ঘনের বিরুদ্ধে <ph name="BRAND" /> আপনার পাসওয়ার্ড চেক করতে পারছে না। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
 <translation id="648927581764831596">কিছুই উপলব্ধ নয়</translation>
 <translation id="6490471652906364588">USB-C ডিভাইস (ডান পোর্ট)</translation>
+<translation id="6491890991754498129">এর &amp;মাধ্যমে খুলুন...</translation>
 <translation id="649396225532207613">এই ফাইলটি আপনার ব্যক্তিগত ও সোশ্যাল নেটওয়ার্ক অ্যাকাউন্টের ক্ষতি করতে পারে</translation>
 <translation id="6493991254603208962">উজ্জ্বলতা কমান</translation>
 <translation id="6494327278868541139">উন্নত সুরক্ষা সংক্রান্ত বিবরণ দেখুন</translation>
@@ -7916,6 +7922,7 @@
 <translation id="7030304022046916278">URL চেক করতে Safe Browsing-এ পাঠায়</translation>
 <translation id="7030695672997239647">ট্যাবের উপর ডানদিকের মাউস বোতামে ক্লিক করে "গ্রুপে ট্যাব যোগ করুন" বিকল্প বেছে নিন এবং তারপরে "নতুন গ্রুপ" বাছুন</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - সিরিয়াল পোর্ট কানেক্ট করা হয়েছে</translation>
+<translation id="7032334023419126809">Google অ্যাকাউন্ট: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">৬২টির বেশি অক্ষর লেখা যাবে না</translation>
 <translation id="7033731598469029604">অটো ব্রাউজ</translation>
 <translation id="70356134210715500">আপনার পাসকী পান</translation>
@@ -8216,7 +8223,6 @@
 <translation id="7273110280511444812">সর্বশেষ <ph name="DATE" /> এ সংযুক্ত হয়েছে</translation>
 <translation id="7273894023751806510"><ph name="HOST" />-এর জন্য সবসময়ই কন্ট্রোল ও রিপ্রোগ্রাম করার অনুমতি ব্লক করুন</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - পূর্ণ হতে <ph name="TIME" /> বাকি আছে</translation>
-<translation id="7274453646377524248">আপনার খোলা সব ট্যাব ও উইন্ডো অটোমেটিক আবার খুলে যাবে।</translation>
 <translation id="7275950084263610253">আপনার লোকাল নেটওয়ার্কে অন্যান্য ডিভাইস অ্যাক্সেস করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="727595954130325265">এখনই কিনুন</translation>
 <translation id="727952162645687754">ডাউনলোড ক্রটি</translation>
@@ -9001,7 +9007,6 @@
 <translation id="7871691770940645922">ভার্চুয়াল ব্রেইল প্রদর্শন</translation>
 <translation id="787268756490971083">বন্ধ করা আছে</translation>
 <translation id="7872758299142009420">খুব বেশি সংখ্যক নেস্টেড গ্রুপ: রয়েছে <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">আমি দূরে থাকাকালীন আপডেট করুন</translation>
 <translation id="7876027585589532670">শর্টকাট এডিট করা যাবে না</translation>
 <translation id="7876243839304621966">সকল সরান</translation>
 <translation id="7877126887274043657">&amp;সিঙ্ক করা সম্পর্কিত সমস্যা সমাধান করুন</translation>
@@ -9449,6 +9454,7 @@
 <translation id="8199300056570174101">নেটওয়ার্ক (পরিষেবা) এবং ডিভাইসের বৈশিষ্ট্য</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8202827109322349110">প্রাথমিক এডিটরে খুলুন</translation>
+<translation id="8203105157044679380">Google Search প্যানেল</translation>
 <translation id="8203152941016626022">যে ডিভাইসে 'নিয়ারবাই শেয়ার' ব্যবহার করা হচ্ছে, তার নাম</translation>
 <translation id="8203732864715032075">আপনাকে বিজ্ঞপ্তি পাঠায় এবং মেসেজের জন্য এই কম্পিউটারকে ডিফল্ট হিসেবে মনে রাখে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">ডানদিকের বোতামে ক্লিক করুন</translation>
@@ -10057,6 +10063,7 @@
 <translation id="8666268818656583275">F 'কী' এখন উপরের সারির সিস্টেম 'কী'-এর মতো কাজ করবে</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" />-এর জন্য অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8667261224612332309">আপনার পাসওয়ার্ড যা উন্নত করা যেতে পারে</translation>
+<translation id="8667543835349994431">এর &amp;মাধ্যমে খুলুন...</translation>
 <translation id="8668378421690365723">আপনার ডিভাইস সঠিকভাবে আর কাজ নাও করতে পারে এবং এতে নিরাপত্তা ও পারফর্ম্যান্স সংক্রান্ত সমস্যা দেখা দিতে পারে।</translation>
 <translation id="8669284339312441707">ওয়ার্মার</translation>
 <translation id="8670537393737592796">এখানে চটপট ফিরে আসতে, ইনস্টল বোতামে ক্লিক করে <ph name="APP_NAME" /> ইনস্টল করুন</translation>
@@ -10165,6 +10172,7 @@
 <translation id="8738418093147087440">দেশ, ভাষা বা ইনপুটের নাম অনুযায়ী সার্চ করুন</translation>
 <translation id="8741944563400125534">সুইচ দিয়ে অ্যাক্সেসের সেটআপ গাইড</translation>
 <translation id="8743357966416354615">ম্যানেজ করা ডেভেলপমেন্ট এনভায়রনমেন্ট (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">এর পরিবর্তে <ph name="URL" />-এ নেভিগেট করবেন?</translation>
 <translation id="8744641000906923997">রোমাজি</translation>
 <translation id="8744913471985800082">আপডেট করার আগে URL-এর পরিবর্তনটি একবার দেখে নিন, যাতে নিশ্চিত হতে পারেন যে এটি আপনার জন্য উপযুক্ত।</translation>
 <translation id="8745034592125932220">আপনার ডিভাইসে ডেটা সেভ করার অনুমতি নেই</translation>
@@ -10261,6 +10269,7 @@
 <translation id="8818152010000655963">ওয়ালপেপার</translation>
 <translation id="8818988764764862764">উইন্ডো বাঁদিকে সরানো হয়েছে</translation>
 <translation id="8819510664278523111">আপনার ডিভাইসের EID নম্বর <ph name="EID_NUMBER" /> IMEI নম্বর <ph name="IMEI_NUMBER" /> এবং ডিভাইসের সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />। পরিষেবা চালু করতে সাহায্য করার জন্য এইসব নম্বর ব্যবহার করা যেতে পারে।</translation>
+<translation id="8819762137851963556">মাউস কার্সর খুঁজুন</translation>
 <translation id="8820817407110198400">বুকমার্ক</translation>
 <translation id="8821045908425223359">আইপি অ্যাড্রেস অটোমেটিক কনফিগার করুন</translation>
 <translation id="8821206216942230957">আপনার অ্যাকাউন্টের কাছে Chrome-এ Gemini অ্যাক্সেস করার সুবিধা নেই</translation>

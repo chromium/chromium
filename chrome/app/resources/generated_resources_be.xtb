@@ -684,6 +684,7 @@
 <translation id="1523279371236772909">Прагледжана ў мінулым месяцы</translation>
 <translation id="1523978563989812243">Модулі сінтэзу маўлення</translation>
 <translation id="1524563461097350801">Не, дзякуй</translation>
+<translation id="1524903662136734524">Дадаць з Дыска</translation>
 <translation id="1525740877599838384">Вызначаць месцазнаходжанне толькі праз Wi-Fi</translation>
 <translation id="1526274304859009691">Увайдзіце, каб атрымаць доступ да сваіх пашырэнняў і іншых даных на гэтай прыладзе: <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Дакумент без назвы</translation>
@@ -2687,6 +2688,7 @@
 <translation id="3032204772252313646">Аўтаматычныя субцітры</translation>
 <translation id="3032272345862007156">Нядаўняя тэма <ph name="INDEX" />, створаная з дапамогай AI</translation>
 <translation id="3033167916029856961">Уключаны рэжым "Не турбаваць"</translation>
+<translation id="3034219227076811559">Google Пошук у Chrome</translation>
 <translation id="3036546437875325427">Уключыць Flash</translation>
 <translation id="3036602651971781493">Сайты могуць выкарыстоўваць сэрвіс абароны змесціва, каб прайграваць змесціва, абароненае аўтарскім правам, або правяраць, які браўзер вы выкарыстоўваеце</translation>
 <translation id="3036907164806060573">Мроя</translation>
@@ -3205,6 +3207,7 @@
 <translation id="3437072258256045988">Кіраваць гісторыяй дзеянняў у праграмах Gemini</translation>
 <translation id="3437397693214267762">Праглядайце Каляндар Outlook і файлы Sharepoint і OneDrive</translation>
 <translation id="3437494162908353428">Інструменты распрацоўшчыка не дазволены для гэтага URL-адраса.</translation>
+<translation id="3437498061222607130">Вы ўвайшлі ў Пошук праз уліковы запіс <ph name="USER_EMAIL" /></translation>
 <translation id="3438633801274389918">Ніндзя</translation>
 <translation id="3439153939049640737">Заўсёды даваць сайту <ph name="HOST" /> доступ да мікрафона</translation>
 <translation id="3439970425423980614">PDF адкрываецца ў рэжыме перадпрагляду</translation>
@@ -5033,6 +5036,7 @@
 <translation id="4823484602432206655">Прагляд і змяненне налад прылады і карыстальніка</translation>
 <translation id="4824037980212326045">Рэзервовае капіраванне і аднаўленне Linux</translation>
 <translation id="4824263260587281352">Змяніць камбінацыю клавіш <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Уліковы запіс Google: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Скасаваць сінхранізацыю?</translation>
 <translation id="4825462365587146530">Адкрыць падрабязную інфармацыю пра Chrome Root Store у новай укладцы.</translation>
 <translation id="4825532258163983651">Не ўдалося выдаліць ключ доступу</translation>
@@ -5770,7 +5774,6 @@
 <translation id="5392864580775235956">Дадайце і адрэдагуйце відарыс</translation>
 <translation id="5393330235977997602">Варыянты PIN-кода</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Спасылка}one{# спасылка}few{# спасылкі}many{# спасылак}other{# спасылкі}}</translation>
-<translation id="5394400188854257119">5 хвілін</translation>
 <translation id="5394529681046491727">Wi‑Fi Direct</translation>
 <translation id="5395353843367783642">Ідзе захаванне ва ўліковы запіс…</translation>
 <translation id="5397656531674854099">Выкарыстоўвайце групы ўкладак на тэлефоне</translation>
@@ -5998,6 +6001,7 @@
 <translation id="5558129378926964177">Павялічыць &amp;маштаб</translation>
 <translation id="5558594314398017686">Стандартныя налады АС (пры наяўнасці)</translation>
 <translation id="5559311991468302423">Выдаленне адраса</translation>
+<translation id="5559646482656763170">Абнавіць, калі не выкарыстоўваецца</translation>
 <translation id="555968128798542113">У гэтага сайта ёсць дазвол на кіраванне прыладамі MIDI і іх перапраграмаванне</translation>
 <translation id="5559768063688681413">Няма захаваных прынтараў</translation>
 <translation id="55601339223879446">Рэгуліроўка граніц працоўнага стала ў межах дысплэя</translation>
@@ -6499,6 +6503,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе ({COUNT}) у &amp;новым акне}few{Адкрыць усе ({COUNT}) у &amp;новым акне}many{Адкрыць усе ({COUNT}) у &amp;новым акне}other{Адкрыць усе ({COUNT}) у &amp;новым акне}}</translation>
 <translation id="5964247741333118902">Убудаванае змесціва</translation>
 <translation id="5965607173855879702">Ідзе выдаленне даных…</translation>
+<translation id="5966067139745999860">Ярлык "<ph name="SHORTCUT_TITLE" />" перамешчаны на пазіцыю <ph name="SHORTCUT_POSITION" /> з <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Даныя сайтаў выдаляюцца з прылады пры закрыцці ўсіх вокнаў</translation>
 <translation id="5968022600320704045">Няма вынікаў пошуку</translation>
 <translation id="5968400720580217226">Рэжым AI</translation>
@@ -7164,6 +7169,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" /> не можа праверыць, ці былі раскрыты вашы паролі пры парушэнні прыватнасці даных. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
 <translation id="648927581764831596">Даступных няма</translation>
 <translation id="6490471652906364588">Прылада USB-C (правы порт)</translation>
+<translation id="6491890991754498129">Адкрыць &amp;з дапамогай…</translation>
 <translation id="649396225532207613">Гэты файл можа нанесці шкоду вашым асабістым уліковым запісам і ўліковым запісам у сацыяльных сетках</translation>
 <translation id="6493991254603208962">Паменшыць яркасць</translation>
 <translation id="6494327278868541139">Паказаць падрабязныя звесткі аб палепшанай абароне</translation>
@@ -7901,6 +7907,7 @@
 <translation id="7030304022046916278">Адпраўляе URL-адрасы на праверку ў Бяспечны прагляд</translation>
 <translation id="7030695672997239647">Націсніце правай кнопкай мышы на ўкладку, выберыце "Дадаць укладку ў групу", а затым "Новая група"</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – паслядоўны порт падключаны</translation>
+<translation id="7032334023419126809">Уліковы запіс Google: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">Максімальна дапушчальная колькасць сімвалаў – 62</translation>
 <translation id="7033731598469029604">Аўтаматычны прагляд</translation>
 <translation id="70356134210715500">Атрымаць ключы доступу</translation>
@@ -8201,7 +8208,6 @@
 <translation id="7273110280511444812">апошняе падключэнне: <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Заўсёды блакіраваць сайту <ph name="HOST" /> доступ да кіравання прыладамі MIDI і іх перапраграмавання</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> да поўнай зарадкі</translation>
-<translation id="7274453646377524248">Усе адкрытыя ўкладкі і вокны адкрыюцца зноў аўтаматычна.</translation>
 <translation id="7275950084263610253">Дазволены доступ да іншых прылад у лакальнай сетцы</translation>
 <translation id="727595954130325265">Купіць</translation>
 <translation id="727952162645687754">Памылка спампоўкі</translation>
@@ -8986,7 +8992,6 @@
 <translation id="7871691770940645922">Віртуальны дысплэй Брайля</translation>
 <translation id="787268756490971083">Выключана</translation>
 <translation id="7872758299142009420">Занадта шмат укладзеных груп: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Абнавіць, калі я не буду карыстацца</translation>
 <translation id="7876027585589532670">Не ўдалося змяніць ярлык</translation>
 <translation id="7876243839304621966">Выдаліць усе</translation>
 <translation id="7877126887274043657">Выправіць &amp;памылку сінхранізацыі</translation>
@@ -9434,6 +9439,7 @@
 <translation id="8199300056570174101">Уласцівасці прылады і сеткі (сэрвісу)</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8202827109322349110">Адкрыць у базавым рэдактары</translation>
+<translation id="8203105157044679380">Панэль Google Пошуку</translation>
 <translation id="8203152941016626022">Абагульванне паблізу: назва прылады</translation>
 <translation id="8203732864715032075">Адпраўляць вам апавяшчэнні і зрабіць гэты камп’ютар стандартным для праграмы "Паведамленні". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Націсканне правай клавішай мышы</translation>
@@ -10042,6 +10048,7 @@
 <translation id="8666268818656583275">Функцыянальныя клавішы цяпер будуць працаваць як клавішы верхняга радка.</translation>
 <translation id="8666321716757704924">Вэб-сайту <ph name="WEBSITE" /> зноў дадзены дазволы</translation>
 <translation id="8667261224612332309">Знойдзены паролі, якія можна замяніць на больш надзейныя</translation>
+<translation id="8667543835349994431">Адкрыць &amp;з дапамогай…</translation>
 <translation id="8668378421690365723">Прылада можа перастаць працаваць належным чынам. Магчымыя праблемы з прадукцыйнасцю і бяспекай.</translation>
 <translation id="8669284339312441707">Цяплей</translation>
 <translation id="8670537393737592796">Каб хутка вяртацца сюды, усталюйце праграму "<ph name="APP_NAME" />", націснуўшы кнопку ўсталявання</translation>
@@ -10150,6 +10157,7 @@
 <translation id="8738418093147087440">Пошук па назве краіны, мовы або спосабу ўводу</translation>
 <translation id="8741944563400125534">Майстар наладкі доступу праз пераключальнікі</translation>
 <translation id="8743357966416354615">Асяроддзе распрацоўкі пад кіраваннем (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Перайсці на старонку <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Рамадзі</translation>
 <translation id="8744913471985800082">Перш чым абнаўляць URL-адрас, пераканайцеся, што ўнесенае ў яго змяненне вас задавольвае.</translation>
 <translation id="8745034592125932220">Сайту не дазволена захоўваць даныя на прыладзе</translation>
@@ -10246,6 +10254,7 @@
 <translation id="8818152010000655963">Шпалеры</translation>
 <translation id="8818988764764862764">Акно перамешчана ўлева</translation>
 <translation id="8819510664278523111">EID прылады: <ph name="EID_NUMBER" />; IMEI прылады: <ph name="IMEI_NUMBER" />; серыйны нумар: <ph name="SERIAL_NUMBER" />. Гэтыя нумары можна выкарыстаць для актывацыі сэрвісу.</translation>
+<translation id="8819762137851963556">Знайсці курсор мышы</translation>
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="8821045908425223359">Задаваць IP-адрас аўтаматычна</translation>
 <translation id="8821206216942230957">Ваш уліковы запіс не мае доступу да Gemini ў Chrome</translation>

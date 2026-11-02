@@ -1206,6 +1206,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3030331669969285614">Te oznaczenia zapobiegają zmianom powodującym niezgodność lub je cofają. Będą one dostępne tylko przez ograniczony czas.</translation>
 <translation id="3033200136993730761">Dzięki adresowi domowemu możesz korzystać z usług Google w bardziej efektywny sposób, np. otrzymywać trafniejsze wyniki wyszukiwania i wskazówki dojazdu w Mapach Google. Adres możesz zmienić lub usunąć <ph name="BEGIN_LINK" />na koncie Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Czujniki ruchu i światła są na razie dozwolone</translation>
+<translation id="3034219227076811559">Wyszukiwarka Google w Chrome</translation>
 <translation id="3034526003882782781">Przewijanie i powiększanie jest dozwolone</translation>
 <translation id="3037177537145227281">Monitoruję cenę</translation>
 <translation id="3037605927509011580">Kurza twarz!</translation>
@@ -3223,6 +3224,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6342069812937806050">Przed momentem</translation>
 <translation id="6342171901363060580">Widzisz to ostrzeżenie, ponieważ korzystasz z trybu incognito, a ta witryna nie obsługuje HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Trasa</translation>
+<translation id="6345664705388712774">Dodaj obrazy do wyszukiwania</translation>
 <translation id="6348220984832452017">Aktywne warianty</translation>
 <translation id="6349101878882523185">Zainstaluj aplikację <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Płać bez kopiowania i wklejania kodu Pix. <ph name="BEGIN_LINK1" />Jak to działa<ph name="END_LINK1" /></translation>
@@ -4324,6 +4326,7 @@ Dodatkowe informacje:
 <translation id="8199437620497683918">Dysk optyczny (błyszczący)</translation>
 <translation id="8202097416529803614">Podsumowanie zamówienia</translation>
 <translation id="8202370299023114387">Konflikt</translation>
+<translation id="8203105157044679380">Panel wyszukiwarki Google</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">Zawartość drukowanych stron i informacje o drukarce są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane pod kątem danych wrażliwych, a także mogą być przechowywane zgodnie z zasadami firmy i widoczne dla administratora.</translation>
 <translation id="8210490490377416373">Wybierz nazwę zasady</translation>

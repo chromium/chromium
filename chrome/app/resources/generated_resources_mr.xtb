@@ -5789,7 +5789,6 @@
 <translation id="5392864580775235956">इमेज जोडा आणि संपादित करा</translation>
 <translation id="5393330235977997602">पिनसंबंधित पर्याय</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{लिंक}other{# लिंक}}</translation>
-<translation id="5394400188854257119">५ मिनिटे</translation>
 <translation id="5394529681046491727">वायफाय डिरेक्ट</translation>
 <translation id="5395353843367783642">तुमच्या खात्यामध्ये सेव्ह करत आहे...</translation>
 <translation id="5397656531674854099">तुमच्या फोनवर तुमचे टॅब गट वापरा</translation>
@@ -6017,6 +6016,7 @@
 <translation id="5558129378926964177">झूम &amp;वाढवा</translation>
 <translation id="5558594314398017686">OS डीफॉल्ट (उपलब्ध असताना)</translation>
 <translation id="5559311991468302423">पत्ता हटवा</translation>
+<translation id="5559646482656763170">वापरात नसताना अपडेट करा</translation>
 <translation id="555968128798542113">ही साइट तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करू शकते</translation>
 <translation id="5559768063688681413">सेव्ह केलेले कोणतेही प्रिंटर नाहीत</translation>
 <translation id="55601339223879446">डिस्प्लेामध्ये तुमच्या डेस्कटॉपच्या सीमा समायोजित करा</translation>
@@ -6518,6 +6518,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{Open all in new window}=1{नवीन विंडोमध्ये उघडा}other{सर्व ({COUNT}) नवीन विंडोमध्ये उघडा}}</translation>
 <translation id="5964247741333118902">एंबेड केलेला आशय</translation>
 <translation id="5965607173855879702">डेटा हटवत आहे...</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> ला <ph name="TOTAL_SHORTCUTS" /> पैकी <ph name="SHORTCUT_POSITION" /> स्थानावर हलवले आहे.</translation>
 <translation id="5966511985653515929">तुम्ही सर्व विंडो बंद करता, तेव्हा तुमच्या डिव्हाइसवरून साइट डेटा हटवला जातो</translation>
 <translation id="5968022600320704045">कोणतेही शोध परिणाम नाहीत</translation>
 <translation id="5968400720580217226">AI मोड</translation>
@@ -7185,6 +7186,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6488266788670893993">डेटा भंग होण्याची शक्यता असल्यामुळे, <ph name="BRAND" /> तुमचे पासवर्ड तपासू शकत नाही. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="648927581764831596">काहीही उपलब्ध नाही</translation>
 <translation id="6490471652906364588">USB-C डिव्‍हाइस (उजवे पोर्ट)</translation>
+<translation id="6491890991754498129">यामध्ये उघडा...</translation>
 <translation id="649396225532207613">ही फाइल तुमच्या वैयक्तिक आणि सोशल नेटवर्क खात्यांना हानी पोहोचवू शकते</translation>
 <translation id="6493991254603208962">चकाकी कमी करा</translation>
 <translation id="6494327278868541139">वर्धित संरक्षणाचे तपशील दाखवा</translation>
@@ -8218,7 +8220,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7273110280511444812"><ph name="DATE" /> रोजी अंतिम संलग्न केले</translation>
 <translation id="7273894023751806510"><ph name="HOST" /> ला तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्यापासून नेहमी ब्लॉक करा</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - पूर्ण होण्‍यास <ph name="TIME" /></translation>
-<translation id="7274453646377524248">तुमचे सर्व उघडे टॅब आणि विंडो आपोआप पुन्हा उघडतील.</translation>
 <translation id="7275950084263610253">तुमच्या स्थानिक नेटवर्कवरील इतर डिव्हाइस ॲक्सेस करण्याची अनुमती आहे</translation>
 <translation id="727595954130325265">आता खरेदी करा</translation>
 <translation id="727952162645687754">डाउनलोड एरर</translation>
@@ -9003,7 +9004,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7871691770940645922">व्हर्च्युअल ब्रेल डिस्प्ले</translation>
 <translation id="787268756490971083">बंद</translation>
 <translation id="7872758299142009420">नेस्ट केलेले खूप जास्त गट आहेत: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">मी इनॅक्टिव्ह असताना अपडेट करा</translation>
 <translation id="7876027585589532670">शॉर्टकट संपादित करू शकत नाही</translation>
 <translation id="7876243839304621966">सर्व काढून टाका</translation>
 <translation id="7877126887274043657">सिंकसंबंधित &amp;समस्येचे निराकरण करा</translation>
@@ -10060,6 +10060,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8666268818656583275">एफ की आता सिस्टीममधील सर्वात वरच्या पंक्ती की म्हणून वर्तन करतील</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> साठी पुन्हा परवानग्यांना अनुमती दिला आहे</translation>
 <translation id="8667261224612332309">तुमच्याकडे सुधारणा करता येतील असे पासवर्ड आहेत</translation>
+<translation id="8667543835349994431">यामध्ये उघडा...</translation>
 <translation id="8668378421690365723">तुमचे डिव्हाइस यापुढे कदाचित योग्यरीत्या काम करणार नाही आणि सुरक्षा व परफॉर्मन्सशी संबंधित समस्या येऊ शकतात.</translation>
 <translation id="8669284339312441707">गरम</translation>
 <translation id="8670537393737592796">येथे झटपट परत येण्यासाठी, इंस्टॉल करा बटण क्लिक करून <ph name="APP_NAME" /> इंस्टॉल करा</translation>
@@ -10168,6 +10169,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8738418093147087440">देश, भाषा किंवा इनपुटच्या नावांनुसार शोधा</translation>
 <translation id="8741944563400125534">स्विच अ‍ॅक्सेस सेटअप मार्गदर्शक</translation>
 <translation id="8743357966416354615">व्यवस्थापित विकास पर्यावरण (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">त्याऐवजी <ph name="URL" /> वर नेव्हिगेट करायचे आहे का?</translation>
 <translation id="8744641000906923997">रोमाजी</translation>
 <translation id="8744913471985800082">अपडेट करण्यापूर्वी तुम्ही URL बदलाबाबत सोयीस्कर असल्याची खात्री करण्यासाठी त्याचे पुनरावलोकन करा.</translation>
 <translation id="8745034592125932220">तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती नाही</translation>

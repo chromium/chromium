@@ -1206,6 +1206,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3030331669969285614">Këta flamurë parandalojnë ose anulojnë një ndryshim problematik dhe do të ofrohen vetëm për një kohë të kufizuar.</translation>
 <translation id="3033200136993730761">Adresa jote e shtëpisë mund të të ndihmojë të realizosh gjërat në shërbimet e Google, si p.sh. rezultate më të përshtatshme të "Kërko" dhe udhëzimet në Google Maps. Mund ta modifikosh ose ta fshish adresën tënde <ph name="BEGIN_LINK" />në "Llogarinë tënde të Google" <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Sensorët e lëvizjes dhe të dritës lejohen për momentin</translation>
+<translation id="3034219227076811559">"Kërko në Google" në Chrome</translation>
 <translation id="3034526003882782781">Lëvizja dhe zmadhimi lejohen</translation>
 <translation id="3037177537145227281">Çmimi po monitorohet</translation>
 <translation id="3037605927509011580">Ndërprerje aksidentale!</translation>
@@ -3222,6 +3223,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6342069812937806050">Pikërisht tani</translation>
 <translation id="6342171901363060580">Po e shikon këtë paralajmërim sepse ky sajt nuk e mbështet protokollin HTTPS dhe je në modalitetin "I fshehtë". <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Udhëzimet</translation>
+<translation id="6345664705388712774">Shto imazhe në kërkimin tënd</translation>
 <translation id="6348220984832452017">Variantet aktive</translation>
 <translation id="6349101878882523185">Instalo <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Paguaj pa kopjuar dhe ngjitur kodin Pix. <ph name="BEGIN_LINK1" />Shiko se si funksionon<ph name="END_LINK1" /></translation>
@@ -4322,6 +4324,7 @@ Detaje shtesë:
 <translation id="8199437620497683918">Disk optik (me shkëlqim)</translation>
 <translation id="8202097416529803614">Përmbledhja e porosisë</translation>
 <translation id="8202370299023114387">Konflikt</translation>
+<translation id="8203105157044679380">Paneli i "Kërko në Google"</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8208629719488976364">Përmbajtjet e faqeve që printon dhe informacionet për printerin tënd dërgohen te Google Cloud ose palë të treta për analizim. Për shembull, ato mund të skanohen për të dhëna delikate dhe mund të ruhen bazuar në politikat e kompanisë dhe të jenë të dukshme për administratorin tënd.</translation>
 <translation id="8210490490377416373">Zgjidh emrin e politikës</translation>

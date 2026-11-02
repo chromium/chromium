@@ -1206,6 +1206,7 @@
 <translation id="3030331669969285614">这些标记可以防止或还原破坏性更改，并且只能在有限的时间内使用。</translation>
 <translation id="3033200136993730761">保留住址可方便您畅享各项 Google 服务，例如在 Google 地图中获得更精确的搜索结果和路线。您可在 <ph name="BEGIN_LINK" />Google 账号 <ph name="ACCOUNT" /><ph name="END_LINK" /> 中修改或删除地址。</translation>
 <translation id="3033777742142108756">目前允许使用移动传感器和光传感器</translation>
+<translation id="3034219227076811559">Chrome 中的 Google 搜索</translation>
 <translation id="3034526003882782781">允许滚动和缩放</translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
@@ -3218,6 +3219,7 @@
 <translation id="6342069812937806050">刚刚</translation>
 <translation id="6342171901363060580">您之所以会看到此警告，是因为该网站不支持 HTTPS 且您处于无痕模式。<ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">路线</translation>
+<translation id="6345664705388712774">将图片添加到搜索会话</translation>
 <translation id="6348220984832452017">使用中的变体</translation>
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
 <translation id="6350739641326887427">无需复制和粘贴 Pix 代码即可付款。<ph name="BEGIN_LINK1" />了解运作方式<ph name="END_LINK1" /></translation>
@@ -4319,6 +4321,7 @@
 <translation id="8199437620497683918">光盘（平滑）</translation>
 <translation id="8202097416529803614">订单摘要</translation>
 <translation id="8202370299023114387">冲突</translation>
+<translation id="8203105157044679380">Google 搜索面板</translation>
 <translation id="8208363704094329105">300 x 400 毫米</translation>
 <translation id="8208629719488976364">系统会将您打印的页面内容和您的打印机相关信息发送到 Google Cloud 或第三方以供分析。例如，这些内容和信息可能会被扫描以确定其是否包含敏感数据，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="8210490490377416373">选择政策名称</translation>

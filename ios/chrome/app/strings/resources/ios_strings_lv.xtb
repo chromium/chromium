@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Clear History and Website Data (Notīrīt vēsturi un vietņu datus)</translation>
 <translation id="3190558889382726167">Parole ir saglabāta</translation>
 <translation id="3190736958609431397">Atcelt izsekošanu</translation>
+<translation id="3192820089569442694">Radās kļūda, izpildot jūsu datu atteikuma pieprasījumu</translation>
 <translation id="3208260410153224535">Jūsu organizācija izslēdza pierakstīšanos. Jaunas grāmatzīmes, paroles un citi dati tiks saglabāti tikai šajā ierīcē.</translation>
 <translation id="3211969308836412674">Atspraust vietni</translation>
 <translation id="3213807041830307252">Iepērcieties, tulkojiet un identificējiet redzamo saturu, izmantojot kameru un fotoattēlu galeriju.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Uzzināt vairāk par Google Lens</translation>
 <translation id="3449029510150690417">Izveidojiet jaunu ciļņu grupu, piešķirot tai nosaukumu un krāsu.</translation>
 <translation id="345348365500626747">Adrese atrasta</translation>
+<translation id="3453878468834191501">Pašreizējā cilne tiek kopīgota ar Gemini, kad sākat jaunu tērzēšanas sarunu. <ph name="BEGIN_LINK" />Uzziniet vairāk par MI un konfidencialitāti<ph name="END_LINK" />.</translation>
 <translation id="3459644598174926977">Izmantojiet frāzi “Live ar Gemini”, lai uzdotu jautājumus par lapu, skaļi apspriestu idejas un sarunātos.</translation>
 <translation id="3462768334899086950">Tas nozīmē, ka zaudēsiet nesaglabāto failu un pašreizējās cilnes.</translation>
 <translation id="3464194322481586217">Nevarēja izsekot cenai.</translation>
@@ -1626,6 +1628,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6078236141387574983">Atkārtoti pielāgot lapas augstumu</translation>
 <translation id="6084848228346514841">Atlasīt cilnes</translation>
 <translation id="6089212833343035912">Google paroļu pārvaldnieka PIN</translation>
+<translation id="6090690847556987004">Radās ar iestatījumu saistīta problēma. Atjauniniet pārlūku Chrome un operētājsistēmu iOS, pēc tam restartējiet ierīci, lai mēģinātu vēlreiz. Ja šī kļūda atkārtojas, iespējams, jūsu iPhone tālrunī netiek atbalstīts šis iestatījums.</translation>
 <translation id="6090760257419195752">Noraidītie brīdinājumi</translation>
 <translation id="6094325891006032858">Ieslēdziet drošu pārlūkošanu ar papildu aizsardzību</translation>
 <translation id="6096965253650248286">Atrasta(-as) <ph name="COUNT" /> cilne(-es)</translation>
@@ -2122,6 +2125,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7557508262441527045">Izrakstījies</translation>
 <translation id="7561196759112975576">Vienmēr</translation>
 <translation id="7561982940498449837">Aizvērt izvēlni</translation>
+<translation id="7562347727679121642">Pievienot attēlu meklēšanai</translation>
 <translation id="7566349809380613217">Atvērt kopīgoto grupu “<ph name="GROUP_TITLE" />” ar šādu ciļņu skaitu: <ph name="NUMBER_OF_TABS" />; <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Grāmatzīmes ir paslēptas.</translation>
 <translation id="7575664680938145959">Atvēršana ar vienu pieskārienu</translation>
@@ -2669,6 +2673,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="9203951165704618409">Pārvietojiet adreses joslu no augšdaļas uz apakšdaļu, lai pielāgotu pārlūkošanas iespējas.</translation>
 <translation id="9205189991633470489">Inkognito ciļņu bloķēšana</translation>
 <translation id="9206887540681440657">Ātrums</translation>
+<translation id="9218088788182688902">Radās ar iestatījumu saistīta problēma. Atjauniniet pārlūku Chrome un operētājsistēmu iPadOS, pēc tam restartējiet ierīci, lai mēģinātu vēlreiz. Ja šī kļūda atkārtojas, iespējams, jūsu iPad planšetdatorā šis iestatījums netiek atbalstīts.</translation>
 <translation id="9218430445555521422">Iestatīt kā noklusējumu</translation>
 <translation id="9219103736887031265">Attēli</translation>
 <translation id="9219154867334666734">Meklēt cilnēs…</translation>

@@ -1206,6 +1206,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3030331669969285614">Tyto příznaky zabraňují změně, která narušuje zpětnou kompatibilitu (nebo takovouto změnu vrací zpět), a budou k dispozici pouze po omezenou dobu.</translation>
 <translation id="3033200136993730761">Adresa domů vám pomůže napříč službami Google – získáte například relevantnější výsledky ve Vyhledávání a trasy v Mapách Google. Svou adresu můžete upravit nebo smazat <ph name="BEGIN_LINK" />ve svém účtu Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Senzory pohybu a světla jsou pro tentokrát povoleny</translation>
+<translation id="3034219227076811559">Vyhledávání Google v Chromu</translation>
 <translation id="3034526003882782781">Posouvání a přibližování povoleno</translation>
 <translation id="3037177537145227281">Cena sledována</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
@@ -3218,6 +3219,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6342069812937806050">Právě teď</translation>
 <translation id="6342171901363060580">Toto upozornění se vám zobrazuje, protože tento web nepodporuje protokol HTTPS a jste v anonymním režimu. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Trasa</translation>
+<translation id="6345664705388712774">Přidat k vyhledávání obrázky</translation>
 <translation id="6348220984832452017">Aktivní variace</translation>
 <translation id="6349101878882523185">Nainstalovat aplikaci <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Plaťte bez kopírování a vkládání kódu Pix. <ph name="BEGIN_LINK1" />Jak to funguje<ph name="END_LINK1" /></translation>
@@ -4318,6 +4320,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8199437620497683918">Optický disk (lesklý)</translation>
 <translation id="8202097416529803614">Shrnutí objednávky</translation>
 <translation id="8202370299023114387">Konflikt</translation>
+<translation id="8203105157044679380">Panel Vyhledávání Google</translation>
 <translation id="8208363704094329105">300 × 400 mm</translation>
 <translation id="8208629719488976364">Obsah tisknutých stránek a informace o vaší tiskárně se odesílají do služby Google Cloud nebo třetím stranám k analýze. Může se u něj například kontrolovat přítomnost citlivých údajů může být uchováván v souladu se zásadami společnosti a může k němu mít přístup váš administrátor.</translation>
 <translation id="8210490490377416373">Vyberte název zásady</translation>

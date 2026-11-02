@@ -1206,6 +1206,7 @@
 <translation id="3030331669969285614">이 플래그는 브레이킹 체인지를 방지하거나 되돌리며 제한된 기간 동안만 사용할 수 있습니다.</translation>
 <translation id="3033200136993730761">집 주소를 입력하면 더 관련성 높은 Google 검색 결과를 확인하고 Google 지도에서 경로 안내를 받는 등 Google 서비스 전반에서 작업을 처리하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />Google 계정(<ph name="ACCOUNT" />)에서<ph name="END_LINK" /> 주소를 수정하거나 삭제할 수 있습니다.</translation>
 <translation id="3033777742142108756">현재 움직임 감지 센서 및 조도 센서가 허용되어 있습니다</translation>
+<translation id="3034219227076811559">Chrome에서 Google 검색</translation>
 <translation id="3034526003882782781">스크롤 및 확대/축소가 허용됨</translation>
 <translation id="3037177537145227281">가격 추적</translation>
 <translation id="3037605927509011580">앗, 이런!</translation>
@@ -3223,6 +3224,7 @@
 <translation id="6342069812937806050">방금</translation>
 <translation id="6342171901363060580">HTTPS를 지원하지 않는 사이트이며 현재 시크릿 모드를 사용하고 있기 때문에 이 경고가 표시되었습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">경로</translation>
+<translation id="6345664705388712774">검색에 이미지 추가</translation>
 <translation id="6348220984832452017">활성 버전</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
 <translation id="6350739641326887427">Pix 코드를 복사하여 붙여넣을 필요 없이 결제할 수 있습니다. <ph name="BEGIN_LINK1" />작동 방식 보기<ph name="END_LINK1" /></translation>
@@ -4323,6 +4325,7 @@
 <translation id="8199437620497683918">광디스크(유광)</translation>
 <translation id="8202097416529803614">주문 요약</translation>
 <translation id="8202370299023114387">충돌</translation>
+<translation id="8203105157044679380">Google 검색 패널</translation>
 <translation id="8208363704094329105">300x400mm</translation>
 <translation id="8208629719488976364">인쇄하는 페이지의 콘텐츠와 프린터 정보가 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어, 민감한 정보를 찾기 위해 내용을 스캔할 수 있으며 회사 정책에 따라 보관되어 관리자가 볼 수도 있습니다.</translation>
 <translation id="8210490490377416373">정책 이름 선택</translation>

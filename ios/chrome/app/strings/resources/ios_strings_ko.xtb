@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">방문 기록 및 웹사이트 데이터 지우기</translation>
 <translation id="3190558889382726167">비밀번호 저장됨</translation>
 <translation id="3190736958609431397">추적 취소</translation>
+<translation id="3192820089569442694">데이터 사용 중지 요청에 문제가 발생했습니다.</translation>
 <translation id="3208260410153224535">조직에서 로그인을 사용 중지했습니다. 새 북마크, 비밀번호 등이 이 기기에만 저장됩니다.</translation>
 <translation id="3211969308836412674">사이트 고정 해제</translation>
 <translation id="3213807041830307252">카메라와 사진 갤러리를 사용하여 지금 보고 있는 항목을 쇼핑하고, 번역하고, 식별하세요</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Google 렌즈 자세히 알아보기</translation>
 <translation id="3449029510150690417">이름 및 색상을 지정하여 새로운 탭 그룹을 생성합니다.</translation>
 <translation id="345348365500626747">주소 찾음</translation>
+<translation id="3453878468834191501">새 채팅을 시작하면 현재 탭이 Gemini와 공유됩니다. <ph name="BEGIN_LINK" />AI 및 개인 정보 보호에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Gemini Live 대화로 페이지에 관해 질문하고, 소리 내어 브레인스토밍하고, 대화를 주고받을 수 있습니다.</translation>
 <translation id="3462768334899086950">저장되지 않은 파일이 삭제되고 현재 탭이 닫힙니다</translation>
 <translation id="3464194322481586217">가격을 추적할 수 없습니다.</translation>
@@ -1626,6 +1628,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6078236141387574983">시트 높이 재조정</translation>
 <translation id="6084848228346514841">탭 선택</translation>
 <translation id="6089212833343035912">Google 비밀번호 관리자 PIN</translation>
+<translation id="6090690847556987004">이 설정에서 문제가 발생했습니다. Chrome 및 iOS를 업데이트한 후 기기를 다시 시작하여 다시 시도해 보세요. 문제가 계속 발생하면 iPhone에서 이 설정을 지원하지 않는 것일 수 있습니다.</translation>
 <translation id="6090760257419195752">닫은 경고</translation>
 <translation id="6094325891006032858">향상된 세이프 브라우징 사용 설정하기</translation>
 <translation id="6096965253650248286"><ph name="COUNT" />개 찾음</translation>
@@ -2122,6 +2125,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7557508262441527045">로그아웃됨</translation>
 <translation id="7561196759112975576">항상</translation>
 <translation id="7561982940498449837">메뉴 닫기</translation>
+<translation id="7562347727679121642">검색에 이미지 추가</translation>
 <translation id="7566349809380613217"><ph name="GROUP_TITLE" /> 열기, <ph name="NUMBER_OF_TABS" /> 공유 그룹, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">북마크가 숨겨져 있음</translation>
 <translation id="7575664680938145959">탭 한 번으로 여세요</translation>
@@ -2669,6 +2673,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9203951165704618409">주소 표시줄을 상단에서 하단으로 전환하여 탐색 환경을 맞춤설정하세요</translation>
 <translation id="9205189991633470489">시크릿 탭 잠금</translation>
 <translation id="9206887540681440657">속도</translation>
+<translation id="9218088788182688902">이 설정에서 문제가 발생했습니다. Chrome 및 iPadOS를 업데이트한 후 기기를 다시 시작하여 다시 시도해 보세요. 문제가 계속 발생하면 iPad에서 이 설정을 지원하지 않는 것일 수 있습니다.</translation>
 <translation id="9218430445555521422">기본값으로 설정</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="9219154867334666734">탭 검색…</translation>

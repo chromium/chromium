@@ -684,6 +684,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1523279371236772909">Wyświetlono w zeszłym miesiącu</translation>
 <translation id="1523978563989812243">Mechanizmy zamiany tekstu na mowę</translation>
 <translation id="1524563461097350801">Nie, dziękuję</translation>
+<translation id="1524903662136734524">Dodaj z Dysku</translation>
 <translation id="1525740877599838384">Do określania lokalizacji używaj tylko Wi-Fi</translation>
 <translation id="1526274304859009691">Zaloguj się, aby mieć dostęp do rozszerzeń oraz innych danych z urządzenia <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Dokument bez tytułu</translation>
@@ -2684,6 +2685,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3032204772252313646">Napisy automatyczne</translation>
 <translation id="3032272345862007156">Ostatni motyw AI: <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">Włączono tryb Nie przeszkadzać</translation>
+<translation id="3034219227076811559">Wyszukiwarka Google w Chrome</translation>
 <translation id="3036546437875325427">Włącz Flasha</translation>
 <translation id="3036602651971781493">Strony mogą korzystać z usługi ochrony treści, aby odtwarzać treści chronione prawem autorskim lub sprawdzać, z jakiej przeglądarki korzystasz</translation>
 <translation id="3036907164806060573">Sen</translation>
@@ -3198,6 +3200,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3437072258256045988">Zarządzaj aktywnością w aplikacjach z Gemini</translation>
 <translation id="3437397693214267762">Wyświetlaj kalendarz Outlooka i pliki SharePoint oraz OneDrive</translation>
 <translation id="3437494162908353428">Narzędzia deweloperskie są niedozwolone w przypadku tego adresu URL.</translation>
+<translation id="3437498061222607130">Korzystasz z wyszukiwarki na koncie <ph name="USER_EMAIL" /></translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do mikrofonu</translation>
 <translation id="3439970425423980614">Otwieranie podglądu PDF</translation>
@@ -5024,6 +5027,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4823484602432206655">Odczyt i zmiana ustawień użytkownika oraz urządzenia</translation>
 <translation id="4824037980212326045">Tworzenie i przywracanie kopii zapasowej Linuksa</translation>
 <translation id="4824263260587281352">Zmień kombinację klawiszy <ph name="KEY_COMBINATION" /></translation>
+<translation id="4824320026281030716">Konto Google: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Anulować synchronizację?</translation>
 <translation id="4825462365587146530">Więcej informacji o Chrome Root Store znajdziesz w nowej karcie.</translation>
 <translation id="4825532258163983651">Nie udało się usunąć klucza</translation>
@@ -5760,7 +5764,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5392864580775235956">Dodawanie i edytowanie obrazu</translation>
 <translation id="5393330235977997602">Opcje kodu PIN</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}few{# linki}many{# linków}other{# linku}}</translation>
-<translation id="5394400188854257119">5 minut</translation>
 <translation id="5394529681046491727">Wi‑Fi Direct</translation>
 <translation id="5395353843367783642">Zapisuję na Twoim koncie…</translation>
 <translation id="5397656531674854099">Używaj grup kart na telefonie</translation>
@@ -5987,6 +5990,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5558129378926964177">Po&amp;większ</translation>
 <translation id="5558594314398017686">Ustawienie domyślne systemu operacyjnego (jeśli jest dostępne)</translation>
 <translation id="5559311991468302423">Usuń adres</translation>
+<translation id="5559646482656763170">Zaktualizuj, gdy nie jest używany</translation>
 <translation id="555968128798542113">Ta strona może sterować urządzeniami MIDI i je przeprogramowywać</translation>
 <translation id="5559768063688681413">Brak zapisanych drukarek</translation>
 <translation id="55601339223879446">Przesuń krawędzie pulpitu na ekranie</translation>
@@ -6488,6 +6492,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Otwórz wszystkie w &amp;nowym oknie}=1{Otwórz w &amp;nowym oknie}few{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}many{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}other{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}}</translation>
 <translation id="5964247741333118902">Umieszczona treść</translation>
 <translation id="5965607173855879702">Usuwam dane…</translation>
+<translation id="5966067139745999860">Przeniesiono skrót <ph name="SHORTCUT_TITLE" /> na pozycję <ph name="SHORTCUT_POSITION" /> z <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Dane witryn są usuwane z urządzenia po zamknięciu wszystkich okien</translation>
 <translation id="5968022600320704045">Brak wyników wyszukiwania</translation>
 <translation id="5968400720580217226">Tryb AI</translation>
@@ -7153,6 +7158,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> nie może sprawdzić Twoich haseł pod kątem naruszenia bezpieczeństwa danych. Sprawdź połączenie z internetem.</translation>
 <translation id="648927581764831596">Brak dostępnych</translation>
 <translation id="6490471652906364588">Urządzenie USB-C (prawy port)</translation>
+<translation id="6491890991754498129">Otwórz &amp;za pomocą…</translation>
 <translation id="649396225532207613">Ten plik może zaszkodzić Twoim kontom osobistym i kontom w sieciach społecznościowch</translation>
 <translation id="6493991254603208962">Zmniejsz jasność</translation>
 <translation id="6494327278868541139">Pokaż szczegóły silniejszej ochrony</translation>
@@ -7887,6 +7893,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7030304022046916278">Wysyła adresy URL do sprawdzenia przez usługę Bezpieczne przeglądanie.</translation>
 <translation id="7030695672997239647">Kliknij kartę prawym przyciskiem i wybierz „Dodaj kartę do grupy”, a następnie „Nowa grupa”</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – podłączono port szeregowy</translation>
+<translation id="7032334023419126809">Konto Google: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">Wpisany tekst może mieć maksymalnie 62 znaki</translation>
 <translation id="7033731598469029604">Automatyczne przeglądanie</translation>
 <translation id="70356134210715500">Uzyskaj klucze dostępu</translation>
@@ -8187,7 +8194,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7273110280511444812">ostatnio podłączone w dniu <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Nigdy nie zezwalaj stronie <ph name="HOST" /> na sterowanie urządzeniami MIDI ani na ich przeprogramowywanie</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – pełne naładowanie za <ph name="TIME" /></translation>
-<translation id="7274453646377524248">Wszystkie otwarte karty i okna automatycznie otworzą się z powrotem.</translation>
 <translation id="7275950084263610253">Ma dostęp do innych urządzeń w sieci lokalnej</translation>
 <translation id="727595954130325265">Kup teraz</translation>
 <translation id="727952162645687754">Błąd pobierania</translation>
@@ -8971,7 +8977,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7871691770940645922">Wirtualny monitor brajlowski</translation>
 <translation id="787268756490971083">Wyłączono</translation>
 <translation id="7872758299142009420">Za dużo zagnieżdżonych grup: <ph name="ERROR_LINE" /></translation>
-<translation id="7875512939198436953">Zaktualizuj, gdy odejdę od urządzenia</translation>
 <translation id="7876027585589532670">Nie można edytować skrótu</translation>
 <translation id="7876243839304621966">Usuń wszystkie</translation>
 <translation id="7877126887274043657">Rozwiąż problem z &amp;synchronizacją</translation>
@@ -9419,6 +9424,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8199300056570174101">Właściwości sieci (usługi) i urządzenia</translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8202827109322349110">Otwórz w podstawowym edytorze</translation>
+<translation id="8203105157044679380">Panel wyszukiwarki Google</translation>
 <translation id="8203152941016626022">Udostępnianie w pobliżu nazwa urządzenia</translation>
 <translation id="8203732864715032075">Wysyła powiadomienia i sprawia, że ten komputer jest domyślnie używany do obsługi Wiadomości. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Kliknięcie prawym przyciskiem</translation>
@@ -10025,6 +10031,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8666268818656583275">Klawisze funkcyjne będą teraz działać tak samo jak systemowe klawisze z górnego rzędu</translation>
 <translation id="8666321716757704924">Witryna <ph name="WEBSITE" /> ponownie ma uprawnienia</translation>
 <translation id="8667261224612332309">Masz hasła, które można poprawić</translation>
+<translation id="8667543835349994431">Otwórz &amp;za pomocą…</translation>
 <translation id="8668378421690365723">Twoje urządzenie może przestać działać prawidłowo i możesz mieć problemy z bezpieczeństwem i wydajnością.</translation>
 <translation id="8669284339312441707">Cieplejsze</translation>
 <translation id="8670537393737592796">Aby szybko tu wrócić, zainstaluj aplikację <ph name="APP_NAME" /> (kliknij przycisk instalacji)</translation>
@@ -10131,6 +10138,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8738418093147087440">Wyszukaj według kraju, języka lub nazwy metody wprowadzania</translation>
 <translation id="8741944563400125534">Przewodnik po konfiguracji Switch Access</translation>
 <translation id="8743357966416354615">Zarządzane środowisko programistyczne (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Przejść do <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Rōmaji</translation>
 <translation id="8744913471985800082">Przed aktualizacją sprawdź zmianę adresu URL, aby upewnić się, że jest odpowiednia.</translation>
 <translation id="8745034592125932220">Nie może zapisywać danych na urządzeniu</translation>
@@ -10227,6 +10235,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8818988764764862764">Okno zostało przeniesione w lewo</translation>
 <translation id="8819510664278523111">EID urządzenia to <ph name="EID_NUMBER" />, jego IMEI to <ph name="IMEI_NUMBER" />, a numer seryjny to <ph name="SERIAL_NUMBER" />. Tych numerów można użyć do aktywowania usługi.</translation>
+<translation id="8819762137851963556">Znajdź kursor myszy</translation>
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="8821045908425223359">Skonfiguruj adres IP automatycznie</translation>
 <translation id="8821206216942230957">Twoje konto nie ma dostępu do Gemini w Chrome</translation>
