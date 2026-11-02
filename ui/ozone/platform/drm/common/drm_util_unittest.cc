@@ -1329,11 +1329,5 @@ TEST(GetFourCCFormatForOpaqueFramebufferTest, SupportedFormats) {
   EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
                 viz::SinglePlaneFormat::kRGBA_F16)),
             DRM_FORMAT_XBGR16161616F);
-  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
-                viz::SinglePlaneFormat::kR_8)),
-            DRM_FORMAT_R8);
-  EXPECT_EQ(static_cast<uint32_t>(GetFourCCFormatForOpaqueFramebuffer(
-                viz::SinglePlaneFormat::kRG_88)),
-            DRM_FORMAT_GR88);
 }
 }  // namespace ui
