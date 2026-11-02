@@ -78,7 +78,24 @@ class UI_ANDROID_EXPORT EventForwarder {
                    const base::android::JavaRef<jstring>& j_url,
                    const base::android::JavaRef<jstring>& j_customData,
                    const base::android::JavaRef<jstring>& j_effectAllowed,
-                   const base::android::JavaRef<jstring>& j_dragId);
+                   const base::android::JavaRef<jstring>& j_dragId,
+                   const base::android::JavaRef<jbyteArray>& j_imageBytes,
+                   const base::android::JavaRef<jstring>& j_imageExtension,
+                   const base::android::JavaRef<jstring>& j_imageFilename);
+
+  // Dispatches a drag event carrying `clip_data` (an
+  // `android.content.ClipData`) through the Java `EventForwarder`, as if it had
+  // been delivered by `View#onDragEvent`, so that its `ClipData` parsing and
+  // content URI filtering run. Coordinates are in physical pixels relative to
+  // this forwarder's view. Used by browser tests to replay drags captured from
+  // a `DragAndDropDelegate`.
+  void DispatchDragEventForTesting(
+      int32_t action,
+      float x,
+      float y,
+      float screen_x,
+      float screen_y,
+      const base::android::JavaRef<jobject>& clip_data);
 
   bool OnGestureEvent(JNIEnv* env, int32_t type, int64_t time_ms, float scale);
 
@@ -131,6 +148,12 @@ class UI_ANDROID_EXPORT EventForwarder {
   void RemoveObserver(Observer* observer);
 
   gfx::PointF GetCurrentTouchSequenceOffset();
+
+  // Delivers images dragged out of this browser's own web contents to this
+  // view as DropData::file_contents, as desktop platforms do for every drop
+  // target. Off by default so that ordinary tabs continue receiving intra-app
+  // image drags as DropData::filenames.
+  void SetAllowIntraAppImageDrops(bool allow);
 
   base::ObserverList<Observer>& GetObserversForTesting() { return observers_; }
 

@@ -26,7 +26,10 @@ DragEventAndroid::DragEventAndroid(
     const base::android::JavaRef<jstring>& url,
     const base::android::JavaRef<jstring>& custom_data,
     const base::android::JavaRef<jstring>& effect_allowed,
-    const base::android::JavaRef<jstring>& drag_id)
+    const base::android::JavaRef<jstring>& drag_id,
+    const base::android::JavaRef<jbyteArray>& image_bytes,
+    const base::android::JavaRef<jstring>& image_extension,
+    const base::android::JavaRef<jstring>& image_filename)
     : action_(action),
       location_(location),
       screen_location_(screen_location),
@@ -39,6 +42,9 @@ DragEventAndroid::DragEventAndroid(
   custom_data_.Reset(env, custom_data);
   effect_allowed_.Reset(env, effect_allowed);
   drag_id_.Reset(env, drag_id);
+  image_bytes_.Reset(env, image_bytes);
+  image_extension_.Reset(env, image_extension);
+  image_filename_.Reset(env, image_filename);
 }
 
 DragEventAndroid::~DragEventAndroid() {}
@@ -71,6 +77,18 @@ ScopedJavaLocalRef<jstring> DragEventAndroid::GetJavaDragId() const {
   return ScopedJavaLocalRef<jstring>(drag_id_);
 }
 
+ScopedJavaLocalRef<jbyteArray> DragEventAndroid::GetJavaImageBytes() const {
+  return ScopedJavaLocalRef<jbyteArray>(image_bytes_);
+}
+
+ScopedJavaLocalRef<jstring> DragEventAndroid::GetJavaImageExtension() const {
+  return ScopedJavaLocalRef<jstring>(image_extension_);
+}
+
+ScopedJavaLocalRef<jstring> DragEventAndroid::GetJavaImageFilename() const {
+  return ScopedJavaLocalRef<jstring>(image_filename_);
+}
+
 std::unique_ptr<DragEventAndroid> DragEventAndroid::CreateFor(
     const gfx::PointF& new_location) const {
   gfx::PointF new_screen_location =
@@ -78,7 +96,8 @@ std::unique_ptr<DragEventAndroid> DragEventAndroid::CreateFor(
   JNIEnv* env = AttachCurrentThread();
   return std::make_unique<DragEventAndroid>(
       env, action_, new_location, new_screen_location, *mime_types_, has_files_,
-      filenames_, text_, html_, url_, custom_data_, effect_allowed_, drag_id_);
+      filenames_, text_, html_, url_, custom_data_, effect_allowed_, drag_id_,
+      image_bytes_, image_extension_, image_filename_);
 }
 
 }  // namespace ui

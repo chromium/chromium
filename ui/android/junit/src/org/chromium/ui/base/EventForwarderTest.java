@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -25,10 +26,15 @@ import static org.mockito.Mockito.verify;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.ProviderInfo;
 import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PersistableBundle;
+import android.os.Process;
 import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -48,7 +54,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowContentResolver;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -57,6 +65,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.base.EventForwarder.TouchSequenceObserver;
 import org.chromium.ui.dragdrop.DropDataAndroid;
+import org.chromium.ui.dragdrop.DropDataContentProvider;
+import org.chromium.ui.dragdrop.DropDataProviderImpl;
 import org.chromium.ui.util.MotionEventUtils;
 
 import java.io.IOException;
@@ -82,6 +92,13 @@ public class EventForwarderTest {
             };
 
     private static final long NATIVE_EVENT_FORWARDER_ID = 1;
+
+    /** A URI of a provider of this app other than its DropDataProvider. */
+    private static final String FILE_PROVIDER_URI =
+            "content://"
+                    + ContextUtils.getApplicationContext().getPackageName()
+                    + ".FileProvider/images/image.jpg";
+
     private final int mScaledTouchSlop =
             ViewConfiguration.get(ContextUtils.getApplicationContext()).getScaledTouchSlop();
 
@@ -866,57 +883,131 @@ public class EventForwarderTest {
             String expectedText,
             String expectedHtml,
             String expectedUrl) {
+        validateDragDropEvent(
+                mimeTypes,
+                items,
+                expectedFilenames,
+                expectedText,
+                expectedHtml,
+                expectedUrl,
+                /* allowIntraAppImageDrops= */ false,
+                /* dragId= */ null,
+                /* expectedImageBytes= */ null,
+                /* expectedImageExtension= */ null,
+                /* expectedImageFilename= */ null);
+    }
+
+    private void validateDragDropEvent(
+            String[] mimeTypes,
+            ClipData.Item[] items,
+            String[][] expectedFilenames,
+            String expectedText,
+            String expectedHtml,
+            String expectedUrl,
+            boolean allowIntraAppImageDrops,
+            String dragId,
+            byte[] expectedImageBytes,
+            String expectedImageExtension,
+            String expectedImageFilename) {
         ClipData clipData = new ClipData("label", mimeTypes, items[0]);
         for (int i = 1; i < items.length; i++) {
             clipData.addItem(items[i]);
         }
         ClipDescription clipDescription = new ClipDescription("label", mimeTypes);
+        if (dragId != null) {
+            PersistableBundle extras = new PersistableBundle();
+            extras.putString(DropDataAndroid.EXTRA_DRAG_ID, dragId);
+            clipDescription.setExtras(extras);
+        }
         EventForwarder eventForwarder =
                 new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
-        DragEvent event = mock(DragEvent.class);
-        doReturn(DragEvent.ACTION_DROP).when(event).getAction();
-        doReturn(14f).when(event).getX();
-        doReturn(21f).when(event).getY();
-        doReturn(clipData).when(event).getClipData();
-        doReturn(clipDescription).when(event).getClipDescription();
-        HistogramWatcher histograms =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Android.DragDrop.Files.Count", expectedFilenames.length)
-                        .build();
-        eventForwarder.onDragEvent(event, mView);
-        verify(mNativeMock, times(1))
-                .onDragEvent(
-                        eq(EventForwarderTest.NATIVE_EVENT_FORWARDER_ID),
-                        eq(DragEvent.ACTION_DROP),
-                        eq(14.0f), // x
-                        eq(21.0f), // y
-                        eq(14.0f), // screenX
-                        eq(21.0f), // screenY
-                        eq(mimeTypes),
-                        anyBoolean(), // hasFiles
-                        argThat(
-                                (String[][] filenames) -> {
-                                    if (filenames.length != expectedFilenames.length) {
-                                        return false;
-                                    }
-                                    for (int i = 0; i < filenames.length; i++) {
-                                        if (filenames[i].length != 2
-                                                || !expectedFilenames[i][0].equals(filenames[i][0])
-                                                || !expectedFilenames[i][1].equals(
-                                                        filenames[i][1])) {
+        try {
+            eventForwarder.setAllowIntraAppImageDrops(allowIntraAppImageDrops);
+            DragEvent event = mock(DragEvent.class);
+            doReturn(DragEvent.ACTION_DROP).when(event).getAction();
+            doReturn(14f).when(event).getX();
+            doReturn(21f).when(event).getY();
+            doReturn(clipData).when(event).getClipData();
+            doReturn(clipDescription).when(event).getClipDescription();
+            HistogramWatcher histograms =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(
+                                    "Android.DragDrop.Files.Count", expectedFilenames.length)
+                            .build();
+            eventForwarder.onDragEvent(event, mView);
+            verify(mNativeMock, times(1))
+                    .onDragEvent(
+                            eq(EventForwarderTest.NATIVE_EVENT_FORWARDER_ID),
+                            eq(DragEvent.ACTION_DROP),
+                            eq(14.0f), // x
+                            eq(21.0f), // y
+                            eq(14.0f), // screenX
+                            eq(21.0f), // screenY
+                            eq(mimeTypes),
+                            anyBoolean(), // hasFiles
+                            argThat(
+                                    (String[][] filenames) -> {
+                                        if (filenames.length != expectedFilenames.length) {
                                             return false;
                                         }
-                                    }
-                                    return true;
-                                }),
-                        eq(expectedText),
-                        eq(expectedHtml),
-                        eq(expectedUrl),
-                        isNull(),
-                        isNull(),
-                        isNull());
-        histograms.assertExpected();
-        eventForwarder.destroy();
+                                        for (int i = 0; i < filenames.length; i++) {
+                                            if (filenames[i].length != 2
+                                                    || !expectedFilenames[i][0].equals(
+                                                            filenames[i][0])
+                                                    || !expectedFilenames[i][1].equals(
+                                                            filenames[i][1])) {
+                                                return false;
+                                            }
+                                        }
+                                        return true;
+                                    }),
+                            eq(expectedText),
+                            eq(expectedHtml),
+                            eq(expectedUrl),
+                            isNull(),
+                            isNull(),
+                            eq(dragId),
+                            eq(expectedImageBytes),
+                            eq(expectedImageExtension),
+                            eq(expectedImageFilename));
+            clearInvocations(mNativeMock);
+            histograms.assertExpected();
+        } finally {
+            eventForwarder.destroy();
+        }
+    }
+
+    /**
+     * Installs this app's DropDataProvider: with the ContentResolver so that ContentResolver#call
+     * reaches it, and with the PackageManager so that ContentUriUtils#isUriFromThisApp recognises
+     * its URIs (and those of FILE_PROVIDER_URI) as this app's. Returns the backing implementation.
+     */
+    private DropDataProviderImpl installDropDataProvider() {
+        Context context = ContextUtils.getApplicationContext();
+        String authority = DropDataProviderImpl.FULL_AUTH_URI.getAuthority();
+
+        DropDataProviderImpl dropDataProviderImpl = new DropDataProviderImpl();
+        DropDataContentProvider provider = new DropDataContentProvider();
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = authority;
+        provider.attachInfo(context, providerInfo);
+        provider.setDropDataProviderImpl(dropDataProviderImpl);
+        ShadowContentResolver.registerProviderInternal(authority, provider);
+
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = context.getPackageName();
+        packageInfo.applicationInfo = new ApplicationInfo();
+        packageInfo.applicationInfo.packageName = packageInfo.packageName;
+        packageInfo.applicationInfo.uid = Process.myUid();
+        ProviderInfo fileProviderInfo = new ProviderInfo();
+        fileProviderInfo.authority = Uri.parse(FILE_PROVIDER_URI).getAuthority();
+        for (ProviderInfo info : new ProviderInfo[] {providerInfo, fileProviderInfo}) {
+            info.packageName = packageInfo.packageName;
+            info.applicationInfo = packageInfo.applicationInfo;
+        }
+        packageInfo.providers = new ProviderInfo[] {providerInfo, fileProviderInfo};
+        Shadows.shadowOf(context.getPackageManager()).installPackage(packageInfo);
+        return dropDataProviderImpl;
     }
 
     @Test
@@ -952,8 +1043,127 @@ public class EventForwarderTest {
                         isNull(),
                         isNull(),
                         isNull(),
-                        eq("DRAG_ID"));
+                        eq("DRAG_ID"),
+                        isNull(),
+                        isNull(),
+                        isNull());
         eventForwarder.destroy();
+    }
+
+    @Test
+    @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+    public void testDragDropEvent_intraAppImage() {
+        DropDataProviderImpl dropDataProvider = installDropDataProvider();
+        String[] mimeTypes = new String[] {"image/jpeg"};
+        byte[] imageBytes = new byte[] {1, 2, 3};
+        Uri liveUri = dropDataProvider.cache(imageBytes, "jpg", "image.jpg", "DRAG_ID");
+        ClipData.Item[] liveUriItems = new ClipData.Item[] {new ClipData.Item(liveUri)};
+
+        // Targets that did not opt in receive this app's DropDataProvider URI as a file, not as
+        // in-memory image bytes.
+        validateDragDropEvent(
+                mimeTypes,
+                liveUriItems,
+                /* expectedFilenames= */ new String[][] {{liveUri.toString(), "image.jpg"}},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null,
+                /* allowIntraAppImageDrops= */ false,
+                "DRAG_ID",
+                /* expectedImageBytes= */ null,
+                /* expectedImageExtension= */ null,
+                /* expectedImageFilename= */ null);
+
+        // An opted-in target receives the image being dragged as bytes, not as a file.
+        validateDragDropEvent(
+                mimeTypes,
+                liveUriItems,
+                /* expectedFilenames= */ new String[][] {},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null,
+                /* allowIntraAppImageDrops= */ true,
+                "DRAG_ID",
+                imageBytes,
+                "jpg",
+                "image.jpg");
+
+        // The bytes are bound to the drag they were cached for: a drag that carries the URI
+        // without that drag's ID, e.g. one started by another app that received the URI, gets
+        // neither the bytes nor the file.
+        for (String otherDragId : new String[] {null, "", "OTHER_DRAG_ID"}) {
+            validateDragDropEvent(
+                    mimeTypes,
+                    liveUriItems,
+                    /* expectedFilenames= */ new String[][] {},
+                    /* expectedText= */ null,
+                    /* expectedHtml= */ null,
+                    /* expectedUrl= */ null,
+                    /* allowIntraAppImageDrops= */ true,
+                    otherDragId,
+                    /* expectedImageBytes= */ null,
+                    /* expectedImageExtension= */ null,
+                    /* expectedImageFilename= */ null);
+        }
+
+        // Any other URI of this app is still rejected, whether it names an image this app's
+        // DropDataProvider no longer serves or another of this app's providers.
+        validateDragDropEvent(
+                mimeTypes,
+                new ClipData.Item[] {new ClipData.Item(Uri.withAppendedPath(liveUri, "stale"))},
+                /* expectedFilenames= */ new String[][] {},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null,
+                /* allowIntraAppImageDrops= */ true,
+                "DRAG_ID",
+                /* expectedImageBytes= */ null,
+                /* expectedImageExtension= */ null,
+                /* expectedImageFilename= */ null);
+        validateDragDropEvent(
+                mimeTypes,
+                new ClipData.Item[] {new ClipData.Item(Uri.parse(FILE_PROVIDER_URI))},
+                /* expectedFilenames= */ new String[][] {},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null,
+                /* allowIntraAppImageDrops= */ true,
+                "DRAG_ID",
+                /* expectedImageBytes= */ null,
+                /* expectedImageExtension= */ null,
+                /* expectedImageFilename= */ null);
+
+        // Files from other apps are unaffected by the opt-in.
+        validateDragDropEvent(
+                mimeTypes,
+                new ClipData.Item[] {
+                    new ClipData.Item(Uri.parse("content://com.pkg/foo/image.jpg"))
+                },
+                /* expectedFilenames= */ new String[][] {{"content://com.pkg/foo/image.jpg", ""}},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null,
+                /* allowIntraAppImageDrops= */ true,
+                /* dragId= */ null,
+                /* expectedImageBytes= */ null,
+                /* expectedImageExtension= */ null,
+                /* expectedImageFilename= */ null);
+
+        // Once the drag ends, a replay during the delayed cache-clear window gets neither the
+        // bytes nor the file on an opted-in target.
+        dropDataProvider.onDragEnd(true);
+        validateDragDropEvent(
+                mimeTypes,
+                liveUriItems,
+                /* expectedFilenames= */ new String[][] {},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null,
+                /* allowIntraAppImageDrops= */ true,
+                "DRAG_ID",
+                /* expectedImageBytes= */ null,
+                /* expectedImageExtension= */ null,
+                /* expectedImageFilename= */ null);
     }
 
     @Test

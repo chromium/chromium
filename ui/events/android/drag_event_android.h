@@ -38,7 +38,10 @@ class EVENTS_EXPORT DragEventAndroid {
                    const base::android::JavaRef<jstring>& url,
                    const base::android::JavaRef<jstring>& custom_data,
                    const base::android::JavaRef<jstring>& effect_allowed,
-                   const base::android::JavaRef<jstring>& drag_id);
+                   const base::android::JavaRef<jstring>& drag_id,
+                   const base::android::JavaRef<jbyteArray>& image_bytes,
+                   const base::android::JavaRef<jstring>& image_extension,
+                   const base::android::JavaRef<jstring>& image_filename);
 
   DragEventAndroid(const DragEventAndroid&) = delete;
   DragEventAndroid& operator=(const DragEventAndroid&) = delete;
@@ -63,6 +66,13 @@ class EVENTS_EXPORT DragEventAndroid {
   base::android::ScopedJavaLocalRef<jstring> GetJavaText() const;
   base::android::ScopedJavaLocalRef<jstring> GetJavaHtml() const;
   base::android::ScopedJavaLocalRef<jstring> GetJavaUrl() const;
+  // The bytes, filename extension and filename of an image dragged out of this
+  // browser's own web contents, delivered in place of its content URI. Only set
+  // on a drop, and only for views that opted in via
+  // EventForwarder::SetAllowIntraAppImageDrops().
+  base::android::ScopedJavaLocalRef<jbyteArray> GetJavaImageBytes() const;
+  base::android::ScopedJavaLocalRef<jstring> GetJavaImageExtension() const;
+  base::android::ScopedJavaLocalRef<jstring> GetJavaImageFilename() const;
 
   // Creates a new DragEventAndroid instance different from |this| only by
   // its location.
@@ -85,6 +95,9 @@ class EVENTS_EXPORT DragEventAndroid {
   base::android::ScopedJavaGlobalRef<jstring> custom_data_;
   base::android::ScopedJavaGlobalRef<jstring> effect_allowed_;
   base::android::ScopedJavaGlobalRef<jstring> drag_id_;
+  base::android::ScopedJavaGlobalRef<jbyteArray> image_bytes_;
+  base::android::ScopedJavaGlobalRef<jstring> image_extension_;
+  base::android::ScopedJavaGlobalRef<jstring> image_filename_;
 };
 
 }  // namespace ui

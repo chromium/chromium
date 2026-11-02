@@ -9,6 +9,8 @@ import static org.robolectric.Shadows.shadowOf;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.BYTES_PARAM;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.CACHE_METHOD_NAME;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.CLEAR_CACHE_PARAM;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.DRAG_ID_PARAM;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.GET_IMAGE_METHOD_NAME;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.IMAGE_CONTENT_EXTENSION_PARAM;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.IMAGE_FILE_PARAM;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.IMAGE_USAGE_PARAM;
@@ -53,6 +55,7 @@ public class DropDataProviderImplTest {
     private static final String EXTENSION_B = "gif";
     private static final String EXTENSION_C = "png";
     private static final String IMAGE_FILENAME_A = "image.jpg";
+    private static final String DRAG_ID = "DRAG_ID";
     private static final String IMAGE_FILENAME_B = "image.gif";
     private static final String IMAGE_FILENAME_C = "image.png";
     private static final int CLEAR_CACHED_DATA_INTERVAL_MS = 10_000;
@@ -272,6 +275,92 @@ public class DropDataProviderImplTest {
         Assert.assertThrows(
                 SecurityException.class,
                 () -> mDropDataProviderImpl.call(ON_DRAG_END_METHOD_NAME, null, dragEndBundle));
+
+        Bundle getImageBundle = new Bundle();
+        getImageBundle.putParcelable(
+                URI_PARAM,
+                mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A));
+        Assert.assertThrows(
+                SecurityException.class,
+                () -> mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, getImageBundle));
+    }
+
+    @Test
+    public void testCall_getImage() {
+        Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A, DRAG_ID);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(URI_PARAM, uri);
+        bundle.putString(DRAG_ID_PARAM, DRAG_ID);
+
+        Bundle result = mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, bundle);
+        Assert.assertNotNull("Result bundle should not be null.", result);
+        Assert.assertArrayEquals(
+                "Image bytes should match.", IMAGE_DATA_A, result.getByteArray(BYTES_PARAM));
+        Assert.assertEquals(
+                "Extension should match.",
+                EXTENSION_A,
+                result.getString(IMAGE_CONTENT_EXTENSION_PARAM));
+        Assert.assertEquals(
+                "Filename should match.", IMAGE_FILENAME_A, result.getString(IMAGE_FILE_PARAM));
+
+        Bundle otherUriBundle = new Bundle();
+        otherUriBundle.putParcelable(URI_PARAM, Uri.withAppendedPath(uri, "other"));
+        otherUriBundle.putString(DRAG_ID_PARAM, DRAG_ID);
+        Assert.assertNull(
+                "Only the image currently being dragged should be served.",
+                mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, otherUriBundle));
+
+        Bundle noDragIdBundle = new Bundle();
+        noDragIdBundle.putParcelable(URI_PARAM, uri);
+        Assert.assertNull(
+                "The image should not be served without the drag ID it was cached with.",
+                mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, noDragIdBundle));
+
+        Bundle otherDragIdBundle = new Bundle();
+        otherDragIdBundle.putParcelable(URI_PARAM, uri);
+        otherDragIdBundle.putString(DRAG_ID_PARAM, "OTHER_DRAG_ID");
+        Assert.assertNull(
+                "The image should not be served for another drag's ID.",
+                mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, otherDragIdBundle));
+
+        mDropDataProviderImpl.onDragEnd(false);
+        Assert.assertNull(
+                "Nothing should be served after the cache is cleared.",
+                mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, bundle));
+    }
+
+    @Test
+    public void testCall_getImage_notServedAfterDragEnd() {
+        Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A, DRAG_ID);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(URI_PARAM, uri);
+        bundle.putString(DRAG_ID_PARAM, DRAG_ID);
+        Assert.assertNotNull(
+                "The image should be served while the drag is in progress.",
+                mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, bundle));
+
+        // The drop target took the image, so the cache is kept for it to read through the URI,
+        // but the image is no longer handed out to in-process drop targets.
+        mDropDataProviderImpl.onDragEnd(true);
+        Assert.assertNotNull(
+                "The cache should be kept for the drop target.",
+                mDropDataProviderImpl.getImageBytesForTesting());
+        Assert.assertNull(
+                "The image should not be served once the drag has ended.",
+                mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, bundle));
+        Assert.assertNull(
+                "The image should not be served once the drag has ended.",
+                DropDataProviderUtils.getCachedImage(uri, DRAG_ID));
+    }
+
+    @Test
+    public void testCall_getImage_cachedWithoutDragId() {
+        Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(URI_PARAM, uri);
+        Assert.assertNull(
+                "An image cached without a drag ID should not be served.",
+                mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, bundle));
     }
 
     @Test
@@ -351,6 +440,12 @@ public class DropDataProviderImplTest {
         Assert.assertNull(
                 "Result should be null for null extras.",
                 mDropDataProviderImpl.call(ON_DRAG_END_METHOD_NAME, null, null));
+        Assert.assertNull(
+                "Result should be null for null extras.",
+                mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, null));
+        Assert.assertNull(
+                "Result should be null when the URI is missing.",
+                mDropDataProviderImpl.call(GET_IMAGE_METHOD_NAME, null, new Bundle()));
 
         Bundle bundleNoBytes = new Bundle();
         bundleNoBytes.putString(IMAGE_CONTENT_EXTENSION_PARAM, EXTENSION_A);
@@ -402,5 +497,58 @@ public class DropDataProviderImplTest {
         Assert.assertNull(
                 "cacheImageData should return null for invalid drop data.",
                 DropDataProviderUtils.cacheImageData(invalidDropData));
+    }
+
+    @Test
+    public void testDropDataProviderUtils_getCachedImage() {
+        Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A, DRAG_ID);
+
+        DropDataProviderUtils.CachedImage image =
+                DropDataProviderUtils.getCachedImage(uri, DRAG_ID);
+        Assert.assertNotNull("The image being dragged should be served.", image);
+        Assert.assertArrayEquals("Image bytes should match.", IMAGE_DATA_A, image.bytes);
+        Assert.assertEquals("Extension should match.", EXTENSION_A, image.extension);
+        Assert.assertEquals("Filename should match.", IMAGE_FILENAME_A, image.filename);
+
+        Assert.assertNull(
+                "Only the image currently being dragged should be served.",
+                DropDataProviderUtils.getCachedImage(Uri.withAppendedPath(uri, "other"), DRAG_ID));
+        Assert.assertNull(
+                "URIs of other providers should not be served.",
+                DropDataProviderUtils.getCachedImage(
+                        Uri.parse("content://com.pkg/foo/image.jpg"), DRAG_ID));
+        Assert.assertNull(
+                "The image should not be served without its drag ID.",
+                DropDataProviderUtils.getCachedImage(uri, null));
+        Assert.assertNull(
+                "The image should not be served for another drag's ID.",
+                DropDataProviderUtils.getCachedImage(uri, "OTHER_DRAG_ID"));
+
+        mDropDataProviderImpl.onDragEnd(false);
+        Assert.assertNull(
+                "Nothing should be served after the cache is cleared.",
+                DropDataProviderUtils.getCachedImage(uri, DRAG_ID));
+    }
+
+    @Test
+    public void testDropDataProviderUtils_cacheImageDataStoresDragId() {
+        DropDataAndroid dropData =
+                DropDataAndroid.create(
+                        null,
+                        null,
+                        IMAGE_DATA_A,
+                        EXTENSION_A,
+                        IMAGE_FILENAME_A,
+                        null,
+                        null,
+                        DRAG_ID);
+        Uri uri = DropDataProviderUtils.cacheImageData(dropData);
+        Assert.assertNotNull("The image should be cached.", uri);
+        Assert.assertNotNull(
+                "The image should be served for the drag it was cached for.",
+                DropDataProviderUtils.getCachedImage(uri, DRAG_ID));
+        Assert.assertNull(
+                "The image should not be served for another drag's ID.",
+                DropDataProviderUtils.getCachedImage(uri, "OTHER_DRAG_ID"));
     }
 }

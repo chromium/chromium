@@ -5,6 +5,7 @@
 package org.chromium.ui.dragdrop;
 
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.CACHE_METHOD_NAME;
+import static org.chromium.ui.dragdrop.DropDataProviderImpl.GET_IMAGE_METHOD_NAME;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.ON_DRAG_END_METHOD_NAME;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.SET_INTERVAL_METHOD_NAME;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.URI_PARAM;
@@ -17,7 +18,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** This class wraps all the calls to ContentResolver#call. */
+/**
+ * Wraps calls to this app's DropDataProvider via {@link android.content.ContentResolver#call}
+ * (rather than a process-local singleton, as WebView embedders may declare the provider in another
+ * process of the same app).
+ */
 @NullMarked
 public class DropDataProviderUtils {
     /** Returns whether {@code uri} is served by this app's DropDataProvider. */
@@ -28,6 +33,19 @@ public class DropDataProviderUtils {
         String authority = DropDataProviderImpl.FULL_AUTH_URI.getAuthority();
         return TextUtils.equals(authority, uri.getAuthority())
                 && TextUtils.equals(authority, Uri.parse(uri.toString()).getAuthority());
+    }
+
+    /** The image this app's DropDataProvider is serving for the drag in progress. */
+    public static class CachedImage {
+        public final byte[] bytes;
+        public final String extension;
+        public final String filename;
+
+        CachedImage(byte[] bytes, String extension, String filename) {
+            this.bytes = bytes;
+            this.extension = extension;
+            this.filename = filename;
+        }
     }
 
     /**
@@ -78,6 +96,7 @@ public class DropDataProviderUtils {
         bundle.putString(
                 DropDataProviderImpl.IMAGE_CONTENT_EXTENSION_PARAM, dropData.imageContentExtension);
         bundle.putString(DropDataProviderImpl.IMAGE_FILE_PARAM, dropData.imageFilename);
+        bundle.putString(DropDataProviderImpl.DRAG_ID_PARAM, dropData.dragId);
         try {
             Bundle cachedUriBundle =
                     ContextUtils.getApplicationContext()
@@ -91,6 +110,44 @@ public class DropDataProviderUtils {
                 return null;
             }
             return cachedUriBundle.getParcelable(URI_PARAM);
+        } catch (NullPointerException | IllegalArgumentException | SecurityException exception) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the image behind {@code uri} if it is the one this app's DropDataProvider is
+     * currently serving, i.e. the image being dragged out of one of this app's own web contents,
+     * and {@code dragId} is the drag ID that drag was started with. Returns null for any other URI,
+     * and if {@code dragId} is null or doesn't match.
+     */
+    public static @Nullable CachedImage getCachedImage(Uri uri, @Nullable String dragId) {
+        if (dragId == null || !isDropDataProviderUri(uri)) {
+            return null;
+        }
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(URI_PARAM, uri);
+        bundle.putString(DropDataProviderImpl.DRAG_ID_PARAM, dragId);
+        try {
+            Bundle imageBundle =
+                    ContextUtils.getApplicationContext()
+                            .getContentResolver()
+                            .call(
+                                    DropDataProviderImpl.FULL_AUTH_URI,
+                                    GET_IMAGE_METHOD_NAME,
+                                    "",
+                                    bundle);
+            if (imageBundle == null) {
+                return null;
+            }
+            byte[] bytes = imageBundle.getByteArray(DropDataProviderImpl.BYTES_PARAM);
+            String extension =
+                    imageBundle.getString(DropDataProviderImpl.IMAGE_CONTENT_EXTENSION_PARAM);
+            String filename = imageBundle.getString(DropDataProviderImpl.IMAGE_FILE_PARAM);
+            if (bytes == null || extension == null || filename == null) {
+                return null;
+            }
+            return new CachedImage(bytes, extension, filename);
         } catch (NullPointerException | IllegalArgumentException | SecurityException exception) {
             return null;
         }

@@ -56,6 +56,12 @@ ScopedJavaLocalRef<jobject> EventForwarder::GetOrCreateJavaObject(JNIEnv* env) {
   return java_obj;
 }
 
+void EventForwarder::SetAllowIntraAppImageDrops(bool allow) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  Java_EventForwarder_setAllowIntraAppImageDrops(
+      env, GetOrCreateJavaObject(env), allow);
+}
+
 bool EventForwarder::OnTouchEvent(JNIEnv* env,
                                   const JavaRef<jobject>& motion_event,
                                   int64_t oldest_event_time_ns,
@@ -224,7 +230,10 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
                                  const JavaRef<jstring>& j_url,
                                  const JavaRef<jstring>& j_customData,
                                  const JavaRef<jstring>& j_effectAllowed,
-                                 const JavaRef<jstring>& j_dragId) {
+                                 const JavaRef<jstring>& j_dragId,
+                                 const JavaRef<jbyteArray>& j_imageBytes,
+                                 const JavaRef<jstring>& j_imageExtension,
+                                 const JavaRef<jstring>& j_imageFilename) {
   float dip_scale = view_->GetDipScale();
   gfx::PointF location(x / dip_scale, y / dip_scale);
   gfx::PointF root_location(screen_x / dip_scale, screen_y / dip_scale);
@@ -233,8 +242,22 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
 
   DragEventAndroid event(env, action, location, root_location, mime_types,
                          has_files, j_filenames, j_text, j_html, j_url,
-                         j_customData, j_effectAllowed, j_dragId);
+                         j_customData, j_effectAllowed, j_dragId, j_imageBytes,
+                         j_imageExtension, j_imageFilename);
   view_->OnDragEvent(event);
+}
+
+void EventForwarder::DispatchDragEventForTesting(
+    int32_t action,
+    float x,
+    float y,
+    float screen_x,
+    float screen_y,
+    const JavaRef<jobject>& clip_data) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  Java_EventForwarder_dispatchDragEventForTesting(  // IN-TEST
+      env, GetOrCreateJavaObject(env), action, x, y, screen_x, screen_y,
+      clip_data);
 }
 
 bool EventForwarder::OnGestureEvent(JNIEnv* env,

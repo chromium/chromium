@@ -297,6 +297,9 @@ struct DragEventParams {
   base::android::ScopedJavaLocalRef<jstring> custom_data;
   base::android::ScopedJavaLocalRef<jstring> effect_allowed;
   base::android::ScopedJavaLocalRef<jstring> drag_id;
+  base::android::ScopedJavaLocalRef<jbyteArray> image_bytes;
+  base::android::ScopedJavaLocalRef<jstring> image_extension;
+  base::android::ScopedJavaLocalRef<jstring> image_filename;
 };
 
 ui::DragEventAndroid MakeDragEvent(const DragEventParams& params) {
@@ -306,7 +309,8 @@ ui::DragEventAndroid MakeDragEvent(const DragEventParams& params) {
       params.screen_location,
       params.mime_types ? *params.mime_types : *kNoMimeTypes, params.has_files,
       params.filenames, params.text, params.html, params.url,
-      params.custom_data, params.effect_allowed, params.drag_id);
+      params.custom_data, params.effect_allowed, params.drag_id,
+      params.image_bytes, params.image_extension, params.image_filename);
 }
 
 }  // namespace
@@ -582,6 +586,64 @@ TEST_F(WebContentsViewAndroidTest, DragImage_ExternalSource_Allowed) {
   ASSERT_EQ(restored_data->filenames.size(), 1u);
   EXPECT_EQ(restored_data->filenames[0].path,
             base::FilePath("content://external.app/photo.png"));
+}
+
+// An image dragged out of another WebContents of this browser arrives as bytes
+// and is restored as file contents, as on desktop.
+TEST_F(WebContentsViewAndroidTest, DragIntraAppImage_RestoredAsFileContents) {
+  // The drag did not start in this view, so the image is accessible.
+  EXPECT_FALSE(drag_security_info().did_initiate());
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {u"image/png"};
+  const std::vector<uint8_t> image_bytes = {'t', 'e', 's', 't'};
+  ui::DragEventAndroid drop_event = MakeDragEvent(
+      {.action = DragEventJni::ACTION_DROP,
+       .mime_types = &mime_types,
+       .has_files = true,
+       .image_bytes = base::android::ToJavaByteArray(env, image_bytes),
+       .image_extension = base::android::ConvertUTF8ToJavaString(env, "png"),
+       .image_filename =
+           base::android::ConvertUTF8ToJavaString(env, "image.png")});
+  view()->OnDragEvent(drop_event);
+
+  DropData* restored_data = view()->GetDropData();
+  ASSERT_TRUE(restored_data);
+  EXPECT_TRUE(restored_data->filenames.empty());
+  EXPECT_EQ(restored_data->file_contents, image_bytes);
+  EXPECT_TRUE(restored_data->file_contents_image_accessible);
+  EXPECT_EQ(restored_data->file_contents_filename_extension, "png");
+  EXPECT_EQ(restored_data->file_contents_source_url, GURL("file:///image.png"));
+}
+
+TEST_F(WebContentsViewAndroidTest,
+       DragIntraAppImage_InaccessibleImageWithheld) {
+  DropData drop_data;
+  drop_data.file_contents = {'t', 'e', 's', 't'};
+  drop_data.file_contents_image_accessible = false;
+  drop_data.file_contents_source_url =
+      GURL("https://different-origin.com/image.png");
+  drop_data.file_contents_filename_extension = "png";
+  InitiateDragSecurityInfo(GetRenderWidgetHost(), drop_data);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::u16string> mime_types = {u"image/png"};
+  ui::DragEventAndroid drop_event = MakeDragEvent(
+      {.action = DragEventJni::ACTION_DROP,
+       .mime_types = &mime_types,
+       .has_files = true,
+       .image_bytes =
+           base::android::ToJavaByteArray(env, drop_data.file_contents),
+       .image_extension = base::android::ConvertUTF8ToJavaString(env, "png"),
+       .image_filename =
+           base::android::ConvertUTF8ToJavaString(env, "image.png")});
+  view()->OnDragEvent(drop_event);
+
+  DropData* restored_data = view()->GetDropData();
+  ASSERT_TRUE(restored_data);
+  EXPECT_TRUE(restored_data->file_contents.empty());
+  EXPECT_FALSE(restored_data->file_contents_image_accessible);
+  EXPECT_TRUE(restored_data->file_contents_source_url.is_empty());
 }
 
 TEST_F(WebContentsViewAndroidTest,
