@@ -173,10 +173,6 @@ void TabModelJniBridge::TabAddedToModel(TabAndroid* tab) {
   }
 }
 
-TabAndroid* TabModelJniBridge::DuplicateTab(JNIEnv* env, TabAndroid* tab) {
-  return static_cast<TabAndroid*>(DuplicateTab(tab));
-}
-
 void TabModelJniBridge::MoveTabToWindowForTesting(
     TabAndroid* tab,
     BrowserWindowInterface* browser_window,
@@ -650,15 +646,16 @@ tabs::TabInterface* TabModelJniBridge::DuplicateTab(tabs::TabHandle tab) {
   return DuplicateTab(tab_android);
 }
 
-tabs::TabInterface* TabModelJniBridge::DuplicateTab(TabAndroid* tab) {
+TabAndroid* TabModelJniBridge::DuplicateTab(TabAndroid* tab) {
   WebContents* web_contents = tab ? tab->web_contents() : nullptr;
   if (!web_contents) {
     return nullptr;
   }
 
   std::unique_ptr<WebContents> cloned_web_contents = web_contents->Clone();
-  return CreateTab(tab, std::move(cloned_web_contents), /* index= */ -1,
-                   TabLaunchType::FROM_TAB_LIST_INTERFACE, tab->IsPinned());
+  return static_cast<TabAndroid*>(
+      CreateTab(tab, std::move(cloned_web_contents), /* index= */ -1,
+                TabLaunchType::FROM_TAB_LIST_INTERFACE, tab->IsPinned()));
 }
 
 tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
@@ -666,18 +663,13 @@ tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
 }
 
 int TabModelJniBridge::GetIndexOfTab(tabs::TabHandle tab) {
-  tabs::TabInterface* tab_interface = tab.Get();
-  if (!tab_interface) {
+  TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
+  if (!tab_android) {
     return tab_list::kNoTabIndex;
   }
-  int count = GetTabCount();
-  for (int i = 0; i < count; ++i) {
-    if (GetTabAt(i) == tab_interface) {
-      return i;
-    }
-  }
-
-  return tab_list::kNoTabIndex;
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabModelJniBridge_getIndexOfTab(env, java_object_.get(env),
+                                              tab_android);
 }
 
 void TabModelJniBridge::HighlightTabs(tabs::TabHandle tab_to_activate,

@@ -53,7 +53,7 @@ class TabModelJniBridge : public TabModel {
   void AssociateWithBrowserWindow(int64_t native_android_browser_window);
   void DissociateWithBrowserWindow();
   void TabAddedToModel(TabAndroid* tab);
-  TabAndroid* DuplicateTab(JNIEnv* env, TabAndroid* tab);
+  TabAndroid* DuplicateTab(TabAndroid* tab);
   void MoveTabToWindowForTesting(TabAndroid* tab,
                                  BrowserWindowInterface* browser_window,
                                  int new_index);
@@ -187,8 +187,6 @@ class TabModelJniBridge : public TabModel {
   static TabModel* FromJavaObject(const jni_zero::JavaRef<jobject>& obj);
 
  private:
-  tabs::TabInterface* DuplicateTab(TabAndroid* tab);
-
   JavaObjectWeakGlobalRef java_object_;
 
   // The observer bridge. This exists as long as there are registered observers.

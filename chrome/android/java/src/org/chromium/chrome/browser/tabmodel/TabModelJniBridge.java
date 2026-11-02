@@ -139,6 +139,11 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     public abstract @JniType("TabAndroid*") @Nullable Tab getTabAt(int index);
 
+    @CalledByNative
+    protected int getIndexOfTab(@JniType("TabAndroid*") Tab tab) {
+        return indexOf(tab);
+    }
+
     @Override
     @CalledByNative
     public abstract @JniType("std::vector<TabAndroid*>") List<Tab> getOrderedMultiSelectedTabs();
@@ -695,7 +700,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     // TODO(https://crbug.com/495795228): add `bringToFront` parameter to indicate
     // if the destination activity should be activated. See MultiInstanceOrchestrator.
     protected abstract boolean moveTabGroupToWindow(
-            @JniType("base::Token") Token tabGroupId, Activity activity, int newIndex);
+            Token tabGroupId, Activity activity, int newIndex);
 
     @Override
     public int getPinnedTabsCount() {
