@@ -55,6 +55,15 @@ webapps::AppId GenerateAppIdFromManifest(
   return internal::GenerateAppIdFromManifest(manifest);
 }
 
+webapps::AppId GenerateAppIdFromManifest(const blink::Manifest& manifest) {
+  return internal::GenerateAppIdFromManifest(manifest);
+}
+
+webapps::ManifestId GenerateManifestIdFromManifest(
+    const blink::Manifest& manifest) {
+  return internal::GenerateManifestIdFromManifest(manifest);
+}
+
 webapps::AppId GenerateAppIdFromManifestId(
     const webapps::ManifestId& manifest_id) {
   return internal::GenerateAppIdFromManifestId(manifest_id);

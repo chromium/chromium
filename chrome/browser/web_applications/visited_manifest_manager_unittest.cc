@@ -11,7 +11,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
 namespace {
@@ -21,22 +21,21 @@ GURL GetExampleUrl(int i) {
       base::StrCat({"https://www.example", base::ToString(i), ".com/"}));
 }
 
-blink::mojom::ManifestPtr CreateManifestWithScope(const GURL& scope) {
-  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-  manifest->start_url = GURL(scope.GetWithoutFilename().spec() + "index.html");
-  manifest->id = manifest->start_url;
-  manifest->scope = scope;
-  manifest->has_valid_specified_start_url = true;
-  return manifest;
+blink::Manifest CreateManifestWithScope(const GURL& scope) {
+  GURL start_url = GURL(scope.GetWithoutFilename().spec() + "index.html");
+  blink::Manifest::Builder builder(start_url, start_url, scope);
+  builder.SetHasValidSpecifiedStartUrl(true);
+  return std::move(builder).BuildChecked();
 }
 
-blink::mojom::ManifestPtr CreatManifestWithScopeNoStartUrl(const GURL& scope) {
-  blink::mojom::ManifestPtr manifest = CreateManifestWithScope(scope);
-  manifest->has_valid_specified_start_url = false;
-  return manifest;
+blink::Manifest CreatManifestWithScopeNoStartUrl(const GURL& scope) {
+  GURL start_url = GURL(scope.GetWithoutFilename().spec() + "index.html");
+  blink::Manifest::Builder builder(start_url, start_url, scope);
+  builder.SetHasValidSpecifiedStartUrl(false);
+  return std::move(builder).BuildChecked();
 }
 
-blink::mojom::ManifestPtr CreateExampleManifest(int i) {
+blink::Manifest CreateExampleManifest(int i) {
   return CreateManifestWithScope(GetExampleUrl(i));
 }
 
@@ -50,11 +49,11 @@ TEST_F(VisitedManagerEnabledTest, ControlledChecks) {
   VisitedManifestManager manager;
 
   manager.OnManifestSeen(
-      *CreateManifestWithScope(GURL("https://www.example0.com/pre/")));
+      CreateManifestWithScope(GURL("https://www.example0.com/pre/")));
   manager.OnManifestSeen(
-      *CreateManifestWithScope(GURL("https://www.example1.com/seen/")));
+      CreateManifestWithScope(GURL("https://www.example1.com/seen/")));
   manager.OnManifestSeen(
-      *CreateManifestWithScope(GURL("https://www.example2.com/seeo/")));
+      CreateManifestWithScope(GURL("https://www.example2.com/seeo/")));
 
   EXPECT_TRUE(manager.IsUrlControlledBySeenManifest(
       GURL("https://www.example1.com/seen/")));
@@ -79,19 +78,19 @@ TEST_F(VisitedManagerEnabledTest, ClearDateRange) {
   base::Time start = base::Time::Now();
   clock.SetNow(start);
   manager.OnManifestSeen(
-      *CreateManifestWithScope(GURL("https://www.example0.com/")));
+      CreateManifestWithScope(GURL("https://www.example0.com/")));
 
   clock.Advance(base::Minutes(10));
   manager.OnManifestSeen(
-      *CreateManifestWithScope(GURL("https://www.example1.com/")));
+      CreateManifestWithScope(GURL("https://www.example1.com/")));
 
   clock.Advance(base::Minutes(10));
   manager.OnManifestSeen(
-      *CreateManifestWithScope(GURL("https://www.example2.com/")));
+      CreateManifestWithScope(GURL("https://www.example2.com/")));
 
   clock.Advance(base::Minutes(10));
   manager.OnManifestSeen(
-      *CreateManifestWithScope(GURL("https://www.example3.com/")));
+      CreateManifestWithScope(GURL("https://www.example3.com/")));
 
   // This should clear examples 1 and 2.
   manager.ClearSeenScopes(start + base::Minutes(10), start + base::Minutes(20));
@@ -122,7 +121,7 @@ TEST_F(VisitedManagerEnabledTest, TestLru) {
   // Fill up the cache. Eviction should start from 0, as that is the first one
   // that was added.
   for (int i = 0; i < VisitedManifestManager::kMaxScopesToSave; ++i) {
-    manager.OnManifestSeen(*CreateExampleManifest(i));
+    manager.OnManifestSeen(CreateExampleManifest(i));
   }
   // Check they are all present, in order again which should keep the same
   // ordering.
@@ -131,18 +130,18 @@ TEST_F(VisitedManagerEnabledTest, TestLru) {
   }
   // Test that is '0' was evicted after adding one more.
   manager.OnManifestSeen(
-      *CreateExampleManifest(VisitedManifestManager::kMaxScopesToSave));
+      CreateExampleManifest(VisitedManifestManager::kMaxScopesToSave));
   EXPECT_FALSE(manager.IsUrlControlledBySeenManifest(GetExampleUrl(0)));
 
   // Test `OnManifestSeen` and `IsUrlControlledBySeenManifest` both move the
   // entry to the top of the queue. '1' and '2' will not be deleted, instead '3'
   // and '4' will when adding two more manifests.
-  manager.OnManifestSeen(*CreateExampleManifest(1));
+  manager.OnManifestSeen(CreateExampleManifest(1));
   EXPECT_TRUE(manager.IsUrlControlledBySeenManifest(GetExampleUrl(2)));
   manager.OnManifestSeen(
-      *CreateExampleManifest(VisitedManifestManager::kMaxScopesToSave + 1));
+      CreateExampleManifest(VisitedManifestManager::kMaxScopesToSave + 1));
   manager.OnManifestSeen(
-      *CreateExampleManifest(VisitedManifestManager::kMaxScopesToSave + 2));
+      CreateExampleManifest(VisitedManifestManager::kMaxScopesToSave + 2));
   EXPECT_FALSE(manager.IsUrlControlledBySeenManifest(GetExampleUrl(3)));
   EXPECT_FALSE(manager.IsUrlControlledBySeenManifest(GetExampleUrl(4)));
 
@@ -161,7 +160,7 @@ TEST_F(VisitedManagerEnabledTest, TestLru) {
 TEST_F(VisitedManagerEnabledTest, TestInvalidManifests) {
   VisitedManifestManager manager;
   manager.OnManifestSeen(
-      *CreatManifestWithScopeNoStartUrl(GURL("https://www.example0.com/")));
+      CreatManifestWithScopeNoStartUrl(GURL("https://www.example0.com/")));
   EXPECT_FALSE(
       manager.IsUrlControlledBySeenManifest(GURL("https://www.example0.com/")));
 }
@@ -177,9 +176,9 @@ TEST(VisitedManagerDisabledTest, DisabledFeature) {
   base::Time start = base::Time::Now();
   clock.SetNow(start);
   manager.OnManifestSeen(
-      *CreateManifestWithScope(GURL("https://www.example0.com/")));
+      CreateManifestWithScope(GURL("https://www.example0.com/")));
   manager.OnManifestSeen(
-      *CreateManifestWithScope(GURL("https://www.example1.com/")));
+      CreateManifestWithScope(GURL("https://www.example1.com/")));
 
   base::Time check_time = clock.Now();
 

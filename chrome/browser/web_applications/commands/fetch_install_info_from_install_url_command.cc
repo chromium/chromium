@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -150,9 +151,12 @@ void FetchInstallInfoFromInstallUrlCommand::
     WebAppInstallInfoConstructOptions construct_options;
     construct_options.download_page_favicons = opt_manifest->icons.empty();
 
+    auto converted_manifest = blink::ManifestFromMojom(*opt_manifest);
+    CHECK(converted_manifest.has_value());
+
     manifest_to_install_info_job_ =
         ManifestToWebAppInstallInfoJob::CreateAndStart(
-            *opt_manifest, *data_retriever_.get(),
+            *converted_manifest, *data_retriever_.get(),
             /*background_installation=*/true,
             webapps::WebappInstallSource::SUB_APP,
             lock_->shared_web_contents().GetWeakPtr(), [](IconUrlSizeSet&) {},

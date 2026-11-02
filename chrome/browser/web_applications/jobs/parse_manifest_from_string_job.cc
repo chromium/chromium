@@ -15,8 +15,7 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -72,25 +71,25 @@ void ParseManifestFromStringJob::OnAboutBlankLoaded(
 }
 
 void ParseManifestFromStringJob::OnManifestParsed(
-    blink::mojom::ManifestPtr manifest) {
+    std::optional<blink::Manifest> manifest) {
   // Note that most errors during parsing (e.g. errors to do with parsing a
   // particular field) are silently ignored. As long as the manifest is valid
   // JSON and contains a valid start_url and name, installation will proceed.
-  if (blink::IsEmptyManifest(manifest)) {
+  if (!manifest) {
     debug_value_->Set("manifest_parse_error", "invalid_manifest");
     std::move(callback_).Run(
         base::unexpected(ParseManifestError::kEmptyOrInvalidManifest));
     return;
   }
 
-  if (!manifest->has_valid_specified_start_url) {
+  if (!manifest->has_valid_specified_start_url()) {
     debug_value_->Set("manifest_parse_error", "invalid_start_url");
     std::move(callback_).Run(
         base::unexpected(ParseManifestError::kStartUrlInvalid));
     return;
   }
 
-  if (!manifest->short_name.has_value() && !manifest->name.has_value()) {
+  if (!manifest->short_name().has_value() && !manifest->name().has_value()) {
     debug_value_->Set("manifest_parse_error", "missing_name");
     std::move(callback_).Run(
         base::unexpected(ParseManifestError::kManifestMissingNameOrShortName));
@@ -98,7 +97,7 @@ void ParseManifestFromStringJob::OnManifestParsed(
   }
 
   debug_value_->Set("manifest_parsed", true);
-  std::move(callback_).Run(std::move(manifest));
+  std::move(callback_).Run(std::move(*manifest));
 }
 
 }  // namespace web_app

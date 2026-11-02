@@ -78,7 +78,7 @@ To keep each CL small and independently reviewable:
 - [x] **Milestone 8: Migrate `//components/webapps/browser/installable/`**
 - [x] **Milestone 9: Migrate `//components/webapps/browser/banners/`,
   `WebappsClient`, and Android `ShortcutInfo` / `WebAPK`**
-- [ ] **Milestone 10: Migrate `content::PageManifestManager`,
+- [x] **Milestone 10: Migrate `content::PageManifestManager`,
   `ParseManifestFromStringJob`, and `//chrome/browser/web_applications/jobs/`**
 - [ ] **Milestone 11: Migrate `WebAppDataRetriever`, `PrepareInstallInfoJob`,
   `WebAppCommandScheduler`, UI, and Commands**

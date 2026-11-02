@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 
@@ -478,30 +479,30 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
 }
 
 // This is required as the CallbackList uses const ref, and TestFuture requires
-// copying or move support. This manually clones from the const ref so the
+// copying or move support. This manually copies from the const ref so the
 // result can be moved into the TestFuture.
-base::expected<blink::mojom::ManifestPtr, blink::mojom::RequestManifestErrorPtr>
-CopyMojoExpectedConstRef(
-    const base::expected<blink::mojom::ManifestPtr,
+base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>
+CopyManifestExpectedConstRef(
+    const base::expected<blink::Manifest,
                          blink::mojom::RequestManifestErrorPtr>&
         const_ref_result) {
   if (const_ref_result.has_value()) {
-    return base::ok(const_ref_result->Clone());
+    return base::ok(const_ref_result.value());
   } else {
     return base::unexpected(const_ref_result.error()->Clone());
   }
 }
 
 TEST_F(WebAppDataRetrieverTest, CheckTimeoutTriggers) {
-  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr,
-                                        blink::mojom::RequestManifestErrorPtr>>
+  base::test::TestFuture<
+      base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>>
       primary_manifest_future;
 
   WebAppDataRetriever retriever;
   base::AutoReset<int> manifest_wait_timeout =
       WebAppDataRetriever::SetManifestWaitTimeoutForTesting(0);
   retriever.GetPrimaryPageFirstSpecifiedManifest(
-      *web_contents(), base::BindOnce(&CopyMojoExpectedConstRef)
+      *web_contents(), base::BindOnce(&CopyManifestExpectedConstRef)
                            .Then(primary_manifest_future.GetCallback()));
 
   ASSERT_TRUE(primary_manifest_future.Wait());

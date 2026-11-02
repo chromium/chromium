@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -43,9 +43,9 @@ IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
   ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
   ASSERT_TRUE(result.has_value());
-  const blink::mojom::ManifestPtr& manifest = result.value();
-  EXPECT_EQ(manifest->start_url, GURL("https://example.com/start"));
-  EXPECT_EQ(manifest->name, u"Test App");
+  const blink::Manifest& manifest = result.value();
+  EXPECT_EQ(manifest.start_url(), GURL("https://example.com/start"));
+  EXPECT_EQ(manifest.name(), u"Test App");
 }
 
 // A relative start_url without leading slash resolves relative to the manifest
@@ -61,8 +61,8 @@ IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
   ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
   ASSERT_TRUE(result.has_value());
-  const blink::mojom::ManifestPtr& manifest = result.value();
-  EXPECT_EQ(manifest->start_url, GURL("https://example.com/app/index.html"));
+  const blink::Manifest& manifest = result.value();
+  EXPECT_EQ(manifest.start_url(), GURL("https://example.com/app/index.html"));
 }
 
 // A missing start_url fails parsing requirements.
@@ -137,9 +137,9 @@ IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
   ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
   ASSERT_TRUE(result.has_value());
-  const blink::mojom::ManifestPtr& manifest = result.value();
-  EXPECT_TRUE(manifest->has_custom_id);
-  EXPECT_EQ(manifest->id, GURL("https://example.com/my-app-id"));
+  const blink::Manifest& manifest = result.value();
+  EXPECT_TRUE(manifest.has_custom_id());
+  EXPECT_EQ(manifest.id(), GURL("https://example.com/my-app-id"));
 }
 
 // A valid manifest without an explicit id field has has_custom_id = false.
@@ -154,8 +154,8 @@ IN_PROC_BROWSER_TEST_F(ParseManifestFromManifestUrlCommandTest,
   ParseManifestResult result = ParseAndAwaitResult(kManifestUrl, kManifest);
 
   ASSERT_TRUE(result.has_value());
-  const blink::mojom::ManifestPtr& manifest = result.value();
-  EXPECT_FALSE(manifest->has_custom_id);
+  const blink::Manifest& manifest = result.value();
+  EXPECT_FALSE(manifest.has_custom_id());
 }
 
 }  // namespace

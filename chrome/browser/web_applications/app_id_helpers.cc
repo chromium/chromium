@@ -6,6 +6,7 @@
 
 #include "components/crx_file/id_util.h"
 #include "crypto/sha2.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -28,6 +29,15 @@ webapps::AppId GenerateAppIdFromManifest(
       webapps::ManifestId::Create(manifest.id);
   CHECK(manifest_id.has_value());
   return GenerateAppIdFromManifestId(manifest_id.value());
+}
+
+webapps::ManifestId GenerateManifestIdFromManifest(
+    const blink::Manifest& manifest) {
+  return webapps::ManifestId(manifest.id());
+}
+
+webapps::AppId GenerateAppIdFromManifest(const blink::Manifest& manifest) {
+  return GenerateAppIdFromManifestId(GenerateManifestIdFromManifest(manifest));
 }
 
 webapps::AppId GenerateAppIdFromManifestId(

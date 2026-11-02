@@ -158,7 +158,7 @@ std::unique_ptr<ManifestUpdateJob> ManifestUpdateJob::CreateAndStart(
     WithAppResources* lock_resources,
     content::WebContents* web_contents,
     base::DictValue* debug_value,
-    blink::mojom::ManifestPtr manifest,
+    blink::Manifest manifest,
     WebAppDataRetriever* data_retriever,
     base::Clock* clock,
     ManifestUpdateJobCallback callback,
@@ -167,7 +167,6 @@ std::unique_ptr<ManifestUpdateJob> ManifestUpdateJob::CreateAndStart(
   CHECK(lock_resources);
   CHECK(web_contents);
   CHECK(debug_value);
-  CHECK(manifest);
   CHECK(data_retriever);
   CHECK(clock);
 
@@ -184,7 +183,7 @@ ManifestUpdateJob::ManifestUpdateJob(Profile& profile,
                                      WithAppResources* lock_resources,
                                      content::WebContents* web_contents,
                                      base::DictValue* debug_value,
-                                     blink::mojom::ManifestPtr manifest,
+                                     blink::Manifest manifest,
                                      WebAppDataRetriever* data_retriever,
                                      base::Clock* clock,
                                      ManifestUpdateJobCallback callback,
@@ -197,7 +196,7 @@ ManifestUpdateJob::ManifestUpdateJob(Profile& profile,
       manifest_(std::move(manifest)),
       data_retriever_(*data_retriever),
       clock_(*clock),
-      app_id_(GenerateAppIdFromManifest(*manifest_)),
+      app_id_(GenerateAppIdFromManifest(manifest_)),
       callback_(std::move(callback)),
       options_(options) {
   debug_value_->Set(
@@ -250,7 +249,7 @@ void ManifestUpdateJob::Start() {
 
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
-          *manifest_, *data_retriever_,
+          manifest_, *data_retriever_,
           /*background_installation=*/false,
           webapps::WebappInstallSource::MENU_BROWSER_TAB, web_contents_,
           [](IconUrlSizeSet&) {},

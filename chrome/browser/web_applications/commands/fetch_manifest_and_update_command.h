@@ -20,7 +20,7 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -63,9 +63,9 @@ class FetchManifestAndUpdateCommand
  private:
   void OnUrlLoaded(webapps::WebAppUrlLoaderResult result);
   void OnManifestRetrieved(
-      const base::expected<blink::mojom::ManifestPtr,
+      const base::expected<blink::Manifest,
                            blink::mojom::RequestManifestErrorPtr>& result);
-  void OnAppLockAcquired(blink::mojom::ManifestPtr manifest);
+  void OnAppLockAcquired(blink::Manifest manifest);
   void OnUpdateJobCompleted(ManifestUpdateJobResultWithTimestamp result_info);
 
   const GURL install_url_;

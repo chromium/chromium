@@ -33,6 +33,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace {
@@ -118,9 +119,12 @@ void WebInstallFromManifestCommand::StartWithLock(
 
   // Convert manifest to WebAppInstallInfo and download icons via the shared
   // web contents (about:blank context — no user session cookies).
+  auto converted_manifest = blink::ManifestFromMojom(*manifest_);
+  CHECK(converted_manifest.has_value());
+
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
-          *manifest_, *data_retriever_.get(),
+          *converted_manifest, *data_retriever_.get(),
           /*background_installation=*/true, kInstallSource,
           web_contents_lock_->shared_web_contents().GetWeakPtr(),
           [](IconUrlSizeSet& icon_url_size_set) {}, GetMutableDebugValue(),

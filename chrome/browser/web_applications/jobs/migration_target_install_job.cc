@@ -25,13 +25,13 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
 
 std::unique_ptr<MigrationTargetInstallJob>
 MigrationTargetInstallJob::CreateAndStart(
-    blink::mojom::ManifestPtr manifest,
+    blink::Manifest manifest,
     base::WeakPtr<content::WebContents> web_contents,
     Profile* profile,
     WebAppDataRetriever* data_retriever,
@@ -39,7 +39,6 @@ MigrationTargetInstallJob::CreateAndStart(
     Lock* lock,
     WithAppResources* lock_resources,
     MigrationTargetInstallCallback callback) {
-  CHECK(manifest);
   CHECK(web_contents);
   CHECK(profile);
   CHECK(debug_value);
@@ -57,7 +56,7 @@ MigrationTargetInstallJob::CreateAndStart(
 MigrationTargetInstallJob::~MigrationTargetInstallJob() = default;
 
 MigrationTargetInstallJob::MigrationTargetInstallJob(
-    blink::mojom::ManifestPtr manifest,
+    blink::Manifest manifest,
     base::WeakPtr<content::WebContents> web_contents,
     Profile* profile,
     WebAppDataRetriever* data_retriever,
@@ -76,7 +75,7 @@ MigrationTargetInstallJob::MigrationTargetInstallJob(
 
 void MigrationTargetInstallJob::Start() {
   std::optional<webapps::ManifestId> manifest_id =
-      webapps::ManifestId::Create(manifest_->id);
+      webapps::ManifestId::Create(manifest_.id());
   if (!manifest_id.has_value()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MigrationTargetInstallJob::Complete,
@@ -97,7 +96,7 @@ void MigrationTargetInstallJob::Start() {
   }
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
-          *manifest_, data_retriever_.get(),
+          manifest_, data_retriever_.get(),
           /*background_installation=*/true,
           webapps::WebappInstallSource::MIGRATION, web_contents_,
           [](IconUrlSizeSet&) {},

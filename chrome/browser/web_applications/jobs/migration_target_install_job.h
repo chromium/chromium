@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 class Profile;
 
@@ -49,7 +49,7 @@ class WebAppDataRetriever;
 class MigrationTargetInstallJob {
  public:
   static std::unique_ptr<MigrationTargetInstallJob> CreateAndStart(
-      blink::mojom::ManifestPtr manifest,
+      blink::Manifest manifest,
       base::WeakPtr<content::WebContents> web_contents,
       Profile* profile,
       WebAppDataRetriever* data_retriever,
@@ -61,7 +61,7 @@ class MigrationTargetInstallJob {
   ~MigrationTargetInstallJob();
 
  private:
-  MigrationTargetInstallJob(blink::mojom::ManifestPtr manifest,
+  MigrationTargetInstallJob(blink::Manifest manifest,
                             base::WeakPtr<content::WebContents> web_contents,
                             Profile* profile,
                             WebAppDataRetriever* data_retriever,
@@ -79,7 +79,7 @@ class MigrationTargetInstallJob {
 
   void Complete(MigrationTargetInstallJobResult result);
 
-  blink::mojom::ManifestPtr manifest_;
+  blink::Manifest manifest_;
   const base::WeakPtr<content::WebContents> web_contents_;
   const raw_ptr<Profile> profile_;
   const raw_ref<WebAppDataRetriever> data_retriever_;

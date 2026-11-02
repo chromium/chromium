@@ -8,8 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -49,18 +48,16 @@ bool VisitedManifestManager::IsUrlControlledBySeenManifest(
   return false;
 }
 
-void VisitedManifestManager::OnManifestSeen(
-    const blink::mojom::Manifest& manifest) {
+void VisitedManifestManager::OnManifestSeen(const blink::Manifest& manifest) {
   if (!base::FeatureList::IsEnabled(kBlockMlPromotionInNestedPagesNoManifest)) {
     return;
   }
-  CHECK(!blink::IsEmptyManifest(manifest));
   // Only consider manifests that have specified a `start_url`, as every page
   // has a default manifest.
-  if (!manifest.has_valid_specified_start_url) {
+  if (!manifest.has_valid_specified_start_url()) {
     return;
   }
-  recent_manifest_scopes_.Put(manifest.scope, clock_->Now());
+  recent_manifest_scopes_.Put(manifest.scope(), clock_->Now());
 }
 
 void VisitedManifestManager::ClearSeenScopes(const base::Time& begin_time,

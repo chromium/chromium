@@ -23,6 +23,7 @@
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -278,9 +279,13 @@ void PrepareInstallInfoJob::ParseInstallInfoFromManifest(
     const IwaVersion parsed_version) {
   WebAppInstallInfoConstructOptions construct_options;
   construct_options.fail_all_if_any_fail = true;
+  auto converted_manifest = blink::ManifestFromMojom(*manifest_);
+  CHECK(converted_manifest.has_value());
+
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
-          *manifest_, *data_retriever_.get(), /*background_installation=*/false,
+          *converted_manifest, *data_retriever_.get(),
+          /*background_installation=*/false,
           webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER,
           web_contents_->GetWeakPtr(), [](IconUrlSizeSet& icon_url_size_set) {},
           manifest_to_info_debug_data_,

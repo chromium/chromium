@@ -16,10 +16,10 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 namespace base {
 class DictValue;
@@ -99,7 +99,7 @@ class ManifestToWebAppInstallInfoJob {
   // `FetchIcons` is called later (via `defer_icon_fetching` being specified
   // above in the options).
   static std::unique_ptr<ManifestToWebAppInstallInfoJob> CreateAndStart(
-      const blink::mojom::Manifest& manifest,
+      const blink::Manifest& manifest,
       WebAppDataRetriever& data_retriever,
       bool background_installation,
       webapps::WebappInstallSource install_source,
@@ -136,7 +136,7 @@ class ManifestToWebAppInstallInfoJob {
 
  private:
   ManifestToWebAppInstallInfoJob(
-      const blink::mojom::Manifest& manifest,
+      const blink::Manifest& manifest,
       WebAppDataRetriever& data_retriever,
       bool background_installation,
       webapps::WebappInstallSource install_source,
@@ -166,7 +166,7 @@ class ManifestToWebAppInstallInfoJob {
 
   std::unique_ptr<WebAppInstallInfo> install_info_;
   raw_ptr<WebAppInstallInfo> install_info_for_icon_fetch_ = nullptr;
-  blink::mojom::ManifestPtr manifest_;
+  blink::Manifest manifest_;
   raw_ref<WebAppDataRetriever> data_retriever_;
   WebAppInstallInfoCreationCallback creation_callback_;
   WebAppInstallInfoConstructOptions options_;

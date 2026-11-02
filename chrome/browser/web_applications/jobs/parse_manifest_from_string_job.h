@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_PARSE_MANIFEST_FROM_STRING_JOB_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_PARSE_MANIFEST_FROM_STRING_JOB_H_
 
-#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/model/parse_manifest_result.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -56,7 +55,7 @@ class ParseManifestFromStringJob {
 
  private:
   void OnAboutBlankLoaded(webapps::WebAppUrlLoaderResult result);
-  void OnManifestParsed(blink::mojom::ManifestPtr manifest);
+  void OnManifestParsed(std::optional<blink::Manifest> manifest);
 
   const raw_ref<content::WebContents> web_contents_;
   GURL document_url_;

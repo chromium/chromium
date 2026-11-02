@@ -56,8 +56,8 @@ class MigrationTargetInstallJobTest : public WebAppTest {
         fake_provider().web_contents_manager());
   }
 
-  MigrationTargetInstallJobResult RunJob(blink::mojom::ManifestPtr manifest) {
-    webapps::AppId app_id = GenerateAppIdFromManifest(*manifest);
+  MigrationTargetInstallJobResult RunJob(blink::Manifest manifest) {
+    webapps::AppId app_id = GenerateAppIdFromManifest(manifest);
     base::test::TestFuture<void> lock_future;
     auto lock = std::make_unique<AppLock>();
     fake_provider().command_manager().lock_manager().AcquireLock(
@@ -77,19 +77,19 @@ class MigrationTargetInstallJobTest : public WebAppTest {
 };
 
 TEST_F(MigrationTargetInstallJobTest, InstallNewApp) {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->start_url = GURL("https://example.com/start");
-  manifest->scope = GURL("https://example.com/");
-  manifest->name = u"New App";
-  manifest->id = GURL("https://example.com/start");
-  manifest->manifest_url = GURL("https://example.com/start");
+  blink::Manifest::MigrateFrom migrate_from;
+  migrate_from.id = GURL("https://example.com/old_app");
+  migrate_from.behavior = blink::mojom::ManifestMigrationBehavior::kSuggest;
 
-  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
-  migrate_from->id = GURL("https://example.com/old_app");
-  migrate_from->behavior = blink::mojom::ManifestMigrationBehavior::kSuggest;
-  manifest->migrate_from.push_back(std::move(migrate_from));
+  blink::Manifest::Builder builder(GURL("https://example.com/start"),
+                                   GURL("https://example.com/start"),
+                                   GURL("https://example.com/"));
+  builder.SetName(u"New App");
+  builder.SetManifestUrl(GURL("https://example.com/start"));
+  builder.SetMigrateFrom({std::move(migrate_from)});
+  blink::Manifest manifest = std::move(builder).BuildChecked();
 
-  webapps::AppId app_id = GenerateAppIdFromManifest(*manifest);
+  webapps::AppId app_id = GenerateAppIdFromManifest(manifest);
 
   EXPECT_EQ(RunJob(std::move(manifest)),
             MigrationTargetInstallJobResult::kSuccessInstalled);
@@ -104,31 +104,30 @@ TEST_F(MigrationTargetInstallJobTest, InstallNewApp) {
 }
 
 TEST_F(MigrationTargetInstallJobTest, UpdateInstalledApp) {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->start_url = GURL("https://example.com/start");
-  manifest->scope = GURL("https://example.com/");
-  manifest->name = u"Old App Name";
-  manifest->id = GURL("https://example.com/start");
-  manifest->manifest_url = GURL("https://example.com/start");
-
   blink::Manifest::ImageResource icon_info;
   icon_info.src = GURL("https://example.com/icon.png");
   icon_info.sizes.push_back(gfx::Size(192, 192));
   icon_info.purpose.push_back(
       blink::mojom::ManifestImageResource::Purpose::ANY);
-  manifest->icons.push_back(std::move(icon_info));
 
-  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
-  migrate_from->id = GURL("https://example.com/old_app");
-  migrate_from->behavior = blink::mojom::ManifestMigrationBehavior::kSuggest;
-  manifest->migrate_from.push_back(std::move(migrate_from));
+  blink::Manifest::MigrateFrom migrate_from;
+  migrate_from.id = GURL("https://example.com/old_app");
+  migrate_from.behavior = blink::mojom::ManifestMigrationBehavior::kSuggest;
 
-  webapps::AppId app_id = GenerateAppIdFromManifest(*manifest);
+  // The name in the manifest is "New App Name", which is a security-sensitive
+  // update.
+  blink::Manifest::Builder update_builder(GURL("https://example.com/start"),
+                                          GURL("https://example.com/start"),
+                                          GURL("https://example.com/"));
+  update_builder.SetName(u"New App Name");
+  update_builder.SetManifestUrl(GURL("https://example.com/start"));
+  update_builder.SetIcons({std::move(icon_info)});
+  update_builder.SetMigrateFrom({std::move(migrate_from)});
+  blink::Manifest manifest = std::move(update_builder).BuildChecked();
+
+  webapps::AppId app_id = GenerateAppIdFromManifest(manifest);
   test::InstallDummyWebApp(profile(), "Old App Name",
                            GURL("https://example.com/start"));
-
-  // The name in the manifest has changed, which is a security-sensitive update.
-  manifest->name = u"New App Name";
 
   {
     FakeWebContentsManager::FakeIconState icon_state;
@@ -153,24 +152,26 @@ TEST_F(MigrationTargetInstallJobTest, UpdateInstalledApp) {
 }
 
 TEST_F(MigrationTargetInstallJobTest, NoUpdateSuggestedApp) {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->start_url = GURL("https://example.com/start");
-  manifest->scope = GURL("https://example.com/");
-  manifest->name = u"Old App Name";
-  manifest->id = GURL("https://example.com/start");
-  manifest->manifest_url = GURL("https://example.com/start");
-
   blink::Manifest::ImageResource icon_info;
   icon_info.src = GURL("https://example.com/icon.png");
   icon_info.sizes.push_back(gfx::Size(192, 192));
   icon_info.purpose.push_back(
       blink::mojom::ManifestImageResource::Purpose::ANY);
-  manifest->icons.push_back(std::move(icon_info));
 
-  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
-  migrate_from->id = GURL("https://example.com/old_app");
-  migrate_from->behavior = blink::mojom::ManifestMigrationBehavior::kSuggest;
-  manifest->migrate_from.push_back(std::move(migrate_from));
+  blink::Manifest::MigrateFrom migrate_from;
+  migrate_from.id = GURL("https://example.com/old_app");
+  migrate_from.behavior = blink::mojom::ManifestMigrationBehavior::kSuggest;
+
+  // The name in the manifest is "New App Name", which is a security-sensitive
+  // update.
+  blink::Manifest::Builder no_update_builder(GURL("https://example.com/start"),
+                                             GURL("https://example.com/start"),
+                                             GURL("https://example.com/"));
+  no_update_builder.SetName(u"New App Name");
+  no_update_builder.SetManifestUrl(GURL("https://example.com/start"));
+  no_update_builder.SetIcons({std::move(icon_info)});
+  no_update_builder.SetMigrateFrom({std::move(migrate_from)});
+  blink::Manifest manifest = std::move(no_update_builder).BuildChecked();
 
   webapps::AppId app_id = test::InstallDummyWebApp(
       profile(), "Old App Name", GURL("https://example.com/start"));
@@ -180,9 +181,6 @@ TEST_F(MigrationTargetInstallJobTest, NoUpdateSuggestedApp) {
     update->UpdateApp(app_id)->SetInstallState(
         proto::InstallState::SUGGESTED_FROM_MIGRATION);
   }
-
-  // The name in the manifest has changed, which is a security-sensitive update.
-  manifest->name = u"New App Name";
 
   {
     FakeWebContentsManager::FakeIconState icon_state;

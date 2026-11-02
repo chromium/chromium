@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_MODEL_PARSE_MANIFEST_RESULT_H_
 
 #include "base/types/expected.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
 
@@ -17,8 +17,7 @@ enum class ParseManifestError {
   kInternalError,
 };
 
-using ParseManifestResult =
-    base::expected<blink::mojom::ManifestPtr, ParseManifestError>;
+using ParseManifestResult = base::expected<blink::Manifest, ParseManifestError>;
 
 }  // namespace web_app
 

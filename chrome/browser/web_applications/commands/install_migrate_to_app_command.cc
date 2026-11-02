@@ -34,6 +34,7 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
@@ -165,20 +166,22 @@ void InstallMigrateToAppCommand::OnAppLockAcquired() {
   GetMutableDebugValue().Set(
       "migrate_to_app_install_state",
       install_state.has_value() ? base::ToString(*install_state) : "nullopt");
+  auto converted_manifest = blink::ManifestFromMojom(*manifest_);
+  CHECK(converted_manifest.has_value());
   if (install_state.has_value()) {
     update_job_ = ManifestUpdateJob::CreateAndStart(
         *profile_, shared_web_contents_with_app_lock_.get(),
         shared_web_contents_with_app_lock_.get(),
         &shared_web_contents_with_app_lock_->shared_web_contents(),
         GetMutableDebugValue().EnsureDict("ManifestUpdateJob"),
-        std::move(manifest_), data_retriever_.get(),
+        std::move(*converted_manifest), data_retriever_.get(),
         &WebAppProvider::GetForWebApps(profile_)->clock(),
         base::BindOnce(&InstallMigrateToAppCommand::OnUpdateJobFinished,
                        weak_factory_.GetWeakPtr()),
         ManifestUpdateJob::Options());
   } else {
     install_job_ = MigrationTargetInstallJob::CreateAndStart(
-        std::move(manifest_),
+        std::move(*converted_manifest),
         shared_web_contents_with_app_lock_->shared_web_contents().GetWeakPtr(),
         profile_, data_retriever_.get(),
         GetMutableDebugValue().EnsureDict("MigrationTargetInstallJob"),

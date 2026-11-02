@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/jobs/parse_manifest_from_string_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
 

@@ -28,6 +28,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "url/gurl.h"
@@ -103,7 +104,7 @@ void FetchManifestAndUpdateCommand::OnUrlLoaded(
 }
 
 void FetchManifestAndUpdateCommand::OnManifestRetrieved(
-    const base::expected<blink::mojom::ManifestPtr,
+    const base::expected<blink::Manifest,
                          blink::mojom::RequestManifestErrorPtr>& result) {
   if (!result.has_value()) {
     GetMutableDebugValue().Set("manifest_error",
@@ -119,21 +120,12 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
             FetchManifestAndUpdateResult::kManifestRetrievalError));
     return;
   }
-  CHECK(result.value());
 
-  blink::mojom::ManifestPtr manifest = result.value()->Clone();
-  if (blink::IsEmptyManifest(*manifest)) {
-    GetMutableDebugValue().Set("manifest_error", "empty");
-    CompleteAndSelfDestruct(
-        CommandResult::kSuccess,
-        FetchManifestAndUpdateCompletionInfo(
-            FetchManifestAndUpdateResult::kInvalidManifest));
-    return;
-  }
+  const blink::Manifest& manifest = result.value();
 
-  if (manifest->id != expected_manifest_id_.value()) {
+  if (manifest.id() != expected_manifest_id_.value()) {
     GetMutableDebugValue().Set("foundmanifest_id",
-                               manifest->id.possibly_invalid_spec());
+                               manifest.id().possibly_invalid_spec());
     GetMutableDebugValue().Set("manifest_error", "manifest_id_mismatch");
     CompleteAndSelfDestruct(
         CommandResult::kSuccess,
@@ -142,7 +134,7 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
     return;
   }
 
-  if (!manifest->has_valid_specified_start_url) {
+  if (!manifest.has_valid_specified_start_url()) {
     GetMutableDebugValue().Set("manifest_error", "no_specified_start_url");
     CompleteAndSelfDestruct(
         CommandResult::kSuccess,
@@ -152,7 +144,7 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
   }
 
   bool has_any_icon = false;
-  for (const auto& icon : manifest->icons) {
+  for (const auto& icon : manifest.icons()) {
     if (std::ranges::contains(
             icon.purpose, blink::mojom::ManifestImageResource_Purpose::ANY)) {
       has_any_icon = true;
@@ -173,11 +165,11 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
       std::move(web_contents_lock_), *app_lock_,
       {GenerateAppIdFromManifestId(expected_manifest_id_)},
       base::BindOnce(&FetchManifestAndUpdateCommand::OnAppLockAcquired,
-                     weak_factory_.GetWeakPtr(), std::move(manifest)));
+                     weak_factory_.GetWeakPtr(), manifest));
 }
 
 void FetchManifestAndUpdateCommand::OnAppLockAcquired(
-    blink::mojom::ManifestPtr manifest) {
+    blink::Manifest manifest) {
   if (!app_lock_->registrar().AppMatches(
           GenerateAppIdFromManifestId(expected_manifest_id_),
           WebAppFilter::InstalledInChrome())) {

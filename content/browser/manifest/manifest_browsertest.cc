@@ -619,14 +619,15 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, Navigation) {
 
 // This is required as the CallbackList uses const ref, and TestFuture requires
 // copying or move support. This manually clones from the const ref so the
-// result can be moved into the TestFuture.
-base::expected<blink::mojom::ManifestPtr, blink::mojom::RequestManifestErrorPtr>
-CopyMojoExpectedConstRef(
-    const base::expected<blink::mojom::ManifestPtr,
+// A helper function to clone the base::expected<blink::Manifest, ...> so that
+// the result can be moved into the TestFuture.
+base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>
+CopyExpectedManifestResult(
+    const base::expected<blink::Manifest,
                          blink::mojom::RequestManifestErrorPtr>&
         const_ref_result) {
   if (const_ref_result.has_value()) {
-    return base::ok(const_ref_result->Clone());
+    return base::ok(*const_ref_result);
   } else {
     return base::unexpected(const_ref_result.error()->Clone());
   }
@@ -640,13 +641,13 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ManifestSubscription) {
 
   // The subscription should resolve after the manifest is added.
   {
-    base::test::TestFuture<base::expected<
-        blink::mojom::ManifestPtr, blink::mojom::RequestManifestErrorPtr>>
+    base::test::TestFuture<
+        base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>>
         manifest_future;
     PageManifestManager* manifest_manager = PageManifestManager::GetOrCreate(
         shell()->web_contents()->GetPrimaryPage());
     auto subscription = manifest_manager->GetSpecifiedManifest(
-        base::BindOnce(&CopyMojoExpectedConstRef)
+        base::BindOnce(&CopyExpectedManifestResult)
             .Then(manifest_future.GetCallback()));
 
     std::string manifest_link =
@@ -655,10 +656,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ManifestSubscription) {
 
     ASSERT_TRUE(manifest_future.Wait());
     ASSERT_TRUE(manifest_future.Get().has_value());
-    blink::mojom::Manifest& manifest = *manifest_future.Get().value();
-    EXPECT_FALSE(blink::IsEmptyManifest(manifest));
-    EXPECT_FALSE(blink::IsDefaultManifest(manifest, test_url));
-    EXPECT_FALSE(manifest.manifest_url.is_empty());
+    const blink::Manifest& manifest = manifest_future.Get().value();
+    EXPECT_FALSE(manifest.manifest_url().is_empty());
   }
 
   // Navigate away and back to have a different 'page', so we aren't getting the
@@ -669,13 +668,13 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ManifestSubscription) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   {
-    base::test::TestFuture<base::expected<
-        blink::mojom::ManifestPtr, blink::mojom::RequestManifestErrorPtr>>
+    base::test::TestFuture<
+        base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>>
         manifest_future;
     PageManifestManager* manifest_manager = PageManifestManager::GetOrCreate(
         shell()->web_contents()->GetPrimaryPage());
     auto subscription = manifest_manager->GetSpecifiedManifest(
-        base::BindOnce(&CopyMojoExpectedConstRef)
+        base::BindOnce(&CopyExpectedManifestResult)
             .Then(manifest_future.GetCallback()));
 
     std::string manifest_link =
@@ -683,8 +682,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ManifestSubscription) {
     ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
     ASSERT_TRUE(manifest_future.Wait());
-    ASSERT_FALSE(manifest_future.Get().has_value())
-        << manifest_future.Get().value()->start_url.spec();
+    ASSERT_FALSE(manifest_future.Get().has_value());
     blink::mojom::RequestManifestError& error = *manifest_future.Get().error();
     EXPECT_EQ(blink::mojom::ManifestRequestResult::kManifestFailedToFetch,
               error.error);
@@ -1876,19 +1874,19 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ManifestUrlChangedDuringFetch) {
   GURL test_url = custom_server->GetURL("/manifest/manifest_index.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr,
-                                        blink::mojom::RequestManifestErrorPtr>>
+  base::test::TestFuture<
+      base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>>
       manifest_future;
   PageManifestManager* manifest_manager = PageManifestManager::GetOrCreate(
       shell()->web_contents()->GetPrimaryPage());
   auto subscription = manifest_manager->GetSpecifiedManifest(
-      base::BindOnce(&CopyMojoExpectedConstRef)
+      base::BindOnce(&CopyExpectedManifestResult)
           .Then(manifest_future.GetCallback()));
 
   ASSERT_TRUE(manifest_future.Wait());
   ASSERT_TRUE(manifest_future.Get().has_value());
-  blink::mojom::Manifest& manifest = *manifest_future.Get().value();
-  EXPECT_EQ(u"Manifest_New", manifest.name);
+  const blink::Manifest& manifest = manifest_future.Get().value();
+  EXPECT_EQ(u"Manifest_New", manifest.name());
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ParseManifestFromString_Success) {
@@ -1905,17 +1903,16 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ParseManifestFromString_Success) {
         "scope": "/manifest/"
       })";
 
-  base::test::TestFuture<blink::mojom::ManifestPtr> manifest_future;
+  base::test::TestFuture<std::optional<blink::Manifest>> manifest_future;
   PageManifestManager* manifest_manager = PageManifestManager::GetOrCreate(
       shell()->web_contents()->GetPrimaryPage());
   manifest_manager->ParseManifestFromString(
       test_url, manifest_url, manifest_contents, manifest_future.GetCallback());
 
-  blink::mojom::ManifestPtr manifest = manifest_future.Take();
-  ASSERT_TRUE(manifest);
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest));
-  EXPECT_EQ(u"Test App", manifest->name);
-  EXPECT_EQ(test_url, manifest->start_url);
+  std::optional<blink::Manifest> manifest = manifest_future.Take();
+  ASSERT_TRUE(manifest.has_value());
+  EXPECT_EQ(u"Test App", manifest->name());
+  EXPECT_EQ(test_url, manifest->start_url());
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
@@ -1945,7 +1942,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
 
   for (const GURL& doc_url : invalid_or_opaque_urls) {
     SCOPED_TRACE(::testing::Message() << "doc_url: " << doc_url);
-    base::test::TestFuture<blink::mojom::ManifestPtr> manifest_future;
+    base::test::TestFuture<std::optional<blink::Manifest>> manifest_future;
     manifest_manager->ParseManifestFromString(doc_url, manifest_url,
                                               manifest_contents,
                                               manifest_future.GetCallback());
@@ -1954,9 +1951,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
     // without blocking or synchronously invoking the callback.
     EXPECT_FALSE(manifest_future.IsReady());
 
-    blink::mojom::ManifestPtr manifest = manifest_future.Take();
-    ASSERT_TRUE(manifest);
-    EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+    std::optional<blink::Manifest> manifest = manifest_future.Take();
+    EXPECT_FALSE(manifest.has_value());
 
     // Because invalid or opaque document_url inputs short-circuit before the
     // IPC, the renderer is not contacted and remains live (not terminated for
@@ -2007,15 +2003,14 @@ IN_PROC_BROWSER_TEST_F(
 
   for (const GURL& doc_url : invalid_or_opaque_urls) {
     SCOPED_TRACE(::testing::Message() << "doc_url: " << doc_url);
-    base::test::TestFuture<blink::mojom::ManifestPtr> manifest_future;
+    base::test::TestFuture<std::optional<blink::Manifest>> manifest_future;
     manifest_manager->ParseManifestFromString(doc_url, manifest_url,
                                               manifest_contents,
                                               manifest_future.GetCallback());
 
     EXPECT_FALSE(manifest_future.IsReady());
-    blink::mojom::ManifestPtr manifest = manifest_future.Take();
-    ASSERT_TRUE(manifest);
-    EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+    std::optional<blink::Manifest> manifest = manifest_future.Take();
+    EXPECT_FALSE(manifest.has_value());
   }
 
   // Verify that when a valid and non-opaque document URL is provided, the
@@ -2028,10 +2023,11 @@ IN_PROC_BROWSER_TEST_F(
         std::move(cb).Run(blink::mojom::Manifest::New());
       });
 
-  base::test::TestFuture<blink::mojom::ManifestPtr> valid_future;
+  base::test::TestFuture<std::optional<blink::Manifest>> valid_future;
   manifest_manager->ParseManifestFromString(
       test_url, manifest_url, manifest_contents, valid_future.GetCallback());
   EXPECT_TRUE(valid_future.Wait());
+  EXPECT_FALSE(valid_future.Get().has_value());
 
   test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
 }
@@ -2187,20 +2183,20 @@ IN_PROC_BROWSER_TEST_F(
       base::BindRepeating(&MockManifestManager::Bind,
                           base::Unretained(&mock_manifest_manager)));
 
-  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr,
-                                        blink::mojom::RequestManifestErrorPtr>>
+  base::test::TestFuture<
+      base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>>
       specified_future;
-  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr,
-                                        blink::mojom::RequestManifestErrorPtr>>
+  base::test::TestFuture<
+      base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>>
       all_future;
 
   PageManifestManager* manifest_manager = PageManifestManager::GetOrCreate(
       shell()->web_contents()->GetPrimaryPage());
   auto sub1 = manifest_manager->GetSpecifiedManifest(
-      base::BindOnce(&CopyMojoExpectedConstRef)
+      base::BindOnce(&CopyExpectedManifestResult)
           .Then(specified_future.GetCallback()));
   auto sub2 = manifest_manager->GetAllSpecifiedManifests(
-      base::BindRepeating(&CopyMojoExpectedConstRef)
+      base::BindRepeating(&CopyExpectedManifestResult)
           .Then(all_future.GetRepeatingCallback()));
 
   base::RunLoop run_loop;
@@ -2259,10 +2255,10 @@ IN_PROC_BROWSER_TEST_F(
   bad_manifest->file_handlers.push_back(std::move(file_handler));
 
   mojo::test::BadMessageObserver bad_message_observer;
-  blink::mojom::ManifestPtr result =
+  std::optional<blink::Manifest> result =
       host->ValidateParsedManifestFromStringForTesting(test_url, manifest_url,
                                                        std::move(bad_manifest));
-  EXPECT_TRUE(blink::IsEmptyManifest(result));
+  EXPECT_FALSE(result.has_value());
   EXPECT_THAT(
       bad_message_observer.WaitForBadMessage(),
       ::testing::StartsWith(
@@ -2287,11 +2283,11 @@ IN_PROC_BROWSER_TEST_F(
   bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
 
   mojo::test::BadMessageObserver bad_message_observer;
-  blink::mojom::ManifestPtr result =
+  std::optional<blink::Manifest> result =
       host->ValidateParsedManifestFromStringForTesting(
           test_url, embedded_test_server()->GetURL("/manifest/manifest.json"),
           std::move(bad_manifest));
-  EXPECT_TRUE(blink::IsEmptyManifest(result));
+  EXPECT_FALSE(result.has_value());
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Returned manifest has incorrect manifest URL");
 }
@@ -2321,10 +2317,10 @@ IN_PROC_BROWSER_TEST_F(
   bad_manifest->scope_extensions.push_back(std::move(scope_extension));
 
   mojo::test::BadMessageObserver bad_message_observer;
-  blink::mojom::ManifestPtr result =
+  std::optional<blink::Manifest> result =
       host->ValidateParsedManifestFromStringForTesting(test_url, manifest_url,
                                                        std::move(bad_manifest));
-  EXPECT_TRUE(blink::IsEmptyManifest(result));
+  EXPECT_FALSE(result.has_value());
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Manifest scope_extensions origin must use the https scheme.");
 }
@@ -2353,10 +2349,10 @@ IN_PROC_BROWSER_TEST_F(
   bad_manifest->scope_extensions.push_back(std::move(scope_extension));
 
   mojo::test::BadMessageObserver bad_message_observer;
-  blink::mojom::ManifestPtr result =
+  std::optional<blink::Manifest> result =
       host->ValidateParsedManifestFromStringForTesting(test_url, manifest_url,
                                                        std::move(bad_manifest));
-  EXPECT_TRUE(blink::IsEmptyManifest(result));
+  EXPECT_FALSE(result.has_value());
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Manifest scope_extensions origin must not be opaque.");
 }

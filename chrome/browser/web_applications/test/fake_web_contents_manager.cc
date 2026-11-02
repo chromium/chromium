@@ -26,6 +26,7 @@
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -376,9 +377,28 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
       std::move(page.on_manifest_fetch).Run();
     }
 
+    auto get_manifest_result =
+        [&]() -> base::expected<blink::Manifest,
+                                blink::mojom::RequestManifestErrorPtr> {
+      if (!manifest) {
+        return base::unexpected(blink::mojom::RequestManifestError::New(
+            blink::mojom::ManifestRequestResult::kManifestFailedToFetch,
+            std::vector<blink::mojom::ManifestErrorPtr>()));
+      }
+      auto converted = blink::ManifestFromMojom(*manifest);
+      if (!converted.has_value()) {
+        return base::unexpected(blink::mojom::RequestManifestError::New(
+            blink::mojom::ManifestRequestResult::kUnexpectedFailure,
+            std::vector<blink::mojom::ManifestErrorPtr>()));
+      }
+      return std::move(*converted);
+    };
+    base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>
+        manifest_result = get_manifest_result();
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), base::ok(std::move(manifest))));
+        base::BindOnce(std::move(callback), std::move(manifest_result)));
   }
 
   void GetIcons(content::WebContents* web_contents,

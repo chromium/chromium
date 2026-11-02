@@ -97,14 +97,12 @@ const typename MapType::mapped_type* FindLocalizedValue(
 }
 
 // Matches a localized text object from a map based on |application_locale|.
-blink::mojom::ManifestLocalizedTextObjectPtr MatchLocalizedText(
-    const base::flat_map<base::i18n::LanguageTag,
-                         blink::mojom::ManifestLocalizedTextObjectPtr>&
+const blink::Manifest::ManifestLocalizedTextObject* MatchLocalizedText(
+    const absl::flat_hash_map<base::i18n::LanguageTag,
+                              blink::Manifest::ManifestLocalizedTextObject>&
         localized_map,
     const base::i18n::LanguageTag& application_locale) {
-  const blink::mojom::ManifestLocalizedTextObjectPtr* result =
-      FindLocalizedValue(localized_map, application_locale);
-  return result ? (*result).Clone() : nullptr;
+  return FindLocalizedValue(localized_map, application_locale);
 }
 
 const std::vector<blink::Manifest::ImageResource>& GetLocalizedShortcutIcons(
@@ -136,16 +134,16 @@ const std::u16string& GetLocalizedShortcutName(
 }
 
 LocalizedText GetLocalizedTitleFromManifestFields(
-    const blink::mojom::Manifest& manifest,
+    const blink::Manifest& manifest,
     const base::i18n::LanguageTag& application_locale) {
-  blink::mojom::ManifestLocalizedTextObjectPtr localized_name;
-  if (manifest.name_localized.has_value()) {
+  const blink::Manifest::ManifestLocalizedTextObject* localized_name = nullptr;
+  if (manifest.name_localized().has_value()) {
     localized_name =
-        MatchLocalizedText(*manifest.name_localized, application_locale);
+        MatchLocalizedText(*manifest.name_localized(), application_locale);
   }
-  if (!localized_name && manifest.short_name_localized.has_value()) {
-    localized_name =
-        MatchLocalizedText(*manifest.short_name_localized, application_locale);
+  if (!localized_name && manifest.short_name_localized().has_value()) {
+    localized_name = MatchLocalizedText(*manifest.short_name_localized(),
+                                        application_locale);
   }
 
   if (localized_name && !localized_name->value.empty()) {
@@ -155,21 +153,22 @@ LocalizedText GetLocalizedTitleFromManifestFields(
   // Fall back to non-localized fields. Use assignment operator which handles
   // clearing lang/dir fields.
   LocalizedText result;
-  std::u16string name = manifest.name.value_or(std::u16string());
+  std::u16string name = manifest.name().value_or(std::u16string());
   if (!name.empty()) {
     result = name;
-  } else if (manifest.short_name) {
-    result = *manifest.short_name;
+  } else if (manifest.short_name()) {
+    result = *manifest.short_name();
   }
   return result;
 }
 
 LocalizedText GetLocalizedDescriptionFromManifestFields(
-    const blink::mojom::Manifest& manifest,
+    const blink::Manifest& manifest,
     const base::i18n::LanguageTag& application_locale) {
-  if (manifest.description_localized.has_value()) {
-    blink::mojom::ManifestLocalizedTextObjectPtr localized_description =
-        MatchLocalizedText(*manifest.description_localized, application_locale);
+  if (manifest.description_localized().has_value()) {
+    const blink::Manifest::ManifestLocalizedTextObject* localized_description =
+        MatchLocalizedText(*manifest.description_localized(),
+                           application_locale);
     if (localized_description && !localized_description->value.empty()) {
       return LocalizedText(localized_description->value,
                            localized_description->lang,
@@ -179,25 +178,25 @@ LocalizedText GetLocalizedDescriptionFromManifestFields(
   // Fall back to non-localized field. Use assignment operator which handles
   // clearing lang/dir fields.
   LocalizedText result;
-  if (manifest.description.has_value()) {
-    result = *manifest.description;
+  if (manifest.description().has_value()) {
+    result = *manifest.description();
   }
   return result;
 }
 
 const std::vector<blink::Manifest::ImageResource>&
 GetLocalizedIconsFromManifest(
-    const blink::mojom::Manifest& manifest,
+    const blink::Manifest& manifest,
     const base::i18n::LanguageTag& application_locale) {
-  if (manifest.icons_localized.has_value() &&
-      !manifest.icons_localized->empty()) {
+  if (manifest.icons_localized().has_value() &&
+      !manifest.icons_localized()->empty()) {
     const std::vector<blink::Manifest::ImageResource>* localized_icons =
-        FindLocalizedValue(*manifest.icons_localized, application_locale);
+        FindLocalizedValue(*manifest.icons_localized(), application_locale);
     if (localized_icons && !localized_icons->empty()) {
       return *localized_icons;
     }
   }
-  return manifest.icons;
+  return manifest.icons();
 }
 
 void RecordSvgIconUrl(const blink::Manifest::ImageResource& icon,
@@ -446,42 +445,40 @@ std::optional<apps::ShareTarget> ToWebAppShareTarget(
 }
 
 std::vector<apps::ProtocolHandlerInfo> ToWebAppProtocolHandlers(
-    const std::vector<blink::mojom::ManifestProtocolHandlerPtr>&
+    const std::vector<blink::Manifest::ProtocolHandler>&
         manifest_protocol_handlers) {
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers;
   for (const auto& manifest_protocol_handler : manifest_protocol_handlers) {
     apps::ProtocolHandlerInfo protocol_handler;
     protocol_handler.protocol =
-        base::UTF16ToUTF8(manifest_protocol_handler->protocol);
-    protocol_handler.url = manifest_protocol_handler->url;
+        base::UTF16ToUTF8(manifest_protocol_handler.protocol);
+    protocol_handler.url = manifest_protocol_handler.url;
     protocol_handlers.push_back(std::move(protocol_handler));
   }
   return protocol_handlers;
 }
 
 ScopeExtensions ToWebAppScopeExtensions(
-    const std::vector<blink::mojom::ManifestScopeExtensionPtr>&
-        scope_extensions) {
+    const std::vector<blink::Manifest::ScopeExtension>& scope_extensions) {
   ScopeExtensions apps_scope_extensions;
   for (const auto& scope_extension : scope_extensions) {
-    CHECK(scope_extension);
     // Disallow opaque origins and non-HTTPS origins as defense-in-depth against
     // corrupted or invalid scope extension entries. IPC validation and bad
     // message reporting are performed at the IPC boundary in
     // ManifestManagerHost.
-    if (scope_extension->origin.opaque() ||
-        scope_extension->origin.scheme() != url::kHttpsScheme) {
+    if (scope_extension.origin.opaque() ||
+        scope_extension.origin.scheme() != url::kHttpsScheme) {
       continue;
     }
     auto new_scope_extension = ScopeExtensionInfo::CreateForOrigin(
-        scope_extension->origin, scope_extension->has_origin_wildcard);
+        scope_extension.origin, scope_extension.has_origin_wildcard);
     apps_scope_extensions.insert(std::move(new_scope_extension));
   }
   return apps_scope_extensions;
 }
 
 std::optional<MigrationSource> ToMigrationSource(
-    const blink::mojom::ManifestMigrateFrom& migrate_from) {
+    const blink::Manifest::MigrateFrom& migrate_from) {
   std::optional<webapps::ManifestId> manifest_id =
       webapps::ManifestId::Create(migrate_from.id);
   if (!manifest_id.has_value() ||
@@ -615,7 +612,7 @@ ManifestToWebAppInstallInfoJob::~ManifestToWebAppInstallInfoJob() = default;
 // static
 std::unique_ptr<ManifestToWebAppInstallInfoJob>
 ManifestToWebAppInstallInfoJob::CreateAndStart(
-    const blink::mojom::Manifest& manifest,
+    const blink::Manifest& manifest,
     WebAppDataRetriever& data_retriever,
     bool background_installation,
     webapps::WebappInstallSource install_source,
@@ -656,7 +653,7 @@ IconsDownloadedResult ManifestToWebAppInstallInfoJob::icon_download_result()
 }
 
 ManifestToWebAppInstallInfoJob::ManifestToWebAppInstallInfoJob(
-    const blink::mojom::Manifest& manifest,
+    const blink::Manifest& manifest,
     WebAppDataRetriever& data_retriever,
     bool background_installation,
     webapps::WebappInstallSource install_source,
@@ -664,7 +661,7 @@ ManifestToWebAppInstallInfoJob::ManifestToWebAppInstallInfoJob(
     WebAppInstallInfoCreationCallback creation_callback,
     WebAppInstallInfoConstructOptions options,
     std::optional<WebAppInstallInfo> fallback_info)
-    : manifest_(manifest.Clone()),
+    : manifest_(manifest),
       data_retriever_(data_retriever),
       creation_callback_(std::move(creation_callback)),
       options_(options),
@@ -672,19 +669,21 @@ ManifestToWebAppInstallInfoJob::ManifestToWebAppInstallInfoJob(
       debug_data_(debug_data) {
   // These are the pre-requisites for constructing a WebAppInstallInfo from a
   // valid manifest id and start url.
-  CHECK(manifest_->id.is_valid());
-  CHECK(!manifest_->id.has_ref());
-  CHECK(manifest_->start_url.is_valid());
+  CHECK(manifest_.id().is_valid());
+  CHECK(!manifest_.id().has_ref());
+  CHECK(manifest_.start_url().is_valid());
 
-  debug_data_->Set("manifest_id", manifest_->id.spec());
-  debug_data_->Set("start_url", manifest_->start_url.spec());
+  // TODO(https://crbug.com/485890278): Consider adding
+  // blink::Manifest::ToDebugValue() for richer manifest debug_data logging.
+  debug_data_->Set("manifest_id", manifest_.id().spec());
+  debug_data_->Set("start_url", manifest_.start_url().spec());
   debug_data_->Set("background_installation", background_installation);
   debug_data_->Set("install_source", base::ToString(install_source));
-  if (manifest_->name && !manifest_->name->empty()) {
-    debug_data_->Set("manifest_name", *manifest_->name);
+  if (manifest_.name() && !manifest_.name()->empty()) {
+    debug_data_->Set("manifest_name", *manifest_.name());
   }
-  if (manifest_->short_name && !manifest_->short_name->empty()) {
-    debug_data_->Set("manifest_short_name", *manifest_->short_name);
+  if (manifest_.short_name() && !manifest_.short_name()->empty()) {
+    debug_data_->Set("manifest_short_name", *manifest_.short_name());
   }
 }
 
@@ -706,12 +705,12 @@ void ManifestToWebAppInstallInfoJob::Start(
   }
 
   std::optional<webapps::ManifestId> manifest_id =
-          webapps::ManifestId::Create(manifest_->id);
+      webapps::ManifestId::Create(manifest_.id());
 
   CHECK(manifest_id.has_value());
 
-  install_info_ = std::make_unique<WebAppInstallInfo>(
-      *manifest_id, manifest_->start_url);
+  install_info_ =
+      std::make_unique<WebAppInstallInfo>(*manifest_id, manifest_.start_url());
 
   // First, populate the `install_info()` by parsing the fields provided in the
   // manifest.
@@ -783,11 +782,11 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
       g_browser_process->GetFeatures()->application_locale_storage()->GetTag();
 
   install_info().title =
-      GetLocalizedTitleFromManifestFields(*manifest_, application_locale);
+      GetLocalizedTitleFromManifestFields(manifest_, application_locale);
 
   // Clean up.
-  if (manifest_->scope.is_valid()) {
-    install_info().scope = manifest_->scope;
+  if (manifest_.scope().is_valid()) {
+    install_info().scope = manifest_.scope();
   }
   // Ensure scope is derived if empty after processing manifest.
   if (install_info().scope.is_empty()) {
@@ -795,21 +794,21 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   }
   CHECK(!install_info().scope.is_empty());
 
-  if (manifest_->theme_color.has_value()) {
+  if (manifest_.theme_color().has_value()) {
     install_info().theme_color = SkColorSetA(
-        static_cast<SkColor>(manifest_->theme_color.value()), SK_AlphaOPAQUE);
+        static_cast<SkColor>(manifest_.theme_color().value()), SK_AlphaOPAQUE);
   }
 
-  if (manifest_->background_color.has_value()) {
+  if (manifest_.background_color().has_value()) {
     install_info().background_color =
-        SkColorSetA(static_cast<SkColor>(manifest_->background_color.value()),
+        SkColorSetA(static_cast<SkColor>(manifest_.background_color().value()),
                     SK_AlphaOPAQUE);
   }
 
-  if (manifest_->display != DisplayMode::kUndefined) {
-    install_info().display_mode = manifest_->display;
+  if (manifest_.display() != DisplayMode::kUndefined) {
+    install_info().display_mode = manifest_.display();
   }
-  for (const auto& override_item : manifest_->display_override) {
+  for (const auto& override_item : manifest_.display_override()) {
     if (override_item.display() == DisplayMode::kUnframed) {
       if (base::FeatureList::IsEnabled(blink::features::kUnframedIwa)) {
         install_info().display_override.push_back(
@@ -822,7 +821,7 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   }
 
   const std::vector<blink::Manifest::ImageResource>& icons =
-      GetLocalizedIconsFromManifest(*manifest_, application_locale);
+      GetLocalizedIconsFromManifest(manifest_, application_locale);
   UpdateWebAppInstallInfoIconsFromManifestIfNeeded(icons, &install_info());
   if (options_.use_manifest_icons_as_trusted) {
     for (const apps::IconInfo& icon_info : install_info().manifest_icons) {
@@ -839,76 +838,77 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   }
 
   // TODO(crbug.com/40185556): Confirm incoming icons to write to install_info_.
-  PopulateFileHandlerInfoFromManifest(manifest_->file_handlers,
+  PopulateFileHandlerInfoFromManifest(manifest_.file_handlers(),
                                       install_info().scope, &install_info());
 
-  install_info().share_target = ToWebAppShareTarget(manifest_->share_target);
+  install_info().share_target = ToWebAppShareTarget(manifest_.share_target());
 
   install_info().protocol_handlers =
-      ToWebAppProtocolHandlers(manifest_->protocol_handlers);
+      ToWebAppProtocolHandlers(manifest_.protocol_handlers());
 
   install_info().scope_extensions =
-      ToWebAppScopeExtensions(manifest_->scope_extensions);
+      ToWebAppScopeExtensions(manifest_.scope_extensions());
 
   GURL inferred_scope = install_info().scope.is_valid()
                             ? install_info().scope
                             : install_info().start_url().GetWithoutFilename();
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppManifestLockScreen) &&
-      manifest_->lock_screen && manifest_->lock_screen->start_url.is_valid() &&
-      IsInScope(manifest_->lock_screen->start_url, inferred_scope)) {
-    install_info().lock_screen_start_url = manifest_->lock_screen->start_url;
+      manifest_.lock_screen() &&
+      manifest_.lock_screen()->start_url.is_valid() &&
+      IsInScope(manifest_.lock_screen()->start_url, inferred_scope)) {
+    install_info().lock_screen_start_url = manifest_.lock_screen()->start_url;
   }
 
-  if (manifest_->note_taking &&
-      manifest_->note_taking->new_note_url.is_valid() &&
-      IsInScope(manifest_->note_taking->new_note_url, inferred_scope)) {
+  if (manifest_.note_taking() &&
+      manifest_.note_taking()->new_note_url.is_valid() &&
+      IsInScope(manifest_.note_taking()->new_note_url, inferred_scope)) {
     install_info().note_taking_new_note_url =
-        manifest_->note_taking->new_note_url;
+        manifest_.note_taking()->new_note_url;
   }
 
   CHECK(install_info().shortcuts_menu_item_infos.empty());
-  PopulateWebAppShortcutsMenuItemInfos(manifest_->shortcuts, &install_info(),
+  PopulateWebAppShortcutsMenuItemInfos(manifest_.shortcuts(), &install_info(),
                                        application_locale);
 
-  for (const auto& migrate_from : manifest_->migrate_from) {
-    if (!net::SchemefulSite::IsSameSite(manifest_->manifest_url,
-                                        migrate_from->id)) {
+  for (const auto& migrate_from : manifest_.migrate_from()) {
+    if (!net::SchemefulSite::IsSameSite(manifest_.manifest_url(),
+                                        migrate_from.id)) {
       continue;
     }
-    std::optional<MigrationSource> source = ToMigrationSource(*migrate_from);
+    std::optional<MigrationSource> source = ToMigrationSource(migrate_from);
     if (source.has_value()) {
       install_info().migration_sources.push_back(std::move(*source));
     }
   }
 
-  if (manifest_->manifest_url.is_valid()) {
-    install_info().manifest_url = manifest_->manifest_url;
+  if (manifest_.manifest_url().is_valid()) {
+    install_info().manifest_url = manifest_.manifest_url();
   }
 
-  if (manifest_->update_manifest_url &&
-      manifest_->update_manifest_url->is_valid()) {
+  if (manifest_.update_manifest_url() &&
+      manifest_.update_manifest_url()->is_valid()) {
     install_info().iwa_update_manifest_url =
-        manifest_->update_manifest_url.value();
+        manifest_.update_manifest_url().value();
   }
 
-  install_info().launch_handler = manifest_->launch_handler;
+  install_info().launch_handler = manifest_.launch_handler();
 
   LocalizedText description =
-      GetLocalizedDescriptionFromManifestFields(*manifest_, application_locale);
+      GetLocalizedDescriptionFromManifestFields(manifest_, application_locale);
   if (!description.empty()) {
     install_info().description = std::move(description);
   }
 
-  install_info().translations = ToWebAppTranslations(manifest_->translations);
+  install_info().translations = ToWebAppTranslations(manifest_.translations());
 
-  install_info().tab_strip = manifest_->tab_strip;
+  install_info().tab_strip = manifest_.tab_strip();
 
   if (HomeTabIconsExistInTabStrip(*install_info_)) {
     PopulateHomeTabIconsFromHomeTabManifestParams(&install_info());
   }
 
-  install_info().related_applications = manifest_->related_applications;
+  install_info().related_applications = manifest_.related_applications();
 }
 
 void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(

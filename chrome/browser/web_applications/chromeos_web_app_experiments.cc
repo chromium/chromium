@@ -181,7 +181,7 @@ bool ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
 std::optional<blink::Manifest> ChromeOsWebAppExperiments::MaybeOverrideManifest(
     content::RenderFrameHost* frame_host,
     const blink::Manifest& manifest) {
-  const auto pwa_start_url_origin = url::Origin::Create(manifest.start_url());
+  const auto& pwa_start_url_origin = manifest.GetOrigin();
   std::string pwa_start_url_path =
       manifest.start_url().GetWithoutFilename().GetPath();
 

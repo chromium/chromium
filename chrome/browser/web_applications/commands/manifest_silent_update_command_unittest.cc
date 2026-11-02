@@ -655,7 +655,7 @@ TEST_F(ManifestSilentUpdateCommandTest, ProtocolHandlersUpdatedSilently) {
   {
     auto protocol_handler = blink::mojom::ManifestProtocolHandler::New();
     protocol_handler->protocol = u"mailto";
-    protocol_handler->url = GURL("http://example.com/handle=%s");
+    protocol_handler->url = GURL("https://www.foo.bar/web_apps/handle=%s");
     new_manifest->protocol_handlers.push_back(std::move(protocol_handler));
   }
 
@@ -670,7 +670,7 @@ TEST_F(ManifestSilentUpdateCommandTest, ProtocolHandlersUpdatedSilently) {
       testing::ElementsAre(testing::AllOf(
           testing::Field(&apps::ProtocolHandlerInfo::protocol, "mailto"),
           testing::Field(&apps::ProtocolHandlerInfo::url,
-                         GURL("http://example.com/handle=%s")))));
+                         GURL("https://www.foo.bar/web_apps/handle=%s")))));
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Webapp.Update.ManifestSilentUpdateCheckResult"),
               BucketsAre(base::Bucket(
@@ -691,7 +691,7 @@ TEST_F(ManifestSilentUpdateCommandTest, FileHandlersUpdatedSilently) {
 
   {
     auto handler = blink::mojom::ManifestFileHandler::New();
-    handler->action = GURL("http://example.com/open-files");
+    handler->action = GURL("https://www.foo.bar/web_apps/open-files");
     handler->accept[u"image/png"].push_back(u".png");
     handler->name = u"Images";
     new_manifest->file_handlers.push_back(std::move(handler));
@@ -707,7 +707,7 @@ TEST_F(ManifestSilentUpdateCommandTest, FileHandlersUpdatedSilently) {
       *new_file_handlers,
       testing::ElementsAre(testing::AllOf(
           testing::Field(&apps::FileHandler::action,
-                         GURL("http://example.com/open-files")),
+                         GURL("https://www.foo.bar/web_apps/open-files")),
           testing::Field(&apps::FileHandler::display_name, u"Images"))));
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Webapp.Update.ManifestSilentUpdateCheckResult"),

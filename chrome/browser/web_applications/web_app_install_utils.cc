@@ -313,23 +313,19 @@ void PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
 }  // namespace
 
 void PopulateFileHandlerInfoFromManifest(
-    const std::vector<blink::mojom::ManifestFileHandlerPtr>&
-        manifest_file_handlers,
+    const std::vector<blink::Manifest::FileHandler>& manifest_file_handlers,
     const GURL& app_scope,
     WebAppInstallInfo* web_app_info) {
   apps::FileHandlers web_app_file_handlers;
 
   for (const auto& manifest_file_handler : manifest_file_handlers) {
-    if (!manifest_file_handler) {
-      continue;
-    }
     apps::FileHandler web_app_file_handler;
-    web_app_file_handler.action = manifest_file_handler->action;
-    web_app_file_handler.display_name = manifest_file_handler->name;
+    web_app_file_handler.action = manifest_file_handler.action;
+    web_app_file_handler.display_name = manifest_file_handler.name;
     web_app_file_handler.launch_type =
-        ToFileHandlerLaunchType(manifest_file_handler->launch_type);
+        ToFileHandlerLaunchType(manifest_file_handler.launch_type);
 
-    for (const auto& it : manifest_file_handler->accept) {
+    for (const auto& it : manifest_file_handler.accept) {
       std::string mime_type = base::UTF16ToUTF8(it.first);
       std::string top_level_mime_type;
       if (!net::ParseMimeTypeWithoutParameter(mime_type, &top_level_mime_type,
@@ -357,6 +353,26 @@ void PopulateFileHandlerInfoFromManifest(
   }
 
   web_app_info->file_handlers = std::move(web_app_file_handlers);
+}
+
+void PopulateFileHandlerInfoFromManifest(
+    const std::vector<blink::mojom::ManifestFileHandlerPtr>&
+        manifest_file_handlers,
+    const GURL& app_scope,
+    WebAppInstallInfo* web_app_info) {
+  std::vector<blink::Manifest::FileHandler> converted;
+  for (const auto& handler : manifest_file_handlers) {
+    if (!handler) {
+      continue;
+    }
+    blink::Manifest::FileHandler h;
+    h.action = handler->action;
+    h.name = handler->name;
+    h.accept = handler->accept;
+    h.launch_type = handler->launch_type;
+    converted.push_back(std::move(h));
+  }
+  PopulateFileHandlerInfoFromManifest(converted, app_scope, web_app_info);
 }
 
 void PopulateOtherIcons(WebAppInstallInfo* web_app_info,

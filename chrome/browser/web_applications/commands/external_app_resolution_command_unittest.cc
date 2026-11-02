@@ -127,6 +127,7 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
     manifest->short_name = u"App";
     manifest->start_url = kWebAppUrl;
     manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value();
+    manifest->scope = kWebAppUrl.GetWithoutFilename();
     manifest->display = blink::mojom::DisplayMode::kStandalone;
     return manifest;
   }
@@ -445,7 +446,8 @@ TEST_F(ExternalAppResolutionCommandTest, ReinstallPlaceholderSucceeds) {
   // Replace the placeholder with a real app.
   SetPageState(options);
   auto data_retriever = std::make_unique<FakeDataRetriever>();
-  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
+  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl,
+                                               kWebAppUrl.GetWithoutFilename());
 
   MockWebAppUiManager& ui_manager =
       static_cast<MockWebAppUiManager&>(fake_ui_manager());
@@ -637,7 +639,8 @@ TEST_F(ExternalAppResolutionCommandTest,
   // Replace the placeholder with a real app.
   SetPageState(options);
   auto data_retriever = std::make_unique<FakeDataRetriever>();
-  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
+  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl,
+                                               kWebAppUrl.GetWithoutFilename());
 
   // Simulate disk failure to uninstall the placeholder.
   file_utils().SetNextDeleteFileRecursivelyResult(false);

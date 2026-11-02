@@ -53,6 +53,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -401,9 +402,12 @@ void ExternalAppResolutionCommand::RetrieveWebAppInfoFromManifest(
 
   GetMutableDebugValue().Set("manifest_id", opt_manifest->id.spec());
 
+  auto converted_manifest = blink::ManifestFromMojom(*opt_manifest);
+  CHECK(converted_manifest.has_value());
+
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
-          *opt_manifest, *data_retriever_.get(),
+          *converted_manifest, *data_retriever_.get(),
           /*background_installation=*/true, install_surface_,
           web_contents_->GetWeakPtr(), [](IconUrlSizeSet&) {},
           GetMutableDebugValue(),

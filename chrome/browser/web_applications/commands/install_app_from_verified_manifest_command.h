@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace web_app {

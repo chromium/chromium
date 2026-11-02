@@ -15,6 +15,10 @@
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
+namespace blink {
+class Manifest;
+}
+
 namespace content {
 class WebContents;
 }
@@ -42,7 +46,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   // Called by WebAppTabHelper when a developer-specified manifest is seen on
   // the primary page.
   void OnManifestSeenOnPrimaryPage(content::WebContents& web_contents,
-                                   const blink::mojom::ManifestPtr& manifest,
+                                   const blink::Manifest& manifest,
                                    base::PassKey<WebAppTabHelper>);
   void TriggerManifestUpdateProcess(content::WebContents& web_contents,
                                     const webapps::AppId& app_id);

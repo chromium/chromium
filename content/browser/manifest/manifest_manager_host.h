@@ -81,7 +81,7 @@ class CONTENT_EXPORT ManifestManagerHost
                                const std::string& manifest_contents,
                                ParseManifestCallback callback) override;
 
-  blink::mojom::ManifestPtr ValidateParsedManifestFromStringForTesting(
+  std::optional<blink::Manifest> ValidateParsedManifestFromStringForTesting(
       const GURL& document_url,
       const GURL& manifest_url,
       blink::mojom::ManifestPtr manifest);
@@ -100,7 +100,7 @@ class CONTENT_EXPORT ManifestManagerHost
   ValidateAndMaybeOverrideManifest(blink::mojom::ManifestRequestResult result,
                                    std::optional<blink::Manifest> manifest);
 
-  blink::mojom::ManifestPtr ValidateParsedManifestFromString(
+  std::optional<blink::Manifest> ValidateParsedManifestFromString(
       const GURL& document_url,
       const GURL& manifest_url,
       blink::mojom::ManifestPtr manifest);
@@ -142,8 +142,7 @@ class CONTENT_EXPORT ManifestManagerHost
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;
   CallbackMap callbacks_;
 
-  std::optional<blink::mojom::ManifestPtr> last_manifest_success_result_ =
-      std::nullopt;
+  std::optional<blink::Manifest> last_manifest_success_result_ = std::nullopt;
 
   // Keep track of the manifest url that is currently being fetched, to prevent
   // duplicate manifest fetches being triggered if one is already in progress.

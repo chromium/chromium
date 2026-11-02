@@ -41,6 +41,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
 
@@ -254,9 +255,12 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
   // forever.
   // TODO(crbug.com/40226606): Allow favicons without waiting for them to
   // be updated on the page.
+  auto converted_manifest = blink::ManifestFromMojom(*opt_manifest);
+  CHECK(converted_manifest.has_value());
+
   manifest_to_install_info_job_ =
       ManifestToWebAppInstallInfoJob::CreateAndStart(
-          *opt_manifest, *data_retriever_.get(),
+          *converted_manifest, *data_retriever_.get(),
           /*background_installation=*/true, webapps::WebappInstallSource::SYNC,
           lock_->shared_web_contents().GetWeakPtr(), [](IconUrlSizeSet&) {},
           GetMutableDebugValue(),

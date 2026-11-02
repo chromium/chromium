@@ -360,8 +360,7 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
 }
 
 void WebAppDataRetriever::OnGotDeveloperSpecifiedManifest(
-    const base::expected<blink::mojom::ManifestPtr,
-                         blink::mojom::RequestManifestErrorPtr>& result) {
+    const ManifestResult& result) {
   if (!get_specified_manifest_callback_) {
     return;
   }

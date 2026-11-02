@@ -556,7 +556,7 @@ void WebAppTabHelper::OnManifestSpecifiedOnPrimaryPage(
   if (result.has_value()) {
     provider_->manifest_update_manager().OnManifestSeenOnPrimaryPage(
         *web_contents(), result.value(), base::PassKey<WebAppTabHelper>());
-    webapps::ManifestId manifest_id = webapps::ManifestId(result.value()->id);
+    webapps::ManifestId manifest_id = webapps::ManifestId(result.value().id());
     last_processed_manifest_id_for_current_page_ = manifest_id;
     manifest_processed_callbacks_.Notify(manifest_id);
   }

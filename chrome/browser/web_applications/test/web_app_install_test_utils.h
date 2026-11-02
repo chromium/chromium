@@ -15,8 +15,8 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/common/buildflags.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 class GURL;
@@ -104,6 +104,12 @@ webapps::AppId InstallForWebContents(
     webapps::WebappInstallSource install_surface);
 
 // Parses the manifest to create a `WebAppInstallInfo` instance out of it.
+std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
+    base::WeakPtr<content::WebContents> web_contents,
+    const blink::Manifest& manifest,
+    WebAppInstallInfoConstructOptions construct_options =
+        WebAppInstallInfoConstructOptions{});
+
 std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
     base::WeakPtr<content::WebContents> web_contents,
     const blink::mojom::Manifest& manifest,

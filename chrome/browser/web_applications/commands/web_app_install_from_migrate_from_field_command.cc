@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
 
@@ -111,9 +112,12 @@ void WebAppInstallFromMigrateFromFieldCommand::StartWithLock(
 
   data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
 
+  auto converted_manifest = blink::ManifestFromMojom(*manifest_);
+  CHECK(converted_manifest.has_value());
+
   job_ = MigrationTargetInstallJob::CreateAndStart(
-      std::move(manifest_), web_contents_, profile, data_retriever_.get(),
-      &GetMutableDebugValue(), lock_.get(), lock_.get(),
+      std::move(*converted_manifest), web_contents_, profile,
+      data_retriever_.get(), &GetMutableDebugValue(), lock_.get(), lock_.get(),
       base::BindOnce(&WebAppInstallFromMigrateFromFieldCommand::OnJobFinished,
                      weak_factory_.GetWeakPtr()));
 }

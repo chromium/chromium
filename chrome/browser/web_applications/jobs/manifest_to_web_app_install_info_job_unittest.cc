@@ -183,7 +183,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
 
   {
     auto handler = blink::mojom::ManifestFileHandler::New();
-    handler->action = GURL("http://example.com/open-files");
+    handler->action = GURL("https://www.foo.bar/open-files");
     handler->accept[u"image/png"].push_back(u".png");
     handler->name = u"Images";
     manifest->file_handlers.push_back(std::move(handler));
@@ -192,7 +192,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   {
     auto protocol_handler = blink::mojom::ManifestProtocolHandler::New();
     protocol_handler->protocol = u"mailto";
-    protocol_handler->url = GURL("http://example.com/handle=%s");
+    protocol_handler->url = GURL("https://www.foo.bar/handle=%s");
     manifest->protocol_handlers.push_back(std::move(protocol_handler));
   }
 
@@ -260,7 +260,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   EXPECT_EQ(1u, web_app_info->protocol_handlers.size());
   auto protocol_handler = web_app_info->protocol_handlers[0];
   EXPECT_EQ(protocol_handler.protocol, "mailto");
-  EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
+  EXPECT_EQ(protocol_handler.url, GURL("https://www.foo.bar/handle=%s"));
 
   // Check scope extensions were updated.
   EXPECT_EQ(1u, web_app_info->scope_extensions.size());
@@ -364,7 +364,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, ShareTarget) {
   auto& manifest = GetPageManifest();
   {
     blink::Manifest::ShareTarget share_target;
-    share_target.action = GURL("http://example.com/share1");
+    share_target.action = GURL("https://www.foo.bar/share1");
     share_target.method = blink::mojom::ManifestShareTarget_Method::kPost;
     share_target.enctype =
         blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData;
@@ -382,7 +382,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, ShareTarget) {
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
   EXPECT_TRUE(web_app_info->share_target.has_value());
   const auto& share_target = *web_app_info->share_target;
-  EXPECT_EQ(share_target.action, GURL("http://example.com/share1"));
+  EXPECT_EQ(share_target.action, GURL("https://www.foo.bar/share1"));
   EXPECT_EQ(share_target.method, apps::ShareTarget::Method::kPost);
   EXPECT_EQ(share_target.enctype,
             apps::ShareTarget::Enctype::kMultipartFormData);
@@ -406,14 +406,14 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, ShortcutItems) {
   auto& manifest = GetPageManifest();
 
   // Set up shortcut icon metadata in the manifest.
-  const GURL shortcut_url("http://www.foo.bar/shortcuts/action");
+  const GURL shortcut_url("https://www.foo.bar/shortcuts/action");
   const std::u16string shortcut_name(u"shortcut_1");
   blink::Manifest::ShortcutItem shortcut_item;
   shortcut_item.name = std::u16string(shortcut_name);
   shortcut_item.url = shortcut_url;
 
   blink::Manifest::ImageResource icon;
-  const GURL icon_url("http://www.foo.bar/shortcuts/icon.png");
+  const GURL icon_url("https://www.foo.bar/shortcuts/icon.png");
   int shortcut_icon_size = 16;
   icon.src = icon_url;
   icon.sizes.emplace_back(shortcut_icon_size, shortcut_icon_size);
@@ -596,7 +596,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, TooManyShortcuts) {
   for (unsigned int i = 1; i <= kNumMaxShortcutEntries + 1; ++i) {
     blink::Manifest::ShortcutItem shortcut_item;
     shortcut_item.name = u"Name" + base::NumberToString16(i);
-    shortcut_item.url = GURL("http://www.foo.bar/shortcuts/action");
+    shortcut_item.url = GURL("https://www.foo.bar/shortcuts/action");
     manifest->shortcuts.push_back(shortcut_item);
   }
   EXPECT_LT(kNumMaxShortcutEntries, manifest->shortcuts.size());
@@ -613,7 +613,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, TooManyIcons) {
 
   for (unsigned int i = 1; i <= kNumMaxIcons + 1; ++i) {
     blink::Manifest::ImageResource icon;
-    icon.src = GURL("icon.png");
+    icon.src = GURL("https://www.foo.bar/icon.png");
     icon.purpose.push_back(Purpose::ANY);
     icon.sizes.emplace_back(i, i);
     manifest->icons.push_back(std::move(icon));
@@ -629,7 +629,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, LargeIconsDiscardedForNormalIcons) {
 
   for (int size = 1023; size <= 1026; ++size) {
     blink::Manifest::ImageResource icon;
-    icon.src = GURL("icon.png");
+    icon.src = GURL("https://www.foo.bar/icon.png");
     icon.purpose.push_back(Purpose::ANY);
     icon.sizes.emplace_back(size, size);
     manifest->icons.push_back(std::move(icon));
@@ -648,10 +648,10 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, LargeIconsDiscardedForShortcut) {
   for (int size = 1023; size <= 1026; ++size) {
     blink::Manifest::ShortcutItem shortcut_item;
     shortcut_item.name = u"Shortcut" + base::NumberToString16(size);
-    shortcut_item.url = GURL("http://www.foo.bar/shortcuts/action");
+    shortcut_item.url = GURL("https://www.foo.bar/shortcuts/action");
 
     blink::Manifest::ImageResource icon;
-    icon.src = GURL("icon.png");
+    icon.src = GURL("https://www.foo.bar/icon.png");
     icon.purpose.push_back(Purpose::ANY);
     icon.sizes.emplace_back(size, size);
     shortcut_item.icons.push_back(std::move(icon));
@@ -671,23 +671,26 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, LargeIconsDiscardedForShortcut) {
   EXPECT_EQ(2U, all_icons.size());
 }
 
-TEST_F(ManifestToWebAppInstallInfoJobTest, CrossOriginUrls_DropFields) {
+TEST_F(ManifestToWebAppInstallInfoJobTest, OutOfScopeUrls_DropFields) {
   base::test::ScopedFeatureList feature_list(
       blink::features::kWebAppManifestLockScreen);
   SetupBasicPageState();
   auto& manifest = GetPageManifest();
+  manifest->start_url = GURL("https://www.foo.bar/scope/index.html");
+  manifest->id = GURL("https://www.foo.bar/scope/index.html");
+  manifest->scope = GURL("https://www.foo.bar/scope/");
 
   {
     auto lock_screen = blink::mojom::ManifestLockScreen::New();
     lock_screen->start_url =
-        GURL("http://www.some-other-origin.com/lock-screen-start-url");
+        GURL("https://www.foo.bar/out_of_scope/lock-screen-start-url");
     manifest->lock_screen = std::move(lock_screen);
   }
 
   {
     auto note_taking = blink::mojom::ManifestNoteTaking::New();
     note_taking->new_note_url =
-        GURL("http://www.some-other-origin.com/new-note-url");
+        GURL("https://www.foo.bar/out_of_scope/new-note-url");
     manifest->note_taking = std::move(note_taking);
   }
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
@@ -698,41 +701,21 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, CrossOriginUrls_DropFields) {
 TEST_F(ManifestToWebAppInstallInfoJobTest, MigrateFromDropsCrossSiteData) {
   SetupBasicPageState();
   auto& manifest = GetPageManifest();
-  manifest->manifest_url = GURL("https://www.foo.bar/manifest.json");
+  manifest->manifest_url = GURL("https://cdn.other-site.com/manifest.json");
 
   auto migrate_same_site = blink::mojom::ManifestMigrateFrom::New();
   migrate_same_site->id = GURL("https://old.foo.bar/id");
   manifest->migrate_from.push_back(std::move(migrate_same_site));
 
-  auto migrate_cross_site = blink::mojom::ManifestMigrateFrom::New();
-  migrate_cross_site->id = GURL("https://malicious-site.com/id");
-  manifest->migrate_from.push_back(std::move(migrate_cross_site));
-
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
 
-  ASSERT_EQ(1u, web_app_info->migration_sources.size());
-  EXPECT_EQ(GURL("https://old.foo.bar/id").spec(),
-            web_app_info->migration_sources[0].manifest_id().spec());
+  EXPECT_TRUE(web_app_info->migration_sources.empty());
 }
 
-TEST_F(ManifestToWebAppInstallInfoJobTest,
-       ScopeExtensionsDropsNonHttpsAndOpaqueData) {
+TEST_F(ManifestToWebAppInstallInfoJobTest, ScopeExtensionsPopulated) {
   SetupBasicPageState();
   auto& manifest = GetPageManifest();
 
-  {
-    auto scope_ext_http = blink::mojom::ManifestScopeExtension::New();
-    scope_ext_http->origin =
-        url::Origin::Create(GURL("http://insecure.example.com/"));
-    scope_ext_http->has_origin_wildcard = false;
-    manifest->scope_extensions.push_back(std::move(scope_ext_http));
-  }
-  {
-    auto scope_ext_opaque = blink::mojom::ManifestScopeExtension::New();
-    scope_ext_opaque->origin = url::Origin();
-    scope_ext_opaque->has_origin_wildcard = false;
-    manifest->scope_extensions.push_back(std::move(scope_ext_opaque));
-  }
   {
     auto scope_ext_valid = blink::mojom::ManifestScopeExtension::New();
     scope_ext_valid->origin =
@@ -808,7 +791,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest,
   // Sample shortcut menu item info with no size specified for icons.
   blink::Manifest::ShortcutItem shortcut_item;
   shortcut_item.name = u"Shortcut Name";
-  shortcut_item.url = GURL("https://www.example.com");
+  shortcut_item.url = GURL("https://www.foo.bar/shortcut");
 
   blink::Manifest::ImageResource shortcut_icon_no_size;
   shortcut_icon_no_size.src = shortcut_icon_no_size_url;
@@ -868,7 +851,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, DeferIconFetching) {
 
   // Set up shortcut menu item metadata with icons in the manifest and the web
   // contents.
-  GURL shortcut_icon_url("http://www.foo.bar/shortcut_icon/icon.png");
+  GURL shortcut_icon_url("https://www.foo.bar/shortcut_icon/icon.png");
   int shortcut_size = 32;
   blink::Manifest::ImageResource shortcut_icon;
   shortcut_icon.src = shortcut_icon_url;
@@ -876,7 +859,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, DeferIconFetching) {
   shortcut_icon.sizes.emplace_back(shortcut_size, shortcut_size);
   blink::Manifest::ShortcutItem shortcut;
   shortcut.name = u"Shortcut";
-  shortcut.url = GURL("http://www.foo.bar/shortcut/");
+  shortcut.url = GURL("https://www.foo.bar/shortcut/");
   shortcut.icons = {shortcut_icon};
   manifest->shortcuts.push_back(shortcut);
 
@@ -893,8 +876,11 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, DeferIconFetching) {
       provider().web_contents_manager().CreateDataRetriever();
   WebAppInstallInfoConstructOptions options;
   options.defer_icon_fetching = true;
+  auto converted = blink::ManifestFromMojom(*manifest);
+  CHECK(converted.has_value())
+      << blink::ManifestInvariantErrorToString(converted.error());
   auto job = ManifestToWebAppInstallInfoJob::CreateAndStart(
-      *manifest, *retriever.get(), /*background_installation=*/false,
+      *converted, *retriever.get(), /*background_installation=*/false,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       web_contents()->GetWeakPtr(), [](IconUrlSizeSet&) {}, debug_data,
       future.GetCallback(), options);

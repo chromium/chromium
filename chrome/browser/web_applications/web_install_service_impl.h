@@ -202,7 +202,7 @@ class WebInstallServiceImpl
       InstallFromManifestCallbackWithMetrics callback_with_metrics,
       blink::mojom::ManifestInstallOptionsPtr options,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-      blink::mojom::ManifestPtr manifest,
+      blink::Manifest manifest,
       const std::vector<content::PermissionResult>& permission_result);
 
   // Shared "permission granted, proceed to install" step for the manifest URL
@@ -211,7 +211,7 @@ class WebInstallServiceImpl
       InstallFromManifestCallbackWithMetrics callback_with_metrics,
       blink::mojom::ManifestInstallOptionsPtr options,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-      blink::mojom::ManifestPtr manifest);
+      blink::Manifest manifest);
 
   // Callback for when the manifest URL install command completes.
   void OnAppInstalledFromManifest(

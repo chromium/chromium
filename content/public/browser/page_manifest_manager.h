@@ -5,15 +5,19 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PAGE_MANIFEST_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_PAGE_MANIFEST_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-forward.h"
 
 class GURL;
+
+namespace blink {
+class Manifest;
+}  // namespace blink
 
 namespace content {
 class Page;
@@ -29,8 +33,8 @@ class Page;
 // and not in a fenced frame, need to do do so separately from calling this API.
 class CONTENT_EXPORT PageManifestManager {
  public:
-  using ManifestResult = base::expected<blink::mojom::ManifestPtr,
-                                        blink::mojom::RequestManifestErrorPtr>;
+  using ManifestResult =
+      base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>;
   using ManifestCallbackList =
       base::OnceCallbackList<void(const ManifestResult& manifest_result)>;
 
@@ -45,9 +49,9 @@ class CONTENT_EXPORT PageManifestManager {
   // (where the developer specifies a manifest link). The callback is guaranteed
   // to be called asynchronously.
   //
-  // The `callback` is called with a `blink::mojom::ManifestPtr` on success. On
-  // failure (e.g. the manifest URL fails to load, or the manifest fails to
-  // parse), it is called with a `blink::mojom::RequestManifestErrorPtr`.
+  // The `callback` is called with a `blink::Manifest` on success. On failure
+  // (e.g. the manifest URL fails to load, or the manifest fails to parse), it
+  // is called with a `blink::mojom::RequestManifestErrorPtr`.
   virtual base::CallbackListSubscription GetSpecifiedManifest(
       ManifestCallbackList::CallbackType callback) = 0;
 
@@ -58,9 +62,9 @@ class CONTENT_EXPORT PageManifestManager {
   // ASYNCHRONOUSLY for subsequent manifests found when the  manifest URL
   // changes on the page.
   //
-  // A `callback` is called with a `blink::mojom::ManifestPtr` on success. On
-  // failure (e.g. the manifest URL fails to load, or the manifest fails to
-  // parse), it is called with a `blink::mojom::RequestManifestErrorPtr`.
+  // A `callback` is called with a `blink::Manifest` on success. On failure
+  // (e.g. the manifest URL fails to load, or the manifest fails to parse), it
+  // is called with a `blink::mojom::RequestManifestErrorPtr`.
   //
   // The `callback` is NOT called when the developer removes the manifest URL
   // from the page (i.e. changing from a specified manifest to no manifest).
@@ -68,19 +72,18 @@ class CONTENT_EXPORT PageManifestManager {
       AllManifestsCallbackList::CallbackType callback) = 0;
 
   using ParseManifestCallback =
-      base::OnceCallback<void(blink::mojom::ManifestPtr)>;
+      base::OnceCallback<void(std::optional<blink::Manifest>)>;
 
   // Parses the given manifest string using the renderer associated with this
   // page. Performs browser-side security validation on the parsed manifest
   // against `document_url` and `manifest_url`. If the renderer returns an
   // invalid manifest (e.g. cross-origin handlers or mismatched manifest URL),
   // a Mojo bad message is reported, terminating the renderer process, and
-  // `callback` is called with an empty ManifestPtr.
+  // `callback` is called with std::nullopt.
   //
   // `document_url` must be valid and have a non-opaque origin. If
   // `document_url` is invalid or has an opaque origin, `callback` is invoked
-  // asynchronously with an empty ManifestPtr without contacting the
-  // renderer.
+  // asynchronously with std::nullopt without contacting the renderer.
   virtual void ParseManifestFromString(const GURL& document_url,
                                        const GURL& manifest_url,
                                        const std::string& manifest_contents,

@@ -132,9 +132,7 @@ class WebAppDataRetriever : content::WebContentsObserver {
       int last_committed_nav_entry_unique_id,
       webapps::mojom::WebPageMetadataPtr web_page_metadata);
   void OnDidPerformInstallableCheck(const webapps::InstallableData& data);
-  void OnGotDeveloperSpecifiedManifest(
-      const base::expected<blink::mojom::ManifestPtr,
-                           blink::mojom::RequestManifestErrorPtr>& result);
+  void OnGotDeveloperSpecifiedManifest(const ManifestResult& result);
   void OnDeveloperSpecifiedManifestTimeout();
   void OnIconsDownloaded(IconsDownloadedResult result,
                          IconsMap icons_map,

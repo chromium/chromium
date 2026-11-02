@@ -198,8 +198,7 @@ void WebappsClientDesktop::OnManifestSeen(
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(browsing_context));
   if (provider && provider->is_registry_ready()) {
-    provider->visited_manifest_manager().OnManifestSeen(
-        *blink::ManifestToMojom(manifest));
+    provider->visited_manifest_manager().OnManifestSeen(manifest);
   }
 }
 

@@ -234,11 +234,15 @@ void ManifestSilentUpdateCommand::OnAppLockAcquired(
   options.previous_time_for_silent_icon_update =
       previous_time_for_silent_icon_update_;
 
+  auto converted_manifest = blink::ManifestFromMojom(*manifest);
+  CHECK(converted_manifest.has_value());
+
   manifest_update_job_ = ManifestUpdateJob::CreateAndStart(
       *Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
       app_lock_.get(), app_lock_.get(), web_contents_.get(),
       GetMutableDebugValue().EnsureDict("manifest_update_job"),
-      std::move(manifest), data_retriever_.get(), &app_lock_->clock(),
+      std::move(*converted_manifest), data_retriever_.get(),
+      &app_lock_->clock(),
       base::BindOnce(&ManifestSilentUpdateCommand::OnUpdateJobCompleted,
                      GetWeakPtr()),
       std::move(options));
