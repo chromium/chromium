@@ -10,7 +10,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 #include "media/muxers/muxer.h"
@@ -59,8 +58,12 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   // removes the input data from the presentation, while still preserving it.
   // Once `Resume()` is called, new inputs will have muxer timestamps starting
   // from the time that `Pause()` was called.
-  void Pause();
-  void Resume();
+  // `now` is the current time in the same time base as the timestamps passed
+  // to `OnEncodedVideo()` and `OnEncodedAudio()`. Callers that coarsen
+  // the input timestamps must coarsen `now` the same way, since the time in
+  // pause is subtracted from the input timestamps.
+  void Pause(base::TimeTicks now);
+  void Resume(base::TimeTicks now);
 
   // Drains and writes out all buffered frames and finalizes the output.
   // Returns true on success, false otherwise.
@@ -118,7 +121,7 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   base::TimeTicks first_timestamp_;
 
   // Variables to measure and accumulate, respectively, the time in pause state.
-  std::optional<base::ElapsedTimer> elapsed_time_in_pause_;
+  std::optional<base::TimeTicks> pause_start_time_;
   base::TimeDelta total_time_in_pause_;
 
   // Variables to track live and enabled state of audio and video.

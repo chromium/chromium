@@ -714,7 +714,7 @@ void MediaRecorderHandler::Pause() {
   for (const auto& audio_recorder : audio_recorders_)
     audio_recorder->Pause();
   if (muxer_adapter_) {
-    muxer_adapter_->Pause();
+    muxer_adapter_->Pause(CoarsenTimestamp(base::TimeTicks::Now()));
   }
 }
 
@@ -727,7 +727,7 @@ void MediaRecorderHandler::Resume() {
   for (const auto& audio_recorder : audio_recorders_)
     audio_recorder->Resume();
   if (muxer_adapter_) {
-    muxer_adapter_->Resume();
+    muxer_adapter_->Resume(CoarsenTimestamp(base::TimeTicks::Now()));
   }
 }
 

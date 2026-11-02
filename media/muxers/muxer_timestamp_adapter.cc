@@ -4,6 +4,7 @@
 
 #include "media/muxers/muxer_timestamp_adapter.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/logging.h"
@@ -93,18 +94,19 @@ void MuxerTimestampAdapter::OnVideoEnded() {
   muxer_->OnVideoEnded();
 }
 
-void MuxerTimestampAdapter::Pause() {
+void MuxerTimestampAdapter::Pause(base::TimeTicks now) {
   DVLOG(1) << __func__;
-  if (!elapsed_time_in_pause_) {
-    elapsed_time_in_pause_.emplace();
+  if (!pause_start_time_) {
+    pause_start_time_ = now;
   }
 }
 
-void MuxerTimestampAdapter::Resume() {
+void MuxerTimestampAdapter::Resume(base::TimeTicks now) {
   DVLOG(1) << __func__;
-  if (elapsed_time_in_pause_) {
-    total_time_in_pause_ += elapsed_time_in_pause_->Elapsed();
-    elapsed_time_in_pause_.reset();
+  if (pause_start_time_) {
+    total_time_in_pause_ +=
+        std::max(now - *pause_start_time_, base::TimeDelta());
+    pause_start_time_.reset();
   }
 }
 
