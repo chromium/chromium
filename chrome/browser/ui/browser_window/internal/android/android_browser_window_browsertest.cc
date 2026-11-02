@@ -4,15 +4,22 @@
 
 #include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 
+#include <algorithm>
+
 #include "base/base_switches.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/test/android/browser_window_android_browsertest_base.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -24,8 +31,41 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+
+namespace {
+
+class BrowserClosedVerifier : public BrowserCollectionObserver {
+ public:
+  explicit BrowserClosedVerifier(BrowserWindowInterface* target_browser)
+      : target_browser_(target_browser) {
+    observation_.Observe(GlobalBrowserCollection::GetInstance());
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    if (browser != target_browser_) {
+      return;
+    }
+    EXPECT_NE(nullptr, TabListInterface::From(browser));
+    EXPECT_FALSE(
+        std::ranges::contains(GetAllBrowserWindowInterfaces(), browser));
+    target_browser_ = nullptr;
+    run_loop_.Quit();
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> target_browser_;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      observation_{this};
+};
+
+}  // namespace
 
 class AndroidBrowserWindowBrowserTest
     : public BrowserWindowAndroidBrowserTestBase {
@@ -253,4 +293,15 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupAllowed) {
   // Callback should eventually be called.
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(url, future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AndroidBrowserWindowBrowserTest,
+    OnBrowserClosed_TabListInterfaceValidAndWindowExcludedFromIterator) {
+  AndroidBrowserWindow* window = GetBrowserWindow();
+  ASSERT_NE(nullptr, TabListInterface::From(window));
+
+  BrowserClosedVerifier verifier(window);
+  window->GetWindow()->Close();
+  verifier.Wait();
 }

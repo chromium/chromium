@@ -912,19 +912,21 @@ final class ChromeAndroidTaskImpl
                     == internalActivityScopedObjects.mActivityScopedObjects.mActivityWindowAndroid;
             assert browserWindow.getNativePtr() != null : "Native object has not been created.";
 
-            var profile = browserWindow.getProfile();
+            internalActivityScopedObjects.mAndroidBrowserWindows.remove(browserWindow.getProfile());
+        }
+
+        // Note: Notify observers after removing from mAndroidBrowserWindows (so iterators exclude
+        // the closing window) and before dissociating the TabModel or destroying browserWindow.
+        if (browserWindow.getNativePtr() != null) {
+            browserWindowObserverNotifier.notifyBrowserWindowDestroyed(browserWindow);
+        }
+
+        if (internalActivityScopedObjects != null) {
             internalActivityScopedObjects
                     .mActivityScopedObjects
                     .mTabModelSelector
-                    .getModel(profile.isOffTheRecord())
+                    .getModel(browserWindow.getProfile().isOffTheRecord())
                     .dissociateWithBrowserWindow();
-            internalActivityScopedObjects.mAndroidBrowserWindows.remove(profile);
-        }
-
-        // Note: Notify observers immediately before browserWindow.destroy(), and after everything
-        // else.
-        if (browserWindow.getNativePtr() != null) {
-            browserWindowObserverNotifier.notifyBrowserWindowDestroyed(browserWindow);
         }
         browserWindow.destroy();
     }
