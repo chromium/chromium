@@ -161,6 +161,10 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   }
 }
 
+- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass {
+  [_tableViewController setIsPrivateWalletPass:isPrivateWalletPass];
+}
+
 - (void)showLoadingState {
   _saveButton.enabled = NO;
   _saveButtonEnabled = NO;

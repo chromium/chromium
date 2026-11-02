@@ -36,6 +36,9 @@ enum class AutofillAIEntityEditMode {
 // Sets whether the entity being viewed is a server wallet item.
 - (void)setIsServerWalletItem:(BOOL)isServerWalletItem;
 
+// Sets whether the entity being viewed is a private wallet pass.
+- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass;
+
 // Sets the user email.
 - (void)setUserEmail:(NSString*)userEmail;
 

@@ -133,6 +133,9 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   // Legal message lines to display in the footer.
   NSArray<AutofillLegalMessageLine*>* _legalMessages;
 
+  // Denotes whether the entity is a private wallet pass.
+  BOOL _isPrivateWalletPass;
+
   // Cached footer text and URLs computed when the model updates.
   NSString* _cachedFooterText;
   NSArray<CrURL*>* _cachedFooterURLs;
@@ -210,6 +213,14 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   if (self.viewLoaded) {
     [self loadModel];
   }
+}
+
+- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass {
+  if (_isPrivateWalletPass == isPrivateWalletPass) {
+    return;
+  }
+  _isPrivateWalletPass = isPrivateWalletPass;
+  [self updateCachedFooter];
 }
 
 - (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages {
@@ -339,20 +350,22 @@ TableViewTextHeaderFooterView* GetHeaderView(UITableView* table_view,
   }
 
   NSString* email = base::SysUTF16ToNSString(_userEmail);
-  NSString* storageNoticeText =
-      [self isUpdateDialog]
-          ? autofill::GetUpdateEntitySavedInWalletFooterText(email)
-          : autofill::GetSaveEntityToWalletFooterText(email);
-  GURL url = [self isUpdateDialog] ? autofill::GetGoogleWalletPassesURL()
-                                   : autofill::GetManageYourInfoURL();
-  [urls addObject:[[CrURL alloc] initWithGURL:url]];
-  return storageNoticeText;
+  if ([self isUpdateDialog]) {
+    [urls addObject:[[CrURL alloc]
+                        initWithGURL:autofill::GetGoogleWalletPassesURL()]];
+    return autofill::GetUpdateEntitySavedInWalletFooterText(email);
+  }
+
+  return autofill::GetSaveEntityToWalletFooterTextAppendingURLsTo(
+      email, _isPrivateWalletPass, urls);
 }
 
 // Computes and caches the footer text and URLs based on current model data.
 - (void)updateCachedFooter {
-  // `urls` must be filled in the same order the links appear in the text, so
-  // the storage notice is built before the disclosure legal messages.
+  // `urls` must be populated in the exact order the link tags appear in the
+  // text so that `ParseStringWithLinks()` correctly associates each tagged
+  // range with its corresponding URL. Therefore, the storage notice URLs are
+  // added before the disclosure legal message URLs.
   NSMutableArray<CrURL*>* urls = [NSMutableArray array];
   NSString* storageNoticeText = [self textForStorageNoticeAppendingURLsTo:urls];
 

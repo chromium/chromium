@@ -23,6 +23,9 @@
             userEmail:(const std::u16string&)userEmail
     saveIsSynchronous:(BOOL)saveIsSynchronous;
 
+// Sets whether the entity being saved is a private wallet pass.
+- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass;
+
 // Sets the legal message lines for the disclosure.
 - (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages;
 

@@ -189,6 +189,11 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   }
   [consumer setEditingAllowed:editingAllowed];
   [consumer setIsServerWalletItem:isServerWalletItem];
+  // TODO(crbug.com/573949431): Compute the footer text and URLs in the mediator
+  // and push them via a single consumer method instead of pushing
+  // `isPrivateWalletPass`, `userEmail`, and `legalMessages` separately and
+  // duplicating footer construction across view controllers.
+  [consumer setIsPrivateWalletPass:[self isPrivateWalletPass]];
   [consumer setUserEmail:_userEmail];
 
   // `_legalMessages` is only set when the Google Wallet disclosure notice is
@@ -277,12 +282,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
 
   _entityInstance = builder.Build();
 
-  BOOL isWalletPrivatePass =
-      autofill::GetWalletPassType(_entityInstance->type(),
-                                  _entityInstance->record_type()) ==
-      autofill::EntityInstance::WalletPassType::kPrivate;
-
-  if (!isWalletPrivatePass || !_walletPassManager) {
+  if (![self isPrivateWalletPass] || !_walletPassManager) {
     // Personal Context entities do not support saving.
     CHECK_NE(_entityInstance->record_type(),
              autofill::EntityInstance::RecordType::kPersonalContext);
@@ -321,7 +321,8 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   if (base::FeatureList::IsEnabled(
           wallet::features::kWalletApiPrivatePassesConsent)) {
     sessionId = autofill::RecordWalletPrivatePassConsent(
-        /*consent_string_id=*/autofill::GetSaveToWalletSubtitleStringId(),
+        /*consent_string_id=*/autofill::GetSaveToWalletSubtitleStringId(
+            [self isPrivateWalletPass]),
         /*clicked_button_string_id=*/
         autofill::GetSaveEntityAcceptButtonStringId(), *_consentAuditor,
         *_identityManager);
@@ -456,6 +457,13 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
 - (void)downgradeEntityToLocalStorage {
   _entityInstance = _entityInstance->CopyWithNewRecordType(
       autofill::EntityInstance::RecordType::kLocal);
+}
+
+- (BOOL)isPrivateWalletPass {
+  return _entityInstance.has_value() &&
+         autofill::GetWalletPassType(_entityInstance->type(),
+                                     _entityInstance->record_type()) ==
+             autofill::EntityInstance::WalletPassType::kPrivate;
 }
 
 - (void)onReauthenticationFinished:(BOOL)success {

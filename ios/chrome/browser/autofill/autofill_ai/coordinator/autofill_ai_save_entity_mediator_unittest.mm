@@ -28,6 +28,7 @@ autofill::EntityInstance CreateTestEntity() {
     : NSObject <AutofillAISaveEntityConsumer>
 @property(nonatomic, strong) NSArray<AutofillLegalMessageLine*>* legalMessages;
 @property(nonatomic, assign) BOOL setNewEntityCalled;
+@property(nonatomic, assign) BOOL isPrivateWalletPass;
 @end
 
 @implementation FakeAutofillAISaveEntityConsumer
@@ -49,6 +50,29 @@ autofill::EntityInstance CreateTestEntity() {
 
 class AutofillAISaveEntityMediatorTest : public PlatformTest {
  protected:
+  // Creates a mediator with the given entity, pushes data to a fake consumer,
+  // and returns the consumer.
+  FakeAutofillAISaveEntityConsumer* PushEntityToMediator(
+      autofill::EntityInstance entity) {
+    autofill::SaveEntityParams params(std::move(entity),
+                                      /*old_entity=*/std::nullopt,
+                                      /*user_email=*/u"test@example.com",
+                                      /*save_is_synchronous=*/true,
+                                      /*callback=*/base::DoNothing(),
+                                      /*public_passes_notice=*/{});
+
+    AutofillAISaveEntityMediator* mediator =
+        [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
+                                           entityDataManager:nullptr];
+
+    FakeAutofillAISaveEntityConsumer* consumer =
+        [[FakeAutofillAISaveEntityConsumer alloc] init];
+    mediator.consumer = consumer;
+
+    [mediator disconnect];
+    return consumer;
+  }
+
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -102,4 +126,27 @@ TEST_F(AutofillAISaveEntityMediatorTest, DoesNotPushLegalMessagesWhenEmpty) {
   EXPECT_EQ(nil, consumer.legalMessages);
 
   [mediator disconnect];
+}
+
+// Tests that `isPrivateWalletPass` is set to YES when saving a private pass to
+// Wallet.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       PushesIsPrivateWalletPassTrueForPrivateWalletPass) {
+  FakeAutofillAISaveEntityConsumer* consumer =
+      PushEntityToMediator(autofill::test::GetPassportEntityInstance(
+          {.record_type =
+               autofill::EntityInstance::RecordType::kServerWallet}));
+
+  EXPECT_TRUE(consumer.isPrivateWalletPass);
+}
+
+// Tests that `isPrivateWalletPass` is set to NO when saving a public pass or
+// local entity.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       PushesIsPrivateWalletPassFalseForNonPrivateWalletPass) {
+  FakeAutofillAISaveEntityConsumer* consumer =
+      PushEntityToMediator(autofill::test::GetPassportEntityInstance(
+          {.record_type = autofill::EntityInstance::RecordType::kLocal}));
+
+  EXPECT_FALSE(consumer.isPrivateWalletPass);
 }

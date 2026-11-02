@@ -61,8 +61,12 @@ NSString* TextForDisclosureLegalMessageAppendingURLsTo(
     NSMutableArray<CrURL*>* urls);
 
 // Returns the footer text for saving an entity to Wallet, formatted with the
-// user's email.
-NSString* GetSaveEntityToWalletFooterText(NSString* user_email);
+// user's email, and appends the corresponding link URLs to `urls` (if non-nil)
+// in the order their tags appear in the returned string.
+NSString* GetSaveEntityToWalletFooterTextAppendingURLsTo(
+    NSString* user_email,
+    bool is_private_pass,
+    NSMutableArray<CrURL*>* urls);
 
 // Returns the footer text for updating an entity saved in Wallet, formatted
 // with the user's email.
@@ -70,6 +74,9 @@ NSString* GetUpdateEntitySavedInWalletFooterText(NSString* user_email);
 
 // Returns the URL for "manage your info" link for save to wallet footer.
 GURL GetManageYourInfoURL();
+
+// Returns the URL for the Google Privacy Policy link.
+GURL GetGooglePrivacyPolicyURL();
 
 // Returns the URL for Google Wallet passes.
 GURL GetGoogleWalletPassesURL();
@@ -85,9 +92,7 @@ UIView* CreateBrandedTitleForWalletSave(NSString* title);
 
 // Returns the message ID for the subtitle shown in the save-to-wallet dialog.
 // Exposed so the Consent Auditor records the exact string shown in the UI.
-// Note: The string contains placeholders for the Google Wallet title, a
-// link, the Google Wallet title again, and the user's email.
-int GetSaveToWalletSubtitleStringId();
+int GetSaveToWalletSubtitleStringId(bool is_private_pass);
 
 // Returns the message ID for the accept button in the save entity dialog.
 // Exposed so the Consent Auditor records the exact string shown in the UI.

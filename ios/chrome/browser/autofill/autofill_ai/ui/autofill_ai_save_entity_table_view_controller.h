@@ -26,6 +26,9 @@
            oldEntity:(std::optional<autofill::EntityInstance>)oldEntity
            userEmail:(const std::u16string&)userEmail;
 
+// Sets whether the entity to be saved is a private wallet pass.
+- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass;
+
 // Sets the legal message lines to be displayed in the footer.
 - (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages;
 

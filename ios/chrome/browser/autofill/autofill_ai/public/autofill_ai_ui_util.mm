@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
@@ -222,17 +223,37 @@ NSString* TextForDisclosureLegalMessageAppendingURLsTo(
   return [fragments componentsJoinedByString:@""];
 }
 
-NSString* GetSaveEntityToWalletFooterText(NSString* user_email) {
-  NSString* googleWallet =
-      l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
-  NSString* linkText =
-      l10n_util::GetNSString(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK);
-  NSString* formattedLink = WrapInLinkTags(linkText);
-  return l10n_util::GetNSStringF(GetSaveToWalletSubtitleStringId(),
-                                 base::SysNSStringToUTF16(googleWallet),
+NSString* GetSaveEntityToWalletFooterTextAppendingURLsTo(
+    NSString* user_email,
+    bool is_private_pass,
+    NSMutableArray<CrURL*>* urls) {
+  int stringId = GetSaveToWalletSubtitleStringId(is_private_pass);
+  std::u16string googleWallet =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
+  std::u16string email = base::SysNSStringToUTF16(user_email);
+
+  if (stringId ==
+      IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS) {
+    NSString* howInfoIsUsedLink = WrapInLinkTags(l10n_util::GetNSString(
+        IDS_AUTOFILL_HOW_THIS_INFO_IS_USED_ACROSS_GOOGLE_LINK));
+    [urls addObject:[[CrURL alloc] initWithGURL:GetManageYourInfoURL()]];
+
+    NSString* privacyPolicyLink = WrapInLinkTags(
+        l10n_util::GetNSString(IDS_AUTOFILL_PRIVACY_POLICY_LINK));
+    [urls addObject:[[CrURL alloc] initWithGURL:GetGooglePrivacyPolicyURL()]];
+
+    return l10n_util::GetNSStringF(
+        stringId, googleWallet, base::SysNSStringToUTF16(howInfoIsUsedLink),
+        email, base::SysNSStringToUTF16(privacyPolicyLink));
+  }
+
+  NSString* formattedLink = WrapInLinkTags(
+      l10n_util::GetNSString(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK));
+  [urls addObject:[[CrURL alloc] initWithGURL:GetManageYourInfoURL()]];
+
+  return l10n_util::GetNSStringF(stringId, googleWallet,
                                  base::SysNSStringToUTF16(formattedLink),
-                                 base::SysNSStringToUTF16(googleWallet),
-                                 base::SysNSStringToUTF16(user_email));
+                                 googleWallet, email);
 }
 
 NSString* GetUpdateEntitySavedInWalletFooterText(NSString* user_email) {
@@ -247,6 +268,10 @@ NSString* GetUpdateEntitySavedInWalletFooterText(NSString* user_email) {
 
 GURL GetManageYourInfoURL() {
   return GURL("https://support.google.com/wallet?p=private_use_across_google");
+}
+
+GURL GetGooglePrivacyPolicyURL() {
+  return GURL("https://policies.google.com/privacy");
 }
 
 GURL GetGoogleWalletPassesURL() {
@@ -277,7 +302,12 @@ UIView* CreateBrandedTitleForWalletSave(NSString* title) {
   return titleView;
 }
 
-int GetSaveToWalletSubtitleStringId() {
+int GetSaveToWalletSubtitleStringId(bool is_private_pass) {
+  if (is_private_pass &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillRegionalizedPrivatePassesUxRefine)) {
+    return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_PRIVATE_PASS;
+  }
   return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW;
 }
 

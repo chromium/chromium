@@ -9,7 +9,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
@@ -487,7 +489,65 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
   TableViewLinkHeaderFooterItem* footerItem =
       base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
           [view_controller.tableViewModel footerForSectionIndex:1]);
-  EXPECT_NSEQ(autofill::GetSaveEntityToWalletFooterText(testEmail),
+  EXPECT_NSEQ(autofill::GetSaveEntityToWalletFooterTextAppendingURLsTo(
+                  testEmail, /*is_private_pass=*/false, /*urls=*/nil),
+              footerItem.text);
+  ASSERT_EQ(1U, footerItem.urls.count);
+  EXPECT_EQ(autofill::GetManageYourInfoURL(), footerItem.urls[0].gurl);
+}
+
+// Tests that saving a private pass in Settings with
+// `kAutofillRegionalizedPrivatePassesUxRefine` enabled displays the refined
+// private pass storage notice and both URLs (manage info and Privacy Policy).
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestPrivatePassFooterWithRefinedUxEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillRegionalizedPrivatePassesUxRefine);
+
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  NSString* testEmail = @"test@gmail.com";
+  [view_controller setIsServerWalletItem:YES];
+  [view_controller setIsPrivateWalletPass:YES];
+  [view_controller setUserEmail:testEmail];
+  [view_controller loadModel];
+
+  TableViewLinkHeaderFooterItem* footerItem =
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+          [view_controller.tableViewModel footerForSectionIndex:1]);
+  EXPECT_NSEQ(autofill::GetSaveEntityToWalletFooterTextAppendingURLsTo(
+                  testEmail, /*is_private_pass=*/true, /*urls=*/nil),
+              footerItem.text);
+  ASSERT_EQ(2U, footerItem.urls.count);
+  EXPECT_EQ(autofill::GetManageYourInfoURL(), footerItem.urls[0].gurl);
+  EXPECT_EQ(autofill::GetGooglePrivacyPolicyURL(), footerItem.urls[1].gurl);
+}
+
+// Tests that saving a public pass in Settings with
+// `kAutofillRegionalizedPrivatePassesUxRefine` enabled continues displaying the
+// standard public pass storage notice and single URL.
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestPublicPassFooterWithRefinedUxEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillRegionalizedPrivatePassesUxRefine);
+
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  NSString* testEmail = @"test@gmail.com";
+  [view_controller setIsServerWalletItem:YES];
+  [view_controller setIsPrivateWalletPass:NO];
+  [view_controller setUserEmail:testEmail];
+  [view_controller loadModel];
+
+  TableViewLinkHeaderFooterItem* footerItem =
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+          [view_controller.tableViewModel footerForSectionIndex:1]);
+  EXPECT_NSEQ(autofill::GetSaveEntityToWalletFooterTextAppendingURLsTo(
+                  testEmail, /*is_private_pass=*/false, /*urls=*/nil),
               footerItem.text);
   ASSERT_EQ(1U, footerItem.urls.count);
   EXPECT_EQ(autofill::GetManageYourInfoURL(), footerItem.urls[0].gurl);

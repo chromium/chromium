@@ -78,6 +78,9 @@ bool ContainsURL(NSArray<CrURL*>* urls, const GURL& target_url) {
   // Denotes the entity is saved in wallet.
   BOOL _isServerWalletItem;
 
+  // Denotes the entity is a private wallet pass.
+  BOOL _isPrivateWalletPass;
+
   // The user's email address to display in the footer.
   NSString* _userEmail;
 
@@ -277,6 +280,14 @@ bool ContainsURL(NSArray<CrURL*>* urls, const GURL& target_url) {
   if (_titleText.length > 0) {
     [self setTitle:_titleText];
   }
+  [self reloadFooterIfNotVisible];
+}
+
+- (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass {
+  if (_isPrivateWalletPass == isPrivateWalletPass) {
+    return;
+  }
+  _isPrivateWalletPass = isPrivateWalletPass;
   [self reloadFooterIfNotVisible];
 }
 
@@ -870,9 +881,8 @@ bool ContainsURL(NSArray<CrURL*>* urls, const GURL& target_url) {
 
   // Entities already stored in Wallet cannot be updated from settings, so the
   // Wallet notice always describes saving the entity to Wallet.
-  [urls
-      addObject:[[CrURL alloc] initWithGURL:autofill::GetManageYourInfoURL()]];
-  return autofill::GetSaveEntityToWalletFooterText(_userEmail);
+  return autofill::GetSaveEntityToWalletFooterTextAppendingURLsTo(
+      _userEmail, _isPrivateWalletPass, urls);
 }
 
 // Rebuilds the footer so it reflects the latest footer inputs, without touching

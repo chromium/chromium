@@ -30,6 +30,8 @@
 
 @property(nonatomic, assign) BOOL isServerWalletItem;
 
+@property(nonatomic, assign) BOOL isPrivateWalletPass;
+
 // User email with the account.
 @property(nonatomic, strong) NSString* userEmail;
 
