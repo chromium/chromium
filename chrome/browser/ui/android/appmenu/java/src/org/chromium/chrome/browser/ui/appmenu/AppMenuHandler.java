@@ -35,7 +35,9 @@ public interface AppMenuHandler {
         AppMenuItemType.RECENT_ENTRY,
         AppMenuItemType.RECENT_ENTRY_NO_ICON,
         AppMenuItemType.EMPTY,
-        AppMenuItemType.HEADER
+        AppMenuItemType.HEADER,
+        AppMenuItemType.TAB_GROUP,
+        AppMenuItemType.TAB_GROUP_NO_ICON
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AppMenuItemType {
@@ -89,15 +91,22 @@ public interface AppMenuHandler {
         /** A header item. */
         int HEADER = 13;
 
+        /** A tab group item. */
+        int TAB_GROUP = 14;
+
+        /** A tab group item with no icon. */
+        int TAB_GROUP_NO_ICON = 15;
+
         /**
          * The number of menu item types specified above. If you add a menu item type you MUST
          * increment this.
          */
-        int NUM_ENTRIES = 14;
+        int NUM_ENTRIES = 16;
     }
 
     /**
      * Adds the observer to App Menu.
+     *
      * @param observer Observer that should be notified about App Menu changes.
      */
     void addObserver(AppMenuObserver observer);

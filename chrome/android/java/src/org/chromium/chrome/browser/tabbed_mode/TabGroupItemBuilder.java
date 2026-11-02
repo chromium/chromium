@@ -241,7 +241,7 @@ import java.util.function.Supplier;
         if (TabGroupUiUtils.isRemoteGroupOperationsEnabled() && tabGroup.syncId != null) {
             builder.with(AppMenuTabGroupItemProperties.SYNC_GROUP_ID, tabGroup.syncId);
         }
-        return AppMenuItemUtils.createStandardListItem(builder.build(), /* showIcon= */ true);
+        return AppMenuItemUtils.createTabGroupListItem(builder.build(), /* showIcon= */ true);
     }
 
     /**
@@ -441,7 +441,7 @@ import java.util.function.Supplier;
         if (tabGroup.syncId != null) {
             builder.with(AppMenuTabGroupItemProperties.SYNC_GROUP_ID, tabGroup.syncId);
         }
-        return AppMenuItemUtils.createStandardListItem(builder.build(), /* showIcon= */ false);
+        return AppMenuItemUtils.createTabGroupListItem(builder.build(), /* showIcon= */ false);
     }
 
     /**

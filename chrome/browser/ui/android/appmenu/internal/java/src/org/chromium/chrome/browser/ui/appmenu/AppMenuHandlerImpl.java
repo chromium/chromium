@@ -357,11 +357,7 @@ class AppMenuHandlerImpl
                 /* headerModelList= */ null, mModelList, CallbackUtils.emptyRunnable());
 
         if (mAppMenu == null) {
-            mAppMenu =
-                    new AppMenu(
-                            this,
-                            mContext.getResources(),
-                            mHierarchicalMenuController);
+            mAppMenu = new AppMenu(this, mContext.getResources(), mHierarchicalMenuController);
             mAppMenuDragHelper = new AppMenuDragHelper(mContext, mAppMenu, itemRowHeight);
         }
 
@@ -671,6 +667,14 @@ class AppMenuHandlerImpl
                 AppMenuItemType.HEADER,
                 new LayoutViewBuilder<>(R.layout.menu_header),
                 AppMenuItemViewBinder::bindHeaderItem);
+        adapter.registerType(
+                AppMenuItemType.TAB_GROUP,
+                new LayoutViewBuilder<>(standardItemResId),
+                AppMenuItemViewBinder::bindStandardItem);
+        adapter.registerType(
+                AppMenuItemType.TAB_GROUP_NO_ICON,
+                new LayoutViewBuilder<>(R.layout.menu_item_no_icon),
+                AppMenuItemViewBinder::bindStandardItem);
     }
 
     private void registerViewBinders(
