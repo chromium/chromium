@@ -36,6 +36,14 @@ void MenuPreTargetHandlerMac::NativeWidgetMacEventMonitorOnEvent(
   if (!ui_event->IsKeyEvent()) {
     return;
   }
+  // When a menu-hosted view (e.g. search bar textfield) actively owns keyboard
+  // input, allow key events to pass through the local event monitor to Cocoa's
+  // normal window dispatch. This ensures -[BridgedContentView keyDown:] invokes
+  // -[NSView interpretKeyEvents:], enabling IME candidate window navigation,
+  // text composition, and Cocoa text editing action selectors.
+  if (controller_->HasFocusedTextfield()) {
+    return;
+  }
   *was_handled = controller_->OnWillDispatchKeyEvent(ui_event->AsKeyEvent()) !=
                  ui::POST_DISPATCH_PERFORM_DEFAULT;
 }

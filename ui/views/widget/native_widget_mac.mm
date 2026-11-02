@@ -50,6 +50,9 @@
 #import "ui/views/cocoa/drag_drop_client_mac.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/cocoa/text_input_host.h"
+#include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/native_widget_delegate.h"
@@ -1252,6 +1255,27 @@ void NativeWidgetMac::OnDidChangeFocus(View* focused_before,
   if (ns_window_host_) {
     ns_window_host_->text_input_host()->SetTextInputClient(
         new_text_input_client);
+  }
+
+  // A non-activating widget (e.g. MenuHost) shares its owner's InputMethod, but
+  // the owner window stays key and owns the NSTextInputClient. Point the
+  // owner's TextInputHost at the focused menu text input client, or back at the
+  // owner's focused Textfield when menu focus leaves it. MenuHost restores the
+  // InputMethod's client itself.
+  if (GetWidget()->CanFocusViewsWithoutActivation()) {
+    if (Widget* owner = GetWidget()->GetPrimaryWindowWidget();
+        owner && owner != GetWidget()) {
+      ui::TextInputClient* owner_text_input_client = new_text_input_client;
+      if (!owner_text_input_client && owner->GetFocusManager()) {
+        owner_text_input_client =
+            AsViewClass<Textfield>(owner->GetFocusManager()->GetFocusedView());
+      }
+      if (auto* owner_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+              owner->GetNativeWindow())) {
+        owner_host->text_input_host()->SetTextInputClient(
+            owner_text_input_client);
+      }
+    }
   }
 }
 

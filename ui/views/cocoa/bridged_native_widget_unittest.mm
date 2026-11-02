@@ -37,11 +37,17 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/base/test/scoped_fake_nswindow_focus.h"
+#include "ui/compositor/test/test_context_factories.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/menus/simple_menu_model.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #import "ui/views/cocoa/text_input_host.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/controls/textfield/textfield_model.h"
@@ -486,6 +492,8 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest,
   // Overridden from testing::Test:
   void SetUp() override {
     ui::CocoaTest::SetUp();
+    test_views_delegate_.set_context_factory(
+        context_factories_.GetContextFactory());
 
     Widget::InitParams init_params(ownership_);
     init_params.native_widget = native_widget_mac_.get();
@@ -507,7 +515,10 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest,
     if (widget_) {
       observation_.Reset();
       widget_->CloseNow();
+      widget_.reset();
     }
+    task_environment_.RunUntilIdle();
+    test_views_delegate_.set_context_factory(nullptr);
     ui::CocoaTest::TearDown();
   }
 
@@ -550,10 +561,11 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest,
   Widget::InitParams::ShadowType shadow_type_ =
       Widget::InitParams::ShadowType::kDefault;
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
 
  private:
+  ui::TestContextFactories context_factories_{false};
   TestViewsDelegate test_views_delegate_;
 
   display::ScopedNativeScreen screen_;
@@ -1107,8 +1119,7 @@ TEST_F(BridgedNativeWidgetTest, InputContext) {
   text_field->SetTextInputFlags(ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
   EXPECT_FALSE(ns_view_.inputContext);
 
-  text_field =
-      InstallTextField(test_string, ui::TEXT_INPUT_TYPE_TEXT);
+  text_field = InstallTextField(test_string, ui::TEXT_INPUT_TYPE_TEXT);
   EXPECT_TRUE(ns_view_.inputContext);
 
   // TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD does not prevent an input context;
@@ -2412,6 +2423,161 @@ TEST_F(BridgedNativeWidgetTest, WriteToFindPasteboard) {
   SetSelectionRange(NSMakeRange(0, 0));
   [ns_view_ copyToFindPboard:nil];
   EXPECT_NSEQ(@"bar baz", [[FindPasteboard sharedInstance] findText]);
+}
+
+TEST_F(BridgedNativeWidgetTest,
+       TextInput_MenuKeyEventTargetViewForwardsKeyEventsToInputMethod) {
+  object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
+  base::RepeatingClosure do_nothing = base::DoNothing();
+  InterpretKeyEventsCallback ignore_key = base::DoNothing();
+  base::apple::ScopedObjCClassSwizzler update_windows_swizzler(
+      [NSApplication class], [UpdateWindowsDonorForNSApp class],
+      @selector(updateWindows));
+  g_update_windows_closure = &do_nothing;
+  g_fake_interpret_key_events = &ignore_key;
+
+  {
+    ui::test::ScopedFakeNSWindowFocus fake_focus;
+    [bridge_window() makeKeyWindow];
+
+    Textfield* owner_textfield = InstallTextField("owner");
+    EXPECT_EQ(owner_textfield, [ns_view_ textInputClientForTesting]);
+    EXPECT_EQ(owner_textfield, widget_->GetInputMethod()->GetTextInputClient());
+
+    ui::SimpleMenuModel menu_model(nullptr);
+    menu_model.AddItem(1, u"Item 1");
+    MenuModelAdapter menu_adapter(&menu_model);
+    std::unique_ptr<MenuItemView> root_menu = menu_adapter.CreateMenu();
+    MenuItemView* root_menu_ptr = root_menu.get();
+    MenuRunner menu_runner(std::move(root_menu), MenuRunner::HAS_MNEMONICS);
+    menu_runner.RunMenuAt(widget_.get(), nullptr, gfx::Rect(10, 10, 10, 10),
+                          MenuAnchorPosition::kTopLeft,
+                          ui::mojom::MenuSourceType::kKeyboard);
+
+    ASSERT_TRUE(root_menu_ptr->GetSubmenu());
+    MenuItemView* item = root_menu_ptr->GetSubmenu()->GetMenuItemAt(0);
+    Textfield* menu_textfield =
+        item->AddChildView(std::make_unique<Textfield>());
+    menu_textfield->SetBounds(0, 0, 100, 20);
+    menu_textfield->SetText(u"hello");
+    menu_textfield->RequestFocus();
+
+    EXPECT_TRUE([ns_view_ hasActiveMenuController]);
+    EXPECT_EQ(menu_textfield, [ns_view_ textInputClientForTesting]);
+    EXPECT_NE(nil, [ns_view_ inputContext]);
+
+    // Send keys the way AppKit does: -keyDown: runs -interpretKeyEvents:, which
+    // inserts text or sends an editing command, and -keyUp: follows.
+    InterpretKeyEventsCallback insert_exclamation =
+        base::BindRepeating([](id view) {
+          [view insertText:@"!" replacementRange:NSMakeRange(NSNotFound, 0)];
+        });
+    InterpretKeyEventsCallback insert_question =
+        base::BindRepeating([](id view) {
+          [view insertText:@"?" replacementRange:NSMakeRange(NSNotFound, 0)];
+        });
+    InterpretKeyEventsCallback move_left = base::BindRepeating(
+        [](id view) { [view doCommandBySelector:@selector(moveLeft:)]; });
+    auto press_key = [&](NSEvent* key_down,
+                         InterpretKeyEventsCallback* action) {
+      g_fake_interpret_key_events = action;
+      [ns_view_ keyDown:key_down];
+      g_fake_interpret_key_events = &ignore_key;
+      [ns_view_
+          keyUp:cocoa_test_event_utils::KeyEventWithKeyCode(
+                    key_down.keyCode, [key_down.characters characterAtIndex:0],
+                    NSEventTypeKeyUp, 0)];
+    };
+
+    // 18 and 44 are the macOS virtual key codes for the "1" and "/" keys.
+    press_key(UnicodeKeyDown(18, @"!"), &insert_exclamation);
+    EXPECT_EQ(u"hello!", menu_textfield->GetText());
+
+    press_key(VkeyKeyDown(ui::VKEY_LEFT), &move_left);
+    press_key(UnicodeKeyDown(44, @"?"), &insert_question);
+    EXPECT_EQ(u"hello?!", menu_textfield->GetText());
+
+    // Editing key equivalents (e.g. Cmd+A) are consumed by the focused menu
+    // Textfield, while unhandled global shortcuts (e.g. Cmd+T) return NO so the
+    // window's command dispatcher can route them to the main menu.
+    NSEvent* cmd_a = cocoa_test_event_utils::SynthesizeKeyEvent(
+        bridge_window(), true, ui::VKEY_A, NSEventModifierFlagCommand);
+    EXPECT_TRUE([ns_view_ performMenuKeyEquivalent:cmd_a]);
+    EXPECT_EQ(u"hello?!", menu_textfield->GetSelectedText());
+
+    NSEvent* cmd_t = cocoa_test_event_utils::SynthesizeKeyEvent(
+        bridge_window(), true, ui::VKEY_T, NSEventModifierFlagCommand);
+    EXPECT_FALSE([ns_view_ performMenuKeyEquivalent:cmd_t]);
+
+    menu_runner.Cancel();
+    EXPECT_FALSE([ns_view_ hasActiveMenuController]);
+    EXPECT_EQ(owner_textfield, widget_->GetInputMethod()->GetTextInputClient());
+    EXPECT_EQ(owner_textfield, [ns_view_ textInputClientForTesting]);
+    EXPECT_EQ(u"owner", owner_textfield->GetText());
+
+    GetNSWindowHost()->text_input_host()->SetTextInputClient(nullptr);
+  }
+
+  g_fake_interpret_key_events = nullptr;
+  g_update_windows_closure = nullptr;
+}
+
+// Cmd+Left and Cmd+Backspace in a menu-hosted Textfield use the macOS key
+// bindings (start of line, delete to start of line) via the real
+// -interpretKeyEvents:. The Textfield's own cross-platform mapping would move
+// or delete one word.
+TEST_F(BridgedNativeWidgetTest, TextInput_MenuTextfieldUsesMacKeyBindings) {
+  base::RepeatingClosure do_nothing = base::DoNothing();
+  base::apple::ScopedObjCClassSwizzler update_windows_swizzler(
+      [NSApplication class], [UpdateWindowsDonorForNSApp class],
+      @selector(updateWindows));
+  g_update_windows_closure = &do_nothing;
+
+  {
+    ui::test::ScopedFakeNSWindowFocus fake_focus;
+    [bridge_window() makeKeyWindow];
+    InstallTextField("owner");
+
+    ui::SimpleMenuModel menu_model(nullptr);
+    menu_model.AddItem(1, u"Item 1");
+    MenuModelAdapter menu_adapter(&menu_model);
+    std::unique_ptr<MenuItemView> root_menu = menu_adapter.CreateMenu();
+    MenuItemView* root_menu_ptr = root_menu.get();
+    MenuRunner menu_runner(std::move(root_menu), MenuRunner::HAS_MNEMONICS);
+    menu_runner.RunMenuAt(widget_.get(), nullptr, gfx::Rect(10, 10, 10, 10),
+                          MenuAnchorPosition::kTopLeft,
+                          ui::mojom::MenuSourceType::kKeyboard);
+    ASSERT_TRUE(root_menu_ptr->GetSubmenu());
+    Textfield* menu_textfield =
+        root_menu_ptr->GetSubmenu()->GetMenuItemAt(0)->AddChildView(
+            std::make_unique<Textfield>());
+    menu_textfield->SetBounds(0, 0, 100, 20);
+    menu_textfield->SetText(u"hello world");
+    menu_textfield->RequestFocus();
+    ASSERT_EQ(menu_textfield, [ns_view_ textInputClientForTesting]);
+
+    // Cmd+Left moves to the start of the line (a word move would stop at 6).
+    // 123 and 51 are the macOS virtual key codes for Left Arrow and Delete.
+    NSEvent* cmd_left = cocoa_test_event_utils::KeyEventWithKeyCode(
+        123, NSLeftArrowFunctionKey, NSEventTypeKeyDown,
+        NSEventModifierFlagCommand | NSEventModifierFlagFunction |
+            NSEventModifierFlagNumericPad);
+    EXPECT_TRUE([ns_view_ performMenuKeyEquivalent:cmd_left]);
+    EXPECT_EQ(gfx::Range(0), menu_textfield->GetSelectedRange());
+
+    // Cmd+Backspace deletes to the start of the line (a word delete would keep
+    // "hello ").
+    menu_textfield->SetSelectedRange(gfx::Range(9));
+    NSEvent* cmd_backspace = cocoa_test_event_utils::KeyEventWithKeyCode(
+        51, NSDeleteCharacter, NSEventTypeKeyDown, NSEventModifierFlagCommand);
+    EXPECT_TRUE([ns_view_ performMenuKeyEquivalent:cmd_backspace]);
+    EXPECT_EQ(u"ld", menu_textfield->GetText());
+
+    menu_runner.Cancel();
+    GetNSWindowHost()->text_input_host()->SetTextInputClient(nullptr);
+  }
+
+  g_update_windows_closure = nullptr;
 }
 
 }  // namespace views::test

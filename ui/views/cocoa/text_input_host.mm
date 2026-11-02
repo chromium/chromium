@@ -14,6 +14,9 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
+#include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -134,6 +137,20 @@ std::u16string AttributedSubstringForRangeHelper(
   return substring;
 }
 
+bool HasBlockingViewsMenu(views::NativeWidgetMacNSWindowHost* host_impl) {
+  if (!host_impl) {
+    return false;
+  }
+  views::Widget* widget = host_impl->GetWidget();
+  views::MenuController* menu_controller =
+      widget ? views::MenuController::GetForOwnerWidget(widget) : nullptr;
+  return menu_controller &&
+         menu_controller->exit_type() ==
+             views::MenuController::ExitType::kNone &&
+         !menu_controller->IsEditableCombobox() &&
+         !menu_controller->HasFocusedTextfield();
+}
+
 }  // namespace
 
 namespace views {
@@ -221,12 +238,10 @@ bool TextInputHost::HasInputContext(bool* out_has_input_context) {
     return true;
   }
 
-  // If a views menu is active, and -[NSView interpretKeyEvents:] asks for the
-  // input context, return nil. This ensures the action message is sent to
-  // the view, rather than any NSTextInputClient a subview has installed.
-  bool has_menu_controller = false;
-  host_impl_->GetHasMenuController(&has_menu_controller);
-  if (has_menu_controller) {
+  // If a views menu is active and does NOT host an active text input view,
+  // return nil for input context so that action messages are sent to the menu
+  // rather than the underlying window's previous text input client.
+  if (HasBlockingViewsMenu(host_impl_)) {
     return true;
   }
 
@@ -394,7 +409,7 @@ bool TextInputHost::GetFirstRectForRange(const gfx::Range& requested_range,
 
 bool TextInputHost::IsTextEditCommandEnabled(ui::TextEditCommand command,
                                              bool* out_enabled) {
-  if (text_input_client_) {
+  if (text_input_client_ && !HasBlockingViewsMenu(host_impl_)) {
     *out_enabled = text_input_client_->IsTextEditCommandEnabled(command);
   } else {
     *out_enabled = false;
@@ -420,7 +435,7 @@ void TextInputHost::HasClient(HasClientCallback callback) {
 
 void TextInputHost::HasInputContext(HasInputContextCallback callback) {
   bool has_input_context = false;
-  HasClient(&has_input_context);
+  HasInputContext(&has_input_context);
   std::move(callback).Run(has_input_context);
 }
 

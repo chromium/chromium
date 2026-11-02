@@ -6,9 +6,11 @@
 
 #include <algorithm>
 #include <limits>
+#include <string_view>
 
 #import "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -135,6 +137,52 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 }  // namespace
 
+// Records the action message that AppKit's key bindings produce for a key
+// event (e.g. moveToBeginningOfLine: for Cmd+Left), without the side effects
+// of running -[BridgedContentView keyDown:].
+@interface MenuKeyEquivalentInterpreter : NSResponder
+@property(assign, nonatomic) SEL commandSelector;
+@end
+
+@implementation MenuKeyEquivalentInterpreter
+@synthesize commandSelector = _commandSelector;
+
+- (void)doCommandBySelector:(SEL)selector {
+  _commandSelector = selector;
+}
+
+- (void)insertText:(id)string {
+}
+@end
+
+namespace {
+
+// Returns the text editing action that AppKit's key bindings map `event` to,
+// if BridgedContentView implements it, or nullptr. insert* actions are
+// excluded since -doCommandBySelector: leaves them to -keyDown:. The returned
+// selector names a method that returns void, so it is safe to call with
+// -performSelector: under ARC.
+SEL EditingActionForKeyEquivalent(NSEvent* event) {
+  MenuKeyEquivalentInterpreter* interpreter =
+      [[MenuKeyEquivalentInterpreter alloc] init];
+  [interpreter interpretKeyEvents:@[ event ]];
+  SEL selector = interpreter.commandSelector;
+  if (!selector || [NSStringFromSelector(selector) hasPrefix:@"insert"] ||
+      ![BridgedContentView instancesRespondToSelector:selector] ||
+      [BridgedContentView instanceMethodForSelector:selector] ==
+          [ToolTipBaseView instanceMethodForSelector:selector]) {
+    return nullptr;
+  }
+  NSMethodSignature* signature =
+      [BridgedContentView instanceMethodSignatureForSelector:selector];
+  if (std::string_view(signature.methodReturnType) != @encode(void)) {
+    return nullptr;
+  }
+  return selector;
+}
+
+}  // namespace
+
 @interface BridgedContentView () {
   // When the -[NSApp updateWindows] call that ended the last deferral started
   // and returned. Null when no key event can still have waited for it.
@@ -144,10 +192,6 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 // Dispatch |event| to |bridge_|'s host.
 - (void)dispatchKeyEvent:(ui::KeyEvent*)event;
-
-// Returns true if active menu controller corresponds to this widget. Note that
-// this will synchronously call into the browser process.
-- (BOOL)hasActiveMenuController;
 
 // Dispatch |event| to |menu_controller| and return true if |event| is
 // swallowed.
@@ -346,15 +390,18 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     TRACE_EVENT("ui", "BridgedContentView::CurrentInputContext");
     current = [NSTextInputContext currentInputContext];
   }
-  if (!current)
-    return false;
 
   NSTextInputContext* newContext = [self inputContext];
-  // If the newContext is non-nil, then it can only be [super inputContext]. So
-  // the input context is either not changing, or it was not from |self|. In
-  // both cases, there's no need to call -updateWindows.
+  // A non-nil newContext is normally either not changing or not from |self|,
+  // except when a Views menu is active and switches between menu items and a
+  // menu-hosted text input client within the same window.
   if (newContext) {
     DCHECK_EQ(newContext, [super inputContext]);
+    NSWindow* window = self.window;
+    return window.isKeyWindow && window.firstResponder == self &&
+           [self hasActiveMenuController] && current != newContext;
+  }
+  if (!current) {
     return false;
   }
 
@@ -557,6 +604,37 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   return hasMenuController;
 }
 
+- (BOOL)performMenuKeyEquivalent:(NSEvent*)theEvent {
+  if (!_bridge || ![self hasActiveMenuController] ||
+      [theEvent type] != NSEventTypeKeyDown) {
+    return NO;
+  }
+  // As in -keyDown:, end any deferral first so -inputContext reflects a
+  // focused menu Textfield.
+  if (_deferInputContextActivation) {
+    self.deferInputContextActivation = NO;
+  }
+  // With a text input context (a focused menu Textfield), key equivalents
+  // bound to text editing actions, such as Cmd+Left and Cmd+Backspace, edit
+  // the text rather than reaching the menu or the main menu as raw keys.
+  if ([self inputContext] && ![self hasMarkedText]) {
+    if (SEL selector = EditingActionForKeyEquivalent(theEvent)) {
+      base::AutoReset<NSEvent*> key_down_event(&_keyDownEvent, theEvent);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+      // ARC warns because it can't tell whether -performSelector: returns an
+      // object it must retain or release. `selector` is a text editing action
+      // that returns void (EditingActionForKeyEquivalent() checks this), so
+      // there is nothing to retain or release.
+      [self performSelector:selector withObject:nil];
+#pragma clang diagnostic pop
+      return YES;
+    }
+  }
+  ui::KeyEvent event((base::apple::OwnedNSEvent(theEvent)));
+  return [self dispatchKeyEventToMenuController:&event];
+}
+
 - (BOOL)dispatchKeyEventToMenuController:(ui::KeyEvent*)event {
   if (_bridge)
     return _bridge->host_helper()->DispatchKeyEventToMenuController(event);
@@ -579,6 +657,16 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   [self handleKeyEvent:&event];
   _hasUnhandledKeyDownEvent = NO;
   return event.handled();
+}
+
+- (void)scheduleTextEditCommand:(ui::TextEditCommand)command {
+  bool out_enabled = false;
+  if (_bridge &&
+      _bridge->text_input_host()->IsTextEditCommandEnabled(command,
+                                                           &out_enabled) &&
+      out_enabled) {
+    _bridge->text_input_host()->SetTextEditCommandForNextKeyEvent(command);
+  }
 }
 
 - (void)handleAction:(ui::TextEditCommand)command
@@ -606,17 +694,26 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     event.SetNativeEvent(base::apple::OwnedNSEvent(NSApp.currentEvent));
   }
 
-  if ([self dispatchKeyEventToMenuController:&event])
-    return;
-
   // If there's an active TextInputClient, schedule the editing command to be
-  // performed.
-  bool out_enabled = false;
-  if (_bridge &&
-      _bridge->text_input_host()->IsTextEditCommandEnabled(command,
-                                                           &out_enabled) &&
-      out_enabled) {
-    _bridge->text_input_host()->SetTextEditCommandForNextKeyEvent(command);
+  // performed. With an active menu, schedule it before dispatch: the menu
+  // routes the key to its focused Textfield, which performs the command
+  // (TextInputHost reports commands disabled while the menu has none). Up/Down
+  // move the menu selection rather than the caret of a focused menu Textfield,
+  // matching native macOS textfields embedded in menus. Otherwise, e.g. for an
+  // editable combobox menu, schedule only if the menu does not consume the key,
+  // so no command is left pending.
+  const bool has_active_menu = [self hasActiveMenuController];
+  if (has_active_menu && command != ui::TextEditCommand::MOVE_UP &&
+      command != ui::TextEditCommand::MOVE_DOWN) {
+    [self scheduleTextEditCommand:command];
+  }
+
+  if ([self dispatchKeyEventToMenuController:&event]) {
+    return;
+  }
+
+  if (!has_active_menu) {
+    [self scheduleTextEditCommand:command];
   }
 
   [self dispatchKeyEvent:&event];
@@ -707,8 +804,12 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
       return;
   }
 
-  // Forward the |text| to |textInputClient_| if no menu is active.
-  if ([self hasTextInputClient] && ![self hasActiveMenuController]) {
+  // Forward the |text| to |textInputClient_| if no menu is active, if the
+  // active menu has a text input context, or if an IME is committing text
+  // outside of a keyDown event (e.g. during -[NSApp updateWindows]).
+  if ([self hasTextInputClient] &&
+      (![self hasActiveMenuController] || [self inputContext] != nil ||
+       !_keyDownEvent)) {
     // Note we don't check isFinalInsertForKeyEvent, nor use |keyDownEvent_|
     // to generate the synthetic ui::KeyEvent since:  For composed text,
     // [keyDownEvent_ characters] might not be the same as |text|. This is
@@ -1692,6 +1793,13 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if (actualNSRange)
     *actualNSRange = actualRange.ToNSRange();
   return gfx::ScreenRectToNSRect(rect);
+}
+
+- (NSInteger)windowLevel {
+  if ([self hasActiveMenuController]) {
+    return NSPopUpMenuWindowLevel;
+  }
+  return [[self window] level];
 }
 
 - (BOOL)hasMarkedText {

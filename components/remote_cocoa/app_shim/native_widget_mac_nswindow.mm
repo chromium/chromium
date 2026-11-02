@@ -907,6 +907,13 @@ struct NSEdgeAndCornerThicknesses {
   // TODO(bokan): Tracing added temporarily to diagnose crbug.com/1039833.
   TRACE_EVENT1("browser", "NSWindow::performKeyEquivalent", "WindowNum",
                [self windowNumber]);
+  if ([self hasViewsMenuActive] && [event type] == NSEventTypeKeyDown) {
+    if (BridgedContentView* contentView =
+            base::apple::ObjCCast<BridgedContentView>([self contentView]);
+        [contentView performMenuKeyEquivalent:event]) {
+      return YES;
+    }
+  }
   return [_commandDispatcher performKeyEquivalent:event];
 }
 

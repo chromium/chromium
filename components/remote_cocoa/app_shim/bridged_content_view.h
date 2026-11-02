@@ -98,6 +98,17 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // https://crbug.com/1214013
 - (void)updateCursorTrackingArea;
 
+// Returns YES if there is an active Views MenuController associated with this
+// view's window.
+- (BOOL)hasActiveMenuController;
+
+// Forwards a key equivalent |theEvent| to the active Views menu or its focused
+// text input view. Returns YES if the menu or text input view consumed it.
+// While a menu Textfield has a text input context, key equivalents that the
+// key bindings map to a text editing action (e.g. Cmd+Left) perform that
+// action instead.
+- (BOOL)performMenuKeyEquivalent:(NSEvent*)theEvent;
+
 // The TextInputClient of the currently focused views::View.
 // TODO(ccameron): This cannot be relied on across processes.
 - (ui::TextInputClient*)textInputClientForTesting;

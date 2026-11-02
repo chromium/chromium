@@ -25,6 +25,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/input/web_input_event_builders_mac.h"
+#import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/browser/cocoa/system_hotkey_helper_mac.h"
@@ -1453,6 +1454,16 @@ static NSWindow* __weak _deferredResignKeyWindow;
     return NO;
   }
 
+  // While a Views menu is active on the window, do not intercept key
+  // equivalents for the web page so the menu or browser command dispatcher can
+  // handle them.
+  if (BridgedContentView* contentView =
+          base::apple::ObjCCast<BridgedContentView>(
+              [[self window] contentView]);
+      contentView && [contentView hasActiveMenuController]) {
+    return NO;
+  }
+
   // If the event is being redispatched, do not consume it again. This prevents
   // dispatch loops that break accelerator key dispatch in fullscreen mode. Note
   // that in fullscreen mode, the keys are dispatched to the key window, which
@@ -2690,6 +2701,20 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 // nil when the caret is in non-editable content or password box to avoid
 // making input methods do their work.
 - (NSTextInputContext*)inputContext {
+  // MenuHost windows do not become the key window, so when a Views menu opens
+  // over a focused web page, `RenderWidgetHostViewCocoa` remains the key
+  // window's `firstResponder` (see `-[NativeWidgetMacNSWindow sendEvent:]`).
+  // Delegate `-inputContext` to the window's `BridgedContentView` while a
+  // Views menu is active so `+[NSTextInputContext currentInputContext]` routes
+  // key interpretation and IME events to any active menu text input client
+  // rather than the web page.
+  if (BridgedContentView* contentView =
+          base::apple::ObjCCast<BridgedContentView>(
+              [[self window] contentView]);
+      contentView && [contentView hasActiveMenuController]) {
+    return [contentView inputContext];
+  }
+
   if (_textInputType == ui::TEXT_INPUT_TYPE_NONE ||
       _textInputType == ui::TEXT_INPUT_TYPE_PASSWORD) {
     return nil;
