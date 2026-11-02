@@ -13,6 +13,7 @@ class FaviconLoader;
 namespace password_manager {
 class PasswordManagerClient;
 class PasswordStoreInterface;
+class RemoteActorCredentialSharingService;
 }  // namespace password_manager
 
 namespace signin {
@@ -26,6 +27,11 @@ class SyncService;
 // Delegate protocol for `RemoteActorCredentialBottomSheetMediator` to
 // communicate the progress of the sharing flow back to the coordinator.
 @protocol RemoteActorCredentialBottomSheetMediatorDelegate <NSObject>
+
+// Called when credentials were retrieved and the bottom sheet should be
+// presented.
+- (void)mediatorDidRequestPresentation:
+    (RemoteActorCredentialBottomSheetMediator*)mediator;
 
 // Called when the sharing flow finished, with `success` set to `YES` if a
 // credential was successfully shared.
@@ -47,12 +53,13 @@ class SyncService;
 
 // Initializes the mediator for the remote actor request identified by
 // `domain`, `gaiaID` and `taskID`. `identityManager`, `syncService`,
-// `profilePasswordStore`, `accountPasswordStore` and `passwordManagerClient`
-// are passed to `RemoteActorCredentialSharingController` to retrieve the
-// credentials and reauthenticate the user; `identityManager`, `syncService` and
-// `passwordManagerClient` may be null when unavailable, and the store matching
-// the user's sync state must be non-null. `faviconLoader` is used to load the
-// favicon of `domain`.
+// `profilePasswordStore`, `accountPasswordStore`, `sharingService` and
+// `passwordManagerClient` are passed to
+// `RemoteActorCredentialSharingController` to retrieve the credentials,
+// reauthenticate the user and share the chosen credential; `identityManager`,
+// `syncService`, `sharingService` and `passwordManagerClient` may be null when
+// unavailable, and the store matching the user's sync state must be non-null.
+// `faviconLoader` is used to load the favicon of `domain`.
 - (instancetype)
     initWithIdentityManager:(signin::IdentityManager*)identityManager
                 syncService:(syncer::SyncService*)syncService
@@ -60,6 +67,9 @@ class SyncService;
            (password_manager::PasswordStoreInterface*)profilePasswordStore
        accountPasswordStore:
            (password_manager::PasswordStoreInterface*)accountPasswordStore
+             sharingService:
+                 (password_manager::RemoteActorCredentialSharingService*)
+                     sharingService
       passwordManagerClient:
           (password_manager::PasswordManagerClient*)passwordManagerClient
               faviconLoader:(FaviconLoader*)faviconLoader
@@ -69,9 +79,9 @@ class SyncService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Starts the sharing flow by retrieving the credentials for the domain.
-// Notifies the delegate that the flow finished unsuccessfully if there are no
-// credentials to suggest.
+// Starts the sharing flow by retrieving the credentials for the domain. The
+// delegate is notified when the bottom sheet should be presented and when the
+// flow finished.
 - (void)start;
 
 // Disconnects the mediator and cleans up dependencies. Must be called before

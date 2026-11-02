@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/ios_chrome_remote_actor_credential_sharing_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -78,9 +79,6 @@
       passwordTabHelper ? passwordTabHelper->GetPasswordManagerClient()
                         : nullptr;
 
-  // Unlike the other dependencies, the favicon loader isn't null-checked by
-  // `RemoteActorCredentialSharingController`, and is always created for a
-  // profile.
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   CHECK(faviconLoader);
@@ -94,12 +92,16 @@
   scoped_refptr<password_manager::PasswordStoreInterface> accountPasswordStore =
       IOSChromeAccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
+  password_manager::RemoteActorCredentialSharingService* sharingService =
+      IOSChromeRemoteActorCredentialSharingServiceFactory::GetForProfile(
+          profile);
 
   _mediator = [[RemoteActorCredentialBottomSheetMediator alloc]
       initWithIdentityManager:identityManager
                   syncService:syncService
          profilePasswordStore:profilePasswordStore.get()
          accountPasswordStore:accountPasswordStore.get()
+               sharingService:sharingService
         passwordManagerClient:passwordManagerClient
                 faviconLoader:faviconLoader
                        domain:_domain
@@ -131,6 +133,11 @@
 }
 
 #pragma mark - RemoteActorCredentialBottomSheetMediatorDelegate
+
+- (void)mediatorDidRequestPresentation:
+    (RemoteActorCredentialBottomSheetMediator*)mediator {
+  // TODO(crbug.com/579010739): Present the bottom sheet view controller.
+}
 
 - (void)mediator:(RemoteActorCredentialBottomSheetMediator*)mediator
     didFinishWithSuccess:(BOOL)success {
