@@ -730,6 +730,8 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   SetBackground(nullptr);
   CHECK_EQ(arrow_, BubbleBorder::NONE, base::NotFatalUntil::M163);
   int corner_radius = GetCornerRadius();
+  background_rounded_corners_ = gfx::RoundedCornersF(corner_radius);
+
   outside_border_insets_ = {};
 
   const auto& menu_config = MenuConfig::instance();
@@ -768,8 +770,6 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   }
   SetBorder(views::CreateBorderPainter(
       std::make_unique<views::RoundRectPainter>(color, corner_radius), insets));
-
-  background_rounded_corners_ = gfx::RoundedCornersF(corner_radius);
 }
 
 void MenuScrollViewContainer::CreateBubbleBorder() {
