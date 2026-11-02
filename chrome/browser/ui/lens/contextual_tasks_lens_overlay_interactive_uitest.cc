@@ -859,6 +859,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksLensOverlayControllerInteractiveUiTest,
   const GURL page_url =
       embedded_test_server()->GetURL(kDocumentWithNamedElement);
   const DeepQuery kPathToParagraph{"p"};
+  base::HistogramTester histogram_tester;
 
   RunTestSequence(
       // Step 1: Navigate the active tab to a webpage and select text.
@@ -890,18 +891,14 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksLensOverlayControllerInteractiveUiTest,
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
       CheckResult(
           [this]() {
-            return LensSearchController::FromTabWebContents(
-                       browser()->GetTabStripModel()->GetWebContentsAt(0))
-                ->invocation_source();
-          },
-          std::make_optional(
-              lens::LensOverlayInvocationSource::kContentAreaContextMenuText),
-          "Text query was issued from the text selection context menu"),
-      CheckResult(
-          [this]() {
             return SidePanelUI::From(browser())->IsSidePanelShowing();
           },
           true));
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualTasks.QueryEligibility.ByInvocationSource."
+      "ContentAreaContextMenuText",
+      lens::LensContextualTasksQueryEligibility::kEligible, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1138,16 +1135,16 @@ IN_PROC_BROWSER_TEST_P(
             GURL("https://www.google.com/search?q=Help+me+with+this+page"),
             omnibox::AutocompleteMatchType::kSearchSuggest,
             /*is_zero_prefix_suggestion=*/true);
+
+        ASSERT_TRUE(controller->lens_overlay_query_controller());
+        EXPECT_TRUE(controller->lens_overlay_query_controller()
+                        ->HasPermissionForSession());
       }),
       // Verify the Contextual Tasks side panel web view shows.
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
       CheckResult(
           [this]() {
-            auto* controller = LensSearchController::FromTabWebContents(
-                browser()->GetTabStripModel()->GetActiveWebContents());
-            return controller && controller->lens_overlay_query_controller() &&
-                   controller->lens_overlay_query_controller()
-                       ->HasPermissionForSession();
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
           },
           true));
 }

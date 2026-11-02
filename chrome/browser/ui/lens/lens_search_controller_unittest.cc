@@ -115,4 +115,27 @@ TEST_F(LensSearchControllerTest,
   EXPECT_FALSE(controller_->IsOff());
 }
 
+TEST_F(LensSearchControllerTest,
+       OpenLensOverlay_AllowsReinvokingFromContextualTasksComposebox) {
+  ASSERT_TRUE(controller_->IsOff());
+
+  // Start an initial Lens session so the controller is no longer off.
+  controller_->OpenLensOverlay(lens::LensOverlayInvocationSource::kToolbar);
+  EXPECT_FALSE(controller_->IsOff());
+  EXPECT_EQ(controller_->invocation_source(),
+            lens::LensOverlayInvocationSource::kToolbar);
+
+  // With kLensSearchReinvocationAffordance disabled by default, reinvoking from
+  // a standard entrypoint should be blocked while a session is active.
+  controller_->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
+  EXPECT_EQ(controller_->invocation_source(),
+            lens::LensOverlayInvocationSource::kToolbar);
+
+  // Reinvoking from the Contextual Tasks composebox should be permitted.
+  controller_->OpenLensOverlay(
+      lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+  EXPECT_EQ(controller_->invocation_source(),
+            lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+}
+
 }  // namespace lens
