@@ -1309,6 +1309,67 @@ TEST_F(NavigationRequestWithoutSubframeErrorPageIsolationTest,
   }
 }
 
+// Construct GURLs in the test body, after the test suite registers URL schemes.
+class NavigationRequestNonStandardErrorPageURLTest
+    : public NavigationRequestWithoutSubframeErrorPageIsolationTest,
+      public testing::WithParamInterface<const char*> {};
+
+TEST_P(NavigationRequestNonStandardErrorPageURLTest, SanitizeFinalURL) {
+  base::test::ScopedFeatureList feature_list{{
+      features::kSanitizeFailedSubframeNavigationUrls,
+      features::kSanitizeLocationHeadersDuringNavigation,
+  }};
+
+  NavigationSimulator::NavigateAndCommitFromDocument(GURL("https://a.com/"),
+                                                     main_test_rfh());
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
+
+  const GURL start_url("https://b.com/start?secret=1");
+  const GURL final_url(GetParam());
+  auto navigation =
+      NavigationSimulator::CreateRendererInitiated(start_url, child_frame);
+  navigation->Start();
+
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 302 Found");
+  headers->SetHeader("Location", final_url.spec());
+  navigation->SetRedirectHeaders(headers);
+  navigation->Redirect(final_url);
+  navigation->Fail(net::ERR_BLOCKED_BY_CSP);
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  ASSERT_EQ(ErrorPageProcess::kCurrentProcess,
+            request->ComputeErrorPageProcess());
+
+  // A nonstandard URL sanitizes to an empty URL. Keep the failed-navigation URL
+  // nonempty without disclosing any of the redirect target to the renderer.
+  EXPECT_EQ(GURL(kBlockedURL), request->common_params().url);
+  ASSERT_EQ(1u, request->commit_params().redirects.size());
+  EXPECT_EQ(GURL("https://b.com/"), request->commit_params().redirects[0]);
+  ASSERT_EQ(1u, request->commit_params().redirect_params.size());
+  EXPECT_TRUE(request->commit_params()
+                  .redirect_params[0]
+                  ->redirect_info.new_url.is_empty());
+
+  size_t iter = 0;
+  auto location =
+      request->commit_params()
+          .redirect_params[0]
+          ->response_head->headers->EnumerateHeader(&iter, "Location");
+  ASSERT_TRUE(location);
+  EXPECT_EQ("", location.value());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationRequestNonStandardErrorPageURLTest,
+    testing::Values("custom-scheme://host/path?secret=2#fragment",
+                    "data:text/html,secret",
+                    "about:blank#secret",
+                    "blob:https://c.com/secret"));
+
 TEST_F(
     NavigationRequestWithoutSubframeErrorPageIsolationTest,
     SanitizeRedirectsForCommitErrorPageInCurrentProcess_FinalURLFeatureDisabled) {

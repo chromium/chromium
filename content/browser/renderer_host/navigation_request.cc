@@ -8984,6 +8984,11 @@ void NavigationRequest::SanitizeRedirectsForCommit(
 
   if (should_sanitize_final_url_for_error_page) {
     common_params->url = common_params->url.DeprecatedGetOriginAsURL();
+    // Nonstandard URLs sanitize to an empty URL, but failed navigations require
+    // a nonempty URL. Do not expose the original redirect target as a fallback.
+    if (common_params->url.is_empty()) {
+      common_params->url = GURL(kBlockedURL);
+    }
   }
 
   // It is safe to convert GURL to an Origin and back in the code below because

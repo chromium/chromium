@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/process_lock.h"
@@ -68,6 +69,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/mock_commit_deferring_condition.h"
 #include "content/test/mock_process_selection_deferring_condition_tester.h"
 #include "net/dns/mock_host_resolver.h"
@@ -4629,6 +4631,83 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
       root->child_at(0)->current_frame_host()->GetLastCommittedOrigin();
   EXPECT_TRUE(origin.opaque());
   EXPECT_FALSE(origin.GetTupleOrPrecursorTupleIfOpaque().IsValid());
+}
+
+class NavigationRequestNonStandardErrorPageBrowserTest
+    : public NavigationRequestBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      // Enabled:
+      {
+          features::kSanitizeFailedSubframeNavigationUrls,
+          features::kSanitizeLocationHeadersDuringNavigation,
+      },
+      // Disabled:
+      {
+          features::kIsolateSubframeErrorPages,
+      }};
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationRequestNonStandardErrorPageBrowserTest,
+                       SanitizeFinalURL) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.test",
+                   "/set-header?Content-Security-Policy: frame-src "
+                   "http:")));
+  ASSERT_TRUE(ExecJs(shell(), R"(
+    const frame = document.createElement('iframe');
+    frame.src = '/title1.html';
+    document.body.appendChild(frame);
+  )"));
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  auto* root = contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1u, root->child_count());
+  const int process_id =
+      root->child_at(0)->current_frame_host()->GetProcess()->GetDeprecatedID();
+
+  class ErrorPageCommitObserver : public DidCommitNavigationInterceptor {
+   public:
+    explicit ErrorPageCommitObserver(WebContents* web_contents)
+        : DidCommitNavigationInterceptor(web_contents) {}
+
+    bool saw_commit() const { return saw_commit_; }
+
+    bool WillProcessDidCommitNavigation(
+        RenderFrameHost* render_frame_host,
+        NavigationRequest* navigation_request,
+        mojom::DidCommitProvisionalLoadParamsPtr* params,
+        mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
+        override {
+      EXPECT_FALSE(render_frame_host->IsInPrimaryMainFrame());
+      EXPECT_EQ(net::ERR_BLOCKED_BY_CSP, navigation_request->GetNetErrorCode());
+      EXPECT_EQ(1u, navigation_request->commit_params().redirect_params.size());
+      // Inspect the URL returned by the renderer, not just the outgoing IPC.
+      EXPECT_EQ(GURL(kBlockedURL), (*params)->url);
+      saw_commit_ = true;
+      return true;
+    }
+
+   private:
+    bool saw_commit_ = false;
+  } commit_observer(shell()->web_contents());
+
+  const GURL redirect_url(embedded_test_server()->GetURL(
+      "b.test", "/server-redirect?custom-scheme://host/private?secret=1"));
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+  ASSERT_TRUE(ExecJs(
+      shell(),
+      JsReplace("document.querySelector('iframe').src = $1;", redirect_url)));
+  navigation_observer.Wait();
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CSP, navigation_observer.last_net_error_code());
+  EXPECT_TRUE(commit_observer.saw_commit());
+
+  RenderFrameHostImpl* error_frame = root->child_at(0)->current_frame_host();
+  EXPECT_TRUE(error_frame->IsErrorDocument());
+  EXPECT_EQ(process_id, error_frame->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(kUnreachableWebDataURL, EvalJs(error_frame, "document.URL"));
+  EXPECT_EQ("null", EvalJs(error_frame, "self.origin"));
 }
 
 // Verify that when navigation 1, which starts in an initial siteless
