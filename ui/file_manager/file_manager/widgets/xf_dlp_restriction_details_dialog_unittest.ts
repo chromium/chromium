@@ -225,6 +225,43 @@ export async function testBlockAllUrlsExcept(done: () => void) {
 }
 
 /**
+ * Tests that multiple URLs in higher restriction levels are formatted with
+ * proper separators when excluding from a wildcard `*`.
+ */
+export async function testBlockAllUrlsExceptMultiple(done: () => void) {
+  const dialog = getDialog();
+  const blockDetails = getBlockDetails();
+  assertTrue(blockDetails.hasAttribute('hidden'));
+
+  const details: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [
+    {
+      level: chrome.fileManagerPrivate.DlpLevel.BLOCK,
+      urls: ['*'],
+      components: [],
+    },
+    {
+      level: chrome.fileManagerPrivate.DlpLevel.ALLOW,
+      urls: ['https://internal1.com', 'https://internal2.com'],
+      components: [],
+    },
+  ];
+  dialog.showDlpRestrictionDetailsDialog(details);
+  assertFalse(blockDetails.hasAttribute('hidden'));
+  assertEquals(
+      getBlockUrls().textContent,
+      'File access by all websites and URLs except https://internal1.com, https://internal2.com');
+  // Components should still be hidden.
+  assertTrue(blockDetails.querySelector('#block-li-components')!.hasAttribute(
+      'hidden'));
+
+  // Other restriction levels should still be hidden.
+  assertTrue(getWarnDetails().hasAttribute('hidden'));
+  assertTrue(getReportDetails().hasAttribute('hidden'));
+
+  done();
+}
+
+/**
  * Tests that only the components section for the block section is shown.
  */
 export async function testBlockComponents(done: () => void) {
