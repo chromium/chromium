@@ -788,7 +788,7 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.R, qualifiers = "sw800dp")
+    @Config(sdk = Build.VERSION_CODES.R, qualifiers = "sw800dp-large")
     public void testMakeTranslucentIfFloating_tabletWidth() {
         TranslucentRecordingActivity activity =
                 Robolectric.buildActivity(TranslucentRecordingActivity.class).create().get();
@@ -796,6 +796,19 @@ public class BookmarkUtilsTest {
         BookmarkUtils.makeTranslucentIfFloating(activity);
 
         assertTrue(activity.mTranslucent);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R, qualifiers = "sw800dp-normal")
+    public void testMakeTranslucentIfFloating_splitScreenMultiWindow() {
+        // Split-screen multi-window pins smallestScreenWidthDp >= 600dp with normal screenLayout.
+        TranslucentRecordingActivity activity =
+                Robolectric.buildActivity(TranslucentRecordingActivity.class).create().get();
+
+        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity));
+        BookmarkUtils.makeTranslucentIfFloating(activity);
+
+        assertFalse(activity.mTranslucent);
     }
 
     @Test
@@ -810,7 +823,7 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.Q, qualifiers = "sw800dp")
+    @Config(sdk = Build.VERSION_CODES.Q, qualifiers = "sw800dp-large")
     public void testMakeTranslucentIfFloating_preR() {
         TranslucentRecordingActivity activity =
                 Robolectric.buildActivity(TranslucentRecordingActivity.class).create().get();
@@ -832,10 +845,21 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    @Config(qualifiers = "sw800dp")
+    @Config(qualifiers = "sw800dp-large")
     @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
     public void testShouldShowDesktopBookmarkDialog_tabletWidth() {
+        assertTrue(BookmarkUtils.isBookmarkDialog(mActivity));
         assertTrue(BookmarkUtils.shouldShowDesktopBookmarkDialog(mActivity));
+    }
+
+    @Test
+    @Config(qualifiers = "sw800dp-normal")
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testShouldShowDesktopBookmarkDialog_splitScreenMultiWindow() {
+        // Split-screen multi-window pins smallestScreenWidthDp >= 600dp with normal screenLayout.
+        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        assertFalse(BookmarkUtils.isBookmarkDialog(mActivity));
+        assertFalse(BookmarkUtils.shouldShowDesktopBookmarkDialog(mActivity));
     }
 
     @Test

@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.LocaleList;
 import android.view.View;
@@ -975,20 +976,25 @@ public class BookmarkUtils {
 
     /**
      * Returns whether a bookmark activity's {@code Theme.Chromium.DialogWhenLarge} window floats as
-     * a dialog (tablet width) rather than filling the screen.
+     * a dialog ({@code values-large}, {@link Configuration#SCREENLAYOUT_SIZE_LARGE}) rather than
+     * filling the window.
      */
     public static boolean isBookmarkDialog(Context context) {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+        return context.getResources()
+                .getConfiguration()
+                .isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
     }
 
     /**
      * Makes a bookmark activity translucent when its {@code Theme.Chromium.DialogWhenLarge} window
-     * floats (tablet width), so the activity behind it stays visible under the scrim.
+     * floats ({@code values-large}), so the activity behind it stays visible under the scrim. In
+     * split-screen multi-window, {@code smallestScreenWidthDp} can remain pinned to {@code >= 600}
+     * while {@code screenLayout} is normal and the window does not float.
      *
-     * <p>The theme already declares {@code windowIsTranslucent} at tablet widths, but on foldables
-     * the system can cache the theme as resolved for the posture at the first launch after an
-     * install. If that launch was folded, the floating dialog is later treated as opaque, the
-     * activity behind it is stopped and the scrim is drawn over black. Setting translucency at
+     * <p>The theme already declares {@code windowIsTranslucent} under {@code values-large}, but on
+     * foldables the system can cache the theme as resolved for the posture at the first launch
+     * after an install. If that launch was folded, the floating dialog is later treated as opaque,
+     * the activity behind it is stopped and the scrim is drawn over black. Setting translucency at
      * runtime corrects that for every instance, including ones recreated after a fold/unfold.
      *
      * <p>{@link Activity#setTranslucent} requires Android R. That excludes no foldable Chrome
@@ -999,7 +1005,7 @@ public class BookmarkUtils {
      */
     public static void makeTranslucentIfFloating(Activity activity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return;
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) return;
+        if (!isBookmarkDialog(activity)) return;
         activity.setTranslucent(/* translucent= */ true);
     }
 
