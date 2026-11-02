@@ -11,7 +11,6 @@ import android.os.Build;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,11 +74,6 @@ public class IncognitoStorageLeakageTest {
     public void setUp() throws TimeoutException {
         mTestServer = mChromeActivityTestRule.getTestServer();
         mSiteDataTestPage = mTestServer.getURL(SITE_DATA_HTML_PATH);
-    }
-
-    @After
-    public void tearDown() {
-        mChromeActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
     }
 
     @Test

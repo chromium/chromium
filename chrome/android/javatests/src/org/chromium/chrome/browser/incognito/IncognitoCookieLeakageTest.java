@@ -11,7 +11,6 @@ import android.os.Build;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,11 +66,6 @@ public class IncognitoCookieLeakageTest {
     public void setUp() throws TimeoutException {
         mTestServer = mChromeActivityTestRule.getTestServer();
         mCookiesTestPage = mTestServer.getURL(COOKIES_SETTING_PATH);
-    }
-
-    @After
-    public void tearDown() {
-        mChromeActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
     }
 
     private void setCookies(Tab tab) throws TimeoutException {

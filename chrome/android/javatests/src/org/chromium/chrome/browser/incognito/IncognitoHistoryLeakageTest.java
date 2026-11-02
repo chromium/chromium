@@ -13,7 +13,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -88,11 +87,6 @@ public class IncognitoHistoryLeakageTest {
                         ApplicationProvider.getApplicationContext());
         mTestPage1 = mTestServer.getURL(TEST_PAGE_1);
         mTestPage2 = mTestServer.getURL(TEST_PAGE_2);
-    }
-
-    @After
-    public void tearDown() {
-        mChromeActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
     }
 
     /**

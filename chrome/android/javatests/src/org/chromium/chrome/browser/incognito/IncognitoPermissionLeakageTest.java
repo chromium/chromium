@@ -26,7 +26,6 @@ import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -117,11 +116,6 @@ public class IncognitoPermissionLeakageTest {
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
         ModalDialogView.disableButtonTapProtectionForTesting();
-    }
-
-    @After
-    public void tearDown() {
-        mChromeActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
     }
 
     private void requestLocationPermission(Tab tab) throws TimeoutException, ExecutionException {

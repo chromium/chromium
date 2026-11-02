@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -61,9 +60,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Supplier;
 
 /** Integration tests for {@link TabContextMenuItemDelegate}. */
@@ -80,7 +76,6 @@ public class TabContextMenuItemDelegateTest {
     @Mock private Runnable mContextMenuCopyLinkObserver;
     private ModalDialogManager mModalDialogManager;
     private TabContextMenuItemDelegate mContextMenuDelegate;
-    private List<ChromeTabbedActivity> mExtraTabbedActivities;
 
     @Before
     public void setUp() {
@@ -88,22 +83,14 @@ public class TabContextMenuItemDelegateTest {
         CriteriaHelper.pollUiThread(cta.getTabModelSelectorSupplier().get()::isTabStateInitialized);
 
         mModalDialogManager = cta.getModalDialogManager();
-        mExtraTabbedActivities = new ArrayList<>();
     }
 
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModalDialogManager.dismissAllDialogs(DialogDismissalCause.ACTIVITY_DESTROYED);
-                    // Cleanup extra activities that were created.
-                    for (ChromeTabbedActivity activity : mExtraTabbedActivities) {
-                        var multiInstanceManager = activity.getMultiInstanceMangerForTesting();
-                        multiInstanceManager.closeWindows(
-                                Collections.singletonList(activity.getWindowId()),
-                                CloseWindowAppSource.OTHER);
-                    }
-                });
+                () ->
+                        mModalDialogManager.dismissAllDialogs(
+                                DialogDismissalCause.ACTIVITY_DESTROYED));
     }
 
     @Test
@@ -143,16 +130,14 @@ public class TabContextMenuItemDelegateTest {
         createContextMenuForCurrentTab();
 
         // Open a new window when there is only one existing window.
-        ChromeTabbedActivity secondActivity =
-                MultiWindowTestHelper.waitForNewChromeTabbedActivity(
-                        () ->
-                                mContextMenuDelegate.openInOtherWindow(
-                                        new GURL("about:blank"),
-                                        new Referrer("about:blank", 0),
-                                        /* isIncognito= */ false,
-                                        /* preferNew= */ false,
-                                        /* additionalNavigationParams= */ null));
-        mExtraTabbedActivities.add(secondActivity);
+        MultiWindowTestHelper.waitForNewChromeTabbedActivity(
+                () ->
+                        mContextMenuDelegate.openInOtherWindow(
+                                new GURL("about:blank"),
+                                new Referrer("about:blank", 0),
+                                /* isIncognito= */ false,
+                                /* preferNew= */ false,
+                                /* additionalNavigationParams= */ null));
 
         // Don't show instance picker dialog when there is only one other window.
         ThreadUtils.runOnUiThreadBlocking(
@@ -170,10 +155,7 @@ public class TabContextMenuItemDelegateTest {
 
         // Create a third window. The instance picker dialog should be shown when there are at least
         // two other windows.
-        ChromeTabbedActivity thirdActivity =
-                MultiWindowTestHelper.createNewChromeTabbedActivity(
-                        mActivityTestRule.getActivity());
-        mExtraTabbedActivities.add(thirdActivity);
+        MultiWindowTestHelper.createNewChromeTabbedActivity(mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContextMenuDelegate.openInOtherWindow(
@@ -199,16 +181,14 @@ public class TabContextMenuItemDelegateTest {
     public void testOpenInOtherWindow_PreferNew_CreatesNewWindow() {
         createContextMenuForCurrentTab();
 
-        ChromeTabbedActivity activity =
-                MultiWindowTestHelper.waitForNewChromeTabbedActivity(
-                        () ->
-                                mContextMenuDelegate.openInOtherWindow(
-                                        new GURL("about:blank"),
-                                        new Referrer("about:blank", 0),
-                                        /* isIncognito= */ false,
-                                        /* preferNew= */ true,
-                                        /* additionalNavigationParams= */ null));
-        mExtraTabbedActivities.add(activity);
+        MultiWindowTestHelper.waitForNewChromeTabbedActivity(
+                () ->
+                        mContextMenuDelegate.openInOtherWindow(
+                                new GURL("about:blank"),
+                                new Referrer("about:blank", 0),
+                                /* isIncognito= */ false,
+                                /* preferNew= */ true,
+                                /* additionalNavigationParams= */ null));
     }
 
     @Test
