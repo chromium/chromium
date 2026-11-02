@@ -7,6 +7,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web_view/internal/cwv_lookalike_url_handler_internal.h"
 #import "net/base/apple/url_conversions.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 @implementation CWVLookalikeURLHandler {
   base::WeakPtr<web::WebState> _webState;
@@ -64,7 +65,8 @@
       if ([self isSafeURLValid]) {
         _webState->OpenURL(web::WebState::OpenURLParams(
             _lookalikeURLInfo->safe_url, web::Referrer(),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
+            ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_LINK,
             /*is_renderer_initiated=*/false));
         return YES;
       } else {

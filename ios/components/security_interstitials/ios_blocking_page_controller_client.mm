@@ -13,6 +13,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace security_interstitials {
 
@@ -84,14 +85,14 @@ void IOSBlockingPageControllerClient::Reload() {
 
 void IOSBlockingPageControllerClient::OpenUrlInCurrentTab(const GURL& url) {
   web_state_->OpenURL(web::WebState::OpenURLParams(
-      url, web::Referrer(), WindowOpenDisposition::kCurrentTab,
+      url, web::Referrer(), ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_LINK, false));
 }
 
 void IOSBlockingPageControllerClient::OpenUrlInNewForegroundTab(
     const GURL& url) {
   web_state_->OpenURL(web::WebState::OpenURLParams(
-      url, web::Referrer(), WindowOpenDisposition::kNewForegroundTab,
+      url, web::Referrer(), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK, false));
 }
 
