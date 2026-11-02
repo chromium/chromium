@@ -817,7 +817,7 @@ public class FullscreenSigninMediator
                 mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
                 mModel.set(FullscreenSigninProperties.LOGO_DRAWABLE_ID, mConfig.logoId);
                 mModel.set(FullscreenSigninProperties.SHOW_ANIMATION, mConfig.logoId == 0);
-                mModel.set(FullscreenSigninProperties.TITLE_STRING, mConfig.title);
+                mModel.set(FullscreenSigninProperties.TITLE_STRING, getTitleText());
                 mModel.set(FullscreenSigninProperties.ANIMATOR_LISTENER, null);
                 mModel.set(FullscreenSigninProperties.START_ANIMATION, false);
                 mModel.set(FullscreenSigninProperties.PROFILE_PICTURE, null);

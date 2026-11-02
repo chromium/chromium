@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +30,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -44,6 +47,8 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
+import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -52,6 +57,7 @@ import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -110,6 +116,9 @@ public class FullscreenSigninMediatorTest {
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private SyncService mSyncServiceMock;
+    @Mock private LocalStatePrefs.Natives mLocalStatePrefsNativeMock;
+    @Mock private PrefService mLocalPrefsServiceMock;
+    @Captor private ArgumentCaptor<SignInCallback> mSignInCallbackCaptor;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
             new OneshotSupplierImpl<>();
@@ -666,6 +675,30 @@ public class FullscreenSigninMediatorTest {
                 .logSigninFunnelEvent(anyInt(), eq(SigninFunnelEvent.ACCOUNT_ADDED));
     }
 
+    @Test
+    public void testSignInAbortedKeepsForcedSigninTitle() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        enableForcedSigninPolicy();
+        when(mSigninManagerMock.getUserAcceptedAccountManagement()).thenReturn(true);
+        FullscreenSigninMediator.disableAnimationsForTesting();
+
+        createMediator();
+        initializeNative();
+        String forcedTitle =
+                RuntimeEnvironment.getApplication()
+                        .getString(R.string.signin_fre_title_signin_forced_by_policy);
+        assertEquals(forcedTitle, mModel.get(FullscreenSigninProperties.TITLE_STRING));
+
+        mMediator.proceedWithSignIn();
+        verify(mSigninManagerMock).signin(any(), anyInt(), mSignInCallbackCaptor.capture());
+        // The title shows the welcome text while signing in.
+        assertNotEquals(forcedTitle, mModel.get(FullscreenSigninProperties.TITLE_STRING));
+
+        mSignInCallbackCaptor.getValue().onSignInAborted();
+
+        assertEquals(forcedTitle, mModel.get(FullscreenSigninProperties.TITLE_STRING));
+    }
+
     private void setUpSigninSupported(boolean isSigninSupported) {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(isSigninSupported);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
@@ -674,6 +707,21 @@ public class FullscreenSigninMediatorTest {
         UserPrefs.setPrefServiceForTesting(mPrefServiceMock);
         lenient().when(mPrefServiceMock.getBoolean(Pref.SIGNIN_ALLOWED)).thenReturn(true);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
+    }
+
+    /**
+     * Enables the forced sign-in policy and reports that policies are present. Must be called
+     * before {@link #createMediator()}, because it replaces the policy load listener.
+     */
+    private void enableForcedSigninPolicy() {
+        FeatureOverrides.overrideFlag(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY, true);
+        LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNativeMock);
+        LocalStatePrefs.setNativePrefsLoadedForTesting(true);
+        when(mLocalStatePrefsNativeMock.getPrefService()).thenReturn(mLocalPrefsServiceMock);
+        when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);
+        mPolicyLoadListener = new OneshotSupplierImpl<>();
+        mPolicyLoadListener.set(true);
+        when(mDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListener);
     }
 
     private void createMediator() {
