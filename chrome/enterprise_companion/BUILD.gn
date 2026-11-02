@@ -275,6 +275,8 @@ test("enterprise_companion_tests") {
 
   if (is_mac) {
     sources += [ "app/app_net_worker_unittest.cc" ]
+  } else if (is_win) {
+    sources += [ "ipc_security_win_unittest.cc" ]
   }
 }
 

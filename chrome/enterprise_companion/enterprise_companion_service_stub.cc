@@ -19,6 +19,7 @@
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 #include "components/policy/core/common/policy_types.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
@@ -44,6 +45,30 @@ class UntrustedCallerStub final : public mojom::EnterpriseCompanion {
   }
 };
 
+// Returns a copy of `options` configured so that the trust Mojo extends to each
+// connection matches the stub `trust_decider` selects for it.
+named_mojo_ipc_server::EndpointOptions ApplyTrustDecider(
+    named_mojo_ipc_server::EndpointOptions options,
+    const IpcTrustDecider& trust_decider) {
+#if BUILDFLAG(IS_WIN)
+  // Callers which are not trusted are declared untrusted to Mojo. This prevents
+  // them from transmitting objects whose safety depends on the caller's good
+  // behavior, notably handles it claims to have already duplicated into this
+  // process.
+  DCHECK(!options.send_invitation_flags_callback);
+  options.include_peer_process_info = true;
+  options.send_invitation_flags_callback = base::BindRepeating(
+      [](const IpcTrustDecider& trust_decider,
+         const named_mojo_ipc_server::ConnectionInfo& info) {
+        return trust_decider.Run(info)
+                   ? MOJO_SEND_INVITATION_FLAG_NONE
+                   : MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS;
+      },
+      trust_decider);
+#endif
+  return options;
+}
+
 // Manages the NamedMojoIpcServer and forwards calls to the underlying service.
 class Stub final : public mojom::EnterpriseCompanion {
  public:
@@ -52,7 +77,7 @@ class Stub final : public mojom::EnterpriseCompanion {
        IpcTrustDecider trust_decider,
        base::RepeatingClosure endpoint_created_listener_for_testing)
       : service_(std::move(service)),
-        server_(options,
+        server_(ApplyTrustDecider(options, trust_decider),
                 base::BindRepeating(
                     [](IpcTrustDecider trust_decider,
                        mojom::EnterpriseCompanion* stub,

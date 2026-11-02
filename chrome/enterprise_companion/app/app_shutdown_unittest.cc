@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +18,7 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 #include "chrome/enterprise_companion/enterprise_companion_service_stub.h"
@@ -31,6 +33,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <optional>
+
+#include "base/win/access_token.h"
+#include "chrome/enterprise_companion/ipc_security.h"
+#endif
+
 namespace policy {
 enum class PolicyFetchReason;
 }  // namespace policy
@@ -40,6 +51,7 @@ namespace {
 
 constexpr char kServerNameFlag[] = "server-name";
 constexpr int32_t kIpcCallerNotAllowedExitCode = 42;
+constexpr int32_t kMojoConnectionFailedExitCode = 43;
 
 class MockEnterpriseCompanionService final : public EnterpriseCompanionService {
  public:
@@ -65,12 +77,12 @@ class AppShutdownTest : public ::testing::Test {
   }
 
  protected:
-  base::Process SpawnClient() {
+  base::Process SpawnClient(const base::LaunchOptions& options = {}) {
     base::CommandLine command_line =
         base::GetMultiProcessTestChildBaseCommandLine();
     command_line.AppendSwitchNative(kServerNameFlag, server_name_);
     return base::SpawnMultiProcessTestChild("ShutdownAppClient", command_line,
-                                            /*options=*/{});
+                                            options);
   }
 
   mojo::NamedPlatformChannel::ServerName server_name_ = GetTestServerName();
@@ -135,8 +147,54 @@ TEST_F(AppShutdownTest, UntrustedCallerRejected) {
   start_run_loop.Run(FROM_HERE);
 
   base::Process child_process = SpawnClient();
+#if BUILDFLAG(IS_WIN)
+  // On Windows, untrusted connections are rejected when setting up the Mojo
+  // connection. On Linux and macOS untrusted connections are rejected per-RPC.
+  EXPECT_EQ(WaitForProcess(child_process), kMojoConnectionFailedExitCode);
+#else
+  EXPECT_EQ(WaitForProcess(child_process), kIpcCallerNotAllowedExitCode);
+#endif
+}
+
+#if BUILDFLAG(IS_WIN)
+// Simulates a less privileged user squatting the server's pipe name with a
+// permissive DACL: a Medium integrity caller can reach the server, but must be
+// routed to the untrusted stub by the production trust decider. Completing the
+// RPC also demonstrates that such a caller can connect even though the
+// connection's Mojo invitation declares it untrusted.
+TEST_F(AppShutdownTest, MediumIntegrityCallerRejected) {
+  std::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentProcess(/*impersonation=*/false,
+                                                 TOKEN_DUPLICATE);
+  ASSERT_TRUE(token);
+  if (!IsTrustedIntegrityLevel(token->IntegrityLevel())) {
+    GTEST_SKIP() << "The test process must be at High integrity or above.";
+  }
+  std::optional<base::win::AccessToken> medium_token = token->DuplicatePrimary(
+      TOKEN_ADJUST_DEFAULT | TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE);
+  ASSERT_TRUE(medium_token);
+  ASSERT_TRUE(medium_token->SetIntegrityLevel(SECURITY_MANDATORY_MEDIUM_RID));
+
+  EXPECT_CALL(*mock_service_, Shutdown).Times(0);
+  named_mojo_ipc_server::EndpointOptions options{
+      server_name_,
+      named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection};
+  // Grants access to everyone, as an attacker squatting the pipe name might.
+  options.security_descriptor = L"D:(A;;GA;;;WD)";
+  base::RunLoop start_run_loop;
+  std::unique_ptr<mojom::EnterpriseCompanion> stub =
+      CreateEnterpriseCompanionServiceStub(std::move(mock_service_), options,
+                                           CreateIpcTrustDecider(),
+                                           start_run_loop.QuitClosure());
+  start_run_loop.Run(FROM_HERE);
+
+  base::LaunchOptions launch_options;
+  launch_options.using_token = medium_token->get();
+  base::Process child_process = SpawnClient(launch_options);
+  ASSERT_TRUE(child_process.IsValid());
   EXPECT_EQ(WaitForProcess(child_process), kIpcCallerNotAllowedExitCode);
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(AppShutdownTest, Timeout) {
   EnterpriseCompanionStatus result = CreateAppShutdown(server_name_)->Run();
@@ -155,6 +213,9 @@ MULTIPROCESS_TEST_MAIN(ShutdownAppClient) {
           ->Run();
   if (result.EqualsApplicationError(ApplicationError::kIpcCallerNotAllowed)) {
     return kIpcCallerNotAllowedExitCode;
+  }
+  if (result.EqualsApplicationError(ApplicationError::kMojoConnectionFailed)) {
+    return kMojoConnectionFailedExitCode;
   }
   return !result.ok();
 }
