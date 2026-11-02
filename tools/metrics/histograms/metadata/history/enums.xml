@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
   <int value="0"
       label="Traditional history search result (reverse chronological list)"/>
   <int value="1" label="Grouped history search result"/>
-  <int value="2" label="Embeddings search result"/>
+  <int value="2" label="(Obsolete) Embeddings search result"/>
 </enum>
 
 <enum name="OtherSessionsActions">

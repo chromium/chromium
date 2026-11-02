@@ -2616,10 +2616,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the zero-based index of the result clicked.
 
-    For Embeddings and Traditional history types, this logs the index of the
-    visit with respect to visits of the same type only. For example, the first
-    matching Traditional visit has index 0, even though it's displayed below all
-    Embeddings matches.
+    For Traditional history, this logs the index of the visit with respect to
+    visits of the same type only.
 
     For Grouped history, this logs the index of the visit WITHIN its containing
     cluster. This is to match the History.Clusters.UIActions UMAs.
@@ -2632,7 +2630,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="HistoryResultType">
     <variant name="" summary="Clicks of all types, unsliced"/>
-    <variant name=".Embeddings" summary="Embeddings search result"/>
     <variant name=".Grouped"
         summary="Grouped history search result (index within cluster)"/>
     <variant name=".Traditional"

@@ -565,11 +565,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
             'History.SearchResultClicked.Index.Grouped', clampedIndex,
             boundary);
         break;
-      case HistoryResultType.EMBEDDINGS:
-        browserProxy.recordHistogram(
-            'History.SearchResultClicked.Index.Embeddings', clampedIndex,
-            boundary);
-        break;
       case HistoryResultType.END:
         break;
       default:
