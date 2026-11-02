@@ -82,7 +82,6 @@ static_library("net") {
     "//components/proxy_config",
     "//components/session_manager/core",
     "//components/user_manager",
-    "//components/user_prefs",
     "//components/variations",
     "//components/variations/service",
     "//content/public/browser",

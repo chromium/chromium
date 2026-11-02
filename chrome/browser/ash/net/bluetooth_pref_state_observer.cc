@@ -5,13 +5,13 @@
 #include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
 
 #include "base/check.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_prefs/user_prefs.h"
-#include "content/public/browser/browser_context.h"
 
 namespace ash {
 
@@ -34,25 +34,24 @@ BluetoothPrefStateObserver::~BluetoothPrefStateObserver() {
 void BluetoothPrefStateObserver::OnUserProfileLoaded(
     const AccountId& account_id) {
   // Only set the prefs for primary users.
-  const user_manager::UserManager* const user_manager =
-      user_manager::UserManager::Get();
-  if (!user_manager->IsPrimaryUser(user_manager->FindUser(account_id))) {
+  const session_manager::Session* const primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session || primary_session->account_id() != account_id) {
     BLUETOOTH_LOG(EVENT)
         << "User profile loaded, but user is not primary. Not setting "
         << "CrosBluetoothConfig with profile prefs service";
     return;
   }
 
-  // Only the user's prefs are needed, so they are read off the browser context
-  // rather than through a Profile.
-  content::BrowserContext* const browser_context =
-      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
-  CHECK(browser_context);
+  // The Profile has been created by now, so its prefs are attached to the User.
+  PrefService* const profile_prefs = user_manager::UserManager::Get()
+                                         ->FindUserAndModify(account_id)
+                                         ->GetProfilePrefs();
+  CHECK(profile_prefs);
 
   BLUETOOTH_LOG(EVENT) << "Primary profile loaded, setting CrosBluetoothConfig "
                        << "with profile prefs service";
-  bluetooth_config::SetPrefs(user_prefs::UserPrefs::Get(browser_context),
-                             &local_state_.get());
+  bluetooth_config::SetPrefs(profile_prefs, &local_state_.get());
   session_observation_.Reset();
 }
 
