@@ -239,7 +239,7 @@ crbug.com/575489612 [ iPhone Simulator ] AutofillAIEGTest/testSavePassportForm [
 crbug.com/575489890 AutofillProfileSettingsTestCase/testDoneButtonByRequirementsOfCountries [ Pass Failure ]
 
 # Gardening suppression 2026-10-26
-crbug.com/556601479 [ iPhone Simulator ] PolicyUIMojoEnabledTestCase/testPolicyPageManagedWithCBCM [ Pass Failure ]
+crbug.com/556601479 [ Simulator ] PolicyUIMojoEnabledTestCase/testPolicyPageManagedWithCBCM [ Pass Failure ]
 crbug.com/578110413 SaveCardInfobarEGTest/testSaveCardBottomSheetShowsLoadingAndConfirmationAfterAcceptPushed [ Pass Failure ]
 
 # Gardening suppression 2026-10-28
@@ -258,3 +258,7 @@ crbug.com/579253465 [ Simulator ] BrowserEditMenuHandlerTestCase/testBasicMenu [
 crbug.com/579499405 [ iPhone Simulator ] BrowserEditMenuHandlerTestCase/testPhoneMenu [ Pass Failure ]
 crbug.com/579570304 GeminiExplainWithGeminiTestCase/testExplainWithGeminiSignedOut [ Pass Failure ]
 crbug.com/572662973 [ Device ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationMismatchedAccountSnackbar [ Pass Failure ]
+
+# Gardening suppression 2026-11-02
+crbug.com/578500873 GeminiCopresenceTestCase/testFloatyHiddenWhenOmniboxFocused [ Pass Failure ]
+crbug.com/579456339 [ Simulator ] BrowserEditMenuHandlerTestCase/testEmailMenu [ Pass Failure ]
