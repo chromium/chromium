@@ -1076,17 +1076,26 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       }
 
       if (!this.crashed && !this.paused) {
+        const isMobileMousePointerDown = IS_MOBILE &&
+            e instanceof PointerEvent && e.type === RunnerEvents.POINTERDOWN &&
+            e.pointerType === 'mouse';
         // For a11y, screen reader activation.
-        const isMobileMouseInput = IS_MOBILE && e instanceof PointerEvent &&
-            e.type === RunnerEvents.POINTERDOWN && e.pointerType === 'mouse' &&
+        const isMobileMouseInput = isMobileMousePointerDown &&
             (e.target === this.containerEl ||
              (IS_IOS &&
               (e.target === this.touchController || e.target === this.canvas)));
+        // Primary button click from a physical mouse (e.g. Bluetooth mouse or
+        // touchpad) on the game. Unlike screen reader activation, this must
+        // not enable audio cues.
+        const isMobileMouseClick = isMobileMousePointerDown &&
+            !isMobileMouseInput && e.button === 0 &&
+            (e.target === this.canvas || e.target === this.touchController);
         assert(this.tRex);
 
         if ((e instanceof KeyboardEvent &&
              runnerKeycodes.jump.includes(e.keyCode)) ||
-            e.type === RunnerEvents.TOUCHSTART || isMobileMouseInput) {
+            e.type === RunnerEvents.TOUCHSTART || isMobileMouseInput ||
+            isMobileMouseClick) {
           e.preventDefault();
           // Starting the game for the first time.
           if (!this.playing) {
