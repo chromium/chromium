@@ -41,6 +41,7 @@ java_binary("errorprone_plugin") {
 
   deps = [
     "//build/android:build_java",
+    "//third_party/android_build_tools/error_prone:error_prone_checks_java",
     "//third_party/android_build_tools/error_prone:error_prone_java",
     "//third_party/android_build_tools/error_prone_javac:error_prone_javac_java",
   ]

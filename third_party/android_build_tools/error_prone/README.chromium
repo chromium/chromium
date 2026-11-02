@@ -24,7 +24,8 @@ The CIPD package contains:
    Conditions.
 
 Local Modifications:
-None
+FieldCanBeFinalFast.java is a faster version of FieldCanBeFinal. It should be
+deleted once Error Prone's upstream check picks up the fixes it introduces.
 
 What version is this:
   * Run print_version.sh to find out the version.

@@ -8,6 +8,24 @@ java_prebuilt("error_prone_java") {
   jar_path = "cipd/error_prone_core.jar"
 }
 
+# Temporary copies of Error Prone checks. See README.chromium.
+java_library("error_prone_checks_java") {
+  visibility = [ "//tools/android/errorprone_plugin:*" ]
+  sources = [
+    "java/src/org/chromium/third_party/errorprone/FieldCanBeFinalFast.java",
+  ]
+
+  # Necessary to avoid dependency cycle
+  enable_errorprone = false
+  enable_bytecode_checks = false
+
+  deps = [
+    ":error_prone_java",
+    "//build/android:build_java",
+    "//third_party/android_build_tools/error_prone_javac:error_prone_javac_java",
+  ]
+}
+
 # We use //tools/android/errorprone_plugin when build_with_chromium.
 if (!build_with_chromium) {
   java_binary("error_prone") {

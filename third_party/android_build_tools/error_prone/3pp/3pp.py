@@ -5,8 +5,9 @@
 """Packages Error Prone, NullAway, and a native-image of javac + Error Prone.
 
 The native-image (error_prone) has NullAway and Chromium's Error Prone checks
-(//tools/android/errorprone_plugin) compiled in, since native-images cannot
-load plugins dynamically.
+(//tools/android/errorprone_plugin, and the copied checks in
+//third_party/android_build_tools/error_prone/java) compiled in, since
+native-images cannot load plugins dynamically.
 """
 
 import os
@@ -29,6 +30,13 @@ import maven
 
 _NULLAWAY_PACKAGE = 'com.uber.nullaway:nullaway'
 _PLUGIN_DIR = 'tools/android/errorprone_plugin'
+# Temporary copies of Error Prone checks, which are a part of the plugin.
+_CHECKS_DIR = 'third_party/android_build_tools/error_prone/java'
+# Where _CHECKS_DIR is copied to within the checkout. It cannot be copied to
+# its own path, since the 3pp recipe copies this package's definition (3pp/) to
+# .3pp/chromium/third_party/android_build_tools/error_prone, and fails if that
+# directory already exists.
+_CHECKS_CHECKOUT_SUBPATH = 'error_prone_checks_java'
 _SERVICE_IMPL_JAVA = (
     'build/android/java/src/org/chromium/build/annotations/ServiceImpl.java')
 
@@ -60,6 +68,17 @@ import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public class Sample {
+    // For tracing FieldCanBeFinal.
+    private int mValue;
+
+    public Sample(int value) {
+        mValue = value;
+    }
+
+    public int getValue() {
+        return mValue;
+    }
+
     public static long countItems(List<String> items) {
         return items.stream().count();
     }
@@ -84,18 +103,25 @@ def _filter_nullaway_jar(src_jar_path, dst_jar_path):
 
 
 def _plugin_sources():
-    """Returns the plugin's .java files that are listed in its BUILD.gn."""
+    """Returns the plugin's .java files.
+
+    These are the files listed in the plugin's BUILD.gn, plus all files within
+    _CHECKS_DIR.
+    """
     plugin_dir = common.path_within_checkout(_PLUGIN_DIR)
     build_gn = pathlib.Path(plugin_dir, 'BUILD.gn').read_text(encoding='utf-8')
     # Ignores commented-out sources.
     paths = re.findall(r'^\s*"(src/[^"]+\.java)",', build_gn, re.MULTILINE)
     if not paths:
         raise RuntimeError('Failed to parse sources from ' + pathlib.Path(plugin_dir, 'BUILD.gn'))
-    return [os.path.join(plugin_dir, p) for p in paths]
+    ret = [os.path.join(plugin_dir, p) for p in paths]
+    checks_dir = common.path_within_checkout(_CHECKS_CHECKOUT_SUBPATH)
+    ret += sorted(str(p) for p in pathlib.Path(checks_dir).glob('**/*.java'))
+    return ret
 
 
 def _build_plugin_jar(classpath, output_jar):
-    """Compiles //tools/android/errorprone_plugin into |output_jar|."""
+    """Compiles _plugin_sources() into |output_jar|."""
     sources = _plugin_sources()
     classes_dir = os.path.abspath('errorprone_plugin_classes')
     sys.path.append(common.path_within_checkout('build/android'))
@@ -156,8 +182,12 @@ def _error_prone_args(xep_flags, extra_args):
         '-XDshould-stop.ifError=FLOW',
         '-XDshould-stop.ifNoError=FLOW',
         '-proc:none',
-        ' '.join(['-Xplugin:ErrorProne', '-XepAllErrorsAsWarnings'] +
-                 xep_flags),
+        ' '.join([
+            '-Xplugin:ErrorProne',
+            '-XepAllErrorsAsWarnings',
+            # FieldCanBeFinalFast does nothing without this.
+            '-XepOpt:FieldCanBeFinalFast:Enabled=true',
+        ] + xep_flags),
     ] + extra_args
 
 
@@ -233,8 +263,15 @@ def _build_native_image(error_prone_jar, nullaway_jar, plugin_jar,
                 [
                     '-XepAllDisabledChecksAsWarnings',
                     # These crash when compiling javac's sources.
+                    # FieldCanBeFinal crashes in SuggestedFixes.compilesWithFix()
+                    # with --module-source-path, so it is traced only via
+                    # _SAMPLE_JAVA (which has a field that can be final).
                     '-Xep:FieldCanBeFinal:OFF',
                     '-Xep:UnnecessaryDefaultInEnumSwitch:OFF',
+                    # "FieldCanBeFinal" is an altName of FieldCanBeFinalFast, so
+                    # the flag above disables it as well. Re-enable it (the
+                    # last flag for a check wins).
+                    '-Xep:FieldCanBeFinalFast:WARN',
                 ] + pgo_nullaway_flags,
                 common_args + pgo_args('trace_pgo_out'),
             ),
@@ -268,7 +305,7 @@ def _build_native_image(error_prone_jar, nullaway_jar, plugin_jar,
         stderr=subprocess.STDOUT,
         universal_newlines=True,
     ).stdout
-    for check in ('[NoStreams]', '[NullAway]'):
+    for check in ('[NoStreams]', '[NullAway]', '[FieldCanBeFinalFast]'):
         if check not in output:
             raise RuntimeError(
                 f'error_prone smoke test did not report {check}:\n{output}')
@@ -315,7 +352,15 @@ maven.main(
     package='com.google.errorprone:error_prone_core',
     maven_url=maven.APACHE_MAVEN_URL,
     post_process_func=_post_process,
-    runtime_deps=['//' + _PLUGIN_DIR, '//' + _SERVICE_IMPL_JAVA],
-    version_deps=['//' + _PLUGIN_DIR, '//' + _SERVICE_IMPL_JAVA],
+    runtime_deps=[
+        '//' + _PLUGIN_DIR,
+        ('//' + _CHECKS_DIR, _CHECKS_CHECKOUT_SUBPATH),
+        '//' + _SERVICE_IMPL_JAVA,
+    ],
+    version_deps=[
+        '//' + _PLUGIN_DIR,
+        '//' + _CHECKS_DIR,
+        '//' + _SERVICE_IMPL_JAVA,
+    ],
     version_strings_func=_version_strings,
 )
