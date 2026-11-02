@@ -3825,7 +3825,7 @@
     },
     {
       name: "ICUCapitalization",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "IgnoreLetterSpacingInCursiveScripts",
