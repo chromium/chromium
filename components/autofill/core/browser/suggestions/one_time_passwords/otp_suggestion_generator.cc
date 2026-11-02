@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -37,22 +38,29 @@ Suggestion BuildOtpSuggestion(const std::string& otp_value,
                               SuggestionType type,
                               std::string_view sender_address) {
   Suggestion suggestion(base::UTF8ToUTF16(otp_value), type);
-  if (type == SuggestionType::kGmailOneTimePasswordEntry) {
-    suggestion.icon = Suggestion::Icon::kMailAsterisk;
-    suggestion.minor_texts = {Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_GMAIL_OTP_VERIFICATION_CODE_LABEL))};
-    suggestion.labels = {{Suggestion::Text(base::UTF8ToUTF16(sender_address))}};
-  }
+  switch (type) {
+    case SuggestionType::kGmailOneTimePasswordEntry: {
+      suggestion.icon = Suggestion::Icon::kMailAsterisk;
+      suggestion.minor_texts = {Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_GMAIL_OTP_VERIFICATION_CODE_LABEL))};
+      std::u16string sender_address_16 = base::UTF8ToUTF16(sender_address);
+      suggestion.voice_over = l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_GMAIL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL,
+          suggestion.main_text.value, sender_address_16);
+      suggestion.labels = {{Suggestion::Text(std::move(sender_address_16))}};
+      break;
+    }
+    case SuggestionType::kOneTimePasswordEntry:
 #if BUILDFLAG(IS_ANDROID)
-  // Choose the right icon and A11Y label when more OTP options are supported
-  // in the future.
-  if (type == SuggestionType::kOneTimePasswordEntry) {
-    suggestion.icon = Suggestion::Icon::kAndroidMessages;
-  }
+      suggestion.icon = Suggestion::Icon::kAndroidMessages;
 #endif
-  suggestion.voice_over = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL,
-      suggestion.main_text.value);
+      suggestion.voice_over = l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL,
+          suggestion.main_text.value);
+      break;
+    default:
+      NOTREACHED();
+  }
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_ONE_TIME_PASSWORD);
   return suggestion;

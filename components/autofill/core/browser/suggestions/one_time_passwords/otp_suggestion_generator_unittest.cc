@@ -11,6 +11,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -157,7 +159,8 @@ TEST_F(OtpSuggestionGeneratorTest, GmailOtps) {
               ElementsAre(Suggestion::Text(u"Verification code")));
   EXPECT_THAT(suggestions[0].labels,
               ElementsAre(ElementsAre(Suggestion::Text(u"user@gmail.com"))));
-  EXPECT_EQ(suggestions[0].voice_over, u"Verification code: 123456");
+  EXPECT_EQ(suggestions[0].voice_over,
+            u"Verification code: 123456 from user@gmail.com");
   EXPECT_EQ(suggestions[0].acceptance_a11y_announcement, u"Autofilled code");
 
   EXPECT_EQ(suggestions[1].main_text.value, u"789012");
@@ -167,7 +170,8 @@ TEST_F(OtpSuggestionGeneratorTest, GmailOtps) {
               ElementsAre(Suggestion::Text(u"Verification code")));
   EXPECT_THAT(suggestions[1].labels,
               ElementsAre(ElementsAre(Suggestion::Text(u"user@gmail.com"))));
-  EXPECT_EQ(suggestions[1].voice_over, u"Verification code: 789012");
+  EXPECT_EQ(suggestions[1].voice_over,
+            u"Verification code: 789012 from user@gmail.com");
   EXPECT_EQ(suggestions[1].acceptance_a11y_announcement, u"Autofilled code");
 
   EXPECT_EQ(suggestions[2].type, SuggestionType::kSeparator);
@@ -203,18 +207,23 @@ TEST_F(OtpSuggestionGeneratorTest, BuildOtpSuggestions_MixedOneTimeTokens) {
   EXPECT_EQ(suggestions[0].main_text.value, u"111111");
   EXPECT_EQ(suggestions[0].type, SuggestionType::kOneTimePasswordEntry);
   EXPECT_TRUE(suggestions[0].labels.empty());
+  EXPECT_EQ(suggestions[0].voice_over, u"Verification code: 111111");
 
   EXPECT_EQ(suggestions[1].main_text.value, u"222222");
   EXPECT_EQ(suggestions[1].type, SuggestionType::kGmailOneTimePasswordEntry);
   EXPECT_THAT(
       suggestions[1].labels,
       ElementsAre(ElementsAre(Suggestion::Text(u"sender1@example.com"))));
+  EXPECT_EQ(suggestions[1].voice_over,
+            u"Verification code: 222222 from sender1@example.com");
 
   EXPECT_EQ(suggestions[2].main_text.value, u"333333");
   EXPECT_EQ(suggestions[2].type, SuggestionType::kGmailOneTimePasswordEntry);
   EXPECT_THAT(
       suggestions[2].labels,
       ElementsAre(ElementsAre(Suggestion::Text(u"sender2@example.com"))));
+  EXPECT_EQ(suggestions[2].voice_over,
+            u"Verification code: 333333 from sender2@example.com");
 
   EXPECT_EQ(suggestions[3].type, SuggestionType::kSeparator);
   EXPECT_EQ(suggestions[4].type, SuggestionType::kOpenGmailForOtps);
@@ -234,8 +243,6 @@ TEST_F(OtpSuggestionGeneratorTest, SmsOtps) {
   EXPECT_EQ(suggestions[0].acceptance_a11y_announcement, u"Autofilled code");
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kAndroidMessages);
-#else
-  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kNoIcon);
 #endif
 
   EXPECT_EQ(suggestions[1].main_text.value, u"789012");
@@ -244,8 +251,6 @@ TEST_F(OtpSuggestionGeneratorTest, SmsOtps) {
   EXPECT_EQ(suggestions[1].acceptance_a11y_announcement, u"Autofilled code");
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kAndroidMessages);
-#else
-  EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kNoIcon);
 #endif
 }
 

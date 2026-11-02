@@ -495,6 +495,9 @@
   <message name="IDS_AUTOFILL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL" desc="Voice over label for the one time password field.">
     Verification code: <ph name="OTP">$1<ex>123456</ex></ph>
   </message>
+  <message name="IDS_AUTOFILL_GMAIL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Voice over label for a one-time password verification code retrieved from Gmail. $1 is the OTP verification code (e.g. 123456), and $2 is the sender email address (e.g. login@service.com).">
+    Verification code: <ph name="OTP">$1<ex>123456</ex></ph> from <ph name="EMAIL">$2<ex>login@service.com</ex></ph>
+  </message>
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_ONE_TIME_PASSWORD" desc="Accessibility announcement for when a one time password is autofilled.">
     Autofilled code
   </message>
