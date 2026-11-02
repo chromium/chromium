@@ -763,3 +763,59 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
           &PermissionToggleRowView::GetRowSubTitleForTesting,
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE)));
 }
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+                       ResetPermissionsHidesSystemDisabledSubtitle) {
+  system_permission_settings::ScopedSettingsForTesting mic_denied(
+      ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
+
+  SetPermission(ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_ALLOW);
+
+  RunTestSequence(
+      NavigateAndOpenPageInfo(),
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      CheckViewProperty(kFirstPermissionRow,
+                        &PermissionToggleRowView::GetRowTitleForTesting,
+                        l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_MIC)),
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, true),
+      CheckContentSettings(ContentSettingsType::MEDIASTREAM_MIC,
+                           CONTENT_SETTING_ALLOW),
+      WaitForShow(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId),
+      PressButton(PageInfoMainView::kResetPermissionsButtonElementId),
+      WaitForHide(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId),
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, false),
+      CheckContentSettings(ContentSettingsType::MEDIASTREAM_MIC,
+                           CONTENT_SETTING_ASK));
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+                       ResetMultiplePermissionsHidesSystemDisabledSubtitles) {
+  system_permission_settings::ScopedSettingsForTesting mic_denied(
+      ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
+  system_permission_settings::ScopedSettingsForTesting camera_denied(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
+
+  SetPermission(ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_ALLOW);
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
+
+  RunTestSequence(
+      NavigateAndOpenPageInfo(),
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      WaitForShow(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId),
+      PressButton(PageInfoMainView::kResetPermissionsButtonElementId),
+      WaitForHide(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId),
+      CheckContentSettings(ContentSettingsType::MEDIASTREAM_MIC,
+                           CONTENT_SETTING_ASK),
+      CheckContentSettings(ContentSettingsType::MEDIASTREAM_CAMERA,
+                           CONTENT_SETTING_ASK));
+}

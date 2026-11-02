@@ -121,6 +121,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView,
                                       kMerchantTrustElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView,
                                       kSeeExtensionsButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView,
+                                      kResetPermissionsButtonElementId);
 
 PageInfoMainView::ContainerView::ContainerView(bool set_extra_right_margin) {
   auto box_layout = std::make_unique<views::BoxLayout>(
@@ -434,6 +436,8 @@ void PageInfoMainView::SetPermissionInfo(
       gfx::Insets::TLBR(controls_spacing, side_offset, controls_spacing, 0));
   reset_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_PERMISSIONS_BUTTON);
+  reset_button_->SetProperty(views::kElementIdentifierKey,
+                             kResetPermissionsButtonElementId);
 
   // If a permission is in a non-default state or chooser object is present,
   // show reset button.
