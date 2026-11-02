@@ -1,4 +1,4 @@
 This is a wdspec test.
 [FAIL] test_params_url_invalid_value[host]
-  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_NAME_NOT_RESOLVED)
+  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_INVALID_URL)
 Harness: the test ran to completion.
