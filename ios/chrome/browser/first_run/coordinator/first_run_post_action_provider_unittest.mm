@@ -77,9 +77,11 @@ TEST_F(FirstRunPostActionProviderTest, SkipSafariImportIfTourStarted) {
 }
 
 // Tests that Safari Import is NOT skipped if the Guided Tour has NOT started.
-// TODO(crbug.com/481585370): Re-enable this test.
-TEST_F(FirstRunPostActionProviderTest,
-       DISABLED_ShowSafariImportIfTourNotStarted) {
+TEST_F(FirstRunPostActionProviderTest, ShowSafariImportIfTourNotStarted) {
+  if (!@available(iOS 18.2, *)) {
+    GTEST_SKIP() << "Safari data import requires iOS 18.2+.";
+  }
+
   feature_list_.InitAndEnableFeatureWithParameters(kBestOfAppFRE,
                                                    {{"variant", "4"}});
 
