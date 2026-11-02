@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.download;
 
+import android.view.Choreographer;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnDrawListener;
+
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.test.filters.MediumTest;
 
@@ -17,11 +23,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Matchers;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -33,6 +42,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
+import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -167,6 +177,49 @@ public class DownloadSettingsTest {
                     () -> getPrefService().clearPref(Pref.PROMPT_FOR_DOWNLOAD));
             DeviceInfo.resetIsDesktopForTesting();
             mSettingsActivityTestRule.getActivity().finish();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testAsyncImageViewWaitingDrawableDoesNotLeakActivityWhenHidden() throws Exception {
+        mSettingsActivityTestRule.startSettingsActivity();
+        try {
+            ChromeBaseAppCompatActivity activity = mSettingsActivityTestRule.getActivity();
+            View decorView = activity.getWindow().getDecorView();
+            CriteriaHelper.pollUiThread(() -> decorView.getWindowVisibility() == View.VISIBLE);
+            CallbackHelper hiddenAfterDraw = new CallbackHelper();
+            Runnable hideAndNotify =
+                    () -> {
+                        decorView.setVisibility(View.GONE);
+                        Choreographer.getInstance()
+                                .postFrameCallback(
+                                        ft -> decorView.post(hiddenAfterDraw::notifyCalled));
+                    };
+            OnDrawListener onFirstDraw =
+                    new OnDrawListener() {
+                        @Override
+                        public void onDraw() {
+                            decorView.post(
+                                    () -> {
+                                        decorView.getViewTreeObserver().removeOnDrawListener(this);
+                                        hideAndNotify.run();
+                                    });
+                        }
+                    };
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        var view = new AsyncImageView(activity);
+                        view.setWaitingDrawable(
+                                AppCompatResources.getDrawable(
+                                        activity, R.drawable.async_image_view_waiting));
+                        view.setAsyncImageDrawable((cb, w, h) -> () -> {}, "leak_test");
+                        ((ViewGroup) decorView).addView(view, 100, 100);
+                        view.getViewTreeObserver().addOnDrawListener(onFirstDraw);
+                    });
+            hiddenAfterDraw.waitForNext();
+        } finally {
+            mSettingsActivityTestRule.finishActivity();
         }
     }
 }

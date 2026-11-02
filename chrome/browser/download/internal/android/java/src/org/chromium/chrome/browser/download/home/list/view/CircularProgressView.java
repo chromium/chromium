@@ -181,7 +181,17 @@ public class CircularProgressView extends ChromeImageButton {
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        mForegroundHelper.onVisibilityChanged(changedView, visibility);
+        if (mForegroundHelper != null) {
+            mForegroundHelper.onVisibilityChanged(changedView, visibility);
+        }
+    }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (mForegroundHelper != null) {
+            mForegroundHelper.onWindowVisibilityChanged(visibility);
+        }
     }
 
     @Override

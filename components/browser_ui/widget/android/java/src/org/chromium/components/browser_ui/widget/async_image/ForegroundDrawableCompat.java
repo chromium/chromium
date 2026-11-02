@@ -12,8 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.View.OnLayoutChangeListener;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ImageView;
 
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -29,9 +27,10 @@ import org.chromium.ui.base.ViewUtils;
  * from the underly {@link View}:
  *
  * 1) {@link View#draw(Canvas)}.
- * 2) {@link View#onVisibilityChanged(View,boolean)}
- * 3) {@link View#drawableStateChanged()}.
- * 4) {@link View#verifyDrawable(Drawable)}.
+ * 2) {@link View#onVisibilityChanged(View, int)}
+ * 3) {@link View#onWindowVisibilityChanged(int)}
+ * 4) {@link View#drawableStateChanged()}.
+ * 5) {@link View#verifyDrawable(Drawable)}.
  *
  * Here is a rough example of how to use this below to extend an ImageView (replace with any View):
  *
@@ -60,6 +59,12 @@ import org.chromium.ui.base.ViewUtils;
  *     protected void onVisibilityChanged(View changedView, int visibility) {
  *         super.onVisibilityChanged(changedView, visibility);
  *         mCompat.onVisibilityChanged(changedView, visibility);
+ *     }
+ *
+ *     @Override
+ *     protected void onWindowVisibilityChanged(int visibility) {
+ *         super.onWindowVisibilityChanged(visibility);
+ *         mCompat.onWindowVisibilityChanged(visibility);
  *     }
  *
  *     @Override
@@ -108,7 +113,7 @@ public class ForegroundDrawableCompat
         if (mDrawable == drawable) return;
 
         if (mDrawable != null) {
-            if (ViewCompat.isAttachedToWindow(mView)) mDrawable.setVisible(false, false);
+            mDrawable.setVisible(false, false);
             mDrawable.setCallback(null);
             mView.unscheduleDrawable(mDrawable);
             mDrawable = null;
@@ -124,11 +129,8 @@ public class ForegroundDrawableCompat
 
             // TODO(dtrainor): Support tint?
 
-            if (ViewCompat.isAttachedToWindow(mView)) {
-                mDrawable.setVisible(
-                        mView.getWindowVisibility() == View.VISIBLE && mView.isShown(), false);
-            }
             mDrawable.setCallback(mView);
+            updateDrawableVisibility();
         }
         ViewUtils.requestLayout(mView, "ForegroundDrawableCompat.setDrawable");
         mView.invalidate();
@@ -175,16 +177,12 @@ public class ForegroundDrawableCompat
 
     /** Meant to be called from {@link View#onVisibilityChanged(View,visibility)}. */
     public void onVisibilityChanged(View view, int visibility) {
-        if (mView != view || mDrawable == null) return;
+        updateDrawableVisibility();
+    }
 
-        ViewParent parent = mView.getParent();
-        boolean parentVisible =
-                parent != null
-                        && (!(parent instanceof ViewGroup) || ((ViewGroup) parent).isShown());
-
-        if (parentVisible && mView.getWindowVisibility() == View.VISIBLE) {
-            mDrawable.setVisible(visibility == View.VISIBLE, false);
-        }
+    /** Meant to be called from {@link View#onWindowVisibilityChanged(int)}. */
+    public void onWindowVisibilityChanged(int visibility) {
+        updateDrawableVisibility(visibility);
     }
 
     /** Meant to be called from {@link View#drawableStateChanged()}. */
@@ -201,17 +199,23 @@ public class ForegroundDrawableCompat
     // OnAttachStateChangeListener implementation.
     @Override
     public void onViewAttachedToWindow(View v) {
-        if (mDrawable == null) return;
-        if (mView.isShown() && mView.getWindowVisibility() != View.GONE) {
-            mDrawable.setVisible(mView.getVisibility() == View.VISIBLE, false);
-        }
+        updateDrawableVisibility();
     }
 
     @Override
     public void onViewDetachedFromWindow(View v) {
         if (mDrawable == null) return;
-        if (mView.isShown() && mView.getWindowVisibility() != View.GONE) {
-            mDrawable.setVisible(false, false);
+        mDrawable.setVisible(false, false);
+    }
+
+    private void updateDrawableVisibility() {
+        updateDrawableVisibility(mView.getWindowVisibility());
+    }
+
+    private void updateDrawableVisibility(int windowVisibility) {
+        if (mDrawable == null) return;
+        if (ViewCompat.isAttachedToWindow(mView)) {
+            mDrawable.setVisible(windowVisibility == View.VISIBLE && mView.isShown(), false);
         }
     }
 
