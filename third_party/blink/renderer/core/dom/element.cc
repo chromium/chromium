@@ -3588,11 +3588,18 @@ DOMRect* Element::GetBoundingClientRectForBinding() {
   return GetBoundingClientRect();
 }
 
-ContainerQueryList* Element::matchContainer(const String& query) {
+ContainerQueryList* Element::matchContainer(const String& query,
+                                            ExceptionState& exception_state) {
   CSSParserContext* context =
       MakeGarbageCollected<CSSParserContext>(GetDocument());
   auto* container_queries =
       ContainerQueryParser::ParseContainerQuerySet(query, *context);
+  if (!container_queries) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        StrCat({"Failed to parse the container query list '", query, "'."}));
+    return nullptr;
+  }
   auto* list = MakeGarbageCollected<ContainerQueryList>(
       GetDocument().GetExecutionContext(), container_queries, this);
   ContainerQueryListController::From(GetDocument())

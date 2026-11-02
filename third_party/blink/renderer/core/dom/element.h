@@ -684,7 +684,7 @@ class CORE_EXPORT Element : public ContainerNode {
   DOMRect* GetBoundingClientRect();
   DOMRect* GetBoundingClientRectForBinding();
 
-  ContainerQueryList* matchContainer(const String& query);
+  ContainerQueryList* matchContainer(const String& query, ExceptionState&);
 
   // Call the NoLifecycleUpdate variants if you are sure that the lifcycle is
   // already updated to at least pre-paint clean.

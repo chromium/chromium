@@ -148,7 +148,7 @@ dictionary ParseHTMLUnsafeOptions {
     [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect, ImplementedAs=GetBoundingClientRectForBinding] DOMRect getBoundingClientRect();
 
 
-    [RuntimeEnabled=ElementMatchContainer, NewObject] ContainerQueryList matchContainer(DOMString query);
+    [RuntimeEnabled=ElementMatchContainer, NewObject, RaisesException] ContainerQueryList matchContainer(DOMString query);
 
     // https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility
     [MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
