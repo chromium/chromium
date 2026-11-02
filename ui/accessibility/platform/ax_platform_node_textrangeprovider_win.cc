@@ -337,18 +337,54 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
            AXBoundaryDetection::kDontCheckInitialPosition}));
       break;
     case TextUnit_Word: {
-      AXPositionInstance start_backup = start()->Clone();
-      SetStart(start()->CreatePreviousWordStartPosition(
-          {AXBoundaryBehavior::kStopAtAnchorBoundary,
-           AXBoundaryDetection::kCheckInitialPosition}));
+      AXPositionInstance original_start = start()->Clone();
+      AXPositionInstance word_start =
+          original_start->CreatePreviousWordStartPosition(
+              {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+               AXBoundaryDetection::kCheckInitialPosition});
 
-      // Since start_ is already located at a word boundary, we need to cross it
-      // in order to move to the next one. Because Windows ATs behave
-      // undesirably when the start and end endpoints are not in the same anchor
-      // (for character and word navigation), stop at anchor boundary.
-      SetEnd(start()->CreateNextWordStartPosition(
-          {AXBoundaryBehavior::kStopAtAnchorBoundary,
-           AXBoundaryDetection::kDontCheckInitialPosition}));
+      // UIA word ranges should include trailing word-break characters:
+      // https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationtextunits#word
+      // For example, the first word in "one two" expands to "one ".
+      // With cross-anchor offsets, the split word in ["This h", "aas style"]
+      // expands to "haas ".
+      // Find the word end across anchors, then the next word start only in
+      // that final anchor. This preserves existing separator handling rather
+      // than newly including a following line-break anchor.
+      AXPositionInstance expanded_end;
+      if (word_start->AtStartOfWord()) {
+        AXPositionInstance word_end = word_start->CreateNextWordEndPosition(
+            {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+             AXBoundaryDetection::kDontCheckInitialPosition});
+        expanded_end = word_end->CreateNextWordStartPosition(
+            {AXBoundaryBehavior::kStopAtAnchorBoundary,
+             AXBoundaryDetection::kCheckInitialPosition});
+      }
+      // In these examples, each list item is an anchor. | marks the original
+      // start position, not a character in the text.
+      //
+      // At document start, [" | two"] has no preceding word start. The search
+      // stops at offset 0, although "two" starts at offset 2.
+      // In ["one", " | two"], it instead finds "one", ending before the caret.
+      // In either case, keep the original anchor's "  " unit. Similarly,
+      // ["one", "++|"] keeps "++" with the computed boundary fallback.
+      //
+      // Reject an end equal to the original start too, except at paragraph end:
+      // ["This h", "aas|"] should then keep "haas", not fall back to "aas",
+      // even if another paragraph follows. An end before the caret is still
+      // rejected at paragraph end.
+      if (!expanded_end || *expanded_end < *original_start ||
+          (*expanded_end == *original_start &&
+           !original_start->AtEndOfParagraph())) {
+        word_start = original_start->CreatePreviousWordStartPosition(
+            {AXBoundaryBehavior::kStopAtAnchorBoundary,
+             AXBoundaryDetection::kCheckInitialPosition});
+        expanded_end = word_start->CreateNextWordStartPosition(
+            {AXBoundaryBehavior::kStopAtAnchorBoundary,
+             AXBoundaryDetection::kDontCheckInitialPosition});
+      }
+      SetStart(std::move(word_start));
+      SetEnd(std::move(expanded_end));
       break;
     }
     case TextUnit_Line:

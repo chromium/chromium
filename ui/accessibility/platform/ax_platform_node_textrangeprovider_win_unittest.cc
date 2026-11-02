@@ -2472,6 +2472,266 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveWord) {
                   /*expected_count*/ -2);
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest, WordBoundariesAcrossTextNodes) {
+  AXTreeUpdate update = BuildTextDocument({"This h", "a", "as style"});
+  update.nodes[2].AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                      {0, 5});
+  update.nodes[2].AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                                      {4});
+  update.nodes[4].AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                      {});
+  update.nodes[4].AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                                      {});
+  update.nodes[6].AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                      {3});
+  update.nodes[6].AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                                      {2, 8});
+  Init(update);
+
+  auto word_start = CreateTextPosition(*GetRoot()->children()[0]->children()[0],
+                                       5, ax::mojom::TextAffinity::kDownstream);
+  auto next_word = word_start->CreateNextWordStartPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_EQ(update.nodes[6].id, next_word->anchor_id());
+  EXPECT_EQ(3, next_word->text_offset());
+
+  auto word_end = word_start->CreateNextWordEndPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_EQ(update.nodes[6].id, word_end->anchor_id());
+  EXPECT_EQ(2, word_end->text_offset());
+
+  auto previous_word = next_word->CreatePreviousWordStartPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_EQ(update.nodes[2].id, previous_word->anchor_id());
+  EXPECT_EQ(5, previous_word->text_offset());
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, GetRoot());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"This haas style");
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Word, /*count*/ 1,
+                  /*expected_text*/ L"haas ", /*expected_count*/ 1);
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Word, /*count*/ 1,
+                  /*expected_text*/ L"style", /*expected_count*/ 1);
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Word, /*count*/ -1,
+                  /*expected_text*/ L"haas ", /*expected_count*/ -1);
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 2, /*expected_text*/ L"as ", /*expected_count*/ 2);
+  ASSERT_HRESULT_SUCCEEDED(
+      text_range_provider->ExpandToEnclosingUnit(TextUnit_Word));
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"haas ");
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       WordBoundariesAcrossTextNodesAtDocumentEnd) {
+  AXTreeUpdate update = BuildTextDocument({"This h", "a", "as"});
+  update.nodes[2].AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                      {0, 5});
+  update.nodes[2].AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                                      {4});
+  update.nodes[4].AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                      {});
+  update.nodes[4].AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                                      {});
+  update.nodes[6].AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                      {});
+  update.nodes[6].AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                                      {2});
+  Init(update);
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, GetRoot());
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Word, /*count*/ 1,
+                  /*expected_text*/ L"haas", /*expected_count*/ 1);
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Word, /*count*/ 1,
+                  /*expected_text*/ L"haas", /*expected_count*/ 0);
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByRange(
+      TextPatternRangeEndpoint_Start, text_range_provider.Get(),
+      TextPatternRangeEndpoint_End));
+  ASSERT_HRESULT_SUCCEEDED(
+      text_range_provider->ExpandToEnclosingUnit(TextUnit_Word));
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"haas");
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Word, /*count*/ -1,
+                  /*expected_text*/ L"This ", /*expected_count*/ -1);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       WordBoundariesAcrossTextNodesAtParagraphEnd) {
+  for (bool cross_node_word : {false, true}) {
+    SCOPED_TRACE(cross_node_word);
+    AXTreeUpdate update = BuildTextDocument({"This h", "aas", "next"});
+    update.nodes[2].AddIntListAttribute(
+        ax::mojom::IntListAttribute::kWordStarts, {0, 5});
+    update.nodes[2].AddIntListAttribute(
+        ax::mojom::IntListAttribute::kWordEnds,
+        cross_node_word ? std::vector<int32_t>{4} : std::vector<int32_t>{4, 6});
+    update.nodes[4].AddIntListAttribute(
+        ax::mojom::IntListAttribute::kWordStarts,
+        cross_node_word ? std::vector<int32_t>{} : std::vector<int32_t>{0});
+    update.nodes[4].AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                                        {3});
+    update.nodes[6].AddIntListAttribute(
+        ax::mojom::IntListAttribute::kWordStarts, {0});
+    update.nodes[6].AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                                        {4});
+
+    AXNodeData first_paragraph;
+    first_paragraph.id = 8;
+    first_paragraph.role = ax::mojom::Role::kParagraph;
+    first_paragraph.AddBoolAttribute(
+        ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+    first_paragraph.child_ids = {update.nodes[1].id, update.nodes[3].id};
+    AXNodeData next_paragraph;
+    next_paragraph.id = 9;
+    next_paragraph.role = ax::mojom::Role::kParagraph;
+    next_paragraph.AddBoolAttribute(
+        ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+    next_paragraph.child_ids = {update.nodes[5].id};
+    update.nodes[0].child_ids = {first_paragraph.id, next_paragraph.id};
+    update.nodes = {update.nodes[0], first_paragraph, update.nodes[1],
+                    update.nodes[2], update.nodes[3], update.nodes[4],
+                    next_paragraph,  update.nodes[5], update.nodes[6]};
+    Init(update);
+
+    ComPtr<ITextRangeProvider> text_range_provider;
+    GetTextRangeProviderFromTextNode(text_range_provider,
+                                     GetRoot()->children()[0]->children()[1]);
+    ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByRange(
+        TextPatternRangeEndpoint_Start, text_range_provider.Get(),
+        TextPatternRangeEndpoint_End));
+    auto original_start = GetStart(text_range_provider.Get())->Clone();
+    ASSERT_TRUE(original_start->AtEndOfParagraph());
+    ASSERT_FALSE(original_start->AtEndOfContent());
+    ASSERT_HRESULT_SUCCEEDED(
+        text_range_provider->ExpandToEnclosingUnit(TextUnit_Word));
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider,
+                            cross_node_word ? L"haas" : L"aas");
+    EXPECT_LE(*GetStart(text_range_provider.Get()), *original_start);
+    EXPECT_GE(*GetEnd(text_range_provider.Get()), *original_start);
+  }
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       ExpandWordInLeadingWhitespaceAcrossAnchors) {
+  Init(BuildTextDocument({"one", "  two"},
+                         /*build_word_boundaries_offsets=*/true));
+  for (int offset : {0, 1}) {
+    SCOPED_TRACE(offset);
+    ComPtr<ITextRangeProvider> text_range_provider;
+    GetTextRangeProviderFromTextNode(text_range_provider,
+                                     GetRoot()->children()[1]);
+    int moved;
+    ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+        TextPatternRangeEndpoint_Start, TextUnit_Character, offset, &moved));
+    ASSERT_EQ(offset, moved);
+    ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByRange(
+        TextPatternRangeEndpoint_End, text_range_provider.Get(),
+        TextPatternRangeEndpoint_Start));
+    auto original_start = GetStart(text_range_provider.Get())->Clone();
+
+    ASSERT_HRESULT_SUCCEEDED(
+        text_range_provider->ExpandToEnclosingUnit(TextUnit_Word));
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"  ");
+    EXPECT_LE(*GetStart(text_range_provider.Get()), *original_start);
+    EXPECT_GE(*GetEnd(text_range_provider.Get()), *original_start);
+  }
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       ExpandWordInDocumentLeadingWhitespace) {
+  for (bool separate_word : {false, true}) {
+    SCOPED_TRACE(separate_word);
+    const std::vector<std::string> text_nodes =
+        separate_word ? std::vector<std::string>{"  ", "two"}
+                      : std::vector<std::string>{"  two"};
+    Init(BuildTextDocument(text_nodes,
+                           /*build_word_boundaries_offsets=*/true));
+    for (int offset : {0, 1}) {
+      SCOPED_TRACE(offset);
+      ComPtr<ITextRangeProvider> text_range_provider;
+      GetTextRangeProviderFromTextNode(text_range_provider,
+                                       GetRoot()->children()[0]);
+      int moved;
+      ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+          TextPatternRangeEndpoint_Start, TextUnit_Character, offset, &moved));
+      ASSERT_EQ(offset, moved);
+      ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByRange(
+          TextPatternRangeEndpoint_End, text_range_provider.Get(),
+          TextPatternRangeEndpoint_Start));
+      auto original_start = GetStart(text_range_provider.Get())->Clone();
+
+      ASSERT_HRESULT_SUCCEEDED(
+          text_range_provider->ExpandToEnclosingUnit(TextUnit_Word));
+      EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"  ");
+      EXPECT_LE(*GetStart(text_range_provider.Get()), *original_start);
+      EXPECT_GE(*GetEnd(text_range_provider.Get()), *original_start);
+    }
+  }
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       ExpandWordAtDocumentEndWithComputedPunctuationBoundaries) {
+  Init(BuildTextDocument({"one", "++"}));
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider,
+                                   GetRoot()->children()[1]);
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByRange(
+      TextPatternRangeEndpoint_Start, text_range_provider.Get(),
+      TextPatternRangeEndpoint_End));
+  auto original_start = GetStart(text_range_provider.Get())->Clone();
+  ASSERT_HRESULT_SUCCEEDED(
+      text_range_provider->ExpandToEnclosingUnit(TextUnit_Word));
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"++");
+  EXPECT_GE(*GetEnd(text_range_provider.Get()), *original_start);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest, WordBoundariesStayWithinDialog) {
+  ScopedAXEmbeddedObjectBehaviorSetter behavior(
+      AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent);
+  AXTreeUpdate update = BuildTextDocument(
+      {"one ", "h", "aas style"}, /*build_word_boundaries_offsets=*/true);
+  AXNodeData inside_text = update.nodes[3];
+  inside_text.id = 8;
+  update.nodes[3].role = ax::mojom::Role::kDialog;
+  update.nodes[3].SetName("d");
+  update.nodes[3].child_ids = {inside_text.id};
+  update.nodes.insert(update.nodes.begin() + 4, inside_text);
+  Init(update);
+
+  auto inside = CreateTextPosition(
+      *GetRoot()->children()[1]->children()[0]->children()[0], 0,
+      ax::mojom::TextAffinity::kDownstream);
+  auto inside_end = inside->CreateNextWordEndPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_EQ(inside->anchor_id(), inside_end->anchor_id());
+  EXPECT_EQ(1, inside_end->text_offset());
+
+  ComPtr<ITextRangeProvider> inside_range;
+  GetTextRangeProviderFromTextNode(inside_range,
+                                   GetRoot()->children()[1]->children()[0]);
+  ASSERT_HRESULT_SUCCEEDED(inside_range->ExpandToEnclosingUnit(TextUnit_Word));
+  EXPECT_UIA_TEXTRANGE_EQ(inside_range, L"h");
+
+  auto outside = CreateTextPosition(*GetRoot()->children()[2]->children()[0], 1,
+                                    ax::mojom::TextAffinity::kDownstream);
+  auto word_start = outside->CreatePreviousWordStartPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kCheckInitialPosition});
+  EXPECT_EQ(outside->anchor_id(), word_start->anchor_id());
+  EXPECT_EQ(0, word_start->text_offset());
+  auto word_end = word_start->CreateNextWordEndPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_EQ(outside->anchor_id(), word_end->anchor_id());
+  EXPECT_EQ(3, word_end->text_offset());
+}
+
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveLine) {
   Init(BuildAXTreeForMove());
   AXNode* root_node = GetRoot();
