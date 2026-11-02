@@ -14,6 +14,8 @@
 #import "base/test/test_future.h"
 #import "components/contextual_tasks/public/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
+#import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
@@ -78,6 +80,14 @@ constexpr char kAimZeroStateURL[] =
     "https://www.google.com/"
     "search?udm=50&sourceid=chrome-mobile&gsas=4&csuir=1&cs=0";
 
+// Builds an AIM eligibility service that makes the profile eligible for AIM
+// Cobrowse, which AimCobrowseJavaScriptFeature requires to message the page.
+std::unique_ptr<KeyedService> BuildMockIOSChromeAimEligibilityService(
+    ProfileIOS* profile) {
+  return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
+      profile);
+}
+
 }  // namespace
 
 class AssistantAIMMediatorTest : public PlatformTest {
@@ -87,6 +97,9 @@ class AssistantAIMMediatorTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(
         {contextual_tasks::kContextualTasks, kAimCobrowse}, {});
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        IOSChromeAimEligibilityServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildMockIOSChromeAimEligibilityService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
@@ -110,7 +123,10 @@ class AssistantAIMMediatorTest : public PlatformTest {
     auto manager = std::make_unique<web::FakeWebFramesManager>();
     fake_web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
                                         std::move(manager));
-    AssistantAimTabHelper::CreateForWebState(fake_web_state.get());
+    AssistantAimTabHelper::CreateForWebState(
+        fake_web_state.get(),
+        IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_),
+        profile_->GetPrefs());
     web::test::OverrideJavaScriptFeatures(
         profile_, {AimCobrowseJavaScriptFeature::GetInstance()});
 

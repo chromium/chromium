@@ -4,14 +4,23 @@
 
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
 
+#import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "third_party/lens_server_proto/aim_communication.pb.h"
 
-AssistantAimTabHelper::AssistantAimTabHelper(web::WebState* web_state) {
+AssistantAimTabHelper::AssistantAimTabHelper(
+    web::WebState* web_state,
+    AimEligibilityService* aim_eligibility_service,
+    PrefService* prefs)
+    : aim_eligibility_service_(aim_eligibility_service), prefs_(prefs) {
   observation_.Observe(web_state);
 }
 
 AssistantAimTabHelper::~AssistantAimTabHelper() = default;
+
+bool AssistantAimTabHelper::IsEligible() const {
+  return IsAimCobrowseEligible(aim_eligibility_service_, prefs_);
+}
 
 void AssistantAimTabHelper::DidStartNavigation(
     web::WebState* web_state,
@@ -24,6 +33,8 @@ void AssistantAimTabHelper::DidStartNavigation(
 
 void AssistantAimTabHelper::WebStateDestroyed(web::WebState* web_state) {
   observation_.Reset();
+  aim_eligibility_service_ = nullptr;
+  prefs_ = nullptr;
 }
 
 void AssistantAimTabHelper::SetMessageCallback(MessageCallback callback) {

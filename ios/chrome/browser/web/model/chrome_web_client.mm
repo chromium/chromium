@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/browser_content/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
-#import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_util.h"
@@ -511,7 +510,11 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
     }
   }
 
-  if (IsAimCobrowseEligible(profile)) {
+  // Register the feature regardless of `IsAimCobrowseEligible()`: JavaScript
+  // features are configured only once per profile, but eligibility can change
+  // during the session (e.g. after sign-in or once the AIM eligibility
+  // response arrives). Cobrowse entry points check eligibility before use.
+  if (!profile->IsOffTheRecord() && IsAimCobrowseEnabled()) {
     features.push_back(AimCobrowseJavaScriptFeature::GetInstance());
   }
 

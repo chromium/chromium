@@ -6,9 +6,13 @@
 #define IOS_CHROME_BROWSER_COBROWSE_MODEL_ASSISTANT_AIM_TAB_HELPER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
+
+class AimEligibilityService;
+class PrefService;
 
 namespace web {
 class NavigationContext;
@@ -32,6 +36,9 @@ class AssistantAimTabHelper
 
   ~AssistantAimTabHelper() override;
 
+  // Returns whether the user is eligible for AIM Cobrowse.
+  bool IsEligible() const;
+
   // Sets the callback to be invoked when an AimToClientMessage is received.
   void SetMessageCallback(MessageCallback callback);
 
@@ -48,8 +55,12 @@ class AssistantAimTabHelper
 
  private:
   friend class web::WebStateUserData<AssistantAimTabHelper>;
-  explicit AssistantAimTabHelper(web::WebState* web_state);
+  AssistantAimTabHelper(web::WebState* web_state,
+                        AimEligibilityService* aim_eligibility_service,
+                        PrefService* prefs);
 
+  raw_ptr<AimEligibilityService> aim_eligibility_service_;
+  raw_ptr<PrefService> prefs_;
   bool handshake_received_ = false;
   MessageCallback message_callback_;
 

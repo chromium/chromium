@@ -7,31 +7,88 @@
 #import "base/base64.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
+#import "components/omnibox/browser/mock_aim_eligibility_service.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/js_messaging/script_message.h"
-#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/lens_server_proto/aim_communication.pb.h"
+
+namespace {
+
+class TestFakeWebState : public web::FakeWebState {
+ public:
+  bool IsBeingDestroyed() const override { return is_being_destroyed_; }
+
+  void SetIsBeingDestroyed(bool is_being_destroyed) {
+    is_being_destroyed_ = is_being_destroyed;
+  }
+
+ private:
+  bool is_being_destroyed_ = false;
+};
+
+}  // namespace
 
 class AimCobrowseJavaScriptFeatureTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    web_state_.SetBrowserState(&browser_state_);
+    feature_list_.InitAndEnableFeature(kAimCobrowse);
+
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        IOSChromeAimEligibilityServiceFactory::GetInstance(),
+        base::BindRepeating([](ProfileIOS* profile)
+                                -> std::unique_ptr<KeyedService> {
+          auto service =
+              std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                  *profile->GetPrefs(),
+                  ios::TemplateURLServiceFactory::GetForProfile(profile),
+                  nullptr, IdentityManagerFactory::GetForProfile(profile));
+          ON_CALL(*service, IsFuseboxEligible())
+              .WillByDefault(testing::Return(true));
+          ON_CALL(*service, IsCobrowseEligible())
+              .WillByDefault(testing::Return(true));
+          return service;
+        }));
+    profile_ = std::move(builder).Build();
+
+    web_state_.SetBrowserState(profile_.get());
     auto manager = std::make_unique<web::FakeWebFramesManager>();
     manager_ = manager.get();
     web_state_.SetWebFramesManager(web::ContentWorld::kPageContentWorld,
                                    std::move(manager));
     web::test::OverrideJavaScriptFeatures(
-        &browser_state_, {AimCobrowseJavaScriptFeature::GetInstance()});
+        profile_.get(), {AimCobrowseJavaScriptFeature::GetInstance()});
+    AssistantAimTabHelper::CreateForWebState(
+        &web_state_,
+        IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get()),
+        profile_->GetPrefs());
+  }
+
+  void TearDown() override {
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:@"ForceDisableAIMEligibility"];
+    PlatformTest::TearDown();
   }
 
   void DeliverScriptMessage(web::WebState* web_state,
@@ -42,9 +99,10 @@ class AimCobrowseJavaScriptFeatureTest : public PlatformTest {
 
   web::FakeWebFramesManager* manager() { return manager_; }
 
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
-  web::FakeBrowserState browser_state_;
-  web::FakeWebState web_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  TestFakeWebState web_state_;
   raw_ptr<web::FakeWebFramesManager> manager_;
 };
 
@@ -54,7 +112,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWeb) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://www.google.com")));
   auto* main_frame_ptr = main_frame.get();
-  main_frame_ptr->set_browser_state(&browser_state_);
+  main_frame_ptr->set_browser_state(profile_.get());
   manager()->AddWebFrame(std::move(main_frame));
 
   lens::ClientToAimMessage message;
@@ -90,7 +148,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWebNoMainFrame) {
 TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWebNoOrigin) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame();
   auto* main_frame_ptr = main_frame.get();
-  main_frame_ptr->set_browser_state(&browser_state_);
+  main_frame_ptr->set_browser_state(profile_.get());
   manager()->AddWebFrame(std::move(main_frame));
 
   lens::ClientToAimMessage message;
@@ -108,7 +166,68 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWebDisallowedOrigin) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://example.com")));
   auto* main_frame_ptr = main_frame.get();
-  main_frame_ptr->set_browser_state(&browser_state_);
+  main_frame_ptr->set_browser_state(profile_.get());
+  manager()->AddWebFrame(std::move(main_frame));
+
+  lens::ClientToAimMessage message;
+  message.mutable_open_threads_view()->mutable_payload();
+
+  AimCobrowseJavaScriptFeature::GetInstance()->SendNativeToWeb(&web_state_,
+                                                               message);
+
+  EXPECT_TRUE(main_frame_ptr->GetJavaScriptCallHistory().empty());
+}
+
+// Tests that SendNativeToWeb does not call JavaScript when no
+// AssistantAimTabHelper is attached to the WebState.
+TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWebNoTabHelperIgnored) {
+  web_state_.RemoveUserData(AssistantAimTabHelper::UserDataKey());
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
+      url::Origin::Create(GURL("https://www.google.com")));
+  auto* main_frame_ptr = main_frame.get();
+  main_frame_ptr->set_browser_state(profile_.get());
+  manager()->AddWebFrame(std::move(main_frame));
+
+  lens::ClientToAimMessage message;
+  message.mutable_open_threads_view()->mutable_payload();
+
+  AimCobrowseJavaScriptFeature::GetInstance()->SendNativeToWeb(&web_state_,
+                                                               message);
+
+  EXPECT_TRUE(main_frame_ptr->GetJavaScriptCallHistory().empty());
+}
+
+// Tests that SendNativeToWeb does not call JavaScript when the user is not
+// eligible for AIM Cobrowse.
+TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWebIneligibleIgnored) {
+  [[NSUserDefaults standardUserDefaults] setBool:YES
+                                          forKey:@"ForceDisableAIMEligibility"];
+  ASSERT_FALSE(IsAimCobrowseEligible(profile_.get()));
+
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
+      url::Origin::Create(GURL("https://www.google.com")));
+  auto* main_frame_ptr = main_frame.get();
+  main_frame_ptr->set_browser_state(profile_.get());
+  manager()->AddWebFrame(std::move(main_frame));
+
+  lens::ClientToAimMessage message;
+  message.mutable_open_threads_view()->mutable_payload();
+
+  AimCobrowseJavaScriptFeature::GetInstance()->SendNativeToWeb(&web_state_,
+                                                               message);
+
+  EXPECT_TRUE(main_frame_ptr->GetJavaScriptCallHistory().empty());
+}
+
+// Tests that SendNativeToWeb does not call JavaScript when the WebState is
+// being destroyed.
+TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWebBeingDestroyedIgnored) {
+  web_state_.SetIsBeingDestroyed(true);
+
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
+      url::Origin::Create(GURL("https://www.google.com")));
+  auto* main_frame_ptr = main_frame.get();
+  main_frame_ptr->set_browser_state(profile_.get());
   manager()->AddWebFrame(std::move(main_frame));
 
   lens::ClientToAimMessage message;
@@ -123,7 +242,6 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWebDisallowedOrigin) {
 // Tests that script messages from non-main (child) frames are ignored and not
 // forwarded to the tab helper.
 TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromChildFrameIgnored) {
-  AssistantAimTabHelper::CreateForWebState(&web_state_);
   AssistantAimTabHelper* tab_helper =
       AssistantAimTabHelper::FromWebState(&web_state_);
   ASSERT_NE(tab_helper, nullptr);
@@ -164,6 +282,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromChildFrameIgnored) {
 // Tests that script messages received on a WebState that does not have an
 // AssistantAimTabHelper attached are ignored and do not cause a crash.
 TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageNoTabHelperIgnored) {
+  web_state_.RemoveUserData(AssistantAimTabHelper::UserDataKey());
   lens::AimToClientMessage handshake_response;
   handshake_response.mutable_handshake_response();
   std::string serialized_message;
@@ -188,7 +307,6 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageNoTabHelperIgnored) {
 
 // Tests that script messages with no body are ignored.
 TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageNoBodyIgnored) {
-  AssistantAimTabHelper::CreateForWebState(&web_state_);
   AssistantAimTabHelper* tab_helper =
       AssistantAimTabHelper::FromWebState(&web_state_);
   ASSERT_NE(tab_helper, nullptr);
@@ -215,7 +333,6 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageNoBodyIgnored) {
 
 // Tests that script messages where the body is not a dictionary are ignored.
 TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageBodyNotDictIgnored) {
-  AssistantAimTabHelper::CreateForWebState(&web_state_);
   AssistantAimTabHelper* tab_helper =
       AssistantAimTabHelper::FromWebState(&web_state_);
   ASSERT_NE(tab_helper, nullptr);
@@ -243,7 +360,6 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageBodyNotDictIgnored) {
 
 // Tests that script messages missing the "message" key are ignored.
 TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageMissingKeyIgnored) {
-  AssistantAimTabHelper::CreateForWebState(&web_state_);
   AssistantAimTabHelper* tab_helper =
       AssistantAimTabHelper::FromWebState(&web_state_);
   ASSERT_NE(tab_helper, nullptr);
@@ -274,7 +390,6 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageMissingKeyIgnored) {
 
 // Tests that script messages containing invalid base64 data are ignored.
 TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageInvalidBase64Ignored) {
-  AssistantAimTabHelper::CreateForWebState(&web_state_);
   AssistantAimTabHelper* tab_helper =
       AssistantAimTabHelper::FromWebState(&web_state_);
   ASSERT_NE(tab_helper, nullptr);
@@ -305,7 +420,6 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageInvalidBase64Ignored) {
 
 // Tests that script messages containing invalid protobuf payloads are ignored.
 TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageInvalidProtobufIgnored) {
-  AssistantAimTabHelper::CreateForWebState(&web_state_);
   AssistantAimTabHelper* tab_helper =
       AssistantAimTabHelper::FromWebState(&web_state_);
   ASSERT_NE(tab_helper, nullptr);
@@ -339,7 +453,6 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageInvalidProtobufIgnored) {
 // Tests that a valid script message is successfully parsed and forwarded to the
 // tab helper.
 TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessagePropagatedSuccessfully) {
-  AssistantAimTabHelper::CreateForWebState(&web_state_);
   AssistantAimTabHelper* tab_helper =
       AssistantAimTabHelper::FromWebState(&web_state_);
   ASSERT_NE(tab_helper, nullptr);
@@ -379,10 +492,89 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessagePropagatedSuccessfully) {
   EXPECT_TRUE(handshake_received);
 }
 
+// Tests that a valid script message is ignored and not forwarded to the tab
+// helper when the user is not eligible for AIM Cobrowse.
+TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageIneligibleIgnored) {
+  [[NSUserDefaults standardUserDefaults] setBool:YES
+                                          forKey:@"ForceDisableAIMEligibility"];
+  ASSERT_FALSE(IsAimCobrowseEligible(profile_.get()));
+
+  AssistantAimTabHelper* tab_helper =
+      AssistantAimTabHelper::FromWebState(&web_state_);
+  ASSERT_NE(tab_helper, nullptr);
+
+  bool callback_invoked = false;
+  tab_helper->SetMessageCallback(base::BindRepeating(
+      [](bool* invoked, const lens::AimToClientMessage& msg) {
+        *invoked = true;
+      },
+      &callback_invoked));
+
+  lens::AimToClientMessage message;
+  message.mutable_handshake_response();
+  std::string serialized_message;
+  message.SerializeToString(&serialized_message);
+  std::string base64_message = base::Base64Encode(serialized_message);
+
+  base::DictValue dict;
+  dict.Set("message", base::Value(base64_message));
+  base::Value body(std::move(dict));
+
+  web::ScriptMessage script_message(
+      std::make_unique<base::Value>(std::move(body)),
+      /*is_user_interacting=*/true,
+      /*is_main_frame=*/true,
+      /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
+      /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
+
+  DeliverScriptMessage(&web_state_, script_message);
+
+  EXPECT_FALSE(callback_invoked);
+  EXPECT_FALSE(tab_helper->IsHandshakeReceived());
+}
+
+// Tests that a valid script message is ignored and not forwarded to the tab
+// helper when the WebState is being destroyed.
+TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageBeingDestroyedIgnored) {
+  AssistantAimTabHelper* tab_helper =
+      AssistantAimTabHelper::FromWebState(&web_state_);
+  ASSERT_NE(tab_helper, nullptr);
+
+  bool callback_invoked = false;
+  tab_helper->SetMessageCallback(base::BindRepeating(
+      [](bool* invoked, const lens::AimToClientMessage& msg) {
+        *invoked = true;
+      },
+      &callback_invoked));
+
+  web_state_.SetIsBeingDestroyed(true);
+
+  lens::AimToClientMessage message;
+  message.mutable_handshake_response();
+  std::string serialized_message;
+  message.SerializeToString(&serialized_message);
+  std::string base64_message = base::Base64Encode(serialized_message);
+
+  base::DictValue dict;
+  dict.Set("message", base::Value(base64_message));
+  base::Value body(std::move(dict));
+
+  web::ScriptMessage script_message(
+      std::make_unique<base::Value>(std::move(body)),
+      /*is_user_interacting=*/true,
+      /*is_main_frame=*/true,
+      /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
+      /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
+
+  DeliverScriptMessage(&web_state_, script_message);
+
+  EXPECT_FALSE(callback_invoked);
+  EXPECT_FALSE(tab_helper->IsHandshakeReceived());
+}
+
 // Tests that script messages from invalid URLs (e.g. www.google.com without
 // udm=50) are ignored.
 TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromInvalidUrlIgnored) {
-  AssistantAimTabHelper::CreateForWebState(&web_state_);
   AssistantAimTabHelper* tab_helper =
       AssistantAimTabHelper::FromWebState(&web_state_);
   ASSERT_NE(tab_helper, nullptr);
@@ -418,7 +610,6 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromInvalidUrlIgnored) {
 
 // Tests that script messages from AMP URLs are ignored.
 TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromAmpUrlIgnored) {
-  AssistantAimTabHelper::CreateForWebState(&web_state_);
   AssistantAimTabHelper* tab_helper =
       AssistantAimTabHelper::FromWebState(&web_state_);
   ASSERT_NE(tab_helper, nullptr);

@@ -23,6 +23,7 @@
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/chrome/browser/aim/model/aim_tab_helper.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
@@ -404,7 +405,14 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     attacher.CreateWhen<CobrowseTabHelper>(
         attacher.IsNotInTabHelperFilter(),
         ios::TemplateURLServiceFactory::GetForProfile(profile));
-    attacher.CreateWhen<AssistantAimTabHelper>(attacher.IsForAssistantAim());
+    attacher
+        .CreateDeferredWhen<AssistantAimTabHelper>(attacher.IsForAssistantAim())
+        .With(
+            [&]() {
+              return IOSChromeAimEligibilityServiceFactory::GetForProfile(
+                  profile);
+            },
+            [&]() { return profile->GetPrefs(); });
   }
 
   attacher.CreateWhen<AimTabHelper>(!attacher.IsForPrerender() &&

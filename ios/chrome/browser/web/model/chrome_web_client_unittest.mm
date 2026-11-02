@@ -31,6 +31,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/universal_optout/features.h"
 #import "components/universal_optout/prefs.h"
+#import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
@@ -39,6 +41,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/web/model/error_page_util.h"
@@ -686,6 +689,55 @@ TEST_F(ChromeWebClientTest, GetJavaScriptFeatures_ClientSideDetection) {
     EXPECT_FALSE(std::ranges::contains(
         features, ClientSideDetectionJavaScriptFeature::GetInstance()));
   }
+}
+
+// Tests that GetJavaScriptFeatures includes AimCobrowseJavaScriptFeature when
+// kAimCobrowse is enabled, even if the user is not eligible for AIM Cobrowse.
+// JavaScript features are configured only once per profile, while eligibility
+// can change later in the session.
+TEST_F(ChromeWebClientTest,
+       GetJavaScriptFeatures_AimCobrowseIncludedWhenNotEligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAimCobrowse);
+  [[NSUserDefaults standardUserDefaults] setBool:YES
+                                          forKey:@"ForceDisableAIMEligibility"];
+  EXPECT_TRUE(experimental_flags::ShouldForceDisableComposeboxAIM());
+  EXPECT_FALSE(IsAimCobrowseEligible(profile()));
+
+  ChromeWebClient web_client;
+  auto features = web_client.GetJavaScriptFeatures(profile());
+  EXPECT_TRUE(std::ranges::contains(
+      features, AimCobrowseJavaScriptFeature::GetInstance()));
+
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:@"ForceDisableAIMEligibility"];
+}
+
+// Tests that GetJavaScriptFeatures excludes AimCobrowseJavaScriptFeature when
+// kAimCobrowse is disabled.
+TEST_F(ChromeWebClientTest,
+       GetJavaScriptFeatures_AimCobrowseExcludedWhenDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kAimCobrowse);
+
+  ChromeWebClient web_client;
+  auto features = web_client.GetJavaScriptFeatures(profile());
+  EXPECT_FALSE(std::ranges::contains(
+      features, AimCobrowseJavaScriptFeature::GetInstance()));
+}
+
+// Tests that GetJavaScriptFeatures excludes AimCobrowseJavaScriptFeature for
+// the off-the-record profile, even when kAimCobrowse is enabled.
+TEST_F(ChromeWebClientTest,
+       GetJavaScriptFeatures_AimCobrowseExcludedWhenOffTheRecord) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAimCobrowse);
+
+  ChromeWebClient web_client;
+  auto features =
+      web_client.GetJavaScriptFeatures(profile()->GetOffTheRecordProfile());
+  EXPECT_FALSE(std::ranges::contains(
+      features, AimCobrowseJavaScriptFeature::GetInstance()));
 }
 
 // Tests that GetUniversalOptOutState reflects the kUniversalOptOutEnabled
