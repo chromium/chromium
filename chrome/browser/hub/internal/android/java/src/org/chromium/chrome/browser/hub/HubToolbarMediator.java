@@ -58,6 +58,8 @@ import java.util.Objects;
 public class HubToolbarMediator {
     // Progress at which a search box shown by both panes switches to the incoming pane's hint.
     private static final float SEARCH_BOX_HINT_SWITCH_PROGRESS = 0.5f;
+    // A manual search box animation starting below this fraction reveals the search box.
+    private static final float SEARCH_BOX_REVEAL_MAX_START_FRACTION = 0.5f;
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -158,6 +160,11 @@ public class HubToolbarMediator {
     // Ignores search box clicks during a pane transition, since the search box can show the hint of
     // a pane that is not focused.
     private boolean mIgnoreSearchBoxClicks;
+    // Keeps the search box open after a pane transition lands on a pane with a search box, until
+    // that pane's next manual search box animation ends.
+    private boolean mKeepSearchBoxOpen;
+    // Whether the current pane transition already decided to keep the search box open.
+    private boolean mHasCheckedKeepSearchBoxOpen;
 
     /** Creates the mediator. */
     public HubToolbarMediator(
@@ -347,6 +354,13 @@ public class HubToolbarMediator {
 
     private void onFocusedPaneChange(Pane focusedPane) {
         int focusedPaneId = focusedPane.getPaneId();
+        // Any focus change decides again whether to keep the search box open, even if it interrupts
+        // a transition. Swipes focus their destination while their progress is still set, so they
+        // decide here. Taps focus before HubPaneHostMediator starts their slide (HubCoordinator
+        // creates the toolbar first), so their first frame decides instead.
+        mKeepSearchBoxOpen = false;
+        mHasCheckedKeepSearchBoxOpen = false;
+        maybeKeepSearchBoxOpen(mPaneTransitionProgressSupplier.get());
 
         // This must be called before IS_INCOGNITO is set for all valid focused panes. This is
         // because hub search box elements (hint text) that will be updated via incognito state
@@ -385,11 +399,24 @@ public class HubToolbarMediator {
     }
 
     private void onManualSearchBoxAnimationChange(@Nullable Boolean manual) {
-        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, Boolean.TRUE.equals(manual));
+        boolean isManual = Boolean.TRUE.equals(manual);
+        // HubToolbarView only applies SEARCH_BOX_VISIBILITY_FRACTION during a manual animation.
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, isManual);
+        if (!isManual) {
+            // The manual search box animation ended, so stop keeping the search box open.
+            mKeepSearchBoxOpen = false;
+        } else if (mKeepSearchBoxOpen) {
+            // Only a reveal, which starts from a collapsed search box, keeps it open.
+            float fraction = mSearchBoxVisibilityFractionSupplier.get();
+            mKeepSearchBoxOpen = fraction < SEARCH_BOX_REVEAL_MAX_START_FRACTION;
+            mPropertyModel.set(
+                    SEARCH_BOX_VISIBILITY_FRACTION, mKeepSearchBoxOpen ? 1.0f : fraction);
+        }
     }
 
     private void onSearchBoxVisibilityFractionChange(@Nullable Float fraction) {
-        mPropertyModel.set(SEARCH_BOX_VISIBILITY_FRACTION, fraction == null ? 0.0f : fraction);
+        float value = fraction == null ? 0.0f : fraction;
+        mPropertyModel.set(SEARCH_BOX_VISIBILITY_FRACTION, mKeepSearchBoxOpen ? 1.0f : value);
     }
 
     private void consumeButtonLookup(PaneButtonLookup paneButtonLookup) {
@@ -464,10 +491,13 @@ public class HubToolbarMediator {
     private void onPaneTransitionProgress(@Nullable PaneTransitionProgress progress) {
         if (progress == null) {
             mIgnoreSearchBoxClicks = false;
+            mHasCheckedKeepSearchBoxOpen = false;
             mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
             mPropertyModel.set(SEARCH_BOX_TRANSITION_IS_INCOGNITO, null);
             return;
         }
+
+        maybeKeepSearchBoxOpen(progress);
 
         // The outgoing pane is judged by what is on screen, since pinned tabs can hide its search
         // box. The incoming pane shows its search box once it is focused.
@@ -492,6 +522,21 @@ public class HubToolbarMediator {
         // resting position, while the incoming pane moves toward it.
         float offset = toHasSearchBox ? progress.progress - 1.0f : progress.progress;
         mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, progress.isSwipeLeft ? -offset : offset);
+    }
+
+    /**
+     * Keeps the search box open once a pane transition lands on a pane that shows it. The search
+     * box is already open by then, so a reveal the pane plays on landing should not collapse and
+     * re-expand it.
+     */
+    private void maybeKeepSearchBoxOpen(@Nullable PaneTransitionProgress progress) {
+        if (progress == null || mHasCheckedKeepSearchBoxOpen) return;
+
+        Pane focusedPane = mPaneManager.getFocusedPaneSupplier().get();
+        if (focusedPane == null || focusedPane.getPaneId() != progress.toPaneId) return;
+
+        mHasCheckedKeepSearchBoxOpen = true;
+        mKeepSearchBoxOpen = supportsSearchBox(progress.toPaneId);
     }
 
     /**
