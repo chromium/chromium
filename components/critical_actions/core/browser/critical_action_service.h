@@ -18,46 +18,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "components/critical_actions/core/browser/critical_action_metrics.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace critical_actions {
-
-// Outcome of resolving a conversation ID for critical action entries.
-// LINT.IfChange(ConversationIdResolutionOutcome)
-enum class ConversationIdResolutionOutcome {
-  kAlreadyPresent = 0,
-  kResolvedFromCache = 1,
-  kMissingTaskId = 2,
-  kDeferredCacheMiss = 3,
-  kMaxValue = kDeferredCacheMiss,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionConversationIdResolutionOutcome)
-
-// Outcome of deferred conversation ID resolution for critical action entries.
-// LINT.IfChange(ConversationIdDeferredResolutionOutcome)
-enum class ConversationIdDeferredResolutionOutcome {
-  kBackfilled = 0,
-  kEvictedServiceShutdown = 1,
-  kEvictedCapacityExceeded = 2,
-  kMaxValue = kEvictedCapacityExceeded,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionConversationIdDeferredResolutionOutcome)
-
-// Outcome of resolving a navigation ID to a History Visit ID for critical
-// action entries.
-// LINT.IfChange(VisitIdResolutionOutcome)
-enum class VisitIdResolutionOutcome {
-  kSuccess = 0,
-  kEvictedCapacityExceeded = 1,
-  kEvictedNavigatedAway = 2,
-  kDroppedNoNavigationId = 3,
-  kEvictedServiceShutdown = 4,
-  kMaxValue = kEvictedServiceShutdown,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionVisitIdResolutionOutcome)
 
 class CriticalActionBackend;
 

@@ -17,52 +17,13 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/critical_actions/core/browser/critical_action_backend.h"
+#include "components/critical_actions/core/browser/critical_action_metrics.h"
 #include "components/critical_actions/core/browser/features.h"
 #include "ui/base/page_transition_types.h"
 
 namespace critical_actions {
 
 namespace {
-
-std::string_view ActionSourceToString(ActionSource source) {
-  switch (source) {
-    case ActionSource::kPasswordManager:
-      return "PasswordManager";
-    case ActionSource::kActor:
-      return "Actor";
-    case ActionSource::kAutofill:
-      return "Autofill";
-    case ActionSource::kUnknown:
-      return "Unknown";
-  }
-  NOTREACHED();
-}
-
-void LogVisitIdResolutionOutcome(ActionSource source,
-                                 VisitIdResolutionOutcome outcome) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"CriticalActions.VisitIdResolutionOutcome.",
-                    ActionSourceToString(source)}),
-      outcome);
-}
-
-void LogConversationIdResolutionOutcome(
-    ActionSource source,
-    ConversationIdResolutionOutcome outcome) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"CriticalActions.ConversationIdResolutionOutcome.",
-                    ActionSourceToString(source)}),
-      outcome);
-}
-
-void LogConversationIdDeferredResolutionOutcome(
-    ActionSource source,
-    ConversationIdDeferredResolutionOutcome outcome) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"CriticalActions.ConversationIdDeferredResolutionOutcome.",
-                    ActionSourceToString(source)}),
-      outcome);
-}
 
 bool IsRedirectChainStart(ui::PageTransition transition) {
   return (transition & ui::PAGE_TRANSITION_CHAIN_START) != 0;
@@ -111,7 +72,7 @@ void CriticalActionService::Shutdown() {
 
   for (const auto& [_, actions] : task_to_critical_action_ids_cache_) {
     for (const auto& pending_action : actions) {
-      LogConversationIdDeferredResolutionOutcome(
+      RecordConversationIdDeferredResolutionOutcome(
           pending_action.action_source,
           ConversationIdDeferredResolutionOutcome::kEvictedServiceShutdown);
     }
@@ -172,8 +133,8 @@ void CriticalActionService::OnURLVisitedWithNavigationId(
   for (auto& entry : state.pending_actions) {
     entry.visit_id = visit_id;
     AddCriticalAction(entry);
-    LogVisitIdResolutionOutcome(entry.action_source,
-                                VisitIdResolutionOutcome::kSuccess);
+    RecordVisitIdResolutionOutcome(entry.action_source,
+                                   VisitIdResolutionOutcome::kSuccess);
     HandleActionForRedirectMetric(entry, visit_id);
   }
   state.pending_actions.clear();
@@ -194,13 +155,10 @@ void CriticalActionService::AddCriticalAction(
   CriticalActionEntry resolved_entry = entry;
   ConversationIdResolutionOutcome conversation_id_outcome =
       MaybeSetConversationId(resolved_entry);
-  LogConversationIdResolutionOutcome(resolved_entry.action_source,
-                                     conversation_id_outcome);
+  RecordConversationIdResolutionOutcome(resolved_entry.action_source,
+                                        conversation_id_outcome);
 
-  base::UmaHistogramEnumeration(
-      base::StrCat({"CriticalActions.EventLogged.",
-                    ActionSourceToString(resolved_entry.action_source)}),
-      resolved_entry.action_type);
+  RecordEventLogged(resolved_entry.action_source, resolved_entry.action_type);
   backend_.AsyncCall(&CriticalActionBackend::AddCriticalAction)
       .WithArgs(resolved_entry);
 }
@@ -225,7 +183,7 @@ void CriticalActionService::SetCriticalActionsConversationId(
     auto it = task_to_critical_action_ids_cache_.Get(task_id);
     if (it != task_to_critical_action_ids_cache_.end()) {
       for (const auto& pending_action : it->second) {
-        LogConversationIdDeferredResolutionOutcome(
+        RecordConversationIdDeferredResolutionOutcome(
             pending_action.action_source,
             ConversationIdDeferredResolutionOutcome::kBackfilled);
         critical_action_ids_to_update.push_back(
@@ -247,7 +205,7 @@ void CriticalActionService::AddCriticalActionWithNavigationId(
     int64_t navigation_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (navigation_id == 0) {
-    LogVisitIdResolutionOutcome(
+    RecordVisitIdResolutionOutcome(
         entry.action_source, VisitIdResolutionOutcome::kDroppedNoNavigationId);
     return;
   }
@@ -257,8 +215,8 @@ void CriticalActionService::AddCriticalActionWithNavigationId(
     CriticalActionEntry resolved_entry = entry;
     resolved_entry.visit_id = *it->second.visit_id;
     AddCriticalAction(resolved_entry);
-    LogVisitIdResolutionOutcome(resolved_entry.action_source,
-                                VisitIdResolutionOutcome::kSuccess);
+    RecordVisitIdResolutionOutcome(resolved_entry.action_source,
+                                   VisitIdResolutionOutcome::kSuccess);
     HandleActionForRedirectMetric(resolved_entry, *it->second.visit_id);
     return;
   }
@@ -347,7 +305,7 @@ void CriticalActionService::DropPendingActions(
     NavigationState& state,
     VisitIdResolutionOutcome outcome) {
   for (const auto& entry : state.pending_actions) {
-    LogVisitIdResolutionOutcome(entry.action_source, outcome);
+    RecordVisitIdResolutionOutcome(entry.action_source, outcome);
   }
   state.pending_actions.clear();
 }
@@ -415,7 +373,8 @@ void CriticalActionService::RecordEventLoggedInRedirectHistogram(
   // LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:RedirectType)
   base::UmaHistogramEnumeration(
       base::StrCat({"CriticalActions.EventLoggedInRedirect.",
-                    redirect_type_suffix, ".", ActionSourceToString(source)}),
+                    redirect_type_suffix, ".",
+                    ActionSourceToHistogramSuffix(source)}),
       action_type);
 }
 
@@ -447,7 +406,7 @@ ConversationIdResolutionOutcome CriticalActionService::MaybeSetConversationId(
       task_to_critical_action_ids_cache_.max_size() > 0) {
     for (const auto& pending_action :
          task_to_critical_action_ids_cache_.rbegin()->second) {
-      LogConversationIdDeferredResolutionOutcome(
+      RecordConversationIdDeferredResolutionOutcome(
           pending_action.action_source,
           ConversationIdDeferredResolutionOutcome::kEvictedCapacityExceeded);
     }

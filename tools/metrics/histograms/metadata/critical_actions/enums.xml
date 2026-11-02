@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Evicted: Task cache capacity exceeded"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:ConversationIdDeferredResolutionOutcome) -->
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_metrics.h:ConversationIdDeferredResolutionOutcome) -->
 
 <!-- LINT.IfChange(CriticalActionConversationIdResolutionOutcome) -->
 
@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Deferred: Cache miss, deferred for later resolution"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:ConversationIdResolutionOutcome) -->
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_metrics.h:ConversationIdResolutionOutcome) -->
 
 <!-- LINT.IfChange(CriticalActionType) -->
 
@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Evicted: Service shutting down"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:CriticalActionVisitIdResolutionOutcome) -->
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_metrics.h:VisitIdResolutionOutcome) -->
 
 <!-- LINT.IfChange(OpenConversationResult) -->
 
