@@ -471,10 +471,6 @@ class TabFeatures {
   }
 #endif
 
-  InactiveWindowMouseEventController* inactive_window_mouse_event_controller() {
-    return inactive_window_mouse_event_controller_.get();
-  }
-
   TabUIHelper* SetTabUIHelperForTesting(
       std::unique_ptr<TabUIHelper> tab_ui_helper);
 

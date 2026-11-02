@@ -5,14 +5,25 @@
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace tabs {
 
-InactiveWindowMouseEventController::InactiveWindowMouseEventController() =
-    default;
+DEFINE_USER_DATA(InactiveWindowMouseEventController);
+
+InactiveWindowMouseEventController::InactiveWindowMouseEventController(
+    TabInterface& tab)
+    : scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
+
 InactiveWindowMouseEventController::~InactiveWindowMouseEventController() =
     default;
+
+// static
+InactiveWindowMouseEventController* InactiveWindowMouseEventController::From(
+    TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 ScopedAcceptMouseEventsWhileWindowInactive::
     ScopedAcceptMouseEventsWhileWindowInactive(

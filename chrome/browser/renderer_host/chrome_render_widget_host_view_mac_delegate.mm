@@ -15,7 +15,6 @@
 #include "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiping_control.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_utils.h"
 #include "components/prefs/pref_service.h"
@@ -400,13 +399,11 @@
   // while the window is inactive.
   if (tabs::TabInterface* tab =
           tabs::TabInterface::MaybeGetFromContents(webContents)) {
-    if (tabs::TabFeatures* features = tab->GetTabFeatures()) {
-      if (tabs::InactiveWindowMouseEventController* inactive_event_controller =
-              features->inactive_window_mouse_event_controller()) {
-        if (inactive_event_controller
-                ->ShouldAcceptMouseEventsWhileWindowInactive()) {
-          return AcceptMouseEvents::kWhenInActiveApp;
-        }
+    if (tabs::InactiveWindowMouseEventController* inactive_event_controller =
+            tabs::InactiveWindowMouseEventController::From(tab)) {
+      if (inactive_event_controller
+              ->ShouldAcceptMouseEventsWhileWindowInactive()) {
+        return AcceptMouseEvents::kWhenInActiveApp;
       }
     }
   }

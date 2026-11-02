@@ -925,7 +925,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   inactive_window_mouse_event_controller_ =
-      std::make_unique<InactiveWindowMouseEventController>();
+      GetUserDataFactory().CreateInstance<InactiveWindowMouseEventController>(
+          tab, tab);
 
   if (base::FeatureList::IsEnabled(
           wallet::features::kWalletablePassDetection)) {

@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace tabs {
 
 class InactiveWindowMouseEventController;
+class TabInterface;
 
 // A scoped helper class that manages the lifetime of mouse event acceptance
 // for a InactiveWindowMouseEventController object. It increments the counter
@@ -31,8 +33,16 @@ class ScopedAcceptMouseEventsWhileWindowInactive {
 // controlled by the ScopedAcceptMouseEventsWhileWindowInactive helper.
 class InactiveWindowMouseEventController {
  public:
-  InactiveWindowMouseEventController();
+  DECLARE_USER_DATA(InactiveWindowMouseEventController);
+
+  explicit InactiveWindowMouseEventController(TabInterface& tab);
+  InactiveWindowMouseEventController(
+      const InactiveWindowMouseEventController&) = delete;
+  InactiveWindowMouseEventController& operator=(
+      const InactiveWindowMouseEventController&) = delete;
   ~InactiveWindowMouseEventController();
+
+  static InactiveWindowMouseEventController* From(TabInterface* tab);
 
   bool ShouldAcceptMouseEventsWhileWindowInactive() const;
   std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
@@ -64,6 +74,9 @@ class InactiveWindowMouseEventController {
   // window is inactive. When the counter is greater than 0 it will on Mac. see
   // chrome/browser/renderer_host/chrome_render_widget_host_view_mac_delegate.mm
   int accept_input_counter_ = 0;
+
+  ui::ScopedUnownedUserData<InactiveWindowMouseEventController>
+      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<InactiveWindowMouseEventController> weak_ptr_factory_{
       this};
