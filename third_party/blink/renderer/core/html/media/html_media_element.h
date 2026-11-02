@@ -807,6 +807,10 @@ class CORE_EXPORT HTMLMediaElement
 
   void OnRemovedFromDocumentTimerFired(TimerBase*);
 
+  // Checks whether the muted content attribute is present but muted_ is false,
+  // and triggers a use counter if that is the case.
+  void CheckMutedAttributeWouldMute();
+
   void SetError(MediaError* error);
   void ReportCurrentTimeToMediaSource();
 

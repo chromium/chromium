@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -497,6 +499,14 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   bool PotentiallyPlaying() { return Media()->PotentiallyPlaying(); }
 
   bool ShouldDelayLoadEvent() { return Media()->should_delay_load_event_; }
+
+  void PerformMicrotaskCheckpoint() {
+    Media()
+        ->GetDocument()
+        .GetAgent()
+        .event_loop()
+        ->PerformMicrotaskCheckpoint();
+  }
 
   void SetNetworkState(WebMediaPlayer::NetworkState state) {
     Media()->SetNetworkState(state);
@@ -3782,6 +3792,38 @@ TEST_P(HTMLMediaElementTest,
 
   Media()->GetAudioSourceProvider().SetClient(nullptr);
   WrapAudioSourceProviderForTesting(nullptr);
+}
+
+TEST_P(HTMLMediaElementTest, MutedAttributeWouldMute) {
+  ScopedMediaElementMutedDefaultStateForTest scoped_feature(false);
+  Document& document = Media()->GetDocument();
+
+  Media()->SetBooleanAttribute(html_names::kMutedAttr, true);
+  EXPECT_FALSE(Media()->muted());
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kHTMLMediaElementMutedAttributeWouldMute));
+  PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kHTMLMediaElementMutedAttributeWouldMute));
+}
+
+TEST_P(HTMLMediaElementTest, MutedAttributeWouldMuteNotCounted) {
+  ScopedMediaElementMutedDefaultStateForTest scoped_feature(false);
+  Document& document = Media()->GetDocument();
+
+  // Not counted when set by the parser.
+  document.body()->SetInnerHTMLWithoutTrustedTypes(
+      "<audio muted></audio><video muted></video>");
+  PerformMicrotaskCheckpoint();
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kHTMLMediaElementMutedAttributeWouldMute));
+
+  // Not counted when muted right after setting the attribute.
+  Media()->SetBooleanAttribute(html_names::kMutedAttr, true);
+  Media()->setMuted(true);
+  PerformMicrotaskCheckpoint();
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kHTMLMediaElementMutedAttributeWouldMute));
 }
 
 }  // namespace blink
