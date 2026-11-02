@@ -673,13 +673,17 @@ void BrowsingDataRemoverImpl::RemoveImpl(
             TracingDataType::kNetworkErrorLogging));
 
     // Clears the BFCache entries that are loaded with "Cache-Control: no-store"
-    // header and match the removal filter for the current browser context.
-    auto storage_key_filter = filter_builder->BuildStorageKeyFilter();
-    for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
-      if (web_contents->GetBrowserContext() == browser_context_) {
-        web_contents->GetController()
-            .GetBackForwardCache()
-            .FlushCacheControlNoStoreEntries(storage_key_filter);
+    // header and match the removal filter for the current browser context when
+    // unpartitioned cookies are removed.
+    if (!filter_builder->PartitionedCookiesOnly()) {
+      auto storage_key_filter = filter_builder->BuildStorageKeyFilter();
+      for (WebContentsImpl* web_contents :
+           WebContentsImpl::GetAllWebContents()) {
+        if (web_contents->GetBrowserContext() == browser_context_) {
+          web_contents->GetController()
+              .GetBackForwardCache()
+              .FlushCacheControlNoStoreEntries(storage_key_filter);
+        }
       }
     }
   }

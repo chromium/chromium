@@ -428,7 +428,7 @@ class BrowsingDataRemoverImplForCacheControlNoStorePageBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kCacheControlNoStoreEnterBackForwardCache,
-        {{"level", "store-and-evict"}});
+        {{"level", "restore-unless-cookie-change"}});
     BrowsingDataRemoverImplBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -494,6 +494,66 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back, and the page should not be restored from BFCache since the
   // BFCache entry should be flushed.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kCookieFlushed,
+       BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore},
+      {}, {}, {}, {}, FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowsingDataRemoverImplForCacheControlNoStorePageBrowserTest,
+    DoesNotClearCacheControlNoStoreBackForwardCacheEntries_PartitionedCookiesOnly) {
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
+
+  GURL url_1 = ssl_server().GetURL("/echoall/nocache");
+  GURL url_2 = ssl_server().GetURL("/title1.html");
+
+  // 1) Navigate to url_1 with CCNS response, then to url_2.
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+  ASSERT_TRUE(NavigateToURL(shell(), url_2));
+
+  // 2) Remove partitioned cookies only for the domain matching the BFCached
+  // document's origin.
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
+  filter->SetPartitionedCookiesOnly(true);
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
+                          std::move(filter));
+
+  // 3) Go back, and the page should be restored from BFCache since
+  // unpartitioned cookies were not removed.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  // 4) Navigate to url_2 again, and remove partitioned cookies across all
+  // domains using a kPreserve filter.
+  ASSERT_TRUE(NavigateToURL(shell(), url_2));
+  filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kPreserve);
+  filter->SetPartitionedCookiesOnly(true);
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
+                          std::move(filter));
+
+  // 5) Go back, and the page should still be restored from BFCache.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  // 6) Navigate to url_2 again, and remove unpartitioned cookies for the
+  // domain matching the BFCached document's origin.
+  ASSERT_TRUE(NavigateToURL(shell(), url_2));
+  filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
+  filter->SetPartitionedCookiesOnly(false);
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
+                          std::move(filter));
+
+  // 7) Go back, and the page should not be restored from BFCache since
+  // unpartitioned cookies were flushed.
   ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kCookieFlushed,
