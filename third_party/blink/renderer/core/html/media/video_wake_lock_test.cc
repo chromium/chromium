@@ -714,6 +714,20 @@ TEST_F(VideoWakeLockTest, VideoOnlyMediaStreamAlwaysTakesLock) {
   UpdateObservers();
   EXPECT_TRUE(HasWakeLock());
 
+  // Move the video offscreen and ensure the wake lock is still held.
+  SetDivHeight(kWindowSize.height());
+  UpdateObservers();
+  EXPECT_TRUE(HasWakeLock());
+
+  // Hiding the page should release the lock, and showing it again should
+  // re-acquire the lock even while the MediaStream is small and offscreen.
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               false);
+  EXPECT_FALSE(HasWakeLock());
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               false);
+  EXPECT_TRUE(HasWakeLock());
+
   // Ensure normal wake lock release.
   SimulatePause();
   EXPECT_FALSE(HasWakeLock());

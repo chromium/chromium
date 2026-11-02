@@ -150,20 +150,20 @@ bool VideoWakeLock::ShouldBeActive() const {
   bool has_volume = VideoElement().EffectiveMediaVolume() > 0;
   bool has_audio = VideoElement().HasAudio() && has_volume;
 
-  // Self-view MediaStreams may often be very small.
-  bool is_size_exempt =
+  // Self-view and conferencing MediaStreams may often be very small or cropped.
+  bool is_media_stream =
       VideoElement().GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream;
-
-  bool is_big_enough = is_big_enough_ || is_size_exempt;
 
   // The visibility requirements are met if one of the following is true:
   //  - it's in Picture-in-Picture;
   //  - it's audibly playing on a visible page;
+  //  - it's a MediaStream playing on a visible page;
   //  - it's visible to the user and big enough (>=`kSizeThreshold` of view)
   bool visibility_requirements_met =
       VideoElement().HasVideo() &&
       (in_picture_in_picture ||
-       (page_visible && ((is_visible_ && is_big_enough) || has_audio)));
+       (page_visible &&
+        ((is_visible_ && is_big_enough_) || has_audio || is_media_stream)));
 
   // The video wake lock should be active iff:
   //  - it's playing;
