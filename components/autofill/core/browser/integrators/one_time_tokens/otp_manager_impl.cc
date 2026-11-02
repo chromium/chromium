@@ -203,8 +203,18 @@ void OtpManagerImpl::MaybeRetrieveGmailOtp() {
       (!token || token->value().empty()) && UserOptedIntoGmailOtpFilling()) {
     auto checker = std::make_unique<affiliations::DomainRelationChecker>(
         *affiliation_service);
+    // On form detection or opt-in, this fetch can start while a non-OTP field
+    // (e.g. the email field) has focus. `GetTargetOtpField()` returns null
+    // then, so fall back to the first OTP field and match senders against its
+    // origin. The OTP is cached and offered once the user focuses that field.
+    const AutofillField* target_field = GetTargetOtpField();
+    if (!target_field) {
+      target_field = FirstEligibleOtpField(*owner_).autofill_field;
+    }
     const url::Origin frame_origin =
-        owner_->client().GetLastCommittedPrimaryMainFrameOrigin();
+        (target_field && !target_field->origin().opaque())
+            ? target_field->origin()
+            : owner_->client().GetLastCommittedPrimaryMainFrameOrigin();
     gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
         *gmail_otp_backend, std::move(checker), frame_origin,
         /*allow_psl_matching=*/true,

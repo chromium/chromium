@@ -182,13 +182,15 @@ class OtpManagerImplTest
     autofill_client().set_otp_field_detector(std::move(detector));
   }
 
-  void SetUpGmailOtpRetrieval() {
+  one_time_tokens::FakeGmailOtpBackend& SetUpGmailOtpRetrieval() {
     prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(),
                                              true);
     SetUpOtpFieldDetector();
     autofill_client().set_affiliation_service(&mock_affiliation_service_);
-    autofill_client().set_gmail_otp_backend(
-        std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
+    auto backend = std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
+    one_time_tokens::FakeGmailOtpBackend& backend_ref = *backend;
+    autofill_client().set_gmail_otp_backend(std::move(backend));
+    return backend_ref;
   }
 
   void TearDown() override {
@@ -3752,6 +3754,33 @@ TEST_F(OtpManagerImplTest,
   EXPECT_THAT(
       future.Get(),
       ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "123456")));
+}
+
+// Tests that `MaybeRetrieveGmailOtp()` matches the sender against the OTP
+// field's frame origin rather than the primary main frame origin when the OTP
+// field is in a same-TLD+1 subframe.
+TEST_F(
+    OtpManagerImplTest,
+    GetOtpSuggestions_SameTldPlusOneSubframe_UsesTargetFieldOriginForGmailOtpRetriever) {
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  const FormStructure* form = AddFormWithOtpField(
+      /*field_origin=*/url::Origin::Create(GURL("https://sub.example.test")),
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.test")));
+  ASSERT_TRUE(form);
+  one_time_tokens::FakeGmailOtpBackend& backend = SetUpGmailOtpRetrieval();
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(form->field(0)->host_frame(), _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
+
+  backend.ProcessCallbacks(one_time_tokens::OneTimeToken(
+      one_time_tokens::OneTimeTokenType::kGmail, "654321",
+      base::TimeTicks::Now(), "otp@sub.example.test"));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "654321")));
 }
 
 }  // namespace autofill
