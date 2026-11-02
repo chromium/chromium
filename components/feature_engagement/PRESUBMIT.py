@@ -8,6 +8,55 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+_FEATURE_LIST_H_PATH = (
+    'components/feature_engagement/public/feature_list.h'
+)
+_FEATURE_LIST_CC_PATH = (
+    'components/feature_engagement/public/feature_list.cc'
+)
+_FEATURE_CONSTANTS_H_PATH = (
+    'components/feature_engagement/public/feature_constants.h'
+)
+_FEATURE_CONSTANTS_CC_PATH = (
+    'components/feature_engagement/public/feature_constants.cc'
+)
+_FEATURE_CONSTANTS_PATH = (
+    'components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/FeatureConstants.java'
+)
+_EVENT_CONSTANTS_PATH = (
+    'components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/EventConstants.java'
+)
+_ENTERPRISE_POLICY_ALLOWLIST_PATH = (
+    'components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/EnterprisePolicyBypassAllowlist.java'
+)
+_TRACKER_IMPL_JAVA_PATH = (
+    'components/feature_engagement/internal/android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java'
+)
+_ACTIONS_XML_PATH = (
+    'tools/metrics/actions/actions.xml'
+)
+_HISTOGRAMS_XML_PATH = (
+    'tools/metrics/histograms/metadata/feature_engagement/histograms.xml'
+)
+
+_BYPASS_POLICY_TAG = (
+    '[UserEducation.BypassPolicyCheck]'
+)
+_BYPASS_POLICY_TAG_RE = (
+    r'^\s*\[UserEducation\.BypassPolicyCheck\]\s*=\s*\S.*$'
+)
+
+_ALLOWED_JNI_FILES = (
+    _TRACKER_IMPL_JAVA_PATH,
+    'components/feature_engagement/internal/android/tracker_impl_android.cc',
+    'components/feature_engagement/internal/android/tracker_impl_android.h',
+    'components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/CppWrappedTestTracker.java',
+    'components/feature_engagement/public/android/wrapping_test_tracker.cc',
+    'components/feature_engagement/public/android/wrapping_test_tracker.h',
+    'chrome/browser/feature_engagement/java/src/org/chromium/chrome/browser/feature_engagement/TrackerFactory.java',
+    'chrome/browser/feature_engagement/tracker_factory.cc',
+)
+
 
 def CheckChangeOnUpload(input_api, output_api):
     return _CommonChecks(input_api, output_api)
@@ -26,18 +75,15 @@ def _CommonChecks(input_api, output_api):
     results.extend(_CheckAlwaysTrueInUsedOrTrigger(input_api, output_api))
     results.extend(_CheckEventConfigComparatorAndWindow(input_api, output_api))
     results.extend(_CheckNewFlagsHaveMetrics(input_api, output_api))
+    results.extend(_CheckEnterprisePolicyBypass(input_api, output_api))
+    results.extend(_CheckNoUnauthorizedTrackerJni(input_api, output_api))
     return results
 
 
 def _CheckFeatureListSorting(input_api, output_api):
-    FEATURE_LIST_H_PATH = 'components/feature_engagement/public/feature_list.h'
-    FEATURE_LIST_CC_PATH = (
-        'components/feature_engagement/public/feature_list.cc'
-    )
-
     results = []
     for f in input_api.AffectedFiles():
-        if f.LocalPath() not in (FEATURE_LIST_H_PATH, FEATURE_LIST_CC_PATH):
+        if f.LocalPath() not in (_FEATURE_LIST_H_PATH, _FEATURE_LIST_CC_PATH):
             continue
 
         for line_num, line in f.ChangedContents():
@@ -57,21 +103,17 @@ def _CheckFeatureListSorting(input_api, output_api):
 
 
 def _CheckJavaConstantsSorting(input_api, output_api):
-    FEATURE_CONSTANTS_PATH = (
-        'components/feature_engagement/public/android/java/src/org/chromium/'
-        'components/feature_engagement/FeatureConstants.java'
-    )
-    EVENT_CONSTANTS_PATH = (
-        'components/feature_engagement/public/android/java/src/org/chromium/'
-        'components/feature_engagement/EventConstants.java'
-    )
-
     results = []
     for f in input_api.AffectedFiles():
-        if f.LocalPath() == FEATURE_CONSTANTS_PATH:
+        local_path = f.UnixLocalPath()
+        if local_path == _FEATURE_CONSTANTS_PATH:
             results.extend(_CheckFeatureConstantsFile(input_api, output_api, f))
-        elif f.LocalPath() == EVENT_CONSTANTS_PATH:
+        elif local_path == _EVENT_CONSTANTS_PATH:
             results.extend(_CheckEventConstantsFile(input_api, output_api, f))
+        elif local_path == _ENTERPRISE_POLICY_ALLOWLIST_PATH:
+            results.extend(
+                _CheckEnterprisePolicyAllowlistFile(input_api, output_api, f)
+            )
 
     return results
 
@@ -119,6 +161,12 @@ def _CheckEventConstantsFile(input_api, output_api, affected_file):
     )
 
     return results
+
+
+def _CheckEnterprisePolicyAllowlistFile(input_api, output_api, affected_file):
+    new_contents = affected_file.NewContents()
+    file_path = affected_file.LocalPath()
+    return _CheckKeepSortedBlock(input_api, output_api, new_contents, file_path)
 
 
 def _CheckKeepSortedBlock(input_api, output_api, lines, file_path):
@@ -371,32 +419,17 @@ def _CheckEventConfigComparatorAndWindow(input_api, output_api):
 
 def _CheckNewFlagsHaveMetrics(input_api, output_api):
     """Checks that adding new feature flags also updates actions.xml and histograms.xml."""
-    FEATURE_CONSTANTS_H_PATH = (
-        'components/feature_engagement/public/feature_constants.h'
-    )
-    FEATURE_CONSTANTS_CC_PATH = (
-        'components/feature_engagement/public/feature_constants.cc'
-    )
-    FEATURE_LIST_H_PATH = 'components/feature_engagement/public/feature_list.h'
-    FEATURE_LIST_CC_PATH = (
-        'components/feature_engagement/public/feature_list.cc'
-    )
-    ACTIONS_XML_PATH = 'tools/metrics/actions/actions.xml'
-    HISTOGRAMS_XML_PATH = (
-        'tools/metrics/histograms/metadata/feature_engagement/histograms.xml'
-    )
-
     flag_patterns = {
-        FEATURE_CONSTANTS_H_PATH: input_api.re.compile(
+        _FEATURE_CONSTANTS_H_PATH: input_api.re.compile(
             r'\b(?:FEATURE_CONSTANTS_DECLARE_FEATURE|BASE_DECLARE_FEATURE)\s*\(\s*(k\w+)'
         ),
-        FEATURE_CONSTANTS_CC_PATH: input_api.re.compile(
+        _FEATURE_CONSTANTS_CC_PATH: input_api.re.compile(
             r'\bBASE_FEATURE\s*\(\s*(k\w+)'
         ),
-        FEATURE_LIST_H_PATH: input_api.re.compile(
+        _FEATURE_LIST_H_PATH: input_api.re.compile(
             r'\b(?:DEFINE_VARIATION_PARAM|VARIATION_ENTRY)\s*\(\s*(k\w+)'
         ),
-        FEATURE_LIST_CC_PATH: input_api.re.compile(r'^\s*&\s*\b(k\w+)'),
+        _FEATURE_LIST_CC_PATH: input_api.re.compile(r'^\s*&\s*\b(k\w+)'),
     }
 
     added_flags = set()
@@ -427,10 +460,10 @@ def _CheckNewFlagsHaveMetrics(input_api, output_api):
         f.UnixLocalPath() for f in input_api.change.AffectedFiles()
     }
     missing_files = []
-    if ACTIONS_XML_PATH not in affected_paths:
-        missing_files.append(ACTIONS_XML_PATH)
-    if HISTOGRAMS_XML_PATH not in affected_paths:
-        missing_files.append(HISTOGRAMS_XML_PATH)
+    if _ACTIONS_XML_PATH not in affected_paths:
+        missing_files.append(_ACTIONS_XML_PATH)
+    if _HISTOGRAMS_XML_PATH not in affected_paths:
+        missing_files.append(_HISTOGRAMS_XML_PATH)
 
     if not missing_files:
         return []
@@ -450,3 +483,143 @@ def _CheckNewFlagsHaveMetrics(input_api, output_api):
         f'to generate all required boilerplate code, entries, and UMA configurations automatically.'
     )
     return [output_api.PresubmitError(message)]
+
+
+def _HasValidBypassPolicyTag(input_api):
+    """Checks whether the CL description includes a valid bypass policy tag."""
+    description = ''
+    if hasattr(input_api, 'change') and hasattr(
+        input_api.change, 'DescriptionText'
+    ):
+        description = input_api.change.DescriptionText() or ''
+    tag_re = input_api.re.compile(_BYPASS_POLICY_TAG_RE, input_api.re.MULTILINE)
+    return bool(tag_re.search(description))
+
+
+def _CheckEnterprisePolicyBypass(input_api, output_api):
+    """Enforces allowlist and CL tag rules for bypassing PromotionsEnabled."""
+    results = []
+    feature_re = input_api.re.compile(r'\bFeatureConstants\.([A-Z0-9_]+)\b')
+    has_bypass_tag = _HasValidBypassPolicyTag(input_api)
+
+    # 1. Check modifications to EnterprisePolicyBypassAllowlist.java.
+    for f in input_api.AffectedFiles():
+        if f.UnixLocalPath() != _ENTERPRISE_POLICY_ALLOWLIST_PATH:
+            continue
+
+        new_text = '\n'.join(f.NewContents())
+        old_text = '\n'.join(f.OldContents())
+
+        # Block unconditional return true in EnterprisePolicyBypassAllowlist.
+        if input_api.re.search(r'\breturn\s+true\s*;', new_text):
+            results.append(
+                output_api.PresubmitError(
+                    f'{_ENTERPRISE_POLICY_ALLOWLIST_PATH}: Do not return true '
+                    f'unconditionally from '
+                    f'isAllowedToBypassEnterprisePolicy(). Features must be '
+                    f'explicitly listed in ALLOWLISTED_FEATURES.'
+                )
+            )
+
+        old_features = set(feature_re.findall(old_text))
+        new_features = set(feature_re.findall(new_text))
+        added_features = sorted(new_features - old_features)
+
+        # Only enforce the tag when an existing allowlist is modified. On
+        # initial creation (no old contents) the whole file is reviewed by the
+        # CL that introduces it, and stacked CLs diffed against origin/main
+        # would otherwise see every entry as newly added.
+        if old_text and added_features and not has_bypass_tag:
+            formatted = '\n'.join(
+                f'  - FeatureConstants.{name}' for name in added_features
+            )
+            results.append(
+                output_api.PresubmitError(
+                    f'You are adding one or more features to '
+                    f'{_ENTERPRISE_POLICY_ALLOWLIST_PATH} to bypass the '
+                    f'PromotionsEnabled enterprise policy:\n'
+                    f'{formatted}\n\n'
+                    f'Bypassing the PromotionsEnabled enterprise policy is '
+                    f'restricted to critical legal, regulatory, privacy, or '
+                    f'security prompts and requires explicit approval from '
+                    f'User Education owners (see '
+                    f'chrome/browser/user_education/OWNERS or '
+                    f'components/feature_engagement/OWNERS).\n\n'
+                    f'Once approved, include the following line in your CL '
+                    f'description with a justification and link to the '
+                    f'approval or bug:\n'
+                    f'  {_BYPASS_POLICY_TAG}='
+                    f'<justification and link to approval>'
+                )
+            )
+
+    # 2. Check modifications to TrackerImpl.java that alter policy enforcement.
+    for f in input_api.AffectedFiles():
+        if f.UnixLocalPath() != _TRACKER_IMPL_JAVA_PATH:
+            continue
+
+        new_text = '\n'.join(f.NewContents())
+        old_text = '\n'.join(f.OldContents())
+        if (
+            old_text
+            and 'isAllowedToBypassEnterprisePolicy' in old_text
+            and 'isAllowedToBypassEnterprisePolicy' not in new_text
+            and not has_bypass_tag
+        ):
+            results.append(
+                output_api.PresubmitError(
+                    f'{_TRACKER_IMPL_JAVA_PATH}: Removing the '
+                    f'isAllowedToBypassEnterprisePolicy() check from '
+                    f'TrackerImpl is not permitted without User Education '
+                    f'owner approval and `{_BYPASS_POLICY_TAG}=<justification>`'
+                    f' in the CL description.'
+                )
+            )
+
+    return results
+
+
+def _CheckNoUnauthorizedTrackerJni(input_api, output_api):
+    """Blocks unauthorized JNI bridges to feature_engagement::Tracker."""
+    results = []
+    jni_pattern = input_api.re.compile(
+        r'(?:@NativeMethods|@CalledByNative|\bDEFINE_JNI\b)'
+    )
+    tracker_cpp_pattern = input_api.re.compile(
+        r'\b(?:feature_engagement::Tracker|TrackerImplAndroid)\b'
+    )
+
+    for f in input_api.change.AffectedFiles():
+        unix_path = f.UnixLocalPath()
+        if unix_path in _ALLOWED_JNI_FILES:
+            continue
+        if unix_path.endswith(
+            (
+                'Test.java',
+                'Tests.java',
+                '_unittest.cc',
+                '_unittest.h',
+                '_browsertest.cc',
+            )
+        ):
+            continue
+
+        if unix_path.endswith(('.java', '.cc', '.h')) and (
+            unix_path.startswith('components/feature_engagement/')
+            or tracker_cpp_pattern.search('\n'.join(f.NewContents()))
+        ):
+            for line_num, line in f.ChangedContents():
+                stripped = line.split('//', 1)[0].strip()
+                if jni_pattern.search(stripped):
+                    results.append(
+                        output_api.PresubmitError(
+                            f'{f.LocalPath()}:{line_num}: Unauthorized JNI '
+                            f'bridge in Feature Engagement. All Java calls to '
+                            f'the Feature Engagement Tracker must go through '
+                            f'TrackerImpl.java so enterprise policy and '
+                            f'cooldown group rules are enforced.'
+                        )
+                    )
+                    break
+
+    return results

@@ -16,9 +16,13 @@ import PRESUBMIT
 class MockChange(object):
     def __init__(self, input_api):
         self._input_api = input_api
+        self.description = ''
 
     def AffectedFiles(self):
         return self._input_api.files
+
+    def DescriptionText(self):
+        return self.description
 
 
 class MockInputApi(object):
@@ -917,6 +921,195 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
         results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
         errors = [r for r in results if r.type == 'Error']
         self.assertEqual(0, len(errors))
+
+    def testAllowlistSorting_Sorted(self):
+        input_api = MockInputApi()
+        input_api.change.description = (
+            '[UserEducation.BypassPolicyCheck]=b/571067209 Approved'
+        )
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._ENTERPRISE_POLICY_ALLOWLIST_PATH,
+                new_contents=[
+                    'class EnterprisePolicyBypassAllowlist {',
+                    '    static final Set<String> ALLOWLISTED = Set.of(',
+                    '        FeatureConstants.A_FEATURE,',
+                    '        FeatureConstants.B_FEATURE',
+                    '    );',
+                    '}',
+                ],
+                old_contents=[
+                    'class EnterprisePolicyBypassAllowlist {',
+                    '    static final Set<String> ALLOWLISTED = Set.of(',
+                    '        FeatureConstants.A_FEATURE',
+                    '    );',
+                    '}',
+                ],
+            ),
+        ]
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testAllowlistSorting_UnsortedWarning(self):
+        input_api = MockInputApi()
+        input_api.change.description = (
+            '[UserEducation.BypassPolicyCheck]=b/571067209 Approved'
+        )
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._ENTERPRISE_POLICY_ALLOWLIST_PATH,
+                new_contents=[
+                    'public abstract class EnterprisePolicyBypassAllowlist {',
+                    '    static final Set<String> ALLOWLISTED = Set.of(',
+                    '        FeatureConstants.B_FEATURE,',
+                    '        FeatureConstants.A_FEATURE',
+                    '    );',
+                    '}',
+                ],
+                old_contents=[],
+            ),
+        ]
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        warnings = [r for r in results if r.type == 'Warning']
+        self.assertEqual(1, len(warnings))
+        self.assertIn('not sorted alphabetically', warnings[0].message)
+
+    def testEnterprisePolicyBypass_AllowlistAdditionMissingTag(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._ENTERPRISE_POLICY_ALLOWLIST_PATH,
+                new_contents=[
+                    '    FeatureConstants.A_FEATURE,',
+                    '    FeatureConstants.NEW_EXEMPT_FEATURE',
+                ],
+                old_contents=[
+                    '    FeatureConstants.A_FEATURE',
+                ],
+            ),
+        ]
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('FeatureConstants.NEW_EXEMPT_FEATURE', errors[0].message)
+        self.assertIn('[UserEducation.BypassPolicyCheck]=', errors[0].message)
+
+    def testEnterprisePolicyBypass_InitialCreationWithoutTagAllowed(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._ENTERPRISE_POLICY_ALLOWLIST_PATH,
+                new_contents=[
+                    'public abstract class EnterprisePolicyBypassAllowlist {',
+                    '    static final Set<String> ALLOWLISTED = Set.of(',
+                    '        FeatureConstants.IPH_SOME_FEATURE',
+                    '    );',
+                    '}',
+                ],
+            ),
+        ]
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(0, len(errors))
+
+    def testEnterprisePolicyBypass_InitialCreationUnconditionalReturnTrueStillBlocked(
+        self,
+    ):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._ENTERPRISE_POLICY_ALLOWLIST_PATH,
+                new_contents=[
+                    'public abstract class EnterprisePolicyBypassAllowlist {',
+                    '    public static boolean '
+                    'isAllowedToBypassEnterprisePolicy(String feature) {',
+                    '        return true;',
+                    '    }',
+                    '}',
+                ],
+            ),
+        ]
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('Do not return true', errors[0].message)
+
+    def testEnterprisePolicyBypass_UnconditionalReturnTrueBlocked(self):
+        input_api = MockInputApi()
+        input_api.change.description = (
+            '[UserEducation.BypassPolicyCheck]=b/571067209 Approved'
+        )
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._ENTERPRISE_POLICY_ALLOWLIST_PATH,
+                new_contents=[
+                    'public abstract class EnterprisePolicyBypassAllowlist {',
+                    '    public static boolean '
+                    'isAllowedToBypassEnterprisePolicy(String feature) {',
+                    '        return true;',
+                    '    }',
+                    '}',
+                ],
+                old_contents=[],
+            ),
+        ]
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('Do not return true unconditionally', errors[0].message)
+
+    def testEnterprisePolicyBypass_TrackerImplTamperingBlocked(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._TRACKER_IMPL_JAVA_PATH,
+                new_contents=[
+                    'public class TrackerImpl implements Tracker {',
+                    '    // Check removed!',
+                    '}',
+                ],
+                old_contents=[
+                    'public class TrackerImpl implements Tracker {',
+                    (
+                        '    boolean allowed = '
+                        'isAllowedToBypassEnterprisePolicy(feature);'
+                    ),
+                    '}',
+                ],
+            ),
+        ]
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn(
+            'Removing the isAllowedToBypassEnterprisePolicy() check',
+            errors[0].message,
+        )
+
+    def testNoUnauthorizedTrackerJni_BlocksCustomBridge(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile(
+                (
+                    'components/feature_engagement/internal/android/java/src/'
+                    'org/chromium/components/feature_engagement/internal/'
+                    'CustomBridge.java'
+                ),
+                new_contents=[
+                    '@NativeMethods',
+                    'interface Natives {',
+                    '    boolean shouldTrigger(long ptr, String feature);',
+                    '}',
+                ],
+                changed_lines=[
+                    (1, '@NativeMethods'),
+                ],
+            ),
+        ]
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('Unauthorized JNI bridge', errors[0].message)
 
 
 if __name__ == '__main__':
