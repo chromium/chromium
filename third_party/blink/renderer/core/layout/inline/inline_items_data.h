@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/dcheck_is_on.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_text_index.h"
@@ -23,7 +24,17 @@ class OffsetMapping;
 
 // Represents a text content with a list of InlineItem. A node may have an
 // additional InlineItemsData for ::first-line pseudo-element.
+//
+// The MSVC ABI does not place derived class members in base class tail
+// padding, so on 64-bit Windows this is packed to 4 bytes to let the flags of
+// InlineNodeData fill the space after `data_type_`.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+#pragma pack(push, 4)
+#endif
 struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+#pragma pack(pop)
+#endif
  public:
   InlineItemTextIndex End() const {
     return {items.size(), text_content.length()};

@@ -71,7 +71,7 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
   template <typename OffsetMappingBuilder>
   friend class InlineItemsBuilderTemplate;
 
-  // Flags placed first for packing with InlineItemsData::is_node_data_.
+  // Flags placed first for packing with InlineItemsData::data_type_.
   bool has_non_orc_16bit_ : 1;
   bool is_bidi_enabled_ : 1;
   bool base_direction_ : 1;  // TextDirection
