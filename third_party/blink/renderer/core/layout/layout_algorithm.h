@@ -117,6 +117,7 @@ class CORE_EXPORT LayoutAlgorithm {
     kRelayoutClampingAfterLayoutObject = 128,
     kRelayoutForMarginTrim = 256,
     kRelayoutForFragmentedOof = 512,
+    kRelayoutWithNewRowSizes = 1024,
   };
   // Bitmask of active relayout types (`RelayoutType`).
   typedef int RelayoutMode;

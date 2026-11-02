@@ -168,9 +168,7 @@ LayoutUnit ColumnGap(const ComputedStyle& style,
 
 }  // anonymous namespace
 
-FlexLayoutAlgorithm::FlexLayoutAlgorithm(
-    const LayoutAlgorithmParams& params,
-    const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments)
+FlexLayoutAlgorithm::FlexLayoutAlgorithm(const LayoutAlgorithmParams& params)
     : LayoutAlgorithm(params),
       is_webkit_box_(Style().IsDeprecatedFlexbox()),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
@@ -189,8 +187,7 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
                              ? RowGap(Style(), child_percentage_size_)
                              : ColumnGap(Style(), child_percentage_size_)),
       gap_between_lines_(is_column_ ? ColumnGap(Style(), child_percentage_size_)
-                                    : RowGap(Style(), child_percentage_size_)),
-      cross_size_adjustments_(cross_size_adjustments) {
+                                    : RowGap(Style(), child_percentage_size_)) {
   // TODO(layout-dev): Devtools support when there are multiple fragments.
   if (Node().GetLayoutBox()->NeedsDevtoolsInfo() &&
       !InvolvedInBlockFragmentation(container_builder_)) {
@@ -206,10 +203,20 @@ void FlexLayoutAlgorithm::SetupRelayoutData(const FlexLayoutAlgorithm& previous,
                                             RelayoutType relayout_type) {
   LayoutAlgorithm::SetupRelayoutData(previous, relayout_type);
 
+  ignore_child_scrollbar_changes_ = previous.ignore_child_scrollbar_changes_;
+  cross_size_adjustments_ = previous.cross_size_adjustments_;
+
   if (relayout_type == kRelayoutIgnoringChildScrollbarChanges) {
     ignore_child_scrollbar_changes_ = true;
-  } else {
-    ignore_child_scrollbar_changes_ = previous.ignore_child_scrollbar_changes_;
+  } else if (relayout_type == kRelayoutWithNewRowSizes) {
+    cross_size_adjustments_ = &previous.row_cross_size_updates_;
+  }
+
+  // We may have aborted layout due to an early break previously. Ensure that
+  // the builder detects the correct space shortage, if so.
+  if (previous.early_break_) {
+    container_builder_.PropagateSpaceShortage(
+        previous.container_builder_.MinimalSpaceShortage());
   }
 }
 
@@ -3255,26 +3262,7 @@ const LayoutResult* FlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
   DCHECK(!row_cross_size_updates_.empty());
   DCHECK_LE(row_cross_size_updates_.size(), 2u);
 
-  LayoutAlgorithmParams params(Node(),
-                               container_builder_.InitialFragmentGeometry(),
-                               GetConstraintSpace());
-  params.fragmentation.break_token = GetBreakToken();
-  params.fragmentation.early_break = early_break_;
-  params.additional_early_breaks = additional_early_breaks_;
-  FlexLayoutAlgorithm algorithm_with_row_cross_sizes(params,
-                                                     &row_cross_size_updates_);
-  auto& new_builder = algorithm_with_row_cross_sizes.container_builder_;
-  new_builder.SetBoxType(container_builder_.GetBoxType());
-  algorithm_with_row_cross_sizes.ignore_child_scrollbar_changes_ =
-      ignore_child_scrollbar_changes_;
-
-  // We may have aborted layout due to an early break previously. Ensure that
-  // the builder detects the correct space shortage, if so.
-  if (early_break_) {
-    new_builder.PropagateSpaceShortage(
-        container_builder_.MinimalSpaceShortage());
-  }
-  return algorithm_with_row_cross_sizes.Layout();
+  return Relayout<FlexLayoutAlgorithm>(kRelayoutWithNewRowSizes);
 }
 
 // We are interested in cases where the flex item *may* expand due to

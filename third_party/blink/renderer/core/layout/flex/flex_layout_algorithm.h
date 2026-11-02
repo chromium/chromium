@@ -22,9 +22,7 @@ struct FlexItemData;
 class CORE_EXPORT FlexLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
-  explicit FlexLayoutAlgorithm(
-      const LayoutAlgorithmParams& params,
-      const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments = nullptr);
+  explicit FlexLayoutAlgorithm(const LayoutAlgorithmParams& params);
   ~FlexLayoutAlgorithm() { flex_items_.clear(); }
 
   void SetupRelayoutData(const FlexLayoutAlgorithm& previous, RelayoutType);
