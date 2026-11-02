@@ -214,6 +214,7 @@ DisplayAdElementMonitor::DisplayAdElementMonitor(Element* element,
 void DisplayAdElementMonitor::UpdateToVideoAd() {
   if (!is_video_ad_) {
     is_video_ad_ = true;
+    InvalidatePaintForAdLabel();
   }
   MaybeRecordVideoAdUseCounter();
 
@@ -231,10 +232,11 @@ void DisplayAdElementMonitor::SetIsOverlayPopupAd() {
     return;
   }
   is_overlay_popup_ad_ = true;
+  InvalidatePaintForAdLabel();
+}
 
-  // Repaint so the ad highlight picks up the "popup" label. This only affects
-  // painting when the highlight is currently shown and labels are enabled; if
-  // the highlight is turned on later, DidFinishLifecycleUpdate() invalidates
+void DisplayAdElementMonitor::InvalidatePaintForAdLabel() {
+  // If the highlight is turned on later, DidFinishLifecycleUpdate() invalidates
   // paint on that transition.
   if (should_highlight_ &&
       base::FeatureList::IsEnabled(features::kAdHighlightLabel)) {

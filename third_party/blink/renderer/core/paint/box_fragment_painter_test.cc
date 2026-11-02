@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/test/scoped_feature_list.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -626,12 +629,30 @@ int CountDrawTextBlobOpsWithColor(const PaintRecord& record, SkColor4f color) {
   return count;
 }
 
+// Appends the rects of all rectangles drawn in `color` to `rects`. Used to
+// compare the sizes of label background boxes.
+void CollectDrawRectsWithColor(const PaintRecord& record,
+                               SkColor4f color,
+                               std::vector<SkRect>& rects) {
+  for (const cc::PaintOp& op : record) {
+    if (op.GetType() == cc::PaintOpType::kDrawRect) {
+      const auto& rect_op = static_cast<const cc::DrawRectOp&>(op);
+      if (rect_op.flags.getColor4f() == color) {
+        rects.push_back(rect_op.rect);
+      }
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
+      const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
+      CollectDrawRectsWithColor(record_op.record, color, rects);
+    }
+  }
+}
+
 const SkColor4f kRedOverlay =
     SkColor4f::FromColor(SkColorSetARGB(128, 255, 0, 0));
 // The label is white text on a Google Red 700 background; see PaintAdLabel().
-const SkColor4f kPopupLabelBackground =
+const SkColor4f kAdLabelBackgroundColor =
     Color::FromRGB(0xC5, 0x22, 0x1F).toSkColor4f();
-const SkColor4f kPopupLabelText = Color::kWhite.toSkColor4f();
+const SkColor4f kAdLabelTextColor = Color::kWhite.toSkColor4f();
 
 void SimulateFirstContentfulPaint(Document& document) {
   viz::FrameTimingDetails details;
@@ -707,8 +728,8 @@ TEST_P(BoxFragmentPainterTest, PaintPopupBadgeForOverlayPopupAd) {
 
   // Only the overlay popup ad gets the "popup" label: white text on a solid
   // dark red box.
-  EXPECT_TRUE(ContainsDrawRectWithColor(record, kPopupLabelBackground));
-  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kPopupLabelText), 1);
+  EXPECT_TRUE(ContainsDrawRectWithColor(record, kAdLabelBackgroundColor));
+  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 1);
 }
 
 TEST_P(BoxFragmentPainterTest, PopupBadgeAddedAfterAdHighlightIsPainted) {
@@ -735,14 +756,17 @@ TEST_P(BoxFragmentPainterTest, PopupBadgeAddedAfterAdHighlightIsPainted) {
         CullRect::Infinite());
     auto record = builder.EndRecording();
     EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
-    EXPECT_FALSE(ContainsDrawRectWithColor(record, kPopupLabelBackground));
-    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kPopupLabelText), 0);
+    EXPECT_FALSE(ContainsDrawRectWithColor(record, kAdLabelBackgroundColor));
+    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 0);
   }
 
   // Now flag the already-painted ad as an overlay popup ad, which is what
   // OverlayInterstitialAdDetector does at runtime. Since the highlight is
-  // already shown, this must invalidate paint so the label gets painted.
+  // already shown, this must invalidate paint so the label gets painted. Check
+  // the invalidation flag directly: PaintRecordBuilder below paints without a
+  // display item cache, so it would show the label even without invalidation.
   ad->SetIsOverlayPopupAd();
+  EXPECT_TRUE(ad->GetLayoutObject()->ShouldDoFullPaintInvalidation());
   UpdateAllLifecyclePhasesForTest();
 
   {
@@ -753,8 +777,8 @@ TEST_P(BoxFragmentPainterTest, PopupBadgeAddedAfterAdHighlightIsPainted) {
     auto record = builder.EndRecording();
     // The highlight stays red; only the label is added.
     EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
-    EXPECT_TRUE(ContainsDrawRectWithColor(record, kPopupLabelBackground));
-    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kPopupLabelText), 1);
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kAdLabelBackgroundColor));
+    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 1);
   }
 }
 
@@ -782,8 +806,8 @@ TEST_P(BoxFragmentPainterTest, NoPopupBadgeWhenOverlayPopupAdIsTooSmall) {
   auto record = builder.EndRecording();
 
   EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
-  EXPECT_FALSE(ContainsDrawRectWithColor(record, kPopupLabelBackground));
-  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kPopupLabelText), 0);
+  EXPECT_FALSE(ContainsDrawRectWithColor(record, kAdLabelBackgroundColor));
+  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 0);
 }
 
 // Even if an element was marked while the feature was on, the label is not
@@ -813,8 +837,146 @@ TEST_P(BoxFragmentPainterTest, NoPopupBadgeWhenFeatureDisabled) {
 
   // The red highlight is unaffected by the feature; only the label is gated.
   EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
-  EXPECT_FALSE(ContainsDrawRectWithColor(record, kPopupLabelBackground));
-  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kPopupLabelText), 0);
+  EXPECT_FALSE(ContainsDrawRectWithColor(record, kAdLabelBackgroundColor));
+  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 0);
+}
+
+// A <video> is a replaced element, so this also covers the ReplacedPainter
+// path into PaintAdHighlightIfNeeded(), which is how video ads are painted.
+TEST_P(BoxFragmentPainterTest, PaintVideoBadgeForVideoAd) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAdHighlightLabel);
+
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="normal_ad" style="width: 100px; height: 100px;"></div>
+    <video id="video_ad" style="width: 100px; height: 100px;"></video>
+  )HTML");
+  SimulateFirstContentfulPaint(GetDocument());
+
+  Element* normal_ad = GetDocument().getElementById(AtomicString("normal_ad"));
+  Element* video_ad = GetDocument().getElementById(AtomicString("video_ad"));
+  ASSERT_TRUE(normal_ad);
+  ASSERT_TRUE(video_ad);
+  normal_ad->SetIsAdRelated(NoProvenance{});
+  video_ad->SetIsAdRelated(NoProvenance{});
+  // What HTMLVideoElement does once an ad-related video has loaded metadata.
+  video_ad->UpdateToVideoAd();
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  PaintRecordBuilder builder;
+  GetDocument().View()->PaintOutsideOfLifecycle(
+      builder.Context(), PaintFlag::kOmitCompositingInfo, CullRect::Infinite());
+  auto record = builder.EndRecording();
+
+  // Both ads get the same red highlight.
+  EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+
+  // Only the video ad gets the "video" label.
+  EXPECT_TRUE(ContainsDrawRectWithColor(record, kAdLabelBackgroundColor));
+  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 1);
+}
+
+TEST_P(BoxFragmentPainterTest, VideoBadgeAddedAfterAdHighlightIsPainted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAdHighlightLabel);
+
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  SetBodyInnerHTML(R"HTML(
+    <video id="ad" style="width: 100px; height: 100px;"></video>
+  )HTML");
+  SimulateFirstContentfulPaint(GetDocument());
+
+  Element* ad = GetDocument().getElementById(AtomicString("ad"));
+  ASSERT_TRUE(ad);
+  ad->SetIsAdRelated(NoProvenance{});
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    PaintRecordBuilder builder;
+    GetDocument().View()->PaintOutsideOfLifecycle(
+        builder.Context(), PaintFlag::kOmitCompositingInfo,
+        CullRect::Infinite());
+    auto record = builder.EndRecording();
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+    EXPECT_FALSE(ContainsDrawRectWithColor(record, kAdLabelBackgroundColor));
+    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 0);
+  }
+
+  // Now flag the already-painted ad as a video ad, which is what
+  // HTMLVideoElement does once the video's metadata has loaded, typically well
+  // after the element was tagged as an ad. Since the highlight is already
+  // shown, this must invalidate paint so the label gets painted. Check the
+  // invalidation flag directly: PaintRecordBuilder below paints without a
+  // display item cache, so it would show the label even without invalidation.
+  ad->UpdateToVideoAd();
+  EXPECT_TRUE(ad->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    PaintRecordBuilder builder;
+    GetDocument().View()->PaintOutsideOfLifecycle(
+        builder.Context(), PaintFlag::kOmitCompositingInfo,
+        CullRect::Infinite());
+    auto record = builder.EndRecording();
+    // The highlight stays red; only the label is added.
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kAdLabelBackgroundColor));
+    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 1);
+  }
+}
+
+// An ad of several kinds gets one combined label ("popup, video"; see the
+// AdLabelText test), not one label per kind and not just the popup label.
+TEST_P(BoxFragmentPainterTest, PaintCombinedBadgeForPopupVideoAd) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAdHighlightLabel);
+
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  // Stacked vertically so the two labels can be told apart by their y-position.
+  SetBodyInnerHTML(R"HTML(
+    <div id="popup_ad" style="width: 200px; height: 100px;"></div>
+    <div id="popup_video_ad" style="width: 200px; height: 100px;"></div>
+  )HTML");
+  SimulateFirstContentfulPaint(GetDocument());
+
+  Element* popup_ad = GetDocument().getElementById(AtomicString("popup_ad"));
+  Element* popup_video_ad =
+      GetDocument().getElementById(AtomicString("popup_video_ad"));
+  ASSERT_TRUE(popup_ad);
+  ASSERT_TRUE(popup_video_ad);
+  popup_ad->SetIsAdRelated(NoProvenance{});
+  popup_ad->SetIsOverlayPopupAd();
+  popup_video_ad->SetIsAdRelated(NoProvenance{});
+  popup_video_ad->SetIsOverlayPopupAd();
+  popup_video_ad->UpdateToVideoAd();
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  PaintRecordBuilder builder;
+  GetDocument().View()->PaintOutsideOfLifecycle(
+      builder.Context(), PaintFlag::kOmitCompositingInfo, CullRect::Infinite());
+  auto record = builder.EndRecording();
+
+  // One label per ad, even though the second ad is of two kinds.
+  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 2);
+
+  std::vector<SkRect> label_rects;
+  CollectDrawRectsWithColor(record, kAdLabelBackgroundColor, label_rects);
+  ASSERT_EQ(label_rects.size(), 2u);
+  std::ranges::sort(label_rects, {}, &SkRect::fTop);
+  const SkRect& popup_label = label_rects[0];
+  const SkRect& popup_video_label = label_rects[1];
+
+  // The combined label has more text than the "popup" label, so its box is
+  // wider; the single line of text keeps the height the same.
+  EXPECT_GT(popup_video_label.width(), popup_label.width());
+  EXPECT_EQ(popup_video_label.height(), popup_label.height());
 }
 
 }  // namespace blink

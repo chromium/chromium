@@ -156,6 +156,11 @@ class CORE_EXPORT DisplayAdElementMonitor final
   // non-trivial geometry.
   void MaybeRecordVideoAdUseCounter();
 
+  // Invalidates paint so a currently shown ad highlight picks up a newly
+  // detected ad kind in its label (see BoxFragmentPainter::AdLabelType). No-op
+  // unless the highlight is shown and labels are enabled.
+  void InvalidatePaintForAdLabel();
+
   Member<Element> element_;
 
   AdProvenance ad_provenance_;

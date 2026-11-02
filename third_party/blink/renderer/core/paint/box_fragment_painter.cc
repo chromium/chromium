@@ -673,13 +673,22 @@ void BoxFragmentPainter::PaintAdHighlightIfNeeded(
                      SkBlendMode::kHardLight);
   }
 
-  // Overlay popup ads get an additional "popup" label in the top-right corner
-  // of the highlight.
-  if (base::FeatureList::IsEnabled(features::kAdHighlightLabel) &&
-      element->IsOverlayPopupAd()) {
-    PaintAdLabel(context, paint_rect,
-                 element->GetDocument().GetStyleEngine().GetFontSelector(),
-                 {AdLabelType::kPopup});
+  // Ads detected as a notable kind get an additional label in the top-right
+  // corner of the highlight listing those kinds, e.g. "popup" or "popup,
+  // video". An ad of several kinds gets one combined label, not one per kind.
+  if (base::FeatureList::IsEnabled(features::kAdHighlightLabel)) {
+    AdLabelTypes labels;
+    if (element->IsOverlayPopupAd()) {
+      labels.Put(AdLabelType::kPopup);
+    }
+    if (element->IsVideoAd()) {
+      labels.Put(AdLabelType::kVideo);
+    }
+    if (!labels.empty()) {
+      PaintAdLabel(context, paint_rect,
+                   element->GetDocument().GetStyleEngine().GetFontSelector(),
+                   labels);
+    }
   }
 
   // Paint an "AD" text overlay.
