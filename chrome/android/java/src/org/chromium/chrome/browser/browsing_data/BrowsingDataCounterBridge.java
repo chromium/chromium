@@ -5,10 +5,14 @@
 package org.chromium.chrome.browser.browsing_data;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
@@ -16,6 +20,9 @@ import org.chromium.chrome.browser.profiles.Profile;
  */
 @NullMarked
 public class BrowsingDataCounterBridge {
+    @JniType("::BrowsingDataCounterBridge")
+    interface NativeBrowsingDataCounterBridge extends JniTypeToken {}
+
     /** Can receive a callback from a BrowsingDataCounter. */
     public interface BrowsingDataCounterCallback {
         /**
@@ -28,7 +35,7 @@ public class BrowsingDataCounterBridge {
         void onCounterFinished(String summary);
     }
 
-    private long mNativeBrowsingDataCounterBridge;
+    private @Nullable JniUniquePtr<NativeBrowsingDataCounterBridge> mNativeBrowsingDataCounterBridge;
     private final BrowsingDataCounterCallback mCallback;
 
     /**
@@ -51,7 +58,7 @@ public class BrowsingDataCounterBridge {
     }
 
     public void setSelectedTimePeriod(@TimePeriod int selectedTimePeriod) {
-        if (mNativeBrowsingDataCounterBridge != 0) {
+        if (mNativeBrowsingDataCounterBridge != null) {
             BrowsingDataCounterBridgeJni.get()
                     .setSelectedTimePeriod(mNativeBrowsingDataCounterBridge, selectedTimePeriod);
         }
@@ -59,9 +66,9 @@ public class BrowsingDataCounterBridge {
 
     /** Destroys the native counterpart of this class. */
     public void destroy() {
-        if (mNativeBrowsingDataCounterBridge != 0) {
-            BrowsingDataCounterBridgeJni.get().destroy(mNativeBrowsingDataCounterBridge);
-            mNativeBrowsingDataCounterBridge = 0;
+        if (mNativeBrowsingDataCounterBridge != null) {
+            mNativeBrowsingDataCounterBridge.destroy();
+            mNativeBrowsingDataCounterBridge = null;
         }
     }
 
@@ -72,14 +79,13 @@ public class BrowsingDataCounterBridge {
 
     @NativeMethods
     interface Natives {
-        long initWithoutPeriodPref(
+        JniUniquePtr<NativeBrowsingDataCounterBridge> initWithoutPeriodPref(
                 BrowsingDataCounterBridge self,
                 @JniType("Profile*") Profile profile,
                 int selectedTimePeriod,
                 int dataType);
 
-        void setSelectedTimePeriod(long nativeBrowsingDataCounterBridge, int selectedTimePeriod);
-
-        void destroy(long nativeBrowsingDataCounterBridge);
+        void setSelectedTimePeriod(
+                JniPtr<NativeBrowsingDataCounterBridge> self, int selectedTimePeriod);
     }
 }

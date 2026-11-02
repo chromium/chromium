@@ -34,10 +34,6 @@ class BrowsingDataCounterBridge {
 
   void SetSelectedTimePeriod(JNIEnv* env, int32_t selected_time_period);
 
-  // Destroys the BrowsingDataCounterBridge object. This needs to be called
-  // on the java side when the object is not in use anymore.
-  void Destroy(JNIEnv* env);
-
  private:
   void onCounterFinished(
       std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result);

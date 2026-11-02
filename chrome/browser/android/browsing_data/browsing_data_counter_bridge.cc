@@ -11,6 +11,7 @@
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/BrowsingDataCounterBridge_jni.h"
@@ -67,10 +68,6 @@ void BrowsingDataCounterBridge::SetSelectedTimePeriod(
       static_cast<browsing_data::TimePeriod>(selected_time_period)));
 }
 
-void BrowsingDataCounterBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
-
 void BrowsingDataCounterBridge::onCounterFinished(
     std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
@@ -80,14 +77,15 @@ void BrowsingDataCounterBridge::onCounterFinished(
                                                                   profile_));
 }
 
-static int64_t JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
+static jni_zero::JniUniquePtr<BrowsingDataCounterBridge>
+JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     Profile* profile,
     int32_t selected_time_period,
     int32_t data_type) {
-  return reinterpret_cast<intptr_t>(new BrowsingDataCounterBridge(
-      env, obj, profile, selected_time_period, data_type));
+  return jni_zero::MakeUnique<BrowsingDataCounterBridge>(
+      env, obj, profile, selected_time_period, data_type);
 }
 
 DEFINE_JNI(BrowsingDataCounterBridge)

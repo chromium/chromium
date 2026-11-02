@@ -96,6 +96,7 @@ public class BrowsingDataTest {
                                     BrowsingDataType.SITE_DATA);
                 });
         helper.waitForCallback(0);
+        ThreadUtils.runOnUiThreadBlocking(() -> counter[0].destroy());
         // The counter returns a result like "3 sites" or "None".
         if (out[0].equals("None")) return 0;
         String cookieCount = out[0].replaceAll("[^0-9]", "");
