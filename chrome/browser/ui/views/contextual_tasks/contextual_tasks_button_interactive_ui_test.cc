@@ -86,6 +86,9 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_solid_color.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_state.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -2864,6 +2867,82 @@ IN_PROC_BROWSER_TEST_F(
       SelectMenuItem(
           ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+// When the side panel is open and the user is not pinning eligible, the
+// context menu has no items. Right-clicking the button must be a no-op: no
+// menu should open and the button must keep its "panel open" highlight.
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
+                       RightClickWithNoContextMenuItemsKeepsHighlight) {
+  auto CheckButtonHighlightedAndIdle = [this]() {
+    return CheckView(
+        kContextualTasksEphemeralToolbarButtonElementId,
+        [](ContextualTasksButton* button) {
+          return button->IsHighlighted() && !button->IsMenuShowing() &&
+                 button->GetState() != views::Button::STATE_PRESSED &&
+                 views::InkDrop::Get(button)
+                         ->GetInkDrop()
+                         ->GetTargetInkDropState() ==
+                     views::InkDropState::ACTIVATED;
+        });
+  };
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), SetIsFuseboxEligible(false),
+      InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckButtonHighlightedAndIdle(),
+      // A right mouse press routes through View::ShowContextMenu() (see
+      // View::ProcessMousePressed()), which is what this helper invokes.
+      ShowToolbarButtonContextMenu(
+          kContextualTasksEphemeralToolbarButtonElementId),
+      EnsureNotPresent(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
+      EnsureNotPresent(kPinnedActionToolbarPinElementId),
+      EnsureNotPresent(kPinnedActionToolbarUnpinElementId),
+      EnsureNotPresent(kPinnedActionToolbarCustomizeElementId),
+      CheckButtonHighlightedAndIdle(),
+      // The side panel must stay open and the button must stay visible.
+      EnsurePresent(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+// When the side panel is open and the context menu does have items, opening
+// and dismissing it must not clear the button's "panel open" highlight.
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
+                       ContextMenuKeepsHighlightWhileSidePanelOpen) {
+  auto CheckInkDropActivated = [this]() {
+    return CheckView(kContextualTasksEphemeralToolbarButtonElementId,
+                     [](ContextualTasksButton* button) {
+                       return button->IsHighlighted() &&
+                              views::InkDrop::Get(button)
+                                      ->GetInkDrop()
+                                      ->GetTargetInkDropState() ==
+                                  views::InkDropState::ACTIVATED;
+                     });
+  };
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckInkDropActivated(),
+      ShowToolbarButtonContextMenu(
+          kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForShow(kPinnedActionToolbarPinElementId), CheckInkDropActivated(),
+      Do([]() {
+        views::MenuController::GetActiveInstance()->Cancel(
+            views::MenuController::ExitType::kAll);
+      }),
+      WaitForHide(kPinnedActionToolbarPinElementId),
+      CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
+                        &ContextualTasksButton::IsMenuShowing, false),
+      CheckInkDropActivated());
 }
 
 class ContextualTasksPinnedButtonActiveIndicatorInteractiveTest

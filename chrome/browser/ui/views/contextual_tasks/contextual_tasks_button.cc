@@ -51,6 +51,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -234,6 +235,10 @@ ContextualTasksButton::ContextualTasksButton(
   SetVisible(false);
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksEphemeralToolbarButtonElementId);
+  // The "side panel open" highlight is the ink drop's ACTIVATED state. Keep it
+  // when the context menu opens; otherwise Button::ShowContextMenu() hides the
+  // ink drop and the highlight is lost for as long as the panel stays open.
+  SetHideInkDropWhenShowingContextMenu(false);
   status_indicator_ =
       PinnedToolbarButtonStatusIndicator::Install(image_container_view());
   status_indicator_->SetColorId(kColorToolbarActionItemEngaged,
@@ -395,6 +400,18 @@ bool ContextualTasksButton::ShouldShowMenu() {
   UpdateContextMenu();
   return menu_model() && menu_model()->GetItemCount() > 0 &&
          ToolbarButton::ShouldShowMenu();
+}
+
+void ContextualTasksButton::ShowContextMenu(
+    const gfx::Point& p,
+    ui::mojom::MenuSourceType source_type) {
+  // With nothing to show (e.g. the side panel is open and the user is not
+  // pinning eligible), a right-click must be a no-op. Bail out before
+  // Button::ShowContextMenu() resets the button state and ink drop.
+  if (!ShouldShowMenu()) {
+    return;
+  }
+  ToolbarButton::ShowContextMenu(p, source_type);
 }
 
 void ContextualTasksButton::UpdateColorsAndInsets() {
