@@ -124,9 +124,12 @@ base::UnsafeSharedMemoryRegion SyncReader::TakeSharedMemoryRegion() {
 void SyncReader::RequestMoreData(base::TimeDelta delay,
                                  base::TimeTicks delay_timestamp,
                                  const media::AudioGlitchInfo& glitch_info) {
+  // The index of the buffer we are requesting. `buffer_index_` only advances
+  // once the request is actually sent.
+  const uint32_t next_buffer_index = buffer_index_ + 1;
   TRACE_EVENT("audio", "SyncReader::RequestMoreData",
-              media::AudioBufferFlow(trace_flow_base_id_, buffer_index_ + 1),
-              "buffer_index", buffer_index_ + 1, "this",
+              media::AudioBufferFlow(trace_flow_base_id_, next_buffer_index),
+              "buffer_index", next_buffer_index, "this",
               static_cast<void*>(this), "delay_timestamp (ms)",
               (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
               "playout_delay (ms)", delay.InMillisecondsF());
@@ -151,23 +154,26 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
   constexpr uint32_t kControlSignal = 0;
   size_t sent_bytes = socket_.Send(base::byte_span_from_ref(kControlSignal));
   if (sent_bytes != sizeof(kControlSignal)) {
+    constexpr char kSocketSendFailureMessage[] =
+        "ASR: No room in socket buffer.";
+    // The renderer never sees this request, so end its flow here.
+    TRACE_EVENT_INSTANT("audio",
+                        perfetto::StaticString(kSocketSendFailureMessage),
+                        media::AudioBufferTerminatingFlow(trace_flow_base_id_,
+                                                          next_buffer_index));
     // Ensure we don't log consecutive errors as this can lead to a large
     // amount of logs.
     if (!had_socket_error_) {
       had_socket_error_ = true;
-      constexpr char kSocketSendFailureMessage[] =
-          "ASR: No room in socket buffer.";
       PLOG(WARNING) << kSocketSendFailureMessage;
       log_callback_.Run(kSocketSendFailureMessage);
-      TRACE_EVENT_INSTANT("audio",
-                          perfetto::StaticString(kSocketSendFailureMessage));
     }
   } else {
     had_socket_error_ = false;
     // The AudioDeviceThread will only increase its own index if the socket
     // write succeeds, so only increase our own index on successful writes in
     // order not to get out of sync.
-    ++buffer_index_;
+    buffer_index_ = next_buffer_index;
   }
 }
 
@@ -268,9 +274,11 @@ bool SyncReader::WaitUntilDataIsReady() {
   // Receive timed out or another error occurred.  Receive can timeout if the
   // renderer is unable to deliver audio data within the allotted time.
   if (!bytes_received || renderer_buffer_index != buffer_index_) {
-    TRACE_EVENT_INSTANT("audio", "SyncReader::Read timed out", "expected_index",
-                        buffer_index_, "renderer_index", renderer_buffer_index,
-                        "bytes_received", bytes_received);
+    TRACE_EVENT_INSTANT(
+        "audio", "SyncReader::Read timed out",
+        media::AudioBufferTerminatingFlow(trace_flow_base_id_, buffer_index_),
+        "expected_index", buffer_index_, "renderer_index",
+        renderer_buffer_index, "bytes_received", bytes_received);
 
     base::TimeDelta time_since_start = base::TimeTicks::Now() - start_time;
     base::UmaHistogramCustomTimes("Media.AudioOutputControllerDataNotReady",
