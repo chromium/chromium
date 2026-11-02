@@ -240,8 +240,7 @@ void TabGroupSyncServiceAndroid::UpdateTab(JNIEnv* env,
                                            const JavaRef<jobject>& j_group_id,
                                            int32_t j_tab_id,
                                            const JavaRef<jstring>& j_title,
-                                           const JavaRef<jobject>& j_url,
-                                           int32_t j_position) {
+                                           const JavaRef<jobject>& j_url) {
   auto group_id =
       TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
   auto tab_id = FromJavaTabId(j_tab_id);
@@ -432,9 +431,7 @@ void TabGroupSyncServiceAndroid::UpdateArchivalStatus(
 }
 
 ScopedJavaLocalRef<jobject>
-TabGroupSyncServiceAndroid::GetVersioningMessageController(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_caller) {
+TabGroupSyncServiceAndroid::GetVersioningMessageController(JNIEnv* env) {
   return versioning_messaging_controller_android_->GetJavaObject(env);
 }
 

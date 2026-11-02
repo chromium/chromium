@@ -82,8 +82,7 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                  const JavaRef<jobject>& j_group_id,
                  int32_t j_tab_id,
                  const JavaRef<jstring>& j_title,
-                 const JavaRef<jobject>& j_url,
-                 int32_t j_position);
+                 const JavaRef<jobject>& j_url);
 
   void RemoveTab(JNIEnv* env,
                  const JavaRef<jobject>& j_group_id,
@@ -142,9 +141,7 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                             const JavaRef<jstring>& j_sync_group_id,
                             const bool j_archival_status);
 
-  ScopedJavaLocalRef<jobject> GetVersioningMessageController(
-      JNIEnv* env,
-      const JavaRef<jobject>& j_caller);
+  ScopedJavaLocalRef<jobject> GetVersioningMessageController(JNIEnv* env);
 
   void SetCollaborationAvailableInFinderForTesting(
       JNIEnv* env,

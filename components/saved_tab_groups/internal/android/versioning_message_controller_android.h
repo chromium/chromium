@@ -7,10 +7,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/saved_tab_groups/public/versioning_message_controller.h"
-
-using base::android::JavaRef;
 
 namespace tab_groups {
 
@@ -24,20 +23,12 @@ class VersioningMessageControllerAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env);
 
-  bool IsInitialized(JNIEnv* env, const JavaRef<jobject>& j_caller);
-  bool ShouldShowMessageUi(JNIEnv* env,
-                           const JavaRef<jobject>& j_caller,
-                           int32_t j_message_type);
-  void ShouldShowMessageUiAsync(JNIEnv* env,
-                                const JavaRef<jobject>& j_caller,
-                                int32_t j_message_type,
-                                const JavaRef<jobject>& j_callback);
-  void OnMessageUiShown(JNIEnv* env,
-                        const JavaRef<jobject>& j_caller,
-                        int32_t j_message_type);
-  void OnMessageUiDismissed(JNIEnv* env,
-                            const JavaRef<jobject>& j_caller,
-                            int32_t j_message_type);
+  bool IsInitialized();
+  bool ShouldShowMessageUi(int32_t j_message_type);
+  void ShouldShowMessageUiAsync(int32_t j_message_type,
+                                base::OnceCallback<void(bool)> callback);
+  void OnMessageUiShown(int32_t j_message_type);
+  void OnMessageUiDismissed(int32_t j_message_type);
 
  private:
   // A reference to the Java counterpart of this class.  See

@@ -6,6 +6,7 @@ package org.chromium.components.tab_group_sync;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -28,14 +29,14 @@ public class VersioningMessageControllerImpl implements VersioningMessageControl
     @Override
     public boolean isInitialized() {
         if (mNativePtr == 0) return false;
-        return VersioningMessageControllerImplJni.get().isInitialized(mNativePtr, this);
+        return VersioningMessageControllerImplJni.get().isInitialized(mNativePtr);
     }
 
     @Override
     public boolean shouldShowMessageUi(int messageType) {
         if (mNativePtr == 0) return false;
         return VersioningMessageControllerImplJni.get()
-                .shouldShowMessageUi(mNativePtr, this, messageType);
+                .shouldShowMessageUi(mNativePtr, messageType);
     }
 
     @Override
@@ -45,20 +46,19 @@ public class VersioningMessageControllerImpl implements VersioningMessageControl
             return;
         }
         VersioningMessageControllerImplJni.get()
-                .shouldShowMessageUiAsync(mNativePtr, this, messageType, callback);
+                .shouldShowMessageUiAsync(mNativePtr, messageType, callback);
     }
 
     @Override
     public void onMessageUiShown(@MessageType int messageType) {
         if (mNativePtr == 0) return;
-        VersioningMessageControllerImplJni.get().onMessageUiShown(mNativePtr, this, messageType);
+        VersioningMessageControllerImplJni.get().onMessageUiShown(mNativePtr, messageType);
     }
 
     @Override
     public void onMessageUiDismissed(@MessageType int messageType) {
         if (mNativePtr == 0) return;
-        VersioningMessageControllerImplJni.get()
-                .onMessageUiDismissed(mNativePtr, this, messageType);
+        VersioningMessageControllerImplJni.get().onMessageUiDismissed(mNativePtr, messageType);
     }
 
     @CalledByNative
@@ -68,29 +68,17 @@ public class VersioningMessageControllerImpl implements VersioningMessageControl
 
     @NativeMethods
     interface Natives {
-        boolean isInitialized(
-                long nativeVersioningMessageControllerAndroid,
-                VersioningMessageControllerImpl caller);
+        boolean isInitialized(long nativeVersioningMessageControllerAndroid);
 
-        boolean shouldShowMessageUi(
-                long nativeVersioningMessageControllerAndroid,
-                VersioningMessageControllerImpl caller,
-                int messageType);
+        boolean shouldShowMessageUi(long nativeVersioningMessageControllerAndroid, int messageType);
 
         void shouldShowMessageUiAsync(
                 long nativeVersioningMessageControllerAndroid,
-                VersioningMessageControllerImpl caller,
                 int messageType,
-                Callback<Boolean> callback);
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
 
-        void onMessageUiShown(
-                long nativeVersioningMessageControllerAndroid,
-                VersioningMessageControllerImpl caller,
-                int messageType);
+        void onMessageUiShown(long nativeVersioningMessageControllerAndroid, int messageType);
 
-        void onMessageUiDismissed(
-                long nativeVersioningMessageControllerAndroid,
-                VersioningMessageControllerImpl caller,
-                int messageType);
+        void onMessageUiDismissed(long nativeVersioningMessageControllerAndroid, int messageType);
     }
 }

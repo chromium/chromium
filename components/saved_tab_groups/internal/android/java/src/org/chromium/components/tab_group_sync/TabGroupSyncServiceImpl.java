@@ -122,8 +122,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
             LocalTabGroupId groupId, int tabId, String title, GURL url, int position) {
         if (mNativePtr == 0) return;
         assert groupId != null;
-        TabGroupSyncServiceImplJni.get()
-                .updateTab(mNativePtr, groupId, tabId, title, url, position);
+        TabGroupSyncServiceImplJni.get().updateTab(mNativePtr, groupId, tabId, title, url);
     }
 
     @Override
@@ -253,7 +252,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
 
     @Override
     public VersioningMessageController getVersioningMessageController() {
-        return TabGroupSyncServiceImplJni.get().getVersioningMessageController(mNativePtr, this);
+        return TabGroupSyncServiceImplJni.get().getVersioningMessageController(mNativePtr);
     }
 
     @Override
@@ -354,8 +353,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 LocalTabGroupId groupId,
                 int tabId,
                 String title,
-                GURL url,
-                int position);
+                GURL url);
 
         void removeTab(long nativeTabGroupSyncServiceAndroid, LocalTabGroupId groupId, int tabId);
 
@@ -418,7 +416,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 boolean archivalStatus);
 
         VersioningMessageController getVersioningMessageController(
-                long nativeTabGroupSyncServiceAndroid, TabGroupSyncServiceImpl caller);
+                long nativeTabGroupSyncServiceAndroid);
 
         void setCollaborationAvailableInFinderForTesting(
                 long nativeTabGroupSyncServiceAndroid, String collaborationId);

@@ -4,12 +4,12 @@
 
 #include "components/saved_tab_groups/internal/android/versioning_message_controller_android.h"
 
+#include <utility>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/saved_tab_groups/internal/jni_headers/VersioningMessageControllerImpl_jni.h"
-
-using base::android::JavaRef;
 
 namespace tab_groups {
 using MessageType = VersioningMessageController::MessageType;
@@ -32,46 +32,31 @@ VersioningMessageControllerAndroid::GetJavaObject(JNIEnv* env) {
   return base::android::ScopedJavaLocalRef<jobject>(java_obj_);
 }
 
-bool VersioningMessageControllerAndroid::IsInitialized(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_caller) {
+bool VersioningMessageControllerAndroid::IsInitialized() {
   return versioning_message_controller_->IsInitialized();
 }
 
 bool VersioningMessageControllerAndroid::ShouldShowMessageUi(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_caller,
     int32_t j_message_type) {
   MessageType message_type = static_cast<MessageType>(j_message_type);
   return versioning_message_controller_->ShouldShowMessageUi(message_type);
 }
 
 void VersioningMessageControllerAndroid::ShouldShowMessageUiAsync(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_caller,
     int32_t j_message_type,
-    const JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   MessageType message_type = static_cast<MessageType>(j_message_type);
-  base::OnceCallback<void(bool)> callback = base::BindOnce(
-      [](const base::android::JavaRef<jobject>& j_callback, bool result) {
-        base::android::RunBooleanCallbackAndroid(j_callback, result);
-      },
-      base::android::ScopedJavaGlobalRef<jobject>(j_callback));
   versioning_message_controller_->ShouldShowMessageUiAsync(message_type,
                                                            std::move(callback));
 }
 
 void VersioningMessageControllerAndroid::OnMessageUiShown(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_caller,
     int32_t j_message_type) {
   MessageType message_type = static_cast<MessageType>(j_message_type);
   versioning_message_controller_->OnMessageUiShown(message_type);
 }
 
 void VersioningMessageControllerAndroid::OnMessageUiDismissed(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_caller,
     int32_t j_message_type) {
   MessageType message_type = static_cast<MessageType>(j_message_type);
   versioning_message_controller_->OnMessageUiDismissed(message_type);
