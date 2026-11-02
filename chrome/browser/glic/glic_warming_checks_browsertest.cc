@@ -193,9 +193,10 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingChecksLowMemoryTest,
 
 class GlicWarmingChecksDeferredTest : public GlicWarmingChecksBrowserTest {
  public:
-  // This sets the delay to 500 ms.
-  GlicWarmingChecksDeferredTest()
-      : GlicWarmingChecksBrowserTest(/*delay_ms=*/"500") {}
+  // Use a large default delay so the timer cannot fire prematurely during
+  // startup or while waiting in ShouldPreloadForProfile_Defer on slow bots.
+  explicit GlicWarmingChecksDeferredTest(const std::string& delay_ms = "60000")
+      : GlicWarmingChecksBrowserTest(delay_ms) {}
   ~GlicWarmingChecksDeferredTest() override = default;
 };
 
@@ -204,13 +205,21 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingChecksDeferredTest,
                        ShouldPreloadForProfile_Defer) {
   ResetPrewarming();
   service()->TryPreload(GlicWarmingTrigger::kStartup);
-  // Wait for an interval shorter than the configured 500ms preload delay to
+  // Wait for an interval shorter than the configured preload delay to
   // verify that warming has not triggered prematurely while deferred.
   WaitForDuration(base::Milliseconds(200));
   EXPECT_FALSE(IsWarmed());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWarmingChecksDeferredTest,
+class GlicWarmingChecksDeferredProfileDeletionTest
+    : public GlicWarmingChecksDeferredTest {
+ public:
+  GlicWarmingChecksDeferredProfileDeletionTest()
+      : GlicWarmingChecksDeferredTest(/*delay_ms=*/"100") {}
+  ~GlicWarmingChecksDeferredProfileDeletionTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWarmingChecksDeferredProfileDeletionTest,
                        ShouldPreloadForProfile_DeferWithProfileDeletion) {
   ResetPrewarming();
   base::test::TestFuture<void> future;
