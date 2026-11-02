@@ -101,9 +101,15 @@ class SSLClientCertPendingRequests
                        scoped_refptr<net::SSLPrivateKey> key);
 
   std::unique_ptr<ClientCertRequest> TakeActiveRequestForTesting() {
+    // Otherwise the request is owned by Java, which may still complete it.
+    CHECK(skip_system_selector_for_testing_);
     ClientCertRequest* request = active_request_;
     active_request_ = nullptr;
     return base::WrapUnique(request);
+  }
+
+  void SkipSystemSelectorForTesting() {
+    skip_system_selector_for_testing_ = true;
   }
 
   // Remove pending requests when |should_keep| returns false. Calls |on_drop|
@@ -141,7 +147,7 @@ class SSLClientCertPendingRequests
   void PumpRequests();
 
   raw_ptr<ClientCertRequest> active_request_ = nullptr;
-
+  bool skip_system_selector_for_testing_ = false;
   CertificateDialogPolicy dialog_policy_;
   base::queue<std::unique_ptr<ClientCertRequest>> pending_requests_;
   base::WeakPtrFactory<SSLClientCertPendingRequests> weak_factory_{this};
@@ -164,15 +170,24 @@ ui::WindowAndroid* GetWindowFromWebContents(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SSLClientCertPendingRequests);
 
+// If `skip_system_selector` is true, the request is not handed to Java.
 static bool StartClientCertificateRequest(
     std::unique_ptr<ClientCertRequest> request,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    bool skip_system_selector) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ui::WindowAndroid* window = GetWindowFromWebContents(web_contents);
   if (window == nullptr) {
     LOG(ERROR) << "Could not get Window";
     return false;
+  }
+
+  if (skip_system_selector) {
+    // The test owns the request until it calls
+    // CompleteActiveSSLClientCertificateRequestForTesting().
+    std::ignore = request.release();
+    return true;
   }
 
   // Build the |key_types| JNI parameter, as a String[]
@@ -285,7 +300,8 @@ void SSLClientCertPendingRequests::PumpRequests() {
     ClientCertRequest* raw_next = next.get();
     // Java never completes the request synchronously (the completion callback
     // is always posted), so `raw_next` is still valid if this returns true.
-    if (StartClientCertificateRequest(std::move(next), web_contents())) {
+    if (StartClientCertificateRequest(std::move(next), web_contents(),
+                                      skip_system_selector_for_testing_)) {
       active_request_ = raw_next;
       dialog_policy_.IncrementCount();
       return;
@@ -444,6 +460,13 @@ size_t GetCountOfSSLClientCertificateSelectorForTesting(  // IN-TEST
       SSLClientCertPendingRequests::FromWebContents(contents);
   DCHECK(active_requests);
   return active_requests->GetDialogCount();
+}
+
+void SkipSystemSSLClientCertificateSelectorForTesting(  // IN-TEST
+    content::WebContents* contents) {
+  SSLClientCertPendingRequests::CreateForWebContents(contents);
+  SSLClientCertPendingRequests::FromWebContents(contents)
+      ->SkipSystemSelectorForTesting();
 }
 
 void CompleteActiveSSLClientCertificateRequestForTesting(  // IN-TEST

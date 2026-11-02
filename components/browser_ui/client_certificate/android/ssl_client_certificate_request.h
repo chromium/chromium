@@ -33,8 +33,19 @@ base::OnceClosure ShowSSLClientCertificateSelector(
 size_t GetCountOfSSLClientCertificateSelectorForTesting(
     content::WebContents* contents);
 
+// Requests for `contents` are not handed to the system certificate selector
+// (Java). Instead, they are owned by native code until they are completed with
+// CompleteActiveSSLClientCertificateRequestForTesting(). Tests which use
+// CompleteActiveSSLClientCertificateRequestForTesting() must call this first,
+// as otherwise the system selector may also complete (and access) the request
+// after the test has already completed (and destroyed) it.
+void SkipSystemSSLClientCertificateSelectorForTesting(
+    content::WebContents* contents);
+
 // Simulates the system certificate selector completing the active request for
-// `contents` with `cert` and `key` (both null if the user declined).
+// `contents` with `cert` and `key` (both null if the user declined). Requires
+// SkipSystemSSLClientCertificateSelectorForTesting() to have been called for
+// `contents`.
 void CompleteActiveSSLClientCertificateRequestForTesting(
     content::WebContents* contents,
     scoped_refptr<net::X509Certificate> cert,

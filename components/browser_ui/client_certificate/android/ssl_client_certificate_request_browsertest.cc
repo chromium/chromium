@@ -211,6 +211,9 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
 IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
                        SuccessfulSelectionResetsDialogLimit) {
   content::WebContents* contents = shell()->web_contents();
+  // This test completes requests itself, so they must not also be handed to
+  // the system selector, which could complete them again later.
+  SkipSystemSSLClientCertificateSelectorForTesting(contents);
 
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   ASSERT_TRUE(https_server.Start());
@@ -247,6 +250,9 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
 IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
                        DeclinedSelectionsCountTowardsDialogLimit) {
   content::WebContents* contents = shell()->web_contents();
+  // This test completes requests itself, so they must not also be handed to
+  // the system selector, which could complete them again later.
+  SkipSystemSSLClientCertificateSelectorForTesting(contents);
 
   constexpr size_t kMaxDialogs = 5;
   std::array<bool, kMaxDialogs + 1> destroyed = {};
