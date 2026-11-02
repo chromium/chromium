@@ -135,7 +135,7 @@ CSSPrimitiveValue* ConsumeInteger(
     CSSParserTokenStream&,
     const CSSParserContext&,
     CSSParserLocalContext&,
-    double minimum_value = -std::numeric_limits<double>::max(),
+    CSSPrimitiveValue::ValueRange = CSSPrimitiveValue::ValueRange::kInteger,
     const bool is_percentage_allowed = true);
 CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
     CSSParserTokenStream&,

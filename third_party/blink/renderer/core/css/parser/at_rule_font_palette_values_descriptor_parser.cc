@@ -28,8 +28,9 @@ CSSValue* ConsumeBasePalette(CSSParserTokenStream& stream,
                                           CSSValueID::kDark>(stream)) {
     return ident;
   }
-  CSSPrimitiveValue* palette_index =
-      css_parsing_utils::ConsumeInteger(stream, context, local_context, 0);
+  CSSPrimitiveValue* palette_index = css_parsing_utils::ConsumeInteger(
+      stream, context, local_context,
+      CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
   if (palette_index && !palette_index->IsElementDependent()) {
     // Only calc() expressions that can be fully simplified at parse time are
     // valid. If not, they rely on an element context, and @font-palette-values
@@ -44,8 +45,9 @@ CSSValue* ConsumeColorOverride(CSSParserTokenStream& stream,
                                CSSParserLocalContext& local_context) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   do {
-    CSSPrimitiveValue* color_index =
-        css_parsing_utils::ConsumeInteger(stream, context, local_context, 0);
+    CSSPrimitiveValue* color_index = css_parsing_utils::ConsumeInteger(
+        stream, context, local_context,
+        CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
     if (!color_index || color_index->IsElementDependent()) {
       // Only calc() expressions that can be fully simplified at parse time are
       // valid. If not, they rely on an element context, and

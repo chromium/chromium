@@ -532,9 +532,8 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
       return MediaQueryExpValue(*fallback_value);
     }
   }
-  CSSPrimitiveValue* value = css_parsing_utils::ConsumeInteger(
-      stream, context, local_context,
-      -std::numeric_limits<double>::max() /* minimum_value */);
+  CSSPrimitiveValue* value =
+      css_parsing_utils::ConsumeInteger(stream, context, local_context);
   if (!value && !FeatureExpectingInteger(media_feature, context)) {
     value = css_parsing_utils::ConsumeNumber(
         stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);

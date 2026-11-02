@@ -184,8 +184,9 @@ CSSValue* ConsumeCounterStylePad(CSSParserTokenStream& stream,
   CSSValue* symbol = nullptr;
   while (!integer || !symbol) {
     if (!integer) {
-      integer =
-          css_parsing_utils::ConsumeInteger(stream, context, local_context, 0);
+      integer = css_parsing_utils::ConsumeInteger(
+          stream, context, local_context,
+          CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
       if (integer) {
         if (integer->IsElementDependent()) {
           return nullptr;
@@ -240,8 +241,9 @@ CSSValue* ConsumeCounterStyleAdditiveSymbols(
     CSSValue* symbol = nullptr;
     while (!integer || !symbol) {
       if (!integer) {
-        integer = css_parsing_utils::ConsumeInteger(stream, context,
-                                                    local_context, 0);
+        integer = css_parsing_utils::ConsumeInteger(
+            stream, context, local_context,
+            CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
         if (integer) {
           if (integer->IsElementDependent()) {
             return nullptr;

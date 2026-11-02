@@ -1078,6 +1078,22 @@ bool ConsumeAnyComponentValue(CSSParserTokenStream& stream) {
   return false;
 }
 
+bool InPermittedIntegerRange(CSSPrimitiveValue::ValueRange value_range,
+                             double value) {
+  switch (value_range) {
+    case CSSPrimitiveValue::ValueRange::kAll:
+      NOTREACHED() << "unexpected value range for integer parsing";
+    case CSSPrimitiveValue::ValueRange::kInteger:
+      return true;
+    case CSSPrimitiveValue::ValueRange::kNonNegative:
+      NOTREACHED() << "unexpected value range for integer parsing";
+    case CSSPrimitiveValue::ValueRange::kNonNegativeInteger:
+      return !(value < 0.0);
+    case CSSPrimitiveValue::ValueRange::kPositiveInteger:
+      return !(value < 1.0);
+  }
+}
+
 }  // namespace
 
 void ConsumeAnyValue(CSSParserTokenStream& stream) {
@@ -1154,31 +1170,21 @@ class MathFunctionParser {
   CSSMathFunctionValue* calc_value_ = nullptr;
 };
 
-CSSPrimitiveValue* ConsumeIntegerInternal(CSSParserTokenStream& stream,
-                                          const CSSParserContext& context,
-                                          CSSParserLocalContext& local_context,
-                                          double minimum_value,
-                                          const bool is_percentage_allowed) {
+CSSPrimitiveValue* ConsumeIntegerInternal(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context,
+    CSSPrimitiveValue::ValueRange value_range,
+    const bool is_percentage_allowed) {
   const CSSParserToken token = stream.Peek();
   if (token.GetType() == kNumberToken) {
     if (token.GetNumericValueType() == kNumberValueType ||
-        token.NumericValue() < minimum_value) {
+        !InPermittedIntegerRange(value_range, token.NumericValue())) {
       return nullptr;
     }
     return CSSNumericLiteralValue::Create(
         stream.ConsumeIncludingWhitespace().NumericValue(),
         CSSPrimitiveValue::UnitType::kInteger);
-  }
-
-  DCHECK(minimum_value == -std::numeric_limits<double>::max() ||
-         minimum_value == 0 || minimum_value == 1);
-
-  CSSPrimitiveValue::ValueRange value_range =
-      CSSPrimitiveValue::ValueRange::kInteger;
-  if (minimum_value == 0) {
-    value_range = CSSPrimitiveValue::ValueRange::kNonNegativeInteger;
-  } else if (minimum_value == 1) {
-    value_range = CSSPrimitiveValue::ValueRange::kPositiveInteger;
   }
 
   using enum CSSMathExpressionNode::Flag;
@@ -1203,9 +1209,9 @@ CSSPrimitiveValue* ConsumeIntegerInternal(CSSParserTokenStream& stream,
 CSSPrimitiveValue* ConsumeInteger(CSSParserTokenStream& stream,
                                   const CSSParserContext& context,
                                   CSSParserLocalContext& local_context,
-                                  double minimum_value,
+                                  CSSPrimitiveValue::ValueRange value_range,
                                   const bool is_percentage_allowed) {
-  return ConsumeIntegerInternal(stream, context, local_context, minimum_value,
+  return ConsumeIntegerInternal(stream, context, local_context, value_range,
                                 is_percentage_allowed);
 }
 
@@ -1223,24 +1229,8 @@ CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
     const CSSParserContext& context,
     CSSParserLocalContext& local_context,
     CSSPrimitiveValue::ValueRange value_range) {
-  double minimum_value = -std::numeric_limits<double>::max();
-  switch (value_range) {
-    case CSSPrimitiveValue::ValueRange::kAll:
-      NOTREACHED() << "unexpected value range for integer parsing";
-    case CSSPrimitiveValue::ValueRange::kInteger:
-      minimum_value = -std::numeric_limits<double>::max();
-      break;
-    case CSSPrimitiveValue::ValueRange::kNonNegative:
-      NOTREACHED() << "unexpected value range for integer parsing";
-    case CSSPrimitiveValue::ValueRange::kNonNegativeInteger:
-      minimum_value = 0.0;
-      break;
-    case CSSPrimitiveValue::ValueRange::kPositiveInteger:
-      minimum_value = 1.0;
-      break;
-  }
   if (CSSPrimitiveValue* value =
-          ConsumeInteger(stream, context, local_context, minimum_value)) {
+          ConsumeInteger(stream, context, local_context, value_range)) {
     return value;
   }
 
@@ -1262,7 +1252,8 @@ CSSPrimitiveValue* ConsumePositiveInteger(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) {
-  return ConsumeInteger(stream, context, local_context, 1);
+  return ConsumeInteger(stream, context, local_context,
+                        CSSPrimitiveValue::ValueRange::kPositiveInteger);
 }
 
 CSSPrimitiveValue* ConsumeNumber(CSSParserTokenStream& stream,
@@ -1738,10 +1729,10 @@ CSSFunctionValue* ConsumeIdentFunction(CSSParserTokenStream& stream,
       values.push_back(string_value);
       continue;
     }
-    if (CSSValue* integer_value = ConsumeInteger(
-            stream, context, local_context,
-            /*minimum_value=*/-std::numeric_limits<double>::max(),
-            /*is_percentage_allowed=*/false)) {
+    if (CSSValue* integer_value =
+            ConsumeInteger(stream, context, local_context,
+                           CSSPrimitiveValue::ValueRange::kInteger,
+                           /*is_percentage_allowed=*/false)) {
       // TODO(crbug.com/488111037): Add support for random() inside ident().
       if (integer_value->HasRandomFunctions()) {
         return nullptr;
@@ -7289,7 +7280,7 @@ CSSValue* ConsumeGridLine(CSSParserTokenStream& stream,
     CSSCustomIdentValue* line_name = nullptr;
     do {
       if (!span_count) {
-        span_count = ConsumeInteger(stream, context, local_context, 1.0);
+        span_count = ConsumePositiveInteger(stream, context, local_context);
         if (span_count) {
           continue;
         }

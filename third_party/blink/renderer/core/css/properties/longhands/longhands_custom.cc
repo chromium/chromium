@@ -12906,8 +12906,7 @@ const CSSValue* ZIndex::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(stream);
   }
   return css_parsing_utils::ConsumeInteger(
-      stream, context, local_context,
-      /* minimum_value */ -std::numeric_limits<double>::max(),
+      stream, context, local_context, CSSPrimitiveValue::ValueRange::kInteger,
       /* is_percentage_allowed */ false);
 }
 
