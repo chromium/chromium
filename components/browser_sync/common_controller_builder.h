@@ -159,11 +159,6 @@ class CommonControllerBuilder {
           web_data_service_in_memory);
   void SetPersonalContextEntityMetadataManager(
       autofill::PersonalContextEntityMetadataManager* entity_metadata_manager);
-  // TODO(crbug.com/578879216): Remove once iOS callers are migrated.
-  void SetEntitySuppressionManager(
-      autofill::PersonalContextEntityMetadataManager* entity_metadata_manager) {
-    SetPersonalContextEntityMetadataManager(entity_metadata_manager);
-  }
   void SetAimEligibilityService(AimEligibilityService* aim_eligibility_service);
   void SetBookmarkModel(bookmarks::BookmarkModel* bookmark_model);
   void SetBookmarkSyncService(

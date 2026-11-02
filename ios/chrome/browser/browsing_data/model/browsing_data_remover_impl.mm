@@ -20,7 +20,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -45,7 +45,7 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/strike_database/strike_database.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/model/ios_autofill_entity_suppression_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_personal_context_entity_metadata_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
@@ -649,11 +649,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       }
       if (base::FeatureList::IsEnabled(
               autofill::features::kAutofillAmbientAutofillSuppression)) {
-        if (autofill::EntitySuppressionManager* entity_suppression_manager =
-                IOSAutofillEntitySuppressionManagerFactory::GetForProfile(
-                    profile_)) {
-          entity_suppression_manager->ClearSuppressions(delete_begin,
-                                                        delete_end);
+        if (autofill::
+                PersonalContextEntityMetadataManager* entity_metadata_manager =
+                    IOSAutofillPersonalContextEntityMetadataManagerFactory::
+                        GetForProfile(profile_)) {
+          entity_metadata_manager->ClearSuppressions(delete_begin, delete_end);
         }
       }
 

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/model/ios_autofill_entity_suppression_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_personal_context_entity_metadata_manager_factory.h"
 
 #import <memory>
 #import <utility>
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
-#import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #import "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/sync/base/data_type.h"
@@ -21,17 +21,17 @@
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 
-IOSAutofillEntitySuppressionManagerFactory::
-    IOSAutofillEntitySuppressionManagerFactory(PassKey key)
+IOSAutofillPersonalContextEntityMetadataManagerFactory::
+    IOSAutofillPersonalContextEntityMetadataManagerFactory(PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(
           std::move(key),
-          "EntitySuppressionManager",
+          "PersonalContextEntityMetadataManager",
           ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
-IOSAutofillEntitySuppressionManagerFactory::BuildServiceInstanceFor(
+IOSAutofillPersonalContextEntityMetadataManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAmbientAutofillSuppression)) {
@@ -49,6 +49,6 @@ IOSAutofillEntitySuppressionManagerFactory::BuildServiceInstanceFor(
           DataTypeStoreServiceFactory::GetForProfile(profile)
               ->GetStoreFactory(),
           GetApplicationContext()->GetOSCryptAsync());
-  return std::make_unique<autofill::EntitySuppressionManager>(
+  return std::make_unique<autofill::PersonalContextEntityMetadataManager>(
       std::move(sync_bridge));
 }

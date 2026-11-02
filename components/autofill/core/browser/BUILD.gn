@@ -577,7 +577,6 @@ static_library("browser") {
     "data_manager/autofill_ai/entity_instance_cleaner.h",
     "data_manager/autofill_ai/entity_suppression_entry.cc",
     "data_manager/autofill_ai/entity_suppression_entry.h",
-    "data_manager/autofill_ai/entity_suppression_manager.h",
     "data_manager/autofill_ai/personal_context_entity_metadata_manager.cc",
     "data_manager/autofill_ai/personal_context_entity_metadata_manager.h",
     "data_manager/payments/payments_data_manager.cc",

@@ -31,7 +31,7 @@ struct EntitySuppressionEntry;
 // Autofill AI. Enables users to dismiss specific entity suggestions without
 // deleting the underlying source data. Entity matching is based on satisfied
 // merge constraints.
-class PersonalContextEntityMetadataManager
+class PersonalContextEntityMetadataManager final
     : public KeyedService,
       public PersonalContextEntityMetadataSyncBridge::Observer {
  public:

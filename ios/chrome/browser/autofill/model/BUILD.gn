@@ -111,16 +111,16 @@ source_set("model") {
   ]
   public_deps = [
     ":constants",
-    ":entity_suppression_manager_factory",
+    ":personal_context_entity_metadata_manager_factory",
     "//components/keyed_service/ios",
   ]
   frameworks = [ "QuartzCore.framework" ]
 }
 
-source_set("entity_suppression_manager_factory") {
+source_set("personal_context_entity_metadata_manager_factory") {
   sources = [
-    "ios_autofill_entity_suppression_manager_factory.h",
-    "ios_autofill_entity_suppression_manager_factory.mm",
+    "ios_autofill_personal_context_entity_metadata_manager_factory.h",
+    "ios_autofill_personal_context_entity_metadata_manager_factory.mm",
   ]
   deps = [
     "//base",

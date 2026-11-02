@@ -23,7 +23,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
@@ -65,7 +65,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/model/ios_autofill_entity_suppression_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_personal_context_entity_metadata_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
@@ -172,12 +172,12 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   }
 }
 
-// Returns the EntitySuppressionManager for `profile`, or nullptr if
+// Returns the PersonalContextEntityMetadataManager for `profile`, or nullptr if
 // unavailable.
-autofill::EntitySuppressionManager* GetEntitySuppressionManager(
-    ProfileIOS* profile) {
-  return profile ? IOSAutofillEntitySuppressionManagerFactory::GetForProfile(
-                       profile)
+autofill::PersonalContextEntityMetadataManager*
+GetPersonalContextEntityMetadataManager(ProfileIOS* profile) {
+  return profile ? IOSAutofillPersonalContextEntityMetadataManagerFactory::
+                       GetForProfile(profile)
                  : nullptr;
 }
 
@@ -185,10 +185,10 @@ autofill::EntitySuppressionManager* GetEntitySuppressionManager(
 void UndoInSessionSuppressedEntity(
     base::WeakPtr<ProfileIOS> profile,
     const autofill::EntityInstance::EntityId& entity_id) {
-  autofill::EntitySuppressionManager* suppressionManager =
-      GetEntitySuppressionManager(profile.get());
-  if (suppressionManager) {
-    suppressionManager->UndoInSessionSuppressedEntity(entity_id);
+  autofill::PersonalContextEntityMetadataManager* entityMetadataManager =
+      GetPersonalContextEntityMetadataManager(profile.get());
+  if (entityMetadataManager) {
+    entityMetadataManager->UndoInSessionSuppressedEntity(entity_id);
   }
 }
 
@@ -1120,9 +1120,9 @@ void UndoInSessionSuppressedEntity(
 
 // Suppresses the entity for `suggestion` and refreshes keyboard suggestions.
 - (void)suppressEntityForSuggestion:(FormSuggestion*)suggestion {
-  autofill::EntitySuppressionManager* suppressionManager =
-      GetEntitySuppressionManager(self.profile);
-  if (!suppressionManager) {
+  autofill::PersonalContextEntityMetadataManager* entityMetadataManager =
+      GetPersonalContextEntityMetadataManager(self.profile);
+  if (!entityMetadataManager) {
     return;
   }
   base::optional_ref<const autofill::EntityInstance> entity =
@@ -1133,7 +1133,7 @@ void UndoInSessionSuppressedEntity(
   // Copy the entity because suppressing it evicts it from the
   // `EntityDataManager`, which owns `*entity`.
   const autofill::EntityInstance entityCopy = *entity;
-  const bool suppressed = suppressionManager->SuppressEntity(entityCopy);
+  const bool suppressed = entityMetadataManager->SuppressEntity(entityCopy);
   [self resetSuggestions];
   // Only offer an undo if this call suppressed the entity, like on the other
   // platforms.
