@@ -112,18 +112,10 @@ TEST(NetworkQualityEstimatorUtilTest, ReservedHostUncached) {
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// Flaky on Android: crbug.com/1223950
-#define MAYBE_ReservedHostUncachedWithNetworkIsolationKey \
-  DISABLED_ReservedHostUncachedWithNetworkIsolationKey
-#else
-#define MAYBE_ReservedHostUncachedWithNetworkIsolationKey \
-  ReservedHostUncachedWithNetworkIsolationKey
-#endif
 // Make sure that IsPrivateHostForTesting() uses the NetworkAnonymizationKey
 // provided to it.
 TEST(NetworkQualityEstimatorUtilTest,
-     MAYBE_ReservedHostUncachedWithNetworkIsolationKey) {
+     ReservedHostUncachedWithNetworkIsolationKey) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey =
       NetworkAnonymizationKey::CreateSameSite(kSite);

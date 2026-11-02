@@ -129,13 +129,9 @@ TEST_F(ThroughputAnalyzerTest, PrivateHost) {
       NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// Flaky on Android: crbug.com/1223950.
-#define MAYBE_MaximumRequests DISABLED_MaximumRequests
-#else
-#define MAYBE_MaximumRequests MaximumRequests
-#endif
-TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
+// Verify that throughput measurements are disabled when too many local requests
+// are in flight.
+TEST_F(ThroughputAnalyzerTest, MaximumRequests) {
   const struct TestCase {
     GURL url;
     bool is_local;
