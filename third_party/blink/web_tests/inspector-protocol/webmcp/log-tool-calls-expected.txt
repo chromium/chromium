@@ -5,6 +5,7 @@ Invoked {
     frameId : <string>
     input : {"text":"hello"}
     invocationId : <string 0>
+    toolId : <string 1>
     toolName : imperative_tool
 }
 Responded {
@@ -18,11 +19,12 @@ Executing declarative tool...
 Invoked {
     frameId : <string>
     input : {"text":"hello"}
-    invocationId : <string 1>
+    invocationId : <string 2>
+    toolId : <string 3>
     toolName : declarative_tool
 }
 Responded {
-    invocationId : <string 1>
+    invocationId : <string 2>
     output : {
         declarative : success
     }
@@ -32,11 +34,12 @@ Executing declarative array tool...
 Invoked {
     frameId : <string>
     input : {"text":"hello"}
-    invocationId : <string 2>
+    invocationId : <string 4>
+    toolId : <string 5>
     toolName : declarative_array_tool
 }
 Responded {
-    invocationId : <string 2>
+    invocationId : <string 4>
     output : [
         [0] : array
         [1] : result
@@ -58,11 +61,12 @@ Executing declarative string tool...
 Invoked {
     frameId : <string>
     input : {"text":"hello"}
-    invocationId : <string 3>
+    invocationId : <string 6>
+    toolId : <string 7>
     toolName : declarative_string_tool
 }
 Responded {
-    invocationId : <string 3>
+    invocationId : <string 6>
     output : string result
     status : Completed
 }
@@ -81,11 +85,12 @@ Executing declarative number tool...
 Invoked {
     frameId : <string>
     input : {"text":"hello"}
-    invocationId : <string 4>
+    invocationId : <string 8>
+    toolId : <string 9>
     toolName : declarative_number_tool
 }
 Responded {
-    invocationId : <string 4>
+    invocationId : <string 8>
     output : 42
     status : Completed
 }
@@ -104,7 +109,8 @@ Executing failing JS tool...
 Invoked {
     frameId : <string>
     input : {"text":"hello"}
-    invocationId : <string 5>
+    invocationId : <string 10>
+    toolId : <string 11>
     toolName : failing_js_tool
 }
 Responded {
@@ -116,31 +122,33 @@ Responded {
         subtype : error
         type : object
     }
-    invocationId : <string 5>
+    invocationId : <string 10>
     status : Error
 }
 Executing failing ModelContext tool (invalid JSON)...
 Invoked {
     frameId : <string>
     input : "invalid json"
-    invocationId : <string 6>
+    invocationId : <string 12>
+    toolId : <string 1>
     toolName : imperative_tool
 }
 Responded {
     errorText : Failed to parse input arguments
-    invocationId : <string 6>
+    invocationId : <string 12>
     status : Error
 }
 Executing cancelled tool...
 Invoked {
     frameId : <string>
     input : {"text":"hello"}
-    invocationId : <string 7>
+    invocationId : <string 13>
+    toolId : <string 14>
     toolName : abortable_tool
 }
 Responded {
     errorText :
-    invocationId : <string 7>
+    invocationId : <string 13>
     status : Canceled
 }
 

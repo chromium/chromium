@@ -1,5 +1,5 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {dp} = await testRunner.startHTML(
+  const {session, dp} = await testRunner.startHTML(
       `
       <form id="initial_declarative" toolautosubmit
             toolname="initial_declarative_tool"
@@ -27,6 +27,12 @@
         document.modelContext.registerTool(initial_imperative_tool, { signal: window.initialController.signal });
 
         window.registerNewTools = function() {
+            window.sameNameController = new AbortController();
+            document.modelContext.registerTool({
+              execute: echo,
+              name: "same_name_tool",
+              description: "The first tool with this name",
+            }, { signal: window.sameNameController.signal });
             document.modelContext.registerTool({
               execute: echo,
               name: "new_imperative_tool",
@@ -53,6 +59,17 @@
             form.remove();
         };
 
+        // Unregisters the first "same_name_tool", and registers a different
+        // tool under the same name, which gets a new toolId.
+        window.reRegisterSameName = function() {
+            window.sameNameController.abort();
+            document.modelContext.registerTool({
+              execute: echo,
+              name: "same_name_tool",
+              description: "The second tool with this name",
+            });
+        };
+
         window.registerEvenMoreTools = function() {
             document.modelContext.registerTool({
               execute: echo,
@@ -69,7 +86,7 @@
   let addedTarget = 0;
   let addedResolvers = null;
   dp.WebMCP.onToolsAdded(e => {
-    testRunner.log(e.params, 'Adding ');
+    testRunner.log(e.params, 'Adding ', undefined, ['toolId']);
     addedCount++;
     if (addedResolvers && addedCount >= addedTarget) {
       addedResolvers.resolve();
@@ -81,7 +98,7 @@
   let removedTarget = 0;
   let removedResolvers = null;
   dp.WebMCP.onToolsRemoved(e => {
-    testRunner.log(e.params, 'Removing ');
+    testRunner.log(e.params, 'Removing ', undefined, ['toolId']);
     removedCount++;
     if (removedResolvers && removedCount >= removedTarget) {
       removedResolvers.resolve();
@@ -110,21 +127,24 @@
   await dp.WebMCP.enable();
   await enablePromise;
 
-  testRunner.log('Registering a new imperative and a new declarative tool...');
-  let addPromise = waitAdded(2);
-  await dp.Runtime.evaluate({expression: 'window.registerNewTools()'});
-  await addPromise;
+  testRunner.log(
+      'Registering new imperative, declarative, and same-name tools...');
+  session.evaluate('window.registerNewTools()');
+  await waitAdded(3);
 
   testRunner.log('Unregistering one of each...');
-  let removePromise = waitRemoved(2);
-  await dp.Runtime.evaluate({expression: 'window.unregisterOneOfEach()'});
-  await removePromise;
+  session.evaluate('window.unregisterOneOfEach()');
+  await waitRemoved(2);
+
+  testRunner.log('Replacing a tool with a new tool of the same name...');
+  session.evaluate('window.reRegisterSameName()');
+  await Promise.all([waitRemoved(1), waitAdded(1)]);
 
   testRunner.log('Disabling WebMCP Domain...');
   await dp.WebMCP.disable();
 
   testRunner.log('Registering even more tools (should not be reported)...');
-  await dp.Runtime.evaluate({expression: 'window.registerEvenMoreTools()'});
+  await session.evaluate('window.registerEvenMoreTools()');
 
   testRunner.completeTest();
 });

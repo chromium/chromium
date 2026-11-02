@@ -31,9 +31,16 @@ experimental domain WebMCP
       Canceled
       Error
 
+  # Unique identifier of a registered tool. A new identifier is created every time a tool is registered, so a tool that
+  # is unregistered and then registered again under the same name gets a different identifier. Clients should treat it
+  # as an opaque string.
+  type ToolId extends string
+
   # Definition of a tool that can be invoked.
   type Tool extends object
     properties
+      # Tool identifier.
+      ToolId toolId
       # Tool name.
       string name
       # Tool description.
@@ -87,6 +94,8 @@ experimental domain WebMCP
   # Definition of a tool that was removed.
   type RemovedTool extends object
     properties
+      # Identifier of the removed tool.
+      ToolId toolId
       # Tool name.
       string name
       # Frame identifier associated with the tool registration.
@@ -101,14 +110,18 @@ experimental domain WebMCP
   # Event fired when a tool invocation starts.
   event toolInvoked
     parameters
-      # Name of the tool to invoke.
-      string toolName
       # Frame id
       Page.FrameId frameId
       # Invocation identifier.
       string invocationId
       # The input parameters used for the invocation.
       string input
+      # Name of the tool to invoke. Missing if the tool was invoked by its identifier, but could not be found (e.g.,
+      # it was already unregistered), so its name could not be recovered.
+      optional string toolName
+      # Identifier of the tool to invoke. Missing if the tool was invoked by name, but could not be found, so its
+      # identifier could not be recovered.
+      optional ToolId toolId
 
   # Event fired when a tool invocation completes or fails.
   event toolResponded

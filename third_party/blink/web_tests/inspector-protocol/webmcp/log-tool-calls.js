@@ -138,7 +138,8 @@
       `,
       'Tests that WebMCP toolInvoked and toolResponded events fire correctly.');
 
-  dp.WebMCP.onToolInvoked(e => testRunner.log(e.params, 'Invoked ', undefined, ['invocationId']));
+  dp.WebMCP.onToolInvoked(e => testRunner.log(e.params, 'Invoked ', undefined,
+                                              ['invocationId', 'toolId']));
   dp.WebMCP.onToolResponded(e => testRunner.log(e.params, 'Responded ', undefined, ['invocationId']));
 
   testRunner.log('Enabling WebMCP Domain');

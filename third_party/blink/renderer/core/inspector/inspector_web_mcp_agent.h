@@ -46,8 +46,12 @@ class CORE_EXPORT InspectorWebMCPAgent final
   // Probes
   void WebMCPToolAdded(Document* document, const ToolData& name);
   void WebMCPToolRemoved(Document* document, const ToolData& name);
+  // `name` is null if the tool was invoked by ID, but could not be found, so
+  // its name could not be recovered. `tool_id` is null if the tool was invoked
+  // by name, but could not be found, so its ID could not be recovered.
   void WebMCPToolExecuted(Document* document,
                           const String& name,
+                          const std::optional<ScriptToolToken>& tool_id,
                           const String& input_arguments,
                           const ToolInvocationToken& invocation_id);
   void WebMCPToolResponded(Document* document,

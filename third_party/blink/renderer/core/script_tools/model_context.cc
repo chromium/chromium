@@ -558,7 +558,8 @@ bool ModelContext::ExecuteToolByName(
     return ExecuteTool(invocation_id, tool_data->Id(), input_arguments,
                        std::move(tool_executed_cb));
   }
-  probe::WebMCPToolExecuted(document_, name, input_arguments, invocation_id);
+  probe::WebMCPToolExecuted(document_, name, /*tool_id=*/std::nullopt,
+                            input_arguments, invocation_id);
   OnToolFailed(std::move(tool_executed_cb), invocation_id,
                ScriptToolError(ScriptToolErrorCode::kInvalidToolName,
                                StrCat({"Tool not found: ", name})));
@@ -584,18 +585,14 @@ bool ModelContext::ExecuteTool(ToolInvocationToken invocation_id,
   CHECK(abort_controller);
 
   // Look the tool's name up before the probe below, so that DevTools reports
-  // the name rather than the (non-web-exposed) id.
+  // the name.
   auto it = tool_map_.find(tool_id);
   if (it == tool_map_.end()) {
-    // There's no name to report for a tool we can't find, so the probe falls
-    // back to the id. DevTools is trusted with the id, but the error message
+    // There's no name to report for a tool we can't find, so the probe only
+    // gets the id. DevTools is trusted with the id, but the error message
     // below is surfaced to the `executeTool()` caller, and the id is not
     // web-exposed, so keep the message generic.
-    //
-    // TODO(https://crbug.com/536063275): Once DevTools' `toolInvoked` event
-    // carries a dedicated tool ID, report the ID there instead of in place of
-    // the name.
-    probe::WebMCPToolExecuted(document_, String::FromUtf8(tool_id.ToString()),
+    probe::WebMCPToolExecuted(document_, /*name=*/String(), tool_id,
                               input_arguments, invocation_id);
     OnToolFailed(std::move(tool_executed_cb), invocation_id,
                  ScriptToolError(ScriptToolErrorCode::kInvalidToolName,
@@ -604,7 +601,8 @@ bool ModelContext::ExecuteTool(ToolInvocationToken invocation_id,
   }
 
   const String name = it->value->Name();
-  probe::WebMCPToolExecuted(document_, name, input_arguments, invocation_id);
+  probe::WebMCPToolExecuted(document_, name, tool_id, input_arguments,
+                            invocation_id);
 
   bool success = true;
   if (V8ToolExecuteCallback* v8_tool_function =

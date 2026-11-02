@@ -20,6 +20,7 @@ Adding {
                 type : object
             }
             name : initial_declarative_tool
+            toolId : <string 0>
         }
         [1] : {
             annotations : {
@@ -42,10 +43,32 @@ Adding {
                     }
                 ]
             }
+            toolId : <string 1>
         }
     ]
 }
-Registering a new imperative and a new declarative tool...
+Registering new imperative, declarative, and same-name tools...
+Adding {
+    tools : [
+        [0] : {
+            description : The first tool with this name
+            frameId : <string>
+            name : same_name_tool
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 34
+                        functionName : window.registerNewTools
+                        lineNumber : 20
+                        scriptId : <string>
+                        url :
+                    }
+                ]
+            }
+            toolId : <string 2>
+        }
+    ]
+}
 Adding {
     tools : [
         [0] : {
@@ -74,12 +97,13 @@ Adding {
                     [0] : {
                         columnNumber : 34
                         functionName : window.registerNewTools
-                        lineNumber : 19
+                        lineNumber : 25
                         scriptId : <string>
                         url :
                     }
                 ]
             }
+            toolId : <string 3>
         }
     ]
 }
@@ -103,6 +127,7 @@ Adding {
                 type : object
             }
             name : new_declarative_tool
+            toolId : <string 4>
         }
     ]
 }
@@ -112,6 +137,7 @@ Removing {
         [0] : {
             frameId : <string>
             name : initial_imperative_tool
+            toolId : <string 1>
         }
     ]
 }
@@ -120,6 +146,38 @@ Removing {
         [0] : {
             frameId : <string>
             name : initial_declarative_tool
+            toolId : <string 0>
+        }
+    ]
+}
+Replacing a tool with a new tool of the same name...
+Removing {
+    tools : [
+        [0] : {
+            frameId : <string>
+            name : same_name_tool
+            toolId : <string 2>
+        }
+    ]
+}
+Adding {
+    tools : [
+        [0] : {
+            description : The second tool with this name
+            frameId : <string>
+            name : same_name_tool
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 34
+                        functionName : window.reRegisterSameName
+                        lineNumber : 55
+                        scriptId : <string>
+                        url :
+                    }
+                ]
+            }
+            toolId : <string 5>
         }
     ]
 }
