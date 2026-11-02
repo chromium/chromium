@@ -5,9 +5,12 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
+#include <string_view>
 
+#include "base/memory/stack_allocated.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
@@ -77,6 +80,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
@@ -4704,6 +4708,50 @@ TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQueryMatcher) {
 
 class StyleEngineSimTest : public SimTest {};
 
+TEST_F(StyleEngineSimTest, LoadedCascadeLayerOrderInvalidatesStyle) {
+  constexpr Color kRed = Color::FromRGB(255, 0, 0);
+  constexpr Color kGreen = Color::FromRGB(0, 128, 0);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimSubresourceRequest css_resource("https://example.com/order.css",
+                                     "text/css");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <div id="order"></div>
+    <style>
+      @layer first { #target { color: green; } }
+      @layer second { #target { color: red; } }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(target->GetComputedStyle());
+  ASSERT_EQ(kRed, target->GetComputedStyle()->VisitedDependentColor(
+                      GetCSSPropertyColor()));
+
+  GetElementById("order")->SetInnerHTMLWithoutTrustedTypes(
+      "<link rel=stylesheet href=order.css>");
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+  ASSERT_TRUE(target->GetComputedStyle());
+  ASSERT_EQ(kRed, target->GetComputedStyle()->VisitedDependentColor(
+                      GetCSSPropertyColor()));
+
+  // Complete the earlier sheet only after the target has a computed style.
+  css_resource.Complete("@layer second, first;");
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  ASSERT_TRUE(target->GetComputedStyle());
+  EXPECT_EQ(kGreen, target->GetComputedStyle()->VisitedDependentColor(
+                        GetCSSPropertyColor()));
+}
+
 TEST_F(StyleEngineSimTest, OwnerColorScheme) {
   SimRequest main_resource("https://example.com", "text/html");
   SimRequest frame_resource("https://example.com/frame.html", "text/html");
@@ -6315,6 +6363,167 @@ TEST_F(StyleEngineTest, CascadeLayerUseCount) {
     EXPECT_TRUE(IsUseCounted(WebFeature::kCSSCascadeLayers));
     ClearUseCounter(WebFeature::kCSSCascadeLayers);
   }
+}
+
+TEST_F(StyleEngineTest, ShadowLayerOrderInvalidatesOnlyHostSubtree) {
+  constexpr Color kRed = Color::FromRGB(255, 0, 0);
+  constexpr Color kGreen = Color::FromRGB(0, 128, 0);
+
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open">
+        <style id="order"></style>
+        <style>
+          @layer first { #target { background-color: green; } }
+          @layer second { #target { background-color: red; } }
+        </style>
+        <div id="target"></div>
+      </template>
+    </div>
+    <div id="unrelated"></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  Element* host = GetElementById("host");
+  Element* unrelated = GetElementById("unrelated");
+  ASSERT_TRUE(host);
+  ASSERT_TRUE(unrelated);
+  ShadowRoot* shadow = host->GetShadowRoot();
+  ASSERT_TRUE(shadow);
+  Element* target = shadow->getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(target->GetComputedStyle());
+  ASSERT_EQ(kRed, target->GetComputedStyle()->VisitedDependentColor(
+                      GetCSSPropertyBackgroundColor()));
+  ASSERT_FALSE(GetStyleRecalcRoot());
+
+  auto* order =
+      To<HTMLStyleElement>(shadow->getElementById(AtomicString("order")));
+  ASSERT_TRUE(order);
+  ASSERT_TRUE(order->sheet());
+  order->sheet()->insertRule("@layer second, first;", 0, ASSERT_NO_EXCEPTION);
+  GetStyleEngine().UpdateActiveStyle();
+
+  EXPECT_EQ(host, GetStyleRecalcRoot());
+  EXPECT_EQ(kSubtreeStyleChange, host->GetStyleChangeType());
+  EXPECT_FALSE(GetDocument().documentElement()->NeedsStyleRecalc());
+  EXPECT_FALSE(unrelated->NeedsStyleRecalc());
+
+  UpdateAllLifecyclePhases();
+  ASSERT_TRUE(target->GetComputedStyle());
+  EXPECT_EQ(kGreen, target->GetComputedStyle()->VisitedDependentColor(
+                        GetCSSPropertyBackgroundColor()));
+}
+
+TEST_F(StyleEngineTest,
+       RemovingUserLayerOrderInvalidatesStyleInNestedShadowTrees) {
+  constexpr Color kRed = Color::FromRGB(255, 0, 0);
+  constexpr Color kGreen = Color::FromRGB(0, 128, 0);
+
+  InjectSheet("user_layer_order", WebCssOrigin::kUser, "@layer second, first;");
+  InjectSheet("user_layer_rules", WebCssOrigin::kUser, R"CSS(
+    @layer first { #target { background-color: green; } }
+    @layer second { #target { background-color: red; } }
+  )CSS");
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="target"></div>
+    <div id="host">
+      <template shadowrootmode="open">
+        <div id="target"></div>
+        <div id="nested-host">
+          <template shadowrootmode="open">
+            <div id="target"></div>
+          </template>
+        </div>
+      </template>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  Element* host = GetElementById("host");
+  ASSERT_TRUE(host);
+  ShadowRoot* shadow = host->GetShadowRoot();
+  ASSERT_TRUE(shadow);
+  Element* nested_host = shadow->getElementById(AtomicString("nested-host"));
+  ASSERT_TRUE(nested_host);
+  ShadowRoot* nested = nested_host->GetShadowRoot();
+  ASSERT_TRUE(nested);
+
+  struct TreeScopeTarget {
+    STACK_ALLOCATED();
+
+   public:
+    std::string_view scope_name;
+    Element* element;
+  };
+  const auto targets = std::to_array<TreeScopeTarget>({
+      {"document", GetElementById("target")},
+      {"shadow", shadow->getElementById(AtomicString("target"))},
+      {"nested shadow", nested->getElementById(AtomicString("target"))},
+  });
+  for (const auto& [scope_name, target] : targets) {
+    SCOPED_TRACE(scope_name);
+    ASSERT_TRUE(target);
+    ASSERT_TRUE(target->GetComputedStyle());
+    ASSERT_EQ(kGreen, target->GetComputedStyle()->VisitedDependentColor(
+                          GetCSSPropertyBackgroundColor()));
+  }
+
+  // Background color is not inherited, so each target must be recalculated.
+  GetStyleEngine().RemoveInjectedSheet(StyleSheetKey("user_layer_order"),
+                                       WebCssOrigin::kUser);
+  GetStyleEngine().UpdateActiveStyle();
+  EXPECT_EQ(kSubtreeStyleChange,
+            GetDocument().documentElement()->GetStyleChangeType());
+  UpdateAllLifecyclePhases();
+
+  for (const auto& [scope_name, target] : targets) {
+    SCOPED_TRACE(scope_name);
+    ASSERT_TRUE(target->GetComputedStyle());
+    EXPECT_EQ(kRed, target->GetComputedStyle()->VisitedDependentColor(
+                        GetCSSPropertyBackgroundColor()));
+  }
+}
+
+class StyleEngineCascadeLayerOriginTest
+    : public StyleEngineTest,
+      public testing::WithParamInterface<WebCssOrigin> {};
+
+INSTANTIATE_TEST_SUITE_P(AuthorAndUser,
+                         StyleEngineCascadeLayerOriginTest,
+                         testing::Values(WebCssOrigin::kAuthor,
+                                         WebCssOrigin::kUser),
+                         [](const testing::TestParamInfo<WebCssOrigin>& info) {
+                           return info.param == WebCssOrigin::kAuthor ? "Author"
+                                                                      : "User";
+                         });
+
+TEST_P(StyleEngineCascadeLayerOriginTest,
+       AppendingLayerOrderDoesNotRecalculateStyle) {
+  constexpr Color kRed = Color::FromRGB(255, 0, 0);
+
+  InjectSheet("layer_rules", GetParam(), R"CSS(
+    @layer first { #target { color: green; } }
+    @layer second { #target { color: red; } }
+  )CSS");
+  SetBodyInnerHTML("<div id=target></div>");
+
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(target->GetComputedStyle());
+  ASSERT_EQ(kRed, target->GetComputedStyle()->VisitedDependentColor(
+                      GetCSSPropertyColor()));
+
+  // Appending a declaration cannot reorder layers established by earlier
+  // sheets.
+  const unsigned initial_count = GetStyleEngine().StyleForElementCount();
+  InjectSheet("layer_order", GetParam(), "@layer second, first;");
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(initial_count, GetStyleEngine().StyleForElementCount());
+  ASSERT_TRUE(target->GetComputedStyle());
+  EXPECT_EQ(kRed, target->GetComputedStyle()->VisitedDependentColor(
+                      GetCSSPropertyColor()));
 }
 
 TEST_F(StyleEngineTest, UserKeyframesOverrideWithCascadeLayers) {

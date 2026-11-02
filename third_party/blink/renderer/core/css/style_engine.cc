@@ -160,8 +160,11 @@ enum RuleSetFlags {
   kFontFeatureValuesRules = 1 << 7,
   kViewTransitionRules = 1 << 8,
   kFunctionRules = 1 << 9,
+  kFullRecalcRules = 1 << 10,
 };
 
+// Includes kFullRecalcRules: layer-order changes can affect rules in unchanged
+// sheets and therefore require subtree style recalc.
 const unsigned kRuleSetFlagsAll = ~0u;
 
 unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
@@ -2910,6 +2913,14 @@ void StyleEngine::InvalidateForRuleSetChanges(
   Element& invalidation_root =
       ScopedStyleResolver::InvalidationRootForTreeScope(tree_scope);
   if (invalidation_root.GetStyleChangeType() == kSubtreeStyleChange) {
+    return;
+  }
+
+  if (changed_rule_flags & kFullRecalcRules) {
+    invalidation_root.SetNeedsStyleRecalc(
+        kSubtreeStyleChange,
+        StyleChangeReasonForTracing::Create(
+            style_change_reason::kActiveStylesheetsUpdate));
     return;
   }
 
