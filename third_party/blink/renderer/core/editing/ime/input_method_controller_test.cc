@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 using ui::mojom::ImeTextSpanThickness;
@@ -3990,6 +3991,34 @@ TEST_F(InputMethodControllerTest, TextareaMaxlengthFullWidthSpaceRepro) {
     EXPECT_FALSE(Controller().HasComposition());
     EXPECT_EQ("12345", textarea->Value());
   }
+}
+
+// A focused date field has no text selection, so it used to report
+// kWebTextInputTypeNone unless the selection happened to be left inside
+// another editable element. See https://crbug.com/40622827.
+TEST_F(InputMethodControllerTest, TextInputTypeForDateTimeField) {
+  SetBodyContent("<input id='text' value='abc'><input id='date' type='date'>");
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  GetElementById("date")->Focus();
+
+  EXPECT_EQ(kWebTextInputTypeDateTimeField, Controller().TextInputType());
+  EXPECT_EQ(kWebTextInputTypeDateTimeField, Controller().TextInputInfo().type);
+
+  GetElementById("text")->Focus();
+  GetElementById("date")->Focus();
+  EXPECT_EQ(kWebTextInputTypeDateTimeField, Controller().TextInputType());
+}
+
+TEST_F(InputMethodControllerTest, TextInputTypeForDateTimeFieldKillswitch) {
+  ScopedDateTimeFieldTypeWithoutSelectionForTest disabled(false);
+  SetBodyContent("<input id='date' type='date'>");
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  GetElementById("date")->Focus();
+  ASSERT_TRUE(GetDocument().FocusedElement()->IsDateTimeFieldElement());
+
+  EXPECT_EQ(kWebTextInputTypeNone, Controller().TextInputType());
 }
 
 }  // namespace blink

@@ -1674,6 +1674,10 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
   if (!IsAvailable())
     return info;
 
+  // The type must be resolved before the selection checks below, which bail
+  // out for a focused element without a text selection.
+  info.type = TextInputType();
+
   if (!GetFrame().Selection().IsAvailable()) {
     // plugins/mouse-capture-inside-shadow.html reaches here.
     return info;
@@ -1686,7 +1690,6 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
   info.action = InputActionOfFocusedElement();
   info.input_mode = InputModeOfFocusedElement();
   info.virtual_keyboard_policy = VirtualKeyboardPolicyOfFocusedElement();
-  info.type = TextInputType();
   info.flags = TextInputFlags();
   if (info.type == kWebTextInputTypeNone)
     return info;
@@ -1925,6 +1928,15 @@ WebTextInputType InputMethodController::TextInputType() const {
     Element* element = GetDocument().FocusedElement();
     if (IsA<HTMLCanvasElement>(element)) {
       return kWebTextInputTypeContentEditable;
+    }
+  }
+
+  // A DateTimeFieldElement accepts keyboard input but never has a text
+  // selection, so the selection checks below would report kNone for it.
+  if (RuntimeEnabledFeatures::DateTimeFieldTypeWithoutSelectionEnabled()) {
+    Element* focused_element = GetDocument().FocusedElement();
+    if (focused_element && focused_element->IsDateTimeFieldElement()) {
+      return kWebTextInputTypeDateTimeField;
     }
   }
 

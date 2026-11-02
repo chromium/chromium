@@ -2368,6 +2368,11 @@
       name: "Database",
     },
     {
+      // Killswitch for https://crbug.com/40622827
+      name: "DateTimeFieldTypeWithoutSelection",
+      status: "stable",
+    },
+    {
       // https://crbug.com/473454959
       name: "DateTimeInputTypeEarlyAdvanceFix",
       status: "stable",
