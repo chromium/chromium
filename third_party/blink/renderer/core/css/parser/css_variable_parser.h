@@ -56,6 +56,8 @@ class CORE_EXPORT CSSVariableParser {
   // will simply consume until AtEnd(), unless an error is encountered.
   //
   // [1] https://github.com/w3c/csswg-drafts/issues/9317
+  //
+  // Must only be called on the main thread.
   static CSSVariableData* ConsumeUnparsedDeclaration(
       CSSParserTokenStream& stream,
       bool allow_important_annotation,
