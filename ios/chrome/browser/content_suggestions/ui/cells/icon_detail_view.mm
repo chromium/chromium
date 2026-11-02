@@ -570,7 +570,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   UILabel* label = [[UILabel alloc] init];
 
   label.text = _config.descriptionText;
-  label.numberOfLines = 2;
+  label.numberOfLines = _config.showSwitch ? 3 : 2;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.font = PreferredFontForTextStyle(UIFontTextStyleFootnote, std::nullopt,
                                          kMaxTextSizeForStyleFootnote);

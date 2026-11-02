@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/ui/tab_resumption_config.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
@@ -464,27 +466,33 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShortcuts:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
-      _contentStackViewBottomMarginAnchor.constant =
-          isContentOversized(_stackView) ? -kOversizedReducedContentBottomInset
-                                         : -kReducedContentBottomInset;
       _reducedBottomMargin = true;
       break;
     case ContentSuggestionsModuleType::kSafetyCheck: {
       SafetyCheckConfig* safetyCheckConfig =
           static_cast<SafetyCheckConfig*>(config);
       if ([safetyCheckConfig numberOfIssues] > 1) {
-        _contentStackViewBottomMarginAnchor.constant =
-            isContentOversized(_stackView)
-                ? -kOversizedReducedContentBottomInset
-                : -kReducedContentBottomInset;
         _reducedBottomMargin = true;
       }
       break;
     }
-
+    case ContentSuggestionsModuleType::kTips: {
+      IconDetailViewConfig* iconDetailConfig =
+          base::apple::ObjCCastStrict<IconDetailViewConfig>(config);
+      _reducedBottomMargin = iconDetailConfig.showSwitch;
+      break;
+    }
     default:
       _reducedBottomMargin = false;
       break;
+  }
+
+  if (_reducedBottomMargin) {
+    _contentStackViewBottomMarginAnchor.constant =
+        isContentOversized(_stackView) ? -kOversizedReducedContentBottomInset
+                                       : -kReducedContentBottomInset;
+  } else {
+    _contentStackViewBottomMarginAnchor.constant = -kContentBottomInset;
   }
 }
 
