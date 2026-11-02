@@ -35,17 +35,17 @@ class SkiaProject : public Project {
   std::string_view GetSpanFromRefRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result)
       const override {
-    return "SPAN_FROM_REF_NOT_AVAILABLE";
+    return "SkSpanFromRef";
   }
   std::string_view GetAsByteSpanRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result)
       const override {
-    return "AS_BYTE_SPAN_NOT_AVAILABLE";
+    return "SkAsByteSpan";
   }
   std::string_view GetAsWritableByteSpanRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result)
       const override {
-    return "AS_WRITABLE_BYTE_SPAN_NOT_AVAILABLE";
+    return "SkAsWritableByteSpan";
   }
   std::string_view GetSafeConversionsIncludePath() const override {
     return "include/private/SkTo.h";
