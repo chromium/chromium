@@ -92,8 +92,6 @@ source_set("impl") {
       "//chrome/browser/ui/webui/browser_command",
       "//chrome/common:version_header",
       "//components/bookmarks/common",
-      "//components/history_embeddings/content",
-      "//components/history_embeddings/core",
       "//components/user_education/common",
       "//components/variations/service",
       "//ui/webui",
