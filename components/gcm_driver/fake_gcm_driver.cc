@@ -74,9 +74,4 @@ InstanceIDHandler* FakeGCMDriver::GetInstanceIDHandlerInternal() {
   return nullptr;
 }
 
-void FakeGCMDriver::AddHeartbeatInterval(const std::string& scope,
-                                         int interval_ms) {}
-
-void FakeGCMDriver::RemoveHeartbeatInterval(const std::string& scope) {}
-
 }  // namespace gcm

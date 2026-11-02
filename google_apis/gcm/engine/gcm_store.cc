@@ -24,7 +24,6 @@ void GCMStore::LoadResult::Reset() {
   gservices_settings.clear();
   gservices_digest.clear();
   last_checkin_time = base::Time::FromInternalValue(0LL);
-  heartbeat_intervals.clear();
   success = false;
   store_does_not_exist = false;
   instance_id_data.clear();

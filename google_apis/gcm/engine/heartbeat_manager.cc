@@ -26,8 +26,6 @@ const int kCellHeartbeatDefaultMs = 1000 * 60 * 28;  // 28 minutes.
 const int kWifiHeartbeatDefaultMs = 1000 * 60 * 15;  // 15 minutes.
 // The default heartbeat ack interval.
 const int kHeartbeatAckDefaultMs = 1000 * 60 * 1;  // 1 minute.
-// Minimum allowed client default heartbeat interval.
-const int kMinClientHeartbeatIntervalMs = 1000 * 30;  // 30 seconds.
 // Minimum time spent sleeping before we force a new heartbeat.
 const int kMinSuspendTimeMs = 1000 * 10; // 10 seconds.
 
@@ -47,7 +45,6 @@ HeartbeatManager::HeartbeatManager(
     : waiting_for_ack_(false),
       heartbeat_interval_ms_(0),
       server_interval_ms_(0),
-      client_interval_ms_(0),
       io_task_runner_(std::move(io_task_runner)),
       heartbeat_timer_(new base::RetainingOneShotTimer()) {
   DCHECK(io_task_runner_);
@@ -224,17 +221,9 @@ void HeartbeatManager::CheckForMissedHeartbeat() {
 }
 
 void HeartbeatManager::UpdateHeartbeatInterval() {
-  // Server interval takes precedence over client interval, even if the latter
-  // is less.
   if (server_interval_ms_ != 0) {
     // If a server interval is set, it overrides any local one.
     heartbeat_interval_ms_ = server_interval_ms_;
-  } else if (HasClientHeartbeatInterval() &&
-             (client_interval_ms_ < heartbeat_interval_ms_ ||
-              heartbeat_interval_ms_ == 0)) {
-    // Client interval might have been adjusted up, which should only take
-    // effect during a reconnection.
-    heartbeat_interval_ms_ = client_interval_ms_;
   } else if (heartbeat_interval_ms_ == 0) {
     // If interval is still 0, recalculate it based on network type.
     heartbeat_interval_ms_ = GetDefaultHeartbeatInterval();
@@ -252,45 +241,6 @@ int HeartbeatManager::GetDefaultHeartbeatInterval() {
     heartbeat_interval_ms = kWifiHeartbeatDefaultMs;
   }
   return heartbeat_interval_ms;
-}
-
-int HeartbeatManager::GetMaxClientHeartbeatIntervalMs() {
-  return GetDefaultHeartbeatInterval();
-}
-
-int HeartbeatManager::GetMinClientHeartbeatIntervalMs() {
-  // Returning a constant. This should be adjusted for connection type, like the
-  // default/max interval.
-  return kMinClientHeartbeatIntervalMs;
-}
-
-void HeartbeatManager::SetClientHeartbeatIntervalMs(int interval_ms) {
-  if ((interval_ms != 0 && !IsValidClientHeartbeatInterval(interval_ms)) ||
-      interval_ms == client_interval_ms_) {
-    return;
-  }
-
-  client_interval_ms_ = interval_ms;
-  // Only reset connection if the new heartbeat interval is shorter. If it is
-  // longer, the connection will reset itself at some point and interval will be
-  // fixed.
-  if (client_interval_ms_ > 0 && client_interval_ms_ < heartbeat_interval_ms_) {
-    ResetConnection(ConnectionFactory::NEW_HEARTBEAT_INTERVAL);
-  }
-}
-
-int HeartbeatManager::GetClientHeartbeatIntervalMs() {
-  return client_interval_ms_;
-}
-
-bool HeartbeatManager::HasClientHeartbeatInterval() {
-  return client_interval_ms_ != 0;
-}
-
-bool HeartbeatManager::IsValidClientHeartbeatInterval(int interval) {
-  int max_heartbeat_interval = GetDefaultHeartbeatInterval();
-  return kMinClientHeartbeatIntervalMs <= interval &&
-      interval <= max_heartbeat_interval;
 }
 
 void HeartbeatManager::ResetConnection(

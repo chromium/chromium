@@ -97,9 +97,6 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
                         GCMDriver::ClearActivityLogs clear_logs);
   void SetGCMRecording(GetGCMStatisticsCallback callback, bool recording);
 
-  void AddHeartbeatInterval(const std::string& scope, int interval_ms);
-  void RemoveHeartbeatInterval(const std::string& scope);
-
   void AddInstanceIDData(const std::string& app_id,
                          const std::string& instance_id,
                          const std::string& extra_data);
@@ -460,18 +457,6 @@ void GCMDriverDesktop::IOWorker::DeleteToken(
   instance_id_token_info->authorized_entity = authorized_entity;
   instance_id_token_info->scope = scope;
   gcm_client_->Unregister(std::move(instance_id_token_info));
-}
-
-void GCMDriverDesktop::IOWorker::AddHeartbeatInterval(const std::string& scope,
-                                                      int interval_ms) {
-  DCHECK(io_thread_->RunsTasksInCurrentSequence());
-  gcm_client_->AddHeartbeatInterval(scope, interval_ms);
-}
-
-void GCMDriverDesktop::IOWorker::RemoveHeartbeatInterval(
-    const std::string& scope) {
-  DCHECK(io_thread_->RunsTasksInCurrentSequence());
-  gcm_client_->RemoveHeartbeatInterval(scope);
 }
 
 void GCMDriverDesktop::IOWorker::RecordDecryptionFailure(
@@ -1052,51 +1037,6 @@ void GCMDriverDesktop::DeleteTokenFinished(const std::string& app_id,
   DeleteTokenCallback callback = std::move(callback_iter->second);
   delete_token_callbacks_.erase(callback_iter);
   std::move(callback).Run(result);
-}
-
-void GCMDriverDesktop::AddHeartbeatInterval(const std::string& scope,
-                                            int interval_ms) {
-  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-
-  // The GCM service has not been initialized.
-  if (!delayed_task_controller_) {
-    return;
-  }
-
-  if (!delayed_task_controller_->CanRunTaskWithoutDelay()) {
-    // The GCM service was initialized but has not started yet.
-    delayed_task_controller_->AddTask(
-        base::BindOnce(&GCMDriverDesktop::AddHeartbeatInterval,
-                       weak_ptr_factory_.GetWeakPtr(), scope, interval_ms));
-    return;
-  }
-
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMDriverDesktop::IOWorker::AddHeartbeatInterval,
-                     base::Unretained(io_worker_.get()), scope, interval_ms));
-}
-
-void GCMDriverDesktop::RemoveHeartbeatInterval(const std::string& scope) {
-  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-
-  // The GCM service has not been initialized.
-  if (!delayed_task_controller_) {
-    return;
-  }
-
-  if (!delayed_task_controller_->CanRunTaskWithoutDelay()) {
-    // The GCM service was initialized but has not started yet.
-    delayed_task_controller_->AddTask(
-        base::BindOnce(&GCMDriverDesktop::RemoveHeartbeatInterval,
-                       weak_ptr_factory_.GetWeakPtr(), scope));
-    return;
-  }
-
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMDriverDesktop::IOWorker::RemoveHeartbeatInterval,
-                     base::Unretained(io_worker_.get()), scope));
 }
 
 GCMClient::Result GCMDriverDesktop::EnsureStarted(

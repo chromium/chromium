@@ -557,49 +557,6 @@ TEST_F(GCMStoreImplTest, PerAppMessageLimits) {
   }
 }
 
-TEST_F(GCMStoreImplTest, HeartbeatInterval) {
-  std::unique_ptr<GCMStoreImpl> gcm_store(BuildGCMStore());
-  std::unique_ptr<GCMStore::LoadResult> load_result;
-  LoadGCMStore(gcm_store.get(), &load_result);
-
-  std::string scope1 = "scope1";
-  std::string scope2 = "scope2";
-  int heartbeat1 = 120 * 1000;
-  int heartbeat2 = 360 * 1000;
-
-  gcm_store->AddHeartbeatInterval(
-      scope1, heartbeat1,
-      base::BindOnce(&GCMStoreImplTest::UpdateCallback,
-                     base::Unretained(this)));
-  PumpLoop();
-  gcm_store->AddHeartbeatInterval(
-      scope2, heartbeat2,
-      base::BindOnce(&GCMStoreImplTest::UpdateCallback,
-                     base::Unretained(this)));
-  PumpLoop();
-
-  gcm_store = BuildGCMStore();
-  LoadGCMStore(gcm_store.get(), &load_result);
-
-  EXPECT_EQ(2UL, load_result->heartbeat_intervals.size());
-  EXPECT_TRUE(load_result->heartbeat_intervals.contains(scope1));
-  EXPECT_EQ(heartbeat1, load_result->heartbeat_intervals[scope1]);
-  EXPECT_TRUE(load_result->heartbeat_intervals.contains(scope2));
-  EXPECT_EQ(heartbeat2, load_result->heartbeat_intervals[scope2]);
-
-  gcm_store->RemoveHeartbeatInterval(
-      scope2, base::BindOnce(&GCMStoreImplTest::UpdateCallback,
-                             base::Unretained(this)));
-  PumpLoop();
-
-  gcm_store = BuildGCMStore();
-  LoadGCMStore(gcm_store.get(), &load_result);
-
-  EXPECT_EQ(1UL, load_result->heartbeat_intervals.size());
-  EXPECT_TRUE(load_result->heartbeat_intervals.contains(scope1));
-  EXPECT_EQ(heartbeat1, load_result->heartbeat_intervals[scope1]);
-}
-
 // When the database is destroyed, all database updates should fail. At the
 // same time, they per-app message counts should not go up, as failures should
 // result in decrementing the counts.

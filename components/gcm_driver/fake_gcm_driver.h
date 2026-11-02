@@ -43,8 +43,6 @@ class FakeGCMDriver : public GCMDriver {
   void SetGCMRecording(const GCMStatisticsRecordingCallback& callback,
                        bool recording) override;
   InstanceIDHandler* GetInstanceIDHandlerInternal() override;
-  void AddHeartbeatInterval(const std::string& scope, int interval_ms) override;
-  void RemoveHeartbeatInterval(const std::string& scope) override;
 
  protected:
   // GCMDriver implementation:

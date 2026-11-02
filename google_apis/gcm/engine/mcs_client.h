@@ -160,19 +160,6 @@ class GCM_EXPORT MCSClient {
   // Updates the timer used by |heartbeat_manager_| for sending heartbeats.
   void UpdateHeartbeatTimer(std::unique_ptr<base::RetainingOneShotTimer> timer);
 
-  // Allows a caller to set a heartbeat interval (in milliseconds) with which
-  // the MCS connection will be monitored on both ends, to detect device
-  // presence. In case the newly set interval is smaller than the current one,
-  // connection will be restarted with new heartbeat interval. Valid values have
-  // to be between GetMax/GetMinClientHeartbeatIntervalMs of HeartbeatManager,
-  // otherwise the setting won't take effect.
-  void AddHeartbeatInterval(const std::string& scope, int interval_ms);
-  void RemoveHeartbeatInterval(const std::string& scope);
-
-  HeartbeatManager* GetHeartbeatManagerForTesting() {
-    return &heartbeat_manager_;
-  }
-
  private:
   using StreamId = uint32_t;
   using PersistentId = std::string;
@@ -234,10 +221,6 @@ class GCM_EXPORT MCSClient {
   // Pops the next message from the front of the send queue (cleaning up
   // any associated state).
   MCSPacketInternal PopMessageForSend();
-
-  // Gets the minimum interval from the map of scopes to intervals in
-  // milliseconds.
-  int GetMinHeartbeatIntervalMs();
 
   // Local version string. Sent on login.
   const std::string version_string_;
@@ -310,9 +293,6 @@ class GCM_EXPORT MCSClient {
 
   // Manager to handle triggering/detecting heartbeats.
   HeartbeatManager heartbeat_manager_;
-
-  // Custom heartbeat intervals requested by different components.
-  std::map<std::string, int> custom_heartbeat_intervals_;
 
   // Recorder that records GCM activities for debugging purpose. Not owned.
   raw_ptr<GCMStatsRecorder> recorder_;

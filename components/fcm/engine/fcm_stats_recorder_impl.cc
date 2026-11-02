@@ -76,10 +76,6 @@ std::string GetConnectionResetReasonString(
       return "SOCKET_FAILURE";
     case gcm::ConnectionFactory::NETWORK_CHANGE:
       return "NETWORK_CHANGE";
-    case gcm::ConnectionFactory::NEW_HEARTBEAT_INTERVAL:
-      return "NEW_HEARTBEAT_INTERVAL";
-    case gcm::ConnectionFactory::CONNECTION_RESET_COUNT:
-      NOTREACHED();
   }
   return "UNKNOWN_REASON";
 }

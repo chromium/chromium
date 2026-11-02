@@ -41,10 +41,6 @@ const char kIdleNotification[] = "IdleNotification";
 // const char kPowerNotification[] = "PowerNotification";
 // const char kDataActiveNotification[] = "DataActiveNotification";
 
-// Settings for MCS Login packet.
-const char kHeartbeatIntervalSettingName[] = "hbping";
-const int kNoCustomHeartbeat = 0;
-
 // The number of unacked messages to allow before sending a stream ack.
 // Applies to both incoming and outgoing messages.
 // TODO(zea): make this server configurable.
@@ -277,12 +273,6 @@ void MCSClient::Initialize(
         collapse_key_map_[collapse_key] = packet_info_ptr;
     }
   }
-
-  // Establish if there is any custom client interval persisted from the last
-  // run and set it on the heartbeat manager.
-  custom_heartbeat_intervals_.swap(load_result->heartbeat_intervals);
-  int min_interval_ms = GetMinHeartbeatIntervalMs();
-  heartbeat_manager_.SetClientHeartbeatIntervalMs(min_interval_ms);
 }
 
 void MCSClient::Login(uint64_t android_id, uint64_t security_token) {
@@ -385,45 +375,6 @@ void MCSClient::UpdateHeartbeatTimer(
   heartbeat_manager_.UpdateHeartbeatTimer(std::move(timer));
 }
 
-void MCSClient::AddHeartbeatInterval(const std::string& scope,
-                                     int interval_ms) {
-  if (!heartbeat_manager_.IsValidClientHeartbeatInterval(interval_ms))
-    return;
-
-  custom_heartbeat_intervals_[scope] = interval_ms;
-  gcm_store_->AddHeartbeatInterval(
-      scope, interval_ms,
-      base::BindOnce(&MCSClient::OnGCMUpdateFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  int min_interval_ms = GetMinHeartbeatIntervalMs();
-  heartbeat_manager_.SetClientHeartbeatIntervalMs(min_interval_ms);
-}
-
-void MCSClient::RemoveHeartbeatInterval(const std::string& scope) {
-  custom_heartbeat_intervals_.erase(scope);
-  gcm_store_->RemoveHeartbeatInterval(
-      scope, base::BindOnce(&MCSClient::OnGCMUpdateFinished,
-                            weak_ptr_factory_.GetWeakPtr()));
-
-  int min_interval = GetMinHeartbeatIntervalMs();
-  heartbeat_manager_.SetClientHeartbeatIntervalMs(min_interval);
-}
-
-int MCSClient::GetMinHeartbeatIntervalMs() {
-  if (custom_heartbeat_intervals_.empty())
-    return kNoCustomHeartbeat;
-
-  int min_interval = custom_heartbeat_intervals_.begin()->second;
-  for (std::map<std::string, int>::const_iterator it =
-           custom_heartbeat_intervals_.begin();
-       it != custom_heartbeat_intervals_.end(); ++it) {
-    if (it->second < min_interval)
-      min_interval = it->second;
-  }
-  return min_interval;
-}
-
 void MCSClient::ResetStateAndBuildLoginRequest(
     mcs_proto::LoginRequest* request) {
   DCHECK(android_id_);
@@ -457,15 +408,6 @@ void MCSClient::ResetStateAndBuildLoginRequest(
   // Then build the request, consuming all pending acknowledgments.
   request->Swap(
       BuildLoginRequest(android_id_, security_token_, version_string_).get());
-
-  // Set custom heartbeat interval if specified.
-  if (heartbeat_manager_.HasClientHeartbeatInterval()) {
-    // Ensure that the custom heartbeat interval is communicated to the server.
-    mcs_proto::Setting* setting = request->add_setting();
-    setting->set_name(kHeartbeatIntervalSettingName);
-    setting->set_value(base::NumberToString(
-        heartbeat_manager_.GetClientHeartbeatIntervalMs()));
-  }
 
   for (PersistentIdList::const_iterator iter =
            restored_unackeds_server_ids_.begin();

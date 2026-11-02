@@ -476,19 +476,6 @@ void GCMClientImpl::GetInstanceIDData(const std::string& app_id,
   *extra_data = iter->second.second;
 }
 
-void GCMClientImpl::AddHeartbeatInterval(const std::string& scope,
-                                         int interval_ms) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(mcs_client_);
-  mcs_client_->AddHeartbeatInterval(scope, interval_ms);
-}
-
-void GCMClientImpl::RemoveHeartbeatInterval(const std::string& scope) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(mcs_client_);
-  mcs_client_->RemoveHeartbeatInterval(scope);
-}
-
 void GCMClientImpl::StartCheckin() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 

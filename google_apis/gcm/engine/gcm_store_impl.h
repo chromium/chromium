@@ -89,13 +89,6 @@ class GCM_EXPORT GCMStoreImpl : public GCMStore {
                             const std::string& settings_digest,
                             UpdateCallback callback) override;
 
-  // Sets the custom client heartbeat interval for the scope.
-  void AddHeartbeatInterval(const std::string& scope,
-                            int interval_ms,
-                            UpdateCallback callback) override;
-  void RemoveHeartbeatInterval(const std::string& scope,
-                               UpdateCallback callback) override;
-
   // Instance ID data.
   void AddInstanceIDData(const std::string& app_id,
                          const std::string& instance_id_data,

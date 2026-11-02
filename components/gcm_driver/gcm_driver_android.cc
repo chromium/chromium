@@ -176,11 +176,6 @@ InstanceIDHandler* GCMDriverAndroid::GetInstanceIDHandlerInternal() {
   return NULL;
 }
 
-void GCMDriverAndroid::AddHeartbeatInterval(const std::string& scope,
-                                            int interval_ms) {}
-
-void GCMDriverAndroid::RemoveHeartbeatInterval(const std::string& scope) {}
-
 void GCMDriverAndroid::OnActivityRecorded() {
   DCHECK(gcm_statistics_recording_callback_);
 

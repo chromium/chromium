@@ -294,14 +294,6 @@ class GCMClient {
   virtual void GetInstanceIDData(const std::string& app_id,
                                  std::string* instance_id,
                                  std::string* extra_data) = 0;
-
-  // Gets and sets custom heartbeat interval for the MCS connection.
-  // |scope| is used to identify the component that requests a custom interval
-  // to be set, and allows that component to later revoke the setting. It should
-  // be unique.
-  virtual void AddHeartbeatInterval(const std::string& scope,
-                                    int interval_ms) = 0;
-  virtual void RemoveHeartbeatInterval(const std::string& scope) = 0;
 };
 
 }  // namespace gcm

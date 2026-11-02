@@ -130,8 +130,6 @@ class GCMClientImpl : public GCMClient,
   void GetInstanceIDData(const std::string& app_id,
                          std::string* instance_id,
                          std::string* extra_data) override;
-  void AddHeartbeatInterval(const std::string& scope, int interval_ms) override;
-  void RemoveHeartbeatInterval(const std::string& scope) override;
 
   // GCMStatsRecorder::Delegate implemenation.
   void OnActivityRecorded() override;

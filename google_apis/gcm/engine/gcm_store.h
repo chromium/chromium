@@ -51,7 +51,6 @@ class GCM_EXPORT GCMStore {
     std::map<std::string, std::string> gservices_settings;
     std::string gservices_digest;
     base::Time last_checkin_time;
-    std::map<std::string, int> heartbeat_intervals;
     std::map<std::string, std::string> instance_id_data;
   };
 
@@ -127,13 +126,6 @@ class GCM_EXPORT GCMStore {
       const std::map<std::string, std::string>& settings,
       const std::string& settings_digest,
       UpdateCallback callback) = 0;
-
-  // Sets the custom client heartbeat interval for a specified scope.
-  virtual void AddHeartbeatInterval(const std::string& scope,
-                                    int interval_ms,
-                                    UpdateCallback callback) = 0;
-  virtual void RemoveHeartbeatInterval(const std::string& scope,
-                                       UpdateCallback callback) = 0;
 
   // Instance ID data.
   virtual void AddInstanceIDData(const std::string& app_id,

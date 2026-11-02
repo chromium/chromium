@@ -70,8 +70,6 @@ class GCMDriverAndroid : public GCMDriver,
   void SetGCMRecording(const GCMStatisticsRecordingCallback& callback,
                        bool recording) override;
   InstanceIDHandler* GetInstanceIDHandlerInternal() override;
-  void AddHeartbeatInterval(const std::string& scope, int interval_ms) override;
-  void RemoveHeartbeatInterval(const std::string& scope) override;
   void AddAppHandler(const std::string& app_id,
                      GCMAppHandler* handler) override;
 

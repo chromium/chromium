@@ -78,19 +78,6 @@ class GCM_EXPORT HeartbeatManager : public base::PowerSuspendObserver {
   void OnSuspend() override;
   void OnResume() override;
 
-  // Maximum and minimum of the custom client interval that can be requested,
-  // calculated based on the network conditions.
-  int GetMaxClientHeartbeatIntervalMs();
-  int GetMinClientHeartbeatIntervalMs();
-
-  // Sets, gets and validates the custom client interval. If the interval is
-  // less than the current custom heartbeat interval, the connection will be
-  // reset to update the receiving server.
-  void SetClientHeartbeatIntervalMs(int interval_ms);
-  int GetClientHeartbeatIntervalMs();
-  bool HasClientHeartbeatInterval();
-  bool IsValidClientHeartbeatInterval(int interval);
-
  protected:
   // Helper method to send heartbeat on timer trigger.
   void OnHeartbeatTriggered();
@@ -125,9 +112,6 @@ class GCM_EXPORT HeartbeatManager : public base::PowerSuspendObserver {
   // The most recent server-provided heartbeat interval (0 if none has been
   // provided).
   int server_interval_ms_;
-
-  // Custom interval requested by the client.
-  int client_interval_ms_;
 
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 

@@ -104,12 +104,6 @@ const char kGServiceSettingKeyEnd[] = "gservice2-";
 const char kGServiceSettingsDigestKey[] = "gservices_digest";
 // Key used to timestamp last checkin (marked with G services settings update).
 const char kLastCheckinTimeKey[] = "last_checkin_time";
-// Lowest lexicographically ordered heartbeat key.
-// Used for prefixing account information.
-const char kHeartbeatKeyStart[] = "heartbeat1-";
-// Key guaranteed to be higher than all heartbeat keys.
-// Used for limiting iteration.
-const char kHeartbeatKeyEnd[] = "heartbeat2-";
 // Lowest lexicographically ordered app ids.
 // Used for prefixing app id.
 const char kInstanceIDKeyStart[] = "iid1-";
@@ -168,14 +162,6 @@ std::string ParseGServiceSettingKey(const std::string& key) {
   return key.substr(std::size(kGServiceSettingKeyStart) - 1);
 }
 
-std::string MakeHeartbeatKey(const std::string& scope) {
-  return kHeartbeatKeyStart + scope;
-}
-
-std::string ParseHeartbeatKey(const std::string& key) {
-  return key.substr(std::size(kHeartbeatKeyStart) - 1);
-}
-
 std::string MakeInstanceIDKey(const std::string& app_id) {
   return kInstanceIDKeyStart + app_id;
 }
@@ -226,11 +212,6 @@ class GCMStoreImpl::Backend
   void SetGServicesSettings(const std::map<std::string, std::string>& settings,
                             const std::string& digest,
                             UpdateCallback callback);
-  void AddHeartbeatInterval(const std::string& scope,
-                            int interval_ms,
-                            UpdateCallback callback);
-  void RemoveHeartbeatInterval(const std::string& scope,
-                               UpdateCallback callback);
   void AddInstanceIDData(const std::string& app_id,
                          const std::string& instance_id_data,
                          UpdateCallback callback);
@@ -251,7 +232,6 @@ class GCMStoreImpl::Backend
   bool LoadLastCheckinInfo(base::Time* last_checkin_time);
   bool LoadGServicesSettings(std::map<std::string, std::string>* settings,
                              std::string* digest);
-  bool LoadHeartbeatIntervals(std::map<std::string, int>* heartbeat_intervals);
   bool LoadInstanceIDData(std::map<std::string, std::string>* instance_id_data);
   // Removes deprecated entries from the database on load.
   void RemoveDeprecatedData();
@@ -327,8 +307,6 @@ LoadStatus GCMStoreImpl::Backend::OpenStoreAndLoadData(StoreOpenMode open_mode,
                              &result->gservices_digest)) {
     return load_status = LOADING_GSERVICE_SETTINGS_FAILED;
   }
-  if (!LoadHeartbeatIntervals(&result->heartbeat_intervals))
-    return LOADING_HEARTBEAT_INTERVALS_FAILED;
   if (!LoadInstanceIDData(&result->instance_id_data))
     return LOADING_INSTANCE_ID_DATA_FAILED;
 
@@ -696,54 +674,6 @@ void GCMStoreImpl::Backend::SetGServicesSettings(
       FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
 }
 
-void GCMStoreImpl::Backend::AddHeartbeatInterval(const std::string& scope,
-                                                 int interval_ms,
-                                                 UpdateCallback callback) {
-  DVLOG(1) << "Saving a heartbeat interval: scope: " << scope
-           << " interval: " << interval_ms << "ms.";
-  if (!db_.get()) {
-    LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
-    return;
-  }
-
-  leveldb::WriteOptions write_options;
-  write_options.sync = true;
-
-  std::string data = base::NumberToString(interval_ms);
-  std::string key = MakeHeartbeatKey(scope);
-  const leveldb::Status s =
-      db_->Put(write_options, MakeSlice(key), MakeSlice(data));
-  if (!s.ok())
-    LOG(ERROR) << "LevelDB adding heartbeat interval failed: " << s.ToString();
-  foreground_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
-}
-
-void GCMStoreImpl::Backend::RemoveHeartbeatInterval(const std::string& scope,
-                                                    UpdateCallback callback) {
-  if (!db_.get()) {
-    LOG(ERROR) << "GCMStore db doesn't exist.";
-    foreground_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
-    return;
-  }
-
-  leveldb::WriteOptions write_options;
-  write_options.sync = true;
-
-  leveldb::Status s =
-      db_->Delete(write_options, MakeSlice(MakeHeartbeatKey(scope)));
-
-  if (!s.ok()) {
-    LOG(ERROR) << "LevelDB removal of heartbeat interval failed: "
-               << s.ToString();
-  }
-  foreground_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), s.ok()));
-}
-
 void GCMStoreImpl::Backend::AddInstanceIDData(
     const std::string& app_id,
     const std::string& instance_id_data,
@@ -1001,30 +931,6 @@ bool GCMStoreImpl::Backend::LoadGServicesSettings(
   return true;
 }
 
-bool GCMStoreImpl::Backend::LoadHeartbeatIntervals(
-    std::map<std::string, int>* heartbeat_intervals) {
-  leveldb::ReadOptions read_options;
-  read_options.verify_checksums = true;
-
-  std::unique_ptr<leveldb::Iterator> iter(db_->NewIterator(read_options));
-  for (iter->Seek(MakeSlice(kHeartbeatKeyStart));
-       iter->Valid() && iter->key().ToString() < kHeartbeatKeyEnd;
-       iter->Next()) {
-    std::string scope = ParseHeartbeatKey(iter->key().ToString());
-    int interval_ms;
-    if (!base::StringToInt(iter->value().ToString(), &interval_ms)) {
-      DVLOG(1) << "Failed to parse heartbeat interval info with scope: "
-               << scope;
-      return false;
-    }
-    DVLOG(1) << "Found heartbeat interval with scope: " << scope
-             << " interval: " << interval_ms << "ms.";
-    (*heartbeat_intervals)[scope] = interval_ms;
-  }
-
-  return true;
-}
-
 bool GCMStoreImpl::Backend::LoadInstanceIDData(
     std::map<std::string, std::string>* instance_id_data) {
   leveldb::ReadOptions read_options;
@@ -1257,22 +1163,6 @@ void GCMStoreImpl::SetGServicesSettings(
       FROM_HERE,
       base::BindOnce(&GCMStoreImpl::Backend::SetGServicesSettings, backend_,
                      settings, digest, std::move(callback)));
-}
-
-void GCMStoreImpl::AddHeartbeatInterval(const std::string& scope,
-                                        int interval_ms,
-                                        UpdateCallback callback) {
-  blocking_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMStoreImpl::Backend::AddHeartbeatInterval, backend_,
-                     scope, interval_ms, std::move(callback)));
-}
-
-void GCMStoreImpl::RemoveHeartbeatInterval(const std::string& scope,
-                                           UpdateCallback callback) {
-  blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::RemoveHeartbeatInterval,
-                                backend_, scope, std::move(callback)));
 }
 
 void GCMStoreImpl::SetValueForTesting(const std::string& key,
