@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/tick_clock.h"
 #include "media/base/cross_origin_data_source.h"
 #include "media/base/data_source.h"
@@ -168,13 +169,10 @@ class PLATFORM_EXPORT MultiBufferDataSource
   void OnRedirected(const scoped_refptr<UrlData>& new_destination);
 
   // A factory method to create a BufferedResourceLoader based on the read
-  // parameters.
-  void CreateResourceLoader(int64_t first_byte_position,
-                            int64_t last_byte_position);
-
-  // Same as above, but called with |lock_| held.
+  // parameters. Called with |lock_| held.
   void CreateResourceLoader_Locked(int64_t first_byte_position,
-                                   int64_t last_byte_position);
+                                   int64_t last_byte_position)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Set reader_ while asserting proper locking.
   void SetReader(std::unique_ptr<MultiBufferReader> reader);
@@ -187,7 +185,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
   // After a read, this function updates the read position.
   // It's in a separate function because the read itself can either happen
   // in ReadTask() or in Read(), both of which call this function afterwards.
-  void SeekTask_Locked();
+  void SeekTask_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Lock |lock_| lock and call SeekTask_Locked().
   // Called with PostTask when read() complets on the demuxer thread.
@@ -195,7 +193,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
 
   // Cancels oustanding callbacks and sets |stop_signal_received_|. Safe to call
   // from any thread.
-  void StopInternal_Locked();
+  void StopInternal_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Stops |reader_| if present. Used by Abort() and Stop().
   void StopLoader();
@@ -217,7 +215,8 @@ class PLATFORM_EXPORT MultiBufferDataSource
   // If |force_loading| is true, we call downloading_cb_ and tell it that
   // we are currently loading, regardless of what reader_->IsLoading() says.
   // Caller must hold |lock_|.
-  void UpdateLoadingState_Locked(bool force_loading);
+  void UpdateLoadingState_Locked(bool force_loading)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Update |reader_|'s preload and buffer settings.
   void UpdateBufferSizes();
@@ -264,13 +263,13 @@ class PLATFORM_EXPORT MultiBufferDataSource
   // Callback method from the pipeline for initialization.
   InitializeCB init_cb_;
 
+  // Protects |stop_signal_received_|, |read_op_|, |reader_| and |total_bytes_|.
+  base::Lock lock_;
+
   // Read parameters received from the Read() method call. Must be accessed
   // under |lock_|.
   class ReadOperation;
-  std::unique_ptr<ReadOperation> read_op_;
-
-  // Protects |stop_signal_received_|, |read_op_|, |reader_| and |total_bytes_|.
-  base::Lock lock_;
+  std::unique_ptr<ReadOperation> read_op_ GUARDED_BY(lock_);
 
   // Whether we've been told to stop via Abort() or Stop().
   bool stop_signal_received_ = false;

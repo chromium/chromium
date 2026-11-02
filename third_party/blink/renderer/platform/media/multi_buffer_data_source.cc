@@ -152,18 +152,6 @@ void MultiBufferDataSource::SetReader(
   reader_ = std::move(reader);
 }
 
-void MultiBufferDataSource::CreateResourceLoader(int64_t first_byte_position,
-                                                 int64_t last_byte_position) {
-  DCHECK(render_task_runner_->BelongsToCurrentThread());
-
-  SetReader(std::make_unique<MultiBufferReader>(
-      url_data_->multibuffer(), first_byte_position, last_byte_position,
-      is_client_audio_element_,
-      blink::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),
-      render_task_runner_));
-  UpdateBufferSizes();
-}
-
 void MultiBufferDataSource::CreateResourceLoader_Locked(
     int64_t first_byte_position,
     int64_t last_byte_position) {
@@ -185,7 +173,8 @@ void MultiBufferDataSource::Initialize(InitializeCB init_cb) {
 
   init_cb_ = std::move(init_cb);
 
-  CreateResourceLoader(0, kPositionNotSpecified);
+  base::AutoLock auto_lock(lock_);
+  CreateResourceLoader_Locked(0, kPositionNotSpecified);
 
   // We're not allowed to call Wait() if data is already available.
   if (reader_->Available()) {
@@ -236,26 +225,29 @@ void MultiBufferDataSource::OnRedirected(
   url_data_->OnRedirect(
       blink::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
 
-  if (init_cb_) {
-    CreateResourceLoader(0, kPositionNotSpecified);
-    if (reader_->Available()) {
-      PostCrossThreadTask(
-          *render_task_runner_, FROM_HERE,
-          CrossThreadBindOnce(&MultiBufferDataSource::StartCallback,
-                              weak_ptr_));
-    } else {
-      reader_->Wait(
-          1, blink::BindOnce(&MultiBufferDataSource::StartCallback, weak_ptr_));
-    }
-  } else if (read_op_) {
-    CreateResourceLoader(read_op_->position(), kPositionNotSpecified);
-    if (reader_->Available()) {
-      PostCrossThreadTask(
-          *render_task_runner_, FROM_HERE,
-          CrossThreadBindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
-    } else {
-      reader_->Wait(
-          1, blink::BindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
+  {
+    base::AutoLock auto_lock(lock_);
+    if (init_cb_) {
+      CreateResourceLoader_Locked(0, kPositionNotSpecified);
+      if (reader_->Available()) {
+        PostCrossThreadTask(
+            *render_task_runner_, FROM_HERE,
+            CrossThreadBindOnce(&MultiBufferDataSource::StartCallback,
+                                weak_ptr_));
+      } else {
+        reader_->Wait(1, blink::BindOnce(&MultiBufferDataSource::StartCallback,
+                                         weak_ptr_));
+      }
+    } else if (read_op_) {
+      CreateResourceLoader_Locked(read_op_->position(), kPositionNotSpecified);
+      if (reader_->Available()) {
+        PostCrossThreadTask(
+            *render_task_runner_, FROM_HERE,
+            CrossThreadBindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
+      } else {
+        reader_->Wait(
+            1, blink::BindOnce(&MultiBufferDataSource::ReadTask, weak_ptr_));
+      }
     }
   }
 

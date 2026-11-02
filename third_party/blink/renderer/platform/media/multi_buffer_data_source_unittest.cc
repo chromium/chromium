@@ -17,8 +17,10 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
@@ -2334,6 +2336,42 @@ TEST_F(MultiBufferDataSourceTest, Http_RedirectToCachedUrlWithStopPreloading) {
   Respond(response_generator_->Generate206(0));
 
   EXPECT_FALSE(loading());
+  Stop();
+}
+
+TEST_F(MultiBufferDataSourceTest, Http_RedirectConcurrentWithReadAndAbort) {
+  InitializeWith206Response();
+
+  scoped_refptr<UrlData> url_data1 = url_index_.GetByUrl(
+      KURL(kHttpDifferentPathUrl), UrlData::CORS_UNSPECIFIED,
+      UrlData::kCacheDisabled, security_origin_);
+  scoped_refptr<UrlData> url_data2 = url_index_.GetByUrl(
+      KURL(kHttpDifferentPathUrl), UrlData::CORS_UNSPECIFIED,
+      UrlData::kCacheDisabled, security_origin_);
+
+  base::Thread read_thread("ReadThread");
+  ASSERT_TRUE(read_thread.Start());
+  read_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        for (int i = 0; i < 500; ++i) {
+          bool aborted = false;
+          data_source_->Read(
+              kFarReadPosition,
+              base::span(buffer_).first(base::checked_cast<size_t>(kDataSize)),
+              base::BindLambdaForTesting([&](int size) {
+                EXPECT_EQ(size, media::DataSource::kAborted);
+                aborted = true;
+              }));
+          data_source_->Abort();
+          EXPECT_TRUE(aborted);
+        }
+      }));
+
+  for (int i = 0; i < 500; ++i) {
+    CallOnRedirected(data_source_.get(), (i % 2 == 0) ? url_data1 : url_data2);
+  }
+
+  read_thread.Stop();
   Stop();
 }
 
