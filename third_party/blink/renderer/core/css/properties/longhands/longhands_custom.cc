@@ -2210,12 +2210,11 @@ const CSSValue* CaretColor::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
-  const CSSValue* first;
   if (stream.Peek().Id() == CSSValueID::kAuto) {
-    first = css_parsing_utils::ConsumeIdent(stream);
-  } else {
-    first = css_parsing_utils::ConsumeColor(stream, context, local_context);
+    return css_parsing_utils::ConsumeIdent(stream);
   }
+  const CSSValue* first =
+      css_parsing_utils::ConsumeColor(stream, context, local_context);
   if (!first) {
     return nullptr;
   }
