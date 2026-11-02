@@ -5956,13 +5956,25 @@ StyleRecalcChange Element::RecalcOwnStyle(
     old_style = nullptr;
   }
 
-  if (GetOverscrollAreaTracker() && old_style && new_style &&
-      old_style->IsInert() != new_style->IsInert()) {
-    // Toggle invokers inside closed overscroll areas depend on the container's
-    // inertness via OverscrollAreaTracker::ShouldRemoveInertness(), and closed
-    // areas block independent inherited property propagation.
-    child_change =
-        child_change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
+  if (old_style && new_style) {
+    if (GetOverscrollAreaTracker() &&
+        old_style->IsInert() != new_style->IsInert()) {
+      // Toggle invokers inside closed overscroll areas depend on the
+      // container's inertness via
+      // OverscrollAreaTracker::ShouldRemoveInertness(), and closed areas block
+      // independent inherited property propagation.
+      child_change =
+          child_change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
+    }
+    if (RuntimeEnabledFeatures::CompositeHoverStyleEnabled()) {
+      if (!style_recalc_context.has_hover_affected_ancestor &&
+          !old_style->AffectedByHover() &&
+          !old_style->AffectedByNonSubjectHoverSelector() &&
+          (new_style->AffectedByHover() ||
+           new_style->AffectedByNonSubjectHoverSelector())) {
+        child_change = child_change.ForceClearPrecomputedHover();
+      }
+    }
   }
 
   if (!new_style) {

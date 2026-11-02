@@ -40,7 +40,11 @@ bool StyleRecalcChange::RecalcFlagDependent(const Node& node) const {
   // Container queries may affect display:none elements, and we since we store
   // that dependency on ComputedStyle we need to recalc style for display:none
   // subtree roots.
-  return !old_style ||
+  if (!old_style) {
+    return RecalcContainerQueryDependent();
+  }
+  return (ClearPrecomputedHover() &&
+          old_style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover)) ||
          (RecalcSizeContainerQueryDependent() &&
           (old_style->DependsOnSizeContainerQueries() ||
            old_style->HighlightPseudoElementStylesDependOnContainerUnits())) ||

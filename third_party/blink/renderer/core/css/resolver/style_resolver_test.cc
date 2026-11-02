@@ -5055,4 +5055,70 @@ TEST_F(StyleResolverTest, PrecomputeHoverAncestor) {
           kPseudoIdPrecomputedHover));
 }
 
+TEST_F(StyleResolverTest, PrecomputeHoverAncestorInvalidation) {
+  ScopedCompositeHoverStyleForTest precompute(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #outer-affected.dynamic:hover { border-width: 10px; }
+      #hovered-parent.dynamic:hover > #outer-affected-descendant { border-width: 10px; }
+      #hovered-sibling.dynamic:hover + #outer-affected-sibling { border-width: 10px; }
+      .precomp:hover { color: green; }
+    </style>
+    <div>
+      <div id="outer-affected">
+        <div>
+          <div class="precomp"></div>
+        </div>
+      </div>
+      <div id="hovered-parent">
+        <div id="outer-affected-descendant">
+          <div>
+            <div class="precomp"></div>
+          </div>
+        </div>
+      </div>
+      <div id="hovered-sibling"></div>
+      <div id="outer-affected-sibling">
+        <div>
+          <div class="precomp"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* hovered_parent = GetElementById("hovered-parent");
+  Element* hovered_sibling = GetElementById("hovered-sibling");
+  Element* hovered_subject = GetElementById("outer-affected");
+
+  Element* outer_affected_precomp = GetDocument().querySelector(
+      AtomicString("#outer-affected .precomp"), ASSERT_NO_EXCEPTION);
+  Element* outer_affected_descendant_precomp = GetDocument().querySelector(
+      AtomicString("#outer-affected-descendant .precomp"), ASSERT_NO_EXCEPTION);
+  Element* outer_affected_sibling_precomp = GetDocument().querySelector(
+      AtomicString("#outer-affected-sibling .precomp"), ASSERT_NO_EXCEPTION);
+
+  EXPECT_TRUE(
+      outer_affected_precomp->ComputedStyleRef().GetCachedPseudoElementStyle(
+          kPseudoIdPrecomputedHover));
+  EXPECT_TRUE(outer_affected_descendant_precomp->ComputedStyleRef()
+                  .GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
+  EXPECT_TRUE(outer_affected_sibling_precomp->ComputedStyleRef()
+                  .GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
+
+  hovered_parent->setAttribute(html_names::kClassAttr, AtomicString("dynamic"));
+  hovered_sibling->setAttribute(html_names::kClassAttr,
+                                AtomicString("dynamic"));
+  hovered_subject->setAttribute(html_names::kClassAttr,
+                                AtomicString("dynamic"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(
+      outer_affected_precomp->ComputedStyleRef().GetCachedPseudoElementStyle(
+          kPseudoIdPrecomputedHover));
+  EXPECT_FALSE(outer_affected_descendant_precomp->ComputedStyleRef()
+                   .GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
+  EXPECT_FALSE(outer_affected_sibling_precomp->ComputedStyleRef()
+                   .GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
+}
+
 }  // namespace blink

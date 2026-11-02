@@ -51,16 +51,19 @@ class CORE_EXPORT StyleRecalcChange {
     // Recalc descendant content-visibility elements within a changed
     // scroll-marker-group property elements.
     kRecalcDescendantContentVisibility = 1 << 8,
+    // Remove precomputed :hover styles from elements when ancestors have
+    // started to be affected by :hover rules.
+    kClearPrecomputedHover = 1 << 9,
     // If set, need to reattach layout tree.
-    kReattach = 1 << 9,
+    kReattach = 1 << 10,
     // If set, will prevent style recalc for the node passed to
     // ShouldRecalcStyleFor. This flag is lost when ForChildren is called.
-    kSuppressRecalc = 1 << 10,
+    kSuppressRecalc = 1 << 11,
     // If set, and kReattach is also set, the element should be explicitly
     // marked for re-attachment even if its style doesn't change. Used for query
     // container children to resume re-attachment that was blocked when style
     // recalc for container children was skipped.
-    kMarkReattach = 1 << 11,
+    kMarkReattach = 1 << 12,
   };
   using Flags = uint16_t;
 
@@ -83,8 +86,9 @@ class CORE_EXPORT StyleRecalcChange {
   // Flags which, when set, requires a traversal into descendant elements,
   // and trigger an Element::RecalcOwnStyle() for elements whose current
   // ComputedStyle has certain flags set.
-  static const Flags kRecalcFlags =
-      kRecalcContainerFlags | kRecalcDescendantContentVisibility;
+  static const Flags kRecalcFlags = kRecalcContainerFlags |
+                                    kRecalcDescendantContentVisibility |
+                                    kClearPrecomputedHover;
 
  public:
   enum Propagate {
@@ -174,6 +178,9 @@ class CORE_EXPORT StyleRecalcChange {
     return {propagate_,
             static_cast<Flags>(flags_ | kRecalcDescendantContentVisibility)};
   }
+  StyleRecalcChange ForceClearPrecomputedHover() const {
+    return {propagate_, static_cast<Flags>(flags_ | kClearPrecomputedHover)};
+  }
   StyleRecalcChange SuppressRecalc() const {
     return {propagate_, static_cast<Flags>(flags_ | kSuppressRecalc)};
   }
@@ -250,6 +257,7 @@ class CORE_EXPORT StyleRecalcChange {
   bool RecalcDescendantContentVisibility() const {
     return flags_ & kRecalcDescendantContentVisibility;
   }
+  bool ClearPrecomputedHover() const { return flags_ & kClearPrecomputedHover; }
   bool RecalcFlagDependent() const { return flags_ & kRecalcFlags; }
   Flags FlagsForChildren(const Element&) const;
 
