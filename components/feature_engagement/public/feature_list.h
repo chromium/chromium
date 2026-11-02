@@ -454,7 +454,6 @@ DEFINE_VARIATION_PARAM(kIPHGlicPromoFeature, "IPH_GlicPromo");
 DEFINE_VARIATION_PARAM(kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature,
                        "IPH_GlicTrustFirstOnboardingShortcutSnoozePromo");
 DEFINE_VARIATION_PARAM(kIPHGlicTryItFeature, "IPH_GlicTryIt");
-DEFINE_VARIATION_PARAM(kIPHHistorySearchFeature, "IPH_HistorySearch");
 DEFINE_VARIATION_PARAM(kIPHIndigoContextMenuToastFeature,
                        "IPH_IndigoContextMenuToast");
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -920,7 +919,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHGMCCastStartStopFeature),
         VARIATION_ENTRY(kIPHGMCLocalMediaCastingFeature),
         VARIATION_ENTRY(kIPHGMCSaveVideoFrameFeature),
-        VARIATION_ENTRY(kIPHHistorySearchFeature),
         VARIATION_ENTRY(kIPHIndigoContextMenuToastFeature),
         VARIATION_ENTRY(kIPHMemorySaverModeFeature),
         VARIATION_ENTRY(kIPHMultistepFilterPromoFeature),

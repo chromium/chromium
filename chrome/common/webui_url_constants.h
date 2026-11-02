@@ -572,7 +572,6 @@ inline constexpr char kGlicLoginSettingsSubpage[] = "ai/gemini/login";
 inline constexpr char kGoogleServicesSubpage[] = "googleServices";
 inline constexpr char kHandlerSettingsSubPage[] = "handlers";
 inline constexpr char kHelpSubPage[] = "help";
-inline constexpr char kHistorySearchSubpage[] = "ai/historySearch";
 inline constexpr char kImportDataSubPage[] = "importData";
 inline constexpr char kLanguageOptionsSubPage[] = "languages";
 inline constexpr char kLanguagesSubPage[] = "languages/details";

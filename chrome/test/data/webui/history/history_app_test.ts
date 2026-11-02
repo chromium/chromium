@@ -6,12 +6,11 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement, HistoryFilterChipsElement} from 'chrome://history/history.js';
-import {BrowserProxyImpl, CrRouter, historyEmbeddingsBrowserProxyFactory, HistoryEmbeddingsPageHandlerRemote, userEducationProxyFactory} from 'chrome://history/history.js';
+import {BrowserProxyImpl, CrRouter, historyEmbeddingsBrowserProxyFactory, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {TestUserEducationMixedTrustHandler} from 'chrome://webui-test/test_user_education_mixed_trust_handler.js';
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 // <if expr="not is_chromeos">
@@ -30,7 +29,6 @@ suite('HistoryAppTest', function() {
   let browserProxy: TestHistoryBrowserProxy;
   let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
       HistoryEmbeddingsPageHandlerRemote;
-  let userEducationHandler: TestUserEducationMixedTrustHandler;
 
   // Force cr-history-embeddings to be in the DOM for testing.
   function forceHistoryEmbeddingsElement() {
@@ -45,14 +43,10 @@ suite('HistoryAppTest', function() {
     loadTimeData.overrideValues({
       historyEmbeddingsSearchMinimumWordCount: 2,
       enableHistoryEmbeddings: true,
-      maybeShowEmbeddingsIph: false,
     });
 
     browserProxy = new TestHistoryBrowserProxy();
     BrowserProxyImpl.setInstance(browserProxy);
-    userEducationHandler = new TestUserEducationMixedTrustHandler();
-    userEducationProxyFactory.setInstance({handler: userEducationHandler});
-
     embeddingsHandler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
     const {instance} =
         historyEmbeddingsBrowserProxyFactory.createForTest(embeddingsHandler);
@@ -287,29 +281,6 @@ suite('HistoryAppTest', function() {
 
     element.$.toolbar.dispatchEvent(new CustomEvent('search-term-cleared'));
     assertEquals(0, getCount(), 'resets on clear');
-  });
-
-  test('RegistersAndMaybeShowsPromo', async () => {
-    assertEquals(
-        0, userEducationHandler.getCallCount('maybeShowFeaturePromo'),
-        'promo is disabled in setup');
-
-    // Recreate the app with the promo enabled.
-    loadTimeData.overrideValues({maybeShowEmbeddingsIph: true});
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    element = document.createElement('history-app');
-    document.body.appendChild(element);
-    await microtasksFinished();
-    assertDeepEquals(
-        element.getSortedAnchorStatusesForTesting(),
-        [
-          ['kHistorySearchInputElementId', true],
-        ],
-    );
-    await userEducationHandler.whenCalled('maybeShowFeaturePromo');
-    assertEquals(
-        1, userEducationHandler.getCallCount('maybeShowFeaturePromo'),
-        'promo is disabled in setup');
   });
 
   test('PassesDisclaimerLinkClicksToEmbeddings', async () => {
@@ -825,7 +796,6 @@ suite('WebuiRefresh2026', function() {
     loadTimeData.overrideValues({
       historyEmbeddingsSearchMinimumWordCount: 2,
       enableHistoryEmbeddings: true,
-      maybeShowEmbeddingsIph: false,
     });
 
     browserProxy = new TestHistoryBrowserProxy();
@@ -873,7 +843,6 @@ suite('HistoryAppTestAndroid', function() {
     loadTimeData.overrideValues({
       historyEmbeddingsSearchMinimumWordCount: 2,
       enableHistoryEmbeddings: true,
-      maybeShowEmbeddingsIph: false,
       webuiRefresh2026: 'webui-refresh-2026',
     });
 

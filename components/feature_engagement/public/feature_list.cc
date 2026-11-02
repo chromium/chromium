@@ -294,7 +294,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHGMCCastStartStopFeature,
     &kIPHGMCLocalMediaCastingFeature,
     &kIPHGMCSaveVideoFrameFeature,
-    &kIPHHistorySearchFeature,
     &kIPHIndigoContextMenuToastFeature,
     &kIPHLensOverlayFeature,
     &kIPHMemorySaverModeFeature,

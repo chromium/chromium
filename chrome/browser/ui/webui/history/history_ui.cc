@@ -210,8 +210,7 @@ HistoryUI::HistoryUI(content::WebUI* web_ui)
 
   ui::TrackedElementHandlerDocumentSingleton::Register(
       this,
-      std::vector<ui::ElementIdentifier>{kHistorySearchInputElementId,
-                                         kHistoryGeminiFilterChipElementId});
+      std::vector<ui::ElementIdentifier>{kHistoryGeminiFilterChipElementId});
 }
 
 HistoryUI::~HistoryUI() = default;

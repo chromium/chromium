@@ -102,7 +102,6 @@ class HistoryEmbeddingsHandlerTest : public ChromeRenderViewHostTestHarness {
                  {"TrimAfterHostInResults", "true"},
              }},
             {history_embeddings::kHistoryEmbeddingsAnswers, {}},
-            {feature_engagement::kIPHHistorySearchFeature, {}},
 #if BUILDFLAG(IS_CHROMEOS)
             {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
             {chromeos::features::kFeatureManagementPassageEmbedder, {{}}},

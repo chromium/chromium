@@ -153,10 +153,6 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
   bool enable_history_embeddings =
       history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile);
   source->AddBoolean(kEnableHistoryEmbeddingsKey, enable_history_embeddings);
-  source->AddBoolean(
-      kMaybeShowEmbeddingsIphKey,
-      history_embeddings::IsHistoryEmbeddingsSettingVisible(profile) &&
-          !enable_history_embeddings);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);

@@ -40,7 +40,6 @@ inline constexpr char kSyncHistoryPromoBodyWebOnlySignedInKey[] =
 inline constexpr char kAccountNameKey[] = "accountName";
 inline constexpr char kAccountEmailKey[] = "accountEmail";
 inline constexpr char kEnableHistoryEmbeddingsKey[] = "enableHistoryEmbeddings";
-inline constexpr char kMaybeShowEmbeddingsIphKey[] = "maybeShowEmbeddingsIph";
 inline constexpr char kIsHistoryClustersEnabledKey[] =
     "isHistoryClustersEnabled";
 inline constexpr char kManagedByIconKey[] = "managedByIcon";

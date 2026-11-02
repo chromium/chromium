@@ -114,7 +114,6 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
 
   // History Clusters and Embeddings are disabled on Android.
   source->AddBoolean(kEnableHistoryEmbeddingsKey, false);
-  source->AddBoolean(kMaybeShowEmbeddingsIphKey, false);
   source->AddBoolean(kIsHistoryClustersEnabledKey, false);
   source->AddBoolean(kIsHistoryClustersVisibleKey, false);
 }
