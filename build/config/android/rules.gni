@@ -2037,12 +2037,65 @@ if (!is_robolectric && enable_java_templates) {
     }
   }
 
+  # Represents an Android SDK jar (e.g. android.jar or android_system.jar).
+  # Also generates the R8 API database for the SDK when possible.
+  #
+  # Variables:
+  #   api_versions_xml_path: Optional. Path to the api-versions.xml that
+  #     describes jar_path. When set, an R8 API database is generated.
   template("android_system_java_prebuilt") {
+    _generate_api_database = defined(invoker.api_versions_xml_path)
+
+    _deps = []
+    if (defined(invoker.deps)) {
+      _deps += invoker.deps
+    }
+
+    if (_generate_api_database) {
+      # String replace to prevent dep from being treated as a java library.
+      _api_database_target =
+          string_replace(target_name, "_java", "_J") + "__api_database"
+      _api_database_path = "$target_gen_dir/$target_name.api_database.ser"
+      _r8_path = "//third_party/r8/cipd/lib/r8.jar"
+
+      action_with_pydeps(_api_database_target) {
+        forward_variables_from(invoker, [ "testonly" ])
+        visibility = [ ":*" ]
+        script = "//build/android/gyp/generate_api_database.py"
+        inputs = java_paths_for_inputs + [
+                   _r8_path,
+                   invoker.jar_path,
+                   invoker.api_versions_xml_path,
+                 ]
+        outputs = [ _api_database_path ]
+        args = [
+          "--r8-path",
+          rebase_path(_r8_path, root_build_dir),
+          "--jar-path",
+          rebase_path(invoker.jar_path, root_build_dir),
+          "--xml-path",
+          rebase_path(invoker.api_versions_xml_path, root_build_dir),
+          "--output",
+          rebase_path(_api_database_path, root_build_dir),
+        ]
+      }
+      _deps += [ ":$_api_database_target" ]
+    }
+
     java_library_impl(target_name) {
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [
+                                   "api_versions_xml_path",
+                                   "deps",
+                                 ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      deps = _deps
       supports_android = true
       type = "system_java_library"
+      if (_generate_api_database) {
+        api_database_path = _api_database_path
+      }
     }
   }
 

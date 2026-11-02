@@ -508,7 +508,7 @@ def __android_proguard_handler(ctx, cmd):
                     f, _, _ = f.partition(":")
                     inputs.append(ctx.fs.canonpath(f))
                 break
-        if arg in ["--sdk-jars", "--sdk-extension-jars"]:
+        if arg in ["--sdk-jars", "--sdk-extension-jars", "--sdk-api-databases"]:
             fn, v = __filearg(ctx, cmd.args[i + 1])
             if fn:
                 inputs.append(ctx.fs.canonpath(fn))

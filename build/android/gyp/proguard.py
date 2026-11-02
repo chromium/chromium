@@ -162,6 +162,11 @@ def _ParseOptions():
         'part of R8\'s API database.',
     )
     parser.add_argument(
+        '--sdk-api-databases',
+        action='append',
+        help='GN-list of R8 API databases generated for --sdk-jars.',
+    )
+    parser.add_argument(
         '--main-dex-rules-path',
         action='append',
         help='Path to main dex rules for multidex.',
@@ -320,6 +325,14 @@ def _ParseOptions():
     options.sdk_extension_jars = action_helpers.parse_gn_list(
         options.sdk_extension_jars
     )
+    options.sdk_api_databases = action_helpers.parse_gn_list(
+        options.sdk_api_databases
+    )
+    for api_database in options.sdk_api_databases:
+        # R8 only warns about a missing database and then runs without API
+        # modeling, which shows up as confusing downstream failures.
+        if not os.path.exists(api_database):
+            parser.error(f'SDK API database does not exist: {api_database}')
     options.proguard_configs = action_helpers.parse_gn_list(
         options.proguard_configs
     )
@@ -556,6 +569,9 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
 
         if options.min_api:
             cmd += ['--min-api', options.min_api]
+
+        for api_database in options.sdk_api_databases:
+            cmd += ['--api-database', api_database]
 
         if options.assertion_handler:
             cmd += ['--force-assertions-handler:' + options.assertion_handler]
@@ -827,6 +843,7 @@ def _Run(options):
     )
 
     depfile_inputs = options.proguard_configs + options.input_paths + libraries
+    depfile_inputs += options.sdk_api_databases
     if options.feature_resources:
         for proto_in, _ in options.feature_resources.values():
             depfile_inputs.append(proto_in)

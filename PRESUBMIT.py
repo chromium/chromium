@@ -2674,6 +2674,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/filter_zip.pydeps',
     'build/android/gyp/flatc_java.pydeps',
     'build/android/gyp/gcc_preprocess.pydeps',
+    'build/android/gyp/generate_api_database.pydeps',
     'build/android/gyp/generate_linker_version_script.pydeps',
     'build/android/gyp/ijar.pydeps',
     'build/android/gyp/jacoco_instr.pydeps',

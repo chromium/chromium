@@ -789,6 +789,9 @@ def main():
         if params.needs_full_javac_classpath():
             main_config['javac_full_classpath'] = javac_full_classpath
             main_config['sdk_jars'] = sdk_deps.collect('unprocessed_jar_path')
+            sdk_api_databases = sdk_deps.collect('api_database_path')
+            assert len(sdk_api_databases) <= 1, sdk_api_databases
+            main_config['sdk_api_databases'] = sdk_api_databases
 
         if params.collects_processed_classpath():
             main_config['processed_classpath'] = list(tv.all_processed_jars)
@@ -915,6 +918,7 @@ def main():
             union_fields['proguard_classpath_jars'] = 'proguard_classpath_jars'
             union_fields['proguard_all_configs'] = 'proguard_all_configs'
             union_fields['sdk_jars'] = 'sdk_jars'
+            union_fields['sdk_api_databases'] = 'sdk_api_databases'
 
         unioned_values = {k: OrderedSet() for k in union_fields}
         for n, c in module_configs_by_name.items():
@@ -942,6 +946,9 @@ def main():
 
         for dst_key in union_fields:
             main_config[dst_key] = list(unioned_values[dst_key])
+        if proguard_enabled:
+            sdk_api_databases = main_config['sdk_api_databases']
+            assert len(sdk_api_databases) <= 1, sdk_api_databases
 
         # Promote duplicates from siblings/cousins.
         for f in per_module_fields:

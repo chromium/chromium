@@ -498,6 +498,10 @@ template("write_build_config") {
         unprocessed_jar_path =
             rebase_path(invoker.unprocessed_jar_path, root_build_dir)
       }
+      if (defined(invoker.api_database_path)) {
+        api_database_path =
+            rebase_path(invoker.api_database_path, root_build_dir)
+      }
       if (defined(invoker.ijar_path)) {
         interface_jar_path = rebase_path(invoker.ijar_path, root_build_dir)
       }
@@ -1276,6 +1280,8 @@ if (enable_java_templates) {
       rebase_path(_keep_radius_path, root_build_dir),
       "--sdk-jars",
       "@FileArg($_rebased_build_config:sdk_jars)",
+      "--sdk-api-databases",
+      "@FileArg($_rebased_build_config:sdk_api_databases)",
       "--sdk-extension-jars",
       "@FileArg($_rebased_build_config:proguard_classpath_jars)",
       "--r8-path",
@@ -3926,6 +3932,9 @@ if (enable_java_templates) {
           ijar_path = _header_jar_path
         }
         unprocessed_jar_path = _unprocessed_jar_path
+      }
+      if (defined(invoker.api_database_path)) {
+        api_database_path = invoker.api_database_path
       }
       if (_build_host_jar || _build_device_jar) {
         processed_jar_path = _processed_jar_path
