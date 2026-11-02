@@ -4,7 +4,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -26,7 +25,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -111,12 +109,6 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 // Verifies identity confirmation snackbar shows on startup with multiple
 // identities on device after 1 day.
 - (void)testMultipleIdentities_IdentityConfirmationToast {
-#if TARGET_OS_SIMULATOR
-  // TODO(crbug.com/433726717): Test disabled on iPhones.
-  if (![ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhones simulators.");
-  }
-#endif
   [self prepareStartSurface];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
@@ -150,12 +142,6 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 // Verifies no identity confirmation snackbar shows on startup when there is an
 // identity on the device but the user is signed-out.
 - (void)testNoIdentity_IdentityConfirmationToast {
-#if TARGET_OS_SIMULATOR
-  // TODO(crbug.com/433726717): Test disabled on iPhones.
-  if (![ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhones simulators.");
-  }
-#endif
   [self prepareStartSurface];
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
 
@@ -164,7 +150,7 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
   [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
 
   // Background then foreground the app.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [self backgroundAndForegroundApp];
   AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 }
 
@@ -184,12 +170,6 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 // Verifies identity confirmation snackbar shows on startup with multiple
 // identities on device with frequency limitations.
 - (void)testFrequencyLimitation_IdentityConfirmationToast {
-#if TARGET_OS_SIMULATOR
-  // TODO(crbug.com/433726717): Test disabled on iPhones.
-  if (![ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhones simulators.");
-  }
-#endif
   [self prepareStartSurface];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
@@ -219,7 +199,7 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 
   // Update params to be ready for a third display after 30 days.
   [self prepareSnackbarParamsForNextDisplayWithLastCount:2];
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [self backgroundAndForegroundApp];
   [SigninEarlGreyUI
       dismissSigninConfirmationSnackbarForIdentity:kPrimaryIdentity
                                      assertVisible:YES];
@@ -244,7 +224,7 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
   [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
 
   // Background then foreground the app.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [self backgroundAndForegroundApp];
 
   AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 }
@@ -254,7 +234,7 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
   [ChromeEarlGrey openNewIncognitoTab];
 
   // Background then foreground the app.
-  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [self backgroundAndForegroundApp];
 
   AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 }
