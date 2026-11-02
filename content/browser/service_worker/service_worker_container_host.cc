@@ -1168,6 +1168,11 @@ void ServiceWorkerContainerHostForClient::GetRegistrationsComplete(
 
 bool ServiceWorkerContainerHostForClient::HasValidSandboxFlags() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (service_worker_client().IsContainerForWorkerClient() &&
+      !base::FeatureList::IsEnabled(
+          features::kServiceWorkerDropHandleForCSPSandboxedWorker)) {
+    return true;
+  }
   return (policy_container_policies_.sandbox_flags &
           network::mojom::WebSandboxFlags::kOrigin) !=
          network::mojom::WebSandboxFlags::kOrigin;

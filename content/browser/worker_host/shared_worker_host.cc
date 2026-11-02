@@ -303,18 +303,8 @@ void SharedWorkerHost::Start(
           /*frame_tree_node=*/std::nullopt);
     }
 
-    PolicyContainerPolicies policies;
-    if (base::FeatureList::IsEnabled(
-            features::kServiceWorkerDropHandleForCSPSandboxedWorker)) {
-      policies = std::move(result.policy_container_policies);
-    } else {
-      // https://html.spec.whatwg.org/C/#creating-a-policy-container-from-a-fetch-response
-      // This does not parse the referrer policy, which will be updated in
-      // `SharedWorkerGlobalScope::Initialize()`.
-      policies = PolicyContainerPolicies(
-          result.final_response_url,
-          result.main_script_load_params->response_head.get(), nullptr);
-    }
+    PolicyContainerPolicies policies =
+        std::move(result.policy_container_policies);
 
     // A worker context can only be secure if its creator also is.
     if (!creator_policy_container_host_->policies().is_web_secure_context) {
@@ -455,11 +445,7 @@ void SharedWorkerHost::Start(
     std::tie(container_info, controller) =
         service_worker_handle_->scoped_service_worker_client()
             ->CommitResponseAndRelease(
-                /*rfh_id=*/std::nullopt,
-                base::FeatureList::IsEnabled(
-                    features::kServiceWorkerDropHandleForCSPSandboxedWorker)
-                    ? policy_container_host->policies()
-                    : result.policy_container_policies,
+                /*rfh_id=*/std::nullopt, policy_container_host->policies(),
                 std::move(coep_reporter), std::move(dip_reporter),
                 ukm_source_id());
   }

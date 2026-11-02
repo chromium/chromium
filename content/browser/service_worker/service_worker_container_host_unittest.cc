@@ -1167,6 +1167,54 @@ TEST_F(ServiceWorkerContainerHostTest,
   EXPECT_FALSE(service_worker_client->IsEligibleForServiceWorkerController());
 }
 
+TEST_F(ServiceWorkerContainerHostTest, SandboxedWorker_FeatureEnabledRejected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kServiceWorkerDropHandleForCSPSandboxedWorker);
+
+  GURL url("https://www.example.com/worker.js");
+  ScopedServiceWorkerClient client(
+      helper_->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForWorker(
+              helper_->mock_render_process_id(),
+              ServiceWorkerClientInfo(blink::DedicatedWorkerToken())));
+  client->UpdateUrls(
+      url, url::Origin::Create(url),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
+
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient committed_client(std::move(client), policies);
+
+  EXPECT_FALSE(committed_client->IsEligibleForServiceWorkerController());
+  EXPECT_FALSE(committed_client->container_host()->HasValidSandboxFlags());
+}
+
+TEST_F(ServiceWorkerContainerHostTest, SandboxedWorker_FeatureDisabledAllowed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kServiceWorkerDropHandleForCSPSandboxedWorker);
+
+  GURL url("https://www.example.com/worker.js");
+  ScopedServiceWorkerClient client(
+      helper_->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForWorker(
+              helper_->mock_render_process_id(),
+              ServiceWorkerClientInfo(blink::DedicatedWorkerToken())));
+  client->UpdateUrls(
+      url, url::Origin::Create(url),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
+
+  PolicyContainerPolicies policies;
+  policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  CommittedServiceWorkerClient committed_client(std::move(client), policies);
+
+  EXPECT_TRUE(committed_client->IsEligibleForServiceWorkerController());
+  EXPECT_TRUE(committed_client->container_host()->HasValidSandboxFlags());
+}
+
 TEST_F(ServiceWorkerContainerHostTest, Register_BadCharactersShouldFail) {
   CommittedServiceWorkerClient service_worker_client =
       PrepareServiceWorkerContainerHost(GURL("https://www.example.com"));

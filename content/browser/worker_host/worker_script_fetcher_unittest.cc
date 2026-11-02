@@ -6,8 +6,6 @@
 
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
-#include "content/common/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 #include "url/gurl.h"
@@ -150,27 +148,6 @@ TEST(WorkerScriptFetcherTest, ComputePolicyContainerPolicies_LocalScheme) {
           &creator_policies);
   EXPECT_EQ(network::mojom::WebSandboxFlags::kOrigin,
             policies.sandbox_flags & network::mojom::WebSandboxFlags::kOrigin);
-}
-
-TEST(WorkerScriptFetcherTest, ComputePolicyContainerPolicies_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kServiceWorkerDropHandleForCSPSandboxedWorker);
-
-  auto response_head = network::mojom::URLResponseHead::New();
-  response_head->parsed_headers = network::mojom::ParsedHeaders::New();
-  auto csp = network::mojom::ContentSecurityPolicy::New();
-  csp->self_origin = network::mojom::CSPSource::New();
-  csp->header = network::mojom::ContentSecurityPolicyHeader::New();
-  csp->sandbox = network::mojom::WebSandboxFlags::kOrigin;
-  response_head->parsed_headers->content_security_policy.push_back(
-      std::move(csp));
-
-  PolicyContainerPolicies policies =
-      WorkerScriptFetcher::ComputePolicyContainerPoliciesForTesting(
-          GURL("https://example.com/worker.js"), response_head.get(),
-          /*creator_policies=*/nullptr);
-  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone, policies.sandbox_flags);
 }
 
 }  // namespace content

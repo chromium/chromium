@@ -6,7 +6,6 @@
 
 #include <variant>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/connection_allowlist_utils.h"
@@ -31,7 +30,6 @@
 #include "content/browser/worker_host/network_restrictions_worker_throttle.h"
 #include "content/browser/worker_host/worker_script_loader.h"
 #include "content/browser/worker_host/worker_script_loader_factory.h"
-#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -135,14 +133,11 @@ PolicyContainerPolicies ComputePolicyContainerPoliciesForWorker(
     network::mojom::URLResponseHead* response_head,
     const PolicyContainerPolicies* creator_policies) {
   PolicyContainerPolicies policies;
-  if (base::FeatureList::IsEnabled(
-          features::kServiceWorkerDropHandleForCSPSandboxedWorker)) {
-    if (final_response_url.SchemeIsLocal() && creator_policies) {
-      policies = creator_policies->Clone();
-    } else if (response_head && response_head->parsed_headers) {
-      policies =
-          PolicyContainerPolicies(final_response_url, response_head, nullptr);
-    }
+  if (final_response_url.SchemeIsLocal() && creator_policies) {
+    policies = creator_policies->Clone();
+  } else if (response_head && response_head->parsed_headers) {
+    policies =
+        PolicyContainerPolicies(final_response_url, response_head, nullptr);
   }
   policies.connection_allowlists = GetConnectionAllowlistsForWorker(
       final_response_url, response_head, creator_policies,

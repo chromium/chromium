@@ -21,6 +21,7 @@
 #include "content/browser/worker_host/dedicated_worker_host_factory_impl.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -1022,6 +1023,68 @@ TEST_F(DedicatedWorkerServiceImplTest,
                      std::move(response_head));
   EXPECT_FALSE(HasServiceWorkerHandle(host));
   EXPECT_FALSE(host->GetServiceWorkerClient());
+}
+
+// Tests that when `kServiceWorkerDropHandleForCSPSandboxedWorker` is disabled,
+// a CSP-sandboxed dedicated worker still computes its `PolicyContainerPolicies`
+// while retaining its `ServiceWorkerMainResourceHandle` and allowing
+// `CloneContainerHost()` / `OnExecutionReady()` without triggering a bad Mojo
+// message.
+TEST_F(DedicatedWorkerServiceImplTest,
+       ServiceWorkerHandleRetainedWhenCSPSandboxedFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kServiceWorkerDropHandleForCSPSandboxedWorker);
+
+  TestDedicatedWorkerServiceObserver observer;
+  base::ScopedObservation<DedicatedWorkerService,
+                          DedicatedWorkerService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(GetDedicatedWorkerService());
+
+  const GURL kUrl("https://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  const ChildProcessId render_process_host_id =
+      render_frame_host->GetProcess()->GetID();
+  const auto origin = url::Origin::Create(kUrl);
+  auto mock_dedicated_worker = std::make_unique<MockDedicatedWorker>(
+      render_process_host_id, render_frame_host->GetGlobalId(), origin);
+  observer.RunUntilWorkerEvent();
+  ASSERT_EQ(observer.dedicated_worker_infos().size(), 1u);
+  const blink::DedicatedWorkerToken worker_token =
+      observer.dedicated_worker_infos().begin()->first;
+  DedicatedWorkerHost* host =
+      GetDedicatedWorkerServiceImpl()->GetDedicatedWorkerHostFromToken(
+          worker_token);
+  ASSERT_TRUE(host);
+  EXPECT_TRUE(HasServiceWorkerHandle(host));
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->parsed_headers = network::mojom::ParsedHeaders::New();
+  auto csp = network::mojom::ContentSecurityPolicy::New();
+  csp->self_origin = network::mojom::CSPSource::New();
+  csp->header = network::mojom::ContentSecurityPolicyHeader::New();
+  csp->sandbox = network::mojom::WebSandboxFlags::kOrigin;
+  response_head->parsed_headers->content_security_policy.push_back(
+      std::move(csp));
+
+  DidStartScriptLoad(host, GURL("https://example.com/worker.js"),
+                     std::move(response_head));
+  mock_dedicated_worker->FlushForTesting();
+  EXPECT_TRUE(HasServiceWorkerHandle(host));
+  EXPECT_TRUE(host->GetServiceWorkerClient());
+  ASSERT_TRUE(mock_dedicated_worker->policy_container_policies());
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kOrigin,
+            mock_dedicated_worker->policy_container_policies()->sandbox_flags);
+
+  ASSERT_TRUE(
+      mock_dedicated_worker->service_worker_container_host().is_bound());
+  mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost> cloned_remote;
+  mock_dedicated_worker->service_worker_container_host()->CloneContainerHost(
+      cloned_remote.InitWithNewPipeAndPassReceiver());
+  mock_dedicated_worker->service_worker_container_host()->OnExecutionReady();
+  mock_dedicated_worker->service_worker_container_host().FlushForTesting();
 }
 
 TEST_F(DedicatedWorkerServiceImplTest,
