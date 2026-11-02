@@ -89,7 +89,6 @@ source_set("flags") {
     "//ios/chrome/browser/ai_prototyping:features",
     "//ios/chrome/browser/app_store_rating/model:features",
     "//ios/chrome/browser/autofill/model:features",
-    "//ios/chrome/browser/badges/model:features",
     "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/credential_provider/model:features",

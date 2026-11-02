@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_egtest_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
-#import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/infobar_earl_grey_ui_test_util.h"
@@ -214,8 +213,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   if ([self isRunningTest:@selector(testUserData_AccountSave)] ||
       [self
           isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)]) {
-    // These test cases need a badge.
-    config.features_disabled.push_back(kAutofillBadgeRemoval);
     // TODO(crbug.com/467331873): Re-enable this when the test is updated for
     // PSF.
     config.features_disabled.push_back(kProactiveSuggestionsFramework);
@@ -509,11 +506,11 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
 
   [self fillPresidentProfileAndShowSaveModal];
 
-  // Verify that the address badge is displayed.
+  // Verify that the address badge is not displayed.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kBadgeButtonSaveAddressProfileAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_nil()];
 
   id<GREYMatcher> footerMatcher = grey_text(
       l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
@@ -712,18 +709,14 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
                                        UIAccessibilityTraitButton),
                                    nil)] performAction:grey_tap()];
 
-  // Open modal by selecting the badge that shouldn't be accepted.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kBadgeButtonSaveAddressProfileAccessibilityIdentifier)]
-      performAction:grey_tap()];
+  // Verify that the bottom sheet is dismissed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEditProfileBottomSheetCancelButton)]
+      assertWithMatcher:grey_nil()];
 
-  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Save the profile.
-  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
-      performAction:grey_tap()];
+  // Verify that canceling discarded the profile without saving.
+  GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
+                  @"Profiles count should be 0");
 }
 
 // Tests that the save address flow is still working correctly when the address

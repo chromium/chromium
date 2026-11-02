@@ -7,9 +7,7 @@
 #import <map>
 
 #import "base/apple/foundation_util.h"
-#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
-#import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button_factory.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
@@ -443,31 +441,6 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     [badgeTypes addObject:@(badgeItem.badgeType)];
   }
   return badgeTypes;
-}
-
-- (void)passwordsBadgeButtonTapped:(id)sender {
-  CHECK(!base::FeatureList::IsEnabled(kAutofillBadgeRemoval));
-  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
-  DCHECK(badgeButton.badgeType == kBadgeTypePasswordSave ||
-         badgeButton.badgeType == kBadgeTypePasswordUpdate);
-
-  [self handleTappedBadgeButton:badgeButton];
-}
-
-- (void)saveAddressProfileBadgeButtonTapped:(id)sender {
-  CHECK(!base::FeatureList::IsEnabled(kAutofillBadgeRemoval));
-  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
-  DCHECK_EQ(badgeButton.badgeType, kBadgeTypeSaveAddressProfile);
-
-  [self handleTappedBadgeButton:badgeButton];
-}
-
-- (void)saveCardBadgeButtonTapped:(id)sender {
-  CHECK(!base::FeatureList::IsEnabled(kAutofillBadgeRemoval));
-  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
-  DCHECK_EQ(badgeButton.badgeType, kBadgeTypeSaveCard);
-
-  [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)translateBadgeButtonTapped:(id)sender {

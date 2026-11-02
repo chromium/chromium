@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
-#import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -277,15 +276,6 @@ void LoginOnUff() {
         password_manager::features::kMarkAllCredentialsAsLeaked);
   }
 
-  if ([self isRunningTest:@selector(testSavePromptAppearsOnFormSubmission)] ||
-      [self isRunningTest:@selector(testUpdatePromptAppearsOnFormSubmission)] ||
-      [self isRunningTest:@selector(
-                              testSyntheticTouchendOnBtnElementIsIgnored)] ||
-      [self isRunningTest:@selector(testProgrammaticSubmissionFails)]) {
-    // These tests need a badge.
-    config.features_disabled.push_back(kAutofillBadgeRemoval);
-  }
-
   // The proactive password generation bottom sheet isn't tested here, it
   // is tested in its own suite in password_suggestion_egtest.mm.
   config.features_disabled.push_back(
@@ -362,11 +352,11 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
       waitForUIElementToAppearWithMatcher:
           PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
 
-  // Verify that the password badge is in the omnibox.
+  // Verify that the password badge is not in the omnibox.
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kBadgeButtonSavePasswordAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_nil()];
 
   // Tap to save password.
   [[EarlGrey selectElementWithMatcher:PasswordInfobarButton(
@@ -454,11 +444,11 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
       waitForUIElementToAppearWithMatcher:
           PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
 
-  // Verify that the password badge is in the omnibox.
+  // Verify that the password badge is not in the omnibox.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kBadgeButtonUpdatePasswordAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_nil()];
 
   // Tap to update password.
   [[EarlGrey

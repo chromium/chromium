@@ -14,15 +14,6 @@
 @property(nonatomic, strong, readonly)
     NSArray<NSNumber*>* badgeTypesForOverflowMenu;
 
-// Action when a Passwords badge is tapped.
-- (void)passwordsBadgeButtonTapped:(id)sender;
-
-// Action when a Save Address Profile badge is tapped.
-- (void)saveAddressProfileBadgeButtonTapped:(id)sender;
-
-// Action when a Save Card badge is tapped.
-- (void)saveCardBadgeButtonTapped:(id)sender;
-
 // Action when a Translate badge is tapped.
 - (void)translateBadgeButtonTapped:(id)sender;
 
