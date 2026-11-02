@@ -166,6 +166,7 @@ class GlicSelectionObserver
       optimization_guide::PageContextEligibility* page_context_eligibility);
 
   void ResetSelectionState();
+  bool IsQuickAnswersEligible() const;
 
   raw_ptr<GlicKeyedService> glic_keyed_service_;
   base::CallbackListSubscription panel_state_subscription_;

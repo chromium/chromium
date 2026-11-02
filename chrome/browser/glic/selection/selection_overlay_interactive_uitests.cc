@@ -54,8 +54,12 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/quick_answers.pb.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
+#include "components/optimization_guide/proto/quick_answers_metadata.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/prefs/pref_service.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -2570,8 +2574,20 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
          paragraph_style, "\">Explain this sentence please</p>'; }"});
 
     return Steps(
-        InstrumentTab(tab), NavigateWebContents(tab, GetEmptyDocURL()),
-        ExecuteJs(tab, add_text_js),
+        InstrumentTab(tab), Do([this] {
+          optimization_guide::proto::QuickAnswersMetadata qa_metadata;
+          qa_metadata.set_is_eligible(true);
+          optimization_guide::OptimizationMetadata metadata;
+          metadata.set_any_metadata(
+              optimization_guide::AnyWrapProto(qa_metadata));
+          OptimizationGuideKeyedServiceFactory::GetForProfile(
+              browser()->GetProfile())
+              ->AddHintForTesting(
+                  GetEmptyDocURL(),
+                  optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+                  metadata);
+        }),
+        NavigateWebContents(tab, GetEmptyDocURL()), ExecuteJs(tab, add_text_js),
         // Focus the page and select the text. The small chip shows up on it.
         // Use FocusElement() instead of an OS mouse click so the click's
         // asynchronous kMouseDown input observer task does not dismiss the

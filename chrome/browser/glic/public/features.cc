@@ -68,6 +68,8 @@ BASE_FEATURE_PARAM(std::string,
                    kGlicSelectionSuggestionsCapabilities,
                    &kGlicSelectionSuggestions,
                    "no_override");
+BASE_FEATURE(kQuickAnswersSelectionSuggestions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicSelectionSmallChip, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicSelectionSmallChipOnTop{

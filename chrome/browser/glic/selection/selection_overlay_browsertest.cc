@@ -37,8 +37,12 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/mojom/echo.test-mojom.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/quick_answers.pb.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
+#include "components/optimization_guide/proto/quick_answers_metadata.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -473,12 +477,25 @@ class SelectionOverlayQuickAnswersSuggestionsBrowserTest
   }
   ~SelectionOverlayQuickAnswersSuggestionsBrowserTest() override = default;
 
+ protected:
+  void AddQuickAnswersHint(const GURL& url, bool is_eligible) {
+    optimization_guide::proto::QuickAnswersMetadata qa_metadata;
+    qa_metadata.set_is_eligible(is_eligible);
+    optimization_guide::OptimizationMetadata metadata;
+    metadata.set_any_metadata(optimization_guide::AnyWrapProto(qa_metadata));
+    OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile())
+        ->AddHintForTesting(
+            url, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+            metadata);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
                        QuickAnswersSuggestionsInjectedWhenFeatureEnabled) {
+  AddQuickAnswersHint(GetSimpleTestUrl(), /*is_eligible=*/true);
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
   content::WebContents* web_contents = tab->GetContents();
 
@@ -536,6 +553,151 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
   adjusted_listener.WaitForBatches(1);
   ASSERT_EQ(adjusted_listener.actions().size(), 1u);
   EXPECT_EQ(adjusted_listener.actions()[0]->title, "Ask Gemini");
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
+                       QuickAnswersSuggestionsNotInjectedWhenIneligible) {
+  AddQuickAnswersHint(GetSimpleTestUrl(), /*is_eligible=*/false);
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    document.body.innerText = 'Before text Selected target After text';
+    const textNode = document.body.firstChild;
+    const range = document.createRange();
+    range.setStart(textNode, 12);
+    range.setEnd(textNode, 27);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  )"));
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  TestSuggestedActionsListener listener;
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
+  listener.WaitForBatches(1);
+  const auto& actions = listener.actions();
+  ASSERT_EQ(actions.size(), 1u);
+  EXPECT_EQ(actions[0]->title, "Ask Gemini");
+}
+
+class SelectionOverlayQuickAnswersServerSuggestionsBrowserTest
+    : public SelectionOverlayQuickAnswersSuggestionsBrowserTest {
+ public:
+  SelectionOverlayQuickAnswersServerSuggestionsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::selection::kSmartSelectionServerSuggestions);
+  }
+  ~SelectionOverlayQuickAnswersServerSuggestionsBrowserTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SelectionOverlayQuickAnswersServerSuggestionsBrowserTest,
+    QuickAnswersToolOnlyRegisteredWithSuggestionServiceWhenEligible) {
+  AddQuickAnswersHint(GetSimpleTestUrl(), /*is_eligible=*/false);
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    document.body.innerText = 'Before text Selected target After text';
+    const textNode = document.body.firstChild;
+    const range = document.createRange();
+    range.setStart(textNode, 12);
+    range.setEnd(textNode, 27);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  )"));
+
+  AddServerSuggestionsForTesting(
+      tab, {{optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS,
+             "Explain"}});
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  // Since Quick Answers is ineligible, the QuickAnswersTool is not registered
+  // with SuggestionService, so only the static "Ask Gemini" action is returned.
+  TestSuggestedActionsListener ineligible_listener;
+  controller->GetSuggestedActionsForTesting(ineligible_listener.GetCallback());
+  ineligible_listener.WaitForBatches(1);
+  ASSERT_EQ(ineligible_listener.actions().size(), 1u);
+  EXPECT_EQ(ineligible_listener.actions()[0]->title, "Ask Gemini");
+
+  controller->Close();
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOff,
+      "Timeout waiting for SelectionOverlayController state to be kOff"));
+
+  // Now mark the URL as eligible and navigate so QuickAnswersTool updates
+  // eligibility and registers itself with SuggestionService.
+  const GURL eligible_url = GetTestUrl("page.html");
+  AddQuickAnswersHint(eligible_url, /*is_eligible=*/true);
+  ASSERT_TRUE(content::NavigateToURL(web_contents, eligible_url));
+
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    document.body.innerText = 'Before text Selected target After text';
+    const textNode = document.body.firstChild;
+    const range = document.createRange();
+    range.setStart(textNode, 12);
+    range.setEnd(textNode, 27);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  )"));
+
+  AddServerSuggestionsForTesting(
+      tab, {{optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS,
+             "Explain"}});
+
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  TestSuggestedActionsListener eligible_listener;
+  controller->GetSuggestedActionsForTesting(eligible_listener.GetCallback());
+  eligible_listener.WaitForBatches(2);
+  ASSERT_EQ(eligible_listener.actions().size(), 2u);
+  EXPECT_EQ(eligible_listener.actions()[0]->title, "Ask Gemini");
+  EXPECT_EQ(eligible_listener.actions()[1]->title, "Explain");
+  EXPECT_EQ(eligible_listener.actions()[1]->icon,
+            selection::SuggestedActionIcon::kExplain);
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,

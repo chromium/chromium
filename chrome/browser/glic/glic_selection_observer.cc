@@ -16,12 +16,14 @@
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/selection/quick_answers_tool.h"
 #include "chrome/browser/glic/selection/shake_trigger.h"
 #include "chrome/browser/glic/selection/text_selection_context.h"
 #include "chrome/browser/profiles/profile.h"
@@ -403,6 +405,7 @@ void GlicSelectionObserver::UpdateSelectionState(
   bool panel_showing = IsPanelShowing(tab_interface, bwi);
   bool show_widget =
       is_pending_selection && IsInlineCueEnabled() &&
+      IsQuickAnswersEligible() &&
       // Only normal browser windows show the widget, not popups or app windows.
       bwi->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
 
@@ -734,6 +737,15 @@ void GlicSelectionObserver::ResetSelectionState() {
                        SelectionSource::kAutomatic);
   // This should clear the rest.
   ResetPendingSelection();
+}
+
+bool GlicSelectionObserver::IsQuickAnswersEligible() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kQuickAnswersSelectionSuggestions)) {
+    return true;
+  }
+  auto* tool = QuickAnswersTool::FromTabWebContents(web_contents());
+  return tool && tool->IsEligible();
 }
 
 }  // namespace glic

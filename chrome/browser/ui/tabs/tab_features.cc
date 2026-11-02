@@ -247,6 +247,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_impl.h"
+#include "chrome/browser/glic/selection/quick_answers_tool.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/selection/selection_suggestion_tool.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
@@ -719,6 +720,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       if (base::FeatureList::IsEnabled(features::kGlicSelectionSuggestions)) {
         glic_selection_suggestion_tool_ =
             std::make_unique<glic::SelectionSuggestionTool>(tab);
+      }
+      if (base::FeatureList::IsEnabled(
+              features::kQuickAnswersSelectionSuggestions)) {
+        glic_quick_answers_tool_ =
+            std::make_unique<glic::QuickAnswersTool>(tab);
       }
       if (base::FeatureList::IsEnabled(lens::kLensSelectionSuggestions)) {
         lens_suggestion_tool_ = std::make_unique<lens::LensSuggestionTool>(tab);

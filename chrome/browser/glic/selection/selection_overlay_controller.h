@@ -354,8 +354,6 @@ class SelectionOverlayController
   // Never null.
   std::unique_ptr<Session> session_ = std::make_unique<Session>(this);
 
-  std::unique_ptr<::selection::SuggestionTool> quick_answers_tool_;
-
   base::OnceCallbackList<void(CloseReason)> overlay_closed_callbacks_;
 
   ui::ScopedUnownedUserData<SelectionOverlayController>

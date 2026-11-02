@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -16,9 +18,12 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/selection/quick_answers_tool.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -28,19 +33,40 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/hints.pb.h"
+#include "components/optimization_guide/proto/quick_answers_metadata.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace glic {
 
 namespace {
+
+using ::base::test::RunOnceCallback;
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::An;
+using ::testing::AnyNumber;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::Mock;
+using ::testing::NiceMock;
+using ::testing::Property;
+using ::testing::Return;
+using ::testing::ReturnRef;
 
 class TestGlicSelectionObserver : public GlicSelectionObserver {
  public:
@@ -615,7 +641,7 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
 
   // Keyboard events should dismiss UI with DismissReason::kExternal.
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(nullptr));
+      .WillRepeatedly(Return(nullptr));
   blink::WebKeyboardEvent key_event(
       blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
@@ -626,12 +652,12 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
   EXPECT_TRUE(observer->dismiss_ui_called());
   EXPECT_EQ(observer->dismiss_ui_reason(),
             GlicSelectionObserver::DismissReason::kExternal);
-  testing::Mock::VerifyAndClearExpectations(&mock_tab);
+  Mock::VerifyAndClearExpectations(&mock_tab);
   observer->Reset();
 
   // Mouse clicks should dismiss UI with DismissReason::kExternal.
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(nullptr));
+      .WillRepeatedly(Return(nullptr));
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseDown,
       blink::WebInputEvent::kNoModifiers,
@@ -644,7 +670,7 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
   EXPECT_TRUE(observer->dismiss_ui_called());
   EXPECT_EQ(observer->dismiss_ui_reason(),
             GlicSelectionObserver::DismissReason::kExternal);
-  testing::Mock::VerifyAndClearExpectations(&mock_tab);
+  Mock::VerifyAndClearExpectations(&mock_tab);
   observer->Reset();
 
   // Scroll events should dismiss UI with DismissReason::kExternal.
@@ -660,7 +686,7 @@ TEST_F(GlicSelectionObserverTest, InputEventsDismissUI) {
   EXPECT_TRUE(observer->dismiss_ui_called());
   EXPECT_EQ(observer->dismiss_ui_reason(),
             GlicSelectionObserver::DismissReason::kExternal);
-  testing::Mock::VerifyAndClearExpectations(&mock_tab);
+  Mock::VerifyAndClearExpectations(&mock_tab);
   observer->Reset();
 }
 
@@ -872,7 +898,7 @@ TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowing) {
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   observer->set_call_base_update_selection_state(true);
   observer->set_mock_panel_showing(true);
@@ -900,9 +926,9 @@ TEST_F(GlicSelectionObserverTest, UpdateSelectionStateNoWidgetInPopup) {
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
   EXPECT_CALL(mock_bwi, GetType())
-      .WillRepeatedly(testing::Return(BrowserWindowInterface::TYPE_POPUP));
+      .WillRepeatedly(Return(BrowserWindowInterface::TYPE_POPUP));
 
   observer->set_call_base_update_selection_state(true);
   observer->set_mock_panel_showing(true);
@@ -930,7 +956,7 @@ TEST_F(GlicSelectionObserverTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   observer->set_call_base_update_selection_state(true);
   observer->set_mock_panel_showing(true);
@@ -953,7 +979,7 @@ TEST_F(GlicSelectionObserverTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   observer->set_call_base_update_selection_state(true);
   observer->set_mock_panel_showing(false);
@@ -978,7 +1004,7 @@ TEST_F(GlicSelectionObserverTest, EligibleSelection) {
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   SetMockEligibility(true);
   observer->set_call_base_update_selection_state(true);
@@ -1000,7 +1026,7 @@ TEST_F(GlicSelectionObserverTest, IneligibleSelection) {
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   SetMockEligibility(false);
   observer->set_call_base_update_selection_state(true);
@@ -1021,7 +1047,7 @@ TEST_F(GlicSelectionObserverTest, DynamicEligibilityChangeClearsContext) {
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   SetMockEligibility(true);
   observer->set_call_base_update_selection_state(true);
@@ -1051,7 +1077,7 @@ TEST_F(GlicSelectionObserverTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   // Selection happens while ineligible and panel is showing.
   SetMockEligibility(false);
@@ -1087,7 +1113,7 @@ TEST_F(GlicSelectionObserverTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   // Selection happens while ineligible and panel is closed.
   SetMockEligibility(false);
@@ -1116,7 +1142,7 @@ TEST_F(GlicSelectionObserverTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(nullptr));
+      .WillRepeatedly(Return(nullptr));
 
   SetMockEligibility(false);
   observer->set_call_base_update_selection_state(true);
@@ -1152,7 +1178,7 @@ TEST_F(GlicSelectionObserverTest, IdentityManagerIntegration) {
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
   observer->OnTextSelectionChanged(nullptr, u"Test text");
   task_environment()->FastForwardBy(base::Milliseconds(300));
   EXPECT_TRUE(observer->send_context_called());
@@ -1206,7 +1232,7 @@ class GlicSelectionObserverPromptTest : public GlicSelectionObserverTest {
   std::unique_ptr<KeyedService> CreateService(
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
-    auto service = std::make_unique<testing::NiceMock<MockGlicKeyedService>>(
+    auto service = std::make_unique<NiceMock<MockGlicKeyedService>>(
         context, IdentityManagerFactory::GetForProfile(profile),
         TestingBrowserProcess::GetGlobal()->profile_manager(),
         &glic_profile_manager_,
@@ -1234,15 +1260,15 @@ TEST_F(GlicSelectionObserverPromptTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
   SetMockEligibility(true);
 
   EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
-      .WillRepeatedly(testing::Return(nullptr));
+      .WillRepeatedly(Return(nullptr));
   EXPECT_CALL(*mock_glic_service(),
-              Invoke(testing::Field(&GlicInvokeOptions::target,
-                                    testing::Field(&Target::live_mode_behavior,
-                                                   LiveModeBehavior::kFail))))
+              Invoke(Field(
+                  &GlicInvokeOptions::target,
+                  Field(&Target::live_mode_behavior, LiveModeBehavior::kFail))))
       .Times(1);
 
   GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab,
@@ -1258,19 +1284,19 @@ TEST_F(GlicSelectionObserverPromptTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
   SetMockEligibility(true);
 
-  testing::NiceMock<MockGlicInstance> instance;
-  EXPECT_CALL(instance, IsShowing()).WillRepeatedly(testing::Return(false));
+  NiceMock<MockGlicInstance> instance;
+  EXPECT_CALL(instance, IsShowing()).WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
-      .WillRepeatedly(testing::Return(&instance));
+      .WillRepeatedly(Return(&instance));
 
   EXPECT_CALL(instance, SendAdditionalContext).Times(0);
   EXPECT_CALL(*mock_glic_service(),
-              Invoke(testing::Field(&GlicInvokeOptions::target,
-                                    testing::Field(&Target::live_mode_behavior,
-                                                   LiveModeBehavior::kFail))))
+              Invoke(Field(
+                  &GlicInvokeOptions::target,
+                  Field(&Target::live_mode_behavior, LiveModeBehavior::kFail))))
       .Times(1);
 
   GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab,
@@ -1289,14 +1315,14 @@ TEST_F(GlicSelectionObserverPromptTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
   SetMockEligibility(true);
 
-  testing::NiceMock<MockGlicInstance> instance;
-  EXPECT_CALL(instance, IsShowing()).WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(instance, IsLiveMode()).WillRepeatedly(testing::Return(false));
+  NiceMock<MockGlicInstance> instance;
+  EXPECT_CALL(instance, IsShowing()).WillRepeatedly(Return(true));
+  EXPECT_CALL(instance, IsLiveMode()).WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
-      .WillRepeatedly(testing::Return(&instance));
+      .WillRepeatedly(Return(&instance));
 
   EXPECT_CALL(*mock_glic_service(), Invoke).Times(0);
   mojom::AdditionalContextPtr sent;
@@ -1335,14 +1361,14 @@ TEST_F(GlicSelectionObserverPromptTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
   SetMockEligibility(true);
 
-  testing::NiceMock<MockGlicInstance> instance;
-  EXPECT_CALL(instance, IsShowing()).WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(instance, IsLiveMode()).WillRepeatedly(testing::Return(true));
+  NiceMock<MockGlicInstance> instance;
+  EXPECT_CALL(instance, IsShowing()).WillRepeatedly(Return(true));
+  EXPECT_CALL(instance, IsLiveMode()).WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
-      .WillRepeatedly(testing::Return(&instance));
+      .WillRepeatedly(Return(&instance));
 
   EXPECT_CALL(instance, SendAdditionalContext).Times(0);
   EXPECT_CALL(*mock_glic_service(), Invoke).Times(0);
@@ -1361,20 +1387,19 @@ TEST_F(
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
   SetMockEligibility(true);
 
   EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
-      .WillOnce(testing::Return(nullptr));
+      .WillOnce(Return(nullptr));
   EXPECT_CALL(*mock_glic_service(), Invoke).Times(0);
 
   GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab, u"");
 
-  testing::NiceMock<MockGlicInstance> hidden_instance;
-  EXPECT_CALL(hidden_instance, IsShowing())
-      .WillRepeatedly(testing::Return(false));
+  NiceMock<MockGlicInstance> hidden_instance;
+  EXPECT_CALL(hidden_instance, IsShowing()).WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
-      .WillOnce(testing::Return(&hidden_instance));
+      .WillOnce(Return(&hidden_instance));
   EXPECT_CALL(hidden_instance, SendAdditionalContext).Times(0);
 
   GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab, u"");
@@ -1392,10 +1417,9 @@ TEST_F(GlicSelectionObserverPromptTest, ShakeInvokesRegionCapture) {
 
   EXPECT_CALL(
       *mock_glic_service(),
-      Invoke(testing::AllOf(
-          testing::Property(&GlicInvokeOptions::GetInvocationSource,
+      Invoke(AllOf(Property(&GlicInvokeOptions::GetInvocationSource,
                             mojom::InvocationSource::kCaptureRegionHotkey),
-          testing::Field(&GlicInvokeOptions::wait_for_panel_open, true))))
+                   Field(&GlicInvokeOptions::wait_for_panel_open, true))))
       .Times(1);
 
   SimulateMouseShake();
@@ -1411,7 +1435,7 @@ TEST_F(GlicSelectionObserverTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   observer->set_call_base_update_selection_state(true);
   observer->set_mock_panel_showing(true);
@@ -1452,7 +1476,7 @@ TEST_F(GlicSelectionObserverTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   observer->set_call_base_update_selection_state(true);
   observer->set_mock_panel_showing(true);
@@ -1479,7 +1503,7 @@ TEST_F(GlicSelectionObserverTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   observer->set_call_base_update_selection_state(true);
   observer->set_mock_panel_showing(true);
@@ -1508,7 +1532,7 @@ TEST_F(GlicSelectionObserverTest,
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
   EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
+      .WillRepeatedly(Return(&mock_bwi));
 
   observer->set_call_base_update_selection_state(true);
   observer->set_mock_panel_showing(true);
@@ -1562,6 +1586,456 @@ TEST_F(GlicSelectionObserverTest, DismissUIClearsPendingSelection) {
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsSelecting(); }));
 
   EXPECT_EQ(0, observer->update_count());
+}
+
+namespace {
+
+optimization_guide::OptimizationMetadata MakeQuickAnswersMetadata(
+    bool is_eligible) {
+  optimization_guide::proto::QuickAnswersMetadata quick_answers_metadata;
+  quick_answers_metadata.set_is_eligible(is_eligible);
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(quick_answers_metadata));
+  return metadata;
+}
+
+}  // namespace
+
+class GlicSelectionObserverQuickAnswersTest : public GlicSelectionObserverTest {
+ public:
+  explicit GlicSelectionObserverQuickAnswersTest(
+      bool enable_quick_answers_feature = true,
+      bool create_optimization_guide_service = true)
+      : enable_quick_answers_feature_(enable_quick_answers_feature),
+        create_optimization_guide_service_(create_optimization_guide_service) {
+    if (enable_quick_answers_feature_) {
+      quick_answers_feature_list_.InitWithFeatures(
+          {features::kGlicSelectionPrompt,
+           features::kQuickAnswersSelectionSuggestions},
+          {});
+    } else {
+      quick_answers_feature_list_.InitWithFeatures(
+          {features::kGlicSelectionPrompt},
+          {features::kQuickAnswersSelectionSuggestions});
+    }
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    auto factories = GlicSelectionObserverTest::GetTestingFactories();
+    factories.emplace_back(
+        OptimizationGuideKeyedServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](bool enable_quick_answers_feature,
+               bool create_optimization_guide_service,
+               content::BrowserContext* context)
+                -> std::unique_ptr<KeyedService> {
+              if (!create_optimization_guide_service) {
+                return nullptr;
+              }
+              auto service = std::make_unique<
+                  NiceMock<MockOptimizationGuideKeyedService>>();
+              EXPECT_CALL(*service, RegisterOptimizationTypes(_))
+                  .Times(AnyNumber());
+              EXPECT_CALL(*service, RegisterOptimizationTypes(ElementsAre(
+                                        optimization_guide::proto::
+                                            OptimizationType::QUICK_ANSWERS)))
+                  .Times(enable_quick_answers_feature ? 1 : 0);
+              return service;
+            },
+            enable_quick_answers_feature_, create_optimization_guide_service_));
+    return factories;
+  }
+
+  void SetUp() override {
+    GlicSelectionObserverTest::SetUp();
+
+    ON_CALL(mock_tab_, GetContents()).WillByDefault(Return(web_contents()));
+    ON_CALL(mock_tab_, GetProfile()).WillByDefault(Return(profile()));
+    ON_CALL(mock_tab_, GetUnownedUserDataHost())
+        .WillByDefault(ReturnRef(user_data_host_));
+    ON_CALL(mock_tab_, GetBrowserWindowInterface())
+        .WillByDefault(Return(&mock_bwi_));
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                         &mock_tab_);
+    if (enable_quick_answers_feature_) {
+      quick_answers_tool_ = std::make_unique<QuickAnswersTool>(mock_tab_);
+    }
+    RecreateObserver();
+
+    if (create_optimization_guide_service_) {
+      ASSERT_TRUE(mock_optimization_guide());
+      Mock::VerifyAndClearExpectations(mock_optimization_guide());
+    } else {
+      EXPECT_FALSE(mock_optimization_guide());
+    }
+  }
+
+  void TearDown() override {
+    observer_.reset();
+    quick_answers_tool_.reset();
+    GlicSelectionObserverTest::TearDown();
+  }
+
+ protected:
+  MockOptimizationGuideKeyedService* mock_optimization_guide() {
+    return static_cast<MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile()));
+  }
+
+  void RecreateQuickAnswersToolAndObserver() {
+    observer_.reset();
+    quick_answers_tool_.reset();
+    if (enable_quick_answers_feature_) {
+      quick_answers_tool_ = std::make_unique<QuickAnswersTool>(mock_tab_);
+    }
+    RecreateObserver();
+  }
+
+ private:
+  bool enable_quick_answers_feature_;
+  bool create_optimization_guide_service_;
+  base::test::ScopedFeatureList quick_answers_feature_list_;
+  ui::UnownedUserDataHost user_data_host_;
+  tabs::MockTabInterface mock_tab_;
+  MockBrowserWindowInterface mock_bwi_;
+  std::unique_ptr<QuickAnswersTool> quick_answers_tool_;
+};
+
+class GlicSelectionObserverQuickAnswersDisabledTest
+    : public GlicSelectionObserverQuickAnswersTest {
+ public:
+  GlicSelectionObserverQuickAnswersDisabledTest()
+      : GlicSelectionObserverQuickAnswersTest(
+            /*enable_quick_answers_feature=*/false) {}
+};
+
+class GlicSelectionObserverQuickAnswersNoServiceTest
+    : public GlicSelectionObserverQuickAnswersTest {
+ public:
+  GlicSelectionObserverQuickAnswersNoServiceTest()
+      : GlicSelectionObserverQuickAnswersTest(
+            /*enable_quick_answers_feature=*/true,
+            /*create_optimization_guide_service=*/false) {}
+};
+
+TEST_F(GlicSelectionObserverQuickAnswersDisabledTest,
+       DoesNotQueryOptimizationGuideWhenFeatureDisabled) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  observer->set_call_base_update_selection_state(true);
+
+  EXPECT_CALL(*mock_optimization_guide(),
+              CanApplyOptimization(
+                  _, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .Times(0);
+
+  NavigateAndCommit(GURL("https://example.com/page1"));
+
+  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  EXPECT_TRUE(observer->show_selection_affordance_called());
+  EXPECT_EQ(u"Selected Text", *observer->last_affordance_text());
+}
+
+TEST_F(GlicSelectionObserverQuickAnswersTest,
+       ShowsInlineCueWhenQuickAnswersEligible) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  observer->set_call_base_update_selection_state(true);
+
+  const GURL url("https://example.com/eligible");
+  EXPECT_CALL(
+      *mock_optimization_guide(),
+      CanApplyOptimization(
+          url, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+          An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          MakeQuickAnswersMetadata(/*is_eligible=*/true)));
+
+  NavigateAndCommit(url);
+
+  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  EXPECT_TRUE(observer->show_selection_affordance_called());
+  EXPECT_EQ(u"Selected Text", *observer->last_affordance_text());
+}
+
+TEST_F(GlicSelectionObserverQuickAnswersTest,
+       SuppressesInlineCueWhenQuickAnswersIneligibleButSharesWithPanel) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  observer->set_call_base_update_selection_state(true);
+  observer->set_mock_panel_showing(true);
+
+  const GURL url("https://example.com/ineligible");
+  EXPECT_CALL(
+      *mock_optimization_guide(),
+      CanApplyOptimization(
+          url, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+          An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          MakeQuickAnswersMetadata(/*is_eligible=*/false)));
+
+  NavigateAndCommit(url);
+
+  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+  EXPECT_TRUE(observer->send_context_called());
+  EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
+}
+
+TEST_F(GlicSelectionObserverQuickAnswersTest,
+       SuppressesInlineCueWhenDecisionIsFalseUnknownOrMissingMetadata) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  observer->set_call_base_update_selection_state(true);
+
+  // Case 1: kFalse -> fail closed.
+  const GURL url_false("https://example.com/false");
+  EXPECT_CALL(
+      *mock_optimization_guide(),
+      CanApplyOptimization(
+          url_false, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+          An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          optimization_guide::OptimizationMetadata()));
+  NavigateAndCommit(url_false);
+  observer->OnTextSelectionChanged(nullptr, u"Text False");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+  observer->Reset();
+  observer->set_call_base_update_selection_state(true);
+
+  // Case 2: kUnknown -> fail closed.
+  const GURL url_unknown("https://example.com/unknown");
+  EXPECT_CALL(*mock_optimization_guide(),
+              CanApplyOptimization(
+                  url_unknown,
+                  optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kUnknown,
+          optimization_guide::OptimizationMetadata()));
+  NavigateAndCommit(url_unknown);
+  observer->OnTextSelectionChanged(nullptr, u"Text Unknown");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+  observer->Reset();
+  observer->set_call_base_update_selection_state(true);
+
+  // Case 3: kTrue with absent QuickAnswersMetadata -> fail closed.
+  const GURL url_missing_meta("https://example.com/missing-meta");
+  EXPECT_CALL(*mock_optimization_guide(),
+              CanApplyOptimization(
+                  url_missing_meta,
+                  optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          optimization_guide::OptimizationMetadata()));
+  NavigateAndCommit(url_missing_meta);
+  observer->OnTextSelectionChanged(nullptr, u"Text Missing Meta");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+}
+
+TEST_F(GlicSelectionObserverQuickAnswersNoServiceTest,
+       SuppressesInlineCueWhenOptimizationGuideServiceUnavailable) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  observer->set_call_base_update_selection_state(true);
+
+  // Before any navigation commits -> fail closed.
+  observer->OnTextSelectionChanged(nullptr, u"Before Nav");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+
+  // After navigation commits without an OptimizationGuideKeyedService -> fail
+  // closed.
+  NavigateAndCommit(GURL("https://example.com/no-service"));
+  observer->OnTextSelectionChanged(nullptr, u"After Nav");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+}
+
+TEST_F(GlicSelectionObserverQuickAnswersTest,
+       SuppressesInlineCueWhileDecisionInFlightAndDoesNotShowWhenResolved) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  observer->set_call_base_update_selection_state(true);
+
+  const GURL url("https://example.com/inflight-eligible");
+  optimization_guide::OptimizationGuideDecisionCallback saved_callback;
+  EXPECT_CALL(
+      *mock_optimization_guide(),
+      CanApplyOptimization(
+          url, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+          An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(MoveArg<2>(&saved_callback));
+
+  NavigateAndCommit(url);
+  ASSERT_TRUE(saved_callback);
+
+  // Select text while decision is in-flight: cue should not be shown.
+  observer->OnTextSelectionChanged(nullptr, u"Inflight Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+
+  // Resolve decision as eligible: cue is not retroactively shown for the prior
+  // selection, but subsequent selections on the page do show it.
+  std::move(saved_callback)
+      .Run(optimization_guide::OptimizationGuideDecision::kTrue,
+           MakeQuickAnswersMetadata(/*is_eligible=*/true));
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+
+  observer->OnTextSelectionChanged(nullptr, u"Subsequent Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_TRUE(observer->show_selection_affordance_called());
+  EXPECT_EQ(u"Subsequent Text", *observer->last_affordance_text());
+}
+
+TEST_F(GlicSelectionObserverQuickAnswersTest,
+       SkipsFragmentNavigationAndRequeriesOnSameDocNavigation) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  observer->set_call_base_update_selection_state(true);
+
+  const GURL url1("https://example.com/page1");
+  const GURL url2("https://example.com/page2");
+
+  EXPECT_CALL(
+      *mock_optimization_guide(),
+      CanApplyOptimization(
+          url1, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+          An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          MakeQuickAnswersMetadata(/*is_eligible=*/true)));
+
+  NavigateAndCommit(url1);
+
+  // Fragment-only same-document navigation should NOT trigger a new query.
+  EXPECT_CALL(*mock_optimization_guide(),
+              CanApplyOptimization(
+                  _, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .Times(0);
+  auto fragment_nav = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/page1#section"), main_rfh());
+  fragment_nav->CommitSameDocument();
+  Mock::VerifyAndClearExpectations(mock_optimization_guide());
+
+  // Show the inline cue on /page1#section.
+  observer->OnTextSelectionChanged(nullptr, u"Shown Selection");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_TRUE(observer->show_selection_affordance_called());
+  observer->Reset();
+  observer->set_call_base_update_selection_state(true);
+
+  // Same-document pushState navigation to /page2 DOES re-query and updates
+  // eligibility for subsequent selections.
+  EXPECT_CALL(
+      *mock_optimization_guide(),
+      CanApplyOptimization(
+          url2, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+          An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          MakeQuickAnswersMetadata(/*is_eligible=*/false)));
+
+  auto push_state_nav =
+      content::NavigationSimulator::CreateRendererInitiated(url2, main_rfh());
+  push_state_nav->CommitSameDocument();
+
+  observer->OnTextSelectionChanged(nullptr, u"Selection On Page 2");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_FALSE(observer->show_selection_affordance_called());
+}
+
+TEST_F(GlicSelectionObserverQuickAnswersTest,
+       IgnoresStaleCallbackAfterNavigationAndQueriesExistingUrlOnCreation) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  observer->set_call_base_update_selection_state(true);
+
+  const GURL url1("https://example.com/stale");
+  const GURL url2("https://example.com/fresh");
+  optimization_guide::OptimizationGuideDecisionCallback stale_callback;
+  optimization_guide::OptimizationGuideDecisionCallback fresh_callback;
+
+  EXPECT_CALL(
+      *mock_optimization_guide(),
+      CanApplyOptimization(
+          url1, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+          An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(MoveArg<2>(&stale_callback));
+  EXPECT_CALL(
+      *mock_optimization_guide(),
+      CanApplyOptimization(
+          url2, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+          An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(MoveArg<2>(&fresh_callback));
+
+  NavigateAndCommit(url1);
+  NavigateAndCommit(url2);
+  ASSERT_TRUE(stale_callback);
+  ASSERT_TRUE(fresh_callback);
+
+  // Fresh navigation resolves to eligible; stale navigation resolves to
+  // ineligible afterwards and must be ignored.
+  std::move(fresh_callback)
+      .Run(optimization_guide::OptimizationGuideDecision::kTrue,
+           MakeQuickAnswersMetadata(/*is_eligible=*/true));
+  std::move(stale_callback)
+      .Run(optimization_guide::OptimizationGuideDecision::kTrue,
+           MakeQuickAnswersMetadata(/*is_eligible=*/false));
+
+  observer->OnTextSelectionChanged(nullptr, u"Fresh Selection");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_TRUE(observer->show_selection_affordance_called());
+  EXPECT_EQ(u"Fresh Selection", *observer->last_affordance_text());
+
+  // Recreating the tool and observer on a WebContents that already has a
+  // committed URL should register QUICK_ANSWERS and query CanApplyOptimization
+  // immediately.
+  EXPECT_CALL(*mock_optimization_guide(),
+              RegisterOptimizationTypes(ElementsAre(
+                  optimization_guide::proto::OptimizationType::QUICK_ANSWERS)))
+      .Times(1);
+  EXPECT_CALL(
+      *mock_optimization_guide(),
+      CanApplyOptimization(
+          url2, optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
+          An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          MakeQuickAnswersMetadata(/*is_eligible=*/false)));
+
+  RecreateQuickAnswersToolAndObserver();
+  GetObserver()->set_call_base_update_selection_state(true);
+
+  GetObserver()->OnTextSelectionChanged(nullptr, u"Recreated Selection");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_FALSE(GetObserver()->show_selection_affordance_called());
+
+  observer_.reset();
 }
 
 }  // namespace glic
