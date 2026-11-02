@@ -3,28 +3,33 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import '../cr_spinner_style.css.js';
-import '../shared_style.css.js';
 import './share_password_dialog_header.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './share_password_loading_dialog.html.js';
+import {getCss} from './share_password_loading_dialog.css.js';
+import {getHtml} from './share_password_loading_dialog.html.js';
 
-export class SharePasswordLoadingDialogElement extends PolymerElement {
+export class SharePasswordLoadingDialogElement extends CrLitElement {
   static get is() {
     return 'share-password-loading-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {dialogTitle: {type: String}};
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  declare dialogTitle: string;
+  static override get properties() {
+    return {
+      dialogTitle: {type: String},
+    };
+  }
+
+  accessor dialogTitle: string = '';
 }
 
 declare global {

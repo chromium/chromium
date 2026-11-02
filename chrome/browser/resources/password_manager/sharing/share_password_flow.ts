@@ -13,14 +13,14 @@ import './share_password_no_other_family_members_dialog.js';
 import './share_password_not_family_member_dialog.js';
 import './share_password_confirmation_dialog.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {PasswordManagerProxy} from '../password_manager_proxy.js';
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 
-import {getTemplate} from './share_password_flow.html.js';
+import {getHtml} from './share_password_flow.html.js';
 
 export enum ShareFlowState {
   NO_DIALOG,
@@ -32,60 +32,41 @@ export enum ShareFlowState {
   CONFIRMATION,
 }
 
-const SharePasswordFlowElementBase = I18nMixin(PolymerElement);
+const SharePasswordFlowElementBase = I18nMixinLit(CrLitElement);
 
 export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
   static get is() {
     return 'share-password-flow';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      passwordName: String,
-      iconUrl: String,
-      password: Object,
-
-      flowState: {
-        type: Number,
-        lalue: ShareFlowState.NO_DIALOG,
-      },
-
-      fetchResults_: {
-        type: Object,
-        value: null,
-      },
-
-      recipients_: {
-        type: Array,
-        value: [],
-      },
-
-      flowStateEnum_: {
-        type: Object,
-        value: ShareFlowState,
-        readOnly: true,
-      },
+      passwordName: {type: String},
+      iconUrl: {type: String},
+      password: {type: Object},
+      flowState: {type: Number},
+      fetchResults_: {type: Object},
+      recipients_: {type: Array},
     };
   }
 
-  declare passwordName: string;
-  declare iconUrl: string;
-  declare password: chrome.passwordsPrivate.PasswordUiEntry;
-  declare flowState: ShareFlowState;
-  declare private recipients_: chrome.passwordsPrivate.RecipientInfo[];
-  declare private fetchResults_: chrome.passwordsPrivate.FamilyFetchResults|
-      null;
+  accessor passwordName: string = '';
+  accessor iconUrl: string = '';
+  accessor password: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor flowState: ShareFlowState = ShareFlowState.NO_DIALOG;
+  protected accessor recipients_: chrome.passwordsPrivate.RecipientInfo[] = [];
+  protected accessor fetchResults_: chrome.passwordsPrivate.FamilyFetchResults|
+      null = null;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
   override connectedCallback() {
-    super.connectedCallback();
-
     this.startSharing_();
+    super.connectedCallback();
   }
 
   private async startSharing_() {
@@ -114,22 +95,34 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
     }
   }
 
-  private isState_(state: ShareFlowState): boolean {
+  protected isState_(state: ShareFlowState): boolean {
     return this.flowState === state;
   }
 
-  private getShareDialogTitle_(): string {
+  protected getShareDialogTitle_(): string {
     return this.i18n('shareDialogTitle', this.passwordName);
   }
 
-  private onDialogClose_() {
-    this.dispatchEvent(
-        new CustomEvent('share-flow-done', {bubbles: true, composed: true}));
+  protected onDialogClose_() {
+    this.fire('share-flow-done');
     this.flowState = ShareFlowState.NO_DIALOG;
   }
 
-  private onStartShare_() {
+  protected onDialogCancel_() {
+    this.onDialogClose_();
+  }
+
+  protected onRestart_() {
+    this.startSharing_();
+  }
+
+  protected onStartShare_() {
     this.flowState = ShareFlowState.CONFIRMATION;
+  }
+
+  protected onSelectedRecipientsChanged_(
+      e: CustomEvent<{value: chrome.passwordsPrivate.RecipientInfo[]}>) {
+    this.recipients_ = e.detail.value;
   }
 }
 

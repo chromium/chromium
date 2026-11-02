@@ -7,15 +7,16 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './metrics_utils.js';
 import './share_password_dialog_header.js';
 import './share_password_recipient.js';
-import '../shared_style.css.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {UserUtilMixin} from '../user_utils_mixin.js';
+import {UserUtilMixinLit} from '../user_utils_mixin_lit.js';
 
 import {PasswordSharingActions, recordPasswordSharingInteraction} from './metrics_utils.js';
-import {getTemplate} from './share_password_family_picker_dialog.html.js';
+import {getCss} from './share_password_family_picker_dialog.css.js';
+import {getHtml} from './share_password_family_picker_dialog.html.js';
 
 export interface SharePasswordFamilyPickerDialogElement {
   $: {
@@ -29,61 +30,65 @@ export interface SharePasswordFamilyPickerDialogElement {
   };
 }
 
-export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
-(I18nMixin(PolymerElement)) {
+const SharePasswordFamilyPickerDialogElementBase =
+    UserUtilMixinLit(I18nMixinLit(CrLitElement));
+
+export class SharePasswordFamilyPickerDialogElement extends
+    SharePasswordFamilyPickerDialogElementBase {
   static get is() {
     return 'share-password-family-picker-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      dialogTitle: String,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      members: {
-        type: Array,
-        value: [],
-      },
+  static override get properties() {
+    return {
+      dialogTitle: {type: String},
+      members: {type: Array},
 
       selectedRecipients: {
         type: Array,
-        value: [],
-        reflectToAttribute: true,
         notify: true,
       },
 
-      eligibleRecipients_: {
-        type: Array,
-        computed: 'computeEligible_(members)',
-      },
-
-      ineligibleRecipients_: {
-        type: Array,
-        computed: 'computeIneligible_(members)',
-      },
+      eligibleRecipients_: {type: Array},
+      ineligibleRecipients_: {type: Array},
     };
   }
 
-  declare dialogTitle: string;
-  declare members: chrome.passwordsPrivate.RecipientInfo[];
-  declare selectedRecipients: chrome.passwordsPrivate.RecipientInfo[];
-  declare private eligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
-  declare private ineligibleRecipients_:
-      chrome.passwordsPrivate.RecipientInfo[];
+  accessor dialogTitle: string = '';
+  accessor members: chrome.passwordsPrivate.RecipientInfo[] = [];
+  accessor selectedRecipients: chrome.passwordsPrivate.RecipientInfo[] = [];
+  protected accessor eligibleRecipients_:
+      chrome.passwordsPrivate.RecipientInfo[] = [];
+  protected accessor ineligibleRecipients_:
+      chrome.passwordsPrivate.RecipientInfo[] = [];
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     recordPasswordSharingInteraction(
         PasswordSharingActions.FAMILY_PICKER_OPENED);
+  }
 
-    // Pre-select the member if they are eligible for sharing and there are no
-    // other members in the group.
-    if (this.members.length === 1 && this.computeEligible_().length === 1) {
-      this.selectedRecipients = this.members;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('members')) {
+      this.eligibleRecipients_ = this.computeEligible_();
+      this.ineligibleRecipients_ = this.computeIneligible_();
+
+      // Pre-select the member if they are eligible for sharing and there are no
+      // other members in the group.
+      if (this.members.length === 1 && this.eligibleRecipients_.length === 1) {
+        this.selectedRecipients = this.members;
+      }
     }
   }
 
@@ -99,33 +104,31 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
     return inEligibleMembers;
   }
 
-  private recipientSelected_(): void {
+  protected onRecipientChange_(): void {
     this.selectedRecipients =
-        Array
-            .from(this.shadowRoot!.querySelectorAll('share-password-recipient'))
+        Array.from(this.shadowRoot.querySelectorAll('share-password-recipient'))
             .filter(item => item.selected)
             .map(item => item.recipient);
   }
 
   // Should only be called for eligible recipients.
-  private shouldPreselectFirstEntry_(index: number): boolean {
+  protected shouldPreselectFirstEntry_(index: number): boolean {
     // Only pre-select the first entry when there is only single group member.
     return index === 0 && this.members.length === 1;
   }
 
-  private onViewFamilyClick_() {
+  protected onViewFamilyClick_() {
     recordPasswordSharingInteraction(
         PasswordSharingActions.FAMILY_PICKER_VIEW_FAMILY_CLICKED);
   }
 
-  private onClickCancel_() {
+  protected onCancelClick_() {
     recordPasswordSharingInteraction(
         PasswordSharingActions.FAMILY_PICKER_CANCELED);
-    this.dispatchEvent(
-        new CustomEvent('close', {bubbles: true, composed: true}));
+    this.fire('close');
   }
 
-  private onClickShare_() {
+  protected onShareClick_() {
     if (this.selectedRecipients.length === 1) {
       recordPasswordSharingInteraction(
           PasswordSharingActions.FAMILY_PICKER_SHARE_WITH_ONE_MEMBER);
@@ -133,8 +136,7 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
       recordPasswordSharingInteraction(
           PasswordSharingActions.FAMILY_PICKER_SHARE_WITH_MULTIPLE_MEMBERS);
     }
-    this.dispatchEvent(
-        new CustomEvent('start-share', {bubbles: true, composed: true}));
+    this.fire('start-share');
   }
 }
 

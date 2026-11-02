@@ -6,10 +6,8 @@ import 'chrome://password-manager/password_manager.js';
 
 import type {SharePasswordFlowElement} from 'chrome://password-manager/password_manager.js';
 import {PasswordManagerImpl, ShareFlowState} from 'chrome://password-manager/password_manager.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {makeFamilyFetchResults, makeRecipientInfo} from './test_util.js';
@@ -21,7 +19,6 @@ function startPasswordShare(passwordName: string = SITE):
   const shareElement = document.createElement('share-password-flow');
   shareElement.passwordName = passwordName;
   document.body.appendChild(shareElement);
-  flush();
   return shareElement;
 }
 
@@ -44,7 +41,7 @@ suite('SharePasswordFlowTest', function() {
 
     assertEquals(ShareFlowState.FETCHING, shareElement.flowState);
     const dialog =
-        shareElement.shadowRoot!.querySelector('share-password-loading-dialog');
+        shareElement.shadowRoot.querySelector('share-password-loading-dialog');
     assertTrue(!!dialog);
 
     await passwordManager.whenCalled('fetchFamilyMembers');
@@ -55,10 +52,10 @@ suite('SharePasswordFlowTest', function() {
         chrome.passwordsPrivate.FamilyFetchStatus.UNKNOWN_ERROR);
     const shareElement = startPasswordShare();
     await passwordManager.whenCalled('fetchFamilyMembers');
-    await flushTasks();
+    await microtasksFinished();
 
     const dialog =
-        shareElement.shadowRoot!.querySelector('share-password-error-dialog');
+        shareElement.shadowRoot.querySelector('share-password-error-dialog');
     assertTrue(!!dialog);
 
     assertVisibleTextContent(
@@ -76,10 +73,10 @@ suite('SharePasswordFlowTest', function() {
         chrome.passwordsPrivate.FamilyFetchStatus.UNKNOWN_ERROR);
     const shareElement = startPasswordShare();
     await passwordManager.whenCalled('fetchFamilyMembers');
-    await flushTasks();
+    await microtasksFinished();
 
     const dialog =
-        shareElement.shadowRoot!.querySelector('share-password-error-dialog');
+        shareElement.shadowRoot.querySelector('share-password-error-dialog');
     assertTrue(!!dialog);
     dialog.$.tryAgain.click();
     assertEquals(ShareFlowState.FETCHING, shareElement.flowState);
@@ -91,15 +88,14 @@ suite('SharePasswordFlowTest', function() {
         chrome.passwordsPrivate.FamilyFetchStatus.UNKNOWN_ERROR);
     const shareElement = startPasswordShare();
     await passwordManager.whenCalled('fetchFamilyMembers');
-    await flushTasks();
+    await microtasksFinished();
 
     const shareFlowDone = eventToPromise('share-flow-done', shareElement);
 
     const dialog =
-        shareElement.shadowRoot!.querySelector('share-password-error-dialog');
+        shareElement.shadowRoot.querySelector('share-password-error-dialog');
     assertTrue(!!dialog);
     dialog.$.cancel.click();
-    await flushTasks();
 
     await shareFlowDone;
   });
@@ -109,9 +105,9 @@ suite('SharePasswordFlowTest', function() {
         chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS, /*members=*/[]);
     const shareElement = startPasswordShare();
     await passwordManager.whenCalled('fetchFamilyMembers');
-    await flushTasks();
+    await microtasksFinished();
 
-    const dialog = shareElement.shadowRoot!.querySelector(
+    const dialog = shareElement.shadowRoot.querySelector(
         'share-password-no-other-family-members-dialog');
     assertTrue(!!dialog);
 
@@ -129,9 +125,9 @@ suite('SharePasswordFlowTest', function() {
         chrome.passwordsPrivate.FamilyFetchStatus.NO_MEMBERS);
     const shareElement = startPasswordShare();
     await passwordManager.whenCalled('fetchFamilyMembers');
-    await flushTasks();
+    await microtasksFinished();
 
-    const dialog = shareElement.shadowRoot!.querySelector(
+    const dialog = shareElement.shadowRoot.querySelector(
         'share-password-not-family-member-dialog');
     assertTrue(!!dialog);
 
@@ -149,15 +145,14 @@ suite('SharePasswordFlowTest', function() {
         chrome.passwordsPrivate.FamilyFetchStatus.NO_MEMBERS);
     const shareElement = startPasswordShare();
     await passwordManager.whenCalled('fetchFamilyMembers');
-    await flushTasks();
+    await microtasksFinished();
 
     const shareFlowDone = eventToPromise('share-flow-done', shareElement);
 
-    const dialog = shareElement.shadowRoot!.querySelector(
+    const dialog = shareElement.shadowRoot.querySelector(
         'share-password-not-family-member-dialog');
     assertTrue(!!dialog);
     dialog.$.action.click();
-    await flushTasks();
 
     await shareFlowDone;
   });
@@ -167,15 +162,14 @@ suite('SharePasswordFlowTest', function() {
         chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS, /*members=*/[]);
     const shareElement = startPasswordShare();
     await passwordManager.whenCalled('fetchFamilyMembers');
-    await flushTasks();
+    await microtasksFinished();
 
     const shareFlowDone = eventToPromise('share-flow-done', shareElement);
 
-    const dialog = shareElement.shadowRoot!.querySelector(
+    const dialog = shareElement.shadowRoot.querySelector(
         'share-password-no-other-family-members-dialog');
     assertTrue(!!dialog);
     dialog.$.action.click();
-    await flushTasks();
 
     await shareFlowDone;
   });
@@ -186,15 +180,14 @@ suite('SharePasswordFlowTest', function() {
         /*members=*/[makeRecipientInfo()]);
     const shareElement = startPasswordShare();
     await passwordManager.whenCalled('fetchFamilyMembers');
-    await flushTasks();
+    await microtasksFinished();
 
     const shareFlowDone = eventToPromise('share-flow-done', shareElement);
 
-    const dialog = shareElement.shadowRoot!.querySelector(
+    const dialog = shareElement.shadowRoot.querySelector(
         'share-password-family-picker-dialog');
     assertTrue(!!dialog);
     dialog.$.cancel.click();
-    await flushTasks();
 
     await shareFlowDone;
   });

@@ -6,7 +6,6 @@ import 'chrome://password-manager/password_manager.js';
 
 import type {SharePasswordConfirmationDialogElement} from 'chrome://password-manager/password_manager.js';
 import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -43,7 +42,6 @@ suite('SharePasswordConfirmationDialogTest', function() {
     });
     dialog.recipients = [makeRecipientInfo()];
     document.body.appendChild(dialog);
-    flush();
   });
 
   teardown(function() {
@@ -59,10 +57,10 @@ suite('SharePasswordConfirmationDialogTest', function() {
     assertFalse(isVisible(dialog.$.footerDescription));
   });
 
-  test('Has correct canceled state', function() {
+  test('Has correct canceled state', async function() {
     assertTrue(isVisible(dialog.$.cancel));
     dialog.$.cancel.click();
-    flush();
+    await dialog.updateComplete;
 
     assertVisibleTextContent(
         dialog.$.header, dialog.i18n('shareDialogCanceledTitle'));
@@ -76,7 +74,7 @@ suite('SharePasswordConfirmationDialogTest', function() {
     // The user has 5 seconds to cancel the dialog, after that `sharePassword`
     // is triggered.
     mockTimer.tick(5000);
-    flush();
+    await dialog.updateComplete;
 
     assertVisibleTextContent(
         dialog.$.header, dialog.i18n('shareDialogSuccessTitle'));
@@ -93,7 +91,7 @@ suite('SharePasswordConfirmationDialogTest', function() {
         // The user has 5 seconds to cancel the dialog, after that
         // `sharePassword` is triggered.
         mockTimer.tick(5000);
-        flush();
+        await dialog.updateComplete;
 
         assertVisibleTextContent(
             dialog.$.header, dialog.i18n('shareDialogSuccessTitle'));
@@ -139,7 +137,7 @@ suite('SharePasswordConfirmationDialogTest', function() {
         // The user has 5 seconds to cancel the dialog, after that
         // `sharePassword` is triggered.
         mockTimer.tick(5000);
-        flush();
+        await dialog.updateComplete;
 
         assertEquals(
             dialog.$.footerDescription.innerHTML,
@@ -165,7 +163,7 @@ suite('SharePasswordConfirmationDialogTest', function() {
     // The user has 5 seconds to cancel the dialog, after that `sharePassword`
     // is triggered.
     mockTimer.tick(5000);
-    flush();
+    await dialog.updateComplete;
 
     assertTrue(isVisible(dialog.$.footerDescription));
     assertEquals(
@@ -183,7 +181,7 @@ suite('SharePasswordConfirmationDialogTest', function() {
         // The user has 5 seconds to cancel the dialog, after that
         // `sharePassword` is triggered.
         mockTimer.tick(5000);
-        flush();
+        await dialog.updateComplete;
 
         assertVisibleTextContent(
             dialog.$.header, dialog.i18n('shareDialogSuccessTitle'));

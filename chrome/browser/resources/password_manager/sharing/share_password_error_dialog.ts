@@ -8,11 +8,11 @@ import './metrics_utils.js';
 import './share_password_dialog_header.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordSharingActions, recordPasswordSharingInteraction} from './metrics_utils.js';
-import {getTemplate} from './share_password_error_dialog.html.js';
+import {getHtml} from './share_password_error_dialog.html.js';
 
 export interface SharePasswordErrorDialogElement {
   $: {
@@ -24,27 +24,28 @@ export interface SharePasswordErrorDialogElement {
   };
 }
 
-export class SharePasswordErrorDialogElement extends I18nMixin
-(PolymerElement) {
+const SharePasswordErrorDialogElementBase = I18nMixinLit(CrLitElement);
+
+export class SharePasswordErrorDialogElement extends
+    SharePasswordErrorDialogElementBase {
   static get is() {
     return 'share-password-error-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  private onClickCancel_() {
+  protected onCancelClick_() {
     recordPasswordSharingInteraction(
         PasswordSharingActions.ERROR_DIALOG_CANCELED);
     this.$.dialog.cancel();
   }
 
-  private onClickTryAgain_() {
+  protected onTryAgainClick_() {
     recordPasswordSharingInteraction(
         PasswordSharingActions.ERROR_DIALOG_TRY_AGAIN_CLICKED);
-    this.dispatchEvent(
-        new CustomEvent('restart', {bubbles: true, composed: true}));
+    this.fire('restart');
   }
 }
 
