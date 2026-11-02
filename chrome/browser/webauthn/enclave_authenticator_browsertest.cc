@@ -5231,7 +5231,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
 // Tests that when the CMTG key fetch times out, the flow proceeds and returns
 // no CMTG key.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyTimeout) {
+// TODO(crbug.com/580329266): Flaky due to real-time timer race.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       DISABLED_CmtgKeyTimeout) {
   cmtg_device_key_provider_fake().SetHoldCallback(true);
   SetTrustedVaultEmpty();
 
