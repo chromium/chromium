@@ -115,6 +115,12 @@ class PasswordStatusCheckService
                            CheckTimeUpdatedAfterRunScheduledInThePast);
   FRIEND_TEST_ALL_PREFIXES(PasswordStatusCheckServiceBaseTest,
                            CheckTimeUpdatedAfterRunScheduledLongTimeInThePast);
+  FRIEND_TEST_ALL_PREFIXES(PasswordStatusCheckServiceBaseTest,
+                           PasswordCheckSignedOutWithPasswords);
+  FRIEND_TEST_ALL_PREFIXES(PasswordStatusCheckServiceBaseTest,
+                           PasswordCheck_FindCompromised);
+  FRIEND_TEST_ALL_PREFIXES(PasswordStatusCheckServiceBaseTest,
+                           PasswordCheck_Error);
   // The enum to hold 4 password check states.
   // As soon as the check is started, the state will be kStarting.
   // When the state is kStarting:

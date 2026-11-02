@@ -424,23 +424,24 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheckNoPasswords) {
   RunUntilIdle();
 }
 
-// TODO: sideyilmaz@chromium.org - Investigate why this test fails.
 TEST_F(PasswordStatusCheckServiceBaseTest,
-       DISABLED_PasswordCheckSignedOutWithPasswords) {
+       PasswordCheckSignedOutWithPasswords) {
   profile_store().AddLogin(password_manager::FromPasswordForm(
       MakeForm(kUsername1, kPassword, kOrigin1)));
 
+  service()->SetPasswordCheckSchedulePrefsWithInterval(base::Time::Now() +
+                                                       base::Minutes(10));
+  service()->StartRepeatedUpdates();
+
   ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
-  task_environment()->AdvanceClock(
-      service()->GetScheduledPasswordCheckInterval());
   EXPECT_CALL(observer,
               OnStateChanged(BulkLeakCheckService::State::kSignedOut));
+  task_environment()->AdvanceClock(base::Minutes(10));
   RunUntilIdle();
 }
 
-TEST_F(PasswordStatusCheckServiceBaseTest,
-       DISABLED_PasswordCheck_FindCompromised) {
+TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_FindCompromised) {
   identity_test_env().MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
 
@@ -451,13 +452,16 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
 
   EXPECT_EQ(service()->compromised_credential_count(), 0UL);
 
+  service()->SetPasswordCheckSchedulePrefsWithInterval(base::Time::Now() +
+                                                       base::Minutes(10));
+  service()->StartRepeatedUpdates();
+
   // When leak check runs, mock the result for this credential coming back
   // positive.
-  task_environment()->AdvanceClock(
-      service()->GetScheduledPasswordCheckInterval());
+  task_environment()->AdvanceClock(base::Minutes(10));
   RunUntilIdle();
 
-  // Enumlate response from leak check server.
+  // Emulate response from leak check server.
   static_cast<BulkLeakCheckDelegateInterface*>(bulk_leak_check_service())
       ->OnFinishedCredential(
           LeakCheckCredential(kUsername1, PasswordString(kPassword)),
@@ -471,7 +475,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
   EXPECT_EQ(service()->compromised_credential_count(), 1UL);
 }
 
-TEST_F(PasswordStatusCheckServiceBaseTest, DISABLED_PasswordCheck_Error) {
+TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_Error) {
   identity_test_env().MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
   profile_store().AddLogin(password_manager::FromPasswordForm(
@@ -480,16 +484,17 @@ TEST_F(PasswordStatusCheckServiceBaseTest, DISABLED_PasswordCheck_Error) {
   UpdateInsecureCredentials();
   EXPECT_EQ(service()->compromised_credential_count(), 0UL);
 
-  ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
+  service()->SetPasswordCheckSchedulePrefsWithInterval(base::Time::Now() +
+                                                       base::Minutes(10));
+  service()->StartRepeatedUpdates();
 
-  task_environment()->AdvanceClock(
-      service()->GetScheduledPasswordCheckInterval());
-  RunUntilIdle();
+  ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
   EXPECT_CALL(observer, OnStateChanged(BulkLeakCheckService::State::kRunning));
   EXPECT_CALL(observer,
               OnStateChanged(BulkLeakCheckService::State::kServiceError));
 
+  task_environment()->AdvanceClock(base::Minutes(10));
   RunUntilIdle();
 
   bulk_leak_check_service()->set_state_and_notify(
