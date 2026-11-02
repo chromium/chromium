@@ -188,6 +188,11 @@ class MODULES_EXPORT MediaRecorderHandler final
       base::TimeTicks timestamp);
   void WriteData(base::span<const uint8_t> data);
 
+  // Coarsens `timestamp` to the resolution of `performance.now()` in the
+  // recorder's execution context. All timestamps reaching the muxer must pass
+  // through this, since the muxed bytes are exposed to the page.
+  base::TimeTicks CoarsenTimestamp(base::TimeTicks timestamp) const;
+
   // Updates recorded tracks live and enabled.
   void UpdateTracksLiveAndEnabled();
 

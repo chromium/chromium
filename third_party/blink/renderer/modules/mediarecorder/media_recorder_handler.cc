@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -1031,7 +1033,7 @@ void MediaRecorderHandler::HandleEncodedVideo(
   }
   if (!muxer_adapter_->OnEncodedVideo(params, std::move(encoded_data),
                                       std::move(codec_description),
-                                      timestamp)) {
+                                      CoarsenTimestamp(timestamp))) {
     recorder_->OnError(DOMExceptionCode::kUnknownError,
                        "Error muxing video data");
   }
@@ -1049,10 +1051,30 @@ void MediaRecorderHandler::OnEncodedAudio(
   }
   if (!muxer_adapter_->OnEncodedAudio(params, std::move(encoded_data),
                                       std::move(codec_description),
-                                      timestamp)) {
+                                      CoarsenTimestamp(timestamp))) {
     recorder_->OnError(DOMExceptionCode::kUnknownError,
                        "Error muxing audio data");
   }
+}
+
+base::TimeTicks MediaRecorderHandler::CoarsenTimestamp(
+    base::TimeTicks timestamp) const {
+  // The muxer serializes timestamps into the recorded bytes at a resolution
+  // that can be finer than what `performance.now()` exposes (e.g. 30 kHz for
+  // MP4 video), and the bytes are handed to the page. Apply the same clamping
+  // as `performance.now()` so that recordings can't be used as a
+  // high-resolution timer. Clamping absolute time keeps the same grid as
+  // `Performance::MonotonicTimeToDOMHighResTimeStamp()`, and using the
+  // clamper backing `performance.now()` avoids exposing a second, differently
+  // jittered clock that could be combined with it.
+  if (timestamp.is_null()) {
+    return timestamp;
+  }
+  const double clamped_ms = Performance::ClampTimeResolution(
+      timestamp.since_origin(), cross_origin_isolated_capability_);
+  return base::TimeTicks() +
+         base::Microseconds(
+             std::round(clamped_ms * base::Time::kMicrosecondsPerMillisecond));
 }
 
 void MediaRecorderHandler::OnAudioEncodingError(

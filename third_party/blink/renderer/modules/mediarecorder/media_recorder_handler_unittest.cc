@@ -266,6 +266,11 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
                                             std::nullopt, timestamp);
   }
 
+  static base::TimeTicks CoarsenTimestamp(const MediaRecorderHandler& handler,
+                                          base::TimeTicks timestamp) {
+    return handler.CoarsenTimestamp(timestamp);
+  }
+
   void OnAudioBusForTesting(const media::AudioBus& audio_bus) {
     media_recorder_handler_->OnAudioBusForTesting(audio_bus,
                                                   base::TimeTicks::Now());
@@ -1330,6 +1335,41 @@ INSTANTIATE_TEST_SUITE_P(,
 class MediaRecorderHandlerAudioVideoTest
     : public testing::Test,
       public MediaRecorderHandlerAudioVideoBase {};
+
+// Timestamps reach the page via the muxed bytes, so the deltas between them
+// must not be finer than what performance.now() exposes.
+TEST_F(MediaRecorderHandlerAudioVideoTest, CoarsensMuxerTimestamps) {
+  auto* handler = MakeGarbageCollected<MediaRecorderHandler>(
+      scheduler::GetSingleThreadTaskRunnerForTesting(),
+      KeyFrameRequestProcessor::Configuration(),
+      /*cross_origin_isolated_capability=*/false);
+  const base::TimeTicks t1 =
+      base::TimeTicks() + base::Seconds(1000) + base::Microseconds(33);
+  const base::TimeTicks t2 = t1 + base::Microseconds(33);
+  const base::TimeDelta delta =
+      CoarsenTimestamp(*handler, t2) - CoarsenTimestamp(*handler, t1);
+  EXPECT_EQ(delta % base::Microseconds(100), base::TimeDelta());
+  EXPECT_LE(delta.magnitude(), base::Microseconds(100));
+  EXPECT_TRUE(CoarsenTimestamp(*handler, base::TimeTicks()).is_null());
+  media_recorder_handler_ = nullptr;
+}
+
+TEST_F(MediaRecorderHandlerAudioVideoTest,
+       CoarsensMuxerTimestampsLessWhenCrossOriginIsolated) {
+  auto* handler = MakeGarbageCollected<MediaRecorderHandler>(
+      scheduler::GetSingleThreadTaskRunnerForTesting(),
+      KeyFrameRequestProcessor::Configuration(),
+      /*cross_origin_isolated_capability=*/true);
+  const base::TimeTicks t1 =
+      base::TimeTicks() + base::Seconds(1000) + base::Microseconds(33);
+  const base::TimeTicks t2 = t1 + base::Microseconds(33);
+  const base::TimeDelta delta =
+      CoarsenTimestamp(*handler, t2) - CoarsenTimestamp(*handler, t1);
+  EXPECT_EQ(delta % base::Microseconds(5), base::TimeDelta());
+  EXPECT_GE(delta, base::Microseconds(25));
+  EXPECT_LE(delta, base::Microseconds(40));
+  media_recorder_handler_ = nullptr;
+}
 
 TEST_F(MediaRecorderHandlerAudioVideoTest, IgnoresStaleEncodedMediaOnRestart) {
   AddTracks();
