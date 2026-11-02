@@ -361,8 +361,8 @@ suite('<history-synced-device-manager>', function() {
 
   // <if expr="is_chromeos">
   // On ChromeOS, this promo may be shown depending on the
-  // kReplaceSyncPromosWithSignInPromos flag value. For other platforms, the
-  // flag is true so this promo is not shown (checked in other tests below).
+  // replaceSyncPromosWithSignInPromos loadTimeData value. For other platforms,
+  // the flag is true so this promo is not shown (checked in other tests below).
   test('show sign in promo', async () => {
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_OUT,

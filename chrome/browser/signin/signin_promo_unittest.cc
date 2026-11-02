@@ -274,8 +274,7 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceForwardsGaiaExpBranch) {
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
                              {{"flow_type", "autofill"},
-                              {"magichrome_fre_exp_branch", "2"}}},
-                            {syncer::kReplaceSyncPromosWithSignInPromos, {}}},
+                              {"magichrome_fre_exp_branch", "2"}}}},
       /*disabled_features=*/{});
 
   EXPECT_EQ(
@@ -289,8 +288,7 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceForwardsServerOnlyGaiaExpBranch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
-                             {{"magichrome_fre_exp_branch", "3"}}},
-                            {syncer::kReplaceSyncPromosWithSignInPromos, {}}},
+                             {{"magichrome_fre_exp_branch", "3"}}}},
       /*disabled_features=*/{});
 
   EXPECT_EQ(
@@ -303,8 +301,7 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceUnsetGaiaExpBranchAddsNoParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
-                             {{"flow_type", "autofill"}}},
-                            {syncer::kReplaceSyncPromosWithSignInPromos, {}}},
+                             {{"flow_type", "autofill"}}}},
       /*disabled_features=*/{});
 
   EXPECT_EQ(
@@ -317,8 +314,7 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceNonNumericGaiaExpBranchAddsNoParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
-                             {{"magichrome_fre_exp_branch", "autofill"}}},
-                            {syncer::kReplaceSyncPromosWithSignInPromos, {}}},
+                             {{"magichrome_fre_exp_branch", "autofill"}}}},
       /*disabled_features=*/{});
 
   EXPECT_EQ(
@@ -330,7 +326,7 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceNonNumericGaiaExpBranchAddsNoParam) {
 TEST_F(SigninPromoUrlTest, SigninURLForDicePasskeyFeatureDisabledAddsNoParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+      /*enabled_features=*/{},
       /*disabled_features=*/{switches::kMagiChromePasskeySignIn});
 
   EXPECT_EQ(
@@ -470,28 +466,10 @@ TEST(SigninPromoTest, IsSignInPromo_SendTabToSelf) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-// ChromeOS does not show any sign in promos when
-// `kReplaceSyncPromosWithSignInPromos` is disabled.
 #if BUILDFLAG(IS_CHROMEOS)
+// The extension install bubble access point counts as a sign in promo on
+// ChromeOS.
 TEST(SigninPromoTest, IsSignInPromo) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kPasswordBubble));
-  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kAddressBubble));
-  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
-  EXPECT_FALSE(
-      IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
-  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kSendTabToSelfPromo));
-}
-
-// With `kReplaceSyncPromosWithSignInPromos` enabled, the extension install
-// bubble access point counts as a sign in promo on ChromeOS.
-TEST(SigninPromoTest, IsSignInPromo_ReplaceSyncPromosWithSignInPromos) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
   EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kPasswordBubble));
   EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kAddressBubble));
   EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
@@ -634,8 +612,7 @@ class ShowSigninPromoTestWithFeatureFlags : public ShowPromoTest {
     ShowPromoTest::SetUp();
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {syncer::kReplaceSyncPromosWithSignInPromos,
-         syncer::kUnoPhase2FollowUp},
+        {syncer::kUnoPhase2FollowUp},
         /*disabled_features=*/{});
   }
 
@@ -1131,7 +1108,7 @@ class ShowSigninPromoTestWithoutPhase2FollowUp
   void SetUp() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {syncer::kReplaceSyncPromosWithSignInPromos},
+        {},
         /*disabled_features=*/{syncer::kUnoPhase2FollowUp});
     ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
         .WillByDefault(testing::Return(syncer::DataTypeSet::All()));

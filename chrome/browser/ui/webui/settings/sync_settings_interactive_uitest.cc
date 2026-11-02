@@ -146,8 +146,6 @@ class SyncSettingsInteractiveTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
   net::EmbeddedTestServer gaia_signin_page_test_server_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 };

@@ -55,8 +55,7 @@
 // dialog's internal logic that orchestrates the parental permission process.
 class ExtensionEnableFlowTestSupervised
     : public MixinBasedInProcessBrowserTest,
-      public TestParentPermissionDialogViewObserver,
-      public base::test::WithFeatureOverride {
+      public TestParentPermissionDialogViewObserver {
  public:
   // The next dialog action to take.
   enum class NextDialogAction {
@@ -65,9 +64,7 @@ class ExtensionEnableFlowTestSupervised
   };
 
   ExtensionEnableFlowTestSupervised()
-      : TestParentPermissionDialogViewObserver(this),
-        base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {}
+      : TestParentPermissionDialogViewObserver(this) {}
 
   ExtensionEnableFlowTestSupervised(const ExtensionEnableFlowTestSupervised&) =
       delete;
@@ -165,8 +162,7 @@ class ExtensionEnableFlowTestSupervised
       mixin_host_,
       this,
       embedded_test_server(),
-      {.consent_level = IsParamFeatureEnabled() ? signin::ConsentLevel::kSignin
-                                                : signin::ConsentLevel::kSync,
+      {.consent_level = signin::ConsentLevel::kSignin,
        .sign_in_mode =
            content::IsPreTest()
                ? supervised_user::SupervisionMixin::SignInMode::kRegular
@@ -188,7 +184,7 @@ class ExtensionEnableFlowTestSupervised
 };
 
 // Tests launching an app that requires parent approval from the launcher.
-IN_PROC_BROWSER_TEST_P(ExtensionEnableFlowTestSupervised,
+IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTestSupervised,
                        ParentPermissionDialogAccept) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(browser()->GetProfile()->IsChild());
@@ -234,10 +230,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionEnableFlowTestSupervised,
                                     2);
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ExtensionEnableFlowTestSupervised);
-
 // Tests launching an app and canceling parent approval from the launcher.
-IN_PROC_BROWSER_TEST_P(ExtensionEnableFlowTestSupervised,
+IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTestSupervised,
                        ParentPermissionDialogCancel) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(browser()->GetProfile()->IsChild());
@@ -352,14 +346,14 @@ class ExtensionManagementApiTestSupervised
   std::string test_extension_id_;
 };
 
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestSupervised,
+IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTestSupervised,
                        PRE_ParentPermissionGrantedForEnable) {
   ASSERT_FALSE(browser()->GetProfile()->IsChild());
 }
 
 // Tests launching the Parent Permission Dialog from the management api when the
 // extension hasn't already been approved.
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestSupervised,
+IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTestSupervised,
                        ParentPermissionGrantedForEnable) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(browser()->GetProfile()->IsChild());
@@ -395,14 +389,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestSupervised,
                                     2);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestSupervised,
+IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTestSupervised,
                        PRE_ParentPermissionNotGrantedForEnable) {
   ASSERT_FALSE(browser()->GetProfile()->IsChild());
 }
 
 // Tests that extensions are not enabled after the parent permission dialog is
 // cancelled.
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestSupervised,
+IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTestSupervised,
                        ParentPermissionNotGrantedForEnable) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(browser()->GetProfile()->IsChild());
@@ -436,5 +430,3 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestSupervised,
                                         kParentPermissionDialogHistogramName,
                                     2);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ExtensionManagementApiTestSupervised);

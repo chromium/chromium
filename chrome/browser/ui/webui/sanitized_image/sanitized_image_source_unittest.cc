@@ -203,19 +203,9 @@ TEST_F(SanitizedImageSourceTest, WrongUrl) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 
-class SanitizedImageSourceSigninPromoTest
-    : public base::test::WithFeatureOverride,
-      public SanitizedImageSourceTest {
- public:
-  SanitizedImageSourceSigninPromoTest()
-      : base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {}
-};
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SanitizedImageSourceSigninPromoTest);
-
 // Verifies that the image source sends a Google Photos auth token with its data
 // request if and only if asked to by URL specification.
-TEST_P(SanitizedImageSourceSigninPromoTest, GooglePhotosImage) {
+TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
   constexpr char kImageUrl[] = "https://lh3.googleusercontent.com/img.png";
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   signin::IdentityTestEnvironment identity_test_env;

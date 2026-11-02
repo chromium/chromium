@@ -128,10 +128,6 @@ class BookmarkBubbleViewIPHInteractiveTest
 
  private:
   base::CallbackListSubscription create_services_subscription_;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
-#endif
 
   base::WeakPtrFactory<BookmarkBubbleViewIPHInteractiveTest> weak_ptr_factory_{
       this};

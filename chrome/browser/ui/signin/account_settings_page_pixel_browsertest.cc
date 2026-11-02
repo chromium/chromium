@@ -37,8 +37,7 @@ class AccountSettingsPagePixelBrowserTest : public InteractiveBrowserTest {
  public:
   AccountSettingsPagePixelBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                              syncer::kUnoPhase2FollowUp},
+        /*enabled_features=*/{syncer::kUnoPhase2FollowUp},
         /*disabled_features=*/{});
   }
 

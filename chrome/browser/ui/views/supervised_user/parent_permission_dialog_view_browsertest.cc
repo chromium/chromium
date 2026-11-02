@@ -201,12 +201,9 @@ class ParentPermissionDialogViewHarness
 // internal logic that orchestrates the parental permission process.
 class ParentPermissionDialogViewTest
     : public SupportsTestDialog<
-          InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest>>,
-      public base::test::WithFeatureOverride {
+          InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest>> {
  protected:
-  ParentPermissionDialogViewTest()
-      : base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {}
+  ParentPermissionDialogViewTest() = default;
 
   void ShowUi(const std::string& name) override {
     if (name == "LongNameExtension") {
@@ -297,8 +294,7 @@ class ParentPermissionDialogViewTest
       mixin_host_,
       this,
       embedded_test_server(),
-      {.consent_level = IsParamFeatureEnabled() ? signin::ConsentLevel::kSignin
-                                                : signin::ConsentLevel::kSync,
+      {.consent_level = signin::ConsentLevel::kSignin,
        .sign_in_mode =
            content::IsPreTest()
                ? supervised_user::SupervisionMixin::SignInMode::kRegular
@@ -325,22 +321,22 @@ class ParentPermissionDialogViewTest
 
 // Tests that a plain dialog widget is shown using the TestBrowserUi
 // infrastructure.
-IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
 // Tests that a plain dialog widget is shown using the TestBrowserUi
 // infrastructure.
-IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest, InvokeUi_extension) {
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest, InvokeUi_extension) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        InvokeUi_LongNameExtension) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionReceived_default) {
   RunTestSequence(InAnyContext(
       ShowDialog(),
@@ -351,9 +347,7 @@ IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
                   ParentPermissionDialog::Result::kParentPermissionReceived)));
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ParentPermissionDialogViewTest);
-
-IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionFailedInvalidPassword_default) {
   supervision_mixin_.SetNextReAuthStatus(
       GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidGrant);
@@ -374,7 +368,7 @@ IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
               ParentPermissionDialog::Result::kParentPermissionFailed))));
 }
 
-IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionDialogCanceled_default) {
   RunTestSequence(InAnyContext(
       ShowDialog(),
@@ -385,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
                   ParentPermissionDialog::Result::kParentPermissionCanceled)));
 }
 
-IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionReceived_extension) {
   // Provide an extension dialog entry point to test the recorded histograms.
   supervision_mixin_.SetNextReAuthStatus(
@@ -423,7 +417,7 @@ IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
           ActionStatus::kWasPerformed)));
 }
 
-IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionFailedInvalidPassword_extension) {
   // Provide an extension dialog entry point to test the recorded histograms.
   supervision_mixin_.SetNextReAuthStatus(
@@ -469,7 +463,7 @@ IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
               ActionStatus::kWasPerformed))));
 }
 
-IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionFailedInvalidPasswordWithRepromt_extension) {
   harness_.SetRepromptAfterIncorrectCredential(true);
   supervision_mixin_.SetNextReAuthStatus(
@@ -503,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
                                 0)));
 }
 
-IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionDialogCanceled_extension) {
   RunTestSequence(InAnyContext(
       ShowDialog(),
@@ -543,9 +537,7 @@ IN_PROC_BROWSER_TEST_P(ParentPermissionDialogViewTest,
 class ParentPermissionInputSectionLabelTest
     : public ParentPermissionDialogViewTest {};
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ParentPermissionInputSectionLabelTest);
-
-IN_PROC_BROWSER_TEST_P(ParentPermissionInputSectionLabelTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionInputSectionLabelTest,
                        PermissionReceived_extension) {
   supervision_mixin_.SetNextReAuthStatus(
       GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess);
@@ -565,7 +557,7 @@ IN_PROC_BROWSER_TEST_P(ParentPermissionInputSectionLabelTest,
                    EnsureNotPresent(non_present_parent_label_id)));
 }
 
-IN_PROC_BROWSER_TEST_P(ParentPermissionInputSectionLabelTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionInputSectionLabelTest,
                        PermissionReceived_default) {
   supervision_mixin_.SetNextReAuthStatus(
       GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess);

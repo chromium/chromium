@@ -58,8 +58,7 @@ class HistorySyncOptinUIDialogPixelTest
  public:
   HistorySyncOptinUIDialogPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(std::get<0>(GetParam())) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kReplaceSyncPromosWithSignInPromos};
+    std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
     bool is_ui_refresh_enabled = std::get<1>(GetParam());
     if (is_ui_refresh_enabled) {
@@ -176,8 +175,7 @@ class HistorySyncOptinUIWindowPixelTest
  public:
   HistorySyncOptinUIWindowPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(std::get<0>(GetParam())) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kReplaceSyncPromosWithSignInPromos};
+    std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
     bool is_ui_refresh_enabled = std::get<1>(GetParam());
     if (is_ui_refresh_enabled) {

@@ -1275,34 +1275,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_TURN_ON_SYNC));
 }
 
-class BrowserCommandControllerBrowserTestShowSigninWhenPaused
-    : public BrowserCommandControllerBrowserTestRefreshOnly,
-      public testing::WithParamInterface<bool> {
- public:
-  BrowserCommandControllerBrowserTestShowSigninWhenPaused() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BrowserCommandControllerBrowserTestShowSigninWhenPaused,
-    testing::Bool(),
-    [](const testing::TestParamInfo<bool>& info) {
-      return info.param ? "ReplaceSyncPromosEnabled"
-                        : "ReplaceSyncPromosDisabled";
-    });
-
-IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestShowSigninWhenPaused,
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteShowSigninWhenPaused) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->GetProfile());

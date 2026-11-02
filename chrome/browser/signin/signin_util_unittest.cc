@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/with_feature_override.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -23,11 +22,11 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using signin_util::ProfileSeparationPolicyState;
 using signin_util::ProfileSeparationPolicyStateSet;
@@ -638,15 +637,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class SignedInStatesTest : public base::test::WithFeatureOverride,
-                           public ::testing::Test {
- public:
-  SignedInStatesTest()
-      : base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {}
-};
-
-TEST_P(SignedInStatesTest, SignedInStates) {
+TEST(SignedInStatesTest, SignedInStates) {
   base::test::SingleThreadTaskEnvironment task_environment;
   signin::IdentityTestEnvironment identity_test_env;
   signin::IdentityManager* identity_manager =
@@ -663,19 +654,14 @@ TEST_P(SignedInStatesTest, SignedInStates) {
             signin_util::GetSignedInState(identity_manager));
 
   // Syncing.
-  const signin::ConsentLevel consent_level = IsParamFeatureEnabled()
-                                                 ? signin::ConsentLevel::kSignin
-                                                 : signin::ConsentLevel::kSync;
   AccountInfo info = identity_test_env.MakePrimaryAccountAvailable(
-      "test@email.com", consent_level);
-  EXPECT_EQ(IsParamFeatureEnabled() ? SignedInState::kSignedIn
-                                    : SignedInState::kSyncing,
+      "test@email.com", signin::ConsentLevel::kSync);
+  EXPECT_EQ(SignedInState::kSyncing,
             signin_util::GetSignedInState(identity_manager));
 
   // Sync paused state.
   identity_test_env.SetInvalidRefreshTokenForPrimaryAccount();
-  EXPECT_EQ(IsParamFeatureEnabled() ? SignedInState::kSignInPending
-                                    : SignedInState::kSyncPaused,
+  EXPECT_EQ(SignedInState::kSyncPaused,
             signin_util::GetSignedInState(identity_manager));
 
   // Remove account.
@@ -698,6 +684,4 @@ TEST_P(SignedInStatesTest, SignedInStates) {
   EXPECT_EQ(SignedInState::kSignInPending,
             signin_util::GetSignedInState(identity_manager));
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SignedInStatesTest);
 #endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)

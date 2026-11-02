@@ -1170,10 +1170,7 @@ IN_PROC_BROWSER_TEST_F(
 class AppMenuModelBookmarkLimitExceededSignedInNonSyncingTest
     : public AppMenuModelTest {
  public:
-  AppMenuModelBookmarkLimitExceededSignedInNonSyncingTest() {
-    feature_list_.InitAndEnableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
+  AppMenuModelBookmarkLimitExceededSignedInNonSyncingTest() = default;
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {

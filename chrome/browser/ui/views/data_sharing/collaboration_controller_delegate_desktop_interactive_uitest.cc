@@ -496,9 +496,7 @@ class
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         syncer::kReplaceSyncPromosWithSignInPromos},
-        {});
+        {data_sharing::features::kDataSharingFeature}, {});
     InProcessBrowserTest::SetUp();
   }
 

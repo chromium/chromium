@@ -58,13 +58,7 @@ IN_PROC_BROWSER_TEST_F(SigninManagedUserProfileNoticeRefreshTest,
 
 class SigninTestWithHistorySync : public SigninTest {
  protected:
-  SigninTestWithHistorySync() {
-    feature_list_.InitAndEnableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  SigninTestWithHistorySync() = default;
 };
 
 IN_PROC_BROWSER_TEST_F(SigninTestWithHistorySync, HistorySyncOptIn) {

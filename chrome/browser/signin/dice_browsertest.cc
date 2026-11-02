@@ -105,7 +105,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
@@ -1989,24 +1988,11 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, BrowserSignInFromAddAccountTab) {
       /*expected_count=*/1);
 }
 
-class DiceBrowserTestWithSyncOptinScreen : public DiceBrowserTest {
- public:
-  DiceBrowserTestWithSyncOptinScreen() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that a signed in user gets the history sync optin dialog,
 // after Sync an ENABLE_SYNC response and the user is not syncing
 // history. Accepting the dialog results in enabling the history
 // sync preference.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
-                       EnableHistorySyncOptin) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableHistorySyncOptin) {
   base::HistogramTester histogram_tester;
   EXPECT_EQ(0, reconcilor_started_count_);
 
@@ -2063,7 +2049,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
 // Tests that the history sync optin dialog is not shown (and the browser does
 // not crash) when a concurrent sign-in flow made a different account primary
 // while this Gaia sign-in flow was in progress.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
                        NoHistorySyncOptinForNonPrimaryAccount) {
   base::HistogramTester histogram_tester;
 
@@ -2108,7 +2094,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
 // Tests that if the entry point for a sign in tab is updated to a value
 // that should not offer the history sync optin flow, then the initialized
 // history sync optin flow is aborted.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
                        SkipsHistorySyncScreenOnUnexpectedEntryPoint) {
   EXPECT_EQ(0, reconcilor_started_count_);
 
@@ -2161,7 +2147,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
 // from the "Tabs from other devices" page, the sign-in is handled as a Chrome
 // sign-in: it is not intercepted as a web sign-in, and history sync is enabled
 // once the user is signed in.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
                        SignInAndEnableHistorySyncWhenSignedOut) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(GetIdentityManager()->GetAccountsWithRefreshTokens().empty());
@@ -2300,16 +2286,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
       signin_metrics::AccessPoint::kSigninChoiceRemembered, 1);
 }
 
-class DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos
-    : public DiceBrowserTestWithExplicitSignin {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
-};
-
-IN_PROC_BROWSER_TEST_F(
-    DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos,
-    AutoSigninWhenAccountAllowedByPattern) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
+                       AutoSigninWhenAccountAllowedByPattern) {
   g_browser_process->local_state()->SetString(
       prefs::kGoogleServicesUsernamePattern, ".*@gmail.com");
 
@@ -2324,7 +2302,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos,
+    DiceBrowserTestWithExplicitSignin,
     SigninDisallowedWithSilentFailureWhenAccountNotAllowedByPattern) {
   g_browser_process->local_state()->SetString(
       prefs::kGoogleServicesUsernamePattern, ".*@restricted.com");
@@ -2340,7 +2318,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos,
+    DiceBrowserTestWithExplicitSignin,
     SetPrimaryAccountAfterEnableSyncWhenAccountAllowedByPattern) {
   g_browser_process->local_state()->SetString(
       prefs::kGoogleServicesUsernamePattern, ".*@gmail.com");
@@ -2363,7 +2341,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos,
+    DiceBrowserTestWithExplicitSignin,
     NoPrimaryAccountChangeAfterEnableSyncWhenAccountDisallowedByPattern) {
   g_browser_process->local_state()->SetString(
       prefs::kGoogleServicesUsernamePattern, ".*@restricted.com");

@@ -41,8 +41,7 @@ BASE_DECLARE_FEATURE(kEnableAwaitSyncServiceStartupOnHistorySync);
 // Helper class to track the state of the SyncService.
 // Executes a callback when the SyncService's state is no longer pending. The
 // right implementation of the class is chosen based on the state of the
-// `syncer::kEnableAwaitSyncServiceStartup` and
-// `syncer::kReplaceSyncPromosWithSignInPromos` feature flags.
+// `syncer::kEnableAwaitSyncServiceStartup` feature flag.
 // TODO(crbug.com/483991595): When the history sync helper becomes the only
 // consumer of this class make it private and simplify the histogram
 // recording logic.

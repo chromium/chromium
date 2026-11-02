@@ -1922,10 +1922,6 @@ class PeopleHandlerWithReplaceSyncWithSigninUI : public PeopleHandlerTest {
     SigninUserWithoutSyncFeature();
     CreatePeopleHandler();
   }
-
- private:
-  base::test::ScopedFeatureList features_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 // Walks through each user selectable type, and tries to activate account

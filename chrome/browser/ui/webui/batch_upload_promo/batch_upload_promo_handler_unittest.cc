@@ -66,8 +66,7 @@ class BatchUploadPromoHandlerTest : public testing::Test {
   BatchUploadPromoHandlerTest()
       : profile_(MakeTestingProfile()),
         web_contents_(web_contents_factory_.CreateWebContents(profile_.get())) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kReplaceSyncPromosWithSignInPromos};
+    std::vector<base::test::FeatureRef> enabled_features = {};
 #if !BUILDFLAG(IS_CHROMEOS)
     enabled_features.push_back(syncer::kUnoPhase2FollowUp);
 #endif

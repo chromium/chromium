@@ -817,12 +817,7 @@ bool IsSignInPromo(signin_metrics::AccessPoint access_point) {
   }
 
   if (access_point == signin_metrics::AccessPoint::kExtensionInstallBubble) {
-#if BUILDFLAG(IS_CHROMEOS)
-    return base::FeatureList::IsEnabled(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-#else
     return true;
-#endif
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -45,7 +45,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -137,10 +136,6 @@ class LiveSignInTestBase : public LiveTest {
 class LiveSignInTest : public LiveSignInTestBase {
  public:
   LiveSignInTest() = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
@@ -624,8 +619,7 @@ class DeviceBoundSessionsLiveSignInTest : public LiveSignInTestBase {
          switches::kEnableOAuthMultiloginStandardCookiesBinding,
          network::features::kUseUnexportableKeyServiceInBrowserProcess,
          unexportable_keys::
-             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
-         syncer::kReplaceSyncPromosWithSignInPromos},
+             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting},
         {});
   }
 

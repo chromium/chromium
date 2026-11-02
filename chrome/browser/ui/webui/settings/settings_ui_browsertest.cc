@@ -94,8 +94,6 @@ class SettingsUITestDisableSync : public SettingsUITest {
     std::vector<base::test::FeatureRef> enabled_features;
 #if !BUILDFLAG(IS_CHROMEOS)
     enabled_features.push_back(syncer::kUnoPhase2FollowUp);
-#else
-    enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
 #endif
     scoped_feature_list_.InitWithFeatures(enabled_features,
                                           /*disabled_features=*/{});

@@ -115,12 +115,9 @@ const char kNpsObjectUrl[] =
 // Live tests for Lens Overlay.
 // These tests can be run with:
 // browser_tests --gtest_filter=LensOverlayLiveTest.* --run-live-tests
-class LensOverlayLiveTest : public base::test::WithFeatureOverride,
-                            public signin::test::LiveTest {
+class LensOverlayLiveTest : public signin::test::LiveTest {
  public:
-  LensOverlayLiveTest()
-      : base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {}
+  LensOverlayLiveTest() = default;
   ~LensOverlayLiveTest() override = default;
 
   void SetUp() override {
@@ -275,7 +272,7 @@ class LensOverlayLiveTest : public base::test::WithFeatureOverride,
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(LensOverlayLiveTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
                        ClickObject_SignedInAndSyncingHistory) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
@@ -325,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayLiveTest,
   VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayLiveTest, ClickObject_SignedInOnWebOnly) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInOnWebOnly) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
@@ -373,7 +370,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayLiveTest, ClickObject_SignedInOnWebOnly) {
   VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayLiveTest, ClickObject_SignedOut) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedOut) {
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsObjectUrl);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
@@ -412,10 +409,5 @@ IN_PROC_BROWSER_TEST_P(LensOverlayLiveTest, ClickObject_SignedOut) {
   // loaded a result.
   VerifySidePanelLoaded();
 }
-
-// TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
-// deleted from the codebase. See ConsentLevel::kSync documentation for
-// details.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LensOverlayLiveTest);
 
 }  // namespace lens

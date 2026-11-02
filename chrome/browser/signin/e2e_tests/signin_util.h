@@ -37,11 +37,8 @@ AccountReconcilor* account_reconcilor(BrowserWindowInterface* browser);
 
 class SignInFunctions {
  public:
-  // Depending on the feature `syncer::kReplaceSyncPromosWithSignInPromos`,
-  // at sign-in, the user is presented with the choice to sync all the optional
-  // data types. When the feature is enabled the only optional data types are
-  // history and tabs, while then the feature is disabled all user configurable
-  // data types are available. This class represents either accepting or
+  // At sign-in, the user is presented with the choice to sync all the optional
+  // data types (history and tabs). This class represents either accepting or
   // rejecting syncing of all available data types.
   enum class SyncChoice : int {
     kAcceptAllOptionalDataTypesSync = 0,

@@ -50,8 +50,7 @@ class BookmarkPromoDelegateTestBase : public testing::Test {
 class BatchUploadPromoDelegateTest : public BookmarkPromoDelegateTestBase {
  public:
   BatchUploadPromoDelegateTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kReplaceSyncPromosWithSignInPromos};
+    std::vector<base::test::FeatureRef> enabled_features = {};
 #if !BUILDFLAG(IS_CHROMEOS)
     enabled_features.push_back(syncer::kUnoPhase2FollowUp);
 #endif

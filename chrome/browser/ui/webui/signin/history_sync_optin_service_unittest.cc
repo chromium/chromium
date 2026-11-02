@@ -166,8 +166,6 @@ class HistorySyncOptinServiceTestBase : public testing::Test {
  public:
   HistorySyncOptinServiceTestBase()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    feature_list_.InitAndEnableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
     CHECK(profile_manager_.SetUp());
     profile_ = CreateNewProfile(profile_manager_, "TestingProfile");
     identity_test_env_adaptor_ =

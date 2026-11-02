@@ -269,10 +269,6 @@ class HistorySyncOptinViewControllerInteractiveBrowserTest
         return GetHistoryOptinRejectButtonQuery();
     }
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 IN_PROC_BROWSER_TEST_P(HistorySyncOptinViewControllerInteractiveBrowserTest,

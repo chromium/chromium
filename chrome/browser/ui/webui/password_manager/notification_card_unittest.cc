@@ -39,7 +39,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -209,18 +208,9 @@ TEST_F(NotificationCardCheckupTest, CardShownIn7DaysAfterDismiss) {
   EXPECT_TRUE(card->ShouldShowCard(dismissed_state));
 }
 
-class NotificationCardInWebTest
-    : public NotificationCardBaseTest,
-      public ::testing::WithParamInterface<signin::ConsentLevel> {
+class NotificationCardInWebTest : public NotificationCardBaseTest {
  public:
   void SetUp() override {
-    if (GetParam() == signin::ConsentLevel::kSignin) {
-      feature_list_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {syncer::kReplaceSyncPromosWithSignInPromos});
-    }
     NotificationCardBaseTest::SetUp();
     sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -229,7 +219,7 @@ class NotificationCardInWebTest
                 [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
                   return std::make_unique<syncer::TestSyncService>();
                 })));
-    sync_service_->SetSignedIn(GetParam());
+    sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
   }
 
   void TearDown() override {
@@ -241,22 +231,11 @@ class NotificationCardInWebTest
 
  private:
   raw_ptr<syncer::TestSyncService> sync_service_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(ConsentLevel,
-                         NotificationCardInWebTest,
-                         ::testing::Values(signin::ConsentLevel::kSignin,
-                                           signin::ConsentLevel::kSync));
-
-TEST_P(NotificationCardInWebTest, NoCardIfNotSyncing) {
+TEST_F(NotificationCardInWebTest, NoCardIfNotSyncing) {
   sync_service()->SetSignedOut();
-
-  if (GetParam() == signin::ConsentLevel::kSignin) {
-    ASSERT_FALSE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  } else {
-    ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
-  }
+  ASSERT_FALSE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   std::unique_ptr<PasswordNotificationCardBase> card =
       std::make_unique<WebPasswordManagerPromo>(sync_service());
@@ -264,12 +243,8 @@ TEST_P(NotificationCardInWebTest, NoCardIfNotSyncing) {
   EXPECT_FALSE(card->ShouldShowCard(NotificationCardPrefState{}));
 }
 
-TEST_P(NotificationCardInWebTest, CardIsShownWhenSyncing) {
-  if (GetParam() == signin::ConsentLevel::kSignin) {
-    ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  } else {
-    ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
-  }
+TEST_F(NotificationCardInWebTest, CardIsShownWhenSyncing) {
+  ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   std::unique_ptr<PasswordNotificationCardBase> card =
       std::make_unique<WebPasswordManagerPromo>(sync_service());
@@ -277,12 +252,8 @@ TEST_P(NotificationCardInWebTest, CardIsShownWhenSyncing) {
   EXPECT_TRUE(card->ShouldShowCard(NotificationCardPrefState{}));
 }
 
-TEST_P(NotificationCardInWebTest, ShouldShowCardFirstThreeTimes) {
-  if (GetParam() == signin::ConsentLevel::kSignin) {
-    ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  } else {
-    ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
-  }
+TEST_F(NotificationCardInWebTest, ShouldShowCardFirstThreeTimes) {
+  ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   std::unique_ptr<PasswordNotificationCardBase> card =
       std::make_unique<WebPasswordManagerPromo>(sync_service());
@@ -296,12 +267,8 @@ TEST_P(NotificationCardInWebTest, ShouldShowCardFirstThreeTimes) {
       .number_of_times_shown = 3, .last_time_shown = base::Time::Now()}));
 }
 
-TEST_P(NotificationCardInWebTest, CardNotShownAfterDismiss) {
-  if (GetParam() == signin::ConsentLevel::kSignin) {
-    ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  } else {
-    ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
-  }
+TEST_F(NotificationCardInWebTest, CardNotShownAfterDismiss) {
+  ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   std::unique_ptr<PasswordNotificationCardBase> card =
       std::make_unique<WebPasswordManagerPromo>(sync_service());

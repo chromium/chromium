@@ -114,11 +114,7 @@ class HistorySyncOptinHelperTestObserver
 class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
  public:
   HistorySyncOptinHelperBrowserTest()
-      : SigninBrowserTestBase(/*use_main_profile=*/true) {
-    scoped_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
-        /*disabled_features=*/{});
-  }
+      : SigninBrowserTestBase(/*use_main_profile=*/true) {}
 
   AccountInfo MakeAccountInfoAvailableAndSignIn() {
     AccountInfo account_info =
@@ -691,8 +687,7 @@ class HistorySyncOptinHelperFreBrowserTest
  public:
   HistorySyncOptinHelperFreBrowserTest() {
     scoped_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kFirstRunDesktopRefresh,
+        /*enabled_features=*/{switches::kFirstRunDesktopRefresh,
                               switches::kFirstRunDesktopRevamp},
         /*disabled_features=*/{});
   }
