@@ -959,7 +959,7 @@ TEST(ContextHubMojomTraitsTest, MemoryBankEntrySerialization_Image) {
 }
 
 TEST(ContextHubMojomTraitsTest, ChatReferenceSerialization) {
-  context_hub::MemoryBankChatCitation input{
+  context_hub::MemoryBankChatCitation input = {
       .title = "Example Doc",
       .url = GURL("https://example.com/doc"),
   };
@@ -969,6 +969,20 @@ TEST(ContextHubMojomTraitsTest, ChatReferenceSerialization) {
               browser::context_hub::mojom::ChatReference>(input, output));
   EXPECT_EQ(output.title, "Example Doc");
   EXPECT_EQ(output.url, GURL("https://example.com/doc"));
+  EXPECT_FALSE(output.image_url.has_value());
+
+  context_hub::MemoryBankChatCitation image_input = {
+      .title = "Example Image",
+      .url = GURL("https://example.com/page"),
+      .image_url = GURL("https://example.com/image.png"),
+  };
+  context_hub::MemoryBankChatCitation image_output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::ChatReference>(image_input,
+                                                          image_output));
+  EXPECT_EQ(image_output.title, "Example Image");
+  EXPECT_EQ(image_output.url, GURL("https://example.com/page"));
+  EXPECT_EQ(image_output.image_url, GURL("https://example.com/image.png"));
 }
 
 TEST(ContextHubMojomTraitsTest, MemoryBankChatMessageSerialization) {
@@ -2513,6 +2527,88 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_WithSelectedEntries) {
   ASSERT_EQ(response.citations.size(), 1u);
   EXPECT_EQ(response.citations[0].title, "Test Page");
   EXPECT_EQ(response.citations[0].url, GURL("https://example.com/test"));
+  EXPECT_TRUE(service->GetMemoryBankChatHistory().empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_WithImageEntry) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  base::test::TestFuture<bool> save_image_future;
+  service->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kImage, GURL("https://example.com/test"),
+                      "Test Diagram", /*selected_text=*/std::nullopt,
+                      GURL("https://example.com/diagram.png")),
+      save_image_future.GetCallback());
+  ASSERT_TRUE(save_image_future.Wait());
+
+  base::test::TestFuture<const std::vector<MemoryBankEntry>&>
+      all_entries_future;
+  handler_->GetAllMemoryBankEntries(all_entries_future.GetCallback());
+  std::vector<MemoryBankEntry> entries = all_entries_future.Take();
+  ASSERT_EQ(entries.size(), 1u);
+  int64_t entry_id = entries[0].id;
+
+  EXPECT_CALL(
+      *GetMockOptimizationGuideService(),
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce([entry_id](
+                    optimization_guide::ModelBasedCapabilityKey feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const optimization_guide::ModelExecutionOptions& options,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultCallback
+                            callback) {
+        const auto& request =
+            static_cast<const optimization_guide::proto::ContextHubRequest&>(
+                request_metadata);
+        EXPECT_EQ(request.request_type(),
+                  optimization_guide::proto::
+                      CONTEXT_HUB_REQUEST_TYPE_MEMORY_BANK_CHAT);
+        EXPECT_EQ(request.user_command(), "Describe diagram");
+        ASSERT_EQ(request.entry_items_size(), 1);
+        EXPECT_TRUE(request.entry_items(0).has_memory_bank_entry());
+        EXPECT_EQ(request.entry_items(0).memory_bank_entry().id(), entry_id);
+        EXPECT_EQ(request.entry_items(0).memory_bank_entry().tab_title(),
+                  "Test Diagram");
+        EXPECT_EQ(request.entry_items(0).memory_bank_entry().url(),
+                  "https://example.com/test");
+        EXPECT_EQ(request.entry_items(0).memory_bank_entry().type(),
+                  optimization_guide::proto::MEMORY_BANK_TYPE_IMAGE);
+
+        optimization_guide::proto::ContextHubResponse response;
+        optimization_guide::proto::MemoryBankChatResponse* chat_response =
+            response.mutable_memory_bank_chat_response();
+        chat_response->set_text_response("Description of Test Diagram.");
+        chat_response->add_cited_entry_indices(0);
+
+        optimization_guide::proto::Any any_response;
+        any_response.set_type_url(
+            "type.googleapis.com/optimization_guide.proto.ContextHubResponse");
+        response.SerializeToString(any_response.mutable_value());
+
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(std::move(any_response)), nullptr),
+            nullptr);
+      });
+
+  base::test::TestFuture<const MemoryBankChatHistoryTurn&> ask_future;
+  handler_->AskGeminiWithContext("Describe diagram", {entry_id},
+                                 /*save_to_history=*/false,
+                                 ask_future.GetCallback());
+
+  MemoryBankChatHistoryTurn response = ask_future.Take();
+  EXPECT_EQ(response.turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(response.turn.message_content(), "Description of Test Diagram.");
+  ASSERT_EQ(response.citations.size(), 1u);
+  EXPECT_EQ(response.citations[0].title, "Test Diagram");
+  EXPECT_EQ(response.citations[0].url, GURL("https://example.com/test"));
+  EXPECT_EQ(response.citations[0].image_url,
+            GURL("https://example.com/diagram.png"));
   EXPECT_TRUE(service->GetMemoryBankChatHistory().empty());
 }
 

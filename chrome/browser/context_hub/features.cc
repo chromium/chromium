@@ -71,6 +71,8 @@ BASE_FEATURE_PARAM(size_t,
                    &kMemoryBanks,
                    20);
 
+BASE_FEATURE_PARAM(size_t, kMaxMemoryBankChatImages, &kMemoryBanks, 10);
+
 BASE_FEATURE_PARAM(int,
                    kMaxTabGroups,
                    &browser::context_hub::mojom::kAutoTabGroups,

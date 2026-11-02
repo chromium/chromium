@@ -5,6 +5,7 @@
 #include "chrome/browser/context_hub/context_hub_service.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <ranges>
@@ -16,15 +17,21 @@
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -39,8 +46,12 @@
 #include "chrome/browser/context_hub/tab_group_store/tab_group_store.h"
 #include "chrome/browser/context_hub/topics/topic_feedback_conversions.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/image_fetcher/core/request_metadata.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -69,7 +80,13 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/backoff_entry.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/tab_list/tab_removed_reason.h"
@@ -79,12 +96,59 @@
 
 namespace context_hub {
 
+// Holds the PNG-encoded image bytes fetched for one or more memory bank chat
+// entry items that share the same image URL.
+struct FetchedChatImage {
+  std::vector<size_t> entry_indices;
+  std::optional<std::vector<uint8_t>> png_bytes;
+};
+
 namespace {
 
 // Maximum number of parallel MES requests for tab-based todos generation.
 // Matches the execution limit for ModelBasedCapabilityKey::kContextHub in
 // components/optimization_guide/core/model_execution/model_execution_manager.cc.
 constexpr int kMaxConcurrentMesRequests = 10;
+
+constexpr net::NetworkTrafficAnnotationTag
+    kMemoryBankImageFetchTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation(
+            "context_hub_memory_bank_image_fetch",
+            R"(
+        semantics {
+          sender: "Context Hub Memory Bank"
+          description:
+            "Fetches an image from an HTTP/HTTPS URL that the user previously "
+            "saved to their Memory Bank, so the image can be included as "
+            "visual context when the user asks a question in Memory Bank Chat."
+          trigger:
+            "User submits a prompt in Memory Bank Chat on chrome://context-hub "
+            "while one or more saved image entries are included in the context."
+          data:
+            "An HTTP GET request to the URL of the image that the user "
+            "previously saved to Memory Banks. No additional payload is sent."
+          destination: WEBSITE
+          internal {
+            contacts {
+              owners: "//chrome/browser/context_hub/OWNERS"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+          }
+          last_reviewed: "2026-10-08"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature is gated behind the MemoryBanks feature flag and "
+            "cannot be disabled by settings."
+          policy_exception_justification:
+            "Not implemented yet (crbug.com/532549697). This feature is "
+            "currently experimental and gated behind a feature flag. "
+            "Requests made via the profile URLLoaderFactory are still "
+            "subject to the URLBlocklist and URLAllowlist enterprise policies."
+        })");
 
 optimization_guide::proto::MemoryBankEntry ToMemoryBankEntryProto(
     const MemoryBankEntry& entry) {
@@ -95,11 +159,11 @@ optimization_guide::proto::MemoryBankEntry ToMemoryBankEntryProto(
       mb_proto.set_type(optimization_guide::proto::MEMORY_BANK_TYPE_TAB);
       break;
     case MemoryBankType::kTextSelection:
-    // TODO(crbug.com/570703760): Update to MEMORY_BANK_TYPE_IMAGE once the
-    // optimization_guide proto is updated.
-    case MemoryBankType::kImage:
       mb_proto.set_type(
           optimization_guide::proto::MEMORY_BANK_TYPE_TEXT_SELECTION);
+      break;
+    case MemoryBankType::kImage:
+      mb_proto.set_type(optimization_guide::proto::MEMORY_BANK_TYPE_IMAGE);
       break;
   }
   mb_proto.set_timestamp_ms(entry.timestamp.InMillisecondsSinceUnixEpoch());
@@ -112,6 +176,42 @@ optimization_guide::proto::MemoryBankEntry ToMemoryBankEntryProto(
     mb_proto.add_tags(tag);
   }
   return mb_proto;
+}
+
+// Returns true if `entry` is an image with an HTTP or HTTPS URL. Note that
+// WebUI's `cr-auto-img` (`chrome://image/`) does not support HTTP and only
+// renders HTTPS image URLs.
+bool HasHttpImageUrl(const MemoryBankEntry& entry) {
+  return entry.type == MemoryBankType::kImage && entry.image_url.has_value() &&
+         entry.image_url->SchemeIsHTTPOrHTTPS();
+}
+
+FetchedChatImage EncodeChatImageToPng(std::vector<size_t> entry_indices,
+                                      const SkBitmap& bitmap) {
+  return FetchedChatImage{
+      .entry_indices = std::move(entry_indices),
+      .png_bytes = gfx::PNGCodec::EncodeBGRASkBitmap(
+          bitmap, /*discard_transparency=*/false),
+  };
+}
+
+void OnChatImageFetched(
+    std::vector<size_t> entry_indices,
+    base::OnceCallback<void(FetchedChatImage)> barrier_callback,
+    const gfx::Image& image,
+    const image_fetcher::RequestMetadata& /*metadata*/) {
+  if (image.IsEmpty()) {
+    std::move(barrier_callback)
+        .Run(FetchedChatImage{.entry_indices = std::move(entry_indices)});
+    return;
+  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&EncodeChatImageToPng, std::move(entry_indices),
+                     image.AsBitmap()),
+      std::move(barrier_callback));
 }
 
 base::TimeDelta GetDurationOfCurrentOrLastVisit(
@@ -350,6 +450,11 @@ ContextHubService::ContextHubService(
   // is turned off (e.g. via Finch at teardown), wipe anything left behind.
   if (!features::kTopicsFishfoodFeedback.Get()) {
     profile_->GetPrefs()->ClearPref(prefs::kContextHubTopicsFishfoodFeedback);
+  }
+  if (scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+          profile_->GetURLLoaderFactory()) {
+    image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
+        std::make_unique<ImageDecoderImpl>(), std::move(url_loader_factory));
   }
   if (auto_todos_store_) {
     auto_todos_store_->AddObserver(this);
@@ -1225,12 +1330,12 @@ void ContextHubService::ClearTabGroupChatHistory() {
 void ContextHubService::AddMemoryBankChatHistoryTurn(
     optimization_guide::proto::ChatHistoryTurn::Role role,
     std::string_view message_content,
-    const std::vector<MemoryBankChatCitation>& citations) {
+    std::vector<MemoryBankChatCitation> citations) {
   MemoryBankChatHistoryTurn entry;
   entry.turn.set_role(role);
   entry.turn.set_message_content(message_content);
   entry.turn.set_timestamp_ms(base::Time::Now().InMillisecondsSinceUnixEpoch());
-  entry.citations = citations;
+  entry.citations = std::move(citations);
   MemoryBankChatHistoryTurnId id =
       memory_bank_chat_history_turn_id_generator_.GenerateNextId();
   memory_bank_chat_history_cache_.Put(id, std::move(entry));
@@ -1609,9 +1714,20 @@ void ContextHubService::OnMemoryBankEntriesFetched(
   request.set_request_type(
       optimization_guide::proto::CONTEXT_HUB_REQUEST_TYPE_MEMORY_BANK_CHAT);
 
-  for (const MemoryBankEntry& entry : entries) {
+  // Only the first `max_image_count` image entries get their images fetched
+  // and attached; the rest are sent with metadata only. Entries rather than
+  // distinct image URLs are counted, since every attached entry adds its own
+  // copy of the image bytes to `request`.
+  const size_t max_image_count = features::kMaxMemoryBankChatImages.Get();
+  size_t image_count = 0;
+  base::flat_map<GURL, std::vector<size_t>> image_entry_indices_by_url;
+  for (size_t i = 0; i < entries.size(); ++i) {
     *request.add_entry_items()->mutable_memory_bank_entry() =
-        ToMemoryBankEntryProto(entry);
+        ToMemoryBankEntryProto(entries[i]);
+    if (HasHttpImageUrl(entries[i]) && image_count < max_image_count) {
+      image_entry_indices_by_url[*entries[i].image_url].push_back(i);
+      ++image_count;
+    }
   }
 
   if (save_to_history) {
@@ -1623,17 +1739,70 @@ void ContextHubService::OnMemoryBankEntriesFetched(
 
   request.set_user_command(user_command);
 
+  if (!image_fetcher_ || image_entry_indices_by_url.empty()) {
+    DispatchMemoryBankChatRequest(std::move(entries), request, save_to_history,
+                                  std::move(callback));
+    return;
+  }
+
+  auto barrier_callback = base::BarrierCallback<FetchedChatImage>(
+      image_entry_indices_by_url.size(),
+      base::BindOnce(&ContextHubService::OnMemoryBankChatImagesFetched,
+                     weak_factory_.GetWeakPtr(), std::move(entries),
+                     std::move(request), save_to_history, std::move(callback)));
+
+  for (auto& [image_url, entry_indices] : image_entry_indices_by_url) {
+    image_fetcher::ImageFetcherParams params(
+        kMemoryBankImageFetchTrafficAnnotation, "ContextHubMemoryBank");
+    params.set_max_download_size(
+        network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+    image_fetcher_->FetchImage(
+        image_url,
+        base::BindOnce(&OnChatImageFetched, std::move(entry_indices),
+                       barrier_callback),
+        std::move(params));
+  }
+}
+
+void ContextHubService::OnMemoryBankChatImagesFetched(
+    std::vector<MemoryBankEntry> entries,
+    optimization_guide::proto::ContextHubRequest request,
+    bool save_to_history,
+    MemoryBankChatCallback callback,
+    const std::vector<FetchedChatImage>& fetched_images) {
+  for (const FetchedChatImage& fetched_image : fetched_images) {
+    if (!fetched_image.png_bytes.has_value() ||
+        fetched_image.png_bytes->empty()) {
+      continue;
+    }
+    for (size_t entry_index : fetched_image.entry_indices) {
+      if (base::checked_cast<int>(entry_index) < request.entry_items_size()) {
+        request.mutable_entry_items(base::checked_cast<int>(entry_index))
+            ->mutable_memory_bank_entry()
+            ->set_image_bytes(base::as_string_view(*fetched_image.png_bytes));
+      }
+    }
+  }
+  DispatchMemoryBankChatRequest(std::move(entries), request, save_to_history,
+                                std::move(callback));
+}
+
+void ContextHubService::DispatchMemoryBankChatRequest(
+    std::vector<MemoryBankEntry> entries,
+    const optimization_guide::proto::ContextHubRequest& request,
+    bool save_to_history,
+    MemoryBankChatCallback callback) {
   optimization_guide_remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
       optimization_guide::ModelExecutionOptions(),
       base::BindOnce(
           &ContextHubService::HandleMemoryBankChatModelExecutionResult,
-          weak_factory_.GetWeakPtr(), std::move(entries), user_command,
-          save_to_history, std::move(callback)));
+          weak_factory_.GetWeakPtr(), std::move(entries),
+          request.user_command(), save_to_history, std::move(callback)));
 }
 
 void ContextHubService::HandleMemoryBankChatModelExecutionResult(
-    std::vector<MemoryBankEntry> entries,
+    const std::vector<MemoryBankEntry>& entries,
     const std::string& user_command,
     bool save_to_history,
     MemoryBankChatCallback callback,
@@ -1664,19 +1833,26 @@ void ContextHubService::HandleMemoryBankChatModelExecutionResult(
   std::string text_response = chat_response.text_response();
 
   std::vector<MemoryBankChatCitation> citations;
-  base::flat_set<GURL> seen_urls;
+  base::flat_set<std::pair<GURL, std::optional<GURL>>> seen_urls;
   for (int32_t index : chat_response.cited_entry_indices()) {
     if (index < 0 || static_cast<size_t>(index) >= entries.size()) {
       continue;
     }
     const MemoryBankEntry& entry = entries[index];
-    if (!entry.url.is_valid() || !seen_urls.insert(entry.url).second) {
+    std::optional<GURL> image_url;
+    if (HasHttpImageUrl(entry)) {
+      image_url = *entry.image_url;
+    }
+    if (!entry.url.is_valid() ||
+        !seen_urls.insert(std::make_pair(entry.url, image_url)).second) {
       continue;
     }
-    citations.push_back(MemoryBankChatCitation{
+    MemoryBankChatCitation citation = {
         .title = entry.tab_title.empty() ? entry.url.spec() : entry.tab_title,
         .url = entry.url,
-    });
+        .image_url = std::move(image_url),
+    };
+    citations.push_back(std::move(citation));
   }
 
   if (save_to_history && !text_response.empty()) {
@@ -1817,6 +1993,12 @@ void ContextHubService::OnSmartSearchFetched(
   }
 
   std::move(callback).Run(results);
+}
+
+void ContextHubService::SetImageFetcherForTesting(
+    std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher) {
+  CHECK_IS_TEST();
+  image_fetcher_ = std::move(image_fetcher);
 }
 
 }  // namespace context_hub

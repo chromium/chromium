@@ -51,6 +51,11 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kMaxMemoryBankEntries);
 // The maximum number of turns stored in the memory bank chat history cache.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxMemoryBankChatHistoryTurns);
 
+// The maximum number of image entries per memory bank chat request whose images
+// are fetched and attached to the request. Any other image entries are sent
+// without image bytes.
+BASE_DECLARE_FEATURE_PARAM(size_t, kMaxMemoryBankChatImages);
+
 // The maximum number of tab groups stored in the in-memory tab group store.
 BASE_DECLARE_FEATURE_PARAM(int, kMaxTabGroups);
 

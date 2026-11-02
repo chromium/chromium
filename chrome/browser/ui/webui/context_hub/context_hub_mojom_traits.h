@@ -354,6 +354,11 @@ struct StructTraits<browser::context_hub::mojom::ChatReferenceDataView,
     return citation.url;
   }
 
+  static const std::optional<GURL>& image_url(
+      const context_hub::MemoryBankChatCitation& citation) {
+    return citation.image_url;
+  }
+
   static bool Read(browser::context_hub::mojom::ChatReferenceDataView data,
                    context_hub::MemoryBankChatCitation* out);
 };

@@ -438,11 +438,14 @@ bool StructTraits<browser::context_hub::mojom::ChatReferenceDataView,
          context_hub::MemoryBankChatCitation* out) {
   std::string title;
   GURL url;
-  if (!data.ReadTitle(&title) || !data.ReadUrl(&url)) {
+  std::optional<GURL> image_url;
+  if (!data.ReadTitle(&title) || !data.ReadUrl(&url) ||
+      !data.ReadImageUrl(&image_url)) {
     return false;
   }
   out->title = std::move(title);
   out->url = std::move(url);
+  out->image_url = std::move(image_url);
   return true;
 }
 

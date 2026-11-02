@@ -92,6 +92,7 @@ source_set("context_hub") {
 
   deps = [
     "//chrome/browser/contextual_tasks",
+    "//chrome/browser/image_fetcher",
     "//chrome/browser/passage_embeddings",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
@@ -99,12 +100,17 @@ source_set("context_hub") {
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
+    "//components/image_fetcher/core",
     "//components/saved_tab_groups/public",
     "//components/sessions",
     "//components/signin/public/base",
     "//components/tabs:public",
     "//net",
+    "//services/network/public/cpp",
+    "//skia",
     "//sql",
+    "//ui/gfx",
+    "//ui/gfx/codec",
   ]
 }
 
@@ -126,6 +132,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//components/image_fetcher/core:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/content:test_support",
@@ -137,9 +144,11 @@ source_set("unit_tests") {
     "//components/sync_tab_context:test_support",
     "//components/tabs:test_support",
     "//content/test:test_support",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/unowned_user_data",
+    "//ui/gfx",
   ]
 
   if (!is_android) {

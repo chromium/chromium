@@ -14,11 +14,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -41,6 +43,8 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/image_fetcher/core/mock_image_fetcher.h"
+#include "components/image_fetcher/core/request_metadata.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
@@ -69,7 +73,10 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2975,6 +2982,370 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_NoSaveToHistory) {
   EXPECT_EQ(citations[0].title, "https://example.com/1");
   EXPECT_EQ(citations[0].url, GURL("https://example.com/1"));
   EXPECT_TRUE(service_.GetMemoryBankChatHistory().empty());
+}
+
+TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_WithImageEntry) {
+  auto mock_image_fetcher =
+      std::make_unique<testing::StrictMock<image_fetcher::MockImageFetcher>>();
+  image_fetcher::MockImageFetcher* raw_image_fetcher = mock_image_fetcher.get();
+  service_.SetImageFetcherForTesting(std::move(mock_image_fetcher));
+
+  base::test::TestFuture<bool> save_tab_future;
+  service_.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com/1"),
+                      "Title 1", "Page text 1"),
+      save_tab_future.GetCallback());
+  EXPECT_TRUE(save_tab_future.Get());
+
+  MemoryBankEntry image_entry(
+      MemoryBankType::kImage, GURL("https://example.com/1"), "Diagram Page",
+      /*selected_text=*/std::nullopt, GURL("https://example.com/chart.png"));
+  base::test::TestFuture<bool> save_image_future;
+  service_.SaveMemoryBankEntry(std::move(image_entry),
+                               save_image_future.GetCallback());
+  EXPECT_TRUE(save_image_future.Get());
+
+  MemoryBankEntry second_image_entry(
+      MemoryBankType::kImage, GURL("https://example.com/1"), "Diagram Page",
+      /*selected_text=*/std::nullopt, GURL("https://example.com/chart2.png"));
+  base::test::TestFuture<bool> save_second_image_future;
+  service_.SaveMemoryBankEntry(std::move(second_image_entry),
+                               save_second_image_future.GetCallback());
+  EXPECT_TRUE(save_second_image_future.Get());
+
+  MemoryBankEntry duplicate_url_image_entry(
+      MemoryBankType::kImage, GURL("https://example.com/1"), "Diagram Page",
+      /*selected_text=*/std::nullopt, GURL("https://example.com/chart.png"));
+  base::test::TestFuture<bool> save_duplicate_url_image_future;
+  service_.SaveMemoryBankEntry(std::move(duplicate_url_image_entry),
+                               save_duplicate_url_image_future.GetCallback());
+  EXPECT_TRUE(save_duplicate_url_image_future.Get());
+
+  MemoryBankEntry data_image_entry(
+      MemoryBankType::kImage, GURL("https://example.com/data-page"),
+      "Data Image Page", /*selected_text=*/std::nullopt,
+      GURL("data:image/png;base64,iVBORw0KGgo="));
+  base::test::TestFuture<bool> save_data_image_future;
+  service_.SaveMemoryBankEntry(std::move(data_image_entry),
+                               save_data_image_future.GetCallback());
+  EXPECT_TRUE(save_data_image_future.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;
+  service_.GetAllEntries(entries_future.GetCallback());
+  std::vector<MemoryBankEntry> entries = entries_future.Take();
+  ASSERT_EQ(entries.size(), 5u);
+
+  std::vector<int64_t> ids = {entries[0].id, entries[1].id, entries[2].id,
+                              entries[3].id, entries[4].id};
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(2, 2);
+  bitmap.eraseColor(SK_ColorBLUE);
+  gfx::Image test_image = gfx::Image::CreateFrom1xBitmap(bitmap);
+  scoped_refptr<base::RefCountedMemory> expected_png =
+      test_image.As1xPNGBytes();
+  ASSERT_TRUE(expected_png);
+  ASSERT_GT(expected_png->size(), 0u);
+
+  EXPECT_CALL(
+      *raw_image_fetcher,
+      FetchImageAndData_(GURL("https://example.com/chart.png"), _, _, _))
+      .WillOnce(
+          [&test_image](const GURL&, image_fetcher::ImageDataFetcherCallback*,
+                        image_fetcher::ImageFetcherCallback* image_callback,
+                        image_fetcher::ImageFetcherParams) {
+            std::move(*image_callback)
+                .Run(test_image, image_fetcher::RequestMetadata());
+          });
+  EXPECT_CALL(
+      *raw_image_fetcher,
+      FetchImageAndData_(GURL("https://example.com/chart2.png"), _, _, _))
+      .WillOnce(
+          [&test_image](const GURL&, image_fetcher::ImageDataFetcherCallback*,
+                        image_fetcher::ImageFetcherCallback* image_callback,
+                        image_fetcher::ImageFetcherParams) {
+            std::move(*image_callback)
+                .Run(test_image, image_fetcher::RequestMetadata());
+          });
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce([&expected_png](
+                    optimization_guide::ModelBasedCapabilityKey feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const optimization_guide::ModelExecutionOptions& options,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultCallback
+                            callback) {
+        const auto& request =
+            static_cast<const optimization_guide::proto::ContextHubRequest&>(
+                request_metadata);
+        ASSERT_EQ(request.entry_items_size(), 5);
+
+        size_t fetched_image_entry_count = 0;
+        size_t unfetched_image_entry_count = 0;
+        size_t tab_entry_count = 0;
+        for (const optimization_guide::proto::EntryItem& item :
+             request.entry_items()) {
+          ASSERT_TRUE(item.has_memory_bank_entry());
+          const optimization_guide::proto::MemoryBankEntry& mb_entry =
+              item.memory_bank_entry();
+          if (mb_entry.type() ==
+              optimization_guide::proto::MEMORY_BANK_TYPE_IMAGE) {
+            if (mb_entry.has_image_bytes()) {
+              ++fetched_image_entry_count;
+              EXPECT_EQ(mb_entry.image_bytes(),
+                        base::as_string_view(*expected_png));
+            } else {
+              ++unfetched_image_entry_count;
+            }
+          } else if (mb_entry.type() ==
+                     optimization_guide::proto::MEMORY_BANK_TYPE_TAB) {
+            ++tab_entry_count;
+            EXPECT_FALSE(mb_entry.has_image_bytes());
+          }
+        }
+        EXPECT_EQ(fetched_image_entry_count, 3u);
+        EXPECT_EQ(unfetched_image_entry_count, 1u);
+        EXPECT_EQ(tab_entry_count, 1u);
+
+        optimization_guide::proto::ContextHubResponse response;
+        optimization_guide::proto::MemoryBankChatResponse* chat_response =
+            response.mutable_memory_bank_chat_response();
+        chat_response->set_text_response("The diagram shows blue pixels.");
+        chat_response->add_cited_entry_indices(0);
+        chat_response->add_cited_entry_indices(1);
+        chat_response->add_cited_entry_indices(1);
+        chat_response->add_cited_entry_indices(2);
+        chat_response->add_cited_entry_indices(3);
+        chat_response->add_cited_entry_indices(4);
+
+        optimization_guide::proto::Any any_response;
+        any_response.set_type_url(
+            "type.googleapis.com/optimization_guide.proto.ContextHubResponse");
+        response.SerializeToString(any_response.mutable_value());
+
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(std::move(any_response)), nullptr),
+            nullptr);
+      });
+
+  base::test::TestFuture<std::optional<std::string>,
+                         std::vector<MemoryBankChatCitation>>
+      future;
+  service_.ExecuteMemoryBankChat(ids, "explain the diagram",
+                                 /*save_to_history=*/true,
+                                 future.GetCallback());
+  auto [response_text, citations] = future.Take();
+  ASSERT_TRUE(response_text.has_value());
+  EXPECT_EQ(*response_text, "The diagram shows blue pixels.");
+  ASSERT_EQ(citations.size(), 4u);
+  size_t image_citation_count = 0;
+  size_t page_only_citation_count = 0;
+  for (const MemoryBankChatCitation& citation : citations) {
+    if (citation.image_url.has_value()) {
+      ++image_citation_count;
+      EXPECT_EQ(citation.title, "Diagram Page");
+      EXPECT_EQ(citation.url, GURL("https://example.com/1"));
+      EXPECT_TRUE(
+          *citation.image_url == GURL("https://example.com/chart.png") ||
+          *citation.image_url == GURL("https://example.com/chart2.png"));
+    } else {
+      ++page_only_citation_count;
+      EXPECT_FALSE(citation.image_url.has_value());
+    }
+  }
+  EXPECT_EQ(image_citation_count, 2u);
+  EXPECT_EQ(page_only_citation_count, 2u);
+
+  std::vector<MemoryBankChatHistoryTurn> history =
+      service_.GetMemoryBankChatHistory();
+  ASSERT_EQ(history.size(), 2u);
+  EXPECT_EQ(history[0].turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_USER);
+  EXPECT_EQ(history[0].turn.message_content(), "explain the diagram");
+  EXPECT_EQ(history[1].turn.role(),
+            optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT);
+  EXPECT_EQ(history[1].turn.message_content(),
+            "The diagram shows blue pixels.");
+}
+
+TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_LimitsAttachedImages) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kMemoryBanks, {{features::kMaxMemoryBankChatImages.name, "2"}});
+
+  auto mock_image_fetcher =
+      std::make_unique<testing::StrictMock<image_fetcher::MockImageFetcher>>();
+  image_fetcher::MockImageFetcher* raw_image_fetcher = mock_image_fetcher.get();
+  service_.SetImageFetcherForTesting(std::move(mock_image_fetcher));
+
+  for (const char* image_url :
+       {"https://example.com/1.png", "https://example.com/2.png",
+        "https://example.com/3.png"}) {
+    base::test::TestFuture<bool> save_image_future;
+    service_.SaveMemoryBankEntry(
+        MemoryBankEntry(MemoryBankType::kImage, GURL("https://example.com"),
+                        "Image Page", /*selected_text=*/std::nullopt,
+                        GURL(image_url)),
+        save_image_future.GetCallback());
+    EXPECT_TRUE(save_image_future.Get());
+  }
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;
+  service_.GetAllEntries(entries_future.GetCallback());
+  std::vector<MemoryBankEntry> entries = entries_future.Take();
+  ASSERT_EQ(entries.size(), 3u);
+
+  std::vector<int64_t> ids = {entries[0].id, entries[1].id, entries[2].id};
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(2, 2);
+  bitmap.eraseColor(SK_ColorBLUE);
+  gfx::Image test_image = gfx::Image::CreateFrom1xBitmap(bitmap);
+
+  // Only the first two image entries are fetched. The strict mock fails the
+  // test if the image of the third entry is fetched.
+  for (size_t i = 0; i < 2; ++i) {
+    EXPECT_CALL(*raw_image_fetcher,
+                FetchImageAndData_(*entries[i].image_url, _, _, _))
+        .WillOnce(
+            [&test_image](const GURL&, image_fetcher::ImageDataFetcherCallback*,
+                          image_fetcher::ImageFetcherCallback* image_callback,
+                          image_fetcher::ImageFetcherParams) {
+              std::move(*image_callback)
+                  .Run(test_image, image_fetcher::RequestMetadata());
+            });
+  }
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce([](optimization_guide::ModelBasedCapabilityKey feature,
+                   const google::protobuf::MessageLite& request_metadata,
+                   const optimization_guide::ModelExecutionOptions& options,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultCallback callback) {
+        const auto& request =
+            static_cast<const optimization_guide::proto::ContextHubRequest&>(
+                request_metadata);
+        // The image entry beyond the limit is still sent, without image bytes.
+        ASSERT_EQ(request.entry_items_size(), 3);
+        EXPECT_TRUE(
+            request.entry_items(0).memory_bank_entry().has_image_bytes());
+        EXPECT_TRUE(
+            request.entry_items(1).memory_bank_entry().has_image_bytes());
+        EXPECT_EQ(request.entry_items(2).memory_bank_entry().type(),
+                  optimization_guide::proto::MEMORY_BANK_TYPE_IMAGE);
+        EXPECT_FALSE(
+            request.entry_items(2).memory_bank_entry().has_image_bytes());
+
+        optimization_guide::proto::ContextHubResponse response;
+        response.mutable_memory_bank_chat_response()->set_text_response(
+            "Compared the images.");
+
+        optimization_guide::proto::Any any_response;
+        any_response.set_type_url(
+            "type.googleapis.com/optimization_guide.proto.ContextHubResponse");
+        response.SerializeToString(any_response.mutable_value());
+
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(std::move(any_response)), nullptr),
+            nullptr);
+      });
+
+  base::test::TestFuture<std::optional<std::string>,
+                         std::vector<MemoryBankChatCitation>>
+      future;
+  service_.ExecuteMemoryBankChat(ids, "compare the images",
+                                 /*save_to_history=*/false,
+                                 future.GetCallback());
+  auto [response_text, citations] = future.Take();
+  ASSERT_TRUE(response_text.has_value());
+  EXPECT_EQ(*response_text, "Compared the images.");
+}
+
+TEST_F(ContextHubServiceTest,
+       ExecuteMemoryBankChat_ImageFetchFailureFallsBackGracefully) {
+  auto mock_image_fetcher =
+      std::make_unique<testing::StrictMock<image_fetcher::MockImageFetcher>>();
+  image_fetcher::MockImageFetcher* raw_image_fetcher = mock_image_fetcher.get();
+  service_.SetImageFetcherForTesting(std::move(mock_image_fetcher));
+
+  MemoryBankEntry image_entry(
+      MemoryBankType::kImage, GURL("https://example.com/2"), "Diagram Page",
+      /*selected_text=*/std::nullopt, GURL("https://example.com/missing.png"));
+  base::test::TestFuture<bool> save_image_future;
+  service_.SaveMemoryBankEntry(std::move(image_entry),
+                               save_image_future.GetCallback());
+  EXPECT_TRUE(save_image_future.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;
+  service_.GetAllEntries(entries_future.GetCallback());
+  std::vector<MemoryBankEntry> entries = entries_future.Take();
+  ASSERT_EQ(entries.size(), 1u);
+
+  std::vector<int64_t> ids = {entries[0].id};
+
+  EXPECT_CALL(
+      *raw_image_fetcher,
+      FetchImageAndData_(GURL("https://example.com/missing.png"), _, _, _))
+      .WillOnce([](const GURL&, image_fetcher::ImageDataFetcherCallback*,
+                   image_fetcher::ImageFetcherCallback* image_callback,
+                   image_fetcher::ImageFetcherParams) {
+        std::move(*image_callback)
+            .Run(gfx::Image(), image_fetcher::RequestMetadata());
+      });
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce([](optimization_guide::ModelBasedCapabilityKey feature,
+                   const google::protobuf::MessageLite& request_metadata,
+                   const optimization_guide::ModelExecutionOptions& options,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultCallback callback) {
+        const auto& request =
+            static_cast<const optimization_guide::proto::ContextHubRequest&>(
+                request_metadata);
+        ASSERT_EQ(request.entry_items_size(), 1);
+        const optimization_guide::proto::MemoryBankEntry& mb_entry =
+            request.entry_items(0).memory_bank_entry();
+        EXPECT_EQ(mb_entry.type(),
+                  optimization_guide::proto::MEMORY_BANK_TYPE_IMAGE);
+        EXPECT_FALSE(mb_entry.has_image_bytes());
+
+        optimization_guide::proto::ContextHubResponse response;
+        response.mutable_memory_bank_chat_response()->set_text_response(
+            "Fallback response using metadata.");
+
+        optimization_guide::proto::Any any_response;
+        any_response.set_type_url(
+            "type.googleapis.com/optimization_guide.proto.ContextHubResponse");
+        response.SerializeToString(any_response.mutable_value());
+
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(std::move(any_response)), nullptr),
+            nullptr);
+      });
+
+  base::test::TestFuture<std::optional<std::string>,
+                         std::vector<MemoryBankChatCitation>>
+      future;
+  service_.ExecuteMemoryBankChat(ids, "explain the diagram",
+                                 /*save_to_history=*/false,
+                                 future.GetCallback());
+  auto [response_text, citations] = future.Take();
+  ASSERT_TRUE(response_text.has_value());
+  EXPECT_EQ(*response_text, "Fallback response using metadata.");
+  EXPECT_TRUE(citations.empty());
 }
 
 TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Error) {

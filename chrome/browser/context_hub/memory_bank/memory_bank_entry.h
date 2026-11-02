@@ -45,7 +45,12 @@ struct MemoryBankEntry {
   // The text that the user selected from the page.
   std::optional<std::string> selected_text;
   // The source URL of the image when the entry is of type kImage (may point to
-  // third-party web content).
+  // third-party web content). By design, only the URL is persisted; consumers
+  // such as WebUI previews (chrome://image) re-fetch it without cookies,
+  // subject to a 5 MB download limit, and decode it in the data_decoder
+  // service, which handles raster formats (e.g. PNG, JPEG, GIF, WebP, AVIF)
+  // but not SVG. As a result, SVG images, images over 5 MB and images that
+  // require signing in have no preview.
   std::optional<GURL> image_url;
   // Tags associated with the entry for grouping.
   std::vector<std::string> tags;

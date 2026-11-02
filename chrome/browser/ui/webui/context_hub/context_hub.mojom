@@ -174,7 +174,14 @@ enum ChatRole {
 // Represents a cited source reference in a chat response.
 struct ChatReference {
   string title;
+  // The URL of the page where the cited entry originated.
   url.mojom.Url url;
+  // The source URL of the image when the cited entry is an image (null
+  // otherwise). May point to untrusted third-party web content; WebUI
+  // consumers must render it via chrome://image (e.g. `<img is="cr-auto-img">`;
+  // `url.mojom.Url` is typemapped to `string` in WebUI TypeScript via
+  // `url/mojom/BUILD.gn`).
+  url.mojom.Url? image_url;
 };
 
 struct ChatMessage {
