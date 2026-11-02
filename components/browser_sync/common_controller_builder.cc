@@ -16,7 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/account_settings/account_setting_service.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/payments/autofill_wallet_data_type_controller.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_data_type_controller.h"
@@ -246,9 +246,9 @@ void CommonControllerBuilder::SetAutofillWebDataService(
   account_autofill_web_data_service_.Set(web_data_service_in_memory);
 }
 
-void CommonControllerBuilder::SetEntitySuppressionManager(
-    autofill::EntitySuppressionManager* entity_suppression_manager) {
-  entity_suppression_manager_.Set(entity_suppression_manager);
+void CommonControllerBuilder::SetPersonalContextEntityMetadataManager(
+    autofill::PersonalContextEntityMetadataManager* entity_metadata_manager) {
+  entity_metadata_manager_.Set(entity_metadata_manager);
 }
 
 void CommonControllerBuilder::SetAimEligibilityService(
@@ -1228,12 +1228,12 @@ CommonControllerBuilder::CreateJourneyDataTypeController(
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateAutofillEntitySuppressionDataTypeController() {
   if (!base::FeatureList::IsEnabled(syncer::kSyncAutofillEntitySuppression) ||
-      !entity_suppression_manager_.value()) {
+      !entity_metadata_manager_.value()) {
     return nullptr;
   }
 
   syncer::DataTypeControllerDelegate* delegate =
-      entity_suppression_manager_.value()->GetSyncControllerDelegate().get();
+      entity_metadata_manager_.value()->GetSyncControllerDelegate().get();
   if (!delegate) {
     return nullptr;
   }

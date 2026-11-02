@@ -19,7 +19,7 @@
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 #include "chrome/browser/autofill/autofill_ai_personal_context_access_manager_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
-#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
+#include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +27,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -458,10 +458,10 @@ void InternalsUIHandler::OnResetCacheDone(const std::string& message) {
 
 void InternalsUIHandler::OnClearAutofillAiEntitySuppressions(
     const base::ListValue& args) {
-  if (EntitySuppressionManager* suppression_manager =
-          EntitySuppressionManagerFactory::GetForProfile(
+  if (PersonalContextEntityMetadataManager* entity_metadata_manager =
+          PersonalContextEntityMetadataManagerFactory::GetForProfile(
               Profile::FromWebUI(web_ui()))) {
-    suppression_manager->ClearSuppressions(base::Time(), base::Time::Max());
+    entity_metadata_manager->ClearSuppressions(base::Time(), base::Time::Max());
   }
   FireWebUIListener("notify-reset-done",
                     base::Value(kClearAutofillAiEntitySuppressionsDone));

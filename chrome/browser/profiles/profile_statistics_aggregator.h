@@ -20,7 +20,7 @@ class PrefService;
 
 namespace autofill {
 class EntityDataManager;
-class EntitySuppressionManager;
+class PersonalContextEntityMetadataManager;
 class PersonalDataManager;
 }  // namespace autofill
 
@@ -44,7 +44,8 @@ class ProfileStatisticsAggregator {
       scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service,
       autofill::PersonalDataManager* personal_data_manager,
       const autofill::EntityDataManager* entity_data_manager,
-      const autofill::EntitySuppressionManager* entity_suppression_manager,
+      const autofill::PersonalContextEntityMetadataManager*
+          entity_metadata_manager,
       bookmarks::BookmarkModel* bookmark_model,
       history::HistoryService* history_service,
       scoped_refptr<password_manager::PasswordStoreInterface>
@@ -81,8 +82,8 @@ class ProfileStatisticsAggregator {
       autofill_web_data_service_;
   const raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   const raw_ptr<const autofill::EntityDataManager> entity_data_manager_;
-  const raw_ptr<const autofill::EntitySuppressionManager>
-      entity_suppression_manager_;
+  const raw_ptr<const autofill::PersonalContextEntityMetadataManager>
+      entity_metadata_manager_;
   const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   const raw_ptr<history::HistoryService> history_service_;
   const scoped_refptr<password_manager::PasswordStoreInterface>

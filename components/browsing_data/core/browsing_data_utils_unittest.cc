@@ -77,7 +77,7 @@ TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
   AutofillCounter counter(&test_personal_data_manager,
                           base::MakeRefCounted<FakeWebDataService>(),
                           /*entity_data_manager=*/nullptr,
-                          /*entity_suppression_manager=*/nullptr, nullptr);
+                          /*entity_metadata_manager=*/nullptr, nullptr);
 
   // Test cases are grouped by the shape of the resulting string. Each group
   // covers singular and plural counts, the different data types that map onto

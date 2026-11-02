@@ -37,8 +37,8 @@
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
 #include "chrome/browser/autofill/autofill_policy_service_factory.h"
 #include "chrome/browser/autofill/cross_tab_copy_paste_tracker_factory.h"
-#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/ml_log_router_factory.h"
+#include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/sms_otp_service_factory.h"
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
@@ -802,8 +802,8 @@ void ChromeBrowserMainExtraPartsProfiles::
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   autofill::CrossTabCopyPasteTrackerFactory::GetInstance();
 #endif
-  autofill::EntitySuppressionManagerFactory::GetInstance();
   autofill::MlLogRouterFactory::GetInstance();
+  autofill::PersonalContextEntityMetadataManagerFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
   autofill::SmsOtpServiceFactory::GetInstance();
   autofill::ValuablesDataManagerFactory::GetInstance();

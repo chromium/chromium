@@ -8,7 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
-#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
+#include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
@@ -95,7 +95,8 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
         WebDataServiceFactory::GetAutofillWebDataForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
         autofill::AutofillEntityDataManagerFactory::GetForProfile(profile),
-        autofill::EntitySuppressionManagerFactory::GetForProfile(profile),
+        autofill::PersonalContextEntityMetadataManagerFactory::GetForProfile(
+            profile),
         SyncServiceFactory::GetForProfile(profile));
   }
 

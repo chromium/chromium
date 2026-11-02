@@ -16,7 +16,7 @@
 namespace autofill {
 class AutofillWebDataService;
 class EntityDataManager;
-class EntitySuppressionManager;
+class PersonalContextEntityMetadataManager;
 class PersonalDataManager;
 }  // namespace autofill
 
@@ -59,7 +59,8 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter {
       autofill::PersonalDataManager* personal_data_manager,
       scoped_refptr<autofill::AutofillWebDataService> web_data_service,
       const autofill::EntityDataManager* entity_data_manager,
-      const autofill::EntitySuppressionManager* entity_suppression_manager,
+      const autofill::PersonalContextEntityMetadataManager*
+          entity_metadata_manager,
       syncer::SyncService* sync_service);
 
   AutofillCounter(const AutofillCounter&) = delete;
@@ -102,8 +103,8 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter {
 
   const raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   const raw_ptr<const autofill::EntityDataManager> entity_data_manager_;
-  const raw_ptr<const autofill::EntitySuppressionManager>
-      entity_suppression_manager_;
+  const raw_ptr<const autofill::PersonalContextEntityMetadataManager>
+      entity_metadata_manager_;
   scoped_refptr<autofill::AutofillWebDataService> web_data_service_;
   SyncTracker sync_tracker_;
 

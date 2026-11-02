@@ -5,7 +5,7 @@
 #include "chrome/browser/autofill/autofill_ai_personal_context_access_manager_factory.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
+#include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,7 +44,7 @@ AutofillAiPersonalContextAccessManagerFactory::
   DependsOn(PersonalContextEligibilityServiceFactory::GetInstance());
   DependsOn(PersonalContextServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
-  DependsOn(EntitySuppressionManagerFactory::GetInstance());
+  DependsOn(PersonalContextEntityMetadataManagerFactory::GetInstance());
 }
 
 AutofillAiPersonalContextAccessManagerFactory::
@@ -71,7 +71,7 @@ std::unique_ptr<KeyedService> AutofillAiPersonalContextAccessManagerFactory::
   return std::make_unique<AutofillAiPersonalContextAccessManagerImpl>(
       personal_context_service, personal_context_eligibility_service,
       profile->GetPrefs(), DeviceInfoSyncServiceFactory::GetForProfile(profile),
-      EntitySuppressionManagerFactory::GetForProfile(profile));
+      PersonalContextEntityMetadataManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace autofill

@@ -127,7 +127,7 @@ class InternalsUIHandler
   void OnLoaded(const base::ListValue& args);
   void OnResetCache(const base::ListValue& args);
   // Clears all suppressed AutofillAI Personal Context entity suggestions via
-  // `EntitySuppressionManager`.
+  // `PersonalContextEntityMetadataManager`.
   void OnClearAutofillAiEntitySuppressions(const base::ListValue& args);
   void OnClearGmailOtpOptInPrefs(const base::ListValue& args);
   void OnDumpAddresses(const base::ListValue& args);

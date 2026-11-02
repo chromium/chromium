@@ -33,7 +33,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
-#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
+#include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -94,7 +94,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -1089,11 +1089,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       }
       if (base::FeatureList::IsEnabled(
               autofill::features::kAutofillAmbientAutofillSuppression)) {
-        if (autofill::EntitySuppressionManager* entity_suppression_manager =
-                autofill::EntitySuppressionManagerFactory::GetForProfile(
-                    profile_)) {
-          entity_suppression_manager->ClearSuppressions(delete_begin_,
-                                                        delete_end_);
+        if (autofill::
+                PersonalContextEntityMetadataManager* entity_metadata_manager =
+                    autofill::PersonalContextEntityMetadataManagerFactory::
+                        GetForProfile(profile_)) {
+          entity_metadata_manager->ClearSuppressions(delete_begin_,
+                                                     delete_end_);
         }
       }
       // Clear out the Autofill StrikeDatabase in its entirety.

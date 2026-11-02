@@ -7,7 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
-#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
+#include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -17,7 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
@@ -57,13 +57,14 @@ class EntitySuppressionBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
     // The bridge finishes loading during browser startup, before the test body
     // runs.
-    EntitySuppressionManagerFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindRepeating(
-            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<EntitySuppressionManager>(
-                  CreateTestPersonalContextEntityMetadataSyncBridge());
-            }));
+    PersonalContextEntityMetadataManagerFactory::GetInstance()
+        ->SetTestingFactory(
+            context,
+            base::BindRepeating(
+                [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<PersonalContextEntityMetadataManager>(
+                      CreateTestPersonalContextEntityMetadataSyncBridge());
+                }));
   }
 
  protected:
@@ -76,8 +77,8 @@ class EntitySuppressionBrowserTest : public InProcessBrowserTest {
     return passport;
   }
 
-  EntitySuppressionManager& suppression_manager() {
-    return *EntitySuppressionManagerFactory::GetForProfile(
+  PersonalContextEntityMetadataManager& entity_metadata_manager() {
+    return *PersonalContextEntityMetadataManagerFactory::GetForProfile(
         browser()->GetProfile());
   }
 
@@ -140,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(EntitySuppressionBrowserTest,
 
   views::test::AcceptDialog(ShiftDeleteSuggestion(passport));
 
-  EXPECT_TRUE(suppression_manager().IsSuppressed(passport));
+  EXPECT_TRUE(entity_metadata_manager().IsSuppressed(passport));
 }
 
 IN_PROC_BROWSER_TEST_F(EntitySuppressionBrowserTest,
@@ -149,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(EntitySuppressionBrowserTest,
 
   views::test::AcceptDialog(ClickRemoveInfo(passport));
 
-  EXPECT_TRUE(suppression_manager().IsSuppressed(passport));
+  EXPECT_TRUE(entity_metadata_manager().IsSuppressed(passport));
 }
 
 IN_PROC_BROWSER_TEST_F(EntitySuppressionBrowserTest,
@@ -158,19 +159,19 @@ IN_PROC_BROWSER_TEST_F(EntitySuppressionBrowserTest,
 
   views::test::CancelDialog(ClickRemoveInfo(passport));
 
-  EXPECT_FALSE(suppression_manager().IsSuppressed(passport));
+  EXPECT_FALSE(entity_metadata_manager().IsSuppressed(passport));
 }
 
 IN_PROC_BROWSER_TEST_F(EntitySuppressionBrowserTest, UndoUnsuppressesEntity) {
   const EntityInstance passport = AddPersonalContextPassport();
   views::test::AcceptDialog(ClickRemoveInfo(passport));
-  ASSERT_TRUE(suppression_manager().IsSuppressed(passport));
+  ASSERT_TRUE(entity_metadata_manager().IsSuppressed(passport));
   ASSERT_EQ(ToastController::From(browser())->GetCurrentToastId(),
             ToastId::kAutofillAiSuggestionRemoved);
 
   ClickUndo();
 
-  EXPECT_FALSE(suppression_manager().IsSuppressed(passport));
+  EXPECT_FALSE(entity_metadata_manager().IsSuppressed(passport));
 }
 
 }  // namespace

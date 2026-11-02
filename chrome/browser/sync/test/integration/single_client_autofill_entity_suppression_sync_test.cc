@@ -4,10 +4,10 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
+#include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -18,7 +18,7 @@
 namespace {
 
 using autofill::EntityInstance;
-using autofill::EntitySuppressionManager;
+using autofill::PersonalContextEntityMetadataManager;
 using autofill::test::GetPassportEntityInstance;
 
 class SingleClientAutofillEntitySuppressionSyncTest
@@ -36,8 +36,8 @@ class SingleClientAutofillEntitySuppressionSyncTest
     return GetParam();
   }
 
-  EntitySuppressionManager* GetSuppressionManager() {
-    return autofill::EntitySuppressionManagerFactory::GetForProfile(
+  PersonalContextEntityMetadataManager* GetEntityMetadataManager() {
+    return autofill::PersonalContextEntityMetadataManagerFactory::GetForProfile(
         GetProfile(0));
   }
 
@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientAutofillEntitySuppressionSyncTest,
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(
-      GetSuppressionManager()->SuppressEntity(GetPassportEntityInstance()));
+      GetEntityMetadataManager()->SuppressEntity(GetPassportEntityInstance()));
 
   EXPECT_TRUE(
       ServerCountMatchStatusChecker(syncer::AUTOFILL_ENTITY_SUPPRESSION, 1)
@@ -66,13 +66,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientAutofillEntitySuppressionSyncTest,
                        UndoneSuppressionIsDeleted) {
   const EntityInstance passport = GetPassportEntityInstance();
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(GetSuppressionManager()->SuppressEntity(passport));
+  ASSERT_TRUE(GetEntityMetadataManager()->SuppressEntity(passport));
   ASSERT_TRUE(
       ServerCountMatchStatusChecker(syncer::AUTOFILL_ENTITY_SUPPRESSION, 1)
           .Wait());
 
-  ASSERT_TRUE(
-      GetSuppressionManager()->UndoInSessionSuppressedEntity(passport.guid()));
+  ASSERT_TRUE(GetEntityMetadataManager()->UndoInSessionSuppressedEntity(
+      passport.guid()));
 
   EXPECT_TRUE(
       ServerCountMatchStatusChecker(syncer::AUTOFILL_ENTITY_SUPPRESSION, 0)
@@ -83,12 +83,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientAutofillEntitySuppressionSyncTest,
                        ClearedSuppressionIsDeleted) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
-      GetSuppressionManager()->SuppressEntity(GetPassportEntityInstance()));
+      GetEntityMetadataManager()->SuppressEntity(GetPassportEntityInstance()));
   ASSERT_TRUE(
       ServerCountMatchStatusChecker(syncer::AUTOFILL_ENTITY_SUPPRESSION, 1)
           .Wait());
 
-  ASSERT_TRUE(GetSuppressionManager()->ClearSuppressions(
+  ASSERT_TRUE(GetEntityMetadataManager()->ClearSuppressions(
       /*delete_begin=*/base::Time(), /*delete_end=*/base::Time::Max()));
 
   EXPECT_TRUE(

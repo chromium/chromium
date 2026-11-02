@@ -10,7 +10,7 @@
 #include "base/test/run_until.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
-#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
+#include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -19,7 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -212,14 +212,15 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ScopeFiltering) {
 // TODO(crbug.com/501036619): Failing after being wired.
 IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
                        DISABLED_ClearAutofillAiEntitySuppressions) {
-  autofill::EntitySuppressionManager* suppression_manager =
-      autofill::EntitySuppressionManagerFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(suppression_manager);
+  autofill::PersonalContextEntityMetadataManager* entity_metadata_manager =
+      autofill::PersonalContextEntityMetadataManagerFactory::GetForProfile(
+          GetProfile());
+  ASSERT_TRUE(entity_metadata_manager);
 
   autofill::EntityInstance passport =
       autofill::test::GetPassportEntityInstance();
-  ASSERT_TRUE(suppression_manager->SuppressEntity(passport));
-  ASSERT_TRUE(suppression_manager->IsSuppressed(passport));
+  ASSERT_TRUE(entity_metadata_manager->SuppressEntity(passport));
+  ASSERT_TRUE(entity_metadata_manager->IsSuppressed(passport));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("chrome://autofill-internals")));
@@ -251,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
       "document.getElementsByClassName('modal-dialog-text')[0].innerText";
   EXPECT_EQ(autofill::kClearAutofillAiEntitySuppressionsDone,
             EvalJs(kDialogText));
-  EXPECT_FALSE(suppression_manager->IsSuppressed(passport));
+  EXPECT_FALSE(entity_metadata_manager->IsSuppressed(passport));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,

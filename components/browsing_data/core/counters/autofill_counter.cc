@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/personal_context_entity_metadata_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -39,11 +39,12 @@ AutofillCounter::AutofillCounter(
     autofill::PersonalDataManager* personal_data_manager,
     scoped_refptr<autofill::AutofillWebDataService> web_data_service,
     const autofill::EntityDataManager* entity_data_manager,
-    const autofill::EntitySuppressionManager* entity_suppression_manager,
+    const autofill::PersonalContextEntityMetadataManager*
+        entity_metadata_manager,
     syncer::SyncService* sync_service)
     : personal_data_manager_(personal_data_manager),
       entity_data_manager_(entity_data_manager),
-      entity_suppression_manager_(entity_suppression_manager),
+      entity_metadata_manager_(entity_metadata_manager),
       web_data_service_(web_data_service),
       sync_tracker_(this, sync_service),
       suggestions_query_(0),
@@ -112,9 +113,9 @@ void AutofillCounter::Count() {
   // them, so count them too, even though they are not user-visible items, so
   // the counter does not report "None" when the deletion would affect data.
   num_suppressions_ =
-      entity_suppression_manager_
-          ? entity_suppression_manager_->CountSuppressionsCreatedBetween(start,
-                                                                         end)
+      entity_metadata_manager_
+          ? entity_metadata_manager_->CountSuppressionsCreatedBetween(start,
+                                                                      end)
           : 0;
 
   CancelAllRequests();

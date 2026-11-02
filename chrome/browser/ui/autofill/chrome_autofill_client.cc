@@ -44,8 +44,8 @@
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
 #include "chrome/browser/autofill/autofill_policy_service_factory.h"
 #include "chrome/browser/autofill/cross_tab_copy_paste_tracker_factory.h"
-#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
+#include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/sms_otp_service_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -604,7 +604,8 @@ ChromeAutofillClient::GetAutofillAiPersonalContextAccessManager() {
 
 PersonalContextEntityMetadataManager*
 ChromeAutofillClient::GetPersonalContextEntityMetadataManager() {
-  return EntitySuppressionManagerFactory::GetForProfile(GetProfile());
+  return PersonalContextEntityMetadataManagerFactory::GetForProfile(
+      GetProfile());
 }
 
 AutofillAiModelCache* ChromeAutofillClient::GetAutofillAiModelCache() {
