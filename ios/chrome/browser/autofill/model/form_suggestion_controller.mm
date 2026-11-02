@@ -13,24 +13,19 @@
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
-#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_default_icons.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -44,9 +39,6 @@ using PipelineBlock = void (^)(void (^completion)(BOOL));
 using PipelineCompletionBlock = void (^)(NSUInteger index);
 
 namespace {
-
-// Point size of the SF Symbol used for default icons.
-const CGFloat kSymbolPointSize = 17.0f;
 
 // Struct that describes suggestion state.
 struct AutofillSuggestionState {
@@ -95,71 +87,6 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
       RunSearchPipeline(blocks, on_complete, from_index + 1);
     }
   });
-}
-
-// Returns the default icon for the suggestion type.
-UIImage* DefaultIconForType(FormSuggestion* suggestion,
-                            web::WebState* web_state) {
-  switch (suggestion.type) {
-    case autofill::SuggestionType::kUndo:
-      return SymbolWithPalette(
-          SymbolWithPointSize(SymbolArrowUTurnBackward, kSymbolActionPointSize),
-          @[
-            [UIColor colorNamed:kTextPrimaryColor],
-          ]);
-    case autofill::SuggestionType::kGeneratePasswordEntry:
-      return MakeSymbolMulticolor(
-          SymbolWithPointSize(SymbolPasswordManager, kSymbolPointSize));
-    case autofill::SuggestionType::kAddressEntry: {
-      switch (suggestion.suggestionIconType) {
-        case SuggestionIconType::kAccountHome:
-          return SymbolWithPalette(
-              SymbolWithPointSize(SymbolHome, kSymbolPointSize), @[
-                [UIColor colorNamed:kTextPrimaryColor],
-              ]);
-        case SuggestionIconType::kAccountWork:
-          return SymbolWithPalette(
-              SymbolWithPointSize(SymbolWork, kSymbolPointSize), @[
-                [UIColor colorNamed:kTextPrimaryColor],
-              ]);
-        default:
-          return nil;
-      }
-    }
-    case autofill::SuggestionType::kFillAutofillAi: {
-      if (!web_state) {
-        return nil;
-      }
-
-      if (base::FeatureList::IsEnabled(
-              autofill::features::kAutofillAiNoFillingIconsExperiment)) {
-        return nil;
-      }
-
-      base::optional_ref<const autofill::EntityInstance> entity =
-          autofill::GetEntityInstance(
-              ProfileIOS::FromBrowserState(web_state->GetBrowserState()),
-              suggestion.payload);
-      if (!entity.has_value()) {
-        return nil;
-      }
-
-      const bool isPersonalContext =
-          entity->record_type() ==
-          autofill::EntityInstance::RecordType::kPersonalContext;
-
-      return autofill::DefaultIconForAutofillAiEntityType(
-          entity->type().name(), isPersonalContext, kSymbolPointSize,
-          /*tint_color=*/nil);
-    }
-    case autofill::SuggestionType::kAutocompleteAtMemoryButton:
-      return SymbolWithPalette(SymbolWithPointSize(SymbolMagnifyingglassSpark,
-                                                   kSymbolActionPointSize),
-                               @[ [UIColor colorNamed:kTextPrimaryColor] ]);
-    case autofill::SuggestionType::kAutocompleteEntry:
-    default:
-      return nil;
-  }
 }
 
 // Make a copy of suggestions with `params` and `provider` set in the copies.
@@ -519,37 +446,7 @@ bool IsRequestDedupingAllowed() {
 // Copies the incoming suggestions, making adjustments if necessary.
 - (NSArray<FormSuggestion*>*)copyAndAdjustSuggestions:
     (NSArray<FormSuggestion*>*)suggestions {
-  NSMutableArray<FormSuggestion*>* suggestionsCopy = [NSMutableArray array];
-  for (FormSuggestion* suggestion : suggestions) {
-    UIImage* defaultIcon = DefaultIconForType(suggestion, _webState);
-
-    // If there are no icons, but we have a default icon for this suggestion,
-    // copy the suggestion and add the default icon, otherwise, update the icon
-    // for this suggestion.
-    BOOL shouldUpdateIcon = !suggestion.icon && defaultIcon;
-
-    if (shouldUpdateIcon) {
-      FormSuggestion* suggestionCopy = [FormSuggestion
-                  suggestionWithValue:suggestion.value
-                           minorValue:suggestion.minorValue
-                   displayDescription:suggestion.displayDescription
-                                 icon:defaultIcon
-                                 type:suggestion.type
-                              payload:suggestion.payload
-          fieldByFieldFillingTypeUsed:suggestion.fieldByFieldFillingTypeUsed
-                       requiresReauth:suggestion.requiresReauth
-           acceptanceA11yAnnouncement:suggestion.acceptanceA11yAnnouncement
-                             metadata:suggestion.metadata];
-      // TODO(crbug.com/452315148): Include `featureForIPH` in the
-      // `FormSuggestion` constructor.
-      suggestionCopy.featureForIPH = suggestion.featureForIPH;
-      suggestionCopy.suggestionIconType = suggestion.suggestionIconType;
-      [suggestionsCopy addObject:suggestionCopy];
-    } else {
-      [suggestionsCopy addObject:suggestion];
-    }
-  }
-  return suggestionsCopy;
+  return CopyFormSuggestionsWithDefaultIcons(suggestions, _webState);
 }
 
 // Performs the selection of the suggestion at the provided `index` based on the
