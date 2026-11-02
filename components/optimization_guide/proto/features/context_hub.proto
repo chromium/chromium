@@ -50,6 +50,12 @@ message ContextHubRequest {
 
   // The request for the auto todos deduplication feature.
   AutoTodosDeduplicationRequest auto_todos_deduplication_request = 6 [features = { field_presence: EXPLICIT }];
+
+  // The user's saved tab-grouping preferences (short markdown bullets, user-
+  // authored or model-distilled). Shapes GROUPING decisions when present and
+  // is the document being updated by AUTO_TAB_GROUPS_PREFERENCE_REFINEMENT
+  // requests. Absent for users without a stored document.
+  string auto_tab_groups_preferences = 7 [features = { field_presence: EXPLICIT }];
 }
 
 message EntryItem {
@@ -187,6 +193,10 @@ message ContextHubResponse {
     // The response for a request of type
     // CONTEXT_HUB_REQUEST_TYPE_AUTO_TODOS_DEDUPLICATION.
     AutoTodosDeduplicationResponse auto_todos_deduplication_response = 4;
+
+    // The response for a request of type
+    // CONTEXT_HUB_REQUEST_TYPE_AUTO_TAB_GROUPS_PREFERENCE_REFINEMENT.
+    AutoTabGroupsPreferenceRefinementResponse auto_tab_groups_preference_refinement_response = 5;
   }
 }
 
@@ -258,6 +268,13 @@ message AutoTodosDeduplicationResponse {
   repeated ContextHubAutoTodoItem deduplicated_todos = 1;
 }
 
+// Holds the output data for a request of type
+// CONTEXT_HUB_REQUEST_TYPE_AUTO_TAB_GROUPS_PREFERENCE_REFINEMENT.
+message AutoTabGroupsPreferenceRefinementResponse {
+  // The complete, updated preferences document (markdown bullets).
+  string preferences = 1 [features = { field_presence: EXPLICIT }];
+}
+
 enum ContextHubRequestType {
   CONTEXT_HUB_REQUEST_TYPE_UNSPECIFIED = 0;
 
@@ -272,6 +289,10 @@ enum ContextHubRequestType {
 
   // For the deduplication of auto todos.
   CONTEXT_HUB_REQUEST_TYPE_AUTO_TODOS_DEDUPLICATION = 4;
+
+  // For distilling durable tab-grouping preferences from the chat history of
+  // one completed session.
+  CONTEXT_HUB_REQUEST_TYPE_AUTO_TAB_GROUPS_PREFERENCE_REFINEMENT = 5;
 }
 
 // Type of entry in the memory bank.
