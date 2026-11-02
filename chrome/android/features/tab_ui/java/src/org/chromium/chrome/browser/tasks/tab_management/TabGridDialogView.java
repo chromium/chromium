@@ -458,7 +458,10 @@ public class TabGridDialogView extends FrameLayout {
         // In case where user jumps to a new page from dialog, clean existing animations in
         // mHideDialogAnimation and play basic fade out instead of zooming back to corresponding tab
         // grid card.
-        if (sourceView == null) {
+        if (sourceView == null
+                || mParent == null
+                || !isAttachedToWindow()
+                || sourceView.getParent() == null) {
             mShowDialogAnimation = new AnimatorSet();
             mShowDialogAnimation.play(mBasicFadeInAnimation);
             mShowDialogAnimation.removeAllListeners();
@@ -497,7 +500,7 @@ public class TabGridDialogView extends FrameLayout {
         // Calculate a clip mask to avoid any source view that is not fully visible from drawing
         // over other UI.
         Rect itemViewParentRect = new Rect();
-        ((View) mItemView.getParent()).getGlobalVisibleRect(itemViewParentRect);
+        ((View) assumeNonNull(mItemView.getParent())).getGlobalVisibleRect(itemViewParentRect);
         int clipTop = itemViewParentRect.top - dialogParentRect.top;
         FrameLayout.LayoutParams params =
                 (FrameLayout.LayoutParams) mAnimationClip.getLayoutParams();

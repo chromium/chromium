@@ -315,7 +315,7 @@ public class TabGroupRowMediatorUnitTest {
         verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(GROUP_ID1);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testOpen_InCurrent_RequestShowFails() {
         when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(any())).thenReturn(false);
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_CURRENT);

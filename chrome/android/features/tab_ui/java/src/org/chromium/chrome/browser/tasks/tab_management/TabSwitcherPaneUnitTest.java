@@ -457,6 +457,28 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
+    public void testRequestOpenTabGroupDialog_OnlyWhenVisible() {
+        mTabModel.setActive(/* active= */ true);
+        Token tabGroupId = Token.createRandom();
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertFalse(mTabSwitcherPane.requestOpenTabGroupDialog(tabGroupId));
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        assertFalse(mTabSwitcherPane.requestOpenTabGroupDialog(tabGroupId));
+        verify(coordinator, never()).requestOpenTabGroupDialog(tabGroupId);
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertTrue(mTabSwitcherPane.requestOpenTabGroupDialog(tabGroupId));
+        verify(coordinator).requestOpenTabGroupDialog(tabGroupId);
+    }
+
+    @Test
     public void testGetRootView() {
         assertNotNull(mTabSwitcherPane.getRootView());
     }

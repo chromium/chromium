@@ -287,8 +287,7 @@ class TabGroupRowMediator {
         TabSwitcherPaneBase tabSwitcherPaneBase =
                 (TabSwitcherPaneBase) mPaneManager.getPaneForId(PaneId.TAB_SWITCHER);
         assumeNonNull(tabSwitcherPaneBase);
-        boolean success = tabSwitcherPaneBase.requestOpenTabGroupDialog(localGroupId);
-        assert success;
+        tabSwitcherPaneBase.requestOpenTabGroupDialog(localGroupId);
     }
 
     private void processDeleteGroup() {

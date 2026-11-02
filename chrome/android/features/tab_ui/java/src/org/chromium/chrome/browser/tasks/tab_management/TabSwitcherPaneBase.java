@@ -599,6 +599,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
 
     @Override
     public boolean requestOpenTabGroupDialog(Token tabGroupId) {
+        if (!mIsVisibleSupplier.get()) return false;
+
         @Nullable TabSwitcherPaneCoordinator coordinator =
                 mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator != null) {

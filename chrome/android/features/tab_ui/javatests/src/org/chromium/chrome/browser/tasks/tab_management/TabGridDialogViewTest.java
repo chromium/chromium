@@ -517,6 +517,48 @@ public class TabGridDialogViewTest {
 
     @Test
     @MediumTest
+    public void testSetupDialogAnimation_DetachedDialogView_FallsBackToFade() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSourceView = new View(sActivity);
+                    mTestParent.addView(mSourceView, 0, new FrameLayout.LayoutParams(100, 100));
+                });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Detach the dialog view so that the zoom animation cannot be computed.
+                    mTestParent.removeView(mTabGridDialogView);
+                    assertFalse(mTabGridDialogView.isAttachedToWindow());
+
+                    // Should fall back to the basic fade animation instead of throwing an NPE.
+                    mTabGridDialogView.setupDialogAnimation(mSourceView);
+                    assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);
+                    assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
+                    assertFalse(mTabGridDialogContainer.isFocusable());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testSetupDialogAnimation_DetachedSourceView_FallsBackToFade() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // The source view has no parent, but the dialog view stays attached.
+                    View detachedSourceView = new View(sActivity);
+                    assertNull(detachedSourceView.getParent());
+                    assertTrue(mTabGridDialogView.isAttachedToWindow());
+
+                    // Should fall back to the basic fade animation instead of throwing an NPE.
+                    mTabGridDialogView.setupDialogAnimation(detachedSourceView);
+                    assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);
+                    assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
+                    assertFalse(mTabGridDialogContainer.isFocusable());
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testDialog_FadeInFadeOut() {
         // Setup the the basic fade-in and fade-out animation.
         ThreadUtils.runOnUiThreadBlocking(
