@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -249,10 +248,7 @@ void DecryptDoesNotCrash(std::size_t clear_bytes,
 
   // Now attempt to decrypt the fuzzed data. Seed data should be properly
   // encrypted buffer.
-  auto encrypted_buffer =
-      base::MakeRefCounted<media::DecoderBuffer>(data.size());
-  UNSAFE_TODO(
-      memcpy(encrypted_buffer->writable_data(), data.data(), data.size()));
+  auto encrypted_buffer = media::DecoderBuffer::CopyFrom(data);
   std::string key_id_string(std::begin(key_id), std::end(key_id));
   std::string iv_string(std::begin(kIv), std::end(kIv));
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCencConfig(
