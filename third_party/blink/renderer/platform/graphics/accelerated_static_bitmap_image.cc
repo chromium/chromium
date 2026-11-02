@@ -451,9 +451,6 @@ AcceleratedStaticBitmapImage::GetSharedImage() const {
 }
 
 gpu::SyncToken AcceleratedStaticBitmapImage::GetSyncToken() const {
-  if (!IsValid()) {
-    return gpu::SyncToken();
-  }
   return mailbox_ref_->sync_token();
 }
 
