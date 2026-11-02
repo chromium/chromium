@@ -266,6 +266,24 @@ TEST_F(TtcPageContextMonitorTest, SkipsUnrealizedWebStateOnConstruction) {
   EXPECT_FALSE(HasPendingWrapper(monitor));
 }
 
+// Tests that a renderer termination cancels any pending extraction and reports
+// `kPageNotExtractableError` to the delegate, and is ignored after
+// `Disconnect()`.
+TEST_F(TtcPageContextMonitorTest, RenderProcessGoneCancelsPendingExtraction) {
+  TtcPageContextMonitor monitor(web_state_, &delegate_);
+  EXPECT_TRUE(HasPendingWrapper(monitor));
+
+  web_state_.OnRenderProcessGone();
+  EXPECT_FALSE(HasPendingWrapper(monitor));
+  ASSERT_EQ(delegate_.fetched_errors().size(), 1u);
+  EXPECT_EQ(delegate_.fetched_errors()[0],
+            PageContextWrapperError::kPageNotExtractableError);
+
+  monitor.Disconnect();
+  web_state_.OnRenderProcessGone();
+  EXPECT_EQ(delegate_.fetched_errors().size(), 1u);
+}
+
 // Tests that destroying the monitored `WebState` cancels any pending extraction
 // and clears `web_state()`.
 TEST_F(TtcPageContextMonitorTest, WebStateDestroyedCancelsPendingExtraction) {

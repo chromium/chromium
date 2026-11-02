@@ -70,6 +70,15 @@ void TtcPageContextMonitor::PageLoaded(
   FetchPageContextIfNeeded();
 }
 
+void TtcPageContextMonitor::RenderProcessGone(web::WebState* /*web_state*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CancelPendingExtraction();
+  if (delegate_) {
+    delegate_->OnPageContextFetched(
+        base::unexpected(PageContextWrapperError::kPageNotExtractableError));
+  }
+}
+
 void TtcPageContextMonitor::WebStateDestroyed(web::WebState* /*web_state*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CancelPendingExtraction();
