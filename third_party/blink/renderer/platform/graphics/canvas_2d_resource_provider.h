@@ -135,10 +135,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   bool IsValid() const;
 
-  // Notifies before any unaccelerated drawing will be done on the resource used
-  // by this provider.
-  void WillDrawUnaccelerated();
-
   void SetResourceRecyclingEnabled(bool value);
 
   gpu::raster::RasterInterface* RasterInterface() const;

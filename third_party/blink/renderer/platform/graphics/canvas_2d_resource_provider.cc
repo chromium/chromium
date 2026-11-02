@@ -201,15 +201,6 @@ void Canvas2DResourceProvider::EnsureResourceReadyForDraw() {
   }
 }
 
-void Canvas2DResourceProvider::WillDrawUnaccelerated() {
-  CHECK(!IsAccelerated());
-
-  if (IsSoftware()) {
-    return;
-  }
-  EnsureWriteAccess();
-}
-
 base::ByteSize Canvas2DResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result;
   if (resource_) {

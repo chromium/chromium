@@ -690,8 +690,8 @@ void BaseRenderingContext2D::RasterRecordToSharedImage(
 
 void BaseRenderingContext2D::RasterRecordToSoftwareSurface(
     cc::PaintRecord last_recording) {
-  if (shared_image_provider_) {
-    shared_image_provider_->WillDrawUnaccelerated();
+  if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
+    shared_image_provider_->EnsureWriteAccess();
   }
   cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(),
                                   GetOrCreateCanvasImageProvider());
@@ -839,8 +839,8 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
     return true;
   }
   if (surface_) {
-    if (shared_image_provider_) {
-      shared_image_provider_->WillDrawUnaccelerated();
+    if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
+      shared_image_provider_->EnsureWriteAccess();
     }
     return surface_->getCanvas()->writePixels(orig_info, pixels, row_bytes, x,
                                               y);
