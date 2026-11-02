@@ -225,7 +225,7 @@ public class NavigationHandlerTest {
         mNavUtils.swipeFromEdge(RIGHT_EDGE);
         mNavUtils.swipeFromEdge(RIGHT_EDGE);
         mNavUtils.swipeFromEdge(RIGHT_EDGE);
-        mNavUtils.swipeFromEdge(LEFT_EDGE);
+        assertNavigateOnSwipeFrom(LEFT_EDGE, mTestServer.getURL(TEST_PAGE));
         histogramWatcher.assertExpected("Wrong histogram recording");
     }
 

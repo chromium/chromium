@@ -207,24 +207,11 @@ public class ArchivedTabsDialogCoordinatorTest {
                                 .forceCloseTabs(
                                         TabClosureParams.closeAllTabs().allowUndo(false).build());
                     }
-                    // TODO(crbug.com/580067196): Remove once
-                    // BaseCtaTransitTestRule#finishActivityWithCleanup closes tabs on
-                    // Android <= 11.
-                    if (mRegularTabModel != null) {
-                        mRegularTabModel.commitAllTabClosures();
-                        mRegularTabModel
-                                .getTabRemover()
-                                .forceCloseTabs(
-                                        TabClosureParams.closeAllTabs()
-                                                .allowUndo(false)
-                                                .saveToTabRestoreService(false)
-                                                .build());
-                    }
                     if (mTabArchiveSettings != null) {
                         mTabArchiveSettings.resetSettingsForTesting();
                     }
                 });
-        // TODO(crbug.com/580067196): Remove once BaseCtaTransitTestRule#finishActivityWithCleanup
+        // TODO(crbug.com/447525636): Remove once BaseCtaTransitTestRule#finishActivityWithCleanup
         // waits for non-ChromeTabbedActivity instances to reach Stage.DESTROYED.
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
             if (!(activity instanceof ChromeTabbedActivity)) {
