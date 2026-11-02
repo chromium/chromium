@@ -141,6 +141,9 @@
   await checkHasNoSideEffect(`div.getBoundingClientRect()`);
   await checkHasNoSideEffect(`div.getBoundingClientRect().toJSON()`);
   await checkHasNoSideEffect(`global_getComputedStyle(div)`);
+  await checkHasNoSideEffect(`div.getClientRects()`);
+  await checkHasNoSideEffect(`div.checkVisibility()`);
+  await checkHasNoSideEffect(`div.checkVisibility({checkOpacity: true})`);
 
   testRunner.completeTest();
 

@@ -144,14 +144,14 @@ dictionary ParseHTMLUnsafeOptions {
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extension-to-the-element-interface
-    [Measure] DOMRectList getClientRects();
+    [Affects=Nothing, Measure] DOMRectList getClientRects();
     [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect, ImplementedAs=GetBoundingClientRectForBinding] DOMRect getBoundingClientRect();
 
 
     [RuntimeEnabled=ElementMatchContainer, NewObject, RaisesException] ContainerQueryList matchContainer(DOMString query);
 
     // https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility
-    [MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
+    [Affects=Nothing, MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
 
     [CallWith=ScriptState] Promise<ScrollResult> scrollIntoView(optional (ScrollIntoViewOptions or boolean) arg = {});
     [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<ScrollResult> scroll(optional ScrollToOptions options = {});

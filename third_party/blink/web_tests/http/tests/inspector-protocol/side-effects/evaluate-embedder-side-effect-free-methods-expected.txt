@@ -183,4 +183,10 @@ Expression `div.getBoundingClientRect().toJSON()`
 has side effect: false, expected: false
 Expression `global_getComputedStyle(div)`
 has side effect: false, expected: false
+Expression `div.getClientRects()`
+has side effect: false, expected: false
+Expression `div.checkVisibility()`
+has side effect: false, expected: false
+Expression `div.checkVisibility({checkOpacity: true})`
+has side effect: false, expected: false
 
