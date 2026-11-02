@@ -14,8 +14,8 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 

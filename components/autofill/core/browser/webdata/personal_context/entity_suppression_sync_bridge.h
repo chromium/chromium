@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_ENTITY_SUPPRESSION_SYNC_BRIDGE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_ENTITY_SUPPRESSION_SYNC_BRIDGE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PERSONAL_CONTEXT_ENTITY_SUPPRESSION_SYNC_BRIDGE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PERSONAL_CONTEXT_ENTITY_SUPPRESSION_SYNC_BRIDGE_H_
 
 #include <memory>
 #include <optional>
@@ -43,7 +43,6 @@ namespace autofill {
 // Sync bridge for the `AUTOFILL_ENTITY_SUPPRESSION` data type.
 // Handles encrypted persistence at rest and Sync integration.
 // Owned by `EntitySuppressionManager`, one instance per profile.
-// TODO(crbug.com/501036619): Move under webdata/personal_context.
 class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   class Observer : public base::CheckedObserver {
@@ -192,4 +191,4 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_ENTITY_SUPPRESSION_SYNC_BRIDGE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PERSONAL_CONTEXT_ENTITY_SUPPRESSION_SYNC_BRIDGE_H_

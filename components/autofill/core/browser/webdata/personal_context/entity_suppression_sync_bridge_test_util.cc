@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge_test_util.h"
 
 #include <memory>
 #include <utility>
 
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/protocol/entity_specifics.pb.h"

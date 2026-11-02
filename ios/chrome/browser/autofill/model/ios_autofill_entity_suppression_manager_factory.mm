@@ -10,7 +10,7 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
+#import "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/report_unrecoverable_error.h"
