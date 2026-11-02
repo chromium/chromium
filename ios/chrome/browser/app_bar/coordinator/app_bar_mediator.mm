@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_observer_bridge.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
-#import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -783,18 +782,13 @@ inline LayoutStateAssistantPassKey PassKey() {
       if (_geminiBrowserAgent && _geminiBrowserAgent->is_floaty_invoked()) {
         [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
       } else {
-        __weak __typeof(self) weakSelf = self;
         [self.geminiHandler
             startGeminiEntryFlowWithStartupState:
                 [[GeminiStartupState alloc]
                     initWithEntryPoint:gemini::EntryPoint::AppBar]
                               baseViewController:self.baseViewController
                         showSnackbarOnCompletion:YES
-                                      completion:^(
-                                          GeminiEntryFlowResult result) {
-                                        [weakSelf
-                                            handleGeminiEntryFlowResult:result];
-                                      }];
+                                      completion:nil];
       }
       break;
     }
@@ -1612,25 +1606,6 @@ inline LayoutStateAssistantPassKey PassKey() {
 
   [self updateConsumer];
   return webStateListCount != webStateList->count();
-}
-
-// Handles the result of the Gemini entry flow from the app bar.
-- (void)handleGeminiEntryFlowResult:(GeminiEntryFlowResult)result {
-  switch (result) {
-    case kGeminiEntryFlowResultAccountCapabilityRestricted:
-    case kGeminiEntryFlowResultAccountIneligibleByEnterprise:
-    case kGeminiEntryFlowResultAccountIneligibleByGemini:
-      // TODO(crbug.com/484000888): Update app bar button state to reflect
-      // ineligibility.
-      break;
-    case kGeminiEntryFlowResultSuccess:
-    case kGeminiEntryFlowResultTimeout:
-    case kGeminiEntryFlowResultCancelled:
-    case kGeminiEntryFlowResultPageIneligible:
-    case kGeminiEntryFlowResultUnknown:
-    case kGeminiEntryFlowResultNoConsent:
-      break;
-  }
 }
 
 #pragma mark - IdentityManagerObserving

@@ -1402,7 +1402,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedEligible) {
       }]
                         baseViewController:[OCMArg any]
                   showSnackbarOnCompletion:YES
-                                completion:[OCMArg any]]);
+                                completion:nil]);
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAsk
                                    fromView:nil];
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
