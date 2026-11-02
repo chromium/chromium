@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -150,13 +149,11 @@ FatalCrashEventsObserver::TestEnvironment::GetUploadedCrashInfoSaveFilePath()
 }
 
 // static
-const base::flat_set<CrashEventInfo::CrashType>&
+FatalCrashEventsObserver::CrashTypeSet
 FatalCrashEventsObserver::TestEnvironment::GetAllowedCrashTypes() {
-  static const base::NoDestructor<base::flat_set<CrashEventInfo::CrashType>>
-      allowed_crash_types({CrashEventInfo::CrashType::kKernel,
-                           CrashEventInfo::CrashType::kChrome,
-                           CrashEventInfo::CrashType::kEmbeddedController});
-  return *allowed_crash_types;
+  return {CrashEventInfo::CrashType::kKernel,
+          CrashEventInfo::CrashType::kChrome,
+          CrashEventInfo::CrashType::kEmbeddedController};
 }
 
 FatalCrashEventsObserver::TestEnvironment::SequenceBlocker::SequenceBlocker(

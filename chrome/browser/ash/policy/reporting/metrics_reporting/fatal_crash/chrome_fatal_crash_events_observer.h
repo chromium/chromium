@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_FATAL_CRASH_CHROME_FATAL_CRASH_EVENTS_OBSERVER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_FATAL_CRASH_CHROME_FATAL_CRASH_EVENTS_OBSERVER_H_
 
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -42,8 +41,7 @@ class ChromeFatalCrashEventsObserver
       ::ash::cros_healthd::mojom::CrashEventInfo::CrashType crash_type)
       const override;
   // Get allowed crash types.
-  const base::flat_set<::ash::cros_healthd::mojom::CrashEventInfo::CrashType>&
-  GetAllowedCrashTypes() const override;
+  CrashTypeSet GetAllowedCrashTypes() const override;
 };
 }  // namespace reporting
 #endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_FATAL_CRASH_CHROME_FATAL_CRASH_EVENTS_OBSERVER_H_

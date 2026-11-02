@@ -95,9 +95,7 @@ class FatalCrashEventsObserver::TestEnvironment {
   base::FilePath GetUploadedCrashInfoSaveFilePath() const;
 
   // Get allowed crash types. Proxy of `FatalCrashEvents::GetAllowedCrashTypes`.
-  static const base::flat_set<
-      ::ash::cros_healthd::mojom::CrashEventInfo::CrashType>&
-  GetAllowedCrashTypes();
+  static CrashTypeSet GetAllowedCrashTypes();
 
  private:
   // Temporary dir for storing save files.

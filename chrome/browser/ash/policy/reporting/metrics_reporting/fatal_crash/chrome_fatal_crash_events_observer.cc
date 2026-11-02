@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/chrome_fatal_crash_events_observer.h"
 
-#include <base/no_destructor.h>
-
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
@@ -52,11 +50,9 @@ ChromeFatalCrashEventsObserver::GetFatalCrashTelemetryCrashType(
   }
 }
 
-const base::flat_set<CrashEventInfo::CrashType>&
+FatalCrashEventsObserver::CrashTypeSet
 ChromeFatalCrashEventsObserver::GetAllowedCrashTypes() const {
-  static const base::NoDestructor<base::flat_set<CrashEventInfo::CrashType>>
-      allowed_crash_types({CrashEventInfo::CrashType::kChrome});
-  return *allowed_crash_types;
+  return {CrashEventInfo::CrashType::kChrome};
 }
 
 }  // namespace reporting

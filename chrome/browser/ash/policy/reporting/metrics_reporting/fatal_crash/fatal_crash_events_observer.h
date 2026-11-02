@@ -10,7 +10,7 @@
 #include <queue>
 #include <string>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -38,6 +38,9 @@ class FatalCrashEventsObserver
           ash::cros_healthd::mojom::EventObserver>,
       public ash::cros_healthd::mojom::EventObserver {
  public:
+  using CrashTypeSet =
+      base::EnumSet<::ash::cros_healthd::mojom::CrashEventInfo::CrashType>;
+
   // Callbacks and other variables created solely for test purposes. Fit the
   // Chromium code style to not name it "TestSettings" because this struct is
   // also compiled in production code.
@@ -86,9 +89,7 @@ class FatalCrashEventsObserver
 
  protected:
   // Get allowed crash types.
-  virtual const base::flat_set<
-      ::ash::cros_healthd::mojom::CrashEventInfo::CrashType>&
-  GetAllowedCrashTypes() const;
+  virtual CrashTypeSet GetAllowedCrashTypes() const;
 
   virtual FatalCrashTelemetry::CrashType GetFatalCrashTelemetryCrashType(
       ::ash::cros_healthd::mojom::CrashEventInfo::CrashType crash_type) const;

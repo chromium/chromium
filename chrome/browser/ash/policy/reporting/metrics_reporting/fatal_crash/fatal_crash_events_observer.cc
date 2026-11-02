@@ -12,7 +12,6 @@
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -150,14 +149,12 @@ int64_t FatalCrashEventsObserver::ConvertTimeToMicroseconds(base::Time t) {
          base::Time::kMicrosecondsPerMillisecond;
 }
 
-const base::flat_set<CrashEventInfo::CrashType>&
+FatalCrashEventsObserver::CrashTypeSet
 FatalCrashEventsObserver::GetAllowedCrashTypes() const {
   // This may appear to be overkilling for only 2 crash types, but it provides
   // more robustness for future crash type additions.
-  static const base::NoDestructor<base::flat_set<CrashEventInfo::CrashType>>
-      allowed_crash_types({CrashEventInfo::CrashType::kKernel,
-                           CrashEventInfo::CrashType::kEmbeddedController});
-  return *allowed_crash_types;
+  return {CrashEventInfo::CrashType::kKernel,
+          CrashEventInfo::CrashType::kEmbeddedController};
 }
 
 void FatalCrashEventsObserver::OnEvent(EventInfoPtr info) {
@@ -187,7 +184,7 @@ void FatalCrashEventsObserver::ProcessEvent(EventInfoPtr info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(settings_for_test_->sequence_checker);
 
   auto& crash_event_info = info->get_crash_event_info();
-  if (!GetAllowedCrashTypes().contains(crash_event_info->crash_type)) {
+  if (!GetAllowedCrashTypes().Has(crash_event_info->crash_type)) {
     // A type of crash that is uninteresting to us. Don't process it.
     settings_for_test_->skipped_uninteresting_crash_type_callback.Run(
         crash_event_info->crash_type);
