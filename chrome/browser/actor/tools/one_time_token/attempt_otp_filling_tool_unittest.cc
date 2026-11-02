@@ -548,7 +548,8 @@ TEST_F(AttemptOtpFillingToolTest, Validate_DestroyedDuringConsentFetch) {
 }
 
 // Destroying the tool while the opt-in card is shown records
-// `kCancelledDuringOptInCard`. A late response records nothing.
+// `kCancelledDuringOptInCard` and the card's `kCancelled`. A late response
+// records nothing.
 TEST_F(AttemptOtpFillingToolTest, Validate_DestroyedDuringOptInCard) {
   ToolDelegate::GmailOtpOptInCallback opt_in_callback;
   EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog)
@@ -568,6 +569,10 @@ TEST_F(AttemptOtpFillingToolTest, Validate_DestroyedDuringOptInCard) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kCancelledDuringOptInCard, 1);
+  histogram_tester_.ExpectBucketCount(kGmailOtpOptInCardInteractionHistogram,
+                                      GmailOtpOptInCardInteraction::kCancelled,
+                                      1);
+  histogram_tester_.ExpectTotalCount(kGmailOtpOptInCardInteractionHistogram, 2);
   base::HistogramTester::CountsMap counts_before_late_response =
       histogram_tester_.GetTotalCountsForPrefix("OneTimeTokens.");
   std::move(opt_in_callback)
@@ -700,7 +705,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_DestroyedDuringOtpRetrieval) {
 }
 
 // Destroying the tool during the confirmation dialog records
-// `kCancelledDuringConfirmationDialog`.
+// `kCancelledDuringConfirmationDialog` and the dialog's `kCancelled`.
 TEST_F(AttemptOtpFillingToolTest, Invoke_DestroyedDuringConfirmationDialog) {
   EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
       .WillOnce(Return(std::nullopt));
@@ -722,6 +727,11 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_DestroyedDuringConfirmationDialog) {
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kCancelledDuringConfirmationDialog, 1);
   histogram_tester_.ExpectTotalCount(kAttemptOtpFillingToolHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kGmailOtpConfirmationDialogInteractionHistogram,
+      GmailOtpConfirmationDialogInteraction::kCancelled, 1);
+  histogram_tester_.ExpectTotalCount(
+      kGmailOtpConfirmationDialogInteractionHistogram, 2);
 }
 
 // Shared by the three `Invoke_DestroyedDuringFillOtp_*` tests below, one per

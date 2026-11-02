@@ -20,10 +20,12 @@ found in the LICENSE file.
   <owner>trangm@google.com</owner>
   <summary>
     Records user interactions with the Gmail OTP confirmation dialog during the
-    AttemptOtpFilling tool execution, such as whether permission was granted,
-    denied, or if an error occurred. Recorded once when the dialog is requested
-    to be shown, when there's an error, the user approves or declines the
-    confirmation dialog.
+    AttemptOtpFilling tool execution. ShowDialog is recorded when the dialog is
+    requested to be shown. Then one outcome is recorded: permission granted,
+    permission denied, an error response, or Cancelled when the tool is
+    destroyed after the dialog is requested and before a response is received
+    (e.g. the task is stopped, paused or cancelled, or the tab is closed).
+    Nothing is recorded if the tool never requests the dialog.
   </summary>
 </histogram>
 
@@ -33,11 +35,13 @@ found in the LICENSE file.
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
   <summary>
-    Records user interactions with the Gmail OTP opt-in dialog card during the
-    AttemptOtpFilling tool execution, such as whether permission was granted,
-    denied, or if an error occurred. Recorded once when the dialog is requested
-    to be shown, when there's an error, the user approves or declines the opt-in
-    dialog.
+    Records user interactions with the Gmail OTP opt-in card during the
+    AttemptOtpFilling tool execution. ShowCard is recorded when the card is
+    requested to be shown. Then one outcome is recorded: permission granted,
+    permission denied, an error response, or Cancelled when the tool is
+    destroyed after the card is requested and before a response is received
+    (e.g. the task is stopped, paused or cancelled, or the tab is closed).
+    Nothing is recorded if the tool never requests the card.
   </summary>
 </histogram>
 

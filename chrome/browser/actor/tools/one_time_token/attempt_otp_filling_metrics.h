@@ -70,7 +70,10 @@ enum class GmailOtpOptInCardInteraction {
   kErrorResponse = 1,
   kPermissionDenied = 2,
   kPermissionGranted = 3,
-  kMaxValue = kPermissionGranted
+  // The tool was destroyed after the opt-in card was requested and before a
+  // response was received.
+  kCancelled = 4,
+  kMaxValue = kCancelled
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpOptInCardInteraction)
 
@@ -84,7 +87,10 @@ enum class GmailOtpConfirmationDialogInteraction {
   kErrorResponse = 1,
   kPermissionDenied = 2,
   kPermissionGranted = 3,
-  kMaxValue = kPermissionGranted
+  // The tool was destroyed after the confirmation dialog was requested and
+  // before a response was received.
+  kCancelled = 4,
+  kMaxValue = kCancelled
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpConfirmationDialogInteraction)
 

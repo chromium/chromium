@@ -155,8 +155,18 @@ AttemptOtpFillingTool::AttemptOtpFillingTool(
 }
 
 AttemptOtpFillingTool::~AttemptOtpFillingTool() {
-  if (pending_cancellation_event_) {
-    RecordAttemptOtpFillingEvent(*pending_cancellation_event_);
+  if (!pending_cancellation_event_) {
+    return;
+  }
+  RecordAttemptOtpFillingEvent(*pending_cancellation_event_);
+  if (*pending_cancellation_event_ ==
+      AttemptOtpFillingToolEvent::kCancelledDuringOptInCard) {
+    RecordGmailOtpOptInCardInteraction(
+        GmailOtpOptInCardInteraction::kCancelled);
+  } else if (*pending_cancellation_event_ ==
+             AttemptOtpFillingToolEvent::kCancelledDuringConfirmationDialog) {
+    RecordGmailOtpConfirmationDialogInteraction(
+        GmailOtpConfirmationDialogInteraction::kCancelled);
   }
 }
 

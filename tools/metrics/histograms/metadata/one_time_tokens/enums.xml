@@ -146,6 +146,7 @@ found in the LICENSE file.
   <int value="1" label="ErrorResponse"/>
   <int value="2" label="PermissionDenied"/>
   <int value="3" label="PermissionGranted"/>
+  <int value="4" label="Cancelled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.h:GmailOtpConfirmationDialogInteraction) -->
@@ -157,6 +158,7 @@ found in the LICENSE file.
   <int value="1" label="ErrorResponse"/>
   <int value="2" label="PermissionDenied"/>
   <int value="3" label="PermissionGranted"/>
+  <int value="4" label="Cancelled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.h:GmailOtpOptInCardInteraction) -->
