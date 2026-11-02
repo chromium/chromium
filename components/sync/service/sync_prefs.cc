@@ -752,8 +752,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       // Allow 'Themes' toggle on iOS if the feature is enabled.
       return base::FeatureList::IsEnabled(syncer::kSyncThemesIos);
 #else
-      return base::FeatureList::IsEnabled(
-          syncer::kSeparateLocalAndAccountThemes);
+      return true;
 #endif
     case UserSelectableType::kApps:
       return IsReplaceSyncPromosWithSignInPromosEnabled();

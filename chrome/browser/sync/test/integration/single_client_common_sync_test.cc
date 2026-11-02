@@ -365,7 +365,6 @@ class SingleClientGetUnsyncedTypesTest : public SyncTest {
     // mode.
     feature_list_.InitWithFeatures(
         {switches::kEnablePreferencesAccountStorage,
-         syncer::kSeparateLocalAndAccountThemes,
          switches::kSyncEnableBookmarksInTransportMode},
         {});
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -129,7 +129,6 @@ class EnableDisableSingleClientTest
           /*enabled_features=*/
           {switches::kEnablePreferencesAccountStorage,
            syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
-           syncer::kSeparateLocalAndAccountThemes,
            switches::kSyncEnableBookmarksInTransportMode},
           /*disabled_features=*/{});
     }

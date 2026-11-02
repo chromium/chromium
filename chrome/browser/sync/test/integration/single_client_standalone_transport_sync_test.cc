@@ -102,7 +102,6 @@ class SingleClientStandaloneTransportSyncTest : public SyncTest {
 #endif  // BUILDFLAG(IS_CHROMEOS)
             switches::kSyncEnableBookmarksInTransportMode,
             syncer::kReplaceSyncPromosWithSignInPromos,
-            syncer::kSeparateLocalAndAccountThemes,
         },
         /*disabled_features=*/{});
   }

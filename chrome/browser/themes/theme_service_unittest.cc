@@ -41,7 +41,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/color/color_mixers.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/themes/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1196,9 +1195,6 @@ TEST_P(ThemeServiceTest, ReinstallerRecoversDefaultTheme) {
 }
 
 TEST_P(ThemeServiceTest, RemoveUnusedThemesExemptsSavedLocalTheme) {
-  base::test::ScopedFeatureList feature_list{
-      syncer::kSeparateLocalAndAccountThemes};
-
   ThemeScoper scoper1 = LoadUnpackedTheme();
   ASSERT_EQ(scoper1.extension_id(), theme_service()->GetThemeID());
 

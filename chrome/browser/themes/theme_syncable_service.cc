@@ -26,7 +26,6 @@
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_data.h"
@@ -137,14 +136,12 @@ void ThemeSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
 }
 
 void ThemeSyncableService::WillStartInitialSync() {
-  if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
-    // Save current theme specifics to pref. This is used to restore the local
-    // theme upon signout.
-    profile_->GetPrefs()->SetString(
-        prefs::kSavedLocalTheme,
-        base::Base64Encode(
-            GetThemeSpecificsFromCurrentTheme().SerializeAsString()));
-  }
+  // Save current theme specifics to pref. This is used to restore the local
+  // theme upon signout.
+  profile_->GetPrefs()->SetString(
+      prefs::kSavedLocalTheme,
+      base::Base64Encode(
+          GetThemeSpecificsFromCurrentTheme().SerializeAsString()));
 }
 
 std::optional<syncer::ModelError>
@@ -199,18 +196,10 @@ ThemeSyncableService::MergeDataAndStartSyncing(
     }
   }
 
-  // No theme specifics found.
-  std::optional<syncer::ModelError> error;
-  ThemeSyncState startup_state = ThemeSyncState::kFailed;
-  if (!base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
-    // Commit the current theme and set the startup state accordingly.
-    error = ProcessNewTheme(syncer::SyncChange::ACTION_ADD, current_specifics);
-    startup_state = error ? ThemeSyncState::kFailed : ThemeSyncState::kApplied;
-  }
-  // Else, the startup state is failed because the account theme (which is none)
-  // is different from the currently applied theme.
-  NotifyOnSyncStarted(startup_state);
-  return error;
+  // No theme specifics found. The startup state is failed because the account
+  // theme (which is none) is different from the currently applied theme.
+  NotifyOnSyncStarted(ThemeSyncState::kFailed);
+  return std::nullopt;
 }
 
 void ThemeSyncableService::StopSyncing(syncer::DataType type) {
@@ -219,20 +208,18 @@ void ThemeSyncableService::StopSyncing(syncer::DataType type) {
 
   sync_processor_.reset();
 
-  if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
-    // It is possible that saved local theme was cleared by the batch uploader.
-    // In such a case, apply the default theme.
-    const bool result = ApplySavedLocalThemeIfExistsAndClear();
-    base::UmaHistogramBoolean("Theme.RestoredLocalThemeUponSignout", result);
-    if (!result) {
-      theme_service_->UseDefaultTheme();
-      // Explicitly reset the browser color scheme to default because
-      // UseDefaultTheme() does not do it.
-      // TODO(crbug.com/442592525): Consider resetting the browser color scheme
-      // in UseDefaultTheme().
-      theme_service_->SetBrowserColorScheme(
-          ThemeService::BrowserColorScheme::kSystem);
-    }
+  // It is possible that saved local theme was cleared by the batch uploader.
+  // In such a case, apply the default theme.
+  const bool result = ApplySavedLocalThemeIfExistsAndClear();
+  base::UmaHistogramBoolean("Theme.RestoredLocalThemeUponSignout", result);
+  if (!result) {
+    theme_service_->UseDefaultTheme();
+    // Explicitly reset the browser color scheme to default because
+    // UseDefaultTheme() does not do it.
+    // TODO(crbug.com/442592525): Consider resetting the browser color scheme
+    // in UseDefaultTheme().
+    theme_service_->SetBrowserColorScheme(
+        ThemeService::BrowserColorScheme::kSystem);
   }
 }
 
@@ -241,12 +228,10 @@ void ThemeSyncableService::StayStoppedAndMaybeClearData(syncer::DataType type) {
   CHECK_EQ(type, syncer::THEMES);
   CHECK(!sync_processor_);
 
-  if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
-    // Avoid applying the default theme unlike StopSyncing() does because this
-    // method can be called multiple times and applying default theme will cause
-    // the local theme to be lost.
-    ApplySavedLocalThemeIfExistsAndClear();
-  }
+  // Avoid applying the default theme unlike StopSyncing() does because this
+  // method can be called multiple times and applying default theme will cause
+  // the local theme to be lost.
+  ApplySavedLocalThemeIfExistsAndClear();
 }
 
 void ThemeSyncableService::OnBrowserShutdown(syncer::DataType type) {
@@ -577,10 +562,6 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentThemeForTesting() const {
 }
 
 std::string ThemeSyncableService::GetSavedLocalThemeExtensionID() const {
-  if (!base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
-    return std::string();
-  }
-
   std::optional<sync_pb::ThemeSpecifics> specifics = GetSavedLocalTheme();
   if (specifics && specifics->use_custom_theme()) {
     return specifics->custom_theme_id();
@@ -698,7 +679,6 @@ void ThemeSyncableService::NotifyOnSyncStarted(ThemeSyncState startup_state) {
 
 std::optional<sync_pb::ThemeSpecifics>
 ThemeSyncableService::GetSavedLocalTheme() const {
-  CHECK(base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes));
   if (const base::Value* saved_local_theme =
           profile_->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme)) {
     std::string decoded_str;
@@ -713,7 +693,6 @@ ThemeSyncableService::GetSavedLocalTheme() const {
 }
 
 bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
-  CHECK(base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes));
   std::optional<sync_pb::ThemeSpecifics> local_theme_specifics =
       GetSavedLocalTheme();
   if (local_theme_specifics) {

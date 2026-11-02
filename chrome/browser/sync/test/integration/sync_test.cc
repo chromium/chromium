@@ -1454,9 +1454,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
-    allowed_types.Put(syncer::THEMES);
-  }
+  allowed_types.Put(syncer::THEMES);
 
   // These types are excluded on Android as they run outside Chrome.
   allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);

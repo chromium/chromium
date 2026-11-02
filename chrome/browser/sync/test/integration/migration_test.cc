@@ -179,7 +179,6 @@ class MigrationTest : public SyncTest,
       scoped_feature_list_.InitWithFeatures(
           {switches::kEnablePreferencesAccountStorage,
            syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
-           syncer::kSeparateLocalAndAccountThemes,
            switches::kSyncEnableBookmarksInTransportMode},
           {});
     }

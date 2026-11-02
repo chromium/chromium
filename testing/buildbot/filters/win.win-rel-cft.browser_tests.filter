@@ -163,8 +163,7 @@ BrowserRootViewBrowserTest.*
 -SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest.*
 -SingleClientSyncInvalidationsTest.*
 -SingleClientThemesSyncTest.*
--SingleClientThemesSyncTestWithAccountThemesSeparation.*
--SingleClientThemesSyncTestWithAccountThemesSeparationInSigninPendingState.*
+-SingleClientThemesSyncInSigninPendingStateTest.*
 -SingleClientTrackedPreferencesSyncTest.*
 -SingleClientTrackedPreferencesSyncTestWithAttack.*
 -SingleClientUserConsentsSyncTest.*

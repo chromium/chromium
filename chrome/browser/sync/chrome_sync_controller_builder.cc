@@ -283,11 +283,8 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
           syncer::THEMES, data_type_store_factory,
           theme_service_.value()->GetThemeSyncableService()->AsWeakPtr(),
           dump_stack,
-          base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)
-              ? ExtensionDataTypeController::DelegateMode::
-                    kTransportModeWithSingleModel
-              : ExtensionDataTypeController::DelegateMode::
-                    kLegacyFullSyncModeOnly,
+          ExtensionDataTypeController::DelegateMode::
+              kTransportModeWithSingleModel,
           extension_system_profile_.value(),
           // SyncService depends on ThemeService. So the
           // ThemeSyncableService instance should outlive the controller.

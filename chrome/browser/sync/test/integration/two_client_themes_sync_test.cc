@@ -24,13 +24,10 @@ class TwoClientThemesSyncTest
  public:
   TwoClientThemesSyncTest() : SyncTest(TWO_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kSeparateLocalAndAccountThemes,
-                                // `kEnablePreferencesAccountStorage` is used to
-                                // enable themes in transport
-                                // mode alongside some other data types.
-                                switches::kEnablePreferencesAccountStorage},
-          /*disabled_features=*/{});
+      // `kEnablePreferencesAccountStorage` is used to enable themes in
+      // transport mode alongside some other data types.
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kEnablePreferencesAccountStorage);
     }
   }
 
