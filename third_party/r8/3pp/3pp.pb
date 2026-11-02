@@ -12,8 +12,6 @@ create {
 
   build {
     install: ["3pp.py", "install"]
-    # gradle cannot be executed correctly under docker env
-    no_docker_env: true
   }
 }
 

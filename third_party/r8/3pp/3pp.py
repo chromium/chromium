@@ -34,6 +34,7 @@ _DEPOT_TOOLS_URL = ('https://chromium.googlesource.com/chromium/tools/'
                     'depot_tools/+archive/main.tar.gz')
 _BRANCHES_URL = 'https://r8-review.googlesource.com/projects/r8/branches?r=%5B1-9%5D.*'
 _BRANCH_NAME_PREFIX = 'refs/heads/'
+_MANYLINUX_PYTHON_BIN_DIR = '/opt/python/cp311-cp311/bin'
 
 _CHROME_D8_SRC = 'third_party/r8/java/src/org/chromium/build/ChromeD8.java'
 _CHROME_R8_SRC = 'third_party/r8/java/src/org/chromium/build/ChromeR8.java'
@@ -195,16 +196,31 @@ def _install(version, output_prefix):
     # R8's gradle build (d8_r8/commonBuildSrc/.../R8SettingsPlugin.kt) enables
     # its GCS remote build cache whenever SWARMING_BOT_ID is set, which the 3pp
     # bot's service account cannot read (403 on bucket r8-build-cache).
-    # Also isolate GRADLE_USER_HOME and pass --no-daemon because 3pp runs with
-    # no_docker_env: true on persistent Swarming hosts; otherwise Gradle can
-    # connect to a warm daemon from an earlier build whose checkout directory
-    # (and third_party/gradle/lib/*.jar) has already been deleted.
+    # Also isolate GRADLE_USER_HOME and pass --no-daemon so that no Gradle state
+    # is shared with other builds.
     gradle_env = {
         k: v
         for k, v in os.environ.items() if k != 'SWARMING_BOT_ID'
     }
     gradle_env['GRADLE_USER_HOME'] = os.path.abspath('gradle_user_home')
-    common.run_cmd(['tools/gradle.py', '--no-daemon', 'r8'], env=gradle_env)
+    # The manylinux docker container's /usr/bin/python3 is Python 3.6, which is
+    # too old for R8's tools/*.py.
+    if os.path.isdir(_MANYLINUX_PYTHON_BIN_DIR):
+        gradle_env['PATH'] = os.pathsep.join(
+            [_MANYLINUX_PYTHON_BIN_DIR, gradle_env['PATH']])
+    # Inside docker, this runs as root, so R8's tools (via tarfile) try to chown
+    # extracted files to the archives' owners. That fails for uids outside of
+    # the container's user namespace, and CPython's tarfile then skips chmod,
+    # leaving e.g. third_party/gradle/bin/gradle non-executable.
+    site_dir = os.path.abspath('r8_tools_site')
+    os.makedirs(site_dir)
+    pathlib.Path(site_dir, 'sitecustomize.py').write_text(
+        'import tarfile\n'
+        'tarfile.TarFile.chown = lambda *args, **kwargs: None\n',
+        encoding='utf-8')
+    gradle_env['PYTHONPATH'] = site_dir
+    common.run_cmd(['python3', 'tools/gradle.py', '--no-daemon', 'r8'],
+                   env=gradle_env)
 
     # Shrink (improves r8/d8 launch time):
     # Needs the -D flag to avoid compilation error, see http://b/311202383.
