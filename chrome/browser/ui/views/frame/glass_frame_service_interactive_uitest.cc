@@ -775,3 +775,42 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceOptOutIphInteractiveTest,
                       chrome::GetSettingsUrl(chrome::kAppearanceSubPage)),
                   InAnyContext(WaitForShow(kTabStylingSettingElementId)));
 }
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
+                       SharedThemeServiceObservedAfterClosingOtherWindow) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  GlassFrameService* const glass_frame_service =
+      GlassFrameService::GetInstance();
+  BrowserWindowInterface* const browser1 = browser();
+
+  // Open and close a second window of the same profile. Both windows share one
+  // ThemeService, which must still be observed for browser1 afterwards.
+  BrowserWindowInterface* const browser2 =
+      CreateBrowser(browser1->GetProfile());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return glass_frame_service->IsBrowserWindowEligible(browser2); }));
+  CloseBrowserSynchronously(browser2);
+
+  bool browser1_eligible =
+      glass_frame_service->IsBrowserWindowEligible(browser1);
+  ASSERT_TRUE(browser1_eligible);
+  base::CallbackListSubscription sub1 =
+      glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
+          browser1, base::BindRepeating(
+                        [](bool* out_eligible, bool is_eligible) {
+                          *out_eligible = is_eligible;
+                        },
+                        &browser1_eligible));
+
+  FakeThemeService* const fake_theme_service = static_cast<FakeThemeService*>(
+      ThemeServiceFactory::GetForProfile(browser1->GetProfile()));
+  ASSERT_TRUE(fake_theme_service);
+
+  // The callback only runs if the theme change is still observed.
+  fake_theme_service->set_using_extension_theme(true);
+  ASSERT_TRUE(base::test::RunUntil([&] { return !browser1_eligible; }));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
+}
