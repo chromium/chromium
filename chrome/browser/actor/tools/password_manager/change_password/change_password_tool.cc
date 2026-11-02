@@ -4,15 +4,18 @@
 
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
@@ -24,6 +27,9 @@
 #include "components/actor/core/shared_types.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -42,6 +48,15 @@ bool IsValidPasswordFieldTarget(const std::optional<PageTarget>& target) {
 
 std::string MaybeTargetDebugString(const std::optional<PageTarget>& target) {
   return target ? DebugString(*target) : "null";
+}
+
+bool WasFieldFilled(const autofill::FormData& form_data,
+                    autofill::FieldRendererId renderer_id) {
+  CHECK(renderer_id);
+  auto it = std::ranges::find(form_data.fields(), renderer_id,
+                              &autofill::FormFieldData::renderer_id);
+  return it != form_data.fields().end() &&
+         it->is_autofilled_according_to_renderer();
 }
 
 }  // namespace
@@ -159,7 +174,7 @@ mojom::ActionResultPtr ChangePasswordTool::ExtractFieldIds(
     }
     *field_id = GetFieldIdFromPageTarget(
         last_observation, actor_surface_handle_, target->value());
-    //  TODO(crbug.com/574401623): we should be more lenient and be able to
+    //  TODO(crbug.com/574401623): we should be more lenient and be able to
     //  skip invalid fields (with a warning back to the agent). That would also
     //  allow us to skip fields that exist but are not password fields (by our
     //  classification).
@@ -192,16 +207,64 @@ mojom::ActionResultPtr ChangePasswordTool::ExtractFieldIds(
 
 void ChangePasswordTool::OnChangePasswordFormFilled(
     ToolCallback callback,
+    // TODO(crbug.com/574401623): if a page has password inputs that do not
+    // share the same <form> element (or one is inside a <form> and another is
+    // unowned), `FillChangePasswordForm()` only returns `FormData` which
+    // contains part of what was actually filled.
     const std::optional<autofill::FormData>& form_data) {
   if (!form_data.has_value()) {
     PostResponseTask(
         std::move(callback),
         MakeResult(mojom::ActionResultCode::kFormFillingUnknownAutofillError,
                    /*requires_page_stabilization=*/false,
-                   "Failed to fill change password form."));
+                   "Found no eligible form to fill."));
     return;
   }
-  PostResponseTask(std::move(callback), MakeOkResult());
+
+  std::vector<std::string> filled_parts;
+  std::vector<std::string> unfilled_parts;
+  for (auto [label, renderer_id] :
+       {std::pair{"old password", current_password_field_id_.renderer_id},
+        std::pair{"new generated password", new_password_field_id_.renderer_id},
+        std::pair{"confirmation password",
+                  confirm_new_password_field_id_.renderer_id}}) {
+    if (!renderer_id) {
+      continue;
+    }
+    std::string part =
+        absl::StrFormat("%s into field with id %v", label, renderer_id.value());
+    if (WasFieldFilled(*form_data, renderer_id)) {
+      filled_parts.push_back(std::move(part));
+    } else {
+      unfilled_parts.push_back(std::move(part));
+    }
+  }
+
+  if (filled_parts.empty()) {
+    PostResponseTask(
+        std::move(callback),
+        MakeResult(mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+                   /*requires_page_stabilization=*/false,
+                   absl::StrFormat("Failed to fill %s.",
+                                   base::JoinString(unfilled_parts, " and "))));
+    return;
+  }
+
+  std::string message =
+      absl::StrFormat("Filled %s.", base::JoinString(filled_parts, " and "));
+  if (!unfilled_parts.empty()) {
+    PostResponseTask(
+        std::move(callback),
+        MakeResult(mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+                   /*requires_page_stabilization=*/false,
+                   absl::StrFormat("%s Failed to fill %s.", message,
+                                   base::JoinString(unfilled_parts, " and "))));
+    return;
+  }
+
+  PostResponseTask(
+      std::move(callback),
+      MakeOkResultWithMessage(/*requires_page_stabilization=*/true, message));
 }
 
 std::string ChangePasswordTool::DebugString() const {
