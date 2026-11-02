@@ -15,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/version.h"
-#include "build/build_config.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_histograms.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
@@ -37,6 +36,13 @@ class PrivacySandboxAttestationsTestBase : public testing::Test {
       : scoped_attestations_(PrivacySandboxAttestations::CreateForTesting()) {}
 
  protected:
+  // Initializes `scoped_feature_list_` with `enabled_feature` before
+  // `browser_task_environment_` is constructed.
+  explicit PrivacySandboxAttestationsTestBase(
+      const base::Feature& enabled_feature)
+      : scoped_feature_list_(enabled_feature),
+        scoped_attestations_(PrivacySandboxAttestations::CreateForTesting()) {}
+
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
   }
@@ -95,12 +101,19 @@ class PrivacySandboxAttestationsTestBase : public testing::Test {
   }
 
  private:
+  // Must be declared before `browser_task_environment_` so that the
+  // `base::FeatureList` override is initialized before `base::ThreadPool`
+  // worker threads start and destroyed after `browser_task_environment_` joins
+  // them.
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment browser_task_environment_;
   ScopedPrivacySandboxAttestations scoped_attestations_;
   base::ScopedTempDir scoped_temp_dir_;
   base::HistogramTester histogram_tester_;
 };
 
+// Verifies that `PrivacySandboxAttestations::AddOverride` marks the given site
+// as overridden according to `PrivacySandboxAttestations::IsOverridden`.
 TEST_F(PrivacySandboxAttestationsTestBase, AddOverride) {
   net::SchemefulSite site(GURL("https://example.com"));
   ASSERT_FALSE(PrivacySandboxAttestations::GetInstance()->IsOverridden(site));
@@ -115,9 +128,8 @@ class PrivacySandboxAttestationsFeatureEnabledTest
  public:
   PrivacySandboxAttestationsFeatureEnabledTest()
       : base::test::WithFeatureOverride(
-            kDefaultAllowPrivacySandboxAttestations) {
-    scoped_feature_list_.InitAndEnableFeature(
-        kEnforcePrivacySandboxAttestations);
+            kDefaultAllowPrivacySandboxAttestations),
+        PrivacySandboxAttestationsTestBase(kEnforcePrivacySandboxAttestations) {
   }
 
   bool IsAttestationsDefaultAllowed() const { return IsParamFeatureEnabled(); }
@@ -140,11 +152,11 @@ class PrivacySandboxAttestationsFeatureEnabledTest
 
     return status;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Verifies that `PrivacySandboxAttestations::IsSiteAttested` records
+// `Status::kAttestationsFileNotYetChecked` and does not record
+// `kAttestationsFileSource` when the attestations map is absent.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
        AttestationsBehaviorWithMapBeingAbsent) {
   net::SchemefulSite site(GURL("https://example.com"));
@@ -160,6 +172,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
 }
 
+// Verifies that `PrivacySandboxAttestations::IsSiteAttested` returns the
+// expected status for `Status::kAttestationsFileNotYetChecked` when the
+// attestations component is not yet ready.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
        DefaultDenyIfAttestationsComponentNotYetReady) {
   net::SchemefulSite site(GURL("https://example.com"));
@@ -174,6 +189,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
       kAttestationStatusUMA, Status::kAttestationsFileNotYetChecked, 1);
 }
 
+// Verifies that adding an override via
+// `PrivacySandboxAttestations::AddOverride` causes
+// `PrivacySandboxAttestations::IsOverridden` to return `true`.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, AttestedIfOverridden) {
   net::SchemefulSite site(GURL("https://example.com"));
   Status attestation_status =
@@ -189,6 +207,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, AttestedIfOverridden) {
   EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()->IsOverridden(site));
 }
 
+// Verifies that `PrivacySandboxAttestations::IsSiteAttested` returns
+// `Status::kAttestationFailed` when a site is enrolled in the attestations map
+// with an empty `PrivacySandboxAttestationsGatedAPISet`.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
        EnrolledWithoutAttestations) {
   net::SchemefulSite site(GURL("https://example.com"));
@@ -214,6 +235,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
                                        Status::kAttestationFailed, 1);
 }
 
+// Verifies that `PrivacySandboxAttestations::IsSiteAttested` returns
+// `Status::kAllowed` when a site is enrolled and attested for the queried
+// `PrivacySandboxAttestationsGatedAPI`.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, EnrolledAndAttested) {
   net::SchemefulSite site(GURL("https://example.com"));
   Status attestation_status =
@@ -239,18 +263,10 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, EnrolledAndAttested) {
                                        1);
 }
 
-// TODO(crbug.com/575528383): Hits a base::Lock DCHECK on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NonExistentAttestationsFile DISABLED_NonExistentAttestationsFile
-#define MAYBE_TryParseNonExistentAttestationsFileTwice \
-  DISABLED_TryParseNonExistentAttestationsFileTwice
-#else
-#define MAYBE_NonExistentAttestationsFile NonExistentAttestationsFile
-#define MAYBE_TryParseNonExistentAttestationsFileTwice \
-  TryParseNonExistentAttestationsFileTwice
-#endif
+// Verifies that `PrivacySandboxAttestations::LoadAttestations` fails when
+// given a non-existent file path and records `ParsingStatus::kFileNotExist`.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
-       MAYBE_NonExistentAttestationsFile) {
+       NonExistentAttestationsFile) {
   base::RunLoop run_loop;
   PrivacySandboxAttestations::GetInstance()
       ->SetLoadAttestationsDoneCallbackForTesting(run_loop.QuitClosure());
@@ -273,7 +289,7 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
 // `PrivacySandboxAttestations::Progress::kFinished` but there is no in-memory
 // attestations map. Verify that the second attempt to parse should not crash.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
-       MAYBE_TryParseNonExistentAttestationsFileTwice) {
+       TryParseNonExistentAttestationsFileTwice) {
   base::RunLoop first_attempt;
   PrivacySandboxAttestations::GetInstance()
       ->SetLoadAttestationsDoneCallbackForTesting(first_attempt.QuitClosure());
@@ -307,6 +323,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
                                        ParsingStatus::kFileNotExist, 2);
 }
 
+// Verifies that `PrivacySandboxAttestations::LoadAttestations` fails to parse
+// an invalid proto file, records `ParsingStatus::kCannotParseFile`, and reports
+// `Status::kAttestationsFileCorrupt` on subsequent attestation queries.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
        InvalidAttestationsFileIsNotLoaded) {
   // Write an invalid proto file, and try to parse it.
@@ -331,6 +350,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
             GetExpectedStatus(Status::kAttestationsFileCorrupt));
 }
 
+// Verifies that `PrivacySandboxAttestations::LoadAttestations` parses a valid
+// attestations proto file, updates the attested APIs and version, and records
+// the expected parsing and attestation histograms.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   PrivacySandboxAttestationsProto proto;
   ASSERT_TRUE(proto.site_attestations_size() == 0);
@@ -431,6 +453,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
                                        FileSource::kDownloaded, 4);
 }
 
+// Verifies that `PrivacySandboxAttestations::IsSiteAttested` reports
+// `Status::kAttestationsDownloadedNotYetLoaded` while attestations file parsing
+// is in progress.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
        LoadAttestationsFilePauseDuringParsing) {
   PrivacySandboxAttestationsProto proto;
@@ -468,6 +493,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
       kAttestationStatusUMA, Status::kAttestationsDownloadedNotYetLoaded, 1);
 }
 
+// Verifies that `PrivacySandboxAttestations::LoadAttestations` does not
+// overwrite an existing attestations map when given a file with an older
+// `base::Version` and records `ParsingStatus::kNotNewerVersion`.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
        OlderVersionAttestationsFileIsNotLoaded) {
   PrivacySandboxAttestationsProto proto;
@@ -543,6 +571,8 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
                                        2);
 }
 
+// Verifies that `PrivacySandboxAttestations::LoadAttestations` replaces the
+// existing attestations map when given a file with a newer `base::Version`.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
        NewerVersionAttestationsFileIsLoaded) {
   PrivacySandboxAttestationsProto proto;
@@ -696,6 +726,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
                                        Status::kAttestationFailed, 1);
 }
 
+// Verifies that `PrivacySandboxAttestations::IsSiteAttested` returns
+// `Status::kAllowed` when the attestations map is absent and
+// `AttestationsDefaultBehavior::kAllow` is explicitly specified.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
        AttestationsDefaultBehaviorAllowWithMapBeingAbsent) {
   net::SchemefulSite site(GURL("https://example.com"));
@@ -711,6 +744,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
 }
 
+// Verifies that `PrivacySandboxAttestations::IsSiteAttested` returns
+// `Status::kAttestationsFileNotYetChecked` when the attestations map is absent
+// and `AttestationsDefaultBehavior::kDeny` is explicitly specified.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
        AttestationsDefaultBehaviorDenyWithMapBeingAbsent) {
   net::SchemefulSite site(GURL("https://example.com"));
