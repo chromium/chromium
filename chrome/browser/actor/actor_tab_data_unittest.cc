@@ -126,7 +126,7 @@ TEST_F(ActorTabDataTest, LastObservedScriptToolIds) {
   ASSERT_TRUE(tab_data);
 
   const base::UnguessableToken document_id = base::UnguessableToken::Create();
-  const base::UnguessableToken tool_id = base::UnguessableToken::Create();
+  const blink::ScriptToolToken tool_id;
   optimization_guide::AIPageContentResult result;
   result.script_tool_ids[document_id.ToString()]["tool"] = tool_id;
 

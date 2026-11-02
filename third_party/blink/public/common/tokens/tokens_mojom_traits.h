@@ -313,6 +313,13 @@ struct StructTraits<
           blink::SameDocNavigationScreenshotDestinationToken> {};
 
 template <>
+struct StructTraits<blink::mojom::ScriptToolTokenDataView,
+                    blink::ScriptToolToken>
+    : public blink::TokenMojomTraitsHelper<
+          blink::mojom::ScriptToolTokenDataView,
+          blink::ScriptToolToken> {};
+
+template <>
 struct StructTraits<blink::mojom::ToolInvocationTokenDataView,
                     blink::ToolInvocationToken>
     : public blink::TokenMojomTraitsHelper<

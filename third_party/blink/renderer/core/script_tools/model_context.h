@@ -57,7 +57,7 @@ class DeclarativeWebMCPTool : public GarbageCollectedMixin {
 
   // The unique, non-web-exposed identifier of this tool. It is fixed for the
   // lifetime of the object, and is used to register and unregister the tool.
-  virtual const base::UnguessableToken& ToolId() const = 0;
+  virtual const ScriptToolToken& ToolId() const = 0;
 
   virtual String ToolDescription() const = 0;
 
@@ -95,9 +95,7 @@ class CORE_EXPORT ToolData : public GarbageCollected<ToolData> {
   // The stable, non-web-exposed identifier minted for this tool at
   // registration time. This is the key that both `ModelContext::tool_map_` and
   // the browser process use to look the tool up.
-  const base::UnguessableToken& Id() const {
-    return script_tool_->tool_id.value();
-  }
+  const ScriptToolToken& Id() const { return script_tool_->tool_id.value(); }
 
   const mojom::blink::ScriptTool& ScriptTool() const { return *script_tool_; }
 
@@ -188,7 +186,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
       const String& name) const;
 
   bool ExecuteTool(ToolInvocationToken invocation_id,
-                   const base::UnguessableToken& tool_id,
+                   const ScriptToolToken& tool_id,
                    const String& input_arguments,
                    ScriptToolExecutedCallback tool_executed_cb);
   // Like `ExecuteTool()`, but embedders that identify tools by name. If no tool
@@ -222,13 +220,13 @@ class CORE_EXPORT ModelContext : public EventTarget,
   // Unregisters the tool identified by `tool_id`, which must be registered.
   // Used for both imperative tools (when their `AbortSignal` aborts) and
   // declarative tools (when their form stops being a tool).
-  void UnregisterTool(const base::UnguessableToken& tool_id);
+  void UnregisterTool(const ScriptToolToken& tool_id);
   void PauseExecution();
 
   // mojom::blink::ModelContext implementation:
   void NotifyToolChange() override;
   void ExecuteScriptTool(const ToolInvocationToken& invocation_id,
-                         const base::UnguessableToken& tool_id,
+                         const ScriptToolToken& tool_id,
                          const String& input_arguments,
                          ExecuteScriptToolCallback callback) override;
   void CancelScriptTool(const ToolInvocationToken& invocation_id) override;
@@ -247,7 +245,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
   // identify tools by ID. See `ExecuteToolByName()`.
   ToolData* FindToolDataByName(const String& name) const;
   // Returns the tool registered with `tool_id`, or null if there is none.
-  ToolData* FindToolDataById(const base::UnguessableToken& tool_id) const;
+  ToolData* FindToolDataById(const ScriptToolToken& tool_id) const;
 
   ExecutionContext* GetExecutionContext() const override;
 
@@ -269,13 +267,13 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
                               ToolInvocationToken invocation_id,
-                              const base::UnguessableToken& tool_id,
+                              const ScriptToolToken& tool_id,
                               const String& input_arguments,
                               AbortController* abort_controller,
                               ScriptToolExecutedCallback tool_executed_cb);
   bool ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
                      ToolInvocationToken invocation_id,
-                     const base::UnguessableToken& tool_id,
+                     const ScriptToolToken& tool_id,
                      const String& name,
                      const String& input_arguments,
                      AbortController* abort_controller,
@@ -291,11 +289,11 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   void MaybeRecordToolCount();
 
-  HeapHashMap<base::UnguessableToken, Member<ToolData>> tool_map_;
+  HeapHashMap<ScriptToolToken, Member<ToolData>> tool_map_;
 
   struct PendingExecution final : public GarbageCollected<PendingExecution> {
     PendingExecution(String tool_name,
-                     const base::UnguessableToken& tool_id,
+                     const ScriptToolToken& tool_id,
                      ScriptToolExecutedCallback callback,
                      AbortController* abort_controller)
         : tool_name(std::move(tool_name)),
@@ -308,7 +306,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
     // The tool being executed. Used to look the tool back up in `tool_map_`,
     // which `tool_name` cannot safely do, since the name may since have been
     // taken by a different tool.
-    base::UnguessableToken tool_id;
+    ScriptToolToken tool_id;
     ScriptToolExecutedCallback callback;
     // Created for every tool execution; never null.
     Member<AbortController> abort_controller;

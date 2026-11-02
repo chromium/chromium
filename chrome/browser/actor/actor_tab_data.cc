@@ -76,7 +76,7 @@ void ActorTabData::DidObserveContent(
   last_observed_dom_node_geometry_.reset();
 }
 
-std::optional<base::UnguessableToken> ActorTabData::GetLastObservedScriptToolId(
+std::optional<blink::ScriptToolToken> ActorTabData::GetLastObservedScriptToolId(
     const base::UnguessableToken& document_id,
     const std::string& tool_name) const {
   // The map is keyed by serialized document identifiers.

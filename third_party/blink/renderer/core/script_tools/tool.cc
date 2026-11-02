@@ -27,7 +27,6 @@ Tool::Tool(DOMWindow* window,
   // The browser only accepts (and therefore only returns) tools that were
   // registered with a `tool_id`.
   CHECK(script_tool_->tool_id);
-  CHECK(!script_tool_->tool_id->is_empty());
   CHECK_EQ(script_tool_->input_schema.IsNull(), input_schema.IsEmpty());
   if (!input_schema.IsEmpty()) {
     input_schema_.Reset(input_schema.GetIsolate(), input_schema.V8Value());

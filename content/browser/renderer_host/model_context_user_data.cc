@@ -180,7 +180,7 @@ void ModelContextUserData::RegisterScriptTool(
 }
 
 void ModelContextUserData::UnregisterScriptTool(
-    const base::UnguessableToken& tool_id) {
+    const blink::ScriptToolToken& tool_id) {
   if (!IsWebMCPEnabled(render_frame_host())) {
     // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
     bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
@@ -285,7 +285,7 @@ void ModelContextUserData::GetScriptTools(
 
 void ModelContextUserData::ExecuteRemoteScriptTool(
     const blink::ToolInvocationToken& invocation_id,
-    const base::UnguessableToken& tool_id,
+    const blink::ScriptToolToken& tool_id,
     const blink::FrameToken& tool_owner_frame_token,
     const url::Origin& expected_target_origin,
     const std::string& input_arguments,

@@ -137,6 +137,10 @@ using ExecutionContextToken = MultiToken<LocalFrameToken,
 using SameDocNavigationScreenshotDestinationToken = base::TokenType<
     class SameDocNavigationScreenshotDestinationTokenTypeMarker>;
 
+// Identifies a WebMCP tool registered by a document, in the registering
+// renderer and in the browser. Minted by the registering renderer.
+using ScriptToolToken = base::TokenType<class ScriptToolTokenTypeMarker>;
+
 // Identifies an invocation of a WebMCP script tool.
 using ToolInvocationToken =
     base::TokenType<class ToolInvocationTokenTypeMarker>;

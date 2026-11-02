@@ -100,6 +100,10 @@ mojom_component("tokens") {
           cpp = "::blink::SameDocNavigationScreenshotDestinationToken"
         },
         {
+          mojom = "blink.mojom.ScriptToolToken"
+          cpp = "::blink::ScriptToolToken"
+        },
+        {
           mojom = "blink.mojom.ToolInvocationToken"
           cpp = "::blink::ToolInvocationToken"
         },

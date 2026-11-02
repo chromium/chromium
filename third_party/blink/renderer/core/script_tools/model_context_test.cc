@@ -39,8 +39,7 @@ namespace blink {
 // Tools are keyed by their (non-web-exposed) id rather than by name, but it's
 // much more readable for tests to refer to them by name. Resolves a registered
 // tool's name to the id that `ModelContext::ExecuteTool()` expects.
-base::UnguessableToken ToolIdFor(ModelContext* model_context,
-                                 const String& name) {
+ScriptToolToken ToolIdFor(ModelContext* model_context, const String& name) {
   ToolData* tool_data = model_context->FindToolDataByName(name);
   CHECK(tool_data) << "No registered tool named " << name;
   return tool_data->Id();
@@ -88,7 +87,7 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
 
   void RegisterScriptTool(mojom::blink::ScriptToolPtr tool,
                           RegisterScriptToolCallback callback) override {
-    tool_names_by_id_.insert(tool->tool_id.value(), tool->name);
+    tool_names_by_id_.insert(*tool->tool_id, tool->name);
     registered_tools_.push_back(tool->name);
     if (model_context_.is_bound()) {
       model_context_->NotifyToolChange();
@@ -96,7 +95,7 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
     std::move(callback).Run();
   }
 
-  void UnregisterScriptTool(const base::UnguessableToken& tool_id) override {
+  void UnregisterScriptTool(const ScriptToolToken& tool_id) override {
     auto it = tool_names_by_id_.find(tool_id);
     if (it == tool_names_by_id_.end()) {
       return;
@@ -119,7 +118,7 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
 
   void ExecuteRemoteScriptTool(
       const ToolInvocationToken& invocation_id,
-      const base::UnguessableToken& tool_id,
+      const ScriptToolToken& tool_id,
       const ::blink::FrameToken& tool_owner_frame_token,
       const ::scoped_refptr<const ::blink::SecurityOrigin>&
           expected_target_origin,
@@ -137,7 +136,7 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
   mojo::Receiver<mojom::blink::ModelContextHost> receiver_{this};
   mojo::Remote<mojom::blink::ModelContext> model_context_;
   Vector<String> registered_tools_;
-  HashMap<base::UnguessableToken, String> tool_names_by_id_;
+  HashMap<ScriptToolToken, String> tool_names_by_id_;
 };
 
 class ModelContextTestBase : public SimTest {
@@ -881,7 +880,7 @@ class MockDeclarativeTool : public GarbageCollected<MockDeclarativeTool>,
   void CancelTool() override {}
 
   String ToolName() const override { return "test_tool"; }
-  const base::UnguessableToken& ToolId() const override { return tool_id_; }
+  const ScriptToolToken& ToolId() const override { return tool_id_; }
   String ToolDescription() const override { return "description"; }
   String ToolTitle() const override { return "title"; }
   String ComputeInputSchema() override { return "{}"; }
@@ -889,7 +888,7 @@ class MockDeclarativeTool : public GarbageCollected<MockDeclarativeTool>,
   void Trace(Visitor* visitor) const override {}
 
  private:
-  const base::UnguessableToken tool_id_ = base::UnguessableToken::Create();
+  const ScriptToolToken tool_id_;
 };
 
 TEST_F(ModelContextTest, ForEachScriptToolGC) {
@@ -899,7 +898,7 @@ TEST_F(ModelContextTest, ForEachScriptToolGC) {
 
   auto* model_context = ModelContextSupplement::modelContext(GetDocument());
 
-  base::UnguessableToken tool_id;
+  ScriptToolToken tool_id;
   {
     auto* mock_tool = MakeGarbageCollected<MockDeclarativeTool>();
     tool_id = mock_tool->ToolId();

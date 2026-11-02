@@ -292,7 +292,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
       CHECK(!tool_name.IsNull() && !tool_description.IsNull());
     }
     String ToolName() const override { return tool_name_; }
-    const base::UnguessableToken& ToolId() const override { return tool_id_; }
+    const ScriptToolToken& ToolId() const override { return tool_id_; }
     String ToolDescription() const override { return tool_description_; }
     String ToolTitle() const override { return tool_title_; }
     String ComputeInputSchema() override;
@@ -339,7 +339,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
     // Minted once per `HTMLFormMcpTool`. Every (re-)registration of `form_`
     // creates a new `HTMLFormMcpTool`, and therefore a new ID.
-    const base::UnguessableToken tool_id_ = base::UnguessableToken::Create();
+    const ScriptToolToken tool_id_;
 
     // Both `tool_name_` and `tool_description_` are guaranteed to be non-null
     // (i.e., `blink::String::IsNull()`), since the `toolname` and

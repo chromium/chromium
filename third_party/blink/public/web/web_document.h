@@ -218,7 +218,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // finished along with the result of the execution and the tool declaration.
   // Returns true for success.
   bool ExecuteScriptTool(const ToolInvocationToken& invocation_id,
-                         const base::UnguessableToken& tool_id,
+                         const ScriptToolToken& tool_id,
                          const WebString& input_arguments,
                          WebScriptToolResultCallback tool_result_cb);
 

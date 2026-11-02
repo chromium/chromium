@@ -10,11 +10,11 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/unguessable_token.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -65,7 +65,7 @@ class ActorTabData {
   // Returns the internal ID of the script tool named `tool_name` that the
   // document identified by `document_id` reported in the last observed page
   // content, or nullopt if there is no such tool.
-  std::optional<base::UnguessableToken> GetLastObservedScriptToolId(
+  std::optional<blink::ScriptToolToken> GetLastObservedScriptToolId(
       const base::UnguessableToken& document_id,
       const std::string& tool_name) const;
 

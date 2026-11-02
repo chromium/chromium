@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_TOOL_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/unguessable_token.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -54,7 +54,7 @@ class CORE_EXPORT Tool final : public ScriptWrappable {
   ~Tool() override;
 
   // Not web-exposed. The stable identity of the underlying registered tool.
-  const base::UnguessableToken& ToolId() const {
+  const ScriptToolToken& ToolId() const {
     return script_tool_->tool_id.value();
   }
 

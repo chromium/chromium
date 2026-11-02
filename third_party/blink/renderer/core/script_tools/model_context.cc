@@ -183,7 +183,7 @@ class ModelContext::ToolUnregisterAbortAlgorithm final
     : public AbortSignal::Algorithm {
  public:
   ToolUnregisterAbortAlgorithm(ModelContext* model_context,
-                               const base::UnguessableToken& tool_id,
+                               const ScriptToolToken& tool_id,
                                ScriptPromiseResolverBase* resolver,
                                AbortSignal* signal)
       : model_context_(model_context),
@@ -207,7 +207,7 @@ class ModelContext::ToolUnregisterAbortAlgorithm final
   Member<ModelContext> model_context_;
   // The specific tool this algorithm was created for. Keyed by id rather than
   // by name, so that this can only ever unregister that exact tool.
-  const base::UnguessableToken tool_id_;
+  const ScriptToolToken tool_id_;
   // Never null. The `ScriptPromiseResolverBase` that `this` must reject when
   // `signal_` is aborted (as notified by `Run()` above).
   Member<ScriptPromiseResolverBase> resolver_;
@@ -436,7 +436,7 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
 
   // Mint the tool's identity up-front, so that the unregistration abort
   // algorithm below can be bound to this specific tool.
-  const base::UnguessableToken tool_id = base::UnguessableToken::Create();
+  const ScriptToolToken tool_id;
 
   AbortSignal::AlgorithmHandle* abort_handle = nullptr;
   if (options && options->hasSignal()) {
@@ -496,7 +496,7 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
   return promise;
 }
 
-void ModelContext::UnregisterTool(const base::UnguessableToken& tool_id) {
+void ModelContext::UnregisterTool(const ScriptToolToken& tool_id) {
   // The tool must still be registered:
   //  - An imperative tool's `AbortSignal` aborts at most once, and nothing
   //    else unregisters imperative tools.
@@ -566,7 +566,7 @@ bool ModelContext::ExecuteToolByName(
 }
 
 bool ModelContext::ExecuteTool(ToolInvocationToken invocation_id,
-                               const base::UnguessableToken& tool_id,
+                               const ScriptToolToken& tool_id,
                                const String& input_arguments,
                                ScriptToolExecutedCallback tool_executed_cb) {
   CHECK(document_->GetFrame());
@@ -584,10 +584,8 @@ bool ModelContext::ExecuteTool(ToolInvocationToken invocation_id,
   CHECK(abort_controller);
 
   // Look the tool's name up before the probe below, so that DevTools reports
-  // the name rather than the (non-web-exposed) id. An empty token is never a
-  // valid key (ids are always minted at registration), and Blink's `HashMap`
-  // disallows looking up the empty value, so check for it separately.
-  auto it = tool_id.is_empty() ? tool_map_.end() : tool_map_.find(tool_id);
+  // the name rather than the (non-web-exposed) id.
+  auto it = tool_map_.find(tool_id);
   if (it == tool_map_.end()) {
     // There's no name to report for a tool we can't find, so the probe falls
     // back to the id. DevTools is trusted with the id, but the error message
@@ -643,7 +641,7 @@ bool ModelContext::CancelTool(ToolInvocationToken invocation_id) {
     return false;
   }
   String tool_name = it->value->tool_name;
-  base::UnguessableToken tool_id = it->value->tool_id;
+  ScriptToolToken tool_id = it->value->tool_id;
 
   // It's possible that `invocation_id` matches an existing ID in
   // `pending_executions_`, but that `tool_id` is not found in `tool_map_`.
@@ -750,7 +748,7 @@ void ModelContext::DidFinishParsing() {
 void ModelContext::ExecuteDeclarativeTool(
     DeclarativeWebMCPTool* tool,
     ToolInvocationToken invocation_id,
-    const base::UnguessableToken& tool_id,
+    const ScriptToolToken& tool_id,
     const String& input_arguments,
     AbortController* abort_controller,
     ScriptToolExecutedCallback tool_executed_cb) {
@@ -805,7 +803,7 @@ void ModelContext::ExecuteDeclarativeTool(
 // it to OnToolExecuted().
 bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
                                  ToolInvocationToken invocation_id,
-                                 const base::UnguessableToken& tool_id,
+                                 const ScriptToolToken& tool_id,
                                  const String& name,
                                  const String& input_arguments,
                                  AbortController* abort_controller,
@@ -893,7 +891,7 @@ bool ModelContext::RegisterDeclarativeTool(
   UseCounter::Count(document_,
                     WebFeature::kModelContextRegisterDeclarativeTool);
 
-  const base::UnguessableToken& tool_id = declarative_tool->ToolId();
+  const ScriptToolToken& tool_id = declarative_tool->ToolId();
 
   auto script_tool = mojom::blink::ScriptTool::New();
   script_tool->tool_id = tool_id;
@@ -965,7 +963,7 @@ void ModelContext::NotifyToolChange() {
 }
 
 void ModelContext::ExecuteScriptTool(const ToolInvocationToken& invocation_id,
-                                     const base::UnguessableToken& tool_id,
+                                     const ScriptToolToken& tool_id,
                                      const String& input_arguments,
                                      ExecuteScriptToolCallback callback) {
   ExecuteTool(invocation_id, tool_id, input_arguments,
@@ -1012,13 +1010,7 @@ ToolData* ModelContext::FindToolDataByName(const String& name) const {
   return nullptr;
 }
 
-ToolData* ModelContext::FindToolDataById(
-    const base::UnguessableToken& tool_id) const {
-  // Blink's `HashMap` disallows looking up the empty value, and an empty token
-  // is never a valid key (ids are always minted at registration).
-  if (tool_id.is_empty()) {
-    return nullptr;
-  }
+ToolData* ModelContext::FindToolDataById(const ScriptToolToken& tool_id) const {
   auto it = tool_map_.find(tool_id);
   return it == tool_map_.end() ? nullptr : it->value.Get();
 }

@@ -145,7 +145,7 @@ struct ScriptToolAction {
   // action in the same batch). In that case, the renderer falls back to looking
   // the tool up by `name`, and executes whichever tool is registered under that
   // name at execution time.
-  mojo_base.mojom.UnguessableToken? tool_id;
+  blink.mojom.ScriptToolToken? tool_id;
 };
 
 // Union of tool-specific actions.

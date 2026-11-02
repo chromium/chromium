@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-forward.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -131,7 +132,7 @@ enum class AIPageContentExtractionStatus {
 
 // Maps the name of each WebMCP script tool that a document reported in the page
 // content to the tool's browser-internal unique ID.
-using ToolNameToToolId = base::flat_map<std::string, base::UnguessableToken>;
+using ToolNameToToolId = base::flat_map<std::string, blink::ScriptToolToken>;
 
 // Maps a serialized document identifier (as used in
 // `AIPageContentResult::document_identifiers`) to that document's script tools.

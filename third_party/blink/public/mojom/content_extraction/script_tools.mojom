@@ -43,7 +43,7 @@ struct ScriptTool {
   // reusing `ScriptTool`, this can be made required. See
   // https://crbug.com/536063275 and
   // https://docs.google.com/document/d/1psoB7k71-Dgkxg2tTG62DYJDTg02x8zOS3jCEd0QlbM/edit?pli=1&tab=t.0#heading=h.n6mukb2ajzia.
-  mojo_base.mojom.UnguessableToken? tool_id;
+  blink.mojom.ScriptToolToken? tool_id;
   // These directly map to the corresponding fields in the web API.
   string name;
   // The optional title for the tool. This can be null if the tool is registered
@@ -125,7 +125,7 @@ interface ModelContextHost {
   // Unregisters a previously-declared tool. When this is called, `tool_id` is
   // guaranteed to match an existing tool; if this invariant is not upheld, the
   // renderer process is killed.
-  UnregisterScriptTool(mojo_base.mojom.UnguessableToken tool_id);
+  UnregisterScriptTool(blink.mojom.ScriptToolToken tool_id);
 
   // Returns all script tools visible to the caller document, optionally filtered
   // by `from_origins`. If `from_origins` is empty, it defaults to returning
@@ -144,7 +144,7 @@ interface ModelContextHost {
   // If tool execution fails, `error` is set to a `ExecuteRemoteScriptToolError`
   // corresponding to the `DOMException` that will be exposed to the caller.
   ExecuteRemoteScriptTool(blink.mojom.ToolInvocationToken invocation_id,
-                          mojo_base.mojom.UnguessableToken tool_id,
+                          blink.mojom.ScriptToolToken tool_id,
                           blink.mojom.FrameToken tool_owner_frame_token,
                           url.mojom.Origin expected_target_origin,
                           string input_arguments)
@@ -169,7 +169,7 @@ interface ModelContext {
   // with the result and a null error_code, while failure passes a null result
   // and a non-null error_code.
   ExecuteScriptTool(blink.mojom.ToolInvocationToken invocation_id,
-                    mojo_base.mojom.UnguessableToken tool_id, string input_arguments)
+                    blink.mojom.ScriptToolToken tool_id, string input_arguments)
       => (string? result, ScriptToolErrorCode? error_code);
 
   // Cancels a pending execution of a script tool in this Document.

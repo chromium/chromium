@@ -472,7 +472,7 @@ ScriptToolExecutedCallback ToScriptToolExecutedCallback(
 
 bool WebDocument::ExecuteScriptTool(
     const ToolInvocationToken& invocation_id,
-    const base::UnguessableToken& tool_id,
+    const ScriptToolToken& tool_id,
     const WebString& input_arguments,
     WebScriptToolResultCallback tool_result_cb) {
   auto* model_context =
