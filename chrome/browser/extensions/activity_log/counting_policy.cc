@@ -203,10 +203,12 @@ CountingPolicy::CountingPolicy(Profile* profile)
 CountingPolicy::~CountingPolicy() = default;
 
 bool CountingPolicy::InitDatabase(sql::Database* db) {
-  if (!string_table_.Initialize(db))
+  if (!string_table_.Initialize(db)) {
     return false;
-  if (!url_table_.Initialize(db))
+  }
+  if (!url_table_.Initialize(db)) {
     return false;
+  }
 
   // Create the unified activity log entry table.
   if (!ActivityDatabase::InitializeTable(db, "activitylog_compressed",
@@ -236,8 +238,9 @@ void CountingPolicy::QueueAction(scoped_refptr<Action> action) {
     // queue, flush the queue out now to prevent any false merging (actions
     // from different days being merged).
     base::Time new_date = action->time().LocalMidnight();
-    if (new_date != queued_actions_date_)
+    if (new_date != queued_actions_date_) {
       activity_database()->AdviseFlush(ActivityDatabase::kFlushImmediately);
+    }
     queued_actions_date_ = new_date;
 
     auto queued_entry = queued_actions_.find(action);
@@ -259,8 +262,8 @@ void CountingPolicy::QueueAction(scoped_refptr<Action> action) {
 bool CountingPolicy::FlushDatabase(sql::Database* db) {
   // Columns that must match exactly for database rows to be coalesced.
   static const char* const matched_columns[] = {
-      "extension_id_x", "action_type", "api_name_x", "args_x", "page_url_x",
-      "page_title_x", "arg_url_x", "other_x"};
+      "extension_id_x", "action_type",  "api_name_x", "args_x",
+      "page_url_x",     "page_title_x", "arg_url_x",  "other_x"};
   ActionQueue queue;
   queue.swap(queued_actions_);
 
@@ -271,12 +274,14 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
   bool clean_database = (last_database_cleaning_time_.is_null() ||
                          Now() - last_database_cleaning_time_ > kCleaningDelay);
 
-  if (queue.empty() && !clean_database)
+  if (queue.empty() && !clean_database) {
     return true;
+  }
 
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   // Adding an Action to the database is a two step process that depends on
   // whether the count on an existing row can be incremented or a new row needs
@@ -309,21 +314,23 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
 
   for (auto& [action, count] : queue) {
     base::Time day_start = action->time().LocalMidnight();
-    base::Time next_day = Util::AddDays(day_start, 1);
+    base::Time next_day = day_start.NextLocalMidnight();
 
     // The contents in values must match up with fields in matched_columns.  A
     // value of -1 is used to encode a null database value.
     int64_t id;
     std::vector<int64_t> matched_values;
 
-    if (!string_table_.StringToInt(db, action->extension_id(), &id))
+    if (!string_table_.StringToInt(db, action->extension_id(), &id)) {
       return false;
+    }
     matched_values.push_back(id);
 
     matched_values.push_back(static_cast<int>(action->action_type()));
 
-    if (!string_table_.StringToInt(db, action->api_name(), &id))
+    if (!string_table_.StringToInt(db, action->api_name(), &id)) {
       return false;
+    }
     matched_values.push_back(id);
 
     if (action->args()) {
@@ -335,8 +342,9 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       if (args.length() > 10000) {
         args = "[\"<too_large>\"]";
       }
-      if (!string_table_.StringToInt(db, args, &id))
+      if (!string_table_.StringToInt(db, args, &id)) {
         return false;
+      }
       matched_values.push_back(id);
     } else {
       matched_values.push_back(-1);
@@ -344,8 +352,9 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
 
     std::string page_url_string = action->SerializePageUrl();
     if (!page_url_string.empty()) {
-      if (!url_table_.StringToInt(db, page_url_string, &id))
+      if (!url_table_.StringToInt(db, page_url_string, &id)) {
         return false;
+      }
       matched_values.push_back(id);
     } else {
       matched_values.push_back(-1);
@@ -353,8 +362,9 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
 
     // TODO(mvrable): Create a title_table_?
     if (!action->page_title().empty()) {
-      if (!string_table_.StringToInt(db, action->page_title(), &id))
+      if (!string_table_.StringToInt(db, action->page_title(), &id)) {
         return false;
+      }
       matched_values.push_back(id);
     } else {
       matched_values.push_back(-1);
@@ -362,16 +372,19 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
 
     std::string arg_url_string = action->SerializeArgUrl();
     if (!arg_url_string.empty()) {
-      if (!url_table_.StringToInt(db, arg_url_string, &id))
+      if (!url_table_.StringToInt(db, arg_url_string, &id)) {
         return false;
+      }
       matched_values.push_back(id);
     } else {
       matched_values.push_back(-1);
     }
 
     if (action->other()) {
-      if (!string_table_.StringToInt(db, Util::Serialize(action->other()), &id))
+      if (!string_table_.StringToInt(db, Util::Serialize(action->other()),
+                                     &id)) {
         return false;
+      }
       matched_values.push_back(id);
     } else {
       matched_values.push_back(-1);
@@ -389,10 +402,11 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       // bound.  But to be completely clear, and in case a cached statement
       // ever comes with some values already bound, we bind all parameters
       // (even null ones) explicitly.
-      if (matched_values[j] == -1)
+      if (matched_values[j] == -1) {
         locate_statement.BindNull(j + 2);
-      else
+      } else {
         locate_statement.BindInt64(j + 2, matched_values[j]);
+      }
     }
 
     if (locate_statement.Step()) {
@@ -403,8 +417,9 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       update_statement.BindInt(0, count);
       update_statement.BindTime(1, action->time());
       update_statement.BindInt64(2, rowid);
-      if (!update_statement.Run())
+      if (!update_statement.Run()) {
         return false;
+      }
     } else if (locate_statement.Succeeded()) {
       // No matching row was found, so we need to insert one.
       sql::Statement insert_statement(
@@ -412,13 +427,15 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       insert_statement.BindInt(0, count);
       insert_statement.BindTime(1, action->time());
       for (size_t j = 0; j < matched_values.size(); j++) {
-        if (matched_values[j] == -1)
+        if (matched_values[j] == -1) {
           insert_statement.BindNull(j + 2);
-        else
+        } else {
           insert_statement.BindInt64(j + 2, matched_values[j]);
+        }
       }
-      if (!insert_statement.Run())
+      if (!insert_statement.Run()) {
         return false;
+      }
     } else {
       // Database error.
       return false;
@@ -427,13 +444,15 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
 
   if (clean_database) {
     base::Time cutoff = (Now() - retention_time()).LocalMidnight();
-    if (!CleanOlderThan(db, cutoff))
+    if (!CleanOlderThan(db, cutoff)) {
       return false;
+    }
     last_database_cleaning_time_ = Now();
   }
 
-  if (!transaction.Commit())
+  if (!transaction.Commit()) {
     return false;
+  }
 
   return true;
 }
@@ -453,8 +472,9 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
   std::unique_ptr<Action::ActionVector> actions(new Action::ActionVector());
 
   sql::Database* db = GetDatabaseConnection();
-  if (!db)
+  if (!db) {
     return actions;
+  }
 
   // Build up the query based on which parameters were specified.
   std::string where_str;
@@ -479,28 +499,32 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
     where_str += where_next + "arg_url LIKE ?";
     where_next = " AND ";
   }
-  if (days_ago >= 0)
+  if (days_ago >= 0) {
     where_str += where_next + "time BETWEEN ? AND ?";
+  }
 
   std::string query_str = base::StringPrintf(
       "SELECT extension_id,time, action_type, api_name, args, page_url,"
       "page_title, arg_url, other, count, activity_id FROM %s %s %s ORDER BY "
       "count DESC, time DESC LIMIT 300",
-      kReadViewName,
-      where_str.empty() ? "" : "WHERE",
-      where_str.c_str());
+      kReadViewName, where_str.empty() ? "" : "WHERE", where_str.c_str());
   sql::Statement query(db->GetUniqueStatement(query_str));
   int i = -1;
-  if (!extension_id.empty())
+  if (!extension_id.empty()) {
     query.BindString(++i, extension_id);
-  if (!api_name.empty())
+  }
+  if (!api_name.empty()) {
     query.BindString(++i, api_name + "%");
-  if (type != Action::ACTION_ANY)
+  }
+  if (type != Action::ACTION_ANY) {
     query.BindInt(++i, static_cast<int>(type));
-  if (!page_url.empty())
+  }
+  if (!page_url.empty()) {
     query.BindString(++i, page_url + "%");
-  if (!arg_url.empty())
+  }
+  if (!arg_url.empty()) {
     query.BindString(++i, arg_url + "%");
+  }
   if (days_ago >= 0) {
     int64_t early_bound;
     int64_t late_bound;
@@ -543,8 +567,9 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
 }
 
 void CountingPolicy::DoRemoveActions(const std::vector<int64_t>& action_ids) {
-  if (action_ids.empty())
+  if (action_ids.empty()) {
     return;
+  }
 
   sql::Database* db = GetDatabaseConnection();
   if (!db) {
@@ -556,8 +581,9 @@ void CountingPolicy::DoRemoveActions(const std::vector<int64_t>& action_ids) {
   activity_database()->AdviseFlush(ActivityDatabase::kFlushImmediately);
 
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
 
   sql::Statement statement(db->GetCachedStatement(
       sql::StatementID(SQL_FROM_HERE),
@@ -644,8 +670,9 @@ void CountingPolicy::DoRemoveURLs(const std::vector<GURL>& restrict_urls) {
 }
 
 void CountingPolicy::DoRemoveExtensionData(const std::string& extension_id) {
-  if (extension_id.empty())
+  if (extension_id.empty()) {
     return;
+  }
 
   sql::Database* db = GetDatabaseConnection();
   if (!db) {
@@ -669,9 +696,8 @@ void CountingPolicy::DoRemoveExtensionData(const std::string& extension_id) {
     return;
   }
   if (!statement.Run()) {
-    LOG(ERROR) << "Removing URLs for extension "
-               << extension_id << "from database failed: "
-               << statement.GetSQLStatement();
+    LOG(ERROR) << "Removing URLs for extension " << extension_id
+               << "from database failed: " << statement.GetSQLStatement();
   }
   CleanStringTables(db);
 }
@@ -765,8 +791,9 @@ bool CountingPolicy::CleanOlderThan(sql::Database* db,
       sql::StatementID(SQL_FROM_HERE),
       "DELETE FROM activitylog_compressed WHERE time < ?"));
   cleaner.BindTime(0, cutoff);
-  if (!cleaner.Run())
+  if (!cleaner.Run()) {
     return false;
+  }
   return CleanStringTables(db);
 }
 
@@ -775,17 +802,21 @@ bool CountingPolicy::CleanOlderThan(sql::Database* db,
 bool CountingPolicy::CleanStringTables(sql::Database* db) {
   sql::Statement cleaner1(db->GetCachedStatement(
       sql::StatementID(SQL_FROM_HERE), kStringTableCleanup));
-  if (!cleaner1.Run())
+  if (!cleaner1.Run()) {
     return false;
-  if (db->GetLastChangeCount() > 0)
+  }
+  if (db->GetLastChangeCount() > 0) {
     string_table_.ClearCache();
+  }
 
   sql::Statement cleaner2(db->GetCachedStatement(
       sql::StatementID(SQL_FROM_HERE), kUrlTableCleanup));
-  if (!cleaner2.Run())
+  if (!cleaner2.Run()) {
     return false;
-  if (db->GetLastChangeCount() > 0)
+  }
+  if (db->GetLastChangeCount() > 0) {
     url_table_.ClearCache();
+  }
 
   return true;
 }

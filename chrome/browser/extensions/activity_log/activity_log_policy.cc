@@ -37,8 +37,9 @@ void ActivityLogPolicy::SetClockForTesting(base::Clock* clock) {
 }
 
 base::Time ActivityLogPolicy::Now() const {
-  if (testing_clock_)
+  if (testing_clock_) {
     return testing_clock_->Now();
+  }
   return base::Time::Now();
 }
 
@@ -58,8 +59,7 @@ void ActivityLogDatabasePolicy::Init() {
 }
 
 void ActivityLogDatabasePolicy::Flush() {
-  ScheduleAndForget(activity_database(),
-                    &ActivityDatabase::AdviseFlush,
+  ScheduleAndForget(activity_database(), &ActivityDatabase::AdviseFlush,
                     ActivityDatabase::kFlushImmediately);
 }
 
@@ -100,10 +100,12 @@ void ActivityLogPolicy::Util::StripPrivacySensitiveFields(
     url_sanitizer.ClearQuery();
     url_sanitizer.ClearRef();
 
-    if (action->page_url().is_valid())
+    if (action->page_url().is_valid()) {
       action->set_page_url(action->page_url().ReplaceComponents(url_sanitizer));
-    if (action->arg_url().is_valid())
+    }
+    if (action->arg_url().is_valid()) {
       action->set_arg_url(action->arg_url().ReplaceComponents(url_sanitizer));
+    }
   }
 
   // Clear WebRequest details; only keep a record of which types of
@@ -128,25 +130,16 @@ void ActivityLogPolicy::Util::StripArguments(const ApiSet& api_allowlist,
 }
 
 // static
-base::Time ActivityLogPolicy::Util::AddDays(const base::Time& base_date,
-                                            int days) {
-  // To allow for time zone changes, add an additional partial day then round
-  // down to midnight.
-  return (base_date + base::Days(days) + base::Hours(4)).LocalMidnight();
-}
-
-// static
 void ActivityLogPolicy::Util::ComputeDatabaseTimeBounds(const base::Time& now,
                                                         int days_ago,
                                                         int64_t* early_bound,
                                                         int64_t* late_bound) {
-  base::Time morning_midnight = now.LocalMidnight();
   if (days_ago == 0) {
-    *early_bound = morning_midnight.ToInternalValue();
+    *early_bound = now.LocalMidnight().ToInternalValue();
     *late_bound = base::Time::Max().ToInternalValue();
   } else {
-    base::Time early_time = Util::AddDays(morning_midnight, -days_ago);
-    base::Time late_time = Util::AddDays(early_time, 1);
+    base::Time early_time = now.LocalMidnightWithOffset(-days_ago);
+    base::Time late_time = early_time.NextLocalMidnight();
     *early_bound = early_time.ToInternalValue();
     *late_bound = late_time.ToInternalValue();
   }

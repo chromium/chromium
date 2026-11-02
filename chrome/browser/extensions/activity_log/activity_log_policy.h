@@ -33,10 +33,9 @@ class GURL;
 namespace base {
 class Clock;
 class FilePath;
-}
+}  // namespace base
 
 namespace extensions {
-
 
 // An abstract class for processing and summarizing activity log data.
 // Subclasses will generally store data in an SQLite database (the
@@ -100,7 +99,7 @@ class ActivityLogPolicy {
 
     // A collection of API calls, used to specify allowlists for argument
     // filtering.
-    typedef std::set<std::pair<Action::ActionType, std::string> > ApiSet;
+    typedef std::set<std::pair<Action::ActionType, std::string>> ApiSet;
 
     // Serialize a Value as a JSON string.  Returns an empty string if value is
     // null.
@@ -117,10 +116,6 @@ class ActivityLogPolicy {
     // allowlisted set.  Modifies the Action object in-place.
     static void StripArguments(const ApiSet& api_allowlist,
                                scoped_refptr<Action> action);
-
-    // Given a base day (timestamp at local midnight), computes the timestamp
-    // at midnight the given number of days before or after.
-    static base::Time AddDays(const base::Time& base_date, int days);
 
     // Compute the time bounds that should be used for a database query to
     // cover a time range days_ago days in the past, relative to the specified
@@ -195,20 +190,22 @@ class ActivityLogDatabasePolicy : public ActivityLogPolicy,
  protected:
   // The Schedule methods dispatch the calls to the database on a
   // separate thread.
-  template<typename DatabaseType, typename DatabaseFunc>
+  template <typename DatabaseType, typename DatabaseFunc>
   void ScheduleAndForget(DatabaseType db, DatabaseFunc func) {
     GetActivityLogTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(func, base::Unretained(db)));
   }
 
-  template<typename DatabaseType, typename DatabaseFunc, typename ArgA>
+  template <typename DatabaseType, typename DatabaseFunc, typename ArgA>
   void ScheduleAndForget(DatabaseType db, DatabaseFunc func, ArgA a) {
     GetActivityLogTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(func, base::Unretained(db), a));
   }
 
-  template<typename DatabaseType, typename DatabaseFunc,
-      typename ArgA, typename ArgB>
+  template <typename DatabaseType,
+            typename DatabaseFunc,
+            typename ArgA,
+            typename ArgB>
   void ScheduleAndForget(DatabaseType db, DatabaseFunc func, ArgA a, ArgB b) {
     GetActivityLogTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(func, base::Unretained(db), a, b));
