@@ -35,9 +35,9 @@ TEST_F(SearchEngineTableViewControllerEEATest, TestSectionSubtitle) {
   TableViewHeaderFooterItem* header =
       [[controller() tableViewModel] headerForSectionIndex:0];
   ASSERT_TRUE([header respondsToSelector:@selector(subtitle)]);
-  EXPECT_NSEQ(
-      l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE),
-      [(id)header subtitle]);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_RANDOM_ORDER),
+              [(id)header subtitle]);
 }
 
 // Tests that items are displayed correctly when a prepopulated search engine is

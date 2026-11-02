@@ -10,4 +10,5 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:padding="16dp"
     android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-    android:text="@string/search_engine_choice_settings_subtitle" />
+    android:text="@string/search_engine_choice_settings_subtitle_random_order"
+    />

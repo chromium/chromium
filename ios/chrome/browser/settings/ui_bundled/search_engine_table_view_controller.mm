@@ -270,8 +270,8 @@ const char kUmaSelectDefaultSearchEngine[] =
     if (_regionalCapabilitiesService->IsInSearchEngineChoiceScreenRegion()) {
       TableViewTextHeaderFooterItem* header =
           [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
-      header.subtitle =
-          l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE);
+      header.subtitle = l10n_util::GetNSString(
+          IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_RANDOM_ORDER);
       [model setHeader:header
           forSectionWithIdentifier:SectionIdentifierFirstList];
     }

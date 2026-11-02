@@ -3,11 +3,11 @@
 
   <!-- Non-choice screen strings -->
 
-  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE" desc="This is the body text of a dialog where the user can change their default search engine. This string explains that the list of search engines reflects the user’s region and are randomized (not in order of recommendation). We want users to understand that they can use any search engine with Chrome." formatter_data="android_java">
+  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_RANDOM_ORDER" desc="This is the body text of a dialog where the user can change their default search engine. This string explains that the list of search engines reflects the user’s region and are randomized (not in order of recommendation). We want users to understand that they can use any search engine with Chrome." formatter_data="android_java">
     These search engines are popular in your region and are shown in random order
   </message>
 
-  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_NON_EEA" desc="This is the body text of a dialog where the user can change their default search engine. This string explains that the list of search engines reflects the user’s region. We want users to understand that they can use any search engine with Chrome.">
+  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_REGIONAL_ORDER" desc="This is the body text of a dialog where the user can change their default search engine. This string explains that the list of search engines reflects the user’s region. We want users to understand that they can use any search engine with Chrome.">
     These search engines are popular in your region
   </message>
 

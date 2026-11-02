@@ -2167,10 +2167,10 @@
     <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_TITLE" desc="Title of the dialog, opened from the Search engine settings page, that lets the user pick their default search engine from a list of search engines that are popular in their region.">
       Default search engine
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE" desc="Subtitle of the default search engine picker dialog, shown below the dialog title, for users in countries where the list of search engines is displayed in random order (EEA). Explains that the listed search engines are popular in the user's region and are shown in random order.">
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_RANDOM_ORDER" desc="Subtitle of the default search engine picker dialog, shown below the dialog title, for users in countries where the list of search engines is displayed in random order. Explains that the listed search engines are popular in the user's region and are shown in random order.">
       Popular in your region (in random order)
     </message>
-    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_NON_EEA" desc="Subtitle of the default search engine picker dialog, shown below the dialog title, for users in countries where the list of search engines is not shown in random order (outside the EEA). Explains that the listed search engines are popular in the user's region.">
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_REGIONAL_ORDER" desc="Subtitle of the default search engine picker dialog, shown below the dialog title, for users in countries where the list of search engines is not shown in random order. Explains that the listed search engines are popular in the user's region.">
       Popular in your region
     </message>
     <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_OPTIONS" desc="Label of a button in the header of the default search engine picker dialog. Clicking it replaces the dialog with another dialog listing all the search engines the user can pick as their default search engine." meaning="Choices of search engines to pick from, not settings.">

@@ -3147,13 +3147,13 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddLocalizedString(
       "searchEnginesSettingsDialogSubtitle",
       is_in_search_engine_choice_screen_region
-          ? IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE
-          : IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_NON_EEA);
+          ? IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_RANDOM_ORDER
+          : IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_REGIONAL_ORDER);
   html_source->AddLocalizedString(
       "searchEnginesPickerSubtitle",
       is_in_search_engine_choice_screen_region
-          ? IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE
-          : IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_NON_EEA);
+          ? IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_RANDOM_ORDER
+          : IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_REGIONAL_ORDER);
 }
 
 void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
