@@ -815,4 +815,18 @@ TEST_F(PopupRowFactoryUtilsTest,
   EXPECT_EQ(sender_label->GetElideBehavior(), gfx::ELIDE_EMAIL);
 }
 
+TEST_F(PopupRowFactoryUtilsTest, PendingStateTrustedVaultErrorRowView) {
+  Suggestion suggestion(u"Unlock passwords to continue",
+                        SuggestionType::kPendingStateTrustedVaultError);
+  ShowSuggestion(suggestion);
+
+  views::Label* label = FindLabelWithText(&row_view().GetContentView(),
+                                          u"Unlock passwords to continue");
+  ASSERT_THAT(label, NotNull());
+  EXPECT_TRUE(label->GetMultiLine());
+  EXPECT_EQ(label->GetHorizontalAlignment(), gfx::ALIGN_TO_HEAD);
+  EXPECT_EQ(row_view().GetContentView().GetInsideBorderInsets().top(), 8);
+  EXPECT_EQ(row_view().GetContentView().GetInsideBorderInsets().bottom(), 8);
+}
+
 }  // namespace autofill

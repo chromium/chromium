@@ -103,8 +103,10 @@ constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
      SuggestionType::kManageAutofillAiTravel, SuggestionType::kManageIban,
      SuggestionType::kManageLoyaltyCard, SuggestionType::kManageOffers,
      SuggestionType::kManageEnhancedAutofill, SuggestionType::kOpenGmailForOtps,
-     SuggestionType::kPendingStateSignin, SuggestionType::kRemoveAutofillAi,
-     SuggestionType::kUndo, SuggestionType::kViewPasswordDetails,
+     SuggestionType::kPendingStateSignin,
+     SuggestionType::kPendingStateTrustedVaultError,
+     SuggestionType::kRemoveAutofillAi, SuggestionType::kUndo,
+     SuggestionType::kViewPasswordDetails,
      SuggestionType::kWebauthnSignInWithAnotherDevice});
 
 // Max width for the username and masked password.
@@ -390,6 +392,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
   main_text_label->SetEnabled(!suggestion.is_loading);
 
   if (suggestion.type == SuggestionType::kPendingStateSignin ||
+      suggestion.type == SuggestionType::kPendingStateTrustedVaultError ||
       suggestion.type == SuggestionType::kFreeformFooter) {
     main_text_label->SetMultiLine(true);
     main_text_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
