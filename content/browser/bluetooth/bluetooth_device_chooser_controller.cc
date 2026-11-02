@@ -555,7 +555,9 @@ void BluetoothDeviceChooserController::OnBluetoothChooserEvent(
 
 void BluetoothDeviceChooserController::PostSuccessCallback(
     const std::string& device_address) {
-  CHECK(callback_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/578149381): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(callback_);
 
   if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
