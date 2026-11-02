@@ -64,18 +64,6 @@ public class SpanApplier {
                     ? -1
                     : (this.mStartTagIndex == other.mStartTagIndex ? 0 : 1);
         }
-
-        @Override
-        public boolean equals(Object other) {
-            if (!(other instanceof SpanInfo)) return false;
-
-            return compareTo((SpanInfo) other) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            return 0;
-        }
     }
 
     /**

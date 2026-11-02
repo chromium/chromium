@@ -1905,7 +1905,10 @@ public class BottomControlsStackerUnitTest {
                 tagsInfo.getConstraints().getBottomControlsConstraints();
         OffsetTagConstraints expectedConstraints =
                 new OffsetTagConstraints(0, 0, 0, maxScrollOffset);
-        assertTrue(newConstraints.equals(expectedConstraints));
+        assertEquals(expectedConstraints.minX(), newConstraints.minX(), 0.0f);
+        assertEquals(expectedConstraints.maxX(), newConstraints.maxX(), 0.0f);
+        assertEquals(expectedConstraints.minY(), newConstraints.minY(), 0.0f);
+        assertEquals(expectedConstraints.maxY(), newConstraints.maxY(), 0.0f);
 
         mBottomControlsStacker.onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
         assertLayerYOffset(top, -20);

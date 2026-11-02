@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
@@ -76,7 +77,6 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.BrowserControlsOffsetTagConstraints;
 import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
 import org.chromium.ui.OffsetTagConstraints;
 import org.chromium.ui.util.TokenHolder;
@@ -1144,12 +1144,40 @@ public class BrowserControlsManagerUnitTest {
 
     private void verifyUpdateOffsetTagDefinitions(
             OffsetTagConstraints top, OffsetTagConstraints content, OffsetTagConstraints bottom) {
-        BrowserControlsOffsetTagConstraints expectedConstraints =
-                new BrowserControlsOffsetTagConstraints(top, content, bottom);
-        BrowserControlsOffsetTagDefinitions expectedDefinitions =
-                new BrowserControlsOffsetTagDefinitions(
-                        new BrowserControlsOffsetTags(null, null, null), expectedConstraints);
-        mWebContentsInOrder.verify(mWebContents).updateOffsetTagDefinitions(expectedDefinitions);
+        BrowserControlsOffsetTags expectedTags =
+                new BrowserControlsOffsetTags(
+                        /* topControls= */ null, /* content= */ null, /* bottomControls= */ null);
+        mWebContentsInOrder
+                .verify(mWebContents)
+                .updateOffsetTagDefinitions(
+                        argThat(
+                                actual ->
+                                        offsetTagDefinitionsMatch(
+                                                expectedTags, top, content, bottom, actual)));
+    }
+
+    private static boolean offsetTagDefinitionsMatch(
+            BrowserControlsOffsetTags expectedTags,
+            OffsetTagConstraints top,
+            OffsetTagConstraints content,
+            OffsetTagConstraints bottom,
+            BrowserControlsOffsetTagDefinitions actual) {
+        return expectedTags.equals(actual.getTags())
+                && offsetTagConstraintsMatch(
+                        top, actual.getConstraints().getTopControlsConstraints())
+                && offsetTagConstraintsMatch(
+                        content, actual.getConstraints().getContentConstraints())
+                && offsetTagConstraintsMatch(
+                        bottom, actual.getConstraints().getBottomControlsConstraints());
+    }
+
+    private static boolean offsetTagConstraintsMatch(
+            OffsetTagConstraints expected, OffsetTagConstraints actual) {
+        if (expected == null || actual == null) return expected == actual;
+        return expected.minX() == actual.minX()
+                && expected.maxX() == actual.maxX()
+                && expected.minY() == actual.minY()
+                && expected.maxY() == actual.maxY();
     }
 
     @Test
