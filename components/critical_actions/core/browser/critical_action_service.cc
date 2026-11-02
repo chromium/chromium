@@ -12,29 +12,13 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/critical_actions/core/browser/critical_action_backend.h"
 #include "components/critical_actions/core/browser/critical_action_metrics.h"
 #include "components/critical_actions/core/browser/features.h"
-#include "ui/base/page_transition_types.h"
 
 namespace critical_actions {
-
-namespace {
-
-bool IsRedirectChainStart(ui::PageTransition transition) {
-  return (transition & ui::PAGE_TRANSITION_CHAIN_START) != 0;
-}
-
-bool IsRedirectChainContinuation(ui::PageTransition transition) {
-  return ui::PageTransitionIsRedirect(transition) &&
-         !IsRedirectChainStart(transition);
-}
-
-}  // namespace
 
 CriticalActionService::CriticalActionService(
     const base::FilePath& db_path,
@@ -42,8 +26,8 @@ CriticalActionService::CriticalActionService(
     history::HistoryService* history_service)
     : backend_(backend_task_runner, db_path),
       navigation_cache_(features::kMaxNavigationCacheCapacity.Get()),
-      visits_to_actions_cache_(features::kMaxVisitToActionsCacheCapacity.Get()),
-      visit_redirect_types_(features::kMaxVisitToActionsCacheCapacity.Get()),
+      redirect_metrics_recorder_(
+          features::kMaxVisitToActionsCacheCapacity.Get()),
       task_to_conversation_cache_(
           features::kMaxTaskToConversationCacheCapacity.Get()),
       task_to_critical_action_ids_cache_(
@@ -66,8 +50,7 @@ void CriticalActionService::Shutdown() {
                        VisitIdResolutionOutcome::kEvictedServiceShutdown);
   }
   navigation_cache_.Clear();
-  visits_to_actions_cache_.Clear();
-  visit_redirect_types_.Clear();
+  redirect_metrics_recorder_.Clear();
   task_to_conversation_cache_.Clear();
 
   for (const auto& [_, actions] : task_to_critical_action_ids_cache_) {
@@ -114,7 +97,7 @@ void CriticalActionService::OnURLVisitedWithNavigationId(
     history::HistoryService* history_service,
     const history::VisitedURLInfo& visited_url_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HandleVisitForRedirectMetric(visited_url_info.visit_row);
+  redirect_metrics_recorder_.OnURLVisited(visited_url_info.visit_row);
 
   if (!visited_url_info.local_navigation_id.has_value()) {
     return;
@@ -135,7 +118,8 @@ void CriticalActionService::OnURLVisitedWithNavigationId(
     AddCriticalAction(entry);
     RecordVisitIdResolutionOutcome(entry.action_source,
                                    VisitIdResolutionOutcome::kSuccess);
-    HandleActionForRedirectMetric(entry, visit_id);
+    redirect_metrics_recorder_.OnActionResolvedToVisit(
+        visit_id, entry.action_source, entry.action_type);
   }
   state.pending_actions.clear();
 }
@@ -217,7 +201,9 @@ void CriticalActionService::AddCriticalActionWithNavigationId(
     AddCriticalAction(resolved_entry);
     RecordVisitIdResolutionOutcome(resolved_entry.action_source,
                                    VisitIdResolutionOutcome::kSuccess);
-    HandleActionForRedirectMetric(resolved_entry, *it->second.visit_id);
+    redirect_metrics_recorder_.OnActionResolvedToVisit(
+        *it->second.visit_id, resolved_entry.action_source,
+        resolved_entry.action_type);
     return;
   }
 
@@ -308,74 +294,6 @@ void CriticalActionService::DropPendingActions(
     RecordVisitIdResolutionOutcome(entry.action_source, outcome);
   }
   state.pending_actions.clear();
-}
-
-void CriticalActionService::HandleVisitForRedirectMetric(
-    const history::VisitRow& visit_row) {
-  const int64_t referring_visit_id = visit_row.referring_visit;
-  const ui::PageTransition transition = visit_row.transition;
-
-  if (referring_visit_id == history::kInvalidVisitID ||
-      !IsRedirectChainContinuation(transition)) {
-    return;
-  }
-
-  // LINT.IfChange(RedirectTypeClassification)
-  const RedirectType redirect_type =
-      (transition & ui::PAGE_TRANSITION_SERVER_REDIRECT)
-          ? RedirectType::kServer
-          : RedirectType::kClient;
-  // LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:RedirectType)
-
-  // Remember the redirect so critical actions arriving for
-  // `referring_visit_id` later are recorded immediately.
-  visit_redirect_types_.Put(referring_visit_id, redirect_type);
-
-  auto it = visits_to_actions_cache_.Peek(referring_visit_id);
-  if (it == visits_to_actions_cache_.end()) {
-    return;
-  }
-  for (const auto& action : it->second) {
-    RecordEventLoggedInRedirectHistogram(redirect_type, action.action_source,
-                                         action.action_type);
-  }
-  visits_to_actions_cache_.Erase(it);
-}
-
-void CriticalActionService::HandleActionForRedirectMetric(
-    const CriticalActionEntry& entry,
-    int64_t visit_id) {
-  auto redirected_it = visit_redirect_types_.Peek(visit_id);
-  if (redirected_it != visit_redirect_types_.end()) {
-    RecordEventLoggedInRedirectHistogram(
-        redirected_it->second, entry.action_source, entry.action_type);
-    return;
-  }
-
-  // Defer recording for visits not yet known to be redirected, in case a
-  // subsequent redirect hop from this visit is seen.
-  auto it = visits_to_actions_cache_.Get(visit_id);
-  if (it == visits_to_actions_cache_.end()) {
-    it = visits_to_actions_cache_.Put(visit_id, std::vector<VisitAction>());
-  }
-  it->second.push_back(VisitAction{entry.action_source, entry.action_type});
-}
-
-// static
-void CriticalActionService::RecordEventLoggedInRedirectHistogram(
-    RedirectType redirect_type,
-    ActionSource source,
-    ActionType action_type) {
-  // LINT.IfChange(RedirectTypeHistogramSuffix)
-  const std::string_view redirect_type_suffix =
-      redirect_type == RedirectType::kServer ? "ServerRedirect"
-                                             : "ClientRedirect";
-  // LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:RedirectType)
-  base::UmaHistogramEnumeration(
-      base::StrCat({"CriticalActions.EventLoggedInRedirect.",
-                    redirect_type_suffix, ".",
-                    ActionSourceToHistogramSuffix(source)}),
-      action_type);
 }
 
 ConversationIdResolutionOutcome CriticalActionService::MaybeSetConversationId(

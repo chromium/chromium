@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ServerRedirect" summary="a server redirect"/>
 </variants>
 
-<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:RedirectType) -->
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_redirect_metrics_recorder.h:RedirectType) -->
 
 <histogram
     name="CriticalActions.ConversationIdDeferredResolutionOutcome.{ActionSource}"
