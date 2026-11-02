@@ -10,6 +10,7 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.transit.Triggers.noopTo;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
+import android.content.Intent;
 import android.util.Pair;
 
 import org.chromium.base.Log;
@@ -18,6 +19,7 @@ import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -48,7 +50,9 @@ public class Journeys {
 
     /**
      * Make Chrome have {@code numRegularTabs} of regular Tabs and {@code numIncognitoTabs} of
-     * incognito tabs with {@code url} loaded. Incognito tabs are opened in the same window.
+     * incognito tabs with {@code url}. Intermediate tabs are created lazily without renderer
+     * initialization (except the first tab on a cross-model switch), and the final tab of each
+     * model is loaded in the foreground. Incognito tabs are opened in the same window.
      *
      * @param <T> specific type of {@link CtaPageStation} for all opened tabs.
      * @param startingStation The current active station.
@@ -101,8 +105,8 @@ public class Journeys {
     }
 
     /**
-     * Same as {@link #prepareTabs(CtaPageStation, int, int, String, Supplier)}, but ensures tab
-     * thumbnails are captured to disk.
+     * Same as {@link #prepareTabs(CtaPageStation, int, int, String, Supplier)}, but loads all tabs
+     * and ensures tab thumbnails are captured to disk.
      */
     public static <T extends CtaPageStation> T prepareTabsWithThumbnails(
             CtaPageStation startingStation,
@@ -224,7 +228,9 @@ public class Journeys {
 
     /**
      * Create multiple tabs fast by executing all {@link TabCreator#launchUrl} calls in a single UI
-     * thread block, completing in one single Public Transit trip.
+     * thread block, completing in one single Public Transit trip. Intermediate tabs are created
+     * lazily in the background without renderer initialization (except the first tab on a
+     * cross-model switch), and the final tab is opened and loaded in the foreground.
      *
      * @param <T> specific type of {@link CtaPageStation} for all opened tabs.
      * @param startingPage The current active station.
@@ -254,16 +260,36 @@ public class Journeys {
                 .runOnUiThreadTo(
                         () -> {
                             var tabCreator = startingPage.getActivity().getTabCreator(isIncognito);
-                            for (String url : urls) {
-                                tabCreator.launchUrl(url, TabLaunchType.FROM_LINK);
+                            boolean isCrossModel = isIncognito != startingPage.isIncognito();
+                            Intent noRendererIntent = new Intent();
+                            noRendererIntent.putExtra(
+                                    IntentHandler.EXTRA_DISABLE_INITIALIZE_RENDERER, true);
+                            // Use FROM_CHROME_UI without EXTRA_DISABLE_INITIALIZE_RENDERER on a
+                            // cross-model first tab (where willOpenInForeground is true, so a
+                            // frozen lazy-load tab would have initiallyHidden=false and skip
+                            // loadIfNeeded() in TabImpl.show()) and on the final tab (so
+                            // !shouldOpenAdjacent appends at the end rather than currentIndex + 1).
+                            for (int i = 0; i < numTabsToOpen - 1; i++) {
+                                if (i == 0 && isCrossModel) {
+                                    tabCreator.launchUrl(urls.get(0), TabLaunchType.FROM_CHROME_UI);
+                                } else {
+                                    tabCreator.launchUrl(
+                                            urls.get(i),
+                                            TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND,
+                                            noRendererIntent,
+                                            /* intentTimestamp= */ 0);
+                                }
                             }
+                            tabCreator.launchUrl(lastUrl, TabLaunchType.FROM_CHROME_UI);
                         })
                 .arriveAt(builder.build());
     }
 
     /**
      * Make Chrome have {@code numRegularTabs} of regular Tabs and {@code numIncognitoTabs} of
-     * incognito tabs with {@code url} loaded fast in a minimal number of Public Transit trips.
+     * incognito tabs with {@code url} fast in a minimal number of Public Transit trips.
+     * Intermediate tabs are created lazily without renderer initialization (except the first tab on
+     * a cross-model switch), and the final tab of each model is loaded in the foreground.
      *
      * @param <T> specific type of {@link CtaPageStation} for all opened tabs.
      * @param startingStation The current active station.
