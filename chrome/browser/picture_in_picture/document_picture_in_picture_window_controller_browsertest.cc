@@ -377,15 +377,8 @@ class DocumentPictureInPictureWindowControllerBackendTest
  public:
   bool standalone_enabled() const { return GetParam(); }
 
- protected:
-  bool UseStandaloneDocumentPip() const override {
-    return standalone_enabled();
-  }
-};
-
-class DocumentPictureInPictureWindowControllerLifecycleTest
-    : public DocumentPictureInPictureWindowControllerBackendTest {
- protected:
+  // Returns the generic Widget that hosts the PiP window, regardless of
+  // which backend is in use.
   views::Widget* GetPipWidget() {
     content::WebContents* pip_web_contents =
         window_controller()->GetChildWebContents();
@@ -404,6 +397,15 @@ class DocumentPictureInPictureWindowControllerLifecycleTest
     return browser_view->GetWidget();
   }
 
+ protected:
+  bool UseStandaloneDocumentPip() const override {
+    return standalone_enabled();
+  }
+};
+
+class DocumentPictureInPictureWindowControllerLifecycleTest
+    : public DocumentPictureInPictureWindowControllerBackendTest {
+ protected:
   void ExpectPipWindowOwner() {
     content::WebContents* pip_web_contents =
         window_controller()->GetChildWebContents();
@@ -480,6 +482,48 @@ class DocumentPictureInPictureWindowControllerFrameViewTest
   }
 };
 
+class DocumentPictureInPictureWindowControllerBoundsCacheTest
+    : public DocumentPictureInPictureWindowControllerBackendTest {
+ protected:
+  // Sets the PiP window's bounds through the same entry point production
+  // code uses for each backend. On the legacy backend,
+  // `views::Widget::SetBounds()` bypasses `BrowserView::SetBounds()`'s
+  // frame-view routing (see `PictureInPictureBrowserFrameView`), so the
+  // resulting bounds can disagree slightly with a direct Widget call.
+  void SetPipWidgetBounds(const gfx::Rect& bounds) {
+    if (standalone_enabled()) {
+      GetPipWidget()->SetBounds(bounds);
+      return;
+    }
+
+    content::WebContents* pip_web_contents =
+        window_controller()->GetChildWebContents();
+    CHECK(pip_web_contents);
+    auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+        pip_web_contents->GetTopLevelNativeWindow());
+    CHECK(browser_view);
+    browser_view->SetBounds(bounds);
+  }
+
+  bool IsOriginSet(views::Widget* pip_widget) {
+    // Document Picture In Picture windows are always positioned relative to
+    // the bottom-right corner. Therefore we can assert that the origin is set
+    // whenever it is not located at the top-left corner.
+    return pip_widget->GetWindowBoundsInScreen().origin() != gfx::Point(0, 0);
+  }
+
+  void CheckOriginSet(views::Widget* pip_widget) {
+    ui_test_utils::CheckWaiter(
+        base::BindRepeating(
+            &DocumentPictureInPictureWindowControllerBoundsCacheTest::
+                IsOriginSet,
+            base::Unretained(this), pip_widget),
+        true, base::Minutes(1))
+        .Wait();
+    EXPECT_NE(pip_widget->GetWindowBoundsInScreen().origin(), gfx::Point(0, 0));
+  }
+};
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DocumentPictureInPictureWindowControllerBackendTest,
                          testing::Bool(),
@@ -508,6 +552,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Standalone" : "BrowserBacked";
                          });
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DocumentPictureInPictureWindowControllerBoundsCacheTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "Standalone" : "BrowserBacked";
+    });
 
 // Helper class that waits without polling a run loop until a condition is met.
 // Note that it does not ever check the condition itself; some other thing, like
@@ -1032,7 +1084,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBoundsCacheTest,
                        WindowBoundsAreCached) {
 #if BUILDFLAG(IS_OZONE)
   // Ozone/wayland doesn't support getting/setting window position in global
@@ -1053,16 +1105,16 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* pip_web_contents = window_controller()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);
   WaitForPageLoad(pip_web_contents);
-  auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
-      pip_web_contents->GetTopLevelNativeWindow());
-  ASSERT_TRUE(browser_view);
+  views::Widget* pip_widget = GetPipWidget();
+  ASSERT_TRUE(pip_widget);
 
   // Wait for the window origin location to be set. This is needed to eliminate
   // test flakiness.
-  CheckOriginSet(browser_view);
+  CheckOriginSet(pip_widget);
 
   // Get the bounds, which might not be the same size we asked for.
-  const gfx::Rect original_window_bounds = browser_view->GetBounds();
+  const gfx::Rect original_window_bounds =
+      pip_widget->GetWindowBoundsInScreen();
   gfx::Rect window_bounds = original_window_bounds;
 
   // Move the window and change the size.  Make sure that it stays on-screen.
@@ -1097,7 +1149,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
       {window_bounds.width() - 10, window_bounds.height() - 10});
 #endif  // !BUILDFLAG(IS_LINUX)
 
-  browser_view->SetBounds(window_bounds);
+  SetPipWidgetBounds(window_bounds);
 
   // Wait for the bounds to change.  It would be nice if we didn't need to
   // explicitly create a variable.  A temporary would do it, but it seems like
@@ -1108,12 +1160,12 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
       CheckCondition();
     }
   } waiter;
-  waiter.Wait(browser_view->GetWidget(),
+  waiter.Wait(pip_widget,
               base::BindRepeating(
-                  [](const gfx::Rect& expected, BrowserView* browser_view) {
-                    return expected == browser_view->GetBounds();
+                  [](const gfx::Rect& expected, views::Widget* pip_widget) {
+                    return expected == pip_widget->GetWindowBoundsInScreen();
                   },
-                  window_bounds, browser_view));
+                  window_bounds, pip_widget));
 
   // Open a new pip window, and make sure that it's not in the same place it was
   // last time.
@@ -1121,12 +1173,12 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* pip_web_contents_2 = window_controller()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents_2);
   WaitForPageLoad(pip_web_contents_2);
-  auto* browser_view_2 = BrowserView::GetBrowserViewForNativeWindow(
-      pip_web_contents_2->GetTopLevelNativeWindow());
+  views::Widget* pip_widget_2 = GetPipWidget();
+  ASSERT_TRUE(pip_widget_2);
 
   // The new window should match the bounds we set for the old one, which differ
   // from the default.
-  EXPECT_EQ(browser_view_2->GetBounds(), window_bounds);
+  EXPECT_EQ(pip_widget_2->GetWindowBoundsInScreen(), window_bounds);
 
   // Close the window and re-open it, but request no cache this time.  This
   // should revert it to its original bounds.
@@ -1135,9 +1187,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* pip_web_contents_3 = window_controller()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents_3);
   WaitForPageLoad(pip_web_contents_3);
-  auto* browser_view_3 = BrowserView::GetBrowserViewForNativeWindow(
-      pip_web_contents_3->GetTopLevelNativeWindow());
-  EXPECT_EQ(browser_view_3->GetBounds(), original_window_bounds);
+  views::Widget* pip_widget_3 = GetPipWidget();
+  ASSERT_TRUE(pip_widget_3);
+  EXPECT_EQ(pip_widget_3->GetWindowBoundsInScreen(), original_window_bounds);
 }
 
 class DocumentPictureInPictureWindowControllerWindowSizeBrowserTest

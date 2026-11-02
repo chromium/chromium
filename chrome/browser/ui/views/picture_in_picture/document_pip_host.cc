@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -49,6 +50,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -988,6 +990,14 @@ void DocumentPipHost::EnforceTucking() {
   } else {
     tucker_->Untuck();
   }
+}
+
+void DocumentPipHost::OnUserDesiredBoundsChanged(const gfx::Rect& bounds) {
+  CHECK(widget_);
+  const auto pip_display = display::Screen::Get()->GetDisplayNearestWindow(
+      widget_->GetNativeWindow());
+  PictureInPictureWindowManager::GetInstance()->UpdateCachedBounds(bounds,
+                                                                   pip_display);
 }
 
 views::Widget* DocumentPipHost::GetPipWidget() {

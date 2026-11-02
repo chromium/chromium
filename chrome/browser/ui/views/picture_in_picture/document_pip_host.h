@@ -331,6 +331,10 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   // helper after it resizes the window for a child dialog, so a forced-tucked
   // window stays tucked at its new bounds.
   void EnforceTucking() override;
+  // Updates the bounds cache so a subsequently reopened PiP window reuses the
+  // user's most recent size and position. Mirrors
+  // PictureInPictureBrowserFrameView::OnUserDesiredBoundsChanged().
+  void OnUserDesiredBoundsChanged(const gfx::Rect& bounds) override;
 
   // The delegate for the floating Widget. Owned by this host (not by the
   // Widget): `CLIENT_OWNS_WIDGET` + not `SetOwnedByWidget()` means the Widget
