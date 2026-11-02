@@ -1830,6 +1830,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/580876710")
     public void testExpandedSheet_scrollsAccountListInsteadOfSheet() {
         // Add enough accounts so that the expanded account list doesn't fit in the bottom sheet.
         for (int i = 0; i < 20; i++) {
