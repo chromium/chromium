@@ -42,6 +42,11 @@ enum class AttemptOtpFillingToolEvent {
   kGmailSmartFeaturesConsentRequired = 19,
   kGoogleSmartFeaturesConsentRequired = 20,
   kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent = 21,
+  // Recorded when the tool is destroyed (e.g. the task is stopped, paused or
+  // cancelled, or the tab is closed) before the callback of the named
+  // asynchronous step runs.
+  kCancelledDuringConsentFetch = 22,
+  kCancelledDuringOptInCard = 23,
   // OTP retrieval timed out after a received token was rejected for its sender
   // domain.
   kGmailOtpSenderDomainMismatch = 30,

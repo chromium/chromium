@@ -114,6 +114,8 @@ found in the LICENSE file.
   <int value="19" label="GmailSmartFeaturesConsentRequired"/>
   <int value="20" label="GoogleSmartFeaturesConsentRequired"/>
   <int value="21" label="UnableToRetrieveGmailAndGoogleSmartFeaturesConsent"/>
+  <int value="22" label="CancelledDuringConsentFetch"/>
+  <int value="23" label="CancelledDuringOptInCard"/>
   <int value="30" label="GmailOtpSenderDomainMismatch"/>
   <int value="31" label="OtpRetrievalTimeout"/>
 </enum>

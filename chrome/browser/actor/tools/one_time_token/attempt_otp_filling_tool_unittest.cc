@@ -12,9 +12,11 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -368,6 +370,15 @@ using optimization_guide::DocumentIdentifierUserData;
 using optimization_guide::proto::AnnotatedPageContent;
 using webui::mojom::GmailOtpErrorReason;
 using webui::mojom::GmailOtpOptInResult;
+
+void ExpectNoCancellationRecorded(const base::HistogramTester& tester) {
+  for (AttemptOtpFillingToolEvent event : {
+           AttemptOtpFillingToolEvent::kCancelledDuringConsentFetch,
+           AttemptOtpFillingToolEvent::kCancelledDuringOptInCard,
+       }) {
+    tester.ExpectBucketCount(kAttemptOtpFillingToolHistogram, event, 0);
+  }
+}
 }  // namespace
 
 // When the user grants permission to opt in to Gmail OTPs, the tool
@@ -499,6 +510,138 @@ TEST_F(AttemptOtpFillingToolTest,
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kStartFillingAttempt, 1);
+}
+
+// Destroying the tool while the consent fetch is pending records
+// `kCancelledDuringConsentFetch`. A late response records nothing.
+TEST_F(AttemptOtpFillingToolTest, Validate_DestroyedDuringConsentFetch) {
+  autofill::ActorOneTimeTokenFillingService::
+      FetchUserDataProcessingConsentCallback consent_callback;
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .WillOnce([&consent_callback](
+                    autofill::ActorOneTimeTokenFillingService::
+                        FetchUserDataProcessingConsentCallback callback) {
+        consent_callback = std::move(callback);
+      });
+  {
+    AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+    tool.Validate(base::DoNothing());
+    ExpectNoCancellationRecorded(histogram_tester_);
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kCancelledDuringConsentFetch, 1);
+  base::HistogramTester::CountsMap counts_before_late_response =
+      histogram_tester_.GetTotalCountsForPrefix("OneTimeTokens.");
+  std::move(consent_callback).Run(std::nullopt);
+  EXPECT_EQ(counts_before_late_response,
+            histogram_tester_.GetTotalCountsForPrefix("OneTimeTokens."));
+}
+
+// Destroying the tool while the opt-in card is shown records
+// `kCancelledDuringOptInCard`. A late response records nothing.
+TEST_F(AttemptOtpFillingToolTest, Validate_DestroyedDuringOptInCard) {
+  ToolDelegate::GmailOtpOptInCallback opt_in_callback;
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog)
+      .WillOnce(
+          [&opt_in_callback](ToolDelegate::GmailOtpOptInCallback callback) {
+            opt_in_callback = std::move(callback);
+          });
+  SetAutofillGmailOtpFillingEnabled(prefs(), false);
+  SetAutofillGmailOtpFillingActivationDismissalTimestamp(
+      prefs(), base::Time::Now() - base::Days(90));
+  {
+    AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+    tool.Validate(base::DoNothing());
+    ExpectNoCancellationRecorded(histogram_tester_);
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kCancelledDuringOptInCard, 1);
+  base::HistogramTester::CountsMap counts_before_late_response =
+      histogram_tester_.GetTotalCountsForPrefix("OneTimeTokens.");
+  std::move(opt_in_callback)
+      .Run(GmailOtpOptInResult::NewResponse(
+          webui::mojom::GmailOtpOptInResponse::New(true)));
+  EXPECT_EQ(counts_before_late_response,
+            histogram_tester_.GetTotalCountsForPrefix("OneTimeTokens."));
+}
+
+// When the consent fetch and the opt-in card reply synchronously, destroying
+// the tool afterwards records no cancellation. This guards against setting the
+// pending cancellation event after the asynchronous call instead of before it.
+TEST_F(AttemptOtpFillingToolTest,
+       Validate_SynchronousCallbacks_NoCancellationOnDestruction) {
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog)
+      .WillOnce(RunOnceCallback<0>(GmailOtpOptInResult::NewResponse(
+          webui::mojom::GmailOtpOptInResponse::New(true))));
+  SetAutofillGmailOtpFillingEnabled(prefs(), false);
+  SetAutofillGmailOtpFillingActivationDismissalTimestamp(
+      prefs(), base::Time::Now() - base::Days(90));
+  {
+    AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+    TestFuture<ActionResultPtr> future;
+    tool.Validate(future.GetCallback());
+    EXPECT_EQ(kOk, future.Take()->code);
+  }
+
+  ExpectNoCancellationRecorded(histogram_tester_);
+}
+
+// Like `ToolController`, destroys the tool from inside the `Validate()`
+// callback. The pending cancellation event must already be reset by then.
+TEST_F(AttemptOtpFillingToolTest,
+       Validate_ToolDestroyedInsideCallback_NoCancellation) {
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog)
+      .WillOnce(RunOnceCallback<0>(GmailOtpOptInResult::NewResponse(
+          webui::mojom::GmailOtpOptInResponse::New(true))));
+  SetAutofillGmailOtpFillingEnabled(prefs(), false);
+  SetAutofillGmailOtpFillingActivationDismissalTimestamp(
+      prefs(), base::Time::Now() - base::Days(90));
+  auto tool = std::make_unique<AttemptOtpFillingTool>(
+      TaskId(1), delegate(), *actor_surface_,
+      std::vector<PageTarget>{PageTarget(gfx::Point(10, 10))},
+      /*for_signin=*/true, AttemptOtpFillingToolRequest::OtpType::kUnknown,
+      std::make_unique<ActorLoginFlowVerifier>(fake_affiliation_service_));
+
+  tool->Validate(base::BindLambdaForTesting([&tool](ActionResultPtr result) {
+    EXPECT_EQ(kOk, result->code);
+    tool.reset();
+  }));
+
+  EXPECT_FALSE(tool);
+  ExpectNoCancellationRecorded(histogram_tester_);
+}
+
+// Destroying the tool after a completed `Validate()` and `Invoke()` records no
+// cancellation.
+TEST_F(AttemptOtpFillingToolTest,
+       ValidateThenInvoke_HappyPath_NoCancellationOnDestruction) {
+  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+      .WillOnce(Return(CreateValidLoginContext()));
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
+      .WillOnce(RunOnceCallback<4>("123456"));
+  EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
+      .WillOnce(RunOnceCallback<3>(true));
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+  PageTarget target(gfx::Point(10, 10));
+  {
+    AttemptOtpFillingTool tool = CreateTool({target});
+    TestFuture<ActionResultPtr> validate_future;
+    tool.Validate(validate_future.GetCallback());
+    ASSERT_EQ(kOk, validate_future.Take()->code);
+    SetupSuccessfulTimeOfUseValidation(tool, target);
+    TestFuture<ActionResultPtr> invoke_future;
+    tool.Invoke(invoke_future.GetCallback());
+    ASSERT_EQ(kOk, invoke_future.Take()->code);
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
+  ExpectNoCancellationRecorded(histogram_tester_);
 }
 
 // Time of use validation returns kTabWentAway when the target tab is not

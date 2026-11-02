@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/one_time_token/actor_login_flow_verifier.h"
+#include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.h"
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
@@ -92,6 +93,12 @@ class AttemptOtpFillingTool : public Tool {
 
   bool requires_confirmation_ = false;
   std::unique_ptr<ActorLoginFlowVerifier> actor_login_flow_verifier_;
+
+  // Set right before each asynchronous step and reset at the start of its
+  // callback: once the step has finished, destroying the tool is no longer a
+  // cancellation during it. If set when the tool is destroyed, it is recorded
+  // as the stage at which the tool was cancelled.
+  std::optional<AttemptOtpFillingToolEvent> pending_cancellation_event_;
 
   base::WeakPtrFactory<AttemptOtpFillingTool> weak_factory_{this};
 };

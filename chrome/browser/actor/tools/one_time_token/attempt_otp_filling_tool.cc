@@ -154,7 +154,11 @@ AttemptOtpFillingTool::AttemptOtpFillingTool(
   CHECK(actor_login_flow_verifier_);
 }
 
-AttemptOtpFillingTool::~AttemptOtpFillingTool() = default;
+AttemptOtpFillingTool::~AttemptOtpFillingTool() {
+  if (pending_cancellation_event_) {
+    RecordAttemptOtpFillingEvent(*pending_cancellation_event_);
+  }
+}
 
 void AttemptOtpFillingTool::Validate(ToolCallback callback) {
   RecordAttemptOtpFillingEvent(
@@ -191,6 +195,8 @@ void AttemptOtpFillingTool::Validate(ToolCallback callback) {
           .Add("within_cool_off_period", within_cool_off_period)
           .Build());
 
+  pending_cancellation_event_ =
+      AttemptOtpFillingToolEvent::kCancelledDuringConsentFetch;
   tool_delegate()
       .GetActorOneTimeTokenFillingService()
       .FetchUserDataProcessingConsent(base::BindOnce(
@@ -205,6 +211,9 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
     bool within_cool_off_period,
     std::optional<one_time_tokens::UserDataProcessingConsentStates>
         consent_states) {
+  // The awaited step has finished; see `pending_cancellation_event_` for more
+  // details.
+  pending_cancellation_event_.reset();
   if (!consent_states.has_value()) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::
@@ -266,6 +275,8 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
   }
 
   RecordGmailOtpOptInCardInteraction(GmailOtpOptInCardInteraction::kShowCard);
+  pending_cancellation_event_ =
+      AttemptOtpFillingToolEvent::kCancelledDuringOptInCard;
   tool_delegate().RequestToShowGmailOtpOptInDialog(
       base::BindOnce(&AttemptOtpFillingTool::OnGmailOtpOptInResponse,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -274,6 +285,9 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
 void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
     ToolCallback callback,
     webui::mojom::GmailOtpOptInResultPtr response) {
+  // The awaited step has finished; see `pending_cancellation_event_` for more
+  // details.
+  pending_cancellation_event_.reset();
   if (!response || response.is_null()) {
     RecordAttemptOtpFillingEvent(
         AttemptOtpFillingToolEvent::kOptInNullResponse);

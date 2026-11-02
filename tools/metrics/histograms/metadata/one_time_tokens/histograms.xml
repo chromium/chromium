@@ -61,7 +61,10 @@ found in the LICENSE file.
     Records events during the execution of the AttemptOtpFilling tool by the
     actor, such as the start of an attempt, OTP retrieval status, consent
     checks, and whether OTP filling succeeded or failed. This metric spans
-    across the lifecycle methods Validate, TimeOfUseValidation and Invoke.
+    across the lifecycle methods Validate, TimeOfUseValidation and Invoke. The
+    CancelledDuring* buckets are recorded when the tool is destroyed (e.g. the
+    task is stopped, paused or cancelled, or the tab is closed) before the named
+    asynchronous step completes.
   </summary>
 </histogram>
 
