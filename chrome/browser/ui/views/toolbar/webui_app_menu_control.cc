@@ -196,6 +196,7 @@ void WebUIAppMenuControl::HandleContextMenu(const gfx::Rect& anchor_bounds,
                                             ui::mojom::MenuSourceType source) {
   if (IsMenuShowing()) {
     CloseMenu();
+    NotifyElementActivated();
     return;
   }
 
@@ -226,6 +227,7 @@ void WebUIAppMenuControl::RunMenu(const gfx::Rect& anchor_bounds,
     action_menu_->RunMenu(delegate_->GetView()->GetWidget(), anchor_bounds,
                           run_flags, source);
     UpdateOpenState();
+    NotifyElementActivated();
     return;
   }
 
@@ -248,6 +250,17 @@ void WebUIAppMenuControl::RunMenu(const gfx::Rect& anchor_bounds,
 
   menu_->RunMenu(delegate_->GetView()->GetWidget(), anchor_bounds, source);
   UpdateOpenState();
+  NotifyElementActivated();
+}
+
+void WebUIAppMenuControl::NotifyElementActivated() {
+  if (ui::TrackedElement* element =
+          ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+              kToolbarAppMenuButtonElementId,
+              views::ElementTrackerViews::GetContextForView(
+                  delegate_->GetView()))) {
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(element);
+  }
 }
 
 void WebUIAppMenuControl::SetTypeAndSeverity(

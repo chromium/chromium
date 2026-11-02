@@ -8,7 +8,6 @@ import './icons.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {TimerHelper} from '/shared/timer_helper.js';
@@ -223,7 +222,6 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
   }
 
   private handleMenuClick_(e: Event) {
-    TrackedElementManager.getInstance().notifyElementActivated(this);
     this.browserProxy_.toolbarUIHandler.showContextMenu(
         ContextMenuType.kAppMenu, getContextMenuPosition(this),
         getClickSourceType(e), /*showMenuToken=*/ null);

@@ -70,6 +70,7 @@ class WebUIAppMenuControl : public AppMenuControl {
   void RunMenu(const gfx::Rect& anchor_bounds,
                ui::mojom::MenuSourceType source,
                int run_flags);
+  void NotifyElementActivated();
 
   // Updates the open state of the app menu control and notifies the delegate.
   void UpdateOpenState();
