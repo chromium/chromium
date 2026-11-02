@@ -10,7 +10,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -18,16 +21,21 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -38,6 +46,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
@@ -59,6 +69,18 @@ public class ChromeTabbedActivityUnitTest {
         private boolean mTerminateIncognitoSessionCalled;
         private boolean mFinishCalled;
         private final List<Integer> mRequestedWindowFeatures = new ArrayList<>();
+        private OnBackInvokedDispatcher mMockOnBackInvokedDispatcher;
+
+        public void setMockOnBackInvokedDispatcher(OnBackInvokedDispatcher dispatcher) {
+            mMockOnBackInvokedDispatcher = dispatcher;
+        }
+
+        @Override
+        public OnBackInvokedDispatcher getOnBackInvokedDispatcher() {
+            return mMockOnBackInvokedDispatcher != null
+                    ? mMockOnBackInvokedDispatcher
+                    : super.getOnBackInvokedDispatcher();
+        }
 
         public List<Integer> getRequestedWindowFeatures() {
             return mRequestedWindowFeatures;
@@ -469,5 +491,134 @@ public class ChromeTabbedActivityUnitTest {
         when(tabModel.getCount()).thenReturn(0);
         assertTrue(activity.onMenuOrKeyboardAction(R.id.select_last_tab, /* fromMenu= */ false));
         verify(tabModel, never()).setIndex(anyInt(), anyInt());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void testPredictiveBackToHomeCallback_registeredOnBaklava() {
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        OnBackInvokedDispatcher dispatcher = mock(OnBackInvokedDispatcher.class);
+        activity.setMockOnBackInvokedDispatcher(dispatcher);
+
+        activity.maybeRegisterPredictiveBackToHomeCallback();
+
+        OnBackInvokedCallback callback = activity.getMoveTaskToBackCallbackForTesting();
+        assertNotNull(callback);
+        verify(dispatcher)
+                .registerOnBackInvokedCallback(
+                        eq(OnBackInvokedDispatcher.PRIORITY_DEFAULT), eq(callback));
+
+        activity.maybeUnregisterPredictiveBackToHomeCallback();
+        verify(dispatcher).unregisterOnBackInvokedCallback(eq(callback));
+        assertNull(activity.getMoveTaskToBackCallbackForTesting());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void testOnPreCreate_registersPredictiveBackToHomeCallbackBeforeBackPressEnabled() {
+        TestChromeTabbedActivity activity =
+                Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
+        OnBackInvokedDispatcher dispatcher = mock(OnBackInvokedDispatcher.class);
+        activity.setMockOnBackInvokedDispatcher(dispatcher);
+
+        activity.onPreCreate();
+
+        OnBackInvokedCallback callback = activity.getMoveTaskToBackCallbackForTesting();
+        assertNotNull(callback);
+        assertFalse(activity.getBackPressManagerForTesting().getCallback().isEnabled());
+        verify(dispatcher)
+                .registerOnBackInvokedCallback(
+                        eq(OnBackInvokedDispatcher.PRIORITY_DEFAULT), eq(callback));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void testPredictiveBackToHomeCallback_desktopConventions_notRegistered() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        OnBackInvokedDispatcher dispatcher = mock(OnBackInvokedDispatcher.class);
+        activity.setMockOnBackInvokedDispatcher(dispatcher);
+
+        activity.maybeRegisterPredictiveBackToHomeCallback();
+
+        assertNull(activity.getMoveTaskToBackCallbackForTesting());
+        verify(dispatcher, never()).registerOnBackInvokedCallback(anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testPredictiveBackToHomeCallback_preBaklava_notRegistered() {
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        OnBackInvokedDispatcher dispatcher = mock(OnBackInvokedDispatcher.class);
+        activity.setMockOnBackInvokedDispatcher(dispatcher);
+
+        activity.maybeRegisterPredictiveBackToHomeCallback();
+
+        assertNull(activity.getMoveTaskToBackCallbackForTesting());
+        verify(dispatcher, never()).registerOnBackInvokedCallback(anyInt(), any());
+    }
+
+    @Test
+    public void testBackShouldCloseTab_tabFromLink() {
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModelSelector.getModel(anyBoolean())).thenReturn(tabModel);
+        activity.setTabModelSelectorForTesting(tabModelSelector);
+
+        Tab tab = mock(Tab.class);
+        when(tab.isInitialized()).thenReturn(true);
+        when(tab.isClosing()).thenReturn(false);
+        when(tab.isDestroyed()).thenReturn(false);
+        when(tab.getLaunchType()).thenReturn(TabLaunchType.FROM_LINK);
+
+        assertTrue(activity.backShouldCloseTab(tab));
+    }
+
+    @Test
+    public void testBackShouldCloseTab_tabFromChromeUiWithoutParent() {
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModelSelector.getModel(anyBoolean())).thenReturn(tabModel);
+        activity.setTabModelSelectorForTesting(tabModelSelector);
+
+        Tab tab = mock(Tab.class);
+        when(tab.isInitialized()).thenReturn(true);
+        when(tab.isClosing()).thenReturn(false);
+        when(tab.isDestroyed()).thenReturn(false);
+        when(tab.getLaunchType()).thenReturn(TabLaunchType.FROM_CHROME_UI);
+        when(tab.getParentId()).thenReturn(Tab.INVALID_TAB_ID);
+
+        assertFalse(activity.backShouldCloseTab(tab));
+        assertFalse(activity.minimizationShouldCloseTab(tab));
+    }
+
+    @Test
+    public void testMinimizationShouldCloseTab_tabFromLauncherShortcut() {
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        TabModelSelectorBase tabModelSelector = mock(TabModelSelectorBase.class);
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModelSelector.getModel(anyBoolean())).thenReturn(tabModel);
+        activity.setTabModelSelectorForTesting(tabModelSelector);
+
+        Tab shortcutTab = mock(Tab.class);
+        when(shortcutTab.isInitialized()).thenReturn(true);
+        when(shortcutTab.isClosing()).thenReturn(false);
+        when(shortcutTab.isDestroyed()).thenReturn(false);
+        when(shortcutTab.getLaunchType()).thenReturn(TabLaunchType.FROM_LAUNCHER_SHORTCUT);
+
+        assertTrue(activity.backShouldCloseTab(shortcutTab));
+        assertTrue(activity.minimizationShouldCloseTab(shortcutTab));
+
+        Tab linkTab = mock(Tab.class);
+        when(linkTab.isInitialized()).thenReturn(true);
+        when(linkTab.isClosing()).thenReturn(false);
+        when(linkTab.isDestroyed()).thenReturn(false);
+        when(linkTab.getLaunchType()).thenReturn(TabLaunchType.FROM_LINK);
+        when(linkTab.getUserDataHost()).thenReturn(new UserDataHost());
+
+        assertTrue(activity.backShouldCloseTab(linkTab));
+        assertFalse(activity.minimizationShouldCloseTab(linkTab));
     }
 }

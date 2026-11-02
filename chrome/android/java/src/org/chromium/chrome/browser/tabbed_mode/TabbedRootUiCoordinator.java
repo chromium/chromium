@@ -203,6 +203,7 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewFactory;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
@@ -1371,12 +1372,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                         && DeviceInfo.isDesktop()) {
                                     return ActionType.NONE;
                                 }
-                                if (TabAssociatedApp.isOpenedFromExternalApp(tab)) {
-                                    return ActionType.EXIT_APP_AND_CLOSE_TAB;
-                                }
-                                return mBackButtonShouldCloseTabFn.apply(tab)
-                                        ? ActionType.CLOSE_TAB
-                                        : ActionType.EXIT_APP_ONLY;
+                                return getBackActionTypeForNonNavigableTab(tab);
                             }
 
                             @Override
@@ -1545,6 +1541,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivity,
                             url -> CustomTabActivity.showInfoPage(mActivity, url));
         }
+    }
+
+    @VisibleForTesting
+    @BackActionDelegate.ActionType
+    int getBackActionTypeForNonNavigableTab(Tab tab) {
+        if (!mBackButtonShouldCloseTabFn.apply(tab)) {
+            return BackActionDelegate.ActionType.EXIT_APP_ONLY;
+        }
+        if (TabAssociatedApp.isOpenedFromExternalApp(tab)
+                || tab.getLaunchType() == TabLaunchType.FROM_LAUNCHER_SHORTCUT) {
+            return BackActionDelegate.ActionType.EXIT_APP_AND_CLOSE_TAB;
+        }
+        return BackActionDelegate.ActionType.CLOSE_TAB;
     }
 
     @Override

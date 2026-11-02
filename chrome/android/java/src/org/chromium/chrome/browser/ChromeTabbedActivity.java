@@ -42,6 +42,9 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.Window;
 import android.view.WindowManager;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
+import android.window.SystemOnBackInvokedCallbacks;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
@@ -710,6 +713,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private @Nullable SendTabToSelfBackPressHandler mSendTabToSelfBackPressHandler;
     private @Nullable MinimizeAppAndCloseTabBackPressHandler
             mMinimizeAppAndCloseTabBackPressHandler;
+    private @Nullable OnBackInvokedCallback mMoveTaskToBackCallback;
     private @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
     private final TabSwitcherBackPressHandlerManager mDragHandlerManager =
             new TabSwitcherBackPressHandlerManager();
@@ -811,6 +815,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (!shouldUseDesktopBackConventions()) {
             mBackPressManager.setFallbackOnBackPressed(
                     () -> minimizeAppAndCloseTabOnBackPress(getActivityTab()));
+            maybeRegisterPredictiveBackToHomeCallback();
         }
 
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && !mHasIncognitoExtra) {
@@ -5170,10 +5175,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         // Minimize the app if either:
         // - we decided not to close the tab
-        // - we decided to close the tab, but it was opened by an external app, so we will go
-        //   exit Chrome on top of closing the tab
-        final boolean minimizeApp =
-                !shouldCloseTab || TabAssociatedApp.isOpenedFromExternalApp(currentTab);
+        // - we decided to close the tab, but it was opened by an external app or launcher
+        //   shortcut, so we will exit Chrome on top of closing the tab
+        final boolean minimizeApp = !shouldCloseTab || minimizationShouldCloseTab(currentTab);
 
         BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
 
@@ -5232,7 +5236,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     new MinimizeAppAndCloseTabBackPressHandler(
                             getActivityTabProvider().asObservable(),
                             this::backShouldCloseTab,
-                            TabAssociatedApp::isOpenedFromExternalApp,
+                            this::minimizationShouldCloseTab,
                             this::closeTabUponMinimization,
                             this::sendToBackground);
             mBackPressManager.addHandler(
@@ -5242,6 +5246,39 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mBackPressManager.addOnSystemNavigationObserver(
                         mMinimizeAppAndCloseTabBackPressHandler);
             }
+        }
+    }
+
+    /**
+     * On Android 16+ (Baklava), registers {@link
+     * SystemOnBackInvokedCallbacks#moveTaskToBackCallback} at {@link
+     * OnBackInvokedDispatcher#PRIORITY_DEFAULT} during {@link #onPreCreate()} before any {@link
+     * androidx.activity.OnBackPressedCallback} is enabled. This ensures that when {@link
+     * BackPressManager} has enabled handlers, AndroidX's {@link
+     * androidx.activity.OnBackPressedDispatcher} callback is registered on top of {@code
+     * mMoveTaskToBackCallback}, and when no handler is enabled (e.g. on a root NTP without back
+     * stack history), {@code mMoveTaskToBackCallback} is the top callback so the activity is
+     * minimized (moveTaskToBack) with the system back-to-home animation rather than finished,
+     * preserving Incognito sessions when opened via launcher shortcuts (crbug.com/579576444).
+     */
+    @VisibleForTesting
+    void maybeRegisterPredictiveBackToHomeCallback() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                && !shouldUseDesktopBackConventions()
+                && mMoveTaskToBackCallback == null) {
+            mMoveTaskToBackCallback = SystemOnBackInvokedCallbacks.moveTaskToBackCallback(this);
+            getOnBackInvokedDispatcher()
+                    .registerOnBackInvokedCallback(
+                            OnBackInvokedDispatcher.PRIORITY_DEFAULT, mMoveTaskToBackCallback);
+        }
+    }
+
+    @VisibleForTesting
+    void maybeUnregisterPredictiveBackToHomeCallback() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                && mMoveTaskToBackCallback != null) {
+            getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(mMoveTaskToBackCallback);
+            mMoveTaskToBackCallback = null;
         }
     }
 
@@ -5277,6 +5314,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         return TabLaunchTypeUtils.shouldCloseTabOnBackPress(tab);
+    }
+
+    /**
+     * Returns whether the provided {@link Tab} should be closed when Chrome is minimized to the
+     * background via system back press (e.g. tabs opened from an external app or launcher
+     * shortcut).
+     */
+    @VisibleForTesting
+    boolean minimizationShouldCloseTab(Tab tab) {
+        if (!backShouldCloseTab(tab)) return false;
+        return tab.getLaunchType() == TabLaunchType.FROM_LAUNCHER_SHORTCUT
+                || TabAssociatedApp.isOpenedFromExternalApp(tab);
     }
 
     /**
@@ -5562,6 +5611,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mMinimizeAppAndCloseTabBackPressHandler.destroy();
             mMinimizeAppAndCloseTabBackPressHandler = null;
         }
+        maybeUnregisterPredictiveBackToHomeCallback();
 
         if (mCallbackController != null) {
             mCallbackController.destroy();
@@ -5819,6 +5869,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     public void setTabModelSelectorForTesting(TabModelSelectorBase tabModelSelector) {
         mTabModelSelector = tabModelSelector;
+    }
+
+    public @Nullable OnBackInvokedCallback getMoveTaskToBackCallbackForTesting() {
+        return mMoveTaskToBackCallback;
     }
 
     @Override

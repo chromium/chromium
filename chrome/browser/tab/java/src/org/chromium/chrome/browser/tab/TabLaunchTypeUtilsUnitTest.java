@@ -206,6 +206,7 @@ public class TabLaunchTypeUtilsUnitTest {
                     TabLaunchType.FROM_LINK,
                     TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
                     TabLaunchType.FROM_EXTERNAL_APP,
+                    TabLaunchType.FROM_LAUNCHER_SHORTCUT,
                     TabLaunchType.FROM_READING_LIST,
                     TabLaunchType.FROM_LONGPRESS_FOREGROUND,
                     TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,

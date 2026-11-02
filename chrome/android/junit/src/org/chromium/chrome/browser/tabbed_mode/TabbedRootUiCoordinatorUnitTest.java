@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +40,7 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.UnownedUserDataHost;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -55,6 +57,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityResultWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -62,6 +65,9 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabAssociatedApp;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
@@ -339,6 +345,48 @@ public class TabbedRootUiCoordinatorUnitTest {
         assertNull(mCoordinator.getOrCreateInAppUpdateController());
     }
 
+    @Test
+    public void testGetBackActionTypeForNonNavigableTab() {
+        // 1. When mBackButtonShouldCloseTabFn returns false (e.g. destroyed tab or confirmation
+        // required), returns EXIT_APP_ONLY without querying TabAssociatedApp / UserDataHost.
+        Tab blockedTab = mock(Tab.class);
+        when(blockedTab.isClosing()).thenReturn(false);
+        assertEquals(
+                ActionType.EXIT_APP_ONLY,
+                mCoordinator.getBackActionTypeForNonNavigableTab(blockedTab));
+        verify(blockedTab, never()).getUserDataHost();
+
+        // 2. Tab from launcher shortcut when mBackButtonShouldCloseTabFn returns true ->
+        // EXIT_APP_AND_CLOSE_TAB.
+        Tab shortcutTab = mock(Tab.class);
+        when(shortcutTab.isClosing()).thenReturn(true);
+        when(shortcutTab.getUserDataHost()).thenReturn(new UserDataHost());
+        when(shortcutTab.getLaunchType()).thenReturn(TabLaunchType.FROM_LAUNCHER_SHORTCUT);
+        assertEquals(
+                ActionType.EXIT_APP_AND_CLOSE_TAB,
+                mCoordinator.getBackActionTypeForNonNavigableTab(shortcutTab));
+
+        // 3. Tab opened from external app when mBackButtonShouldCloseTabFn returns true ->
+        // EXIT_APP_AND_CLOSE_TAB.
+        Tab externalTab = mock(Tab.class);
+        UserDataHost externalUserDataHost = new UserDataHost();
+        when(externalTab.isClosing()).thenReturn(true);
+        when(externalTab.getUserDataHost()).thenReturn(externalUserDataHost);
+        when(externalTab.getLaunchType()).thenReturn(TabLaunchType.FROM_EXTERNAL_APP);
+        TabAssociatedApp.from(externalTab).setAppId("com.example.external");
+        assertEquals(
+                ActionType.EXIT_APP_AND_CLOSE_TAB,
+                mCoordinator.getBackActionTypeForNonNavigableTab(externalTab));
+
+        // 4. Regular closeable tab (e.g. FROM_LINK) -> CLOSE_TAB.
+        Tab linkTab = mock(Tab.class);
+        when(linkTab.isClosing()).thenReturn(true);
+        when(linkTab.getUserDataHost()).thenReturn(new UserDataHost());
+        when(linkTab.getLaunchType()).thenReturn(TabLaunchType.FROM_LINK);
+        assertEquals(
+                ActionType.CLOSE_TAB, mCoordinator.getBackActionTypeForNonNavigableTab(linkTab));
+    }
+
     private TabbedRootUiCoordinator createCoordinator() {
         return new TabbedRootUiCoordinator(
                 mActivity,
@@ -381,7 +429,7 @@ public class TabbedRootUiCoordinatorUnitTest {
                 /* ephemeralTabCoordinatorSupplier= */ ObservableSuppliers.createMonotonic(),
                 mIntentRequestTracker,
                 mInsetObserver,
-                /* backButtonShouldCloseTabFn= */ _ -> false,
+                /* backButtonShouldCloseTabFn= */ Tab::isClosing,
                 /* sendToBackground= */ CallbackUtils.emptyCallback(),
                 /* initializeUiWithIncognitoColors= */ false,
                 mBackPressManager,
