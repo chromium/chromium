@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_network_auth_service_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "net/log/net_log.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -30,7 +31,8 @@ std::unique_ptr<KeyedService> BuildEnterpriseProxyService(ProfileIOS& profile) {
   return std::make_unique<enterprise_net::EnterpriseProxyService>(
       profile.GetPrefs(), network_auth_service,
       base::ReturnValueRepeating(profile.GetSharedURLLoaderFactory()),
-      enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile));
+      enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile),
+      net::NetLog::Get());
 }
 
 }  // namespace
