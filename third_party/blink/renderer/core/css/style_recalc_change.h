@@ -80,6 +80,12 @@ class CORE_EXPORT StyleRecalcChange {
       kRecalcSizeContainerFlags | kRecalcStyleContainerFlags |
       kRecalcScrollStateContainerFlags | kRecalcAnchoredContainerFlags;
 
+  // Flags which, when set, requires a traversal into descendant elements,
+  // and trigger an Element::RecalcOwnStyle() for elements whose current
+  // ComputedStyle has certain flags set.
+  static const Flags kRecalcFlags =
+      kRecalcContainerFlags | kRecalcDescendantContentVisibility;
+
  public:
   enum Propagate {
     // No need to update style of any children.
@@ -184,7 +190,9 @@ class CORE_EXPORT StyleRecalcChange {
   }
   bool RecalcChildren() const { return propagate_ > kUpdatePseudoElements; }
   bool RecalcDescendants() const { return propagate_ == kRecalcDescendants; }
-  bool RecalcContainerQueryDependent(const Node&) const;
+  // Returns true if we should recalc style for the passed in Node based on the
+  // flags_ and current ComputedStyle.
+  bool RecalcFlagDependent(const Node&) const;
   bool UpdatePseudoElements() const { return propagate_ != kNo; }
   // Returns true if we should and can do independent inheritance. The passed in
   // computed style is the existing style for the element we are considering.
@@ -242,6 +250,7 @@ class CORE_EXPORT StyleRecalcChange {
   bool RecalcDescendantContentVisibility() const {
     return flags_ & kRecalcDescendantContentVisibility;
   }
+  bool RecalcFlagDependent() const { return flags_ & kRecalcFlags; }
   Flags FlagsForChildren(const Element&) const;
 
   // To what extent do we need to update style for children.

@@ -12,25 +12,24 @@
 namespace blink {
 
 bool StyleRecalcChange::TraverseChildren(const Element& element) const {
-  return RecalcChildren() || RecalcContainerQueryDependent() ||
-         element.ChildNeedsStyleRecalc() || RecalcDescendantContentVisibility();
+  return RecalcChildren() || RecalcFlagDependent() ||
+         element.ChildNeedsStyleRecalc();
 }
 
 bool StyleRecalcChange::TraversePseudoElements(const Element& element) const {
-  return UpdatePseudoElements() || RecalcContainerQueryDependent() ||
-         element.ChildNeedsStyleRecalc() || RecalcDescendantContentVisibility();
+  return UpdatePseudoElements() || RecalcFlagDependent() ||
+         element.ChildNeedsStyleRecalc();
 }
 
 bool StyleRecalcChange::TraverseChild(const Node& node) const {
   return ShouldRecalcStyleFor(node) || MarkReattachLayoutTree() ||
          node.ChildNeedsStyleRecalc() || node.GetForceReattachLayoutTree() ||
-         RecalcContainerQueryDependent() || node.NeedsLayoutSubtreeUpdate() ||
-         RecalcDescendantContentVisibility();
+         RecalcFlagDependent() || node.NeedsLayoutSubtreeUpdate();
 }
 
-bool StyleRecalcChange::RecalcContainerQueryDependent(const Node& node) const {
+bool StyleRecalcChange::RecalcFlagDependent(const Node& node) const {
   // Early exit before getting the computed style.
-  if (!RecalcContainerQueryDependent()) {
+  if (!RecalcFlagDependent()) {
     return false;
   }
   const Element* element = DynamicTo<Element>(node);
@@ -63,7 +62,7 @@ bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
   if (node.NeedsStyleRecalc()) {
     return true;
   }
-  return RecalcContainerQueryDependent(node);
+  return RecalcFlagDependent(node);
 }
 
 bool StyleRecalcChange::ShouldUpdatePseudoElement(
@@ -80,7 +79,7 @@ bool StyleRecalcChange::ShouldUpdatePseudoElement(
   if (pseudo_element.NeedsLayoutSubtreeUpdate()) {
     return true;
   }
-  if (!RecalcContainerQueryDependent()) {
+  if (!RecalcFlagDependent()) {
     return false;
   }
   const ComputedStyle& style = pseudo_element.ComputedStyleRef();
