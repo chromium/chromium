@@ -19,13 +19,13 @@ e = document.getElementById('test');
 computedStyle = window.getComputedStyle(e, null);
 
 e.style.outline = "thick solid red";
-shouldBe("computedStyle.getPropertyValue('outline')", "'rgb(255, 0, 0) solid 5px'");
+shouldBe("computedStyle.getPropertyValue('outline')", "'5px solid rgb(255, 0, 0)'");
 
 e.style.outline = "2em solid";
-shouldBe("computedStyle.getPropertyValue('outline')", "'rgb(0, 0, 0) solid 32px'");
+shouldBe("computedStyle.getPropertyValue('outline')", "'32px solid rgb(0, 0, 0)'");
 
 e.style.outline = "4px none red";
-shouldBe("computedStyle.getPropertyValue('outline')", "'rgb(255, 0, 0) none 4px'");
+shouldBe("computedStyle.getPropertyValue('outline')", "'4px none rgb(255, 0, 0)'");
 
 document.body.removeChild(testContainer);
 

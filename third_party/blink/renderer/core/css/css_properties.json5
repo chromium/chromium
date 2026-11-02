@@ -10050,7 +10050,7 @@
     },
     {
       name: "outline",
-      longhands: ["outline-color", "outline-style", "outline-width"],
+      longhands: ["outline-width", "outline-style", "outline-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_page_context: true,
       keywords: ["auto", "none", "inset", "groove", "ridge", "outset", "dotted",

@@ -179,9 +179,9 @@ address, blockquote, center, div, figure, figcaption, footer, form, header, hr, 
     ['background-origin':'initial'] @[undefined-undefined] 
     ['background-clip':'initial'] @[undefined-undefined] 
     ['background-color':'rgb(186, 218, 85)'] @[undefined-undefined] 
-    ['outline-color':'lime'] @[undefined-undefined] 
-    ['outline-style':'solid'] @[undefined-undefined] 
     ['outline-width':'5px'] @[undefined-undefined] 
+    ['outline-style':'solid'] @[undefined-undefined] 
+    ['outline-color':'lime'] @[undefined-undefined] 
 }
 
 Running test: test_textNodeComputedStyles
