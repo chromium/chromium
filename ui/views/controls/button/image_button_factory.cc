@@ -9,7 +9,6 @@
 #include "base/memory/raw_ref.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -42,14 +41,11 @@ class ColorTrackingVectorImageButton : public ImageButton {
         icon_hovered_color_id_(icon_hovered_color_id) {}
 
   // ImageButton:
-  void OnThemeChanged() override {
-    ImageButton::OnThemeChanged();
-    const ui::ColorProvider* cp = GetColorProvider();
-    const SkColor color = cp->GetColor(icon_color_id_);
-    const SkColor disabled_color = cp->GetColor(icon_disabled_color_id_);
+  void AddedToWidget() override {
+    ImageButton::AddedToWidget();
     SetImageFromVectorIconWithColor(
         this, *icon_, dip_size_,
-        {color, disabled_color, icon_hovered_color_id_});
+        {icon_color_id_, icon_disabled_color_id_, icon_hovered_color_id_});
   }
 
  private:
