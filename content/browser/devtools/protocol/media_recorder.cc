@@ -35,6 +35,8 @@ namespace content::protocol {
 
 namespace {
 
+constexpr int kIdleKeepAliveIntervalMs = 1000;
+
 class DummyObserver final : public media::mojom::AudioInputStreamObserver {
  public:
   void DidStartRecording() final {}
@@ -233,11 +235,6 @@ Response MediaRecorder::Start(RenderFrameHostImpl* host,
   return Response::ServerError(
       "Video recording is not supported without AV1/libaom enabled.");
 #else
-  session_start_time_ = base::TimeTicks::Now();
-
-  max_width_ = max_width;
-  max_height_ = max_height;
-
   gfx::Size surface_size = gfx::Size();
   RenderWidgetHostViewBase* const view =
       static_cast<RenderWidgetHostViewBase*>(host->GetView());
@@ -246,30 +243,9 @@ Response MediaRecorder::Start(RenderFrameHostImpl* host,
     last_surface_size_ = surface_size;
   }
 
-  stream_file_ = DevToolsStreamFile::Create(io_context_, true /* binary */);
-  stream_ = stream_file_->handle();
-
-  mojo::Remote<
-      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
-      remote = content::ServiceProcessHost::Launch<
-          devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>(
-          ServiceProcessHost::Options()
-              .WithDisplayName("DevTools Media Encoding Service")
-#if BUILDFLAG(IS_MAC)
-              .WithChildFlags(ChildProcessHost::CHILD_RENDERER)
-#endif
-              .Pass());
-
   auto* web_contents = WebContentsImpl::FromRenderFrameHostImpl(host);
   bool has_audio = audio && web_contents != nullptr;
-
-  remote->StartRecording(client_receiver_.BindNewPipeAndPassRemote(), max_width,
-                         max_height, frame_rate, has_audio);
-  client_receiver_.set_disconnect_handler(
-      base::BindOnce(&MediaRecorder::OnClosed, base::Unretained(this)));
-  service_ = mojo::SharedRemote<
-      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>(
-      remote.Unbind());
+  StartEncodingService(max_width, max_height, frame_rate, has_audio);
 
   gfx::Size snapshot_size =
       DetermineSnapshotSize(surface_size, max_width_, max_height_);
@@ -282,8 +258,6 @@ Response MediaRecorder::Start(RenderFrameHostImpl* host,
 #else
   constexpr auto kScreencastPixelFormat = media::PIXEL_FORMAT_ARGB;
 #endif
-
-  constexpr int kIdleKeepAliveIntervalMs = 1000;
 
   content::WebContentsMediaCaptureId capture_id(
       host->GetProcess()->GetDeprecatedID(), host->GetRoutingID());
@@ -313,25 +287,58 @@ Response MediaRecorder::Start(RenderFrameHostImpl* host,
                                           weak_factory_.GetWeakPtr()));
 
   if (has_audio) {
-    audio_capturer_ = base::MakeRefCounted<media::AudioInputDevice>(
-        std::make_unique<LoopbackAudioInputIPC>(
-            web_contents->GetAudioGroupId()),
-        media::AudioInputDevice::Purpose::kLoopback,
-        media::AudioInputDevice::DeadStreamDetection::kDisabled);
-
-    media::AudioParameters audio_params(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::ChannelLayoutConfig::Stereo(), 48000, 480);
-    audio_capturer_->Initialize(audio_params, this);
-    audio_capturer_->Start();
+    StartAudioCapture(web_contents);
   }
 
   return Response::Success();
 #endif
 }
 
+void MediaRecorder::StartEncodingService(int max_width,
+                                         int max_height,
+                                         int frame_rate,
+                                         bool has_audio) {
+  session_start_time_ = base::TimeTicks::Now();
+  max_width_ = max_width;
+  max_height_ = max_height;
+
+  stream_file_ = DevToolsStreamFile::Create(io_context_, true /* binary */);
+  stream_ = stream_file_->handle();
+
+  mojo::Remote<
+      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
+      remote = content::ServiceProcessHost::Launch<
+          devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>(
+          ServiceProcessHost::Options()
+              .WithDisplayName("DevTools Media Encoding Service")
+#if BUILDFLAG(IS_MAC)
+              .WithChildFlags(ChildProcessHost::CHILD_RENDERER)
+#endif
+              .Pass());
+
+  remote->StartRecording(client_receiver_.BindNewPipeAndPassRemote(), max_width,
+                         max_height, frame_rate, has_audio);
+  client_receiver_.set_disconnect_handler(
+      base::BindOnce(&MediaRecorder::OnClosed, base::Unretained(this)));
+  service_ = mojo::SharedRemote<
+      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>(
+      remote.Unbind());
+}
+
+void MediaRecorder::StartAudioCapture(WebContents* audio_source) {
+  audio_capturer_ = base::MakeRefCounted<media::AudioInputDevice>(
+      std::make_unique<LoopbackAudioInputIPC>(audio_source->GetAudioGroupId()),
+      media::AudioInputDevice::Purpose::kLoopback,
+      media::AudioInputDevice::DeadStreamDetection::kDisabled);
+
+  media::AudioParameters audio_params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Stereo(), 48000, 480);
+  audio_capturer_->Initialize(audio_params, this);
+  audio_capturer_->Start();
+}
+
 void MediaRecorder::RequestRefreshFrame() {
-  constexpr int kIdleKeepAliveIntervalMs = 1000;
   if (video_capturer_ && (last_frame_receive_time_.is_null() ||
                           base::TimeTicks::Now() - last_frame_receive_time_ >=
                               base::Milliseconds(kIdleKeepAliveIntervalMs))) {

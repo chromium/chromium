@@ -38,6 +38,7 @@ namespace content {
 class DevToolsIOContext;
 class InProcessLaunchedVideoCaptureDevice;
 class RenderFrameHostImpl;
+class WebContents;
 class WebContentsVideoCaptureDevice;
 
 namespace protocol {
@@ -66,6 +67,11 @@ class CONTENT_EXPORT MediaRecorder
   void OnBufferRetired(int buffer_id);
 
  private:
+  void StartEncodingService(int max_width,
+                            int max_height,
+                            int frame_rate,
+                            bool has_audio);
+  void StartAudioCapture(WebContents* audio_source);
   void OnFrameFromVideoConsumer(scoped_refptr<media::VideoFrame> frame);
   void RequestRefreshFrame();
 
