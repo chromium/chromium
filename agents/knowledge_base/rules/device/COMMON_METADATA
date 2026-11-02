@@ -1,0 +1,56 @@
+# Knowledge base rules for Chrome Device APIs (WebHID, WebUSB, Web Serial,
+# Web Bluetooth, Generic Sensor, Geolocation, Gamepad, Compute Pressure,
+# Device Posture, etc.). Embed via `mixins:` in the DIR_METADATA of directories
+# that should be reviewed against them.
+agentic_review {
+  # Rule 1: Bind-time frame, origin, and embedder eligibility validation.
+  capability_groups {
+    path_expression: "(?:chrome|content)/browser/(?:bluetooth|compute_pressure|device_posture|device_sensors|gamepad|generic_sensor|geolocation|hid|sensor|serial|usb|vibration|wake_lock)/.*\\.(?:cc|h|mm)"
+    path_expression_exclusion: ".*(?:_unittest|_browsertest|_interactive_uitest|_test_util)\\.(?:cc|h|mm)"
+    content_patterns: "\\b(?:RenderFrameHost|DocumentService|PendingReceiver|Bind\\w*|Create|GetLastCommitted(?:Origin|URL)|GetMainFrame|GetOutermostMainFrame(?:OrEmbedder)?|GetParentOrOuterDocument(?:OrEmbedder)?|IsNestedWithinFencedFrame|IsIsolatedContext|IsGuest|Origin)\\b"
+    rules: "agents/knowledge_base/rules/device/validate-frame-and-context-eligibility-at-bind.md"
+  }
+
+  # Rule 2: Purge cached readings and pending/deferred queues on permission revocation or downgrade.
+  capability_groups {
+    path_expression: "(?:chrome|content)/browser/(?:bluetooth|compute_pressure|device_posture|device_sensors|gamepad|generic_sensor|geolocation|hid|sensor|serial|usb|vibration|wake_lock)/.*\\.(?:cc|h|mm)"
+    path_expression: "(?:device|services/device)/.*\\.(?:cc|h|mm)"
+    path_expression: "third_party/blink/renderer/(?:core/geolocation|modules/(?:bluetooth|compute_pressure|device_orientation|device_posture|direct_sockets|gamepad|geolocation|hid|screen_orientation|sensor|serial|shapedetection|smart_card|vibration|wake_lock|webmidi|webusb))/.*\\.(?:cc|h)"
+    path_expression_exclusion: ".*(?:_unittest|_browsertest|_interactive_uitest|_test|_test_util)\\.(?:cc|h|mm)"
+    content_patterns: "\\b(?:Permission\\w*|OnPermission\\w*|Revoke\\w*|Forget\\w*|GrantLevel|kApproximate|kPrecise|cached_\\w*|pending_\\w*|deferred_\\w*)\\b"
+    rules: "agents/knowledge_base/rules/device/purge-cached-data-and-pending-queues-on-permission-downgrade.md"
+  }
+
+  # Rule 3: Chooser permission object validation, per-(origin, device) token scoping, and StoragePartition iteration.
+  capability_groups {
+    path_expression: "(?:(?:chrome|content)/browser/(?:bluetooth|hid|serial|usb)|components/permissions/contexts)/.*\\.(?:cc|h|mm)"
+    path_expression_exclusion: ".*(?:_unittest|_browsertest|_interactive_uitest|_test_util)\\.(?:cc|h|mm)"
+    content_patterns: "\\b(?:ChooserContext|ObjectPermissionContextBase|IsValidObject|Grant\\w*Permission\\w*|Revoke\\w*Permission\\w*|StoragePartition|GetDefaultStoragePartition|ForEachLoadedStoragePartition|ephemeral_\\w*|UnguessableToken)\\b"
+    rules: "agents/knowledge_base/rules/device/isolate-chooser-permissions-across-origins-and-storage-partitions.md"
+  }
+
+  # Rule 4: Mutate state and extract callback queues before invoking re-entrant callbacks; keep std::erase_if pure.
+  capability_groups {
+    path_expression: "(?:chrome|content)/browser/(?:bluetooth|compute_pressure|device_posture|device_sensors|gamepad|generic_sensor|geolocation|hid|sensor|serial|usb|vibration|wake_lock)/.*\\.(?:cc|h|mm)"
+    path_expression: "(?:device|services/device)/.*\\.(?:cc|h|mm)"
+    path_expression: "third_party/blink/renderer/(?:core/geolocation|modules/(?:bluetooth|compute_pressure|device_orientation|device_posture|direct_sockets|gamepad|geolocation|hid|screen_orientation|sensor|serial|shapedetection|smart_card|vibration|wake_lock|webmidi|webusb))/.*\\.(?:cc|h)"
+    path_expression_exclusion: ".*(?:_unittest|_browsertest|_interactive_uitest|_test|_test_util)\\.(?:cc|h|mm)"
+    content_patterns: "\\b(?:erase_if|erase|std::exchange|Notify\\w*|OnceCallback|RepeatingCallback|OnceClosure)\\b|\\.Run\\("
+    rules: "agents/knowledge_base/rules/device/mutate-state-and-move-queues-before-reentrant-callbacks.md"
+  }
+
+  # Rule 5: Guard synchronous chooser and permission prompt creation with base::WeakPtr.
+  capability_groups {
+    path_expression: "(?:chrome|content)/browser/(?:bluetooth|hid|serial|usb)/.*\\.(?:cc|h|mm)"
+    path_expression_exclusion: ".*(?:_unittest|_browsertest|_interactive_uitest|_test_util)\\.(?:cc|h|mm)"
+    content_patterns: "\\b(?:Run(?:Bluetooth)?Chooser|Show\\w*(?:Prompt|Chooser|Dialog)|DeviceChooser\\w*|BluetoothChooser\\w*|SerialChooser\\w*|HidChooser\\w*|(?:Web)?UsbChooser\\w*)\\b"
+    rules: "agents/knowledge_base/rules/device/guard-chooser-and-prompt-creation-against-sync-reentrancy.md"
+  }
+
+  # Rule 6: Prefer gmock + TestFuture/InvokeFuture over RunUntilIdle/Wait and verify error callbacks in tests.
+  capability_groups {
+    path_expression: "(?:chrome/browser|content/browser|device|services/device|third_party/blink/renderer)/.*(?:_unittest|_browsertest|_interactive_uitest|_test)\\.(?:cc|h|mm)"
+    content_patterns: "\\b(?:RunLoop|RunUntilIdle|RunUntil|TestFuture|InvokeFuture|MOCK_METHOD\\w*|EXPECT_CALL|BadMessageObserver|ReportBadMessage)\\b"
+    rules: "agents/knowledge_base/rules/device/prefer-gmock-invoke-future-and-verify-error-callbacks.md"
+  }
+}
