@@ -1,2 +1,7 @@
 per-file csd.proto=file://components/safe_browsing/core/common/SAFE_BROWSING_FEATURE_OWNERS
 per-file webui.proto=file://components/safe_browsing/core/common/SAFE_BROWSING_FEATURE_OWNERS
+
+per-file realtimeapi.proto=file://components/safe_browsing/core/browser/realtime/OWNERS
+per-file safebrowsingv5.proto=file://components/safe_browsing/core/browser/db/OWNERS
+per-file safebrowsingv5.proto=file://components/safe_browsing/core/browser/hashprefix_realtime/OWNERS
+per-file v5_store.proto=file://components/safe_browsing/core/browser/db/OWNERS
