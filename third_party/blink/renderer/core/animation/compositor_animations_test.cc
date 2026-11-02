@@ -1466,6 +1466,35 @@ TEST_P(AnimationCompositorAnimationsTest,
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
+       CanStartElementOnCompositorEffectBackdropFilter) {
+  // Pixel-moving filters (such as blur) on backdrop-filter do not change layer
+  // bounds and can be composited.
+  StringKeyframeEffectModel* effect1 = CreateKeyframeEffectModel(
+      CreateReplaceOpKeyframe(CSSPropertyID::kBackdropFilter, "none", 0),
+      CreateReplaceOpKeyframe(CSSPropertyID::kBackdropFilter, "blur(10px)",
+                              1.0));
+  auto* keyframe_effect1 =
+      MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect1, timing_);
+  Animation* animation1 = timeline_->Play(keyframe_effect1);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
+                                            animation1, *effect1),
+            CompositorAnimations::kNoFailure);
+
+  // Reference filters on backdrop-filter cannot be interpolated or composited.
+  StringKeyframeEffectModel* effect2 = CreateKeyframeEffectModel(
+      CreateReplaceOpKeyframe(CSSPropertyID::kBackdropFilter, "none", 0),
+      CreateReplaceOpKeyframe(CSSPropertyID::kBackdropFilter, "url(#f)", 1.0));
+  auto* keyframe_effect2 =
+      MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect2, timing_);
+  Animation* animation2 = timeline_->Play(keyframe_effect2);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
+                                              animation2, *effect2) &
+              CompositorAnimations::kUnsupportedCSSProperty);
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
        CanStartElementOnCompositorEffectTransform) {
   const auto& style = GetDocument().GetStyleResolver().InitialStyle();
 
