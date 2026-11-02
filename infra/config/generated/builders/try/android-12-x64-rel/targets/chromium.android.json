@@ -8,7 +8,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -60,7 +59,6 @@
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -113,7 +111,6 @@
         ],
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -164,7 +161,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -214,7 +210,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -263,7 +258,6 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -308,7 +302,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -357,7 +350,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -406,7 +398,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -455,7 +446,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -505,7 +495,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -559,7 +548,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -609,7 +597,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -658,7 +645,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -708,7 +694,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -757,7 +742,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -807,7 +791,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -858,7 +841,6 @@
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -907,7 +889,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -956,7 +937,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1009,7 +989,6 @@
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1066,7 +1045,6 @@
         ],
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1121,7 +1099,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1171,7 +1148,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1224,7 +1200,6 @@
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1276,7 +1251,6 @@
         ],
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1326,7 +1300,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1377,7 +1350,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1426,7 +1398,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1475,7 +1446,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1524,7 +1494,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1574,7 +1543,6 @@
         ],
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1623,7 +1591,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1672,7 +1639,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1721,7 +1687,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1770,7 +1735,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1819,7 +1783,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1870,7 +1833,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1920,7 +1882,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -1969,7 +1930,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2018,7 +1978,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2067,7 +2026,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2116,7 +2074,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2165,7 +2122,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2214,7 +2170,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2264,7 +2219,6 @@
         ],
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2313,7 +2267,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2362,7 +2315,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2412,7 +2364,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2461,7 +2412,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2510,7 +2460,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2559,7 +2508,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2608,7 +2556,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2657,7 +2604,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2708,7 +2654,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2757,7 +2702,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2806,7 +2750,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2856,7 +2799,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2906,7 +2848,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -2955,7 +2896,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3004,7 +2944,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3053,7 +2992,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3102,7 +3040,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3151,7 +3088,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3200,7 +3136,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3249,7 +3184,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3298,7 +3232,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3348,7 +3281,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3397,7 +3329,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3446,7 +3377,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3496,7 +3426,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3556,7 +3485,6 @@
         ],
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3614,7 +3542,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3664,7 +3591,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3715,7 +3641,6 @@
         ],
         "ci_only": true,
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3764,7 +3689,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3813,7 +3737,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -3862,7 +3785,6 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
         "description": "Run with android_31_google_apis_x64",
-        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
