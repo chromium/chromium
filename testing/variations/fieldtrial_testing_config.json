@@ -6047,21 +6047,6 @@
             ]
         }
     ],
-    "DesktopCaptureAndroidFrameBufferReuse": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DesktopCaptureAndroidFrameBufferReuse"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopCapturePermissionCheckerPreMacos14_4": [
         {
             "platforms": [

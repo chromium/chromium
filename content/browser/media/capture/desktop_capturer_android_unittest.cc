@@ -525,9 +525,6 @@ TEST_F(DesktopCapturerAndroidTest,
 }
 
 TEST_F(DesktopCapturerAndroidTest, FrameBufferReuse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDesktopCaptureAndroidFrameBufferReuse);
-
   StartCapturer(/*start_success=*/true);
 
   // Push and capture frame 1.
@@ -573,10 +570,29 @@ TEST_F(DesktopCapturerAndroidTest, FrameBufferReuse) {
   EXPECT_EQ(frame4->data(), frame3_data);
 }
 
-TEST_F(DesktopCapturerAndroidTest, ZeroHertzWithFrameBufferReuse) {
+TEST_F(DesktopCapturerAndroidTest, FrameBufferReuseDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDesktopCaptureAndroidFrameBufferReuse);
+  feature_list.InitAndDisableFeature(kDesktopCaptureAndroidFrameBufferReuse);
 
+  StartCapturer(/*start_success=*/true);
+
+  PushRgbaFrame();
+  auto [result1, frame1] = CaptureFrame();
+  EXPECT_EQ(result1, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame1);
+  const uint8_t* const frame1_data = frame1->data();
+  frame1.reset();
+
+  // `current_frame_` still owns frame 1's buffer when frame 2 arrives, so a
+  // fresh allocation can't land at the same address.
+  PushRgbaFrame();
+  auto [result2, frame2] = CaptureFrame();
+  EXPECT_EQ(result2, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame2);
+  EXPECT_NE(frame2->data(), frame1_data);
+}
+
+TEST_F(DesktopCapturerAndroidTest, ZeroHertzWithFrameBufferReuse) {
   StartCapturer(/*start_success=*/true);
 
   PushRgbaFrame();
