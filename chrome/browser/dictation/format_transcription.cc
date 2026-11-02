@@ -73,6 +73,13 @@ bool IsEllipsisAt(std::u16string_view text, size_t period_index) {
   return period_index > 0 && IsSentenceEndingPeriod(text[period_index - 1]);
 }
 
+// Returns true if `text`, ignoring trailing whitespace, ends with a
+// sentence-ending period.
+bool EndsWithSentenceEndingPeriod(std::u16string_view text) {
+  std::u16string_view trimmed = base::TrimWhitespace(text, base::TRIM_TRAILING);
+  return !trimmed.empty() && IsSentenceEndingPeriod(trimmed.back());
+}
+
 bool HasAtMostOneSentence(std::u16string_view text, size_t last_period_index) {
   // If there are interior sentence terminators or newlines before the final
   // period, text contains multiple sentences.
@@ -162,12 +169,16 @@ std::u16string TrimTrailingPeriodIfSingleSentence(std::u16string_view text) {
 }
 
 std::u16string FormatTranscription(const std::u16string& text,
-                                   std::u16string_view preceding_text) {
+                                   std::u16string_view preceding_text,
+                                   std::u16string_view selected_text) {
   if (text.empty()) {
     return text;
   }
 
-  std::u16string formatted_text = TrimTrailingPeriodIfSingleSentence(text);
+  std::u16string formatted_text =
+      EndsWithSentenceEndingPeriod(selected_text)
+          ? text
+          : TrimTrailingPeriodIfSingleSentence(text);
 
   bool prepend_whitespace = WhitespaceNeeded(preceding_text, formatted_text);
 

@@ -19,9 +19,11 @@ bool WhitespaceNeeded(std::u16string_view preceding_text,
 std::u16string TrimTrailingPeriodIfSingleSentence(std::u16string_view text);
 
 // Formats transcription `text` for insertion into a target element given the
-// text preceding the insertion point.
+// text preceding the insertion point and the selected text being replaced, if
+// any.
 std::u16string FormatTranscription(const std::u16string& text,
-                                   std::u16string_view preceding_text);
+                                   std::u16string_view preceding_text,
+                                   std::u16string_view selected_text = {});
 
 }  // namespace dictation
 

@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -75,6 +76,11 @@ class Target {
   // needed. Returns nullptr if the target's document is gone.
   blink::mojom::DictationAgent* GetDictationAgent();
 
+  // Sets the text that was selected in the target when dictation started.
+  void SetSelectedText(std::u16string selected_text) {
+    selected_text_ = std::move(selected_text);
+  }
+
  protected:
   virtual void SetExternallySourcedComposition(
       const std::u16string& text,
@@ -131,6 +137,9 @@ class Target {
   bool paste_fallback_required_ = false;
 
   std::optional<std::u16string> preceding_text_;
+  // The text selected in the target when dictation started. See
+  // `SetSelectedText()`.
+  std::u16string selected_text_;
 
   bool is_waiting_on_operation_completion_ = false;
   std::optional<QueuedOperation> queued_operation_;

@@ -118,6 +118,18 @@ TEST(FormatTranscriptionTest, FormatTranscription) {
   EXPECT_EQ(FormatTranscription(u"...", u"Hello"), u"...");
 }
 
+TEST(FormatTranscriptionTest, PreservesPeriodWhenSelectionEndsWithPeriod) {
+  // Preserved when the selection ends with a period.
+  EXPECT_EQ(FormatTranscription(u"THIS IS A TEST.", u"", u"This is a test."),
+            u"THIS IS A TEST.");
+  EXPECT_EQ(FormatTranscription(u"Hi.", u"", u"Hello. "), u"Hi.");
+
+  // Trimmed otherwise.
+  EXPECT_EQ(FormatTranscription(u"THIS IS A TEST.", u"", u"This is a test"),
+            u"THIS IS A TEST");
+  EXPECT_EQ(FormatTranscription(u"Dr Smith.", u"", u"Dr. Smith"), u"Dr Smith");
+}
+
 }  // namespace
 
 }  // namespace dictation

@@ -155,11 +155,20 @@ void ListenerStreamProvider::StartStream(
 }
 
 void ListenerStreamProvider::OnStartContextCaptured(DictationContext result) {
+  ForwardSelectedTextToTarget(result);
   StartStream(std::move(result));
+}
+
+void ListenerStreamProvider::ForwardSelectedTextToTarget(
+    const DictationContext& context) {
+  if (context.editable_content) {
+    target_->SetSelectedText(base::UTF8ToUTF16(*context.editable_content));
+  }
 }
 
 void ListenerStreamProvider::OnAsyncContextCaptured(DictationContext result) {
   CHECK(stream_id_);
+  ForwardSelectedTextToTarget(result);
 
   extensions::api::dictation_private::ContextUpdateDetails details;
   details.stream_id = stream_id_.value();

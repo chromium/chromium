@@ -281,15 +281,13 @@ std::u16string Target::FormatTextForInsertion(const std::u16string& text) {
     return text;
   }
 
+  // Snapshot the preceding text before the first composition replaces the
+  // selection.
   if (!preceding_text_.has_value()) {
-    std::optional<std::u16string_view> text_preceding_selection =
-        GetTextPrecedingSelection();
-    preceding_text_ = text_preceding_selection
-                          ? std::u16string(*text_preceding_selection)
-                          : std::u16string();
+    preceding_text_ = std::u16string(GetTextPrecedingSelection().value_or(u""));
   }
 
-  return FormatTranscription(text, *preceding_text_);
+  return FormatTranscription(text, *preceding_text_, selected_text_);
 }
 
 }  // namespace dictation

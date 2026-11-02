@@ -123,6 +123,33 @@ IN_PROC_BROWSER_TEST_F(DictationTargetBrowserTest, ReplaceSelectedText) {
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "Hello world");
 }
 
+IN_PROC_BROWSER_TEST_F(DictationTargetBrowserTest,
+                       PreservesTrailingPeriodWhenSelectionEndsWithPeriod) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textinput.html");
+  const DeepQuery kInput{"#text_id"};
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    ExecuteJsAt(kWebContentsElementId, kInput,
+                "(el) => {"
+                "  el.value = 'This is a test.';"
+                "  el.select();"
+                "}"),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kFinal, "THIS IS A TEST."),
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete)
+  );
+  // clang-format on
+
+  EXPECT_EDITABLE_TEXT_EQ("#text_id", "THIS IS A TEST.");
+}
+
 IN_PROC_BROWSER_TEST_F(DictationTargetBrowserTest, InsertIntoIframeInput) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url = embedded_test_server()->GetURL("/iframe_blank.html");

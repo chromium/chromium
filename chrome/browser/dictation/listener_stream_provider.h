@@ -58,6 +58,8 @@ class ListenerStreamProvider : public StreamProvider {
   void StartStream(std::optional<DictationContext> context);
   void OnStartContextCaptured(DictationContext result);
   void OnAsyncContextCaptured(DictationContext result);
+  // Passes the selection captured in `context` to `target_`.
+  void ForwardSelectedTextToTarget(const DictationContext& context);
   void OnPendingInsertionsComplete();
   void RecordExitMetric(DictationStreamEndTrigger trigger);
 

@@ -403,6 +403,30 @@ TEST_F(DictationTargetTest, TargetPreservesTrailingPeriodForMultipleSentences) {
   EXPECT_EQ(target.last_sent_commit(), u"First sentence. Second sentence.");
 }
 
+TEST_F(DictationTargetTest,
+       TargetPreservesTrailingPeriodWhenSelectionEndsWithPeriod) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
+  target.SetSelectedText(u"This is a test.");
+
+  target.SetComposition(u"THIS IS A TEST.", true);
+  EXPECT_EQ(target.last_sent_composition(), u"THIS IS A TEST.");
+
+  target.CommitComposition(u"THIS IS A TEST.", base::NullCallback());
+  EXPECT_EQ(target.last_sent_commit(), u"THIS IS A TEST.");
+}
+
+TEST_F(DictationTargetTest,
+       TargetTrimsTrailingPeriodWhenSelectionHasNoTrailingPeriod) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
+  target.SetSelectedText(u"This is a test");
+
+  target.SetComposition(u"THIS IS A TEST.", true);
+  target.CommitComposition(u"THIS IS A TEST.", base::NullCallback());
+  EXPECT_EQ(target.last_sent_commit(), u"THIS IS A TEST");
+}
+
 }  // namespace
 
 }  // namespace dictation
