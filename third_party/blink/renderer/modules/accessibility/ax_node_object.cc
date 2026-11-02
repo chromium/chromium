@@ -8238,7 +8238,8 @@ String AXNodeObject::Description(
   // For form controls that act as interest for triggering elements, use
   // the target for a description if it only contains plain contents.
   if (name_from != ax::mojom::blink::NameFrom::kInterestFor) {
-    if (Element* target = element->InterestForElement()) {
+    if (Element* target = element->InterestForElement(
+            Element::InterestForType::kExplicitOnly)) {
       description_from = ax::mojom::blink::DescriptionFrom::kInterestFor;
       if (description_sources) {
         description_sources->push_back(
@@ -8248,20 +8249,33 @@ String AXNodeObject::Description(
       AXObject* interest_ax_object = AXObjectCache().Get(target);
       if (interest_ax_object && interest_ax_object->IsPlainContent()) {
         AXObjectSet visited;
-        description = RecursiveTextAlternative(*interest_ax_object,
-                                               interest_ax_object, visited);
-        if (related_objects) {
-          related_objects->push_back(
-              MakeGarbageCollected<NameSourceRelatedObject>(interest_ax_object,
-                                                            description));
-        }
-        if (description_sources) {
-          DescriptionSource& source = description_sources->back();
-          source.related_objects = *related_objects;
-          source.text = description;
-          found_description = true;
-        } else {
-          return description;
+        String candidate = RecursiveTextAlternative(
+            *interest_ax_object, interest_ax_object, visited);
+        String simplified_candidate =
+            candidate.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+        if (!simplified_candidate.empty()) {
+          ax::mojom::blink::NameFrom computed_name_from;
+          AXObjectVector name_objects;
+          String name = GetName(computed_name_from, &name_objects,
+                                /*name_sources=*/nullptr);
+          if (!name_objects.Contains(interest_ax_object) &&
+              simplified_candidate !=
+                  name.StripWhiteSpace(IsHTMLSpace<UChar>)) {
+            description = candidate;
+            if (related_objects) {
+              related_objects->push_back(
+                  MakeGarbageCollected<NameSourceRelatedObject>(
+                      interest_ax_object, description));
+            }
+            if (description_sources) {
+              DescriptionSource& source = description_sources->back();
+              source.related_objects = *related_objects;
+              source.text = description;
+              found_description = true;
+            } else {
+              return description;
+            }
+          }
         }
       }
     }

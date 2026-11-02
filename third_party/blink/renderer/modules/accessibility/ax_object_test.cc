@@ -3555,6 +3555,131 @@ TEST_F(AccessibilityTest, InterestForRichHintIncrementalUpdates) {
   EXPECT_EQ(ax::mojom::blink::Role::kGroup, ax_other_popover->role);
 }
 
+TEST_F(AccessibilityTest, InterestForPlainHintRedundantDescription) {
+  using ax::mojom::blink::DescriptionFrom;
+  using ax::mojom::blink::IntListAttribute;
+  using ax::mojom::blink::NameFrom;
+  using ax::mojom::blink::StringAttribute;
+
+  SetBodyInnerHTML(R"HTML(
+      <button id="btnA" interestfor="tipA"></button>
+      <div id="tipA" popover="hint">Alpha</div>
+
+      <button id="btnB" aria-label="Bravo" interestfor="tipB"></button>
+      <div id="tipB" popover="hint">Bravo</div>
+
+      <button id="btnC" aria-labelledby="tipC" interestfor="tipC"></button>
+      <div id="tipC" popover="hint">Charlie</div>
+
+      <button id="btnC2" aria-labelledby="tipC2 extra" interestfor="tipC2"></button>
+      <div id="tipC2" popover="hint">Charlie</div>
+      <span id="extra">Two</span>
+
+      <button id="btnD" interestfor="tipD">Delta</button>
+      <div id="tipD" popover="hint">Delta</div>
+
+      <button id="btnE" interestfor="tipE"></button>
+      <div id="tipE" popover="hint" style="display:none">Echo</div>
+
+      <button id="btnF" interestfor="tipF">Edit</button>
+      <div id="tipF" popover="hint">Modify settings</div>
+      )HTML");
+
+  auto SerializeNode = [&](const char* id) {
+    ui::AXNodeData node_data;
+    AXObject* ax_object = GetAXObjectByElementId(id);
+    CHECK(ax_object) << "No AXObject for " << id;
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ax_object->Serialize(&node_data, ui::kAXModeComplete);
+    return node_data;
+  };
+
+  // Case A: Icon-only button with plain hint gets name from hint, no
+  // description.
+  ui::AXNodeData btn_a = SerializeNode("btnA");
+  EXPECT_EQ("Alpha", btn_a.GetStringAttribute(StringAttribute::kName));
+  EXPECT_EQ(NameFrom::kInterestFor, btn_a.GetNameFrom());
+  EXPECT_FALSE(btn_a.HasStringAttribute(StringAttribute::kDescription));
+  EXPECT_FALSE(btn_a.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+
+  // Case B: Button with aria-label matching plain hint text gets no redundant
+  // description.
+  ui::AXNodeData btn_b = SerializeNode("btnB");
+  EXPECT_EQ("Bravo", btn_b.GetStringAttribute(StringAttribute::kName));
+  EXPECT_EQ(NameFrom::kAttribute, btn_b.GetNameFrom());
+  EXPECT_FALSE(btn_b.HasStringAttribute(StringAttribute::kDescription));
+  EXPECT_FALSE(btn_b.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+
+  // Case C: Button with aria-labelledby referencing the plain hint gets no
+  // redundant description (whether single or part of multiple IDs).
+  ui::AXNodeData btn_c = SerializeNode("btnC");
+  EXPECT_EQ("Charlie", btn_c.GetStringAttribute(StringAttribute::kName));
+  EXPECT_EQ(NameFrom::kRelatedElement, btn_c.GetNameFrom());
+  EXPECT_FALSE(btn_c.HasStringAttribute(StringAttribute::kDescription));
+  EXPECT_FALSE(btn_c.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+
+  ui::AXNodeData btn_c2 = SerializeNode("btnC2");
+  EXPECT_EQ("Charlie Two", btn_c2.GetStringAttribute(StringAttribute::kName));
+  EXPECT_EQ(NameFrom::kRelatedElement, btn_c2.GetNameFrom());
+  EXPECT_FALSE(btn_c2.HasStringAttribute(StringAttribute::kDescription));
+  EXPECT_FALSE(btn_c2.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+
+  // Case D: Button whose visible text matches plain hint text gets no redundant
+  // description.
+  ui::AXNodeData btn_d = SerializeNode("btnD");
+  EXPECT_EQ("Delta", btn_d.GetStringAttribute(StringAttribute::kName));
+  EXPECT_EQ(NameFrom::kContents, btn_d.GetNameFrom());
+  EXPECT_FALSE(btn_d.HasStringAttribute(StringAttribute::kDescription));
+  EXPECT_FALSE(btn_d.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+
+  // Case E: Icon-only button with display:none plain hint still gets name from
+  // hint, no description.
+  ui::AXNodeData btn_e = SerializeNode("btnE");
+  EXPECT_EQ("Echo", btn_e.GetStringAttribute(StringAttribute::kName));
+  EXPECT_EQ(NameFrom::kInterestFor, btn_e.GetNameFrom());
+  EXPECT_FALSE(btn_e.HasStringAttribute(StringAttribute::kDescription));
+
+  // Case F: Button with distinct name and plain hint text gets description from
+  // hint.
+  ui::AXNodeData btn_f = SerializeNode("btnF");
+  EXPECT_EQ("Edit", btn_f.GetStringAttribute(StringAttribute::kName));
+  EXPECT_EQ(NameFrom::kContents, btn_f.GetNameFrom());
+  EXPECT_EQ("Modify settings",
+            btn_f.GetStringAttribute(StringAttribute::kDescription));
+  EXPECT_EQ(DescriptionFrom::kInterestFor, btn_f.GetDescriptionFrom());
+  EXPECT_FALSE(btn_f.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+
+  // Showing the popovers should still not produce redundant descriptions or
+  // describedby relations for Cases B, C, and D, while Case F gets
+  // `kDescribedbyIds` when open.
+  for (const char* id : {"tipA", "tipB", "tipC", "tipC2", "tipD", "tipF"}) {
+    To<HTMLElement>(GetElementById(id))->showPopover(ASSERT_NO_EXCEPTION);
+  }
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  btn_b = SerializeNode("btnB");
+  EXPECT_FALSE(btn_b.HasStringAttribute(StringAttribute::kDescription));
+  EXPECT_FALSE(btn_b.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+
+  btn_c = SerializeNode("btnC");
+  EXPECT_FALSE(btn_c.HasStringAttribute(StringAttribute::kDescription));
+  EXPECT_FALSE(btn_c.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+
+  btn_c2 = SerializeNode("btnC2");
+  EXPECT_FALSE(btn_c2.HasStringAttribute(StringAttribute::kDescription));
+  EXPECT_FALSE(btn_c2.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+
+  btn_d = SerializeNode("btnD");
+  EXPECT_FALSE(btn_d.HasStringAttribute(StringAttribute::kDescription));
+  EXPECT_FALSE(btn_d.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+
+  btn_f = SerializeNode("btnF");
+  EXPECT_EQ("Modify settings",
+            btn_f.GetStringAttribute(StringAttribute::kDescription));
+  EXPECT_EQ(DescriptionFrom::kInterestFor, btn_f.GetDescriptionFrom());
+  EXPECT_TRUE(btn_f.HasIntListAttribute(IntListAttribute::kDescribedbyIds));
+}
+
 TEST_F(AccessibilityTest, ClearChildrenDetachesIncludedAndUnincludedChildren) {
   SetBodyInnerHTML(R"HTML(
       <div id="parent" role="group">
