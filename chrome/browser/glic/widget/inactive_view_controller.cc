@@ -185,9 +185,7 @@ void InactiveViewController::CaptureScreenshot(
 
 void InactiveViewController::OnScreenshotCaptured(gfx::Image screenshot) {
   screenshot_ = screenshot.AsImageSkia();
-  CheckForImageDistortion();
-  animation_->Reset();
-  animation_->Show();
+  StartScrimAnimation();
   UpdateImageView();
 }
 
@@ -196,7 +194,6 @@ base::WeakPtr<InactiveViewController> InactiveViewController::GetWeakPtr() {
 }
 
 void InactiveViewController::OnViewBoundsChanged(views::View* observed_view) {
-  CheckForImageDistortion();
   UpdateImageView();
 }
 
@@ -219,24 +216,18 @@ void InactiveViewController::AnimationProgressed(
 }
 
 void InactiveViewController::UpdateImageView() {
-  if (!image_view_ || screenshot_.isNull()) {
-    return;
-  }
-  if (image_view_->size().IsEmpty()) {
+  if (!image_view_ || screenshot_.isNull() || image_view_->size().IsEmpty()) {
     return;
   }
 
   gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
       screenshot_, skia::ImageOperations::RESIZE_BEST, image_view_->size());
 
-  views::View* card_view = card_view_tracker_.view();
-  if (card_view) {
-    card_view->SetVisible(is_image_distorted_);
+  const bool is_image_distorted = IsImageDistorted();
+  if (views::View* card_view = card_view_tracker_.view()) {
+    card_view->SetVisible(is_image_distorted);
   }
-
-  if (is_image_distorted_) {
-    image_view_->layer()->SetLayerBlur(kBlurRadius);
-  }
+  image_view_->layer()->SetLayerBlur(is_image_distorted ? kBlurRadius : 0.0f);
   image_view_->SetImage(ui::ImageModel::FromImageSkia(resized_image));
 }
 
@@ -268,14 +259,9 @@ void InactiveViewController::UpdateScrimOpacity(double animation_value) {
   scrim_view->layer()->SetOpacity(opacity);
 }
 
-void InactiveViewController::CheckForImageDistortion() {
-  if (!image_view_ || screenshot_.isNull()) {
-    is_image_distorted_ = false;
-    return;
-  }
-  if (image_view_->size().IsEmpty()) {
-    is_image_distorted_ = false;
-    return;
+bool InactiveViewController::IsImageDistorted() const {
+  if (!image_view_ || screenshot_.isNull() || image_view_->size().IsEmpty()) {
+    return false;
   }
 
   // Get aspect ratios.
@@ -285,6 +271,11 @@ void InactiveViewController::CheckForImageDistortion() {
       static_cast<float>(image_view_->width()) / image_view_->height();
 
   // Check if they are significantly different.
-  is_image_distorted_ = std::abs(source_aspect_ratio - view_aspect_ratio) >
-                        kBlurAspectRatioThreshold;
+  return std::abs(source_aspect_ratio - view_aspect_ratio) >
+         kBlurAspectRatioThreshold;
+}
+
+void InactiveViewController::StartScrimAnimation() {
+  animation_->Reset();
+  animation_->Show();
 }
