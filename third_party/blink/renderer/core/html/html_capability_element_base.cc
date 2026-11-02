@@ -118,8 +118,15 @@ constexpr float kDefaultMaxPercentRadiusHeight = 50;
 // with the layout in unsupported ways. Additionally, all "table" styles are
 // also not allowed.
 constexpr EDisplay kInvalidDisplayStyles[] = {
-    EDisplay::kContents, EDisplay::kInline,   EDisplay::kListItem,
-    EDisplay::kRuby,     EDisplay::kRubyText,
+    EDisplay::kContents,
+    EDisplay::kInline,
+    EDisplay::kListItem,
+    EDisplay::kInlineListItem,
+    EDisplay::kFlowRootListItem,
+    EDisplay::kInlineFlowRootListItem,
+    EDisplay::kRuby,
+    EDisplay::kBlockRuby,
+    EDisplay::kRubyText,
 };
 
 // Helper to get `PermissionsPolicyFeature` from permission name
@@ -427,6 +434,7 @@ bool HTMLCapabilityElementBase::CanGeneratePseudoElement(PseudoId id) const {
   switch (id) {
     case PseudoId::kPseudoIdAfter:
     case PseudoId::kPseudoIdBefore:
+    case PseudoId::kPseudoIdMarker:
     case PseudoId::kPseudoIdCheckMark:
     case PseudoId::kPseudoIdPickerIcon:
     case PseudoId::kPseudoIdExpandIcon:

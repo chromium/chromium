@@ -1075,13 +1075,23 @@ TEST_F(HTMLCapabilityElementBaseSimTest, EnableClickingAfterDelay) {
 TEST_F(HTMLCapabilityElementBaseSimTest, InvalidDisplayStyleElement) {
   auto* permission_element = CreatePermissionElement(GetDocument(), "camera");
   DeferredChecker checker(permission_element);
-  permission_element->setAttribute(
-      html_names::kStyleAttr,
-      AtomicString("display: contents; position: absolute;"));
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  checker.CheckClickingEnabled(/*enabled=*/false);
-  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
-                                         /*expected_enabled=*/false);
+  for (const String invalid_display :
+       {"contents", "inline", "list-item", "inline list-item",
+        "flow-root list-item", "inline flow-root list-item", "ruby",
+        "block ruby", "ruby-text"}) {
+    SCOPED_TRACE(invalid_display);
+    permission_element->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString("display: " + invalid_display + ";"));
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    EXPECT_EQ(permission_element->GetPseudoElement(kPseudoIdMarker), nullptr);
+    checker.CheckClickingEnabled(/*enabled=*/false);
+    checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                           /*expected_enabled=*/false);
+  }
+
+  EXPECT_FALSE(
+      permission_element->CanGeneratePseudoElement(kPseudoIdMarker));
 
   permission_element->setAttribute(
       html_names::kStyleAttr,
