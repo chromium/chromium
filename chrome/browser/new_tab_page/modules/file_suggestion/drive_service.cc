@@ -83,6 +83,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         data:
           "OAuth2 access token."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "appsitemsuggest-pa.googleapis.com"
       }
       policy {
         cookies_allowed: NO
