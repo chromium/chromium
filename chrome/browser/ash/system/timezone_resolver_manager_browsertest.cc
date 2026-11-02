@@ -23,6 +23,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_waiter.h"
 #include "chromeos/ash/components/timezone/timezone_util.h"
@@ -336,18 +337,29 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerEnrolledDeviceTest, ManagedUser) {
 
 IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerEnrolledDeviceTest,
                        ManagedUserStaticTimeZonePolicy) {
+  ash::system::TimeZoneResolverManager* tz_resolver_manager =
+      g_browser_process->platform_part()->GetTimezoneResolverManager();
+  EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
+
   // Set static time zone by policy and log in a managed user.
   // Static time zone policy overrides automatic time zone policies,
   // so no matter what other policies are provided, automatic time zone
   // resolution will be prohobited.
   SetDeviceTimeZoneStaticPolicy("Europe/Berlin");
+  std::string system_timezone;
+  EXPECT_TRUE(
+      CrosSettings::Get()->GetString(kSystemTimezone, &system_timezone));
+  EXPECT_EQ("Europe/Berlin", system_timezone);
+  EXPECT_EQ("Europe/Berlin", g_browser_process->local_state()->GetString(
+                                 ash::prefs::kSigninScreenTimezone));
+  EXPECT_FALSE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
+  EXPECT_FALSE(tz_resolver_manager->GetResolver()->IsRunning());
+
   LoginUser(managed_user_id_);
   base::RunLoop().RunUntilIdle();
 
   // Iterate over all possible automatic time zone policies and check that
   // TimeZoneResolverManager is not sending out any sensor data.
-  ash::system::TimeZoneResolverManager* tz_resolver_manager =
-      g_browser_process->platform_part()->GetTimezoneResolverManager();
   for (auto tz_policy : kTimeZoneAutomaticDetectionCloudPolicies) {
     SetDeviceTimeZoneAutomaticDetectionPolicy(tz_policy);
 
@@ -368,6 +380,22 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerEnrolledDeviceTest,
     EXPECT_FALSE(tz_resolver_manager->ShouldSendWiFiGeolocationData());
     EXPECT_FALSE(tz_resolver_manager->ShouldSendCellularGeolocationData());
   }
+
+  // Dynamically updating the static timezone policy updates the system
+  // timezone without a reboot.
+  SetDeviceTimeZoneStaticPolicy("America/New_York");
+  EXPECT_TRUE(
+      CrosSettings::Get()->GetString(kSystemTimezone, &system_timezone));
+  EXPECT_EQ("America/New_York", system_timezone);
+
+  // Clearing the static timezone policy keeps the active timezone and allows
+  // the resolver to run again.
+  SetDeviceTimeZoneStaticPolicy("");
+  EXPECT_TRUE(
+      CrosSettings::Get()->GetString(kSystemTimezone, &system_timezone));
+  EXPECT_EQ("America/New_York", system_timezone);
+  EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
+  EXPECT_TRUE(tz_resolver_manager->GetResolver()->IsRunning());
 }
 
 IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerEnrolledDeviceTest,

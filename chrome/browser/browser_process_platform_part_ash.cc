@@ -404,7 +404,6 @@ void BrowserProcessPlatformPart::InitializeTimezoneResolverManager() {
 
 ash::system::TimeZoneResolverManager*
 BrowserProcessPlatformPart::GetTimezoneResolverManager() {
-  CHECK(timezone_resolver_manager_);
   return timezone_resolver_manager_.get();
 }
 

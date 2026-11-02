@@ -67,7 +67,9 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 #include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
@@ -265,6 +267,11 @@ void BrowserPolicyConnectorAsh::Init(
     }
   }
 
+  timezone_policy_subscription_ = ash::CrosSettings::Get()->AddSettingsObserver(
+      ash::kSystemTimezonePolicy,
+      base::BindRepeating(
+          &BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable,
+          weak_ptr_factory_.GetWeakPtr()));
   SetTimezoneIfPolicyAvailable();
 
   device_network_configuration_updater_ =
@@ -440,6 +447,8 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   }
 
   adb_sideloading_allowance_mode_policy_handler_.reset();
+
+  timezone_policy_subscription_ = {};
 
   ChromeBrowserPolicyConnector::Shutdown();
 }
@@ -689,6 +698,10 @@ void BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable() {
       !timezone.empty()) {
     ash::system::SetSystemAndSigninScreenTimezone(
         CHECK_DEREF(local_state_.get()), timezone);
+  }
+  if (auto* timezone_resolver_manager =
+          g_browser_process->platform_part()->GetTimezoneResolverManager()) {
+    timezone_resolver_manager->UpdateTimezoneResolver();
   }
 }
 
