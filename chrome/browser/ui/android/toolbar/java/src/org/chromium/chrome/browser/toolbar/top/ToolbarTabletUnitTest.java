@@ -8,6 +8,7 @@ import static android.view.View.MeasureSpec.UNSPECIFIED;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.geq;
@@ -45,6 +46,7 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
@@ -367,6 +369,45 @@ public final class ToolbarTabletUnitTest {
                 "Reloading button position is not as expected",
                 mReloadingButton,
                 mToolbarTabletLayout.getChildAt(3));
+    }
+
+    @Test
+    public void testTtcButtonHiddenUntilWanted() {
+        View ttcButton = mToolbarTablet.findViewById(R.id.ttc_toolbar_button);
+        assertNotNull(ttcButton);
+        assertEquals(View.GONE, ttcButton.getVisibility());
+
+        mToolbarTablet.setTtcButtonState(
+                /* wanted= */ false, /* active= */ false, /* onClickListener= */ null);
+        assertEquals(View.GONE, ttcButton.getVisibility());
+    }
+
+    @Test
+    public void testTtcButtonActiveState() {
+        View ttcButton = mToolbarTablet.findViewById(R.id.ttc_toolbar_button);
+        Drawable defaultBackground = ttcButton.getBackground();
+
+        mToolbarTablet.setTtcButtonState(
+                /* wanted= */ false, /* active= */ true, /* onClickListener= */ null);
+        assertTrue(ttcButton.isActivated());
+        assertNotEquals(defaultBackground, ttcButton.getBackground());
+
+        // Back to the default background once the session ends.
+        mToolbarTablet.setTtcButtonState(
+                /* wanted= */ false, /* active= */ false, /* onClickListener= */ null);
+        assertFalse(ttcButton.isActivated());
+        assertEquals(defaultBackground, ttcButton.getBackground());
+    }
+
+    @Test
+    public void testTtcButtonClick() {
+        View ttcButton = mToolbarTablet.findViewById(R.id.ttc_toolbar_button);
+        int[] clicks = {0};
+        mToolbarTablet.setTtcButtonState(
+                /* wanted= */ false, /* active= */ false, v -> clicks[0]++);
+
+        ttcButton.performClick();
+        assertEquals(1, clicks[0]);
     }
 
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)

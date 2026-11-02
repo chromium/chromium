@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionHandler;
+import org.chromium.chrome.browser.ttc.TtcEntryPoint;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
@@ -178,6 +179,11 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      * against, or null if the AI overlay is disabled or the mic button is absent.
      */
     private @Nullable WindowAndroid mAiOverlayWindowAndroid;
+
+    /** The window's TTC entry point, which the TTC toolbar button reflects. */
+    private @Nullable TtcEntryPoint mTtcEntryPoint;
+
+    private final TtcEntryPoint.Observer mTtcEntryPointObserver = this::updateTtcButton;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -375,6 +381,14 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                                     currentTab != null ? currentTab.getWebContents() : null);
                         });
             }
+        }
+        if (ToolbarFeatures.isTtcToolbarButtonSupported()
+                && mToolbarLayout instanceof ToolbarTablet) {
+            // Scoped to this window: the TTC session UI of this window publishes whether the
+            // button should show and handles its clicks.
+            mTtcEntryPoint = TtcEntryPoint.from(windowAndroid);
+            mTtcEntryPoint.addObserver(mTtcEntryPointObserver);
+            updateTtcButton();
         }
         controlContainer.setPostInitializationDependencies(
                 this,
@@ -622,12 +636,23 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         mOverlayCoordinator.setBookmarkBarHeightSupplier(bookmarkBarHeightSupplier);
     }
 
+    private void updateTtcButton() {
+        TtcEntryPoint entryPoint = mTtcEntryPoint;
+        if (entryPoint == null || !(mToolbarLayout instanceof ToolbarTablet toolbarTablet)) return;
+        toolbarTablet.setTtcButtonState(
+                entryPoint.shouldShow(), entryPoint.isActive(), v -> entryPoint.toggleSession());
+    }
+
     /** Cleans up any code as necessary. */
     @SuppressWarnings("NullAway")
     public void destroy() {
         if (ToolbarFeatures.isAiOverlayDialogEnabled() && mAiOverlayWindowAndroid != null) {
             AiOverlayDialogBridge.setAudioEnergyListener(mAiOverlayWindowAndroid, null);
             mAiOverlayWindowAndroid = null;
+        }
+        if (mTtcEntryPoint != null) {
+            mTtcEntryPoint.removeObserver(mTtcEntryPointObserver);
+            mTtcEntryPoint = null;
         }
         if (mOverlayCoordinator != null) {
             mOverlayCoordinator.destroy();

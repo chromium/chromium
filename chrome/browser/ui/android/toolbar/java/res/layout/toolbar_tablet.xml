@@ -155,6 +155,16 @@ found in the LICENSE file.
             android:contentDescription="@string/accessibility_toolbar_btn_ai_overlay_mic"
             android:tooltipText="@string/accessibility_toolbar_btn_ai_overlay_mic" />
 
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/ttc_toolbar_button"
+            style="@style/ToolbarHoverableButton.AdaptiveDensity"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_audio_spark_24dp"
+            android:visibility="gone"
+            android:contentDescription="@string/ttc_entrypoint_label"
+            android:tooltipText="@string/ttc_entrypoint_label" />
+
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarHoverableButton.AdaptiveDensity"

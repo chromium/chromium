@@ -32,6 +32,15 @@ public final class ToolbarFeatures {
     }
 
     /**
+     * Returns whether the tablet toolbar, used on large screens (tablets and desktop Android), can
+     * host the TTC button: whether the TTC feature is enabled. The button only shows once the TTC
+     * session UI asks for it, and when there's room for it.
+     */
+    public static boolean isTtcToolbarButtonSupported() {
+        return ChromeFeatureList.sTtc.isEnabled();
+    }
+
+    /**
      * Returns if app header customization is supported. This feature enables rendering the tab
      * strip in the caption bar when applicable.
      */
