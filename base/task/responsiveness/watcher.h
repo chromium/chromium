@@ -2,33 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_WATCHER_H_
-#define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_WATCHER_H_
+#ifndef BASE_TASK_RESPONSIVENESS_WATCHER_H_
+#define BASE_TASK_RESPONSIVENESS_WATCHER_H_
 
 #include <stdint.h>
 
+#include <memory>
 #include <variant>
 #include <vector>
 
+#include "base/base_export.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "content/browser/scheduler/responsiveness/metric_source.h"
-#include "content/common/content_export.h"
 
-namespace content {
+namespace base {
+
+struct PendingTask;
+class SequencedTaskRunner;
+
 namespace responsiveness {
 
 class Calculator;
+class MessageLoopObserver;
 
-class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
-                               public MetricSource::Delegate {
+class BASE_EXPORT Watcher : public base::RefCounted<Watcher> {
  public:
-  Watcher();
+  explicit Watcher(scoped_refptr<SequencedTaskRunner> io_task_runner);
   void SetUp();
-  void Destroy();
+  virtual void Destroy();
 
   // Must be invoked once-and-only-once, after SetUp(), the first time
   // MainMessageLoopRun() reaches idle (i.e. done running all tasks queued
@@ -41,25 +47,25 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
 
   // Exposed for tests.
   virtual std::unique_ptr<Calculator> CreateCalculator();
-  virtual std::unique_ptr<MetricSource> CreateMetricSource();
+  virtual void RegisterMessageLoopObserverUI();
+  virtual void RegisterMessageLoopObserverIO();
 
-  ~Watcher() override;
+  virtual ~Watcher();
 
-  // Delegate interface implementation.
-  void SetUpOnIOThread() override;
-  void TearDownOnUIThread() override;
-  void TearDownOnIOThread() override;
+  void SetUpOnIOThread();
+  void TearDownOnUIThread();
+  void TearDownOnIOThread();
 
   void WillRunTaskOnUIThread(const base::PendingTask* task,
-                             bool was_blocked_or_low_priority) override;
-  void DidRunTaskOnUIThread(const base::PendingTask* task) override;
+                             bool was_blocked_or_low_priority);
+  void DidRunTaskOnUIThread(const base::PendingTask* task);
 
   void WillRunTaskOnIOThread(const base::PendingTask* task,
-                             bool was_blocked_or_low_priority) override;
-  void DidRunTaskOnIOThread(const base::PendingTask* task) override;
+                             bool was_blocked_or_low_priority);
+  void DidRunTaskOnIOThread(const base::PendingTask* task);
 
-  void WillRunEventOnUIThread(uintptr_t opaque_identifier) override;
-  void DidRunEventOnUIThread(uintptr_t opaque_identifier) override;
+  void WillRunEventOnUIThread(uintptr_t opaque_identifier);
+  void DidRunEventOnUIThread(uintptr_t opaque_identifier);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ResponsivenessWatcherTest, TaskForwarding);
@@ -92,9 +98,6 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
     bool caused_reentrancy = false;
   };
 
-  // This is called when |metric_source_| finishes destruction.
-  void FinishDestroyMetricSource();
-
   // Common implementations for the thread-specific methods.
   void WillRunTask(const base::PendingTask* task,
                    bool was_blocked_or_low_priority,
@@ -114,11 +117,13 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
                   int* mismatched_task_identifiers,
                   TaskOrEventFinishedCallback callback);
 
-  // The source that emits responsiveness events.
-  std::unique_ptr<MetricSource> metric_source_;
+  scoped_refptr<SequencedTaskRunner> io_task_runner_;
 
   // The following members are all affine to the UI thread.
   std::unique_ptr<Calculator> calculator_;
+  std::unique_ptr<MessageLoopObserver> message_loop_observer_ui_;
+  bool destroy_was_called_ = false;
+  SEQUENCE_CHECKER(ui_sequence_checker_);
 
   // Metadata for currently running tasks and events on the UI thread.
   std::vector<Metadata> currently_running_metadata_ui_;
@@ -134,8 +139,10 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
   int mismatched_event_identifiers_ui_ = 0;
 
   // The following members are all affine to the IO thread.
+  std::unique_ptr<MessageLoopObserver> message_loop_observer_io_;
   std::vector<Metadata> currently_running_metadata_io_;
   int mismatched_task_identifiers_io_ = 0;
+  SEQUENCE_CHECKER(io_sequence_checker_);
 
   // The implementation of this class guarantees that |calculator_io_| will be
   // non-nullptr and point to a valid object any time it is used on the IO
@@ -149,6 +156,6 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
 };
 
 }  // namespace responsiveness
-}  // namespace content
+}  // namespace base
 
-#endif  // CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_WATCHER_H_
+#endif  // BASE_TASK_RESPONSIVENESS_WATCHER_H_

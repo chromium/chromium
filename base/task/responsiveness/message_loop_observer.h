@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_
-#define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_
+#ifndef BASE_TASK_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_
+#define BASE_TASK_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_
 
+#include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/task/task_observer.h"
 
 namespace base {
-struct PendingTask;
-}  // namespace base
 
-namespace content {
+struct PendingTask;
+
 namespace responsiveness {
 
 // This object is not thread safe. It must be constructed and destroyed on the
 // same thread. The callbacks will occur synchronously from WillProcessTask()
 // and DidProcessTask().
-class MessageLoopObserver : base::TaskObserver {
+class BASE_EXPORT MessageLoopObserver : base::TaskObserver {
  public:
   using WillProcessTaskCallback =
       base::RepeatingCallback<void(const base::PendingTask* task,
@@ -46,6 +46,6 @@ class MessageLoopObserver : base::TaskObserver {
 };
 
 }  // namespace responsiveness
-}  // namespace content
+}  // namespace base
 
-#endif  // CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_
+#endif  // BASE_TASK_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_

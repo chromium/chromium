@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_RESPONSIVENESS_CALCULATOR_DELEGATE_H_
-#define CONTENT_PUBLIC_BROWSER_RESPONSIVENESS_CALCULATOR_DELEGATE_H_
+#ifndef BASE_TASK_RESPONSIVENESS_RESPONSIVENESS_CALCULATOR_DELEGATE_H_
+#define BASE_TASK_RESPONSIVENESS_RESPONSIVENESS_CALCULATOR_DELEGATE_H_
 
-#include "content/common/content_export.h"
+#include <stddef.h>
 
-namespace content {
+#include "base/base_export.h"
+
+namespace base {
 
 // Allows the embedder to be notified when the responsiveness metric
 // (Browser.MainThreadsCongestion) is emitted.
-class CONTENT_EXPORT ResponsivenessCalculatorDelegate {
+class BASE_EXPORT ResponsivenessCalculatorDelegate {
  public:
   // Invoked whenever a measurement interval ended, which includes when the
   // application is suspended and the current interval should be discarded.
@@ -25,6 +27,6 @@ class CONTENT_EXPORT ResponsivenessCalculatorDelegate {
   virtual ~ResponsivenessCalculatorDelegate() = default;
 };
 
-}  // namespace content
+}  // namespace base
 
-#endif  // CONTENT_PUBLIC_BROWSER_RESPONSIVENESS_CALCULATOR_DELEGATE_H_
+#endif  // BASE_TASK_RESPONSIVENESS_RESPONSIVENESS_CALCULATOR_DELEGATE_H_

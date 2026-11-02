@@ -2,25 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_CALCULATOR_H_
-#define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_CALCULATOR_H_
+#ifndef BASE_TASK_RESPONSIVENESS_CALCULATOR_H_
+#define BASE_TASK_RESPONSIVENESS_CALCULATOR_H_
 
 #include <memory>
 #include <set>
 #include <vector>
 
+#include "base/base_export.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/task/responsiveness/responsiveness_calculator_delegate.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
-#include "content/public/browser/responsiveness_calculator_delegate.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
-namespace content {
+namespace base {
 namespace responsiveness {
 
 // This class receives execution latency on events and tasks, and uses that to
@@ -28,7 +30,7 @@ namespace responsiveness {
 //
 // All members are UI-thread affine, with the exception of |*_on_io_thread_|
 // which are protected by |io_thread_lock_|.
-class CONTENT_EXPORT Calculator {
+class BASE_EXPORT Calculator {
  public:
   explicit Calculator(
       std::unique_ptr<ResponsivenessCalculatorDelegate> delegate);
@@ -224,6 +226,9 @@ class CONTENT_EXPORT Calculator {
 
   perfetto::NamedTrack congestion_track_;
 
+  SEQUENCE_CHECKER(ui_thread_sequence_checker_);
+  SEQUENCE_CHECKER(io_thread_sequence_checker_);
+
 #if BUILDFLAG(IS_ANDROID)
   // Listener for changes in application state, unregisters itself when
   // destroyed.
@@ -233,6 +238,6 @@ class CONTENT_EXPORT Calculator {
 };
 
 }  // namespace responsiveness
-}  // namespace content
+}  // namespace base
 
-#endif  // CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_CALCULATOR_H_
+#endif  // BASE_TASK_RESPONSIVENESS_CALCULATOR_H_

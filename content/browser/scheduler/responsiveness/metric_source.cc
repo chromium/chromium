@@ -6,8 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/pending_task.h"
+#include "base/task/responsiveness/message_loop_observer.h"
 #include "build/build_config.h"
-#include "content/browser/scheduler/responsiveness/message_loop_observer.h"
 #include "content/browser/scheduler/responsiveness/native_event_observer.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -72,8 +72,9 @@ void MetricSource::RegisterMessageLoopObserverUI() {
                                                base::Unretained(delegate_));
   auto did_run_callback = base::BindRepeating(&Delegate::DidRunTaskOnUIThread,
                                               base::Unretained(delegate_));
-  message_loop_observer_ui_ = std::make_unique<MessageLoopObserver>(
-      std::move(will_run_callback), std::move(did_run_callback));
+  message_loop_observer_ui_ =
+      std::make_unique<base::responsiveness::MessageLoopObserver>(
+          std::move(will_run_callback), std::move(did_run_callback));
 }
 
 void MetricSource::RegisterMessageLoopObserverIO() {
@@ -83,8 +84,9 @@ void MetricSource::RegisterMessageLoopObserverIO() {
                                                base::Unretained(delegate_));
   auto did_run_callback = base::BindRepeating(&Delegate::DidRunTaskOnIOThread,
                                               base::Unretained(delegate_));
-  message_loop_observer_io_ = std::make_unique<MessageLoopObserver>(
-      std::move(will_run_callback), std::move(did_run_callback));
+  message_loop_observer_io_ =
+      std::make_unique<base::responsiveness::MessageLoopObserver>(
+          std::move(will_run_callback), std::move(did_run_callback));
 }
 
 void MetricSource::SetUpOnIOThread() {

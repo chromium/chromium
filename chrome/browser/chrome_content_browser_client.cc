@@ -9381,7 +9381,7 @@ ChromeContentBrowserClient::GetContainerPolicyOverrideForCommit(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
 }
 
-std::unique_ptr<content::ResponsivenessCalculatorDelegate>
+std::unique_ptr<base::ResponsivenessCalculatorDelegate>
 ChromeContentBrowserClient::CreateResponsivenessCalculatorDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
   return ChromeResponsivenessCalculatorDelegate::Create();

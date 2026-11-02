@@ -44,6 +44,9 @@
 #include "base/task/current_thread.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/execution_fence.h"
+#include "base/task/responsiveness/calculator.h"
+#include "base/task/responsiveness/responsiveness_calculator_delegate.h"
+#include "base/task/responsiveness/watcher.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -92,7 +95,7 @@
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/scheduler/browser_task_executor.h"
-#include "content/browser/scheduler/responsiveness/watcher.h"
+#include "content/browser/scheduler/responsiveness/native_event_observer.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_device_source.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -445,6 +448,46 @@ uint32_t GenerateBrowserSalt() {
 // Controls whether the memory-mapped ICU data file is pre-read on the
 // ThreadPool during startup.
 BASE_FEATURE(kPreReadIcuData, base::FEATURE_ENABLED_BY_DEFAULT);
+
+class BrowserResponsivenessWatcher : public base::responsiveness::Watcher {
+ public:
+  BrowserResponsivenessWatcher() : Watcher(GetIOThreadTaskRunner({})) {}
+
+ private:
+  ~BrowserResponsivenessWatcher() override = default;
+
+  std::unique_ptr<base::responsiveness::Calculator> CreateCalculator()
+      override {
+    return std::make_unique<base::responsiveness::Calculator>(
+        GetContentClient()
+            ->browser()
+            ->CreateResponsivenessCalculatorDelegate());
+  }
+
+  // Overrides `Watcher`'s UI-thread observer registration hook to also install
+  // `BrowserUINativeEventObserver` (which depends on `//ui` and `//content`, so
+  // `base::responsiveness::Watcher` cannot own it directly) for native OS
+  // events dispatched from the UI message pump.
+  void RegisterMessageLoopObserverUI() override {
+    Watcher::RegisterMessageLoopObserverUI();
+    native_event_observer_ui_ =
+        std::make_unique<responsiveness::BrowserUINativeEventObserver>(
+            base::BindRepeating(
+                &BrowserResponsivenessWatcher::WillRunEventOnUIThread,
+                base::Unretained(this)),
+            base::BindRepeating(
+                &BrowserResponsivenessWatcher::DidRunEventOnUIThread,
+                base::Unretained(this)));
+  }
+
+  void Destroy() override {
+    native_event_observer_ui_.reset();
+    Watcher::Destroy();
+  }
+
+  std::unique_ptr<responsiveness::BrowserUINativeEventObserver>
+      native_event_observer_ui_;
+};
 
 }  // namespace
 
@@ -1133,7 +1176,8 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
   // responsiveness::Watcher to catch jank induced by any unintentionally
   // blocking tasks.
   base::DisallowUnresponsiveTasks();
-  responsiveness_watcher_ = new responsiveness::Watcher;
+  responsiveness_watcher_ =
+      base::MakeRefCounted<BrowserResponsivenessWatcher>();
   responsiveness_watcher_->SetUp();
   return result_code_;
 }

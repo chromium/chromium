@@ -35,6 +35,9 @@ class CommandLine;
 class HighResolutionTimerManager;
 class SingleThreadTaskRunner;
 class SystemMonitor;
+namespace responsiveness {
+class Watcher;
+}  // namespace responsiveness
 }  // namespace base
 
 namespace data_decoder {
@@ -98,10 +101,6 @@ class StartupTracingController;
 }
 namespace content {
 struct MainFunctionParams;
-
-namespace responsiveness {
-class Watcher;
-}  // namespace responsiveness
 
 #if BUILDFLAG(IS_ANDROID)
 class ScreenOrientationDelegate;
@@ -390,7 +389,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   // END Members initialized in |PostCreateThreads()| --------------------------
 
   // Members initialized in |PreMainMessageLoopRun()| --------------------------
-  scoped_refptr<responsiveness::Watcher> responsiveness_watcher_;
+  scoped_refptr<base::responsiveness::Watcher> responsiveness_watcher_;
   base::CallbackListSubscription idle_callback_subscription_;
 
   // Members not associated with a specific phase.

@@ -20,6 +20,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
+#include "base/task/responsiveness/responsiveness_calculator_delegate.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/uuid.h"
@@ -50,7 +51,6 @@
 #include "content/public/browser/prerender_web_contents_delegate.h"
 #include "content/public/browser/process_selection_deferring_condition.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/responsiveness_calculator_delegate.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/sms_fetcher.h"
@@ -1871,7 +1871,7 @@ bool ContentBrowserClient::ShouldSkipBeforeUnloadDialog(
   return false;
 }
 
-std::unique_ptr<ResponsivenessCalculatorDelegate>
+std::unique_ptr<base::ResponsivenessCalculatorDelegate>
 ContentBrowserClient::CreateResponsivenessCalculatorDelegate() {
   return nullptr;
 }

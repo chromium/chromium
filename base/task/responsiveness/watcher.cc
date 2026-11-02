@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/scheduler/responsiveness/watcher.h"
+#include "base/task/responsiveness/watcher.h"
 
+#include <utility>
 #include <variant>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/pending_task.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/task/responsiveness/calculator.h"
+#include "base/task/responsiveness/message_loop_observer.h"
+#include "base/task/responsiveness/responsiveness_calculator_delegate.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "content/browser/scheduler/responsiveness/calculator.h"
-#include "content/browser/scheduler/responsiveness/message_loop_observer.h"
-#include "content/browser/scheduler/responsiveness/native_event_observer.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_client.h"
 
-namespace content {
+namespace base {
 namespace responsiveness {
 
 Watcher::Metadata::Metadata(uintptr_t identifier,
@@ -29,24 +30,37 @@ Watcher::Metadata::Metadata(uintptr_t identifier,
       execution_start_time(execution_start_time) {}
 
 std::unique_ptr<Calculator> Watcher::CreateCalculator() {
-  return std::make_unique<Calculator>(
-      GetContentClient()->browser()->CreateResponsivenessCalculatorDelegate());
+  return std::make_unique<Calculator>(nullptr);
 }
 
-std::unique_ptr<MetricSource> Watcher::CreateMetricSource() {
-  return std::make_unique<MetricSource>(this);
+void Watcher::RegisterMessageLoopObserverUI() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+  message_loop_observer_ui_ = std::make_unique<MessageLoopObserver>(
+      base::BindRepeating(&Watcher::WillRunTaskOnUIThread,
+                          base::Unretained(this)),
+      base::BindRepeating(&Watcher::DidRunTaskOnUIThread,
+                          base::Unretained(this)));
+}
+
+void Watcher::RegisterMessageLoopObserverIO() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  message_loop_observer_io_ = std::make_unique<MessageLoopObserver>(
+      base::BindRepeating(&Watcher::WillRunTaskOnIOThread,
+                          base::Unretained(this)),
+      base::BindRepeating(&Watcher::DidRunTaskOnIOThread,
+                          base::Unretained(this)));
 }
 
 void Watcher::WillRunTaskOnUIThread(const base::PendingTask* task,
                                     bool was_blocked_or_low_priority) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
   WillRunTask(task, was_blocked_or_low_priority,
               &currently_running_metadata_ui_);
 }
 
 void Watcher::DidRunTaskOnUIThread(const base::PendingTask* task) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
   // Capturing `this` is safe because the callback is invoked synchronously by
   // `DidRunTask()`.
@@ -62,14 +76,14 @@ void Watcher::DidRunTaskOnUIThread(const base::PendingTask* task) {
 
 void Watcher::WillRunTaskOnIOThread(const base::PendingTask* task,
                                     bool was_blocked_or_low_priority) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
 
   WillRunTask(task, was_blocked_or_low_priority,
               &currently_running_metadata_io_);
 }
 
 void Watcher::DidRunTaskOnIOThread(const base::PendingTask* task) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M160);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
 
   // Capturing `this` is safe because the callback is invoked synchronously by
   // `DidRunTask()`.
@@ -155,7 +169,7 @@ void Watcher::DidRunTask(const base::PendingTask* task,
 }
 
 void Watcher::WillRunEventOnUIThread(uintptr_t opaque_identifier) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
   // Reentrancy should be rare.
   if (!currently_running_metadata_ui_.empty()) [[unlikely]] {
     currently_running_metadata_ui_.back().caused_reentrancy = true;
@@ -168,7 +182,7 @@ void Watcher::WillRunEventOnUIThread(uintptr_t opaque_identifier) {
 }
 
 void Watcher::DidRunEventOnUIThread(uintptr_t opaque_identifier) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
   // Calls to DidRunEventOnUIThread should always be paired with
   // WillRunEventOnUIThread. The only time the identifier should differ is when
@@ -201,29 +215,41 @@ void Watcher::DidRunEventOnUIThread(uintptr_t opaque_identifier) {
                                              execution_finish_time);
 }
 
-Watcher::Watcher() = default;
-Watcher::~Watcher() = default;
+Watcher::Watcher(scoped_refptr<SequencedTaskRunner> io_task_runner)
+    : io_task_runner_(std::move(io_task_runner)) {
+  DETACH_FROM_SEQUENCE(io_sequence_checker_);
+}
+
+Watcher::~Watcher() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+}
 
 void Watcher::SetUp() {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
-  // Set up |calculator_| before |metric_source_| because SetUpOnIOThread()
-  // uses |calculator_|.
+  // Set up |calculator_| before SetUpOnIOThread() uses |calculator_|.
   calculator_ = CreateCalculator();
   currently_running_metadata_ui_.reserve(5);
 
-  metric_source_ = CreateMetricSource();
-  metric_source_->SetUp();
+  RegisterMessageLoopObserverUI();
+  io_task_runner_->PostTask(FROM_HERE, base::BindOnce(&Watcher::SetUpOnIOThread,
+                                                      base::Unretained(this)));
 }
 
 void Watcher::Destroy() {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+  CHECK(!destroy_was_called_, base::NotFatalUntil::M160);
+  destroy_was_called_ = true;
 
-  // This holds a ref to |this| until the destroy flow completes.
-  base::ScopedClosureRunner on_destroy_complete(base::BindOnce(
-      &Watcher::FinishDestroyMetricSource, base::RetainedRef(this)));
+  message_loop_observer_ui_.reset();
 
-  metric_source_->Destroy(std::move(on_destroy_complete));
+  // `base::Unretained(this)` is safe because the reply callback holds a
+  // reference via `base::RetainedRef(this)`, keeping `this` alive across both
+  // `TearDownOnIOThread()` and `TearDownOnUIThread()`.
+  io_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&Watcher::TearDownOnIOThread, base::Unretained(this)),
+      base::BindOnce(&Watcher::TearDownOnUIThread, base::RetainedRef(this)));
 }
 
 void Watcher::OnFirstIdle() {
@@ -231,20 +257,22 @@ void Watcher::OnFirstIdle() {
 }
 
 void Watcher::SetUpOnIOThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   currently_running_metadata_io_.reserve(5);
   CHECK(calculator_.get(), base::NotFatalUntil::M160);
   calculator_io_ = calculator_.get();
+  RegisterMessageLoopObserverIO();
 }
 
-void Watcher::TearDownOnUIThread() {}
-
-void Watcher::FinishDestroyMetricSource() {
-  metric_source_ = nullptr;
+void Watcher::TearDownOnUIThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 }
 
 void Watcher::TearDownOnIOThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  message_loop_observer_io_.reset();
   calculator_io_ = nullptr;
 }
 
 }  // namespace responsiveness
-}  // namespace content
+}  // namespace base

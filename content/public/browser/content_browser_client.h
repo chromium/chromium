@@ -122,6 +122,7 @@ class GURL;
 namespace base {
 class CommandLine;
 class Location;
+class ResponsivenessCalculatorDelegate;
 class SequencedTaskRunner;
 class ScopedClosureRunner;
 class Uuid;
@@ -271,7 +272,6 @@ class ProcessSelectionUserData;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
 class RenderProcessHost;
-class ResponsivenessCalculatorDelegate;
 class SecurityPrincipal;
 class SensorDelegate;
 class SerialDelegate;
@@ -3126,7 +3126,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allows the embedder to return a delegate for the responsiveness calculator.
   // The default implementation returns nullptr.
-  virtual std::unique_ptr<ResponsivenessCalculatorDelegate>
+  virtual std::unique_ptr<base::ResponsivenessCalculatorDelegate>
   CreateResponsivenessCalculatorDelegate();
 
   // Callback will be called with either an error

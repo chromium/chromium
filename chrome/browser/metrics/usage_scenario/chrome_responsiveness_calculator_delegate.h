@@ -9,8 +9,8 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/responsiveness/responsiveness_calculator_delegate.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario.h"
-#include "content/public/browser/responsiveness_calculator_delegate.h"
 
 class UsageScenarioDataStore;
 class UsageScenarioTracker;
@@ -21,7 +21,7 @@ class UsageScenarioTracker;
 // The embedder is responsible for creating instances of this class, but the
 // ownership is passed to the //content layer.
 class ChromeResponsivenessCalculatorDelegate
-    : public content::ResponsivenessCalculatorDelegate {
+    : public base::ResponsivenessCalculatorDelegate {
  public:
   static std::unique_ptr<ChromeResponsivenessCalculatorDelegate> Create();
 
@@ -30,7 +30,7 @@ class ChromeResponsivenessCalculatorDelegate
 
   ~ChromeResponsivenessCalculatorDelegate() override;
 
-  // content::ResponsivnessCalculatorDelegate:
+  // base::ResponsivenessCalculatorDelegate:
   void OnMeasurementIntervalEnded() override;
   void OnResponsivenessEmitted(int num_congested_slices,
                                int min,

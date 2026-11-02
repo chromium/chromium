@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/scheduler/responsiveness/watcher.h"
+#include "base/task/responsiveness/watcher.h"
+
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -12,16 +14,17 @@
 #include "base/pending_task.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
+#include "base/task/responsiveness/calculator.h"
+#include "base/task/responsiveness/responsiveness_calculator_delegate.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/scheduler/responsiveness/calculator.h"
-#include "content/browser/scheduler/responsiveness/native_event_observer.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace base {
 namespace responsiveness {
 
 namespace {
@@ -74,31 +77,6 @@ class FakeCalculator : public Calculator {
   std::vector<TaskTiming> execution_times_io_;
 };
 
-class FakeMetricSource : public MetricSource {
- public:
-  FakeMetricSource(Delegate* delegate, bool register_message_loop_observer)
-      : MetricSource(delegate),
-        register_message_loop_observer_(register_message_loop_observer) {}
-  ~FakeMetricSource() override {}
-
-  void RegisterMessageLoopObserverUI() override {
-    if (register_message_loop_observer_)
-      MetricSource::RegisterMessageLoopObserverUI();
-  }
-  void RegisterMessageLoopObserverIO() override {
-    if (register_message_loop_observer_)
-      MetricSource::RegisterMessageLoopObserverIO();
-  }
-
-  std::unique_ptr<BrowserUINativeEventObserver> CreateNativeEventObserver()
-      override {
-    return nullptr;
-  }
-
- private:
-  bool register_message_loop_observer_;
-};
-
 class FakeWatcher : public Watcher {
  public:
   std::unique_ptr<Calculator> CreateCalculator() override {
@@ -108,13 +86,21 @@ class FakeWatcher : public Watcher {
     return calculator;
   }
 
-  std::unique_ptr<MetricSource> CreateMetricSource() override {
-    return std::make_unique<FakeMetricSource>(this,
-                                              register_message_loop_observer_);
+  void RegisterMessageLoopObserverUI() override {
+    if (register_message_loop_observer_) {
+      Watcher::RegisterMessageLoopObserverUI();
+    }
+  }
+  void RegisterMessageLoopObserverIO() override {
+    if (register_message_loop_observer_) {
+      Watcher::RegisterMessageLoopObserverIO();
+    }
   }
 
-  FakeWatcher(bool register_message_loop_observer)
-      : Watcher(),
+  explicit FakeWatcher(bool register_message_loop_observer,
+                       scoped_refptr<SequencedTaskRunner> io_task_runner =
+                           SequencedTaskRunner::GetCurrentDefault())
+      : Watcher(std::move(io_task_runner)),
         register_message_loop_observer_(register_message_loop_observer) {}
 
   int NumTasksOnUIThread() { return calculator_->NumTasksOnUIThread(); }
@@ -137,7 +123,7 @@ class FakeWatcher : public Watcher {
 class ResponsivenessWatcherTest : public testing::Test {
  public:
   void SetUp() override {
-    // Watcher's constructor posts a task to IO thread, which in the unit test
+    // Watcher's SetUp() posts a task to IO thread, which in the unit test
     // is also this thread. Regardless, we need to let those tasks finish.
     watcher_ = scoped_refptr<FakeWatcher>(
         new FakeWatcher(/*register_message_loop_observer=*/false));
@@ -148,13 +134,12 @@ class ResponsivenessWatcherTest : public testing::Test {
   void TearDown() override {
     watcher_->Destroy();
     watcher_.reset();
+    task_environment_.RunUntilIdle();
   }
 
  protected:
-  // This member sets up BrowserThread::IO and BrowserThread::UI. It must be the
-  // first member, as other members may depend on these abstractions.
-  content::BrowserTaskEnvironment task_environment_{
-      content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   scoped_refptr<FakeWatcher> watcher_;
 };
@@ -303,53 +288,54 @@ TEST_F(ResponsivenessWatcherTest, DelayedTask) {
 
 class ResponsivenessWatcherRealIOThreadTest : public testing::Test {
  public:
-  ResponsivenessWatcherRealIOThreadTest()
-      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
-
   void SetUp() override {
-    // Watcher's constructor posts a task to IO thread. We need to let those
+    ASSERT_TRUE(io_thread_.Start());
+    // Watcher's SetUp() posts a task to IO thread. We need to let those
     // tasks finish.
-    watcher_ = scoped_refptr<FakeWatcher>(
-        new FakeWatcher(/*register_message_loop_observer=*/true));
+    watcher_ = scoped_refptr<FakeWatcher>(new FakeWatcher(
+        /*register_message_loop_observer=*/true, io_thread_.task_runner()));
     watcher_->SetUp();
-    task_environment_.RunIOThreadUntilIdle();
+    io_thread_.FlushForTesting();
   }
 
   void TearDown() override {
     watcher_->Destroy();
     watcher_.reset();
 
-    // Destroy a task onto the IO thread, which posts back to the UI thread
-    // to complete destruction.
-    task_environment_.RunIOThreadUntilIdle();
+    // Destroy posts a task onto the IO thread, which posts back to the UI
+    // thread to complete destruction.
+    io_thread_.FlushForTesting();
     task_environment_.RunUntilIdle();
+    io_thread_.Stop();
   }
 
  protected:
-  // This member sets up BrowserThread::IO and BrowserThread::UI. It must be the
-  // first member, as other members may depend on these abstractions.
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::Thread io_thread_{"IOThread"};
 
   scoped_refptr<FakeWatcher> watcher_;
 };
 
 TEST_F(ResponsivenessWatcherRealIOThreadTest, MessageLoopObserver) {
   // Post a do-nothing task onto the UI thread.
-  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::DoNothing());
 
   // Post a do-nothing task onto the IO thread.
-  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
+  io_thread_.task_runner()->PostTask(FROM_HERE, base::DoNothing());
 
   // Post a task onto the IO thread that hops back to the UI thread. This
   // guarantees that both of the do-nothing tasks have already been processed.
   base::RunLoop run_loop;
-  content::GetIOThreadTaskRunner({})->PostTask(
+  scoped_refptr<base::SingleThreadTaskRunner> ui_runner =
+      base::SingleThreadTaskRunner::GetCurrentDefault();
+  io_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(
-                     [](base::OnceClosure quit_closure) {
-                       GetUIThreadTaskRunner({})->PostTask(
-                           FROM_HERE, std::move(quit_closure));
+                     [](scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
+                        base::OnceClosure quit_closure) {
+                       ui_runner->PostTask(FROM_HERE, std::move(quit_closure));
                      },
-                     run_loop.QuitClosure()));
+                     std::move(ui_runner), run_loop.QuitClosure()));
   run_loop.Run();
 
   ASSERT_GE(watcher_->NumTasksOnUIThread(), 1);
@@ -361,11 +347,11 @@ TEST_F(ResponsivenessWatcherRealIOThreadTest, MessageLoopObserver) {
 
   ASSERT_GE(watcher_->NumTasksOnIOThread(), 1);
   const TaskTiming io_thread_task_timing =
-      watcher_->ExecutionTimesUIThread()[0];
+      watcher_->ExecutionTimesIOThread()[0];
   EXPECT_FALSE(io_thread_task_timing.queue_time.is_null());
   EXPECT_FALSE(io_thread_task_timing.execution_start_time.is_null());
   EXPECT_FALSE(io_thread_task_timing.execution_finish_time.is_null());
 }
 
 }  // namespace responsiveness
-}  // namespace content
+}  // namespace base

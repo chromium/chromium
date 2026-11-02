@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/scheduler/responsiveness/calculator.h"
+#include "base/task/responsiveness/calculator.h"
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/task/responsiveness/responsiveness_calculator_delegate.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/public/browser/responsiveness_calculator_delegate.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace base {
 namespace responsiveness {
 
 using CongestionType = Calculator::CongestionType;
@@ -123,9 +125,7 @@ class ResponsivenessCalculatorTest : public testing::Test {
   }
 
  protected:
-  // This member sets up BrowserThread::IO and BrowserThread::UI. It must be the
-  // first member, as other members may depend on these abstractions.
-  content::BrowserTaskEnvironment task_environment_;
+  test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<FakeCalculator> calculator_;
   raw_ptr<MockDelegate> delegate_;
@@ -864,4 +864,4 @@ TEST_F(ResponsivenessCalculatorTest, Delegate) {
 }
 
 }  // namespace responsiveness
-}  // namespace content
+}  // namespace base

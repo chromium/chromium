@@ -1,3 +1,6 @@
+Note: `Calculator`, `Watcher`, and `MessageLoopObserver` now live in
+`//base/task/responsiveness/`.
+
 The classes in this folder estimate the responsiveness of Chrome by measuring
 execution duration of individual work items on the UI and IO threads of the
 browser process.

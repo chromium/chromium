@@ -69,6 +69,7 @@ class ScopedKeepAlive;
 
 namespace base {
 class CommandLine;
+class ResponsivenessCalculatorDelegate;
 }  // namespace base
 
 namespace blink {
@@ -1125,7 +1126,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldSkipBeforeUnloadDialog(content::RenderFrameHost* rfh) override;
 
-  std::unique_ptr<content::ResponsivenessCalculatorDelegate>
+  std::unique_ptr<base::ResponsivenessCalculatorDelegate>
   CreateResponsivenessCalculatorDelegate() override;
 
   void GetCloudIdentifiers(
