@@ -7,7 +7,6 @@ package org.chromium.chrome.test.transit;
 import static org.chromium.base.test.transit.Triggers.noopTo;
 
 import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
@@ -18,6 +17,7 @@ import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
@@ -29,7 +29,7 @@ import java.util.List;
  * <p>Tests using this should be batched.
  */
 @NullMarked
-public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implements TestRule {
+public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule {
     private static final String TAG = "Transit";
     private final BlankCTATabInitialStateRule mInitialStateRule;
     private final BatchedPublicTransitRule<CtaPageStation> mBatchedRule;
@@ -59,6 +59,7 @@ public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implemen
      * <p>From the second test onwards, tab state was reset by {@link BlankCTATabInitialStateRule}.
      * Extra windows are closed here.
      */
+    @Override
     public WebPageStation startOnBlankPage() {
         // Empty in the first test, should be size 1+ from the second test onwards.
         // When we encounter size 2+, close the extra windows left by the previous test.
@@ -88,18 +89,21 @@ public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implemen
      *
      * <p>From the second test onwards, state was reset by {@link BlankCTATabInitialStateRule}.
      */
+    @Override
     public RegularNewTabPageStation startOnNtp() {
         WebPageStation blankPage = startOnBlankPage();
         return blankPage.loadNtp();
     }
 
     /**
-     * Start the batched test in a URL.
+     * Start the batched test at |url| arriving at the Station built by |builder|.
      *
      * <p>From the second test onwards, state was reset by {@link BlankCTATabInitialStateRule}.
      */
-    public WebPageStation startOnWebPage(String url) {
+    @Override
+    public <T extends CtaPageStation> T startOnPage(
+            String url, BasePageStation.Builder<T> builder) {
         WebPageStation blankPage = startOnBlankPage();
-        return blankPage.loadWebPageProgrammatically(url);
+        return blankPage.loadPageProgrammatically(url, builder);
     }
 }

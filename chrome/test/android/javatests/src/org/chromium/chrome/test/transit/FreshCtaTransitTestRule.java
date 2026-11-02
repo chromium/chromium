@@ -9,7 +9,6 @@ import android.content.Intent;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
-import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
@@ -21,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
@@ -35,7 +35,7 @@ import java.util.List;
  * process.
  */
 @NullMarked
-public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements TestRule {
+public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule {
     private static final String TAG = "TestRule";
     private boolean mSkipInstanceAndTabStateCleanup;
 
@@ -84,11 +84,7 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
         }
     }
 
-    /**
-     * Start the test in a blank page.
-     *
-     * @return the active entry {@link CtaPageStation}
-     */
+    @Override
     public WebPageStation startOnBlankPage() {
         return ChromeTabbedActivityEntryPoints.startOnBlankPage(mActivityTestRule);
     }
@@ -102,6 +98,12 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
         return ChromeTabbedActivityEntryPoints.startOnIncognitoBlankPage(mActivityTestRule);
     }
 
+    @Override
+    public <T extends CtaPageStation> T startOnPage(
+            String url, BasePageStation.Builder<T> builder) {
+        return startOnUrlTo(url).arriveAt(builder.initForEntryPointUrl(url).build());
+    }
+
     /**
      * Start the test with a url that leads to a web page.
      *
@@ -109,7 +111,7 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
      * @return the active entry {@link CtaPageStation}
      */
     public WebPageStation startOnUrl(String url) {
-        return ChromeTabbedActivityEntryPoints.startOnUrl(mActivityTestRule, url);
+        return startOnWebPage(url);
     }
 
     /**
@@ -121,18 +123,6 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
     @CheckReturnValue
     public TripBuilder startOnUrlTo(String url) {
         return ChromeTabbedActivityEntryPoints.startOnUrlTo(mActivityTestRule, url);
-    }
-
-    /**
-     * Start the test in a web page served by the test server.
-     *
-     * @param relativeUrl the relative URL of the page to serve and load
-     * @return the active entry {@link CtaPageStation}
-     */
-    public WebPageStation startOnTestServerUrl(String relativeUrl) {
-        assert relativeUrl.startsWith("/") : "|relativeUrl| must be relative";
-        String fullUrl = mActivityTestRule.getTestServer().getURL(relativeUrl);
-        return ChromeTabbedActivityEntryPoints.startOnUrl(mActivityTestRule, fullUrl);
     }
 
     /**
@@ -188,11 +178,7 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
                                 .build());
     }
 
-    /**
-     * Start the test in an NTP.
-     *
-     * @return the active entry {@link RegularNewTabPageStation}
-     */
+    @Override
     public RegularNewTabPageStation startOnNtp() {
         return ChromeTabbedActivityEntryPoints.startOnNtp(mActivityTestRule);
     }

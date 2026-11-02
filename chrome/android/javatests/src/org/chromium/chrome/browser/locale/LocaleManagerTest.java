@@ -43,7 +43,7 @@ public class LocaleManagerTest {
     public void setUp() throws ExecutionException {
         // Launch any activity as an Activity ref is required to attempt to show the activity.
         mActivityTestRule.start();
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivityTestRule.getActivityTestRule().waitForActivityNativeInitializationComplete();
         mActivityTestRule.getActivityTestRule().waitForDeferredStartup();
     }
 

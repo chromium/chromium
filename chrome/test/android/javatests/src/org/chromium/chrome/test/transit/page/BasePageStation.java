@@ -138,6 +138,15 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             return this;
         }
 
+        /** Expect to show |url| as the entry point in the first tab of the Activity. */
+        public Builder<PageT> initForEntryPointUrl(String url) {
+            mConfig.withEntryPoint();
+            if (mConfig.mExpectedUrlSubstring == null) {
+                mConfig.withExpectedUrlSubstring(url);
+            }
+            return this;
+        }
+
         /**
          * Expect to show the same tab as |previousStation|, without it becoming selected, but
          * loading |url|.

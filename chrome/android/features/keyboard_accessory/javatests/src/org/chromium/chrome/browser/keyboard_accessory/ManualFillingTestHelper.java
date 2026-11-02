@@ -63,9 +63,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.content_public.browser.ImeAdapter;
@@ -134,14 +132,7 @@ public class ManualFillingTestHelper {
         getOrCreateTestServer();
         ChromeWindow.setKeyboardVisibilityDelegateFactory(keyboardDelegate);
 
-        WebPageStation page;
-        if (mActivityTestRule instanceof AutoResetCtaTransitTestRule autoResetCtaTransitTestRule) {
-            page = autoResetCtaTransitTestRule.startOnWebPage(mEmbeddedTestServer.getURL(url));
-        } else if (mActivityTestRule instanceof FreshCtaTransitTestRule freshCtaTransitTestRule) {
-            page = freshCtaTransitTestRule.startOnUrl(mEmbeddedTestServer.getURL(url));
-        } else {
-            throw new IllegalArgumentException("Unsupported rule: " + mActivityTestRule.getClass());
-        }
+        WebPageStation page = mActivityTestRule.startOnWebPage(mEmbeddedTestServer.getURL(url));
 
         setRtlForTesting(isRtl);
         updateWebContentsDependentState();

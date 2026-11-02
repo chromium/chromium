@@ -41,7 +41,9 @@ public class AndroidPaymentAppFinderCanMakePaymentTest {
     public void setUp() throws Exception {
         mMockPaymentAppInstaller = new MockPaymentAppInstaller();
         mTestRule.start();
-        mTestRule.loadUrl(mTestRule.getTestServer().getURL(TEST_PAGE));
+        mTestRule
+                .getActivityTestRule()
+                .loadUrl(mTestRule.getActivityTestRule().getTestServer().getURL(TEST_PAGE));
     }
 
     @After
@@ -87,7 +89,7 @@ public class AndroidPaymentAppFinderCanMakePaymentTest {
 
     private String getCanMakePaymentResult() throws Exception {
         return JavaScriptUtils.runJavascriptWithAsyncResult(
-                mTestRule.getWebContents(),
+                mTestRule.getActivityTestRule().getWebContents(),
                 String.format(
                         "initAndCheckCanMakePayment('%s').then(result => "
                                 + "{window.domAutomationController.send(result);})",
@@ -96,14 +98,14 @@ public class AndroidPaymentAppFinderCanMakePaymentTest {
 
     private String getHasEnrolledInstrumentResult() throws Exception {
         return JavaScriptUtils.runJavascriptWithAsyncResult(
-                mTestRule.getWebContents(),
+                mTestRule.getActivityTestRule().getWebContents(),
                 "checkHasEnrolledInstrument().then(result => "
                         + "{window.domAutomationController.send(result);})");
     }
 
     private String getShowResult() throws Exception {
         return JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
-                mTestRule.getWebContents(),
+                mTestRule.getActivityTestRule().getWebContents(),
                 "checkShowResult().then(result => "
                         + "{window.domAutomationController.send(result);})");
     }

@@ -9,6 +9,8 @@ import android.os.Build;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
+import org.junit.rules.TestRule;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
@@ -23,6 +25,10 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.BasePageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -35,7 +41,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Base class for integration tests that start {@link ChromeTabbedActivity}. */
 @NullMarked
-public class BaseCtaTransitTestRule {
+public abstract class BaseCtaTransitTestRule implements TestRule {
     protected final ChromeTabbedActivityTestRule mActivityTestRule;
 
     BaseCtaTransitTestRule() {
@@ -44,6 +50,33 @@ public class BaseCtaTransitTestRule {
 
     BaseCtaTransitTestRule(ChromeTabbedActivityTestRule activityTestRule) {
         mActivityTestRule = activityTestRule;
+    }
+
+    /** Start the test in a blank page. */
+    public abstract WebPageStation startOnBlankPage();
+
+    /** Start the test in an NTP. */
+    public abstract RegularNewTabPageStation startOnNtp();
+
+    /** Start the test at |url| arriving at the Station built by |builder|. */
+    public abstract <T extends CtaPageStation> T startOnPage(
+            String url, BasePageStation.Builder<T> builder);
+
+    /** Start the test in a web page at |url|. */
+    public WebPageStation startOnWebPage(String url) {
+        return startOnPage(url, WebPageStation.newBuilder());
+    }
+
+    /**
+     * Start the test in a web page served by the test server.
+     *
+     * @param relativeUrl the relative URL of the page to serve and load
+     * @return the active entry {@link WebPageStation}
+     */
+    public WebPageStation startOnTestServerUrl(String relativeUrl) {
+        assert relativeUrl.startsWith("/") : "|relativeUrl| must be relative";
+        String fullUrl = mActivityTestRule.getTestServer().getURL(relativeUrl);
+        return startOnWebPage(fullUrl);
     }
 
     public ChromeTabbedActivityTestRule getActivityTestRule() {
