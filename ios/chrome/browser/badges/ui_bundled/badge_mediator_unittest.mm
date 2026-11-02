@@ -371,6 +371,35 @@ TEST_P(BadgeMediatorTest, PermissionsBadgeButtonTappedShowsPageInfo) {
   EXPECT_OCMOCK_VERIFY(mock_page_info_handler);
 }
 
+// Tests that BadgeTypeForInfobarType and IsBadgeSupportedForInfobarType return
+// kBadgeTypeNone / false for sunset autofill/password infobars.
+TEST_P(BadgeMediatorTest, SunsetAutofillInfobarsHaveNoBadges) {
+  EXPECT_EQ(BadgeTypeForInfobarType(InfobarType::kInfobarTypePasswordSave),
+            kBadgeTypeNone);
+  EXPECT_EQ(BadgeTypeForInfobarType(InfobarType::kInfobarTypePasswordUpdate),
+            kBadgeTypeNone);
+  EXPECT_EQ(BadgeTypeForInfobarType(InfobarType::kInfobarTypeSaveCard),
+            kBadgeTypeNone);
+  EXPECT_EQ(BadgeTypeForInfobarType(
+                InfobarType::kInfobarTypeSaveAutofillAddressProfile),
+            kBadgeTypeNone);
+
+  EXPECT_FALSE(
+      IsBadgeSupportedForInfobarType(InfobarType::kInfobarTypePasswordSave));
+  EXPECT_FALSE(
+      IsBadgeSupportedForInfobarType(InfobarType::kInfobarTypePasswordUpdate));
+  EXPECT_FALSE(
+      IsBadgeSupportedForInfobarType(InfobarType::kInfobarTypeSaveCard));
+  EXPECT_FALSE(IsBadgeSupportedForInfobarType(
+      InfobarType::kInfobarTypeSaveAutofillAddressProfile));
+
+  // Supported badges are unaffected.
+  EXPECT_EQ(BadgeTypeForInfobarType(InfobarType::kInfobarTypeTranslate),
+            kBadgeTypeTranslate);
+  EXPECT_TRUE(
+      IsBadgeSupportedForInfobarType(InfobarType::kInfobarTypeTranslate));
+}
+
 INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
                          BadgeMediatorTest,
                          testing::Values(TestParam::kNormal,
