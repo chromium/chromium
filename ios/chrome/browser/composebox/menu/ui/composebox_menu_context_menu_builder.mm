@@ -287,8 +287,7 @@ struct MenuItemAvailability {
         favicon = ImageWithCornerRadius(favicon, kAttachCurrentTabIconRadius);
       }
       return favicon
-                 ?: SymbolWithPointSize(SymbolNewTabGroupAction,
-                                        kSymbolActionPointSize);
+                 ?: SymbolWithPointSize(SymbolGlobe, kSymbolActionPointSize);
     }
     case ComposeboxMenuItemType::kAttachmentTabs:
       return SymbolWithPointSize(SymbolNewTabGroupAction,
