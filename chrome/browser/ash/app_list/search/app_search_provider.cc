@@ -9,7 +9,6 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/callback_list.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -113,11 +112,7 @@ void AppSearchProvider::UpdateResults() {
 
   SearchProvider::Results new_results;
 
-  const bool use_exact_match =
-      app_list_features::IsExactMatchForNonLatinLocaleEnabled() &&
-      IsNonLatinLocale(base::i18n::GetDefaultIcuLocale());
-
-  if (use_exact_match) {
+  if (IsNonLatinLocale(base::i18n::GetDefaultIcuLocale())) {
     new_results = data_source_->GetExactMatches(query_);
   } else {
     new_results = data_source_->GetFuzzyMatches(query_);

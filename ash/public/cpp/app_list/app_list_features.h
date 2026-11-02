@@ -18,9 +18,6 @@ namespace app_list_features {
 // Enables hashed recording of a app list launches.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableAppListLaunchRecording);
 
-// Enables using exact string search for non latin locales.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableExactMatchForNonLatinLocale);
-
 // Forces the launcher to show the continue section even if there are no file
 // suggestions.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kForceShowContinueSection);
@@ -33,7 +30,6 @@ ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kDynamicSearchUpdateAnimation);
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kLauncherPlayStoreSearch);
 
 ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
-ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
 ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();
 ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
