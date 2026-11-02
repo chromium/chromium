@@ -21,6 +21,7 @@
 #include "components/android_autofill/browser/android_autofill_provider_bridge.h"
 #include "components/android_autofill/browser/android_autofill_provider_test_api.h"
 #include "components/android_autofill/browser/autofill_provider.h"
+#include "components/android_autofill/browser/card_value_validation.h"
 #include "components/android_autofill/browser/form_data_android.h"
 #include "components/android_autofill/browser/form_data_android_test_api.h"
 #include "components/android_autofill/browser/mock_form_field_data_android_bridge.h"
@@ -3020,16 +3021,22 @@ class AndroidAutofillManagerSecurityPolicyTypesTest
   FormData form_;
 };
 
+constexpr char kCrossOriginMainFrameValidationHistogram[] =
+    "Autofill.WebView.CrossOriginMainFrameCreditCardFieldValidation";
+
 // Tests that without kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame, the
 // security policy gets UNKNOWN_TYPE for all fields.
 TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
        UnknownTypesWithoutFeature) {
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(FillAndGetTypes(),
               UnorderedElementsAre(Pair(field_id(kName), UNKNOWN_TYPE),
                                    Pair(field_id(kNumber), UNKNOWN_TYPE),
                                    Pair(field_id(kMonth), UNKNOWN_TYPE),
                                    Pair(field_id(kYear), UNKNOWN_TYPE),
                                    Pair(field_id(kCvc), UNKNOWN_TYPE)));
+  histogram_tester.ExpectTotalCount(kCrossOriginMainFrameValidationHistogram,
+                                    0);
 }
 
 // Tests that with kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame, the
@@ -3039,6 +3046,7 @@ TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
        PredictedTypesForMainFrameNameAndExpiryWithFeature) {
   base::test::ScopedFeatureList feature_list(
       features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(FillAndGetTypes(),
               UnorderedElementsAre(
                   Pair(field_id(kName), CREDIT_CARD_NAME_FULL),
@@ -3047,6 +3055,9 @@ TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
                   Pair(field_id(kYear), AnyOf(CREDIT_CARD_EXP_2_DIGIT_YEAR,
                                               CREDIT_CARD_EXP_4_DIGIT_YEAR)),
                   Pair(field_id(kCvc), UNKNOWN_TYPE)));
+  histogram_tester.ExpectUniqueSample(
+      kCrossOriginMainFrameValidationHistogram,
+      MainFrameCreditCardFieldValidationResult::kAllowed, 3);
 }
 
 // Tests that with kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame, a
@@ -3056,8 +3067,15 @@ TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
        UnknownTypeForImplausibleNameWithFeature) {
   base::test::ScopedFeatureList feature_list(
       features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(FillAndGetTypes(/*name=*/u"4111111111111111"),
               Contains(Pair(field_id(kName), UNKNOWN_TYPE)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kCrossOriginMainFrameValidationHistogram),
+      base::BucketsAre(
+          base::Bucket(MainFrameCreditCardFieldValidationResult::kAllowed, 2),
+          base::Bucket(
+              MainFrameCreditCardFieldValidationResult::kImplausibleValue, 1)));
 }
 
 // Tests that FillOrPreviewForm drops unfocusable non-<select> fields before
@@ -3066,6 +3084,7 @@ TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
        DropsUnfocusableNonSelectFields) {
   base::test::ScopedFeatureList feature_list(
       features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  base::HistogramTester histogram_tester;
   FormData filled_form = form();
   FillAllFields(filled_form);
   test_api(filled_form).field(kName).set_is_focusable(false);
@@ -3084,18 +3103,22 @@ TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
                   Pair(field_id(kYear), AnyOf(CREDIT_CARD_EXP_2_DIGIT_YEAR,
                                               CREDIT_CARD_EXP_4_DIGIT_YEAR)),
                   Pair(field_id(kCvc), UNKNOWN_TYPE)));
+  histogram_tester.ExpectUniqueSample(
+      kCrossOriginMainFrameValidationHistogram,
+      MainFrameCreditCardFieldValidationResult::kAllowed, 2);
 }
 
 // Tests that a fill triggered from the main frame itself leaves all field types
-// as UNKNOWN_TYPE, since the router's security policy already permits filling
-// main-frame fields on same-origin triggers without consulting
-// `field_type_map`.
+// as UNKNOWN_TYPE and does not record the cross-origin validation histogram.
 TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
        SameOriginFillLeavesUnknownTypes) {
   base::test::ScopedFeatureList feature_list(
       features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(FillAndGetTypes(/*name=*/u"Jane Doe", main_origin()),
               Contains(Pair(field_id(kName), UNKNOWN_TYPE)));
+  histogram_tester.ExpectTotalCount(kCrossOriginMainFrameValidationHistogram,
+                                    0);
 }
 
 }  // namespace

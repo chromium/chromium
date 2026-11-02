@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -191,9 +192,13 @@ class GetPlausibleNonSensitiveCreditCardTypesTest
   test::AutofillUnitTestEnvironment autofill_environment_;
 };
 
+constexpr char kValidationHistogram[] =
+    "Autofill.WebView.CrossOriginMainFrameCreditCardFieldValidation";
+
 // Tests that only the cardholder name and expiration date fields in the main
 // frame's origin get a type.
 TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, MainFrameNameAndExpiry) {
+  base::HistogramTester histogram_tester;
   FormData form = test::GetFormData(
       {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
                   {.value = u"4111111111111111", .origin = iframe_origin_},
@@ -210,11 +215,15 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, MainFrameNameAndExpiry) {
           Pair(form.fields()[0].global_id(), CREDIT_CARD_NAME_FULL),
           Pair(form.fields()[2].global_id(), CREDIT_CARD_EXP_MONTH),
           Pair(form.fields()[3].global_id(), CREDIT_CARD_EXP_2_DIGIT_YEAR)));
+  histogram_tester.ExpectUniqueSample(
+      kValidationHistogram, MainFrameCreditCardFieldValidationResult::kAllowed,
+      3);
 }
 
 // Tests that card numbers, CVCs and other types in the main frame don't get a
 // type.
 TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, OtherTypesInMainFrame) {
+  base::HistogramTester histogram_tester;
   FormData form = test::GetFormData(
       {.fields = {{.value = u"4111111111111111", .origin = main_origin_},
                   {.value = u"123", .origin = main_origin_},
@@ -223,10 +232,12 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, OtherTypesInMainFrame) {
   EXPECT_THAT(GetTypes(form, {CREDIT_CARD_NUMBER, CREDIT_CARD_VERIFICATION_CODE,
                               NAME_FULL}),
               IsEmpty());
+  histogram_tester.ExpectTotalCount(kValidationHistogram, 0);
 }
 
 // Tests that fields whose values don't look like their type don't get a type.
 TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, ImplausibleValues) {
+  base::HistogramTester histogram_tester;
   FormData form = test::GetFormData(
       {.fields = {{.value = u"4111111111111111", .origin = main_origin_},
                   {.value = u"2030", .origin = main_origin_},
@@ -241,11 +252,19 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, ImplausibleValues) {
                       CREDIT_CARD_EXP_4_DIGIT_YEAR}),
       UnorderedElementsAre(
           Pair(form.fields()[2].global_id(), CREDIT_CARD_EXP_4_DIGIT_YEAR)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kValidationHistogram),
+      base::BucketsAre(
+          base::Bucket(MainFrameCreditCardFieldValidationResult::kAllowed, 1),
+          base::Bucket(
+              MainFrameCreditCardFieldValidationResult::kImplausibleValue, 2)));
 }
 
-// Tests that fills triggered from the main frame itself return an empty map.
+// Tests that fills triggered from the main frame itself return an empty map and
+// do not record cross-origin validation metrics.
 TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
        SameOriginTriggerReturnsEmpty) {
+  base::HistogramTester histogram_tester;
   FormData form = test::GetFormData(
       {.fields = {{.value = u"Jane Doe", .origin = main_origin_},
                   {.value = u"12", .origin = main_origin_},
@@ -256,12 +275,14 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
                         CREDIT_CARD_EXP_2_DIGIT_YEAR},
                        main_origin_),
               IsEmpty());
+  histogram_tester.ExpectTotalCount(kValidationHistogram, 0);
 }
 
 // Tests that field properties are checked on `filled_fields` rather than on the
 // potentially outdated `FormStructure`.
 TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
        ChecksFilledFieldsInsteadOfCachedFormStructure) {
+  base::HistogramTester histogram_tester;
   FormData cached_form = test::GetFormData(
       {.fields = {{.origin = main_origin_},
                   {.origin = iframe_origin_},
@@ -289,12 +310,16 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
       UnorderedElementsAre(
           Pair(filled_form.fields()[1].global_id(), CREDIT_CARD_NAME_LAST),
           Pair(filled_form.fields()[2].global_id(), CREDIT_CARD_EXP_MONTH)));
+  histogram_tester.ExpectUniqueSample(
+      kValidationHistogram, MainFrameCreditCardFieldValidationResult::kAllowed,
+      2);
 }
 
 // Tests that at most one month, one year and one expiration date field get a
 // type, while names aren't limited.
 TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
        AtMostOneFieldPerExpiryType) {
+  base::HistogramTester histogram_tester;
   FormData form = test::GetFormData(
       {.fields = {{.value = u"Jane", .origin = main_origin_},
                   {.value = u"Doe", .origin = main_origin_},
@@ -321,6 +346,15 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest,
           Pair(form.fields()[5].global_id(), CREDIT_CARD_EXP_2_DIGIT_YEAR),
           Pair(form.fields()[7].global_id(),
                CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kValidationHistogram),
+      base::BucketsAre(
+          base::Bucket(MainFrameCreditCardFieldValidationResult::kAllowed, 5),
+          base::Bucket(
+              MainFrameCreditCardFieldValidationResult::kImplausibleValue, 1),
+          base::Bucket(MainFrameCreditCardFieldValidationResult::
+                           kDuplicateExpirationPart,
+                       3)));
 }
 
 // Tests that a <select> element only gets a type if it has an option with the
@@ -361,6 +395,7 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, SelectOptionTexts) {
   };
   for (size_t i = 0; const TestCase& test_case : kTestCases) {
     SCOPED_TRACE(testing::Message() << "Test case " << i++);
+    base::HistogramTester histogram_tester;
     FormData form = test::GetFormData(
         {.fields = {{.value = test_case.value,
                      .form_control_type = FormControlType::kSelectOne,
@@ -369,6 +404,12 @@ TEST_F(GetPlausibleNonSensitiveCreditCardTypesTest, SelectOptionTexts) {
          .main_frame_origin = main_origin_});
     EXPECT_EQ(GetTypes(form, {test_case.type}).size(),
               test_case.gets_type ? 1u : 0u);
+    histogram_tester.ExpectUniqueSample(
+        kValidationHistogram,
+        test_case.gets_type ? MainFrameCreditCardFieldValidationResult::kAllowed
+                            : MainFrameCreditCardFieldValidationResult::
+                                  kImplausibleSelectOptionText,
+        1);
   }
 }
 

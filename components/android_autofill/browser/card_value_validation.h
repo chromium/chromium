@@ -18,6 +18,21 @@ namespace autofill {
 class FormFieldData;
 class FormStructure;
 
+// Outcome of validating a filled main-frame cardholder name or expiration date
+// field in `GetPlausibleNonSensitiveCreditCardTypes()`.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AndroidAutofillMainFrameCreditCardFieldValidationResult)
+enum class MainFrameCreditCardFieldValidationResult {
+  kAllowed = 0,
+  kImplausibleValue = 1,
+  kImplausibleSelectOptionText = 2,
+  kDuplicateExpirationPart = 3,
+  kMaxValue = kDuplicateExpirationPart,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AndroidAutofillMainFrameCreditCardFieldValidationResult)
+
 // Returns whether `value`, which an Android Autofill service filled into a
 // field that Autofill classified as `type`, looks like a value of `type`.
 //
@@ -60,6 +75,11 @@ bool IsPlausibleNonSensitiveCreditCardValue(FieldType type,
 // At most one month, one year and one expiration date field get a type (the
 // first in `filled_fields`), so that at most one short block of a card number
 // that is split across several fields can pass the policy.
+//
+// On cross-origin fills (`triggered_origin` != `form`'s main-frame origin),
+// records `Autofill.WebView.CrossOriginMainFrameCreditCardFieldValidation` for
+// each filled main-frame field that Autofill classified as a cardholder name or
+// expiration date.
 absl::flat_hash_map<FieldGlobalId, FieldType>
 GetPlausibleNonSensitiveCreditCardTypes(
     const FormStructure& form,

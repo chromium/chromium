@@ -96,6 +96,21 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="The user turned the Chrome setting off"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidAutofillMainFrameCreditCardFieldValidationResult) -->
+
+<enum name="AndroidAutofillMainFrameCreditCardFieldValidationResult">
+  <summary>
+    Outcome of checking a filled main-frame cardholder name or expiration date
+    field during a cross-origin credit card fill.
+  </summary>
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Implausible value"/>
+  <int value="2" label="Implausible select option text"/>
+  <int value="3" label="Duplicate expiration part"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/android_autofill/browser/card_value_validation.h:AndroidAutofillMainFrameCreditCardFieldValidationResult) -->
+
 <enum name="AndroidAutofillPrefillRequestState">
   <summary>
     Describes the state of a prefill request for a given, cacheable, form.

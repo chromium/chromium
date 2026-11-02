@@ -11311,6 +11311,22 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.WebView.CrossOriginMainFrameCreditCardFieldValidation"
+    enum="AndroidAutofillMainFrameCreditCardFieldValidationResult"
+    expires_after="2027-06-27">
+  <owner>elabadysayed@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the validation outcome for each filled main-frame cardholder name or
+    expiration date field during a cross-origin fill (i.e. when the fill was
+    triggered from a frame whose origin differs from the main frame's origin)
+    with AndroidAutofillFillNonSensitiveCardFieldsInMainFrame enabled. If the
+    user triggers multiple cross-origin fills on the same form in one session,
+    fields still autofilled from an earlier fill are evaluated again.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.WebView.Enabled" enum="BooleanEnabled"
     expires_after="2027-04-04">
   <owner>battre@chromium.org</owner>

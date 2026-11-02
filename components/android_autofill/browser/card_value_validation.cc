@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -119,6 +120,30 @@ bool HasOnlyPlausibleOptionTexts(const FormFieldData& field, FieldType type) {
          });
 }
 
+// Returns whether `type` is a cardholder name or expiration date type that
+// `GetPlausibleNonSensitiveCreditCardTypes()` can pass to the iframe security
+// policy.
+bool IsSupportedNonSensitiveCreditCardType(FieldType type) {
+  switch (type) {
+    case CREDIT_CARD_NAME_FULL:
+    case CREDIT_CARD_NAME_FIRST:
+    case CREDIT_CARD_NAME_LAST:
+    case CREDIT_CARD_EXP_MONTH:
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+      return true;
+    default:
+      return false;
+  }
+}
+
+void RecordValidationResult(MainFrameCreditCardFieldValidationResult result) {
+  base::UmaHistogramEnumeration(
+      "Autofill.WebView.CrossOriginMainFrameCreditCardFieldValidation", result);
+}
+
 }  // namespace
 
 bool IsPlausibleNonSensitiveCreditCardValue(FieldType type,
@@ -171,13 +196,24 @@ GetPlausibleNonSensitiveCreditCardTypes(
     if (!field) {
       continue;
     }
-    // Reject values (or matching <select> option texts) that don't look like
-    // the cardholder name or expiration type Autofill classified the field as.
+    // Only cardholder name and expiration date fields can get a type here;
+    // skip other fields without recording a validation failure.
     const FieldType type = field->Type().GetCreditCardType();
+    if (!IsSupportedNonSensitiveCreditCardType(type)) {
+      continue;
+    }
+    // Reject values (or matching <select> option texts) that don't look like
+    // `type`.
     if (!IsPlausibleNonSensitiveCreditCardValue(
-            type, filled_field.value(), filled_field.IsSelectElement()) ||
-        (filled_field.IsSelectElement() &&
-         !HasOnlyPlausibleOptionTexts(filled_field, type))) {
+            type, filled_field.value(), filled_field.IsSelectElement())) {
+      RecordValidationResult(
+          MainFrameCreditCardFieldValidationResult::kImplausibleValue);
+      continue;
+    }
+    if (filled_field.IsSelectElement() &&
+        !HasOnlyPlausibleOptionTexts(filled_field, type)) {
+      RecordValidationResult(MainFrameCreditCardFieldValidationResult::
+                                 kImplausibleSelectOptionText);
       continue;
     }
     // Allow at most one filled field per expiration part across the whole form
@@ -186,9 +222,12 @@ GetPlausibleNonSensitiveCreditCardTypes(
     // the service can't pass as multiple expiration fields.
     if (std::optional<ExpirationPart> part = GetExpirationPart(type)) {
       if (!seen_expiration_parts.insert(*part).second) {
+        RecordValidationResult(
+            MainFrameCreditCardFieldValidationResult::kDuplicateExpirationPart);
         continue;
       }
     }
+    RecordValidationResult(MainFrameCreditCardFieldValidationResult::kAllowed);
     types.emplace(filled_field.global_id(), type);
   }
   return types;
