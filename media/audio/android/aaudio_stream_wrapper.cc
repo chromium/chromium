@@ -688,6 +688,9 @@ std::optional<android::AudioDeviceId> AAudioStreamWrapper::GetActualDeviceId() {
 base::TimeDelta AAudioStreamWrapper::GetOutputDelay(
     base::TimeTicks delay_timestamp) {
   CHECK_EQ(stream_type_, AAudioStreamWrapper::StreamType::kOutput);
+  if (!aaudio_stream_) {
+    return base::TimeDelta();
+  }
 
   // Get the time that a known audio frame was presented for playing.
   int64_t existing_frame_index;

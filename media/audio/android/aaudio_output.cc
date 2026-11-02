@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/audio/android/audio_device.h"
 #include "media/audio/android/audio_manager_android.h"
@@ -43,7 +44,14 @@ AAudioOutputStream::~AAudioOutputStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void AAudioOutputStream::Flush() {}
+void AAudioOutputStream::Flush() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::AutoLock al(lock_);
+  if (pull_fifo_) {
+    pull_fifo_->Clear();
+  }
+}
 
 bool AAudioOutputStream::Open() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -51,6 +59,14 @@ bool AAudioOutputStream::Open() {
   if (!stream_wrapper_.Open()) {
     return false;
   }
+
+  CreateAudioBusAndFifo();
+
+  return true;
+}
+
+void AAudioOutputStream::CreateAudioBusAndFifo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!audio_bus_);
   audio_bus_ = AudioBus::Create(params_);
@@ -61,8 +77,6 @@ bool AAudioOutputStream::Open() {
         base::BindRepeating(&AAudioOutputStream::RefillFifo,
                             base::Unretained(this)));
   }
-
-  return true;
 }
 
 void AAudioOutputStream::Close() {
@@ -119,6 +133,10 @@ void AAudioOutputStream::Stop() {
 
     // OnAudioDataRequested should no longer provide data from this point on.
     callback_ = nullptr;
+
+    if (pull_fifo_) {
+      pull_fifo_->Clear();
+    }
   }
 
   if (!stream_wrapper_.Stop()) {
