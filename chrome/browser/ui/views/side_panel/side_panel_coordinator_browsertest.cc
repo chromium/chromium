@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
@@ -54,7 +55,6 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -84,9 +85,9 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "ui/compositor/layer.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
 
@@ -214,7 +215,9 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
 
  protected:
   void WaitForExtensionsContainerAnimation() {
-    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarDesktop());
+    WaitForInitialWebUIToolbar(browser());
+    ExtensionActionTestHelper::Create(browser())
+        ->WaitForExtensionsContainerLayout();
   }
 
   void ClickButton(views::Button* button) {
@@ -225,12 +228,6 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
 
   SidePanelEntry::Key GetKeyForExtension(const extensions::ExtensionId& id) {
     return SidePanelEntry::Key(SidePanelEntry::Id::kExtension, id);
-  }
-
-  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar()
-        ->extensions_container_for_testing();
   }
 
   SidePanelRegistry* GetActiveTabRegistry() {
