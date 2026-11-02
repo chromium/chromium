@@ -652,4 +652,5 @@ grit("resources") {
     "//mojo/public/js:bindings",
     "//ui/webui/resources/mojo:build_ts",
   ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }

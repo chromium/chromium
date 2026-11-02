@@ -27,4 +27,5 @@ grit("theme") {
     "ios_theme_resources_200_percent.pak",
     "ios_theme_resources_300_percent.pak",
   ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }
