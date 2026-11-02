@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.permissions;
 
 import android.Manifest;
+import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 
@@ -86,7 +87,7 @@ public class RuntimePermissionTest {
     @Test
     @MediumTest
     @Feature({"RuntimePermissions", "Location"})
-    @DisabledTest(message = "crbug.com/344053209")
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.Q, message = "crbug.com/344053209")
     public void testAllowRuntimeLocation() throws Exception {
         RuntimePermissionTestUtils.setupGeolocationSystemMock();
 
@@ -360,7 +361,7 @@ public class RuntimePermissionTest {
     @Test
     @MediumTest
     @Feature({"RuntimePermissions", "Location"})
-    @DisabledTest(message = "crbug.com/344053209")
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.Q, message = "crbug.com/344053209")
     public void testAlreadyGrantedRuntimeLocation() throws Exception {
         RuntimePermissionTestUtils.setupGeolocationSystemMock();
 
