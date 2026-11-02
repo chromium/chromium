@@ -58,13 +58,11 @@ class TTCMediatorTest : public PlatformTest {
   id mock_consumer_ = nil;
 };
 
-// Tests that attaching a consumer pushes initial session state, 0.0 RMS energy,
-// and default diagnostic states.
+// Tests that attaching a consumer pushes initial session state and 0.0 RMS
+// energy.
 TEST_F(TTCMediatorTest, TestSetConsumerPushesInitialState) {
   OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kIdle]);
   OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-  OCMExpect([mock_consumer_ setLoopbackEnabled:NO]);
-  OCMExpect([mock_consumer_ setTestAudioPlaying:NO]);
 
   mediator_.consumer = mock_consumer_;
 
@@ -84,8 +82,6 @@ TEST_F(TTCMediatorTest, TestSetConsumerReflectsExistingActiveSession) {
 
   OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kListening]);
   OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-  OCMExpect([mock_consumer_ setLoopbackEnabled:NO]);
-  OCMExpect([mock_consumer_ setTestAudioPlaying:NO]);
 
   live_mediator.consumer = mock_consumer_;
 
@@ -271,31 +267,12 @@ TEST_F(TTCMediatorTest, TestDisconnectDoesNotEndServiceSession) {
   EXPECT_TRUE(mediator_.consumer == nil);
 }
 
-// Tests that mutator diagnostic stubs update the consumer.
-TEST_F(TTCMediatorTest, TestDiagnosticStubs) {
-  mediator_.consumer = mock_consumer_;
-
-  OCMExpect([mock_consumer_ setLoopbackEnabled:YES]);
-  [mediator_ setLoopbackEnabled:YES];
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-
-  OCMExpect([mock_consumer_ setTestAudioPlaying:NO]);
-  [mediator_ playTestAudio];
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-
-  OCMExpect([mock_consumer_ setTestAudioPlaying:NO]);
-  [mediator_ stopTestAudio];
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
 // Tests that calling viewWillAppear triggers complete hydration of consumer.
 TEST_F(TTCMediatorTest, TestViewWillAppearHydratesConsumer) {
   mediator_.consumer = mock_consumer_;
 
   OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kIdle]);
   OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-  OCMExpect([mock_consumer_ setLoopbackEnabled:NO]);
-  OCMExpect([mock_consumer_ setTestAudioPlaying:NO]);
 
   [mediator_ viewWillAppear];
 

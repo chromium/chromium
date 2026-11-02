@@ -169,18 +169,6 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   }
 }
 
-- (void)setLoopbackEnabled:(BOOL)enabled {
-  [self.consumer setLoopbackEnabled:enabled];
-}
-
-- (void)playTestAudio {
-  [self.consumer setTestAudioPlaying:NO];
-}
-
-- (void)stopTestAudio {
-  [self.consumer setTestAudioPlaying:NO];
-}
-
 - (void)viewWillAppear {
   [self hydrateConsumer];
 }
@@ -354,8 +342,6 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   }
   [self.consumer setSessionState:_currentState];
   [self.consumer setMicEnergyLevel:0.0f];
-  [self.consumer setLoopbackEnabled:NO];
-  [self.consumer setTestAudioPlaying:NO];
   [self.consumer setJournalLines:[self formattedJournalLines]];
 }
 
