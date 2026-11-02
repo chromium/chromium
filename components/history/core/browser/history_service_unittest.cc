@@ -990,7 +990,7 @@ base::Time GetTimeInThePast(base::Time base_time,
                             int hours_since_midnight,
                             int minutes = 0,
                             int seconds = 0) {
-  base::Time past_midnight = MidnightNDaysLater(base_time, -days_back);
+  base::Time past_midnight = base_time.LocalMidnightWithOffset(-days_back);
 
   return past_midnight + base::Hours(hours_since_midnight) +
          base::Minutes(minutes) + base::Seconds(seconds);

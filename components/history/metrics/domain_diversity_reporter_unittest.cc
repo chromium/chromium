@@ -13,7 +13,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -71,8 +70,7 @@ class DomainDiversityReporterTest : public testing::Test {
     // Sets the internal clock's current time to 10:00am. This avoids
     // issues in time arithmetic caused by uneven day lengths due to Daylight
     // Saving Time.
-    test_clock_.SetTime(MidnightNDaysLater(test_clock_.Now(), 0) +
-                        base::Hours(10));
+    test_clock_.SetTime(test_clock_.Now().LocalMidnight() + base::Hours(10));
   }
 
   void TearDown() override {
@@ -176,9 +174,9 @@ TEST_F(DomainDiversityReporterTest, HistoryLoaded) {
 
   // Set the last reporting date to 1 day ago.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
-                   MidnightNDaysLater(test_clock().Now(), -1));
+                   test_clock().Now().LocalMidnightWithOffset(-1));
   prefs()->SetTime(kDomainDiversityReportingTimestampV4,
-                   MidnightNDaysLater(test_clock().Now(), -1));
+                   test_clock().Now().LocalMidnightWithOffset(-1));
 
   CreateDomainDiversityReporter();
   task_environment_.RunUntilIdle();
@@ -197,12 +195,12 @@ TEST_F(DomainDiversityReporterTest, HostAddedSimple) {
 
   // The last report was 3 days ago.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
-                   MidnightNDaysLater(test_clock().Now(), -3));
+                   test_clock().Now().LocalMidnightWithOffset(-3));
   prefs()->SetTime(kDomainDiversityReportingTimestampV4,
-                   MidnightNDaysLater(test_clock().Now(), -3));
+                   test_clock().Now().LocalMidnightWithOffset(-3));
 
   // A domain was visited 2 days ago.
-  base::Time two_days_ago = MidnightNDaysLater(test_clock().Now(), -2);
+  base::Time two_days_ago = test_clock().Now().LocalMidnightWithOffset(-2);
 
   history_service()->AddPage(GURL("http://www.google.com"), two_days_ago,
                              history::VisitSource::SOURCE_BROWSED);
@@ -232,13 +230,13 @@ TEST_F(DomainDiversityReporterTest, HostAddedSimple) {
 TEST_F(DomainDiversityReporterTest, HostAddedLongAgo) {
   LoadHistory();
 
-  base::Time time_29_days_ago = MidnightNDaysLater(test_clock().Now(), -29);
-  base::Time time_31_days_ago = MidnightNDaysLater(test_clock().Now(), -31);
+  base::Time time_29_days_ago = test_clock().Now().LocalMidnightWithOffset(-29);
+  base::Time time_31_days_ago = test_clock().Now().LocalMidnightWithOffset(-31);
   // The last report was 3 days ago.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
-                   MidnightNDaysLater(test_clock().Now(), -3));
+                   test_clock().Now().LocalMidnightWithOffset(-3));
   prefs()->SetTime(kDomainDiversityReportingTimestampV4,
-                   MidnightNDaysLater(test_clock().Now(), -3));
+                   test_clock().Now().LocalMidnightWithOffset(-3));
 
   // The visit occurring on the same day as the reporting time
   // will not be counted.
@@ -284,14 +282,14 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   // Last report was emitted 4 days ago. So the report emitted today
   // will emit one set of histogram values of each of the last 4 days.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
-                   MidnightNDaysLater(test_clock().Now(), -4));
+                   test_clock().Now().LocalMidnightWithOffset(-4));
   prefs()->SetTime(kDomainDiversityReportingTimestampV4,
-                   MidnightNDaysLater(test_clock().Now(), -4));
+                   test_clock().Now().LocalMidnightWithOffset(-4));
   history_service()->AddPage(GURL("http://www.google.com"),
-                             MidnightNDaysLater(test_clock().Now(), -2),
+                             test_clock().Now().LocalMidnightWithOffset(-2),
                              history::VisitSource::SOURCE_BROWSED);
   history_service()->AddPage(GURL("http://www.example.com"),
-                             MidnightNDaysLater(test_clock().Now(), -2),
+                             test_clock().Now().LocalMidnightWithOffset(-2),
                              history::VisitSource::SOURCE_BROWSED);
 
   // These visits are ignored in the initial DomainCount1Day values,
@@ -311,10 +309,10 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   // These visits are included in the DomainCount7Day and DomainCount28Day
   // values of the first report, but will expire for the second report.
   history_service()->AddPage(GURL("http://www.visited-7-days-ago1.com"),
-                             MidnightNDaysLater(test_clock().Now(), -7),
+                             test_clock().Now().LocalMidnightWithOffset(-7),
                              history::VisitSource::SOURCE_BROWSED);
   history_service()->AddPage(GURL("http://www.visited-28-days-ago.com"),
-                             MidnightNDaysLater(test_clock().Now(), -28),
+                             test_clock().Now().LocalMidnightWithOffset(-28),
                              history::VisitSource::SOURCE_BROWSED);
 
   CreateDomainDiversityReporter();
@@ -334,7 +332,7 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDay) {
   histograms().ExpectBucketCount("History.DomainCount28Day_V4", 2, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V4", 4, 2);
 
-  test_clock().SetTime(MidnightNDaysLater(test_clock().Now(), 1) +
+  test_clock().SetTime(test_clock().Now().NextLocalMidnight() +
                        base::Hours(10));
   FastForwardAndWait(kScheduleInterval);  // fast-forward 24 hours
 
@@ -370,14 +368,14 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDaySuspended) {
   // Last report was emitted 4 days ago. So the report emitted today
   // will emit one set of histogram values of each of the last 4 days.
   prefs()->SetTime(kDomainDiversityReportingTimestamp,
-                   MidnightNDaysLater(test_clock().Now(), -4));
+                   test_clock().Now().LocalMidnightWithOffset(-4));
   prefs()->SetTime(kDomainDiversityReportingTimestampV4,
-                   MidnightNDaysLater(test_clock().Now(), -4));
+                   test_clock().Now().LocalMidnightWithOffset(-4));
   history_service()->AddPage(GURL("http://www.google.com"),
-                             MidnightNDaysLater(test_clock().Now(), -2),
+                             test_clock().Now().LocalMidnightWithOffset(-2),
                              history::VisitSource::SOURCE_BROWSED);
   history_service()->AddPage(GURL("http://www.example.com"),
-                             MidnightNDaysLater(test_clock().Now(), -2),
+                             test_clock().Now().LocalMidnightWithOffset(-2),
                              history::VisitSource::SOURCE_BROWSED);
 
   // These visits are ignored in the initial DomainCount1Day values,
@@ -397,10 +395,10 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDaySuspended) {
   // These visits are included in the DomainCount7Day and DomainCount28Day
   // values of the first report, but will expire for the second report.
   history_service()->AddPage(GURL("http://www.visited-7-days-ago1.com"),
-                             MidnightNDaysLater(test_clock().Now(), -7),
+                             test_clock().Now().LocalMidnightWithOffset(-7),
                              history::VisitSource::SOURCE_BROWSED);
   history_service()->AddPage(GURL("http://www.visited-28-days-ago.com"),
-                             MidnightNDaysLater(test_clock().Now(), -28),
+                             test_clock().Now().LocalMidnightWithOffset(-28),
                              history::VisitSource::SOURCE_BROWSED);
 
   CreateDomainDiversityReporter();
@@ -420,7 +418,7 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDaySuspended) {
   histograms().ExpectBucketCount("History.DomainCount28Day_V4", 2, 2);
   histograms().ExpectBucketCount("History.DomainCount28Day_V4", 4, 2);
 
-  test_clock().SetTime(MidnightNDaysLater(test_clock().Now(), 1) +
+  test_clock().SetTime(test_clock().Now().NextLocalMidnight() +
                        base::Hours(10));
   FastForwardPowerSuspendedAndWait(kScheduleInterval);  // fast-forward 24 hours
 
@@ -448,7 +446,7 @@ TEST_F(DomainDiversityReporterTest, ScheduleNextDaySuspended) {
 
 TEST_F(DomainDiversityReporterTest, SaveTimestampInPreference) {
   LoadHistory();
-  base::Time last_midnight = MidnightNDaysLater(test_clock().Now(), -1);
+  base::Time last_midnight = test_clock().Now().LocalMidnightWithOffset(-1);
   prefs()->SetTime(kDomainDiversityReportingTimestamp, last_midnight);
   prefs()->SetTime(kDomainDiversityReportingTimestampV4, last_midnight);
   EXPECT_EQ(last_midnight,
@@ -469,7 +467,7 @@ TEST_F(DomainDiversityReporterTest, SaveTimestampInPreference) {
 TEST_F(DomainDiversityReporterTest, OnlyOneReportPerDay) {
   LoadHistory();
 
-  base::Time last_midnight = MidnightNDaysLater(test_clock().Now(), -1);
+  base::Time last_midnight = test_clock().Now().LocalMidnightWithOffset(-1);
 
   prefs()->SetTime(kDomainDiversityReportingTimestamp, last_midnight);
   prefs()->SetTime(kDomainDiversityReportingTimestampV4, last_midnight);
@@ -488,8 +486,7 @@ TEST_F(DomainDiversityReporterTest, OnlyOneReportPerDay) {
                              history::VisitSource::SOURCE_BROWSED);
 
   // Set the mock clock to 20:00 on the same day
-  test_clock().SetTime(MidnightNDaysLater(test_clock().Now(), 0) +
-                       base::Hours(20));
+  test_clock().SetTime(test_clock().Now().LocalMidnight() + base::Hours(20));
 
   // Fast-forward the scheduler's clock by another 24 hours in order to trigger
   // the next report

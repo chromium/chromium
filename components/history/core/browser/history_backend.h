@@ -86,11 +86,6 @@ class URLDatabase;
 // username/password, and any trivial subdomains (e.g., "www.", "m.") removed.
 std::u16string FormatUrlForRedirectComparison(const GURL& url);
 
-// Advances (if `day` >= 0) or backtracks (if `day` < 0) from `time` by
-// abs(`day`) calendar days in local timezone and returns the midnight of the
-// resulting day.
-base::Time MidnightNDaysLater(base::Time time, int days);
-
 // Keeps track of a queued HistoryDBTask. This class lives solely on the
 // DB thread.
 class QueuedHistoryDBTask {

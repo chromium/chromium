@@ -82,16 +82,18 @@ const size_t* QueryResults::MatchesForURL(const GURL& url,
                                           size_t* num_matches) const {
   auto found = url_to_results_.find(url);
   if (found == url_to_results_.end()) {
-    if (num_matches)
+    if (num_matches) {
       *num_matches = 0;
+    }
     return nullptr;
   }
 
   // All entries in the map should have at least one index, otherwise it
   // shouldn't be in the map.
   DCHECK(!found->second.empty());
-  if (num_matches)
+  if (num_matches) {
     *num_matches = found->second.size();
+  }
   return &found->second.front();
 }
 
@@ -106,15 +108,17 @@ void QueryResults::SetURLResults(std::vector<URLResult>&& results) {
 
   // Recreate the map for the results_ has been replaced.
   url_to_results_.clear();
-  for (size_t i = 0; i < results_.size(); ++i)
+  for (size_t i = 0; i < results_.size(); ++i) {
     AddURLUsageAtIndex(results_[i].url(), i);
+  }
 }
 
 void QueryResults::DeleteURL(const GURL& url) {
   // Delete all instances of this URL. We re-query each time since each
   // mutation will cause the indices to change.
-  while (const size_t* match_indices = MatchesForURL(url, nullptr))
+  while (const size_t* match_indices = MatchesForURL(url, nullptr)) {
     DeleteRange(*match_indices, *match_indices);
+  }
 }
 
 void QueryResults::DeleteRange(size_t begin, size_t end) {
@@ -177,8 +181,9 @@ void QueryResults::AdjustResultMap(size_t begin, size_t end, ptrdiff_t delta) {
   for (auto& url_to_result : url_to_results_) {
     for (size_t match = 0; match < url_to_result.second.size(); match++) {
       size_t match_index = url_to_result.second[match];
-      if (match_index >= begin && match_index <= end)
+      if (match_index >= begin && match_index <= end) {
         url_to_result.second[match] += delta;
+      }
     }
   }
 }
@@ -269,8 +274,7 @@ FilteredURL::FilteredURL() = default;
 FilteredURL::FilteredURL(const PageUsageData& page_data)
     : url(page_data.GetURL()),
       title(page_data.GetTitle()),
-      score(page_data.GetScore()) {
-}
+      score(page_data.GetScore()) {}
 
 FilteredURL::FilteredURL(FilteredURL&& other) noexcept = default;
 
@@ -416,10 +420,7 @@ ExpireHistoryArgs::~ExpireHistoryArgs() = default;
 
 void ExpireHistoryArgs::SetTimeRangeForOneDay(base::Time time) {
   begin_time = time.LocalMidnight();
-
-  // Due to DST, leap seconds, etc., the next day at midnight may be more than
-  // 24 hours away, so add 36 hours and round back down to midnight.
-  end_time = (begin_time + base::Hours(36)).LocalMidnight();
+  end_time = time.NextLocalMidnight();
 }
 
 // DeletionTimeRange ----------------------------------------------------------

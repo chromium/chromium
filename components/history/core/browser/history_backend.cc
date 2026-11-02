@@ -178,15 +178,6 @@ const int kMaxRedirectCount = 32;
 // each time HistoryBackend::GetDomainDiversity() is called.
 constexpr int kDomainDiversityMaxBacktrackedDays = 7;
 
-// An offset that corrects possible error in date/time arithmetic caused by
-// fluctuation of day length due to Daylight Saving Time (DST). For example,
-// given midnight M, its next midnight can be computed as (M + 24 hour
-// + offset).LocalMidnight(). In most modern DST systems, the DST shift is
-// typically 1 hour. However, a larger value of 4 is chosen here to
-// accommodate larger DST shifts that have been used historically and to
-// avoid other potential issues.
-constexpr int kDSTRoundingOffsetHours = 4;
-
 // When batch-deleting foreign visits (i.e. visits coming from other devices),
 // this specifies how many visits to delete in a single HistoryDBTask. This
 // usually happens when history sync was turned off.
@@ -320,12 +311,6 @@ std::u16string FormatUrlForRedirectComparison(const GURL& url) {
           url_formatter::kFormatUrlOmitUsernamePassword |
           url_formatter::kFormatUrlOmitTrivialSubdomains,
       base::UnescapeRule::NONE, nullptr, nullptr, nullptr);
-}
-
-base::Time MidnightNDaysLater(base::Time time, int days) {
-  return (time.LocalMidnight() + base::Days(days) +
-          base::Hours(kDSTRoundingOffsetHours))
-      .LocalMidnight();
 }
 
 QueuedHistoryDBTask::QueuedHistoryDBTask(
@@ -1281,8 +1266,7 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
       ui::PageTransitionCoreTypeIs(request_transition,
                                    ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
   if (!is_subframe_navigation && !is_keyword_generated &&
-      request.response_code_category !=
-          VisitResponseCodeCategory::k404 &&
+      request.response_code_category != VisitResponseCodeCategory::k404 &&
       current_visit_was_successfully_added) {
     tracker_.AddVisit(request.context_id, request.nav_entry_id, request.url,
                       last_visit_id);
@@ -2216,14 +2200,15 @@ DomainDiversityResults HistoryBackend::GetDomainDiversity(
     metric_set.end_time = current_midnight;
 
     if (metric_type_bitmask & kEnableLast1DayMetric) {
-      base::Time last_midnight = MidnightNDaysLater(current_midnight, -1);
+      base::Time last_midnight = current_midnight.LocalMidnightWithOffset(-1);
       auto domains = db_->CountUniqueDomainsVisited(
           last_midnight, current_midnight, policy_for_404_visits);
       metric_set.one_day_metric = DomainMetricCountType(domains, last_midnight);
     }
 
     if (metric_type_bitmask & kEnableLast7DayMetric) {
-      base::Time seven_midnights_ago = MidnightNDaysLater(current_midnight, -7);
+      base::Time seven_midnights_ago =
+          current_midnight.LocalMidnightWithOffset(-7);
       auto domains = db_->CountUniqueDomainsVisited(
           seven_midnights_ago, current_midnight, policy_for_404_visits);
       metric_set.seven_day_metric =
@@ -2232,7 +2217,7 @@ DomainDiversityResults HistoryBackend::GetDomainDiversity(
 
     if (metric_type_bitmask & kEnableLast28DayMetric) {
       base::Time twenty_eight_midnights_ago =
-          MidnightNDaysLater(current_midnight, -28);
+          current_midnight.LocalMidnightWithOffset(-28);
       auto domains = db_->CountUniqueDomainsVisited(
           twenty_eight_midnights_ago, current_midnight, policy_for_404_visits);
       metric_set.twenty_eight_day_metric =
@@ -2240,7 +2225,7 @@ DomainDiversityResults HistoryBackend::GetDomainDiversity(
     }
     result.push_back(metric_set);
 
-    current_midnight = MidnightNDaysLater(current_midnight, -1);
+    current_midnight = current_midnight.LocalMidnightWithOffset(-1);
   }
 
   return result;
@@ -3262,7 +3247,7 @@ KeywordSearchTermVisitList HistoryBackend::QueryMostRepeatedQueriesForKeyword(
 
   KeywordSearchTermVisitList search_terms;
   GetMostRepeatedSearchTermsFromEnumerator(*enumerator, result_count,
-                                                    &search_terms);
+                                           &search_terms);
   DCHECK_LE(search_terms.size(), result_count);
   base::UmaHistogramTimes("History.QueryMostRepeatedQueriesTimeV2",
                           query_timer.Elapsed());

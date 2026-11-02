@@ -15,18 +15,6 @@
 
 namespace history {
 
-namespace {
-
-// Returns local midnight of the day `days` days before the day that `midnight`
-// (a local midnight) falls on. Adding half a day before re-snapping to midnight
-// makes this robust against DST transitions, which can make a day 23 or 25
-// hours long.
-base::Time LocalMidnightDaysBefore(base::Time midnight, int days) {
-  return (midnight - base::Days(days) + base::Hours(12)).LocalMidnight();
-}
-
-}  // namespace
-
 std::vector<TimePeriodOption> ComputeTimePeriodOptions(base::Time now) {
   // If feature is disabled, return an empty list.
   if (!base::FeatureList::IsEnabled(history::kBrowsingHistoryFilterByTime)) {
@@ -52,14 +40,14 @@ std::vector<TimePeriodOption> ComputeTimePeriodOptions(base::Time now) {
   }
 
   const base::Time today = now.LocalMidnight();
-  const base::Time yesterday = LocalMidnightDaysBefore(today, 1);
+  const base::Time yesterday = today.LocalMidnightWithOffset(-1);
   const int days_since_monday = (exploded.day_of_week + 6) % 7;
   const base::Time this_week_start =
-      LocalMidnightDaysBefore(today, days_since_monday);
+      today.LocalMidnightWithOffset(-days_since_monday);
   const base::Time last_week_start =
-      LocalMidnightDaysBefore(this_week_start, 7);
+      this_week_start.LocalMidnightWithOffset(-7);
   const base::Time two_weeks_ago_start =
-      LocalMidnightDaysBefore(last_week_start, 7);
+      last_week_start.LocalMidnightWithOffset(-7);
 
   return {
       std::move(all_time),
