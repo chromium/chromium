@@ -1420,6 +1420,78 @@ TEST_F(AndroidAutofillProviderTest,
             iframe_origin);
 }
 
+// Tests that a cross-origin `OnAskForValuesToFill()` call on a linked
+// multi-origin form starts a new Autofill session with a new SessionId so that
+// datasets from the previous origin's session are invalidated
+// (crbug.com/578317115).
+TEST_F(AndroidAutofillProviderTest,
+       CrossOriginAskForValuesToFillOnLinkedFormStartsNewSession) {
+  content::RenderFrameHost* cross_origin_frame =
+      content::RenderFrameHostTester::For(main_frame())
+          ->AppendChild(std::string("cross_origin"));
+  cross_origin_frame = NavigateAndCommitFrame(
+      cross_origin_frame, GURL("https://other-origin.example"));
+
+  url::Origin main_origin = url::Origin::Create(GURL("https://main.example"));
+  url::Origin other_origin =
+      url::Origin::Create(GURL("https://other-origin.example"));
+
+  FormData form = GetFormData({
+      .fields = {{
+                     .host_frame = main_frame_token(),
+                     .origin = main_origin,
+                 },
+                 {
+                     .host_frame = LocalFrameToken(
+                         cross_origin_frame->GetFrameToken().value()),
+                     .origin = other_origin,
+                 }},
+      .url = "https://main.example/form.html",
+      .main_frame_origin = main_origin,
+  });
+
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // 1. User taps and focuses field 0 on main.example.
+  SessionId first_session_id = SessionId(0);
+  EXPECT_CALL(
+      provider_bridge(),
+      StartAutofillSession(EqualsFormData(form), EqualsFieldInfo(/*index=*/0),
+                           /*has_server_predictions=*/false))
+      .WillOnce(WithArg<0>(SaveSessionId(&first_session_id)));
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[0].global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  ASSERT_EQ(test_api(autofill_provider()).last_focused_field_id(),
+            form.fields()[0].global_id());
+  ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            main_origin);
+  ASSERT_EQ(test_api(autofill_provider()).last_queried_field_rfh_id(),
+            main_frame()->GetGlobalId());
+
+  // 2. `OnAskForValuesToFill()` for cross-origin field 1 on the same linked
+  // form must start a new session with a different SessionId.
+  SessionId second_session_id = SessionId(0);
+  EXPECT_CALL(
+      provider_bridge(),
+      StartAutofillSession(EqualsFormData(form), EqualsFieldInfo(/*index=*/1),
+                           /*has_server_predictions=*/false))
+      .WillOnce(WithArg<0>(SaveSessionId(&second_session_id)));
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[1].global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  EXPECT_NE(first_session_id, second_session_id);
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_id(),
+            form.fields()[1].global_id());
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            other_origin);
+  EXPECT_EQ(test_api(autofill_provider()).last_queried_field_rfh_id(),
+            cross_origin_frame->GetGlobalId());
+}
+
 class AndroidAutofillProviderWithCredManTest
     : public AndroidAutofillProviderTestBase {
  public:

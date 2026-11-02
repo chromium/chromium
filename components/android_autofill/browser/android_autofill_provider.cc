@@ -214,11 +214,16 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
     session_state_->last_queried_field_rfh_id = rfh->GetGlobalId();
   }
 
+  const bool is_cross_origin_field =
+      !session_state_->current_field.origin.IsSameOriginWith(field.origin());
   UpdateCurrentField(manager, form, field);
 
   // Focus or field value change will also trigger the query, so it should be
-  // ignored if the form is same.
-  if (!IsLinkedForm(form)) {
+  // ignored if the form is same and the field's origin has not changed. If the
+  // field's origin differs from the current session's origin, start a new
+  // session so that suggestions from the previous origin's session cannot be
+  // filled under the new origin (crbug.com/578317115).
+  if (!IsLinkedForm(form) || is_cross_origin_field) {
     StartNewSession(manager, form, field);
   }
 
