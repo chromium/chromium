@@ -72,6 +72,7 @@ static_library("renderer") {
     "//third_party/re2",
     "//ui/base",
     "//ui/events/blink",
+    "//url",
     "//v8",
   ]
 }

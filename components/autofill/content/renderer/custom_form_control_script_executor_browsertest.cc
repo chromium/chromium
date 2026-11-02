@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ref.h"
@@ -15,8 +16,14 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_script_source.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-value.h"
 
 namespace autofill {
 namespace {
@@ -30,6 +37,13 @@ constexpr char kValidScript[] = R"(
     return {};
   }
 )";
+
+// Copies `string` into a `std::string` as UTF-8.
+std::string ToUtf8(v8::Isolate* isolate, v8::Local<v8::String> string) {
+  std::string utf8(string->Utf8Length(isolate), '\0');
+  string->WriteUtf8(isolate, utf8.data(), utf8.size());
+  return utf8;
+}
 
 class CustomFormControlScriptExecutorTest : public content::RenderViewTest {
  protected:
@@ -52,6 +66,24 @@ class CustomFormControlScriptExecutorTest : public content::RenderViewTest {
         base::UTF8ToUTF16("typeof " + expression + " === 'undefined' ? 1 : 0"),
         &result));
     return result == 1;
+  }
+
+  // Evaluates `expression` in the executor's isolated world of the main frame
+  // and returns the result if it is a string.
+  std::optional<std::string> EvaluateInIsolatedWorld(
+      const std::string& expression) {
+    v8::Isolate* isolate = GetMainFrame()->GetAgentGroupScheduler()->Isolate();
+    v8::HandleScope handle_scope(isolate);
+    v8::Local<v8::Value> result =
+        GetMainFrame()->ExecuteScriptInIsolatedWorldAndReturnValue(
+            kWorldId,
+            blink::WebScriptSource(blink::WebString::FromUtf8(expression)),
+            blink::BackForwardCacheAware::kAllow);
+    // Converting other values would run script (e.g. `toString()`).
+    if (result.IsEmpty() || !result->IsString()) {
+      return std::nullopt;
+    }
+    return ToUtf8(isolate, result.As<v8::String>());
   }
 
   std::unique_ptr<CustomFormControlScriptExecutor> executor_;
@@ -237,6 +269,47 @@ TEST_F(CustomFormControlScriptExecutorTest, LoadsScriptThatOpensDocument) {
     function createCustomFormControlManager() { return {}; }
   )"));
   EXPECT_TRUE(executor_->has_manager());
+}
+
+// Tests that a manager whose `toString()` and `valueOf()` throw loads, since
+// loading doesn't convert the manager.
+TEST_F(CustomFormControlScriptExecutorTest,
+       LoadsManagerThatThrowsOnConversion) {
+  EXPECT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return {
+        toString() { throw new Error('error'); },
+        valueOf() { throw new Error('error'); },
+      };
+    }
+  )"));
+  EXPECT_TRUE(executor_->has_manager());
+}
+
+// Tests that the isolated world's Content Security Policy blocks `eval()` and
+// `new Function()` in scripts, without affecting the page.
+TEST_F(CustomFormControlScriptExecutorTest, IsolatedWorldBlocksEval) {
+  ASSERT_TRUE(executor_->LoadScript(kValidScript));
+  EXPECT_EQ(EvaluateInIsolatedWorld(
+                "try { eval('1'); 'allowed' } catch (e) { 'blocked' }"),
+            "blocked");
+  EXPECT_EQ(EvaluateInIsolatedWorld(
+                "try { new Function('1'); 'allowed' } catch (e) { 'blocked' }"),
+            "blocked");
+  // The page's own scripts may still use `eval()`.
+  int result = 0;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"eval('1 + 1')", &result));
+  EXPECT_EQ(result, 2);
+}
+
+// Tests that scripts can still access the DOM of their frame under the
+// isolated world's Content Security Policy.
+TEST_F(CustomFormControlScriptExecutorTest, IsolatedWorldCanAccessDom) {
+  LoadHTML("<div id=target>Hello</div>");
+  ASSERT_TRUE(executor_->LoadScript(kValidScript));
+  EXPECT_EQ(
+      EvaluateInIsolatedWorld("document.getElementById('target').textContent"),
+      "Hello");
 }
 
 }  // namespace

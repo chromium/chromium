@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/custom_form_control_script_executor.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -14,9 +15,11 @@
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "url/origin.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-value.h"
@@ -62,6 +65,34 @@ bool IsManager(v8::Local<v8::Value> value) {
          !value->IsArray() && !value->IsPromise();
 }
 
+// Sets the Content Security Policy, origin and name of the isolated world, once
+// per renderer process. These are global to the renderer process, so they also
+// apply to the world's contexts in other frames. Must always be called with the
+// same `world_id`.
+void EnsureIsolatedWorldSetUp(int32_t world_id) {
+  // Only accessed on the renderer main thread.
+  static std::optional<int32_t> last_used_world_id;
+  if (last_used_world_id) {
+    CHECK_EQ(*last_used_world_id, world_id);
+    return;
+  }
+  last_used_world_id = world_id;
+
+  // No eval, no script loading, no network requests.
+  static constexpr char kWorldCsp[] =
+      "default-src 'none'; script-src 'none'; connect-src 'none'";
+  blink::WebIsolatedWorldInfo info;
+  // An isolated world's origin can only add to what its requests may access
+  // (e.g. for extensions); requests are still made with the page's origin. An
+  // opaque origin adds nothing. Blink requires an origin to set a Content
+  // Security Policy.
+  info.security_origin = blink::WebSecurityOrigin(url::Origin());
+  info.content_security_policy = blink::WebString::FromUtf8(kWorldCsp);
+  info.human_readable_name =
+      blink::WebString::FromUtf8("Autofill custom form controls");
+  blink::SetIsolatedWorldInfo(world_id, info);
+}
+
 }  // namespace
 
 CustomFormControlScriptExecutor::CustomFormControlScriptExecutor(
@@ -70,6 +101,8 @@ CustomFormControlScriptExecutor::CustomFormControlScriptExecutor(
     : content::RenderFrameObserver(&render_frame), world_id_(world_id) {
   CHECK_GT(world_id_, blink::kMainDOMWorldId);
   CHECK(!blink::IsEqualOrExceedEmbedderWorldIdLimit(world_id_));
+  // Before any script runs in the world.
+  EnsureIsolatedWorldSetUp(world_id_);
 }
 
 CustomFormControlScriptExecutor::~CustomFormControlScriptExecutor() = default;

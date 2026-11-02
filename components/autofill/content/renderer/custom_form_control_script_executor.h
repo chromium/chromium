@@ -30,13 +30,19 @@ namespace autofill {
 // is destroyed, the executor keeps no manager and its methods fail; the creator
 // may destroy it then or later, even while a script of the executor runs (e.g.
 // if the script detached the frame).
+//
+// The isolated world has a restrictive Content Security Policy: scripts can
+// access the frame's DOM, but can't use `eval()`, load scripts or make network
+// requests.
 class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
  public:
   // `world_id` is the id of the isolated world to run scripts in, which is
   // chosen by the creator (Chrome passes
   // `ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS`). It must be a valid
   // embedder world id: positive, since 0 is the page's main world, and below
-  // Blink's limit for embedder world ids.
+  // Blink's limit for embedder world ids. The constructor sets up the world's
+  // Content Security Policy, which applies in all frames of the renderer
+  // process.
   CustomFormControlScriptExecutor(content::RenderFrame& render_frame,
                                   int32_t world_id);
   CustomFormControlScriptExecutor(const CustomFormControlScriptExecutor&) =
