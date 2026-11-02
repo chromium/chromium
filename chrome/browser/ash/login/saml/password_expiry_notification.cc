@@ -12,7 +12,6 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -119,19 +118,18 @@ void PasswordExpiryNotification::Show(const user_manager::User& user,
   const std::string notification_id =
       CreateUserScopedNotificationId(kNotificationId, user.username_hash());
 
-  // Leaving this empty means the notification is attributed to the system -
-  // ie "Chromium OS" or similar.
-  static const base::NoDestructor<std::u16string> kEmptyDisplaySource;
-
   const std::u16string title = GetTitleText(time_until_expiry);
   const std::u16string body = GetBodyText();
   const RichNotificationData rich_notification_data = GetRichNotificationData();
   const scoped_refptr<PasswordExpiryNotificationDelegate> delegate =
       base::MakeRefCounted<PasswordExpiryNotificationDelegate>();
 
+  // Leaving `display_source` empty means the notification is attributed to the
+  // system - ie "Chromium OS" or similar.
   auto notification = CreateSystemNotificationPtr(
-      kNotificationType, notification_id, title, body, *kEmptyDisplaySource,
-      notifier_id, rich_notification_data, delegate, GetIcon(), kWarningLevel);
+      kNotificationType, notification_id, title, body,
+      /*display_source=*/std::u16string(), notifier_id, rich_notification_data,
+      delegate, GetIcon(), kWarningLevel);
 
   // Calling remove before add ensures that the notification pops up again
   // even if it is already shown.

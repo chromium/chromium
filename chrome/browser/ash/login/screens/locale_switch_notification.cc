@@ -13,7 +13,6 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -220,10 +219,6 @@ void LocaleSwitchNotification::Show(
                          NotificationCatalogName::kLocaleUpdate);
   notifier_id.profile_id = user->GetAccountId().GetUserEmail();
 
-  // Leaving this empty means the notification is attributed to the system -
-  // ie "Chromium OS" or similar.
-  static const base::NoDestructor<std::u16string> kEmptyDisplaySource;
-
   const std::u16string title =
       l10n_util::GetStringUTF16(IDS_LOCALE_SWITCH_NOTIFICATION_TITLE);
 
@@ -249,9 +244,12 @@ void LocaleSwitchNotification::Show(
           application_locale_storage, std::move(new_locale), profile,
           notification_id, std::move(locale_switch_callback));
 
+  // Leaving `display_source` empty means the notification is attributed to the
+  // system - ie "Chromium OS" or similar.
   auto notification = CreateSystemNotificationPtr(
-      kNotificationType, notification_id, title, body, *kEmptyDisplaySource,
-      notifier_id, rich_notification_data, delegate, kIcon, kWarningLevel);
+      kNotificationType, notification_id, title, body,
+      /*display_source=*/std::u16string(), notifier_id, rich_notification_data,
+      delegate, kIcon, kWarningLevel);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));

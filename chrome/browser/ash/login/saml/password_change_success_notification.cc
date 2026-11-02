@@ -10,7 +10,6 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/user_manager/user.h"
 #include "components/vector_icons/vector_icons.h"
@@ -63,10 +62,6 @@ void PasswordChangeSuccessNotification::Show(const user_manager::User& user) {
   const std::string notification_id =
       CreateUserScopedNotificationId(kNotificationId, user.username_hash());
 
-  // Leaving this empty means the notification is attributed to the system -
-  // ie "Chromium OS" or similar.
-  static const base::NoDestructor<std::u16string> kEmptyDisplaySource;
-
   const std::u16string title =
       l10n_util::GetStringUTF16(IDS_PASSWORD_CHANGE_NOTIFICATION_TITLE);
 
@@ -78,9 +73,12 @@ void PasswordChangeSuccessNotification::Show(const user_manager::User& user) {
   const scoped_refptr<NotificationDelegate> delegate =
       base::MakeRefCounted<NotificationDelegate>();
 
+  // Leaving `display_source` empty means the notification is attributed to the
+  // system - ie "Chromium OS" or similar.
   auto notification = CreateSystemNotificationPtr(
-      kNotificationType, notification_id, title, body, *kEmptyDisplaySource,
-      notifier_id, rich_notification_data, delegate, GetIcon(), kWarningLevel);
+      kNotificationType, notification_id, title, body,
+      /*display_source=*/std::u16string(), notifier_id, rich_notification_data,
+      delegate, GetIcon(), kWarningLevel);
 
   // Calling remove before add ensures that the notification pops up again
   // even if it is already shown.
