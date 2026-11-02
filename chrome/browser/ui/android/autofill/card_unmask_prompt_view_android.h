@@ -29,6 +29,7 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
   CardUnmaskPromptViewAndroid(const CardUnmaskPromptViewAndroid&) = delete;
   CardUnmaskPromptViewAndroid& operator=(const CardUnmaskPromptViewAndroid&) =
       delete;
+  ~CardUnmaskPromptViewAndroid() override;
 
   bool CheckUserInputValidity(const std::u16string& response);
   void OnUserInput(const std::u16string& cvc,
@@ -38,7 +39,6 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
                    bool was_checkbox_visible);
   void OnNewCardLinkClicked();
   int GetExpectedCvcLength();
-  void PromptDismissed();
 
   // CardUnmaskPromptView implementation.
   void Show() override;
@@ -49,7 +49,6 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
                              bool allow_retry) override;
 
  private:
-  ~CardUnmaskPromptViewAndroid() override;
 
   // Returns either the fully initialized java counterpart of this bridge or
   // a is_null() reference if the creation failed. By using this method, the

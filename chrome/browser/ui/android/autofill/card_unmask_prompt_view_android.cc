@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/autofill/card_unmask_prompt_view_android.h"
 
 #include "base/android/jni_string.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
@@ -12,6 +13,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
@@ -91,10 +93,6 @@ int CardUnmaskPromptViewAndroid::GetExpectedCvcLength() {
   return controller_->GetExpectedCvcLength();
 }
 
-void CardUnmaskPromptViewAndroid::PromptDismissed() {
-  delete this;
-}
-
 void CardUnmaskPromptViewAndroid::ControllerGone() {
   controller_ = nullptr;
   Dismiss();
@@ -135,7 +133,7 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
 
   return java_object_internal_ = Java_CardUnmaskBridge_create(
-             env, reinterpret_cast<intptr_t>(this),
+             env, jni_zero::MakeUnique(base::WrapUnique(this)),
              Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
              controller_->GetWindowTitle(),
              controller_->GetInstructionsMessage(),

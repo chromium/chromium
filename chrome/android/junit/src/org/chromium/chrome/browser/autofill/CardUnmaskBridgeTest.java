@@ -10,12 +10,14 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -32,9 +34,10 @@ public class CardUnmaskBridgeTest {
     @Mock private CardUnmaskBridge.Natives mNativeMock;
     @Mock private AutofillImageFetcher mAutofillImageFetcherMock;
 
+    @Mock private JniUniquePtr<CardUnmaskBridge.NativeCardUnmaskPromptViewAndroid> mNativePtr;
+
     private WindowAndroid mWindowAndroid;
     private CardUnmaskBridge mCardUnmaskBridge;
-    private static final long NATIVE_POINTER = 12345L;
 
     @Before
     public void setUp() {
@@ -45,7 +48,7 @@ public class CardUnmaskBridgeTest {
 
         mCardUnmaskBridge =
                 new CardUnmaskBridge(
-                        NATIVE_POINTER,
+                        mNativePtr,
                         mAutofillImageFetcherMock,
                         /* title= */ "Title",
                         /* instructions= */ "Instructions",
@@ -73,31 +76,31 @@ public class CardUnmaskBridgeTest {
     @Test
     public void testCheckUserInputValidity_CallsJni() {
         mCardUnmaskBridge.checkUserInputValidity("123");
-        verify(mNativeMock).checkUserInputValidity(NATIVE_POINTER, "123");
+        verify(mNativeMock).checkUserInputValidity(mNativePtr, "123");
     }
 
     @Test
     public void testOnUserInput_CallsJni() {
         mCardUnmaskBridge.onUserInput("123", "12", "2034", true, false);
-        verify(mNativeMock).onUserInput(NATIVE_POINTER, "123", "12", "2034", true, false);
+        verify(mNativeMock).onUserInput(mNativePtr, "123", "12", "2034", true, false);
     }
 
     @Test
     public void testOnNewCardLinkClicked_CallsJni() {
         mCardUnmaskBridge.onNewCardLinkClicked();
-        verify(mNativeMock).onNewCardLinkClicked(NATIVE_POINTER);
+        verify(mNativeMock).onNewCardLinkClicked(mNativePtr);
     }
 
     @Test
     public void testGetExpectedCvcLength_CallsJni() {
         mCardUnmaskBridge.getExpectedCvcLength();
-        verify(mNativeMock).getExpectedCvcLength(NATIVE_POINTER);
+        verify(mNativeMock).getExpectedCvcLength(mNativePtr);
     }
 
     @Test
     public void testDismissed_CallsJniAndClearsPointer() {
         mCardUnmaskBridge.dismissed();
-        verify(mNativeMock).promptDismissed(NATIVE_POINTER);
+        verify(mNativePtr).destroy();
 
         // Subsequent calls should not reach JNI.
         assertFalse(mCardUnmaskBridge.checkUserInputValidity("123"));
@@ -107,6 +110,6 @@ public class CardUnmaskBridgeTest {
         mCardUnmaskBridge.dismissed();
 
         // Verify no other calls were made to JNI after the first dismiss.
-        org.mockito.Mockito.verifyNoMoreInteractions(mNativeMock);
+        Mockito.verifyNoMoreInteractions(mNativeMock, mNativePtr);
     }
 }
