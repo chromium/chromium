@@ -311,12 +311,24 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
   NSString* text1 = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_1);
-  [body appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:text1
-                                       attributes:defaultAttrs]];
+  NSAttributedString* paragraph1 =
+      [self attributedTextForBody:text1
+                          actions:@[
+                            kGeminiUploadsLinkAction, kGeminiScreensLinkAction
+                          ]];
+  [body appendAttributedString:paragraph1];
   [[body mutableString] appendString:@"\n\n"];
 
   // Subsection 2
+  NSString* text2 = l10n_util::GetNSString(
+      IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_2);
+  NSAttributedString* paragraph2 =
+      [self attributedTextForBody:text2
+                          actions:@[ kGeminiPauseActivityLinkAction ]];
+  [body appendAttributedString:paragraph2];
+  [[body mutableString] appendString:@"\n\n"];
+
+  // Subsection 3
   NSString* subtitle2 = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_SUBTITLE_2);
   [body appendAttributedString:[[NSAttributedString alloc]
@@ -324,18 +336,23 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
                                        attributes:boldAttrs]];
   [[body mutableString] appendString:@"\n"];
 
-  NSString* text2 = l10n_util::GetNSString(
-      IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_2);
-  NSAttributedString* paragraph2 =
-      [self attributedTextForBody:text2 actions:@[ kGeminiActivityLinkAction ]];
-  [body appendAttributedString:paragraph2];
-  [[body mutableString] appendString:@"\n\n"];
-
   NSString* text3 = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_3);
   [body appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:text3
                                        attributes:defaultAttrs]];
+  [[body mutableString] appendString:@"\n\n"];
+
+  // Subsection 4
+  NSString* text4 = l10n_util::GetNSString(
+      IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_4);
+  NSAttributedString* paragraph4 =
+      [self attributedTextForBody:text4
+                          actions:@[
+                            kGeminiImproveSettingLinkAction,
+                            kGeminiTrainingSettingLinkAction
+                          ]];
+  [body appendAttributedString:paragraph4];
 
   GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
                                                            title:title

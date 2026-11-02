@@ -325,6 +325,16 @@ const CGFloat kPromoMaxImpressionCount = 3;
   } else if ([actionString
                  isEqualToString:kGeminiConnectedServicesLinkAction]) {
     [self openNewTabWithURL:GURL(kConnectedServicesLinkURL)];
+  } else if ([actionString isEqualToString:kGeminiUploadsLinkAction]) {
+    [self openNewTabWithURL:GURL(kUploadsLinkURL)];
+  } else if ([actionString isEqualToString:kGeminiScreensLinkAction]) {
+    [self openNewTabWithURL:GURL(kScreensLinkURL)];
+  } else if ([actionString isEqualToString:kGeminiPauseActivityLinkAction]) {
+    [self openNewTabWithURL:GURL(kPauseActivityLinkURL)];
+  } else if ([actionString isEqualToString:kGeminiImproveSettingLinkAction]) {
+    [self openNewTabWithURL:GURL(kImproveSettingLinkURL)];
+  } else if ([actionString isEqualToString:kGeminiTrainingSettingLinkAction]) {
+    [self openNewTabWithURL:GURL(kTrainingSettingLinkURL)];
   }
 }
 

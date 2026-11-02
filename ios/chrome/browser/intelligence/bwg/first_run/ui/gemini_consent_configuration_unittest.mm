@@ -268,23 +268,31 @@ TEST_F(GeminiConsentConfigurationTest, StrictConsentLayout) {
       containsString:
           l10n_util::GetNSString(
               IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_SUBTITLE_1)]);
-  EXPECT_TRUE([row3.body.string
-      containsString:
-          l10n_util::GetNSString(
-              IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_1)]);
-  EXPECT_TRUE([row3.body.string
-      containsString:
-          l10n_util::GetNSString(
-              IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_SUBTITLE_2)]);
+  StringWithTags parsedStrictBody1 =
+      ParseStringWithLinks(l10n_util::GetNSString(
+          IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_1));
+  EXPECT_TRUE([row3.body.string containsString:parsedStrictBody1.string]);
+  EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiUploadsLinkAction));
+  EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiScreensLinkAction));
   StringWithTags parsedStrictBody2 =
       ParseStringWithLinks(l10n_util::GetNSString(
           IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_2));
   EXPECT_TRUE([row3.body.string containsString:parsedStrictBody2.string]);
+  EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiPauseActivityLinkAction));
+  EXPECT_TRUE([row3.body.string
+      containsString:
+          l10n_util::GetNSString(
+              IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_SUBTITLE_2)]);
   EXPECT_TRUE([row3.body.string
       containsString:
           l10n_util::GetNSString(
               IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_3)]);
-  EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiActivityLinkAction));
+  StringWithTags parsedStrictBody4 =
+      ParseStringWithLinks(l10n_util::GetNSString(
+          IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_4));
+  EXPECT_TRUE([row3.body.string containsString:parsedStrictBody4.string]);
+  EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiImproveSettingLinkAction));
+  EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiTrainingSettingLinkAction));
 }
 
 TEST_F(GeminiConsentConfigurationTest,
