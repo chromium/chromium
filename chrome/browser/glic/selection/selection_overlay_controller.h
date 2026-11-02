@@ -342,6 +342,8 @@ class SelectionOverlayController
     base::CallbackListSubscription overlay_web_view_focus_subscription;
     // The entry point that started this Smart Selection session.
     std::optional<::selection::EntryPoint> entry_point;
+    // Records Smart Selection UMA metrics for prompt-enabled sessions.
+    std::optional<::selection::MetricsLogger> metrics_logger;
     std::optional<CloseReason> close_reason;
     // Subscription to the active tab changes of the window that hosts `tab_`.
     base::CallbackListSubscription active_tab_subscription;

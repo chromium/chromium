@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/selection/features.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -55,6 +57,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -649,6 +652,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                        SubmitPromptWithSelectedRegion) {
   // The panel stays closed: a page session started with the panel open is
   // handed to the panel and then outlives a prompt.
+  base::HistogramTester histogram_tester;
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
   content::WebContents* web_contents = tab->GetContents();
   auto* controller =
@@ -670,6 +674,18 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 
   // The browser started this session, so it dismisses the overlay itself.
   EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+  histogram_tester.ExpectUniqueSample("SmartSelection.Invocation.ByEntryPoint",
+                                      ::selection::EntryPoint::kContextMenuText,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Invocation.ByDocumentMimeType",
+      ::selection::DocumentMimeType::kHtml, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Selection.Outcome",
+      ::selection::SelectionOutcome::kPreselectedText, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Submission.Outcome",
+      ::selection::SubmissionOutcome::kPromptSubmitted, 1);
 
   controller->Close();
   EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
@@ -1119,6 +1135,95 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 
 namespace {
 
+class FakeSuggestionService : public ::selection::SuggestionService {
+ public:
+  explicit FakeSuggestionService(tabs::TabInterface* tab)
+      : ::selection::SuggestionService(tab,
+                                       /*remote_model_executor=*/nullptr,
+                                       /*google_groups_manager=*/nullptr) {}
+  ~FakeSuggestionService() override = default;
+
+  void RequestSuggestions(::selection::AreaOfInterest processed_area,
+                          ::selection::SuggestionsCallback callback) override {
+    pending_callbacks_.push_back(std::move(callback));
+  }
+
+  size_t pending_request_count() const { return pending_callbacks_.size(); }
+
+  void CompleteRequest(
+      size_t index,
+      std::vector<std::unique_ptr<::selection::Suggestion>> suggestions) {
+    std::move(pending_callbacks_[index])
+        .Run(std::move(suggestions), ::selection::FeedbackZipBuilder());
+  }
+
+ private:
+  std::vector<::selection::SuggestionsCallback> pending_callbacks_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       SuggestionsShownMetricNotRecordedForInactiveRegion) {
+  base::HistogramTester histogram_tester;
+  FakeSuggestionService* fake_service = nullptr;
+  ui::UserDataFactory::ScopedOverride override_subscription =
+      tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+          base::BindLambdaForTesting([&](tabs::TabInterface& tab) {
+            auto service = std::make_unique<FakeSuggestionService>(&tab);
+            fake_service = service.get();
+            return service;
+          }));
+
+  tabs::TabInterface* const tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(fake_service);
+
+  SelectionOverlayController* const controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  selection::SelectionOverlayPageHandler* const handler =
+      static_cast<selection::SelectionOverlayPageHandler*>(controller);
+
+  // Select Region 1 and wait for the overlay WebUI to request suggestions;
+  // FakeSuggestionService holds the request in flight.
+  const base::UnguessableToken region1_id = base::UnguessableToken::Create();
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          region1_id,
+          selection::RegionShape::NewRect(gfx::RectF(0.2f, 0.2f, 0.2f, 0.2f))),
+      /*is_using_keyboard=*/false);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return fake_service->pending_request_count() == 1u; }));
+
+  // Select a different Region 2 before Region 1's suggestions arrive.
+  const base::UnguessableToken region2_id = base::UnguessableToken::Create();
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          region2_id,
+          selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+      /*is_using_keyboard=*/false);
+
+  // Now Region 1's suggestions arrive while Region 2 is active.
+  std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
+  suggestions.push_back(
+      std::make_unique<SelectionSuggestion>(*tab, u"Action 1", "Prompt"));
+  fake_service->CompleteRequest(0, std::move(suggestions));
+
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.TotalShownCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.GeminiInChromeShownCount", 0);
+}
+
+namespace {
+
 class FakePromptSuggestionTool : public ::selection::SuggestionTool {
  public:
   explicit FakePromptSuggestionTool(tabs::TabInterface* tab) : tab_(tab) {
@@ -1238,6 +1343,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                        HandoffDismissesOverlay) {
   // The panel stays closed: a page session started with the panel open is
   // handed to the panel and then outlives a hand-off.
+  base::HistogramTester histogram_tester;
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
 
   auto* suggestion_service = ::selection::SuggestionService::From(tab);
@@ -1265,6 +1371,19 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
       ->ExecuteSuggestedAction(action_id,
                                mojo::GenericPendingAssociatedReceiver());
   EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Selection.Outcome",
+      ::selection::SelectionOutcome::kSpatialSelectionCompleted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Suggestions.TotalShownCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Suggestions.GeminiInChromeShownCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Suggestions.AcceptedSuggestionType",
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Submission.Outcome",
+      ::selection::SubmissionOutcome::kSuggestionAccepted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,

@@ -631,6 +631,11 @@ void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options,
 
 void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
   session_->options = std::move(options);
+  if (IsSelectionOverlayPromptEnabled() && session_->entry_point.has_value()) {
+    session_->metrics_logger.emplace(*session_->entry_point,
+                                     tab_->GetContents()->GetContentsMimeType(),
+                                     !session_->selected_regions.empty());
+  }
   if (GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
       service && !service->GetInstanceForTab(tab_)) {
     service->TryPreload(GlicWarmingTrigger::kSelectionOverlay);
@@ -1060,6 +1065,9 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   }
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
   if (service) {
+    if (session_->metrics_logger) {
+      session_->metrics_logger->RecordPromptSubmitted();
+    }
     GlicInvokeOptions options(glic::Target(*tab_),
                               mojom::InvocationSource::kTextSelectionWidget);
     options.prompts.push_back(prompt);
@@ -1246,10 +1254,16 @@ void SelectionOverlayController::OnSuggestionsReceived(
 
   if (complete) {
     region_data->suggestions_complete = true;
-    if (session_->active_region_id == region_id &&
-        base::FeatureList::IsEnabled(
-            features::kGlicSelectionOverlayDogfoodFeedback)) {
-      session_->feedback_zip_builder = std::move(feedback_zip_builder);
+    if (session_->active_region_id == region_id) {
+      if (base::FeatureList::IsEnabled(
+              features::kGlicSelectionOverlayDogfoodFeedback)) {
+        session_->feedback_zip_builder = std::move(feedback_zip_builder);
+      }
+      if (session_->metrics_logger &&
+          (session_->suggested_actions_listener.is_bound() ||
+           session_->suggested_actions_callback_for_testing)) {
+        session_->metrics_logger->RecordSuggestionsShown(suggestions);
+      }
     }
   }
 
@@ -1316,6 +1330,9 @@ void SelectionOverlayController::ExecuteSuggestedAction(
             "Channel supplied for a handoff action.");
         return;
       }
+      if (session_->metrics_logger) {
+        session_->metrics_logger->RecordSuggestionAccepted(*matched_suggestion);
+      }
       matched_suggestion->Execute(mojo::GenericPendingAssociatedReceiver());
       if (session_->owner == Session::Owner::kDirect) {
         Close();
@@ -1332,6 +1349,9 @@ void SelectionOverlayController::ExecuteSuggestedAction(
         session_->receiver.ReportBadMessage(
             "Channel interface does not match.");
         return;
+      }
+      if (session_->metrics_logger) {
+        session_->metrics_logger->RecordSuggestionAccepted(*matched_suggestion);
       }
       matched_suggestion->Execute(std::move(channel));
       return;
@@ -1379,6 +1399,13 @@ void SelectionOverlayController::Reset() {
   // Drop the callbacks still pending for the old session (e.g. the page context
   // fetch), so they can't land in the next one.
   session_weak_factory_.InvalidateWeakPtrs();
+  if (session_->metrics_logger) {
+    const bool cancelled_by_user =
+        session_->close_reason == CloseReason::kCloseButton ||
+        session_->close_reason == CloseReason::kEscapeKeyPress ||
+        session_->close_reason == CloseReason::kBackgroundClick;
+    session_->metrics_logger->RecordSessionEnd(cancelled_by_user);
+  }
   session_ = std::make_unique<Session>(this);
 }
 
@@ -1453,6 +1480,9 @@ void SelectionOverlayController::SyncRegions(bool should_focus_panel) {
     return;
   }
   CapturedRegions captured_regions = GetCapturedRegions();
+  if (!captured_regions.empty() && session_->metrics_logger) {
+    session_->metrics_logger->RecordSpatialSelectionCompleted();
+  }
 
   if (session_->page) {
     std::vector<selection::SelectedRegionPtr> regions;

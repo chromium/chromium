@@ -1106,7 +1106,8 @@ class GlicSmartSuggestionContextMenuBrowserTest
   GlicSmartSuggestionContextMenuBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kGlicContextMenu,
-                              features::kGlicSuggestionContextMenu},
+                              features::kGlicSuggestionContextMenu,
+                              features::kGlicSelectionOverlayPromptBox},
         /*disabled_features=*/{features::kGlicSelectionPrompt});
   }
 
@@ -1128,6 +1129,7 @@ class GlicSmartSuggestionContextMenuBrowserTest
 
 IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
                        ItemPresentAndOpensOverlay) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
   auto* controller = SelectionOverlayController::FromTabWebContents(
       browser()->tab_strip_model()->GetActiveWebContents());
@@ -1137,6 +1139,9 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION,
                        /*event_flags=*/0);
+  histogram_tester.ExpectUniqueSample("SmartSelection.Invocation.ByEntryPoint",
+                                      ::selection::EntryPoint::kContextMenuPage,
+                                      1);
 
   ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
                           SelectionOverlayController::State::kOverlay,
@@ -1160,6 +1165,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
                        ExecWithTextSelectionPreselectsRegionAndSetsOptions) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1181,6 +1187,9 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION,
                        /*event_flags=*/0);
+  histogram_tester.ExpectUniqueSample("SmartSelection.Invocation.ByEntryPoint",
+                                      ::selection::EntryPoint::kContextMenuText,
+                                      1);
 
   ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
                           SelectionOverlayController::State::kOverlay,
