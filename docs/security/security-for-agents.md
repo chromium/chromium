@@ -268,6 +268,15 @@ Chromium:
 * Attacks on Linux that require control of a process with an X11 connection,
   such as a compromised GPU process, and act through the X server (e.g. via
   XSETTINGS). See the [X11 threat model](x11-threat-model.md).
+* Attacks that require a compromised child process whose sandbox currently
+  permits write access to the user data directory (`DIR_USER_DATA`)—such as the
+  macOS network service prior to `kTriggerNetworkDataMigration`
+  ([crbug.com/40214277](https://crbug.com/40214277),
+  [crbug.com/567101748](https://crbug.com/567101748))—to modify files, edit
+  preferences (`Local State`), or plant symlinks/FIFOs in `DIR_USER_DATA` to
+  subvert browser-process file operations. Browser-process accesses to
+  `DIR_USER_DATA` are not a security boundary against processes that can write
+  to `DIR_USER_DATA`.
 
 These are not security bugs, regardless of how easy they are to trigger. Under
 no circumstances is something matching an entry in this list a security bug.

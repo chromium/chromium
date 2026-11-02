@@ -38,6 +38,12 @@ does not isolate clients. See the [X11 threat model](x11-threat-model.md).
 * kGpu (Fuchsia, Mac, Windows, ChromeOS, Linux (non-X11))
 * kVideoCapture (Fuchsia)
 
+Note: On macOS, until `kTriggerNetworkDataMigration` is enabled by default on
+Stable ([crbug.com/40214277](https://crbug.com/40214277),
+[crbug.com/567101748](https://crbug.com/567101748)), the `kNetwork` sandbox
+permits full `file*` access to the user data directory (`DIR_USER_DATA`) and is
+not a security boundary for files inside `DIR_USER_DATA`.
+
 # Sandboxed
 
 * kRenderer (renderer, extensions, PDF renderers)
