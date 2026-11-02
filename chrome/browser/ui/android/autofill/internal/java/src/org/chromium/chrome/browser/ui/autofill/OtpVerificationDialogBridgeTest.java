@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -12,6 +12,8 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,7 +29,8 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 /** Unit tests for {@link OtpVerificationDialogBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OtpVerificationDialogBridgeTest {
-    private static final long NATIVE_OTP_VERIFICATION_DIALOG_VIEW = 100L;
+    private JniRawPtr<OtpVerificationDialogBridge.NativeOtpVerificationDialogViewAndroid>
+            mNativeDialogView;
 
     private FakeModalDialogManager mModalDialogManager;
     private OtpVerificationDialogBridge mOtpVerificationDialogBridge;
@@ -37,54 +40,62 @@ public class OtpVerificationDialogBridgeTest {
     @Before
     public void setUp() {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
+        mNativeDialogView = JniRawPtr.createForTesting(100L);
         mOtpVerificationDialogBridge =
                 new OtpVerificationDialogBridge(
-                        NATIVE_OTP_VERIFICATION_DIALOG_VIEW,
+                        mNativeDialogView,
                         ApplicationProvider.getApplicationContext(),
                         mModalDialogManager);
         OtpVerificationDialogBridgeJni.setInstanceForTesting(mNativeMock);
+    }
+
+    @After
+    public void tearDown() {
+        if (mNativeDialogView != null) {
+            mNativeDialogView.release();
+        }
     }
 
     @Test
     public void testOnConfirm_callsNative() {
         mOtpVerificationDialogBridge.onConfirm("123456");
 
-        verify(mNativeMock, times(1)).onConfirm(NATIVE_OTP_VERIFICATION_DIALOG_VIEW, "123456");
+        verify(mNativeMock, times(1)).onConfirm(mNativeDialogView, "123456");
     }
 
     @Test
     public void testOnNewOtpRequested_callsNative() {
         mOtpVerificationDialogBridge.onNewOtpRequested();
 
-        verify(mNativeMock, times(1)).onNewOtpRequested(NATIVE_OTP_VERIFICATION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onNewOtpRequested(mNativeDialogView);
     }
 
     @Test
     public void testOnDialogDismissed_callsNativeAndClearsPointer() {
         mOtpVerificationDialogBridge.onDialogDismissed();
 
-        verify(mNativeMock, times(1)).onDialogDismissed(NATIVE_OTP_VERIFICATION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDialogDismissed(mNativeDialogView);
 
         // Subsequent calls should not reach native.
         mOtpVerificationDialogBridge.onConfirm("123456");
         mOtpVerificationDialogBridge.onNewOtpRequested();
         mOtpVerificationDialogBridge.onDialogDismissed();
 
-        verify(mNativeMock, never()).onConfirm(anyLong(), anyString());
-        verify(mNativeMock, never()).onNewOtpRequested(anyLong());
-        verify(mNativeMock, times(1)).onDialogDismissed(anyLong());
+        verify(mNativeMock, never()).onConfirm(any(), anyString());
+        verify(mNativeMock, never()).onNewOtpRequested(any());
+        verify(mNativeMock, times(1)).onDialogDismissed(any());
     }
 
     @Test
     public void testNativeCallsDoNotOccurAfterDismissed() {
         mOtpVerificationDialogBridge.onDialogDismissed();
 
-        verify(mNativeMock).onDialogDismissed(NATIVE_OTP_VERIFICATION_DIALOG_VIEW);
+        verify(mNativeMock).onDialogDismissed(mNativeDialogView);
 
         mOtpVerificationDialogBridge.onConfirm("123456");
         mOtpVerificationDialogBridge.onNewOtpRequested();
 
-        verify(mNativeMock, never()).onConfirm(anyLong(), anyString());
-        verify(mNativeMock, never()).onNewOtpRequested(anyLong());
+        verify(mNativeMock, never()).onConfirm(any(), anyString());
+        verify(mNativeMock, never()).onNewOtpRequested(any());
     }
 }

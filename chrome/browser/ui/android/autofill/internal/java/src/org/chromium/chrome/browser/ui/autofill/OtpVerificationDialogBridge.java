@@ -8,7 +8,10 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -23,11 +26,16 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @JNINamespace("autofill")
 @NullMarked
 class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.Delegate {
-    private long mNativeOtpVerificationDialogView;
+    @JniType("autofill::OtpVerificationDialogViewAndroid")
+    interface NativeOtpVerificationDialogViewAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeOtpVerificationDialogViewAndroid>
+            mNativeOtpVerificationDialogView;
     private final OtpVerificationDialogCoordinator mDialogCoordinator;
 
     OtpVerificationDialogBridge(
-            long nativeOtpVerificationDialogView,
+            @Nullable JniRawPtr<NativeOtpVerificationDialogViewAndroid>
+                    nativeOtpVerificationDialogView,
             Context context,
             ModalDialogManager modalDialogManager) {
         this.mNativeOtpVerificationDialogView = nativeOtpVerificationDialogView;
@@ -44,11 +52,12 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
      */
     @CalledByNative
     static @Nullable OtpVerificationDialogBridge create(
-            long nativeOtpVerificationDialogView,
+            JniRawPtr<NativeOtpVerificationDialogViewAndroid> nativeOtpVerificationDialogView,
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         Context context = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (context == null || modalDialogManager == null) {
+            nativeOtpVerificationDialogView.release();
             return null;
         }
         return new OtpVerificationDialogBridge(
@@ -57,21 +66,21 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
 
     @Override
     public void onConfirm(String otp) {
-        if (mNativeOtpVerificationDialogView == 0) return;
+        if (mNativeOtpVerificationDialogView == null) return;
         OtpVerificationDialogBridgeJni.get().onConfirm(mNativeOtpVerificationDialogView, otp);
     }
 
     @Override
     public void onNewOtpRequested() {
-        if (mNativeOtpVerificationDialogView == 0) return;
+        if (mNativeOtpVerificationDialogView == null) return;
         OtpVerificationDialogBridgeJni.get().onNewOtpRequested(mNativeOtpVerificationDialogView);
     }
 
     @Override
     public void onDialogDismissed() {
-        if (mNativeOtpVerificationDialogView == 0) return;
+        if (mNativeOtpVerificationDialogView == null) return;
         OtpVerificationDialogBridgeJni.get().onDialogDismissed(mNativeOtpVerificationDialogView);
-        mNativeOtpVerificationDialogView = 0;
+        clearNativePtr();
     }
 
     /**
@@ -106,13 +115,22 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
         mDialogCoordinator.showConfirmationAndDismissDialog(confirmationMessage);
     }
 
+    @CalledByNative
+    void clearNativePtr() {
+        if (mNativeOtpVerificationDialogView != null) {
+            mNativeOtpVerificationDialogView.release();
+            mNativeOtpVerificationDialogView = null;
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onConfirm(
-                long nativeOtpVerificationDialogViewAndroid, @JniType("std::u16string") String otp);
+                JniPtr<NativeOtpVerificationDialogViewAndroid> self,
+                @JniType("std::u16string") String otp);
 
-        void onNewOtpRequested(long nativeOtpVerificationDialogViewAndroid);
+        void onNewOtpRequested(JniPtr<NativeOtpVerificationDialogViewAndroid> self);
 
-        void onDialogDismissed(long nativeOtpVerificationDialogViewAndroid);
+        void onDialogDismissed(JniPtr<NativeOtpVerificationDialogViewAndroid> self);
     }
 }
