@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build_overrides/ipcz.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -227,13 +226,13 @@ source_set("ipcz_sources") {
 }
 
 config("ipcz_include_dir") {
-  include_dirs = [ "${ipcz_include_root}" ]
+  include_dirs = [ "//third_party/ipcz/include" ]
 }
 
 config("ipcz_include_src_dir") {
   include_dirs = [
-    "${ipcz_src_root}",
-    get_path_info("${ipcz_src_root}/", "gen_dir"),
+    "//third_party/ipcz/src",
+    get_path_info("//third_party/ipcz/src/", "gen_dir"),
   ]
 }
 
