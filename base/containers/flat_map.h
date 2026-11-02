@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_tree.h"
 
 namespace base {
@@ -283,7 +284,7 @@ class flat_map : public ::base::internal::
   //
   // Assume that swap invalidates iterators and references.
 
-  void swap(flat_map& other) noexcept;
+  REINITIALIZES_AFTER_MOVE void swap(flat_map& other) noexcept;
 
   friend void swap(flat_map& lhs, flat_map& rhs) noexcept { lhs.swap(rhs); }
 };

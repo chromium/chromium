@@ -244,7 +244,7 @@ class flat_tree {
   //
   // clear() leaves the capacity() of the flat_tree unchanged.
 
-  void clear();
+  REINITIALIZES_AFTER_MOVE void clear();
 
   constexpr size_type size() const;
   constexpr size_type max_size() const;
@@ -316,7 +316,7 @@ class flat_tree {
 
   // Replaces the container_type with `body`. Expects that `body` is sorted
   // and has no repeated elements with regard to value_comp().
-  void replace(container_type&& body);
+  REINITIALIZES_AFTER_MOVE void replace(container_type&& body);
 
   // --------------------------------------------------------------------------
   // Erase operations.
@@ -384,7 +384,7 @@ class flat_tree {
   // and lexicographical_compare(). If the underlying container type is changed,
   // this code may need to be modified.
 
-  void swap(flat_tree& other) noexcept;
+  REINITIALIZES_AFTER_MOVE void swap(flat_tree& other) noexcept;
 
   friend bool operator==(const flat_tree& lhs, const flat_tree& rhs) {
     return lhs.body_ == rhs.body_;
