@@ -118,6 +118,10 @@ found in the LICENSE file.
   <int value="21" label="UnableToRetrieveGmailAndGoogleSmartFeaturesConsent"/>
   <int value="22" label="CancelledDuringConsentFetch"/>
   <int value="23" label="CancelledDuringOptInCard"/>
+  <int value="24" label="CancelledDuringLoginFlowVerification"/>
+  <int value="25" label="CancelledDuringOtpRetrieval"/>
+  <int value="26" label="CancelledDuringConfirmationDialog"/>
+  <int value="27" label="CancelledDuringFillOtp"/>
   <int value="30" label="GmailOtpSenderDomainMismatch"/>
   <int value="31" label="OtpRetrievalTimeout"/>
 </enum>

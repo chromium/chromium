@@ -47,6 +47,10 @@ enum class AttemptOtpFillingToolEvent {
   // asynchronous step runs.
   kCancelledDuringConsentFetch = 22,
   kCancelledDuringOptInCard = 23,
+  kCancelledDuringLoginFlowVerification = 24,
+  kCancelledDuringOtpRetrieval = 25,
+  kCancelledDuringConfirmationDialog = 26,
+  kCancelledDuringFillOtp = 27,
   // OTP retrieval timed out after a received token was rejected for its sender
   // domain.
   kGmailOtpSenderDomainMismatch = 30,

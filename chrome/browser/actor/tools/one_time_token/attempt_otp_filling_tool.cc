@@ -442,6 +442,9 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
     LogJournalEvent(
         "AttemptOtpFillingTool::Invoke",
         JournalDetailsBuilder().Add("status", "Using mock OTP").Build());
+    // The mock path records ToolInvocation events like a real run.
+    pending_cancellation_event_ =
+        AttemptOtpFillingToolEvent::kCancelledDuringFillOtp;
     tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
         actor_surface_handle_.GetTabHandle(), trigger_field_ids_,
         std::move(mock_otp),
@@ -476,6 +479,8 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
           .Add("should_use_strong_matching", should_use_strong_matching)
           .Build());
 
+  pending_cancellation_event_ =
+      AttemptOtpFillingToolEvent::kCancelledDuringLoginFlowVerification;
   actor_login_flow_verifier_->VerifyIsActorLoginFlow(
       otp_frame->GetFrameTreeNodeId(), otp_frame->GetLastCommittedOrigin(),
       main_frame_origin, context_origin, should_use_strong_matching,
@@ -492,6 +497,9 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
 void AttemptOtpFillingTool::OnActorLoginFlowChecked(
     ToolCallback callback,
     ActorLoginFlowVerifier::Result result) {
+  // The awaited step has finished; see `pending_cancellation_event_` for more
+  // details.
+  pending_cancellation_event_.reset();
   RecordActorLoginFlowVerification(result);
 
   bool is_actor_login = ActorLoginFlowVerifier::IsSuccess(result);
@@ -527,6 +535,8 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(
   LogJournalEvent(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
       JournalDetailsBuilder().Add("status", "Calling RetrieveOtp").Build());
+  pending_cancellation_event_ =
+      AttemptOtpFillingToolEvent::kCancelledDuringOtpRetrieval;
   tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
       actor_surface_handle_.GetTabHandle(), otp_frame->GetLastCommittedOrigin(),
       trigger_field_ids_, is_actor_login,
@@ -538,6 +548,9 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
     ToolCallback callback,
     base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>
         result) {
+  // The awaited step has finished; see `pending_cancellation_event_` for more
+  // details.
+  pending_cancellation_event_.reset();
   LogJournalEvent(
       "AttemptOtpFillingTool::OnOtpRetrieved",
       JournalDetailsBuilder().Add("otp_received", result.has_value()).Build());
@@ -631,6 +644,8 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
     RecordGmailOtpConfirmationDialogInteraction(
         GmailOtpConfirmationDialogInteraction::kShowDialog);
     std::string otp_code = retrieved_otp;
+    pending_cancellation_event_ =
+        AttemptOtpFillingToolEvent::kCancelledDuringConfirmationDialog;
     tool_delegate().RequestToShowGmailOtpConfirmationDialog(
         otp_code,
         base::BindOnce(&AttemptOtpFillingTool::OnGmailOtpConfirmationResponse,
@@ -645,6 +660,8 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
           .Add("status",
                "Calling FillOtp without showing the confirmation dialog")
           .Build());
+  pending_cancellation_event_ =
+      AttemptOtpFillingToolEvent::kCancelledDuringFillOtp;
   tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
       actor_surface_handle_.GetTabHandle(), trigger_field_ids_,
       std::move(retrieved_otp),
@@ -653,6 +670,9 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
 }
 
 void AttemptOtpFillingTool::OnOtpFilled(ToolCallback callback, bool success) {
+  // The awaited step has finished; see `pending_cancellation_event_` for more
+  // details.
+  pending_cancellation_event_.reset();
   LogJournalEvent("AttemptOtpFillingTool::OnOtpFilled",
                   JournalDetailsBuilder().Add("success", success).Build());
 
@@ -710,6 +730,9 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
     ToolCallback callback,
     std::string otp,
     webui::mojom::GmailOtpConfirmationResultPtr response) {
+  // The awaited step has finished; see `pending_cancellation_event_` for more
+  // details.
+  pending_cancellation_event_.reset();
   if (!response || response.is_null()) {
     LogJournalEvent("AttemptOtpFillingTool::OnGmailOtpConfirmationResponse",
                     JournalDetailsBuilder()
@@ -800,6 +823,8 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
                   JournalDetailsBuilder()
                       .Add("status", "Calling FillOtp after confirmation")
                       .Build());
+  pending_cancellation_event_ =
+      AttemptOtpFillingToolEvent::kCancelledDuringFillOtp;
   tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
       actor_surface_handle_.GetTabHandle(), trigger_field_ids_, std::move(otp),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,

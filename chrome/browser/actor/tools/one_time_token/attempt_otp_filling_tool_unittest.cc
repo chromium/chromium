@@ -292,6 +292,10 @@ class AttemptOtpFillingToolTest : public testing::Test {
                                  predicted_otp_type, std::move(verifier));
   }
 
+  // Invokes the tool with `FillOtp()` pending, destroys the tool and expects
+  // `kCancelledDuringFillOtp` as the only sample.
+  void InvokeAndExpectCancelledDuringFillOtp();
+
   // Ensures `tool` passes time-of-use validation for `target` by setting up an
   // `AnnotatedPageContent` with an element corresponding to `target`.
   void SetupSuccessfulTimeOfUseValidation(AttemptOtpFillingTool& tool,
@@ -375,6 +379,10 @@ void ExpectNoCancellationRecorded(const base::HistogramTester& tester) {
   for (AttemptOtpFillingToolEvent event : {
            AttemptOtpFillingToolEvent::kCancelledDuringConsentFetch,
            AttemptOtpFillingToolEvent::kCancelledDuringOptInCard,
+           AttemptOtpFillingToolEvent::kCancelledDuringLoginFlowVerification,
+           AttemptOtpFillingToolEvent::kCancelledDuringOtpRetrieval,
+           AttemptOtpFillingToolEvent::kCancelledDuringConfirmationDialog,
+           AttemptOtpFillingToolEvent::kCancelledDuringFillOtp,
        }) {
     tester.ExpectBucketCount(kAttemptOtpFillingToolHistogram, event, 0);
   }
@@ -644,6 +652,132 @@ TEST_F(AttemptOtpFillingToolTest,
   ExpectNoCancellationRecorded(histogram_tester_);
 }
 
+// Destroying the tool during login-flow verification records
+// `kCancelledDuringLoginFlowVerification`.
+TEST_F(AttemptOtpFillingToolTest, Invoke_DestroyedDuringLoginFlowVerification) {
+  auto verifier =
+      std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>(
+          fake_affiliation_service_);
+  // Never replies, so the tool keeps waiting.
+  EXPECT_CALL(*verifier, VerifyIsActorLoginFlow);
+  PageTarget target(gfx::Point(10, 10));
+  {
+    AttemptOtpFillingTool tool = CreateTool(
+        {target}, /*for_signin=*/true,
+        AttemptOtpFillingToolRequest::OtpType::kUnknown, std::move(verifier));
+    SetupSuccessfulTimeOfUseValidation(tool, target);
+    tool.Invoke(base::DoNothing());
+    ExpectNoCancellationRecorded(histogram_tester_);
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kCancelledDuringLoginFlowVerification, 1);
+  histogram_tester_.ExpectTotalCount(kAttemptOtpFillingToolHistogram, 1);
+}
+
+// Destroying the tool during OTP retrieval records
+// `kCancelledDuringOtpRetrieval`.
+TEST_F(AttemptOtpFillingToolTest, Invoke_DestroyedDuringOtpRetrieval) {
+  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+      .WillOnce(Return(CreateValidLoginContext()));
+  // Never replies, so the tool keeps waiting.
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp);
+  PageTarget target(gfx::Point(10, 10));
+  {
+    AttemptOtpFillingTool tool = CreateTool({target});
+    SetupSuccessfulTimeOfUseValidation(tool, target);
+    tool.Invoke(base::DoNothing());
+    // Login-flow verification replies asynchronously.
+    task_environment_.RunUntilIdle();
+    ExpectNoCancellationRecorded(histogram_tester_);
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kCancelledDuringOtpRetrieval, 1);
+  histogram_tester_.ExpectTotalCount(kAttemptOtpFillingToolHistogram, 1);
+}
+
+// Destroying the tool during the confirmation dialog records
+// `kCancelledDuringConfirmationDialog`.
+TEST_F(AttemptOtpFillingToolTest, Invoke_DestroyedDuringConfirmationDialog) {
+  EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
+      .WillOnce(Return(std::nullopt));
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
+      .WillOnce(RunOnceCallback<4>("123456"));
+  // Never replies, so the tool keeps waiting.
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog("123456", _));
+  PageTarget target(gfx::Point(10, 10));
+  {
+    AttemptOtpFillingTool tool = CreateTool({target});
+    SetupSuccessfulTimeOfUseValidation(tool, target);
+    tool.Invoke(base::DoNothing());
+    // Login-flow verification replies asynchronously.
+    task_environment_.RunUntilIdle();
+    ExpectNoCancellationRecorded(histogram_tester_);
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kCancelledDuringConfirmationDialog, 1);
+  histogram_tester_.ExpectTotalCount(kAttemptOtpFillingToolHistogram, 1);
+}
+
+// Shared by the three `Invoke_DestroyedDuringFillOtp_*` tests below, one per
+// `FillOtp()` call site: without confirmation, after confirmation, and with a
+// mock OTP.
+void AttemptOtpFillingToolTest::InvokeAndExpectCancelledDuringFillOtp() {
+  // Never replies, so the tool keeps waiting.
+  EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _));
+  PageTarget target(gfx::Point(10, 10));
+  {
+    AttemptOtpFillingTool tool = CreateTool({target});
+    SetupSuccessfulTimeOfUseValidation(tool, target);
+    tool.Invoke(base::DoNothing());
+    // Login-flow verification replies asynchronously.
+    task_environment_.RunUntilIdle();
+    ExpectNoCancellationRecorded(histogram_tester_);
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kCancelledDuringFillOtp, 1);
+  histogram_tester_.ExpectTotalCount(kAttemptOtpFillingToolHistogram, 1);
+}
+
+TEST_F(AttemptOtpFillingToolTest,
+       Invoke_DestroyedDuringFillOtp_WithoutConfirmation) {
+  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+      .WillOnce(Return(CreateValidLoginContext()));
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
+      .WillOnce(RunOnceCallback<4>("123456"));
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog).Times(0);
+  InvokeAndExpectCancelledDuringFillOtp();
+}
+
+TEST_F(AttemptOtpFillingToolTest,
+       Invoke_DestroyedDuringFillOtp_AfterConfirmation) {
+  EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
+      .WillOnce(Return(std::nullopt));
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
+      .WillOnce(RunOnceCallback<4>("123456"));
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog("123456", _))
+      .WillOnce(RunOnceCallback<1>(
+          webui::mojom::GmailOtpConfirmationResult::NewResponse(
+              webui::mojom::GmailOtpConfirmationResponse::New(
+                  /*permission_granted=*/true))));
+  InvokeAndExpectCancelledDuringFillOtp();
+}
+
+TEST_F(AttemptOtpFillingToolTest, Invoke_DestroyedDuringFillOtp_MockOtp) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kAttemptOtpFillingToolMockValueSkipsChecks, "123456");
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp).Times(0);
+  InvokeAndExpectCancelledDuringFillOtp();
+}
+
 // Time of use validation returns kTabWentAway when the target tab is not
 // available any more.
 TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_TabWentAway) {
@@ -848,16 +982,18 @@ TEST_P(AttemptOtpFillingToolRetrieveOtpErrorTest, Invoke_RetrievalError) {
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
       .WillOnce(RunOnceCallback<4>(base::unexpected(test_case.error)));
   PageTarget target(gfx::Point(10, 10));
-  AttemptOtpFillingTool tool = CreateTool({target});
   SetAutofillGmailOtpFillingEnabled(prefs(), true);
-  SetupSuccessfulTimeOfUseValidation(tool, target);
+  {
+    AttemptOtpFillingTool tool = CreateTool({target});
+    SetupSuccessfulTimeOfUseValidation(tool, target);
 
-  TestFuture<ActionResultPtr> future;
-  tool.Invoke(future.GetCallback());
+    TestFuture<ActionResultPtr> future;
+    tool.Invoke(future.GetCallback());
 
-  ActionResultPtr action_result = future.Take();
-  EXPECT_EQ(test_case.expected_code, action_result->code);
-  EXPECT_EQ(test_case.expected_message, action_result->message);
+    ActionResultPtr action_result = future.Take();
+    EXPECT_EQ(test_case.expected_code, action_result->code);
+    EXPECT_EQ(test_case.expected_message, action_result->message);
+  }
   histogram_tester_.ExpectUniqueSample(kAttemptOtpFillingToolHistogram,
                                        test_case.expected_event, 1);
 }
@@ -1333,13 +1469,15 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp).Times(0);
 
   PageTarget target(gfx::Point(10, 10));
-  AttemptOtpFillingTool tool = CreateTool({target}, /*for_signin=*/true);
-  SetupSuccessfulTimeOfUseValidation(tool, target);
+  {
+    AttemptOtpFillingTool tool = CreateTool({target}, /*for_signin=*/true);
+    SetupSuccessfulTimeOfUseValidation(tool, target);
 
-  TestFuture<ActionResultPtr> future;
-  tool.Invoke(future.GetCallback());
+    TestFuture<ActionResultPtr> future;
+    tool.Invoke(future.GetCallback());
 
-  EXPECT_EQ(kOtpUserDeclinedFillingConfirmation, future.Take()->code);
+    EXPECT_EQ(kOtpUserDeclinedFillingConfirmation, future.Take()->code);
+  }
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser, 1);
@@ -1349,6 +1487,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
   histogram_tester_.ExpectBucketCount(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kPermissionDenied, 1);
+  ExpectNoCancellationRecorded(histogram_tester_);
 }
 
 TEST_F(AttemptOtpFillingToolTest,
@@ -1432,19 +1571,22 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_FrameLostDuringVerification) {
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp).Times(0);
 
   PageTarget target(gfx::Point(10, 10));
-  AttemptOtpFillingTool tool = CreateTool(
-      {target}, /*for_signin=*/true,
-      AttemptOtpFillingToolRequest::OtpType::kUnknown, std::move(verifier));
-  SetupSuccessfulTimeOfUseValidation(tool, target);
+  {
+    AttemptOtpFillingTool tool = CreateTool(
+        {target}, /*for_signin=*/true,
+        AttemptOtpFillingToolRequest::OtpType::kUnknown, std::move(verifier));
+    SetupSuccessfulTimeOfUseValidation(tool, target);
 
-  TestFuture<ActionResultPtr> future;
-  tool.Invoke(future.GetCallback());
+    TestFuture<ActionResultPtr> future;
+    tool.Invoke(future.GetCallback());
 
-  EXPECT_EQ(mojom::ActionResultCode::kOtpTargetFrameNotFound,
-            future.Take()->code);
+    EXPECT_EQ(mojom::ActionResultCode::kOtpTargetFrameNotFound,
+              future.Take()->code);
+  }
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kNoTargetFrameWithOtpFound, 1);
+  ExpectNoCancellationRecorded(histogram_tester_);
 }
 
 TEST_F(AttemptOtpFillingToolTest,
