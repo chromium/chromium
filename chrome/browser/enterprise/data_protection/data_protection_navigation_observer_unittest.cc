@@ -6,8 +6,6 @@
 
 #include <map>
 #include <optional>
-#include <string>
-#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/to_string.h"
@@ -201,10 +199,8 @@ class FakeRealTimeUrlLookupService
   }
 
   void SetWatermarkTextForURL(const GURL& url,
-                              std::optional<std::string_view> watermark_text) {
-    url_to_watermark_[url] = watermark_text
-                                 ? std::optional<std::string>(*watermark_text)
-                                 : std::nullopt;
+                              std::optional<std::string> watermark_text) {
+    url_to_watermark_[url] = std::move(watermark_text);
   }
 
   void SetBlockScreenshotForURL(const GURL& url, bool block_screenshot) {
@@ -1540,13 +1536,11 @@ TEST_F(SinglePageAppWatermarkTest,
 }
 
 struct WatermarkChangeParams {
-  std::string_view source_url;
-  std::optional<std::string_view> source_watermark;
-  std::string_view destination_url;
-  std::optional<std::string_view> destination_watermark;
-};
-
-constexpr WatermarkChangeParams kWatermarkChangeTestCases[] = {
+  std::string source_url;
+  std::optional<std::string> source_watermark;
+  std::string destination_url;
+  std::optional<std::string> destination_watermark;
+} kWatermarkChangeTestCases[]{
     {
         .source_url = "https://example.com/watermark",
         .source_watermark = "custom_message",

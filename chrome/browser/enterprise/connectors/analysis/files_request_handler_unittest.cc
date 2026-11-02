@@ -48,7 +48,6 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace enterprise_connectors {
 
@@ -191,7 +190,10 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   const GURL& url() const override { return tab_url(); }
 
-  const GURL& tab_url() const override { return tab_url_; }
+  const GURL& tab_url() const override {
+    static GURL url(kTestUrl);
+    return url;
+  }
 
   ContentAnalysisRequest::Reason reason() const override {
     return ContentAnalysisRequest::FILE_PICKER_DIALOG;
@@ -211,7 +213,6 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
   content::WebContents* web_contents() const override { return nullptr; }
 
  private:
-  const GURL tab_url_{kTestUrl};
   const raw_ref<const enterprise_connectors::AnalysisSettings> settings_;
   int user_action_requests_count_ = 0;
 };

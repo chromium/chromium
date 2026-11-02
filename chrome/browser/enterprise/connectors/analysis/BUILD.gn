@@ -71,6 +71,10 @@ if (is_chromeos) {
 source_set("unit_tests") {
   testonly = true
 
+  # Some of these tests declare file-scope objects with non-trivial
+  # destructors.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
   sources = []
   deps = [
     "//base",
@@ -137,6 +141,10 @@ if (!is_android && enterprise_cloud_content_analysis) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    # Some of these tests declare file-scope objects with non-trivial
+    # destructors.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
     sources = [
       "content_analysis_browsertest.cc",

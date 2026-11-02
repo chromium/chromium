@@ -4,8 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 
-#include <string>
-#include <string_view>
 #include <tuple>
 
 #include "base/json/json_reader.h"
@@ -597,16 +595,14 @@ TEST_F(ConnectorsServiceProfileTypeBrowserTest, IsEnabled) {
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 
 struct IdentifierTestParams {
-  std::string_view profile_affiliation_id;
-  std::string_view device_affiliation_id;
+  std::string profile_affiliation_id;
+  std::string device_affiliation_id;
   policy::PolicyScope policy_scope;
 
   // DM Token is not known at the point of defining the test cases.
   bool has_device_token;
   bool has_profile_email;
-};
-
-constexpr IdentifierTestParams kIdentifierTestCases[] = {
+} kIdentifierTestCases[] = {
     // Affiliated cases
     {.profile_affiliation_id = kAffiliationId1,
      .device_affiliation_id = kAffiliationId1,
@@ -659,11 +655,10 @@ TEST_P(ConnectorsServiceRealTimeURLIdentifierTest, ReturnsCorrectIdentifier) {
 #if !BUILDFLAG(IS_CHROMEOS)
   // Set Affiliation IDs, matching affiliation ids => affiliated profile
   profile_->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
-      {std::string(GetParam().profile_affiliation_id)});
+      {GetParam().profile_affiliation_id});
   TestingBrowserProcess::GetGlobal()
       ->browser_policy_connector()
-      ->SetDeviceAffiliatedIdsForTesting(
-          {std::string(GetParam().device_affiliation_id)});
+      ->SetDeviceAffiliatedIdsForTesting({GetParam().device_affiliation_id});
 #endif
 
   // Set the profile email.

@@ -7,6 +7,10 @@ import("//components/enterprise/buildflags/buildflags.gni")
 source_set("unit_tests") {
   testonly = true
 
+  # Some of these tests declare file-scope objects with non-trivial
+  # destructors.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
   sources = [
     "interstitials/delayed_interstitial_reporter_unittest.cc",
     "interstitials/enterprise_page_unittest.cc",
