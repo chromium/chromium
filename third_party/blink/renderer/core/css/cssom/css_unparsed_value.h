@@ -55,7 +55,8 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
   // https://github.com/w3c/csswg-drafts/issues/13547
   bool IsValidDeclarationValue() const;
 
-  // Requires IsValidDeclarationValue()==true.
+  // Requires IsValidDeclarationValue()==true. Must only be called on the main
+  // thread.
   const CSSValue* ToCSSValue() const override;
 
   StyleValueType GetType() const override { return kUnparsedType; }
@@ -70,6 +71,8 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
 
   wtf_size_t length() const { return segments_.size(); }
 
+  String toString() const override;
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(segments_);
     CSSStyleValue::Trace(visitor);
@@ -77,7 +80,6 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
 
  private:
   static bool IsValidDeclarationValue(const String&);
-  String ToStringInternal() const;
   String SerializeSegments() const;
   // Return 'false' if there is a cycle in the serialization.
   bool AppendUnparsedString(
