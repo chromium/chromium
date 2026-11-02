@@ -27,6 +27,7 @@
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/common/renderer.mojom.h"
+#include "content/common/renderer_variations_configuration.mojom.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_request_id.h"
@@ -35,6 +36,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "media/media_buildflags.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -108,6 +110,7 @@ void MockRenderProcessHost::SimulateRenderProcessExit(
     base::TerminationStatus status,
     int exit_code) {
   has_connection_ = false;
+  renderer_variations_configuration_.reset();
   ChildProcessTerminationInfo termination_info;
   termination_info.status = status;
   termination_info.exit_code = exit_code;
@@ -577,6 +580,21 @@ mojom::Renderer* MockRenderProcessHost::GetRendererInterface() {
         renderer_interface_->BindNewEndpointAndPassDedicatedReceiver();
   }
   return renderer_interface_->get();
+}
+
+mojom::RendererVariationsConfiguration*
+MockRenderProcessHost::GetRendererVariationsConfiguration() {
+  if (!renderer_variations_configuration_) {
+    IPC::ChannelProxy* channel = GetChannel();
+    if (!channel) {
+      return nullptr;
+    }
+    renderer_variations_configuration_ = std::make_unique<
+        mojo::AssociatedRemote<mojom::RendererVariationsConfiguration>>();
+    channel->GetRemoteAssociatedInterface(
+        renderer_variations_configuration_.get());
+  }
+  return renderer_variations_configuration_->get();
 }
 
 bool MockRenderProcessHost::MayReuseHost() {

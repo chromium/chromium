@@ -5,6 +5,7 @@
 #include "content/browser/field_trial_synchronizer.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial.h"
@@ -15,6 +16,7 @@
 #include "components/metrics/persistent_system_profile.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/variations_client.h"
+#include "components/variations/variations_features.h"
 #include "content/common/renderer_variations_configuration.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -31,6 +33,11 @@ namespace content {
 namespace {
 
 FieldTrialSynchronizer* g_instance = nullptr;
+
+bool IsOptimizeVariationsIpcEnabled() {
+  return base::FeatureList::GetInstance() &&
+         base::FeatureList::IsEnabled(variations::kOptimizeVariationsIpc);
+}
 
 // Notifies all renderer processes about the |group_name| that is finalized for
 // the given field trail (|field_trial_name|). This is called on UI thread.
@@ -57,17 +64,24 @@ void NotifyAllRenderersOfFieldTrial(const std::string& field_trial_name,
                       : group_name);
   }
 
+  const bool optimize_variations_ipc = IsOptimizeVariationsIpcEnabled();
   for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
     auto* host = it.GetCurrentValue();
     IPC::ChannelProxy* channel = host->GetChannel();
     // channel might be null in tests.
     if (host->IsInitializedAndNotDead() && channel) {
-      mojo::AssociatedRemote<mojom::RendererVariationsConfiguration>
-          renderer_variations_configuration;
-      channel->GetRemoteAssociatedInterface(&renderer_variations_configuration);
-      renderer_variations_configuration->SetFieldTrialGroup(field_trial_name,
-                                                            group_name);
+      if (optimize_variations_ipc) {
+        host->GetRendererVariationsConfiguration()->SetFieldTrialGroup(
+            field_trial_name, group_name);
+      } else {
+        mojo::AssociatedRemote<mojom::RendererVariationsConfiguration>
+            renderer_variations_configuration;
+        channel->GetRemoteAssociatedInterface(
+            &renderer_variations_configuration);
+        renderer_variations_configuration->SetFieldTrialGroup(field_trial_name,
+                                                              group_name);
+      }
     }
   }
 }
@@ -159,6 +173,12 @@ void FieldTrialSynchronizer::UpdateRendererVariationsHeader(
   // |client| might be null in tests.
   if (!client || client->IsOffTheRecord())
     return;
+
+  if (IsOptimizeVariationsIpcEnabled()) {
+    host->GetRendererVariationsConfiguration()->SetVariationsHeaders(
+        client->GetVariationsHeaders());
+    return;
+  }
 
   mojo::AssociatedRemote<mojom::RendererVariationsConfiguration>
       renderer_variations_configuration;

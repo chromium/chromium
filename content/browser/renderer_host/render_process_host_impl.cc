@@ -2291,6 +2291,7 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
   // See OnProcessLaunched() for some additional details of this somewhat
   // surprising behavior.
   renderer_interface_.reset();
+  renderer_variations_configuration_.reset();
   channel_->GetRemoteAssociatedInterface(&renderer_interface_);
 
   if (ShouldPauseChannelUntilProcessLaunched()) {
@@ -2334,6 +2335,7 @@ void RenderProcessHostImpl::InitializeSharedMemoryRegionsOnceChannelIsUp() {
 }
 
 void RenderProcessHostImpl::ResetChannelProxy() {
+  renderer_variations_configuration_.reset();
   if (!channel_)
     return;
 
@@ -3215,6 +3217,17 @@ bool RenderProcessHostImpl::AreRefCountsDisabled() {
 
 mojom::Renderer* RenderProcessHostImpl::GetRendererInterface() {
   return renderer_interface_.get();
+}
+
+mojom::RendererVariationsConfiguration*
+RenderProcessHostImpl::GetRendererVariationsConfiguration() {
+  if (!channel_) {
+    return nullptr;
+  }
+  if (!renderer_variations_configuration_.is_bound()) {
+    channel_->GetRemoteAssociatedInterface(&renderer_variations_configuration_);
+  }
+  return renderer_variations_configuration_.get();
 }
 
 blink::mojom::CallStackGenerator*

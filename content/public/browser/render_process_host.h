@@ -125,6 +125,7 @@ enum class ChildProcessImportance;
 
 namespace mojom {
 class Renderer;
+class RendererVariationsConfiguration;
 }  // namespace mojom
 
 // Interface that represents the browser side of the browser <-> renderer
@@ -628,6 +629,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // internal use only, and is only exposed here to support
   // MockRenderProcessHost usage in tests.
   virtual mojom::Renderer* GetRendererInterface() = 0;
+
+  // Acquires the `mojom::RendererVariationsConfiguration` interface to the
+  // render process. This is for internal use only, and is only exposed here to
+  // support `MockRenderProcessHost` usage in tests.
+  virtual mojom::RendererVariationsConfiguration*
+  GetRendererVariationsConfiguration() = 0;
 
   // Whether this process is locked out from ever being reused for sites other
   // than the ones it currently has.

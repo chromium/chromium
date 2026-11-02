@@ -49,6 +49,7 @@
 #include "content/common/media/media_log_records.mojom-forward.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/renderer_host.mojom.h"
+#include "content/common/renderer_variations_configuration.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/process_allocation_context.h"
@@ -335,6 +336,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DisableRefCounts() override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
+  mojom::RendererVariationsConfiguration* GetRendererVariationsConfiguration()
+      override;
 
   blink::mojom::CallStackGenerator* GetJavaScriptCallStackGeneratorInterface();
 
@@ -1618,6 +1621,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // This will be bound to |io_thread_host_impl_|.
   mojo::PendingReceiver<mojom::ChildProcessHost> child_host_pending_receiver_;
   mojo::AssociatedRemote<mojom::Renderer> renderer_interface_;
+  mojo::AssociatedRemote<mojom::RendererVariationsConfiguration>
+      renderer_variations_configuration_;
   mojo::Remote<blink::mojom::CallStackGenerator>
       javascript_call_stack_generator_interface_;
   mojo::AssociatedReceiver<mojom::RendererHost> renderer_host_receiver_{this};
