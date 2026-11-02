@@ -13,7 +13,6 @@ static_library("network") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//components/prefs",
     "//components/reporting/metrics:metrics_data_collection",
     "//components/reporting/proto:metric_data_proto",

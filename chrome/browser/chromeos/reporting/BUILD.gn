@@ -10,8 +10,6 @@ static_library("reporting") {
     "local_state_reporting_settings.h",
     "metric_default_utils.cc",
     "metric_default_utils.h",
-    "metric_reporting_manager_delegate_base.cc",
-    "metric_reporting_manager_delegate_base.h",
     "metric_reporting_prefs.cc",
     "metric_reporting_prefs.h",
     "usage_telemetry_periodic_collector_base.cc",
@@ -23,18 +21,12 @@ static_library("reporting") {
   deps = [
     "//base",
     "//chrome/browser/chromeos/reporting/websites",
-    "//chrome/browser/enterprise",
     "//chrome/browser/profiles:profile",
     "//components/content_settings/core/common",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/reporting/client:report_queue_configuration",
-    "//components/reporting/client:report_queue_factory",
     "//components/reporting/metrics:metrics_data_collection",
     "//components/reporting/proto:metric_data_proto",
-    "//components/reporting/proto:record_proto",
-    "//components/reporting/util:rate_limiter_interface",
-    "//components/reporting/util:rate_limiter_slide_window",
     "//url",
   ]
 

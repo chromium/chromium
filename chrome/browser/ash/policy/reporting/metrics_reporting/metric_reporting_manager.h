@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_METRIC_REPORTING_MANAGER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_METRIC_REPORTING_MANAGER_H_
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -24,13 +26,20 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/reporting/local_state_reporting_settings.h"
-#include "chrome/browser/chromeos/reporting/metric_reporting_manager_delegate_base.h"
 #include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
+#include "components/reporting/metrics/metric_event_observer.h"
+#include "components/reporting/metrics/metric_event_observer_manager.h"
+#include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/periodic_event_collector.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/util/rate_limiter_interface.h"
+#include "components/reporting/util/rate_limiter_slide_window.h"
 
 class PrefService;
 
@@ -42,10 +51,6 @@ namespace reporting {
 
 class AppUsageObserver;
 class WebsiteUsageObserver;
-class MetricEventObserver;
-class MetricEventObserverManager;
-class MetricReportQueue;
-class CollectorBase;
 class Sampler;
 class FatalCrashEventsObserver;
 class ChromeFatalCrashEventsObserver;
@@ -61,16 +66,94 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
  public:
   // Delegate class for dependencies and behaviors that need to be overridden
   // for testing purposes.
-  class Delegate : public metrics::MetricReportingManagerDelegateBase {
+  class Delegate {
    public:
     Delegate() = default;
 
     Delegate(const Delegate& other) = delete;
     Delegate& operator=(const Delegate& other) = delete;
 
-    ~Delegate() override = default;
+    virtual ~Delegate() = default;
 
-    bool IsUserAffiliated(Profile& profile) const override;
+    // Creates a new `MetricReportQueue` that can be used towards metrics
+    // reporting. Specify a `RateLimiterInterface` implementation to enforce
+    // rate limiting.
+    virtual std::unique_ptr<MetricReportQueue> CreateMetricReportQueue(
+        EventType event_type,
+        Destination destination,
+        Priority priority,
+        std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
+        std::optional<SourceInfo> source_info = std::nullopt);
+
+    // Creates a new `MetricReportQueue` for periodic uploads. The rate is
+    // controlled by the specified setting and we fall back to the defaults
+    // specified if none set by policy.
+    virtual std::unique_ptr<MetricReportQueue> CreatePeriodicUploadReportQueue(
+        EventType event_type,
+        Destination destination,
+        Priority priority,
+        ReportingSettings* reporting_settings,
+        const std::string& rate_setting_path,
+        base::TimeDelta default_rate,
+        int rate_unit_to_ms = 1,
+        std::optional<SourceInfo> source_info = std::nullopt);
+
+    // Creates a new collector for periodic metric collection. The rate is
+    // controlled by the specified setting and we fall back to the defaults
+    // specified if none set by policy.
+    virtual std::unique_ptr<CollectorBase> CreatePeriodicCollector(
+        Sampler* sampler,
+        MetricReportQueue* metric_report_queue,
+        ReportingSettings* reporting_settings,
+        const std::string& enable_setting_path,
+        bool setting_enabled_default_value,
+        const std::string& rate_setting_path,
+        base::TimeDelta default_rate,
+        int rate_unit_to_ms,
+        base::TimeDelta init_delay = base::TimeDelta());
+
+    // Creates a new collector for one shot metric collection. The rate is
+    // controlled by the specified setting and we fall back to the defaults
+    // specified if none set by policy.
+    virtual std::unique_ptr<CollectorBase> CreateOneShotCollector(
+        Sampler* sampler,
+        MetricReportQueue* metric_report_queue,
+        ReportingSettings* reporting_settings,
+        const std::string& enable_setting_path,
+        bool setting_enabled_default_value,
+        base::TimeDelta init_delay = base::TimeDelta());
+
+    // Creates a new collector for manual collection. Does not automatically
+    // collect data upon construction or on any time period. Only collects if
+    // the appropriate settings are enabled when manual collection happens.
+    virtual std::unique_ptr<CollectorBase> CreateManualCollector(
+        Sampler* sampler,
+        MetricReportQueue* metric_report_queue,
+        ReportingSettings* reporting_settings,
+        const std::string& enable_setting_path,
+        bool setting_enabled_default_value);
+
+    // Creates a new event observer manager to manage events reporting. The rate
+    // is controlled by the specified setting and we fall back to the defaults
+    // specified if none set by policy.
+    virtual std::unique_ptr<MetricEventObserverManager>
+    CreateEventObserverManager(
+        std::unique_ptr<MetricEventObserver> event_observer,
+        MetricReportQueue* metric_report_queue,
+        ReportingSettings* reporting_settings,
+        const std::string& enable_setting_path,
+        bool setting_enabled_default_value,
+        EventDrivenTelemetryCollectorPool* collector_pool,
+        base::TimeDelta init_delay = base::TimeDelta());
+
+    // Creates a new instance of the sliding window rate limiter with the
+    // specified total size, time window and bucket count.
+    virtual std::unique_ptr<RateLimiterSlideWindow>
+    CreateSlidingWindowRateLimiter(size_t total_size,
+                                   base::TimeDelta time_window,
+                                   size_t bucket_count);
+
+    virtual bool IsUserAffiliated(Profile& profile) const;
 
     virtual bool IsDeprovisioned() const;
 
@@ -81,6 +164,13 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
     // Returns app service availability for the given profile. Not all profiles
     // can run apps (for example, non-guest incognito profiles).
     virtual bool IsAppServiceAvailableForProfile(Profile* profile) const;
+
+    // Returns the delay interval used with `MetricReportingManager`
+    // initialization.
+    base::TimeDelta GetInitDelay() const;
+
+    // Returns the delay interval used with initial record uploads.
+    base::TimeDelta GetInitialUploadDelay() const;
   };
 
   // `local_state` and `network_quality_tracker` must be non-null and must
