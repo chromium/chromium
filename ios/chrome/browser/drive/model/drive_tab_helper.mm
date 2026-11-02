@@ -18,11 +18,11 @@
 #import "ios/chrome/browser/drive/model/drive_upload_task.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/cloud_content_scanning_helper.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
 using drive::DriveService;
 using drive::DriveServiceFactory;
@@ -48,27 +48,17 @@ NSError* CreateAccountNotFoundError() {
                          userInfo:userInfo];
 }
 
-// Returns true if `identity` is valid and has valid authentication on the
-// device.
-// TODO(crbug.com/576575308): Check `ChromeAccountManagerService` instead of
-// `SystemIdentityManager` so that accounts restricted by
-// `kRestrictAccountsToPatterns` are rejected before starting `upload_task_`.
-bool IsIdentityOnDeviceWithValidAuth(id<SystemIdentity> identity,
-                                     SystemIdentityManager* manager) {
-  if (!identity || !manager) {
+// Returns true if `identity` is valid, matches `kRestrictAccountsToPatterns`,
+// and has valid authentication on the device.
+bool IsIdentityOnDeviceWithValidAuth(
+    id<SystemIdentity> identity,
+    ChromeAccountManagerService* account_manager_service) {
+  if (!identity || !account_manager_service) {
     return false;
   }
-  __block BOOL identity_found_and_valid = NO;
-  manager->IterateOverIdentities(
-      base::BindRepeating(^(id<SystemIdentity> sys_identity) {
-        if ([sys_identity.hashedGaiaID isEqualToString:identity.hashedGaiaID]) {
-          // This identity is present on this device.
-          identity_found_and_valid = sys_identity.hasValidAuth;
-          return SystemIdentityManager::IteratorResult::kInterruptIteration;
-        }
-        return SystemIdentityManager::IteratorResult::kContinueIteration;
-      }));
-  return identity_found_and_valid;
+  id<SystemIdentity> identity_on_device =
+      account_manager_service->GetIdentityOnDeviceWithGaiaID(identity.gaiaId);
+  return identity_on_device && identity_on_device.hasValidAuth;
 }
 
 }  // namespace
@@ -211,9 +201,10 @@ void DriveTabHelper::MaybeUploadDownloadToDrive(web::DownloadTask* task,
                                 task->GetTotalBytes());
 
   id<SystemIdentity> identity = upload_task_->GetIdentity();
-  SystemIdentityManager* manager =
-      GetApplicationContext()->GetSystemIdentityManager();
-  if (!IsIdentityOnDeviceWithValidAuth(identity, manager)) {
+  ChromeAccountManagerService* account_manager_service =
+      ChromeAccountManagerServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
+  if (!IsIdentityOnDeviceWithValidAuth(identity, account_manager_service)) {
     upload_task_->Fail(CreateAccountNotFoundError(), /*resumable=*/false);
     files_request_handler_.reset();
     content_analysis_info_.reset();
