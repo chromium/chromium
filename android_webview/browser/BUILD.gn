@@ -407,6 +407,7 @@ source_set("browser") {
     "//third_party/crashpad/crashpad/client",
     "//third_party/zlib/google:compression_utils",
     "//ui/android",
+    "//ui/base/mojom",
     "//ui/display/util",
     "//ui/gl",
     "//ui/resources",
