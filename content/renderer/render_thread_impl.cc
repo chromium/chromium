@@ -176,7 +176,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include <cpu-features.h>
+
 #include "media/base/android/media_codec_util.h"
+#include "third_party/blink/public/web/web_memory_features.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -1687,6 +1689,9 @@ void RenderThreadImpl::OnRendererHidden() {
   }
 
   blink_isolates_pressure_listener_.OnRendererHidden();
+#if BUILDFLAG(IS_ANDROID)
+  blink::WebMemoryFeatures::SetRendererVisible(false);
+#endif
 }
 
 void RenderThreadImpl::OnRendererVisible() {
@@ -1696,6 +1701,9 @@ void RenderThreadImpl::OnRendererVisible() {
         base::Process::Priority::kUserBlocking);
   }
   blink_isolates_pressure_listener_.OnRendererVisible();
+#if BUILDFLAG(IS_ANDROID)
+  blink::WebMemoryFeatures::SetRendererVisible(true);
+#endif
 }
 
 bool RenderThreadImpl::RendererIsBackgrounded() const {

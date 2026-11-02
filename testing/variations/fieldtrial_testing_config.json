@@ -8303,6 +8303,21 @@
             ]
         }
     ],
+    "GateMemoryMetricsOnVisibility": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GateMemoryMetricsOnVisibility"
+                    ]
+                }
+            ]
+        }
+    ],
     "Geic": [
         {
             "platforms": [
