@@ -1204,14 +1204,8 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
 // inactive RenderViewHost. Previously, this led to a browser process crash in
 // WebUI pages that use MojoWebUIController, which tried to use the
 // RenderViewHost's GetPrimaryMainFrame() when it was invalid in
-// RenderViewCreated(). See https://crbug.com/627027. Flaky on Mac. See
-// https://crbug.com/1044335.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ReuseRVHWithWebUI DISABLED_ReuseRVHWithWebUI
-#else
-#define MAYBE_ReuseRVHWithWebUI ReuseRVHWithWebUI
-#endif
-IN_PROC_BROWSER_TEST_F(WebUISecurityTest, MAYBE_ReuseRVHWithWebUI) {
+// RenderViewCreated(). See https://crbug.com/627027.
+IN_PROC_BROWSER_TEST_F(WebUISecurityTest, ReuseRVHWithWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Visit a WebUI page with bindings.
@@ -1224,9 +1218,12 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, MAYBE_ReuseRVHWithWebUI) {
   // window.open a new tab.  This will keep the WebUI page's process alive
   // once we navigate away from it.
   ShellAddedObserver new_shell_observer;
+  TestNavigationObserver new_tab_observer(webui_url);
+  new_tab_observer.StartWatchingNewWebContents();
   ASSERT_TRUE(ExecJs(shell()->web_contents(),
                      JsReplace("window.open($1);", webui_url)));
   Shell* new_shell = new_shell_observer.GetShell();
+  new_tab_observer.Wait();
   WebContents* new_contents = new_shell->web_contents();
   EXPECT_TRUE(WaitForLoadStop(new_contents));
   RenderFrameHost* webui_rfh = new_contents->GetPrimaryMainFrame();
