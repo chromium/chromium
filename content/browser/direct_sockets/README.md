@@ -30,7 +30,8 @@ allowing Isolated Web Apps (IWAs) and isolated contexts to establish raw TCP
   `PermissionsPolicyFeature::kMulticastInDirectSockets`, and requests
   `blink::PermissionType::LOCAL_NETWORK` or
   `blink::PermissionType::LOOPBACK_NETWORK` via `PermissionController` when
-  connecting or binding to non-public IP addresses.
+  connecting to non-public or multicast IP addresses, and always for bound UDP
+  sockets. See [SECURITY.md](SECURITY.md).
 - **ChromeOS Firewall Integration (`FirewallHoleDelegate`):** Opens and manages
   scoped OS firewall holes for listening TCP/UDP server sockets on ChromeOS.
 
