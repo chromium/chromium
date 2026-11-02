@@ -212,43 +212,6 @@ void Canvas2DResourceProvider::WillDrawUnaccelerated() {
   EnsureWriteAccess();
 }
 
-bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
-                                           const void* pixels,
-                                           size_t row_bytes,
-                                           int x,
-                                           int y) {
-  TRACE_EVENT0("blink", "Canvas2DResourceProvider::WritePixels");
-  CHECK(is_accelerated_);
-  if (IsGpuContextLost()) {
-    return false;
-  }
-
-  EnsureResourceReadyForDraw();
-
-  // The below  write to the resource's SharedImage will need to be preserved in
-  // the case of a subsequent CopyOnWrite.
-  // TODO(crbug.com/352263194): Logically this bool must already be true
-  // (see discussion here:
-  // https://chromium-review.googlesource.com/c/chromium/src/+/7557841/comment/bb38e497_ef1efdbc/).
-  // Verify that this is the case and update the code here.
-  must_preserve_content_on_copy_on_write_ = true;
-
-  gpu::SyncToken sync_token = RasterInterface()->WritePixels(
-      resource()->GetSharedImage(), resource()->acquire_sync_token(), x, y,
-      SkPixmap(orig_info, pixels, row_bytes));
-  resource()->SetReleaseSyncToken(sync_token);
-
-  // If the overdraw optimization kicked in, we need to indicate that the
-  // pixels do not need to be cleared, otherwise the subsequent
-  // rasterizations will clobber canvas contents.
-  if (x <= 0 && y <= 0 && orig_info.width() >= Size().width() &&
-      orig_info.height() >= Size().height()) {
-    is_cleared_ = true;
-  }
-
-  return true;
-}
-
 base::ByteSize Canvas2DResourceProvider::EstimatedSizeInBytes() const {
   base::ByteSize result;
   if (resource_) {

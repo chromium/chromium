@@ -747,8 +747,37 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
                                                   int x,
                                                   int y) {
   if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
-    return shared_image_provider_->WritePixels(orig_info, pixels, row_bytes, x,
-                                               y);
+    if (shared_image_provider_->IsGpuContextLost()) {
+      return false;
+    }
+
+    shared_image_provider_->EnsureResourceReadyForDraw();
+
+    // The below write to the resource's SharedImage will need to be preserved
+    // in the case of a subsequent CopyOnWrite.
+    // TODO(crbug.com/352263194): Logically this bool must already be true
+    // (see discussion here:
+    // https://chromium-review.googlesource.com/c/chromium/src/+/7557841/comment/bb38e497_ef1efdbc/).
+    // Verify that this is the case and update the code here.
+    shared_image_provider_->must_preserve_content_on_copy_on_write_ = true;
+
+    gpu::SyncToken sync_token =
+        shared_image_provider_->RasterInterface()->WritePixels(
+            shared_image_provider_->resource()->GetSharedImage(),
+            shared_image_provider_->resource()->acquire_sync_token(), x, y,
+            SkPixmap(orig_info, pixels, row_bytes));
+    shared_image_provider_->resource()->SetReleaseSyncToken(sync_token);
+
+    // If the overdraw optimization kicked in, we need to indicate that the
+    // pixels do not need to be cleared, otherwise the subsequent
+    // rasterizations will clobber canvas contents.
+    if (x <= 0 && y <= 0 &&
+        orig_info.width() >= shared_image_provider_->Size().width() &&
+        orig_info.height() >= shared_image_provider_->Size().height()) {
+      shared_image_provider_->is_cleared_ = true;
+    }
+
+    return true;
   }
   if (surface_) {
     if (shared_image_provider_) {

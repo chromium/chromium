@@ -145,11 +145,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   // Notifies before any unaccelerated drawing will be done on the resource used
   // by this provider.
   void WillDrawUnaccelerated();
-  bool WritePixels(const SkImageInfo& orig_info,
-                   const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y);
 
   void SetResourceRecyclingEnabled(bool value);
 
