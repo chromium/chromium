@@ -555,6 +555,16 @@ MULTIPROCESS_TEST_MAIN(NetworkDataMigrationRestrictedProcess) {
   test_denied_file(user_data_dir.Append("Default").Append("Preferences"));
   test_denied_file(user_data_dir.Append("unauthorized.txt"));
 
+  // Symbolic link creation is denied even in writable directories.
+  CHECK(!base::CreateSymbolicLink(network_dir.Append("cookies.db"),
+                                  network_dir.Append("symlink")));
+  CHECK_EQ(base::File::GetLastFileError(),
+           base::File::FILE_ERROR_ACCESS_DENIED);
+  CHECK(!base::CreateSymbolicLink(user_cache_dir.Append("cache_file"),
+                                  user_cache_dir.Append("symlink")));
+  CHECK_EQ(base::File::GetLastFileError(),
+           base::File::FILE_ERROR_ACCESS_DENIED);
+
   return 0;
 }
 
@@ -627,6 +637,16 @@ MULTIPROCESS_TEST_MAIN(NetworkDataMigrationUnrestrictedProcess) {
   test_allowed_file(user_data_dir.Append("Default").Append("Preferences"));
   test_allowed_file(user_data_dir.Append("unauthorized.txt"));
   test_allowed_file(user_cache_dir.Append("cache_file"));
+
+  // Symbolic link creation is denied even in writable directories.
+  CHECK(!base::CreateSymbolicLink(user_data_dir.Append("unauthorized.txt"),
+                                  user_data_dir.Append("symlink")));
+  CHECK_EQ(base::File::GetLastFileError(),
+           base::File::FILE_ERROR_ACCESS_DENIED);
+  CHECK(!base::CreateSymbolicLink(user_cache_dir.Append("cache_file"),
+                                  user_cache_dir.Append("symlink")));
+  CHECK_EQ(base::File::GetLastFileError(),
+           base::File::FILE_ERROR_ACCESS_DENIED);
 
   return 0;
 }

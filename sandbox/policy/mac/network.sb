@@ -32,6 +32,9 @@
 (if (param-defined? user-cache-dir)
   (allow file* (subpath (param user-cache-dir))))
 
+; Disallow creating symbolic links.
+(deny file-write-create (vnode-type SYMLINK))
+
 ; DNS configuration watcher entries. This is a nesty mess of symlinks.
 (allow file-read*
   (path "/")
