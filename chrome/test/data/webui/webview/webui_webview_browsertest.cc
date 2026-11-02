@@ -56,8 +56,8 @@
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 // Turn these tests off on Mac while we collect data on windows server crashes
 // on mac chromium builders.
@@ -594,11 +594,12 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
   // Load the victim WebUI first, so that its resources are available to fetch.
   g_browser_process->local_state()->SetBoolean(
       chrome_urls::kInternalOnlyUisEnabled, true);
-  content::WebContents* target_webui_window = browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          GURL(chrome::kChromeUIWebUIJsErrorURL),
-          WindowOpenDisposition::kNewWindow, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  content::WebContents* target_webui_window =
+      browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                             GURL(chrome::kChromeUIWebUIJsErrorURL),
+                             ui::mojom::WindowOpenDisposition::kNewWindow,
+                             ui::PAGE_TRANSITION_TYPED),
+                         /*navigation_handle_callback=*/{});
   content::WaitForLoadStop(target_webui_window);
 
   ASSERT_TRUE(RunContentScriptTestCase("ExecuteScriptBadUrlFromOtherWebUi",

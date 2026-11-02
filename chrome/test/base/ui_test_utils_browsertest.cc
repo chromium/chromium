@@ -11,7 +11,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 class UITestUtilsBrowserTest : public InProcessBrowserTest {
  public:
@@ -34,17 +34,17 @@ IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, OpenTwoTabsInBackground) {
   const GURL url3 = embedded_test_server()->GetURL("a.com", "/title3.html");
 
   NavigateToURLWithDisposition(browser(), url1,
-                               WindowOpenDisposition::kCurrentTab,
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  NavigateToURLWithDisposition(browser(), url2,
-                               WindowOpenDisposition::kNewBackgroundTab,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLWithDisposition(
+      browser(), url2, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // This test will pass if this call does not time out, which requires
   //   // NavigateToURLWithDisposition to pick correct tab to wait for.
-  NavigateToURLWithDisposition(browser(), url3,
-                               WindowOpenDisposition::kNewBackgroundTab,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLWithDisposition(
+      browser(), url3, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 
 IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, FindMatchingBrowsers) {

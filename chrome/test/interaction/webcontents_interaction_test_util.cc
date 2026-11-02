@@ -53,8 +53,8 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/safe_castable.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -1160,9 +1160,9 @@ void TabWebContentsInteractionTestUtil::LoadPageInNewTab(const GURL& url,
       new_tab_watcher_ ? new_tab_watcher_->browser()
                        : GetBrowserWindowForWebContentsInTab(web_contents());
   NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_TYPED);
-  navigate_params.disposition = activate_tab
-                                    ? WindowOpenDisposition::kNewForegroundTab
-                                    : WindowOpenDisposition::kNewBackgroundTab;
+  navigate_params.disposition =
+      activate_tab ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+                   : ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   auto navigate_result = Navigate(&navigate_params);
   CHECK(navigate_result);
 }

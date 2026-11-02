@@ -21,7 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -73,7 +73,7 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
       std::string* json_events) {
     GURL url1("about:blank");
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url1, WindowOpenDisposition::kNewForegroundTab,
+        browser(), url1, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_NO_FATAL_FAILURE(ExecuteJavascriptOnCurrentTab());
 
@@ -87,7 +87,7 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
     // Create and destroy renderers while tracing is enabled.
     GURL url2("chrome://credits");
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url2, WindowOpenDisposition::kNewForegroundTab,
+        browser(), url2, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_NO_FATAL_FAILURE(ExecuteJavascriptOnCurrentTab());
 
@@ -96,7 +96,7 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
 
     GURL url3("chrome://chrome-urls");
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url3, WindowOpenDisposition::kCurrentTab,
+        browser(), url3, ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_NO_FATAL_FAILURE(ExecuteJavascriptOnCurrentTab());
 

@@ -34,8 +34,8 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -367,8 +367,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                              EXPECT_EQ(url2, util->web_contents()->GetURL());
                              EXPECT_TRUE(chrome::CanGoBack(browser()));
                              util->set_page_identifier(kWebContentsElementId);
-                             chrome::GoBack(browser(),
-                                            WindowOpenDisposition::kCurrentTab);
+                             chrome::GoBack(
+                                 browser(),
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -382,7 +383,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                              EXPECT_TRUE(chrome::CanGoForward(browser()));
                              util->set_page_identifier(kWebContentsElementId2);
                              chrome::GoForward(
-                                 browser(), WindowOpenDisposition::kCurrentTab);
+                                 browser(),
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -2375,7 +2377,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   NavigateParams params(browser(),
                         embedded_test_server()->GetURL(kDocumentWithLinksURL),
                         ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::kCurrentTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   Navigate(&params);
 
   // Using this constructor hits all of the rest of the constructors, saving us

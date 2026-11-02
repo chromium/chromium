@@ -42,7 +42,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -286,7 +286,7 @@ void MediaRouterIntegrationBrowserTest::OpenTestPageInNewTab(
   base::FilePath full_path = GetResourceFile(file_name);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetTestPageUrl(full_path),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   // Opening a new tab creates new WebContents, so we must re-configure the
   // test UI for it.

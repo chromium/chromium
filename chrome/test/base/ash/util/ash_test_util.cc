@@ -30,7 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
@@ -63,9 +63,10 @@ apps::AppLaunchParams GetAppLaunchParams(Profile* profile,
                     "ash::SystemWebAppManager::InstallSystemAppsForTesting in "
                     "your test.";
   }
-  return apps::AppLaunchParams(
-      *app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
+  return apps::AppLaunchParams(*app_id,
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               ui::mojom::WindowOpenDisposition::kNewWindow,
+                               apps::LaunchSource::kFromTest);
 }
 
 webapps::AppId CreateSystemWebAppImpl(Profile* profile,

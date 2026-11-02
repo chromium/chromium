@@ -32,8 +32,8 @@
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
@@ -520,7 +520,7 @@ InteractiveAshTest::CreateBrowserWindow(const GURL& url) {
   Profile* profile = GetActiveUserProfile();
   CHECK(profile);
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::kNewWindow;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   return Navigate(&params);
 }

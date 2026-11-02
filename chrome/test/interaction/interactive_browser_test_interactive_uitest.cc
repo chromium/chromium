@@ -44,7 +44,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"

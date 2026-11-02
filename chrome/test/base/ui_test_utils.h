@@ -22,7 +22,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/view_observer.h"
@@ -137,7 +137,7 @@ void NavigateToURLWithPost(BrowserWindowInterface* browser, const GURL& url);
 content::RenderFrameHost* NavigateToURLWithDisposition(
     BrowserWindowInterface* browser,
     const GURL& url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     int browser_test_flags);
 
 // Same as |NavigateToURL|, but wait for a given number of navigations to
@@ -154,7 +154,7 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     BrowserWindowInterface* browser,
     const GURL& url,
     int number_of_navigations,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     int browser_test_flags);
 
 // Generate the path of the build directory, relative to the source root.

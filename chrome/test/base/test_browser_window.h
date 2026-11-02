@@ -24,6 +24,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -120,7 +121,8 @@ class TestBrowserWindow : public BrowserWindow,
   void FocusToolbar() override {}
   void ToolbarSizeChanged(bool is_animating) override {}
   void TabDraggingStatusChanged(bool is_dragging) override {}
-  void LinkOpeningFromGesture(WindowOpenDisposition disposition) override {}
+  void LinkOpeningFromGesture(
+      ui::mojom::WindowOpenDisposition disposition) override {}
   void FocusAppMenu() override {}
   void ShowAppMenu() override {}
   void PreHandleDragUpdate(const content::DropData& drop_data,

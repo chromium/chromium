@@ -27,8 +27,8 @@
 #include "gpu/config/gpu_test_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gl/gl_implementation.h"
 
 namespace {
@@ -43,7 +43,7 @@ void SimulateGPUCrash(BrowserWindowInterface* browser) {
       browser, GURL(blink::kChromeUIGpuCrashURL),
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
-  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
 }
 

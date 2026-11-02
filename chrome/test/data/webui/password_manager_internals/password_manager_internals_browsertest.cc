@@ -11,23 +11,24 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 class PasswordManagerInternalsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     WebUIMochaBrowserTest::SetUpOnMainThread();
-    OpenInternalsPage(WindowOpenDisposition::kCurrentTab);
+    OpenInternalsPage(ui::mojom::WindowOpenDisposition::kCurrentTab);
   }
 
   // Navigates to the internals page in a tab specified by |disposition| (and
   // optionally, by |browser|).
-  void OpenInternalsPage(WindowOpenDisposition disposition) {
+  void OpenInternalsPage(ui::mojom::WindowOpenDisposition disposition) {
     OpenInternalsPageWithBrowser(browser(), disposition);
   }
 
-  void OpenInternalsPageWithBrowser(BrowserWindowInterface* browser,
-                                    WindowOpenDisposition disposition) {
+  void OpenInternalsPageWithBrowser(
+      BrowserWindowInterface* browser,
+      ui::mojom::WindowOpenDisposition disposition) {
     std::string url_string("chrome://");
     url_string += chrome::kChromeUIPasswordManagerInternalsHost;
     ui_test_utils::NavigateToURLWithDisposition(
@@ -74,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsBrowserTest,
           browser()->GetProfile());
   ASSERT_TRUE(log_router);
   log_router->ProcessLog("<script> text for testing");
-  OpenInternalsPage(WindowOpenDisposition::kCurrentTab);  // Reload.
+  OpenInternalsPage(ui::mojom::WindowOpenDisposition::kCurrentTab);  // Reload.
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(RunTestOnWebContents(

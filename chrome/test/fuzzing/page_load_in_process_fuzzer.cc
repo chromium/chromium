@@ -19,7 +19,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 // A fuzzer which can test the interaction of HTTP response parameters
 // and HTML content. This is a large search space and it's unlikely that
@@ -205,7 +205,7 @@ int PageLoadInProcessFuzzer::Fuzz(
         ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_NO_WAIT;
   }
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), test_url, WindowOpenDisposition::kCurrentTab,
+      browser(), test_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       browser_test_flags);
   return 0;
 }

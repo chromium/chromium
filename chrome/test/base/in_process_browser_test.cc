@@ -108,11 +108,11 @@
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
@@ -847,7 +847,7 @@ bool InProcessBrowserTest::AddTabAtIndexToBrowser(
     ui::PageTransition transition) {
   NavigateParams params(browser, url, transition);
   params.tabstrip_index = index;
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   params.web_app_navigation_data.emplace();
   params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
   Navigate(&params);
