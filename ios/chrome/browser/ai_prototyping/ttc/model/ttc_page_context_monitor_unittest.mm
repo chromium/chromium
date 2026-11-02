@@ -36,16 +36,23 @@ class FakeTtcPageContextMonitorDelegate
     return fetched_contexts_;
   }
 
+  const std::vector<PageContextWrapperError>& fetched_errors() const {
+    return fetched_errors_;
+  }
+
   // `TtcPageContextMonitor::Delegate` implementation:
   void OnPageContextFetched(
       PageContextWrapperCallbackResponse response) override {
     if (response.has_value() && response.value()) {
       fetched_contexts_.push_back(*response.value());
+    } else if (!response.has_value()) {
+      fetched_errors_.push_back(response.error());
     }
   }
 
  private:
   std::vector<optimization_guide::proto::PageContext> fetched_contexts_;
+  std::vector<PageContextWrapperError> fetched_errors_;
 };
 
 // Builds a synthetic `PageContext` proto for `url` and `title`.
@@ -132,17 +139,25 @@ TEST_F(TtcPageContextMonitorTest, WaitsForPageLoadedWhenInitiallyLoading) {
   TtcPageContextMonitor monitor(web_state_, &delegate_);
   EXPECT_FALSE(HasPendingWrapper(monitor));
 
-  // A failed page load must not trigger extraction.
+  // A failed page load must not trigger extraction and must notify the delegate
+  // of the failure.
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
   EXPECT_FALSE(HasPendingWrapper(monitor));
+  ASSERT_EQ(delegate_.fetched_errors().size(), 1u);
+  EXPECT_EQ(delegate_.fetched_errors()[0],
+            PageContextWrapperError::kGenericError);
 
   web_state_.SetLoading(false);
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_TRUE(HasPendingWrapper(monitor));
 
-  // A subsequent failed page load cancels any in-flight extraction.
+  // A subsequent failed page load cancels any in-flight extraction and reports
+  // `kGenericError`.
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
   EXPECT_FALSE(HasPendingWrapper(monitor));
+  ASSERT_EQ(delegate_.fetched_errors().size(), 2u);
+  EXPECT_EQ(delegate_.fetched_errors()[1],
+            PageContextWrapperError::kGenericError);
 }
 
 // Tests that a committed cross-document navigation cancels any in-flight
@@ -211,14 +226,20 @@ TEST_F(TtcPageContextMonitorTest, SameDocumentNavigationExtractsImmediately) {
 }
 
 // Tests that ineligible pages (such as `chrome://newtab`) do not trigger
-// extraction.
+// extraction and instead report `kPageNotExtractableError` to the delegate.
 TEST_F(TtcPageContextMonitorTest, SkipsIneligiblePages) {
   web_state_.SetCurrentURL(GURL("chrome://newtab"));
   TtcPageContextMonitor monitor(web_state_, &delegate_);
   EXPECT_FALSE(HasPendingWrapper(monitor));
+  ASSERT_EQ(delegate_.fetched_errors().size(), 1u);
+  EXPECT_EQ(delegate_.fetched_errors()[0],
+            PageContextWrapperError::kPageNotExtractableError);
 
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_FALSE(HasPendingWrapper(monitor));
+  ASSERT_EQ(delegate_.fetched_errors().size(), 2u);
+  EXPECT_EQ(delegate_.fetched_errors()[1],
+            PageContextWrapperError::kPageNotExtractableError);
 }
 
 // Tests that `Disconnect()` stops observing the `WebState` and suppresses
@@ -232,7 +253,9 @@ TEST_F(TtcPageContextMonitorTest, DisconnectStopsObservation) {
   EXPECT_FALSE(HasPendingWrapper(monitor));
 
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  web_state_.OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
   EXPECT_FALSE(HasPendingWrapper(monitor));
+  EXPECT_TRUE(delegate_.fetched_errors().empty());
 }
 
 // Tests that constructing `TtcPageContextMonitor` on an unrealized `WebState`

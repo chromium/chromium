@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/types/expected.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -60,6 +61,10 @@ void TtcPageContextMonitor::PageLoaded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (load_completion_status != web::PageLoadCompletionStatus::SUCCESS) {
     CancelPendingExtraction();
+    if (delegate_) {
+      delegate_->OnPageContextFetched(
+          base::unexpected(PageContextWrapperError::kGenericError));
+    }
     return;
   }
   FetchPageContextIfNeeded();
@@ -78,9 +83,14 @@ void TtcPageContextMonitor::FetchPageContextIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CancelPendingExtraction();
   web::WebState* web_state = web_state_.get();
-  if (!web_state || !web_state->IsRealized() || web_state->IsLoading() ||
-      !CanExtractPageContextForWebState(web_state,
-                                        /*pdf_enabled=*/false)) {
+  if (!web_state || !web_state->IsRealized() || web_state->IsLoading()) {
+    return;
+  }
+  if (!CanExtractPageContextForWebState(web_state, /*pdf_enabled=*/false)) {
+    if (delegate_) {
+      delegate_->OnPageContextFetched(
+          base::unexpected(PageContextWrapperError::kPageNotExtractableError));
+    }
     return;
   }
 
