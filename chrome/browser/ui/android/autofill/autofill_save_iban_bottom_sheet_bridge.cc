@@ -13,6 +13,7 @@
 #include "components/autofill/android/payments/legal_message_line_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_iban_ui_info.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -42,7 +43,7 @@ AutofillSaveIbanBottomSheetBridge::AutofillSaveIbanBottomSheetBridge(
   CHECK(tab_model);
   java_autofill_save_iban_bottom_sheet_bridge_ =
       Java_AutofillSaveIbanBottomSheetBridge_Constructor(
-          base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this),
+          base::android::AttachCurrentThread(), jni_zero::MakeRaw(this),
           window_android->GetJavaObject(), tab_model->GetJavaObject());
 }
 

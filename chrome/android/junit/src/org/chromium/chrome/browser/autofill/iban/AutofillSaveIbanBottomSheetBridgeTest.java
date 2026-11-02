@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
+import org.chromium.chrome.browser.autofill.iban.AutofillSaveIbanBottomSheetBridge.NativeAutofillSaveIbanBottomSheetBridge;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -41,7 +43,6 @@ import java.util.Collections;
 /** Unit tests for {@link AutofillSaveIbanBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillSaveIbanBottomSheetBridgeTest {
-    private static final long MOCK_POINTER = 0xb00fb00f;
     private static final String USER_PROVIDED_NICKNAME = "My Doctor's IBAN";
     private static final AutofillSaveIbanUiInfo TEST_IBAN_UI_INFO =
             new AutofillSaveIbanUiInfo.Builder()
@@ -57,6 +58,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private JniRawPtr<NativeAutofillSaveIbanBottomSheetBridge> mMockPointer;
     @Mock private AutofillSaveIbanBottomSheetBridge.Natives mBridgeNatives;
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private AnchoredDialogCoordinator mAnchoredDialogCoordinator;
@@ -78,7 +80,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);
         mAutofillSaveIbanBottomSheetBridge =
-                new AutofillSaveIbanBottomSheetBridge(MOCK_POINTER, mWindow, tabModel);
+                new AutofillSaveIbanBottomSheetBridge(mMockPointer, mWindow, tabModel);
     }
 
     @After
@@ -144,7 +146,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
     public void testOnUiAccepted_callsNativeOnUiAccepted() {
         mAutofillSaveIbanBottomSheetBridge.onUiAccepted(USER_PROVIDED_NICKNAME);
 
-        verify(mBridgeNatives).onUiAccepted(MOCK_POINTER, USER_PROVIDED_NICKNAME);
+        verify(mBridgeNatives).onUiAccepted(mMockPointer, USER_PROVIDED_NICKNAME);
     }
 
     @Test
@@ -160,7 +162,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
     public void testOnUiCanceled_callsNativeOnUiCanceled() {
         mAutofillSaveIbanBottomSheetBridge.onUiCanceled();
 
-        verify(mBridgeNatives).onUiCanceled(MOCK_POINTER);
+        verify(mBridgeNatives).onUiCanceled(mMockPointer);
     }
 
     @Test
@@ -176,7 +178,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
     public void testOnUiIgnored_callsNativeOnUiIgnored() {
         mAutofillSaveIbanBottomSheetBridge.onUiIgnored();
 
-        verify(mBridgeNatives).onUiIgnored(MOCK_POINTER);
+        verify(mBridgeNatives).onUiIgnored(mMockPointer);
     }
 
     @Test
