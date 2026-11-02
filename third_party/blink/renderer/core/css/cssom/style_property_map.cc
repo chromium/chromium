@@ -384,6 +384,12 @@ void StylePropertyMap::set(
     return;
   }
 
+  if (!IsPropertyValid(property_id)) {
+    exception_state.ThrowTypeError(
+        StrCat({"Invalid propertyName: ", property_name}));
+    return;
+  }
+
   if (property.IsShorthand()) {
     if (values.size() != 1) {
       exception_state.ThrowTypeError("Invalid type for property");
@@ -454,6 +460,12 @@ void StylePropertyMap::append(
   }
 
   const CSSProperty& property = CSSProperty::Get(property_id);
+
+  if (!IsPropertyValid(property_id)) {
+    exception_state.ThrowTypeError(
+        StrCat({"Invalid propertyName: ", property_name}));
+    return;
+  }
 
   if (property_id == CSSPropertyID::kVariable) {
     exception_state.ThrowTypeError(

@@ -44,7 +44,10 @@ String AbstractPropertySetCSSStyleDeclaration::item(unsigned i) const {
   if (i >= PropertySet().PropertyCount()) {
     return "";
   }
-  return PropertySet().PropertyAt(i).Name().ToAtomicString();
+  const CSSPropertyName name = PropertySet().PropertyAt(i).Name();
+  return name.IsCustomProperty()
+             ? HygienicToAuthoredCustomPropertyName(name.ToAtomicString())
+             : name.ToAtomicString();
 }
 
 String AbstractPropertySetCSSStyleDeclaration::cssText() const {
@@ -61,11 +64,18 @@ void AbstractPropertySetCSSStyleDeclaration::setCSSText(
   const SecureContextMode mode = execution_context
                                      ? execution_context->GetSecureContextMode()
                                      : SecureContextMode::kInsecureContext;
-  PropertySet().ParseDeclarationList(text, mode, ContextStyleSheet());
+  SetCSSTextInternal(text, mode);
 
   DidMutate(kPropertyChanged);
 
   mutation_scope.EnqueueMutationRecord();
+}
+
+void AbstractPropertySetCSSStyleDeclaration::SetCSSTextInternal(
+    const String& text,
+    SecureContextMode secure_context_mode) {
+  PropertySet().ParseDeclarationList(text, secure_context_mode,
+                                     ContextStyleSheet());
 }
 
 const CSSPropertyValueSet&
@@ -81,7 +91,8 @@ String AbstractPropertySetCSSStyleDeclaration::getPropertyValue(
     return String();
   }
   if (property_id == CSSPropertyID::kVariable) {
-    return PropertySet().GetPropertyValue(AtomicString(property_name));
+    return PropertySet().GetPropertyValue(
+        AuthoredToHygienicCustomPropertyName(AtomicString(property_name)));
   }
   return PropertySet().GetPropertyValue(property_id);
 }
@@ -96,7 +107,8 @@ String AbstractPropertySetCSSStyleDeclaration::getPropertyPriority(
 
   bool important = false;
   if (property_id == CSSPropertyID::kVariable) {
-    important = PropertySet().PropertyIsImportant(AtomicString(property_name));
+    important = PropertySet().PropertyIsImportant(
+        AuthoredToHygienicCustomPropertyName(AtomicString(property_name)));
   } else {
     important = PropertySet().PropertyIsImportant(property_id);
   }
@@ -171,8 +183,9 @@ String AbstractPropertySetCSSStyleDeclaration::removeProperty(
   String result;
   bool changed = false;
   if (property_id == CSSPropertyID::kVariable) {
-    changed =
-        PropertySet().RemoveProperty(AtomicString(property_name), &result);
+    changed = PropertySet().RemoveProperty(
+        AuthoredToHygienicCustomPropertyName(AtomicString(property_name)),
+        &result);
   } else {
     changed = PropertySet().RemoveProperty(property_id, &result);
   }
@@ -191,8 +204,9 @@ void AbstractPropertySetCSSStyleDeclaration::QuietlyRemoveProperty(
       CssPropertyID(GetExecutionContext(), property_name);
   CHECK(IsValidCSSPropertyID(property_id));
   if (property_id == CSSPropertyID::kVariable) {
-    PropertySet().RemoveProperty(AtomicString(property_name),
-                                 /*return_text=*/nullptr);
+    PropertySet().RemoveProperty(
+        AuthoredToHygienicCustomPropertyName(AtomicString(property_name)),
+        /*return_text=*/nullptr);
   } else {
     PropertySet().RemoveProperty(property_id, /*return_text=*/nullptr);
   }
@@ -209,7 +223,8 @@ AbstractPropertySetCSSStyleDeclaration::GetPropertyCSSValueInternal(
     const AtomicString& custom_property_name) {
   DCHECK_EQ(CSSPropertyID::kVariable,
             CssPropertyID(GetExecutionContext(), custom_property_name));
-  return PropertySet().GetPropertyCSSValue(custom_property_name);
+  return PropertySet().GetPropertyCSSValue(
+      AuthoredToHygienicCustomPropertyName(custom_property_name));
 }
 
 String AbstractPropertySetCSSStyleDeclaration::GetPropertyValueInternal(
@@ -226,8 +241,9 @@ String AbstractPropertySetCSSStyleDeclaration::GetPropertyValueWithHint(
     return String();
   }
   if (property_id == CSSPropertyID::kVariable) {
-    return PropertySet().GetPropertyValueWithHint(AtomicString(property_name),
-                                                  index);
+    return PropertySet().GetPropertyValueWithHint(
+        AuthoredToHygienicCustomPropertyName(AtomicString(property_name)),
+        index);
   }
   return PropertySet().GetPropertyValue(property_id);
 }
@@ -243,7 +259,8 @@ String AbstractPropertySetCSSStyleDeclaration::GetPropertyPriorityWithHint(
   bool important = false;
   if (property_id == CSSPropertyID::kVariable) {
     important = PropertySet().PropertyIsImportantWithHint(
-        AtomicString(property_name), index);
+        AuthoredToHygienicCustomPropertyName(AtomicString(property_name)),
+        index);
   } else {
     important = PropertySet().PropertyIsImportant(property_id);
   }
@@ -258,17 +275,19 @@ void AbstractPropertySetCSSStyleDeclaration::SetPropertyInternal(
     bool important,
     SecureContextMode secure_context_mode,
     ExceptionState&) {
+  if (!IsPropertyValid(unresolved_property)) {
+    return;
+  }
   StyleAttributeMutationScope mutation_scope(this);
   WillMutate();
 
   MutableCSSPropertyValueSet::SetResult result;
   if (unresolved_property == CSSPropertyID::kVariable) {
     AtomicString atomic_name(custom_property_name);
-
-    bool is_animation_tainted = IsKeyframeStyle();
+    PrepareCustomProperty(atomic_name, value, important);
     result = PropertySet().ParseAndSetCustomProperty(
         atomic_name, value, important, secure_context_mode, ContextStyleSheet(),
-        is_animation_tainted);
+        /*is_animation_tainted=*/IsKeyframeStyle());
   } else {
     result = PropertySet().ParseAndSetProperty(unresolved_property, value,
                                                important, secure_context_mode,
@@ -304,6 +323,11 @@ bool AbstractPropertySetCSSStyleDeclaration::FastPathSetProperty(
   if (!std::isfinite(value)) {
     // Just to be on the safe side.
     return false;
+  }
+  if (!IsPropertyValid(unresolved_property)) {
+    // There's no point in trying an invalid property further, so treat it as
+    // handled.
+    return true;
   }
   CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
   const CSSProperty& property = CSSProperty::Get(property_id);

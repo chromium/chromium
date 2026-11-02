@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 
+#include "third_party/blink/renderer/core/css/css_private_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -72,6 +73,65 @@ void StyleRuleCSSStyleDeclaration::DidMutate(MutationType type) {
 
 CSSStyleSheet* StyleRuleCSSStyleDeclaration::ParentStyleSheet() const {
   return parent_rule_ ? parent_rule_->parentStyleSheet() : nullptr;
+}
+
+bool StyleRuleCSSStyleDeclaration::IsPropertyValid(
+    CSSPropertyID property_id) const {
+  return !IsA<CSSPrivateRule>(parent_rule_.Get()) ||
+         property_id == CSSPropertyID::kVariable;
+}
+
+String StyleRuleCSSStyleDeclaration::cssText() const {
+  auto* private_rule = DynamicTo<CSSPrivateRule>(parent_rule_.Get());
+  return PropertySet().AsText(
+      private_rule ? &private_rule->GetPropertyRegistry() : nullptr);
+}
+
+void StyleRuleCSSStyleDeclaration::SetCSSTextInternal(
+    const String& text,
+    SecureContextMode secure_context_mode) {
+  if (auto* private_rule = DynamicTo<CSSPrivateRule>(parent_rule_.Get())) {
+    PropertySet().ParseDeclarationListForPrivate(
+        text, secure_context_mode, ContextStyleSheet(),
+        private_rule->GetPropertyRegistry(),
+        private_rule->GetAuthoredToHygienicNameMap());
+  } else {
+    PropertySetCSSStyleDeclaration::SetCSSTextInternal(text,
+                                                       secure_context_mode);
+  }
+}
+
+void StyleRuleCSSStyleDeclaration::PrepareCustomProperty(AtomicString& name,
+                                                         StringView value,
+                                                         bool& important) {
+  if (auto* private_rule = DynamicTo<CSSPrivateRule>(parent_rule_.Get())) {
+    // Empty values request removal. An unmapped name has nothing to remove,
+    // so don't create a mapping or registration for it.
+    name = value.empty()
+               ? private_rule->AuthoredToHygienicCustomPropertyName(name)
+               : private_rule->EnsureCustomPropertyNameForHygienic(name);
+    // `@private` declarations cannot be `!important`, so clear the caller's
+    // flag.
+    // TODO(crbug.com/549237151): Revisit this once the parser rejects
+    // !important in @private declarations.
+    important = false;
+  }
+}
+
+AtomicString StyleRuleCSSStyleDeclaration::HygienicToAuthoredCustomPropertyName(
+    const AtomicString& name) const {
+  if (auto* private_rule = DynamicTo<CSSPrivateRule>(parent_rule_.Get())) {
+    return private_rule->HygienicToAuthoredCustomPropertyName(name);
+  }
+  return name;
+}
+
+AtomicString StyleRuleCSSStyleDeclaration::AuthoredToHygienicCustomPropertyName(
+    const AtomicString& name) const {
+  if (auto* private_rule = DynamicTo<CSSPrivateRule>(parent_rule_.Get())) {
+    return private_rule->AuthoredToHygienicCustomPropertyName(name);
+  }
+  return name;
 }
 
 void StyleRuleCSSStyleDeclaration::Reattach(

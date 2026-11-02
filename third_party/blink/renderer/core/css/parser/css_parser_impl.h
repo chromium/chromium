@@ -215,6 +215,12 @@ class CORE_EXPORT CSSParserImpl {
   static bool ParseDeclarationList(MutableCSSPropertyValueSet*,
                                    const String&,
                                    const CSSParserContext*);
+  static void ConsumeDeclarationListForPrivate(
+      CSSParserTokenStream&,
+      const CSSParserContext&,
+      PropertyRegistry&,
+      PrivateNameMap&,
+      HeapVector<CSSPropertyValue, 64>&);
   // This is used for parsing CSSNestedDeclarations from ParseRuleForInsert
   // (CSSGroupingRule/CSSStyleRule.insertRule).
   static StyleRuleBase* ParseNestedDeclarationsRule(

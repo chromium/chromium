@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_medialist_string.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
@@ -216,8 +217,26 @@ TEST_F(CSSStyleSheetTest, SharedPrivateStyleSheetCopiesPrivateRegistry) {
   EXPECT_NE(first_sheet->Contents()->GetPrivatePropertyRegistry(),
             second_sheet->Contents()->GetPrivatePropertyRegistry());
   second_style = To<CSSStyleRule>(second_sheet->ItemInternal(0));
-  second_private = second_style->ItemInternal(0);
+  EXPECT_EQ(second_private, second_style->ItemInternal(0));
   EXPECT_EQ(expected, second_private->cssText());
+
+  auto* second_private_style = static_cast<CSSStyleRule*>(second_private);
+  second_private_style->style()->setProperty(
+      GetDocument().GetExecutionContext(), "--y", "20px", "",
+      ASSERT_NO_EXCEPTION);
+  const CSSPropertyValueSet& properties =
+      second_private_style->GetStyleRule()->Properties();
+  ASSERT_EQ(2u, properties.PropertyCount());
+  const AtomicString& private_name =
+      properties.PropertyAt(1).CustomPropertyName();
+  EXPECT_EQ(AtomicString("--y"),
+            second_sheet->Contents()
+                ->GetPrivatePropertyRegistry()
+                ->AuthoredPrivatePropertyName(private_name));
+  EXPECT_TRUE(first_sheet->Contents()
+                  ->GetPrivatePropertyRegistry()
+                  ->AuthoredPrivatePropertyName(private_name)
+                  .IsNull());
 }
 
 TEST_F(CSSStyleSheetTest, InsertedPrivateRuleUsesStyleSheetRegistry) {

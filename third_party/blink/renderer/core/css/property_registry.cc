@@ -12,7 +12,7 @@ namespace blink {
 AtomicString PropertyRegistry::AllocatePrivatePropertyName() {
   static base::AtomicSequenceNumber sequence;
   StringBuilder builder;
-  builder.Append("-ua-private-");
+  builder.Append(kPrivatePropertyNamePrefix);
   builder.AppendNumber(sequence.GetNext());
   return AtomicString(builder.ReleaseString());
 }

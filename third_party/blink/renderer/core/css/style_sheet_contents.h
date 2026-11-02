@@ -84,7 +84,7 @@ class CORE_EXPORT StyleSheetContents final
                                CSSDeferPropertyParsing defer_property_parsing =
                                    CSSDeferPropertyParsing::kNo);
   PropertyRegistry& EnsurePrivatePropertyRegistry();
-  const PropertyRegistry* GetPrivatePropertyRegistry() const {
+  PropertyRegistry* GetPrivatePropertyRegistry() {
     return private_property_registry_.Get();
   }
 

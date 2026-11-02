@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class CSSPrivateRule;
 class CSSStyleRule;
 class StyleRule;
 
@@ -35,6 +36,7 @@ class CORE_EXPORT DeclaredStylePropertyMap final : public StylePropertyMap {
   unsigned int size() const final;
 
  protected:
+  bool IsPropertyValid(CSSPropertyID) const override;
   const CSSValue* GetProperty(CSSPropertyID) const override;
   const CSSValue* GetCustomProperty(const AtomicString&) const override;
   void ForEachProperty(IterationFunction visitor) override;
@@ -50,6 +52,7 @@ class CORE_EXPORT DeclaredStylePropertyMap final : public StylePropertyMap {
   String SerializationForShorthand(const CSSProperty&) const final;
 
  private:
+  CSSPrivateRule* GetPrivateRule() const;
   StyleRule* GetStyleRule() const;
   void NotifyRuleMutation();
 

@@ -74,6 +74,9 @@ CSSStyleDeclaration* CSSStyleRule::style() const {
 }
 
 String CSSStyleRule::selectorText() const {
+  if (style_rule_->IsPrivateRule()) {
+    return g_empty_string;
+  }
   if (HasCachedSelectorText()) {
     DCHECK(GetSelectorTextCache().Contains(this));
     return GetSelectorTextCache().at(this);
@@ -88,6 +91,9 @@ String CSSStyleRule::selectorText() const {
 
 void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
                                    const String& selector_text) {
+  if (style_rule_->IsPrivateRule()) {
+    return;
+  }
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
 
   const auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -139,10 +145,17 @@ String CSSStyleRule::cssText() const {
   // Step 1.
   StringBuilder result;
   result.Append(selectorText());
+  AppendBlockText(result, /*private_property_registry=*/nullptr);
+  return result.ReleaseString();
+}
+
+void CSSStyleRule::AppendBlockText(
+    StringBuilder& result,
+    const PropertyRegistry* private_property_registry) const {
   result.Append(" {");
 
   // Step 2.
-  String decls = style_rule_->Properties().AsText();
+  String decls = style_rule_->Properties().AsText(private_property_registry);
 
   // Step 3.
   StringBuilder rules;
@@ -159,7 +172,7 @@ String CSSStyleRule::cssText() const {
   // Step 4.
   if (decls.empty() && rules.empty()) {
     result.Append(" }");
-    return result.ReleaseString();
+    return;
   }
 
   // Step 5.
@@ -167,7 +180,7 @@ String CSSStyleRule::cssText() const {
     result.Append(' ');
     result.Append(decls);
     result.Append(" }");
-    return result.ReleaseString();
+    return;
   }
 
   // Step 6.
@@ -181,7 +194,6 @@ String CSSStyleRule::cssText() const {
   result.Append(rules);
 
   result.Append("\n}");
-  return result.ReleaseString();
 }
 
 void CSSStyleRule::Reattach(StyleRuleBase* rule) {

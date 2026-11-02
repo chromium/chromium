@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
+#include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
@@ -291,7 +292,9 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValueForCustomProperty(
     StyleSheetContents* style_sheet,
     bool is_animation_tainted) {
   DCHECK(ThreadState::Current()->IsAllocationAllowed());
-  DCHECK(CSSVariableParser::IsValidVariableName(property_name));
+  DCHECK(
+      CSSVariableParser::IsValidVariableName(property_name) ||
+      property_name.starts_with(PropertyRegistry::kPrivatePropertyNamePrefix));
   if (value.empty()) {
     return MutableCSSPropertyValueSet::kParseError;
   }

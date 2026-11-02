@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 [Exposed=Window, RuntimeEnabled=CSSPrivate]
-interface CSSPrivateRule : CSSRule {
+interface CSSPrivateRule : CSSStyleRule {
 };

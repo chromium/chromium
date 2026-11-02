@@ -1006,7 +1006,7 @@ interface CSSPositionValue : CSSStyleValue
     method constructor
     setter x
     setter y
-interface CSSPrivateRule : CSSRule
+interface CSSPrivateRule : CSSStyleRule
     attribute @@toStringTag
     method constructor
 interface CSSPropertyRule : CSSRule

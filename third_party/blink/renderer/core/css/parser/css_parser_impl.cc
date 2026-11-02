@@ -2674,6 +2674,24 @@ static bool ConsumePrivateVariable(
   return true;
 }
 
+void CSSParserImpl::ConsumeDeclarationListForPrivate(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    PropertyRegistry& registry,
+    PrivateNameMap& private_names,
+    HeapVector<CSSPropertyValue, 64>& properties) {
+  stream.ConsumeWhitespace();
+  while (!stream.AtEnd()) {
+    if (!ConsumePrivateVariable(stream, context, registry, private_names,
+                                properties)) {
+      stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
+    }
+    if (!stream.AtEnd()) {
+      stream.ConsumeIncludingWhitespace();
+    }
+  }
+}
+
 StyleRule* CSSParserImpl::ConsumePrivateRule(CSSParserTokenStream& stream) {
   wtf_size_t header_start = stream.LookAheadOffset();
 
@@ -2699,16 +2717,8 @@ StyleRule* CSSParserImpl::ConsumePrivateRule(CSSParserTokenStream& stream) {
   CHECK(private_names_);
   PropertyRegistry& registry = style_sheet_->EnsurePrivatePropertyRegistry();
   HeapVector<CSSPropertyValue, 64> properties;
-  stream.ConsumeWhitespace();
-  while (!stream.AtEnd()) {
-    if (!ConsumePrivateVariable(stream, *context_, registry, *private_names_,
-                                properties)) {
-      stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
-    }
-    if (!stream.AtEnd()) {
-      stream.ConsumeIncludingWhitespace();
-    }
-  }
+  ConsumeDeclarationListForPrivate(stream, *context_, registry, *private_names_,
+                                   properties);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());

@@ -28,6 +28,7 @@
 #include "base/logging.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
+#include "third_party/blink/renderer/core/css/css_function_rule.h"
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/css_to_style_map.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -333,8 +335,10 @@ bool StylePropertySerializer::CSSPropertyValueSetForSerializer::
 }
 
 StylePropertySerializer::StylePropertySerializer(
-    const CSSPropertyValueSet& properties)
-    : property_set_(properties) {}
+    const CSSPropertyValueSet& properties,
+    const PropertyRegistry* private_property_registry)
+    : property_set_(properties),
+      private_property_registry_(private_property_registry) {}
 
 void StylePropertySerializer::AppendCustomPropertyText(
     StringBuilder& result,
@@ -345,8 +349,20 @@ void StylePropertySerializer::AppendCustomPropertyText(
     result.Append(' ');
   }
   const CSSValue& value = property.Value();
-  SerializeIdentifier(property.Name().ToAtomicString(), result,
-                      is_not_first_decl);
+  const AtomicString& hygienic_name = property.Name().ToAtomicString();
+  if (private_property_registry_) {
+    const AtomicString& authored_name =
+        private_property_registry_->AuthoredPrivatePropertyName(hygienic_name);
+    SerializeIdentifier(authored_name, result, is_not_first_decl);
+    const PropertyRegistration* registration =
+        private_property_registry_->PrivateRegistration(hygienic_name);
+    if (!registration->Syntax().IsUniversal()) {
+      result.Append(' ');
+      AppendCSSType(registration->Syntax(), result);
+    }
+  } else {
+    SerializeIdentifier(hygienic_name, result, is_not_first_decl);
+  }
   result.Append(": ");
   result.Append(value.CssText());
   if (property.IsImportant()) {

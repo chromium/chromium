@@ -49,6 +49,14 @@ class StyleRuleCSSStyleDeclaration : public PropertySetCSSStyleDeclaration {
 
   void WillMutate() override;
   void DidMutate(MutationType) override;
+  bool IsPropertyValid(CSSPropertyID) const override;
+  String cssText() const override;
+  void SetCSSTextInternal(const String&, SecureContextMode) override;
+  void PrepareCustomProperty(AtomicString&, StringView, bool&) override;
+  AtomicString HygienicToAuthoredCustomPropertyName(
+      const AtomicString&) const override;
+  AtomicString AuthoredToHygienicCustomPropertyName(
+      const AtomicString&) const override;
 
   Member<CSSRule> parent_rule_;
 };

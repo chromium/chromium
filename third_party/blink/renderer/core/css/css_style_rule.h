@@ -32,11 +32,13 @@ namespace blink {
 
 class CSSStyleDeclaration;
 class ExecutionContext;
+class PropertyRegistry;
+class StringBuilder;
 class StyleRuleCSSStyleDeclaration;
 class StyleRule;
 
 // CSSOM wrapper for StyleRule.
-class CORE_EXPORT CSSStyleRule final : public CSSRule {
+class CORE_EXPORT CSSStyleRule : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -88,6 +90,9 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
   }
 
   void Trace(Visitor*) const override;
+
+ protected:
+  void AppendBlockText(StringBuilder&, const PropertyRegistry*) const;
 
  private:
   CSSRule::Type GetType() const override { return kStyleRule; }

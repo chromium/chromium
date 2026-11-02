@@ -14,10 +14,14 @@
 
 namespace blink {
 
+// TODO(crbug.com/578573238): Consolidate these aliases. Keep in sync with
+// css_property_value_set.h for now.
 using PrivateNameMap = HashMap<AtomicString, AtomicString>;
 
 class CORE_EXPORT PropertyRegistry : public GarbageCollected<PropertyRegistry> {
  public:
+  static constexpr char kPrivatePropertyNamePrefix[] = "-ua-private-";
+
   using RegistrationMap =
       HeapHashMap<AtomicString, Member<PropertyRegistration>>;
 

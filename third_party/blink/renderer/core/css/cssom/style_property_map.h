@@ -36,6 +36,9 @@ class CORE_EXPORT StylePropertyMap : public StylePropertyMapReadOnlyMainThread {
   void clear();
 
  protected:
+  // Some subclasses only allow a subset of properties. For example,
+  // CSSPrivateRule only allows custom properties.
+  virtual bool IsPropertyValid(CSSPropertyID) const { return true; }
   virtual void SetProperty(CSSPropertyID, const CSSValue&) = 0;
   virtual bool SetShorthandProperty(CSSPropertyID,
                                     const String&,
