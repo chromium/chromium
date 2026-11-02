@@ -4463,12 +4463,9 @@ const FeatureEntry::FeatureVariation kRefreshTokenBindingUpgradeVariations[] = {
 
 const FeatureEntry::FeatureParam kMagiChromePasskeySignInAutofill[] = {
     {"flow_type", "autofill"}};
-const FeatureEntry::FeatureParam kMagiChromePasskeySignInBanner[] = {
-    {"flow_type", "banner"}};
 
 const FeatureEntry::FeatureVariation kMagiChromePasskeySignInVariations[] = {
     {"Autofill flow", kMagiChromePasskeySignInAutofill, nullptr},
-    {"Banner flow", kMagiChromePasskeySignInBanner, nullptr},
 };
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

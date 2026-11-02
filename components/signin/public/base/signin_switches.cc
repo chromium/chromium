@@ -794,10 +794,6 @@ bool IsMagiChromePasskeyAutofillEnabled() {
   return base::FeatureList::IsEnabled(kMagiChromePasskeySignIn) &&
          kMagiChromePasskeySignInFlowType.Get() == "autofill";
 }
-bool IsMagiChromePasskeyBannerEnabled() {
-  return base::FeatureList::IsEnabled(kMagiChromePasskeySignIn) &&
-         kMagiChromePasskeySignInFlowType.Get() == "banner";
-}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)

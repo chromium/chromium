@@ -723,8 +723,8 @@ BASE_DECLARE_FEATURE(kHandleMdmErrorsForDasherAccountsOnAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Controls the MagiChrome passkey sign-in experiment, enabling either the
-// Autofill-based promo flow or the native Views-based banner flow.
+// Controls the MagiChrome passkey sign-in experiment. The active flow is
+// selected by the `flow_type` param below.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kMagiChromePasskeySignIn);
 // Controls which client flow is active. The client only acts on "autofill";
@@ -740,10 +740,6 @@ extern const base::FeatureParam<int> kMagiChromePasskeySignInGaiaExpBranch;
 // Returns true if the MagiChrome passkey sign-in Autofill flow is active.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsMagiChromePasskeyAutofillEnabled();
-// Returns true if the MagiChrome passkey sign-in native Views banner flow is
-// active.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-bool IsMagiChromePasskeyBannerEnabled();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)

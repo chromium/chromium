@@ -84,10 +84,6 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
   const std::vector<base::test::FeatureRef> disabled_features = {
       privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation};
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  enable_feature(switches::kMagiChromePasskeySignIn, {{"flow_type", "banner"}});
-#endif
-
   feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                               disabled_features);
 }

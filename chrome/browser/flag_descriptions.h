@@ -1653,8 +1653,8 @@ inline constexpr char kDoubleBufferCompositingDescription[] =
 inline constexpr char kMagiChromePasskeySignInName[] =
     "MagiChrome Passkey Sign-in";
 inline constexpr char kMagiChromePasskeySignInDescription[] =
-    "Enables the MagiChrome passkey sign-in experiment, enabling either the "
-    "Autofill promo flow or the native Views banner flow.";
+    "Enables the MagiChrome passkey sign-in experiment. Use the variations "
+    "below to pick which flow is active.";
 
 inline constexpr char kCollaborationEntrepriseV2Name[] =
     "Collaboration Entreprise V2";

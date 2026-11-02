@@ -133,11 +133,7 @@ DiceTabHelper::DiceTabHelper(content::WebContents* web_contents)
       content::WebContentsObserver(web_contents),
       state_{std::make_unique<ResetableState>()} {}
 
-DiceTabHelper::~DiceTabHelper() {
-  for (auto& observer : observer_list_) {
-    observer.OnDiceTabHelperWillDestroy();
-  }
-}
+DiceTabHelper::~DiceTabHelper() = default;
 
 void DiceTabHelper::InitializeSigninFlow(
     const GURL& signin_url,
@@ -255,14 +251,6 @@ void DiceTabHelper::UpdateSigninErrorCallback(
 
 void DiceTabHelper::UpdateRedirectUrl(const GURL& redirect_url) {
   state_->redirect_url = redirect_url;
-}
-
-void DiceTabHelper::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void DiceTabHelper::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
 }
 
 // static
@@ -459,9 +447,6 @@ void DiceTabHelper::SetIsChromeSigninPage(bool is_signin_page) {
   is_chrome_signin_page_ = is_signin_page;
   if (!is_chrome_signin_page_) {
     bluetooth_adapter_.reset();
-  }
-  for (auto& observer : observer_list_) {
-    observer.OnIsChromeSigninPageChanged(is_chrome_signin_page_);
   }
 }
 

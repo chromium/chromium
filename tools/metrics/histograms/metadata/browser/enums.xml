@@ -369,7 +369,7 @@ chromium-metrics-reviews@google.com.
   <int value="134" label="WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE"/>
   <int value="135" label="OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE"/>
   <int value="136" label="AUTOFILL_AI_PRE_FETCH_FAILURE_INFOBAR_DELEGATE_IOS"/>
-  <int value="137" label="SIGNIN_QRCODE_INFOBAR_DELEGATE"/>
+  <int value="137" label="SIGNIN_QRCODE_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="138" label="FORMS_AI_PRIVATE_INFERENCE_INFOBAR_DELEGATE_IOS"/>
   <int value="139" label="PASSWORD_SAVED_INFOBAR_DELEGATE_IOS"/>
   <int value="140" label="CONTEXTUAL_CUE_INFOBAR_DELEGATE_IOS"/>

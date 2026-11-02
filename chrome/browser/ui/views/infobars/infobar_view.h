@@ -74,8 +74,6 @@ class InfoBarView : public infobars::InfoBar,
   void SetQueuedInfoBarCount(size_t count,
                              base::PassKey<InfoBarContainerView> key);
 
-  void SetInteriorMargin(const gfx::Insets& margin);
-
  protected:
   using Labels = std::vector<views::Label*>;
 

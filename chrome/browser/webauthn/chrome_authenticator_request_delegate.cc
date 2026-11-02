@@ -104,7 +104,6 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_tab_helper.h"
-#include "chrome/browser/ui/signin/signin_qrcode_model.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -446,17 +445,6 @@ ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate() {
   dialog_model_->OnRequestComplete();
   dialog_model_->observers.RemoveObserver(this);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(render_frame_host_id_));
-  if (web_contents) {
-    auto* model = SigninQRCodeModel::FromWebContents(web_contents);
-    if (model) {
-      model->Reset();
-    }
-  }
-#endif
   MaybeRecordHybridPasskeyOutcome(
       HybridPasskeyTerminationReason::kOtherFailure);
   MaybeRecordHybridPasskeyEngagement();
@@ -767,22 +755,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   dialog_controller_->set_cable_transport_info(qr_string);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (IsChromeSigninPage(GetRenderFrameHost())) {
-    if (switches::IsMagiChromePasskeyAutofillEnabled()) {
-      is_chrome_signin_request_ = true;
+  if (IsChromeSigninPage(GetRenderFrameHost()) &&
+      switches::IsMagiChromePasskeyAutofillEnabled()) {
+    is_chrome_signin_request_ = true;
 #if BUILDFLAG(IS_WIN)
-      discovery_factory->set_force_hybrid_discovery(true);
+    discovery_factory->set_force_hybrid_discovery(true);
 #endif  // BUILDFLAG(IS_WIN)
-    }
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(
-            content::RenderFrameHost::FromID(render_frame_host_id_));
-    if (web_contents) {
-      SigninQRCodeModel::GetOrCreateForWebContents(web_contents)
-          ->SetQrCode(qr_string);
-    }
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   discovery_factory->set_cable_data(request_type, qr_generator_key);
 
@@ -953,8 +933,7 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
     // popup, while avoiding unnecessary Bluetooth advertising on other pages.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (IsChromeSigninPage(GetRenderFrameHost()) &&
-        (switches::IsMagiChromePasskeyAutofillEnabled() ||
-         switches::IsMagiChromePasskeyBannerEnabled()) &&
+        switches::IsMagiChromePasskeyAutofillEnabled() &&
         authenticator.AuthenticatorTransport() ==
             device::FidoTransportProtocol::kHybrid) {
       return false;

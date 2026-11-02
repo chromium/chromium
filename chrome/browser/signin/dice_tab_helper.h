@@ -11,8 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -38,12 +36,6 @@ class SigninUIError;
 class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
                       public content::WebContentsObserver {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnIsChromeSigninPageChanged(bool is_signin_page) {}
-    virtual void OnDiceTabHelperWillDestroy() {}
-  };
-
   // Callback starting the History syncing. This is a repeating callback,
   // because multiple `ProcessDiceHeaderDelegateImpl` may make copies of it.
   using EnableHistorySyncOptinCallback =
@@ -167,9 +159,6 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // in case of errors.
   void UpdateRedirectUrl(const GURL& redirect_url);
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
   // Can be used in tests to reduce the delay before showing the interception
   // bubble, after the auth token is received.
   [[nodiscard]] static base::AutoReset<base::TimeDelta>
@@ -282,8 +271,6 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // completes, which hides the passkey QR code from the Autofill suggestions.
   // See crbug.com/568301366.
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-
-  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<DiceTabHelper> weak_ptr_factory_{this};
 
