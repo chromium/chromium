@@ -646,6 +646,22 @@ ContextualTasksWebContentsUserData::GetConnectedDocumentIdForTesting() const {
   return page_state ? page_state->connected_document_id : base::EmptyString();
 }
 
+ContextualTasksWebContentsUserData::PageSearchDebugState
+ContextualTasksWebContentsUserData::GetPageSearchDebugState() const {
+  PageSearchDebugState debug_state;
+  if (const auto* page_state = GetPrimaryPageSearchState()) {
+    debug_state.connected_document_id = page_state->connected_document_id;
+    debug_state.is_handshake_complete = page_state->is_handshake_complete;
+    debug_state.pending_search_messages_count =
+        page_state->pending_search_messages.size();
+    debug_state.is_lens_crop_mounted = page_state->is_lens_crop_mounted;
+    debug_state.context_library_is_active =
+        page_state->context_library_is_active;
+    debug_state.last_sent_context_state = page_state->last_sent_context_state;
+  }
+  return debug_state;
+}
+
 bool ContextualTasksWebContentsUserData::OnSearchMessageReceived(
     base::span<const uint8_t> message,
     const void* source_handler_id) {
@@ -1736,6 +1752,21 @@ ContextualTasksWebContentsUserData::GetOrCreateContextualSessionHandle() {
   return existing_session;
 }
 
+const contextual_search::ContextualSearchSessionHandle*
+ContextualTasksWebContentsUserData::GetExistingContextualSessionHandle() const {
+  const auto* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(&GetWebContents());
+  if (!helper) {
+    return nullptr;
+  }
+  if (task_id_.has_value()) {
+    return (helper->session_handle() && helper->task_id() == task_id_)
+               ? helper->session_handle()
+               : nullptr;
+  }
+  return helper->session_handle();
+}
+
 std::optional<base::UnguessableToken>
 ContextualTasksWebContentsUserData::GetLensOverlayToken() {
 #if !BUILDFLAG(IS_ANDROID)
@@ -1798,12 +1829,22 @@ ContextualTasksWebContentsUserData::GetSelectedTabs() {
   if (!subscribed_session_handle_) {
     return {};
   }
-  const auto& attached_tabs =
-      subscribed_session_handle_->GetTabContextState().attached;
+  return GetSelectedTabsSnapshot();
+}
+
+std::vector<contextual_search::TabInfo>
+ContextualTasksWebContentsUserData::GetSelectedTabsSnapshot() const {
+  const auto* session_handle = subscribed_session_handle_
+                                   ? subscribed_session_handle_.get()
+                                   : GetExistingContextualSessionHandle();
+  if (!session_handle) {
+    return {};
+  }
+  const auto& attached_tabs = session_handle->GetTabContextState().attached;
   const std::vector<base::UnguessableToken> uploaded_tokens =
-      subscribed_session_handle_->GetUploadedContextTokens();
+      session_handle->GetUploadedContextTokens();
   const std::vector<contextual_search::FileInfo> uploaded_file_infos =
-      subscribed_session_handle_->GetUploadedContextFileInfos();
+      session_handle->GetUploadedContextFileInfos();
   auto is_implicit_token = [&](const base::UnguessableToken& token) {
     return std::ranges::any_of(
         uploaded_file_infos, [&](const contextual_search::FileInfo& info) {

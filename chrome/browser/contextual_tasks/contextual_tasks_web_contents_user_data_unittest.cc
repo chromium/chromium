@@ -1528,4 +1528,41 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_TRUE(user_data->IsSmartTabSharingActive());
 }
 
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       ConstDebugAccessorsDoNotMutateOrCreateSession) {
+  ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
+  const auto* const_user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+  ASSERT_NE(const_user_data, nullptr);
+
+  ContextualTasksWebContentsUserData::PageSearchDebugState initial_debug_state =
+      const_user_data->GetPageSearchDebugState();
+  EXPECT_TRUE(initial_debug_state.connected_document_id.empty());
+  EXPECT_FALSE(initial_debug_state.is_handshake_complete);
+  EXPECT_EQ(initial_debug_state.pending_search_messages_count, 0u);
+  EXPECT_TRUE(const_user_data->extension_frames().empty());
+  EXPECT_TRUE(const_user_data->pending_context_uploads().empty());
+  EXPECT_TRUE(const_user_data->failed_context_uploads().empty());
+  EXPECT_FALSE(const_user_data->submit_pending());
+  EXPECT_TRUE(const_user_data->GetSelectedTabsSnapshot().empty());
+  EXPECT_EQ(const_user_data->GetExistingContextualSessionHandle(), nullptr);
+
+  auto* mutable_user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+  mutable_user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame());
+  mutable_user_data->OnHandshakeComplete();
+  mutable_user_data->RecordTabIdMapping(/*tab_handle_id=*/42,
+                                        /*session_tab_id=*/99);
+
+  ContextualTasksWebContentsUserData::PageSearchDebugState updated_debug_state =
+      const_user_data->GetPageSearchDebugState();
+  EXPECT_FALSE(updated_debug_state.connected_document_id.empty());
+  EXPECT_TRUE(updated_debug_state.is_handshake_complete);
+
+  const base::flat_map<int32_t, int32_t>& mappings =
+      const_user_data->tab_handle_to_session_id();
+  ASSERT_EQ(mappings.size(), 1u);
+  EXPECT_EQ(mappings.at(42), 99);
+}
+
 }  // namespace contextual_tasks
