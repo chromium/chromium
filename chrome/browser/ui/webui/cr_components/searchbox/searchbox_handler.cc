@@ -653,10 +653,13 @@ base::DictValue SearchboxHandler::GetProfileDependentWebUIDataSourceDict(
   return dict;
 }
 
-std::string SearchboxHandler::AutocompleteIconToResourceName(
-    const gfx::VectorIcon& icon) const {
+// static
+std::string SearchboxHandler::VectorIconToResourceName(
+    const gfx::VectorIcon& icon) {
   if (icon.is_empty()) {
-    return "";  // An empty resource name is effectively a blank icon.
+    // Dropdown rows render blank for an empty resource name, while the
+    // searchbox input falls back to its default icon.
+    return "";
   }
 
   // Keep sorted alphabetically by `if` predicate. E.g.
@@ -874,6 +877,11 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
   }
 
   return resource_name;
+}
+
+std::string SearchboxHandler::AutocompleteIconToResourceName(
+    const gfx::VectorIcon& icon) const {
+  return VectorIconToResourceName(icon);
 }
 
 searchbox::mojom::AutocompleteResultPtr
