@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.tabmodel.undo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forSavedGroups;
@@ -19,141 +19,132 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
+import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosureKind;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /** Tests for {@link UndoClosureSnapshot}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UndoClosureSnapshotUnitTest {
     private static final Token GROUP_1 = new Token(1, 1);
-    private static final Token GROUP_2 = new Token(2, 2);
 
     @Test
     public void testConstruction() {
         UndoClosureSnapshot snapshot =
                 forTabModel(
-                        List.of(new UndoClosureSnapshot.ClosedTab(1, "Tab 1", GROUP_1)),
-                        Map.of(GROUP_1, "Group 1"),
-                        Set.of(GROUP_1),
-                        Collections.emptySet(),
+                        List.of(
+                                new ClosedTab(
+                                        1,
+                                        "Tab 1",
+                                        GROUP_1,
+                                        /* modelIndex= */ TabList.INVALID_TAB_INDEX,
+                                        /* pinned= */ true,
+                                        /* wasSelected= */ false)),
+                        Map.of(
+                                GROUP_1,
+                                new GroupData(
+                                        "Group 1",
+                                        /* color= */ 2,
+                                        /* collapsed= */ true,
+                                        /* isHiding= */ true,
+                                        /* survivesInModel= */ false)),
                         /* isTabGroupSyncEnabled= */ true,
-                        /* isAllTabs= */ false);
+                        /* isAllTabs= */ false,
+                        /* entryId= */ 42);
 
         assertEquals(ClosureKind.TAB_MODEL, snapshot.kind);
         assertEquals(1, snapshot.tabs.size());
         assertEquals("Tab 1", snapshot.tabs.get(0).title);
         assertEquals(GROUP_1, snapshot.tabs.get(0).groupId);
-        assertFalse(snapshot.isEmpty());
-        assertEquals(1, snapshot.tabIds().length);
-        assertEquals(1, snapshot.tabIds()[0]);
+        assertTrue(snapshot.tabs.get(0).pinned);
+        assertFalse(snapshot.tabs.get(0).wasSelected);
+        assertEquals(TabList.INVALID_TAB_INDEX, snapshot.tabs.get(0).modelIndex);
+
+        GroupData groupData = snapshot.groups.get(GROUP_1);
+        assertNotNull(groupData);
+        assertEquals("Group 1", groupData.title);
+        assertEquals(2, groupData.color);
+        assertTrue(groupData.collapsed);
+        assertTrue(groupData.isHiding);
+        assertFalse(groupData.survivesInModel);
+
+        assertEquals(42, snapshot.entryId);
     }
 
     @Test
-    public void testWithoutTabs() {
-        UndoClosureSnapshot snapshot =
-                forTabModel(
-                        List.of(
-                                new UndoClosureSnapshot.ClosedTab(1, "Tab 1", GROUP_1),
-                                new UndoClosureSnapshot.ClosedTab(2, "Tab 2", GROUP_1)),
-                        Map.of(GROUP_1, "Group 1"),
-                        Set.of(GROUP_1),
-                        Collections.emptySet(),
-                        /* isTabGroupSyncEnabled= */ true,
-                        /* isAllTabs= */ false);
-
-        UndoClosureSnapshot shrunk = snapshot.withoutTabs(List.of(1));
-        assertEquals(1, shrunk.tabs.size());
-        assertEquals(2, shrunk.tabs.get(0).id);
-        assertFalse(shrunk.isEmpty());
-        assertEquals(ClosureKind.TAB_MODEL, shrunk.kind);
-
-        UndoClosureSnapshot empty = shrunk.withoutTabs(List.of(2));
-        assertTrue(empty.isEmpty());
-    }
-
-    @Test
-    public void testWithoutTabs_PreservesSavedGroupsKind() {
+    public void testForSavedGroups() {
         UndoClosureSnapshot snapshot =
                 forSavedGroups(
                         List.of(
-                                new UndoClosureSnapshot.ClosedTab(1, "Tab 1", /* groupId= */ null),
-                                new UndoClosureSnapshot.ClosedTab(2, "Tab 2", /* groupId= */ null)),
-                        /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
-                        /* savedGroupTitle= */ null,
-                        /* savedGroupTabCount= */ 0);
+                                new ClosedTab(
+                                        1,
+                                        "Tab 1",
+                                        /* groupId= */ null,
+                                        /* modelIndex= */ TabList.INVALID_TAB_INDEX,
+                                        /* pinned= */ false,
+                                        /* wasSelected= */ false)),
+                        /* savedTabGroupSyncIds= */ List.of("sync-1"),
+                        /* savedGroupTitle= */ "Saved 1",
+                        /* savedGroupTabCount= */ 3);
 
-        UndoClosureSnapshot shrunk = snapshot.withoutTabs(List.of(1));
-        assertEquals(1, shrunk.tabs.size());
-        assertEquals(ClosureKind.SAVED_GROUPS, shrunk.kind);
+        assertEquals(ClosureKind.SAVED_GROUPS, snapshot.kind);
+        assertTrue(snapshot.groups.isEmpty());
+        assertFalse(snapshot.isTabGroupSyncEnabled);
+        assertFalse(snapshot.isAllTabs);
+        assertEquals(List.of("sync-1"), snapshot.savedTabGroupSyncIds);
+        assertEquals("Saved 1", snapshot.savedGroupTitle);
+        assertEquals(3, snapshot.savedGroupTabCount);
+        assertEquals(TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID, snapshot.entryId);
     }
 
     @Test
-    public void testWithGroupRestored() {
+    public void testCollectionsAreUnmodifiable() {
+        List<ClosedTab> tabs = new ArrayList<>();
+        tabs.add(
+                new ClosedTab(
+                        1,
+                        "Tab 1",
+                        /* groupId= */ null,
+                        /* modelIndex= */ TabList.INVALID_TAB_INDEX,
+                        /* pinned= */ false,
+                        /* wasSelected= */ false));
+
+        Map<Token, GroupData> groups = new HashMap<>();
+        groups.put(
+                GROUP_1,
+                new GroupData(
+                        "Group 1",
+                        /* color= */ 0,
+                        /* collapsed= */ false,
+                        /* isHiding= */ false,
+                        /* survivesInModel= */ true));
+
         UndoClosureSnapshot snapshot =
                 forTabModel(
-                        List.of(new UndoClosureSnapshot.ClosedTab(1, "Tab 1", GROUP_1)),
-                        Map.of(GROUP_1, "Group 1"),
-                        Set.of(GROUP_1),
-                        Collections.emptySet(),
-                        /* isTabGroupSyncEnabled= */ true,
-                        /* isAllTabs= */ false);
+                        tabs,
+                        groups,
+                        /* isTabGroupSyncEnabled= */ false,
+                        /* isAllTabs= */ false,
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
 
-        UndoClosureSnapshot restored = snapshot.withGroupRestored(GROUP_1);
-        assertFalse(restored.hidingGroupIds.contains(GROUP_1));
-        assertTrue(restored.survivingGroupIds.contains(GROUP_1));
-        assertEquals(ClosureKind.TAB_MODEL, restored.kind);
-    }
+        // Mutate original collections after construction.
+        tabs.clear();
+        groups.clear();
 
-    @Test
-    public void testWithGroupRestored_UnknownGroup_ReturnsSameInstance() {
-        UndoClosureSnapshot snapshot = createSingleGroupSnapshot(/* isHiding= */ true);
+        assertEquals(1, snapshot.tabs.size());
+        assertEquals(1, snapshot.groups.size());
+        assertTrue(snapshot.groups.containsKey(GROUP_1));
 
-        assertSame(snapshot, snapshot.withGroupRestored(GROUP_2));
-    }
-
-    @Test
-    public void testWithGroupRestored_AlreadyRestored_ReturnsSameInstance() {
-        UndoClosureSnapshot restored =
-                createSingleGroupSnapshot(/* isHiding= */ true).withGroupRestored(GROUP_1);
-
-        assertSame(restored, restored.withGroupRestored(GROUP_1));
-    }
-
-    @Test
-    public void testWithGroupRestored_DeletingGroup_AddsSurvival() {
-        UndoClosureSnapshot snapshot = createSingleGroupSnapshot(/* isHiding= */ false);
-
-        UndoClosureSnapshot restored = snapshot.withGroupRestored(GROUP_1);
-        assertNotSame(snapshot, restored);
-        assertTrue(restored.hidingGroupIds.isEmpty());
-        assertTrue(restored.survivingGroupIds.contains(GROUP_1));
-    }
-
-    @Test
-    public void testEmptyInput() {
-        UndoClosureSnapshot snapshot =
-                forTabModel(
-                        Collections.emptyList(),
-                        Collections.emptyMap(),
-                        Collections.emptySet(),
-                        Collections.emptySet(),
-                        /* isTabGroupSyncEnabled= */ true,
-                        /* isAllTabs= */ false);
-        assertTrue(snapshot.isEmpty());
-    }
-
-    private static UndoClosureSnapshot createSingleGroupSnapshot(boolean isHiding) {
-        return forTabModel(
-                List.of(new UndoClosureSnapshot.ClosedTab(1, "Tab 1", GROUP_1)),
-                Map.of(GROUP_1, "Group 1"),
-                isHiding ? Set.of(GROUP_1) : Collections.emptySet(),
-                /* survivingGroupIds= */ Collections.emptySet(),
-                /* isTabGroupSyncEnabled= */ true,
-                /* isAllTabs= */ false);
+        // Verify snapshot collections are unmodifiable.
+        assertThrows(UnsupportedOperationException.class, () -> snapshot.tabs.clear());
+        assertThrows(UnsupportedOperationException.class, () -> snapshot.groups.clear());
     }
 }

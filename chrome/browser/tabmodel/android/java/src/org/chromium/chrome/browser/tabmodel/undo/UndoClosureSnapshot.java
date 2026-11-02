@@ -9,17 +9,16 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
+import org.chromium.chrome.browser.tabmodel.TabList;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /** An immutable snapshot of the state required to show the undo snackbar. */
 @NullMarked
@@ -47,17 +46,83 @@ public final class UndoClosureSnapshot {
         public final @Nullable Token groupId;
 
         /**
+         * The index of the tab in the model prior to closure, or {@link TabList#INVALID_TAB_INDEX}
+         * when not populated by a pre-removal capture.
+         */
+        public final int modelIndex;
+
+        /** Whether the tab was pinned prior to closure. */
+        public final boolean pinned;
+
+        /**
+         * Whether the tab was selected prior to closure. Only populated by a pre-removal capture.
+         */
+        public final boolean wasSelected;
+
+        /**
          * Constructs a closed tab representation.
          *
          * @param id The identifier of the closed tab.
          * @param title The title of the closed tab.
          * @param groupId The identifier of the tab group this tab belonged to, or null if
          *     ungrouped.
+         * @param modelIndex The index of the tab in the model prior to closure.
+         * @param pinned Whether the tab was pinned prior to closure.
+         * @param wasSelected Whether the tab was selected prior to closure.
          */
-        public ClosedTab(int id, String title, @Nullable Token groupId) {
+        public ClosedTab(
+                int id,
+                String title,
+                @Nullable Token groupId,
+                int modelIndex,
+                boolean pinned,
+                boolean wasSelected) {
             this.id = id;
             this.title = title;
             this.groupId = groupId;
+            this.modelIndex = modelIndex;
+            this.pinned = pinned;
+            this.wasSelected = wasSelected;
+        }
+    }
+
+    /** Represents a tab group captured at close time. */
+    public static final class GroupData {
+        /** The title of the closed tab group. */
+        public final @Nullable String title;
+
+        /** The color of the closed tab group. */
+        public final int color;
+
+        /** Whether the closed tab group was collapsed. */
+        public final boolean collapsed;
+
+        /** Whether the closed tab group was hiding. */
+        public final boolean isHiding;
+
+        /** Whether the closed tab group survives in the comprehensive model. */
+        public final boolean survivesInModel;
+
+        /**
+         * Constructs a closed tab group representation.
+         *
+         * @param title The title of the closed tab group.
+         * @param color The color of the closed tab group.
+         * @param collapsed Whether the closed tab group was collapsed.
+         * @param isHiding Whether the closed tab group was hiding.
+         * @param survivesInModel Whether the closed tab group survives in the comprehensive model.
+         */
+        public GroupData(
+                @Nullable String title,
+                int color,
+                boolean collapsed,
+                boolean isHiding,
+                boolean survivesInModel) {
+            this.title = title;
+            this.color = color;
+            this.collapsed = collapsed;
+            this.isHiding = isHiding;
+            this.survivesInModel = survivesInModel;
         }
     }
 
@@ -67,19 +132,8 @@ public final class UndoClosureSnapshot {
     /** The list of tabs captured in this snapshot. */
     public final List<ClosedTab> tabs;
 
-    /**
-     * A mapping from group identifiers to their titles for the groups involved in this snapshot.
-     */
-    public final Map<Token, @Nullable String> groupTitles;
-
-    /** The set of group identifiers that are hiding as a result of this closure event. */
-    public final Set<Token> hidingGroupIds;
-
-    /**
-     * The set of group identifiers that survive in the comprehensive model despite this closure
-     * event.
-     */
-    public final Set<Token> survivingGroupIds;
+    /** A mapping from group identifiers to their state for the groups involved in this snapshot. */
+    public final Map<Token, GroupData> groups;
 
     /** Whether tab group sync is enabled for the profile. */
     public final boolean isTabGroupSyncEnabled;
@@ -104,35 +158,73 @@ public final class UndoClosureSnapshot {
     public final int savedGroupTabCount;
 
     /**
+     * The TabRestoreService entry id, or {@link TabRestoreEntryId#INVALID_TAB_RESTORE_ENTRY_ID}
+     * when not populated by a pre-removal capture.
+     */
+    public final @TabRestoreEntryId int entryId;
+
+    /**
+     * Constructs an immutable snapshot.
+     *
+     * @param kind The kind of closure event this snapshot represents.
+     * @param tabs The list of closed tabs.
+     * @param groups The mapping from group identifiers to their state.
+     * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
+     * @param isAllTabs Whether all tabs were closed.
+     * @param savedTabGroupSyncIds The list of closed saved tab group sync identifiers.
+     * @param savedGroupTitle The title of the saved group, if applicable.
+     * @param savedGroupTabCount The tab count of the saved group, if applicable.
+     * @param entryId The TabRestoreService entry id.
+     */
+    private UndoClosureSnapshot(
+            @ClosureKind int kind,
+            List<ClosedTab> tabs,
+            Map<Token, GroupData> groups,
+            boolean isTabGroupSyncEnabled,
+            boolean isAllTabs,
+            List<String> savedTabGroupSyncIds,
+            @Nullable String savedGroupTitle,
+            int savedGroupTabCount,
+            @TabRestoreEntryId int entryId) {
+        this.kind = kind;
+        this.tabs = Collections.unmodifiableList(new ArrayList<>(tabs));
+        this.groups = Collections.unmodifiableMap(new HashMap<>(groups));
+        this.isTabGroupSyncEnabled = isTabGroupSyncEnabled;
+        this.isAllTabs = isAllTabs;
+        this.savedTabGroupSyncIds =
+                Collections.unmodifiableList(new ArrayList<>(savedTabGroupSyncIds));
+        this.savedGroupTitle = savedGroupTitle;
+        this.savedGroupTabCount = savedGroupTabCount;
+        this.entryId = entryId;
+    }
+
+    /**
      * Creates a {@link ClosureKind#TAB_MODEL} snapshot. The saved-group-only fields are left empty,
      * null or 0.
      *
      * @param tabs The list of closed tabs.
-     * @param groupTitles The mapping from group identifiers to their titles.
-     * @param hidingGroupIds The set of group identifiers that are hiding.
-     * @param survivingGroupIds The set of group identifiers that survive.
+     * @param groups The mapping from group identifiers to their state.
      * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
      * @param isAllTabs Whether all tabs were closed.
+     * @param entryId The TabRestoreService entry id.
      * @return The immutable snapshot.
      */
     public static UndoClosureSnapshot forTabModel(
             List<ClosedTab> tabs,
-            Map<Token, @Nullable String> groupTitles,
-            Set<Token> hidingGroupIds,
-            Set<Token> survivingGroupIds,
+            Map<Token, GroupData> groups,
             boolean isTabGroupSyncEnabled,
-            boolean isAllTabs) {
+            boolean isAllTabs,
+            @TabRestoreEntryId int entryId) {
         return new UndoClosureSnapshot(
                 ClosureKind.TAB_MODEL,
                 tabs,
-                groupTitles,
-                hidingGroupIds,
-                survivingGroupIds,
+                groups,
                 isTabGroupSyncEnabled,
                 isAllTabs,
                 /* savedTabGroupSyncIds= */ Collections.emptyList(),
                 /* savedGroupTitle= */ null,
-                /* savedGroupTabCount= */ 0);
+                /* savedGroupTabCount= */ 0,
+                entryId);
     }
 
     /**
@@ -153,132 +245,12 @@ public final class UndoClosureSnapshot {
         return new UndoClosureSnapshot(
                 ClosureKind.SAVED_GROUPS,
                 tabs,
-                /* groupTitles= */ Collections.emptyMap(),
-                /* hidingGroupIds= */ Collections.emptySet(),
-                /* survivingGroupIds= */ Collections.emptySet(),
+                /* groups= */ Collections.emptyMap(),
                 /* isTabGroupSyncEnabled= */ false,
                 /* isAllTabs= */ false,
                 savedTabGroupSyncIds,
                 savedGroupTitle,
-                savedGroupTabCount);
-    }
-
-    /**
-     * Constructs an immutable snapshot.
-     *
-     * @param kind The kind of closure event this snapshot represents.
-     * @param tabs The list of closed tabs.
-     * @param groupTitles The mapping from group identifiers to their titles.
-     * @param hidingGroupIds The set of group identifiers that are hiding.
-     * @param survivingGroupIds The set of group identifiers that survive.
-     * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
-     * @param isAllTabs Whether all tabs were closed.
-     * @param savedTabGroupSyncIds The list of closed saved tab group sync identifiers.
-     * @param savedGroupTitle The title of the saved group, if applicable.
-     * @param savedGroupTabCount The tab count of the saved group, if applicable.
-     */
-    private UndoClosureSnapshot(
-            @ClosureKind int kind,
-            List<ClosedTab> tabs,
-            Map<Token, @Nullable String> groupTitles,
-            Set<Token> hidingGroupIds,
-            Set<Token> survivingGroupIds,
-            boolean isTabGroupSyncEnabled,
-            boolean isAllTabs,
-            List<String> savedTabGroupSyncIds,
-            @Nullable String savedGroupTitle,
-            int savedGroupTabCount) {
-        this.kind = kind;
-        this.tabs = Collections.unmodifiableList(new ArrayList<>(tabs));
-        this.groupTitles = Collections.unmodifiableMap(new HashMap<>(groupTitles));
-        this.hidingGroupIds = Collections.unmodifiableSet(new HashSet<>(hidingGroupIds));
-        this.survivingGroupIds = Collections.unmodifiableSet(new HashSet<>(survivingGroupIds));
-        this.isTabGroupSyncEnabled = isTabGroupSyncEnabled;
-        this.isAllTabs = isAllTabs;
-        this.savedTabGroupSyncIds =
-                Collections.unmodifiableList(new ArrayList<>(savedTabGroupSyncIds));
-        this.savedGroupTitle = savedGroupTitle;
-        this.savedGroupTabCount = savedGroupTabCount;
-    }
-
-    /**
-     * Returns a new snapshot without the specified tab identifiers, or this instance if no tabs
-     * match.
-     *
-     * @param ids The tab identifiers to exclude.
-     * @return The modified snapshot or this instance if nothing changes.
-     */
-    public UndoClosureSnapshot withoutTabs(Collection<Integer> ids) {
-        List<ClosedTab> newTabs = new ArrayList<>();
-        for (ClosedTab tab : tabs) {
-            if (!ids.contains(tab.id)) {
-                newTabs.add(tab);
-            }
-        }
-        if (newTabs.size() == tabs.size()) return this;
-        return new UndoClosureSnapshot(
-                kind,
-                newTabs,
-                groupTitles,
-                hidingGroupIds,
-                survivingGroupIds,
-                isTabGroupSyncEnabled,
-                isAllTabs,
-                savedTabGroupSyncIds,
-                savedGroupTitle,
-                savedGroupTabCount);
-    }
-
-    /**
-     * Returns a new snapshot reflecting that the given group has been restored, or this instance if
-     * nothing changes.
-     *
-     * @param gid The identifier of the restored group.
-     * @return The modified snapshot or this instance if nothing changes.
-     */
-    public UndoClosureSnapshot withGroupRestored(Token gid) {
-        if (!groupTitles.containsKey(gid)
-                || (!hidingGroupIds.contains(gid) && survivingGroupIds.contains(gid))) {
-            return this;
-        }
-
-        Set<Token> newHiding = new HashSet<>(hidingGroupIds);
-        newHiding.remove(gid);
-        Set<Token> newSurviving = new HashSet<>(survivingGroupIds);
-        newSurviving.add(gid);
-
-        return new UndoClosureSnapshot(
-                kind,
-                tabs,
-                groupTitles,
-                newHiding,
-                newSurviving,
-                isTabGroupSyncEnabled,
-                isAllTabs,
-                savedTabGroupSyncIds,
-                savedGroupTitle,
-                savedGroupTabCount);
-    }
-
-    /**
-     * Returns whether this snapshot contains no tabs and no saved tab group sync identifiers.
-     *
-     * @return True if the snapshot is empty, false otherwise.
-     */
-    public boolean isEmpty() {
-        return tabs.isEmpty() && savedTabGroupSyncIds.isEmpty();
-    }
-
-    /**
-     * Returns the array of tab identifiers captured in this snapshot.
-     *
-     * @return The array of tab identifiers.
-     */
-    public int[] tabIds() {
-        int[] ids = new int[tabs.size()];
-        for (int i = 0; i < tabs.size(); i++) {
-            ids[i] = tabs.get(i).id;
-        }
-        return ids;
+                savedGroupTabCount,
+                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
     }
 }

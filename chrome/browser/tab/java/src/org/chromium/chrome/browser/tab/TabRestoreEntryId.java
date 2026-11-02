@@ -19,4 +19,10 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target(TYPE_USE)
 @NullMarked
-public @interface TabRestoreEntryId {}
+public @interface TabRestoreEntryId {
+    /**
+     * Sentinel value indicating no TabRestoreService entry (equal to
+     * sessions::SessionID::InvalidValue()). Valid entry IDs are > 0.
+     */
+    int INVALID_TAB_RESTORE_ENTRY_ID = -1;
+}

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel.undo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,8 +29,10 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosureKind;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -42,7 +45,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UndoClosureSnapshotFactoryUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final Token GROUP_1 = new Token(1, 1);
     private static final Token GROUP_2 = new Token(2, 2);
@@ -56,9 +59,12 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(tab.getId()).thenReturn(1);
         when(tab.getTitle()).thenReturn("Tab 1");
         when(tab.getTabGroupId()).thenReturn(GROUP_1);
+        when(tab.getIsPinned()).thenReturn(true);
 
         when(mLazySupplier.get()).thenReturn(null);
         when(tabModel.getLazyAllTabGroupIds(any(), eq(true))).thenReturn(mLazySupplier);
+        when(tabModel.getTabGroupColorWithFallback(GROUP_1)).thenReturn(3);
+        when(tabModel.getTabGroupCollapsed(GROUP_1)).thenReturn(false);
 
         UndoClosureSnapshot snapshot =
                 UndoClosureSnapshotFactory.captureFromTabModel(
@@ -68,7 +74,12 @@ public class UndoClosureSnapshotFactoryUnitTest {
                         /* isTabGroupSyncEnabled= */ true);
 
         assertEquals(ClosureKind.TAB_MODEL, snapshot.kind);
-        assertTrue(snapshot.survivingGroupIds.isEmpty());
+        GroupData groupData = snapshot.groups.get(GROUP_1);
+        assertNotNull(groupData);
+        assertFalse(groupData.survivesInModel);
+        assertEquals(3, groupData.color);
+        assertFalse(groupData.collapsed);
+        assertTrue(snapshot.tabs.get(0).pinned);
     }
 
     @Test
@@ -82,10 +93,10 @@ public class UndoClosureSnapshotFactoryUnitTest {
                         List.of(tab), List.of("sync-id-1"), /* tabGroupSyncService= */ null);
 
         assertEquals(ClosureKind.SAVED_GROUPS, snapshot.kind);
-        assertFalse(snapshot.isEmpty());
         assertEquals(1, snapshot.savedTabGroupSyncIds.size());
         assertNull(snapshot.savedGroupTitle);
         assertEquals(0, snapshot.savedGroupTabCount);
+        assertEquals(TabList.INVALID_TAB_INDEX, snapshot.tabs.get(0).modelIndex);
     }
 
     @Test
@@ -136,7 +147,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
                         /* isTabGroupSyncEnabled= */ true);
 
         verify(mLazySupplier, never()).get();
-        assertTrue(snapshot.survivingGroupIds.isEmpty());
+        assertTrue(snapshot.groups.isEmpty());
     }
 
     @Test
@@ -162,9 +173,13 @@ public class UndoClosureSnapshotFactoryUnitTest {
                         /* isAllTabs= */ false,
                         /* isTabGroupSyncEnabled= */ true);
 
-        assertEquals(2, snapshot.survivingGroupIds.size());
-        assertTrue(snapshot.survivingGroupIds.contains(GROUP_1));
-        assertTrue(snapshot.survivingGroupIds.contains(GROUP_2));
+        assertEquals(2, snapshot.groups.size());
+        GroupData group1 = snapshot.groups.get(GROUP_1);
+        assertNotNull(group1);
+        assertTrue(group1.survivesInModel);
+        GroupData group2 = snapshot.groups.get(GROUP_2);
+        assertNotNull(group2);
+        assertTrue(group2.survivesInModel);
     }
 
     @Test
@@ -194,12 +209,19 @@ public class UndoClosureSnapshotFactoryUnitTest {
                         /* isAllTabs= */ false,
                         /* isTabGroupSyncEnabled= */ true);
 
-        assertEquals(Set.of(GROUP_1), snapshot.hidingGroupIds);
-        assertEquals(2, snapshot.groupTitles.size());
-        assertEquals("Group 1", snapshot.groupTitles.get(GROUP_1));
-        assertTrue(snapshot.groupTitles.containsKey(GROUP_2));
-        assertNull(snapshot.groupTitles.get(GROUP_2));
-        assertTrue(snapshot.survivingGroupIds.isEmpty());
+        assertEquals(2, snapshot.groups.size());
+        GroupData group1 = snapshot.groups.get(GROUP_1);
+        assertNotNull(group1);
+        GroupData group2 = snapshot.groups.get(GROUP_2);
+        assertNotNull(group2);
+
+        assertTrue(group1.isHiding);
+        assertEquals("Group 1", group1.title);
+        assertFalse(group1.survivesInModel);
+
+        assertFalse(group2.isHiding);
+        assertNull(group2.title);
+        assertFalse(group2.survivesInModel);
     }
 
     @Test

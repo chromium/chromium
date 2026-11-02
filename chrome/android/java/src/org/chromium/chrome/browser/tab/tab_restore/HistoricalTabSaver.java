@@ -20,7 +20,8 @@ public interface HistoricalTabSaver {
      * Returned when no TabRestoreService entry was stored. Equal to
      * sessions::SessionID::InvalidValue(). Valid ids are > 0.
      */
-    @TabRestoreEntryId int INVALID_TAB_RESTORE_ENTRY_ID = -1;
+    @TabRestoreEntryId
+    int INVALID_TAB_RESTORE_ENTRY_ID = TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID;
 
     /** Destroys the instance. */
     void destroy();

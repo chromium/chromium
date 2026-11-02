@@ -12,8 +12,11 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -42,8 +45,7 @@ public final class UndoClosureSnapshotFactory {
     public static UndoClosureSnapshot captureFromTabModel(
             TabModel tabModel, List<Tab> tabs, boolean isAllTabs, boolean isTabGroupSyncEnabled) {
         List<ClosedTab> closedTabs = new ArrayList<>(tabs.size());
-        Map<Token, @Nullable String> groupTitles = new HashMap<>();
-        Set<Token> hidingGroupIds = new HashSet<>();
+        Map<Token, GroupData> groups = new HashMap<>();
 
         LazyOneshotSupplier<Set<Token>> lazyGroupIds =
                 tabModel.getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ true);
@@ -53,34 +55,43 @@ public final class UndoClosureSnapshotFactory {
             int id = tab.getId();
             String title = tab.getTitle();
             Token groupId = tab.getTabGroupId();
-            closedTabs.add(new ClosedTab(id, title, groupId));
+            closedTabs.add(
+                    new ClosedTab(
+                            id,
+                            title,
+                            groupId,
+                            /* modelIndex= */ TabList.INVALID_TAB_INDEX,
+                            tab.getIsPinned(),
+                            /* wasSelected= */ false));
             if (groupId != null && closedGroupIds.add(groupId)) {
-                groupTitles.put(groupId, tabModel.getTabGroupTitle(groupId));
-                if (tabModel.isTabGroupHiding(groupId)) {
-                    hidingGroupIds.add(groupId);
-                }
-            }
-        }
+                String groupTitle = tabModel.getTabGroupTitle(groupId);
+                int groupColor = tabModel.getTabGroupColorWithFallback(groupId);
+                boolean groupCollapsed = tabModel.getTabGroupCollapsed(groupId);
+                boolean groupIsHiding = tabModel.isTabGroupHiding(groupId);
 
-        Set<Token> survivingGroupIds = new HashSet<>();
-        if (!closedGroupIds.isEmpty()) {
-            Set<Token> lazySet = lazyGroupIds.get();
-            if (lazySet != null) {
-                for (Token gid : closedGroupIds) {
-                    if (lazySet.contains(gid)) {
-                        survivingGroupIds.add(gid);
-                    }
+                boolean survivesInModel = false;
+                Set<Token> lazySet = lazyGroupIds.get();
+                if (lazySet != null) {
+                    survivesInModel = lazySet.contains(groupId);
                 }
+
+                groups.put(
+                        groupId,
+                        new GroupData(
+                                groupTitle,
+                                groupColor,
+                                groupCollapsed,
+                                groupIsHiding,
+                                survivesInModel));
             }
         }
 
         return forTabModel(
                 closedTabs,
-                groupTitles,
-                hidingGroupIds,
-                survivingGroupIds,
+                groups,
                 isTabGroupSyncEnabled,
-                isAllTabs);
+                isAllTabs,
+                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
     }
 
     /**
@@ -97,7 +108,14 @@ public final class UndoClosureSnapshotFactory {
             @Nullable TabGroupSyncService tabGroupSyncService) {
         List<ClosedTab> closedTabs = new ArrayList<>(tabs.size());
         for (Tab tab : tabs) {
-            closedTabs.add(new ClosedTab(tab.getId(), tab.getTitle(), /* groupId= */ null));
+            closedTabs.add(
+                    new ClosedTab(
+                            tab.getId(),
+                            tab.getTitle(),
+                            /* groupId= */ null,
+                            /* modelIndex= */ TabList.INVALID_TAB_INDEX,
+                            tab.getIsPinned(),
+                            /* wasSelected= */ false));
         }
 
         String savedGroupTitle = null;
