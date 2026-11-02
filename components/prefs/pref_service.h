@@ -271,6 +271,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // either ScopedDictPrefUpdate or ScopedListPrefUpdate from
   // scoped_user_pref_update.h.
   void Set(std::string_view path, const base::Value& value);
+  void Set(std::string_view path, base::Value&& value);
   void SetBoolean(std::string_view path, bool value);
   void SetInteger(std::string_view path, int value);
   void SetDouble(std::string_view path, double value);

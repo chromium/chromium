@@ -381,6 +381,10 @@ void PrefService::Set(std::string_view path, const base::Value& value) {
   SetUserPrefValue(path, value.Clone());
 }
 
+void PrefService::Set(std::string_view path, base::Value&& value) {
+  SetUserPrefValue(path, std::move(value));
+}
+
 void PrefService::SetBoolean(std::string_view path, bool value) {
   SetUserPrefValue(path, base::Value(value));
 }
