@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
@@ -111,10 +112,13 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -159,6 +163,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -1770,6 +1775,66 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    public void testSnackbarController_onAction_undoClosureSnapshot_restoresWithReselect() {
+        UndoClosureSnapshot snapshot = createUndoClosureSnapshot();
+        mMediator.setReselectableSnapshotForTesting(snapshot);
+        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true))
+                .thenReturn(new int[] {TAB1_ID});
+
+        mMediator.onAction(snapshot);
+
+        verify(mTabModel).restoreClosedTabsForUndo(snapshot, /* reselect= */ true);
+        verify(mTabModel, never()).cancelTabClosure(anyInt());
+        verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void testSnackbarController_onAction_undoClosureSnapshot_afterDidSelectTab() {
+        UndoClosureSnapshot snapshot = createUndoClosureSnapshot();
+        mMediator.setReselectableSnapshotForTesting(snapshot);
+        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ false))
+                .thenReturn(new int[] {TAB1_ID});
+
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_USER, TAB2_ID);
+        mMediator.onAction(snapshot);
+
+        verify(mTabModel).restoreClosedTabsForUndo(snapshot, /* reselect= */ false);
+        verify(mTabModel, never()).cancelTabClosure(anyInt());
+        verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void testSnackbarController_onAction_undoClosureSnapshot_incognito_doesNotReselect() {
+        UndoClosureSnapshot snapshot = createUndoClosureSnapshot();
+        mMediator.setReselectableSnapshotForTesting(snapshot);
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ false))
+                .thenReturn(new int[] {TAB1_ID});
+
+        mMediator.onAction(snapshot);
+
+        verify(mTabModel).restoreClosedTabsForUndo(snapshot, /* reselect= */ false);
+        verify(mTabModel, never()).cancelTabClosure(anyInt());
+        verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void testSnackbarController_onDismissNoAction_undoClosureSnapshot_isNoOp() {
+        UndoClosureSnapshot snapshot = createUndoClosureSnapshot();
+        mMediator.setReselectableSnapshotForTesting(snapshot);
+        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ false))
+                .thenReturn(new int[] {TAB1_ID});
+
+        mMediator.onDismissNoAction(snapshot);
+
+        verify(mTabModel, never()).commitTabClosure(anyInt());
+        verify(mTabModel, never()).restoreClosedTabsForUndo(any(), anyBoolean());
+
+        mMediator.onAction(snapshot);
+        verify(mTabModel).restoreClosedTabsForUndo(snapshot, /* reselect= */ false);
+    }
+
+    @Test
     public void testScrollToTab() {
         // Mock that tab1, tab2 and newTab are in the same group and newTab is the root tab.
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
@@ -2291,6 +2356,24 @@ public class TabGridDialogMediatorUnitTest {
         Tab tab = TabUiUnitTestUtils.prepareTab(id, title, GURL.emptyGURL());
         when(tab.isIncognito()).thenReturn(true);
         return tab;
+    }
+
+    private static UndoClosureSnapshot createUndoClosureSnapshot() {
+        return UndoClosureSnapshot.forTabModel(
+                List.of(
+                        new ClosedTab(
+                                /* id= */ TAB1_ID,
+                                "title",
+                                /* groupId= */ null,
+                                /* modelIndex= */ TabList.INVALID_TAB_INDEX,
+                                /* pinned= */ false,
+                                /* wasSelected= */ false)),
+                /* groups= */ Collections.emptyMap(),
+                /* isTabGroupSyncEnabled= */ false,
+                /* isAllTabs= */ false,
+                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
+                /* closingSource= */ TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null);
     }
 
     private void mockTabsInGroup(Token tabGroupId, List<Tab> tabs) {
