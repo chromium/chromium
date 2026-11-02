@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <cfloat>
+#include <cmath>
+#include <limits>
 #include <numeric>
 
 #include "base/notreached.h"
@@ -528,16 +530,26 @@ float CalculationExpressionOperationNode::Evaluate(
     case CalculationOperator::kMin: {
       DCHECK(!children_.empty());
       float minimum = children_[0]->Evaluate(max_value, input);
-      for (auto& child : children_) {
-        minimum = std::min(minimum, child->Evaluate(max_value, input));
+      for (wtf_size_t i = 1; i < children_.size(); ++i) {
+        float value = children_[i]->Evaluate(max_value, input);
+        // std::min() drops a NaN second argument.
+        if (std::isnan(value)) {
+          return value;
+        }
+        minimum = std::min(minimum, value);
       }
       return minimum;
     }
     case CalculationOperator::kMax: {
       DCHECK(!children_.empty());
       float maximum = children_[0]->Evaluate(max_value, input);
-      for (auto& child : children_) {
-        maximum = std::max(maximum, child->Evaluate(max_value, input));
+      for (wtf_size_t i = 1; i < children_.size(); ++i) {
+        float value = children_[i]->Evaluate(max_value, input);
+        // std::max() drops a NaN second argument.
+        if (std::isnan(value)) {
+          return value;
+        }
+        maximum = std::max(maximum, value);
       }
       return maximum;
     }
@@ -546,7 +558,12 @@ float CalculationExpressionOperationNode::Evaluate(
       float min = children_[0]->Evaluate(max_value, input);
       float val = children_[1]->Evaluate(max_value, input);
       float max = children_[2]->Evaluate(max_value, input);
-      // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX))
+      // Any operation with a NaN argument produces NaN.
+      // https://drafts.csswg.org/css-values-4/#calc-type-checking
+      if (std::isnan(min) || std::isnan(val) || std::isnan(max)) {
+        return std::numeric_limits<float>::quiet_NaN();
+      }
+      // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX)).
       return std::max(min, std::min(val, max));
     }
     case CalculationOperator::kRoundNearest:
