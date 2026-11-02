@@ -79,8 +79,14 @@ std::u16string RefCountedMemoryToString16(
   CHECK(memory.get());
 
   auto in_bytes = base::span(*memory);
+  // Selection data comes from other processes and may contain an incomplete
+  // UTF-16 code unit. Reject it before copying into a std::u16string.
+  if (in_bytes.size() % sizeof(char16_t) != 0) {
+    return {};
+  }
+
   std::u16string out;
-  out.resize(memory->size() / 2u);
+  out.resize(in_bytes.size() / sizeof(char16_t));
   base::as_writable_byte_span(out).copy_from(in_bytes);
   return out;
 }

@@ -46,6 +46,7 @@ COMPONENT_EXPORT(UI_BASE_X)
 std::string RefCountedMemoryToString(
     const scoped_refptr<base::RefCountedMemory>& memory);
 
+// Returns an empty string if `memory` has an odd byte count.
 COMPONENT_EXPORT(UI_BASE_X)
 std::u16string RefCountedMemoryToString16(
     const scoped_refptr<base::RefCountedMemory>& memory);
