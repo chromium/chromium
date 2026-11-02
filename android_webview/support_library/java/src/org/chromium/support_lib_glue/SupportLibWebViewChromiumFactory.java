@@ -163,7 +163,7 @@ public class SupportLibWebViewChromiumFactory
                 WebFeatures.WEB_CONTENT,
                 Features.WEBVIEW_NAVIGATE_DRAIN_PREFETCH,
                 Features.NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS,
-                Features.WEB_MESSAGE_SHARED_ARRAY_BUFFER + Features.DEV_SUFFIX,
+                Features.WEB_MESSAGE_SHARED_ARRAY_BUFFER,
                 WebFeatures.WEB_SURFACE,
                 Features.ADD_QUIC_HINTS_WILDCARDS,
                 Features.THEME_COLOR_CALLBACK + Features.DEV_SUFFIX,
