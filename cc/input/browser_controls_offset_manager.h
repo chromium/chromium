@@ -10,17 +10,14 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/types/optional_ref.h"
 #include "cc/input/browser_controls_animation.h"
-#include "cc/input/browser_controls_offset_tag_modifications.h"
+#include "cc/input/browser_controls_offset_manager_interface.h"
 #include "cc/input/browser_controls_snap_animation_controller.h"
 #include "cc/input/browser_controls_snap_hint.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/browser_controls_params.h"
-#include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/size.h"
@@ -30,8 +27,11 @@ namespace cc {
 
 class BrowserControlsOffsetManagerClient;
 
-// Manages the position of the browser controls.
-class CC_EXPORT BrowserControlsOffsetManager {
+// Manages the position of the browser controls. Moves the controls in
+// response to compositor scrolls and runs the show, hide and height-change
+// animations.
+class CC_EXPORT BrowserControlsOffsetManager
+    : public BrowserControlsOffsetManagerInterface {
  public:
   static std::unique_ptr<BrowserControlsOffsetManager> Create(
       BrowserControlsOffsetManagerClient* client,
@@ -39,130 +39,31 @@ class CC_EXPORT BrowserControlsOffsetManager {
       float controls_hide_threshold,
       bool in_viz_process = false);
   BrowserControlsOffsetManager(const BrowserControlsOffsetManager&) = delete;
-  virtual ~BrowserControlsOffsetManager();
+  ~BrowserControlsOffsetManager() override;
 
   BrowserControlsOffsetManager& operator=(const BrowserControlsOffsetManager&) =
       delete;
 
-  // The offset from the window top to the top edge of the controls. Runs from 0
-  // (controls fully shown) to negative values (down is positive).
-  float ControlsTopOffset() const;
+  // BrowserControlsOffsetManagerInterface:
+  std::vector<viz::OffsetTagValue> GetOffsetTagValues() const override;
+  std::pair<float, float> TopControlsShownRatioRange() override;
+  std::pair<float, float> BottomControlsShownRatioRange() override;
+  bool HasAnimation() override;
+  void OnBrowserControlsParamsChanged(bool animate_changes) override;
+  void ScrollBegin() override;
+  gfx::Vector2dF ScrollBy(const gfx::Vector2dF& pending_delta,
+                          bool is_inertial) override;
+  void ScrollEnd(const gfx::Vector2dF& compensated_scroll_delta) override;
+  void PinchBegin() override;
+  void PinchEnd() override;
+  gfx::Vector2dF Animate(base::TimeTicks monotonic_time) override;
+  void ResetAnimations() override;
 
-  // The amount of offset of the web content area. Same as the current shown
-  // height of the browser controls.
-  float ContentTopOffset() const;
-
-  float TopControlsShownRatio() const;
-  float TopControlsHeight() const;
-  float TopControlsMinHeight() const;
-
-  // The minimum shown ratio top controls can have.
-  float TopControlsMinShownRatio() const;
-
-  // The current top controls min-height. If the min-height is changing with an
-  // animation, this will return a value between the old min-height and the new
-  // min-height, which is equal to the current visible min-height. Otherwise,
-  // this will return the same value as |TopControlsMinHeight()|.
-  float TopControlsMinHeightOffset() const;
-
-  // The amount of offset of the web content area, calculating from the bottom.
-  // Same as the current shown height of the bottom controls.
-  float ContentBottomOffset() const;
-
-  // Similar to TopControlsHeight(), this method should return a static value.
-  // The current animated height should be acquired from ContentBottomOffset().
-  float BottomControlsHeight() const;
-  float BottomControlsMinHeight() const;
-  float BottomControlsShownRatio() const;
-
-  // The minimum shown ratio bottom controls can have.
-  float BottomControlsMinShownRatio() const;
-
-  // The current bottom controls min-height. If the min-height is changing with
-  // an animation, this will return a value between the old min-height and the
-  // new min-height, which is equal to the current visible min-height.
-  // Otherwise, this will return the same value as |BottomControlsMinHeight()|.
-  float BottomControlsMinHeightOffset() const;
-
-  // Returns the current offset tag values for the browser controls. Currently
-  // used only on Android.
-  std::vector<viz::OffsetTagValue> GetOffsetTagValues() const;
-
-  // Valid shown ratio range for the top controls. The values will be (0, 1) if
-  // there is no animation running.
-  std::pair<float, float> TopControlsShownRatioRange();
-
-  // Valid shown ratio range for the bottom controls. The values will be (0, 1)
-  // if there is no animation running.
-  std::pair<float, float> BottomControlsShownRatioRange();
-
-  bool HasAnimation();
   bool IsAnimatingToShowControls() const {
     return top_controls_animation_.IsInitialized() &&
            top_controls_animation_.direction() ==
                BrowserControlsAnimation::Direction::kShowingControls;
   }
-
-  // See UpdateBrowserControlsState in
-  // third_party/blink/public/mojom/frame/frame.mojom
-  void UpdateBrowserControlsState(
-      BrowserControlsState constraints,
-      BrowserControlsState current,
-      bool animate,
-      base::optional_ref<const BrowserControlsOffsetTagModifications>
-          offset_tag_modifications);
-
-  // Directly set the current offset tag modifications.
-  // This is used to set the offset tag modifications from the viz process.
-  void SetOffsetTagModifications(
-      const BrowserControlsOffsetTagModifications& offset_tag_modifications) {
-    offset_tag_modifications_ = offset_tag_modifications;
-  }
-
-  // Returns the current offset tag modifications.
-  const BrowserControlsOffsetTagModifications& GetOffsetTagModifications()
-      const {
-    return offset_tag_modifications_;
-  }
-
-  BrowserControlsMetadata GetMetadata() const;
-
-  // Return the browser control constraint that must be synced to the
-  // main renderer thread (to trigger viewport and related changes).
-  BrowserControlsState PullConstraintForMainThread(
-      bool* out_changed_since_commit);
-  // Called to notify this object that the control constraint has
-  // been pushed to the main thread. When a compositor commit does not
-  // happen the value pulled by the method above may not be synced;
-  // a call to this method notifies us that it has.
-  void NotifyConstraintSyncedToMainThread();
-
-  void OnBrowserControlsParamsChanged(bool animate_changes);
-
-  void ScrollBegin();
-  // Scrolls the browser controls by the given `pending_delta` and returns the
-  // remaining scroll delta that was not applied. `is_inertial` indicates
-  // whether the scroll update received from the browser process corresponds to
-  // a scroll that continues after the user lifts their finger off the screen
-  // (e.g. fling).
-  gfx::Vector2dF ScrollBy(const gfx::Vector2dF& pending_delta,
-                          bool is_inertial);
-  void ScrollEnd(const gfx::Vector2dF& compensated_scroll_delta);
-
-  // The caller should ensure that |Pinch{Begin,End}| are called within
-  // the scope of |Scroll{Begin,End}|.
-  void PinchBegin();
-  void PinchEnd();
-
-  gfx::Vector2dF Animate(base::TimeTicks monotonic_time);
-
-  // Predict what the outer viewport container bounds delta will be as browser
-  // controls are shown or hidden during a scroll gesture before the Blink
-  // WebView is resized to reflect the new state.
-  double PredictViewportBoundsDelta(double current_bounds_delta,
-                                    gfx::Vector2dF scroll_distance);
-
-  void ResetAnimations();
 
   const BrowserControlsSnapAnimationController& snap_controller_for_testing()
       const {
@@ -174,6 +75,11 @@ class CC_EXPORT BrowserControlsOffsetManager {
                                float controls_show_threshold,
                                float controls_hide_threshold,
                                bool in_viz_process = false);
+
+  // BrowserControlsOffsetManagerInterface:
+  void OnBrowserControlsStateUpdated(BrowserControlsState constraints,
+                                     BrowserControlsState current,
+                                     bool animate) override;
 
  private:
   void SetupAnimation(BrowserControlsAnimation::Direction direction,
@@ -202,11 +108,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   gfx::Vector2dF ScrollByPrecise(const gfx::Vector2dF& pending_delta);
 
-  // The client manages the lifecycle of this.
-  raw_ptr<BrowserControlsOffsetManagerClient> client_;
-
-  BrowserControlsState permitted_state_;
-
   // Accumulated scroll delta since last baseline reset
   float accumulated_scroll_delta_;
 
@@ -224,10 +125,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   bool pinch_gesture_active_;
 
-  // Used to track whether the constraint has changed and we need up reflect
-  // the changes to Blink.
-  bool constraint_changed_since_commit_;
-
   // The old browser controls params that are used to figure out how to animate
   // the height and min-height changes.
   BrowserControlsParams old_browser_controls_params_;
@@ -235,10 +132,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // Whether a min-height change animation is in progress.
   bool top_min_height_change_in_progress_;
   bool bottom_min_height_change_in_progress_;
-
-  // Current top/bottom controls min-height.
-  float top_controls_min_height_offset_;
-  float bottom_controls_min_height_offset_;
 
   // Minimum and maximum values |top_controls_min_height_offset_| can take
   // during the current min-height change animation.
@@ -270,8 +163,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // in the always-shown region is not undone by a snap animation to show.
   const bool extra_hide_gestures_enabled_ = false;
   const bool in_viz_process_ = false;
-
-  BrowserControlsOffsetTagModifications offset_tag_modifications_;
 
   BrowserControlsAnimation top_controls_animation_;
   BrowserControlsAnimation bottom_controls_animation_;

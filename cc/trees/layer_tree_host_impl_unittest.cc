@@ -33,7 +33,7 @@
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/base/features.h"
-#include "cc/input/browser_controls_offset_manager.h"
+#include "cc/input/browser_controls_offset_manager_interface.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/page_scale_animation.h"

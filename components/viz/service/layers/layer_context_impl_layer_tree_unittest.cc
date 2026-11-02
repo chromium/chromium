@@ -6,7 +6,7 @@
 #include <optional>
 
 #include "cc/debug/layer_tree_debug_state.h"
-#include "cc/input/browser_controls_offset_manager.h"
+#include "cc/input/browser_controls_offset_manager_interface.h"
 #include "cc/trees/latency_info_swap_promise.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"

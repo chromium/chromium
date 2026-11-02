@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/devtools_instrumentation.h"
-#include "cc/input/browser_controls_offset_manager.h"
+#include "cc/input/browser_controls_offset_manager_interface.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/paint/paint_worklet_layer_painter.h"

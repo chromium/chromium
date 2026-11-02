@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "cc/input/browser_controls_offset_manager.h"
+#include "cc/input/browser_controls_offset_manager_interface.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"

@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/math_util.h"
-#include "cc/input/browser_controls_offset_manager.h"
+#include "cc/input/browser_controls_offset_manager_interface.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "cc/input/scroll_snap_data.h"
