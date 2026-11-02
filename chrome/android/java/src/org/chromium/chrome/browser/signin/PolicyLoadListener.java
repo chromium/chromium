@@ -99,10 +99,10 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
                         && mPolicyServiceSupplier.get().isInitializationComplete());
         Log.i(
                 TAG,
-                "#setSupplierIfDecidable() confirmedNoAppRestriction:"
-                        + confirmedNoAppRestriction
-                        + " policyServiceInitialized:"
-                        + policyServiceInitialized);
+                "#setSupplierIfDecidable() confirmedNoAppRestriction:%s"
+                        + " policyServiceInitialized:%s",
+                confirmedNoAppRestriction,
+                policyServiceInitialized);
         if (confirmedNoAppRestriction) {
             // No app restriction is found.
             mMightHavePoliciesSupplier.set(false);
@@ -118,7 +118,7 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
     }
 
     private void onPolicyServiceAvailable(PolicyService policyService) {
-        Log.i(TAG, "#onPolicyServiceAvailable() " + policyService.isInitializationComplete());
+        Log.i(TAG, "#onPolicyServiceAvailable() %s", policyService.isInitializationComplete());
 
         // Ignore the signal if loading is no longer necessary.
         if (mMightHavePoliciesSupplier.get() != null) return;
@@ -134,8 +134,8 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
                         public void onPolicyServiceInitialized() {
                             Log.i(
                                     TAG,
-                                    "#onPolicyServiceInitialized() "
-                                            + policyService.isInitializationComplete());
+                                    "#onPolicyServiceInitialized() %s",
+                                    policyService.isInitializationComplete());
                             assert mPolicyServiceObserver != null;
                             policyService.removeObserver(mPolicyServiceObserver);
                             mPolicyServiceObserver = null;

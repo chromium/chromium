@@ -297,7 +297,7 @@ public class FullscreenSigninMediator
     void onInitialLoadCompleted(boolean hasPolicies) {
         if (mDestroyed) return;
 
-        Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
+        Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:%s", hasPolicies);
         Profile profile = getProfile();
         List<AccountInfo> accounts = getAccounts();
         updateAccounts(accounts);

@@ -210,19 +210,18 @@ public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
         if (!hasOutstandingSignal) {
             Log.i(
                     TAG,
-                    "Supplier available, <TosDialogEnabled>="
-                            + (mTosDialogEnabled == TriState.TRUE)
-                            + " <IsDeviceOwned>="
-                            + (mIsDeviceOwned == TriState.TRUE));
+                    "Supplier available, <TosDialogEnabled>=%s <IsDeviceOwned>=%s",
+                    mTosDialogEnabled == TriState.TRUE,
+                    mIsDeviceOwned == TriState.TRUE);
             mSkipTosDialogPolicySupplier.set(
                     mTosDialogEnabled == TriState.FALSE && mIsDeviceOwned == TriState.TRUE);
         } else if (confirmedTosDialogEnabled || confirmedDeviceNotOwned) {
             Log.i(
                     TAG,
-                    "Supplier early out, <confirmedTosDialogEnabled>="
-                            + confirmedTosDialogEnabled
-                            + " <confirmedDeviceNotOwned>="
-                            + confirmedDeviceNotOwned);
+                    "Supplier early out, <confirmedTosDialogEnabled>=%s"
+                            + " <confirmedDeviceNotOwned>=%s",
+                    confirmedTosDialogEnabled,
+                    confirmedDeviceNotOwned);
             mSkipTosDialogPolicySupplier.set(false);
         }
     }
