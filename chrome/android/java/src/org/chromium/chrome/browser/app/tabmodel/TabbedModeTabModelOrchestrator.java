@@ -23,6 +23,7 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
@@ -339,6 +340,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         Profile profile = getOriginalProfile();
         assert profile != null;
         mTabContentManager = tabContentManager;
+        ArchivedTabModelOrchestrator.registerActivityOrchestrator(this);
 
         PersistentStoreCleanerFactory.getForProfile(profile)
                 .scheduleCleanUnusedData(tabContentManager);
@@ -411,10 +413,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         ArchivedTabModelOrchestrator archivedOrchestrator =
                 ArchivedTabModelOrchestrator.getForProfile(profile);
         archivedOrchestrator.maybeCreateAndInitTabModels(tabContentManager, mCipherFactory);
-        mArchivedHistoricalObserverSupplier =
-                () -> mTabModelSelector.getModel(/* incognito= */ false);
         archivedOrchestrator.initializeHistoricalTabModelObserver(
-                mArchivedHistoricalObserverSupplier);
+                assumeNonNull(getArchivedHistoricalObserverSupplier()));
 
         // Registering will automatically do an archive pass.
         archivedOrchestrator.registerTabModelOrchestrator(this);
@@ -440,23 +440,20 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         if (profile == null || !profile.isNativeInitialized() || profile.shutdownStarted()) {
             return;
         }
+        ArchivedTabModelOrchestrator existingOrchestrator =
+                ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(profile);
+        if (existingOrchestrator != null && existingOrchestrator.areTabModelsInitialized()) {
+            // The initialized ArchivedTabModelOrchestrator has its own TabArchiveSettings.Observer
+            // that triggers rescueArchivedTabs().
+            return;
+        }
         boolean mayHaveArchivedTabs =
                 !archiveSettings.hasArchivedTabCountBeenSet()
-                        || archiveSettings.getArchivedTabCount() > 0
-                        || ArchivedTabModelOrchestrator.isInstantiatedForProfile(profile);
+                        || archiveSettings.getArchivedTabCount() > 0;
         if (mayHaveArchivedTabs
                 && ArchivedTabModelOrchestrator.isOrchestratorRegistered(this)
                 && mTabContentManager != null) {
-            releaseDeclutterLease();
-            if (ChromeFeatureList.sArchivedTabsTeardown.isEnabled()) {
-                mDeclutterLease =
-                        ArchivedTabModelOrchestrator.acquireLease(
-                                profile, LeaseReason.RESCUE_ARCHIVED_TABS);
-            }
-            ArchivedTabModelOrchestrator archivedOrchestrator =
-                    ArchivedTabModelOrchestrator.getForProfile(profile);
-            archivedOrchestrator.maybeCreateAndInitTabModels(mTabContentManager, mCipherFactory);
-            archivedOrchestrator.rescueArchivedTabs(this);
+            getOrCreateArchivedOrchestrator(profile).rescueArchivedTabs(this);
         }
     }
 
@@ -485,17 +482,28 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         TabArchiveSettings archiveSettings = TabArchiveSettings.getInstance();
         if (!archiveSettings.getArchiveEnabled() || mTabContentManager == null) return;
 
-        releaseDeclutterLease();
+        ArchivedTabModelOrchestrator archivedOrchestrator =
+                getOrCreateArchivedOrchestrator(profile);
         if (ChromeFeatureList.sArchivedTabsTeardown.isEnabled()) {
             mDeclutterLease =
-                    ArchivedTabModelOrchestrator.acquireLease(
-                            profile, LeaseReason.RECURRING_DECLUTTER_PASS);
+                    archivedOrchestrator.acquireLease(LeaseReason.RECURRING_DECLUTTER_PASS);
         }
+        archivedOrchestrator.doDeclutterPass(this);
+    }
 
+    @RequiresNonNull("mTabContentManager")
+    private ArchivedTabModelOrchestrator getOrCreateArchivedOrchestrator(Profile profile) {
+        releaseDeclutterLease();
         ArchivedTabModelOrchestrator archivedOrchestrator =
                 ArchivedTabModelOrchestrator.getForProfile(profile);
-        archivedOrchestrator.maybeCreateAndInitTabModels(mTabContentManager, mCipherFactory);
-        archivedOrchestrator.doDeclutterPass(this);
+        if (!archivedOrchestrator.areTabModelsInitialized()) {
+            archivedOrchestrator.maybeCreateAndInitTabModels(mTabContentManager, mCipherFactory);
+        }
+        Supplier<@Nullable TabModel> supplier = getArchivedHistoricalObserverSupplier();
+        if (supplier != null) {
+            archivedOrchestrator.initializeHistoricalTabModelObserver(supplier);
+        }
+        return archivedOrchestrator;
     }
 
     /** Called when the rescue pass finishes executing. */
@@ -530,7 +538,12 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         return (TabPersistentStoreImpl) mTabPersistentStore;
     }
 
-    @Nullable Supplier<@Nullable TabModel> getArchivedHistoricalObserverSupplier() {
+    /** Returns the supplier for the non-incognito TabModel for historical observations. */
+    public @Nullable Supplier<@Nullable TabModel> getArchivedHistoricalObserverSupplier() {
+        if (mArchivedHistoricalObserverSupplier == null && mTabModelSelector != null) {
+            mArchivedHistoricalObserverSupplier =
+                    () -> mTabModelSelector.getModel(/* incognito= */ false);
+        }
         return mArchivedHistoricalObserverSupplier;
     }
 

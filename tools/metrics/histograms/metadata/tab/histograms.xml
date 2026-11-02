@@ -2206,6 +2206,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tabs.ArchivedTabs.TimeResidentMs" units="ms"
+    expires_after="2027-08-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records the duration in milliseconds that
+    ArchivedTabModelOrchestrator remained resident in memory between
+    instantiation and teardown or destruction.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.ArchivePass.DurationMs" units="ms"
     expires_after="2027-06-11">
   <owner>wylieb@google.com</owner>

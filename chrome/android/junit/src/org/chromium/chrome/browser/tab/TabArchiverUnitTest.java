@@ -612,4 +612,19 @@ public class TabArchiverUnitTest {
         assertNotNull(prepared);
         assertEquals(Tab.INVALID_TAB_ID, prepared.parentId);
     }
+
+    @Test
+    public void testDestroy_CancelsPendingBroadcastsAndClearsObservers() {
+        TabArchiver.Observer observer = mock(TabArchiver.Observer.class);
+        mTabArchiver.addObserver(observer);
+        assertFalse(mTabArchiver.getObserversForTesting().isEmpty());
+
+        mTabArchiver.doArchivePass(mTabModelSelector);
+        mTabArchiver.destroy();
+
+        assertTrue(mTabArchiver.getObserversForTesting().isEmpty());
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(observer, never()).onDeclutterPassCompleted();
+        verify(observer, never()).onArchivePersistedTabDataCreated();
+    }
 }

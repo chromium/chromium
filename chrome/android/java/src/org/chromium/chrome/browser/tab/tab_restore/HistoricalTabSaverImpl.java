@@ -68,7 +68,9 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
     @Override
     public void addSecondaryTabModelSupplier(Supplier<@Nullable TabModel> tabModelSupplier) {
-        mSecondaryTabModelSuppliers.add(tabModelSupplier);
+        if (!mSecondaryTabModelSuppliers.contains(tabModelSupplier)) {
+            mSecondaryTabModelSuppliers.add(tabModelSupplier);
+        }
     }
 
     @Override

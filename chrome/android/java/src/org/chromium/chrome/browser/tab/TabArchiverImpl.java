@@ -93,6 +93,7 @@ public class TabArchiverImpl implements TabArchiver {
     @Override
     public void destroy() {
         mCallbackController.destroy();
+        mObservers.clear();
     }
 
     @Override
@@ -686,8 +687,7 @@ public class TabArchiverImpl implements TabArchiver {
     }
 
     private void broadcastDeclutterComplete() {
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
+        postUiThreadCancellableTask(
                 () -> {
                     for (Observer obs : mObservers) {
                         obs.onDeclutterPassCompleted();
@@ -700,8 +700,7 @@ public class TabArchiverImpl implements TabArchiver {
     }
 
     private void broadcastPersistedTabDataCreated() {
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
+        postUiThreadCancellableTask(
                 () -> {
                     for (Observer obs : mObservers) {
                         obs.onArchivePersistedTabDataCreated();
@@ -710,8 +709,7 @@ public class TabArchiverImpl implements TabArchiver {
     }
 
     private void broadcastAutodeletePassComplete() {
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
+        postUiThreadCancellableTask(
                 () -> {
                     for (Observer obs : mObservers) {
                         obs.onAutodeletePassCompleted();
