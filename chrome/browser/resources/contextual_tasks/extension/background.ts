@@ -113,6 +113,17 @@ function postProtoMessageToPort(
   }
 }
 
+function resetExtensionPageHandler(): void {
+  if (extensionPageHandler) {
+    extensionPageHandler.$.close();
+    extensionPageHandler = null;
+  }
+  if (extensionPageRouter) {
+    extensionPageRouter.$.close();
+    extensionPageRouter = null;
+  }
+}
+
 function getExtensionPageHandler(): ExtensionPageHandlerRemote {
   if (!extensionPageHandler) {
     extensionPageRouter = new ExtensionPageCallbackRouter();
@@ -134,8 +145,7 @@ function getExtensionPageHandler(): ExtensionPageHandlerRemote {
         extensionPageRouter.$.bindNewPipeAndPassRemote(),
         extensionPageHandler.$.bindNewPipeAndPassReceiver());
     extensionPageHandler.onConnectionError.addListener(() => {
-      extensionPageHandler = null;
-      extensionPageRouter = null;
+      resetExtensionPageHandler();
     });
   }
   return extensionPageHandler;
@@ -169,6 +179,9 @@ function handleSearchPortDisconnect(
     portsByDocumentId.delete(documentId);
   }
   port.disconnect();
+  if (portsByDocumentId.size === 0) {
+    resetExtensionPageHandler();
+  }
 }
 
 async function sendSearchPortHandshake(
@@ -242,10 +255,10 @@ chrome.runtime.onConnectExternal.addListener((port: chrome.runtime.Port) => {
   // If this document already has an open port, replace and disconnect the old
   // port so stale onDisconnect events cannot drop the new connection.
   const existingPort = portsByDocumentId.get(documentId);
-  if (existingPort && existingPort !== port) {
-    handleSearchPortDisconnect(documentId, existingPort);
-  }
   portsByDocumentId.set(documentId, port);
+  if (existingPort && existingPort !== port) {
+    existingPort.disconnect();
+  }
 
   // Forward incoming search messages and clean up on port disconnect.
   port.onMessage.addListener((message: unknown) => {
