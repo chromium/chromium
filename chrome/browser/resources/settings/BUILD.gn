@@ -308,6 +308,7 @@ build_webui("build") {
     "performance_page/performance_page_index.ts",
     "performance_page/speed_page.html.ts",
     "performance_page/speed_page.ts",
+    "performance_page/speed_page_cpu_performance.html.ts",
     "performance_page/tab_discard/exception_add_input.html.ts",
     "performance_page/tab_discard/exception_add_input.ts",
     "performance_page/tab_discard/exception_current_sites_list.html.ts",

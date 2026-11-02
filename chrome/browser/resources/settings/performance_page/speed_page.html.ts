@@ -6,6 +6,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {NetworkPredictionOptions} from './constants.js';
 import type {SpeedPageElement} from './speed_page.js';
+import {getHtml as getCpuPerformanceHtml} from './speed_page_cpu_performance.html.js';
 
 export function getHtml(this: SpeedPageElement) {
   return html`<!--_html_template_start_-->
@@ -102,30 +103,15 @@ export function getHtml(this: SpeedPageElement) {
     </div>
   </cr-collapse>
 
-  ${this.cpuPerformanceEnabled_ ? html`
+  ${this.cpuPerformanceEnabled_ && !this.settingsRefresh2026Enabled_ ? html`
     <div class="hr"></div>
-    <div class="cr-row">
-      <div class="cpu-performance-override-header cr-padded-text">
-        <div>$i18n{cpuPerformanceOverrideTitle}</div>
-        <div class="cr-secondary-text">
-          $i18n{cpuPerformanceOverrideDescription}
-        </div>
-      </div>
-    </div>
-    <div class="cr-row continuation">
-      <div id="cpuPerformanceInfo" class="cr-padded-text">
-        ${this.cpuPerformanceInfo_ ? html`
-          <div class="cr-secondary-text">${this.cpuPerformanceModelLabel_}</div>
-          <div class="cr-secondary-text">
-            ${this.getCpuPerformanceNominalTierLabel_()}
-          </div>
-        ` : ''}
-      </div>
-      <settings-dropdown-menu id="cpuPerformanceOverrideDropdown"
-          pref-key="cpu_performance_tier_override"
-          .menuOptions="${this.cpuPerformanceTierOptions_}">
-      </settings-dropdown-menu>
-    </div>
+    ${getCpuPerformanceHtml.bind(this)()}
   ` : ''}
-</settings-section><!--_html_template_end_-->`;
+</settings-section>
+
+${this.cpuPerformanceEnabled_ && this.settingsRefresh2026Enabled_ ? html`
+  <settings-section>
+    ${getCpuPerformanceHtml.bind(this)()}
+  </settings-section>
+` : ''}<!--_html_template_end_-->`;
 }

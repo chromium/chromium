@@ -9,7 +9,7 @@ import type {SettingsSectionElement} from './settings_section.js';
 export function getHtml(this: SettingsSectionElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="header">
+<div id="header" ?hidden="${!this.pageTitle && !this.showSendFeedbackButton}">
   <h2 id="title" class="title" tabindex="-1"
       aria-hidden="${this.getTitleHiddenStatus_() || nothing}">
     ${this.pageTitle}
