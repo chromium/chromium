@@ -66,13 +66,8 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
       },
 
       proceedLabel_: {type: String},
-
-      errorTitle_: {type: String},
-      errorSubtitle_: {type: String},
-
       disableProceedButton_: {type: Boolean},
       currentState_: {type: Number},
-      processingSubtitle_: {type: String},
       selectedDataHandling_: {type: String},
       appMode_: {
         type: String,
@@ -101,16 +96,12 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
   protected accessor isModalDialog_: boolean =
       loadTimeData.getBoolean('isModalDialog');
   protected accessor proceedLabel_: string = '';
-  protected accessor errorTitle_: string = '';
-  protected accessor errorSubtitle_: string = '';
   protected accessor disableProceedButton_: boolean = false;
   protected accessor currentState_: State = State.DISCLOSURE;
   protected accessor appMode_: AppMode = this.getAppModeFromScreenType(
       loadTimeData.getInteger('screenType') as ScreenType);
   protected accessor revampEnabled_: boolean =
       loadTimeData.getBoolean('isFirstRunDesktopRevampEnabled');
-  protected accessor processingSubtitle_: string =
-      loadTimeData.getString('processingSubtitle');
   protected accessor selectedDataHandling_: BrowsingDataHandling|undefined;
 
   private managedUserProfileNoticeBrowserProxy_:
@@ -130,17 +121,11 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
 
     this.addWebUiListener(
         'on-state-changed-to-error',
-        (errorTitle: string, errorSubTitle: string) => {
-          this.updateErrorStrings_(errorTitle, errorSubTitle);
-          this.updateCurrentState_(State.ERROR);
-        });
+        () => this.updateCurrentState_(State.ERROR));
 
     this.addWebUiListener(
         'on-profile-info-changed',
         (info: ManagedUserProfileInfo) => this.updateProfileInfo_(info));
-
-    this.addWebUiListener(
-        'on-long-processing', () => this.updateProcessingText_());
 
     this.managedUserProfileNoticeBrowserProxy_.initialized().then(info => {
       this.updateProfileInfo_(info);
@@ -224,11 +209,6 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
     }
   }
 
-  private updateErrorStrings_(errorTitle: string, errorSubTitle: string) {
-    this.errorTitle_ = errorTitle;
-    this.errorSubtitle_ = errorSubTitle;
-  }
-
   protected allowCancel_(): boolean {
     return this.isState_(State.DISCLOSURE) ||
         this.isState_(State.VALUE_PROPOSITION) ||
@@ -277,16 +257,14 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
     }
   }
 
-  private updateProcessingText_() {
-    this.processingSubtitle_ = this.i18n('longProcessingSubtitle');
-  }
-
   protected onSelectedDataHandlingChanged_(
       e: CustomEvent<{value: BrowsingDataHandling}>) {
     this.selectedDataHandling_ = e.detail.value;
   }
 
-
+  protected isAnyState_(states: State[]): boolean {
+    return states.includes(this.currentState_);
+  }
 
   protected isState_(state: State): boolean {
     return this.currentState_ === state;

@@ -8,6 +8,7 @@ import type {ManagedUserProfileNoticeAppRefreshElement} from 'chrome://managed-u
 import type {ManagedUserProfileInfo} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
 import {ManagedUserProfileNoticeBrowserProxyImpl, ScreenType, State} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
 import type {ManagedUserProfileNoticeDisclosureRefreshElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_disclosure_refresh.js';
+import type {ManagedUserProfileNoticeStateRefreshElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_state_refresh.js';
 import type {SignalsDisclaimerRefreshElement} from 'chrome://managed-user-profile-notice/signals_disclaimer_refresh.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -60,6 +61,31 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
     assertEquals(expectedUrl, targetElement.$.avatar.src);
   }
 
+  /**
+   * Checks that the state section is visible and shows the expected icon,
+   * title and subtitle. An empty `expectedTitle` means that no title is shown.
+   */
+  function checkStateSection(
+      iconSelector: string, expectedTitle: string,
+      expectedSubtitle: string): void {
+    const stateElement =
+        app.shadowRoot
+            .querySelector<ManagedUserProfileNoticeStateRefreshElement>(
+                '#state');
+    assertTrue(!!stateElement);
+    assertTrue(isVisible(stateElement));
+    assertTrue(isChildVisible(stateElement, iconSelector));
+
+    if (expectedTitle) {
+      assertTrue(isVisible(stateElement.$.title));
+      assertEquals(expectedTitle, stateElement.$.title.textContent.trim());
+    } else {
+      assertFalse(isVisible(stateElement.$.title));
+    }
+    assertTrue(isVisible(stateElement.$.subtitle));
+    assertEquals(expectedSubtitle, stateElement.$.subtitle.textContent.trim());
+  }
+
   test('proceed', async function() {
     assertTrue(isVisible(app.$.proceedButton));
     app.$.proceedButton.click();
@@ -99,10 +125,7 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
     const allSections = [
       '#disclosure',
       '#signals-disclaimer',
-      '#processing',
-      '#error',
-      '#timeout',
-      '#success',
+      '#state',
     ];
 
     await checkState(
@@ -117,22 +140,58 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
         app.i18n('signalsDisclaimerContinueLabel'));
 
     await checkState(
-        State.PROCESSING, ['#processing', '#cancelButton'],
-        [...allSections.filter(id => id !== '#processing'), '#proceedButton']);
+        State.PROCESSING, ['#state', '#cancelButton'],
+        [...allSections.filter(id => id !== '#state'), '#proceedButton']);
 
     await checkState(
-        State.ERROR, ['#error', '#proceedButton'],
-        [...allSections.filter(id => id !== '#error'), '#cancelButton'],
+        State.ERROR, ['#state', '#proceedButton'],
+        [...allSections.filter(id => id !== '#state'), '#cancelButton'],
         app.i18n('closeLabel'));
 
     await checkState(
-        State.TIMEOUT, ['#timeout', '#proceedButton', '#cancelButton'],
-        allSections.filter(id => id !== '#timeout'), app.i18n('retryLabel'));
+        State.TIMEOUT, ['#state', '#proceedButton', '#cancelButton'],
+        allSections.filter(id => id !== '#state'), app.i18n('retryLabel'));
 
     await checkState(
-        State.SUCCESS, ['#success', '#proceedButton'],
-        [...allSections.filter(id => id !== '#success'), '#cancelButton'],
+        State.SUCCESS, ['#state', '#proceedButton'],
+        [...allSections.filter(id => id !== '#state'), '#cancelButton'],
         app.i18n('continueLabel'));
+  });
+
+  test('stateSection', async function() {
+    webUIListenerCallback('on-state-changed', State.PROCESSING);
+    await microtasksFinished();
+    checkStateSection(
+        '.spinner', '', loadTimeData.getString('processingSubtitle'));
+
+    webUIListenerCallback('on-long-processing');
+    await microtasksFinished();
+    checkStateSection('.spinner', '', app.i18n('longProcessingSubtitle'));
+
+    webUIListenerCallback('on-state-changed', State.TIMEOUT);
+    await microtasksFinished();
+    checkStateSection(
+        '.timeout-icon', app.i18n('timeoutTitle'), app.i18n('timeoutSubtitle'));
+
+    webUIListenerCallback('on-state-changed', State.SUCCESS);
+    await microtasksFinished();
+    checkStateSection(
+        '.success-icon', app.i18n('successTitle'), app.i18n('successSubtitle'));
+  });
+
+  test('stateSectionError', async function() {
+    // Errors are reported by the OIDC enrollment flow, after the processing
+    // state is shown.
+    webUIListenerCallback('on-state-changed', State.PROCESSING);
+    await microtasksFinished();
+
+    webUIListenerCallback(
+        'on-state-changed-to-error', 'error_title', 'error_subtitle');
+    await microtasksFinished();
+
+    checkStateSection('.error-icon', 'error_title', 'error_subtitle');
+    assertEquals(
+        app.i18n('closeLabel'), app.$.proceedButton.textContent.trim());
   });
 
   test('signalsDisclaimerSection', async function() {
