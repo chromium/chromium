@@ -1373,7 +1373,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (permissionBlockedByOs) {
             maybeShowOsWarning(screen);
         }
-        if (permissionBlockedByOs || !mCategory.enabledInAndroid(getContext())) {
+        if (!mCategory.enabledInAndroid(getContext())) {
             screen.removePreference(notificationsVibrate);
             screen.removePreference(mNotificationsQuietUiPref);
             screen.removePreference(mNotificationsTriStatePref);

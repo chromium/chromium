@@ -456,6 +456,26 @@ public class SiteSettingsLocationTest {
                 getGeolocationSetting(url));
     }
 
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void testCoarseAndroidPermissionWithSiteExceptionShowsOsWarningAndException() {
+        String url = "https://example.com";
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ false);
+        var allowSetting = new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
+        setGeolocationSetting(url, allowSetting);
+        assertEquals(allowSetting, getGeolocationSetting(url));
+
+        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
+        onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
+                .perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText(url)).check(matches(isDisplayed()));
+    }
+
     void setGeolocationSetting(String url, GeolocationSetting setting) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
