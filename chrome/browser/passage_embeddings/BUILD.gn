@@ -18,7 +18,6 @@ source_set("passage_embeddings") {
 
   deps = [
     "//chrome/browser:browser_process",
-    "//chrome/browser/history_embeddings",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//components/page_content_annotations/core",

@@ -9,7 +9,6 @@
 #include "base/byte_size.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
@@ -44,7 +43,7 @@ PassageEmbedderModelObserverFactory::GetInstance() {
 
 PassageEmbedderModelObserverFactory::PassageEmbedderModelObserverFactory()
     : ProfileKeyedServiceFactory(
-          "HistoryEmbeddingsService",
+          "PassageEmbedderModelObserver",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
@@ -62,7 +61,6 @@ std::unique_ptr<KeyedService>
 PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(kPassageEmbedder) &&
-      !history_embeddings::IsHistoryEmbeddingsFeatureEnabled() &&
       !base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4)) {
     return nullptr;
   }
@@ -84,9 +82,6 @@ PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   Profile* profile = Profile::FromBrowserContext(context);
-  // When the history embeddings feature is on, observe launched target even
-  // when in the experiment group, as we never want to use both models at once.
-  // Observe launched target by default, as the user could opt in at any time.
   OptimizationGuideGlobalStateHolderKeyedService* global_state_service =
       OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
           profile);

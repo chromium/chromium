@@ -85,8 +85,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/history/core/browser",
     "//components/history/core/test",
-    "//components/history_embeddings/core",
-    "//components/history_embeddings/proto:history_embeddings_proto",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
