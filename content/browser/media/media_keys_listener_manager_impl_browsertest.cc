@@ -347,4 +347,43 @@ IN_PROC_BROWSER_TEST_F(MediaKeysListenerManagerImplTest,
   delegate.ExpectReceivedKeysCount(1);
 }
 
+IN_PROC_BROWSER_TEST_F(MediaKeysListenerManagerImplTest, IgnoreZeroSeek) {
+  ActiveMediaSessionController* controller =
+      media_keys_listener_manager()
+          ->active_media_session_controller_for_testing();
+
+  // A zero relative seek should be ignored rather than sent to the
+  // MediaController (which disallows zero seek times).
+  controller->OnSeek(base::TimeDelta());
+  FlushForTesting();
+  EXPECT_EQ(0, media_controller()->seek_forward_count());
+  EXPECT_EQ(0, media_controller()->seek_backward_count());
+
+  // A non-zero relative seek should be forwarded.
+  controller->OnSeek(base::Seconds(5));
+  FlushForTesting();
+  EXPECT_EQ(1, media_controller()->seek_forward_count());
+  EXPECT_EQ(0, media_controller()->seek_backward_count());
+
+  // When `kSeekTo` is not supported, `OnSeekTo` falls back to relative `Seek`
+  // using the difference from `position_`. If the target time matches the
+  // current position (so `time_diff` is zero), it should be ignored.
+  controller->MediaSessionPositionChanged(media_session::MediaPosition(
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false));
+  controller->OnSeekTo(base::Seconds(5));
+  FlushForTesting();
+  EXPECT_EQ(1, media_controller()->seek_forward_count());
+  EXPECT_EQ(0, media_controller()->seek_backward_count());
+  EXPECT_EQ(0, media_controller()->seek_to_count());
+
+  // Seeking to a different position when `kSeekTo` is not supported should
+  // forward the non-zero difference via `Seek`.
+  controller->OnSeekTo(base::Seconds(3));
+  FlushForTesting();
+  EXPECT_EQ(1, media_controller()->seek_forward_count());
+  EXPECT_EQ(1, media_controller()->seek_backward_count());
+  EXPECT_EQ(0, media_controller()->seek_to_count());
+}
+
 }  // namespace content

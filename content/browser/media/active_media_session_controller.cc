@@ -151,6 +151,9 @@ void ActiveMediaSessionController::OnStop() {
 }
 
 void ActiveMediaSessionController::OnSeek(const base::TimeDelta& time) {
+  if (time.is_zero()) {
+    return;
+  }
   media_controller_remote_->Seek(time);
 }
 
@@ -160,7 +163,9 @@ void ActiveMediaSessionController::OnSeekTo(const base::TimeDelta& time) {
   } else if (position_) {
     auto time_diff =
         time - position_->GetPositionAtTime(base::TimeTicks::Now());
-    media_controller_remote_->Seek(time_diff);
+    if (!time_diff.is_zero()) {
+      media_controller_remote_->Seek(time_diff);
+    }
   }
 }
 
