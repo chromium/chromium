@@ -14076,6 +14076,8 @@ bool RenderFrameHostImpl::IsStorageAccessRestricted() {
          IsSandboxed(
              network::mojom::WebSandboxFlags::kStorageAccessByUserActivation) ||
          GetStorageKey().ForbidsUnpartitionedStorageAccess() ||
+         !IsFeatureEnabled(
+             network::mojom::PermissionsPolicyFeature::kStorageAccessAPI) ||
          !ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
              GetProcess()->GetID().GetUnsafeValue(), GetLastCommittedOrigin());
 }

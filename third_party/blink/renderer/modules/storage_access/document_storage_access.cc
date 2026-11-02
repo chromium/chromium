@@ -270,6 +270,20 @@ ScriptPromise<T> DocumentStorageAccess::RequestStorageAccessImpl(
         "requestStorageAccess not allowed"));
     return promise;
   }
+
+  if (!GetSupplementable()->GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kStorageAccessAPI)) {
+    GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
+        "requestStorageAccess: Refused to execute request. The document is "
+        "blocked from using the Storage Access API by permissions policy."));
+
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
+    return promise;
+  }
+
   if (GetSupplementable()->GetExecutionContext()->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     UseCounter::Count(GetSupplementable()->GetExecutionContext(),

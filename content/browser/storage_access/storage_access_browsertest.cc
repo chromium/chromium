@@ -21,6 +21,11 @@
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom.h"
 
 namespace {
+
+const base::expected<void, std::string> kBindingFailure = base::unexpected(
+    "Binding a StorageAccessHandle requires third-party cookie access "
+    "and an unrestricted frame context.");
+
 class MockContentBrowserClient final
     : public content::ContentBrowserTestContentBrowserClient {
  public:
@@ -39,6 +44,7 @@ class MockContentBrowserClient final
  private:
   const bool is_full_cookie_access_allowed_{false};
 };
+
 }  // namespace
 
 namespace content {
@@ -66,13 +72,7 @@ class StorageAccessBrowserTest : public ContentBrowserTest,
       return base::ok();
     }
 
-    return expected_restricted_handle_result();
-  }
-
-  base::expected<void, std::string> expected_restricted_handle_result() const {
-    return base::unexpected(
-        "Binding a StorageAccessHandle requires third-party cookie access "
-        "and an unrestricted frame context.");
+    return kBindingFailure;
   }
 
  protected:
@@ -204,8 +204,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
   ASSERT_EQ(1U, root->child_count());
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
 
-  EXPECT_EQ(BindStorageAccessHandleInFrame(child),
-            expected_restricted_handle_result());
+  EXPECT_EQ(BindStorageAccessHandleInFrame(child), kBindingFailure);
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
@@ -240,8 +239,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
   ASSERT_EQ(1U, root->child_count());
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
 
-  EXPECT_EQ(BindStorageAccessHandleInFrame(child),
-            expected_restricted_handle_result());
+  EXPECT_EQ(BindStorageAccessHandleInFrame(child), kBindingFailure);
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
@@ -258,8 +256,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   ASSERT_TRUE(child->IsCredentialless());
 
-  EXPECT_EQ(BindStorageAccessHandleInFrame(child),
-            expected_restricted_handle_result());
+  EXPECT_EQ(BindStorageAccessHandleInFrame(child), kBindingFailure);
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
@@ -269,8 +266,23 @@ IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
 
   ASSERT_TRUE(NavigateToURLWithPdf(tab, url));
 
-  EXPECT_EQ(BindStorageAccessHandleInFrame(host()),
-            expected_restricted_handle_result());
+  EXPECT_EQ(BindStorageAccessHandleInFrame(host()), kBindingFailure);
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
+                       BindStorageAccessHandle_DisallowedByPermissionsPolicy) {
+  CHECK(NavigateToURL(shell(),
+                      embedded_https_test_server().GetURL(
+                          "a.test",
+                          "/cross_site_iframe_factory.html?a.test(b.test{"
+                          "disallow-storage-access})")));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  ASSERT_EQ(1U, root->child_count());
+  RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(BindStorageAccessHandleInFrame(child), kBindingFailure);
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest, BindDomStorage) {
@@ -299,6 +311,12 @@ IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
 IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
                        BindDomStorage_Credentialless) {
   EXPECT_FALSE(BindDomStorageInFrame("a.test(b.test{credentialless})"));
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessBrowserTest,
+                       BindDomStorage_DisallowedByPermissionsPolicy) {
+  EXPECT_FALSE(
+      BindDomStorageInFrame("a.test(b.test{disallow-storage-access})"));
 }
 
 INSTANTIATE_TEST_SUITE_P(, StorageAccessBrowserTest, testing::Bool());
