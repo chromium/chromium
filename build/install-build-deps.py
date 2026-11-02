@@ -305,6 +305,7 @@ def dev_list():
         "ripgrep",
         "rpm",
         "ruby",
+        "squashfs-tools",
         "uuid-dev",
         "wdiff",
         "x11-utils",
