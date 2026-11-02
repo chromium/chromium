@@ -31,8 +31,19 @@ void SignoutFromAccountMenu();
 // Waits for the enterprise onboarding screen to become sufficiently visible.
 void WaitForEnterpriseOnboardingScreen();
 
+// Confirms the enterprise onboarding screen by tapping the primary button,
+// scrolling to the bottom first if needed (required when `scrollToEndMandatory`
+// is active on compact screens).
+void ConfirmEnterpriseOnboardingScreen();
+
+// Opens the browsing data management screen by scrolling to the browsing data
+// button if needed and tapping it.
+void OpenBrowsingDataManagementScreen();
+
 id<GREYMatcher> SigninScreenMatcher();
 id<GREYMatcher> ManagedProfileCreationScreenMatcher();
+// Matcher for the browsing data button on the enterprise onboarding screen.
+id<GREYMatcher> ManagedProfileCreationBrowsingDataButtonMatcher();
 id<GREYMatcher> BrowsingDataManagementScreenMatcher();
 id<GREYMatcher> HistoryScreenMatcher();
 id<GREYMatcher> DefaultBrowserScreenMatcher();

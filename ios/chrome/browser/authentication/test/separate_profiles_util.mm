@@ -14,8 +14,10 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/settings/manage_accounts/public/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -89,6 +91,31 @@ void WaitForEnterpriseOnboardingScreen() {
              @"Enterprise onboarding didn't appear.");
 }
 
+void ConfirmEnterpriseOnboardingScreen() {
+  WaitForEnterpriseOnboardingScreen();
+  // On compact screens, `scrollToEndMandatory` displays a "Read More" button
+  // that must be tapped to scroll to the bottom before the confirmation button
+  // appears.
+  id<GREYMatcher> primaryButton =
+      grey_allOf(chrome_test_util::ButtonStackPrimaryButton(),
+                 grey_ancestor(ManagedProfileCreationScreenMatcher()),
+                 grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> readMoreButton = grey_allOf(
+      primaryButton,
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE)),
+      nil);
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:readMoreButton]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (!error) {
+    [[EarlGrey selectElementWithMatcher:readMoreButton]
+        performAction:grey_tap()];
+  }
+  [[EarlGrey selectElementWithMatcher:primaryButton] performAction:grey_tap()];
+}
+
 id<GREYMatcher> SigninScreenMatcher() {
   return grey_accessibilityID(
       first_run::kFirstRunSignInScreenAccessibilityIdentifier);
@@ -97,6 +124,39 @@ id<GREYMatcher> SigninScreenMatcher() {
 id<GREYMatcher> ManagedProfileCreationScreenMatcher() {
   return grey_accessibilityID(
       kManagedProfileCreationScreenAccessibilityIdentifier);
+}
+
+id<GREYMatcher> ManagedProfileCreationBrowsingDataButtonMatcher() {
+  return grey_accessibilityID(kBrowsingDataButtonAccessibilityIdentifier);
+}
+
+void OpenBrowsingDataManagementScreen() {
+  WaitForEnterpriseOnboardingScreen();
+  // If the "Read More" button is present, tap it to scroll to the bottom so
+  // that the browsing data button is not obscured by the button stack.
+  id<GREYMatcher> readMoreButton = grey_allOf(
+      chrome_test_util::ButtonStackPrimaryButton(),
+      grey_ancestor(ManagedProfileCreationScreenMatcher()),
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE)),
+      nil);
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:readMoreButton]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (!error) {
+    [[EarlGrey selectElementWithMatcher:readMoreButton]
+        performAction:grey_tap()];
+  }
+
+  id<GREYMatcher> scrollView =
+      grey_accessibilityID(kButtonStackScrollViewAccessibilityIdentifier);
+  id<GREYAction> searchAction = grey_scrollInDirection(kGREYDirectionDown, 200);
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_allOf(ManagedProfileCreationBrowsingDataButtonMatcher(),
+                             grey_interactable(), nil)]
+         usingSearchAction:searchAction
+      onElementWithMatcher:scrollView] performAction:grey_tap()];
 }
 
 id<GREYMatcher> BrowsingDataManagementScreenMatcher() {
