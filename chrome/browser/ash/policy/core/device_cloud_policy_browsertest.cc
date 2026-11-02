@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
@@ -41,6 +42,7 @@
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_service.h"
@@ -108,6 +110,18 @@ class KeyRotationDeviceCloudPolicyTest
 
   void SetUpOnMainThread() override {
     DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+    CloudPolicyService* service = GetDeviceCloudPolicyService();
+    if (!service->initial_policy_refresh_result().has_value()) {
+      struct RefreshObserver : public CloudPolicyService::Observer {
+        void OnCloudPolicyServiceInitializationCompleted() override {}
+        void OnPolicyRefreshed(bool) override { run_loop.Quit(); }
+        base::RunLoop run_loop;
+      } observer;
+      service->AddObserver(&observer);
+      observer.run_loop.Run();
+      service->RemoveObserver(&observer);
+    }
+    EXPECT_EQ(service->initial_policy_refresh_result(), true);
     StartObservingTestPolicy();
   }
 
@@ -139,11 +153,19 @@ class KeyRotationDeviceCloudPolicyTest
     policy_test_server_mixin_.UpdateDevicePolicy(device_policy()->payload());
   }
 
-  void StartDevicePolicyRefresh() {
-    g_browser_process->platform_part()
+  CloudPolicyService* GetDeviceCloudPolicyService() {
+    return g_browser_process->platform_part()
         ->browser_policy_connector_ash()
         ->GetDeviceCloudPolicyManager()
-        ->RefreshPolicies(PolicyFetchReason::kTest);
+        ->core()
+        ->service();
+  }
+
+  void StartDevicePolicyRefresh() {
+    base::test::TestFuture<bool> refresh_future;
+    GetDeviceCloudPolicyService()->RefreshPolicy(refresh_future.GetCallback(),
+                                                 PolicyFetchReason::kTest);
+    EXPECT_TRUE(refresh_future.Get());
   }
 
   std::string GetOwnerPublicKey() const {
