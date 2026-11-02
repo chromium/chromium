@@ -114,6 +114,7 @@ source_set("impl") {
     "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/sessions:session_id",
   ]
 
   if (is_chromeos) {
@@ -178,6 +179,8 @@ source_set("unit_tests") {
     "//components/enterprise/connectors/core:test_support",
     "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/sessions",
+    "//components/sessions:session_id",
     "//testing/gtest",
   ]
 

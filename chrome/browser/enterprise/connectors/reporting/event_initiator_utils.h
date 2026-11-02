@@ -9,7 +9,10 @@
 
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
+class SessionID;
+
 namespace content {
+class BrowserContext;
 class WebContents;
 }  // namespace content
 
@@ -44,6 +47,18 @@ GetExtensionInitiatorInfo(download::DownloadItem* download);
 // Must be called on the UI thread.
 std::optional<safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
 GetActiveExtensionInitiatorInfo(content::WebContents* web_contents);
+
+// Same as above for the tab identified by `tab_id` in `browser_context`, for
+// callers that only know a tab's `SessionID` (e.g. the real-time URL lookup
+// service). Off-the-record tabs of `browser_context` are included.
+//
+// Returns `std::nullopt` if `browser_context` is null, the feature is off, no
+// such tab exists, or under the same conditions as the `WebContents` overload.
+//
+// Must be called on the UI thread.
+std::optional<safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+GetActiveExtensionInitiatorInfo(content::BrowserContext* browser_context,
+                                SessionID tab_id);
 
 }  // namespace enterprise_connectors
 

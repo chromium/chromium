@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
@@ -17,6 +18,8 @@
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -352,6 +355,45 @@ TEST_F(EventInitiatorUtilsTest,
   EXPECT_FALSE(extension_info->has_version());
   EXPECT_FALSE(extension_info->has_install_location());
   EXPECT_FALSE(extension_info->has_is_from_store());
+}
+
+// The `SessionID` overload resolves the tab through the browser's tab strips,
+// so only its guard conditions are covered here; resolution of a hosted tab is
+// exercised by ExtensionTabUtil's own tests.
+TEST_F(EventInitiatorUtilsTest, TabIdWithNullBrowserContextReturnsNullopt) {
+  EXPECT_FALSE(GetActiveExtensionInitiatorInfo(/*browser_context=*/nullptr,
+                                               SessionID::NewUnique())
+                   .has_value());
+}
+
+TEST_F(EventInitiatorUtilsTest, InvalidTabIdReturnsNullopt) {
+  EXPECT_FALSE(
+      GetActiveExtensionInitiatorInfo(&profile_, SessionID::InvalidValue())
+          .has_value());
+}
+
+TEST_F(EventInitiatorUtilsTest, UnhostedTabIdReturnsNullopt) {
+  // A WebContents that is not hosted in any window cannot be found by tab ID,
+  // even if it has an active actor.
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents,
+                                                   base::NullCallback());
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Page.navigate");
+
+  EXPECT_FALSE(
+      GetActiveExtensionInitiatorInfo(
+          &profile_, sessions::SessionTabHelper::IdForTab(web_contents))
+          .has_value());
+}
+
+TEST_F(EventInitiatorUtilsTest, TabIdWithFeatureDisabledReturnsNullopt) {
+  base::test::ScopedFeatureList disabled;
+  disabled.InitAndDisableFeature(kEnterpriseExtensionActorAttribution);
+  EXPECT_FALSE(
+      GetActiveExtensionInitiatorInfo(&profile_, SessionID::NewUnique())
+          .has_value());
 }
 
 }  // namespace enterprise_connectors

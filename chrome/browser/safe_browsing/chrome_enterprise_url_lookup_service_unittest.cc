@@ -4,7 +4,11 @@
 
 #include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 
+#include <optional>
+#include <vector>
+
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -44,6 +48,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
 using base::test::RunOnceClosure;
@@ -199,7 +204,14 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         base::BindRepeating([] { return true; }),
         /*is_command_line_switch_supported=*/true,
         /*intelligent_scan_delegate=*/nullptr,
-        /*network_context_getter=*/base::NullCallback());
+        /*network_context_getter=*/base::NullCallback(),
+        base::BindRepeating(
+            [](ChromeEnterpriseRealTimeUrlLookupServiceTest* test,
+               SessionID tab_id) {
+              test->extension_initiator_tab_ids_.push_back(tab_id);
+              return test->extension_initiator_;
+            },
+            base::Unretained(this)));
 
     test_pref_service_.SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
@@ -297,6 +309,12 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   // TestingProfileManager owns `test_profile_` so it must be freed after all
   // reference to the test profile are freed.
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  // Returned by the extension initiator callback injected into
+  // `enterprise_rt_service_`, and the tab IDs it was queried with. Declared
+  // before the service so they outlive it.
+  std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+      extension_initiator_;
+  std::vector<SessionID> extension_initiator_tab_ids_;
   std::unique_ptr<ChromeEnterpriseRealTimeUrlLookupService>
       enterprise_rt_service_;
   std::unique_ptr<VerdictCacheManager> cache_manager_;
@@ -685,6 +703,139 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kEnterpriseRealTimeUrlCheckNewUrl);
   EXPECT_EQ(GURL(kRealTimeLookupNewUrl), GetRealTimeLookupUrl());
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       TestStartLookup_RequestCarriesExtensionInitiator) {
+  GURL url("http://example.test/");
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::SAFE,
+                        RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED,
+                        60, "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  EXPECT_CALL(*referrer_chain_provider_,
+              IdentifyReferrerChainByPendingEventURL(_, _, _))
+      .WillOnce(Return(ReferrerChainProvider::SUCCESS));
+
+  ExtensionTelemetryReportRequest::ExtensionInfo extension_info;
+  extension_info.set_id("abcdefghijklmnopabcdefghijklmnop");
+  extension_info.set_name("Test Extension");
+  extension_info.set_version("1.2.3");
+  extension_initiator_ = extension_info;
+  const SessionID tab_id = SessionID::NewUnique();
+
+  base::RunLoop run_loop;
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  EXPECT_CALL(response_callback, Run(/*is_rt_lookup_successful=*/true,
+                                     /*is_cached_response=*/false, _))
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  enterprise_rt_service()->StartLookup(
+      url, response_callback.Get(), content::GetIOThreadTaskRunner({}), tab_id,
+      /*referring_app_info=*/std::nullopt);
+
+  bool request_validated = false;
+  test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+      [&request_validated](const network::ResourceRequest& request) {
+        RTLookupRequest request_proto;
+        ASSERT_TRUE(GetRequestProto(request, &request_proto));
+        ASSERT_TRUE(request_proto.has_initiator());
+        ASSERT_TRUE(request_proto.initiator().has_chrome_extension());
+        const auto& chrome_extension =
+            request_proto.initiator().chrome_extension();
+        EXPECT_EQ("abcdefghijklmnopabcdefghijklmnop", chrome_extension.id());
+        EXPECT_EQ("Test Extension", chrome_extension.name());
+        EXPECT_EQ("1.2.3", chrome_extension.version());
+        request_validated = true;
+      }));
+
+  FulfillAccessTokenRequest("access_token_string");
+  run_loop.Run();
+
+  EXPECT_TRUE(request_validated);
+  // The service resolves the initiator for the tab being navigated.
+  EXPECT_THAT(extension_initiator_tab_ids_, testing::ElementsAre(tab_id));
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       TestStartLookup_NoExtensionInitiatorLeavesFieldUnset) {
+  GURL url("http://example.test/");
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::SAFE,
+                        RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED,
+                        60, "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  EXPECT_CALL(*referrer_chain_provider_,
+              IdentifyReferrerChainByPendingEventURL(_, _, _))
+      .WillOnce(Return(ReferrerChainProvider::SUCCESS));
+
+  // The callback reports no initiator (e.g. a human-driven navigation).
+  extension_initiator_ = std::nullopt;
+
+  base::RunLoop run_loop;
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  EXPECT_CALL(response_callback, Run(/*is_rt_lookup_successful=*/true,
+                                     /*is_cached_response=*/false, _))
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  enterprise_rt_service()->StartLookup(
+      url, response_callback.Get(), content::GetIOThreadTaskRunner({}),
+      SessionID::NewUnique(), /*referring_app_info=*/std::nullopt);
+
+  bool request_validated = false;
+  test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+      [&request_validated](const network::ResourceRequest& request) {
+        RTLookupRequest request_proto;
+        ASSERT_TRUE(GetRequestProto(request, &request_proto));
+        // Left unset so the server can tell "unknown" from "not an extension".
+        EXPECT_FALSE(request_proto.has_initiator());
+        request_validated = true;
+      }));
+
+  FulfillAccessTokenRequest("access_token_string");
+  run_loop.Run();
+
+  EXPECT_TRUE(request_validated);
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       TestStartLookup_InvalidTabIdSkipsExtensionInitiatorLookup) {
+  GURL url("http://example.test/");
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::SAFE,
+                        RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED,
+                        60, "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  EXPECT_CALL(*referrer_chain_provider_,
+              IdentifyReferrerChainByPendingEventURL(_, _, _))
+      .WillOnce(Return(ReferrerChainProvider::SUCCESS));
+
+  ExtensionTelemetryReportRequest::ExtensionInfo extension_info;
+  extension_info.set_id("abcdefghijklmnopabcdefghijklmnop");
+  extension_initiator_ = extension_info;
+
+  base::RunLoop run_loop;
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  EXPECT_CALL(response_callback, Run(/*is_rt_lookup_successful=*/true,
+                                     /*is_cached_response=*/false, _))
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  enterprise_rt_service()->StartLookup(
+      url, response_callback.Get(), content::GetIOThreadTaskRunner({}),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
+
+  bool request_validated = false;
+  test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+      [&request_validated](const network::ResourceRequest& request) {
+        RTLookupRequest request_proto;
+        ASSERT_TRUE(GetRequestProto(request, &request_proto));
+        EXPECT_FALSE(request_proto.has_initiator());
+        request_validated = true;
+      }));
+
+  FulfillAccessTokenRequest("access_token_string");
+  run_loop.Run();
+
+  EXPECT_TRUE(request_validated);
+  // Without a tab there is nothing to resolve, so the callback is not run.
+  EXPECT_TRUE(extension_initiator_tab_ids_.empty());
 }
 
 }  // namespace safe_browsing

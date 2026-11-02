@@ -694,6 +694,11 @@ RealTimeUrlLookupServiceBase::MaybeGetLlamaForcedTriggerCapability() const {
   return capability;
 }
 
+std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+RealTimeUrlLookupServiceBase::GetExtensionInitiator(SessionID tab_id) const {
+  return std::nullopt;
+}
+
 void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
     const GURL& url,
     bool is_sampled_report,
@@ -739,6 +744,14 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
   if (!content_area_account_email.empty()) {
     request->set_content_area_account_email(
         std::move(content_area_account_email));
+  }
+
+  // Left unset when no initiator is known so the server can tell "unknown"
+  // from "not an extension".
+  if (std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+          extension_initiator = GetExtensionInitiator(tab_id)) {
+    *request->mutable_initiator()->mutable_chrome_extension() =
+        std::move(*extension_initiator);
   }
 
   *request->mutable_population() = get_user_population_callback_.Run();

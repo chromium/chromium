@@ -76,6 +76,7 @@ static_library("enterprise_url_lookup_service") {
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/sessions:session_id",
     "//components/signin/public/identity_manager",
     "//net/traffic_annotation",
     "//services/network/public/cpp",

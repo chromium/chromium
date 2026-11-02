@@ -4,10 +4,14 @@
 
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 
+#include <optional>
+
+#include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/event_initiator_utils.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +32,7 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -49,6 +54,16 @@ std::string GetProfileEmail(Profile* profile) {
 bool IsCommandLineSwitchSupported() {
   return g_browser_process && g_browser_process->browser_policy_connector()
                                   ->IsCommandLineSwitchSupported();
+}
+
+// Helper function for retrieving the extension driving tab `tab_id` in
+// `profile`. Makes it easier to bind a callback to
+// `enterprise_connectors::GetActiveExtensionInitiatorInfo()` which has
+// multiple overloads, so binding to it would require a cast.
+std::optional<safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+GetExtensionInitiator(Profile* profile, SessionID tab_id) {
+  return enterprise_connectors::GetActiveExtensionInitiatorInfo(profile,
+                                                                tab_id);
 }
 
 }  // namespace
@@ -139,7 +154,8 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
       base::BindRepeating(&enterprise_util::IsProfileAffiliated, profile),
       /*is_command_line_switch_supported=*/IsCommandLineSwitchSupported(),
       ClientSideDetectionIntelligentScanDelegateFactory::GetForProfile(profile),
-      network_context_getter);
+      network_context_getter,
+      base::BindRepeating(&GetExtensionInitiator, profile));
 }
 
 // static

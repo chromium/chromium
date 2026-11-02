@@ -379,6 +379,14 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       const internal::ReferringAppInfo& referring_app_info,
       RTLookupRequest& request) {}
 
+  // Returns the Chrome extension that initiated the navigation in the tab
+  // identified by `tab_id`, if Chrome can determine one. The base
+  // implementation returns `std::nullopt`; the enterprise service overrides it
+  // so the server can attribute the reporting events it generates for the
+  // request. Called on the UI thread.
+  virtual std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+  GetExtensionInitiator(SessionID tab_id) const;
+
   // Get a resource request with URL, load_flags and method set.
   std::unique_ptr<network::ResourceRequest> GetResourceRequest();
 

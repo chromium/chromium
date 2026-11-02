@@ -6,8 +6,10 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_REALTIME_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -15,6 +17,7 @@
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -54,6 +57,12 @@ class ReferrerChainProvider;
 class ChromeEnterpriseRealTimeUrlLookupService
     : public RealTimeUrlLookupServiceBase {
  public:
+  // Returns the Chrome extension actively driving the tab identified by the
+  // given `SessionID`, or `std::nullopt` if there is none or it cannot be
+  // determined. Run on the UI thread.
+  using GetExtensionInitiatorCallback = base::RepeatingCallback<
+      std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>(SessionID)>;
+
   ChromeEnterpriseRealTimeUrlLookupService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       VerdictCacheManager* cache_manager,
@@ -76,7 +85,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
       bool is_command_line_switch_supported,
       IntelligentScanDelegate* intelligent_scan_delegate,
       base::RepeatingCallback<network::mojom::NetworkContext*()>
-          network_context_getter);
+          network_context_getter,
+      GetExtensionInitiatorCallback get_extension_initiator_callback);
 
   ChromeEnterpriseRealTimeUrlLookupService(
       const ChromeEnterpriseRealTimeUrlLookupService&) = delete;
@@ -113,6 +123,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
   bool ShouldIncludeCredentials() const override;
   std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
       const override;
+  std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+  GetExtensionInitiator(SessionID tab_id) const override;
 
   // Unowned pointer to ConnectorsService, used to get a DM token.
   raw_ptr<enterprise_connectors::ConnectorsServiceBase, DanglingUntriaged>
@@ -150,6 +162,11 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   // Whether the service can use the policy command line switch.
   bool is_command_line_switch_supported_;
+
+  // Callback resolving the extension actively driving a tab, used to attribute
+  // the server-generated reporting events for a lookup. Null where the
+  // embedder has no extension attribution (e.g. iOS).
+  GetExtensionInitiatorCallback get_extension_initiator_callback_;
 
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 

@@ -14,6 +14,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -21,6 +22,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -174,6 +176,36 @@ std::optional<ExtensionInfo> GetActiveExtensionInitiatorInfo(
   PopulateInstalledExtensionInfo(web_contents->GetBrowserContext(), *actor_id,
                                  extension_info);
   return extension_info;
+#else
+  return std::nullopt;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
+        // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+}
+
+std::optional<ExtensionInfo> GetActiveExtensionInitiatorInfo(
+    content::BrowserContext* browser_context,
+    SessionID tab_id) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // The feature check and build guard below match the `WebContents` overload
+  // and are applied first so the tab walk is skipped whenever attribution is
+  // impossible.
+  if (!base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution) ||
+      !browser_context || !tab_id.is_valid()) {
+    return std::nullopt;
+  }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // The enterprise services that call this are shared between a profile and
+  // its off-the-record profiles, so search both.
+  content::WebContents* web_contents = nullptr;
+  if (!extensions::ExtensionTabUtil::GetTabById(tab_id.id(), browser_context,
+                                                /*include_incognito=*/true,
+                                                &web_contents)) {
+    return std::nullopt;
+  }
+  return GetActiveExtensionInitiatorInfo(web_contents);
 #else
   return std::nullopt;
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
