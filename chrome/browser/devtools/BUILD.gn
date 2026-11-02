@@ -254,6 +254,9 @@ static_library("devtools") {
       "//components/metrics/structured:structured_events",
       "//components/signin/public/base:signin_switches",
       "//components/viz/host",
+      "//ui/base",
+      "//ui/base/interaction",
+      "//ui/base/mojom:ui_base_types",
       "//ui/shell_dialogs",
     ]
     public_deps += [ "//chrome/browser/themes" ]
@@ -602,6 +605,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base:test_support",
   ]
 
   if (enable_devtools_frontend) {

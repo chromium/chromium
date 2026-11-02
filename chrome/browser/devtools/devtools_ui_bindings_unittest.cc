@@ -4,10 +4,13 @@
 
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -43,6 +46,11 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_host.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/test/test_dialog_model_host.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -1820,3 +1828,90 @@ TEST_F(DevToolsUIBindingsExtensionsTest,
       captured_forbidden_origins.GetList().contains("https://ntp.example.com"));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+class DevToolsUIBindingsDirectoryPermissionDialogTest : public testing::Test {
+ protected:
+  class DialogModelHostForTesting : public ui::DialogModelHost {
+   public:
+    using DialogModelHost::GetPassKey;
+  };
+
+  std::unique_ptr<ui::DialogModel> CreateDialogModel() {
+    return DevToolsUIBindings::CreateDirectoryPermissionDialogForTesting(
+        "/tmp/example-project",
+        base::BindLambdaForTesting([&](bool allowed) { result_ = allowed; }));
+  }
+
+  std::unique_ptr<ui::TestDialogModelHost> CreateDialogModelHost() {
+    return std::make_unique<ui::TestDialogModelHost>(CreateDialogModel());
+  }
+
+  bool CallbackWasCalled() const { return result_.has_value(); }
+  bool Result() const {
+    CHECK(result_.has_value());
+    return *result_;
+  }
+
+ private:
+  std::optional<bool> result_;
+};
+
+TEST_F(DevToolsUIBindingsDirectoryPermissionDialogTest, Accept) {
+  auto host = CreateDialogModelHost();
+
+  ui::TestDialogModelHost::Accept(std::move(host));
+
+  ASSERT_TRUE(CallbackWasCalled());
+  EXPECT_TRUE(Result());
+}
+
+TEST_F(DevToolsUIBindingsDirectoryPermissionDialogTest, Cancel) {
+  auto host = CreateDialogModelHost();
+
+  ui::TestDialogModelHost::Cancel(std::move(host));
+
+  ASSERT_TRUE(CallbackWasCalled());
+  EXPECT_FALSE(Result());
+}
+
+TEST_F(DevToolsUIBindingsDirectoryPermissionDialogTest, Close) {
+  auto host = CreateDialogModelHost();
+
+  ui::TestDialogModelHost::Close(std::move(host));
+
+  ASSERT_TRUE(CallbackWasCalled());
+  EXPECT_FALSE(Result());
+}
+
+TEST_F(DevToolsUIBindingsDirectoryPermissionDialogTest, DestroyWithoutAction) {
+  auto host = CreateDialogModelHost();
+
+  ui::TestDialogModelHost::DestroyWithoutAction(std::move(host));
+
+  EXPECT_FALSE(CallbackWasCalled());
+}
+
+TEST_F(DevToolsUIBindingsDirectoryPermissionDialogTest,
+       CancelButtonInitiallyFocused) {
+  auto host = CreateDialogModelHost();
+
+  ui::ElementIdentifier cancel_id =
+      host->GetId(ui::TestDialogModelHost::ButtonId::kCancel);
+  EXPECT_TRUE(cancel_id);
+  EXPECT_EQ(host->GetInitiallyFocusedField(), cancel_id);
+}
+
+TEST_F(DevToolsUIBindingsDirectoryPermissionDialogTest,
+       DefaultButtonOverriddenToNone) {
+  auto dialog = CreateDialogModel();
+
+  EXPECT_EQ(
+      dialog->override_default_button(DialogModelHostForTesting::GetPassKey()),
+      ui::mojom::DialogButton::kNone);
+}
+
+TEST_F(DevToolsUIBindingsDirectoryPermissionDialogTest, EnableInputProtection) {
+  auto host = CreateDialogModelHost();
+
+  EXPECT_TRUE(host->GetEnableInputProtection());
+}

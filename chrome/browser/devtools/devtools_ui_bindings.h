@@ -63,6 +63,10 @@ namespace permissions {
 enum class PermissionAction;
 }
 
+namespace ui {
+class DialogModel;
+}
+
 class DevToolsHttpServiceHandler;
 class DevToolsHttpServiceRegistry;
 class DevToolsUIBindingsDispatchHttpRequestTest;
@@ -193,6 +197,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
       DevToolsInfoBarDelegate::Callback callback) {
     ShowDevToolsInfoBar(message, std::move(callback));
   }
+  static std::unique_ptr<ui::DialogModel>
+  CreateDirectoryPermissionDialogForTesting(
+      const std::string& directory_path,
+      DevToolsInfoBarDelegate::Callback callback);
 
   static base::DictValue GetSyncInformationForProfile(Profile* profile);
 
@@ -484,6 +492,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                                          std::string enabled_by_flags,
                                          std::string disabled_by_flags);
   static bool HasUntrustedOpenerChain(content::WebContents* web_contents);
+  static std::unique_ptr<ui::DialogModel> CreateDirectoryPermissionDialog(
+      const std::string& directory_path,
+      DevToolsInfoBarDelegate::Callback callback);
 
   static DevToolsUIBindingsList& GetDevToolsUIBindings();
 
