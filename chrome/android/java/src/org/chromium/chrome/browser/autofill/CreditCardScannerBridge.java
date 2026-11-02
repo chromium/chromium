@@ -8,7 +8,10 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -24,17 +27,24 @@ import java.lang.ref.WeakReference;
 @JNINamespace("autofill")
 @NullMarked
 public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
-    private final long mNativeScanner;
+    @JniType("::autofill::CreditCardScannerViewAndroid")
+    interface NativeCreditCardScannerViewAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeCreditCardScannerViewAndroid> mNativeScanner;
     private final CreditCardScanner mScanner;
     private final @Nullable IntentRequestTracker mIntentRequestTracker;
     private final WeakReference<Context> mContextRef;
 
     @CalledByNative
-    private static CreditCardScannerBridge create(long nativeScanner, WebContents webContents) {
+    private static CreditCardScannerBridge create(
+            @Nullable JniRawPtr<NativeCreditCardScannerViewAndroid> nativeScanner,
+            @Nullable WebContents webContents) {
         return new CreditCardScannerBridge(nativeScanner, webContents);
     }
 
-    private CreditCardScannerBridge(long nativeScanner, WebContents webContents) {
+    private CreditCardScannerBridge(
+            @Nullable JniRawPtr<NativeCreditCardScannerViewAndroid> nativeScanner,
+            @Nullable WebContents webContents) {
         mNativeScanner = nativeScanner;
         mScanner = CreditCardScanner.create(this);
         WindowAndroid window = webContents != null ? webContents.getTopLevelNativeWindow() : null;
@@ -57,21 +67,33 @@ public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
         mScanner.scan(mIntentRequestTracker);
     }
 
+    @CalledByNative
+    private void destroy() {
+        if (mNativeScanner != null) {
+            mNativeScanner.release();
+            mNativeScanner = null;
+        }
+    }
+
     @Override
     public void onScanCancelled() {
-        CreditCardScannerBridgeJni.get().scanCancelled(mNativeScanner);
+        if (mNativeScanner != null) {
+            CreditCardScannerBridgeJni.get().scanCancelled(mNativeScanner);
+        }
     }
 
     @Override
     public void onScanCompleted(
             String cardHolderName, String cardNumber, int expirationMonth, int expirationYear) {
-        CreditCardScannerBridgeJni.get()
-                .scanCompleted(
-                        mNativeScanner,
-                        cardHolderName,
-                        cardNumber,
-                        expirationMonth,
-                        expirationYear);
+        if (mNativeScanner != null) {
+            CreditCardScannerBridgeJni.get()
+                    .scanCompleted(
+                            mNativeScanner,
+                            cardHolderName,
+                            cardNumber,
+                            expirationMonth,
+                            expirationYear);
+        }
     }
 
     @Override
@@ -81,10 +103,10 @@ public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
 
     @NativeMethods
     interface Natives {
-        void scanCancelled(long nativeCreditCardScannerViewAndroid);
+        void scanCancelled(JniPtr<NativeCreditCardScannerViewAndroid> self);
 
         void scanCompleted(
-                long nativeCreditCardScannerViewAndroid,
+                JniPtr<NativeCreditCardScannerViewAndroid> self,
                 @JniType("std::u16string") String cardHolderName,
                 @JniType("std::u16string") String cardNumber,
                 int expirationMonth,

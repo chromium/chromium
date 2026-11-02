@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -27,7 +28,7 @@ namespace autofill {
 bool CreditCardScannerView::CanShow() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaGlobalRef<jobject> java_object(
-      Java_CreditCardScannerBridge_create(env, 0, nullptr));
+      Java_CreditCardScannerBridge_create(env, nullptr, nullptr));
   return Java_CreditCardScannerBridge_canScan(env, java_object);
 }
 
@@ -45,10 +46,15 @@ CreditCardScannerViewAndroid::CreditCardScannerViewAndroid(
     : delegate_(delegate),
       java_object_(Java_CreditCardScannerBridge_create(
           base::android::AttachCurrentThread(),
-          reinterpret_cast<intptr_t>(this),
+          jni_zero::MakeRaw(this),
           web_contents->GetJavaWebContents())) {}
 
-CreditCardScannerViewAndroid::~CreditCardScannerViewAndroid() = default;
+CreditCardScannerViewAndroid::~CreditCardScannerViewAndroid() {
+  if (java_object_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_CreditCardScannerBridge_destroy(env, java_object_);
+  }
+}
 
 void CreditCardScannerViewAndroid::ScanCancelled(JNIEnv* env) {
   delegate_->ScanCancelled();
