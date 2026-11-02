@@ -564,6 +564,9 @@ size_t BaseRenderingContext2D::GetSize() const {
 }
 
 void BaseRenderingContext2D::OnContextDestroyed() {
+  if (shared_image_provider_) {
+    shared_image_provider_->ClearUnusedResources();
+  }
   canvas_image_provider_ = nullptr;
 }
 

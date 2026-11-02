@@ -219,12 +219,6 @@ base::ByteSize Canvas2DResourceProvider::EstimatedSizeInBytes() const {
   return result;
 }
 
-void Canvas2DResourceProvider::OnContextDestroyed() {
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
-}
-
 bool Canvas2DResourceProvider::IsValid() const {
   if (IsSoftware()) {
     // Software compositing (which always uses software raster).
@@ -301,7 +295,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       hdr_metadata_(hdr_metadata) {
   CHECK(context_provider_wrapper_);
-  context_provider_wrapper_->AddObserver(this);
 
   auto* sii =
       context_provider_wrapper_->ContextProvider().SharedImageInterface();
@@ -391,10 +384,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
 }
 
 Canvas2DResourceProvider::~Canvas2DResourceProvider() {
-  if (context_provider_wrapper_) {
-    context_provider_wrapper_->RemoveObserver(this);
-  }
-
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
 }

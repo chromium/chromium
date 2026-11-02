@@ -96,8 +96,7 @@ enum class CanvasResourceProviderType {
 // * Subclass of CanvasResourceProvider that is specialized for usage
 // * by Canvas2D.
 class PLATFORM_EXPORT Canvas2DResourceProvider
-    : public CanvasResourceSharedImage::Client,
-      public WebGraphicsContext3DProviderWrapper::DestructionObserver {
+    : public CanvasResourceSharedImage::Client {
  public:
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
@@ -160,8 +159,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool IsGpuContextLost() const;
   gfx::Size Size() const { return image_pool_->GetImageInfo().size; }
 
-  // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
-  void OnContextDestroyed() override;
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
