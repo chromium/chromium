@@ -715,11 +715,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void deleteTabGroupCollapsed(Token tabGroupId) {
-        mDelegateModel.deleteTabGroupCollapsed(tabGroupId);
-    }
-
-    @Override
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {
         mDelegateModel.moveTabOutOfGroupInDirection(sourceTabId, trailing);
     }

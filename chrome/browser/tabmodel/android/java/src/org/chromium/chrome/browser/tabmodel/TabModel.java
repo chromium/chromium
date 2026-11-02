@@ -657,7 +657,4 @@ public interface TabModel extends TabList {
 
     /** Sets whether the tab group is expanded or collapsed, with optional animation. */
     void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate);
-
-    /** Deletes the record that the group is collapsed, setting it to expanded. */
-    void deleteTabGroupCollapsed(Token tabGroupId);
 }

@@ -1533,12 +1533,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void deleteTabGroupCollapsed(Token tabGroupId) {
-        if (!containsTabGroup(tabGroupId)) return;
-        setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false, /* animate= */ false);
-    }
-
-    @Override
     public void moveTabOutOfGroupInDirection(@TabId int sourceTabId, boolean trailing) {
         assertOnUiThread();
 

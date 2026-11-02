@@ -101,7 +101,6 @@ public class StubTabModelUnitTest {
                             "setTabGroupTitle",
                             "deleteTabGroupTitle",
                             "setTabGroupColor",
-                            "deleteTabGroupCollapsed",
                             "getTabAtChecked",
                             "spliterator",
                             "forEach",

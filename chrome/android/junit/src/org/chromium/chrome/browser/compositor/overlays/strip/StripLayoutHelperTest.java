@@ -5681,7 +5681,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 0, startIndex, TabSelectionType.FROM_USER);
 
         // Verify we auto-expand.
-        verify(mModel).deleteTabGroupCollapsed(TAB_GROUP_ID_1);
+        verify(mModel)
+                .setTabGroupCollapsed(
+                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ false);
     }
 
     @Test
@@ -5696,7 +5698,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(TIMESTAMP, 0, startIndex, TabSelectionType.FROM_DRAG);
 
         // Verify we do NOT auto-expand.
-        verify(mModel, never()).deleteTabGroupCollapsed(TAB_GROUP_ID_1);
+        verify(mModel, never())
+                .setTabGroupCollapsed(
+                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ false);
     }
 
     private void testTabCreated_InCollapsedGroup(boolean selected) {
@@ -5710,7 +5714,8 @@ public class StripLayoutHelperTest {
                             return null;
                         })
                 .when(mModel)
-                .deleteTabGroupCollapsed(TAB_GROUP_ID_1);
+                .setTabGroupCollapsed(
+                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ false);
 
         // Create a tab in the collapsed group.
         int tabId = 5;
@@ -5721,7 +5726,9 @@ public class StripLayoutHelperTest {
                 TIMESTAMP, tabId, selected, /* closureCancelled= */ false, /* onStartup= */ false);
 
         // Verify we only auto-expand if selected.
-        verify(mModel, times(selected ? 1 : 0)).deleteTabGroupCollapsed(TAB_GROUP_ID_1);
+        verify(mModel, times(selected ? 1 : 0))
+                .setTabGroupCollapsed(
+                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ false);
     }
 
     @Test
@@ -5756,7 +5763,8 @@ public class StripLayoutHelperTest {
                             return null;
                         })
                 .when(mModel)
-                .deleteTabGroupCollapsed(TAB_GROUP_ID_1);
+                .setTabGroupCollapsed(
+                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ false);
 
         // Scroll strip to start so the collapsed group is towards or past the right edge.
         mStripLayoutHelper.setScrollOffsetForTesting(0f);

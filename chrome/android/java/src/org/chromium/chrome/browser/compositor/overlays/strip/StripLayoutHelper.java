@@ -1924,7 +1924,8 @@ public class StripLayoutHelper
                 && tab.getTabGroupId() != null
                 && mModel.getTabGroupCollapsed(tab.getTabGroupId())
                 && type != TabSelectionType.FROM_DRAG) {
-            mModel.deleteTabGroupCollapsed(tab.getTabGroupId());
+            // Auto-expand the group so the newly selected tab is visible on the strip.
+            mModel.setTabGroupCollapsed(tab.getTabGroupId(), /* isCollapsed= */ false);
         }
 
         if (!mReorderDelegate.getInReorderMode()) {
@@ -2086,7 +2087,7 @@ public class StripLayoutHelper
             updateGroupTextAndSharedState(tabGroupId);
             if (tabGroupId != null && mModel != null && mModel.getTabGroupCollapsed(tabGroupId)) {
                 if (selected) {
-                    mModel.deleteTabGroupCollapsed(tabGroupId);
+                    mModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
                 } else {
                     collapsed = true;
                 }
@@ -4144,7 +4145,7 @@ public class StripLayoutHelper
         Tab tab = getTabById(selectedTab.getTabId());
         Token tabGroupId = tab != null ? tab.getTabGroupId() : null;
         if (tabGroupId != null && mModel.getTabGroupCollapsed(tabGroupId)) {
-            mModel.deleteTabGroupCollapsed(tabGroupId);
+            mModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
             bringSelectedTabToVisibleArea(LayoutManagerImpl.time(), true);
         }
     }

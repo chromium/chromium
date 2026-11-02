@@ -1722,11 +1722,11 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addTabGroupObserver(collapsedDeleteObserver);
-                    mCollectionModel.deleteTabGroupCollapsed(tabGroupId);
+                    mCollectionModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
                     assertFalse(mCollectionModel.getTabGroupCollapsed(tabGroupId));
                     mCollectionModel.removeTabGroupObserver(collapsedDeleteObserver);
                 });
-        collapsedDeletedHelper.waitForOnly("deleteTabGroupCollapsed failed");
+        collapsedDeletedHelper.waitForOnly("setTabGroupCollapsed failed");
     }
 
     @Test
