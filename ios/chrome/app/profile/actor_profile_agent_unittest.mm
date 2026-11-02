@@ -10,6 +10,7 @@
 #import <string>
 #import <vector>
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -151,9 +152,11 @@ class ActorProfileAgentTest : public PlatformTest {
   // and waits until the interrupt requested the user's confirmation.
   void InterruptTask(actor::ActorTaskId task_id) {
     service()->SetTaskInterventionDelegate(task_id, intervention_delegate_);
-    service()->InterruptTask(
-        task_id, actor::ActorTaskInterruptReason::kWaitingUserConfirmation,
-        "Please confirm");
+    actor::ConfirmationInterrupt confirmation;
+    confirmation.title = "Please confirm";
+    confirmation.button_text = "Continue";
+    service()->InterruptTask(task_id, std::move(confirmation),
+                             base::DoNothing());
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return [intervention_delegate_ wasInterventionRequestedForTaskID:task_id];
     }));

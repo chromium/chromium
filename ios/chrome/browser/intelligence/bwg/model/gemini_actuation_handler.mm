@@ -6,7 +6,6 @@
 
 #import <map>
 #import <optional>
-#import <set>
 #import <string>
 #import <utility>
 #import <vector>
@@ -16,6 +15,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
@@ -45,6 +45,14 @@ constexpr char kPNGMimeType[] = "image/png";
 // should be localized.
 NSString* const kConfirmationUserResponse =
     @"I agree with what you wanted me to confirm. Please proceed.";
+
+// Title of confirmation prompts.
+// TODO(crbug.com/573515833): Localize the title.
+constexpr char kConfirmationTitle[] = "Input needed";
+
+// Label of the confirming button of confirmation prompts.
+// TODO(crbug.com/556739755): Localize the button text.
+constexpr char kConfirmationButtonText[] = "Continue";
 
 // Populates a TabObservation proto with data from a PageContext.
 void PopulateTabObservationFromPageContext(
@@ -103,6 +111,29 @@ GeminiActuationResponse* MakeUnsupportedYieldResponse() {
             errorMessage:"The yield reason is not supported yet."];
 }
 
+// Returned when the task is stopped or no longer exists.
+GeminiActuationResponse* MakeTaskWentAwayResponse() {
+  return [[GeminiActuationResponse alloc]
+      initWithResultCode:actor::mojom::ActionResultCode::kTaskWentAway
+            errorMessage:"Task was stopped."];
+}
+
+// Returns the response for a request that failed with `error`.
+GeminiActuationResponse* MakeErrorResponse(actor::ActorTaskError error) {
+  switch (error) {
+    case actor::ActorTaskError::kRejected:
+      // TODO(crbug.com/578539528): Map rejection causes to dedicated result
+      // codes and error messages.
+      return [[GeminiActuationResponse alloc]
+          initWithResultCode:actor::mojom::ActionResultCode::
+                                 kInvalidTaskStateForAct
+                errorMessage:"Task rejected the request."];
+    case actor::ActorTaskError::kTaskWentAway:
+      return MakeTaskWentAwayResponse();
+  }
+  NOTREACHED();
+}
+
 // Maps PageContextWrapperError enums to the corresponding TabObservationResult
 // proto enums.
 optimization_guide::proto::TabObservation::TabObservationResult
@@ -144,6 +175,20 @@ void PopulateTabObservationFromResponse(
     PopulateTabObservationFromPageContext(
         tabObservation, *response.page_context_response.value());
   }
+}
+
+// Returns the response for an accepted confirmation, carrying `observation` of
+// the actuated tab.
+GeminiActuationResponse* MakeConfirmedResponse(
+    const actor::TabObservationResponse& observation) {
+  optimization_guide::proto::ActionsResult actions_result;
+  actions_result.set_action_result(
+      static_cast<int32_t>(actor::mojom::ActionResultCode::kOk));
+  PopulateTabObservationFromResponse(actions_result.add_tabs(), observation);
+  return [[GeminiActuationResponse alloc]
+           initWithResultCode:actor::mojom::ActionResultCode::kOk
+                 userResponse:kConfirmationUserResponse
+      serializedActionsResult:SerializeProtoToNSData(actions_result)];
 }
 
 // Populates an `ActionsResult` proto from `result` and sets `outResultCode`.
@@ -290,20 +335,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
 
   // Active callbacks awaiting completion, keyed by task ID.
   std::map<actor::ActorTaskId, ActuationCallback> _activeCallbacks;
-
-  // Tasks whose callback in `_activeCallbacks` is pending the user's answer to
-  // a confirmation prompt. A confirmation yield is answered in steps:
-  // 1. `-handleConfirmationYieldWithTaskID:...` stores the callback and asks
-  //    `ActorService` to interrupt the task with the prompt.
-  // 2. Once the user accepts,
-  //    `-actorTaskDidResolveConfirmationInterruptWithID:` requests a fresh
-  //    observation of the actuated tab. Only tasks in this set are handled,
-  //    since other clients of `ActorService` may interrupt.
-  // 3. `-completeConfirmationForTaskID:webStateID:pageContextResponse:` builds
-  //    the response and `-resolveConfirmationForTaskID:withResponse:` answers
-  //    the callback.
-  // A task stop or `-disconnect` answers the pending callback instead.
-  std::set<actor::ActorTaskId> _confirmationTaskIDs;
 }
 
 #pragma mark - Public
@@ -332,7 +363,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
     _actorService = nullptr;
   }
   _webStateList = nullptr;
-  _confirmationTaskIDs.clear();
   std::map<actor::ActorTaskId, ActuationCallback> callbacks =
       std::exchange(_activeCallbacks, {});
   for (auto& [taskID, callback] : callbacks) {
@@ -471,52 +501,7 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
 // Aborts any pending request callback when a task stops externally.
 - (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
                     finalState:(actor::ActorTaskState)finalState {
-  _confirmationTaskIDs.erase(taskID);
-  auto it = _activeCallbacks.find(taskID);
-  if (it != _activeCallbacks.end()) {
-    ActuationCallback callback = std::move(it->second);
-    _activeCallbacks.erase(it);
-    std::move(callback).Run([[GeminiActuationResponse alloc]
-        initWithResultCode:actor::mojom::ActionResultCode::kTaskWentAway
-              errorMessage:"Task was stopped."]);
-  }
-  _taskToWebStateIDMap.erase(taskID);
-}
-
-// Resolves a pending confirmation request by capturing a fresh observation of
-// the actuated tab. Step 2 of the confirmation flow described at
-// `_confirmationTaskIDs`.
-- (void)actorTaskDidResolveConfirmationInterruptWithID:
-    (actor::ActorTaskId)taskID {
-  // Early-return rather than CHECK: the interrupt may have been raised by
-  // another client of `ActorService`.
-  if (!_confirmationTaskIDs.contains(taskID)) {
-    return;
-  }
-  // `-disconnect` clears both `_confirmationTaskIDs` and `_actorService`, so a
-  // pending confirmation implies a live service.
-  CHECK(_actorService);
-
-  const web::WebStateID webStateID = [self webStateIDForTaskID:taskID];
-  web::WebState* webState =
-      webStateID.valid() ? _actorService->GetWebStateForID(webStateID, taskID)
-                         : nullptr;
-  if (!webState) {
-    // TODO(crbug.com/510404682): Handle tab closure during task execution
-    // gracefully rather than failing the request.
-    [self resolveConfirmationForTaskID:taskID
-                          withResponse:MakeTabWentAwayResponse()];
-    return;
-  }
-
-  __weak GeminiActuationHandler* weakSelf = self;
-  _actorService->RequestTabObservation(
-      taskID, webState,
-      base::BindOnce(^(PageContextWrapperCallbackResponse response) {
-        [weakSelf completeConfirmationForTaskID:taskID
-                                     webStateID:webStateID
-                            pageContextResponse:std::move(response)];
-      }));
+  [self resolveRequestForTaskID:taskID withResponse:MakeTaskWentAwayResponse()];
 }
 
 #pragma mark - Private
@@ -577,8 +562,7 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
                           completionBlock:(void (^)(GeminiActuationResponse*))
                                               completionBlock {
   CHECK(yieldAction);
-  // `messageToUser` is optional, but `ActorTask` stops a task asked to confirm
-  // without a message, so report a nil or empty message as malformed instead.
+  // A missing `messageToUser` is considered malformed for an intervention.
   if (yieldAction.messageToUser.length == 0) {
     completionBlock([[GeminiActuationResponse alloc]
         initWithResultCode:actor::mojom::ActionResultCode::kArgumentsInvalid
@@ -603,50 +587,98 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
     return;
   }
 
-  // Held before `InterruptTask`, which stops the task when no intervention
-  // delegate is registered; the posted stop notification then answers the
-  // request with `kTaskWentAway`.
-  // TODO(crbug.com/548051839): An interrupt ignored because of the task's
-  // current state leaves the request pending until the task stops or the
-  // handler disconnects. Resolve it from the interrupt result instead.
+  // Held before `InterruptTask` so concurrent requests are rejected while the
+  // user is prompted.
   // TODO(crbug.com/567035844): Resolve the request when the user declines or
   // the prompt is dismissed unanswered.
   _activeCallbacks[taskID] = base::BindOnce(completionBlock);
-  _confirmationTaskIDs.insert(taskID);
+
+  actor::ConfirmationInterrupt confirmation;
+  confirmation.title = kConfirmationTitle;
+  confirmation.subtitle = base::SysNSStringToUTF8(yieldAction.messageToUser);
+  confirmation.button_text = kConfirmationButtonText;
+  __weak GeminiActuationHandler* weakSelf = self;
   _actorService->InterruptTask(
-      taskID, actor::ActorTaskInterruptReason::kWaitingUserConfirmation,
-      base::SysNSStringToUTF8(yieldAction.messageToUser));
+      taskID, std::move(confirmation),
+      base::BindOnce(
+          ^(actor::ActorTaskResult<actor::InterruptTaskResult> result) {
+            [weakSelf handleConfirmationResult:result forTaskID:taskID];
+          }));
 }
 
-// Resolves the pending confirmation for `taskID` with the user's acceptance and
-// `pageContextResponse`, the fresh observation of the tab `webStateID`.
+// Answers the pending confirmation for `taskID` with `result`.
+- (void)handleConfirmationResult:
+            (const actor::ActorTaskResult<actor::InterruptTaskResult>&)result
+                       forTaskID:(actor::ActorTaskId)taskID {
+  if (!result.has_value()) {
+    [self resolveRequestForTaskID:taskID
+                     withResponse:MakeErrorResponse(result.error())];
+    return;
+  }
+  switch (result.value().response) {
+    case actor::InterruptResponse::kConfirmed:
+      [self observeTabForConfirmedTaskID:taskID];
+      return;
+  }
+}
+
+// Answers the confirmed request for `taskID` with a fresh observation of the
+// actuated tab.
+- (void)observeTabForConfirmedTaskID:(actor::ActorTaskId)taskID {
+  // Already answered, e.g. by a task stop or `-disconnect`.
+  if (!_activeCallbacks.contains(taskID)) {
+    return;
+  }
+  // `-disconnect` clears both `_activeCallbacks` and `_actorService`, so a
+  // pending request implies a live service.
+  CHECK(_actorService);
+
+  const web::WebStateID webStateID = [self webStateIDForTaskID:taskID];
+  web::WebState* webState =
+      webStateID.valid() ? _actorService->GetWebStateForID(webStateID, taskID)
+                         : nullptr;
+  if (!webState) {
+    // TODO(crbug.com/510404682): Handle tab closure during task execution
+    // gracefully rather than failing the request.
+    [self resolveRequestForTaskID:taskID
+                     withResponse:MakeTabWentAwayResponse()];
+    return;
+  }
+
+  __weak GeminiActuationHandler* weakSelf = self;
+  _actorService->RequestTabObservation(
+      taskID, webState,
+      base::BindOnce(^(PageContextWrapperCallbackResponse response) {
+        [weakSelf completeConfirmationForTaskID:taskID
+                                     webStateID:webStateID
+                            pageContextResponse:std::move(response)];
+      }));
+}
+
+// Answers the confirmed request for `taskID` with `pageContextResponse`, the
+// fresh observation of the tab `webStateID`.
 - (void)completeConfirmationForTaskID:(actor::ActorTaskId)taskID
                            webStateID:(web::WebStateID)webStateID
                   pageContextResponse:
                       (PageContextWrapperCallbackResponse)pageContextResponse {
   const actor::TabObservationResponse observation(
       webStateID, std::move(pageContextResponse), /*web_state_exists=*/true);
-  optimization_guide::proto::ActionsResult actionsResult;
-  actionsResult.set_action_result(
-      static_cast<int32_t>(actor::mojom::ActionResultCode::kOk));
-  PopulateTabObservationFromResponse(actionsResult.add_tabs(), observation);
-
-  GeminiActuationResponse* response = [[GeminiActuationResponse alloc]
-           initWithResultCode:actor::mojom::ActionResultCode::kOk
-                 userResponse:kConfirmationUserResponse
-      serializedActionsResult:SerializeProtoToNSData(actionsResult)];
-  [self resolveConfirmationForTaskID:taskID withResponse:response];
+  [self resolveRequestForTaskID:taskID
+                   withResponse:MakeConfirmedResponse(observation)];
 }
 
-// Answers the pending confirmation for `taskID` with `response`. No-op if the
-// confirmation was already answered, e.g. by a task stop.
-- (void)resolveConfirmationForTaskID:(actor::ActorTaskId)taskID
-                        withResponse:(GeminiActuationResponse*)response {
-  if (!_confirmationTaskIDs.erase(taskID)) {
-    return;
+// Answers the pending request for `taskID` with `response`, if any. A
+// `kTaskWentAway` response also forgets the task, so that follow-up requests,
+// including from the callback, get `kTaskWentAway`.
+- (void)resolveRequestForTaskID:(actor::ActorTaskId)taskID
+                   withResponse:(GeminiActuationResponse*)response {
+  if (response.resultCode == actor::mojom::ActionResultCode::kTaskWentAway) {
+    _taskToWebStateIDMap.erase(taskID);
   }
   auto it = _activeCallbacks.find(taskID);
-  CHECK(it != _activeCallbacks.end());
+  if (it == _activeCallbacks.end()) {
+    return;
+  }
   ActuationCallback callback = std::move(it->second);
   _activeCallbacks.erase(it);
   std::move(callback).Run(response);
@@ -655,7 +687,7 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
 // Stops the task and invokes `completionBlock`.
 // `actorTaskDidStopWithID:` is posted, so the task is forgotten here directly
 // to reject follow-up requests with `kTaskWentAway`. Any in-flight request is
-// still completed by `actorTaskDidStopWithID:`.
+// still answered with `kTaskWentAway`.
 - (void)handleStopTaskWithID:(actor::ActorTaskId)taskID
                       reason:(actor::ActorTaskStoppedReason)reason
              completionBlock:
@@ -682,12 +714,7 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
       [[GeminiActuationResponse alloc] initWithResultCode:resultCode
                                              userResponse:nil
                                   serializedActionsResult:data];
-  auto it = _activeCallbacks.find(taskID);
-  if (it != _activeCallbacks.end()) {
-    ActuationCallback callback = std::move(it->second);
-    _activeCallbacks.erase(it);
-    std::move(callback).Run(response);
-  }
+  [self resolveRequestForTaskID:taskID withResponse:response];
 }
 
 // TODO(crbug.com/559608376): Query the active WebStateID directly from

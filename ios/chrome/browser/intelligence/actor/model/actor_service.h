@@ -9,7 +9,6 @@
 #import <memory>
 #import <optional>
 #import <string>
-#import <string_view>
 #import <vector>
 
 #import "base/callback_list.h"
@@ -125,12 +124,14 @@ class ActorService : public KeyedService {
   void SetTaskInterventionDelegate(ActorTaskId task_id,
                                    id<ActorTaskInterventionDelegate> delegate);
 
-  // Enqueues an interrupt of a task to wait for user input, suspending ongoing
-  // actions without cancelling them. Accepts an optional message to display to
-  // the user.
+  // Enqueues the interrupt described by `request`. `callback` runs at most
+  // once, asynchronously and never after `Shutdown()`: with the user's answer,
+  // `kRejected` if the task cannot take the interrupt, or `kTaskWentAway` if
+  // the task does not exist or stops first. When `callback` runs with an
+  // answer, the task has resumed.
   void InterruptTask(ActorTaskId task_id,
-                     ActorTaskInterruptReason reason,
-                     std::string_view message = "");
+                     InterruptRequest request,
+                     ActorTaskResultCallback<InterruptTaskResult> callback);
 
   // Enqueues a stop of a task. The task remains active, e.g. for getters,
   // until the command runs. A stop still queued at `Shutdown()` never runs: the
@@ -262,8 +263,8 @@ class ActorService : public KeyedService {
                                base::WeakPtr<web::WebState> weak_web_state,
                                TabObservationCallback callback);
   void DoInterruptTask(ActorTaskId task_id,
-                       ActorTaskInterruptReason reason,
-                       std::string message);
+                       InterruptRequest request,
+                       ActorTaskResultCallback<InterruptTaskResult> callback);
   void DoStopTask(ActorTaskId task_id, ActorTaskStoppedReason reason);
 
   // Starts a PageContext extraction of `web_state` for the task `task_id`.
@@ -279,6 +280,13 @@ class ActorService : public KeyedService {
 
   // Returns whether `Shutdown()` ran.
   bool IsShutDown() const { return !weak_this_; }
+
+  // Runs `callback` with `result`, or with `kTaskWentAway` if the task stopped
+  // since the user answered.
+  void OnInterruptCompleted(
+      ActorTaskId task_id,
+      ActorTaskResultCallback<InterruptTaskResult> callback,
+      ActorTaskResult<InterruptResponse> result);
 
   // Returns the active task identified by `task_id`, or nullptr.
   ActorTask* FindActiveTask(ActorTaskId task_id);

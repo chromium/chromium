@@ -5,9 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TYPES_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TYPES_H_
 
+#import <memory>
+#import <string>
+#import <variant>
 #import <vector>
 
 #import "base/functional/callback_forward.h"
+#import "base/types/expected.h"
 #import "base/types/id_type.h"
 #import "components/actor/core/task_id.h"
 #import "components/actor/public/mojom/actor_types.mojom-forward.h"
@@ -65,19 +69,21 @@ enum class ActorTaskStoppedReason {
   kUserStartedNewChat = 6
 };
 
-// Reasons why an ActorTask is interrupted to wait for user input.
-enum class ActorTaskInterruptReason {
-  // Unknown or unrecognized reason.
-  kUnknownReason = 0,
-  // Waiting for user confirmation.
-  kWaitingUserConfirmation = 1,
-  // Waiting for user clarification.
-  kWaitingUserClarification = 2,
-  // Waiting for user takeover.
-  kWaitingUserTakeover = 3,
-  // User provided irrelevant input.
-  kWaitingIrrelevantUserInput = 4,
+// Why a task request failed.
+enum class ActorTaskError {
+  // The task cannot take the request now. The task is not stopped.
+  kRejected,
+  // The task does not exist or stopped.
+  kTaskWentAway,
 };
+
+// Result of a task request.
+template <typename T>
+using ActorTaskResult = base::expected<T, ActorTaskError>;
+
+// Receives the result of a task request.
+template <typename T>
+using ActorTaskResultCallback = base::OnceCallback<void(ActorTaskResult<T>)>;
 
 // Represents the result of an action execution.
 // TODO(crbug.com/505085267): Add latency and stabilization information.
@@ -140,6 +146,40 @@ struct PerformActionsResult {
 
 // Callback for when a set of actions finishes execution.
 using PerformActionsCallback = base::OnceCallback<void(PerformActionsResult)>;
+
+// Asks the user to confirm before the task continues.
+struct ConfirmationInterrupt {
+  ConfirmationInterrupt();
+  ConfirmationInterrupt(const ConfirmationInterrupt&);
+  ConfirmationInterrupt& operator=(const ConfirmationInterrupt&);
+  ConfirmationInterrupt(ConfirmationInterrupt&&) noexcept;
+  ConfirmationInterrupt& operator=(ConfirmationInterrupt&&) noexcept;
+  ~ConfirmationInterrupt();
+
+  // Prompt title. Required.
+  std::string title;
+  // Prompt subtitle. Optional; not shown when empty.
+  std::string subtitle;
+  // Label of the confirming button. Required.
+  std::string button_text;
+};
+
+// An interrupt; the alternative selects its type.
+using InterruptRequest = std::variant<ConfirmationInterrupt>;
+
+// How the user answered an interrupt.
+enum class InterruptResponse {
+  // The user confirmed a `ConfirmationInterrupt`.
+  kConfirmed,
+};
+
+// Result of a successful `ActorService::InterruptTask()`.
+struct InterruptTaskResult {
+  explicit InterruptTaskResult(InterruptResponse response);
+
+  // How the user answered.
+  InterruptResponse response;
+};
 
 // Callback for a "tab observation" (nomenclature aligned with
 // `chrome/browser/actor`). Tab is equivalent to WebState and observation is

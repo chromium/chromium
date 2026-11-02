@@ -59,4 +59,20 @@ PerformActionsResult::PerformActionsResult(PerformActionsResult&&) = default;
 PerformActionsResult& PerformActionsResult::operator=(PerformActionsResult&&) =
     default;
 
+// ConfirmationInterrupt.
+ConfirmationInterrupt::ConfirmationInterrupt() = default;
+ConfirmationInterrupt::ConfirmationInterrupt(const ConfirmationInterrupt&) =
+    default;
+ConfirmationInterrupt& ConfirmationInterrupt::operator=(
+    const ConfirmationInterrupt&) = default;
+ConfirmationInterrupt::ConfirmationInterrupt(ConfirmationInterrupt&&) noexcept =
+    default;
+ConfirmationInterrupt& ConfirmationInterrupt::operator=(
+    ConfirmationInterrupt&&) noexcept = default;
+ConfirmationInterrupt::~ConfirmationInterrupt() = default;
+
+// InterruptTaskResult.
+InterruptTaskResult::InterruptTaskResult(InterruptResponse response)
+    : response(response) {}
+
 }  // namespace actor

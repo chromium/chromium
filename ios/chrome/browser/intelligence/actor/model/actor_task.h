@@ -8,7 +8,6 @@
 #import <memory>
 #import <optional>
 #import <string>
-#import <string_view>
 #import <vector>
 
 #import "base/containers/flat_map.h"
@@ -54,11 +53,9 @@ class AggregatedJournal;
 // task method is on the stack. Therefore:
 // - Outbound call-outs (observer notifications and `Act()` replies) are always
 //   posted with snapshot arguments.
-// - Intervention delegate requests are issued from a posted task, so no task
-//   method caller is re-entered. The delegate is messaged synchronously and
-//   must not destroy the task, which holds because `ActorService` enqueues its
-//   commands, destroys stopped tasks asynchronously, and is never shut down
-//   from a delegate.
+// - Intervention delegate requests are issued synchronously. The delegate never
+//   re-enters the task, as it only reaches it through `ActorService` enqueued
+//   commands.
 // - Callbacks handed to code outside the actor model (e.g. intervention
 //   delegate completions) are wrapped with `BindPostTaskToCurrentDefault`.
 // Callbacks handed to the engine or timers stay synchronous.
@@ -120,14 +117,14 @@ class ActorTask : public web::WebStateObserver,
   // destroyed after replying:
   // - with the engine results once actions complete and pages finish loading;
   // - with a single `kTaskWentAway` result if the task stops;
-  // - with a single `kExecutionEngineExistingAction` result if a previous
-  //   `Act()` has not replied yet.
+  // - with a single `kExecutionEngineExistingAction` result if an operation
+  //   (`Act()` or `Interrupt()`) is pending.
   void Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
            const std::string& task_update,
            ActCallback callback);
 
-  // Returns whether an `Act()` is pending.
-  bool HasPendingAct() const;
+  // Returns whether an `Act()` or `Interrupt()` is pending.
+  bool HasPendingOperation() const;
 
   // Adds a WebState to the set of controlled WebStates.
   void AddControlledWebState(web::WebState* web_state);
@@ -146,11 +143,12 @@ class ActorTask : public web::WebStateObserver,
   // Sets the intervention delegate for UI interaction.
   void SetInterventionDelegate(id<ActorTaskInterventionDelegate> delegate);
 
-  // Interrupts task execution to wait for user input, suspending ongoing
-  // actions without cancelling them. Accepts an optional message to display to
-  // the user.
-  void Interrupt(ActorTaskInterruptReason interrupt_reason,
-                 std::string_view message = "");
+  // Interrupts the task as described by `request` and prompts the user.
+  // `on_response` is posted at most once: with the user's answer once the task
+  // has resumed, `kRejected` if the task cannot take the interrupt, or
+  // `kTaskWentAway` if it stops first.
+  void Interrupt(const InterruptRequest& request,
+                 ActorTaskResultCallback<InterruptResponse> on_response);
 
   // Interrupts the task while a tool waits on the user, without prompting.
   void InterruptForTool(base::PassKey<ActorEngine> pass_key);
@@ -223,7 +221,8 @@ class ActorTask : public web::WebStateObserver,
   void SetState(ActorTaskState new_state);
 
   // Cancels ongoing actions, timers, and observations, and replies to any
-  // pending `Act()` with `reason`.
+  // pending `Act()` with `reason` and to any pending `Interrupt()` with
+  // `kTaskWentAway`.
   void CancelOngoingActions(mojom::ActionResultCode reason);
 
   // Called when the engine finishes executing the pending `Act()` actions.
@@ -283,19 +282,14 @@ class ActorTask : public web::WebStateObserver,
   // engine. No-op if the task is not waiting on the user.
   void ExitWaitingOnUser(ActorTaskState resumed_state);
 
-  // Validates the confirmation request synchronously, so that a rejected
-  // request stops the task before `Interrupt()` returns, where `ActorService`
-  // can still clean it up. Then posts `ShowInterruptConfirmation()`, so that
-  // the delegate never runs while the caller of `Interrupt()` is on the stack.
-  void RequestInterruptConfirmation(std::string_view message);
+  // Handles `Interrupt()` for a `ConfirmationInterrupt`.
+  void InterruptFor(const ConfirmationInterrupt& confirmation,
+                    ActorTaskResultCallback<InterruptResponse> on_response);
 
-  // Shows the confirmation `message` via the intervention delegate. The task
-  // state and the delegate are re-checked in the same posted task as the
-  // delegate call, so the user is never prompted for a task that was stopped
-  // or uninterrupted since the request was made.
-  void ShowInterruptConfirmation(const std::string& message);
+  // Shows the `confirmation` prompt via the intervention delegate.
+  void ShowInterruptConfirmation(const ConfirmationInterrupt& confirmation);
 
-  // Handles the user resolving the confirmation.
+  // Handles the user confirming.
   void OnInterruptConfirmationResolved();
 
   // The task state.
@@ -347,6 +341,9 @@ class ActorTask : public web::WebStateObserver,
 
   // The pending `Act()` request, if any.
   std::optional<PendingAct> pending_act_;
+
+  // Reply of the pending `Interrupt()`, if any.
+  ActorTaskResultCallback<InterruptResponse> pending_interrupt_;
 
   // Run once by `Stop()`.
   base::OnceClosure on_stopped_;

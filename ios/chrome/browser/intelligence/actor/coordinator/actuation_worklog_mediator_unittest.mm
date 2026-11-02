@@ -11,6 +11,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
+#import "base/types/expected.h"
 #import "components/actor/core/task_source_info.h"
 #import "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_types.h"
@@ -35,7 +37,9 @@
 
 namespace {
 constexpr char kTaskTitle[] = "Task Title";
+constexpr char kConfirmationTitle[] = "Input needed";
 constexpr char kConfirmationMessage[] = "Please confirm";
+constexpr char kConfirmationButtonText[] = "Continue";
 using enum actor::ActorTaskState;
 using enum actor::ToolType;
 
@@ -239,21 +243,27 @@ class ActuationWorklogMediatorTest : public PlatformTest {
     return observer;
   }
 
-  // Interrupts `task_id` for user confirmation and returns whether the
-  // interrupt was accepted, i.e. the task now waits on the user. `ActorTask`
-  // stops a task that has no intervention delegate to prompt instead.
-  bool RequestConfirmation(actor::ActorTaskId task_id) {
-    FakeTaskStateObserver* observer = ObserveTaskState(task_id);
-    actor_service_->InterruptTask(
-        task_id, actor::ActorTaskInterruptReason::kWaitingUserConfirmation,
-        kConfirmationMessage);
-    // Delivers the posted state updates and intervention prompt.
+  // Interrupts `task_id` for user confirmation and returns its result, or
+  // `std::nullopt` while it awaits the user's answer.
+  std::optional<actor::ActorTaskResult<actor::InterruptTaskResult>>
+  RequestConfirmation(actor::ActorTaskId task_id) {
+    actor::ConfirmationInterrupt confirmation;
+    confirmation.title = kConfirmationTitle;
+    confirmation.subtitle = kConfirmationMessage;
+    confirmation.button_text = kConfirmationButtonText;
+    base::test::TestFuture<actor::ActorTaskResult<actor::InterruptTaskResult>>
+        result;
+    actor_service_->InterruptTask(task_id, std::move(confirmation),
+                                  result.GetCallback());
+    // Run the interrupt and deliver its updates.
     actor::FlushCurrentSequence();
-    return !observer.stopped && observer.state == kWaitingOnUser;
+    if (!result.IsReady()) {
+      return std::nullopt;
+    }
+    return result.Take();
   }
 
-  // Creates and observes a task, interrupts it for user confirmation, then
-  // delivers the posted intervention prompt.
+  // Creates and observes a task, then interrupts it for user confirmation.
   actor::ActorTaskId CreateTaskAndRequestConfirmation() {
     actor::ActorTaskId task_id = CreateAndObserveTask();
     RequestConfirmation(task_id);
@@ -486,7 +496,7 @@ TEST_F(ActuationWorklogMediatorTest,
 
   EXPECT_EQ(actor_service_->GetActiveTaskState(), kWaitingOnUser);
   ASSERT_NE(fake_consumer_.intervention, nil);
-  EXPECT_NSEQ(fake_consumer_.intervention.title, @"Input needed");
+  EXPECT_NSEQ(fake_consumer_.intervention.title, @(kConfirmationTitle));
   EXPECT_NSEQ(fake_consumer_.intervention.subtitle, @(kConfirmationMessage));
 
   [mediator_ didTriggerInterventionAction:fake_consumer_.intervention.actions
@@ -518,7 +528,8 @@ TEST_F(ActuationWorklogMediatorTest, TestDisconnectClearsInterventionDelegate) {
   actor::ActorTaskId task_id = CreateAndObserveTask();
 
   [mediator_ disconnect];
-  EXPECT_FALSE(RequestConfirmation(task_id));
+  EXPECT_EQ(RequestConfirmation(task_id),
+            base::unexpected(actor::ActorTaskError::kRejected));
   EXPECT_EQ(fake_consumer_.intervention, nil);
 }
 
@@ -530,7 +541,8 @@ TEST_F(ActuationWorklogMediatorTest,
   actor::ActorTaskId task_id = CreateAndObserveTask();
 
   [mediator_ stopObservingTask];
-  EXPECT_FALSE(RequestConfirmation(task_id));
+  EXPECT_EQ(RequestConfirmation(task_id),
+            base::unexpected(actor::ActorTaskError::kRejected));
 }
 
 // Tests that observing another task moves the intervention delegate to it.
@@ -539,8 +551,9 @@ TEST_F(ActuationWorklogMediatorTest,
   actor::ActorTaskId first_task_id = CreateAndObserveTask();
   actor::ActorTaskId second_task_id = CreateAndObserveTask();
 
-  EXPECT_FALSE(RequestConfirmation(first_task_id));
-  EXPECT_TRUE(RequestConfirmation(second_task_id));
+  EXPECT_EQ(RequestConfirmation(first_task_id),
+            base::unexpected(actor::ActorTaskError::kRejected));
+  EXPECT_EQ(RequestConfirmation(second_task_id), std::nullopt);
   EXPECT_NE(fake_consumer_.intervention, nil);
 }
 

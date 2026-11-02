@@ -225,12 +225,13 @@ void ActorService::SetTaskInterventionDelegate(
   }
 }
 
-void ActorService::InterruptTask(ActorTaskId task_id,
-                                 ActorTaskInterruptReason reason,
-                                 std::string_view message) {
+void ActorService::InterruptTask(
+    ActorTaskId task_id,
+    InterruptRequest request,
+    ActorTaskResultCallback<InterruptTaskResult> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnqueueCommand(&ActorService::DoInterruptTask, task_id, reason,
-                 std::string(message));
+  EnqueueCommand(&ActorService::DoInterruptTask, task_id, std::move(request),
+                 std::move(callback));
 }
 
 void ActorService::StopTask(ActorTaskId task_id,
@@ -397,7 +398,7 @@ void ActorService::DoPerformActions(
   // leave its target WebStates controlled by the task.
   // TODO(crbug.com/568338837): Rely on the `ActorTask::Act()` check once the
   // task registers its controlled WebStates.
-  if (task->HasPendingAct()) {
+  if (task->HasPendingOperation()) {
     constexpr mojom::ActionResultCode kRejectionCode =
         mojom::ActionResultCode::kExecutionEngineExistingAction;
     LogActRejection(*journal_, task_id, "ActorService::PerformActions",
@@ -480,13 +481,40 @@ void ActorService::StartTabObservation(ActorTaskId task_id,
                             GetActorTabObservationPageContextTimeout()];
 }
 
-void ActorService::DoInterruptTask(ActorTaskId task_id,
-                                   ActorTaskInterruptReason reason,
-                                   std::string message) {
+void ActorService::DoInterruptTask(
+    ActorTaskId task_id,
+    InterruptRequest request,
+    ActorTaskResultCallback<InterruptTaskResult> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ActorTask* task = FindActiveTask(task_id)) {
-    task->Interrupt(reason, message);
+  ActorTask* task = FindActiveTask(task_id);
+  if (!task) {
+    PostReply(
+        base::BindOnce(std::move(callback),
+                       ActorTaskResult<InterruptTaskResult>(
+                           base::unexpected(ActorTaskError::kTaskWentAway))));
+    return;
   }
+  task->Interrupt(
+      request, base::BindOnce(&ActorService::OnInterruptCompleted, weak_this_,
+                              task_id, std::move(callback)));
+}
+
+void ActorService::OnInterruptCompleted(
+    ActorTaskId task_id,
+    ActorTaskResultCallback<InterruptTaskResult> callback,
+    ActorTaskResult<InterruptResponse> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // `ActorTask` already posted `result`, so reply without `PostReply()`.
+  if (!result.has_value()) {
+    std::move(callback).Run(base::unexpected(result.error()));
+    return;
+  }
+  // The task may have stopped since the user answered.
+  if (!FindActiveTask(task_id)) {
+    std::move(callback).Run(base::unexpected(ActorTaskError::kTaskWentAway));
+    return;
+  }
+  std::move(callback).Run(InterruptTaskResult(result.value()));
 }
 
 void ActorService::DoStopTask(ActorTaskId task_id,
