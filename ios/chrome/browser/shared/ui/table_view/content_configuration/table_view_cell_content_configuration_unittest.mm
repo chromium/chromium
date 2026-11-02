@@ -94,4 +94,48 @@ TEST_F(TableViewCellContentConfigurationTest,
   }
 }
 
+// Tests that re-applying configurations with nil trailingText multiple times
+// inside an animation block before setting non-nil trailingText unhides and
+// sizes the trailing label properly.
+TEST_F(TableViewCellContentConfigurationTest,
+       TrailingLabelUnhidesAfterRepeatedUpdatesInAnimationBlock) {
+  UIWindow* window =
+      [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+  TableViewCellContentConfiguration* initialConfig =
+      [[TableViewCellContentConfiguration alloc] init];
+  initialConfig.title = @"Passwords in Other Apps";
+  initialConfig.trailingText = nil;
+
+  UIView<UIContentView>* view = [initialConfig makeContentView];
+  view.frame = CGRectMake(0, 0, 320, 48);
+  [window addSubview:view];
+  [window makeKeyAndVisible];
+  [view setNeedsLayout];
+  [view layoutIfNeeded];
+
+  [UIView animateWithDuration:0.3
+                   animations:^{
+                     view.configuration = [initialConfig copy];
+                     view.configuration = [initialConfig copy];
+
+                     TableViewCellContentConfiguration* updatedConfig =
+                         [initialConfig copy];
+                     updatedConfig.trailingText = @"On";
+                     view.configuration = updatedConfig;
+                     [view setNeedsLayout];
+                     [view layoutIfNeeded];
+                   }];
+
+  UIStackView* mainStack =
+      base::apple::ObjCCastStrict<UIStackView>(view.subviews.firstObject);
+  UIStackView* textStack =
+      base::apple::ObjCCastStrict<UIStackView>(mainStack.arrangedSubviews[1]);
+  UILabel* trailingLabel =
+      base::apple::ObjCCastStrict<UILabel>(textStack.arrangedSubviews[1]);
+
+  EXPECT_NSEQ(@"On", trailingLabel.text);
+  EXPECT_FALSE(trailingLabel.hidden);
+  EXPECT_GT(trailingLabel.frame.size.width, 0.0);
+}
+
 }  // namespace
