@@ -517,11 +517,11 @@ TEST_F(UDPSocketTest, PartialRecv) {
   EXPECT_EQ(second_packet, received);
 }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
+// Verifies that two `UDPServerSocket` instances listening on `0.0.0.0` with
+// `AllowAddressReuse()` and `AllowBroadcast()` both receive packets sent to the
+// loopback broadcast address `127.255.255.255`.
+#if BUILDFLAG(IS_APPLE)
 // - MacOS: requires root permissions on OSX 10.7+.
-// - Android: devices attached to testbots don't have default network, so
-// broadcasting to 255.255.255.255 returns error -109 (Address not reachable).
-// crbug.com/139144.
 #define MAYBE_LocalBroadcast DISABLED_LocalBroadcast
 #else
 #define MAYBE_LocalBroadcast LocalBroadcast
