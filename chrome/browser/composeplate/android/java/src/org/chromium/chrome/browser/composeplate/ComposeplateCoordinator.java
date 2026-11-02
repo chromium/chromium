@@ -132,14 +132,17 @@ public class ComposeplateCoordinator {
     }
 
     /**
-     * Records an impression for each visible button on the composeplate: the AI Mode button, the
-     * incognito button and, if shown, the optional button. Nothing is recorded if the composeplate
-     * isn't visible. Should only be called when the New Tab Page is shown to the user.
+     * Records an impression for each visible button on the composeplate: the AI Mode button and,
+     * when the beside-MVT layout is not enabled, the incognito button and (if shown) the optional
+     * button. Nothing is recorded if the composeplate isn't visible. Should only be called when the
+     * New Tab Page is shown to the user.
      */
     public void recordButtonsImpression() {
         if (!mModel.get(ComposeplateProperties.IS_VISIBLE)) return;
 
         ComposeplateMetricsUtils.recordComposeplateButtonImpression(ActionChips.DEFAULT);
+        if (NewTabPageUtils.isBesideMvtModuleEnabled()) return;
+
         ComposeplateMetricsUtils.recordComposeplateButtonImpression(ActionChips.INCOGNITO);
         if (mOptionalButtonType != null
                 && mModel.get(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE)) {
