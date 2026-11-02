@@ -146,7 +146,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
   raw_ptr<views::Label> description_label_ = nullptr;
   raw_ptr<LoginButton> close_button_ = nullptr;
   raw_ptr<LoginPasswordView> login_password_view_ = nullptr;
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 
   // Current local authentication state.
   LocalAuthenticationRequestViewState state_ =

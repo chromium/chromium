@@ -219,7 +219,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   raw_ptr<FocusableLabelButton> help_button_ = nullptr;
   raw_ptr<views::Button> submit_button_ = nullptr;
 
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 
   display::ScopedDisplayObserver display_observer_{this};
 
