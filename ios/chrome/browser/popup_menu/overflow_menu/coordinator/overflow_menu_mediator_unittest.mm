@@ -1129,6 +1129,85 @@ TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   EXPECT_FALSE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
 }
 
+// Tests that 1) the tools menu has an enabled 'Add to Bookmarks' button when
+// the current URL is not in bookmarks, 2) the bookmark button changes to an
+// enabled 'Edit bookmark' button when navigating to a URL bookmarked in account
+// storage (`account_mobile_node()`), and 3) the bookmark button changes back to
+// 'Add to Bookmarks' when the account bookmark is removed.
+TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtonsAccountStorage) {
+  const GURL nonBookmarkedURL("https://nonbookmarked.url");
+  const GURL bookmarkedURL("https://bookmarked.url");
+
+  web_state_->SetCurrentURL(nonBookmarkedURL);
+  SetUpActiveWebState();
+
+  CreateMediator(/*incognito=*/NO);
+  SetUpBookmarks();
+  bookmark_model_->CreateAccountPermanentFolders();
+  bookmark_model_->AddURL(bookmark_model_->account_mobile_node(), 0,
+                          base::SysNSStringToUTF16(@"Test account bookmark"),
+                          bookmarkedURL);
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
+  EXPECT_FALSE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
+
+  // Navigate to bookmarked url.
+  web_state_->SetCurrentURL(bookmarkedURL);
+  web::FakeNavigationContext context;
+  web_state_->OnNavigationFinished(&context);
+
+  EXPECT_FALSE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
+  EXPECT_TRUE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
+
+  bookmark_model_->RemoveAllUserBookmarks(FROM_HERE);
+  EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
+  EXPECT_FALSE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
+}
+
+// Tests that when a URL is bookmarked in both local storage (`mobile_node()`)
+// and account storage (`account_mobile_node()`), removing the local bookmark
+// keeps 'Edit bookmark' enabled until the account bookmark is also removed.
+TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtonsBothStorages) {
+  const GURL bookmarkedURL("https://bookmarked.url");
+
+  web_state_->SetCurrentURL(bookmarkedURL);
+  SetUpActiveWebState();
+
+  CreateMediator(/*incognito=*/NO);
+  SetUpBookmarks();
+  bookmark_model_->CreateAccountPermanentFolders();
+  const bookmarks::BookmarkNode* localNode = bookmark_model_->AddURL(
+      bookmark_model_->mobile_node(), 0,
+      base::SysNSStringToUTF16(@"Test local bookmark"), bookmarkedURL);
+  bookmark_model_->AddURL(bookmark_model_->account_mobile_node(), 0,
+                          base::SysNSStringToUTF16(@"Test account bookmark"),
+                          bookmarkedURL);
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  EXPECT_FALSE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
+  EXPECT_TRUE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
+
+  // Removing only the local bookmark should keep 'Edit bookmark' enabled
+  // because the URL is still bookmarked in account storage.
+  bookmark_model_->Remove(
+      localNode, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  EXPECT_FALSE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
+  EXPECT_TRUE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
+
+  // Removing account permanent folders removes the remaining bookmark and
+  // switches the button back to 'Add to Bookmarks'.
+  bookmark_model_->RemoveAccountPermanentFolders();
+  EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
+  EXPECT_FALSE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
+}
+
 // Tests that the bookmark button is disabled when EditBookmarksEnabled pref is
 // changed to false.
 TEST_F(OverflowMenuMediatorTest, TestDisableBookmarksButton) {
