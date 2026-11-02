@@ -287,8 +287,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsSerialPorts':
       case 'siteSettingsSiteData':
       case 'siteSettingsSiteDetails':
-      // <if expr="is_chromeos">
+      // <if expr="enable_smart_card">
       case 'siteSettingsSmartCardReaders':
+      // </if>
+      // <if expr="is_chromeos">
       case 'siteSettingsWebPrinting':
       // </if>
       case 'siteSettingsSound':

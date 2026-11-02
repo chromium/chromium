@@ -163,7 +163,7 @@ export class ChooserExceptionListElement extends
         this.emptyListMessage_ = this.i18n('noBluetoothDevicesFound');
         this.resetPermissionsMessage_ = this.i18n('resetBluetoothConfirmation');
         break;
-      // <if expr="is_chromeos">
+      // <if expr="enable_smart_card">
       case ChooserType.SMART_CARD_READERS_DEVICES:
         this.emptyListMessage_ =
             this.i18n('siteSettingsNoSmartCardReadersFound');

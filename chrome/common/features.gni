@@ -20,6 +20,7 @@ import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//services/webnn/public/webnn_features.gni")
+import("//third_party/blink/public/public_features.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -100,6 +101,7 @@ chrome_grit_defines = [
   "enable_pdf=$enable_pdf",
   "enable_print_preview=$enable_print_preview",
   "enable_screen_capture=$enable_screen_capture",
+  "enable_smart_card=$enable_smart_card",
   "enable_supervised_users=$enable_supervised_users",
   "enable_vr=$enable_vr",
   "enable_webui_certificate_viewer=$enable_webui_certificate_viewer",

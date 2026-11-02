@@ -83,8 +83,10 @@ import './site_settings/site_data.js';
 import './site_settings/site_details.js';
 import './site_settings/site_details_permission_device_entry.js';
 import './site_settings/site_settings_page.js';
-// <if expr="is_chromeos">
+// <if expr="enable_smart_card">
 import './site_settings/smart_card_readers_page.js';
+// </if>
+// <if expr="is_chromeos">
 import './site_settings/web_printing_page.js';
 // </if>
 import './site_settings/sound_page.js';
@@ -337,7 +339,7 @@ export {defaultSettingLabel} from './site_settings/site_settings_list.js';
 export {SiteSettingsMixin} from './site_settings/site_settings_mixin.js';
 export {SiteSettingsMixinLit} from './site_settings/site_settings_mixin_lit.js';
 export {SettingsSiteSettingsPageElement} from './site_settings/site_settings_page.js';
-// <if expr="is_chromeos">
+// <if expr="enable_smart_card">
 export {SettingsSmartCardReadersPageElement} from './site_settings/smart_card_readers_page.js';
 // </if>
 export {SoundPageElement} from './site_settings/sound_page.js';

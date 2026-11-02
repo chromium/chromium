@@ -94,7 +94,7 @@ export enum ChooserType {
   SERIAL_PORTS = 'serial-ports-data',
   HID_DEVICES = 'hid-devices-data',
   BLUETOOTH_DEVICES = 'bluetooth-devices-data',
-  // <if expr="is_chromeos">
+  // <if expr="enable_smart_card">
   SMART_CARD_READERS_DEVICES = 'smart-card-readers-data',
   // </if>
 }

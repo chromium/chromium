@@ -166,6 +166,7 @@ source_set("browser_tests") {
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/subscription_eligibility",
       "//chrome/browser/ui/webui/settings",
+      "//third_party/blink/public:buildflags",
     ]
 
     if (is_chrome_branded) {

@@ -50,6 +50,7 @@
 #include "crypto/crypto_buildflags.h"
 #include "device/fido/public/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "ui/compositor/compositor_switches.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1305,11 +1306,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Slider) {
   RunTest("settings/settings_slider_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SMART_CARD)
 IN_PROC_BROWSER_TEST_F(SettingsTest, SmartCardReadersPage) {
   RunTest("settings/smart_card_readers_page_test.js", "mocha.run()");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_SMART_CARD)
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SpeedPage) {
   RunTest("settings/speed_page_test.js", "runMochaSuite('SpeedPage')");

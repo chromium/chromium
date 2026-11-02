@@ -75,8 +75,10 @@ suite('SiteDetails', function() {
     await PrefService.getInstance().whenInitialized();
 
     loadTimeData.overrideValues({
-      // <if expr="is_chromeos">
+      // <if expr="enable_smart_card">
       enableSmartCardReadersContentSetting: true,
+      // </if>
+      // <if expr="is_chromeos">
       enableWebPrintingContentSetting: true,
       // </if>
     });
@@ -148,12 +150,14 @@ suite('SiteDetails', function() {
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.PAYMENT_HANDLER,
               [createRawSiteException('https://foo.com:443')]),
-          // <if expr="is_chromeos">
+          // <if expr="enable_smart_card">
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.SMART_CARD_READERS,
               [createRawSiteException('https://foo.com:443', {
                 setting: ContentSetting.BLOCK,
               })]),
+          // </if>
+          // <if expr="is_chromeos">
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.WEB_PRINTING,
               [createRawSiteException('https://foo.com:443')]),
@@ -361,10 +365,12 @@ suite('SiteDetails', function() {
       // For all the categories with non-user-set 'Allow' preferences,
       // update expected values.
       const categoriesWithNonUserSetAllow = [
-        ContentSettingsTypes.NOTIFICATIONS, ContentSettingsTypes.JAVASCRIPT,
-        ContentSettingsTypes.IMAGES, ContentSettingsTypes.POPUPS,
+        ContentSettingsTypes.NOTIFICATIONS,
+        ContentSettingsTypes.JAVASCRIPT,
+        ContentSettingsTypes.IMAGES,
+        ContentSettingsTypes.POPUPS,
         ContentSettingsTypes.FILE_SYSTEM_WRITE,
-        // <if expr="is_chromeos">
+        // <if expr="enable_smart_card">
         ContentSettingsTypes.SMART_CARD_READERS,
         // </if>
       ];

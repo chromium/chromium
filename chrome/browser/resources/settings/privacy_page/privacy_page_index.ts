@@ -124,7 +124,7 @@ export class SettingsPrivacyPageIndexElement extends
         value: () => loadTimeData.getBoolean('enableSecurityKeysSubpage'),
       },
 
-      // <if expr="is_chromeos">
+      // <if expr="enable_smart_card">
       enableSmartCardReadersContentSetting_: {
         type: Boolean,
         value: () => {
@@ -132,7 +132,9 @@ export class SettingsPrivacyPageIndexElement extends
               'enableSmartCardReadersContentSetting');
         },
       },
+      // </if>
 
+      // <if expr="is_chromeos">
       enableWebPrintingContentSetting_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableWebPrintingContentSetting'),
@@ -184,8 +186,10 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enableFederatedIdentityApiContentSetting_: boolean;
   declare private enableExperimentalWebPlatformFeatures_: boolean;
   declare private enableHandTrackingContentSetting_: boolean;
-  // <if expr="is_chromeos">
+  // <if expr="enable_smart_card">
   declare private enableSmartCardReadersContentSetting_: boolean;
+  // </if>
+  // <if expr="is_chromeos">
   declare private enableWebPrintingContentSetting_: boolean;
   // </if>
   declare private enableSafeBrowsingSubresourceFilter_: boolean;

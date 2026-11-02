@@ -453,7 +453,7 @@
     </settings-serial-ports-page>
   </template>
 
-<if expr="is_chromeos">
+<if expr="enable_smart_card">
   <template is="dom-if" if="[[enableSmartCardReadersContentSetting_]]">
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_SMART_CARD_READERS, currentRoute, inSearchMode)]]"
@@ -464,7 +464,9 @@
       </settings-smart-card-readers-page>
     </template>
   </template>
+</if>
 
+<if expr="is_chromeos">
   <template is="dom-if" if="[[enableWebPrintingContentSetting_]]">
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_WEB_PRINTING, currentRoute, inSearchMode)]]"

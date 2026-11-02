@@ -379,7 +379,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       label: 'siteDataPageTitle',
       icon: 'privacy:database',
     },
-    // <if expr="is_chromeos">
+    // <if expr="enable_smart_card">
     {
       route: routes.SITE_SETTINGS_SMART_CARD_READERS,
       id: Id.SMART_CARD_READERS,
@@ -390,6 +390,8 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       shouldShow: () =>
           loadTimeData.getBoolean('enableSmartCardReadersContentSetting'),
     },
+    // </if>
+    // <if expr="is_chromeos">
     {
       route: routes.SITE_SETTINGS_WEB_PRINTING,
       id: Id.WEB_PRINTING,
@@ -536,8 +538,10 @@ export class SettingsSiteSettingsPageElement extends
               Id.AUTO_PICTURE_IN_PICTURE,
               Id.CAPTURED_SURFACE_CONTROL,
               Id.KEYBOARD_LOCK,
-              // <if expr="is_chromeos">
+              // <if expr="enable_smart_card">
               Id.SMART_CARD_READERS,
+              // </if>
+              // <if expr="is_chromeos">
               Id.WEB_PRINTING,
               // </if>
               Id.WEB_APP_INSTALLATION,

@@ -62,11 +62,13 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL =
         r.SITE_SETTINGS.createChild('capturedSurfaceControl');
   }
-  // <if expr="is_chromeos">
+  // <if expr="enable_smart_card">
   if (loadTimeData.getBoolean('enableSmartCardReadersContentSetting')) {
     r.SITE_SETTINGS_SMART_CARD_READERS =
         r.SITE_SETTINGS.createChild('smartCardReaders');
   }
+  // </if>
+  // <if expr="is_chromeos">
   if (loadTimeData.getBoolean('enableWebPrintingContentSetting')) {
     r.SITE_SETTINGS_WEB_PRINTING = r.SITE_SETTINGS.createChild('webPrinting');
   }

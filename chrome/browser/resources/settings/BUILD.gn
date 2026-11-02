@@ -4,6 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//crypto/features.gni")
+import("//third_party/blink/public/public_features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(!is_android, "Android does not use these settings")
@@ -117,7 +118,7 @@ build_webui("build") {
     "site_settings/window_management_page.ts",
   ]
 
-  if (is_chromeos) {
+  if (enable_smart_card) {
     web_component_files += [ "site_settings/smart_card_readers_page.ts" ]
   }
 

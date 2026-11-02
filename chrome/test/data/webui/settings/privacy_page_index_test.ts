@@ -37,8 +37,10 @@ suite('PrivacyPageIndex', function() {
           enablePersistentPermissions: false,
           enableSafeBrowsingSubresourceFilter: false,
           enableSecurityKeysSubpage: false,
-          // <if expr="is_chromeos">
+          // <if expr="enable_smart_card">
           enableSmartCardReadersContentSetting: false,
+          // </if>
+          // <if expr="is_chromeos">
           enableWebPrintingContentSetting: false,
           // </if>
           enableWebAppInstallation: false,
@@ -459,7 +461,7 @@ suite('PrivacyPageIndex', function() {
           'privacy');
     });
 
-    // <if expr="is_chromeos">
+    // <if expr="enable_smart_card">
     test('RoutingSmartCardReaders', async function() {
       assertFalse(
           loadTimeData.getBoolean('enableSmartCardReadersContentSetting'));
@@ -470,7 +472,9 @@ suite('PrivacyPageIndex', function() {
           routes.SITE_SETTINGS_SMART_CARD_READERS,
           ['siteSettingsSmartCardReaders'], 'privacy');
     });
+    // </if>
 
+    // <if expr="is_chromeos">
     test('RoutingWebPrinting', async function() {
       assertFalse(loadTimeData.getBoolean('enableWebPrintingContentSetting'));
       await createPrivacyPageIndex({enableWebPrintingContentSetting: true});

@@ -248,7 +248,7 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
       case ContentSettingImageType.kFramebust:
         iconName = blocked ? 'open_in_new_off' : 'open_in_new_20';
         break;
-      // <if expr="is_chromeos">
+      // <if expr="enable_smart_card">
       case ContentSettingImageType.kSmartCard:
         // Indicator shows only when at least one connection is active, hence no
         // need for the off icon.

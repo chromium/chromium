@@ -552,7 +552,7 @@ suite('SiteDetailsPermission', function() {
                                         '#block')!.hidden);
       });
 
-  // <if expr="is_chromeos">
+  // <if expr="enable_smart_card">
   test(
       'Smart Card Readers: ASK/BLOCK can be chosen as a preference by users',
       function() {

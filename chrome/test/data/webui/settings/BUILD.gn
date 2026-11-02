@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/blink/public/public_features.gni")
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
@@ -230,10 +231,7 @@ build_webui_tests("build") {
   ]
 
   if (is_chromeos) {
-    files += [
-      "people_page_test_cros.ts",
-      "smart_card_readers_page_test.ts",
-    ]
+    files += [ "people_page_test_cros.ts" ]
   } else {
     files += [
       "clear_browsing_data_account_indicator_test.ts",
@@ -257,6 +255,10 @@ build_webui_tests("build") {
       "translate_page_metrics_test_browser.ts",
       "translate_page_test.ts",
     ]
+  }
+
+  if (enable_smart_card) {
+    files += [ "smart_card_readers_page_test.ts" ]
   }
 
   if (is_chrome_branded) {
