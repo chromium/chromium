@@ -5868,8 +5868,7 @@ static Element* SkipDisplayNoneAncestors(Element* element) {
     // own, but it is painted as part of the <img> that uses its <map>, and hit
     // testing resolves image map hits to it, so it can be hovered/activated
     // like a rendered element.
-    if (IsA<HTMLAreaElement>(*element) &&
-        RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+    if (IsA<HTMLAreaElement>(*element)) {
       return element;
     }
   }

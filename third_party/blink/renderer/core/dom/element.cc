@@ -8909,8 +8909,7 @@ void Element::SetFocused(bool now_focused,
   FocusStateChanged();
 
   if (GetLayoutObject() || now_focused ||
-      (IsA<HTMLAreaElement>(*this) && GetComputedStyle() &&
-       RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled())) {
+      (IsA<HTMLAreaElement>(*this) && GetComputedStyle())) {
     return;
   }
 
@@ -9341,8 +9340,7 @@ void Element::FocusStateChanged() {
   // <area> is an exception, since its focus ring is painted by the <img> that
   // uses its <map>, so its focus style needs to stay current.
   if (!GetLayoutObject()) {
-    if (!IsA<HTMLAreaElement>(*this) ||
-        !RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+    if (!IsA<HTMLAreaElement>(*this)) {
       return;
     }
 
@@ -10822,8 +10820,7 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   }
 
   // An <area> has no box, but remains interactive through its image map.
-  if (IsA<HTMLAreaElement>(*this) &&
-      RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+  if (IsA<HTMLAreaElement>(*this)) {
     return true;
   }
 

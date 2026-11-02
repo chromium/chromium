@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -305,8 +304,7 @@ FocusCandidate SpatialNavigationController::FindNextCandidateInContainer(
   // An <area> has no box of its own; it is rendered by the <img> that uses its
   // <map>. Use that image as the visible node, like FocusCandidate does.
   if (auto* area = DynamicTo<HTMLAreaElement>(interest_child_in_container);
-      area && !area->GetLayoutObject() &&
-      RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+      area && !area->GetLayoutObject()) {
     current_interest.visible_node = area->ImageElement();
   }
 
@@ -441,7 +439,7 @@ bool SpatialNavigationController::IsValidCandidate(
 
   if (!element->GetLayoutObject()) {
     const auto* area = DynamicTo<HTMLAreaElement>(element);
-    if (!area || !RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+    if (!area) {
       return false;
     }
     // An <area> has no box of its own; it is rendered by the <img> that uses

@@ -599,8 +599,7 @@ std::optional<ui::Cursor> EventHandler::SelectCursor(
   // style recalc, for the cursor.
   const ComputedStyle* area_style = nullptr;
   if (auto* area = DynamicTo<HTMLAreaElement>(node);
-      area && !hit_layout_object &&
-      RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+      area && !hit_layout_object) {
     area_style = ComputedStyle::NullifyEnsured(area->GetComputedStyle());
     if (area_style) {
       HTMLImageElement* image = area->ImageElement();

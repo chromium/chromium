@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] area should be hidden
-  assert_equals: expected "none" but got "inline"
-Harness: the test ran to completion.
-

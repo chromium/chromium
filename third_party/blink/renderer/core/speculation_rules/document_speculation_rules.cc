@@ -1032,8 +1032,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
           // A default-styled <area> has no box of its own. Judge it by the
           // <img> that uses its <map> instead.
           if (const auto* area = DynamicTo<HTMLAreaElement>(link);
-              area && !area->GetLayoutObject() &&
-              RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+              area && !area->GetLayoutObject()) {
             const HTMLImageElement* image = area->ImageElement();
             if (!image ||
                 ComputedStyle::IsNullOrEnsured(image->GetComputedStyle())) {

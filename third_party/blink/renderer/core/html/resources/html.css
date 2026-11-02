@@ -1067,12 +1067,7 @@ input[type="image" i] {
 }
 
 /* https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements */
-@supports blink-feature(HTMLAreaElementDisplayNone) {
-  area {
-    display: none;
-  }
-}
-base, basefont, datalist, head, link, meta, noembed,
+area, base, basefont, datalist, head, link, meta, noembed,
 noframes, param, rp, script, style, template, title {
   display: none;
 }

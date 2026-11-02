@@ -5173,8 +5173,7 @@ bool AXObject::ComputeIsHiddenViaStyle(const ComputedStyle* style) {
     // <area> is display:none by default, in which case it has no box of its
     // own, but it is rendered as part of the <img> that uses its <map>. Its
     // visibility is the image's.
-    if (const auto* area = DynamicTo<HTMLAreaElement>(GetNode());
-        area && RuntimeEnabledFeatures::HTMLAreaElementDisplayNoneEnabled()) {
+    if (const auto* area = DynamicTo<HTMLAreaElement>(GetNode())) {
       HTMLImageElement* image = area->ImageElement();
       const LayoutObject* image_layout_object =
           image ? image->GetLayoutObject() : nullptr;
