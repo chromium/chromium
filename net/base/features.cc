@@ -506,7 +506,7 @@ BASE_FEATURE(kDeviceBoundSessionsFederatedRegistrationBlockRedirects,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeviceBoundSessionsForRestrictedSites,
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT

@@ -6243,24 +6243,6 @@
             ]
         }
     ],
-    "DeviceBoundSessionCredentialsMac": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DeviceBoundSessionsForRestrictedSites",
-                        "EnableChromeRefreshTokenBinding",
-                        "EnableOAuthMultiloginStandardCookiesBinding",
-                        "EnableOAuthMultiloginStandardCookiesBindingForSecondaryPartitions"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeviceBoundSessionsDsePrewarmerMac": [
         {
             "platforms": [

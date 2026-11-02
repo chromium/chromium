@@ -528,7 +528,7 @@ const base::FeatureParam<std::string>
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Enables Chrome refresh tokens binding to a device.
 BASE_FEATURE(kEnableChromeRefreshTokenBinding,
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -623,7 +623,7 @@ BASE_FEATURE_PARAM(bool,
 //
 // It takes precedence over the `kEnableOAuthMultiloginCookiesBinding` flag.
 BASE_FEATURE(kEnableOAuthMultiloginStandardCookiesBinding,
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -635,11 +635,11 @@ BASE_FEATURE(kEnableOAuthMultiloginStandardCookiesBinding,
 // for secondary partitions.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kEnableOAuthMultiloginStandardCookiesBindingForSecondaryPartitions,
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_WIN)
+#endif
 );
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
