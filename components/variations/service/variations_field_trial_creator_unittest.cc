@@ -50,6 +50,7 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
+#include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -403,6 +404,23 @@ class TestVariationsSeedStore : public VariationsSeedStore {
   bool has_unloadable_safe_seed_ = false;
 };
 
+#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+// Associates a mock testing config, instead of the one defined in
+// fieldtrial_testing_config.json.
+void AssociateMockTestingConfig(Study::Platform platform,
+                                Study::FormFactor form_factor,
+                                base::FeatureList* feature_list) {
+  AssociateParamsFromFieldTrialConfig(
+      {.studies =
+           {{.name = "UnitTest",
+             .experiments = {{.name = "Enabled",
+                              .platforms = {platform},
+                              .params = {{"x", "1"}},
+                              .enable_features = {"UnitTestEnabled"}}}}}},
+      platform, form_factor, feature_list);
+}
+#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+
 class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
  public:
   TestVariationsFieldTrialCreator(
@@ -464,9 +482,8 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
   // We override this method so that a mock testing config is used instead of
   // the one defined in fieldtrial_testing_config.json.
   void ApplyFieldTrialTestingConfig(base::FeatureList* feature_list) override {
-    AssociateParamsFromFieldTrialConfig(
-        kTestingConfig,
-        GetPlatform(), GetCurrentFormFactor(), feature_list);
+    AssociateMockTestingConfig(GetPlatform(), GetCurrentFormFactor(),
+                               feature_list);
   }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 

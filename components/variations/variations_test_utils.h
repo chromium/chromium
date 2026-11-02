@@ -15,7 +15,6 @@
 #include "components/variations/active_field_trials.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
-#include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_reader_writer.h"
 #include "components/variations/synthetic_trial_registry.h"
@@ -80,9 +79,6 @@ extern const SignedSeedPrefKeys kSafeSeedPrefKeys;
 
 // The pref keys used to store regular signed variations seed data.
 extern const SignedSeedPrefKeys kRegularSeedPrefKeys;
-
-// Mock field trial testing config.
-extern const FieldTrialTestingConfig kTestingConfig;
 
 // Disables the use of the field trial testing config to exercise
 // VariationsFieldTrialCreator::CreateTrialsFromSeed().
