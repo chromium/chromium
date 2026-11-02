@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -34,9 +35,9 @@ constexpr gfx::Size kIsoA4Microns(210000, 297000);
 constexpr gfx::Size kNaLetterMicrons(216000, 279000);
 #endif
 
-std::string Simplify(const std::string& title) {
-  return base::UTF16ToUTF8(
-      SimplifyDocumentTitleWithLength(base::UTF8ToUTF16(title), kTestLength));
+std::string Simplify(std::string_view title) {
+  return base::UTF16ToUTF8(SimplifyDocumentTitleWithLengthForTesting(
+      base::UTF8ToUTF16(title), kTestLength));
 }
 
 #if BUILDFLAG(IS_WIN)

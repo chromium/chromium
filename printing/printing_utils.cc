@@ -41,8 +41,6 @@ constexpr size_t kMaxDocumentTitleLength = 80;
 constexpr gfx::Size kIsoA4Microns = gfx::Size(210000, 297000);
 #endif
 
-}  // namespace
-
 std::u16string SimplifyDocumentTitleWithLength(const std::u16string& title,
                                                size_t length) {
   std::u16string no_controls(title);
@@ -62,8 +60,16 @@ std::u16string SimplifyDocumentTitleWithLength(const std::u16string& title,
   return result;
 }
 
+}  // namespace
+
 std::u16string SimplifyDocumentTitle(const std::u16string& title) {
   return SimplifyDocumentTitleWithLength(title, kMaxDocumentTitleLength);
+}
+
+std::u16string SimplifyDocumentTitleWithLengthForTesting(
+    const std::u16string& title,
+    size_t length) {
+  return SimplifyDocumentTitleWithLength(title, length);
 }
 
 #if BUILDFLAG(USE_CUPS)

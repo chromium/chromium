@@ -32,8 +32,9 @@ COMPONENT_EXPORT(PRINTING_BASE)
 std::u16string SimplifyDocumentTitle(const std::u16string& title);
 
 COMPONENT_EXPORT(PRINTING_BASE)
-std::u16string SimplifyDocumentTitleWithLength(const std::u16string& title,
-                                               size_t length);
+std::u16string SimplifyDocumentTitleWithLengthForTesting(
+    const std::u16string& title,
+    size_t length);
 
 #if BUILDFLAG(USE_CUPS)
 // Returns the paper size (microns) most common in the locale to the nearest
