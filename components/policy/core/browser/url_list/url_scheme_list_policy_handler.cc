@@ -94,11 +94,7 @@ size_t URLSchemeListPolicyHandler::max_items() {
 // https://www.chromium.org/administrators/url-blocklist-filter-format
 bool URLSchemeListPolicyHandler::ValidatePolicyEntry(
     const std::string* policy) {
-  url_matcher::util::FilterComponents components;
-  return policy && url_matcher::util::FilterToComponents(
-                       *policy, &components.scheme, &components.host,
-                       &components.match_subdomains, &components.port,
-                       &components.path, &components.query);
+  return policy && url_matcher::util::FilterToComponents(*policy).has_value();
 }
 
 }  // namespace policy

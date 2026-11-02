@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -53,24 +54,17 @@ constexpr base::TimeDelta kMaxSetFilesPolicyRetryDelay = base::Minutes(5);
 scoped_refptr<url_matcher::URLMatcherConditionSet> CreateConditionSet(
     url_matcher::URLMatcher* matcher,
     UrlConditionId condition_id,
-    const std::string& url) {
+    std::string_view url) {
   CHECK(matcher);
 
-  std::string scheme;
-  std::string host;
-  uint16_t port = 0;
-  std::string path;
-  std::string query;
-  bool match_subdomains = true;
-
-  if (!url_matcher::util::FilterToComponents(
-          url, &scheme, &host, &match_subdomains, &port, &path, &query)) {
+  std::optional<url_matcher::util::FilterComponents> components =
+      url_matcher::util::FilterToComponents(url);
+  if (!components) {
     LOG(ERROR) << "Invalid pattern " << url;
     return nullptr;
   }
-  return url_matcher::util::CreateConditionSet(matcher, condition_id, scheme,
-                                               host, match_subdomains, port,
-                                               path, query, /*allow=*/true);
+  return url_matcher::util::CreateConditionSet(matcher, condition_id,
+                                               *components);
 }
 
 // Creates `urls` conditions, saves patterns strings mapping in
@@ -84,7 +78,7 @@ void AddUrlConditions(url_matcher::URLMatcher* matcher,
                       std::map<UrlConditionId, RuleId>& map) {
   CHECK(urls, base::NotFatalUntil::M161);
   for (const auto& list_entry : *urls) {
-    std::string url = list_entry.GetString();
+    const std::string& url = list_entry.GetString();
 
     ++condition_id;
     auto condition_set = CreateConditionSet(matcher, condition_id, url);

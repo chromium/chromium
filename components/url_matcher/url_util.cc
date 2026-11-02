@@ -5,12 +5,16 @@
 #include "components/url_matcher/url_util.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/google/core/common/google_util.h"
@@ -267,35 +271,32 @@ bool FilterComponents::IsWildcard() const {
 scoped_refptr<URLMatcherConditionSet> CreateConditionSet(
     URLMatcher* url_matcher,
     base::MatcherStringPattern::ID id,
-    const std::string& scheme,
-    const std::string& host,
-    bool match_subdomains,
-    uint16_t port,
-    const std::string& path,
-    const std::string& query,
-    bool allow) {
+    const FilterComponents& components) {
   URLMatcherConditionFactory* condition_factory =
       url_matcher->condition_factory();
   std::set<URLMatcherCondition> conditions;
   conditions.insert(
-      match_subdomains
-          ? condition_factory->CreateHostSuffixPathPrefixCondition(host, path)
-          : condition_factory->CreateHostEqualsPathPrefixCondition(host, path));
+      components.match_subdomains
+          ? condition_factory->CreateHostSuffixPathPrefixCondition(
+                components.host, components.path)
+          : condition_factory->CreateHostEqualsPathPrefixCondition(
+                components.host, components.path));
 
   std::set<URLQueryElementMatcherCondition> query_conditions;
-  if (!query.empty()) {
-    ProcessQueryToConditions(condition_factory, query, allow,
-                             &query_conditions);
+  if (!components.query.empty()) {
+    ProcessQueryToConditions(condition_factory, components.query,
+                             components.allow, &query_conditions);
   }
 
   std::unique_ptr<URLMatcherSchemeFilter> scheme_filter;
-  if (!scheme.empty())
-    scheme_filter = std::make_unique<URLMatcherSchemeFilter>(scheme);
+  if (!components.scheme.empty()) {
+    scheme_filter = std::make_unique<URLMatcherSchemeFilter>(components.scheme);
+  }
 
   std::unique_ptr<URLMatcherPortFilter> port_filter;
-  if (port != 0) {
+  if (components.port != 0) {
     std::vector<URLMatcherPortFilter::Range> ranges;
-    ranges.push_back(URLMatcherPortFilter::CreateRange(port));
+    ranges.push_back(URLMatcherPortFilter::CreateRange(components.port));
     port_filter = std::make_unique<URLMatcherPortFilter>(ranges);
   }
 
@@ -304,85 +305,70 @@ scoped_refptr<URLMatcherConditionSet> CreateConditionSet(
       std::move(port_filter));
 }
 
-bool FilterToComponents(const std::string& filter,
-                        std::string* scheme,
-                        std::string* host,
-                        bool* match_subdomains,
-                        uint16_t* port,
-                        std::string* path,
-                        std::string* query) {
-  DCHECK(scheme);
-  DCHECK(host);
-  DCHECK(match_subdomains);
-  DCHECK(port);
-  DCHECK(path);
-  DCHECK(query);
+std::optional<FilterComponents> FilterToComponents(std::string_view filter) {
+  FilterComponents components;
   url::Parsed parsed;
-  std::string lc_filter = base::ToLowerASCII(filter);
-  const std::string url_scheme = url_formatter::SegmentURL(filter, &parsed);
+  std::string url_scheme = url_formatter::SegmentURL(filter, &parsed);
 
   // Check if it's a scheme wildcard pattern. We support both versions
   // (scheme:* and scheme://*) the later being consistent with old filter
   // definitions.
-  if (lc_filter == url_scheme + ":*" || lc_filter == url_scheme + "://*") {
-    scheme->assign(url_scheme);
-    host->clear();
-    *match_subdomains = true;
-    *port = 0;
-    path->clear();
-    query->clear();
-    return true;
+  if (base::StartsWith(filter, url_scheme,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    std::string_view rest = filter.substr(url_scheme.size());
+    if (rest == ":*" || rest == "://*") {
+      components.scheme.assign(std::move(url_scheme));
+      components.match_subdomains = true;
+      components.port = 0;
+      return components;
+    }
   }
 
   if (url_scheme == url::kFileScheme) {
     base::FilePath file_path;
-    if (!net::FileURLToFilePath(GURL(filter), &file_path))
-      return false;
+    if (!net::FileURLToFilePath(GURL(filter), &file_path)) {
+      return std::nullopt;
+    }
 
-    *scheme = url::kFileScheme;
-    host->clear();
-    *match_subdomains = true;
-    *port = 0;
-    *path = file_path.AsUTF8Unsafe();
+    components.scheme = url::kFileScheme;
+    components.match_subdomains = true;
+    components.port = 0;
+    components.path = file_path.AsUTF8Unsafe();
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
     // Separators have to be canonicalized on Windows.
-    std::replace(path->begin(), path->end(), '\\', '/');
-    *path = "/" + *path;
+    std::replace(components.path.begin(), components.path.end(), '\\', '/');
+    components.path = "/" + components.path;
 #endif
-    query->clear();
-    return true;
+    return components;
   }
 
   if (url_scheme == url::kDataScheme) {
-    *scheme = url::kDataScheme;
-    host->clear();
-    *match_subdomains = true;
-    *port = 0;
-    *path = GURL(filter).GetContent();
-    query->clear();
-    return true;
+    components.scheme = url::kDataScheme;
+    components.match_subdomains = true;
+    components.port = 0;
+    components.path = GURL(filter).GetContent();
+    return components;
   }
 
   // According to documentation host can't be empty.
-  if (parsed.host.is_empty())
-    return false;
+  if (parsed.host.is_empty()) {
+    return std::nullopt;
+  }
 
-  if (parsed.scheme.is_nonempty())
-    scheme->assign(url_scheme);
-  else
-    scheme->clear();
+  if (parsed.scheme.is_nonempty()) {
+    components.scheme.assign(std::move(url_scheme));
+  }
 
-  host->assign(filter, parsed.host.begin, parsed.host.len);
-  *host = base::ToLowerASCII(*host);
+  std::string_view host = parsed.host.AsViewOn(filter);
   // Special '*' host, matches all hosts.
-  if (*host == "*") {
-    host->clear();
-    *match_subdomains = true;
-  } else if (host->at(0) == '.') {
+  if (host == "*") {
+    components.host.clear();
+    components.match_subdomains = true;
+  } else if (host[0] == '.') {
     // A leading dot in the pattern syntax means that we don't want to match
     // subdomains.
-    host->erase(0, 1);
-    *match_subdomains = false;
+    components.host = base::ToLowerASCII(host.substr(1));
+    components.match_subdomains = false;
   } else {
     url::RawCanonOutputT<char> output;
     url::CanonHostInfo host_info;
@@ -390,38 +376,37 @@ bool FilterToComponents(const std::string& filter,
     if (host_info.family == url::CanonHostInfo::NEUTRAL) {
       // We want to match subdomains. Add a dot in front to make sure we only
       // match at domain component boundaries.
-      *host = "." + *host;
-      *match_subdomains = true;
+      components.host = base::StrCat({".", base::ToLowerASCII(host)});
+      components.match_subdomains = true;
     } else {
-      *match_subdomains = false;
+      components.host = base::ToLowerASCII(host);
+      components.match_subdomains = false;
     }
   }
 
   if (parsed.port.is_nonempty()) {
     int int_port;
-    if (!base::StringToInt(filter.substr(parsed.port.begin, parsed.port.len),
-                           &int_port)) {
-      return false;
+    if (!base::StringToInt(parsed.port.AsViewOn(filter), &int_port)) {
+      return std::nullopt;
     }
-    if (int_port <= 0 || int_port > std::numeric_limits<uint16_t>::max())
-      return false;
-    *port = int_port;
+    if (int_port <= 0 || int_port > std::numeric_limits<uint16_t>::max()) {
+      return std::nullopt;
+    }
+    components.port = int_port;
   } else {
     // Match any port.
-    *port = 0;
+    components.port = 0;
   }
 
-  if (parsed.path.is_nonempty())
-    path->assign(filter, parsed.path.begin, parsed.path.len);
-  else
-    path->clear();
+  if (parsed.path.is_nonempty()) {
+    components.path.assign(parsed.path.AsViewOn(filter));
+  }
 
-  if (parsed.query.is_nonempty())
-    query->assign(filter, parsed.query.begin, parsed.query.len);
-  else
-    query->clear();
+  if (parsed.query.is_nonempty()) {
+    components.query.assign(parsed.query.AsViewOn(filter));
+  }
 
-  return true;
+  return components;
 }
 
 void AddFiltersWithLimit(
@@ -437,22 +422,17 @@ void AddFiltersWithLimit(
   for (size_t i = 0; i < limit; ++i) {
     DCHECK(patterns[i].is_string());
     const std::string& pattern = patterns[i].GetString();
-    FilterComponents components;
-    components.allow = allow;
-    if (!FilterToComponents(pattern, &components.scheme, &components.host,
-                            &components.match_subdomains, &components.port,
-                            &components.path, &components.query)) {
+    std::optional<FilterComponents> components = FilterToComponents(pattern);
+    if (!components) {
       LOG(ERROR) << "Invalid pattern " << pattern;
       continue;
     }
-    condition_set =
-        CreateConditionSet(matcher, ++(*id), components.scheme, components.host,
-                           components.match_subdomains, components.port,
-                           components.path, components.query, allow);
+    components->allow = allow;
+    condition_set = CreateConditionSet(matcher, ++(*id), *components);
     if (filters) {
-      components.number_of_url_matching_conditions =
+      components->number_of_url_matching_conditions =
           condition_set->query_conditions().size();
-      (*filters)[*id] = std::move(components);
+      (*filters)[*id] = std::move(*components);
     }
     all_conditions.push_back(std::move(condition_set));
   }
@@ -470,22 +450,18 @@ void AddFiltersWithLimit(
   size_t limit = std::min(max_filters, patterns.size());
   scoped_refptr<URLMatcherConditionSet> condition_set;
   for (size_t i = 0; i < limit; ++i) {
-    FilterComponents components;
-    components.allow = allow;
-    if (!FilterToComponents(patterns[i], &components.scheme, &components.host,
-                            &components.match_subdomains, &components.port,
-                            &components.path, &components.query)) {
+    std::optional<FilterComponents> components =
+        FilterToComponents(patterns[i]);
+    if (!components) {
       LOG(ERROR) << "Invalid pattern " << patterns[i];
       continue;
     }
-    condition_set =
-        CreateConditionSet(matcher, ++(*id), components.scheme, components.host,
-                           components.match_subdomains, components.port,
-                           components.path, components.query, allow);
+    components->allow = allow;
+    condition_set = CreateConditionSet(matcher, ++(*id), *components);
     if (filters) {
-      components.number_of_url_matching_conditions =
+      components->number_of_url_matching_conditions =
           condition_set->query_conditions().size();
-      (*filters)[*id] = std::move(components);
+      (*filters)[*id] = std::move(*components);
     }
     all_conditions.push_back(std::move(condition_set));
   }

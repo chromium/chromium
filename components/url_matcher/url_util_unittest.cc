@@ -5,6 +5,7 @@
 #include "components/url_matcher/url_util.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -666,20 +667,14 @@ INSTANTIATE_TEST_SUITE_P(
                          "image/png")));
 
 TEST_P(FilterToComponentsTest, FilterToComponents) {
-  std::string scheme;
-  std::string host;
-  bool match_subdomains = true;
-  uint16_t port = 42;
-  std::string path;
-  std::string query;
-
-  FilterToComponents(GetParam().filter(), &scheme, &host, &match_subdomains,
-                     &port, &path, &query);
-  EXPECT_EQ(GetParam().scheme(), scheme);
-  EXPECT_EQ(GetParam().host(), host);
-  EXPECT_EQ(GetParam().match_subdomains(), match_subdomains);
-  EXPECT_EQ(GetParam().port(), port);
-  EXPECT_EQ(GetParam().path(), path);
+  std::optional<FilterComponents> components =
+      FilterToComponents(GetParam().filter());
+  ASSERT_TRUE(components.has_value());
+  EXPECT_EQ(GetParam().scheme(), components->scheme);
+  EXPECT_EQ(GetParam().host(), components->host);
+  EXPECT_EQ(GetParam().match_subdomains(), components->match_subdomains);
+  EXPECT_EQ(GetParam().port(), components->port);
+  EXPECT_EQ(GetParam().path(), components->path);
 }
 
 }  // namespace util

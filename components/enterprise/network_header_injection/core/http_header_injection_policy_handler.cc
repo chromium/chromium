@@ -5,6 +5,8 @@
 #include "components/enterprise/network_header_injection/core/http_header_injection_policy_handler.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
@@ -34,13 +36,11 @@ constexpr size_t kMaxHeaderSize = 1024 * 8;  // 8KB
 // the domain and subdomains. Two example for such a common mistake are: 1-
 // *.android.com 2- developer.*.com which allow neither android.com nor
 // developer.android.com
-bool IsValidUrlPattern(const std::string& url_pattern) {
-  url_matcher::util::FilterComponents components;
-  return url_matcher::util::FilterToComponents(
-             url_pattern, &components.scheme, &components.host,
-             &components.match_subdomains, &components.port, &components.path,
-             &components.query) &&
-         (components.host == "*" || !components.host.contains('*'));
+bool IsValidUrlPattern(std::string_view url_pattern) {
+  std::optional<url_matcher::util::FilterComponents> components =
+      url_matcher::util::FilterToComponents(url_pattern);
+  return components &&
+         (components->host == "*" || !components->host.contains('*'));
 }
 
 // Validates that the policy complies with limits on the number of URL patterns,

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.h"
 
+#include <optional>
+
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/enterprise/browser/reporting/prefs.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/browser/reporting/prefs.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -55,20 +57,18 @@ size_t LegacyTechReportPolicyHandler::max_items() {
 
 bool LegacyTechReportPolicyHandler::ValidatePolicyEntry(
     const std::string* policy) {
-  url_matcher::util::FilterComponents components;
   if (!policy) {
     return false;
   }
 
-  if (!url_matcher::util::FilterToComponents(
-          *policy, &components.scheme, &components.host,
-          &components.match_subdomains, &components.port, &components.path,
-          &components.query)) {
+  std::optional<url_matcher::util::FilterComponents> components =
+      url_matcher::util::FilterToComponents(*policy);
+  if (!components) {
     return false;
   }
 
   // Wildcard URL '*' and Wildcard host is not allowed.
-  if (components.IsWildcard() || components.host == "") {
+  if (components->IsWildcard() || components->host == "") {
     return false;
   }
 

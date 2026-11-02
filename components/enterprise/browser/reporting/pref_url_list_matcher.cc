@@ -4,6 +4,9 @@
 
 #include "components/enterprise/browser/reporting/pref_url_list_matcher.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_matcher/url_util.h"
@@ -30,24 +33,23 @@ void PrefURLListMatcher::OnPrefUpdated() {
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   filters_.clear();
   for (const auto& url : pref_service_->GetList(pref_name_)) {
-    url_matcher::util::FilterComponents components;
-    url_matcher::util::FilterToComponents(
-        url.GetString(), &components.scheme, &components.host,
-        &components.match_subdomains, &components.port, &components.path,
-        &components.query);
+    const base::MatcherStringPattern::ID current_id = id++;
+    std::optional<url_matcher::util::FilterComponents> components =
+        url_matcher::util::FilterToComponents(url.GetString());
+    if (!components) {
+      continue;
+    }
 
     // Scheme, port and query in the pattern will be ignored while subdomains
     // must be fully specified.
-    components.scheme = "";
-    components.port = 0;
-    components.query = "";
+    components->scheme = "";
+    components->port = 0;
+    components->query = "";
 
     auto condition = url_matcher::util::CreateConditionSet(
-        url_matcher_.get(), id, components.scheme, components.host,
-        components.match_subdomains, components.port, components.path,
-        components.query, components.allow);
+        url_matcher_.get(), current_id, *components);
     conditions.push_back(condition);
-    filters_.emplace(id++, std::move(components));
+    filters_.emplace(current_id, std::move(*components));
   }
   url_matcher_->AddConditionSets(conditions);
 }

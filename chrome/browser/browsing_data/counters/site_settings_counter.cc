@@ -4,6 +4,9 @@
 
 #include "chrome/browser/browsing_data/counters/site_settings_counter.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/json/values_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -112,14 +115,11 @@ void SiteSettingsCounter::Count() {
       performance_manager::user_tuning::prefs::GetTabDiscardExceptionsBetween(
           pref_service_, period_start, period_end);
   for (const auto& exception : tab_discard_exceptions) {
-    url_matcher::util::FilterComponents components;
-    bool is_valid = url_matcher::util::FilterToComponents(
-        exception, &components.scheme, &components.host,
-        &components.match_subdomains, &components.port, &components.path,
-        &components.query);
+    std::optional<url_matcher::util::FilterComponents> components =
+        url_matcher::util::FilterToComponents(exception);
 
-    if (is_valid && !components.host.empty()) {
-      hosts.insert(components.host);
+    if (components && !components->host.empty()) {
+      hosts.insert(std::move(components->host));
     } else {
       empty_host_pattern++;
     }

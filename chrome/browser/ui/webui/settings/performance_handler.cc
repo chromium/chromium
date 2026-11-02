@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/performance_handler.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -139,15 +141,11 @@ void PerformanceHandler::HandleValidateTabDiscardExceptionRule(
     const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
-  const std::string rule = args[1].GetString();
+  std::string_view rule = args[1].GetString();
 
   AllowJavascript();
 
-  url_matcher::util::FilterComponents components;
-
-  bool is_valid = url_matcher::util::FilterToComponents(
-      rule, &components.scheme, &components.host, &components.match_subdomains,
-      &components.port, &components.path, &components.query);
+  bool is_valid = url_matcher::util::FilterToComponents(rule).has_value();
 
   ResolveJavascriptCallback(callback_id, base::Value(is_valid));
 }

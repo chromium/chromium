@@ -5,6 +5,7 @@
 #include "components/policy/core/browser/url_list/url_allowlist_policy_handler.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -65,7 +66,6 @@ bool URLAllowlistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   }
 
   bool type_error = false;
-  std::string policy;
   std::vector<std::string> invalid_policies;
   for (const auto& policy_iter : url_allowlist->GetList()) {
     if (!policy_iter.is_string()) {
@@ -73,7 +73,7 @@ bool URLAllowlistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
       continue;
     }
 
-    policy = policy_iter.GetString();
+    const std::string& policy = policy_iter.GetString();
     if (!ValidatePolicy(policy)) {
       invalid_policies.push_back(policy);
     }
@@ -112,12 +112,9 @@ void URLAllowlistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 }
 
 bool URLAllowlistPolicyHandler::ValidatePolicy(const std::string& url_pattern) {
-  url_matcher::util::FilterComponents components;
-  return url_matcher::util::FilterToComponents(
-             url_pattern, &components.scheme, &components.host,
-             &components.match_subdomains, &components.port, &components.path,
-             &components.query) &&
-         ValidateHost(components.host);
+  std::optional<url_matcher::util::FilterComponents> components =
+      url_matcher::util::FilterToComponents(url_pattern);
+  return components && ValidateHost(components->host);
 }
 
 }  // namespace policy

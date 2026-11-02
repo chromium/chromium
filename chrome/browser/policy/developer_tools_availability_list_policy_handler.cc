@@ -83,7 +83,6 @@ bool DeveloperToolsAvailabilityListPolicyHandler::CheckPolicySettings(
   }
 
   bool type_error = false;
-  std::string policy;
   std::vector<std::string> invalid_policies;
   for (const auto& policy_iter : value->GetList()) {
     if (!policy_iter.is_string()) {
@@ -91,7 +90,7 @@ bool DeveloperToolsAvailabilityListPolicyHandler::CheckPolicySettings(
       continue;
     }
 
-    policy = policy_iter.GetString();
+    const std::string& policy = policy_iter.GetString();
     if (!ValidatePolicy(policy)) {
       invalid_policies.push_back(policy);
     }
@@ -139,16 +138,13 @@ void DeveloperToolsAvailabilityListPolicyHandler::ApplyPolicySettings(
 
 bool DeveloperToolsAvailabilityListPolicyHandler::ValidatePolicy(
     const std::string& url_pattern) {
-  url_matcher::util::FilterComponents components;
-  if (!url_matcher::util::FilterToComponents(
-          url_pattern, &components.scheme, &components.host,
-          &components.match_subdomains, &components.port, &components.path,
-          &components.query) ||
-      !ValidateHost(components.host)) {
+  std::optional<url_matcher::util::FilterComponents> components =
+      url_matcher::util::FilterToComponents(url_pattern);
+  if (!components || !ValidateHost(components->host)) {
     return false;
   }
 
-  if (IsAllowlistPolicy(policy_name()) && components.IsWildcard()) {
+  if (IsAllowlistPolicy(policy_name()) && components->IsWildcard()) {
     return false;
   }
 

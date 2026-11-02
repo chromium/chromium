@@ -4,6 +4,8 @@
 
 #include "components/policy/core/browser/url_list/incognito_mode_policy_handler.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -175,7 +177,6 @@ bool IncognitoModePolicyHandler::CheckUrlListPolicySettings(
   }
 
   bool type_error = false;
-  std::string policy;
   std::vector<std::string> invalid_patterns;
   const bool is_allowlist = IsAllowlistPolicy(policy_name);
   for (const auto& policy_iter : value->GetList()) {
@@ -184,7 +185,7 @@ bool IncognitoModePolicyHandler::CheckUrlListPolicySettings(
       continue;
     }
 
-    policy = policy_iter.GetString();
+    const std::string& policy = policy_iter.GetString();
     if (!ValidatePolicy(policy, is_allowlist)) {
       invalid_patterns.push_back(policy);
     }
@@ -205,16 +206,10 @@ bool IncognitoModePolicyHandler::CheckUrlListPolicySettings(
 
 bool IncognitoModePolicyHandler::ValidatePolicy(const std::string& url_pattern,
                                                 bool is_allowlist) {
-  url_matcher::util::FilterComponents components;
-  if (!url_matcher::util::FilterToComponents(
-          url_pattern, &components.scheme, &components.host,
-          &components.match_subdomains, &components.port, &components.path,
-          &components.query) ||
-      !ValidateHost(components.host)) {
-    return false;
-  }
-
-  if (is_allowlist && components.IsWildcard()) {
+  std::optional<url_matcher::util::FilterComponents> components =
+      url_matcher::util::FilterToComponents(url_pattern);
+  if (!components || !ValidateHost(components->host) ||
+      (is_allowlist && components->IsWildcard())) {
     return false;
   }
 

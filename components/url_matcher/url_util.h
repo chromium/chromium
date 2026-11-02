@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_URL_MATCHER_URL_UTIL_H_
 #define COMPONENTS_URL_MATCHER_URL_UTIL_H_
 
+#include <optional>
+#include <string_view>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher.h"
@@ -58,40 +61,28 @@ struct URL_MATCHER_EXPORT FilterComponents {
   bool allow = true;
 };
 
-// Creates a condition set that can be used with the `url_matcher`. `id` needs
-// to be a unique number that will be returned by the `url_matcher` if the URL
-// matches that condition set. `allow` indicates if it is an allow-list (true)
-// or block-list (false) filter.
+// Creates a condition set from `components` that can be used with the
+// `url_matcher`. `id` needs to be a unique number that will be returned by the
+// `url_matcher` if the URL matches that condition set. `components.allow`
+// indicates if it is an allow-list (true) or block-list (false) filter.
 URL_MATCHER_EXPORT scoped_refptr<url_matcher::URLMatcherConditionSet>
 CreateConditionSet(url_matcher::URLMatcher* url_matcher,
                    base::MatcherStringPattern::ID id,
-                   const std::string& scheme,
-                   const std::string& host,
-                   bool match_subdomains,
-                   uint16_t port,
-                   const std::string& path,
-                   const std::string& query,
-                   bool allow);
+                   const FilterComponents& components);
 
 // Splits a URL filter into its components. A GURL isn't used because these
 // can be invalid URLs e.g. "google.com".
-// Returns false if the URL couldn't be parsed. In case false is returned,
-// the values of output parameters are undefined.
+// Returns `std::nullopt` if the URL couldn't be parsed.
 // The `filter` should have the format described at
 // http://www.chromium.org/administrators/url-blocklist-filter-format and
-// accepts wildcards. The `host` is preprocessed so it can be passed to
+// accepts wildcards. `host` is preprocessed so it can be passed to
 // URLMatcher for the appropriate condition. The optional username and password
 // are ignored. `match_subdomains` specifies whether the filter should include
 // subdomains of the hostname (if it is one.) `port` is 0 if none is explicitly
 // defined. `path` does not include query parameters. `query` contains the query
-// parameters ('?' not included). All arguments are mandatory.
-URL_MATCHER_EXPORT bool FilterToComponents(const std::string& filter,
-                                           std::string* scheme,
-                                           std::string* host,
-                                           bool* match_subdomains,
-                                           uint16_t* port,
-                                           std::string* path,
-                                           std::string* query);
+// parameters ('?' not included).
+URL_MATCHER_EXPORT std::optional<FilterComponents> FilterToComponents(
+    std::string_view filter);
 
 // Adds a limited number of URL filters `patterns` to a URLMatcher
 // `matcher`. The `max_filters` parameter specifies the maximum number of
