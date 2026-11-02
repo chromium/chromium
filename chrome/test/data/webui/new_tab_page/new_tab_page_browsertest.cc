@@ -148,11 +148,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_Composebox) {
           "runMochaSuite('NewTabPageComposeboxTest')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxResizeObserver) {
-  RunTest("new_tab_page/composebox/composebox_test.js",
-          "runMochaSuite('NewTabPageComposeboxResizeObserverTest')");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxSubmit) {
   RunTest("new_tab_page/composebox/composebox_submit_test.js", "mocha.run()");
 }

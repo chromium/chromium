@@ -1050,6 +1050,30 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
               smartTabSharingItemFlyout.disabled,
               'smartTabSharingItemFlyout should be disabled');
         });
+
+    // TODO(crbug.com/570702014): Smart Tab Sharing is desktop-only.
+    // <if expr="not is_android">
+    test(
+        'smartTabSharingActive causes hasTabs true and input has has-tabs ' +
+            'class',
+        async () => {
+          testProxy.searchboxHandler.setPromiseResolveFor(
+              'getSmartTabSharingActive', {active: true});
+          createComposeboxElement(testProxy, {
+            searchboxNextEnabled: true,
+            smartTabSharingActive: true,
+            smartTabSharingVisible: true,
+          });
+          await microtasksFinished();
+          await testProxy.element.updateComplete;
+
+          assertTrue(testProxy.element.hasTabs());
+          assertFalse(testProxy.element.hasAttribute('should-remain-folded_'));
+
+          const inputElement = testProxy.element.getInputElement();
+          assertTrue(inputElement.classList.contains('has-tabs'));
+        });
+    // </if>
   });
 
   suite('Context menu mouse events', () => {
