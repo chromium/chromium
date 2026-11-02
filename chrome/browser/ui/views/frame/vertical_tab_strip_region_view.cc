@@ -1242,6 +1242,7 @@ void VerticalTabStripRegionView::OnActiveTabChanged(
     const tabs::TabInterface* active_tab) {
   BaseTabStripRegionView::OnActiveTabChanged(active_tab);
   omnibox_tab_helper_observation_.Reset();
+  OnOmniboxPopupVisibilityChanged(false);
 
   if (active_tab) {
     OmniboxTabHelper* const tab_helper =

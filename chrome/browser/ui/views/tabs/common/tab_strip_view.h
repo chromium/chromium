@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -74,27 +75,12 @@ class TabStripView final : public views::View,
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
-  void OnChildCountChanged();
+  void OnChildrenAdded(const tabs::TabCollectionNodes& handles);
+  void OnChildrenRemoved();
   void OnChildMoved(TabCollectionNode* moved_node);
-  void OnTabChanged(const tabs::TabInterface* active_tab);
-
-  // Scrolls the scroll view(s) to ensure that the specified target tabs/views
-  // are visible within the viewport.
-  //
-  // - `active_tab` (or `view1`) is treated as the primary view, and `new_tab`
-  // (or
-  //   `view2`) is treated as the secondary view.
-  // - Attempts to scroll so that the combined bounds of both views are visible
-  //   simultaneously within the viewport.
-  // - If the combined bounds exceed the height of the scroll viewport, it falls
-  //   back to prioritizing the primary view (the active tab).
-  // - If the views belong to separate scroll containers (e.g., pinned vs.
-  //   unpinned), each container independently scrolls to reveal its target
-  //   view.
-  void ScrollToFitTabs(const tabs::TabInterface* active_tab,
-                       const tabs::TabInterface* new_tab);
-  void ScrollToFitViews(views::View* view1, views::View* view2);
+  void OnActiveTabChanged(const tabs::TabInterface* active_tab);
 
   void RecordMousePressedInTab();
   bool IsFocusInTabStrip();
@@ -119,6 +105,23 @@ class TabStripView final : public views::View,
   void RemoveScrollViewContents(views::View* view);
   void SetScrollViewProperties(views::ScrollView* scroll_view);
   void ResetCollectionNode();
+
+  // Scrolls the scroll view(s) to ensure that the specified target tabs/views
+  // are visible within the viewport.
+  //
+  // - `active_tab` (or `view1`) is treated as the primary view, and `new_tab`
+  // (or
+  //   `view2`) is treated as the secondary view.
+  // - Attempts to scroll so that the combined bounds of both views are visible
+  //   simultaneously within the viewport.
+  // - If the combined bounds exceed the height of the scroll viewport, it falls
+  //   back to prioritizing the primary view (the active tab).
+  // - If the views belong to separate scroll containers (e.g., pinned vs.
+  //   unpinned), each container independently scrolls to reveal its target
+  //   view.
+  void ScrollToFitTabs(const tabs::TabInterface* active_tab,
+                       const tabs::TabInterface* new_tab);
+  void ScrollToFitViews(views::View* view1, views::View* view2);
 
   // Invoked after layout has been invoked for target views' associated
   // ScrollView. Performs a best-effort attempt to ensure target views are
@@ -152,6 +155,8 @@ class TabStripView final : public views::View,
   raw_ptr<views::ScrollView> unpinned_tabs_scroll_view_ = nullptr;
   raw_ptr<UnpinnedTabContainerView> unpinned_tabs_container_view_ = nullptr;
   raw_ptr<TabScrollButtonContainer> tab_scroll_button_container_ = nullptr;
+
+  bool is_first_window_presentation_ = true;
   bool is_collapsed_ = false;
   bool are_separators_hidden_ = false;
   int leading_overlap_ = 0;

@@ -242,6 +242,9 @@ TabStripView::~TabStripView() {
 void TabStripView::AddedToWidget() {
   views::Widget* const widget = GetWidget();
   widget_observation_.Observe(widget);
+  if (widget->IsVisible()) {
+    is_first_window_presentation_ = false;
+  }
 }
 
 void TabStripView::RemovedFromWidget() {
@@ -275,14 +278,57 @@ void TabStripView::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
-void TabStripView::OnChildCountChanged() {
+void TabStripView::OnWidgetVisibilityChanged(views::Widget* widget,
+                                             bool visible) {
+  if (visible && is_first_window_presentation_) {
+    is_first_window_presentation_ = false;
+    // Only scroll-in the active tab for the first window presentation.
+    if (collection_node_) {
+      OnActiveTabChanged(collection_node_->GetController()->GetActiveTab());
+    }
+  }
+}
+
+void TabStripView::OnChildrenAdded(const tabs::TabCollectionNodes& handles) {
+  if (!collection_node_) {
+    return;
+  }
+
+  UpdateSeparatorVisibility();
+
+  const tabs::TabInterface* active_tab =
+      collection_node_->GetController()->GetActiveTab();
+  if (is_first_window_presentation_ || !active_tab) {
+    return;
+  }
+
+  const tabs::TabInterface* last_new_tab = nullptr;
+  for (const auto& handle : handles) {
+    if (const auto* tab_handle = std::get_if<tabs::TabHandle>(&handle)) {
+      tabs::TabInterface* new_tab = tab_handle->Get();
+      if (new_tab && new_tab != active_tab) {
+        last_new_tab = new_tab;
+      }
+    }
+  }
+
+  if (last_new_tab) {
+    ScrollToFitTabs(active_tab, last_new_tab);
+  }
+}
+
+void TabStripView::OnChildrenRemoved() {
+  if (!collection_node_) {
+    return;
+  }
+
   UpdateSeparatorVisibility();
 }
 
 void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
   CHECK(moved_node);
 
-  if (collection_node_ &&
+  if (!collection_node_ || is_first_window_presentation_ ||
       collection_node_->GetController()->GetDragHandler().IsDragging()) {
     return;
   }
@@ -314,7 +360,7 @@ void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
         const tabs::TabInterface* tab =
             std::get<tabs::ConstDanglingUntriagedTabInterface>(
                 moved_node->GetNodeData());
-        OnTabChanged(tab);
+        OnActiveTabChanged(tab);
         break;
       }
       case TabCollectionNode::Type::SPLIT:
@@ -329,8 +375,8 @@ void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
   }
 }
 
-void TabStripView::OnTabChanged(const tabs::TabInterface* active_tab) {
-  if (!collection_node_ || !active_tab) {
+void TabStripView::OnActiveTabChanged(const tabs::TabInterface* active_tab) {
+  if (!collection_node_ || !active_tab || is_first_window_presentation_) {
     return;
   }
 
