@@ -11,6 +11,7 @@
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
@@ -318,6 +319,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_SuccessFromCache) {
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
       ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 0);
+
+  // A completed retrieval is not reported as cancelled on destruction.
+  service_.reset();
+  histogram_tester_.ExpectBucketCount(
+      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kCancelled, 0);
 }
 
 // Tests that `RetrieveOtp` waits for pending backend requests to complete
@@ -499,6 +506,22 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kGmailOtpSenderDomainMismatch,
       1);
+}
+
+// Tests that destroying the service while a retrieval is pending records
+// `kCancelled`.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       RetrieveOtp_ServiceDestroyedMidRetrieval_RecordsCancelled) {
+  NavigateAndCommit(GURL("https://example.com"));
+
+  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        base::DoNothing());
+  service_.reset();
+
+  histogram_tester_.ExpectBucketCount(
+      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kCancelled, 1);
 }
 
 // Tests that `RetrieveOtp` fails gracefully when the tab is null.
@@ -720,6 +743,36 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_Success) {
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
       ActorOneTimeTokenFillingServiceFillOtp::kSuccess, 1);
+
+  // A completed fill is not reported as cancelled on destruction.
+  service_.reset();
+  histogram_tester_.ExpectBucketCount(
+      kActorOneTimeTokenFillingServiceFillOtpHistogram,
+      ActorOneTimeTokenFillingServiceFillOtp::kCancelled, 0);
+}
+
+// Tests that destroying the service while a fill is pending records
+// `kCancelled` and not `kError`.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       FillOtp_ServiceDestroyedMidFill_RecordsCancelled) {
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  FieldGlobalId field_id = form.fields()[0].global_id();
+  // Fill no fields so that the observer keeps waiting.
+  EXPECT_CALL(driver(), ApplyFormAction)
+      .WillOnce(Return(base::flat_set<FieldGlobalId>()));
+
+  base::test::TestFuture<bool> future;
+  service().FillOtp(tab().GetHandle(), {field_id}, "123456",
+                    future.GetCallback());
+  service_.reset();
+
+  EXPECT_FALSE(future.Get());
+  histogram_tester_.ExpectBucketCount(
+      kActorOneTimeTokenFillingServiceFillOtpHistogram,
+      ActorOneTimeTokenFillingServiceFillOtp::kCancelled, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOneTimeTokenFillingServiceFillOtpHistogram,
+      ActorOneTimeTokenFillingServiceFillOtp::kError, 0);
 }
 
 // Tests that concurrent calls to `FillOtp` are handled gracefully and the

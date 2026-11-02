@@ -218,8 +218,20 @@ ActorOneTimeTokenFillingServiceImpl::ActorOneTimeTokenFillingServiceImpl(
   }
 }
 
-ActorOneTimeTokenFillingServiceImpl::~ActorOneTimeTokenFillingServiceImpl() =
-    default;
+ActorOneTimeTokenFillingServiceImpl::~ActorOneTimeTokenFillingServiceImpl() {
+  // `ExecutionEngine` destroys this service before its `ToolController`, so a
+  // pending operation here means the actor task ended mid-flight.
+  if (retrieve_otp_callback_) {
+    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kCancelled);
+  }
+  // Any observer callback, pending or already posted, later runs with a null
+  // service and records nothing, so there is no double count. A fill whose
+  // result was posted but not yet delivered is also counted as cancelled.
+  if (filling_observer_) {
+    RecordActorOneTimeTokenFillingServiceFillOtp(
+        ActorOneTimeTokenFillingServiceFillOtp::kCancelled);
+  }
+}
 
 void ActorOneTimeTokenFillingServiceImpl::OnPasswordFillingStarted(
     tabs::TabHandle tab_handle,

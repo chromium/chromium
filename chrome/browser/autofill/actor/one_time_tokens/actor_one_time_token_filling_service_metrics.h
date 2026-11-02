@@ -44,7 +44,9 @@ enum class ActorOneTimeTokenFillingServiceRetrieveOtp {
   kUnknownError = 25,
   kGmailOtpBackendMessageAuthenticationFailed = 26,
   kGmailOtpSenderDomainMismatch = 27,
-  kMaxValue = kGmailOtpSenderDomainMismatch,
+  // The service was destroyed while a retrieval was pending.
+  kCancelled = 28,
+  kMaxValue = kCancelled,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceRetrieveOtpEvent)
 
@@ -64,7 +66,9 @@ enum class ActorOneTimeTokenFillingServiceFillOtp {
   kEmptyFillData = 7,
   kSuccess = 8,
   kError = 9,
-  kMaxValue = kError
+  // The service was destroyed while a fill was pending.
+  kCancelled = 10,
+  kMaxValue = kCancelled
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceFillOtpEvent)
 

@@ -86,10 +86,13 @@ found in the LICENSE file.
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
   <summary>
-    Records events during OTP filling operations of the
-    ActorOneTimeTokenFillingService. Recorded at the start of FillOtp
-    invocations, and when filling outcomes or error conditions (e.g. invalid
-    tab, missing form structure, or successful fill) are determined.
+    Records the outcome of a single FillOtp request in
+    ActorOneTimeTokenFillingService: a pre-fill error (e.g. a null tab, no
+    trigger fields, a concurrent call, no autofill manager, a missing form or
+    trigger field, or empty fill data), the renderer fill result (success or
+    error), or Cancelled if the service is destroyed while the fill is pending
+    (e.g. the actor task ends or the browser shuts down). Recorded once per
+    request; Start is additionally recorded when each request begins.
   </summary>
 </histogram>
 
@@ -99,14 +102,19 @@ found in the LICENSE file.
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
   <summary>
-    Records events during OTP retrieval operations of the
-    ActorOneTimeTokenFillingService. Recorded at the start of RetrieveOtp
-    invocations, and when retrieval outcomes or error conditions (e.g. cache
-    hits, mock OTPs, or superseded callbacks) are determined.
-    GmailOtpSenderDomainMismatch is recorded when the subscription timed out
-    after at least one token delivered via the subscription was rejected for
-    sender-domain mismatch. Subscription delivery can include emails received up
-    to 3 minutes before the request.
+    Records the outcome of a single OTP retrieval request in
+    ActorOneTimeTokenFillingService: a null tab, no backend, a mock OTP, a cache
+    or received match, a timeout, a sender-domain mismatch, a backend error, or
+    Cancelled if the service is destroyed while the retrieval is pending (e.g.
+    the actor task ends or the browser shuts down). Recorded once per request;
+    Start is additionally recorded when each request begins. Not recorded for a
+    request that is superseded by a newer request. GmailOtpSenderDomainMismatch
+    is recorded when the subscription timed out after at least one token
+    delivered via the subscription was rejected for sender-domain mismatch.
+    Subscription delivery can include emails received up to 3 minutes before the
+    request. After an actor pause or user takeover, the AttemptOtpFilling tool
+    is destroyed but the retrieval continues, so a later match is recorded as
+    success even though no fill happens.
   </summary>
 </histogram>
 

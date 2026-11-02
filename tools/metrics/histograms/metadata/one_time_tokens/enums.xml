@@ -39,6 +39,7 @@ found in the LICENSE file.
   <int value="7" label="EmptyFillData"/>
   <int value="8" label="Success"/>
   <int value="9" label="Error"/>
+  <int value="10" label="Cancelled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceFillOtp) -->
@@ -75,6 +76,7 @@ found in the LICENSE file.
   <int value="25" label="UnknownError"/>
   <int value="26" label="GmailOtpBackendMessageAuthenticationFailed"/>
   <int value="27" label="GmailOtpSenderDomainMismatch"/>
+  <int value="28" label="Cancelled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceRetrieveOtp) -->
