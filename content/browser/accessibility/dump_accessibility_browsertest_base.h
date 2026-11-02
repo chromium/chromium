@@ -147,6 +147,7 @@ class DumpAccessibilityTestBase
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
+  void PostRunTestOnMainThread() override;
   void SetUp() override;
   void TearDown() override;
 
