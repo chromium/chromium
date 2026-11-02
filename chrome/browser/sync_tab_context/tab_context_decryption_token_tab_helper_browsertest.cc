@@ -51,6 +51,11 @@ class FakeTabContextSyncService
     NOTREACHED();
   }
 
+  std::optional<sync_tab_context::ContainerId>
+  CreateContainerPossiblyUnencryptedEphemeral() override {
+    NOTREACHED();
+  }
+
   void UploadPageContext(
       const sync_tab_context::ContainerId& container_id,
       const std::string& entry_id,

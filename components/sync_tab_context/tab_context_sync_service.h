@@ -34,8 +34,16 @@ class TabContextSyncService : public KeyedService {
   TabContextSyncService& operator=(const TabContextSyncService&) = delete;
 
   // Creates a new container that can later be used to upload entries into.
-  // Returns nullopt in case of failure.
+  // Returns `std::nullopt` in case of failure (e.g. if Trusted Vault encryption
+  // is not active).
   virtual std::optional<ContainerId> CreateContainer() = 0;
+
+  // Similar to `CreateContainer()`, but allows creating a container even when
+  // Trusted Vault passphrase is not active, in which case an ephemeral
+  // container is created whose encryption key is wrapped using a short-lived
+  // server-minted ephemeral key instead of being uploaded to Sync in raw form.
+  virtual std::optional<ContainerId>
+  CreateContainerPossiblyUnencryptedEphemeral() = 0;
 
   // Inserts or updates an entry into a container identified via
   // `container_id`. `entry_id` acts as uniqueness key within the container.

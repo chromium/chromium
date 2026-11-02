@@ -4,14 +4,17 @@
 
 #include "components/sync_tab_context/tab_context_sync_service_impl.h"
 
+#include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
+#include "base/check.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/notimplemented.h"
-#include "base/notreached.h"
+#include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -21,6 +24,7 @@
 #include "components/sync/protocol/encrypted_tab_context_item_specifics.pb.h"
 #include "components/sync_tab_context/build_container_access_token.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
+#include "components/sync_tab_context/pending_ephemeral_container.h"
 #include "components/sync_tab_context/tab_context_container_sync_bridge.h"
 #include "components/sync_tab_context/tab_context_item_sync_bridge.h"
 #include "components/sync_tab_context/tab_context_sync_client.h"
@@ -116,6 +120,68 @@ std::optional<ContainerId> TabContextSyncServiceImpl::CreateContainer() {
   return container_id;
 }
 
+std::optional<ContainerId>
+TabContextSyncServiceImpl::CreateContainerPossiblyUnencryptedEphemeral() {
+  const std::optional<syncer::PassphraseType> passphrase_type =
+      client_->GetPassphraseType();
+  if (!passphrase_type.has_value()) {
+    return std::nullopt;
+  }
+  if (*passphrase_type == syncer::PassphraseType::kTrustedVaultPassphrase) {
+    return CreateContainer();
+  }
+  if (!container_bridge_->IsTrackingMetadata()) {
+    return std::nullopt;
+  }
+
+  const ContainerId container_id(base::Uuid::GenerateRandomV4());
+  auto pending_container = std::make_unique<PendingEphemeralContainer>(
+      container_id, ephemeral_key_fetcher_.get(), item_bridge_.get());
+  // Populate `pending_ephemeral_containers_` before calling `Start()`, as
+  // `Start()` may invoke `OnPendingEphemeralContainerCompleted()`
+  // synchronously (e.g. in tests), which erases the entry from the map.
+  PendingEphemeralContainer* pending_container_ptr = pending_container.get();
+  pending_ephemeral_containers_[container_id] = std::move(pending_container);
+  pending_container_ptr->Start(base::BindOnce(
+      &TabContextSyncServiceImpl::OnPendingEphemeralContainerCompleted,
+      weak_ptr_factory_.GetWeakPtr(), container_id));
+  return container_id;
+}
+
+const syncer::AgileSymmetricKeySet*
+TabContextSyncServiceImpl::GetEncryptionKeyForContainer(
+    const ContainerId& container_id) const {
+  if (const syncer::AgileSymmetricKeySet* key_set =
+          container_bridge_->GetStoredEncryptionKeyForContainer(container_id)) {
+    return key_set;
+  }
+  if (const PendingEphemeralContainer* pending_container =
+          base::FindPtrOrNull(pending_ephemeral_containers_, container_id)) {
+    return &pending_container->GetEncryptionKey();
+  }
+  return nullptr;
+}
+
+void TabContextSyncServiceImpl::OnPendingEphemeralContainerCompleted(
+    const ContainerId& container_id,
+    std::optional<std::string> pre_minted_access_token) {
+  std::unique_ptr<PendingEphemeralContainer> pending_container =
+      std::move(pending_ephemeral_containers_[container_id]);
+  pending_ephemeral_containers_.erase(container_id);
+  CHECK(pending_container);
+
+  std::unique_ptr<syncer::AgileSymmetricKeySet> key_set =
+      PendingEphemeralContainer::DestroyAndTakeKey(
+          std::move(pending_container));
+  if (!pre_minted_access_token.has_value() ||
+      !container_bridge_->IsTrackingMetadata()) {
+    return;
+  }
+
+  container_bridge_->CreateContainer(container_id, std::move(key_set),
+                                     std::move(pre_minted_access_token));
+}
+
 void TabContextSyncServiceImpl::UploadPageContext(
     const ContainerId& container_id,
     const std::string& entry_id,
@@ -127,7 +193,7 @@ void TabContextSyncServiceImpl::UploadPageContext(
   }
 
   const syncer::AgileSymmetricKeySet* key_set =
-      container_bridge_->GetStoredEncryptionKeyForContainer(container_id);
+      GetEncryptionKeyForContainer(container_id);
   if (!key_set || key_set->size() == 0) {
     std::move(callback).Run(UploadOutcome::kFailed);
     return;
@@ -155,6 +221,20 @@ void TabContextSyncServiceImpl::OnPageContextCompressedAndEncrypted(
     return;
   }
 
+  if (PendingEphemeralContainer* pending_container =
+          base::FindPtrOrNull(pending_ephemeral_containers_, container_id)) {
+    pending_container->QueueUploadItem(entry_id, std::move(*encrypted_content),
+                                       std::move(callback));
+    return;
+  }
+
+  // Verify the container still exists (e.g. a pending ephemeral container's
+  // initial key fetch could have failed while compression was in flight).
+  if (!container_bridge_->GetStoredEncryptionKeyForContainer(container_id)) {
+    std::move(callback).Run(UploadOutcome::kFailed);
+    return;
+  }
+
   item_bridge_->UploadItem(container_id, entry_id,
                            std::move(*encrypted_content), std::move(callback));
 }
@@ -162,6 +242,21 @@ void TabContextSyncServiceImpl::OnPageContextCompressedAndEncrypted(
 void TabContextSyncServiceImpl::GetContainerAccessToken(
     const ContainerId& container_id,
     base::OnceCallback<void(std::optional<std::string>)> cb) {
+  if (PendingEphemeralContainer* pending_container =
+          base::FindPtrOrNull(pending_ephemeral_containers_, container_id)) {
+    pending_container->QueueGetContainerAccessToken(std::move(cb));
+    return;
+  }
+
+  if (std::optional<std::string> stored_access_token =
+          container_bridge_->GetStoredPreMintedAccessTokenForContainer(
+              container_id)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(cb), std::move(stored_access_token)));
+    return;
+  }
+
   if (!container_bridge_->GetStoredEncryptionKeyForContainer(container_id)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::nullopt));
@@ -169,11 +264,11 @@ void TabContextSyncServiceImpl::GetContainerAccessToken(
   }
 
   ephemeral_key_fetcher_->FetchEphemeralKey(base::BindOnce(
-      &TabContextSyncServiceImpl::OnEphemeralKeyFetched,
+      &TabContextSyncServiceImpl::OnEphemeralKeyFetchedForAccessToken,
       weak_ptr_factory_.GetWeakPtr(), container_id, std::move(cb)));
 }
 
-void TabContextSyncServiceImpl::OnEphemeralKeyFetched(
+void TabContextSyncServiceImpl::OnEphemeralKeyFetchedForAccessToken(
     const ContainerId& container_id,
     base::OnceCallback<void(std::optional<std::string>)> cb,
     std::optional<EphemeralKeyFetcher::Result> result) {

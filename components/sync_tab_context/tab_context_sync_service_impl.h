@@ -19,13 +19,16 @@
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
 #include "components/sync_tab_context/upload_outcome.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
+class AgileSymmetricKeySet;
 class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace sync_tab_context {
 
+class PendingEphemeralContainer;
 class TabContextSyncClient;
 class TabContextItemSyncBridge;
 class TabContextContainerSyncBridge;
@@ -44,6 +47,8 @@ class TabContextSyncServiceImpl : public TabContextSyncService {
 
   // TabContextSyncService implementation.
   std::optional<ContainerId> CreateContainer() override;
+  std::optional<ContainerId> CreateContainerPossiblyUnencryptedEphemeral()
+      override;
   void UploadPageContext(
       const ContainerId& container_id,
       const std::string& entry_id,
@@ -59,6 +64,20 @@ class TabContextSyncServiceImpl : public TabContextSyncService {
   bool IsActiveForTesting() const override;
 
  private:
+  // Returns the encryption key set for `container_id` from either
+  // `container_bridge_` or `pending_ephemeral_containers_`, or `nullptr` if not
+  // found. The returned pointer is only guaranteed to remain valid while
+  // neither `container_bridge_` nor `pending_ephemeral_containers_` is mutated
+  // (i.e. it must not be retained across tasks).
+  const syncer::AgileSymmetricKeySet* GetEncryptionKeyForContainer(
+      const ContainerId& container_id) const;
+
+  // Called when a `PendingEphemeralContainer` finishes fetching its initial
+  // ephemeral key (or permanently fails).
+  void OnPendingEphemeralContainerCompleted(
+      const ContainerId& container_id,
+      std::optional<std::string> pre_minted_access_token);
+
   // Called asynchronously when `backend_task_runner_` finishes compressing and
   // encrypting the page context.
   void OnPageContextCompressedAndEncrypted(
@@ -68,8 +87,9 @@ class TabContextSyncServiceImpl : public TabContextSyncService {
       std::optional<sync_pb::EncryptedData> encrypted_content);
 
   // Called asynchronously when `ephemeral_key_fetcher_` finishes fetching an
-  // ephemeral key. Encrypts the container's key set and runs `cb`.
-  void OnEphemeralKeyFetched(
+  // ephemeral key for a `GetContainerAccessToken()` request. Encrypts the
+  // container's key set and runs `cb`.
+  void OnEphemeralKeyFetchedForAccessToken(
       const ContainerId& container_id,
       base::OnceCallback<void(std::optional<std::string>)> cb,
       std::optional<EphemeralKeyFetcher::Result> result);
@@ -79,6 +99,11 @@ class TabContextSyncServiceImpl : public TabContextSyncService {
   const std::unique_ptr<TabContextItemSyncBridge> item_bridge_;
   const std::unique_ptr<EphemeralKeyFetcher> ephemeral_key_fetcher_;
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+
+  absl::flat_hash_map<ContainerId,
+                      std::unique_ptr<PendingEphemeralContainer>,
+                      ContainerIdHash>
+      pending_ephemeral_containers_;
 
   base::WeakPtrFactory<TabContextSyncServiceImpl> weak_ptr_factory_{this};
 };

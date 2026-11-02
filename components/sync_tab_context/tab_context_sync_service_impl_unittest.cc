@@ -23,6 +23,7 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/crypto/agile_symmetric_key.h"
@@ -33,6 +34,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/agile_encryption_keys.pb.h"
 #include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/protocol/encrypted_tab_context_container_specifics.pb.h"
 #include "components/sync/protocol/encrypted_tab_context_item_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/tab_context_container_access_token.pb.h"
@@ -61,24 +63,26 @@ class FakeEphemeralKeyFetcher : public EphemeralKeyFetcher {
   FakeEphemeralKeyFetcher() = default;
 
   void FetchEphemeralKey(FetchCallback callback) override {
-    if (should_fail_) {
-      std::move(callback).Run(std::nullopt);
+    if (defer_callbacks_) {
+      deferred_callbacks_.push_back(std::move(callback));
       return;
     }
-    const std::string name = base::NumberToString(++next_server_token_id_);
-    auto key_set = syncer::AgileSymmetricKeySet::CreateEmpty();
-    key_set->RotatePrimaryToNewlyGeneratedRandomKey();
-    issued_key_sets_[name] = key_set->ToProto();
-
-    EphemeralKeyFetcher::Result result{
-        .ephemeral_key = std::move(key_set),
-        .name = name,
-        .expire_time = base::Time::FromSecondsSinceUnixEpoch(1234567890)};
-    std::move(callback).Run(std::move(result));
+    RunFetchCallback(std::move(callback));
   }
 
-  // Configures whether `FetchEphemeralKey` should simulate a fetch failure.
+  // Configures whether `FetchEphemeralKey()` should simulate a fetch failure.
   void set_should_fail(bool fail) { should_fail_ = fail; }
+
+  // Configures whether `FetchEphemeralKey()` should defer callbacks until
+  // `RunDeferredCallbacks()` is called.
+  void set_defer_callbacks(bool defer) { defer_callbacks_ = defer; }
+
+  void RunDeferredCallbacks() {
+    std::vector<FetchCallback> callbacks = std::move(deferred_callbacks_);
+    for (FetchCallback& callback : callbacks) {
+      RunFetchCallback(std::move(callback));
+    }
+  }
 
   // Decrypts the container key set from `serialized_access_token` using the
   // previously issued ephemeral key set corresponding to the token's name.
@@ -132,7 +136,26 @@ class FakeEphemeralKeyFetcher : public EphemeralKeyFetcher {
   }
 
  private:
+  void RunFetchCallback(FetchCallback callback) {
+    if (should_fail_) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    const std::string name = base::NumberToString(++next_server_token_id_);
+    auto key_set = syncer::AgileSymmetricKeySet::CreateEmpty();
+    key_set->RotatePrimaryToNewlyGeneratedRandomKey();
+    issued_key_sets_[name] = key_set->ToProto();
+
+    EphemeralKeyFetcher::Result result{
+        .ephemeral_key = std::move(key_set),
+        .name = name,
+        .expire_time = base::Time::FromSecondsSinceUnixEpoch(1234567890)};
+    std::move(callback).Run(std::move(result));
+  }
+
   bool should_fail_ = false;
+  bool defer_callbacks_ = false;
+  std::vector<FetchCallback> deferred_callbacks_;
   uint64_t next_server_token_id_ = 0;
   base::flat_map<std::string, sync_pb::AgileSymmetricKeySet> issued_key_sets_;
 };
@@ -164,7 +187,15 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
     auto fetcher = std::make_unique<FakeEphemeralKeyFetcher>();
     fake_fetcher_ = fetcher.get();
     store_ = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
-    syncer::DataTypeStoreTestUtil::WriteInitialSyncDoneAndWait(*store_);
+    sync_pb::DataTypeState data_type_state;
+    data_type_state.set_initial_sync_state(
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+    data_type_state.set_cache_guid("test_cache_guid");
+    data_type_state.mutable_progress_marker()->set_data_type_id(
+        syncer::GetSpecificsFieldNumberFromDataType(
+            syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER));
+    syncer::DataTypeStoreTestUtil::WriteDataTypeStateAndWait(*store_,
+                                                             data_type_state);
     service_ = std::make_unique<TabContextSyncServiceImpl>(
         std::move(client),
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
@@ -173,12 +204,16 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
     syncer::DataTypeActivationRequest request;
     request.error_handler = base::DoNothing();
     request.cache_guid = "test_cache_guid";
+
+    service_->GetSyncControllerDelegateForContainer()->OnSyncStarting(
+        request, container_future_.GetCallback());
+
     base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
-        future;
+        item_future;
     service_->GetSyncControllerDelegateForItem()->OnSyncStarting(
-        request, future.GetCallback());
-    item_worker_ =
-        syncer::MockDataTypeWorker::CreateWorkerAndConnectSync(future.Take());
+        request, item_future.GetCallback());
+    item_worker_ = syncer::MockDataTypeWorker::CreateWorkerAndConnectSync(
+        item_future.Take());
   }
 
   void TearDown() override {
@@ -186,6 +221,15 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
     // owned instances, preventing PartitionAlloc dangling pointer warnings.
     fake_client_ = nullptr;
     fake_fetcher_ = nullptr;
+  }
+
+  syncer::MockDataTypeWorker* container_worker() {
+    if (!container_worker_) {
+      container_worker_ =
+          syncer::MockDataTypeWorker::CreateWorkerAndConnectSync(
+              container_future_.Take());
+    }
+    return container_worker_.get();
   }
 
   // Helper method to synchronously call `GetContainerAccessToken()` on
@@ -202,6 +246,9 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
   raw_ptr<FakeTabContextSyncClient> fake_client_;
   raw_ptr<FakeEphemeralKeyFetcher> fake_fetcher_;
   std::unique_ptr<TabContextSyncServiceImpl> service_;
+  base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
+      container_future_;
+  std::unique_ptr<syncer::MockDataTypeWorker> container_worker_;
   std::unique_ptr<syncer::MockDataTypeWorker> item_worker_;
 };
 
@@ -209,6 +256,10 @@ TEST_F(TabContextSyncServiceImplTest,
        ShouldNotCreateContainerWhenNotTrackingMetadata) {
   ASSERT_FALSE(service_->IsActiveForTesting());
   EXPECT_EQ(service_->CreateContainer(), std::nullopt);
+  fake_client_->set_passphrase_type(
+      syncer::PassphraseType::kKeystorePassphrase);
+  EXPECT_EQ(service_->CreateContainerPossiblyUnencryptedEphemeral(),
+            std::nullopt);
 }
 
 TEST_F(TabContextSyncServiceImplTest,
@@ -374,6 +425,157 @@ TEST_F(TabContextSyncServiceImplTest,
 
   item_worker_->FailFullCommitRequest();
   EXPECT_EQ(upload_future.Get(), UploadOutcome::kFailed);
+}
+
+TEST_F(TabContextSyncServiceImplTest,
+       ShouldCreateEphemeralContainerAndUploadPageContextWithoutTrustedVault) {
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsActiveForTesting(); }));
+  fake_client_->set_passphrase_type(
+      syncer::PassphraseType::kKeystorePassphrase);
+
+  const std::optional<ContainerId> container_id =
+      service_->CreateContainerPossiblyUnencryptedEphemeral();
+  ASSERT_TRUE(container_id.has_value());
+
+  // Verify the committed container specifics have `container_access_token` set
+  // and `encryption_key` stripped.
+  const std::vector<const syncer::CommitRequestData*> container_commit_batch =
+      container_worker()->WaitForPendingCommits();
+  ASSERT_EQ(container_commit_batch.size(), 1u);
+  ASSERT_THAT(container_commit_batch[0]->entity, NotNull());
+  const sync_pb::EncryptedTabContextContainerSpecifics container_specifics =
+      container_commit_batch[0]
+          ->entity->specifics.encrypted_tab_context_container();
+  EXPECT_EQ(container_specifics.uuid(),
+            container_id->value().AsLowercaseString());
+  EXPECT_FALSE(container_specifics.has_encryption_key());
+  ASSERT_TRUE(container_specifics.has_container_access_token());
+  container_worker()->AckOnePendingCommit();
+
+  // `GetContainerAccessToken()` returns the pre-minted access token without
+  // issuing another fetch.
+  fake_fetcher_->set_should_fail(true);
+  const std::optional<std::string> token_string =
+      GetContainerAccessToken(*container_id);
+  ASSERT_TRUE(token_string.has_value());
+  EXPECT_EQ(*token_string, container_specifics.container_access_token());
+
+  // `UploadPageContext()` encrypts with the locally stored key set and can be
+  // decrypted using the container access token.
+  const std::string kPageContext = "Ephemeral container page context payload.";
+  base::test::TestFuture<UploadOutcome> upload_future;
+  service_->UploadPageContext(*container_id, "entry_ephemeral", kPageContext,
+                              upload_future.GetCallback());
+
+  const std::vector<const syncer::CommitRequestData*> item_commit_batch =
+      item_worker_->WaitForPendingCommits();
+  ASSERT_EQ(item_commit_batch.size(), 1u);
+  const sync_pb::EncryptedTabContextItemSpecifics& item_specifics =
+      item_commit_batch[0]->entity->specifics.encrypted_tab_context_item();
+
+  const std::optional<std::vector<uint8_t>> decrypted_bytes =
+      fake_fetcher_->DecryptWithAccessToken(*token_string,
+                                            item_specifics.encrypted_content());
+  ASSERT_TRUE(decrypted_bytes.has_value());
+
+  sync_pb::TabContextItemContent item_content;
+  ASSERT_TRUE(item_content.ParseFromArray(decrypted_bytes->data(),
+                                          decrypted_bytes->size()));
+  std::string uncompressed_page_context;
+  ASSERT_TRUE(compression::GzipUncompress(item_content.gzip_compressed_data(),
+                                          &uncompressed_page_context));
+  EXPECT_EQ(uncompressed_page_context, kPageContext);
+
+  item_worker_->AckOnePendingCommit();
+  EXPECT_EQ(upload_future.Get(), UploadOutcome::kSucceeded);
+}
+
+TEST_F(TabContextSyncServiceImplTest,
+       ShouldQueueOperationsWhilePendingEphemeralContainerKeyFetchIsInFlight) {
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsActiveForTesting(); }));
+  fake_client_->set_passphrase_type(
+      syncer::PassphraseType::kKeystorePassphrase);
+  fake_fetcher_->set_defer_callbacks(true);
+
+  const std::optional<ContainerId> container_id =
+      service_->CreateContainerPossiblyUnencryptedEphemeral();
+  ASSERT_TRUE(container_id.has_value());
+
+  // Queue both `UploadPageContext()` and `GetContainerAccessToken()` while the
+  // initial ephemeral key fetch is still in flight.
+  const std::string kPageContext = "Queued page context payload.";
+  base::test::TestFuture<UploadOutcome> upload_future;
+  service_->UploadPageContext(*container_id, "entry_queued", kPageContext,
+                              upload_future.GetCallback());
+
+  base::test::TestFuture<std::optional<std::string>> token_future;
+  service_->GetContainerAccessToken(*container_id, token_future.GetCallback());
+
+  // Wait for background compression/encryption to finish and enqueue the item
+  // on `PendingEphemeralContainer` before completing the key fetch.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(container_worker()->GetNumPendingCommits(), 0u);
+  EXPECT_EQ(item_worker_->GetNumPendingCommits(), 0u);
+  EXPECT_FALSE(token_future.IsReady());
+  EXPECT_FALSE(upload_future.IsReady());
+
+  // Complete the in-flight key fetch. Both the container and the queued item
+  // should now be committed, and `token_future` should resolve.
+  fake_fetcher_->RunDeferredCallbacks();
+
+  const std::optional<std::string> token_string = token_future.Get();
+  ASSERT_TRUE(token_string.has_value());
+
+  ASSERT_EQ(container_worker()->WaitForPendingCommits().size(), 1u);
+  container_worker()->AckOnePendingCommit();
+
+  const std::vector<const syncer::CommitRequestData*> item_commit_batch =
+      item_worker_->WaitForPendingCommits();
+  ASSERT_EQ(item_commit_batch.size(), 1u);
+  const sync_pb::EncryptedTabContextItemSpecifics& item_specifics =
+      item_commit_batch[0]->entity->specifics.encrypted_tab_context_item();
+  EXPECT_TRUE(fake_fetcher_
+                  ->DecryptWithAccessToken(*token_string,
+                                           item_specifics.encrypted_content())
+                  .has_value());
+
+  item_worker_->AckOnePendingCommit();
+  EXPECT_EQ(upload_future.Get(), UploadOutcome::kSucceeded);
+}
+
+TEST_F(TabContextSyncServiceImplTest,
+       ShouldDelegateToCreateContainerWhenPassphraseIsTrustedVault) {
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsActiveForTesting(); }));
+  fake_client_->set_passphrase_type(
+      syncer::PassphraseType::kTrustedVaultPassphrase);
+
+  const std::optional<ContainerId> container_id =
+      service_->CreateContainerPossiblyUnencryptedEphemeral();
+  ASSERT_TRUE(container_id.has_value());
+
+  const std::vector<const syncer::CommitRequestData*> container_commit_batch =
+      container_worker()->WaitForPendingCommits();
+  ASSERT_EQ(container_commit_batch.size(), 1u);
+  ASSERT_THAT(container_commit_batch[0]->entity, NotNull());
+
+  const sync_pb::EncryptedTabContextContainerSpecifics& container_specifics =
+      container_commit_batch[0]
+          ->entity->specifics.encrypted_tab_context_container();
+  EXPECT_EQ(container_specifics.uuid(),
+            container_id->value().AsLowercaseString());
+  EXPECT_TRUE(container_specifics.has_encryption_key());
+  EXPECT_FALSE(container_specifics.has_container_access_token());
+}
+
+TEST_F(
+    TabContextSyncServiceImplTest,
+    ShouldNotCreateContainerPossiblyUnencryptedEphemeralWhenPassphraseUnknown) {
+  fake_client_->set_passphrase_type(std::nullopt);
+  EXPECT_EQ(service_->CreateContainerPossiblyUnencryptedEphemeral(),
+            std::nullopt);
 }
 
 }  // namespace

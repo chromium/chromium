@@ -302,4 +302,76 @@ IN_PROC_BROWSER_TEST_P(SingleClientTabContextSyncTest,
   EXPECT_EQ(GetContainerAccessToken(*container_id), std::nullopt);
 }
 
+IN_PROC_BROWSER_TEST_P(
+    SingleClientTabContextSyncTest,
+    ShouldCreateEphemeralContainerUploadPageContextAndDecryptWithoutTrustedVault) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_NE(GetSyncService(0)->GetUserSettings()->GetPassphraseType(),
+            syncer::PassphraseType::kTrustedVaultPassphrase);
+
+  const std::optional<sync_tab_context::ContainerId> container_id =
+      GetTabContextSyncService().CreateContainerPossiblyUnencryptedEphemeral();
+  ASSERT_TRUE(container_id.has_value());
+
+  const std::string kEntryId = "entry_ephemeral";
+  const std::string kPageContext =
+      "Page context payload uploaded via ephemeral container.";
+  ASSERT_EQ(UploadPageContextAndWaitForCompletion(*container_id, kEntryId,
+                                                  kPageContext),
+            sync_tab_context::UploadOutcome::kSucceeded);
+
+  const std::vector<sync_pb::SyncEntity> server_container_entities =
+      GetFakeServer()->GetSyncEntitiesByDataType(
+          syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER);
+  ASSERT_THAT(server_container_entities, SizeIs(1));
+  EXPECT_TRUE(server_container_entities[0].specifics().has_encrypted());
+
+  const std::vector<sync_pb::SyncEntity> server_item_entities =
+      GetFakeServer()->GetSyncEntitiesByDataType(
+          syncer::ENCRYPTED_TAB_CONTEXT_ITEM);
+  ASSERT_THAT(server_item_entities, SizeIs(1));
+  const sync_pb::EncryptedTabContextItemSpecifics& server_item_specifics =
+      server_item_entities[0].specifics().encrypted_tab_context_item();
+  EXPECT_EQ(server_item_specifics.container_id(),
+            container_id->value().AsLowercaseString());
+  EXPECT_EQ(server_item_specifics.item_id(), kEntryId);
+  ASSERT_TRUE(server_item_specifics.has_encrypted_content());
+
+  const std::optional<std::string> access_token =
+      GetContainerAccessToken(*container_id);
+  ASSERT_TRUE(access_token.has_value());
+
+  EXPECT_EQ(GetEphemeralKeyServer()->DecryptContent(
+                *access_token, server_item_specifics.encrypted_content()),
+            kPageContext);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientTabContextSyncTest,
+    ShouldDownloadRemoteEphemeralContainerAndReturnAccessToken) {
+  const sync_tab_context::ContainerId remote_container_id(
+      base::Uuid::GenerateRandomV4());
+  const std::string kRemoteAccessToken = "remote_ephemeral_access_token";
+
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::EncryptedTabContextContainerSpecifics* const container_specifics =
+      specifics.mutable_encrypted_tab_context_container();
+  container_specifics->set_uuid(
+      remote_container_id.value().AsLowercaseString());
+  container_specifics->set_container_access_token(kRemoteAccessToken);
+  GetFakeServer()->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          /*non_unique_name=*/remote_container_id.value().AsLowercaseString(),
+          /*client_tag=*/remote_container_id.value().AsLowercaseString(),
+          specifics,
+          /*creation_time=*/0,
+          /*last_modified_time=*/0));
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_NE(GetSyncService(0)->GetUserSettings()->GetPassphraseType(),
+            syncer::PassphraseType::kTrustedVaultPassphrase);
+
+  EXPECT_EQ(GetContainerAccessToken(remote_container_id), kRemoteAccessToken);
+}
+
 }  // namespace

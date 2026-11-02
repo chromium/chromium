@@ -24,6 +24,10 @@ class MockTabContextSyncService : public TabContextSyncService {
   ~MockTabContextSyncService() override;
 
   MOCK_METHOD(std::optional<ContainerId>, CreateContainer, (), (override));
+  MOCK_METHOD(std::optional<ContainerId>,
+              CreateContainerPossiblyUnencryptedEphemeral,
+              (),
+              (override));
   MOCK_METHOD(void,
               UploadPageContext,
               (const ContainerId&,
