@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -72,13 +73,13 @@ const char kTestUserPrivateKey[] = "kTestUserPrivateKey";
 class TestTetherService : public TetherService {
  public:
   TestTetherService(
-      Profile* profile,
+      user_manager::User* user,
       chromeos::PowerManagerClient* power_manager_client,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       session_manager::SessionManager* session_manager)
-      : TetherService(profile,
+      : TetherService(user,
                       power_manager_client,
                       device_sync_client,
                       secure_channel_client,
@@ -371,21 +372,30 @@ class TetherServiceTest : public testing::Test {
     NetworkConnect::Shutdown();
   }
 
-  void SetPrimaryUserLoggedIn() {
+  user_manager::User* SetPrimaryUserLoggedIn() {
     const AccountId account_id(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
     fake_chrome_user_manager_->AddPublicAccountUser(account_id);
     fake_chrome_user_manager_->UserLoggedIn(
         account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+    // Attach the profile's prefs to the user, as profile creation does in
+    // production, so that User::GetProfilePrefs() works.
+    fake_chrome_user_manager_->OnUserProfileCreated(account_id,
+                                                    profile_->GetPrefs());
+    return fake_chrome_user_manager_->FindUserAndModify(account_id);
   }
 
   void CreateTetherService() {
+    // The service is created for a logged-in user's profile, so the user has
+    // to exist before it is constructed.
+    user_manager::User* const user = SetPrimaryUserLoggedIn();
+
     fake_multidevice_setup_client_->SetFeatureState(
         multidevice_setup::mojom::Feature::kInstantTethering,
         initial_feature_state_);
 
     tether_service_ = base::WrapUnique(new TestTetherService(
-        profile_.get(), chromeos::FakePowerManagerClient::Get(),
+        user, chromeos::FakePowerManagerClient::Get(),
         fake_device_sync_client_.get(), fake_secure_channel_client_.get(),
         fake_multidevice_setup_client_.get(), nullptr /* session_manager */));
 
@@ -394,8 +404,6 @@ class TetherServiceTest : public testing::Test {
     tether_service_->SetTestDoubles(
         base::WrapUnique(fake_notification_presenter_.get()),
         base::WrapUnique(mock_timer_.get()));
-
-    SetPrimaryUserLoggedIn();
 
     // Ensure that TetherService does not prematurely update its
     // TechnologyState before it fetches the BluetoothAdapter.

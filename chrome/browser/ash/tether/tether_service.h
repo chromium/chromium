@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -23,6 +24,10 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 
 class Profile;
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace session_manager {
 class SessionManager;
@@ -60,8 +65,9 @@ class TetherService
       public device_sync::DeviceSyncClient::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
+  // Caller must ensure that |user| outlives this instance.
   TetherService(
-      Profile* profile,
+      user_manager::User* user,
       chromeos::PowerManagerClient* power_manager_client,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
@@ -262,7 +268,7 @@ class TetherService
   TetherFeatureState previous_feature_state_ =
       TetherFeatureState::TETHER_FEATURE_STATE_MAX;
 
-  raw_ptr<Profile> profile_;
+  const raw_ref<user_manager::User> user_;
   raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
   raw_ptr<device_sync::DeviceSyncClient, DanglingUntriaged> device_sync_client_;
   raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;

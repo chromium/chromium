@@ -24,6 +24,7 @@ static_library("tether") {
     "//chrome/browser/profiles",
     "//chrome/browser/ui/ash/network",
     "//chrome/browser/ui/webui/ash/settings/pages/internet",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/tether",
     "//chromeos/ash/services/device_sync/public/cpp",

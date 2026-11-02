@@ -19,13 +19,13 @@ constexpr char kCarrier[] = "FakeCarrier";
 }  // namespace
 
 FakeTetherService::FakeTetherService(
-    Profile* profile,
+    user_manager::User* user,
     chromeos::PowerManagerClient* power_manager_client,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     session_manager::SessionManager* session_manager)
-    : TetherService(profile,
+    : TetherService(user,
                     power_manager_client,
                     device_sync_client,
                     secure_channel_client,

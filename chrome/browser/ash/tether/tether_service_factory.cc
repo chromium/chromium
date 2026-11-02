@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/ash/tether/fake_tether_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -81,7 +82,7 @@ TetherServiceFactory::BuildServiceInstanceForBrowserContext(
   if (command_line->HasSwitch(switches::kTetherStub)) {
     std::unique_ptr<FakeTetherService> fake_tether_service =
         std::make_unique<FakeTetherService>(
-            Profile::FromBrowserContext(context),
+            ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context),
             chromeos::PowerManagerClient::Get(),
             device_sync::DeviceSyncClientFactory::GetForProfile(
                 Profile::FromBrowserContext(context)),
@@ -100,7 +101,8 @@ TetherServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<TetherService>(
-      Profile::FromBrowserContext(context), chromeos::PowerManagerClient::Get(),
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context),
+      chromeos::PowerManagerClient::Get(),
       device_sync::DeviceSyncClientFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
       secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),

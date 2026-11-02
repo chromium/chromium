@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/tether/tether_service.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -25,6 +26,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
 namespace ash {
@@ -92,13 +94,13 @@ std::string TetherService::TetherFeatureStateToString(
 }
 
 TetherService::TetherService(
-    Profile* profile,
+    user_manager::User* user,
     chromeos::PowerManagerClient* power_manager_client,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     session_manager::SessionManager* session_manager)
-    : profile_(profile),
+    : user_(CHECK_DEREF(user)),
       power_manager_client_(power_manager_client),
       device_sync_client_(device_sync_client),
       secure_channel_client_(secure_channel_client),
@@ -106,7 +108,7 @@ TetherService::TetherService(
       network_state_handler_(NetworkHandler::Get()->network_state_handler()),
       session_manager_(session_manager),
       notification_presenter_(
-          std::make_unique<TetherNotificationPresenter>(profile_,
+          std::make_unique<TetherNotificationPresenter>(&user_.get(),
                                                         NetworkConnect::Get())),
       gms_core_notifications_state_tracker_(
           std::make_unique<GmsCoreNotificationsStateTrackerImpl>()),
@@ -155,7 +157,7 @@ void TetherService::StartTetherIfPossible() {
   tether_component_ = TetherComponentImpl::Factory::Create(
       device_sync_client_, secure_channel_client_, tether_host_fetcher_.get(),
       notification_presenter_.get(),
-      gms_core_notifications_state_tracker_.get(), profile_->GetPrefs(),
+      gms_core_notifications_state_tracker_.get(), user_->GetProfilePrefs(),
       NetworkHandler::Get(), NetworkConnect::Get(), adapter_, session_manager_);
 }
 
@@ -503,12 +505,12 @@ bool TetherService::IsCellularAvailableButNotEnabled() const {
 }
 
 bool TetherService::IsAllowedByPolicy() const {
-  return profile_->GetPrefs()->GetBoolean(
+  return user_->GetProfilePrefs()->GetBoolean(
       multidevice_setup::kInstantTetheringAllowedPrefName);
 }
 
 bool TetherService::IsEnabledByPreference() const {
-  return profile_->GetPrefs()->GetBoolean(
+  return user_->GetProfilePrefs()->GetBoolean(
       multidevice_setup::kInstantTetheringEnabledPrefName);
 }
 

@@ -10,13 +10,17 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/tether/notification_presenter.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-class Profile;
 class PrefRegistrySimple;
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 class NetworkConnect;
@@ -32,9 +36,9 @@ namespace ash::tether {
 // observers about interactions with those notifications.
 class TetherNotificationPresenter : public NotificationPresenter {
  public:
-  // Caller must ensure that |profile| and |network_connect| outlive this
+  // Caller must ensure that |user| and |network_connect| outlive this
   // instance.
-  TetherNotificationPresenter(Profile* profile,
+  TetherNotificationPresenter(const user_manager::User* user,
                               NetworkConnect* network_connect);
 
   TetherNotificationPresenter(const TetherNotificationPresenter&) = delete;
@@ -64,9 +68,9 @@ class TetherNotificationPresenter : public NotificationPresenter {
     virtual ~SettingsUiDelegate() = default;
 
     // Displays the settings page (opening a new window if necessary) at the
-    // provided subpage for the user with the Profile |profile|.
-    virtual void ShowSettingsSubPageForProfile(Profile* profile,
-                                               const std::string& sub_page) = 0;
+    // provided subpage for |user|.
+    virtual void ShowSettingsSubPage(const user_manager::User& user,
+                                     const std::string& sub_page) = 0;
   };
 
  private:
@@ -115,7 +119,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
 
   bool AreNotificationsEnabled();
 
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ref<const user_manager::User> user_;
   raw_ptr<NetworkConnect, DanglingUntriaged> network_connect_;
 
   // The ID of the currently showing notification.

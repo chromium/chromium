@@ -75,18 +75,18 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
     TestSettingsUiDelegate() = default;
     ~TestSettingsUiDelegate() override = default;
 
-    Profile* last_profile() { return last_profile_; }
+    const user_manager::User* last_user() { return last_user_; }
     std::string last_settings_subpage() { return last_settings_subpage_; }
 
     // TetherNotificationPresenter::SettingsUiDelegate:
-    void ShowSettingsSubPageForProfile(Profile* profile,
-                                       const std::string& sub_page) override {
-      last_profile_ = profile;
+    void ShowSettingsSubPage(const user_manager::User& user,
+                             const std::string& sub_page) override {
+      last_user_ = &user;
       last_settings_subpage_ = sub_page;
     }
 
    private:
-    raw_ptr<Profile, DanglingUntriaged> last_profile_ = nullptr;
+    raw_ptr<const user_manager::User> last_user_ = nullptr;
     std::string last_settings_subpage_;
   };
 
@@ -104,7 +104,7 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
     test_network_connect_ = std::make_unique<TestNetworkConnect>();
 
     notification_presenter_ = std::make_unique<TetherNotificationPresenter>(
-        profile(), test_network_connect_.get());
+        &user(), test_network_connect_.get());
 
     auto delegate = std::make_unique<TestSettingsUiDelegate>();
     test_settings_ui_delegate_ = delegate.get();
@@ -123,6 +123,11 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
           0u /* num_expected_button_tapped_single_host_nearby */);
     }
 
+    // Destroy the presenter, which holds a reference to the user, before the
+    // harness tears the UserManager down.
+    notification_presenter_.reset();
+    test_settings_ui_delegate_ = nullptr;
+
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -140,11 +145,14 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
         TetherNotificationPresenter::kSetupRequiredNotificationId);
   }
 
-  std::string GetUserScopedNotificationId(const std::string& notification_id) {
-    const user_manager::User& user = CHECK_DEREF(
+  const user_manager::User& user() {
+    return CHECK_DEREF(
         BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
+  }
+
+  std::string GetUserScopedNotificationId(const std::string& notification_id) {
     return CreateUserScopedNotificationId(notification_id,
-                                          user.username_hash());
+                                          user().username_hash());
   }
 
   const message_center::Notification* GetNotification(
@@ -154,13 +162,13 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
   }
 
   void VerifySettingsOpened(const std::string& expected_subpage) {
-    EXPECT_EQ(profile(), test_settings_ui_delegate_->last_profile());
+    EXPECT_EQ(&user(), test_settings_ui_delegate_->last_user());
     EXPECT_EQ(expected_subpage,
               test_settings_ui_delegate_->last_settings_subpage());
   }
 
   void VerifySettingsNotOpened() {
-    EXPECT_FALSE(test_settings_ui_delegate_->last_profile());
+    EXPECT_FALSE(test_settings_ui_delegate_->last_user());
     EXPECT_TRUE(test_settings_ui_delegate_->last_settings_subpage().empty());
   }
 

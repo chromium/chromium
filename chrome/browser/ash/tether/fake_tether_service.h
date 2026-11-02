@@ -16,7 +16,7 @@ namespace tether {
 class FakeTetherService : public TetherService {
  public:
   FakeTetherService(
-      Profile* profile,
+      user_manager::User* user,
       chromeos::PowerManagerClient* power_manager_client,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
