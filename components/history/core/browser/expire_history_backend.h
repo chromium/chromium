@@ -42,8 +42,10 @@ class ExpiringVisitsReader {
   virtual ~ExpiringVisitsReader() = default;
   // Populates `visits` from `db`, using provided `end_time` and `max_visits`
   // cap.
-  virtual bool Read(base::Time end_time, HistoryDatabase* db,
-                    VisitVector* visits, int max_visits) const = 0;
+  virtual bool Read(base::Time end_time,
+                    HistoryDatabase* db,
+                    VisitVector* visits,
+                    int max_visits) const = 0;
 };
 
 typedef std::vector<raw_ptr<const ExpiringVisitsReader, VectorExperimental>>
@@ -262,8 +264,8 @@ class ExpireHistoryBackend {
   // history to expire with the current time threshold (it does not indicate
   // success or failure).
   bool ExpireSomeOldHistory(base::Time end_time,
-                             const ExpiringVisitsReader* reader,
-                             int max_visits);
+                            const ExpiringVisitsReader* reader,
+                            int max_visits);
 
   // Expire segment data older than `end_time`.
   void ExpireOldSegmentData(base::Time end_time);
