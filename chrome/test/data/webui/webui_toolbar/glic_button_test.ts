@@ -291,20 +291,6 @@ suite('GlicButtonTest', function() {
     assertFalse(chip.classList.contains('help-anchor-highlight'));
   });
 
-  test('DisabledState', async function() {
-    const chip = element.$.button;
-    assertFalse(chip.disabled);
-    assertFalse(chip.$.button.hasAttribute('disabled'));
-
-    element.enabled = false;
-    await element.updateComplete;
-    await chip.updateComplete;
-    await microtasksFinished();
-
-    assertTrue(chip.disabled);
-    assertTrue(chip.$.button.hasAttribute('disabled'));
-  });
-
   test('ContextMenuEventTriggersShowContextMenu', async function() {
     assertEquals(
         0, browserProxy.toolbarUIHandler.getCallCount('showContextMenu'));

@@ -46,13 +46,11 @@ export class GlicButtonElement extends GlicButtonElementBase {
   static override get properties() {
     return {
       ...super.properties,
-      enabled: {type: Boolean},
       state: {type: Object},
       label: {type: String},
     };
   }
 
-  accessor enabled: boolean = true;
   accessor state: GlicButtonState = {
     open: false,
     shouldShow: false,
