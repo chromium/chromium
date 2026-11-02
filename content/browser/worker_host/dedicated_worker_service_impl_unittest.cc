@@ -31,6 +31,7 @@
 #include "content/test/render_document_feature.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
@@ -101,10 +102,50 @@ class MockDedicatedWorker
         receiver_.BindNewPipeAndPassRemote());
   }
 
+  MockDedicatedWorker(
+      mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory,
+      const url::Origin& origin)
+      : factory_(std::move(factory)) {
+    auto fetch_client_settings_object =
+        blink::mojom::FetchClientSettingsObject::New();
+    fetch_client_settings_object->policy_container_policies =
+        blink::mojom::PolicyContainerPolicies::New();
+
+    factory_->CreateWorkerHostAndStartScriptLoad(
+        blink::DedicatedWorkerToken(),
+        /*script_url=*/origin.GetURL().Resolve("worker.js"),
+        network::mojom::CredentialsMode::kSameOrigin,
+        std::move(fetch_client_settings_object),
+        mojo::PendingRemote<blink::mojom::BlobURLToken>(),
+        receiver_.BindNewPipeAndPassRemote());
+  }
+
   ~MockDedicatedWorker() override = default;
 
   // Non-copyable.
   MockDedicatedWorker(const MockDedicatedWorker& other) = delete;
+
+  mojo::Remote<blink::mojom::BrowserInterfaceBroker>&
+  browser_interface_broker() {
+    return browser_interface_broker_;
+  }
+
+  const blink::mojom::PolicyContainerPoliciesPtr& policy_container_policies()
+      const {
+    return policy_container_policies_;
+  }
+
+  mojo::AssociatedRemote<blink::mojom::PolicyContainerHost>&
+  policy_container_host() {
+    return policy_container_host_;
+  }
+
+  mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainerHost>&
+  service_worker_container_host() {
+    return service_worker_container_host_;
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
 
   // blink::mojom::DedicatedWorkerHostFactoryClient:
   void OnWorkerHostCreated(
@@ -130,7 +171,14 @@ class MockDedicatedWorker
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          dip_reporting_observer) override {}
+          dip_reporting_observer) override {
+    if (service_worker_container_info) {
+      service_worker_container_host_.Bind(
+          std::move(service_worker_container_info->host_remote));
+    }
+    policy_container_policies_ = std::move(policy_container->policies);
+    policy_container_host_.Bind(std::move(policy_container->remote));
+  }
   void OnScriptLoadStartFailed() override {}
 
  private:
@@ -143,6 +191,11 @@ class MockDedicatedWorker
 
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> browser_interface_broker_;
   mojo::Remote<blink::mojom::DedicatedWorkerHost> remote_host_;
+  mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainerHost>
+      service_worker_container_host_;
+  blink::mojom::PolicyContainerPoliciesPtr policy_container_policies_;
+  mojo::AssociatedRemote<blink::mojom::PolicyContainerHost>
+      policy_container_host_;
 };
 
 class DedicatedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
@@ -208,7 +261,7 @@ class DedicatedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
     PolicyContainerPolicies policies =
         WorkerScriptFetcher::ComputePolicyContainerPoliciesForTesting(
             final_response_url, main_script_load_params->response_head.get(),
-            /*creator_policies=*/nullptr);
+            &host->creator_policies_);
     host->DidStartScriptLoad(
         WorkerScriptFetcherResult(std::move(subresource_loader_factories),
                                   std::move(main_script_load_params),
@@ -969,6 +1022,221 @@ TEST_F(DedicatedWorkerServiceImplTest,
                      std::move(response_head));
   EXPECT_FALSE(HasServiceWorkerHandle(host));
   EXPECT_FALSE(host->GetServiceWorkerClient());
+}
+
+TEST_F(DedicatedWorkerServiceImplTest,
+       CreateNestedDedicatedWorkerBeforeScriptLoad) {
+  TestDedicatedWorkerServiceObserver observer;
+  base::ScopedObservation<DedicatedWorkerService,
+                          DedicatedWorkerService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(GetDedicatedWorkerService());
+
+  const GURL kUrl("https://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  const ChildProcessId render_process_host_id =
+      render_frame_host->GetProcess()->GetID();
+  const auto origin = url::Origin::Create(kUrl);
+  auto mock_dedicated_worker = std::make_unique<MockDedicatedWorker>(
+      render_process_host_id, render_frame_host->GetGlobalId(), origin);
+  observer.RunUntilWorkerEvent();
+  ASSERT_EQ(observer.dedicated_worker_infos().size(), 1u);
+  mock_dedicated_worker->FlushForTesting();
+  ASSERT_TRUE(mock_dedicated_worker->browser_interface_broker().is_bound());
+
+  // Attempting to create a nested dedicated worker before DidStartScriptLoad()
+  // (when policy_container_host_ is null) must report a bad Mojo message rather
+  // than dereferencing a null pointer.
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> nested_factory;
+  mock_dedicated_worker->browser_interface_broker()->GetInterface(
+      nested_factory.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(
+      "CreateNestedDedicatedWorker called before policy_container_host_ was "
+      "set",
+      bad_message_observer.WaitForBadMessage());
+}
+
+// Tests that nested dedicated workers loaded from local schemes inherit CSP
+// sandbox flags from their parent worker (rather than their grandparent's
+// policies).
+TEST_F(DedicatedWorkerServiceImplTest, NestedWorkersInheritCspSandboxFlags) {
+  TestDedicatedWorkerServiceObserver observer;
+  base::ScopedObservation<DedicatedWorkerService,
+                          DedicatedWorkerService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(GetDedicatedWorkerService());
+
+  const GURL kUrl("https://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  const ChildProcessId render_process_host_id =
+      render_frame_host->GetProcess()->GetID();
+  const auto origin = url::Origin::Create(kUrl);
+
+  // 1. Create Worker 1 from the frame, and load its script with
+  // `Content-Security-Policy: sandbox` (`WebSandboxFlags::kOrigin`).
+  auto worker1 = std::make_unique<MockDedicatedWorker>(
+      render_process_host_id, render_frame_host->GetGlobalId(), origin);
+  observer.RunUntilWorkerEvent();
+  ASSERT_EQ(observer.dedicated_worker_infos().size(), 1u);
+  const blink::DedicatedWorkerToken token1 =
+      observer.dedicated_worker_infos().begin()->first;
+  DedicatedWorkerHost* host1 =
+      GetDedicatedWorkerServiceImpl()->GetDedicatedWorkerHostFromToken(token1);
+  ASSERT_TRUE(host1);
+  EXPECT_TRUE(HasServiceWorkerHandle(host1));
+
+  {
+    auto response_head = network::mojom::URLResponseHead::New();
+    response_head->parsed_headers = network::mojom::ParsedHeaders::New();
+    auto csp = network::mojom::ContentSecurityPolicy::New();
+    csp->self_origin = network::mojom::CSPSource::New();
+    csp->header = network::mojom::ContentSecurityPolicyHeader::New();
+    csp->sandbox = network::mojom::WebSandboxFlags::kOrigin;
+    response_head->parsed_headers->content_security_policy.push_back(
+        std::move(csp));
+    DidStartScriptLoad(host1, GURL("https://example.com/worker1.js"),
+                       std::move(response_head));
+    EXPECT_FALSE(HasServiceWorkerHandle(host1));
+  }
+
+  // 2. Worker 1 creates nested Worker 2, loaded from a local scheme (`blob:`)
+  // without any CSP headers. Worker 2 must inherit Worker 1's policy container
+  // policies (including sandbox flags) and drop its service worker handle.
+  mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory2;
+  host1->CreateNestedDedicatedWorker(factory2.BindNewPipeAndPassReceiver());
+  auto worker2 =
+      std::make_unique<MockDedicatedWorker>(std::move(factory2), origin);
+  observer.RunUntilWorkerEvent();
+  ASSERT_EQ(observer.dedicated_worker_infos().size(), 2u);
+  blink::DedicatedWorkerToken token2 =
+      std::ranges::find_if(observer.dedicated_worker_infos(),
+                           [&](const auto& pair) {
+                             const auto& [token, info] = pair;
+                             return token != token1;
+                           })
+          ->first;
+  DedicatedWorkerHost* host2 =
+      GetDedicatedWorkerServiceImpl()->GetDedicatedWorkerHostFromToken(token2);
+  ASSERT_TRUE(host2);
+  EXPECT_TRUE(HasServiceWorkerHandle(host2));
+
+  DidStartScriptLoad(host2, GURL("blob:https://example.com/worker2"),
+                     /*response_head=*/nullptr);
+  EXPECT_FALSE(HasServiceWorkerHandle(host2));
+
+  // 3. Worker 2 creates nested Worker 3, also loaded from a local scheme
+  // (`blob:`) without any CSP headers. Worker 3 must also inherit the sandbox
+  // flags from Worker 1 via Worker 2 and drop its service worker handle.
+  mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory3;
+  host2->CreateNestedDedicatedWorker(factory3.BindNewPipeAndPassReceiver());
+  auto worker3 =
+      std::make_unique<MockDedicatedWorker>(std::move(factory3), origin);
+  observer.RunUntilWorkerEvent();
+  ASSERT_EQ(observer.dedicated_worker_infos().size(), 3u);
+  blink::DedicatedWorkerToken token3 =
+      std::ranges::find_if(observer.dedicated_worker_infos(),
+                           [&](const auto& pair) {
+                             const auto& [token, info] = pair;
+                             return token != token1 && token != token2;
+                           })
+          ->first;
+  DedicatedWorkerHost* host3 =
+      GetDedicatedWorkerServiceImpl()->GetDedicatedWorkerHostFromToken(token3);
+  ASSERT_TRUE(host3);
+  EXPECT_TRUE(HasServiceWorkerHandle(host3));
+
+  DidStartScriptLoad(host3, GURL("blob:https://example.com/worker3"),
+                     /*response_head=*/nullptr);
+  EXPECT_FALSE(HasServiceWorkerHandle(host3));
+}
+
+// Tests that updates sent over a worker's `blink::mojom::PolicyContainerHost`
+// remote (`SetReferrerPolicy()` and `AddContentSecurityPolicies()`) update the
+// `DedicatedWorkerHost`'s policies and flow into nested local-scheme workers.
+TEST_F(DedicatedWorkerServiceImplTest,
+       NestedWorkersInheritUpdatedPolicyContainerPolicies) {
+  TestDedicatedWorkerServiceObserver observer;
+  base::ScopedObservation<DedicatedWorkerService,
+                          DedicatedWorkerService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(GetDedicatedWorkerService());
+
+  const GURL kUrl("https://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  const ChildProcessId render_process_host_id =
+      render_frame_host->GetProcess()->GetID();
+  const auto origin = url::Origin::Create(kUrl);
+
+  // 1. Create Worker 1 from the frame and start its script load.
+  auto worker1 = std::make_unique<MockDedicatedWorker>(
+      render_process_host_id, render_frame_host->GetGlobalId(), origin);
+  observer.RunUntilWorkerEvent();
+  ASSERT_EQ(observer.dedicated_worker_infos().size(), 1u);
+  const blink::DedicatedWorkerToken token1 =
+      observer.dedicated_worker_infos().begin()->first;
+  DedicatedWorkerHost* host1 =
+      GetDedicatedWorkerServiceImpl()->GetDedicatedWorkerHostFromToken(token1);
+  ASSERT_TRUE(host1);
+
+  DidStartScriptLoad(host1, GURL("https://example.com/worker1.js"),
+                     /*response_head=*/nullptr);
+  worker1->FlushForTesting();
+  ASSERT_TRUE(worker1->policy_container_host().is_bound());
+  ASSERT_TRUE(worker1->policy_container_policies());
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
+            worker1->policy_container_policies()->referrer_policy);
+  EXPECT_TRUE(
+      worker1->policy_container_policies()->content_security_policies.empty());
+
+  // 2. Simulate the renderer updating Worker 1's PolicyContainerHost via
+  // `SetReferrerPolicy()` and `AddContentSecurityPolicies()`.
+  worker1->policy_container_host()->SetReferrerPolicy(
+      network::mojom::ReferrerPolicy::kNever, blink::InitiatorStateToken());
+  auto csp = network::mojom::ContentSecurityPolicy::New();
+  csp->self_origin = network::mojom::CSPSource::New();
+  csp->header = network::mojom::ContentSecurityPolicyHeader::New();
+  csp->header->header_value = "default-src 'self'";
+  std::vector<network::mojom::ContentSecurityPolicyPtr> csps;
+  csps.push_back(std::move(csp));
+  worker1->policy_container_host()->AddContentSecurityPolicies(
+      std::move(csps), blink::InitiatorStateToken());
+  worker1->policy_container_host().FlushForTesting();
+
+  // 3. Worker 1 creates nested Worker 2, loaded from a local scheme (`blob:`).
+  // Worker 2 must inherit the updated referrer policy and CSP from Worker 1.
+  mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory2;
+  host1->CreateNestedDedicatedWorker(factory2.BindNewPipeAndPassReceiver());
+  auto worker2 =
+      std::make_unique<MockDedicatedWorker>(std::move(factory2), origin);
+  observer.RunUntilWorkerEvent();
+  ASSERT_EQ(observer.dedicated_worker_infos().size(), 2u);
+  blink::DedicatedWorkerToken token2 =
+      std::ranges::find_if(observer.dedicated_worker_infos(),
+                           [&](const auto& pair) {
+                             const auto& [token, info] = pair;
+                             return token != token1;
+                           })
+          ->first;
+  DedicatedWorkerHost* host2 =
+      GetDedicatedWorkerServiceImpl()->GetDedicatedWorkerHostFromToken(token2);
+  ASSERT_TRUE(host2);
+
+  DidStartScriptLoad(host2, GURL("blob:https://example.com/worker2"),
+                     /*response_head=*/nullptr);
+  worker2->FlushForTesting();
+  ASSERT_TRUE(worker2->policy_container_policies());
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
+            worker2->policy_container_policies()->referrer_policy);
+  ASSERT_EQ(
+      1u,
+      worker2->policy_container_policies()->content_security_policies.size());
+  EXPECT_EQ("default-src 'self'", worker2->policy_container_policies()
+                                      ->content_security_policies[0]
+                                      ->header->header_value);
 }
 
 }  // namespace content

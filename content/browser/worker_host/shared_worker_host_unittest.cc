@@ -103,7 +103,8 @@ class SharedWorkerHostTest : public testing::Test {
 
   base::WeakPtr<SharedWorkerHost> CreateHostWithParams(
       blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
-      bool extended_lifetime) {
+      bool extended_lifetime,
+      PolicyContainerPolicies creator_policies = PolicyContainerPolicies()) {
     blink::StorageKey creator_storage_key =
         blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl));
     bool is_opaque_origin_enabled = base::FeatureList::IsEnabled(
@@ -122,7 +123,7 @@ class SharedWorkerHostTest : public testing::Test {
     auto host = std::make_unique<SharedWorkerHost>(
         &service_, instance, site_instance_,
         std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-        base::MakeRefCounted<PolicyContainerHost>());
+        base::MakeRefCounted<PolicyContainerHost>(std::move(creator_policies)));
     auto weak_host = host->AsWeakPtr();
     service_.worker_hosts_.insert(std::move(host));
     return weak_host;
@@ -173,7 +174,7 @@ class SharedWorkerHostTest : public testing::Test {
     PolicyContainerPolicies policies =
         WorkerScriptFetcher::ComputePolicyContainerPoliciesForTesting(
             final_response_url, main_script_load_params->response_head.get(),
-            /*creator_policies=*/nullptr);
+            &host->creator_policies());
     host->Start(
         std::move(factory),
         blink::mojom::FetchClientSettingsObject::New(
@@ -797,6 +798,21 @@ TEST_F(SharedWorkerHostTest, ServiceWorkerHandleDroppedWhenCSPSandboxed) {
   StartWorker(host.get(), std::move(factory),
               GURL("https://www.example.com/w.js"), std::move(response_head));
   EXPECT_FALSE(HasServiceWorkerHandle(host.get()));
+}
+
+TEST_F(SharedWorkerHostTest, NetworkResponseDoesNotInheritCreatorSandboxFlags) {
+  PolicyContainerPolicies creator_policies;
+  creator_policies.sandbox_flags = network::mojom::WebSandboxFlags::kOrigin;
+  base::WeakPtr<SharedWorkerHost> host = CreateHostWithParams(
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false, std::move(creator_policies));
+  mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
+  MockSharedWorkerFactory factory_impl(
+      factory.InitWithNewPipeAndPassReceiver());
+
+  StartWorker(host.get(), std::move(factory),
+              GURL("https://www.example.com/w.js"));
+  EXPECT_TRUE(HasServiceWorkerHandle(host.get()));
 }
 
 }  // namespace content

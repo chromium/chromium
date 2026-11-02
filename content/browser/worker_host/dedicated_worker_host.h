@@ -476,6 +476,10 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // The policies of the creator context. Used for inheritance.
   const PolicyContainerPolicies creator_policies_;
 
+  // The policy container host for this worker. Initialized in
+  // `DidStartScriptLoad()`.
+  scoped_refptr<PolicyContainerHost> policy_container_host_;
+
   base::WeakPtrFactory<DedicatedWorkerHost> weak_factory_{this};
 };
 
