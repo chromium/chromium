@@ -9,7 +9,9 @@
 mod icu4c;
 mod provider;
 
-pub(crate) use icu4c::{Icu4cFilterCategory, ParsedIcu4cFilterFile, ResolvedLocaleFilter};
+pub(crate) use icu4c::{
+    all_segmenter_models, Icu4cFilterCategory, ParsedIcu4cFilterFile, ResolvedLocaleFilter,
+};
 pub(crate) use provider::FilteredDataProvider;
 use provider::NonClosingExporter;
 

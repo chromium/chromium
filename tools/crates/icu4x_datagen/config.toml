@@ -10,13 +10,21 @@
 # Run `python3 tools/crates/run_icu4x_datagen.py list-markers` to inspect the
 # default mapping for all registered ICU4X markers (around 340 markers total).
 
+# Unified `.patch` files (relative to the Chromium `src/` root) applied to
+# `ICU4X-json` payloads before baking Rust data into `//third_party/rust/icu4x_data`.
+# See `//third_party/rust/icu4x_data/patches/README.md` for details.
+patches = [
+  "third_party/rust/icu4x_data/patches/name_5_langs.patch",
+  "third_party/rust/icu4x_data/patches/locale1.patch",
+]
+
 [resource_filters]
 # Restrict `TransliteratorRulesV1` (`transliterator/rules/v1`) to transliterators
 # enabled in ICU4C `resourceFilters` (`translit`).
 filter_transliterators = true
 
 # Restrict `CurrencyDisplaynameV1`, `CurrencyExtendedDataV1`, and `CurrencySymbolsV1`
-# to the ~178 active currencies in ICU4C `resourceFilters` (`curr_tree`).
+# to the active currencies in ICU4C `resourceFilters` (`curr_tree`).
 filter_currencies = true
 
 # Restrict `LocaleNamesLanguage*V1` to UI + non-UI target languages in ICU4C
@@ -29,9 +37,10 @@ filter_target_variants = true
 
 # Restrict non-autonym locale trees (`locales_tree`, `lang_tree`) to UI locales
 # by excluding the non-UI Accept-Languages that have `-/*` + `+/Languages/<lang>`
-# rules in `//third_party/icu/filters/<platform>.json` (100 locales in
-# `common.json`; run `inspect-filters` to view per-platform counts), while
-# preserving `LocaleNamesLanguage*V1` autonyms (`lang/x/x`).
+# rules in `//third_party/icu/filters/<platform>.json` (around 100 locales in
+# `common.json`; run `inspect-filters` to view resolved per-platform locale
+# family counts), while preserving `LocaleNamesLanguage*V1` autonyms
+# (`lang/x/x`).
 abridge_non_ui_locales = true
 
 # Optional marker-pattern override rules (`[[rules]]`), evaluated in order

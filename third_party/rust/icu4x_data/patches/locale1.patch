@@ -1,0 +1,299 @@
+# Ported from //third_party/icu/patches/locale1.patch.
+# Overrides Korean (ko, ko-CN, ko-KP) Gregorian yMMMd day-interval spacing
+# ("y년 M월 d일~d일" -> "y년 M월 d일 ~ d일") and North American metazone long
+# names (America_Central, America_Eastern, America_Mountain, America_Pacific)
+# to use "북미 ..." / "북미 로키 산맥 ..." instead of "미 ...".
+diff -ruN a/datetime/patterns/range/date/gregorian/v1/ym0d/ko-CN.json b/datetime/patterns/range/date/gregorian/v1/ym0d/ko-CN.json
+--- a/datetime/patterns/range/date/gregorian/v1/ym0d/ko-CN.json
++++ b/datetime/patterns/range/date/gregorian/v1/ym0d/ko-CN.json
+@@ -12,7 +12,7 @@
+     {
+       "header": 42,
+       "patterns": [
+-        "y년 M월 d일~d일",
++        "y년 M월 d일 ~ d일",
+         "y년 MMM d일~MMM d일",
+         "y년 MMM d일~y년 MMM d일"
+       ]
+diff -ruN a/datetime/patterns/range/date/gregorian/v1/ym0d/ko.json b/datetime/patterns/range/date/gregorian/v1/ym0d/ko.json
+--- a/datetime/patterns/range/date/gregorian/v1/ym0d/ko.json
++++ b/datetime/patterns/range/date/gregorian/v1/ym0d/ko.json
+@@ -12,7 +12,7 @@
+     {
+       "header": 42,
+       "patterns": [
+-        "y년 M월 d일~d일",
++        "y년 M월 d일 ~ d일",
+         "y년 MMM d일~MMM d일",
+         "y년 MMM d일~y년 MMM d일"
+       ]
+diff -ruN a/datetime/patterns/range/date/gregorian/v1/ym0d/ko-KP.json b/datetime/patterns/range/date/gregorian/v1/ym0d/ko-KP.json
+--- a/datetime/patterns/range/date/gregorian/v1/ym0d/ko-KP.json
++++ b/datetime/patterns/range/date/gregorian/v1/ym0d/ko-KP.json
+@@ -12,7 +12,7 @@
+     {
+       "header": 42,
+       "patterns": [
+-        "y년 M월 d일~d일",
++        "y년 M월 d일 ~ d일",
+         "y년 MMM d일~MMM d일",
+         "y년 MMM d일~y년 MMM d일"
+       ]
+diff -ruN a/timezone/names/generic/long/v1/ko-CN.json b/timezone/names/generic/long/v1/ko-CN.json
+--- a/timezone/names/generic/long/v1/ko-CN.json
++++ b/timezone/names/generic/long/v1/ko-CN.json
+@@ -3,10 +3,10 @@
+     "1": "아크레 시간",
+     "7": "알래스카 시간",
+     "8": "아마존 시간",
+-    "9": "미 중부 시간",
+-    "10": "미 동부 시간",
+-    "11": "미 산악 시간",
+-    "12": "미 태평양 시간",
++    "9": "북미 중부 시간",
++    "10": "북미 동부 시간",
++    "11": "북미 로키 산맥 시간",
++    "12": "북미 태평양 시간",
+     "13": "아피아 시간",
+     "14": "아라비아 시간",
+     "15": "아르헨티나 시간",
+diff -ruN a/timezone/names/generic/long/v1/ko.json b/timezone/names/generic/long/v1/ko.json
+--- a/timezone/names/generic/long/v1/ko.json
++++ b/timezone/names/generic/long/v1/ko.json
+@@ -3,10 +3,10 @@
+     "1": "아크레 시간",
+     "7": "알래스카 시간",
+     "8": "아마존 시간",
+-    "9": "미 중부 시간",
+-    "10": "미 동부 시간",
+-    "11": "미 산악 시간",
+-    "12": "미 태평양 시간",
++    "9": "북미 중부 시간",
++    "10": "북미 동부 시간",
++    "11": "북미 로키 산맥 시간",
++    "12": "북미 태평양 시간",
+     "13": "아피아 시간",
+     "14": "아라비아 시간",
+     "15": "아르헨티나 시간",
+diff -ruN a/timezone/names/generic/long/v1/ko-KP.json b/timezone/names/generic/long/v1/ko-KP.json
+--- a/timezone/names/generic/long/v1/ko-KP.json
++++ b/timezone/names/generic/long/v1/ko-KP.json
+@@ -3,10 +3,10 @@
+     "1": "아크레 시간",
+     "7": "알래스카 시간",
+     "8": "아마존 시간",
+-    "9": "미 중부 시간",
+-    "10": "미 동부 시간",
+-    "11": "미 산악 시간",
+-    "12": "미 태평양 시간",
++    "9": "북미 중부 시간",
++    "10": "북미 동부 시간",
++    "11": "북미 로키 산맥 시간",
++    "12": "북미 태평양 시간",
+     "13": "아피아 시간",
+     "14": "아라비아 시간",
+     "15": "아르헨티나 시간",
+diff -ruN a/timezone/names/specific/long/v1/ko-CN.json b/timezone/names/specific/long/v1/ko-CN.json
+--- a/timezone/names/specific/long/v1/ko-CN.json
++++ b/timezone/names/specific/long/v1/ko-CN.json
+@@ -40,56 +40,56 @@
+         9,
+         "Standard"
+       ],
+-      "미 중부 표준시"
++      "북미 중부 표준시"
+     ],
+     [
+       [
+         9,
+         "Daylight"
+       ],
+-      "미 중부 하계 표준시"
++      "북미 중부 하계 표준시"
+     ],
+     [
+       [
+         10,
+         "Standard"
+       ],
+-      "미 동부 표준시"
++      "북미 동부 표준시"
+     ],
+     [
+       [
+         10,
+         "Daylight"
+       ],
+-      "미 동부 하계 표준시"
++      "북미 동부 하계 표준시"
+     ],
+     [
+       [
+         11,
+         "Standard"
+       ],
+-      "미 산악 표준시"
++      "북미 로키 산맥 표준시"
+     ],
+     [
+       [
+         11,
+         "Daylight"
+       ],
+-      "미 산지 하계 표준시"
++      "북미 로키 산맥 하계 표준시"
+     ],
+     [
+       [
+         12,
+         "Standard"
+       ],
+-      "미 태평양 표준시"
++      "북미 태평양 표준시"
+     ],
+     [
+       [
+         12,
+         "Daylight"
+       ],
+-      "미 태평양 하계 표준시"
++      "북미 태평양 하계 표준시"
+     ],
+     [
+       [
+diff -ruN a/timezone/names/specific/long/v1/ko.json b/timezone/names/specific/long/v1/ko.json
+--- a/timezone/names/specific/long/v1/ko.json
++++ b/timezone/names/specific/long/v1/ko.json
+@@ -40,56 +40,56 @@
+         9,
+         "Standard"
+       ],
+-      "미 중부 표준시"
++      "북미 중부 표준시"
+     ],
+     [
+       [
+         9,
+         "Daylight"
+       ],
+-      "미 중부 하계 표준시"
++      "북미 중부 하계 표준시"
+     ],
+     [
+       [
+         10,
+         "Standard"
+       ],
+-      "미 동부 표준시"
++      "북미 동부 표준시"
+     ],
+     [
+       [
+         10,
+         "Daylight"
+       ],
+-      "미 동부 하계 표준시"
++      "북미 동부 하계 표준시"
+     ],
+     [
+       [
+         11,
+         "Standard"
+       ],
+-      "미 산악 표준시"
++      "북미 로키 산맥 표준시"
+     ],
+     [
+       [
+         11,
+         "Daylight"
+       ],
+-      "미 산지 하계 표준시"
++      "북미 로키 산맥 하계 표준시"
+     ],
+     [
+       [
+         12,
+         "Standard"
+       ],
+-      "미 태평양 표준시"
++      "북미 태평양 표준시"
+     ],
+     [
+       [
+         12,
+         "Daylight"
+       ],
+-      "미 태평양 하계 표준시"
++      "북미 태평양 하계 표준시"
+     ],
+     [
+       [
+diff -ruN a/timezone/names/specific/long/v1/ko-KP.json b/timezone/names/specific/long/v1/ko-KP.json
+--- a/timezone/names/specific/long/v1/ko-KP.json
++++ b/timezone/names/specific/long/v1/ko-KP.json
+@@ -40,56 +40,56 @@
+         9,
+         "Standard"
+       ],
+-      "미 중부 표준시"
++      "북미 중부 표준시"
+     ],
+     [
+       [
+         9,
+         "Daylight"
+       ],
+-      "미 중부 하계 표준시"
++      "북미 중부 하계 표준시"
+     ],
+     [
+       [
+         10,
+         "Standard"
+       ],
+-      "미 동부 표준시"
++      "북미 동부 표준시"
+     ],
+     [
+       [
+         10,
+         "Daylight"
+       ],
+-      "미 동부 하계 표준시"
++      "북미 동부 하계 표준시"
+     ],
+     [
+       [
+         11,
+         "Standard"
+       ],
+-      "미 산악 표준시"
++      "북미 로키 산맥 표준시"
+     ],
+     [
+       [
+         11,
+         "Daylight"
+       ],
+-      "미 산지 하계 표준시"
++      "북미 로키 산맥 하계 표준시"
+     ],
+     [
+       [
+         12,
+         "Standard"
+       ],
+-      "미 태평양 표준시"
++      "북미 태평양 표준시"
+     ],
+     [
+       [
+         12,
+         "Daylight"
+       ],
+-      "미 태평양 하계 표준시"
++      "북미 태평양 하계 표준시"
+     ],
+     [
+       [

@@ -157,6 +157,9 @@ fn non_default_scripts_for_language(lang: &str) -> &'static [&'static str] {
     }
 }
 
+const ALL_ICU4C_BRKITR_DICTS: &[&str] =
+    &["burmesedict", "cjdict", "khmerdict", "laodict", "thaidict"];
+
 /// Map an ICU4C `brkitr_dictionaries` stem to its corresponding ICU4X
 /// segmenter dictionary and LSTM model names.
 fn icu4x_models_for_icu4c_dict(dict_name: &str) -> Result<&'static [&'static str]> {
@@ -168,6 +171,18 @@ fn icu4x_models_for_icu4c_dict(dict_name: &str) -> Result<&'static [&'static str
         "thaidict" => Ok(&["Thai_codepoints_exclusive_model4_heavy", "thaidict"]),
         other => bail!("Unknown ICU4C brkitr_dictionaries entry: {other:?}"),
     }
+}
+
+/// Return all ICU4X segmenter dictionary and LSTM model names corresponding
+/// to ICU4C's `brkitr_dictionaries`.
+pub(crate) fn all_segmenter_models() -> Vec<String> {
+    ALL_ICU4C_BRKITR_DICTS
+        .iter()
+        .flat_map(|dict| {
+            icu4x_models_for_icu4c_dict(dict).expect("known ICU4C dictionary").iter().copied()
+        })
+        .map(str::to_string)
+        .collect()
 }
 
 /// Strip `// ...` line comments from ICU4C's JSON-with-comments filter files.
@@ -274,19 +289,7 @@ impl ParsedIcu4cFilterFile {
 
         // Resolve segmenter models based on
         // `featureFilters.brkitr_dictionaries`
-        let default_models = vec![
-            "Burmese_codepoints_exclusive_model4_heavy".to_string(),
-            "burmesedict".to_string(),
-            "cjdict".to_string(),
-            "Khmer_codepoints_exclusive_model4_heavy".to_string(),
-            "khmerdict".to_string(),
-            "Lao_codepoints_exclusive_model4_heavy".to_string(),
-            "laodict".to_string(),
-            "Thai_codepoints_exclusive_model4_heavy".to_string(),
-            "thaidict".to_string(),
-        ];
-
-        let mut segmenter_models = default_models;
+        let mut segmenter_models = all_segmenter_models();
         if let Some(dict_filter) = raw.feature_filters.get("brkitr_dictionaries") {
             match dict_filter {
                 RawFilterNodeOrString::Mode(mode) if mode == "exclude" => {

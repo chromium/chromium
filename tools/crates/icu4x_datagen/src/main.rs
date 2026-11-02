@@ -6,18 +6,22 @@
 //!
 //! Generates per-platform baked ICU4X data in `//third_party/rust/icu4x_data`
 //! using upstream CLDR / ICU / Unicode RSCD / TZDB / segmenter LSTM tags,
-//! ICU4C filter files (`//third_party/icu/filters/*.json`), and standalone TOML
-//! marker-pattern configuration.
+//! ICU4C filter files (`//third_party/icu/filters/*.json`), standalone TOML
+//! marker-pattern configuration, and unified `ICU4X-json` patches.
 
 extern crate alloc;
 
 mod config;
+mod dump_json;
 mod filters;
+mod overlay;
 
 use crate::config::DatagenTomlConfig;
+use crate::dump_json::DumpJsonArgs;
 use crate::filters::FilteredDataProvider;
+use crate::overlay::{prepare_patched_overlay, OverlayDataProvider};
 use anyhow::{Context, Result};
-use clap::{Parser, Subcommand, ValueEnum};
+use clap::{Args, Parser, Subcommand, ValueEnum};
 use icu_locale_fallback::LocaleFallbacker;
 use icu_provider::prelude::*;
 use icu_provider_export::baked_exporter::{BakedExporter, Options as BakedOptions};
@@ -33,6 +37,54 @@ const DEFAULT_ICUEXPORT_TAG: &str = SourceDataProvider::TESTED_ICUEXPORT_TAG;
 const DEFAULT_UNICODE_TAG: &str = SourceDataProvider::TESTED_UNICODE_TAG;
 const DEFAULT_TZDB_TAG: &str = SourceDataProvider::TESTED_TZDB_TAG;
 const DEFAULT_SEGMENTER_LSTM_TAG: &str = SourceDataProvider::TESTED_SEGMENTER_LSTM_TAG;
+
+/// Upstream data tag overrides shared by `generate` and `dump-json`.
+#[derive(Args, Clone)]
+pub(crate) struct SourceTags {
+    /// Override CLDR tag (defaults to `DEFAULT_CLDR_TAG`).
+    #[arg(long, default_value = DEFAULT_CLDR_TAG)]
+    pub(crate) cldr_tag: String,
+
+    /// Override icuexportdata tag (defaults to `DEFAULT_ICUEXPORT_TAG`).
+    #[arg(long, default_value = DEFAULT_ICUEXPORT_TAG)]
+    pub(crate) icuexport_tag: String,
+
+    /// Override Unicode RSCD tag (defaults to `DEFAULT_UNICODE_TAG`).
+    #[arg(long, default_value = DEFAULT_UNICODE_TAG)]
+    pub(crate) unicode_tag: String,
+
+    /// Override TZDB tag (defaults to `DEFAULT_TZDB_TAG`).
+    #[arg(long, default_value = DEFAULT_TZDB_TAG)]
+    pub(crate) tzdb_tag: String,
+
+    /// Override segmenter LSTM tag (defaults to
+    /// `DEFAULT_SEGMENTER_LSTM_TAG`).
+    #[arg(long, default_value = DEFAULT_SEGMENTER_LSTM_TAG)]
+    pub(crate) segmenter_lstm_tag: String,
+}
+
+impl Default for SourceTags {
+    fn default() -> Self {
+        Self {
+            cldr_tag: DEFAULT_CLDR_TAG.to_string(),
+            icuexport_tag: DEFAULT_ICUEXPORT_TAG.to_string(),
+            unicode_tag: DEFAULT_UNICODE_TAG.to_string(),
+            tzdb_tag: DEFAULT_TZDB_TAG.to_string(),
+            segmenter_lstm_tag: DEFAULT_SEGMENTER_LSTM_TAG.to_string(),
+        }
+    }
+}
+
+impl SourceTags {
+    pub(crate) fn source_data_provider(&self) -> SourceDataProvider {
+        SourceDataProvider::new_custom()
+            .with_cldr_for_tag(&self.cldr_tag)
+            .with_icuexport_for_tag(&self.icuexport_tag)
+            .with_unicode_rscd_for_tag(&self.unicode_tag)
+            .with_tzdb_for_tag(&self.tzdb_tag)
+            .with_segmenter_lstm_for_tag(&self.segmenter_lstm_tag)
+    }
+}
 
 /// Target platform bundle corresponding to
 /// `//third_party/icu/filters/<platform>.json`.
@@ -99,6 +151,9 @@ enum Commands {
         #[arg(long, default_value = "third_party/icu/filters")]
         icu_filters_dir: PathBuf,
     },
+    /// Dump pristine `ICU4X-json` files for specific markers and locales to
+    /// inspect or create patches.
+    DumpJson(DumpJsonArgs),
     /// Generate `//third_party/rust/icu4x_data` for one or more platforms.
     Generate {
         /// Path to the existing `//third_party/rust/icu4x_data` crate.
@@ -110,8 +165,9 @@ enum Commands {
         #[arg(long, default_value = "third_party/icu/filters")]
         icu_filters_dir: PathBuf,
 
-        /// Path to the TOML configuration file for marker filter overrides
-        /// (ignored when `--unfiltered` is set).
+        /// Path to the TOML configuration file for marker filter overrides and
+        /// default patches (`patches` are still applied when `--unfiltered` is
+        /// set, while filter rules and `resource_filters` are ignored).
         #[arg(long, default_value = "tools/crates/icu4x_datagen/config.toml")]
         config: PathBuf,
 
@@ -127,34 +183,22 @@ enum Commands {
         #[arg(long, num_args = 1.., default_value = "chromium")]
         markers: Vec<String>,
 
-        /// Ignore ICU4C filter files and export upstream CLDR recommended
-        /// locales (`Modern`, `Moderate`, and `Basic` coverage levels) for all
-        /// selected markers. Useful for measuring the size reduction of
-        /// Chromium's locale filters or testing upstream data before updating
-        /// filter rules.
+        /// Ignore ICU4C filter files and `config.toml` filter rules, exporting
+        /// upstream CLDR recommended locales (`Modern`, `Moderate`, and `Basic`
+        /// coverage levels) for all selected markers while still applying
+        /// patches. Useful for measuring the size reduction of Chromium's
+        /// locale filters or testing upstream data before updating filter
+        /// rules.
         #[arg(long)]
         unfiltered: bool,
 
-        /// Override CLDR tag (defaults to `DEFAULT_CLDR_TAG`).
-        #[arg(long, default_value = DEFAULT_CLDR_TAG)]
-        cldr_tag: String,
+        #[command(flatten)]
+        source_tags: SourceTags,
 
-        /// Override icuexportdata tag (defaults to `DEFAULT_ICUEXPORT_TAG`).
-        #[arg(long, default_value = DEFAULT_ICUEXPORT_TAG)]
-        icuexport_tag: String,
-
-        /// Override Unicode RSCD tag (defaults to `DEFAULT_UNICODE_TAG`).
-        #[arg(long, default_value = DEFAULT_UNICODE_TAG)]
-        unicode_tag: String,
-
-        /// Override TZDB tag (defaults to `DEFAULT_TZDB_TAG`).
-        #[arg(long, default_value = DEFAULT_TZDB_TAG)]
-        tzdb_tag: String,
-
-        /// Override segmenter LSTM tag (defaults to
-        /// `DEFAULT_SEGMENTER_LSTM_TAG`).
-        #[arg(long, default_value = DEFAULT_SEGMENTER_LSTM_TAG)]
-        segmenter_lstm_tag: String,
+        /// Optional additional unified `.patch` files to apply to `ICU4X-json`
+        /// payloads (appended after `patches` from `config.toml`).
+        #[arg(long, num_args = 1..)]
+        patches: Vec<PathBuf>,
     },
 }
 
@@ -187,7 +231,7 @@ macro_rules! cb {
         }
 
         icu_provider::export::make_exportable_provider!(
-            FilteredDataProvider<SourceDataProvider>,
+            FilteredDataProvider<OverlayDataProvider>,
             [
                 $($marker_ty,)+
                 $($emarker_ty,)+
@@ -266,6 +310,7 @@ fn main() -> Result<()> {
             Ok(())
         }
         Commands::InspectFilters { icu_filters_dir } => filters::inspect_filters(&icu_filters_dir),
+        Commands::DumpJson(args) => args.run(),
         Commands::Generate {
             icu4x_data_dir,
             icu_filters_dir,
@@ -273,11 +318,8 @@ fn main() -> Result<()> {
             platforms,
             markers: marker_args,
             unfiltered,
-            cldr_tag,
-            icuexport_tag,
-            unicode_tag,
-            tzdb_tag,
-            segmenter_lstm_tag,
+            source_tags,
+            patches,
         } => {
             for required in ["OWNERS", "BUILD.gn", "sources.gni"] {
                 let path = icu4x_data_dir.join(required);
@@ -299,30 +341,43 @@ fn main() -> Result<()> {
                 platforms
             };
 
-            let toml_cfg: DatagenTomlConfig = if !unfiltered {
-                log::info!("Loading TOML configuration from {}", config.display());
-                let s = std::fs::read_to_string(&config)
-                    .with_context(|| format!("Failed to read {}", config.display()))?;
-                let cfg: DatagenTomlConfig = toml::from_str(&s)
-                    .with_context(|| format!("Failed to parse {}", config.display()))?;
-                cfg.validate(&all_registered_markers())?;
-                cfg
-            } else {
-                DatagenTomlConfig::default()
-            };
+            log::info!("Loading TOML configuration from {}", config.display());
+            let cfg_text = std::fs::read_to_string(&config)
+                .with_context(|| format!("Failed to read {}", config.display()))?;
+            let toml_cfg: DatagenTomlConfig = toml::from_str(&cfg_text)
+                .with_context(|| format!("Failed to parse {}", config.display()))?;
+            toml_cfg.validate(&all_registered_markers())?;
 
             let selected_markers = select_markers_by_args(&marker_args)?;
             log::info!("Selected {} ICU4X markers to generate", selected_markers.len());
 
-            let provider = SourceDataProvider::new_custom()
-                .with_cldr_for_tag(&cldr_tag)
-                .with_icuexport_for_tag(&icuexport_tag)
-                .with_unicode_rscd_for_tag(&unicode_tag)
-                .with_tzdb_for_tag(&tzdb_tag)
-                .with_segmenter_lstm_for_tag(&segmenter_lstm_tag);
+            // Configure SourceDataProvider
+            let provider = source_tags.source_data_provider();
 
             let fallbacker = LocaleFallbacker::try_new_unstable(&provider)
                 .context("Failed to initialize LocaleFallbacker from SourceDataProvider")?;
+
+            let src_root = chromium_src_root();
+            let mut all_patches: Vec<PathBuf> = toml_cfg
+                .patches
+                .iter()
+                .map(|p| if p.is_relative() { src_root.join(p) } else { p.clone() })
+                .collect();
+            all_patches.extend(patches);
+
+            // Keep the temporary overlay directory alive for the duration of
+            // the export across all target platforms.
+            let patched_overlay = if !all_patches.is_empty() {
+                let work_overlay =
+                    prepare_patched_overlay(&provider, fallbacker.clone(), &all_patches)?;
+                log::info!(
+                    "Using patched ICU4X-json overlay from {}",
+                    work_overlay.path().display()
+                );
+                Some(work_overlay)
+            } else {
+                None
+            };
 
             let src_dir = icu4x_data_dir.join("src");
             let data_root = src_dir.join("data");
@@ -340,8 +395,13 @@ fn main() -> Result<()> {
                 let baked_exporter = BakedExporter::new(plat_dir.clone(), baked_opts)
                     .with_context(|| format!("Failed to create BakedExporter for {plat}"))?;
 
+                let overlay_provider = OverlayDataProvider::new(
+                    provider.clone(),
+                    patched_overlay.as_ref().map(|d| d.path().to_path_buf()),
+                );
+
                 if unfiltered {
-                    let exportable = FilteredDataProvider::unfiltered(provider.clone());
+                    let exportable = FilteredDataProvider::unfiltered(overlay_provider);
                     let rec_locales: Vec<DataLocaleFamily> = provider
                         .locales_for_coverage_levels([
                             icu_provider_source::CoverageLevel::Modern,
@@ -363,7 +423,7 @@ fn main() -> Result<()> {
                         *plat,
                         &icu_filters_dir,
                         &toml_cfg,
-                        provider.clone(),
+                        overlay_provider,
                         fallbacker.clone(),
                         &selected_markers,
                         baked_exporter,
@@ -376,9 +436,9 @@ fn main() -> Result<()> {
             write_crate_files(
                 &icu4x_data_dir,
                 &platform_list,
-                &cldr_tag,
-                &unicode_tag,
-                &segmenter_lstm_tag,
+                &source_tags.cldr_tag,
+                &source_tags.unicode_tag,
+                &source_tags.segmenter_lstm_tag,
             )?;
 
             Ok(())
@@ -620,8 +680,7 @@ macro_rules! segmenter_lstm_tag {
     Ok(())
 }
 
-#[cfg(test)]
-fn chromium_src_root() -> PathBuf {
+pub(crate) fn chromium_src_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .unwrap()

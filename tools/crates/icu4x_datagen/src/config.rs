@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 //! Standalone TOML configuration (`config.toml`) for overriding marker filter
-//! rules and `resourceFilters` behavior.
+//! rules, `resourceFilters` behavior, and default `ICU4X-json` patches.
 
 use crate::filters::{
     resolve_default_marker_filter, Icu4cFilterCategory, ParsedIcu4cFilterFile, ResolvedLocaleFilter,
@@ -13,14 +13,17 @@ use anyhow::{bail, Result};
 use icu_provider::prelude::*;
 use serde::Deserialize;
 use std::collections::BTreeSet;
+use std::path::PathBuf;
 
 /// Standalone TOML configuration (`config.toml`) for overriding marker filter
-/// rules or `resourceFilters` behavior.
+/// rules, `resourceFilters` behavior, or default `ICU4X-json` patches.
 #[derive(Debug, Default, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct DatagenTomlConfig {
     #[serde(default)]
     pub(crate) resource_filters: ResourceFiltersConfig,
+    #[serde(default)]
+    pub(crate) patches: Vec<PathBuf>,
     #[serde(default)]
     pub(crate) rules: Vec<MarkerFilterRule>,
 }
@@ -196,6 +199,14 @@ mod tests {
         assert!(toml_cfg.resource_filters.filter_transliterators);
         assert!(toml_cfg.resource_filters.filter_currencies);
         assert!(toml_cfg.resource_filters.abridge_non_ui_locales);
+        assert!(!toml_cfg.patches.is_empty());
+        for patch_rel in &toml_cfg.patches {
+            assert!(
+                root.join(patch_rel).is_file(),
+                "Expected config.toml patch `{}` to exist relative to chromium_src_root()",
+                patch_rel.display()
+            );
+        }
 
         let common =
             ParsedIcu4cFilterFile::load(&root.join("third_party/icu/filters/common.json")).unwrap();

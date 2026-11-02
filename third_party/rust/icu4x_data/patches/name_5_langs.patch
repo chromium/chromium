@@ -1,0 +1,124 @@
+# Ported from //third_party/icu/patches/name_5_langs.patch and
+# //third_party/icu/source/data/lang/{an,wa}.txt.
+# Adds native language autonyms for non-UI languages missing from upstream
+# CLDR 49 (an, ay, dv, ilo, lus, ts, wa) across both LocaleNamesLanguageMediumTinyV1
+# and LocaleNamesLanguageV0.
+diff -ruN a/locale/names/language/medium/tiny/v1/an/an.json b/locale/names/language/medium/tiny/v1/an/an.json
+--- a/locale/names/language/medium/tiny/v1/an/an.json
++++ b/locale/names/language/medium/tiny/v1/an/an.json
+@@ -0,0 +1 @@
++"aragonés"
+diff -ruN a/locale/names/language/medium/tiny/v1/ay/ay.json b/locale/names/language/medium/tiny/v1/ay/ay.json
+--- a/locale/names/language/medium/tiny/v1/ay/ay.json
++++ b/locale/names/language/medium/tiny/v1/ay/ay.json
+@@ -0,0 +1 @@
++"Aymar"
+diff -ruN a/locale/names/language/medium/tiny/v1/dv/dv.json b/locale/names/language/medium/tiny/v1/dv/dv.json
+--- a/locale/names/language/medium/tiny/v1/dv/dv.json
++++ b/locale/names/language/medium/tiny/v1/dv/dv.json
+@@ -0,0 +1 @@
++"ދިވެހި"
+diff -ruN a/locale/names/language/medium/tiny/v1/ilo/ilo.json b/locale/names/language/medium/tiny/v1/ilo/ilo.json
+--- a/locale/names/language/medium/tiny/v1/ilo/ilo.json
++++ b/locale/names/language/medium/tiny/v1/ilo/ilo.json
+@@ -0,0 +1 @@
++"Ilokano"
+diff -ruN a/locale/names/language/medium/tiny/v1/lus/lus.json b/locale/names/language/medium/tiny/v1/lus/lus.json
+--- a/locale/names/language/medium/tiny/v1/lus/lus.json
++++ b/locale/names/language/medium/tiny/v1/lus/lus.json
+@@ -0,0 +1 @@
++"Mizo tawng"
+diff -ruN a/locale/names/language/medium/tiny/v1/ts/ts.json b/locale/names/language/medium/tiny/v1/ts/ts.json
+--- a/locale/names/language/medium/tiny/v1/ts/ts.json
++++ b/locale/names/language/medium/tiny/v1/ts/ts.json
+@@ -0,0 +1 @@
++"Xitsonga"
+diff -ruN a/locale/names/language/medium/tiny/v1/wa/wa.json b/locale/names/language/medium/tiny/v1/wa/wa.json
+--- a/locale/names/language/medium/tiny/v1/wa/wa.json
++++ b/locale/names/language/medium/tiny/v1/wa/wa.json
+@@ -0,0 +1 @@
++"Walon"
+diff -ruN a/locale/names/language/v0/an.json b/locale/names/language/v0/an.json
+--- a/locale/names/language/v0/an.json
++++ b/locale/names/language/v0/an.json
+@@ -0,0 +1,8 @@
++{
++  "names": {
++    "an": "aragonés"
++  },
++  "short_names": {},
++  "long_names": {},
++  "menu_names": {}
++}
+diff -ruN a/locale/names/language/v0/ay.json b/locale/names/language/v0/ay.json
+--- a/locale/names/language/v0/ay.json
++++ b/locale/names/language/v0/ay.json
+@@ -0,0 +1,8 @@
++{
++  "names": {
++    "ay": "Aymar"
++  },
++  "short_names": {},
++  "long_names": {},
++  "menu_names": {}
++}
+diff -ruN a/locale/names/language/v0/dv.json b/locale/names/language/v0/dv.json
+--- a/locale/names/language/v0/dv.json
++++ b/locale/names/language/v0/dv.json
+@@ -0,0 +1,8 @@
++{
++  "names": {
++    "dv": "ދިވެހި"
++  },
++  "short_names": {},
++  "long_names": {},
++  "menu_names": {}
++}
+diff -ruN a/locale/names/language/v0/ilo.json b/locale/names/language/v0/ilo.json
+--- a/locale/names/language/v0/ilo.json
++++ b/locale/names/language/v0/ilo.json
+@@ -0,0 +1,8 @@
++{
++  "names": {
++    "ilo": "Ilokano"
++  },
++  "short_names": {},
++  "long_names": {},
++  "menu_names": {}
++}
+diff -ruN a/locale/names/language/v0/lus.json b/locale/names/language/v0/lus.json
+--- a/locale/names/language/v0/lus.json
++++ b/locale/names/language/v0/lus.json
+@@ -0,0 +1,8 @@
++{
++  "names": {
++    "lus": "Mizo tawng"
++  },
++  "short_names": {},
++  "long_names": {},
++  "menu_names": {}
++}
+diff -ruN a/locale/names/language/v0/ts.json b/locale/names/language/v0/ts.json
+--- a/locale/names/language/v0/ts.json
++++ b/locale/names/language/v0/ts.json
+@@ -0,0 +1,8 @@
++{
++  "names": {
++    "ts": "Xitsonga"
++  },
++  "short_names": {},
++  "long_names": {},
++  "menu_names": {}
++}
+diff -ruN a/locale/names/language/v0/wa.json b/locale/names/language/v0/wa.json
+--- a/locale/names/language/v0/wa.json
++++ b/locale/names/language/v0/wa.json
+@@ -0,0 +1,8 @@
++{
++  "names": {
++    "wa": "Walon"
++  },
++  "short_names": {},
++  "long_names": {},
++  "menu_names": {}
++}

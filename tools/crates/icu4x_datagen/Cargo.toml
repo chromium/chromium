@@ -13,7 +13,7 @@ icu_experimental = { version = "=0.7.0", features = ["datagen"] }
 icu_locale_core = "=2.4.0"
 icu_locale_fallback = "=2.4.0"
 icu_provider = { version = "=2.4.0", features = ["export", "sync"] }
-icu_provider_export = { version = "=2.4.0", features = ["baked_exporter", "rayon"] }
+icu_provider_export = { version = "=2.4.0", features = ["baked_exporter", "fs_exporter", "rayon"] }
 icu_provider_registry = "=2.4.0"
 icu_provider_source = { version = "=2.4.0", features = ["networking", "use_wasm", "unstable"] }
 log = { version = "0.4", features = ["std"] }
