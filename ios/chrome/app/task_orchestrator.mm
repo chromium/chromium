@@ -158,6 +158,20 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
   return nil;
 }
 
+- (void)clearTasksForScene:(SceneState*)sceneState {
+  auto it = _tasksPerScene.find(GetSceneIdentifier(sceneState.scene));
+  if (it == _tasksPerScene.end()) {
+    return;
+  }
+  // The profile or account switch recreates the SceneState by disconnecting and
+  // reconnecting the scene; keep the tasks waiting for that switch.
+  if (it->second.is_switching) {
+    return;
+  }
+  _tasksPerScene.erase(it);
+  sceneState.hasPendingIntent = NO;
+}
+
 #pragma mark - Private
 
 // Returns whether the task should be dropped.

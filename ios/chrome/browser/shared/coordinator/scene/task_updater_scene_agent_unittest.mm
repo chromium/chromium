@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -42,6 +43,8 @@
 // Fake TaskOrchestrator to record calls.
 @interface FakeTaskOrchestrator : TaskOrchestrator
 @property(nonatomic, assign) TaskExecutionStage stage;
+// The last scene passed to -clearTasksForScene:.
+@property(nonatomic, weak) SceneState* clearedSceneState;
 @end
 
 @implementation FakeTaskOrchestrator
@@ -49,6 +52,26 @@
 - (void)updateToStage:(TaskExecutionStage)stage
              forScene:(SceneState*)sceneState {
   self.stage = stage;
+}
+
+- (void)clearTasksForScene:(SceneState*)sceneState {
+  self.clearedSceneState = sceneState;
+}
+
+@end
+
+// Mimics SceneController, which observes the SceneState before the scene agents
+// and tears down the UI when the scene is disconnected.
+@interface FakeTeardownUISceneObserver : NSObject <SceneStateObserver>
+@end
+
+@implementation FakeTeardownUISceneObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level == SceneActivationLevelDisconnected) {
+    sceneState.UIEnabled = NO;
+  }
 }
 
 @end
@@ -302,4 +325,56 @@ TEST_F(TaskUpdaterSceneAgentTest, TestUIReadyResetOnSigninStart) {
 
   EXPECT_EQ(fake_task_orchestrator_.stage,
             TaskExecutionStage::TaskExecutionUIReady);
+}
+
+// Tests that the tasks are cleared when a scene without UI is disconnected.
+TEST_F(TaskUpdaterSceneAgentTest, TestClearTasksOnDisconnectWithoutUI) {
+  SetProfileStateInitStage(profile_state_, ProfileInitStage::kProfileLoaded);
+
+  scene_state_.activationLevel = SceneActivationLevelDisconnected;
+
+  EXPECT_EQ(scene_state_, fake_task_orchestrator_.clearedSceneState);
+}
+
+// Tests that the tasks are cleared when a scene with UI is disconnected. The UI
+// is torn down before the agent is notified of the disconnection, which stops
+// the agent from observing the scene.
+TEST_F(TaskUpdaterSceneAgentTest, TestClearTasksOnDisconnectWithUI) {
+  FakeSceneState* scene_state =
+      [[FakeSceneState alloc] initWithProfile:profile_.get()];
+  scene_state.profileState = profile_state_;
+  scene_state.scene = scene_state_.scene;
+  FakeTeardownUISceneObserver* teardown_observer =
+      [[FakeTeardownUISceneObserver alloc] init];
+  [scene_state addObserver:teardown_observer];
+  [scene_state addAgent:[[TaskUpdaterSceneAgent alloc] init]];
+
+  SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+  scene_state.UIEnabled = YES;
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
+  ASSERT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
+
+  scene_state.activationLevel = SceneActivationLevelDisconnected;
+
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionStageNone);
+  EXPECT_EQ(scene_state, fake_task_orchestrator_.clearedSceneState);
+
+  [scene_state removeObserver:teardown_observer];
+  [scene_state shutdown];
+}
+
+// Tests that the tasks are not cleared when the UI is disabled while the scene
+// is still connected.
+TEST_F(TaskUpdaterSceneAgentTest, TestDisableUIWithoutDisconnectKeepsTasks) {
+  SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+  scene_state_.UIEnabled = YES;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  scene_state_.UIEnabled = NO;
+
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionStageNone);
+  EXPECT_EQ(nullptr, fake_task_orchestrator_.clearedSceneState);
 }

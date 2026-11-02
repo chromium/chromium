@@ -61,6 +61,12 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level == SceneActivationLevelDisconnected) {
+    // Clears tasks if the scene disconnects before `UIEnabled` becomes `YES`
+    // (when `-sceneStateDidDisableUI:` is not called).
+    [self clearTasks];
+    return;
+  }
   [self maybeUpdateToUIReady];
 }
 
@@ -70,6 +76,12 @@
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   [self updateToStageNone];
+  // The UI is torn down when the scene is disconnected. Since this agent stops
+  // observing the scene below, it won't be notified of the transition to
+  // `SceneActivationLevelDisconnected`, so the tasks are cleared here.
+  if (sceneState.activationLevel == SceneActivationLevelDisconnected) {
+    [self clearTasks];
+  }
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState removeObserver:self];
   [self.sceneState.uiBlockerState removeObserver:self];
@@ -120,6 +132,12 @@
   [self.sceneState.profileState.appState.taskOrchestrator
       updateToStage:TaskExecutionStage::TaskExecutionStageNone
            forScene:self.sceneState];
+}
+
+// Clears the pending tasks of the scene, which is being disconnected.
+- (void)clearTasks {
+  [self.sceneState.profileState.appState.taskOrchestrator
+      clearTasksForScene:self.sceneState];
 }
 
 // Updates the scene to TaskExecutionProfileLoaded.

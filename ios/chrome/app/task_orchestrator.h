@@ -31,6 +31,12 @@
 // `sceneState`, if any.
 - (NSString*)gaiaIDForScene:(SceneState*)sceneState;
 
+// Drops the pending tasks of `sceneState` and forgets its execution stage.
+// Called when the scene is disconnected. Tasks are kept if a profile or account
+// switch started by the orchestrator is in progress for that scene, as the
+// switch disconnects and reconnects the scene.
+- (void)clearTasksForScene:(SceneState*)sceneState;
+
 @end
 
 #endif  // IOS_CHROME_APP_TASK_ORCHESTRATOR_H_

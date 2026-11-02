@@ -287,6 +287,7 @@ source_set("unit_tests") {
   deps = [
     ":scene",
     ":scene_state_header",
+    ":scene_state_observer",
     ":scene_testing",
     ":task_updater_scene_agent",
     "//base/test:test_support",

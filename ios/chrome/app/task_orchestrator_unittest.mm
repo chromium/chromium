@@ -447,3 +447,133 @@ TEST_F(TaskOrchestratorTest,
   EXPECT_TRUE(base::test::RunUntil([&]() { return task_was_executed; }));
   EXPECT_FALSE(scene_state.hasPendingIntent);
 }
+
+// Tests that clearTasksForScene: drops the pending tasks of the scene.
+TEST_F(TaskOrchestratorTest, TestClearTasksForSceneDropsPendingTasks) {
+  SceneState* scene_state = CreateFakeSceneState(@"scene1");
+  __block BOOL task_was_executed = NO;
+  TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                              executeBlock:^{
+                                                task_was_executed = YES;
+                                              }];
+  task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+  task.gaiaID = @"test_gaia_id";
+  [orchestrator_ addTaskRequest:task];
+  ASSERT_TRUE(scene_state.hasPendingIntent);
+
+  [orchestrator_ clearTasksForScene:scene_state];
+
+  EXPECT_FALSE(scene_state.hasPendingIntent);
+  EXPECT_NSEQ(nil, [orchestrator_ gaiaIDForScene:scene_state]);
+
+  // The dropped task must not run if the scene reaches the required stage.
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                      forScene:scene_state];
+  EXPECT_FALSE(task_was_executed);
+}
+
+// Tests that clearTasksForScene: doesn't drop the pending tasks of other
+// scenes.
+TEST_F(TaskOrchestratorTest, TestClearTasksForSceneKeepsOtherScenesTasks) {
+  SceneState* cleared_scene_state = CreateFakeSceneState(@"scene1");
+  SceneState* other_scene_state = CreateFakeSceneState(@"scene2");
+  __block BOOL other_task_was_executed = NO;
+
+  TaskRequest* cleared_task =
+      [TaskRequest taskForTestingWithScene:cleared_scene_state.scene
+                              executeBlock:^{
+                              }];
+  cleared_task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+  TaskRequest* other_task =
+      [TaskRequest taskForTestingWithScene:other_scene_state.scene
+                              executeBlock:^{
+                                other_task_was_executed = YES;
+                              }];
+  other_task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+  [orchestrator_ addTaskRequest:cleared_task];
+  [orchestrator_ addTaskRequest:other_task];
+
+  [orchestrator_ clearTasksForScene:cleared_scene_state];
+
+  EXPECT_FALSE(cleared_scene_state.hasPendingIntent);
+  EXPECT_TRUE(other_scene_state.hasPendingIntent);
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                      forScene:other_scene_state];
+  EXPECT_TRUE(other_task_was_executed);
+}
+
+// Tests that clearTasksForScene: keeps the pending tasks while a profile or
+// account switch started by the orchestrator is in progress, as the switch
+// disconnects and reconnects the scene.
+TEST_F(TaskOrchestratorTest, TestClearTasksForSceneDuringProfileSwitch) {
+  IOSChromeScopedTestingLocalState scoped_testing_local_state;
+  TestProfileManagerIOS profile_manager;
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
+                            AuthenticationServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                            base::BindRepeating(&CreateTestSyncService));
+  TestProfileIOS* profile =
+      profile_manager.AddProfileWithBuilder(std::move(builder));
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity(identity);
+
+  CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
+  FakeChangeProfileCommandsHandler* change_profile_handler =
+      [[FakeChangeProfileCommandsHandler alloc] init];
+  [dispatcher startDispatchingToTarget:change_profile_handler
+                           forProtocol:@protocol(ChangeProfileCommands)];
+
+  id mock_app_state = OCMClassMock([AppState class]);
+  OCMStub([mock_app_state initStage]).andReturn(AppInitStage::kFinal);
+  OCMStub([mock_app_state appCommandDispatcher]).andReturn(dispatcher);
+
+  ProfileState* profile_state =
+      [[ProfileState alloc] initWithAppState:mock_app_state];
+  profile_state.profile = profile;
+
+  SceneState* scene_state = CreateFakeSceneState(@"scene_switch");
+  scene_state.profileState = profile_state;
+
+  id mock_browser_provider = OCMProtocolMock(@protocol(BrowserProvider));
+  TestBrowser browser(profile, scene_state);
+  OCMStub([mock_browser_provider browser]).andReturn(&browser);
+  id mock_provider_interface =
+      OCMProtocolMock(@protocol(BrowserProviderInterface));
+  OCMStub([mock_provider_interface mainBrowserProvider])
+      .andReturn(mock_browser_provider);
+  id partial_scene_state = OCMPartialMock(scene_state);
+  OCMStub([partial_scene_state browserProviderInterface])
+      .andReturn(mock_provider_interface);
+
+  bool task_was_executed = false;
+  bool* task_was_executed_ptr = &task_was_executed;
+  TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                              executeBlock:^{
+                                                *task_was_executed_ptr = true;
+                                              }];
+  task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+  task.gaiaID = identity.gaiaId.ToNSString();
+  [orchestrator_ addTaskRequest:task];
+
+  // Start the profile switch.
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
+                      forScene:scene_state];
+  ASSERT_TRUE(change_profile_handler.changeProfileCalled);
+
+  // The switch disconnects the scene; its tasks must be kept.
+  [orchestrator_ clearTasksForScene:scene_state];
+  EXPECT_TRUE(scene_state.hasPendingIntent);
+
+  // Completing the switch and reaching TaskExecutionUIReady runs the task.
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                      forScene:scene_state];
+  ASSERT_TRUE([change_profile_handler hasContinuation]);
+  [change_profile_handler runContinuationForSceneState:scene_state];
+  EXPECT_TRUE(base::test::RunUntil([&]() { return task_was_executed; }));
+  EXPECT_FALSE(scene_state.hasPendingIntent);
+}
