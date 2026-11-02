@@ -8,7 +8,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
@@ -108,58 +107,6 @@ bool IsHistoryEmbeddingsAnswersSettingVisible(Profile* profile) {
   return optimization_guide_keyed_service &&
          optimization_guide_keyed_service
              ->ShouldModelExecutionBeAllowedForUser();
-}
-
-void PopulateSourceForWebUI(content::WebUIDataSource* source,
-                            Profile* profile) {
-  source->AddBoolean("enableHistoryEmbeddingsAnswers",
-                     IsHistoryEmbeddingsAnswersEnabledForProfile(profile));
-  source->AddBoolean(
-      "enableHistoryEmbeddingsImages",
-      history_embeddings::GetFeatureParameters().enable_images_for_results);
-  static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
-      {"foundSearchResults", IDS_HISTORY_FOUND_SEARCH_RESULTS},
-      {"historyEmbeddingsSearchPrompt", IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT},
-      {"historyEmbeddingsHeading", IDS_HISTORY_EMBEDDINGS_HEADING},
-      {"historyEmbeddingsWithAnswersResultsHeading",
-       IDS_HISTORY_EMBEDDINGS_WITH_ANSWERS_RESULTS_HEADING},
-      {"historyEmbeddingsHeadingLoading",
-       IDS_HISTORY_EMBEDDINGS_HEADING_LOADING},
-      {"historyEmbeddingsFooter", IDS_HISTORY_EMBEDDINGS_FOOTER},
-      {"learnMore", IDS_LEARN_MORE},
-      {"thumbsUp", IDS_THUMBS_UP_RESULTS_A11Y_LABEL},
-      {"thumbsDown", IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL},
-      {"historyEmbeddingsAnswerHeading", IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING},
-      {"historyEmbeddingsAnswerLoadingHeading",
-       IDS_HISTORY_EMBEDDINGS_ANSWER_LOADING_HEADING},
-      {"historyEmbeddingsAnswerSourceDate",
-       IDS_HISTORY_EMBEDDINGS_ANSWER_SOURCE_VISIT_DATE_LABEL},
-      {"historyEmbeddingsAnswererErrorModelUnavailable",
-       IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_MODEL_UNAVAILABLE},
-      {"historyEmbeddingsAnswererErrorTryAgain",
-       IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_TRY_AGAIN},
-      {"historyEmbeddingsMatch", IDS_HISTORY_SEARCH_EMBEDDINGS_MATCH_RESULT},
-      {"historyEmbeddingsMatches", IDS_HISTORY_SEARCH_EMBEDDINGS_MATCH_RESULTS},
-  };
-  source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
-  source->AddInteger("historyEmbeddingsSearchMinimumWordCount",
-                     history_embeddings::GetFeatureParameters()
-                         .search_query_minimum_word_count);
-  source->AddString("historyEmbeddingsSettingsUrl",
-                    chrome::kHistorySearchSettingURL);
-
-  bool logging_disabled_by_enterprise =
-      profile->GetPrefs()->GetInteger(
-          optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed) ==
-      static_cast<int>(
-          optimization_guide::EnterprisePolicyValue::kAllowWithoutLogging);
-  if (logging_disabled_by_enterprise) {
-    source->AddLocalizedString("historyEmbeddingsDisclaimer",
-                               IDS_HISTORY_EMBEDDINGS_DISCLAIMER_LOGGING_OFF);
-  } else {
-    source->AddLocalizedString("historyEmbeddingsDisclaimer",
-                               IDS_HISTORY_EMBEDDINGS_DISCLAIMER);
-  }
 }
 
 bool IsHistoryEmbeddingsFeatureEnabled() {

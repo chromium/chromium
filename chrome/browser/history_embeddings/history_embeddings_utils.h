@@ -9,10 +9,6 @@
 
 class Profile;
 
-namespace content {
-class WebUIDataSource;
-}
-
 namespace history_embeddings {
 
 // Do not use. For test only.
@@ -31,8 +27,6 @@ bool IsHistoryEmbeddingsSettingVisible(Profile* profile);
 // Return if the feature is enabled and the setting is visible; i.e. if users
 // have the option to opt-in/out of the history embeddings behavior.
 bool IsHistoryEmbeddingsAnswersSettingVisible(Profile* profile);
-
-void PopulateSourceForWebUI(content::WebUIDataSource* source, Profile* profile);
 
 // Whether the HistoryEmbeddings feature is enabled. This only checks if the
 // feature flags are enabled and does not check the user's opt-in preference

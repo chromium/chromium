@@ -88,7 +88,6 @@ source_set("side_panel") {
     # part of //chrome/browser/ui:ui, but we can't depend on that
     # because that depends on this.
     "//ui/webui/resources/cr_components/history:mojo_bindings",
-    "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
     "//url",
   ]
   deps = [

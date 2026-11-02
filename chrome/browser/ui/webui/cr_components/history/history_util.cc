@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/cr_components/history/history_util.h"
 
-#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -122,8 +121,6 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
   source->AddInteger(
       "lastSelectedTab",
       prefs->GetInteger(history_clusters::prefs::kLastSelectedTab));
-
-  history_embeddings::PopulateSourceForWebUI(source, profile);
 
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
       {"historyEmbeddingsAnswersPromoBody",

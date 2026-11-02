@@ -590,10 +590,6 @@ inline constexpr char kComposeLearnMorePageURL[] =
 inline constexpr char kComposeLearnMorePageManagedURL[] =
     "https://support.google.com/chrome/a?p=help_me_write_settings";
 
-// The URL for the Settings page to enable history search.
-inline constexpr char16_t kHistorySearchSettingURL[] =
-    u"chrome://settings/ai/historySearch";
-
 // The URL for the "Learn more" page for Wallpaper Search.
 inline constexpr char kWallpaperSearchLearnMorePageURL[] =
     "https://support.google.com/chrome?p=create_themes_with_ai";

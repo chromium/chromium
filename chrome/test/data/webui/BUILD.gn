@@ -199,7 +199,6 @@ source_set("browser_tests") {
       "//components/contextual_tasks/public:feature_list",
       "//components/history/core/test",
       "//components/history_clusters/core",
-      "//components/history_embeddings/core",
       "//components/lens:features",
     ]
   }
@@ -379,8 +378,6 @@ source_set("browser_tests") {
       "//components/history/core/common",
       "//components/history_clusters/core",
       "//components/history_clusters/history_clusters_internals/webui:constants",
-      "//components/history_embeddings/content",
-      "//components/history_embeddings/core",
       "//components/javascript_dialogs",
       "//components/language/core/browser",
       "//components/lens:enterprise_policy",
@@ -764,7 +761,6 @@ generate_grd("build_grd") {
       "cr_components/cr_shortcut_input:build_grdp",
       "cr_components/help_bubble:build_grdp",
       "cr_components/history_clusters:build_grdp",
-      "cr_components/history_embeddings:build_grdp",
       "cr_components/search:build_grdp",
       "cr_components/theme_color_picker:build_grdp",
       "css:build_grdp",
@@ -830,7 +826,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/cr_shortcut_input/resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/resources.grdp",
       "$target_gen_dir/cr_components/history_clusters/resources.grdp",
-      "$target_gen_dir/cr_components/history_embeddings/resources.grdp",
       "$target_gen_dir/cr_components/search/resources.grdp",
       "$target_gen_dir/cr_components/theme_color_picker/resources.grdp",
       "$target_gen_dir/css/resources.grdp",

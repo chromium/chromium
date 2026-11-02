@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "chrome/browser/browser_features.h"
 #include "components/history_clusters/core/features.h"
-#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "ui/compositor/compositor_switches.h"
 #endif
 
@@ -48,35 +47,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, HorizontalCarousel) {
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, AudioLevelsProcessorTest) {
   RunTest("cr_components/composebox/composebox_audio_levels_test.js",
-          "mocha.run()");
-}
-
-class CrComponentsHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
- protected:
-  CrComponentsHistoryEmbeddingsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        history_embeddings::kHistoryEmbeddings);
-    set_test_loader_host(chrome::kChromeUIHistoryHost);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(CrComponentsHistoryEmbeddingsTest, HistoryEmbeddings) {
-  RunTest("cr_components/history_embeddings/history_embeddings_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsHistoryEmbeddingsTest,
-                       HistoryEmbeddingsFilterChips) {
-  RunTest("cr_components/history_embeddings/filter_chips_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrComponentsHistoryEmbeddingsTest,
-                       HistoryEmbeddingsResultImage) {
-  RunTest("cr_components/history_embeddings/result_image_test.js",
           "mocha.run()");
 }
 

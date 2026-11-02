@@ -12,8 +12,3 @@ export enum HistoryResultType {
   EMBEDDINGS = 2,
   END = 3,
 }
-
-// Unclicked query results that live for less than this amount of milliseconds
-// are ignored from the metrics perspective. This is to account for the fact
-// that new query results are fetched per user keystroke.
-export const QUERY_RESULT_MINIMUM_AGE = 2000;

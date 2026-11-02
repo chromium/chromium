@@ -10,7 +10,6 @@ source_set("history") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources_grit",
     "//chrome/app/resources:locale_settings",
-    "//chrome/browser/history_embeddings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/history:resources",
     "//chrome/browser/signin",
