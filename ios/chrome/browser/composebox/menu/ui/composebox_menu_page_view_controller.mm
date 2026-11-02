@@ -237,12 +237,6 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 - (NSCollectionLayoutSection*)
     layoutSectionForIndex:(NSInteger)sectionIndex
         layoutEnvironment:(id<NSCollectionLayoutEnvironment>)layoutEnvironment {
-  //  ComposeboxMenuSectionIdentifier identifier =
-  //      ComposeboxMenuSectionIdentifier::kAttachments;
-  //  if (sectionIndex < (NSInteger)_sections.count) {
-  //    identifier = _sections[sectionIndex].identifier;
-  //  }
-
   NSString* sectionTitle = nil;
   if (sectionIndex < (NSInteger)_sections.count) {
     sectionTitle = _sections[sectionIndex].title;
