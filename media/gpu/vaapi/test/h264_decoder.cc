@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "media/base/subsample_entry.h"
 #include "media/gpu/macros.h"
@@ -879,20 +879,20 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
                                          H264Picture::Vector* ref_pic_listx) {
   bool ref_pic_list_modification_flag_lX;
   int num_ref_idx_lX_active_minus1;
-  const H264ModificationOfPicNum* list_mod;
+  base::span<const H264ModificationOfPicNum> list_mod;
 
   // This can process either ref_pic_list0 or ref_pic_list1, depending on
-  // the list argument. Set up pointers to proper list to be processed here.
+  // the list argument. Select the proper list to be processed here.
   if (list == 0) {
     ref_pic_list_modification_flag_lX =
         slice_hdr->ref_pic_list_modification_flag_l0;
     num_ref_idx_lX_active_minus1 = slice_hdr->num_ref_idx_l0_active_minus1;
-    list_mod = slice_hdr->ref_list_l0_modifications.data();
+    list_mod = slice_hdr->ref_list_l0_modifications;
   } else {
     ref_pic_list_modification_flag_lX =
         slice_hdr->ref_pic_list_modification_flag_l1;
     num_ref_idx_lX_active_minus1 = slice_hdr->num_ref_idx_l1_active_minus1;
-    list_mod = slice_hdr->ref_list_l1_modifications.data();
+    list_mod = slice_hdr->ref_list_l1_modifications;
   }
 
   // Resize the list to the size requested in the slice header.
@@ -920,16 +920,17 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
   int pic_num_lx;
   bool done = false;
   scoped_refptr<H264Picture> pic;
-  for (int i = 0; i < H264SliceHeader::kRefListModSize && !done; ++i) {
-    switch (list_mod->modification_of_pic_nums_idc) {
+  for (size_t i = 0; i < list_mod.size() && !done; ++i) {
+    const H264ModificationOfPicNum& mod = list_mod[i];
+    switch (mod.modification_of_pic_nums_idc) {
       case 0:
       case 1:
         // Modify short reference picture position.
-        if (list_mod->modification_of_pic_nums_idc == 0) {
+        if (mod.modification_of_pic_nums_idc == 0) {
           // Subtract given value from predicted PicNum.
           pic_num_lx_no_wrap =
               pic_num_lx_pred -
-              (static_cast<int>(list_mod->abs_diff_pic_num_minus1) + 1);
+              (static_cast<int>(mod.abs_diff_pic_num_minus1) + 1);
           // Wrap around max_pic_num_ if it becomes < 0 as result
           // of subtraction.
           if (pic_num_lx_no_wrap < 0)
@@ -938,7 +939,7 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
           // Add given value to predicted PicNum.
           pic_num_lx_no_wrap =
               pic_num_lx_pred +
-              (static_cast<int>(list_mod->abs_diff_pic_num_minus1) + 1);
+              (static_cast<int>(mod.abs_diff_pic_num_minus1) + 1);
           // Wrap around max_pic_num_ if it becomes >= max_pic_num_ as result
           // of the addition.
           if (pic_num_lx_no_wrap >= max_pic_num_)
@@ -984,10 +985,9 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
         // Modify long term reference picture position.
         DCHECK_LT(num_ref_idx_lX_active_minus1 + 1,
                   H264SliceHeader::kRefListModSize);
-        pic = dpb_.GetLongRefPicByLongTermPicNum(list_mod->long_term_pic_num);
+        pic = dpb_.GetLongRefPicByLongTermPicNum(mod.long_term_pic_num);
         if (!pic) {
-          VLOG(1) << "Malformed stream, no pic num "
-                  << list_mod->long_term_pic_num;
+          VLOG(1) << "Malformed stream, no pic num " << mod.long_term_pic_num;
           return false;
         }
         ShiftRightAndInsert(ref_pic_listx, ref_idx_lx,
@@ -998,8 +998,9 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
              src <= num_ref_idx_lX_active_minus1 + 1; ++src) {
           if ((*ref_pic_listx)[src] &&
               LongTermPicNumF(*(*ref_pic_listx)[src]) !=
-                  static_cast<int>(list_mod->long_term_pic_num))
+                  static_cast<int>(mod.long_term_pic_num)) {
             (*ref_pic_listx)[dst++] = (*ref_pic_listx)[src];
+          }
         }
         break;
 
@@ -1011,12 +1012,9 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
       default:
         // May be recoverable.
         VLOG(1) << "Invalid modification_of_pic_nums_idc="
-                << list_mod->modification_of_pic_nums_idc << " in position "
-                << i;
+                << mod.modification_of_pic_nums_idc << " in position " << i;
         break;
     }
-
-    UNSAFE_TODO(++list_mod);
   }
 
   // Per NOTE 2 in 8.2.4.3.2, the ref_pic_listx size in the above loop is
