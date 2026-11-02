@@ -374,12 +374,8 @@ void DeviceRestrictionScheduleControllerImpl::StartMessageUpdateTimer(
   // We only need to check our position in time relative to these two.
 
   const base::Time next_run_midnight = next_run_time_.value().LocalMidnight();
-  // We need to include the consideration of daylight saving time in local time,
-  // so cannot subtract by one day simply here. 12 hours is enough long/short to
-  // point a time in the "previous local day" even with the consideration of
-  // daylight saving time.
   const base::Time next_run_prev_day_midnight =
-      (next_run_midnight - base::Hours(12)).LocalMidnight();
+      next_run_midnight.LocalMidnightWithOffset(-1);
   base::Time update_time;
 
   if (current_time < next_run_prev_day_midnight) {
