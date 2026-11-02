@@ -411,8 +411,7 @@ bool LayoutImage::IsUnsizedImage() const {
   const ComputedStyle& style = this->Style();
   const auto explicit_width = style.LogicalWidth().HasOnlyFixedAndPercent();
   const auto explicit_height = style.LogicalHeight().HasOnlyFixedAndPercent();
-  bool has_aspect_ratio =
-      style.AspectRatio().GetType() == EAspectRatioType::kRatio;
+  bool has_aspect_ratio = !style.AspectRatio().IsAuto();
   const bool is_fixed_size =
       (explicit_width && explicit_height) ||
       (has_aspect_ratio && (explicit_width || explicit_height));

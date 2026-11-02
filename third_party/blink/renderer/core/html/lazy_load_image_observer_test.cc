@@ -793,7 +793,16 @@ TEST_F(LazyLoadImagesTest, NoLazyLoadImageIssueForSizedImage) {
   LoadURL("https://example.com/");
   main_resource.Complete(R"HTML(
     <body>
-    <img src='data:image/png,' loading='lazy' width='100' height='100'>
+    <!-- Case A: Explicit width/height attributes without inline style -->
+    <img src='data:image/png;caseA' loading='lazy' width='100' height='100'>
+    <!-- Case B: Explicit width/height attributes with style="height:auto" -->
+    <img src='data:image/png;caseB' loading='lazy' width='100' height='100' style='height:auto'>
+    <!-- Case C: Explicit width/height attributes with style="max-width:100%;height:auto" -->
+    <img src='data:image/png;caseC' loading='lazy' width='100' height='100' style='max-width:100%;height:auto'>
+    <!-- Case D: Explicit width/height attributes with style="height:auto;aspect-ratio:1" -->
+    <img src='data:image/png;caseD' loading='lazy' width='100' height='100' style='height:auto;aspect-ratio:1'>
+    <!-- Report 1/2: Responsive image with width:100%;height:auto -->
+    <img src='data:image/png;report12' loading='lazy' width='4000' height='1367' style='width:100%;height:auto'>
     </body>)HTML");
 
   Compositor().BeginFrame();

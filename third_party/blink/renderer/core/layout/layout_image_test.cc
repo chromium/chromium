@@ -58,15 +58,19 @@ TEST_F(LayoutImageTest, IsUnsizedImage) {
       <img style="aspect-ratio: 1 / 1;" id="d-UNSIZED">
       <!-- aspect ratio with at least width or height specified -->
       <img width="100" style="aspect-ratio: 1 / 1;"  id="e-fixedish">
+      <!-- aspect ratio from HTML attributes with CSS height: auto -->
+      <img width="100" height="100" style="height: auto;" id="f-fixedish">
+      <img width="100" height="100" style="max-width: 100%; height: auto;" id="g-fixedish">
+      <img width="100" height="100" style="height: auto; aspect-ratio: 1;" id="h-fixedish">
+      <img width="4000" height="1367" style="width: 100%; height: auto;" id="i-fixedish">
     </body>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  std::map<std::string, bool> expected = {{"a-fixed", false},
-                                          {"b-fixed", false},
-                                          {"c-UNSIZED", true},
-                                          {"d-UNSIZED", true},
-                                          {"e-fixedish", false}};
+  std::map<std::string, bool> expected = {
+      {"a-fixed", false},    {"b-fixed", false},    {"c-UNSIZED", true},
+      {"d-UNSIZED", true},   {"e-fixedish", false}, {"f-fixedish", false},
+      {"g-fixedish", false}, {"h-fixedish", false}, {"i-fixedish", false}};
 
   for (const auto& [id, expectedIsUnsized] : expected) {
     LayoutObject* obj = GetLayoutObjectByElementId(id.c_str());
