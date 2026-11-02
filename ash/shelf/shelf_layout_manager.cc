@@ -1362,6 +1362,16 @@ void ShelfLayoutManager::OnOverviewModeEndingAnimationComplete(bool canceled) {
 
 void ShelfLayoutManager::OnOverviewModeEnded() {
   UpdateVisibilityState(/*force_layout=*/false);
+  // Do not update the background in the cases where `UpdateVisibilityState()`
+  // bails out, as the shelf state used to compute it may be stale.
+  if (in_shutdown_ || !shelf_widget_->GetNativeWindow() ||
+      suspend_visibility_update_) {
+    return;
+  }
+  // `UpdateVisibilityState()` does not update the background if the shelf
+  // state did not change. Update it now so that the shelf background does not
+  // keep the overview style during the exit animation.
+  MaybeUpdateShelfBackground(AnimationChangeType::IMMEDIATE);
 }
 
 void ShelfLayoutManager::OnAppListVisibilityWillChange(bool shown,
@@ -1597,10 +1607,13 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state,
   //   tablet mode.
   // - Doing so would result in animating the opacity of the shelf while it is
   //   showing blur.
-  if (state.window_state == WorkspaceWindowState::kMaximized &&
-      ((state.visibility_state == SHELF_VISIBLE &&
-        old_state.visibility_state != SHELF_VISIBLE) ||
-       is_background_blur_enabled_)) {
+  // - Leaving overview. The shelf background is hidden in overview (except in
+  //   tablet split view), so there is nothing to animate from.
+  if (shelf_background_type_ == ShelfBackgroundType::kOverview ||
+      (state.window_state == WorkspaceWindowState::kMaximized &&
+       ((state.visibility_state == SHELF_VISIBLE &&
+         old_state.visibility_state != SHELF_VISIBLE) ||
+        is_background_blur_enabled_))) {
     change_type = AnimationChangeType::IMMEDIATE;
   } else {
     // Delay the animation when the shelf was hidden, and has just been made

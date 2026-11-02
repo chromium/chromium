@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <tuple>
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -76,6 +77,7 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
@@ -89,7 +91,9 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -105,6 +109,8 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_test_api.h"
+#include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_observer.h"
@@ -4184,6 +4190,104 @@ TEST_F(ShelfLayoutManagerTest, ShelfBoundsUpdateAfterOverviewAnimation) {
   shelf->SetAlignment(ShelfAlignment::kBottom);
   WaitForOverviewAnimation(/*enter=*/false);
   EXPECT_EQ(bottom_shelf_bounds, GetShelfWidget()->GetWindowBoundsInScreen());
+}
+
+// Parameterized by whether the window is maximized and whether system blur is
+// enabled.
+class ShelfLayoutManagerOverviewExitTest
+    : public ShelfLayoutManagerTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  // Uses mock time so that animations only advance by a frame interval per
+  // frame, regardless of how slow the test runs.
+  ShelfLayoutManagerOverviewExitTest()
+      : ShelfLayoutManagerTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    if (!IsSystemBlurEnabled()) {
+      // Simulates a low-end device, on which system blur is disabled.
+      memory_override_.emplace(base::MiB(512));
+    }
+  }
+
+  bool TestMaximized() const { return std::get<0>(GetParam()); }
+  bool IsSystemBlurEnabled() const { return std::get<1>(GetParam()); }
+
+ private:
+  std::optional<base::test::ScopedAmountOfPhysicalMemoryOverride>
+      memory_override_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ShelfLayoutManagerOverviewExitTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+// Tests that the shelf background is updated without animation when the
+// overview exit animation starts, rather than when it completes.
+TEST_P(ShelfLayoutManagerOverviewExitTest, BackgroundUpdatedWhenExitStarts) {
+  ASSERT_EQ(IsSystemBlurEnabled(), chromeos::features::IsSystemBlurEnabled());
+
+  views::Widget* widget = CreateTestWidget();
+  if (TestMaximized()) {
+    widget->Maximize();
+  }
+
+  ShelfLayoutManager* layout_manager = GetShelfLayoutManager();
+  ShelfWidget* shelf_widget = GetShelfWidget();
+  ui::Layer* background_layer = shelf_widget->GetOpaqueBackground();
+  const ShelfBackgroundType expected_type =
+      TestMaximized() ? ShelfBackgroundType::kMaximized
+                      : ShelfBackgroundType::kDefaultBg;
+  const SkColor default_color =
+      ShelfConfig::Get()->GetDefaultShelfColor(shelf_widget);
+  const SkColor expected_color =
+      TestMaximized() ? ShelfConfig::Get()->GetMaximizedShelfColor(shelf_widget)
+                      : default_color;
+  const bool expected_blur = !TestMaximized() && IsSystemBlurEnabled();
+  ASSERT_EQ(expected_type, layout_manager->shelf_background_type());
+  ASSERT_EQ(expected_color, shelf_widget->GetShelfBackgroundColor());
+  ASSERT_EQ(expected_blur, background_layer->background_blur() > 0);
+  ASSERT_EQ(TestMaximized(),
+            background_layer->rounded_corner_radii().IsEmpty());
+
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  EnterOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
+  shelf_widget->background_animator_for_testing()
+      ->CompleteAnimationForTesting();
+  EXPECT_EQ(ShelfBackgroundType::kOverview,
+            layout_manager->shelf_background_type());
+  EXPECT_EQ(default_color, shelf_widget->GetShelfBackgroundColor());
+
+  ExitOverview();
+  EXPECT_EQ(expected_type, layout_manager->shelf_background_type());
+  EXPECT_EQ(expected_color, shelf_widget->GetShelfBackgroundColor());
+  EXPECT_TRUE(background_layer->visible());
+  EXPECT_EQ(TestMaximized(),
+            background_layer->rounded_corner_radii().IsEmpty());
+  EXPECT_EQ(expected_blur, background_layer->background_blur() > 0);
+  ui::LayerTestApi background_layer_test_api(background_layer);
+  EXPECT_FALSE(background_layer_test_api.damaged_region().IsEmpty());
+
+  // Wait for a commit so that the damage from the exit start is sent, while
+  // the exit animation is still running.
+  ui::DrawWaiterForTest::WaitForCommit(
+      shelf_widget->GetNativeWindow()->layer()->GetCompositor());
+  ASSERT_TRUE(background_layer_test_api.damaged_region().IsEmpty());
+  ASSERT_TRUE(
+      Shell::Get()->overview_controller()->IsCompletingShutdownAnimations());
+
+  // Complete the exit animation without producing a frame. The background
+  // should not be repainted when the animation ends.
+  Shell::GetPrimaryRootWindow()->layer()->CompleteAllAnimations();
+  ASSERT_FALSE(
+      Shell::Get()->overview_controller()->IsCompletingShutdownAnimations());
+  EXPECT_TRUE(background_layer_test_api.damaged_region().IsEmpty());
+  EXPECT_EQ(expected_type, layout_manager->shelf_background_type());
+  EXPECT_EQ(expected_color, shelf_widget->GetShelfBackgroundColor());
+  EXPECT_EQ(TestMaximized(),
+            background_layer->rounded_corner_radii().IsEmpty());
+  EXPECT_EQ(expected_blur, background_layer->background_blur() > 0);
 }
 
 // Tests that the shelf on a second display is properly centered.
