@@ -82,6 +82,9 @@
 
 namespace {
 
+// Default percentage for the Assistant AIM medium detent height.
+constexpr NSInteger kAssistantAIMMediumDetentPercentage = 60;
+
 class AssistantAIMUIStateProvider
     : public CobrowseBrowserAgent::UIStateProvider {
  public:
@@ -233,6 +236,8 @@ class AssistantAIMUIStateProvider
   // percentage updates need to be applied to the fully constructed content.
   // Moving it earlier caused the minimized state to not be correctly applied to
   // the content, leading to wrong UI.
+  [_containerHandler setAssistantContainerMediumDetentPercentage:
+                         kAssistantAIMMediumDetentPercentage];
   [_containerHandler showAssistantContainerWithContent:_viewController
                                               delegate:self];
 
@@ -313,6 +318,8 @@ class AssistantAIMUIStateProvider
       }
 
       AssistantContainerDetent targetDetent = _currentDetent;
+      [_containerHandler setAssistantContainerMediumDetentPercentage:
+                             kAssistantAIMMediumDetentPercentage];
       [_containerHandler showAssistantContainerWithContent:_viewController
                                                   delegate:self];
       if (targetDetent == AssistantContainerDetent::kMedium) {

@@ -68,6 +68,7 @@
 @property(nonatomic, assign) std::vector<AssistantContainerDetent> detents;
 @property(nonatomic, assign) std::optional<AssistantContainerDetent>
     lastAnimatedDetent;
+@property(nonatomic, assign) std::optional<NSInteger> mediumDetentPercentage;
 @end
 
 @implementation FakeAssistantContainerCommands
@@ -105,6 +106,10 @@
 
 - (void)setAssistantContainerMediumDetentHeight:
     (std::optional<NSInteger>)height {
+}
+
+- (void)setAssistantContainerMediumDetentPercentage:(NSInteger)percentage {
+  _mediumDetentPercentage = percentage;
 }
 
 - (void)setAssistantContainerGrabberHidden:(BOOL)hidden
@@ -544,5 +549,24 @@ TEST_F(AssistantAIMCoordinatorTest,
   [coordinator_ setValue:nil forKey:@"metricsRecorder"];
   [mock_recorder stopMocking];
   [mock_view stopMocking];
+  [mock_view_controller stopMocking];
+}
+
+// Tests that showing the AIM container configures the default 60% medium
+// detent height on `AssistantContainerCommands`.
+TEST_F(AssistantAIMCoordinatorTest,
+       SetVisible_ConfiguresDefaultMediumDetentPercentage) {
+  FakeAssistantContainerCommands* fake_container_handler =
+      [[FakeAssistantContainerCommands alloc] init];
+  [coordinator_ setValue:fake_container_handler forKey:@"containerHandler"];
+
+  id mock_view_controller = OCMClassMock([AssistantAIMViewController class]);
+  [coordinator_ setValue:mock_view_controller forKey:@"viewController"];
+
+  [coordinator_ setVisible:YES];
+
+  ASSERT_TRUE(fake_container_handler.mediumDetentPercentage.has_value());
+  EXPECT_EQ(60, fake_container_handler.mediumDetentPercentage.value());
+
   [mock_view_controller stopMocking];
 }

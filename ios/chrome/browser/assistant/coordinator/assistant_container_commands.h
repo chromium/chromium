@@ -57,6 +57,9 @@ enum class AssistantContainerDetent : NSInteger;
 - (void)setAssistantContainerMediumDetentHeight:
     (std::optional<NSInteger>)height;
 
+// Sets the medium detent height percentage of the Assistant Container.
+- (void)setAssistantContainerMediumDetentPercentage:(NSInteger)percentage;
+
 // Sets whether the grabber on the Assistant Container is hidden with optional
 // animation.
 - (void)setAssistantContainerGrabberHidden:(BOOL)hidden animated:(BOOL)animated;

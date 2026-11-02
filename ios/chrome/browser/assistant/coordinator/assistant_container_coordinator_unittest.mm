@@ -218,4 +218,38 @@ TEST_F(AssistantContainerCoordinatorTest, FollowsFullscreenProgressChanges) {
       container_view_controller.assistantContainerView.transform));
 }
 
+// Tests that `setAssistantContainerMediumDetentPercentage:` configures the
+// presented container's medium detent percentage and resets after dismissal so
+// subsequent presentations use the default medium detent height.
+TEST_F(AssistantContainerCoordinatorTest,
+       MediumDetentPercentageAppliesAndResetsOnDismissal) {
+  constexpr NSInteger kCustomPercentage = 80;
+  [coordinator_ setAssistantContainerMediumDetentPercentage:kCustomPercentage];
+
+  UIViewController* content_view_controller = [[UIViewController alloc] init];
+  [coordinator_ showAssistantContainerWithContent:content_view_controller
+                                         delegate:delegate_];
+
+  AssistantContainerViewController* container_view_controller =
+      GetPresentedContainerViewController();
+  ASSERT_TRUE(container_view_controller);
+  ASSERT_TRUE(container_view_controller.mediumDetentPercentage.has_value());
+  EXPECT_EQ(kCustomPercentage,
+            container_view_controller.mediumDetentPercentage.value());
+
+  // Dismissing the container should clear `_mediumDetentPercentage`.
+  [coordinator_ dismissAssistantContainerAnimated:NO completion:nil];
+  EXPECT_FALSE(GetPresentedContainerViewController());
+
+  UIViewController* next_content_view_controller =
+      [[UIViewController alloc] init];
+  [coordinator_ showAssistantContainerWithContent:next_content_view_controller
+                                         delegate:delegate_];
+  AssistantContainerViewController* next_container_view_controller =
+      GetPresentedContainerViewController();
+  ASSERT_TRUE(next_container_view_controller);
+  EXPECT_FALSE(
+      next_container_view_controller.mediumDetentPercentage.has_value());
+}
+
 }  // namespace

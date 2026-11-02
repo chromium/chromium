@@ -50,6 +50,11 @@ enum class AssistantContainerDetent : NSInteger;
 // If specified, `computeMediumDetentHeight` will return this value.
 @property(nonatomic, assign) std::optional<NSInteger> mediumDetentHeight;
 
+// An optional percentage to use for the medium detent height.
+// Used when `mediumDetentHeight` is not specified. Defaults to 50% when
+// `std::nullopt`.
+@property(nonatomic, assign) std::optional<NSInteger> mediumDetentPercentage;
+
 // The delegate for the container events.
 @property(nonatomic, weak) id<AssistantContainerDelegate> delegate;
 

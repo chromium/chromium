@@ -243,6 +243,9 @@ constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
   _setMediumDetentHeightCallCount++;
 }
 
+- (void)setAssistantContainerMediumDetentPercentage:(NSInteger)percentage {
+}
+
 - (void)setAssistantContainerGrabberHidden:(BOOL)hidden
                                   animated:(BOOL)animated {
 }
