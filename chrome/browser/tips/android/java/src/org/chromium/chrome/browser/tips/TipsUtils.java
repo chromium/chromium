@@ -622,7 +622,6 @@ public class TipsUtils {
                                 FeatureProperties featureProperties =
                                         new FeatureProperties(
                                                 UiFormat.BOTTOM_SHEET,
-                                                /* isBlockedByEnterprisePolicy= */ true,
                                                 /* isBlockedByCooldownGroup= */ true,
                                                 /* blocksCooldownGroup= */ true);
                                 if (!tracker.shouldTriggerHelpUi(

@@ -1080,7 +1080,6 @@ public class NotificationPermissionControllerTest {
         FeatureProperties expectedProps =
                 new FeatureProperties(
                         UiFormat.ALERTS,
-                        /* isBlockedByEnterprisePolicy= */ false,
                         /* isBlockedByCooldownGroup= */ false,
                         /* blocksCooldownGroup= */ true);
         when(tracker.shouldTriggerHelpUi(

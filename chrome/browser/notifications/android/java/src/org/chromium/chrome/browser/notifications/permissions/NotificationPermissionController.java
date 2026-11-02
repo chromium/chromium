@@ -216,7 +216,6 @@ public class NotificationPermissionController {
             FeatureProperties featureProperties =
                     new FeatureProperties(
                             UiFormat.ALERTS,
-                            /* isBlockedByEnterprisePolicy= */ false,
                             /* isBlockedByCooldownGroup= */ false,
                             /* blocksCooldownGroup= */ true);
             if (!tracker.shouldTriggerHelpUi(

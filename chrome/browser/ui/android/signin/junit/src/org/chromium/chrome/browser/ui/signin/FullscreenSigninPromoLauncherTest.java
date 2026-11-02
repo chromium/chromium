@@ -535,7 +535,6 @@ public class FullscreenSigninPromoLauncherTest {
         FeatureProperties expectedProps =
                 new FeatureProperties(
                         UiFormat.FRE,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ true,
                         /* blocksCooldownGroup= */ true);
         when(mTrackerMock.shouldTriggerHelpUi(

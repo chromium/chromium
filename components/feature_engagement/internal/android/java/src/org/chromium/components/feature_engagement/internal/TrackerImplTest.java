@@ -69,7 +69,7 @@ public class TrackerImplTest {
         when(mTrackerJniMock.shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE)).thenReturn(false);
         mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
 
-        FeatureProperties props = new FeatureProperties(UiFormat.DIALOG, true, true, true);
+        FeatureProperties props = new FeatureProperties(UiFormat.DIALOG, true, true);
         assertFalse(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
 
         // Should delegate to native to record normal failure metrics, not enterprise policy.
@@ -86,7 +86,6 @@ public class TrackerImplTest {
         FeatureProperties props =
                 new FeatureProperties(
                         UiFormat.DIALOG,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ true,
                         /* blocksCooldownGroup= */ true);
 
@@ -123,7 +122,6 @@ public class TrackerImplTest {
         FeatureProperties props =
                 new FeatureProperties(
                         UiFormat.DIALOG,
-                        /* isBlockedByEnterprisePolicy= */ false,
                         /* isBlockedByCooldownGroup= */ true,
                         /* blocksCooldownGroup= */ false);
 
@@ -157,7 +155,6 @@ public class TrackerImplTest {
         FeatureProperties props =
                 new FeatureProperties(
                         UiFormat.BOTTOM_SHEET,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ true,
                         /* blocksCooldownGroup= */ true);
 
@@ -209,7 +206,6 @@ public class TrackerImplTest {
         FeatureProperties props =
                 new FeatureProperties(
                         UiFormat.FRE,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ false,
                         /* blocksCooldownGroup= */ true);
 
@@ -235,7 +231,6 @@ public class TrackerImplTest {
         FeatureProperties props =
                 new FeatureProperties(
                         UiFormat.BLUE_BUBBLE,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ true,
                         /* blocksCooldownGroup= */ true);
 
@@ -252,7 +247,6 @@ public class TrackerImplTest {
         FeatureProperties props =
                 new FeatureProperties(
                         UiFormat.MAGIC_STACK,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ true,
                         /* blocksCooldownGroup= */ true);
 
@@ -286,7 +280,6 @@ public class TrackerImplTest {
         FeatureProperties props =
                 new FeatureProperties(
                         UiFormat.ALERTS,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ true,
                         /* blocksCooldownGroup= */ true);
 
@@ -301,12 +294,11 @@ public class TrackerImplTest {
         FeatureProperties props =
                 new FeatureProperties(
                         UiFormat.BLUE_BUBBLE,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ false,
                         /* blocksCooldownGroup= */ true);
         assertEquals(
-                "FeatureProperties{format=BLUE_BUBBLE, isBlockedByEnterprisePolicy=true,"
-                        + " isBlockedByCooldownGroup=false, blocksCooldownGroup=true}",
+                "FeatureProperties{format=BLUE_BUBBLE, isBlockedByCooldownGroup=false,"
+                        + " blocksCooldownGroup=true}",
                 props.toString());
     }
 }

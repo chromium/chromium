@@ -168,7 +168,6 @@ public class UserEducationHelper {
             FeatureProperties featureProperties =
                     new FeatureProperties(
                             UiFormat.BLUE_BUBBLE,
-                            /* isBlockedByEnterprisePolicy= */ true,
                             /* isBlockedByCooldownGroup= */ isCooldownEnabled,
                             /* blocksCooldownGroup= */ isCooldownEnabled);
             shouldTrigger = tracker.shouldTriggerHelpUi(featureName, featureProperties);

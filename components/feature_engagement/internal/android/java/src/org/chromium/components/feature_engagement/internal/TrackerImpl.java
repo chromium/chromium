@@ -114,7 +114,6 @@ public class TrackerImpl implements Tracker {
         FeatureProperties properties =
                 new FeatureProperties(
                         UiFormat.UNKNOWN,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ false,
                         /* blocksCooldownGroup= */ false);
 
@@ -141,7 +140,6 @@ public class TrackerImpl implements Tracker {
         FeatureProperties properties =
                 new FeatureProperties(
                         UiFormat.UNKNOWN,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ false,
                         /* blocksCooldownGroup= */ false);
 
@@ -168,8 +166,7 @@ public class TrackerImpl implements Tracker {
      * triggering the feature in native FET.
      *
      * @param feature The name of the feature requesting in-product help.
-     * @param featureProperties The {@link FeatureProperties} for cooldown and enterprise policy
-     *     evaluation.
+     * @param featureProperties The {@link FeatureProperties} for cooldown group evaluation.
      * @param withSnooze Whether to query native {@code shouldTriggerHelpUiWithSnooze}.
      * @return The {@link TriggerDetails} indicating whether to show the IPH and snooze UI.
      */

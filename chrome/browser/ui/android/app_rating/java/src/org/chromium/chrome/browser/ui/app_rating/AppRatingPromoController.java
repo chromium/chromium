@@ -140,7 +140,6 @@ public class AppRatingPromoController {
             FeatureProperties featureProperties =
                     new FeatureProperties(
                             UiFormat.DIALOG,
-                            /* isBlockedByEnterprisePolicy= */ isCooldownEnabled,
                             /* isBlockedByCooldownGroup= */ isCooldownEnabled,
                             /* blocksCooldownGroup= */ isCooldownEnabled);
             if (!mTracker.shouldTriggerHelpUi(

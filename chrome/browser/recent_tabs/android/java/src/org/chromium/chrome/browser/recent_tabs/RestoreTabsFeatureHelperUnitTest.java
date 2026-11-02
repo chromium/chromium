@@ -173,7 +173,7 @@ public class RestoreTabsFeatureHelperUnitTest {
         verify(mMockTracker)
                 .shouldTriggerHelpUi(
                         eq(RESTORE_TABS_FEATURE),
-                        eq(new FeatureProperties(UiFormat.BOTTOM_SHEET, false, false, false)));
+                        eq(new FeatureProperties(UiFormat.BOTTOM_SHEET, false, false)));
         verify(mDelegate).showPromo(anyList());
     }
 
@@ -210,7 +210,7 @@ public class RestoreTabsFeatureHelperUnitTest {
         verify(mMockTracker)
                 .shouldTriggerHelpUi(
                         eq(RESTORE_TABS_FEATURE),
-                        eq(new FeatureProperties(UiFormat.BOTTOM_SHEET, true, false, true)));
+                        eq(new FeatureProperties(UiFormat.BOTTOM_SHEET, false, true)));
         verify(mDelegate).showPromo(anyList());
     }
 

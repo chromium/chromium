@@ -202,7 +202,7 @@ public class AppRatingPromoControllerTest {
         verify(mTracker)
                 .shouldTriggerHelpUi(
                         eq(FeatureConstants.APP_RATING_PROMPT_FEATURE),
-                        eq(new FeatureProperties(UiFormat.DIALOG, false, false, false)));
+                        eq(new FeatureProperties(UiFormat.DIALOG, false, false)));
         verify(mPrefService).setBoolean(Pref.APP_RATING_PROMPT_SHOWN, true);
         verify(mAppRatingManager)
                 .requestAndShowReviewFlow(eq(mActivity), mRunnableCapturer.capture());
@@ -235,7 +235,7 @@ public class AppRatingPromoControllerTest {
         verify(mTracker)
                 .shouldTriggerHelpUi(
                         eq(FeatureConstants.APP_RATING_PROMPT_FEATURE),
-                        eq(new FeatureProperties(UiFormat.DIALOG, true, true, true)));
+                        eq(new FeatureProperties(UiFormat.DIALOG, true, true)));
         verify(mAppRatingManager)
                 .requestAndShowReviewFlow(eq(mActivity), mRunnableCapturer.capture());
     }

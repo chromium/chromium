@@ -121,7 +121,6 @@ public class RestoreTabsFeatureHelper {
         FeatureProperties featureProperties =
                 new FeatureProperties(
                         UiFormat.BOTTOM_SHEET,
-                        /* isBlockedByEnterprisePolicy= */ isCooldownEnabled,
                         /* isBlockedByCooldownGroup= */ false,
                         /* blocksCooldownGroup= */ isCooldownEnabled);
         List<ForeignSession> sessions = mForeignSessionHelper.getMobileAndTabletForeignSessions();

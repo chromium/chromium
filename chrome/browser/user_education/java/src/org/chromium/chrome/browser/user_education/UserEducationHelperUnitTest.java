@@ -291,7 +291,6 @@ public class UserEducationHelperUnitTest {
         FeatureProperties expectedProps =
                 new FeatureProperties(
                         UiFormat.BLUE_BUBBLE,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ true,
                         /* blocksCooldownGroup= */ true);
         Mockito.verify(mTracker)
@@ -321,7 +320,6 @@ public class UserEducationHelperUnitTest {
         FeatureProperties expectedProps =
                 new FeatureProperties(
                         UiFormat.BLUE_BUBBLE,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ false,
                         /* blocksCooldownGroup= */ false);
         Mockito.verify(mTracker)

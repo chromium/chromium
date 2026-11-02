@@ -284,7 +284,6 @@ public final class FullscreenSigninPromoLauncher {
         FeatureProperties featureProperties =
                 new FeatureProperties(
                         UiFormat.FRE,
-                        /* isBlockedByEnterprisePolicy= */ true,
                         /* isBlockedByCooldownGroup= */ true,
                         /* blocksCooldownGroup= */ true);
         return tracker.shouldTriggerHelpUi(
