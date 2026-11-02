@@ -8,14 +8,28 @@
 
 #include "base/logging.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/blink/renderer/core/timing/time_clamper.h"
 
 namespace blink {
-KeyFrameRequestProcessor::KeyFrameRequestProcessor(Configuration config)
-    : config_(config) {}
+KeyFrameRequestProcessor::KeyFrameRequestProcessor(
+    Configuration config,
+    bool cross_origin_isolated_capability)
+    : config_(config),
+      cross_origin_isolated_capability_(cross_origin_isolated_capability) {}
+
+base::TimeTicks KeyFrameRequestProcessor::CoarsenTime(
+    base::TimeTicks time) const {
+  // Shared across instances so that parallel recorders can't average out the
+  // jitter.
+  static const TimeClamper time_clamper;
+  return base::TimeTicks() +
+         time_clamper.ClampTimeResolution(time.since_origin(),
+                                          cross_origin_isolated_capability_);
+}
 
 void KeyFrameRequestProcessor::OnKeyFrame(base::TimeTicks now) {
   last_key_frame_received_.frame_counter = frame_counter_;
-  last_key_frame_received_.timestamp = now;
+  last_key_frame_received_.timestamp = CoarsenTime(now);
   consider_key_frame_request_ = true;
 }
 
@@ -29,7 +43,8 @@ bool KeyFrameRequestProcessor::OnFrameAndShouldRequestKeyFrame(
                    last_key_frame_received_.frame_counter + count;
           },
           [&](base::TimeDelta duration) {
-            return now >= last_key_frame_received_.timestamp + duration;
+            return CoarsenTime(now) >=
+                   last_key_frame_received_.timestamp + duration;
           },
           [&](auto&) {
             constexpr size_t kDefaultKeyIntervalCount = 100;

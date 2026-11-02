@@ -1195,7 +1195,8 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
   auto task_runner = resolver->GetExecutionContext()->GetTaskRunner(
       TaskType::kInternalMediaRealTime);
   if (auto* handler = MakeGarbageCollected<MediaRecorderHandler>(
-          task_runner, KeyFrameRequestProcessor::Configuration())) {
+          task_runner, KeyFrameRequestProcessor::Configuration(),
+          /*cross_origin_isolated_capability=*/false)) {
     task_runner->PostTask(
         FROM_HERE, blink::BindOnce(&MediaRecorderHandler::EncodingInfo,
                                    WrapPersistent(handler),

@@ -180,6 +180,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // on the codec-specific task runner.
     void InitializeEncoder(
         KeyFrameRequestProcessor::Configuration key_frame_config,
+        bool cross_origin_isolated_capability,
         std::unique_ptr<media::VideoEncoderMetricsProvider> metrics_provider,
         size_t frame_buffer_pool_limit);
 
@@ -333,6 +334,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       WeakCell<CallbackInterface>* callback_interface,
       uint32_t bits_per_second,
       KeyFrameRequestProcessor::Configuration key_frame_config,
+      bool cross_origin_isolated_capability,
       size_t frame_buffer_pool_limit =
           media::DeviceVideoCaptureMaxBufferPoolSize());
 
@@ -388,6 +390,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   SequenceBound<Encoder> encoder_;
 
   const KeyFrameRequestProcessor::Configuration key_frame_config_;
+  const bool cross_origin_isolated_capability_;
   const CodecProfile codec_profile_;
   const uint32_t bits_per_second_;
   const size_t frame_buffer_pool_limit_;
@@ -410,7 +413,8 @@ class MODULES_EXPORT VideoTrackRecorderPassthrough : public VideoTrackRecorder {
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       MediaStreamComponent* track,
       WeakCell<CallbackInterface>* callback_interface,
-      KeyFrameRequestProcessor::Configuration key_frame_config);
+      KeyFrameRequestProcessor::Configuration key_frame_config,
+      bool cross_origin_isolated_capability);
 
   VideoTrackRecorderPassthrough(const VideoTrackRecorderPassthrough&) = delete;
   VideoTrackRecorderPassthrough& operator=(

@@ -330,6 +330,7 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
         WebMediaStreamTrack(component_.Get()),
         mock_callback_interface_->GetWeakCell(),
         /*bits_per_second=*/1000000, keyframe_config,
+        /*cross_origin_isolated_capability=*/false,
         /*frame_buffer_pool_limit=*/30);
   }
 
@@ -1307,7 +1308,8 @@ class VideoTrackRecorderPassthroughTest : public VideoTrackRecorderTestBase {
         scheduler::GetSingleThreadTaskRunnerForTesting(),
         WebMediaStreamTrack(component_.Get()),
         mock_callback_interface_->GetWeakCell(),
-        KeyFrameRequestProcessor::Configuration());
+        KeyFrameRequestProcessor::Configuration(),
+        /*cross_origin_isolated_capability=*/false);
   }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;

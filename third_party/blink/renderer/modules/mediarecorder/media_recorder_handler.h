@@ -76,7 +76,8 @@ class MODULES_EXPORT MediaRecorderHandler final
 
   MediaRecorderHandler(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
-      KeyFrameRequestProcessor::Configuration key_frame_config);
+      KeyFrameRequestProcessor::Configuration key_frame_config,
+      bool cross_origin_isolated_capability);
   MediaRecorderHandler(const MediaRecorderHandler&) = delete;
   MediaRecorderHandler& operator=(const MediaRecorderHandler&) = delete;
 
@@ -204,6 +205,9 @@ class MODULES_EXPORT MediaRecorderHandler final
 
   // Variant holding configured keyframe intervals.
   const KeyFrameRequestProcessor::Configuration key_frame_config_;
+
+  // Selects the resolution keyframe request timestamps are coarsened to.
+  const bool cross_origin_isolated_capability_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 

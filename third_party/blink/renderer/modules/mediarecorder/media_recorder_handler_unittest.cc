@@ -170,7 +170,8 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
         has_audio_(has_audio),
         media_recorder_handler_(MakeGarbageCollected<MediaRecorderHandler>(
             scheduler::GetSingleThreadTaskRunnerForTesting(),
-            KeyFrameRequestProcessor::Configuration())),
+            KeyFrameRequestProcessor::Configuration(),
+            /*cross_origin_isolated_capability=*/false)),
         audio_source_(kTestAudioChannels,
                       440 /* freq */,
                       kTestAudioSampleRate) {
@@ -1596,7 +1597,8 @@ class MediaRecorderHandlerPassthroughTest
     ON_CALL(*video_source_, SupportsEncodedOutput).WillByDefault(Return(true));
     media_recorder_handler_ = MakeGarbageCollected<MediaRecorderHandler>(
         scheduler::GetSingleThreadTaskRunnerForTesting(),
-        KeyFrameRequestProcessor::Configuration());
+        KeyFrameRequestProcessor::Configuration(),
+        /*cross_origin_isolated_capability=*/false);
     EXPECT_FALSE(media_recorder_handler_->recording_);
   }
 

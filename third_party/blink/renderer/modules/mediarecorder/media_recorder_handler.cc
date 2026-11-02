@@ -210,8 +210,10 @@ VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
 
 MediaRecorderHandler::MediaRecorderHandler(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
-    KeyFrameRequestProcessor::Configuration key_frame_config)
+    KeyFrameRequestProcessor::Configuration key_frame_config,
+    bool cross_origin_isolated_capability)
     : key_frame_config_(key_frame_config),
+      cross_origin_isolated_capability_(cross_origin_isolated_capability),
       main_thread_task_runner_(std::move(main_thread_task_runner)),
       media_stream_observer_(std::make_unique<MediaStreamObserver>(this)) {}
 
@@ -644,12 +646,13 @@ bool MediaRecorderHandler::Start(int timeslice,
       video_recorders_.emplace_back(
           std::make_unique<VideoTrackRecorderPassthrough>(
               main_thread_task_runner_, video_tracks_[0],
-              weak_video_factory_.GetWeakCell(), key_frame_config_));
+              weak_video_factory_.GetWeakCell(), key_frame_config_,
+              cross_origin_isolated_capability_));
     } else {
       video_recorders_.emplace_back(std::make_unique<VideoTrackRecorderImpl>(
           main_thread_task_runner_, video_codec_profile_, video_tracks_[0],
           weak_video_factory_.GetWeakCell(), video_bits_per_second_,
-          key_frame_config_));
+          key_frame_config_, cross_origin_isolated_capability_));
     }
   }
 

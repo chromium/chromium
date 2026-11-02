@@ -14,7 +14,8 @@
 namespace blink {
 
 // Class handling the logic of periodically requesting keyframes. This class is
-// thread-compatible.
+// thread-compatible. Key frame requests are observable by the page, so
+// timestamps are coarsened like performance.now() before use.
 class MODULES_EXPORT KeyFrameRequestProcessor {
  public:
   // TODO(crbug.com/402412612): Replace NotConfiguredTag with std::monostate.
@@ -26,10 +27,15 @@ class MODULES_EXPORT KeyFrameRequestProcessor {
   using TimeNowCallback = base::OnceCallback<base::TimeTicks()>;
 
   KeyFrameRequestProcessor() = default;
-  explicit KeyFrameRequestProcessor(Configuration config);
+  KeyFrameRequestProcessor(Configuration config,
+                           bool cross_origin_isolated_capability);
 
   // Call to update the configuration.
-  void UpdateConfig(Configuration config) { config_ = config; }
+  void UpdateConfig(Configuration config,
+                    bool cross_origin_isolated_capability) {
+    config_ = config;
+    cross_origin_isolated_capability_ = cross_origin_isolated_capability;
+  }
   // Notify the processor that a keyframe has or will soon be processed.
   void OnKeyFrame(base::TimeTicks now);
   // Returns if a key frame should be requested, in which case true will not
@@ -37,7 +43,10 @@ class MODULES_EXPORT KeyFrameRequestProcessor {
   bool OnFrameAndShouldRequestKeyFrame(base::TimeTicks now);
 
  private:
+  base::TimeTicks CoarsenTime(base::TimeTicks time) const;
+
   Configuration config_;
+  bool cross_origin_isolated_capability_ = false;
   struct {
     size_t frame_counter;
     base::TimeTicks timestamp;

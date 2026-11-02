@@ -443,9 +443,11 @@ VideoTrackRecorderImpl::Encoder::~Encoder() = default;
 
 void VideoTrackRecorderImpl::Encoder::InitializeEncoder(
     KeyFrameRequestProcessor::Configuration key_frame_config,
+    bool cross_origin_isolated_capability,
     std::unique_ptr<media::VideoEncoderMetricsProvider> metrics_provider,
     size_t frame_buffer_pool_limit) {
-  key_frame_processor_.UpdateConfig(key_frame_config);
+  key_frame_processor_.UpdateConfig(key_frame_config,
+                                    cross_origin_isolated_capability);
   metrics_provider_ = std::move(metrics_provider);
   frame_buffer_pool_limit_ = frame_buffer_pool_limit;
   Initialize();
@@ -798,11 +800,13 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
     WeakCell<CallbackInterface>* callback_interface,
     uint32_t bits_per_second,
     KeyFrameRequestProcessor::Configuration key_frame_config,
+    bool cross_origin_isolated_capability,
     size_t frame_buffer_pool_limit)
     : VideoTrackRecorder(std::move(main_thread_task_runner),
                          callback_interface),
       track_(track),
       key_frame_config_(key_frame_config),
+      cross_origin_isolated_capability_(cross_origin_isolated_capability),
       codec_profile_(codec_profile),
       bits_per_second_(bits_per_second),
       frame_buffer_pool_limit_(frame_buffer_pool_limit) {
@@ -1018,8 +1022,8 @@ void VideoTrackRecorderImpl::InitializeEncoder(
           : nullptr;
 
   encoder_.AsyncCall(&Encoder::InitializeEncoder)
-      .WithArgs(key_frame_config_, std::move(metrics_provider),
-                frame_buffer_pool_limit_);
+      .WithArgs(key_frame_config_, cross_origin_isolated_capability_,
+                std::move(metrics_provider), frame_buffer_pool_limit_);
   if (should_pause_encoder_on_initialization_) {
     encoder_.AsyncCall(&Encoder::SetPaused).WithArgs(true);
   }
@@ -1055,11 +1059,12 @@ VideoTrackRecorderPassthrough::VideoTrackRecorderPassthrough(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     MediaStreamComponent* track,
     WeakCell<CallbackInterface>* callback_interface,
-    KeyFrameRequestProcessor::Configuration key_frame_config)
+    KeyFrameRequestProcessor::Configuration key_frame_config,
+    bool cross_origin_isolated_capability)
     : VideoTrackRecorder(std::move(main_thread_task_runner),
                          callback_interface),
       track_(track),
-      key_frame_processor_(key_frame_config) {
+      key_frame_processor_(key_frame_config, cross_origin_isolated_capability) {
   CHECK(main_thread_task_runner_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // HandleEncodedVideoFrame() will be called on Render Main thread.

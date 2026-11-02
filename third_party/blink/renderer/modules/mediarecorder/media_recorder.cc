@@ -217,7 +217,7 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
   }
   recorder_handler_ = MakeGarbageCollected<MediaRecorderHandler>(
       context->GetTaskRunner(TaskType::kInternalMediaRealTime),
-      key_frame_config);
+      key_frame_config, context->CrossOriginIsolatedCapability());
   if (!recorder_handler_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -394,7 +394,8 @@ bool MediaRecorder::isTypeSupported(ExecutionContext* context,
                                     const String& type) {
   MediaRecorderHandler* handler = MakeGarbageCollected<MediaRecorderHandler>(
       context->GetTaskRunner(TaskType::kInternalMediaRealTime),
-      KeyFrameRequestProcessor::Configuration());
+      KeyFrameRequestProcessor::Configuration(),
+      /*cross_origin_isolated_capability=*/false);
   if (!handler)
     return false;
 
