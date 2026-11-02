@@ -213,6 +213,9 @@ void SystemMediaControlsWin::SetIsSeekToEnabled(bool value) {
     return;
 
   if (value) {
+    if (has_valid_playback_position_change_requested_registration_token_) {
+      return;
+    }
     auto weak_ptr = weak_factory_.GetWeakPtr();
     auto playback_position_change_requested_handler =
         Microsoft::WRL::Callback<ABI::Windows::Foundation::ITypedEventHandler<
