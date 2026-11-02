@@ -36,6 +36,9 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSecti
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUi;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUi.PaymentRequestObserverForTest;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
@@ -66,7 +69,12 @@ import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/** Custom ActivityTestRule for integration test for payments. */
+/**
+ * Custom TestRule for integration tests for payments.
+ *
+ * <p>Declare it together with a {@link BaseCtaTransitTestRule} in a RuleChain, and call {@link
+ * #startOnTestPage()} to start the test.
+ */
 /*package*/ class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
         implements PaymentRequestObserverForTest,
                 PaymentRequestServiceObserverForTest,
@@ -135,6 +143,8 @@ import java.util.concurrent.atomic.AtomicReference;
     // We need a consistent port so that strings don't vary for render tests.
     private static final int TEST_PORT = 41234;
 
+    private static final String TEST_PAGE_PATH_PREFIX = "/components/test/data/payments/";
+
     private final PaymentsCallbackHelper<PaymentRequestUi> mShowCalled;
     private final PaymentsCallbackHelper<PaymentRequestUi> mReadyForInput;
     private final PaymentsCallbackHelper<PaymentRequestUi> mReadyToPay;
@@ -163,11 +173,12 @@ import java.util.concurrent.atomic.AtomicReference;
     private final FakeClock mClock;
     private final InputProtector mInputProtector;
 
-    private final boolean mDelayStartActivity;
+    private final BaseCtaTransitTestRule mCtaTestRule;
     private boolean mAutoAdvanceInputProtectorClock;
 
     private final AtomicReference<WebContents> mWebContentsRef;
 
+    private final String mTestFileName;
     private final String mTestFilePath;
 
     private CardUnmaskPrompt mCardUnmaskPrompt;
@@ -177,40 +188,25 @@ import java.util.concurrent.atomic.AtomicReference;
     /**
      * Creates an instance of PaymentRequestTestRule.
      *
-     * @param testFileName The file name of an test page in //components/test/data/payments,
-     *     'about:blank', or a data url which starts with 'data:'.
+     * @param testFileName The file name of a test page in //components/test/data/payments, or a
+     *     data url which starts with 'data:'.
      */
     /* package */ PaymentRequestTestRule(String testFileName) {
-        this(testFileName, false);
+        this(null, testFileName);
     }
 
     /**
      * Creates an instance of PaymentRequestTestRule.
      *
-     * @param testFileName The file name of an test page in //components/test/data/payments,
-     *     'about:blank', or a data url which starts with 'data:'.
-     * @param delayStartActivity Whether to delay the start of the main activity. When true, {@link
-     *     #startMainActivityWithURL()} needs to be called to start the main activity; otherwise,
-     *     the main activity would start automatically.
+     * @param ctaTestRule The {@link BaseCtaTransitTestRule} declared by the test, which must wrap
+     *     this rule in a RuleChain.
+     * @param testFileName The file name of a test page in //components/test/data/payments, or a
+     *     data url which starts with 'data:'.
      */
-    /* package */ PaymentRequestTestRule(String testFileName, boolean delayStartActivity) {
-        this(testFileName, /* pathPrefix= */ "/components/test/data/payments/", delayStartActivity);
-    }
-
-    /**
-     * Creates an instance of PaymentRequestTestRule with a test page, which is specified by
-     * pathPrefix and testFileName combined into a path relative to the repository root. For
-     * example, if testFileName is "merchant.html", pathPrefix is "components/test/data/payments/",
-     * the method would look for a test page at "components/test/data/payments/merchant.html".
-     *
-     * @param testFileName The file name of the test page.
-     * @param pathPrefix The prefix path to testFileName.
-     * @param delayStartActivity Whether to delay the start of the main activity.
-     */
-    private PaymentRequestTestRule(
-            String testFilePath, String pathPrefix, boolean delayStartActivity) {
+    /* package */ PaymentRequestTestRule(BaseCtaTransitTestRule ctaTestRule, String testFileName) {
         super();
-        getEmbeddedTestServerRule().setServerPort(TEST_PORT);
+        mCtaTestRule = ctaTestRule;
+        mTestFileName = testFileName;
         mShowCalled = new PaymentsCallbackHelper<>();
         mReadyForInput = new PaymentsCallbackHelper<>();
         mReadyToPay = new PaymentsCallbackHelper<>();
@@ -235,21 +231,28 @@ import java.util.concurrent.atomic.AtomicReference;
         mCompleteHandled = new CallbackHelper();
         mRendererClosedMojoConnection = new CallbackHelper();
         mWebContentsRef = new AtomicReference<>();
-        if (testFilePath.equals("about:blank") || testFilePath.startsWith("data:")) {
-            mTestFilePath = testFilePath;
+        if (ctaTestRule != null) {
+            if (!testFileName.startsWith("data:")) {
+                ctaTestRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
+            }
+            mTestFilePath = null;
         } else {
-            mTestFilePath = getTestServer().getURL(pathPrefix + testFilePath);
+            getEmbeddedTestServerRule().setServerPort(TEST_PORT);
+            if (testFileName.equals("about:blank") || testFileName.startsWith("data:")) {
+                mTestFilePath = testFileName;
+            } else {
+                mTestFilePath = getTestServer().getURL(TEST_PAGE_PATH_PREFIX + testFileName);
+            }
         }
-        mDelayStartActivity = delayStartActivity;
         mAutoAdvanceInputProtectorClock = true;
         mClock = new FakeClock();
         mInputProtector = new InputProtector(mClock);
     }
 
-    /* package */ void setObserversAndWaitForInitialPageLoad() throws InterruptedException {
-        setObserversAndWaitForInitialPageLoad(getActivity());
-    }
-
+    // TODO(crbug.com/490460408): Move test observers to before(), migrate
+    // PaymentRequestContactDetailsTest#testPaymentRequestIncognitoMode to Public Transit, and check
+    // whether WebPageStation's enter conditions let us drop Thread.sleep(2000) and the scale-factor
+    // wait.
     /* package */ void setObserversAndWaitForInitialPageLoad(ChromeActivity activity)
             throws InterruptedException {
         // TODO(crbug.com/40728764): Figure out what these tests need to wait on to not be flaky
@@ -266,7 +269,7 @@ import java.util.concurrent.atomic.AtomicReference;
                             PaymentRequestTestRule.this);
                     CardUnmaskPrompt.setObserverForTest(PaymentRequestTestRule.this);
                 });
-        assertWaitForPageScaleFactorMatch(0.5f);
+        ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(activity, 0.5f);
     }
 
     /* package */ PaymentsCallbackHelper<PaymentRequestUi> getShowCalled() {
@@ -396,7 +399,8 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ void runJavaScriptAndWaitForUiEvent(String code, CallbackHelper helper)
             throws TimeoutException {
         int callCount = helper.getCallCount();
-        runJavaScriptCodeWithUserGestureInCurrentTab(code);
+        JavaScriptUtils.executeJavaScriptWithUserGestureAndWaitForResult(
+                mWebContentsRef.get(), code);
         helper.waitForCallback(callCount);
     }
 
@@ -413,7 +417,8 @@ import java.util.concurrent.atomic.AtomicReference;
                 promiseCode
                         + ".then(result => domAutomationController.send(result))"
                         + ".catch(error => domAutomationController.send(error));";
-        return JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(getWebContents(), code);
+        return JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                mWebContentsRef.get(), code);
     }
 
     /** Clicks on an HTML node. */
@@ -1356,23 +1361,43 @@ import java.util.concurrent.atomic.AtomicReference;
         public void dismissInstrument() {}
     }
 
-    public void startMainActivity() {
-        assert mDelayStartActivity;
-        startMainActivityWithURL(mTestFilePath);
+    /**
+     * Starts or resets ChromeTabbedActivity on the test page and waits for it to be ready for
+     * payments.
+     *
+     * @return the entry {@link WebPageStation} showing the test page.
+     */
+    /* package */ WebPageStation startOnTestPage() throws InterruptedException {
+        assert mCtaTestRule != null : "Pass BaseCtaTransitTestRule to PaymentRequestTestRule";
+        assert mWebContentsRef.get() == null : "Test already started";
+
+        WebPageStation page;
+        if (mTestFileName.startsWith("data:")) {
+            // Data URLs get canonicalized when loaded, so only match the "data:" scheme prefix.
+            page =
+                    mCtaTestRule.startOnPage(
+                            mTestFileName,
+                            WebPageStation.newBuilder().withExpectedUrlSubstring("data:"));
+        } else {
+            page = mCtaTestRule.startOnTestServerUrl(TEST_PAGE_PATH_PREFIX + mTestFileName);
+        }
+        setObserversAndWaitForInitialPageLoad(mCtaTestRule.getActivity());
+        return page;
     }
 
     @Override
     protected void before() throws Throwable {
         super.before();
         PaymentAppService.getInstance().resetForTest();
-        if (!mDelayStartActivity) {
+        if (mCtaTestRule == null) {
             startMainActivityWithURL(mTestFilePath);
-            setObserversAndWaitForInitialPageLoad();
+            setObserversAndWaitForInitialPageLoad(getActivity());
         }
     }
 
     @Override
     protected void after() {
+        mWebContentsRef.set(null);
         PaymentAppService.getInstance().resetForTest();
         super.after();
     }
