@@ -567,7 +567,9 @@ void BluetoothDeviceChooserController::PostSuccessCallback(
 
 void BluetoothDeviceChooserController::PostErrorCallback(
     WebBluetoothResult error) {
-  CHECK(callback_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/579165504): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(callback_);
 
   if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
