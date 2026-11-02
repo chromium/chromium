@@ -241,9 +241,6 @@ const CGFloat kTasksCellHeight = 350.0;
                                                 image:turnOffImage
                                            identifier:nil
                                               handler:^(UIAction* action) {
-                                                // TODO(crbug.com/544808224):
-                                                // Use full new design with
-                                                // secondary confirmation sheet.
                                                 [weakSelf turnOffLevelUp];
                                               }];
   turnOffAction.attributes = UIMenuElementAttributesDestructive;
