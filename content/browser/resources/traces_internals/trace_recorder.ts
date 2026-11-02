@@ -112,6 +112,7 @@ export class TraceRecorderElement extends CrLitElement {
       // <if expr="is_win">
       etwEvents: {type: Array},
       enabledEtwEvents: {type: Object},
+      etwCallStacksEnabled: {type: Boolean},
       etwExpanded_: {type: Boolean},
       // </if>
       disabledTags: {type: Object},
@@ -187,6 +188,7 @@ export class TraceRecorderElement extends CrLitElement {
         'scheduler': new Set(),
         'system_io': new Set(),
       };
+  protected accessor etwCallStacksEnabled: boolean = false;
   protected accessor etwExpanded_: boolean = false;
   // </if>
 
@@ -478,9 +480,31 @@ export class TraceRecorderElement extends CrLitElement {
           [...this.enabledEtwEvents['memory']];
       this.etwConfig.systemIoProviderEvents =
           [...this.enabledEtwEvents['system_io']];
+      this.etwConfig.stackSamplingEvents = this.getEtwStackSamplingEvents_();
     }
 
     this.updateUrlFromConfig_();
+  }
+
+  protected onEtwCallStacksChange_(event: CustomEvent<boolean>) {
+    this.etwCallStacksEnabled = event.detail;
+    if (!this.etwConfig) {
+      return;
+    }
+    this.etwConfig.stackSamplingEvents = this.getEtwStackSamplingEvents_();
+    this.updateUrlFromConfig_();
+  }
+
+  private getEtwStackSamplingEvents_() {
+    if (!this.etwCallStacksEnabled) {
+      return [];
+    }
+    // Return events for which ETW call stacks are currently supported.
+    const events: string[] = [];
+    if (this.isEtwEventEnabled('scheduler', 'CONTEXT_SWITCH')) {
+      events.push('CONTEXT_SWITCH');
+    }
+    return events;
   }
   // </if>
 
@@ -940,6 +964,8 @@ export class TraceRecorderElement extends CrLitElement {
           new Set(this.etwConfig.memoryProviderEvents);
       this.enabledEtwEvents['system_io'] =
           new Set(this.etwConfig.systemIoProviderEvents);
+      this.etwCallStacksEnabled =
+          (this.etwConfig.stackSamplingEvents?.length ?? 0) > 0;
     }
     // </if>
   }

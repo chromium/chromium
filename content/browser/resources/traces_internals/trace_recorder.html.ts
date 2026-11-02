@@ -278,6 +278,17 @@ export function getHtml(this: TraceRecorderElement) {
                 <div>${event.description}</div>
               </div>
             `)}
+            <div class="row">
+              <cr-toggle
+                class="config-toggle"
+                ?checked="${this.etwCallStacksEnabled}"
+                @change="${this.onEtwCallStacksChange_}">
+              </cr-toggle>
+              <div>Call stacks</div>
+              <div>
+                Enables call stacks for Event Tracing for Windows events
+              </div>
+            </div>
           </div>
         </cr-collapse>
       </div>

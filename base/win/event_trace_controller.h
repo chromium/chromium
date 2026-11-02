@@ -30,6 +30,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 
 namespace base {
 namespace win {
@@ -116,6 +117,9 @@ class BASE_EXPORT EtwTraceController {
                          ULONG flags = 0xFFFFFFFF);
   // Disables "provider".
   HRESULT DisableProvider(const GUID& provider);
+
+  // Enables call stacks for the given `events`.
+  HRESULT EnableCallStacks(base::span<const CLASSIC_EVENT_ID> events);
 
   // Stops our session and retrieve the new properties of the session,
   // properties may be NULL.

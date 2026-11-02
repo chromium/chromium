@@ -13,6 +13,7 @@
 
 #include "absl/container/flat_hash_map.h"
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,6 +51,20 @@ ULONG EtwSystemFlagsFromSystemIOProvider(std::string_view keyword) {
     return EVENT_TRACE_FLAG_DISK_IO | EVENT_TRACE_FLAG_DISK_IO_INIT;
   }
   return 0;
+}
+
+CLASSIC_EVENT_ID EtwCallStacksEventIdFromKeyword(std::string_view keyword) {
+  // ThreadGuid, 3d6fa8d1-fe05-11d0-9dda-00c04fd7ba7c
+  static constexpr GUID kThreadGuid = {
+      0x3d6fa8d1,
+      0xfe05,
+      0x11d0,
+      {0x9d, 0xda, 0x00, 0xc0, 0x4f, 0xd7, 0xba, 0x7c}};
+
+  if (keyword == "CONTEXT_SWITCH") {
+    return {kThreadGuid, 36};
+  }
+  return {};
 }
 
 }  // namespace
@@ -135,6 +150,10 @@ void EtwSystemDataSource::OnStart(const StartArgs&) {
   for (const auto& keyword : etw_config.scheduler_provider_events()) {
     p.EnableFlags |= EtwSystemFlagsFromSchedulerProvider(keyword);
   }
+  if (!etw_config.stack_sampling_events().empty()) {
+    // Track loaded images to enable symbolization of call stacks.
+    p.EnableFlags |= EVENT_TRACE_FLAG_IMAGE_LOAD;
+  }
 
   // The ETW Session must be started (but not opened) before providers can be
   // enabled.
@@ -159,6 +178,11 @@ void EtwSystemDataSource::OnStart(const StartArgs&) {
   etw_controller_.EnableProvider(kKernelMemoryProviderGuid,
                                  TRACE_LEVEL_INFORMATION,
                                  memory_provider_flags);
+
+  if (!etw_config.stack_sampling_events().empty()) {
+    etw_controller_.EnableCallStacks(base::ToVector(
+        etw_config.stack_sampling_events(), &EtwCallStacksEventIdFromKeyword));
+  }
 
   bool privacy_filtering_enabled =
       data_source_config_.chrome_config().privacy_filtering_enabled();

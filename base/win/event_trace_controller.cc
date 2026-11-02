@@ -6,6 +6,8 @@
 
 #include "base/win/event_trace_controller.h"
 
+#include <evntrace.h>
+
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
@@ -114,6 +116,15 @@ HRESULT EtwTraceController::EnableProvider(REFGUID provider,
 
 HRESULT EtwTraceController::DisableProvider(REFGUID provider) {
   ULONG error = ::EnableTrace(FALSE, 0, 0, &provider, session_);
+  return HRESULT_FROM_WIN32(error);
+}
+
+HRESULT EtwTraceController::EnableCallStacks(
+    base::span<const CLASSIC_EVENT_ID> events) {
+  const ULONG error =
+      ::TraceSetInformation(session_, ::TraceStackTracingInfo,
+                            const_cast<CLASSIC_EVENT_ID*>(events.data()),
+                            checked_cast<ULONG>(events.size_bytes()));
   return HRESULT_FROM_WIN32(error);
 }
 
