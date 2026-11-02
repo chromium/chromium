@@ -237,11 +237,13 @@ bool LayoutImage::NeedsLayoutOnNaturalSizeChange() const {
   }
 
   const auto& style = Style();
-  // TODO(https://crbug.com/313072): Should this test min/max-height as well?
   bool is_fixed_sized =
       style.LogicalWidth().IsFixed() && style.LogicalHeight().IsFixed() &&
       (style.LogicalMinWidth().IsFixed() || style.LogicalMinWidth().IsAuto()) &&
-      (style.LogicalMaxWidth().IsFixed() || style.LogicalMaxWidth().IsNone());
+      (style.LogicalMaxWidth().IsFixed() || style.LogicalMaxWidth().IsNone()) &&
+      (style.LogicalMinHeight().IsFixed() ||
+       style.LogicalMinHeight().IsAuto()) &&
+      (style.LogicalMaxHeight().IsFixed() || style.LogicalMaxHeight().IsNone());
   return !is_fixed_sized;
 }
 
