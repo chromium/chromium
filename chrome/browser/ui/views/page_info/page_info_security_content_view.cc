@@ -107,9 +107,23 @@ void PageInfoSecurityContentView::SetIdentityInfo(
                             base::Unretained(this)));
   }
 
-  if (identity_info.certificate) {
-    certificate_ = identity_info.certificate;
+  // If QWAC info or certificate views have been added previously, remove the
+  // old ones before recreating them. Re-adding them bumps them to the bottom
+  // of the container, but it's unlikely that the user will notice, since other
+  // things are changing too.
+  if (one_qwac_view_) {
+    RemoveChildViewT(one_qwac_view_.ExtractAsDangling());
+  }
+  if (two_qwac_button_) {
+    RemoveChildViewT(two_qwac_button_.ExtractAsDangling());
+  }
+  if (certificate_button_) {
+    RemoveChildViewT(certificate_button_.ExtractAsDangling());
+  }
+  certificate_ = identity_info.certificate;
+  two_qwac_ = nullptr;
 
+  if (identity_info.certificate) {
     // Show information about the page's certificate.
     // The text of link to the Certificate Viewer varies depending on the
     // validity of the Certificate.
@@ -168,13 +182,6 @@ void PageInfoSecurityContentView::SetIdentityInfo(
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_QWAC_STATUS_TITLE);
       const ui::ImageModel qwac_icon = PageInfoViewFactory::GetImageModel(
           vector_icons::kQwacStatusCustomIcon);
-      // If QWAC info line has been added previously, remove the old one before
-      // recreating it. Re-adding it bumps it to the bottom of the
-      // container, but its unlikely that the user will notice, since other
-      // things are changing too.
-      if (one_qwac_view_) {
-        RemoveChildViewT(one_qwac_view_.get());
-      }
       if (identity_info.identity_status ==
               PageInfo::SITE_IDENTITY_STATUS_1QWAC_CERT &&
           identity_info.connection_status ==
@@ -212,13 +219,6 @@ void PageInfoSecurityContentView::SetIdentityInfo(
         one_qwac_view_->GetViewAccessibility().SetName(
             base::JoinString(qwac_a11y_parts, u"\n"));
       }
-      // If QWAC info line has been added previously, remove the old one before
-      // recreating it. Re-adding it bumps it to the bottom of the container,
-      // but its unlikely that the user will notice, since other things are
-      // changing too.
-      if (two_qwac_button_) {
-        RemoveChildViewT(two_qwac_button_.get());
-      }
       if (identity_info.two_qwac) {
         two_qwac_ = identity_info.two_qwac;
         std::u16string qwac_subtitle;
@@ -252,13 +252,6 @@ void PageInfoSecurityContentView::SetIdentityInfo(
       }
     }
 
-    // If the certificate button has been added previously, remove the old one
-    // before recreating it. Re-adding it bumps it to the bottom of the
-    // container, but its unlikely that the user will notice, since other
-    // things are changing too.
-    if (certificate_button_) {
-      RemoveChildViewT(certificate_button_.get());
-    }
     certificate_button_ =
         AddChildViewRaw(std::make_unique<RichHoverButton>(
                             base::BindRepeating(

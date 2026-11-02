@@ -390,6 +390,9 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
 
       auto* main_page = static_cast<PageInfoMainView*>(current_ui);
       main_page->toggle_rows_.clear();
+      main_page->syncable_permission_rows_.clear();
+      main_page->chosen_object_rows_.clear();
+      main_page->reset_button_ = nullptr;
       main_page->permissions_view_->RemoveAllChildViews();
 
       current_ui->SetPermissionInfo(permissions_list,

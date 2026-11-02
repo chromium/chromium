@@ -298,6 +298,8 @@ void PageInfoMainView::SetPermissionInfo(
   if (permission_info_list.empty() && chosen_object_info_list.empty()) {
     toggle_rows_.clear();
     syncable_permission_rows_.clear();
+    chosen_object_rows_.clear();
+    reset_button_ = nullptr;
     permissions_view_->RemoveAllChildViews();
     return;
   }
@@ -403,11 +405,15 @@ void PageInfoMainView::SetPermissionInfo(
   reset_button_ = content_view->AddChildView(
       std::make_unique<views::MdTextButton>(base::BindRepeating(
           [=](PageInfoMainView* view) {
-            for (PermissionToggleRowView* toggle_row : view->toggle_rows_) {
-              toggle_row->ResetPermission();
+            // Iterate by index because `ResetPermission()` can synchronously
+            // trigger `SetPermissionInfo()` when the last active permission or
+            // chosen object is revoked, which clears `toggle_rows_` and
+            // `chosen_object_rows_` and destroys all child views.
+            for (size_t i = 0; i < view->toggle_rows_.size(); ++i) {
+              view->toggle_rows_[i]->ResetPermission();
             }
-            for (ChosenObjectView* object_row : view->chosen_object_rows_) {
-              object_row->ResetPermission();
+            for (size_t i = 0; i < view->chosen_object_rows_.size(); ++i) {
+              view->chosen_object_rows_[i]->ResetPermission();
             }
             view->chosen_object_rows_.clear();
             view->PreferredSizeChanged();
@@ -471,6 +477,8 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 
   title_->SetText(presenter_->GetSubjectNameForDisplay());
 
+  connection_button_ = nullptr;
+  security_content_view_ = nullptr;
   security_container_view_->RemoveAllChildViews();
   extended_site_info_section_->SetVisible(false);
   if (identity_info.safe_browsing_status ==

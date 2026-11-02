@@ -95,7 +95,7 @@ class PageInfoMainView : public views::View,
     return toggle_rows_.size();
   }
 
-  const std::vector<raw_ptr<PermissionToggleRowView, VectorExperimental>>&
+  const std::vector<raw_ptr<PermissionToggleRowView>>&
   GetToggleRowsForTesting() const {
     return toggle_rows_;
   }
@@ -174,8 +174,7 @@ class PageInfoMainView : public views::View,
   std::u16string details_text_ = std::u16string();
 
   // The button that opens the "Connection" subpage.
-  raw_ptr<RichHoverButton, AcrossTasksDanglingUntriaged> connection_button_ =
-      nullptr;
+  raw_ptr<RichHoverButton> connection_button_ = nullptr;
 
   // The view that contains the certificate, cookie, and permissions sections.
   raw_ptr<views::View> site_settings_view_ = nullptr;
@@ -208,8 +207,7 @@ class PageInfoMainView : public views::View,
   raw_ptr<views::View> merchant_trust_section_ = nullptr;
 
   // The view that contains `SecurityInformationView` and a certificate button.
-  raw_ptr<PageInfoSecurityContentView, AcrossTasksDanglingUntriaged>
-      security_content_view_ = nullptr;
+  raw_ptr<PageInfoSecurityContentView> security_content_view_ = nullptr;
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   // The view that contains ui related to features on a page, like a presenting
@@ -220,8 +218,7 @@ class PageInfoMainView : public views::View,
   // These rows bundle together all the |View|s involved in a single row of the
   // permissions section, and keep those views updated when the underlying
   // |Permission| changes.
-  std::vector<raw_ptr<PermissionToggleRowView, VectorExperimental>>
-      toggle_rows_;
+  std::vector<raw_ptr<PermissionToggleRowView>> toggle_rows_;
 
   // This map contains rows for permission types that should be updated when
   // their usage status is changed. This is needed to avoid recreating the whole
@@ -229,15 +226,13 @@ class PageInfoMainView : public views::View,
   std::map<ContentSettingsType, raw_ptr<PermissionToggleRowView>>
       syncable_permission_rows_;
 
-  std::vector<raw_ptr<ChosenObjectView, VectorExperimental>>
-      chosen_object_rows_;
+  std::vector<raw_ptr<ChosenObjectView>> chosen_object_rows_;
 
   raw_ptr<views::Label> title_ = nullptr;
 
   raw_ptr<views::View> security_container_view_ = nullptr;
 
-  raw_ptr<views::LabelButton, AcrossTasksDanglingUntriaged> reset_button_ =
-      nullptr;
+  raw_ptr<views::LabelButton> reset_button_ = nullptr;
 
   base::RepeatingClosure open_extensions_menu_callback_;
 
