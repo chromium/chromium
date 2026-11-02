@@ -340,7 +340,9 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, InvokeAndOpenSourceMetrics) {
 
   const mojom::InvocationSource kSources[] = {
       mojom::InvocationSource::kTopChromeButton,
-      mojom::InvocationSource::kWebContentsContextMenu,
+      mojom::InvocationSource::kWebContentsContextMenuPage,
+      mojom::InvocationSource::kWebContentsContextMenuLink,
+      mojom::InvocationSource::kWebContentsContextMenuTextSelection,
       mojom::InvocationSource::kOsHotkey,
       mojom::InvocationSource::kThreeDotsMenu,
       mojom::InvocationSource::kDaisyChainOnNewTab,

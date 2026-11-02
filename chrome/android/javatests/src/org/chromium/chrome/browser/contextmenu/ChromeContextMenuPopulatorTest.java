@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -4553,12 +4554,65 @@ public class ChromeContextMenuPopulatorTest {
                         .expectIntRecord(
                                 "ContextMenu.SelectedOptionAndroid.Image",
                                 ChromeContextMenuPopulator.ContextMenuUma.Action.ASK_GEMINI_IMAGE)
+                        .expectIntRecord(
+                                "Glic.EntryPoint.Click.Other", GlicInvocationSource.SHARED_IMAGE)
                         .build();
 
         mPopulator.onItemSelected(R.id.contextmenu_ask_gemini_image);
 
         verify(mGlicKeyedService)
                 .shareContextImage(eq(mTab), eq(mRenderFrameHost), eq(params.getSrcUrl()));
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures({ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU, ChromeFeatureList.TAB_BOTTOM_SHEET})
+    public void testOnItemSelected_askGemini_link() {
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        GlicEnabling.setEnabledForTesting(true);
+        ContextMenuParams params = getHttpLinkParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Glic.EntryPoint.Click.Other",
+                                GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_LINK)
+                        .build();
+
+        mPopulator.onItemSelected(R.id.contextmenu_ask_gemini);
+
+        verify(mGlicKeyedService)
+                .invoke(eq(mTab), eq(GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_LINK));
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures({
+        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU + ":show_on_page/true",
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL
+    })
+    public void testOnItemSelected_askGemini_page() {
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        GlicEnabling.setEnabledForTesting(true);
+        ContextMenuParams params = getPageParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Glic.EntryPoint.Click.Other",
+                                GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_PAGE)
+                        .build();
+
+        mPopulator.onItemSelected(R.id.contextmenu_ask_gemini);
+
+        verify(mGlicKeyedService)
+                .invoke(eq(mTab), eq(GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_PAGE));
         watcher.assertExpected();
     }
 

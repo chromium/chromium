@@ -685,7 +685,9 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="From capture region hotkey"/>
   <int value="21" label="In-product help"/>
   <int value="22" label="User clicked an anchored contextual cue chip"/>
-  <int value="23" label="Context menu (Deprecated M157)"/>
+  <int value="23" label="(Obsolete) Context menu. Split in M158.">
+    Split into Context menu link (46), page (47) and text selection (48).
+  </int>
   <int value="24" label="Text selection nudge"/>
   <int value="25" label="Text selection widget"/>
   <int value="26" label="(Obsolete) Zero-state Auto-summarize"/>
@@ -1133,10 +1135,14 @@ chromium-metrics-reviews@google.com.
   <int value="90" label="Anchored contextual cue, attached, audio mode."/>
   <int value="91" label="Anchored contextual cue, detached, text mode."/>
   <int value="92" label="Anchored contextual cue, detached, audio mode."/>
-  <int value="93" label="Context menu, attached, text mode."/>
-  <int value="94" label="Context menu, attached, audio mode."/>
-  <int value="95" label="Context menu, detached, text mode."/>
-  <int value="96" label="Context menu, detached, audio mode."/>
+  <int value="93"
+      label="(Obsolete) Context menu, attached, text mode. Split in M158."/>
+  <int value="94"
+      label="(Obsolete) Context menu, attached, audio mode. Split in M158."/>
+  <int value="95"
+      label="(Obsolete) Context menu, detached, text mode. Split in M158."/>
+  <int value="96"
+      label="(Obsolete) Context menu, detached, audio mode. Split in M158."/>
   <int value="97" label="Text selection nudge, attached, text mode."/>
   <int value="98" label="Text selection nudge, attached, audio mode."/>
   <int value="99" label="Text selection nudge, detached, text mode."/>

@@ -123,6 +123,8 @@ enum InvocationSource {
   // User clicked an anchored contextual cue chip.
   [MinVersion=14] kAnchoredContextualCue = 22,
   // From the context menu.
+  // Deprecated. Split into kWebContentsContextMenuLink,
+  // kWebContentsContextMenuPage and kWebContentsContextMenuTextSelection.
   [MinVersion=15] kWebContentsContextMenu = 23,
   // User clicked on text selection nudge.
   [MinVersion=16] kTextSelectionNudge = 24,
@@ -173,12 +175,11 @@ enum InvocationSource {
   // User clicked "Ask Gemini" on a link in the context menu. Android only;
   // desktop has no link-specific item.
   [MinVersion=32] kWebContentsContextMenuLink = 46,
-  // User clicked "Ask Gemini" on the page in the context menu. On desktop,
-  // also clicks that don't attach the selection.
+  // User clicked "Ask Gemini" in the context menu with no text selected. On
+  // desktop, this includes clicks on a link.
   [MinVersion=32] kWebContentsContextMenuPage = 47,
   // User clicked "Ask Gemini" on selected text, from the context menu on
-  // desktop (when the selection is attached) or the text selection menu on
-  // Android.
+  // desktop or the text selection menu on Android.
   [MinVersion=32] kWebContentsContextMenuTextSelection = 48,
   // Invoked by the actor GeminiPanelTool.
   [MinVersion=33] kActorTool = 49,

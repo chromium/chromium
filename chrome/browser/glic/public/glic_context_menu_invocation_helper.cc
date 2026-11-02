@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/glic_enums.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
@@ -49,10 +50,6 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_context);
   if (glic_service) {
-    glic::GlicInvokeOptions options(
-        glic::Target(*tab),
-        glic::mojom::InvocationSource::kWebContentsContextMenu);
-
     std::u16string_view trimmed_selection =
         base::TrimWhitespace(selection_text, base::TRIM_ALL);
     bool is_page_eligible = false;
@@ -67,6 +64,14 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
               optimization_guide::PageContextEligibilityStatus::kEligible;
 #endif
     }
+
+    // Desktop has no link-specific item, so clicks without a selection report
+    // Page, even on a link.
+    glic::GlicInvokeOptions options(
+        glic::Target(*tab),
+        trimmed_selection.empty()
+            ? mojom::InvocationSource::kWebContentsContextMenuPage
+            : mojom::InvocationSource::kWebContentsContextMenuTextSelection);
 
     if (is_page_eligible) {
       auto context = glic::mojom::AdditionalContext::New();

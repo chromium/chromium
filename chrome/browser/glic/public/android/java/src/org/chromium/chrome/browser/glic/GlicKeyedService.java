@@ -40,7 +40,6 @@ public interface GlicKeyedService {
         GlicInvocationSource.NUDGE,
         GlicInvocationSource.THREE_DOTS_MENU,
         GlicInvocationSource.SHARED_IMAGE,
-        GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU,
         GlicInvocationSource.TOOLBAR_BUTTON,
         GlicInvocationSource.TAB_CONTEXT_MENU,
         GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_LINK,
@@ -56,7 +55,6 @@ public interface GlicKeyedService {
         int NUDGE = 6;
         int THREE_DOTS_MENU = 7;
         int SHARED_IMAGE = 13;
-        int WEB_CONTENTS_CONTEXT_MENU = 23;
         int TOOLBAR_BUTTON = 31;
         int TAB_CONTEXT_MENU = 41;
         int WEB_CONTENTS_CONTEXT_MENU_LINK = 46;

@@ -2137,6 +2137,10 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     invocation. This metric is split by {TabContext} to distinguish whether the
     user was on the New Tab Page or another tab when they clicked the entry
     point. Scope: {GlicProvider}.
+
+    From M158, the text selection menu records Context menu text selection
+    instead of Context menu, and the context menu's Ask Gemini items are also
+    recorded (Context menu link, Context menu page and User shared an image).
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
   <token key="TabContext">
@@ -2154,9 +2158,10 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     selection menu and Chrome attempts to send the selected text to Glic.
     Records true if Glic was successfully invoked with the selected text, and
     false if the target tab or the Glic service was unavailable, or if Glic
-    could not be opened. Pairs with Glic.EntryPoint.Click.{{TabContext}}
-    (WebContentsContextMenu bucket) to form a click to successful-send funnel
-    for the text selection entry point. Scope: {GlicProvider}.
+    could not be opened. Pairs with
+    Glic{GlicProvider}.EntryPoint.Click.{{TabContext}} (Context menu text
+    selection bucket) to form a click to successful-send funnel for the text
+    selection entry point. Scope: {GlicProvider}.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>

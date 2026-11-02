@@ -188,7 +188,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
             GURL url = mTab.getUrl();
             boolean isNtp = url != null && UrlUtilities.isNtpUrl(url);
             GlicMetrics.recordEntryPointClick(
-                    profile, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU, isNtp);
+                    profile, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION, isNtp);
             if (GlicContextMenuUtils.shouldSendSelectedText()) {
                 String text = GlicContextMenuUtils.sanitizeSelectedText(mSelectedText);
                 if (!text.isEmpty()) {
@@ -200,13 +200,13 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                                             ? null
                                             : webContents.getFocusedFrame(),
                                     text,
-                                    GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+                                    GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION);
                     GlicMetrics.recordSendSelectedTextSucceeded(profile, sent);
                     return sent;
                 }
             }
             return GlicKeyedServiceHandler.invoke(
-                    profile, mTab, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
+                    profile, mTab, GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION);
         }
         return false;
     }
