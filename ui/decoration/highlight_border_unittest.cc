@@ -103,7 +103,7 @@ TEST(HighlightBorderTest, ThicknessAdjustedToFitContent) {
   EXPECT_EQ(3, border.thickness());
 }
 
-TEST(HighlightBorderTest, PillShapedContent) {
+TEST(HighlightBorderTest, PillShaped) {
   HighlightBorder border(kHighlight, kBorder);
   const gfx::RoundedCornersF pill_radii(18);
 

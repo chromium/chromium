@@ -31,6 +31,18 @@
 
 namespace ui::decoration {
 
+namespace {
+
+gfx::RoundedCornersF InsetRoundedCorners(const gfx::RoundedCornersF& corners,
+                                         float inset) {
+  return gfx::RoundedCornersF(std::max(0.0f, corners.upper_left() - inset),
+                              std::max(0.0f, corners.upper_right() - inset),
+                              std::max(0.0f, corners.lower_right() - inset),
+                              std::max(0.0f, corners.lower_left() - inset));
+}
+
+}  // namespace
+
 // static
 gfx::Outsets ShadowGenerator::GetMargins(const gfx::ShadowValues& shadows) {
   return gfx::ShadowValue::GetMargin(shadows).ToOutsets();
@@ -140,17 +152,29 @@ void DrawHighlightBorder(gfx::Canvas* canvas,
   const gfx::RoundedCornersF scaled_radii =
       gfx::ScaleRoundedCorners(rounded_corners, dsf);
 
+  // When rasterizing a pill into a ninebox image, `bounds` includes a 1 DIP
+  // center aperture on top of `2 * radius`. Insetting the radii by each ring's
+  // centerline inset matches the radii Skia scales a pill to at its true size
+  // and keeps the 1 DIP center aperture a straight segment rather than an arc.
+  const gfx::RoundedCornersF outer_radii =
+      value.is_pill_shaped() ? InsetRoundedCorners(scaled_radii, half_thickness)
+                             : scaled_radii;
+  const gfx::RoundedCornersF inner_radii =
+      value.is_pill_shaped()
+          ? InsetRoundedCorners(scaled_radii, thickness + half_thickness)
+          : scaled_radii;
+
   gfx::RectF outer_border_bounds(pixel_bounds);
   outer_border_bounds.Inset(half_thickness);
   canvas->DrawPath(SkPath::RRect(gfx::RoundedRectFToSkRRect(outer_border_bounds,
-                                                            scaled_radii)),
+                                                            outer_radii)),
                    flags);
 
   gfx::RectF inner_border_bounds(pixel_bounds);
   inner_border_bounds.Inset(thickness + half_thickness);
   flags.setColor(value.highlight_color());
   canvas->DrawPath(SkPath::RRect(gfx::RoundedRectFToSkRRect(inner_border_bounds,
-                                                            scaled_radii)),
+                                                            inner_radii)),
                    flags);
 }
 
@@ -176,7 +200,8 @@ gfx::Insets HighlightBorderGenerator::GetNineboxApertureInsets(
 
   // For pill-shaped content, instead of allocating space separately for the
   // rings and rounded corners, both rings can be drawn within the space already
-  // occupied by the corner's curvature so the patches do not overlap in
+  // occupied by the corner's curvature (with their radii inset to stay
+  // concentric; see DrawHighlightBorder) so the patches do not overlap in
   // NinePatchLayer.
   return gfx::Insets::TLBR(
       std::max(ring_insets.top(), corner_insets.top()),
