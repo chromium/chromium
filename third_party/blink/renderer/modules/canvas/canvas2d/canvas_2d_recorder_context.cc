@@ -2767,7 +2767,9 @@ const Font* Canvas2DRecorderContext::AccessFont(HTMLCanvasElement* canvas) {
   if (canvas) {
     canvas->GetDocument().GetCanvasFontCache()->WillUseCurrentFont();
   }
-  return state.GetFont();
+  // Re-fetch `GetState()` as `setFont()` can synchronously execute script and
+  // reset the state stack.
+  return GetState().GetFont();
 }
 
 void Canvas2DRecorderContext::SnapshotStateForFilter() {
