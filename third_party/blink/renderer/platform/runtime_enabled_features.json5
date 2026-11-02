@@ -6369,8 +6369,9 @@
       // Splits a qualified name on its first colon, per the DOM "validate and
       // extract" algorithm, so any later colons are part of the local name.
       // See https://crbug.com/490251709
+      // Enabled in M159, safe to remove in M163.
       name: "SplitQualifiedNameOnFirstColon",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SplitTextNotCleanupDummySpans",
