@@ -1867,6 +1867,7 @@ interface Document : Node
     getter onfullscreenerror
     getter ongotpointercapture
     getter oninput
+    getter oninstallresult
     getter oninvalid
     getter onkeydown
     getter onkeypress
@@ -2089,6 +2090,7 @@ interface Document : Node
     setter onfullscreenerror
     setter ongotpointercapture
     setter oninput
+    setter oninstallresult
     setter oninvalid
     setter onkeydown
     setter onkeypress
@@ -3739,6 +3741,7 @@ interface HTMLElement : Element
     getter onformdata
     getter ongotpointercapture
     getter oninput
+    getter oninstallresult
     getter oninvalid
     getter onkeydown
     getter onkeypress
@@ -3879,6 +3882,7 @@ interface HTMLElement : Element
     setter onformdata
     setter ongotpointercapture
     setter oninput
+    setter oninstallresult
     setter oninvalid
     setter onkeydown
     setter onkeypress
@@ -4381,6 +4385,17 @@ interface HTMLInputElement : HTMLElement
     setter valueAsNumber
     setter webkitdirectory
     setter width
+interface HTMLInstallElement : HTMLElement
+    attribute @@toStringTag
+    getter invalidReason
+    getter isValid
+    getter manifest
+    getter manifestId
+    getter onvalidationstatuschange
+    method constructor
+    setter manifest
+    setter manifestId
+    setter onvalidationstatuschange
 interface HTMLLIElement : HTMLElement
     attribute @@toStringTag
     getter type
@@ -5512,6 +5527,10 @@ interface InputEvent : UIEvent
     getter isComposing
     method constructor
     method getTargetRanges
+interface InstallResultEvent : Event
+    attribute @@toStringTag
+    getter result
+    method constructor
 interface IntegrityViolationReportBody : ReportBody
     attribute @@toStringTag
     getter blockedURL
@@ -5791,6 +5810,7 @@ interface MathMLElement : Element
     getter onformdata
     getter ongotpointercapture
     getter oninput
+    getter oninstallresult
     getter oninvalid
     getter onkeydown
     getter onkeypress
@@ -5906,6 +5926,7 @@ interface MathMLElement : Element
     setter onformdata
     setter ongotpointercapture
     setter oninput
+    setter oninstallresult
     setter oninvalid
     setter onkeydown
     setter onkeypress
@@ -6499,6 +6520,7 @@ interface Navigator
     method getGamepads
     method getInstalledRelatedApps
     method getUserMedia
+    method install
     method javaEnabled
     method registerProtocolHandler
     method requestMIDIAccess
@@ -8130,6 +8152,7 @@ interface SVGElement : Element
     getter onformdata
     getter ongotpointercapture
     getter oninput
+    getter oninstallresult
     getter oninvalid
     getter onkeydown
     getter onkeypress
@@ -8247,6 +8270,7 @@ interface SVGElement : Element
     setter onformdata
     setter ongotpointercapture
     setter oninput
+    setter oninstallresult
     setter oninvalid
     setter onkeydown
     setter onkeypress
@@ -12797,6 +12821,7 @@ namespace console
     getter ongotpointercapture
     getter onhashchange
     getter oninput
+    getter oninstallresult
     getter oninvalid
     getter onkeydown
     getter onkeypress
@@ -13022,6 +13047,7 @@ namespace console
     setter ongotpointercapture
     setter onhashchange
     setter oninput
+    setter oninstallresult
     setter oninvalid
     setter onkeydown
     setter onkeypress

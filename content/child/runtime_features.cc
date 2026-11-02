@@ -518,7 +518,7 @@ void ResolveInvalidConfigurations() {
   // InstallElement cannot be enabled without the support of the browser
   // process.
   if (!base::FeatureList::IsEnabled(blink::features::kInstallElement)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsInstallElementEnabledByRuntimeFlag())
+    LOG_IF(WARNING, WebRuntimeFeatures::IsInstallElementEnabled())
         << "InstallElement cannot be enabled in this configuration. Use --"
         << switches::kEnableFeatures << "="
         << blink::features::kInstallElement.name << " instead.";
@@ -528,8 +528,7 @@ void ResolveInvalidConfigurations() {
   // WebAppInstallation cannot be enabled without the support of the browser
   // process.
   if (!base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
-    LOG_IF(WARNING,
-           WebRuntimeFeatures::IsWebAppInstallationEnabledByRuntimeFlag())
+    LOG_IF(WARNING, WebRuntimeFeatures::IsWebAppInstallationEnabled())
         << "WebAppInstallation cannot be enabled in this configuration. Use "
            "--"
         << switches::kEnableFeatures << "="
