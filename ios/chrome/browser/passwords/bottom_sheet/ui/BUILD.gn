@@ -13,6 +13,8 @@ source_set("ui") {
     "passkey_creation_bottom_sheet_consumer.h",
     "passkey_creation_bottom_sheet_view_controller.h",
     "passkey_creation_bottom_sheet_view_controller.mm",
+    "remote_actor_credential_bottom_sheet_view_controller.h",
+    "remote_actor_credential_bottom_sheet_view_controller.mm",
   ]
   deps = [
     "//base",

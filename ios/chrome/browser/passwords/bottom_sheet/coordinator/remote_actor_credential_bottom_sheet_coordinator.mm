@@ -9,6 +9,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -38,6 +39,9 @@
 
   // Mediator for the remote actor credential bottom sheet.
   RemoteActorCredentialBottomSheetMediator* _mediator;
+
+  // View controller for the remote actor credential bottom sheet.
+  RemoteActorCredentialBottomSheetViewController* _viewController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -103,9 +107,19 @@
                        taskID:_taskID];
   _mediator.delegate = self;
   [_mediator start];
+
+  _viewController =
+      [[RemoteActorCredentialBottomSheetViewController alloc] init];
+  [self.baseViewController presentViewController:_viewController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)stop {
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+  _viewController = nil;
+
   [_mediator disconnect];
   _mediator = nil;
 
