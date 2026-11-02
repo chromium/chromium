@@ -487,6 +487,8 @@ TEST_F(SecurityOriginTest, CanonicalizeHost) {
       {"💩", "xn--ls8h", true},
       {"[]", "[]", false},
       {"%yo", "%25yo", false},
+      // TODO(crbug.com/40256677): '*' should not be escaped.
+      {"sub*.example.test", "sub%2A.example.test", true},
   };
 
   for (const TestCase& test : cases) {
