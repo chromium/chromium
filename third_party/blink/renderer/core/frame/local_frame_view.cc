@@ -3978,7 +3978,7 @@ gfx::Rect LocalFrameView::ConvertToContainingEmbeddedContentView(
 
     // Add borders and padding etc.
     PhysicalRect rect(local_rect);
-    rect.offset += layout_object->PhysicalContentBoxRect().offset;
+    rect.offset += layout_object->ReplacedContentRect().offset;
     return ToPixelSnappedRect(layout_object->LocalToAbsoluteRect(rect));
   }
 
@@ -3996,7 +3996,7 @@ gfx::Rect LocalFrameView::ConvertFromContainingEmbeddedContentView(
 
       PhysicalRect local_rect =
           layout_object->AbsoluteToLocalRect(PhysicalRect(parent_rect));
-      local_rect.offset -= layout_object->PhysicalContentBoxRect().offset;
+      local_rect.offset -= layout_object->ReplacedContentRect().offset;
       return ToEnclosingRect(local_rect);
     }
 
@@ -4016,7 +4016,7 @@ PhysicalOffset LocalFrameView::ConvertToContainingEmbeddedContentView(
 
     PhysicalOffset point(local_offset);
     // Add borders and padding etc.
-    point += layout_object->PhysicalContentBoxRect().offset;
+    point += layout_object->ReplacedContentRect().offset;
     return layout_object->LocalToAbsolutePoint(point);
   }
 
@@ -4032,7 +4032,7 @@ gfx::PointF LocalFrameView::ConvertToContainingEmbeddedContentView(
 
     PhysicalOffset point = PhysicalOffset::FromPointFRound(local_point);
     // Add borders and padding etc.
-    point += layout_object->PhysicalContentBoxRect().offset;
+    point += layout_object->ReplacedContentRect().offset;
     return static_cast<gfx::PointF>(layout_object->LocalToAbsolutePoint(point));
   }
 
@@ -4055,7 +4055,7 @@ gfx::PointF LocalFrameView::ConvertFromContainingEmbeddedContentView(
 
     gfx::PointF point = layout_object->AbsoluteToLocalPoint(parent_point);
     // Subtract borders and padding etc.
-    point -= gfx::Vector2dF(layout_object->PhysicalContentBoxRect().offset);
+    point -= gfx::Vector2dF(layout_object->ReplacedContentRect().offset);
     return point;
   }
 

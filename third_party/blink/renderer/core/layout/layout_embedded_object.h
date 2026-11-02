@@ -58,6 +58,10 @@ class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
                      const PhysicalOffset& paint_offset) const final;
 
   void UpdateAfterLayout() final;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const ComputedStyle& new_style,
+                      const StyleChangeContext&) final;
 
   bool IsEmbeddedObject() const final {
     NOT_DESTROYED();

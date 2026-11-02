@@ -150,11 +150,13 @@ bool LayoutEmbeddedContent::NodeAtPointOverEmbeddedContentView(
                                             accumulated_offset, phase);
 
   // Check to see if we are really over the EmbeddedContentView itself (and not
-  // just in the border/padding area or the resizer area).
+  // just in the border/padding area, the part of the content box that the
+  // content does not cover, or the resizer area).
   if ((inside || hit_test_location.IsRectBasedTest()) && !had_result &&
       result.InnerNode() == GetNode()) {
     bool is_over_content_view =
         PhysicalContentBoxRect().Contains(result.LocalPoint()) &&
+        ReplacedContentRect().Contains(result.LocalPoint()) &&
         !result.IsOverResizer();
     result.SetIsOverEmbeddedContentView(is_over_content_view);
   }

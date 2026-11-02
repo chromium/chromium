@@ -327,7 +327,7 @@ void LayoutView::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
     auto* parent_doc_layout_object = GetFrame()->OwnerLayoutObject();
     if (parent_doc_layout_object) {
       transform_state.Move(
-          parent_doc_layout_object->PhysicalContentBoxRect().offset);
+          parent_doc_layout_object->ReplacedContentRect().offset);
       parent_doc_layout_object->MapLocalToAncestor(ancestor, transform_state,
                                                    mode);
     } else {
@@ -355,7 +355,7 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
                                                    mode);
 
       transform_state.Move(
-          parent_doc_layout_object->PhysicalContentBoxRect().offset);
+          parent_doc_layout_object->ReplacedContentRect().offset);
     } else {
       DCHECK(!ancestor);
       // Note that MapLocalToRemoteMainFrame is correct here because
@@ -430,7 +430,7 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
   const bool apply_viewport_clip =
       !visual_rect_flags.Has(VisualRectFlag::kSkipAncestorAndViewportClips);
 
-  Element* owner = GetDocument().LocalOwner();
+  HTMLFrameOwnerElement* owner = GetDocument().LocalOwner();
   if (!owner) {
     PhysicalRect rect = PhysicalRect::EnclosingRect(
         transform_state.LastPlanarQuad().BoundingBox());
@@ -486,7 +486,7 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
     return retval;
   }
 
-  if (LayoutBox* obj = owner->GetLayoutBox()) {
+  if (LayoutEmbeddedContent* obj = owner->GetLayoutEmbeddedContent()) {
     PhysicalRect rect = PhysicalRect::EnclosingRect(
         transform_state.LastPlanarQuad().BoundingBox());
     PhysicalRect view_rectangle = ViewRect();
@@ -506,10 +506,18 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
     // visible rect.
     rect.ExpandEdgesToPixelBoundaries();
 
-    // Adjust for frame border.
-    rect.Move(obj->PhysicalContentBoxRect().offset);
+    // Adjust for the position of the frame in its owner.
+    rect.Move(obj->ReplacedContentRect().offset);
     transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
 
+    // object-fit can make the frame of an embedded object extend past its
+    // content box, in which case the visual rect is clipped to it.
+    if (obj->IsEmbeddedObject() && obj != ancestor &&
+        !obj->MapContentsRectToBoxSpace(transform_state,
+                                        TransformState::kFlattenTransform,
+                                        *this, visual_rect_flags)) {
+      return false;
+    }
     return obj->MapToVisualRectInAncestorSpaceInternal(
         ancestor, transform_state, visual_rect_flags);
   }

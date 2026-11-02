@@ -81,7 +81,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
                       const ComputedStyle& new_style,
-                      const StyleChangeContext&) final;
+                      const StyleChangeContext&) override;
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
   CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const final;
