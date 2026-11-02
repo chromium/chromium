@@ -6,15 +6,19 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/unguessable_token.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 namespace {
@@ -39,6 +43,34 @@ NSString* const kExpectedLongDomain =
     @"very-long-subdomain-for-dynamic-type.example.com";
 
 }  // namespace
+
+// Fake delegate recording `ComposeboxMenuSharedTabsViewController` actions.
+@interface FakeComposeboxMenuSharedTabsDelegate
+    : NSObject <ComposeboxMenuSharedTabsViewControllerDelegate>
+
+// Identifier of the last tab removed via the view controller, if any.
+@property(nonatomic, readonly) std::optional<base::UnguessableToken>
+    removedInputItemIdentifier;
+
+@end
+
+@implementation FakeComposeboxMenuSharedTabsDelegate
+
+#pragma mark - ComposeboxMenuSharedTabsViewControllerDelegate
+
+- (void)composeboxMenuSharedTabsViewController:
+            (ComposeboxMenuSharedTabsViewController*)viewController
+                                     didTapURL:(const GURL&)url {
+}
+
+- (void)composeboxMenuSharedTabsViewController:
+            (ComposeboxMenuSharedTabsViewController*)viewController
+           didRemoveTabWithInputItemIdentifier:
+               (const base::UnguessableToken&)inputItemIdentifier {
+  _removedInputItemIdentifier = inputItemIdentifier;
+}
+
+@end
 
 class ComposeboxMenuSharedTabsViewControllerTest : public PlatformTest {
  protected:
@@ -187,4 +219,71 @@ TEST_F(ComposeboxMenuSharedTabsViewControllerTest,
           .height;
   EXPECT_GE(CGRectGetHeight(domain_label.bounds),
             required_domain_height - kHeightComparisonTolerance);
+}
+
+// Tests that the shared tabs collection view disables item selection so
+// double-tapping a row in VoiceOver does not leave it in a selected state.
+TEST_F(ComposeboxMenuSharedTabsViewControllerTest,
+       CollectionViewDisablesSelection) {
+  UICollectionView* collection_view = CollectionView();
+  ASSERT_TRUE(collection_view);
+
+  EXPECT_FALSE(collection_view.allowsSelection);
+}
+
+// Tests that invoking the Remove Tab accessibility custom action on a shared
+// tab cell removes the tab from the collection view and notifies the delegate.
+TEST_F(ComposeboxMenuSharedTabsViewControllerTest,
+       RemoveTabAccessibilityActionRemovesItemAndNotifiesDelegate) {
+  const base::UnguessableToken first_identifier =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken second_identifier =
+      base::UnguessableToken::Create();
+  ComposeboxMenuSharedTab* first_tab = [[ComposeboxMenuSharedTab alloc]
+              initWithURL:GURL("https://first.example.org")
+                    title:@"First Tab"
+      inputItemIdentifier:first_identifier
+                  favicon:nil];
+  ComposeboxMenuSharedTab* second_tab = [[ComposeboxMenuSharedTab alloc]
+              initWithURL:GURL("https://second.example.org")
+                    title:@"Second Tab"
+      inputItemIdentifier:second_identifier
+                  favicon:nil];
+  SetSharedTabs(@[ first_tab, second_tab ]);
+
+  FakeComposeboxMenuSharedTabsDelegate* delegate =
+      [[FakeComposeboxMenuSharedTabsDelegate alloc] init];
+  view_controller_.delegate = delegate;
+
+  UICollectionView* collection_view = CollectionView();
+  ASSERT_TRUE(collection_view);
+  [collection_view layoutIfNeeded];
+
+  UICollectionViewListCell* first_cell =
+      base::apple::ObjCCast<UICollectionViewListCell>([collection_view
+          cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
+  ASSERT_TRUE(first_cell);
+  EXPECT_TRUE(chrome_test_util::FindLabelWithText(first_cell, @"First Tab"));
+  ASSERT_EQ(first_cell.accessibilityCustomActions.count, 1u);
+  UIAccessibilityCustomAction* remove_action =
+      first_cell.accessibilityCustomActions[0];
+  ASSERT_NSEQ(remove_action.name,
+              l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_REMOVE_TAB));
+  ASSERT_TRUE(remove_action.actionHandler);
+
+  BOOL handled = remove_action.actionHandler(remove_action);
+
+  EXPECT_TRUE(handled);
+  EXPECT_EQ([collection_view numberOfItemsInSection:0], 1);
+  [collection_view layoutIfNeeded];
+  UICollectionViewListCell* remaining_cell =
+      base::apple::ObjCCast<UICollectionViewListCell>([collection_view
+          cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
+  ASSERT_TRUE(remaining_cell);
+  EXPECT_TRUE(
+      chrome_test_util::FindLabelWithText(remaining_cell, @"Second Tab"));
+  EXPECT_FALSE(
+      chrome_test_util::FindLabelWithText(remaining_cell, @"First Tab"));
+  ASSERT_TRUE(delegate.removedInputItemIdentifier.has_value());
+  EXPECT_EQ(delegate.removedInputItemIdentifier.value(), first_identifier);
 }
