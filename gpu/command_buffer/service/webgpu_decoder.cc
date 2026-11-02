@@ -8,6 +8,7 @@
 #include "ui/gl/buildflags.h"
 
 #if BUILDFLAG(USE_DAWN)
+#include "gpu/command_buffer/service/dawn_instance.h"
 #include "gpu/command_buffer/service/webgpu_decoder_impl.h"
 #endif
 
@@ -29,7 +30,8 @@ std::unique_ptr<WebGPUDecoder> WebGPUDecoder::Create(
   return CreateWebGPUDecoderImpl(
       client, command_buffer_service, shared_image_manager,
       std::move(memory_tracker), outputter, gpu_preferences,
-      std::move(shared_context_state), dawn_cache_options,
+      std::move(shared_context_state),
+      DawnInstance::CreateForWebGPU(gpu_preferences), dawn_cache_options,
       isolation_key_provider);
 #else
   NOTREACHED();

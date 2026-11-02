@@ -10,9 +10,9 @@
 
 #include <memory>
 
-namespace dawn::platform {
-class Platform;
-}  // namespace dawn::platform
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/service/dawn_platform.h"
 
 namespace gpu {
 
@@ -32,16 +32,46 @@ enum class SafetyLevel {
   kUnsafe,
 };
 
-class DawnInstance : public dawn::native::Instance {
+// Wraps a dawn::native::Instance and owns the DawnPlatform that is used by it.
+// The underlying Dawn instance may outlive this wrapper (e.g. via references
+// held by wgpu objects), so the platform is disconnected from the Dawn instance
+// before it is destroyed.
+class DawnInstance : public dawn::native::Instance,
+                     public base::RefCountedThreadSafe<DawnInstance> {
  public:
-  static std::unique_ptr<DawnInstance> Create(
-      dawn::platform::Platform* platform,
+  // Creates a DawnInstance configured for servicing WebGPU contexts. The
+  // safety level is derived from `gpu_preferences`.
+  static scoped_refptr<DawnInstance> CreateForWebGPU(
+      const GpuPreferences& gpu_preferences);
+
+  // Creates a DawnInstance configured for Graphite. Since access to this
+  // instance doesn't leave the GPU process, unsafe APIs are always allowed.
+  static scoped_refptr<DawnInstance> CreateForGraphite(
       const GpuPreferences& gpu_preferences,
-      SafetyLevel safety,
+      gl::ProgressReporter* progress_reporter,
       dawn::native::DawnInstanceDescriptor* dawn_instance_descriptor = nullptr);
 
+  DawnPlatform& platform() const { return *platform_; }
+
+  // The safety level that this instance was created with.
+  SafetyLevel safety_level() const { return safety_level_; }
+
  private:
-  using dawn::native::Instance::Instance;
+  friend class base::RefCountedThreadSafe<DawnInstance>;
+
+  static scoped_refptr<DawnInstance> Create(
+      std::unique_ptr<DawnPlatform> platform,
+      const GpuPreferences& gpu_preferences,
+      SafetyLevel safety,
+      dawn::native::DawnInstanceDescriptor* dawn_instance_descriptor);
+
+  DawnInstance(const WGPUInstanceDescriptor* desc,
+               std::unique_ptr<DawnPlatform> platform,
+               SafetyLevel safety_level);
+  ~DawnInstance();
+
+  const std::unique_ptr<DawnPlatform> platform_;
+  const SafetyLevel safety_level_;
 };
 
 }  // namespace webgpu

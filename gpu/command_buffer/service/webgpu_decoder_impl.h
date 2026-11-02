@@ -26,6 +26,7 @@ class Outputter;
 namespace webgpu {
 
 struct DawnCacheOptions;
+class DawnInstance;
 class WebGPUDecoder;
 
 GPU_GLES2_EXPORT std::unique_ptr<WebGPUDecoder> CreateWebGPUDecoderImpl(
@@ -36,6 +37,7 @@ GPU_GLES2_EXPORT std::unique_ptr<WebGPUDecoder> CreateWebGPUDecoderImpl(
     gles2::Outputter* outputter,
     const GpuPreferences& gpu_preferences,
     scoped_refptr<SharedContextState> shared_context_state,
+    scoped_refptr<DawnInstance> dawn_instance,
     const DawnCacheOptions& dawn_cache_options,
     IsolationKeyProvider* isolation_key_provider);
 

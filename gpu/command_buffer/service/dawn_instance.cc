@@ -6,7 +6,10 @@
 
 #include <dawn/webgpu_cpp.h>
 
+#include <utility>
+
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -21,9 +24,62 @@
 
 namespace gpu::webgpu {
 
+namespace {
+
+SafetyLevel GetWebGPUSafetyLevel(const GpuPreferences& gpu_preferences) {
+  if (gpu_preferences.enable_unsafe_webgpu) {
+    return SafetyLevel::kUnsafe;
+  }
+  if (gpu_preferences.enable_webgpu_developer_features ||
+      gpu_preferences.enable_webgpu_experimental_features) {
+    return SafetyLevel::kSafeExperimental;
+  }
+  return SafetyLevel::kSafe;
+}
+
+}  // namespace
+
+DawnInstance::DawnInstance(const WGPUInstanceDescriptor* desc,
+                           std::unique_ptr<DawnPlatform> platform,
+                           SafetyLevel safety_level)
+    : dawn::native::Instance(desc),
+      platform_(std::move(platform)),
+      safety_level_(safety_level) {
+  CHECK(platform_);
+}
+
+DawnInstance::~DawnInstance() {
+  // The underlying Dawn instance may outlive this wrapper, so make sure that it
+  // no longer references `platform_` which is destroyed with this wrapper.
+  DisconnectDawnPlatform();
+}
+
 // static
-std::unique_ptr<DawnInstance> DawnInstance::Create(
-    dawn::platform::Platform* platform,
+scoped_refptr<DawnInstance> DawnInstance::CreateForWebGPU(
+    const GpuPreferences& gpu_preferences) {
+  return Create(std::make_unique<DawnPlatform>(
+                    /*progress_reporter=*/nullptr,
+                    /*uma_prefix=*/"GPU.WebGPU.",
+                    /*record_cache_count_uma=*/false),
+                gpu_preferences, GetWebGPUSafetyLevel(gpu_preferences),
+                /*dawn_instance_descriptor=*/nullptr);
+}
+
+// static
+scoped_refptr<DawnInstance> DawnInstance::CreateForGraphite(
+    const GpuPreferences& gpu_preferences,
+    gl::ProgressReporter* progress_reporter,
+    dawn::native::DawnInstanceDescriptor* dawn_instance_descriptor) {
+  return Create(
+      std::make_unique<DawnPlatform>(progress_reporter,
+                                     /*uma_prefix=*/"GPU.GraphiteDawn.",
+                                     /*record_cache_count_uma=*/true),
+      gpu_preferences, SafetyLevel::kUnsafe, dawn_instance_descriptor);
+}
+
+// static
+scoped_refptr<DawnInstance> DawnInstance::Create(
+    std::unique_ptr<DawnPlatform> platform,
     const GpuPreferences& gpu_preferences,
     SafetyLevel safety,
     dawn::native::DawnInstanceDescriptor* dawn_instance_descriptor) {
@@ -103,7 +159,7 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
     dawn_instance_desc = *dawn_instance_descriptor;
   }
   dawn_instance_desc.nextInChain = &dawn_toggle_desc;
-  dawn_instance_desc.platform = platform;
+  dawn_instance_desc.platform = platform.get();
 
   std::string_view dawn_search_path_view = dawn_search_path;
   if (!dawn_search_path.empty()) {
@@ -121,8 +177,9 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
   instance_desc.requiredFeatureCount = kInstanceFeatures.size();
   instance_desc.requiredFeatures = kInstanceFeatures.data();
 
-  auto instance = std::make_unique<DawnInstance>(
-      reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
+  auto instance = base::WrapRefCounted(new DawnInstance(
+      reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc),
+      std::move(platform), safety));
 
   switch (gpu_preferences.enable_dawn_backend_validation) {
     case DawnBackendValidationLevel::kDisabled:
