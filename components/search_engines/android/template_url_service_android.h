@@ -12,6 +12,7 @@
 #include "components/search_engines/search_engine_settings_data_provider.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
 
 // Android wrapper of the TemplateUrlService which provides access from the Java
@@ -163,9 +164,9 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& template_url_list_obj);
 
-  // Creates a SearchEngineSettingsDataProvider and returns a raw pointer to it
-  // as an int64_t. The Java caller owns the instance and must close/destroy it.
-  int64_t CreateSettingsDataProvider(JNIEnv* env);
+  // Creates a SearchEngineSettingsDataProvider owned by the Java caller.
+  jni_zero::JniUniquePtr<search_engines::SearchEngineSettingsDataProvider>
+  CreateSettingsDataProvider(JNIEnv* env);
 
   // Get current default search engine.
   base::android::ScopedJavaLocalRef<jobject> GetDefaultSearchEngine(

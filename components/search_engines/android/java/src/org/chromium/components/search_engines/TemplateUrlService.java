@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -121,9 +122,10 @@ public class TemplateUrlService {
      */
     public SearchEngineSettingsDataProvider createSettingsDataProvider() {
         ThreadUtils.assertOnUiThread();
-        long nativeProvider =
-                TemplateUrlServiceJni.get()
-                        .createSettingsDataProvider(mNativeTemplateUrlServiceAndroid);
+        JniUniquePtr<SearchEngineSettingsDataProvider.NativeSearchEngineSettingsDataProvider>
+                nativeProvider =
+                        TemplateUrlServiceJni.get()
+                                .createSettingsDataProvider(mNativeTemplateUrlServiceAndroid);
         return new SearchEngineSettingsDataProvider(nativeProvider);
     }
 
@@ -747,7 +749,8 @@ public class TemplateUrlService {
 
         void getTemplateUrls(long nativeTemplateUrlServiceAndroid, List<TemplateUrl> templateUrls);
 
-        long createSettingsDataProvider(long nativeTemplateUrlServiceAndroid);
+        JniUniquePtr<SearchEngineSettingsDataProvider.NativeSearchEngineSettingsDataProvider>
+                createSettingsDataProvider(long nativeTemplateUrlServiceAndroid);
 
         TemplateUrl getDefaultSearchEngine(long nativeTemplateUrlServiceAndroid);
 

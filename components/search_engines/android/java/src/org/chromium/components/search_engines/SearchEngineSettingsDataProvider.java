@@ -5,12 +5,13 @@
 package org.chromium.components.search_engines;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
-import org.jni_zero.NativeClassQualifiedName;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -29,37 +30,37 @@ import java.util.List;
 @JNINamespace("search_engines")
 @NullMarked
 public class SearchEngineSettingsDataProvider implements AutoCloseable {
-    private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private long mNativeSearchEngineSettingsDataProvider;
+    @JniType("::search_engines::SearchEngineSettingsDataProvider")
+    interface NativeSearchEngineSettingsDataProvider extends JniTypeToken {}
 
-    /* package */ SearchEngineSettingsDataProvider(long nativeSearchEngineSettingsDataProvider) {
-        assert nativeSearchEngineSettingsDataProvider != 0;
-        mNativeSearchEngineSettingsDataProvider = nativeSearchEngineSettingsDataProvider;
+    private @Nullable JniUniquePtr<NativeSearchEngineSettingsDataProvider> mNativeProvider;
+
+    /* package */ SearchEngineSettingsDataProvider(
+            JniUniquePtr<NativeSearchEngineSettingsDataProvider> nativeProvider) {
+        mNativeProvider = nativeProvider;
     }
 
     @Override
     public void close() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeSearchEngineSettingsDataProvider == 0) return;
-        LifetimeAssert.destroy(mLifetimeAssert);
-        SearchEngineSettingsDataProviderJni.get().destroy(mNativeSearchEngineSettingsDataProvider);
-        mNativeSearchEngineSettingsDataProvider = 0;
+        if (mNativeProvider == null) return;
+        mNativeProvider.destroy();
+        mNativeProvider = null;
     }
 
     public PrepopulatedAndRecentlyVisitedTemplateURLs
             getPrepopulatedAndRecentlyVisitedTemplateURLs() {
         ThreadUtils.assertOnUiThread();
-        assert mNativeSearchEngineSettingsDataProvider != 0;
+        assert mNativeProvider != null;
         return SearchEngineSettingsDataProviderJni.get()
-                .getPrepopulatedAndRecentlyVisitedTemplateURLs(
-                        mNativeSearchEngineSettingsDataProvider);
+                .getPrepopulatedAndRecentlyVisitedTemplateURLs(mNativeProvider);
     }
 
     public List<TemplateUrl> getTemplateUrlsByCategory(@TemplateUrlCategory int category) {
         ThreadUtils.assertOnUiThread();
-        assert mNativeSearchEngineSettingsDataProvider != 0;
+        assert mNativeProvider != null;
         return SearchEngineSettingsDataProviderJni.get()
-                .getTemplateUrlsByCategory(mNativeSearchEngineSettingsDataProvider, category);
+                .getTemplateUrlsByCategory(mNativeProvider, category);
     }
 
     @SafeVarargs
@@ -70,7 +71,7 @@ public class SearchEngineSettingsDataProvider implements AutoCloseable {
 
     public void maybeRecordSettingsPageLoadMetrics(List<List<TemplateUrl>> displayedEngineLists) {
         ThreadUtils.assertOnUiThread();
-        assert mNativeSearchEngineSettingsDataProvider != 0;
+        assert mNativeProvider != null;
         int totalSize = 0;
         for (List<TemplateUrl> list : displayedEngineLists) {
             totalSize += list.size();
@@ -86,26 +87,20 @@ public class SearchEngineSettingsDataProvider implements AutoCloseable {
             }
         }
         SearchEngineSettingsDataProviderJni.get()
-                .maybeRecordSettingsPageLoadMetrics(mNativeSearchEngineSettingsDataProvider, ids);
+                .maybeRecordSettingsPageLoadMetrics(mNativeProvider, ids);
     }
 
     @NativeMethods
-    public interface Natives {
-        @NativeClassQualifiedName("search_engines::SearchEngineSettingsDataProvider")
-        void destroy(long nativeSearchEngineSettingsDataProvider);
-
-        @NativeClassQualifiedName("search_engines::SearchEngineSettingsDataProvider")
+    interface Natives {
         PrepopulatedAndRecentlyVisitedTemplateURLs getPrepopulatedAndRecentlyVisitedTemplateURLs(
-                long nativeSearchEngineSettingsDataProvider);
+                JniPtr<NativeSearchEngineSettingsDataProvider> self);
 
-        @NativeClassQualifiedName("search_engines::SearchEngineSettingsDataProvider")
         @JniType("std::vector<const TemplateURL*>")
         List<TemplateUrl> getTemplateUrlsByCategory(
-                long nativeSearchEngineSettingsDataProvider,
+                JniPtr<NativeSearchEngineSettingsDataProvider> self,
                 @JniType("search_engines::TemplateUrlCategory") int category);
 
-        @NativeClassQualifiedName("search_engines::SearchEngineSettingsDataProvider")
         void maybeRecordSettingsPageLoadMetrics(
-                long nativeSearchEngineSettingsDataProvider, long[] displayedEngineIds);
+                JniPtr<NativeSearchEngineSettingsDataProvider> self, long[] displayedEngineIds);
     }
 }

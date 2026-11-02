@@ -39,6 +39,7 @@
 #include "components/search_provider_logos/switches.h"
 #include "components/url_formatter/url_fixer.h"
 #include "net/base/url_util.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "url/android/gurl_android.h"
@@ -659,10 +660,10 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
   }
 }
 
-int64_t TemplateUrlServiceAndroid::CreateSettingsDataProvider(JNIEnv* env) {
-  return reinterpret_cast<int64_t>(
-      template_url_service_->CreateSearchEngineSettingsDataProvider()
-          .release());
+jni_zero::JniUniquePtr<search_engines::SearchEngineSettingsDataProvider>
+TemplateUrlServiceAndroid::CreateSettingsDataProvider(JNIEnv* env) {
+  return jni_zero::MakeUnique(
+      template_url_service_->CreateSearchEngineSettingsDataProvider());
 }
 
 base::android::ScopedJavaLocalRef<jobject>

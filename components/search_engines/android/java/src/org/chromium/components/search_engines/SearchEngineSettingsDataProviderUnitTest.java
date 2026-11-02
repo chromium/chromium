@@ -6,10 +6,12 @@ package org.chromium.components.search_engines;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,21 +36,23 @@ public class SearchEngineSettingsDataProviderUnitTest {
     @Mock private SearchEngineSettingsDataProvider.Natives mProviderJni;
 
     private TemplateUrlService mTemplateUrlService;
+    private JniUniquePtr<SearchEngineSettingsDataProvider.NativeSearchEngineSettingsDataProvider>
+            mNativeProvider;
 
     @Before
     public void setUp() {
         TemplateUrlServiceJni.setInstanceForTesting(mTemplateUrlServiceJni);
         SearchEngineSettingsDataProviderJni.setInstanceForTesting(mProviderJni);
+        mNativeProvider = spy(JniUniquePtr.createForTesting(NATIVE_PROVIDER_PTR));
         when(mTemplateUrlServiceJni.createSettingsDataProvider(NATIVE_SERVICE_PTR))
-                .thenReturn(NATIVE_PROVIDER_PTR);
+                .thenReturn(mNativeProvider);
         mTemplateUrlService = TemplateUrlService.create(NATIVE_SERVICE_PTR);
     }
 
     @Test
     public void testGetTemplateUrlsByCategoryAndClose() {
         TemplateUrl expectedUrl = mock(TemplateUrl.class);
-        when(mProviderJni.getTemplateUrlsByCategory(
-                        NATIVE_PROVIDER_PTR, TemplateUrlCategory.DEFAULT))
+        when(mProviderJni.getTemplateUrlsByCategory(mNativeProvider, TemplateUrlCategory.DEFAULT))
                 .thenReturn(List.of(expectedUrl));
 
         try (SearchEngineSettingsDataProvider provider =
@@ -62,15 +66,14 @@ public class SearchEngineSettingsDataProviderUnitTest {
             // Calling close() multiple times is idempotent and only destroys native once.
             provider.close();
         }
-
-        verify(mProviderJni, times(1)).destroy(NATIVE_PROVIDER_PTR);
+        verify(mNativeProvider, times(1)).destroy();
     }
 
     @Test
     public void testGetPrepopulatedAndRecentlyVisitedTemplateURLs() {
         PrepopulatedAndRecentlyVisitedTemplateURLs expected =
                 new PrepopulatedAndRecentlyVisitedTemplateURLs(List.of(), List.of());
-        when(mProviderJni.getPrepopulatedAndRecentlyVisitedTemplateURLs(NATIVE_PROVIDER_PTR))
+        when(mProviderJni.getPrepopulatedAndRecentlyVisitedTemplateURLs(mNativeProvider))
                 .thenReturn(expected);
 
         try (SearchEngineSettingsDataProvider provider =
@@ -92,6 +95,6 @@ public class SearchEngineSettingsDataProviderUnitTest {
         }
 
         verify(mProviderJni)
-                .maybeRecordSettingsPageLoadMetrics(NATIVE_PROVIDER_PTR, new long[] {11L, 22L});
+                .maybeRecordSettingsPageLoadMetrics(mNativeProvider, new long[] {11L, 22L});
     }
 }

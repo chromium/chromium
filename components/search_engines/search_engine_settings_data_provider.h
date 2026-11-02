@@ -233,8 +233,6 @@ class SearchEngineSettingsDataProvider {
   static template_url_starter_pack_data::StarterPackIdSet
   GetDisabledStarterPackIdsForAndroid();
 
-  void Destroy(JNIEnv* env);
-
   base::android::ScopedJavaLocalRef<jobject>
   GetPrepopulatedAndRecentlyVisitedTemplateURLs(JNIEnv* env) const;
 

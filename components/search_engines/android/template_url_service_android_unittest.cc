@@ -27,6 +27,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 class TemplateUrlServiceAndroidUnitTest
     : public LoadedTemplateURLServiceUnitTestBase {
@@ -280,13 +281,10 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, FilterUserSelectableTemplateUrls) {
 }
 
 TEST_F(TemplateUrlServiceAndroidUnitTest, CreateSettingsDataProvider) {
-  int64_t provider_ptr =
-      template_url_service_android().CreateSettingsDataProvider(env());
-  EXPECT_NE(provider_ptr, 0);
-  auto provider = base::WrapUnique(
-      reinterpret_cast<search_engines::SearchEngineSettingsDataProvider*>(
-          provider_ptr));
-  EXPECT_NE(provider, nullptr);
+  jni_zero::JniUniquePtr<search_engines::SearchEngineSettingsDataProvider>
+      provider =
+          template_url_service_android().CreateSettingsDataProvider(env());
+  EXPECT_NE(provider.get(), nullptr);
 }
 
 TEST_F(TemplateUrlServiceAndroidUnitTest, ActivateAndDeactivateSearchEngine) {

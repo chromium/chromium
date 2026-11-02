@@ -385,10 +385,6 @@ void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void SearchEngineSettingsDataProvider::Destroy(JNIEnv* env) {
-  delete this;
-}
-
 base::android::ScopedJavaLocalRef<jobject>
 SearchEngineSettingsDataProvider::GetPrepopulatedAndRecentlyVisitedTemplateURLs(
     JNIEnv* env) const {
