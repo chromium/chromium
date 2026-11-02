@@ -1521,11 +1521,22 @@ class PageContentProtoProviderBrowserTestMultiProcess
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/438250758): Test is flaky.
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
-                       DISABLED_AIPageContentMultipleCrossSiteFrames) {
-  LoadPage(https_server()->GetURL("a.com", "/iframe_cross_site.html"),
-           GetActionableAIPageContentOptions());
+                       AIPageContentMultipleCrossSiteFrames) {
+  LoadPage(https_server()->GetURL("a.com", "/iframe_cross_site.html"), nullptr);
+
+  for (size_t i = 0; i < 2; ++i) {
+    auto* sub_frame = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), i);
+    ASSERT_TRUE(sub_frame);
+
+    base::test::TestFuture<bool> future;
+    sub_frame->GetRenderWidgetHost()->InsertVisualStateCallback(
+        future.GetCallback());
+    ASSERT_TRUE(future.Wait())
+        << "Timeout waiting for subframe syncing with renderer";
+  }
+
+  LoadData(GetActionableAIPageContentOptions());
 
   const auto& root_node = ActionableContentRootNode();
   EXPECT_EQ(root_node.children_nodes().size(), 2);
