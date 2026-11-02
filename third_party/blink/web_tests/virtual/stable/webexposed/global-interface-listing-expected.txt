@@ -11760,6 +11760,7 @@ interface WebTransport
     getter anticipatedConcurrentIncomingBidirectionalStreams
     getter anticipatedConcurrentIncomingUnidirectionalStreams
     getter closed
+    getter congestionControl
     getter datagrams
     getter draining
     getter incomingBidirectionalStreams

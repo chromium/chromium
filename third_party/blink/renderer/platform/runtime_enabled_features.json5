@@ -7752,8 +7752,8 @@
     },
     {
       name: "WebTransportCongestionControl",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
+      base_feature: "WebTransportCongestionControlAPI",
     },
     {
       name: "WebTransportCreateStreamsBeforeReady",

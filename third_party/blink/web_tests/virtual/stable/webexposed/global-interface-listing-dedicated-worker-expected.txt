@@ -3769,6 +3769,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter anticipatedConcurrentIncomingBidirectionalStreams
 [Worker]     getter anticipatedConcurrentIncomingUnidirectionalStreams
 [Worker]     getter closed
+[Worker]     getter congestionControl
 [Worker]     getter datagrams
 [Worker]     getter draining
 [Worker]     getter incomingBidirectionalStreams
