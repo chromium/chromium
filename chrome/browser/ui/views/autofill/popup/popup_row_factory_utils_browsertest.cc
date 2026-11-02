@@ -91,6 +91,15 @@ Suggestion CreateFreeformFooter() {
   return suggestion;
 }
 
+Suggestion CreatePendingStateTrustedVaultErrorSuggestion() {
+  const std::u16string kMainText =
+      u"To use saved passwords on this device, verify it's you";
+  Suggestion suggestion(kMainText,
+                        SuggestionType::kPendingStateTrustedVaultError);
+  suggestion.icon = Suggestion::Icon::kGooglePasswordManager;
+  return suggestion;
+}
+
 Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
                                         SuggestionType type,
                                         std::vector<Suggestion> children) {
@@ -533,6 +542,21 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FreeformFooter) {
   CreateRowView(CreateFreeformFooter(),
                 /*selected_cell=*/std::nullopt,
+                /*filter_match=*/std::nullopt);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, PendingStateTrustedVaultError) {
+  CreateRowView(CreatePendingStateTrustedVaultErrorSuggestion(),
+                /*selected_cell=*/std::nullopt,
+                /*filter_match=*/std::nullopt);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest,
+                       PendingStateTrustedVaultErrorSelected) {
+  CreateRowView(CreatePendingStateTrustedVaultErrorSuggestion(),
+                /*selected_cell=*/PopupRowView::CellType::kContent,
                 /*filter_match=*/std::nullopt);
   ShowAndVerifyUi();
 }
