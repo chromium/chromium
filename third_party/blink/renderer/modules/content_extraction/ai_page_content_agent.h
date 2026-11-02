@@ -78,6 +78,7 @@ class MODULES_EXPORT AIPageContentAgent final
   // LocalFrameView::LifecycleNotificationObserver overrides.
   void DidFinishPostLifecycleSteps(const LocalFrameView&) override;
 
+  void ExtractPageContentForTest();
   String DumpContentNodeTreeForTest();
   String DumpContentNodeForTest(Node* node);
 

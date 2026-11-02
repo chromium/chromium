@@ -1,0 +1,112 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* Styles for the spreadsheet-like grid in apc-extraction.js. */
+
+body, html {
+  height: 100%;
+}
+html {
+  overflow: visible;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-size: 13px;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+#top-bar {
+  margin: 0;
+  overflow: hidden;
+  border-bottom: 1px solid #c4c7c5;
+  padding: 6px 6px 0;
+}
+#doc-title {
+  padding-bottom: 5px;
+  font-size: 15px;
+}
+#sheets-viewport {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+}
+.ritz.grid-container {
+  width: fit-content;
+  min-width: 100%;
+  overflow: visible;
+  background: #fff;
+}
+.waffle {
+  table-layout: fixed;
+  border-collapse: separate;
+  border-style: none;
+  border-spacing: 0;
+  width: 0;
+}
+.waffle td {
+  overflow: hidden;
+  border: 1px #c4c7c5 solid;
+  border-width: 0 1px 1px 0;
+  vertical-align: bottom;
+  line-height: inherit;
+  background-color: #fff;
+  padding: 0 3px;
+}
+.grid-minimized td {
+  font-size: 10pt;
+  font-family: Arial;
+  vertical-align: bottom;
+}
+.grid-minimized tbody th,
+.grid-minimized tbody tr {
+  height: 20px;
+}
+.grid-minimized tbody th > div {
+  overflow: hidden;
+  border-width: 0;
+  margin: 0;
+  padding: 0;
+  line-height: 20px;
+}
+.grid-minimized tbody th,
+.grid-minimized thead th {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  color: #444746;
+  font-size: .75rem;
+}
+.waffle th {
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  height: 23px;
+  border: solid 1px #c4c7c5;
+  border-width: 0 1px 1px 0;
+  overflow: hidden;
+  padding: 0;
+}
+th.row-header {
+  background-color: #efeded;
+  width: 45px;
+}
+col.row-header {
+  width: 46px;
+}
+.ritz .waffle .s0,
+.ritz .waffle .s1 {
+  text-align: left;
+  color: #000;
+  white-space: normal;
+  overflow: hidden;
+  padding: 2px 3px;
+}
+.ritz .waffle .s0 {
+  background-color: #999;
+}
+.ritz .waffle .s1 {
+  background-color: #fff;
+}

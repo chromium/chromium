@@ -19,6 +19,7 @@ class InternalsContentExtraction {
   STATIC_ONLY(InternalsContentExtraction);
 
  public:
+  static void extractPageContent(Internals&, Document*, ExceptionState&);
   static String dumpContentNodeTree(Internals&, Document*, ExceptionState&);
   static String dumpContentNode(Internals&, Node*, ExceptionState&);
 };

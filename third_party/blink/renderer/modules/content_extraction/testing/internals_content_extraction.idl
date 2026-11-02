@@ -5,6 +5,7 @@
 [
     ImplementedAs=InternalsContentExtraction
 ] partial interface Internals {
+    [RaisesException] undefined extractPageContent(Document document);
     [RaisesException] DOMString dumpContentNodeTree(Document document);
     [RaisesException] DOMString dumpContentNode(Node node);
 };

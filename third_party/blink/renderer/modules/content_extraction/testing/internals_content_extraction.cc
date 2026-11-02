@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/content_extraction/testing/internals_content_extraction.h"
 
+#include "base/check_deref.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -42,12 +43,24 @@ AIPageContentAgent* GetAIPageContentAgent(Document& document,
 
 }  // namespace
 
+void InternalsContentExtraction::extractPageContent(
+    Internals&,
+    Document* document,
+    ExceptionState& exception_state) {
+  AIPageContentAgent* agent =
+      GetAIPageContentAgent(CHECK_DEREF(document), exception_state);
+  if (!agent) {
+    return;
+  }
+  agent->ExtractPageContentForTest();
+}
+
 String InternalsContentExtraction::dumpContentNodeTree(
     Internals&,
     Document* document,
     ExceptionState& exception_state) {
-  DCHECK(document);
-  AIPageContentAgent* agent = GetAIPageContentAgent(*document, exception_state);
+  AIPageContentAgent* agent =
+      GetAIPageContentAgent(CHECK_DEREF(document), exception_state);
   if (!agent) {
     return String();
   }

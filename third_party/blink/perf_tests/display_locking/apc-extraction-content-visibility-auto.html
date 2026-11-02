@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+Measures annotated page content (APC) extraction on a spreadsheet-like page
+with 400k cells, where every table but the first is in a
+`content-visibility: auto` container. Off-screen containers skip style and
+layout during rendering, so this measures how much extra rendering work
+extraction does for them. Compare with apc-extraction-no-content-visibility.html,
+which has the same DOM without `content-visibility`. See b/575578550.
+-->
+<html>
+<head>
+<script src="../resources/runner.js"></script>
+<script src="resources/apc-extraction.js"></script>
+<link rel="stylesheet" href="resources/apc-extraction-sheet.css">
+<style>
+.waffle-chunk {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none auto 4200px;
+}
+</style>
+</head>
+<body>
+<div id="top-bar"><div id="doc-title">Lorem Ipsum (400k Cells)</div></div>
+<div id="sheets-viewport"></div>
+<script>
+runAPCExtractionTest(
+    'Measures APC extraction on a 400k cell table split into ' +
+    'content-visibility: auto chunks.');
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!--
+Baseline for apc-extraction-content-visibility-auto.html: the same 400k cell
+spreadsheet-like page without `content-visibility`, so rendering has already
+styled and laid out everything before annotated page content (APC) extraction
+runs. See b/575578550.
+-->
+<html>
+<head>
+<script src="../resources/runner.js"></script>
+<script src="resources/apc-extraction.js"></script>
+<link rel="stylesheet" href="resources/apc-extraction-sheet.css">
+</head>
+<body>
+<div id="top-bar"><div id="doc-title">Lorem Ipsum (400k Cells)</div></div>
+<div id="sheets-viewport"></div>
+<script>
+runAPCExtractionTest(
+    'Measures APC extraction on a 400k cell table without ' +
+    'content-visibility.');
+</script>
+</body>
+</html>

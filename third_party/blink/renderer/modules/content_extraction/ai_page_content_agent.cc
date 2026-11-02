@@ -2539,6 +2539,15 @@ void AIPageContentAgent::RunAutoBuildAfterDOMContentLoadedForTesting() {
 }
 #endif
 
+void AIPageContentAgent::ExtractPageContentForTest() {
+  mojom::blink::AIPageContentOptions options;
+  options.on_critical_path = true;
+  options.mode = mojom::blink::AIPageContentMode::kActionableElements;
+  auto content = GetAIPageContentInternal(options);
+  CHECK(content);
+  CHECK(content->root_node);
+}
+
 String AIPageContentAgent::DumpContentNodeTreeForTest() {
   mojom::blink::AIPageContentOptions options;
   options.on_critical_path = true;
