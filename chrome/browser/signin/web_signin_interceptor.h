@@ -163,7 +163,10 @@ class WebSigninInterceptor {
     kEnterpriseAcceptManagement,
     kProfileSwitchForced,
     kChromeSignin,
-    kEnterpriseOIDC
+    kEnterpriseOIDC,
+    // Used when displaying the Chrome Signin bubble directly (e.g. from the
+    // 3-dots menu) rather than from a web sign-in interception.
+    kChromeSigninNonIntercept,
   };
 
   // Delegate class responsible for showing the various interception UIs.
@@ -185,6 +188,10 @@ class WebSigninInterceptor {
       BubbleParameters(const BubbleParameters& copy);
       BubbleParameters& operator=(const BubbleParameters&);
       ~BubbleParameters();
+
+      // Returns true if the bubble is a Chrome Signin bubble (`kChromeSignin`
+      // or `kChromeSigninNonIntercept`).
+      bool IsChromeSignin() const;
 
       SigninInterceptionType interception_type;
       AccountInfo intercepted_account;

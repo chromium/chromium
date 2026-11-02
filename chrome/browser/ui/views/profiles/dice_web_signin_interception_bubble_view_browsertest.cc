@@ -119,7 +119,9 @@ class DiceWebSigninInterceptionBubbleBrowserTest
             .Build();
     AccountInfo primary_account;
     if (intercept_type !=
-        WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+            WebSigninInterceptor::SigninInterceptionType::kChromeSignin &&
+        intercept_type != WebSigninInterceptor::SigninInterceptionType::
+                              kChromeSigninNonIntercept) {
       primary_account =
           AccountInfo::Builder(GaiaId("ID2"), "test2@example.com")
               .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("ID2")))
@@ -846,6 +848,10 @@ const InterceptTypesParam kInterceptTypesTestParams[] = {
          IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SWITCH_PROFILE_TEXT},
     {.intercept_type =
          WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     .expected_avatar_text_id =
+         IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT},
+    {.intercept_type = WebSigninInterceptor::SigninInterceptionType::
+         kChromeSigninNonIntercept,
      .expected_avatar_text_id =
          IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT},
 };

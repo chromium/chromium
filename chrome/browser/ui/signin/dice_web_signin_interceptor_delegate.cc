@@ -358,6 +358,9 @@ std::string_view DiceWebSigninInterceptorDelegate::GetHistogramSuffix(
       return ".Switch";
     case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
       return ".ChromeSignin";
+    case WebSigninInterceptor::SigninInterceptionType::
+        kChromeSigninNonIntercept:
+      return ".ChromeSigninNonIntercept";
     case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
       return ".EnterpriseForced";
     case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
@@ -378,8 +381,7 @@ void DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
 
   // Record histogram for users with ClearOnExit set for the Chrome Signin
   // Bubble.
-  if (bubble_parameters.interception_type ==
-          WebSigninInterceptor::SigninInterceptionType::kChromeSignin &&
+  if (bubble_parameters.IsChromeSignin() &&
       ChromeSigninClientFactory::GetForProfile(profile)
           ->AreSigninCookiesDeletedOnExit()) {
     base::UmaHistogramEnumeration(

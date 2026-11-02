@@ -616,7 +616,7 @@ void SigninViewController::ShowChromeSigninBubble(
                      weak_ptr_factory_.GetWeakPtr(),
                      account.GetCoreAccountInfo(), access_point));
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
-      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      WebSigninInterceptor::SigninInterceptionType::kChromeSigninNonIntercept,
       /*intercepted_account=*/account,
       /*primary_account=*/AccountInfo());
   CreateInterceptionBubble(bubble_parameters,

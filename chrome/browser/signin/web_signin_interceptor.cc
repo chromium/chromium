@@ -48,5 +48,10 @@ WebSigninInterceptor::Delegate::BubbleParameters::operator=(
 
 WebSigninInterceptor::Delegate::BubbleParameters::~BubbleParameters() = default;
 
+bool WebSigninInterceptor::Delegate::BubbleParameters::IsChromeSignin() const {
+  return interception_type == SigninInterceptionType::kChromeSignin ||
+         interception_type == SigninInterceptionType::kChromeSigninNonIntercept;
+}
+
 WebSigninInterceptor::WebSigninInterceptor() = default;
 WebSigninInterceptor::~WebSigninInterceptor() = default;

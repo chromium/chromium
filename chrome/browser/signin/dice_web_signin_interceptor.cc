@@ -1145,6 +1145,9 @@ void DiceWebSigninInterceptor::MaybeShowSigninInterceptionBubble(
     case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
     case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
       break;
+    case WebSigninInterceptor::SigninInterceptionType::
+        kChromeSigninNonIntercept:
+      NOTREACHED() << "This interception type is not used by the interceptor";
   }
   state_->interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
       state_->web_contents_.get(), bubble_parameters, std::move(callback));
@@ -1440,6 +1443,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
                                 base::Unretained(this), info);
       break;
     case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
+    case WebSigninInterceptor::SigninInterceptionType::
+        kChromeSigninNonIntercept:
       NOTREACHED() << "This interception type should not happen in DICE";
   }
 
@@ -1492,6 +1497,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
         break;
       case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
+      case WebSigninInterceptor::SigninInterceptionType::
+          kChromeSigninNonIntercept:
         NOTREACHED() << "This interception type should not happen in DICE";
     }
   }

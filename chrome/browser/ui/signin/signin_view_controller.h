@@ -181,9 +181,10 @@ class SigninViewController {
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 
-  // Shows the Chrome Signin bubble (`SigninInterceptionType::kChromeSignin`)
-  // for `account`. The bubble is owned by `SigninViewController`; if accepted,
-  // it signs the user into Chrome using `access_point` and closes the bubble.
+  // Shows the Chrome Signin bubble
+  // (`SigninInterceptionType::kChromeSigninNonIntercept`) for `account`. The
+  // bubble is owned by `SigninViewController`; if accepted, it signs the user
+  // into Chrome using `access_point` and closes the bubble.
   void ShowChromeSigninBubble(const AccountInfo& account,
                               signin_metrics::AccessPoint access_point);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

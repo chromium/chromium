@@ -30,6 +30,8 @@ std::string SigninInterceptTypeToString(SigninInterceptionType type) {
       return "ProfileSwitch";
     case SigninInterceptionType::kChromeSignin:
       return "ChromeSignin";
+    case SigninInterceptionType::kChromeSigninNonIntercept:
+      return "ChromeSigninNonIntercept";
     default:
       NOTREACHED() << "Interception type not supported in the tests.";
   }
@@ -150,6 +152,15 @@ TEST_P(DiceWebSigninInterceptionBubbleViewSyncParamTest, HistogramTests) {
     expected_counts["Signin.InterceptResult.ChromeSignin.NoSync"] = 1;
   }
 
+  // Check ChromeSigninNonIntercept histograms.
+  if (type == SigninInterceptionType::kChromeSigninNonIntercept) {
+    histogram_tester.ExpectUniqueSample(
+        "Signin.InterceptResult.ChromeSigninNonIntercept", result, 1);
+    expected_counts["Signin.InterceptResult.ChromeSigninNonIntercept"] = 1;
+    expected_counts["Signin.InterceptResult.ChromeSigninNonIntercept.NoSync"] =
+        1;
+  }
+
   // Make sure no other histogram are recorded.
   EXPECT_THAT(
       histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult"),
@@ -164,6 +175,7 @@ INSTANTIATE_TEST_SUITE_P(
                          SigninInterceptionType::kMultiUser,
                          SigninInterceptionType::kProfileSwitch,
                          SigninInterceptionType::kChromeSignin,
+                         SigninInterceptionType::kChromeSigninNonIntercept,
                      }),
                      testing::ValuesIn({
                          SigninInterceptionResult::kAccepted,

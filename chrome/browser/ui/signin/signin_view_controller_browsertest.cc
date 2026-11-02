@@ -1578,6 +1578,14 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       account.GetAccountId());
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed",
                                       signin_metrics::AccessPoint::kMenu, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.InterceptResult.ChromeSigninNonIntercept",
+      SigninInterceptionResult::kAccepted, 1);
+  histogram_tester.ExpectTotalCount("Signin.InterceptResult.ChromeSignin", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSigninNonIntercept.ResponseTimeAccepted", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
@@ -1608,6 +1616,59 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.InterceptResult.ChromeSigninNonIntercept",
+      SigninInterceptionResult::kDeclined, 1);
+  histogram_tester.ExpectTotalCount("Signin.InterceptResult.ChromeSignin", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSigninNonIntercept.ResponseTimeDeclined", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowChromeSigninBubble_Dismissed) {
+  AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+  base::HistogramTester histogram_tester;
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  SigninViewController::From(browser())->ShowChromeSigninBubble(
+      account, signin_metrics::AccessPoint::kMenu);
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  AvatarToolbarButtonInterface* avatar_button =
+      browser_view->toolbar_button_provider()
+          ->GetAvatarToolbarButtonInterface();
+  ASSERT_TRUE(avatar_button);
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+  avatar_button->ButtonPressed(/*is_source_accelerator=*/false);
+  destroyed_waiter.Wait();
+
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.InterceptResult.ChromeSigninNonIntercept",
+      SigninInterceptionResult::kDismissed, 1);
+  histogram_tester.ExpectTotalCount("Signin.InterceptResult.ChromeSignin", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.BubbleDismissReason",
+      SigninInterceptionDismissReason::kIdentityPillPressed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.BubbleDismissReason.ChromeSigninNonIntercept",
+      SigninInterceptionDismissReason::kIdentityPillPressed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.BubbleDismissReason.ChromeSignin", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSigninNonIntercept.ResponseTimeDismissed", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Intercept.ChromeSignin.ResponseTimeDismissed", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
