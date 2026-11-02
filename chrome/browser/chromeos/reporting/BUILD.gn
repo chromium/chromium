@@ -6,8 +6,6 @@ assert(is_chromeos)
 
 static_library("reporting") {
   sources = [
-    "local_state_reporting_settings.cc",
-    "local_state_reporting_settings.h",
     "metric_default_utils.cc",
     "metric_default_utils.h",
     "metric_reporting_prefs.cc",
@@ -38,7 +36,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "local_state_reporting_settings_unittest.cc",
     "metric_reporting_prefs_unittest.cc",
     "usage_telemetry_periodic_collector_base_unittest.cc",
     "user_reporting_settings_unittest.cc",

@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/reporting/local_state_reporting_settings.h"
 #include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -40,8 +39,6 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/rate_limiter_slide_window.h"
-
-class PrefService;
 
 namespace network {
 class NetworkQualityTracker;
@@ -173,10 +170,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
     base::TimeDelta GetInitialUploadDelay() const;
   };
 
-  // `local_state` and `network_quality_tracker` must be non-null and must
-  // outlive the returned object.
+  // `network_quality_tracker` must be non-null and must outlive the returned
+  // object.
   static std::unique_ptr<MetricReportingManager> Create(
-      PrefService* local_state,
       ::network::NetworkQualityTracker* network_quality_tracker,
       policy::ManagedSessionService* managed_session_service);
 
@@ -199,10 +195,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   Delegate* delegate() const;
 
  protected:
-  // `local_state` and `network_quality_tracker` must be non-null and must
-  // outlive `this`.
+  // `network_quality_tracker` must be non-null and must outlive `this`.
   MetricReportingManager(
-      PrefService* local_state,
       ::network::NetworkQualityTracker* network_quality_tracker,
       std::unique_ptr<Delegate> delegate);
 
@@ -419,7 +413,6 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   const raw_ref<::network::NetworkQualityTracker> network_quality_tracker_;
 
   CrosReportingSettings reporting_settings_;
-  LocalStateReportingSettings local_state_reporting_settings_;
   std::unique_ptr<UserReportingSettings> user_reporting_settings_;
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -275,7 +275,6 @@ TEST_F(MetricReportingManagerTest, InitiallyDeprovisioned) {
   // Create a metric reporting manager.
   const auto metric_reporting_manager =
       test::MetricReportingManagerForTest::Create(
-          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
 
@@ -323,7 +322,6 @@ TEST_P(MetricReportingManagerInfoTest, Default) {
   // Create a metric reporting manager.
   const auto metric_reporting_manager =
       test::MetricReportingManagerForTest::Create(
-          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
 
@@ -470,7 +468,6 @@ TEST_P(MetricReportingManagerEventTest, Default) {
   // Create a metric reporting manager.
   const auto metric_reporting_manager =
       test::MetricReportingManagerForTest::Create(
-          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
   EXPECT_EQ(observer_manager_count, test_case.expected_count_before_login);
@@ -534,7 +531,6 @@ TEST_F(MetricReportingManagerEventTest,
   // Create a metric reporting manager.
   const auto metric_reporting_manager =
       test::MetricReportingManagerForTest::Create(
-          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
 
@@ -580,7 +576,6 @@ TEST_F(MetricReportingManagerEventTest,
   // Create a metric reporting manager.
   const auto metric_reporting_manager =
       test::MetricReportingManagerForTest::Create(
-          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
 
@@ -728,7 +723,6 @@ TEST_P(MetricReportingManagerPeripheralTest, Default) {
   // Create a metric reporting manager.
   const auto metric_reporting_manager =
       test::MetricReportingManagerForTest::Create(
-          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
 
@@ -781,7 +775,6 @@ TEST_F(MetricReportingManagerTelemetryTest, OneShotCollectorBootPerformance) {
   // Create a metric reporting manager.
   const auto metric_reporting_manager =
       test::MetricReportingManagerForTest::Create(
-          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
 
@@ -837,7 +830,6 @@ TEST_P(MetricReportingManagerTelemetryTest, Default) {
   // Create a metric reporting manager.
   const auto metric_reporting_manager =
       test::MetricReportingManagerForTest::Create(
-          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
 
@@ -978,7 +970,6 @@ TEST_F(KioskHeartbeatTelemetryTest, Init) {
   // Create a metric reporting manager.
   const auto metric_reporting_manager =
       test::MetricReportingManagerForTest::Create(
-          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
 
@@ -1098,7 +1089,6 @@ TEST_P(EventDrivenTelemetryCollectorPoolTest,
   // Create a metric reporting manager.
   const auto metric_reporting_manager =
       test::MetricReportingManagerForTest::Create(
-          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->network_quality_tracker(),
           std::move(mock_delegate_), nullptr);
 
