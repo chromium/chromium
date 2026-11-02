@@ -315,13 +315,10 @@ inline constexpr char kEnableBookmarkUndo[] = "enable-bookmark-undo";
 // Enables Domain Reliability Monitoring.
 inline constexpr char kEnableDomainReliability[] = "enable-domain-reliability";
 
-#if BUILDFLAG(IS_CHROMEOS)
 // If enabled, DevTools will allow creating pwa_handler, to enable executing
-// CDP methods (i.e. PWA.install) on browsers connected remotely
+// CDP methods (i.e. PWA.install) on browsers connected remotely.
 inline constexpr char kEnableDevToolsPwaHandler[] =
     "enable-devtools-pwa-handler";
-
-#endif
 
 // Enables logging for extension activity.
 inline constexpr char kEnableExtensionActivityLogging[] =
