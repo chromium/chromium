@@ -18,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/raster/playback_image_provider.h"
-#include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -101,22 +100,19 @@ enum class CanvasResourceProviderType {
 class PLATFORM_EXPORT Canvas2DResourceProvider
     : public CanvasResourceSharedImage::Client,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
-      public viz::ContextLostObserver,
       public BitmapGpuChannelLostObserver {
  public:
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
 
-  Canvas2DResourceProvider(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      bool is_accelerated,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      base::OnceClosure context_lost_callback = {});
+  Canvas2DResourceProvider(gfx::Size size,
+                           viz::SharedImageFormat format,
+                           SkAlphaType alpha_type,
+                           const gfx::ColorSpace& color_space,
+                           const gfx::HDRMetadata& hdr_metadata,
+                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+                           bool is_accelerated,
+                           gpu::SharedImageUsageSet shared_image_usage_flags);
   Canvas2DResourceProvider(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -194,9 +190,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
     return context_provider_wrapper_;
   }
 
-  // viz::ContextLostObserver implementation.
-  void OnContextLost() override;
-
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override;
 
@@ -237,13 +230,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
-
-  // `raster_context_provider_` holds a reference on the shared
-  // `RasterContextProvider`, to keep it alive until it notifies us after the
-  // GPU context is lost. Without this, instances of this class would not get
-  // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
-  // recreated.
-  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 
   bool resource_recycling_enabled_ = true;
   int num_inflight_resources_ = 0;

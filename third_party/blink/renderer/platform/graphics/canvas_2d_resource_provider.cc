@@ -20,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -29,8 +28,6 @@
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "components/viz/common/gpu/context_lost_observer.h"
-#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -134,7 +131,7 @@ void Canvas2DResourceProvider::SetResourceRecyclingEnabled(bool value) {
   }
 }
 
-void Canvas2DResourceProvider::OnContextLost() {
+void Canvas2DResourceProvider::OnGpuChannelLost() {
   if (notified_context_lost_) {
     return;
   }
@@ -147,10 +144,6 @@ void Canvas2DResourceProvider::OnContextLost() {
       base::BindOnce(&Canvas2DResourceProvider::NotifyGpuContextLostTask,
                      CreateWeakPtr()));
   notified_context_lost_ = true;
-}
-
-void Canvas2DResourceProvider::OnGpuChannelLost() {
-  OnContextLost();
 }
 
 bool Canvas2DResourceProvider::ShouldReplaceTargetBuffer(
@@ -467,19 +460,12 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     bool is_accelerated,
-    gpu::SharedImageUsageSet shared_image_usage_flags,
-    base::OnceClosure context_lost_callback)
+    gpu::SharedImageUsageSet shared_image_usage_flags)
     : is_accelerated_(is_accelerated),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      hdr_metadata_(hdr_metadata),
-      context_lost_callback_(std::move(context_lost_callback)) {
+      hdr_metadata_(hdr_metadata) {
   CHECK(context_provider_wrapper_);
   context_provider_wrapper_->AddObserver(this);
-  raster_context_provider_ = base::WrapRefCounted(
-      context_provider_wrapper_->ContextProvider().RasterContextProvider());
-  if (raster_context_provider_) {
-    raster_context_provider_->AddObserver(this);
-  }
 
   auto* sii =
       context_provider_wrapper_->ContextProvider().SharedImageInterface();
@@ -574,9 +560,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
 Canvas2DResourceProvider::~Canvas2DResourceProvider() {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
-  }
-  if (raster_context_provider_) {
-    raster_context_provider_->RemoveObserver(this);
   }
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);

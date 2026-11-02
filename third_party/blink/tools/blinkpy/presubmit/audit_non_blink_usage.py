@@ -1879,6 +1879,7 @@ _CONFIG = [
             'media::PIXEL_FORMAT_Y16',
             'media::VideoFrame',
             'media::VideoFrameSharedImageCache',
+            'viz::ContextLostObserver',
             'viz::RasterContextProvider',
             'viz::ReleaseCallback',
             'viz::SinglePlaneFormat',
@@ -1886,6 +1887,7 @@ _CONFIG = [
             'viz::TransferableResource',
             'wgpu::.+',
         ],
+        'inclass_allowed': ['base::SequencedTaskRunner::GetCurrentDefault'],
     },
     {
         'paths': [

@@ -27,6 +27,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -199,6 +200,9 @@ BaseRenderingContext2D::~BaseRenderingContext2D() {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
+  if (raster_context_provider_) {
+    raster_context_provider_->RemoveObserver(this);
+  }
 }
 
 const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {
@@ -236,6 +240,10 @@ void BaseRenderingContext2D::ResetBacking() {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
     context_provider_wrapper_.reset();
+  }
+  if (raster_context_provider_) {
+    raster_context_provider_->RemoveObserver(this);
+    raster_context_provider_.reset();
   }
   if (Host()) {
     Host()->UpdateMemoryUsage();
@@ -375,9 +383,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
   auto provider = std::make_unique<Canvas2DResourceProvider>(
       size, format, alpha_type, color_params_.GetGfxColorSpace(),
       color_params_.GetGfxHdrMetadata(), context_provider_wrapper,
-      is_accelerated, shared_image_usage_flags,
-      blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
-                      WrapWeakPersistent(Host())));
+      is_accelerated, shared_image_usage_flags);
   if (!provider->IsValid()) {
     return;
   }
@@ -422,10 +428,17 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
         context_provider_wrapper_->RemoveObserver(this);
         context_provider_wrapper_.reset();
       }
+      return;
     }
-    return;
+  } else {
+    CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   }
-  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
+
+  raster_context_provider_ = base::WrapRefCounted(
+      context_provider_wrapper_->ContextProvider().RasterContextProvider());
+  if (raster_context_provider_) {
+    raster_context_provider_->AddObserver(this);
+  }
 }
 
 void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
@@ -540,6 +553,29 @@ size_t BaseRenderingContext2D::GetSize() const {
 
 void BaseRenderingContext2D::OnContextDestroyed() {
   canvas_image_provider_ = nullptr;
+}
+
+void BaseRenderingContext2D::OnContextLost() {
+  if (!shared_image_provider_ ||
+      shared_image_provider_->notified_context_lost_) {
+    return;
+  }
+  shared_image_provider_->ClearUnusedResources();
+  // Notify the host that the GPU context was lost. The call is done in a
+  // separate task, so that the host can reset the backing if needed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      blink::BindOnce(&BaseRenderingContext2D::NotifyGpuContextLostTask,
+                      WrapWeakPersistent(this),
+                      shared_image_provider_->CreateWeakPtr()));
+  shared_image_provider_->notified_context_lost_ = true;
+}
+
+void BaseRenderingContext2D::NotifyGpuContextLostTask(
+    base::WeakPtr<Canvas2DResourceProvider> provider) {
+  if (provider && Host()) {
+    Host()->NotifyGpuContextLost();
+  }
 }
 
 CanvasImageProvider* BaseRenderingContext2D::GetOrCreateCanvasImageProvider() {

@@ -15,6 +15,8 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_record.h"
+#include "components/viz/common/gpu/context_lost_observer.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_fill_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
@@ -89,6 +91,7 @@ class MODULES_EXPORT BaseRenderingContext2D
       public FlushForImageObserver,
       public CanvasMemoryDumpClient,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
+      public viz::ContextLostObserver,
       public ScopedRasterTimer::Host {
  public:
   // MemoryManagedPaintRecorder::Client implementation.
@@ -412,6 +415,11 @@ class MODULES_EXPORT BaseRenderingContext2D
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
+  // viz::ContextLostObserver implementation.
+  void OnContextLost() override;
+
+  void NotifyGpuContextLostTask(base::WeakPtr<Canvas2DResourceProvider>);
+
   void RasterRecordToSharedImage(cc::PaintRecord last_recording);
   void RasterRecordToSoftwareSurface(cc::PaintRecord last_recording);
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
@@ -431,6 +439,12 @@ class MODULES_EXPORT BaseRenderingContext2D
   // surface may be called upon to rasterize a texture-backed resource, which
   // must be bound to a GPU context for the current thread.
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+  // `raster_context_provider_` holds a reference on the shared
+  // `RasterContextProvider`, to keep it alive until it notifies us after the
+  // GPU context is lost. Without this, instances of this class would not get
+  // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
+  // recreated.
+  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
   cc::PaintImage::Id sw_snapshot_paint_image_id_ = cc::PaintImage::kInvalidId;
   cc::PaintImage::ContentId sw_snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;
