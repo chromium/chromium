@@ -83,6 +83,9 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Accessors used by tests:
   std::u16string_view GetSiteSettingLabelForTesting() const;
+  views::Label* GetSiteSettingsLabelForTesting() {
+    return site_settings_label_;
+  }
   const views::View* site_settings_tooltip() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;

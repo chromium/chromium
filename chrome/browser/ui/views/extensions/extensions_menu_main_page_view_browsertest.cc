@@ -45,7 +45,9 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_switches.h"
 
@@ -1958,4 +1960,145 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestsSection(),
               testing::ElementsAre(extension->id()));
+}
+
+// Verifies that synchronously closing the extensions menu bubble from inside an
+// accessibility event callback (e.g. Windows UIA ::UiaRaiseAutomationEvent
+// spinning the COM STA message loop on kTextChanged and servicing
+// accDoDefaultAction on the toolbar button) while UpdateMainPage() is on the
+// stack does not cause a Use-After-Free.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsMenuMainPageViewBrowserTest,
+    CloseMenuSynchronouslyDuringSiteSettingsTextChangedEvent) {
+  InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  const GURL url_a =
+      embedded_test_server()->GetURL("a.com", "/extensions/test_file.html");
+  const GURL url_b =
+      embedded_test_server()->GetURL("b.com", "/extensions/test_file.html");
+  NavigateAndCommit(url_a);
+
+  ShowMenu();
+  ASSERT_TRUE(main_page());
+  views::Label* site_settings_label =
+      main_page()->GetSiteSettingsLabelForTesting();
+  ASSERT_TRUE(site_settings_label);
+
+  bool callback_invoked = false;
+  ExtensionsMenuCoordinator* coordinator =
+      extensions_container()->GetExtensionsMenuCoordinatorForTesting();
+  ASSERT_TRUE(coordinator);
+  ASSERT_TRUE(coordinator->IsShowing());
+
+  site_settings_label->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](ExtensionsMenuCoordinator* coordinator, bool* invoked,
+             const ui::AXPlatformNodeDelegate*, ax::mojom::Event event) {
+            if (event == ax::mojom::Event::kTextChanged) {
+              *invoked = true;
+              coordinator->Hide();
+            }
+          },
+          coordinator, &callback_invoked));
+
+  // Navigating to a different host updates the open menu's site settings label
+  // text ("Allow extensions on b.com"), firing kTextChanged and synchronously
+  // invoking coordinator->Hide() while UpdateMainPage() is on the stack.
+  NavigateAndCommit(url_b);
+
+  EXPECT_TRUE(callback_invoked);
+  EXPECT_FALSE(coordinator->IsShowing());
+
+  // Re-opening the menu immediately via ShowMenu() (before the asynchronous
+  // widget close task runs) must cleanly close the previous bubble without
+  // dangling raw_ptrs.
+  ShowMenu();
+  EXPECT_TRUE(coordinator->IsShowing());
+}
+
+// Verifies that synchronously closing the extensions menu bubble from inside a
+// kCheckedStateChanged accessibility event callback on the site settings toggle
+// or an extension entry toggle while UpdateMainPage() is on the stack does not
+// cause a Use-After-Free.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsMenuMainPageViewBrowserTest,
+    CloseMenuSynchronouslyDuringToggleAndMenuEntryUpdateEvents) {
+  InstallExtensionWithHostPermissions("Extension A", {"*://a.com/*"});
+  InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+
+  const GURL url_a =
+      embedded_test_server()->GetURL("a.com", "/extensions/test_file.html");
+  const GURL url_b =
+      embedded_test_server()->GetURL("b.com", "/extensions/test_file.html");
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url_b);
+  NavigateAndCommit(url_a);
+
+  // 1. Synchronous close on site_settings_toggle_ kCheckedStateChanged.
+  {
+    ShowMenu();
+    ASSERT_TRUE(main_page());
+    views::ToggleButton* site_settings_toggle =
+        main_page()->GetSiteSettingsToggleForTesting();
+    ASSERT_TRUE(site_settings_toggle);
+
+    bool callback_invoked = false;
+    ExtensionsMenuCoordinator* coordinator =
+        extensions_container()->GetExtensionsMenuCoordinatorForTesting();
+    ASSERT_TRUE(coordinator);
+    ASSERT_TRUE(coordinator->IsShowing());
+
+    site_settings_toggle->GetViewAccessibility()
+        .set_accessibility_events_callback(base::BindRepeating(
+            [](ExtensionsMenuCoordinator* coordinator, bool* invoked,
+               const ui::AXPlatformNodeDelegate*, ax::mojom::Event event) {
+              if (event == ax::mojom::Event::kCheckedStateChanged) {
+                *invoked = true;
+                coordinator->Hide();
+              }
+            },
+            coordinator, &callback_invoked));
+
+    // Navigating to url_b (where extensions are blocked) flips
+    // site_settings_toggle_ from on to off, firing kCheckedStateChanged.
+    NavigateAndCommit(url_b);
+
+    EXPECT_TRUE(callback_invoked);
+    EXPECT_FALSE(coordinator->IsShowing());
+  }
+
+  // 2. Synchronous close during menu_entry->Update() in UpdateMainPage()'s
+  // loop over menu entries.
+  {
+    ShowMenu();
+    ASSERT_TRUE(main_page());
+    std::vector<ExtensionsMenuEntryView*> entries = menu_entries();
+    ASSERT_EQ(entries.size(), 2u);
+
+    bool callback_invoked = false;
+    ExtensionsMenuCoordinator* coordinator =
+        extensions_container()->GetExtensionsMenuCoordinatorForTesting();
+    ASSERT_TRUE(coordinator);
+    ASSERT_TRUE(coordinator->IsShowing());
+
+    entries[0]
+        ->site_access_toggle_for_testing()
+        ->GetViewAccessibility()
+        .set_accessibility_events_callback(base::BindRepeating(
+            [](ExtensionsMenuCoordinator* coordinator, bool* invoked,
+               const ui::AXPlatformNodeDelegate*, ax::mojom::Event event) {
+              if (event == ax::mojom::Event::kCheckedStateChanged) {
+                *invoked = true;
+                coordinator->Hide();
+              }
+            },
+            coordinator, &callback_invoked));
+
+    // Navigating back to url_a flips the first menu entry's site access toggle
+    // from off to on inside the menu_entries loop in UpdateMainPage().
+    NavigateAndCommit(url_a);
+
+    EXPECT_TRUE(callback_invoked);
+    EXPECT_FALSE(coordinator->IsShowing());
+  }
 }
