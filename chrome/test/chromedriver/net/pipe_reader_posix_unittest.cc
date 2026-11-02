@@ -7,13 +7,13 @@
 #include <cmath>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
@@ -80,8 +80,8 @@ class PipeReaderPosixTest : public testing::Test {
       if (rv <= 0) {
         break;
       }
-      received_message.insert(received_message.end(), buffer->data(),
-                              UNSAFE_TODO(buffer->data() + rv));
+      received_message.append(
+          base::as_string_view(buffer->first(static_cast<size_t>(rv))));
     }
     return std::make_pair(std::move(received_message), rv);
   }
