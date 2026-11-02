@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>contextmenu pointerType on double-tap selection</title>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/gesture-util.js"></script>
+<style>
+#editable {
+  font-size: 40px;
+}
+</style>
+</head>
+<body>
+<p>This test checks that a contextmenu event fired by a double-tap text
+selection gesture reports a touch pointer type.</p>
+<div id="editable" contenteditable>This text is editable</div>
+<div id="log"></div>
+<script>
+function tapPositionOf(element) {
+  const rect = element.getBoundingClientRect();
+  return {x: rect.left + 5, y: rect.top + 5};
+}
+
+promise_test(async () => {
+  const target = document.getElementById('editable');
+  window.getSelection().empty();
+  await waitForCompositorCommit();
+  const events = [];
+  target.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    events.push(e);
+  });
+
+  const pos = tapPositionOf(target);
+  await doubleTapAt(pos.x, pos.y);
+
+  assert_equals(events.length, 1, 'contextmenu event count');
+  assert_equals(events[0].pointerType, 'touch', 'contextmenu pointerType');
+}, 'contextmenu from double-tap selection reports touch pointerType');
+</script>
+</body>
+</html>

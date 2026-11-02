@@ -120,6 +120,10 @@ BASE_FEATURE(kClipboardOnExtensionServiceWorker,
 BASE_FEATURE(kComputePressureRateObfuscationMitigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Reports a touch pointerType on contextmenu events dispatched from touch
+// selection menus (non-located context menus). Kill switch.
+BASE_FEATURE(kContextMenuPointerTypeForTouch, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrashReportingAPIMoreContextData,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
