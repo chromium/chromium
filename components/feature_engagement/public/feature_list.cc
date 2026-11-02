@@ -281,6 +281,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopRealboxContextualSearchFeature,
     &kIPHDesktopSharedHighlightingFeature,
     &kIPHDictationFeature,
+    &kIPHDictationHotkeyFeature,
     &kIPHDiscardRingFeature,
     &kIPHDownloadEsbPromoFeature,
     &kIPHExplicitBrowserSigninPreferenceRememberedFeature,
