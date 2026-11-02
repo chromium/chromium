@@ -4,13 +4,24 @@
 
 #include <Cocoa/Cocoa.h>
 
+#include <cmath>
+#include <optional>
+
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/browser/renderer_host/text_input_client_mac.h"
 #include "content/browser/site_per_process_browsertest.h"
+#include "content/common/input/synthetic_pinch_gesture_params.h"
+#include "content/common/input/synthetic_touchpad_pinch_gesture.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -18,14 +29,36 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/text_input_test_utils.h"
 #include "content/test/render_document_feature.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/ocmock_extensions.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
+
+// Swizzled in for -showDefinitionForAttributedString:atPoint: to record the
+// word, baseline point, and font size instead of showing the dictionary
+// overlay. The method is inherited from NSView, so this affects all views while
+// the swizzler is alive.
+@interface DictionaryOverlayWatcher : NSObject
+- (void)showDefinitionForAttributedString:(NSAttributedString*)attrString
+                                  atPoint:(NSPoint)textBaselineOrigin;
+@end
 
 namespace content {
 
 namespace {
+
+// Receives the word, baseline point, and font size (in points) that
+// DictionaryOverlayWatcher records. The point is in the view's coordinates
+// (DIPs, with a top-left origin).
+using DictionaryOverlayCallbackType =
+    base::OnceCallback<void(const std::string&, const gfx::PointF&, float)>;
+DictionaryOverlayCallbackType& DictionaryOverlayCallback() {
+  static base::NoDestructor<DictionaryOverlayCallbackType> callback;
+  return *callback;
+}
 
 // Helper class for TextInputClientMac.
 class TextInputClientMacHelper {
@@ -149,24 +182,74 @@ class SitePerProcessMacHighDPIBrowserTest
     SitePerProcessMacBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
   }
+
+  // Loads a page with a cross-site child frame that's offset from the root
+  // frame's origin, focuses the child frame, and returns it.
+  RenderFrameHostImpl* LoadAndFocusOffsetCrossSiteChildFrame() {
+    EXPECT_TRUE(NavigateToURL(
+        shell(), embedded_test_server()->GetURL(
+                     "/frame_tree/page_with_positioned_nested_frames.html")));
+    FrameTreeNode* child =
+        web_contents()->GetPrimaryFrameTree().root()->child_at(0);
+    EXPECT_TRUE(NavigateToURLFromRenderer(
+        child, embedded_test_server()->GetURL("b.com", "/title1.html")));
+    RenderFrameHostImpl* child_rfh = child->current_frame_host();
+    EXPECT_TRUE(child_rfh->GetView()->IsRenderWidgetHostViewChildFrame());
+    WaitForHitTestData(child_rfh);
+    web_contents()->GetPrimaryFrameTree().SetFocusedFrame(
+        child, web_contents()->GetSiteInstance()->group());
+    return child_rfh;
+  }
+
+  // Returns the origin of the child frame's content box in the root frame.
+  gfx::PointF ChildFrameContentOrigin() {
+    const EvalJsResult origin = EvalJs(shell(), R"(
+        (() => {
+          const iframe = document.querySelector('iframe');
+          const rect = iframe.getBoundingClientRect();
+          return [rect.left + iframe.clientLeft, rect.top + iframe.clientTop];
+        })())");
+    const base::ListValue& values = origin.ExtractList();
+    return gfx::PointF(values[0].GetDouble(), values[1].GetDouble());
+  }
+
+  // Pinch-zooms the root frame by `scale` around `child_rfh`'s origin and waits
+  // for `child_rfh`'s transform to the root view to reflect it.
+  void PinchZoomRootFrame(float scale, RenderFrameHostImpl* child_rfh) {
+    SyntheticPinchGestureParams params;
+    params.anchor = ChildFrameContentOrigin();
+    params.scale_factor = scale;
+    RenderWidgetHostImpl* host = web_contents()
+                                     ->GetPrimaryFrameTree()
+                                     .root()
+                                     ->current_frame_host()
+                                     ->GetRenderWidgetHost();
+    InputEventAckWaiter ack_waiter(
+        host, blink::WebInputEvent::Type::kGesturePinchEnd);
+    host->QueueSyntheticGesture(
+        std::make_unique<SyntheticTouchpadPinchGesture>(params),
+        base::DoNothing());
+    ack_waiter.Wait();
+
+    RenderWidgetHostViewBase* child_view = child_rfh->GetView();
+    EXPECT_TRUE(base::test::RunUntil([&] {
+      gfx::Transform to_root;
+      if (!child_view->GetTransformToViewCoordSpace(child_view->GetRootView(),
+                                                    &to_root)) {
+        return false;
+      }
+      const std::optional<gfx::Vector2dF> transform_scale =
+          gfx::TryComputeTransform2dScaleComponents(to_root);
+      return transform_scale && std::abs(transform_scale->y() - scale) < 0.01f;
+    }));
+  }
 };
 
 // Verifies that the first rect of a range in a cross-site child frame is
 // transformed from the child frame's coordinates to the root frame's.
 IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
                        GetFirstRectForRangeChildFrame) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "/frame_tree/page_with_positioned_nested_frames.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* child =
-      web_contents()->GetPrimaryFrameTree().root()->child_at(0);
-  EXPECT_TRUE(NavigateToURLFromRenderer(
-      child, embedded_test_server()->GetURL("b.com", "/title1.html")));
-  RenderFrameHostImpl* child_rfh = child->current_frame_host();
-  ASSERT_TRUE(child_rfh->GetView()->IsRenderWidgetHostViewChildFrame());
-  WaitForHitTestData(child_rfh);
-  web_contents()->GetPrimaryFrameTree().SetFocusedFrame(
-      child, web_contents()->GetSiteInstance()->group());
+  RenderFrameHostImpl* child_rfh = LoadAndFocusOffsetCrossSiteChildFrame();
 
   base::test::TestFuture<gfx::Rect> future;
   TextInputClientMac::GetInstance()->AsyncGetFirstRectForRange(
@@ -177,16 +260,73 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
 
   // In the root frame, the text starts at the child frame's content edge plus
   // the text's left edge in the child frame.
-  const double frame_left = EvalJs(shell(), R"(
-      (() => {
-        const iframe = document.querySelector('iframe');
-        return iframe.getBoundingClientRect().left + iframe.clientLeft;
-      })())")
-                                .ExtractDouble();
   const double text_left =
       EvalJs(child_rfh, "document.body.getBoundingClientRect().left")
           .ExtractDouble();
-  EXPECT_NEAR(rect_left, frame_left + text_left, 1);
+  EXPECT_NEAR(rect_left, ChildFrameContentOrigin().x() + text_left, 1);
+}
+
+// Verifies that the dictionary overlay for a word in a cross-site child frame
+// is shown at the word's baseline in the root view.
+IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
+                       LookUpDictionaryOverlayChildFrame) {
+  RenderFrameHostImpl* child_rfh = LoadAndFocusOffsetCrossSiteChildFrame();
+
+  base::apple::ScopedObjCClassSwizzler swizzler(
+      GetRenderWidgetHostViewCocoaClassForTesting(),
+      [DictionaryOverlayWatcher class],
+      @selector(showDefinitionForAttributedString:atPoint:));
+  base::test::TestFuture<const std::string&, const gfx::PointF&, float> future;
+  DictionaryOverlayCallback() = future.GetCallback();
+  // Look up "This", the first word in the child frame.
+  AskForLookUpDictionaryForRange(web_contents()->GetRenderWidgetHostView(),
+                                 gfx::Range(0, 4));
+  EXPECT_EQ(future.Get<0>(), "This");
+  const gfx::PointF& baseline = future.Get<1>();
+
+  const gfx::PointF frame_origin = ChildFrameContentOrigin();
+  const EvalJsResult word_bounds = EvalJs(child_rfh, R"(
+      (() => {
+        const range = document.createRange();
+        range.setStart(document.body.firstChild, 0);
+        range.setEnd(document.body.firstChild, 4);
+        const rect = range.getBoundingClientRect();
+        return [rect.left, rect.top, rect.bottom];
+      })())");
+  const base::ListValue& word = word_bounds.ExtractList();
+
+  // The baseline should start at the word's left edge. Its vertical position
+  // depends on the font, so just verify that it's between the word's top and
+  // bottom.
+  EXPECT_NEAR(baseline.x(), frame_origin.x() + word[0].GetDouble(), 1);
+  EXPECT_GE(baseline.y(), frame_origin.y() + word[1].GetDouble());
+  EXPECT_LE(baseline.y(), frame_origin.y() + word[2].GetDouble());
+}
+
+// Verifies that the dictionary overlay's font for a word in a cross-site child
+// frame is scaled along with the child frame when the root frame is
+// pinch-zoomed.
+IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
+                       LookUpDictionaryOverlayChildFramePinchZoomed) {
+  RenderFrameHostImpl* child_rfh = LoadAndFocusOffsetCrossSiteChildFrame();
+  constexpr float kPageScale = 2;
+  PinchZoomRootFrame(kPageScale, child_rfh);
+
+  base::apple::ScopedObjCClassSwizzler swizzler(
+      GetRenderWidgetHostViewCocoaClassForTesting(),
+      [DictionaryOverlayWatcher class],
+      @selector(showDefinitionForAttributedString:atPoint:));
+  base::test::TestFuture<const std::string&, const gfx::PointF&, float> future;
+  DictionaryOverlayCallback() = future.GetCallback();
+  // Look up "This", the first word in the child frame.
+  AskForLookUpDictionaryForRange(web_contents()->GetRenderWidgetHostView(),
+                                 gfx::Range(0, 4));
+  EXPECT_EQ(future.Get<0>(), "This");
+
+  const double font_size =
+      EvalJs(child_rfh, "parseFloat(getComputedStyle(document.body).fontSize)")
+          .ExtractDouble();
+  EXPECT_NEAR(future.Get<2>(), font_size * kPageScale, 0.5);
 }
 
 // Ensure that the RWHVCF forwards wheel events with phase ending information.
@@ -404,3 +544,25 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessMacHighDPIBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 }  // namespace content
+
+@implementation DictionaryOverlayWatcher
+
+- (void)showDefinitionForAttributedString:(NSAttributedString*)attrString
+                                  atPoint:(NSPoint)textBaselineOrigin {
+  // `self` is the RenderWidgetHostViewCocoa. Flip `textBaselineOrigin` from
+  // AppKit's bottom-left origin to the view's top-left origin.
+  NSView* view = base::apple::ObjCCastStrict<NSView>(self);
+  NSFont* font = [attrString attribute:NSFontAttributeName
+                               atIndex:0
+                        effectiveRange:nullptr];
+  auto& callback = content::DictionaryOverlayCallback();
+  if (callback) {
+    std::move(callback).Run(
+        base::SysNSStringToUTF8(attrString.string),
+        gfx::PointF(textBaselineOrigin.x,
+                    NSHeight(view.frame) - textBaselineOrigin.y),
+        static_cast<float>(font.pointSize));
+  }
+}
+
+@end

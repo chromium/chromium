@@ -90,6 +90,9 @@
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/menus/cocoa/text_services_context_menu.h"
@@ -2763,19 +2766,32 @@ void RenderWidgetHostViewMac::OnGotStringForDictionaryOverlay(
     // https://crbug.com/737032
     auto* widget_host = content::RenderWidgetHost::FromID(
         target_widget_process_id, target_widget_routing_id);
-    gfx::Point updated_baseline_point = baseline_point_in_layout_space;
-    if (widget_host) {
-      if (auto* rwhv = widget_host->GetView()) {
-        updated_baseline_point = rwhv->TransformPointToRootCoordSpace(
-            baseline_point_in_layout_space);
+    // Layout space is physical pixels, but the transform below and ns_view_
+    // expect DIPs. Scale to DIPs before transforming.
+    gfx::PointF baseline_point =
+        gfx::ScalePoint(gfx::PointF(baseline_point_in_layout_space),
+                        1.f / GetDeviceScaleFactor());
+    // Values from an out-of-process iframe are in the iframe's own coordinates,
+    // which don't include its position or scale in the root view (such as from
+    // a pinch-zoom), so convert them to the root view's coordinates here.
+    RenderWidgetHostViewBase* target_view =
+        widget_host ? RenderWidgetHostImpl::From(widget_host)->GetView()
+                    : nullptr;
+    gfx::Transform to_root;
+    if (target_view &&
+        target_view->GetTransformToViewCoordSpace(this, &to_root)) {
+      baseline_point = to_root.MapPoint(baseline_point);
+      std::optional<gfx::Vector2dF> scale =
+          gfx::TryComputeTransform2dScaleComponents(to_root);
+      if (scale && scale->y() > 0) {
+        for (auto& attribute : attributed_string->attributes) {
+          attribute->font_point_size *= scale->y();
+        }
       }
     }
-    // Layout space is physical pixels. Scale
-    // it to get DIPs, which is what ns_view_ expects.
-    updated_baseline_point = gfx::ScaleToRoundedPoint(
-        updated_baseline_point, 1.f / GetDeviceScaleFactor());
+
     ns_view_->ShowDictionaryOverlay(std::move(attributed_string),
-                                    updated_baseline_point);
+                                    gfx::ToRoundedPoint(baseline_point));
   }
 }
 
