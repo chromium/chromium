@@ -150,6 +150,40 @@ public class TabStripSnapshotterTest {
         assertEquals(8, mTokenList.size());
     }
 
+    @Test
+    public void testModelChangeInvalidatesEqualScrollToken() {
+        ModelList modelList = new ModelList();
+        PropertyModel propertyModel =
+                makePropertyModel(
+                        mTabFaviconFetcherA, /* isSelected= */ false, /* isFetched= */ false);
+        modelList.add(new ListItem(/* type= */ 0, propertyModel));
+        TabStripSnapshotter tabStripSnapshotter =
+                new TabStripSnapshotter(this::onModelTokenChange, modelList, mRecyclerView);
+        assertEquals(1, mTokenList.size());
+        Object initialToken = mTokenList.get(0);
+
+        // Scrolling away and back without any model change yields an equal token.
+        mRecyclerView.scrollBy(ITEM_WIDTH, 0);
+        settleScroll();
+        assertEquals(2, mTokenList.size());
+        assertNotEquals(initialToken, mTokenList.get(1));
+        mRecyclerView.scrollBy(-ITEM_WIDTH, 0);
+        assertEquals(0, mRecyclerView.computeHorizontalScrollOffset());
+        settleScroll();
+        assertEquals(3, mTokenList.size());
+        assertEquals(initialToken, mTokenList.get(2));
+
+        // A model change bumps the version, so the token at the same scroll offset differs.
+        propertyModel.set(TabProperties.IS_SELECTED, true);
+        assertEquals(4, mTokenList.size());
+        settleScroll();
+        assertEquals(5, mTokenList.size());
+        assertEquals(0, mRecyclerView.computeHorizontalScrollOffset());
+        assertNotEquals(initialToken, mTokenList.get(4));
+
+        tabStripSnapshotter.destroy();
+    }
+
     /** Creates {@link #ITEM_COUNT} fixed-width items. */
     private static class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Override

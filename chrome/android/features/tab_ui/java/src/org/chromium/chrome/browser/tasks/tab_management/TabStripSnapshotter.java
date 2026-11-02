@@ -10,15 +10,10 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListPropertyChangeFilter;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -39,70 +34,36 @@ public class TabStripSnapshotter {
                     TabProperties.IS_SELECTED);
 
     /**
-     * A token that contains an ordered list of tuples for each tab in the tab strip. Should be
-     * compared against other snapshot tokens with {@link Object#equals(Object)}.
+     * A token that contains the model version and the scroll offset. Should be compared against
+     * other snapshot tokens with {@link Object#equals(Object)}.
      */
     private static class TabStripSnapshotToken {
+        private final int mModelVersion;
         private final int mScrollX;
-        private final List<TabStripItemSnapshot> mList;
 
-        /* package */ TabStripSnapshotToken(ModelList modelList, int scrollX) {
+        /* package */ TabStripSnapshotToken(int modelVersion, int scrollX) {
+            mModelVersion = modelVersion;
             mScrollX = scrollX;
-            mList = new ArrayList<>(modelList.size());
-            for (int i = 0; i < modelList.size(); i++) {
-                ListItem listItem = modelList.get(i);
-                TabStripItemSnapshot itemSnapshot = new TabStripItemSnapshot(listItem.model);
-                mList.add(itemSnapshot);
-            }
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(mList, mScrollX);
+            return Objects.hash(mModelVersion, mScrollX);
         }
 
         @Override
         public boolean equals(@Nullable Object obj) {
             return (obj instanceof TabStripSnapshotToken other)
-                    && mScrollX == other.mScrollX
-                    && Objects.equals(mList, other.mList);
-        }
-    }
-
-    /** Simple tuple to hold all relevant fields for a single tab item. */
-    private static class TabStripItemSnapshot {
-        public final @Nullable TabFaviconFetcher mTabFaviconFetcher;
-        public final boolean mFaviconFetched;
-        public final boolean mIsSelected;
-
-        /**
-         * @param propertyModel The model that holds properties about the UI for a single tab.
-         */
-        public TabStripItemSnapshot(PropertyModel propertyModel) {
-            mTabFaviconFetcher = propertyModel.get(TabProperties.FAVICON_FETCHER);
-            mFaviconFetched = propertyModel.get(TabProperties.FAVICON_FETCHED);
-            mIsSelected = propertyModel.get(TabProperties.IS_SELECTED);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(mTabFaviconFetcher, mFaviconFetched, mIsSelected);
-        }
-
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            return (obj instanceof TabStripItemSnapshot other)
-                    && Objects.equals(mTabFaviconFetcher, other.mTabFaviconFetcher)
-                    && mFaviconFetched == other.mFaviconFetched
-                    && mIsSelected == other.mIsSelected;
+                    && mModelVersion == other.mModelVersion
+                    && mScrollX == other.mScrollX;
         }
     }
 
     private final Callback<Object> mOnModelTokenChange;
-    private final ModelList mModelList;
     private final RecyclerView mRecyclerView;
     private final OnScrollListener mOnScrollListener;
     private final ModelListPropertyChangeFilter mPropertyObserverFilter;
+    private int mModelVersion;
 
     /**
      * @param onModelTokenChange Where to pass the token when the snapshot is taken.
@@ -112,7 +73,6 @@ public class TabStripSnapshotter {
     public TabStripSnapshotter(
             Callback<Object> onModelTokenChange, ModelList modelList, RecyclerView recyclerView) {
         mOnModelTokenChange = onModelTokenChange;
-        mModelList = modelList;
         mRecyclerView = recyclerView;
         mOnScrollListener =
                 new OnScrollListener() {
@@ -126,12 +86,18 @@ public class TabStripSnapshotter {
         mRecyclerView.addOnScrollListener(mOnScrollListener);
         mPropertyObserverFilter =
                 new ModelListPropertyChangeFilter(
-                        this::doSnapshot, modelList, SNAPSHOT_PROPERTY_KEY_SET);
+                        this::onModelChanged, modelList, SNAPSHOT_PROPERTY_KEY_SET);
+    }
+
+    private void onModelChanged() {
+        // Bump the version instead of copying every item's state, which was O(n) per change.
+        mModelVersion++;
+        doSnapshot();
     }
 
     private void doSnapshot() {
         int scrollX = mRecyclerView.computeHorizontalScrollOffset();
-        mOnModelTokenChange.onResult(new TabStripSnapshotToken(mModelList, scrollX));
+        mOnModelTokenChange.onResult(new TabStripSnapshotToken(mModelVersion, scrollX));
     }
 
     /** Cleans up when this class is no longer needed. */
