@@ -238,8 +238,7 @@ inline bool ShapeResultBloberizer::IsSkipInkException(
     wtf_size_t character_index) {
   // For skip-ink: auto, skip CJK characters. For skip-ink: all, include all.
   return type_ == ShapeResultBloberizer::Type::kTextIntercepts &&
-         !unicode::CanTextDecorationSkipInk(
-             UNSAFE_TODO(text.CodePointAt(character_index)));
+         !unicode::CanTextDecorationSkipInk(text.CodePointAt(character_index));
 }
 
 inline void ShapeResultBloberizer::AddEmphasisMark(
@@ -384,8 +383,7 @@ class ClusterCallbackContext {
     for (wtf_size_t j = 0; j < graphemes_in_cluster; ++j) {
       // Do not put emphasis marks on space, separator, and control
       // characters.
-      if (unicode::CanReceiveTextEmphasis(
-              UNSAFE_TODO(text.CodePointAt(character_index)))) {
+      if (unicode::CanReceiveTextEmphasis(text.CodePointAt(character_index))) {
         bloberizer->AddEmphasisMark(emphasis_data, canvas_rotation,
                                     glyph_center,
                                     advance_so_far + glyph_advance_x / 2,

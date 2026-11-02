@@ -340,9 +340,7 @@ void SvgTextLayoutAttributesBuilder::Build(const String& ifc_text_content,
       // subset of EGC continuations (notably combining marks); it does
       // not detect ligatures or other tailorings, so those still take a
       // positioning value of their own.
-      // SAFETY: The loop condition keeps `i` within `item_string`, and `i`
-      // always moves to the next code point boundary.
-      const UChar32 code_point = UNSAFE_BUFFERS(item_string.CodePointAt(i));
+      const UChar32 code_point = item_string.CodePointAt(i);
       if (RuntimeEnabledFeatures::SvgTextPositioningGraphemeClustersEnabled() &&
           addressable_index != 0u && unicode::IsGraphemeExtended(code_point)) {
         pending_dx = AccumulateValue(pending_dx, attr_stack.Dx());

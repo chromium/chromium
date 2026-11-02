@@ -26,7 +26,6 @@
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -704,8 +703,7 @@ UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {
     cursor.MoveTo(*this);
     if (cursor) {
       const StringView text = cursor.Current().Text(cursor);
-      // SAFETY: Non-zero text length test.
-      return text.length() ? UNSAFE_BUFFERS(text.CodePointAt(0)) : 0;
+      return text.length() ? text.CodePointAt(0) : 0;
     }
   }
   return 0;
@@ -718,9 +716,7 @@ UChar32 LayoutText::LastCharacterAfterWhitespaceCollapsing() const {
     cursor.MoveTo(*this);
     if (cursor) {
       const StringView text = cursor.Current().Text(cursor);
-      // SAFETY: Non-zero text length test.
-      return text.length() ? UNSAFE_BUFFERS(text.CodePointAt(text.length() - 1))
-                           : 0;
+      return text.length() ? text.CodePointAt(text.length() - 1) : 0;
     }
   }
   return 0;
