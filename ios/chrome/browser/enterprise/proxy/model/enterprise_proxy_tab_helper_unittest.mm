@@ -25,6 +25,23 @@ constexpr char kOtherURL[] = "https://other.example.com/";
 constexpr char kProxyURL[] = "https://proxy.example.com/";
 constexpr int kDisguisedErrorCode = 403;
 
+// Records the re-sign-in requests.
+class FakeDelegate : public EnterpriseProxyTabHelper::Delegate {
+ public:
+  // EnterpriseProxyTabHelper::Delegate:
+  void SignIn(web::WebState* web_state) override {
+    ++sign_in_count_;
+    last_web_state_ = web_state;
+  }
+
+  int sign_in_count() const { return sign_in_count_; }
+  web::WebState* last_web_state() const { return last_web_state_; }
+
+ private:
+  int sign_in_count_ = 0;
+  raw_ptr<web::WebState> last_web_state_ = nullptr;
+};
+
 }  // namespace
 
 class EnterpriseProxyTabHelperTest : public PlatformTest {
@@ -55,6 +72,8 @@ class EnterpriseProxyTabHelperTest : public PlatformTest {
 
   testing::NiceMock<enterprise_net::MockEnterpriseProxyService> proxy_service_;
   enterprise_net::EnterpriseProxyErrorService error_service_{&proxy_service_};
+  // Outlives `web_state_`, whose tab helper points to it.
+  FakeDelegate delegate_;
   web::FakeWebState web_state_;
   raw_ptr<EnterpriseProxyTabHelper> tab_helper_ = nullptr;
 };
@@ -176,4 +195,26 @@ TEST_F(EnterpriseProxyTabHelperTest, RemovesPendingNavigationErrorOnDestroy) {
 
   EXPECT_FALSE(
       error_service_.TakeDisguisedError(context.GetNavigationId()).has_value());
+}
+
+// Tests that the re-sign-in requests are forwarded to the delegate.
+TEST_F(EnterpriseProxyTabHelperTest, ForwardsSignInToDelegate) {
+  tab_helper_->SetDelegate(&delegate_);
+
+  tab_helper_->SignIn();
+
+  EXPECT_EQ(&delegate_, tab_helper_->delegate());
+  EXPECT_EQ(1, delegate_.sign_in_count());
+  EXPECT_EQ(&web_state_, delegate_.last_web_state());
+}
+
+// Tests that the re-sign-in requests are dropped once the delegate is reset.
+TEST_F(EnterpriseProxyTabHelperTest, IgnoresSignInWithoutDelegate) {
+  tab_helper_->SetDelegate(&delegate_);
+  tab_helper_->SetDelegate(nullptr);
+
+  tab_helper_->SignIn();
+
+  EXPECT_EQ(nullptr, tab_helper_->delegate());
+  EXPECT_EQ(0, delegate_.sign_in_count());
 }

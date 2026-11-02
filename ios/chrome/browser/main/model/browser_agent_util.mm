@@ -8,6 +8,7 @@
 #import "base/feature_list.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/data_sharing/public/features.h"
+#import "components/enterprise/net/core/features.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_browser_agent.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_browser_agent.h"
 #import "ios/chrome/browser/favicon/model/favicon_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -255,6 +257,15 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
       !browser_is_inactive && !browser_is_temporary) {
     PersistTabContextBrowserAgent::CreateForBrowser(browser);
   }
+
+  // Mirrors the gating used to attach `EnterpriseProxyTabHelper`, whose
+  // delegate it is.
+  // LINT.IfChange(EnterpriseProxyBrowserAgentGating)
+  if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record &&
+      enterprise_net::IsDynamicRouteFetchingEnabled()) {
+    EnterpriseProxyBrowserAgent::CreateForBrowser(browser);
+  }
+  // LINT.ThenChange(//ios/chrome/browser/tabs/model/tab_helper_util.mm:EnterpriseProxyTabHelperGating)
 
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.

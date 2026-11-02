@@ -459,12 +459,14 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   // pending navigation. `EnterpriseProxyErrorService` only exists while dynamic
   // route fetching is enabled. Not needed for prerendering, which is cancelled
   // on auth challenges, nor in Incognito, where the controller doesn't exist.
+  // LINT.IfChange(EnterpriseProxyTabHelperGating)
   if (!attacher.IsOffTheRecord() && !attacher.IsForPrerender()) {
     if (enterprise_net::EnterpriseProxyErrorService* error_service =
             EnterpriseProxyErrorServiceFactoryIOS::GetForProfile(profile)) {
       attacher.Create<EnterpriseProxyTabHelper>(error_service);
     }
   }
+  // LINT.ThenChange(//ios/chrome/browser/main/model/browser_agent_util.mm:EnterpriseProxyBrowserAgentGating)
 
   if (web::features::IsCobaltEnabled()) {
     ios::provider::AttachCobaltTabHelpers(attacher);

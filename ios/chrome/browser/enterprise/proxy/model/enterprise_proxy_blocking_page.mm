@@ -9,6 +9,7 @@
 #import <string_view>
 #import <utility>
 
+#import "base/check.h"
 #import "base/memory/ptr_util.h"
 #import "base/values.h"
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -17,6 +18,7 @@
 #import "components/security_interstitials/core/controller_client.h"
 #import "components/security_interstitials/core/metrics_helper.h"
 #import "components/security_interstitials/core/utils.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
@@ -115,14 +117,18 @@ void EnterpriseProxyBlockingPage::HandleCommand(
       // Closes the tab when there is no page to go back to.
       client_->GoBack();
       return;
-    case security_interstitials::CMD_OPEN_LOGIN:
+    case security_interstitials::CMD_OPEN_LOGIN: {
       // Only the authentication page offers to sign in again.
       if (category_ != ErrorCategory::kAuthentication) {
         return;
       }
-      // TODO(crbug.com/568444429): Forward the sign-in request to
-      // `EnterpriseProxyTabHelper`.
+      // The page is only shown for errors recorded through the tab helper.
+      EnterpriseProxyTabHelper* tab_helper =
+          EnterpriseProxyTabHelper::FromWebState(web_state());
+      CHECK(tab_helper);
+      tab_helper->SignIn();
       return;
+    }
     default:
       // The page sends no other command.
       return;

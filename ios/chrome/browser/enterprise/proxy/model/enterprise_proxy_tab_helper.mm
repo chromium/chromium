@@ -12,7 +12,7 @@
 EnterpriseProxyTabHelper::EnterpriseProxyTabHelper(
     web::WebState* web_state,
     enterprise_net::EnterpriseProxyErrorService* error_service)
-    : error_service_(CHECK_DEREF(error_service)) {
+    : web_state_(*web_state), error_service_(CHECK_DEREF(error_service)) {
   web_state_observation_.Observe(web_state);
 }
 
@@ -22,6 +22,21 @@ EnterpriseProxyTabHelper::~EnterpriseProxyTabHelper() {
   if (pending_navigation_id_.has_value()) {
     error_service_->RemoveDisguisedError(*pending_navigation_id_);
   }
+}
+
+void EnterpriseProxyTabHelper::SetDelegate(Delegate* delegate) {
+  delegate_ = delegate;
+}
+
+void EnterpriseProxyTabHelper::SignIn() {
+  // The delegate is missing for the WebStates that aren't tabs, like the Lens
+  // overlay and AI Mode ones, which are handled separately
+  // (crbug.com/578096267), and for a tab that is no longer in a `Browser`, e.g.
+  // when a tap is delivered after the tab was detached.
+  if (!delegate_) {
+    return;
+  }
+  delegate_->SignIn(&web_state_.get());
 }
 
 void EnterpriseProxyTabHelper::DidStartNavigation(

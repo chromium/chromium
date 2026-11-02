@@ -15,7 +15,10 @@
 #import "base/test/run_until.h"
 #import "base/values.h"
 #import "components/enterprise/net/core/enterprise_proxy_error_data.h"
+#import "components/enterprise/net/core/enterprise_proxy_error_service.h"
+#import "components/enterprise/net/core/mock_enterprise_proxy_service.h"
 #import "components/security_interstitials/core/controller_client.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -63,6 +66,18 @@ constexpr int kInterstitialItemIndex = 1;
 // Index of the previous page in the navigation history.
 constexpr int kPreviousItemIndex = 0;
 
+// Counts the re-sign-in requests.
+class FakeDelegate : public EnterpriseProxyTabHelper::Delegate {
+ public:
+  // EnterpriseProxyTabHelper::Delegate:
+  void SignIn(web::WebState* web_state) override { ++sign_in_count_; }
+
+  int sign_in_count() const { return sign_in_count_; }
+
+ private:
+  int sign_in_count_ = 0;
+};
+
 // Returns the value of the template `error_category` parameter for `category`.
 std::string GetErrorCategoryParam(ErrorCategory category) {
   return base::NumberToString(static_cast<int>(category));
@@ -84,6 +99,9 @@ class EnterpriseProxyBlockingPageTest : public PlatformTest {
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
+    EnterpriseProxyTabHelper::CreateForWebState(&web_state_, &error_service_);
+    EnterpriseProxyTabHelper::FromWebState(&web_state_)
+        ->SetDelegate(&delegate_);
   }
 
   // Creates the page displayed for an error of `category`.
@@ -104,6 +122,10 @@ class EnterpriseProxyBlockingPageTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  testing::NiceMock<enterprise_net::MockEnterpriseProxyService> proxy_service_;
+  // Outlive `web_state_`, whose tab helper points to them.
+  enterprise_net::EnterpriseProxyErrorService error_service_{&proxy_service_};
+  FakeDelegate delegate_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
 };
@@ -177,5 +199,29 @@ TEST_F(EnterpriseProxyBlockingPageTest, ContinueDoesNotNavigate) {
     EXPECT_EQ(kInterstitialItemIndex,
               navigation_manager_->GetLastCommittedItemIndex());
     EXPECT_FALSE(web_state_.IsClosed());
+  }
+}
+
+// Tests that "Continue" on the authentication page forwards a re-sign-in
+// request to the tab helper delegate.
+TEST_F(EnterpriseProxyBlockingPageTest, ContinueRequestsSignIn) {
+  std::unique_ptr<EnterpriseProxyBlockingPage> page =
+      CreatePage(ErrorCategory::kAuthentication);
+
+  page->HandleCommand(security_interstitials::CMD_OPEN_LOGIN);
+
+  EXPECT_EQ(1, delegate_.sign_in_count());
+}
+
+// Tests that only the authentication page forwards re-sign-in requests.
+TEST_F(EnterpriseProxyBlockingPageTest, IgnoresSignInOutsideAuthentication) {
+  for (ErrorCategory category :
+       {ErrorCategory::kAuthorization, ErrorCategory::kOther}) {
+    SCOPED_TRACE(testing::Message()
+                 << "category: " << static_cast<int>(category));
+
+    CreatePage(category)->HandleCommand(security_interstitials::CMD_OPEN_LOGIN);
+
+    EXPECT_EQ(0, delegate_.sign_in_count());
   }
 }
