@@ -1765,7 +1765,9 @@ void ArcSessionManager::StopArc() {
 
 void ArcSessionManager::MaybeStartArcDataRemoval() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK(profile_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/579329776): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(profile_);
 
   // Data removal cannot run in parallel with ARC session.
   // LoginScreen instance does not use data directory, so removing should work.
