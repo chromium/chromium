@@ -277,10 +277,19 @@ void VideoFrameAcceleratedSnapshotPool::OnContextLost() {
   }
 }
 
-void VideoFrameAcceleratedSnapshotPool::OnResourceRefReturned(
-    scoped_refptr<CanvasResourceSharedImage>&& resource) {
-  if (!resource->IsLost() && resource->HasOneRef() && image_pool_) {
-    image_pool_->ReleaseImage(std::move(resource));
+// static
+void VideoFrameAcceleratedSnapshotPool::OnResourceReleased(
+    base::WeakPtr<VideoFrameAcceleratedSnapshotPool> pool,
+    scoped_refptr<CanvasResourceSharedImage> resource,
+    const gpu::SyncToken& sync_token,
+    bool is_lost) {
+  resource->WaitSyncToken(sync_token);
+  if (is_lost) {
+    resource->NotifyResourceLost();
+  }
+  if (!resource->IsLost() && resource->HasOneRef() && pool &&
+      pool->image_pool_) {
+    pool->image_pool_->ReleaseImage(std::move(resource));
   }
 }
 
@@ -310,9 +319,8 @@ VideoFrameAcceleratedSnapshotPool::NewOrRecycledResource() {
   }
 
   if (!resource->IsInitialized()) {
-    resource->Initialize(weak_ptr_factory_.GetWeakPtr(),
-                         context_provider_wrapper_, info_.hdr_metadata,
-                         /*is_accelerated=*/true);
+    resource->Initialize(/*client=*/nullptr, context_provider_wrapper_,
+                         info_.hdr_metadata, /*is_accelerated=*/true);
   }
   DCHECK(resource->HasOneRef());
   return resource;
@@ -410,19 +418,9 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
     return nullptr;
   }
 
-  auto release_callback = base::BindOnce(
-      [](scoped_refptr<CanvasResourceSharedImage>&& resource,
-         const gpu::SyncToken& sync_token, bool lost_resource) {
-        CHECK(resource);
-
-        resource->WaitSyncToken(sync_token);
-        if (lost_resource) {
-          resource->NotifyResourceLost();
-        }
-
-        CanvasResource::DropRefOnOwningThread(std::move(resource));
-      },
-      resource_);
+  auto release_callback = blink::BindOnce(
+      &VideoFrameAcceleratedSnapshotPool::OnResourceReleased,
+      weak_ptr_factory_.GetWeakPtr(), resource_);
 
   scoped_refptr<StaticBitmapImage> snapshot =
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(

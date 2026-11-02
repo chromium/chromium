@@ -45,8 +45,7 @@ class WebGraphicsContext3DProviderWrapper;
 // Pool of accelerated SharedImages used to produce AcceleratedStaticBitmapImage
 // snapshots from media::VideoFrames.
 class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
-    : public CanvasResourceSharedImage::Client,
-      public viz::ContextLostObserver {
+    : public viz::ContextLostObserver {
  public:
   static std::unique_ptr<VideoFrameAcceleratedSnapshotPool> Create(
       const CanvasSnapshotInfo& info);
@@ -72,10 +71,11 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper);
 
-  // CanvasResourceSharedImage::Client:
-  void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
-  void OnDestroyResource() override {}
+  static void OnResourceReleased(
+      base::WeakPtr<VideoFrameAcceleratedSnapshotPool> pool,
+      scoped_refptr<CanvasResourceSharedImage> resource,
+      const gpu::SyncToken& sync_token,
+      bool is_lost);
 
   // viz::ContextLostObserver:
   void OnContextLost() override;
