@@ -11,6 +11,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {
+class PasswordString;
+
 class MockPasswordManager : public password_manager::PasswordManagerInterface {
  public:
   MockPasswordManager();
@@ -46,7 +48,7 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
               (PasswordManagerDriver*,
                const autofill::FormData&,
                autofill::FieldRendererId,
-               const std::u16string&),
+               const PasswordString&),
               (override));
   MOCK_METHOD(void,
               OnInformAboutUserInput,

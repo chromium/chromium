@@ -184,7 +184,7 @@ class PasswordManager : public PasswordManagerInterface {
       PasswordManagerDriver* driver,
       const autofill::FormData& form_data,
       autofill::FieldRendererId generation_element_id,
-      const std::u16string& password) override;
+      const PasswordString& password) override;
 
   // Handles a dynamic form submission. In contrast to OnPasswordFormSubmitted()
   // this method does not wait for OnPasswordFormsRendered() before invoking

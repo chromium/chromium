@@ -5621,11 +5621,29 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, PasswordNoLongerGenerated) {
 }
 
 TEST_F(PasswordFormManagerTestWithMockedSaver,
+       OnGeneratedPasswordAccepted_PreservesProtectedPassword) {
+  const FormData& form_data = observed_form_only_password_fields_;
+  const PasswordString password(u"generated_password");
+  PasswordForm accepted_form;
+  EXPECT_CALL(*mock_password_save_manager(), GeneratedPasswordAccepted(_, _))
+      .WillOnce(SaveArg<0>(&accepted_form));
+
+  form_manager_->OnGeneratedPasswordAccepted(
+      form_data, form_data.fields()[0].renderer_id(), password);
+
+  EXPECT_EQ(accepted_form.password_value, password);
+  ASSERT_FALSE(accepted_form.form_data.fields().empty());
+  EXPECT_EQ(accepted_form.form_data.fields()[0].value(), u"generated_password");
+  EXPECT_EQ(password, u"generated_password");
+}
+
+TEST_F(PasswordFormManagerTestWithMockedSaver,
        OnGeneratedPasswordAccepted_InvalidField) {
   FormData form_data = observed_form_only_password_fields_;
   // A call with a non-existent password field should not crash.
-  form_manager_->OnGeneratedPasswordAccepted(
-      std::move(form_data), autofill::FieldRendererId(12345), u"new_password");
+  form_manager_->OnGeneratedPasswordAccepted(std::move(form_data),
+                                             autofill::FieldRendererId(12345),
+                                             PasswordString(u"new_password"));
 }
 
 TEST_F(PasswordFormManagerTestWithMockedSaver, SaveHttpAuthNoHttpAuthStored) {

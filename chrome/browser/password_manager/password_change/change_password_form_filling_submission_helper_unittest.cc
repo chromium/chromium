@@ -111,8 +111,8 @@ class MockStubPasswordManagerDriver
       (autofill::FieldRendererId,
        autofill::FieldRendererId,
        autofill::FieldRendererId,
-       const std::u16string&,
-       const std::u16string&,
+       const password_manager::PasswordString&,
+       const password_manager::PasswordString&,
        base::OnceCallback<void(const std::optional<autofill::FormData>&)>),
       (override));
   MOCK_METHOD(void,

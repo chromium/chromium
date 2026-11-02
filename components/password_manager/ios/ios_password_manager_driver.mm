@@ -110,7 +110,7 @@ void IOSPasswordManagerDriver::FormEligibleForGenerationFound(
 }
 
 void IOSPasswordManagerDriver::GeneratedPasswordAccepted(
-    const std::u16string& password) {
+    const password_manager::PasswordString& password) {
   NOTIMPLEMENTED();
 }
 
@@ -156,7 +156,7 @@ void IOSPasswordManagerDriver::PreviewSuggestionById(
 }
 
 void IOSPasswordManagerDriver::PreviewGenerationSuggestion(
-    const std::u16string& password) {
+    const password_manager::PasswordString& password) {
   NOTIMPLEMENTED();
 }
 

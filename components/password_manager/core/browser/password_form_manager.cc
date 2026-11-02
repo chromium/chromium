@@ -1286,7 +1286,7 @@ void PasswordFormManager::FillNow() {
 void PasswordFormManager::OnGeneratedPasswordAccepted(
     FormData form_data,
     autofill::FieldRendererId generation_element_id,
-    const std::u16string& password) {
+    const PasswordString& password) {
   // Find the generating element to update its value. The parser needs a non
   // empty value.
   std::vector<FormFieldData> fields = form_data.ExtractFields();
@@ -1296,7 +1296,8 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
   if (it == fields.end()) {
     return;
   }
-  it->set_value(password);
+  // `FormData` and its parser require a plaintext field value.
+  it->set_value(password.value());
   form_data.set_fields(std::move(fields));
   std::unique_ptr<PasswordForm> parsed_form =
       ParseFormAndMakeLogging(form_data, FormDataParser::Mode::kSaving)
@@ -1307,10 +1308,7 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
     parsed_form->url = form_data.url();
     parsed_form->signon_realm = GetSignonRealm(form_data.url());
   }
-  // TODO(crbug.com/513276101): Explicit construction of std::u16string
-  // R-Value to be removed once incoming parameter is converted to
-  // PasswordString
-  parsed_form->password_value = PasswordString(std::u16string(password));
+  parsed_form->password_value = password;
   password_save_manager_->GeneratedPasswordAccepted(*parsed_form, driver_);
 }
 

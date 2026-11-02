@@ -196,7 +196,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void OnGeneratedPasswordAccepted(
       autofill::FormData form_data,
       autofill::FieldRendererId generation_element_id,
-      const std::u16string& password);
+      const PasswordString& password);
 
   // Check if the field identified by |driver_id| and |field_id| is present in
   // the |observed_form()|.

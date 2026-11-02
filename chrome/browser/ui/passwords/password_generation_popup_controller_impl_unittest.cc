@@ -76,13 +76,13 @@ class MockPasswordManagerDriver
  public:
   MOCK_METHOD(void,
               GeneratedPasswordAccepted,
-              (const std::u16string&),
+              (const PasswordString&),
               (override));
   MOCK_METHOD(void,
               GeneratedPasswordAccepted,
               (const autofill::FormData&,
                autofill::FieldRendererId,
-               const std::u16string&),
+               const PasswordString&),
               (override));
   MOCK_METHOD(void, GeneratedPasswordRejected, (), (override));
   MOCK_METHOD(PasswordGenerationFrameHelper*,
@@ -91,7 +91,7 @@ class MockPasswordManagerDriver
               (override));
   MOCK_METHOD(void,
               PreviewGenerationSuggestion,
-              (const std::u16string& password),
+              (const PasswordString& password),
               (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
   MOCK_METHOD(void, FocusNextFieldAfterPasswords, (), (override));
@@ -211,6 +211,24 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateTheSame) {
           /*observer=*/nullptr, web_contents(), main_rfh());
 
   EXPECT_EQ(controller1.get(), controller2.get());
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       ProtectedPasswordIsPreviewedAndAccepted) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      CreateControllerWithView();
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
+  PasswordGenerationPopupController* const popup_controller = controller.get();
+
+  const PasswordString password = popup_controller->password();
+  ASSERT_FALSE(password.empty());
+
+  EXPECT_CALL(driver(), PreviewGenerationSuggestion(password));
+  controller->Show(PasswordGenerationPopupController::kOfferGeneration);
+
+  EXPECT_CALL(driver(), GeneratedPasswordAccepted(
+                            _, autofill::FieldRendererId(100), password));
+  popup_controller->PasswordAccepted();
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest,

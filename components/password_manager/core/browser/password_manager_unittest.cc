@@ -405,7 +405,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (const, override));
   MOCK_METHOD(void,
               GeneratedPasswordAccepted,
-              (const std::u16string& password),
+              (const PasswordString& password),
               (override));
   MOCK_METHOD(PasswordGenerationFrameHelper*,
               GetPasswordGenerationHelper,
@@ -3797,12 +3797,13 @@ TEST_P(PasswordManagerTest, GenerationTriggersFormManagerCreation) {
   FormData form(MakeSimpleFormData());
   ASSERT_THAT(form.fields(), SizeIs(2));
   EXPECT_TRUE(form.fields()[1].IsPasswordInputElement());
-  std::u16string generated_password;
+  PasswordString generated_password;
 
   EXPECT_CALL(driver_, GeneratedPasswordAccepted)
       .WillOnce(SaveArg<0>(&generated_password));
-  manager()->OnGeneratedPasswordAccepted(
-      &driver_, form, form.fields()[1].renderer_id(), u"generated_password");
+  manager()->OnGeneratedPasswordAccepted(&driver_, form,
+                                         form.fields()[1].renderer_id(),
+                                         PasswordString(u"generated_password"));
 
   EXPECT_THAT(manager()->form_managers(), SizeIs(1));
   EXPECT_EQ(generated_password, u"generated_password");

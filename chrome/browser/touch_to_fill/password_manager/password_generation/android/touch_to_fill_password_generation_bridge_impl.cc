@@ -9,6 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/android/pref_service_android.h"
 #include "content/public/browser/web_contents.h"
@@ -71,7 +72,9 @@ void TouchToFillPasswordGenerationBridgeImpl::OnDismissed(
 void TouchToFillPasswordGenerationBridgeImpl::OnGeneratedPasswordAccepted(
     const std::u16string& password) {
   CHECK(delegate_);
-  delegate_->OnGeneratedPasswordAccepted(password);
+  // JNI boundary: protect the plaintext password received from Java.
+  delegate_->OnGeneratedPasswordAccepted(
+      password_manager::PasswordString(std::u16string(password)));
 }
 
 void TouchToFillPasswordGenerationBridgeImpl::OnGeneratedPasswordRejected() {

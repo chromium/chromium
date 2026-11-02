@@ -48,7 +48,8 @@ class IOSPasswordManagerDriver final
       bool should_show_popup_without_passwords) override;
   void FormEligibleForGenerationFound(
       const autofill::PasswordFormGenerationData& form) override;
-  void GeneratedPasswordAccepted(const std::u16string& password) override;
+  void GeneratedPasswordAccepted(
+      const password_manager::PasswordString& password) override;
   void FillField(autofill::FieldRendererId triggering_field_id,
                  const std::u16string& value,
                  autofill::FieldPropertiesFlags field_flags,
@@ -68,7 +69,8 @@ class IOSPasswordManagerDriver final
                              autofill::FieldRendererId password_element_id,
                              const std::u16string& username,
                              const std::u16string& password) override;
-  void PreviewGenerationSuggestion(const std::u16string& password) override;
+  void PreviewGenerationSuggestion(
+      const password_manager::PasswordString& password) override;
   void ClearPreviewedForm() override;
   void SetSuggestionAvailability(
       autofill::FieldRendererId generation_element_id,

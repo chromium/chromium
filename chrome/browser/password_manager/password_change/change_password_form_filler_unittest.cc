@@ -84,8 +84,8 @@ class MockStubPasswordManagerDriver
       (autofill::FieldRendererId,
        autofill::FieldRendererId,
        autofill::FieldRendererId,
-       const std::u16string&,
-       const std::u16string&,
+       const password_manager::PasswordString&,
+       const password_manager::PasswordString&,
        base::OnceCallback<void(const std::optional<autofill::FormData>&)>),
       (override));
   MOCK_METHOD(void,
@@ -242,6 +242,30 @@ class ChangePasswordFormFillerTest : public ChromeRenderViewHostTestHarness {
   password_manager::PasswordForm existing_credential_;
   std::vector<std::unique_ptr<password_manager::PasswordFormManager>> managers_;
 };
+
+TEST_F(ChangePasswordFormFillerTest, PostedFillingOwnsProtectedPasswords) {
+  password_manager::PasswordFormManager* const form_manager =
+      CreateFormManager(/*credentials_to_seed=*/{});
+  std::unique_ptr<ChangePasswordFormFiller> filler = CreateFiller();
+  password_manager::PasswordString old_password{std::u16string(kOldPassword)};
+  password_manager::PasswordString new_password{std::u16string(kNewPassword)};
+  base::test::TestFuture<FillingResult> filling_future;
+
+  EXPECT_CALL(driver(), FillChangePasswordForm).Times(0);
+  filler->FillForm(form_manager, kUsername, old_password, new_password,
+                   filling_future.GetCallback());
+  testing::Mock::VerifyAndClearExpectations(&driver());
+
+  old_password.clear();
+  new_password.clear();
+  EXPECT_CALL(driver(),
+              FillChangePasswordForm(_, _, _, testing::Eq(kOldPassword),
+                                     testing::Eq(kNewPassword), _))
+      .WillOnce(
+          base::test::RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
+
+  EXPECT_TRUE(filling_future.Get().has_value());
+}
 
 TEST_F(ChangePasswordFormFillerTest, SucceededForExistingCredential) {
   auto* form_manager =

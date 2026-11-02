@@ -272,7 +272,8 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
       password_generation_controller
           ->GetTouchToFillGenerationControllerForTesting();
 
-  touch_to_fill_generation_controller->OnGeneratedPasswordAccepted(u"Password");
+  touch_to_fill_generation_controller->OnGeneratedPasswordAccepted(
+      password_manager::PasswordString(u"Password"));
 
   EXPECT_TRUE(
       content::EvalJs(

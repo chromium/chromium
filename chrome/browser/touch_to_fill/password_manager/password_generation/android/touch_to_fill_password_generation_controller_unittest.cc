@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
+
 #include <memory>
 #include <string>
 #include <tuple>
@@ -11,11 +13,11 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/password_manager/android/password_generation_element_data.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/mock_touch_to_fill_password_generation_bridge.h"
-#include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/text_input_test_utils.h"
@@ -108,7 +110,8 @@ TEST_F(TouchToFillPasswordGenerationControllerTest, HandlesDriverGoingAway) {
       test_user_account_, PasswordGenerationType::kAutomatic, pref_service());
 
   DestroyDriver();
-  controller->OnGeneratedPasswordAccepted(u"generated_password");
+  controller->OnGeneratedPasswordAccepted(
+      password_manager::PasswordString(u"generated_password"));
   controller.reset();
 
   ui::mojom::TextInputStatePtr state = ui::mojom::TextInputState::New();

@@ -98,7 +98,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
   MOCK_METHOD(void,
               GeneratedPasswordAccepted,
-              (const std::u16string&),
+              (const PasswordString&),
               (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
 };
@@ -204,8 +204,7 @@ TEST_F(PasswordGenerationManagerTest, GeneratedPasswordAccepted_EmptyStore) {
   MockPasswordManagerDriver driver;
   FakeFormFetcher fetcher;
 
-  EXPECT_CALL(driver,
-              GeneratedPasswordAccepted(generated.password_value.value()));
+  EXPECT_CALL(driver, GeneratedPasswordAccepted(generated.password_value));
   manager().GeneratedPasswordAccepted(std::move(generated), {}, {},
                                       PasswordForm::Store::kAccountStore,
                                       driver.AsWeakPtr());
@@ -224,8 +223,7 @@ TEST_F(PasswordGenerationManagerTest, GeneratedPasswordAccepted_Conflict) {
   fetcher.SetNonFederated({saved});
   fetcher.SetBestMatches({saved});
 
-  EXPECT_CALL(driver,
-              GeneratedPasswordAccepted(generated.password_value.value()));
+  EXPECT_CALL(driver, GeneratedPasswordAccepted(generated.password_value));
   manager().GeneratedPasswordAccepted(std::move(generated), {&saved}, {},
                                       PasswordForm::Store::kAccountStore,
                                       driver.AsWeakPtr());
@@ -287,8 +285,8 @@ TEST_F(PasswordGenerationManagerTest, GeneratedPasswordAccepted_UpdateUISave) {
   EXPECT_EQ(
       PasswordForm::Store::kAccountStore,
       ui_form->GetPasswordStoreForSaving(ui_form->GetPendingCredentials()));
-  EXPECT_CALL(driver, GeneratedPasswordAccepted(
-                          CreateGenerated().password_value.value()));
+  EXPECT_CALL(driver,
+              GeneratedPasswordAccepted(CreateGenerated().password_value));
   ui_form->Save();
 }
 

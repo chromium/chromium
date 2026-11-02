@@ -265,7 +265,7 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
     // See https://crbug.com/40053471 for when `driver_` might be null due to a
     // compromised renderer.
     driver_->GeneratedPasswordAccepted(form_data_, generation_element_id_,
-                                       current_generated_password_.value());
+                                       current_generated_password_);
   }
   // |this| can be destroyed here because GeneratedPasswordAccepted pops up
   // another UI and generates some event to close the dropdown.
@@ -372,7 +372,7 @@ bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state,
 
   // Preview password on show in generation state.
   if (state_ == kOfferGeneration) {
-    driver_->PreviewGenerationSuggestion(current_generated_password_.value());
+    driver_->PreviewGenerationSuggestion(current_generated_password_);
 
     // When manually triggered, e.g. via context menu, select the accept button
     // on show so that focus enters the popup immediately without requiring

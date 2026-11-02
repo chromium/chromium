@@ -385,7 +385,7 @@ void PasswordGenerationManager::GeneratedPasswordAccepted(
       return;
     }
   }
-  driver->GeneratedPasswordAccepted(generated.password_value.value());
+  driver->GeneratedPasswordAccepted(generated.password_value);
 }
 
 void PasswordGenerationManager::PresaveGeneratedPassword(
@@ -490,7 +490,7 @@ void PasswordGenerationManager::OnPresaveBubbleResult(
   }
 
   if (accepted) {
-    driver->GeneratedPasswordAccepted(pending.password_value.value());
+    driver->GeneratedPasswordAccepted(pending.password_value);
   } else {
     driver->ClearPreviewedForm();
   }

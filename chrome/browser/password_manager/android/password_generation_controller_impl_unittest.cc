@@ -31,6 +31,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -281,8 +282,9 @@ TEST_F(PasswordGenerationControllerTest,
               OnAccessoryActionAvailabilityChanged(
                   ShouldShowAction(false),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
-  controller()->GeneratedPasswordAccepted(u"t3stp@ssw0rd", active_driver(),
-                                          PasswordGenerationType::kAutomatic);
+  controller()->GeneratedPasswordAccepted(
+      password_manager::PasswordString(u"t3stp@ssw0rd"), active_driver(),
+      PasswordGenerationType::kAutomatic);
 
   histogram_tester.ExpectUniqueSample(
       "KeyboardAccessory.GenerationDialogChoice.Automatic",
@@ -318,8 +320,9 @@ TEST_F(PasswordGenerationControllerTest,
               OnAccessoryActionAvailabilityChanged(
                   ShouldShowAction(false),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
-  controller()->GeneratedPasswordAccepted(u"t3stp@ssw0rd", active_driver(),
-                                          PasswordGenerationType::kManual);
+  controller()->GeneratedPasswordAccepted(
+      password_manager::PasswordString(u"t3stp@ssw0rd"), active_driver(),
+      PasswordGenerationType::kManual);
 
   histogram_tester.ExpectUniqueSample(
       "KeyboardAccessory.GenerationDialogChoice.Manual",

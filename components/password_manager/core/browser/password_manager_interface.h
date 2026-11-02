@@ -93,7 +93,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       PasswordManagerDriver* driver,
       const autofill::FormData& form_data,
       autofill::FieldRendererId generation_element_id,
-      const std::u16string& password) = 0;
+      const PasswordString& password) = 0;
 
   // Handles user input and decides whether to show manual fallback for password
   // saving, i.e. the omnibox icon with the anchored hidden prompt.

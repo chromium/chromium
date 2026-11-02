@@ -22,7 +22,7 @@ void StubPasswordManagerDriver::PropagateFillDataOnParsingCompletion(
     const autofill::PasswordFormFillData& form_data) {}
 
 void StubPasswordManagerDriver::GeneratedPasswordAccepted(
-    const std::u16string& password) {}
+    const PasswordString& password) {}
 
 void StubPasswordManagerDriver::GeneratedPasswordRejected() {}
 
@@ -61,7 +61,7 @@ void StubPasswordManagerDriver::PreviewSuggestionById(
     const std::u16string& password) {}
 
 void StubPasswordManagerDriver::PreviewGenerationSuggestion(
-    const std::u16string& password) {}
+    const PasswordString& password) {}
 
 void StubPasswordManagerDriver::ClearPreviewedForm() {}
 

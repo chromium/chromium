@@ -91,7 +91,7 @@ void TouchToFillPasswordGenerationController::OnDismissed(
 }
 
 void TouchToFillPasswordGenerationController::OnGeneratedPasswordAccepted(
-    const std::u16string& password) {
+    const password_manager::PasswordString& password) {
   // `frame_driver_` is null if it was invalidated since the bottom sheet was
   // shown, e.g. because the frame was deleted.
   if (!frame_driver_) {

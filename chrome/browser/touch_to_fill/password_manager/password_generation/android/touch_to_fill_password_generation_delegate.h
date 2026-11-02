@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_DELEGATE_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_DELEGATE_H_
 
-#include <string>
+namespace password_manager {
+class PasswordString;
+}  // namespace password_manager
 
 // The delegate, which handles the Password generation bottom sheet
 // (Touch-To-Fill) functionality. Implemented by
@@ -20,7 +22,8 @@ class TouchToFillPasswordGenerationDelegate {
 
   // Called if the user accepts the proposed generated password. Here the
   // password should be saved and filled into the form.
-  virtual void OnGeneratedPasswordAccepted(const std::u16string& password) = 0;
+  virtual void OnGeneratedPasswordAccepted(
+      const password_manager::PasswordString& password) = 0;
 
   // Called if the user doesn't accept the proposed generated password. Here the
   // keyboard accessory bar with "Suggest strong password" button should be

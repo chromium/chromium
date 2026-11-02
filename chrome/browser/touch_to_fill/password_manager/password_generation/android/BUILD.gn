@@ -32,6 +32,7 @@ source_set("android") {
 
   deps = [
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android/internal:jni",
+    "//components/password_manager/core/browser:password_string",
     "//components/password_manager/core/common:features",
     "//components/prefs",
     "//content/public/browser",

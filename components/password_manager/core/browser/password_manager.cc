@@ -682,7 +682,7 @@ void PasswordManager::OnGeneratedPasswordAccepted(
     PasswordManagerDriver* driver,
     const FormData& form_data,
     autofill::FieldRendererId generation_element_id,
-    const std::u16string& password) {
+    const PasswordString& password) {
   PasswordFormManager* manager =
       GetMatchedManagerForForm(driver, form_data.renderer_id());
   if (!manager) {

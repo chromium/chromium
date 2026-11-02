@@ -108,15 +108,16 @@ void ChangePasswordFormFiller::TriggerFilling(
       base::BindOnce(&ChangePasswordFormFiller::ChangePasswordFormFilled,
                      weak_ptr_factory_.GetWeakPtr());
 
+  // Keep the task's password copies protected until the driver serializes
+  // them for the renderer's Mojo call.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &password_manager::PasswordManagerDriver::FillChangePasswordForm,
           driver, form.password_element_renderer_id,
           form.new_password_element_renderer_id,
-          form.confirmation_password_element_renderer_id,
-          login_password_.value(), generated_password_.value(),
-          std::move(filling_callback)));
+          form.confirmation_password_element_renderer_id, login_password_,
+          generated_password_, std::move(filling_callback)));
 
   password_manager::PasswordForm form_to_save(form);
   form_to_save.username_value = username_;

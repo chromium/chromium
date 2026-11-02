@@ -30,7 +30,7 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   DriverId GetId() const override;
   void PropagateFillDataOnParsingCompletion(
       const autofill::PasswordFormFillData& form_data) override;
-  void GeneratedPasswordAccepted(const std::u16string& password) override;
+  void GeneratedPasswordAccepted(const PasswordString& password) override;
   void GeneratedPasswordRejected() override;
   void FocusNextFieldAfterPasswords() override;
   void FillField(autofill::FieldRendererId triggering_field_id,
@@ -55,7 +55,7 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
                              autofill::FieldRendererId password_element_id,
                              const std::u16string& username,
                              const std::u16string& password) override;
-  void PreviewGenerationSuggestion(const std::u16string& password) override;
+  void PreviewGenerationSuggestion(const PasswordString& password) override;
   void ClearPreviewedForm() override;
   void SetSuggestionAvailability(autofill::FieldRendererId element_id,
                                  autofill::mojom::AutofillSuggestionAvailability

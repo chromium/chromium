@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -142,7 +143,7 @@ void PasswordGenerationControllerImpl::OnGenerationRequested(
 }
 
 void PasswordGenerationControllerImpl::GeneratedPasswordAccepted(
-    const std::u16string& password,
+    const password_manager::PasswordString& password,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver,
     PasswordGenerationType type) {
   if (!driver) {

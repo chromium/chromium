@@ -15,6 +15,7 @@
 
 namespace password_manager {
 class ContentPasswordManagerDriver;
+class PasswordString;
 }  // namespace password_manager
 
 // Interface for the controller responsible for overseeing the UI flow for
@@ -97,7 +98,7 @@ class PasswordGenerationController {
   // |type| what type of generation led to the accepted password
   // (automatic or manual).
   virtual void GeneratedPasswordAccepted(
-      const std::u16string& password,
+      const password_manager::PasswordString& password,
       base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver,
       autofill::password_generation::PasswordGenerationType type) = 0;
 

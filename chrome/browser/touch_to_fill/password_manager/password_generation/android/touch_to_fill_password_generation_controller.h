@@ -55,7 +55,8 @@ class TouchToFillPasswordGenerationController
 
   void OnDismissed(bool generated_password_accepted) override;
 
-  void OnGeneratedPasswordAccepted(const std::u16string& password) override;
+  void OnGeneratedPasswordAccepted(
+      const password_manager::PasswordString& password) override;
 
   void OnGeneratedPasswordRejected() override;
 

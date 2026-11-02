@@ -15,6 +15,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/autofill/core/common/aliases.h"
@@ -25,6 +26,7 @@
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/navigation_entry.h"
@@ -173,6 +175,36 @@ class FakePasswordAutofillAgent
       this};
 };
 
+class FakePasswordGenerationAgent
+    : public autofill::mojom::PasswordGenerationAgent {
+ public:
+  void BindPendingReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.Bind(
+        mojo::PendingAssociatedReceiver<
+            autofill::mojom::PasswordGenerationAgent>(std::move(handle)));
+  }
+
+  // autofill::mojom::PasswordGenerationAgent:
+  MOCK_METHOD(void,
+              GeneratedPasswordAccepted,
+              (const std::u16string&),
+              (override));
+  MOCK_METHOD(void, GeneratedPasswordRejected, (), (override));
+  MOCK_METHOD(void,
+              TriggeredGeneratePassword,
+              (TriggeredGeneratePasswordCallback),
+              (override));
+  MOCK_METHOD(void,
+              FoundFormEligibleForGeneration,
+              (const autofill::PasswordFormGenerationData&),
+              (override));
+  MOCK_METHOD(void, FocusNextFieldAfterPasswords, (), (override));
+
+ private:
+  mojo::AssociatedReceiver<autofill::mojom::PasswordGenerationAgent> receiver_{
+      this};
+};
+
 class MockPasswordManager : public PasswordManager {
  public:
   explicit MockPasswordManager(PasswordManagerClient* client)
@@ -206,6 +238,13 @@ class MockPasswordManager : public PasswordManager {
                bool is_likely_otp),
               (override));
   MOCK_METHOD(PasswordFormCache*, GetPasswordFormCache, (), (override));
+  MOCK_METHOD(void,
+              OnGeneratedPasswordAccepted,
+              (PasswordManagerDriver*,
+               const autofill::FormData&,
+               autofill::FieldRendererId,
+               const PasswordString&),
+              (override));
 };
 
 PasswordFormFillData GetTestPasswordFormFillData() {
@@ -275,6 +314,10 @@ class ContentPasswordManagerDriverTest
         autofill::mojom::PasswordAutofillAgent::Name_,
         base::BindRepeating(&FakePasswordAutofillAgent::BindPendingReceiver,
                             base::Unretained(&fake_agent_)));
+    remote_interfaces->OverrideBinderForTesting(
+        autofill::mojom::PasswordGenerationAgent::Name_,
+        base::BindRepeating(&FakePasswordGenerationAgent::BindPendingReceiver,
+                            base::Unretained(&fake_generation_agent_)));
   }
 
   bool WasLoggingActivationMessageSent(bool* activation_flag) {
@@ -294,6 +337,7 @@ class ContentPasswordManagerDriverTest
   NiceMock<MockLogManager> log_manager_;
   NiceMock<MockPasswordManagerClient> password_manager_client_;
   FakePasswordAutofillAgent fake_agent_;
+  FakePasswordGenerationAgent fake_generation_agent_;
 };
 
 TEST_P(ContentPasswordManagerDriverTest, SendLoggingStateInCtor) {
@@ -344,6 +388,48 @@ TEST_F(ContentPasswordManagerDriverTest, ClearPasswordsOnAutofill) {
               ApplyFillDataOnParsingCompletion(WerePasswordsCleared()));
   driver->PropagateFillDataOnParsingCompletion(fill_data);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ContentPasswordManagerDriverTest,
+       GeneratedPasswordIsSerializedToRenderer) {
+  ContentPasswordManagerDriver driver(main_rfh(), &password_manager_client_);
+  const PasswordString password(u"generated_password");
+  base::test::TestFuture<void> password_accepted;
+
+  EXPECT_CALL(fake_generation_agent_,
+              GeneratedPasswordAccepted(std::u16string(u"generated_password")))
+      .WillOnce([&password_accepted](const std::u16string&) {
+        password_accepted.SetValue();
+      });
+  driver.GeneratedPasswordAccepted(password);
+  ASSERT_TRUE(password_accepted.Wait());
+
+  EXPECT_EQ(password, u"generated_password");
+}
+
+TEST_F(ContentPasswordManagerDriverTest,
+       ChangePasswordFormPasswordsAreSerializedToRenderer) {
+  NavigateAndCommit(GURL("https://example.com"));
+  ContentPasswordManagerDriver driver(main_rfh(), &password_manager_client_);
+  const PasswordString old_password(u"old_password");
+  const PasswordString new_password(u"new_password");
+  const autofill::FieldRendererId old_password_id(1);
+  const autofill::FieldRendererId new_password_id(2);
+  const autofill::FieldRendererId confirmation_id(3);
+  base::test::TestFuture<const std::optional<autofill::FormData>&> future;
+
+  EXPECT_CALL(fake_agent_, FillChangePasswordForm(
+                               old_password_id, new_password_id,
+                               confirmation_id, std::u16string(u"old_password"),
+                               std::u16string(u"new_password"), _))
+      .WillOnce(base::test::RunOnceCallback<5>(std::nullopt));
+  driver.FillChangePasswordForm(old_password_id, new_password_id,
+                                confirmation_id, old_password, new_password,
+                                future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(old_password, u"old_password");
+  EXPECT_EQ(new_password, u"new_password");
 }
 
 TEST_F(ContentPasswordManagerDriverTest, SetFrameAndFormMetaDataOfForm) {
@@ -483,6 +569,18 @@ TEST_F(ContentPasswordManagerDriverURLTest,
       /*autocomplete_attribute_has_username=*/
       true, /*is_likely_otp=*/false);
   EXPECT_EQ(bad_msg_count, process->bad_msg_count());
+}
+
+TEST_F(ContentPasswordManagerDriverURLTest,
+       GeneratedPasswordAcceptedForwardsProtectedPassword) {
+  const PasswordString password(u"generated_password");
+  const autofill::FieldRendererId generation_element_id(123);
+
+  EXPECT_CALL(password_manager_,
+              OnGeneratedPasswordAccepted(driver_.get(), ExpectedFormData(),
+                                          generation_element_id, password));
+  driver_->GeneratedPasswordAccepted(autofill::FormData(),
+                                     generation_element_id, password);
 }
 
 TEST_F(ContentPasswordManagerDriverTest,

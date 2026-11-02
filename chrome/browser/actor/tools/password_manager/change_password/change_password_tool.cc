@@ -31,6 +31,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -153,8 +154,9 @@ void ChangePasswordTool::Invoke(ToolCallback callback) {
       current_password_field_id_.renderer_id,
       new_password_field_id_.renderer_id,
       confirm_new_password_field_id_.renderer_id,
-      /*old_password=*/u"dummy_current_password",
-      /*new_password=*/u"dummy_new_password",
+      /*old_password=*/
+      password_manager::PasswordString(u"dummy_current_password"),
+      /*new_password=*/password_manager::PasswordString(u"dummy_new_password"),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&ChangePasswordTool::OnChangePasswordFormFilled,
                          weak_factory_.GetWeakPtr(), std::move(callback)),
