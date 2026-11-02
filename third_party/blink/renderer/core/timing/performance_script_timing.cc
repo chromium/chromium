@@ -155,9 +155,8 @@ DOMHighResTimeStamp PerformanceScriptTiming::pauseDuration() const {
 }
 
 LocalDOMWindow* PerformanceScriptTiming::window() const {
-  // TODO(crbug.com/576326785): Return null once the window is detached, as the
-  // spec requires, so the result doesn't depend on garbage collection timing.
-  return info_->Window();
+  LocalDOMWindow* script_window = info_->Window();
+  return script_window && script_window->GetFrame() ? script_window : nullptr;
 }
 
 V8ScriptWindowAttribution PerformanceScriptTiming::windowAttribution() const {

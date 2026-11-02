@@ -42,6 +42,7 @@ class PerformanceScriptTiming final : public PerformanceEntry {
   DOMHighResTimeStamp forcedStyleDuration() const;
   DOMHighResTimeStamp forcedLayoutDuration() const;
   DOMHighResTimeStamp pauseDuration() const;
+  // Returns the script's window if it's not detached, and nullptr otherwise.
   LocalDOMWindow* window() const;
   String sourceURL() const;
   String sourceFunctionName() const;
