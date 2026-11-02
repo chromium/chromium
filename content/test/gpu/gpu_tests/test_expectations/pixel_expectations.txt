@@ -542,6 +542,9 @@ crbug.com/558993697 [ android android-pixel-11-pro-xl android-webview-instrument
 crbug.com/286989320 [ linux nvidia ] Pixel_MeetEffects_ar_effect_rainbow_wig_and_eyelashes [ Failure Slow ]
 crbug.com/286989320 [ linux amd-0x7340 ] Pixel_MeetEffects_ar_effect_rainbow_wig_and_eyelashes [ Failure Slow ]
 crbug.com/286989320 [ mac no-clang-coverage no-asan  ] Pixel_MeetEffects_ar_effect_rainbow_wig_and_eyelashes [ Failure Slow ]
+crbug.com/466128059 [ mac apple-angle-metal-renderer:-apple-m2 no-clang-coverage no-asan release ] Pixel_MeetEffects_background_replace_modern_indian_living_room [ RetryOnFailure Slow ]
+crbug.com/466128059 [ mac apple-angle-metal-renderer:-apple-m3 no-clang-coverage no-asan release ] Pixel_MeetEffects_background_replace_modern_indian_living_room [ RetryOnFailure Slow ]
+crbug.com/466128059 [ mac apple-angle-metal-renderer:-apple-m3 no-clang-coverage no-asan release ] Pixel_MeetEffects_web_gpu_background_blur_gpu_mid [ RetryOnFailure Slow ]
 crbug.com/545524954 [ win target-cpu-32 ] Pixel_MeetEffects_ar_effect_rainbow_wig_and_eyelashes [ Failure ]
 crbug.com/579078928 [ win target-cpu-32 ] Pixel_MeetEffects_web_gpu_background_blur_gpu_mid [ Failure ]
 
