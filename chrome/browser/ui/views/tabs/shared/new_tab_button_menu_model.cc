@@ -32,17 +32,23 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabButtonMenuModel,
 NewTabButtonMenuModel::NewTabButtonMenuModel(BrowserWindowInterface* browser)
     : ui::SimpleMenuModel(this), browser_(browser) {
   CHECK(browser_);
+  TabStripModel* const tab_strip_model = browser_->GetTabStripModel();
+  CHECK(tab_strip_model);
 
   // Build the menu.
   AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB_BUTTON_CXMENU_NEW_TAB);
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_NEW_TAB).value(), kNewTab);
-  AddNewTabInGroupItem();
 
-  AddSeparator(ui::NORMAL_SEPARATOR);
+  if (tab_strip_model->SupportsTabGroups()) {
+    AddNewTabInGroupItem();
 
-  AddItemWithStringId(IDC_CREATE_NEW_TAB_GROUP, IDS_NEW_TAB_GROUP);
-  SetElementIdentifierAt(GetIndexOfCommandId(IDC_CREATE_NEW_TAB_GROUP).value(),
-                         kCreateNewTabGroup);
+    AddSeparator(ui::NORMAL_SEPARATOR);
+
+    AddItemWithStringId(IDC_CREATE_NEW_TAB_GROUP, IDS_NEW_TAB_GROUP);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(IDC_CREATE_NEW_TAB_GROUP).value(),
+        kCreateNewTabGroup);
+  }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddNewSplitTabItem();
