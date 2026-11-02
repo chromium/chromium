@@ -18,7 +18,7 @@ export function getHtml(this: LeftHandSideElement) {
       : ''}
   <ntp-iframe id="expanded"
       class="${this.isExpandedReady_ ? 'ready' : ''}"
-      allow="unbounded-element"
+      allow="clipboard-write; unbounded-element"
       style="${this.enableThreadsRailHybrid_
                  ? `width: ${this.expandedWidth_}px;`
                  : ''}"

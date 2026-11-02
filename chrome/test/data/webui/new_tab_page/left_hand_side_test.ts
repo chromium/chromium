@@ -108,7 +108,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       assertTrue(!!iframe);
       assertEquals('NTP-IFRAME', iframe.tagName);
       assertEquals(EXPANDED_LHS_URL, iframe.src);
-      assertEquals('unbounded-element', iframe.allow);
+      assertEquals('clipboard-write; unbounded-element', iframe.allow);
       assertEquals(enableThreadsRailHybrid ? '261px' : '', iframe.style.width);
       // In hybrid mode the host starts at the folded rail's width. In
       // full-iframe mode no width is known until the iframe reports one.
