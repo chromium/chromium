@@ -53,7 +53,7 @@ class ASH_EXPORT PowerButtonMenuCurtainView
   raw_ptr<views::ImageView> enterprise_icon_;
   raw_ptr<views::Label> title_text_;
   raw_ptr<views::Label> description_text_;
-  std::unique_ptr<ash::SystemDecoration> shadow_;
+  std::unique_ptr<ash::SystemDecoration> decoration_;
 };
 
 }  // namespace ash

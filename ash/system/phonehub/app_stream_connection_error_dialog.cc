@@ -23,6 +23,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
@@ -36,7 +37,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
@@ -92,13 +92,10 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
 
     SetBackground(views::CreateSolidBackground(
         static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated)));
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kDialogRoundedCornerRadius,
-        views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
-    view_shadow_ = std::make_unique<views::ViewDecoration>(this);
-    view_shadow_->SetRoundedCornerRadius(kDialogRoundedCornerRadius);
-    view_shadow_->SetShadow(kDialogShadowElevation);
+    view_decoration_ = std::make_unique<views::ViewDecoration>(this);
+    view_decoration_->SetRoundedCornerRadius(kDialogRoundedCornerRadius);
+    view_decoration_->SetShadow(kDialogShadowElevation);
 
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, kDialogContentInsets));
@@ -229,6 +226,14 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
 
   ~ConnectionErrorDialogDelegateView() override = default;
 
+  void OnThemeChanged() override {
+    views::WidgetDelegateView::OnThemeChanged();
+    const ui::ColorProvider* color_provider = GetColorProvider();
+    view_decoration_->SetHighlightBorder(
+        color_provider->GetColor(ui::kColorCrosSystemHighlight),
+        color_provider->GetColor(ui::kColorCrosSystemHighlightBorder1));
+  }
+
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
     return gfx::Size(
@@ -256,7 +261,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
 
  private:
   StartTetheringCallback start_tethering_callback_;
-  std::unique_ptr<views::ViewDecoration> view_shadow_;
+  std::unique_ptr<views::ViewDecoration> view_decoration_;
 
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;

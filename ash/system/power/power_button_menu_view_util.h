@@ -10,7 +10,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -23,10 +22,6 @@ constexpr int kPowerButtonMenuTransformDistanceDp = 16;
 
 // The rounded corner radius of menu.
 constexpr int kPowerButtonMenuCornerRadius = 16;
-
-// The border highlight type for the container.
-constexpr auto kPowerButtonMenuBorderType =
-    views::HighlightBorder::Type::kHighlightBorderOnShadow;
 
 // The color id for widget background.
 constexpr auto kPowerButtonMenuBackgroundColorId = kColorAshShieldAndBase80;

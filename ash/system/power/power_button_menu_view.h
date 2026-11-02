@@ -94,7 +94,7 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   // The physical display side of power button in landscape primary.
   PowerButtonController::PowerButtonPosition power_button_position_;
 
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 };
 
 }  // namespace ash

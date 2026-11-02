@@ -28,7 +28,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -80,8 +79,6 @@ std::u16string MessageText() {
 
 PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
   SetPaintToLayer();
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kPowerButtonMenuCornerRadius, kPowerButtonMenuBorderType));
 
   const ui::ColorId background_color_id =
       chromeos::features::IsSystemBlurEnabled()
@@ -101,10 +98,11 @@ PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   Initialize();
 
-  // Create a system shadow for current view.
-  shadow_ = ash::SystemDecoration::CreateForView(
-      this, ash::SystemDecoration::ShadowType::kElevation12);
-  shadow_->SetRoundedCorners(
+  // Create a system shadow and highlight border decoration for current view.
+  decoration_ = ash::SystemDecoration::CreateForView(
+      this, ash::SystemDecoration::ShadowType::kElevation12,
+      ash::SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
 }
 
@@ -121,7 +119,7 @@ void PowerButtonMenuCurtainView::ScheduleShowHideAnimation(bool show) {
   }
 
   SetLayerAnimation(layer(), this, show, transform);
-  SetLayerAnimation(shadow_->GetLayer(), nullptr, show, transform);
+  SetLayerAnimation(decoration_->GetLayer(), nullptr, show, transform);
 }
 
 void PowerButtonMenuCurtainView::OnThemeChanged() {
