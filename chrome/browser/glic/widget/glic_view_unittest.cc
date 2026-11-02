@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/widget/glic_loading_placeholder_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
+#include "chrome/browser/glic/widget/inactive_view_controller.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -47,14 +48,20 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
@@ -1232,6 +1239,186 @@ TEST_F(GlicViewTest,
   EXPECT_EQ(focus_manager->GetStoredFocusView(), view);
 
   view->SetWebContents(nullptr);
+}
+
+namespace {
+
+gfx::Image CreateTestScreenshot(int width, int height) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(SK_ColorBLUE);
+  bitmap.setImmutable();
+  return gfx::Image::CreateFrom1xBitmap(bitmap);
+}
+
+}  // namespace
+
+TEST_F(
+    GlicViewTest,
+    InactiveViewController_HiddenCaptureSkipsAnimationAndDefersResizeUntilShown) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 380, 500));
+  widget->Show();
+
+  InactiveViewController controller;
+  views::View* root_view = widget->SetContentsView(controller.CreateView());
+  widget->LayoutRootViewIfNecessary();
+  root_view->SetVisible(false);
+
+  ASSERT_GE(root_view->children().size(), 2u);
+  auto* image_view =
+      views::AsViewClass<views::ImageView>(root_view->children()[0]);
+  views::View* scrim_view = root_view->children()[1];
+  ASSERT_NE(image_view, nullptr);
+  ASSERT_NE(scrim_view, nullptr);
+  ASSERT_FALSE(image_view->IsDrawn());
+  ASSERT_EQ(image_view->size(), gfx::Size(380, 500));
+
+  controller.OnScreenshotCaptured(CreateTestScreenshot(760, 1000));
+
+  // When not drawn, OnScreenshotCaptured must not start the 2s SlideAnimation,
+  // must immediately set the scrim to its final opacity, and must defer image
+  // resizing.
+  const float final_opacity = scrim_view->layer()->opacity();
+  EXPECT_GT(final_opacity, 0.0f);
+  EXPECT_LT(final_opacity, 1.0f);
+  EXPECT_TRUE(image_view->GetImageModel().IsEmpty());
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_FLOAT_EQ(scrim_view->layer()->opacity(), final_opacity);
+
+  // Making the view visible triggers OnViewVisibilityChanged and populates the
+  // resized image.
+  root_view->SetVisible(true);
+  ASSERT_TRUE(image_view->IsDrawn());
+  EXPECT_FALSE(image_view->GetImageModel().IsEmpty());
+  EXPECT_EQ(image_view->GetImage().size(), gfx::Size(380, 500));
+}
+
+TEST_F(
+    GlicViewTest,
+    InactiveViewController_UnparentedCapturePopulatesWhenAddedToVisibleWidget) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  InactiveViewController controller;
+  std::unique_ptr<views::View> owned_view = controller.CreateView();
+  views::View* root_view = owned_view.get();
+
+  ASSERT_GE(root_view->children().size(), 2u);
+  auto* image_view =
+      views::AsViewClass<views::ImageView>(root_view->children()[0]);
+  views::View* scrim_view = root_view->children()[1];
+  ASSERT_NE(image_view, nullptr);
+  ASSERT_NE(scrim_view, nullptr);
+  ASSERT_FALSE(image_view->IsDrawn());
+
+  // Simulate screenshot arriving while the side panel container is cached and
+  // detached from the widget during a tab switch.
+  controller.OnScreenshotCaptured(CreateTestScreenshot(760, 1000));
+  const float final_opacity = scrim_view->layer()->opacity();
+  EXPECT_GT(final_opacity, 0.0f);
+  EXPECT_LT(final_opacity, 1.0f);
+  EXPECT_TRUE(image_view->GetImageModel().IsEmpty());
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_FLOAT_EQ(scrim_view->layer()->opacity(), final_opacity);
+
+  // Laying out while still detached from a widget should still defer resizing.
+  root_view->SetBounds(0, 0, 380, 500);
+  views::test::RunScheduledLayout(root_view);
+  ASSERT_FALSE(image_view->IsDrawn());
+  EXPECT_TRUE(image_view->GetImageModel().IsEmpty());
+
+  // Attaching the already-sized view to a visible widget populates the image
+  // via OnViewAddedToWidget.
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 380, 500));
+  widget->Show();
+  widget->SetContentsView(std::move(owned_view));
+  ASSERT_TRUE(image_view->IsDrawn());
+  EXPECT_FALSE(image_view->GetImageModel().IsEmpty());
+  EXPECT_EQ(image_view->GetImage().size(), gfx::Size(380, 500));
+}
+
+TEST_F(
+    GlicViewTest,
+    InactiveViewController_DrawnCaptureAnimatesAndUpdatesImmediatelyAndStopsWhenHidden) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 380, 500));
+  widget->Show();
+
+  InactiveViewController controller;
+  views::View* root_view = widget->SetContentsView(controller.CreateView());
+  widget->LayoutRootViewIfNecessary();
+
+  ASSERT_GE(root_view->children().size(), 2u);
+  auto* image_view =
+      views::AsViewClass<views::ImageView>(root_view->children()[0]);
+  views::View* scrim_view = root_view->children()[1];
+  ASSERT_NE(image_view, nullptr);
+  ASSERT_NE(scrim_view, nullptr);
+  ASSERT_TRUE(image_view->IsDrawn());
+
+  // When drawn, OnScreenshotCaptured starts the animation from 0.0 opacity and
+  // updates the image immediately.
+  controller.OnScreenshotCaptured(CreateTestScreenshot(760, 1000));
+  EXPECT_FLOAT_EQ(scrim_view->layer()->opacity(), 0.0f);
+  EXPECT_FALSE(image_view->GetImageModel().IsEmpty());
+  EXPECT_EQ(image_view->GetImage().size(), gfx::Size(380, 500));
+
+  const gfx::ImageSkia initial_image = image_view->GetImage();
+  ASSERT_FALSE(initial_image.isNull());
+
+  // Origin-only moves while drawn must not trigger a redundant resize.
+  root_view->SetBounds(10, 20, 380, 500);
+  EXPECT_TRUE(image_view->GetImage().BackedBySameObjectAs(initial_image));
+  root_view->SetBounds(0, 0, 380, 500);
+  image_view->SetBounds(10, 20, 380, 500);
+  EXPECT_TRUE(image_view->GetImage().BackedBySameObjectAs(initial_image));
+  image_view->SetBounds(0, 0, 380, 500);
+  EXPECT_TRUE(image_view->GetImage().BackedBySameObjectAs(initial_image));
+
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  const float mid_opacity = scrim_view->layer()->opacity();
+  EXPECT_GT(mid_opacity, 0.0f);
+  EXPECT_LT(mid_opacity, 1.0f);
+
+  // Hiding the view while animating stops the animation and snaps scrim opacity
+  // to its final value.
+  root_view->SetVisible(false);
+  const float final_opacity = scrim_view->layer()->opacity();
+  EXPECT_GT(final_opacity, mid_opacity);
+  EXPECT_LT(final_opacity, 1.0f);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_FLOAT_EQ(scrim_view->layer()->opacity(), final_opacity);
+
+  // Changing bounds while hidden and reverting before showing must not trigger
+  // a redundant resize when shown.
+  ASSERT_FALSE(image_view->IsDrawn());
+  root_view->SetBounds(0, 0, 300, 400);
+  ASSERT_EQ(image_view->size(), gfx::Size(300, 400));
+  root_view->SetBounds(0, 0, 380, 500);
+  ASSERT_EQ(image_view->size(), gfx::Size(380, 500));
+  root_view->SetVisible(true);
+  ASSERT_TRUE(image_view->IsDrawn());
+  EXPECT_EQ(image_view->GetImage().size(), gfx::Size(380, 500));
+  EXPECT_TRUE(image_view->GetImage().BackedBySameObjectAs(initial_image));
+
+  // Changing bounds while hidden without reverting resizes the image when
+  // shown.
+  root_view->SetVisible(false);
+  ASSERT_FALSE(image_view->IsDrawn());
+  root_view->SetBounds(0, 0, 300, 400);
+  ASSERT_EQ(image_view->size(), gfx::Size(300, 400));
+  root_view->SetVisible(true);
+  ASSERT_TRUE(image_view->IsDrawn());
+  EXPECT_EQ(image_view->GetImage().size(), gfx::Size(300, 400));
+  EXPECT_FALSE(image_view->GetImage().BackedBySameObjectAs(initial_image));
 }
 
 }  // namespace glic

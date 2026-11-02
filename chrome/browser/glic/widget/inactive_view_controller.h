@@ -50,6 +50,11 @@ class InactiveViewController : public views::ViewObserver,
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view,
+                               bool visible) override;
+  void OnViewAddedToWidget(views::View* observed_view) override;
+  void OnViewRemovedFromWidget(views::View* observed_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
   void OnViewThemeChanged(views::View* observed_view) override;
 
@@ -69,7 +74,11 @@ class InactiveViewController : public views::ViewObserver,
   // Returns true if the aspect ratio difference requires blurring the image.
   bool IsImageDistorted() const;
 
+  bool IsViewDrawn() const;
+  void OnViewDrawnStateChanged();
+
   void StartScrimAnimation();
+  void SnapScrimToFullOpacity();
 
   // Creates and returns the card view.
   std::unique_ptr<views::View> CreateCardView();
@@ -79,6 +88,9 @@ class InactiveViewController : public views::ViewObserver,
   raw_ptr<views::ImageView> image_view_ = nullptr;
   views::ViewTracker scrim_view_tracker_;
   gfx::ImageSkia screenshot_;
+  // Tracks whether a newly captured `screenshot_` needs to be resized and
+  // applied to `image_view_`.
+  bool is_image_dirty_ = false;
 
   std::unique_ptr<gfx::SlideAnimation> animation_;
   views::ViewTracker card_view_tracker_;

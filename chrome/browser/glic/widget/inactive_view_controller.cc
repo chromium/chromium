@@ -185,8 +185,13 @@ void InactiveViewController::CaptureScreenshot(
 
 void InactiveViewController::OnScreenshotCaptured(gfx::Image screenshot) {
   screenshot_ = screenshot.AsImageSkia();
-  StartScrimAnimation();
-  UpdateImageView();
+  is_image_dirty_ = true;
+  if (IsViewDrawn()) {
+    StartScrimAnimation();
+    UpdateImageView();
+  } else {
+    SnapScrimToFullOpacity();
+  }
 }
 
 base::WeakPtr<InactiveViewController> InactiveViewController::GetWeakPtr() {
@@ -194,7 +199,24 @@ base::WeakPtr<InactiveViewController> InactiveViewController::GetWeakPtr() {
 }
 
 void InactiveViewController::OnViewBoundsChanged(views::View* observed_view) {
-  UpdateImageView();
+  if (image_view_->GetImage().size() != image_view_->size()) {
+    UpdateImageView();
+  }
+}
+
+void InactiveViewController::OnViewVisibilityChanged(views::View* observed_view,
+                                                     views::View* starting_view,
+                                                     bool visible) {
+  OnViewDrawnStateChanged();
+}
+
+void InactiveViewController::OnViewAddedToWidget(views::View* observed_view) {
+  OnViewDrawnStateChanged();
+}
+
+void InactiveViewController::OnViewRemovedFromWidget(
+    views::View* observed_view) {
+  OnViewDrawnStateChanged();
 }
 
 void InactiveViewController::OnViewIsDeleting(views::View* observed_view) {
@@ -216,9 +238,15 @@ void InactiveViewController::AnimationProgressed(
 }
 
 void InactiveViewController::UpdateImageView() {
-  if (!image_view_ || screenshot_.isNull() || image_view_->size().IsEmpty()) {
+  if (!image_view_) {
     return;
   }
+  if ((!is_image_dirty_ &&
+       image_view_->GetImage().size() == image_view_->size()) ||
+      !IsViewDrawn() || screenshot_.isNull() || image_view_->size().IsEmpty()) {
+    return;
+  }
+  is_image_dirty_ = false;
 
   gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
       screenshot_, skia::ImageOperations::RESIZE_BEST, image_view_->size());
@@ -275,7 +303,24 @@ bool InactiveViewController::IsImageDistorted() const {
          kBlurAspectRatioThreshold;
 }
 
+bool InactiveViewController::IsViewDrawn() const {
+  return image_view_ && image_view_->IsDrawn();
+}
+
+void InactiveViewController::OnViewDrawnStateChanged() {
+  if (IsViewDrawn()) {
+    UpdateImageView();
+  } else if (animation_->is_animating()) {
+    SnapScrimToFullOpacity();
+  }
+}
+
 void InactiveViewController::StartScrimAnimation() {
   animation_->Reset();
   animation_->Show();
+}
+
+void InactiveViewController::SnapScrimToFullOpacity() {
+  animation_->Reset(1.0);
+  UpdateScrimOpacity(1.0);
 }
