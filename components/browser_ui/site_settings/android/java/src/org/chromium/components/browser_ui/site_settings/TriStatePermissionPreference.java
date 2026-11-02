@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -90,7 +89,7 @@ public class TriStatePermissionPreference extends ContainedRadioButtonGroupPrefe
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        int type = ContentSettingsType.MAX_VALUE;
+        @ContentSettingsType.EnumType int type = ContentSettingsType.DEFAULT;
         if (getKey().equals("notifications_tri_state_toggle")) {
             type = ContentSettingsType.NOTIFICATIONS;
         } else if (getKey().equals("location_tri_state_toggle")) {
@@ -99,24 +98,18 @@ public class TriStatePermissionPreference extends ContainedRadioButtonGroupPrefe
             assert false : "Should not be reached";
         }
         if (mQuiet.isChecked()) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Permissions.CPSS.SiteSettingsChanged.Quiet",
-                    type,
-                    ContentSettingsType.MAX_VALUE + 1);
+            WebsitePreferenceBridge.recordContentSettingsHistogram(
+                    "Permissions.CPSS.SiteSettingsChanged2.Quiet", type);
             mPrefService.setBoolean(mQuietUiPref, true);
             mPrefService.setBoolean(mCpssPref, false);
         } else if (mCpss.isChecked()) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Permissions.CPSS.SiteSettingsChanged.CPSS",
-                    type,
-                    ContentSettingsType.MAX_VALUE + 1);
+            WebsitePreferenceBridge.recordContentSettingsHistogram(
+                    "Permissions.CPSS.SiteSettingsChanged2.CPSS", type);
             mPrefService.setBoolean(mQuietUiPref, false);
             mPrefService.setBoolean(mCpssPref, true);
         } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Permissions.CPSS.SiteSettingsChanged.Loud",
-                    type,
-                    ContentSettingsType.MAX_VALUE + 1);
+            WebsitePreferenceBridge.recordContentSettingsHistogram(
+                    "Permissions.CPSS.SiteSettingsChanged2.Loud", type);
             mPrefService.setBoolean(mQuietUiPref, false);
             mPrefService.setBoolean(mCpssPref, false);
         }

@@ -1356,6 +1356,14 @@ JNI_WebsitePreferenceBridge_ToHostOnlyPattern(JNIEnv* env,
   return ConvertUTF8ToJavaString(env, host_only_pattern.ToString());
 }
 
+static void JNI_WebsitePreferenceBridge_RecordContentSettingsHistogram(
+    JNIEnv* env,
+    const std::string& histogram_name,
+    int content_settings_type) {
+  content_settings_uma_util::RecordContentSettingsHistogram(
+      histogram_name, static_cast<ContentSettingsType>(content_settings_type));
+}
+
 DEFINE_JNI(GeolocationSetting)
 DEFINE_JNI(PermissionSetting)
 DEFINE_JNI(WebsitePreferenceBridge)

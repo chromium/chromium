@@ -5,9 +5,9 @@
 #include "chrome/browser/content_settings/generated_permission_prompting_behavior_pref.h"
 
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/common/extensions/api/settings_private.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -85,20 +85,21 @@ GeneratedPermissionPromptingBehaviorPref::SetPref(const base::Value* value) {
 
   switch (selection) {
     case SettingsState::kCanPromptWithAlwaysLoudUI:
-      base::UmaHistogramEnumeration("Permissions.CPSS.SiteSettingsChanged.Loud",
-                                    content_settings_type_);
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Permissions.CPSS.SiteSettingsChanged2.Loud", content_settings_type_);
       pref_service->SetBoolean(quiet_ui_pref_name_, /*value=*/false);
       pref_service->SetBoolean(cpss_pref_name_, /*value=*/false);
       break;
     case SettingsState::kCanPromptWithAlwaysQuietUI:
-      base::UmaHistogramEnumeration(
-          "Permissions.CPSS.SiteSettingsChanged.Quiet", content_settings_type_);
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Permissions.CPSS.SiteSettingsChanged2.Quiet",
+          content_settings_type_);
       pref_service->SetBoolean(quiet_ui_pref_name_, /*value=*/true);
       pref_service->SetBoolean(cpss_pref_name_, /*value=*/false);
       break;
     case SettingsState::kCanPromptWithCPSS:
-      base::UmaHistogramEnumeration("Permissions.CPSS.SiteSettingsChanged.CPSS",
-                                    content_settings_type_);
+      content_settings_uma_util::RecordContentSettingsHistogram(
+          "Permissions.CPSS.SiteSettingsChanged2.CPSS", content_settings_type_);
       pref_service->SetBoolean(quiet_ui_pref_name_, /*value=*/false);
       pref_service->SetBoolean(cpss_pref_name_, /*value=*/true);
       break;

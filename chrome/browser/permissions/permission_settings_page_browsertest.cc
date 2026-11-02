@@ -15,6 +15,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -489,8 +490,10 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kLoudButton), TestClickLoud(), Do([&]() {
         histogram_tester.ExpectBucketCount(
-            "Permissions.CPSS.SiteSettingsChanged.Loud",
-            ContentSettingsType::NOTIFICATIONS, 1);
+            "Permissions.CPSS.SiteSettingsChanged2.Loud",
+            content_settings_uma_util::ContentSettingTypeToHistogramValue(
+                ContentSettingsType::NOTIFICATIONS),
+            1);
       }));
 }
 
@@ -502,8 +505,10 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kQuietButton), TestClickQuiet(), Do([&]() {
         histogram_tester.ExpectBucketCount(
-            "Permissions.CPSS.SiteSettingsChanged.Quiet",
-            ContentSettingsType::NOTIFICATIONS, 1);
+            "Permissions.CPSS.SiteSettingsChanged2.Quiet",
+            content_settings_uma_util::ContentSettingTypeToHistogramValue(
+                ContentSettingsType::NOTIFICATIONS),
+            1);
       }));
 }
 
@@ -515,7 +520,9 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kCpssButton), TestClickCPSS(), Do([&]() {
         histogram_tester.ExpectBucketCount(
-            "Permissions.CPSS.SiteSettingsChanged.CPSS",
-            ContentSettingsType::NOTIFICATIONS, 1);
+            "Permissions.CPSS.SiteSettingsChanged2.CPSS",
+            content_settings_uma_util::ContentSettingTypeToHistogramValue(
+                ContentSettingsType::NOTIFICATIONS),
+            1);
       }));
 }

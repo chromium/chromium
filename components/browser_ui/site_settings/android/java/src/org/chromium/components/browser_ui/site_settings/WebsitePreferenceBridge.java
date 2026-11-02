@@ -579,6 +579,13 @@ public class WebsitePreferenceBridge {
         return WebsitePreferenceBridgeJni.get().getSettingSourceFromProviderType(providerType);
     }
 
+    /** Records a linear UMA histogram for the given ContentSettingsType. */
+    public static void recordContentSettingsHistogram(
+            String histogramName, @ContentSettingsType.EnumType int contentSettingsType) {
+        WebsitePreferenceBridgeJni.get()
+                .recordContentSettingsHistogram(histogramName, contentSettingsType);
+    }
+
     public static boolean hasHeuristicDataForTesting(
             BrowserContextHandle browserContextHandle, String origin, int type) {
         return WebsitePreferenceBridgeJni.get()
@@ -767,5 +774,9 @@ public class WebsitePreferenceBridge {
         String toDomainWildcardPattern(String pattern);
 
         String toHostOnlyPattern(String pattern);
+
+        void recordContentSettingsHistogram(
+                @JniType("std::string") String histogramName,
+                @ContentSettingsType.EnumType int contentSettingsType);
     }
 }

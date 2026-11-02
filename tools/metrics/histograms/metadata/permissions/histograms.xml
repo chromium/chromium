@@ -746,7 +746,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.CPSS.SiteSettingsChanged.{Flavor}"
+<histogram name="Permissions.CPSS.SiteSettingsChanged2.{Flavor}"
     enum="ContentType" expires_after="2026-11-29">
   <owner>lyf@chromium.org</owner>
   <owner>elklm@chromium.org</owner>
