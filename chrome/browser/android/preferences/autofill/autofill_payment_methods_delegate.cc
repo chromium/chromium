@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/android/callback_android.h"
+#include "base/check_deref.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -52,9 +53,10 @@ void RunVirtualCardEnrollmentFieldsLoadedCallback(
 }  // namespace
 
 AutofillPaymentMethodsDelegate::AutofillPaymentMethodsDelegate(Profile* profile)
-    : profile_(profile) {
-  personal_data_manager_ =
-      PersonalDataManagerFactory::GetForBrowserContext(profile);
+    : profile_(CHECK_DEREF(profile)),
+      payments_data_manager_(
+          PersonalDataManagerFactory::GetForBrowserContext(profile)
+              ->payments_data_manager()) {
   multiple_request_payments_network_interface_ =
       std::make_unique<payments::MultipleRequestPaymentsNetworkInterface>(
           profile->GetURLLoaderFactory(),
@@ -62,7 +64,7 @@ AutofillPaymentMethodsDelegate::AutofillPaymentMethodsDelegate(Profile* profile)
           profile->IsOffTheRecord());
   virtual_card_enrollment_manager_ =
       std::make_unique<VirtualCardEnrollmentManager>(
-          &personal_data_manager_->payments_data_manager(),
+          &payments_data_manager_.get(),
           multiple_request_payments_network_interface_.get());
 }
 
@@ -80,8 +82,7 @@ void AutofillPaymentMethodsDelegate::InitVirtualCardEnrollment(
     int64_t instrument_id,
     const JavaRef<jobject>& jcallback) {
   const CreditCard* credit_card =
-      personal_data_manager_->payments_data_manager()
-          .GetCreditCardByInstrumentId(instrument_id);
+      payments_data_manager_->GetCreditCardByInstrumentId(instrument_id);
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
       *credit_card, VirtualCardEnrollmentSource::kSettingsPage,
       base::BindOnce(&RunVirtualCardEnrollmentFieldsLoadedCallback,
@@ -109,8 +110,8 @@ void AutofillPaymentMethodsDelegate::UnenrollVirtualCard(
 }
 
 void AutofillPaymentMethodsDelegate::DeleteSavedCvcs(JNIEnv* env) {
-  personal_data_manager_->payments_data_manager().ClearLocalCvcs();
-  personal_data_manager_->payments_data_manager().ClearServerCvcs();
+  payments_data_manager_->ClearLocalCvcs();
+  payments_data_manager_->ClearServerCvcs();
 }
 }  // namespace autofill
 

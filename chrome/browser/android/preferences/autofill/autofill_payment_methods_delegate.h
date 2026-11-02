@@ -10,7 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
@@ -20,7 +20,7 @@ using base::android::JavaRef;
 class Profile;
 
 namespace autofill {
-class PersonalDataManager;
+class PaymentsDataManager;
 class VirtualCardEnrollmentManager;
 
 // Delegate that listens to changes made in the settings related to payment
@@ -48,9 +48,8 @@ class AutofillPaymentMethodsDelegate {
   void DeleteSavedCvcs(JNIEnv* env);
 
  private:
-  raw_ptr<Profile> profile_ = nullptr;  // weak reference
-  raw_ptr<PersonalDataManager> personal_data_manager_ =
-      nullptr;  // weak reference
+  const raw_ref<Profile> profile_;
+  const raw_ref<PaymentsDataManager> payments_data_manager_;
   std::unique_ptr<payments::MultipleRequestPaymentsNetworkInterface>
       multiple_request_payments_network_interface_;
   std::unique_ptr<VirtualCardEnrollmentManager>
