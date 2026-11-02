@@ -16,10 +16,8 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/common/chrome_features.h"
 #include "components/version_info/version_info.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -187,9 +185,6 @@ class SessionEndListenerLinuxTest : public testing::Test {
 
   dbus::ObjectProxy::SignalCallback logind_signal_callback_;
   dbus::ObjectProxy::SignalCallback gnome_signal_callback_;
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kLinuxLogindShutdownInhibitor};
 };
 
 TEST_F(SessionEndListenerLinuxTest, LogindShutdownFlow) {
@@ -279,12 +274,4 @@ TEST_F(SessionEndListenerLinuxTest, ShutdownCancelledReacquiresInhibitor) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(listener->has_inhibitor_for_testing());
   EXPECT_FALSE(session_ended.IsReady());
-}
-
-TEST_F(SessionEndListenerLinuxTest, FeatureDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kLinuxLogindShutdownInhibitor);
-
-  EXPECT_EQ(SessionEndListenerLinux::Create(), nullptr);
 }

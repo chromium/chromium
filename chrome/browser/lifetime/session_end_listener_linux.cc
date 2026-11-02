@@ -8,11 +8,9 @@
 #include <utility>
 
 #include "base/check_is_test.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/common/chrome_features.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/version_info/version_info.h"
 #include "dbus/object_path.h"
@@ -38,9 +36,6 @@ const char SessionEndListenerLinux::kSessionOverSignal[] = "SessionOver";
 
 // static
 std::unique_ptr<SessionEndListenerLinux> SessionEndListenerLinux::Create() {
-  if (!base::FeatureList::IsEnabled(features::kLinuxLogindShutdownInhibitor)) {
-    return nullptr;
-  }
   auto system_bus = dbus_thread_linux::GetSharedSystemBus();
   auto session_bus = dbus_thread_linux::GetSharedSessionBus();
   if (!system_bus && !session_bus) {

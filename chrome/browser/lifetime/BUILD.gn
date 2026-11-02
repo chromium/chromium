@@ -204,7 +204,6 @@ source_set("impl") {
   if (is_linux && use_dbus) {
     sources += [ "session_end_listener_linux.cc" ]
     deps += [
-      "//chrome/common:chrome_features",
       "//components/dbus",
       "//components/version_info",
     ]
@@ -269,7 +268,6 @@ if (!is_android) {
     if (is_linux && use_dbus) {
       sources += [ "session_end_listener_linux_unittest.cc" ]
       deps += [
-        "//chrome/common:chrome_features",
         "//components/dbus",
         "//components/version_info",
         "//dbus:test_support",

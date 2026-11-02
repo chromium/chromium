@@ -29,8 +29,7 @@
 class SessionEndListenerLinux {
  public:
   // Creates and initializes the listener using shared system and session buses.
-  // Returns nullptr if kLinuxLogindShutdownInhibitor is disabled or if no bus
-  // is available.
+  // Returns nullptr if no bus is available.
   static std::unique_ptr<SessionEndListenerLinux> Create();
 
   // For testing with custom buses and a required callback instead of
