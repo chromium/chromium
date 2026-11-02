@@ -2199,6 +2199,24 @@ class ContextualTasksNtpRealboxContextManagementInteractiveUiTest
   // Only stamped into the DOM while the composebox is expanded.
   const DeepQuery kComposeboxDialog = {"ntp-app", "#composeboxDialog"};
 
+  // Inline `ntp-searchbox` ("classic realbox") context menu paths.
+  const DeepQuery kRealboxInlineEntrypoint = {"ntp-app", "ntp-searchbox",
+                                              "#context", "#entrypointButton",
+                                              "#entrypoint"};
+  const DeepQuery kRealboxInlineShareTabsTrigger = {
+      "ntp-app", "ntp-searchbox", "#context",
+      "cr-composebox-contextual-action-menu", "#shareTabsTrigger"};
+  const DeepQuery kRealboxInlineShareTabsFlyout = {
+      "ntp-app", "ntp-searchbox", "#context",
+      "cr-composebox-contextual-action-menu", ".share-tabs-flyout"};
+  const DeepQuery kRealboxComposeboxInput = {
+      "ntp-app", "#composebox", "#composebox", "#composeboxInput", "#input"};
+  const DeepQuery kRealboxSubmitButtonHost = {
+      "ntp-app", "#composebox", "#composebox", "cr-composebox-submit"};
+  const DeepQuery kRealboxSubmitButton = {"ntp-app", "#composebox",
+                                          "#composebox", "cr-composebox-submit",
+                                          "#submitContainer"};
+
   // Opens an NTP in a new foreground tab instrumented as `contents_id` and
   // expands the realbox into the composebox.
   auto OpenNtpComposebox(const ui::ElementIdentifier& contents_id) {
@@ -2208,6 +2226,99 @@ class ContextualTasksNtpRealboxContextManagementInteractiveUiTest
         ExecuteJsAt(contents_id, kComposeButton, "el => el.click()"),
         WaitForElementExists(contents_id, kComposeboxDialog),
         WaitForElementExists(contents_id, kComposeboxContainer));
+  }
+
+  // Clicks the inline "+" button on the collapsed `ntp-searchbox` (without
+  // clicking `#composeButton` first), opens its "Add tabs" flyout, and clicks
+  // the tab matching `matcher`, which expands `#composeboxDialog`.
+  auto SelectTabFromInlineRealboxPlusMenu(
+      const ui::ElementIdentifier& contents_id,
+      std::string_view matcher) {
+    StateChange menu_open;
+    menu_open.type = StateChange::Type::kExistsAndConditionTrue;
+    menu_open.where = kRealboxInlineShareTabsTrigger;
+    menu_open.test_function = "el => !!el.getRootNode().host?.open";
+    menu_open.event = kMenuOpenEvent;
+
+    StateChange flyout_visible;
+    flyout_visible.type = StateChange::Type::kExistsAndConditionTrue;
+    flyout_visible.where = kRealboxInlineShareTabsFlyout;
+    flyout_visible.test_function = "el => !el.hidden";
+    flyout_visible.event = kFlyoutVisibleEvent;
+
+    StateChange tab_button_ready;
+    tab_button_ready.type = StateChange::Type::kExistsAndConditionTrue;
+    tab_button_ready.where = kRealboxInlineShareTabsFlyout;
+    tab_button_ready.test_function = base::StringPrintf(
+        R"(el => {
+          %s
+          return !!findTabBtn(el, %s);
+        })",
+        kFindFlyoutTabButtonJs, base::GetQuotedJSONString(matcher).c_str());
+    tab_button_ready.event = kCheckedReadyEvent;
+
+    return Steps(
+        WaitForElementExists(contents_id, kRealboxInlineEntrypoint),
+        ExecuteJsAt(contents_id, kRealboxInlineEntrypoint, "el => el.click()"),
+        WaitForStateChange(contents_id, menu_open),
+        ExecuteJsAt(contents_id, kRealboxInlineShareTabsTrigger,
+                    R"(el => {
+              el.dispatchEvent(
+                  new PointerEvent('pointerenter', {bubbles: true}));
+              const menu = el.getRootNode().host;
+              if (menu) {
+                menu.pointerOverFlyout_ = true;
+                menu.pointerOverTrigger_ = true;
+                if (typeof menu.cancelCloseTimer_ === 'function') {
+                  menu.cancelCloseTimer_();
+                }
+                if (typeof menu.onShareTabsRowPointerenter_ === 'function') {
+                  menu.onShareTabsRowPointerenter_();
+                }
+                if (typeof menu.setShareTabsFlyoutOpen_ === 'function') {
+                  menu.setShareTabsFlyoutOpen_(true);
+                } else {
+                  menu.shareTabsFlyoutOpen = true;
+                }
+              }
+            })"),
+        WaitForStateChange(contents_id, flyout_visible),
+        WaitForStateChange(contents_id, tab_button_ready),
+        ExecuteJsAt(contents_id, kRealboxInlineShareTabsFlyout,
+                    base::StringPrintf(
+                        R"(el => {
+                  %s
+                  const btn = findTabBtn(el, %s);
+                  btn.click();
+                })",
+                        kFindFlyoutTabButtonJs,
+                        base::GetQuotedJSONString(matcher).c_str())),
+        WaitForElementExists(contents_id, kComposeboxDialog),
+        WaitForElementExists(contents_id, kComposeboxContainer));
+  }
+
+  // Types and submits a query in the expanded NTP composebox.
+  auto SubmitRealboxComposeboxQuery(const ui::ElementIdentifier& contents_id,
+                                    const std::string& query) {
+    StateChange submit_enabled;
+    submit_enabled.type = StateChange::Type::kExistsAndConditionTrue;
+    submit_enabled.where = kRealboxSubmitButtonHost;
+    submit_enabled.test_function = "el => !el.disabled";
+    submit_enabled.event = kSubmitEnabledEvent;
+
+    return Steps(
+        WaitForElementExists(contents_id, kRealboxComposeboxInput),
+        ExecuteJsAt(contents_id, kRealboxComposeboxInput,
+                    base::StringPrintf(
+                        R"((el) => {
+                  el.value = %s;
+                  el.dispatchEvent(new Event('input', { bubbles: true }));
+                  el.dispatchEvent(new Event('change', { bubbles: true }));
+                })",
+                        base::GetQuotedJSONString(query).c_str())),
+        WaitForStateChange(contents_id, submit_enabled),
+        ExecuteJsAt(contents_id, kRealboxSubmitButton, "el => el.click()")
+            .SetMustRemainVisible(false));
   }
 };
 
@@ -2302,6 +2413,83 @@ IN_PROC_BROWSER_TEST_P(
       VerifyMenuTriggerState(kNtpTab, 0),
       VerifyFlyoutTabChecked(kNtpTab, "title1", false),
       VerifyFlyoutTabChecked(kNtpTab, "title2", false));
+}
+
+// Selecting a tab from the collapsed `ntp-searchbox` inline "+" menu expands
+// `#composeboxDialog` and signposts the selected tab across all four surfaces.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksNtpRealboxContextManagementInteractiveUiTest,
+    RealboxClassicInlinePlusButton_AddTabExpandsComposeboxWithSignposting) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpTab);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kFirstTab, 0), NavigateWebContents(kFirstTab, kUrl1),
+      AddInstrumentedTab(kSecondTab, kUrl2),
+      AddInstrumentedTab(kNtpTab, chrome::ChromeUINewTabURLAsGURL()),
+      VerifyUnderlinedTabs({}),
+
+      // Select Tab 0 from the collapsed `ntp-searchbox` inline "+" menu.
+      SelectTabFromInlineRealboxPlusMenu(kNtpTab, "title1"),
+
+      // Verify the composebox expands with Tab 0 signposted across all four
+      // surfaces.
+      WaitForFileUploadsComplete(kNtpTab, 1), VerifyPlusButtonCoins(kNtpTab, 1),
+      VerifyPlusButtonCoinTabs(kNtpTab, {"title1"}), VerifyUnderlinedTabs({0}),
+      OpenShareTabsFlyout(kNtpTab), VerifyMenuTriggerState(kNtpTab, 1),
+      VerifyFlyoutTabChecked(kNtpTab, "title1", true),
+      VerifyFlyoutTabChecked(kNtpTab, "title2", false));
+}
+
+// Submitting a query with attached tabs from the NTP composebox navigates the
+// NTP tab to the AIM page while keeping the attached tabs underlined, and
+// navigating away from the AIM page clears the tab-strip underlines.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksNtpRealboxContextManagementInteractiveUiTest,
+    RealboxSubmitWithTabs_NavigatesToAimAndCleansUpOnExit) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpTab);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kFirstTab, 0), NavigateWebContents(kFirstTab, kUrl1),
+      AddInstrumentedTab(kSecondTab, kUrl2), OpenNtpComposebox(kNtpTab),
+
+      // Attach both tabs and submit a query from the NTP composebox.
+      ToggleFlyoutTab(kNtpTab, "title1"),
+      WaitForFileUploadsComplete(kNtpTab, 1),
+      ToggleFlyoutTab(kNtpTab, "title2"),
+      WaitForFileUploadsComplete(kNtpTab, 2), VerifyUnderlinedTabs({0, 1}),
+      SubmitRealboxComposeboxQuery(kNtpTab, "Compare tabs from NTP"),
+
+      // For signed-in profiles, the navigation is intercepted into the
+      // full-page Contextual Tasks UI (`chrome://contextual-tasks/`), keeping
+      // both attached tabs underlined until the user navigates away. For
+      // signed-out profiles (not Contextual Tasks eligible), the tab navigates
+      // directly to the AIM SERP (`www.google.com`), which exits the NTP
+      // composebox and clears the underlines immediately.
+      GetUserVariation() == UserVariation::kSignedIn
+          ? Steps(WaitForFullTabContextualTasksLoaded(kNtpTab),
+                  VerifyUnderlinedTabs({0, 1}),
+                  NavigateWebContents(kNtpTab, kUrl1), VerifyUnderlinedTabs({}))
+          : Steps(WaitForWebContentsNavigation(kNtpTab),
+                  CheckElement(
+                      kNtpTab,
+                      [](ui::TrackedElement* el) {
+                        return AsInstrumentedWebContents(el)
+                            ->web_contents()
+                            ->GetLastCommittedURL()
+                            .host();
+                      },
+                      std::string(kMockAimPageHost)),
+                  VerifyUnderlinedTabs({})));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
