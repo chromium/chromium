@@ -1142,16 +1142,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </summary>
 </histogram>
 
-<histogram name="Glic.Instance.MemoryUsageAtThreshold" units="MB"
-    expires_after="2026-12-16">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@google.com</owner>
-  <summary>
-    Records the private memory footprint of the Glic instance (sum of WebUI +
-    WebClient) when the hibernation memory threshold is exceeded.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Instance.Session.UninterruptedActiveDuration" units="ms"
     expires_after="2026-12-27">
   <owner>birnie@google.com</owner>
