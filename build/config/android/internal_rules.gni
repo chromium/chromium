@@ -1638,6 +1638,7 @@ if (enable_java_templates) {
     }
 
     if (_proguard_enabled) {
+      not_needed(invoker, [ "allow_chrome_r8" ])
       _proguard_target_name = target_name
 
       proguard(_proguard_target_name) {
@@ -1675,6 +1676,12 @@ if (enable_java_templates) {
       }
     } else {  # !_proguard_enabled
       _is_library = defined(invoker.is_library) && invoker.is_library
+      if (defined(invoker.allow_chrome_r8)) {
+        _allow_chrome_r8 = invoker.allow_chrome_r8
+      } else {
+        # Enable by default for dex merging.
+        _allow_chrome_r8 = !_is_library
+      }
       assert(!(defined(invoker.input_classes_filearg) && _is_library))
       assert(_is_library == defined(invoker.extra_classpath_jars))
       _input_class_jars = []
@@ -1714,6 +1721,9 @@ if (enable_java_templates) {
         outputs = [ invoker.output ]
         inputs = native_image_java_paths_for_inputs +
                  [ _chrome_d8_binary_path ] + _signflinger_inputs
+        if (_allow_chrome_r8) {
+          inputs += [ _chrome_r8_binary_path ]
+        }
         if (!use_native_image_inputs) {
           # Local actions on other hosts run D8 on the JVM. _signflinger_inputs
           # already includes java_paths_for_inputs.
@@ -1758,6 +1768,9 @@ if (enable_java_templates) {
 
         if (_is_library) {
           args += [ "--intermediate" ]
+        }
+        if (_allow_chrome_r8) {
+          args += [ "--allow-chrome-r8" ]
         }
 
         if (defined(invoker.input_dex_filearg)) {
@@ -4462,6 +4475,11 @@ if (enable_java_templates) {
           }
 
           is_library = true
+
+          # For large targets (~1 MiB of .class files), it's faster to use D8
+          # with G1 GC (chrome_r8 --d8), while avoiding staging the larger
+          # binary for small targets.
+          allow_chrome_r8 = len(_source_files) >= 100
 
           # proguard_configs listed on java_library targets need to be marked as
           # inputs to at least one target so that "gn analyze" will know about

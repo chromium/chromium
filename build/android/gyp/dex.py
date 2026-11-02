@@ -27,9 +27,22 @@ _DEX_XMX = '3G'  # Increase this when __final_dex OOMs.
 _CHROME_D8_BINARY_PATH = os.path.join(
     build_utils.DIR_SOURCE_ROOT, 'third_party', 'r8', 'cipd', 'bin', 'chrome_d8'
 )
+_CHROME_R8_BINARY_PATH = os.path.join(
+    build_utils.DIR_SOURCE_ROOT, 'third_party', 'r8', 'cipd', 'bin', 'chrome_r8'
+)
+# Caps G1 GC and D8 thread over-provisioning on many-core hosts.
+_CHROME_R8_MAX_CPUS = 32
+# Bounds G1 heap for ~1.5 MiB shards and medium unsharded intermediates. Not
+# used with chrome_d8 because Serial GC caps young generation to 10% of -Xmx.
+_CHROME_R8_SHARD_XMX_FLAG = '-Xmx256m'
+# chrome_d8 (Serial GC, smaller binary) is faster on small inputs, whereas
+# chrome_r8 --d8 (G1 GC) is faster above ~1 MiB of .class files for library
+# dexing and ~2 MiB of input jars for dex merging.
+_CHROME_R8_INTERMEDIATE_MIN_SIZE = 1024 * 1024
+_CHROME_R8_MERGE_MIN_SIZE = 2 * 1024 * 1024
 # For intermediate dex invocations (_CreateIntermediateDexJar), shard inputs
 # across concurrent GraalVM processes targeting ~1.5 MB per shard to avoid
-# GraalVM Serial GC pauses (e.g. 20.4 MB chrome_java: 5.60s JVM -> 1.18s).
+# GraalVM GC pauses and parallelize dexing.
 _GRAALVM_SHARD_TARGET_SIZE = int(1.5 * 1024 * 1024)
 # Start with a big heap to avoid frequent GCs. Without this, the JVM is faster
 # for large inputs (e.g. 97.6MB dex merge: 16.2s -> 11.3s, vs 13.1s for the
@@ -124,6 +137,12 @@ def _ParseArgs(args):
         '--custom-d8-jar-path',
         required=True,
         help='Path to our customized d8 jar.',
+    )
+    parser.add_argument(
+        '--allow-chrome-r8',
+        action='store_true',
+        help='Allow using the G1-GC chrome_r8 binary (with --d8) when input '
+        'size exceeds the cut-off.',
     )
     parser.add_argument('--desugar', action='store_true')
     parser.add_argument(
@@ -435,20 +454,20 @@ def _ClassFileNestPrefix(class_path):
     return base
 
 
-def _PartitionClassEntriesIntoShards(jar_class_entries, target_shard_size):
+def _PartitionClassEntriesIntoShards(
+    jar_class_entries, target_shard_size, total_size
+):
     """Partitions .class entries into balanced shards, keeping nests together.
 
     Args:
       jar_class_entries: Dict of {jar_path: [(entry_name, file_size), ...]}.
       target_shard_size: Target uncompressed byte size per shard.
+      total_size: Total uncompressed .class byte size across jar_class_entries.
 
     Returns:
       List of shard dicts, each mapping {jar_path: [entry_name, ...]}, or an
       empty list if the input fits in a single shard.
     """
-    total_size = sum(
-        sz for entries in jar_class_entries.values() for _, sz in entries
-    )
     num_shards = min(
         os.cpu_count() or 8,
         max(1, round(total_size / target_shard_size)),
@@ -494,18 +513,36 @@ def _BuildJarInputArgs(shard_map, jar_class_entries):
 def _CreateIntermediateDexJar(
     options,
     tmp_dir,
-    dex_cmd,
+    d8_flags,
     output_jar,
     jar_class_entries,
     services_map,
 ):
+    total_class_size = sum(
+        sz for entries in jar_class_entries.values() for _, sz in entries
+    )
     num_classes = sum(len(v) for v in jar_class_entries.values())
-    logging.debug('Class entries to dex: %d', num_classes)
+    logging.debug(
+        'Class entries to dex: %d (%d bytes)', num_classes, total_class_size
+    )
 
+    use_chrome_r8 = (
+        options.allow_chrome_r8
+        and total_class_size >= _CHROME_R8_INTERMEDIATE_MIN_SIZE
+    )
     shards = _PartitionClassEntriesIntoShards(
-        jar_class_entries, _GRAALVM_SHARD_TARGET_SIZE
+        jar_class_entries, _GRAALVM_SHARD_TARGET_SIZE, total_class_size
     )
     if len(shards) <= 1:
+        dex_cmd = (
+            _BuildLauncherCmd(
+                options,
+                use_native_binary=True,
+                use_chrome_r8=use_chrome_r8,
+                small_heap=total_class_size <= 2 * _GRAALVM_SHARD_TARGET_SIZE,
+            )
+            + d8_flags
+        )
         _CreateFinalDex(
             options.class_inputs,
             output_jar,
@@ -520,7 +557,16 @@ def _CreateIntermediateDexJar(
     shard_jars = [
         os.path.join(tmp_dir, f'shard_{i}.dex.jar') for i in range(len(shards))
     ]
-    shard_dex_cmd = [a for a in dex_cmd if a != _GRAALVM_XMS_FLAG]
+    shard_dex_cmd = (
+        _BuildLauncherCmd(
+            options,
+            use_native_binary=True,
+            use_chrome_r8=use_chrome_r8,
+            num_shards=len(shards),
+            small_heap=True,
+        )
+        + d8_flags
+    )
 
     def run_shard(idx):
         cmd_args = _BuildJarInputArgs(shards[idx], jar_class_entries)
@@ -598,6 +644,64 @@ def MergeDexAndServices(
             dex_idx += 1
 
 
+def _BuildLauncherCmd(
+    options,
+    use_native_binary,
+    use_chrome_r8=False,
+    num_shards=1,
+    small_heap=False,
+):
+    extra_sys_props = []
+    if logging.getLogger().isEnabledFor(logging.DEBUG):
+        extra_sys_props.append('-Dcom.android.tools.r8.printtimes=1')
+    if options.dump_inputs:
+        extra_sys_props.append(
+            '-Dcom.android.tools.r8.dumpinputtofile=d8inputs.zip'
+        )
+
+    if not use_native_binary:
+        cmd = build_utils.JavaCmd(xmx=_DEX_XMX)
+
+        # As of Feb 2026, a hyperfine benchmark of dexing chrome_java:
+        # Without flags: 7.744 s ± 0.177 s [User: 161.982 s, System: 8.416 s]
+        # With flags:    6.579 s ± 0.057 s [User:  37.612 s, System: 8.015 s]
+        cmd += ['-XX:TieredStopAtLevel=1'] + extra_sys_props
+        if options.skip_custom_d8:
+            return cmd + ['-cp', options.r8_jar_path, 'com.android.tools.r8.D8']
+        return cmd + [
+            '-cp',
+            f'{options.r8_jar_path}:{options.custom_d8_jar_path}',
+            'org.chromium.build.ChromeD8',
+        ]
+
+    cpu_count = os.cpu_count() or 8
+    thread_count = (
+        min(_CHROME_R8_MAX_CPUS, max(1, cpu_count // num_shards))
+        if num_shards > 1
+        else None
+    )
+    binary = _CHROME_R8_BINARY_PATH if use_chrome_r8 else _CHROME_D8_BINARY_PATH
+    cmd = [binary, f'-Djava.home={build_utils.JAVA_HOME}']
+    if not use_chrome_r8:
+        if num_shards == 1:
+            cmd += [_GRAALVM_XMS_FLAG]
+    else:
+        if small_heap:
+            cmd += [_CHROME_R8_SHARD_XMX_FLAG]
+        else:
+            cmd += [_GRAALVM_XMS_FLAG, f'-Xmx{_DEX_XMX}']
+        if num_shards > 1:
+            cmd += [f'-XX:ActiveProcessorCount={max(2, thread_count)}']
+        elif cpu_count > _CHROME_R8_MAX_CPUS:
+            cmd += [f'-XX:ActiveProcessorCount={_CHROME_R8_MAX_CPUS}']
+    cmd += extra_sys_props
+    if use_chrome_r8:
+        cmd.append('--d8')
+    if thread_count is not None:
+        cmd += ['--thread-count', str(thread_count)]
+    return cmd
+
+
 def main(args):
     build_utils.InitLogging('DEX_DEBUG')
     options = _ParseArgs(args)
@@ -607,75 +711,42 @@ def main(args):
 
     depfile_deps = options.class_inputs_filearg + options.dex_inputs_filearg
 
-    use_chrome_d8_binary = (
+    use_native_binary = (
         not options.skip_custom_d8
         and sys.platform == 'linux'
         and platform.machine() == 'x86_64'
     )
-    if use_chrome_d8_binary:
-        dex_cmd = [
-            _CHROME_D8_BINARY_PATH,
-            f'-Djava.home={build_utils.JAVA_HOME}',
-            _GRAALVM_XMS_FLAG,
-        ]
-    else:
-        dex_cmd = build_utils.JavaCmd(xmx=_DEX_XMX)
 
-        # As of Feb 2026, a hyperfine benchmark of dexing chrome_java:
-        # Without flags:
-        # Time (mean ± σ): 7.744 s ±  0.177 s   [User: 161.982 s, System: 8.416 s]
-        # With flags:
-        # Time (mean ± σ): 6.579 s ±  0.057 s   [User: 37.612 s, System: 8.015 s]
-        dex_cmd += ['-XX:TieredStopAtLevel=1']
-
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
-        dex_cmd += ['-Dcom.android.tools.r8.printtimes=1']
-
-    if options.dump_inputs:
-        dex_cmd += ['-Dcom.android.tools.r8.dumpinputtofile=d8inputs.zip']
-
-    if options.skip_custom_d8:
-        dex_cmd += [
-            '-cp',
-            options.r8_jar_path,
-            'com.android.tools.r8.D8',
-        ]
-    elif not use_chrome_d8_binary:
-        dex_cmd += [
-            '-cp',
-            f'{options.r8_jar_path}:{options.custom_d8_jar_path}',
-            'org.chromium.build.ChromeD8',
-        ]
-
+    d8_flags = []
     if options.release:
-        dex_cmd += ['--release']
+        d8_flags += ['--release']
     elif options.intermediate:
-        dex_cmd += ['--intermediate']
+        d8_flags += ['--intermediate']
         # Discard global synthetics (e.g. from record desugaring). The final
         # dex step adds them all back via global_synthetics.dex.jar from the
         # r8 CIPD package (see third_party/r8/3pp/3pp.py).
-        dex_cmd += ['--ignore-globals']
+        d8_flags += ['--ignore-globals']
     if options.min_api:
-        dex_cmd += ['--min-api', options.min_api]
+        d8_flags += ['--min-api', options.min_api]
 
     if not options.desugar:
-        dex_cmd += ['--no-desugaring']
+        d8_flags += ['--no-desugaring']
     elif options.classpath:
         # The classpath is used by D8 for interface desugaring.
         depfile_deps += options.classpath
         for path in options.classpath:
-            dex_cmd += ['--classpath', path]
+            d8_flags += ['--classpath', path]
 
     if options.classpath:
-        dex_cmd += ['--lib', build_utils.JAVA_HOME]
+        d8_flags += ['--lib', build_utils.JAVA_HOME]
         for path in options.bootclasspath:
-            dex_cmd += ['--lib', path]
+            d8_flags += ['--lib', path]
         depfile_deps += options.bootclasspath
 
     if options.assertion_handler:
-        dex_cmd += ['--force-assertions-handler:' + options.assertion_handler]
+        d8_flags += ['--force-assertions-handler:' + options.assertion_handler]
     if options.force_enable_assertions:
-        dex_cmd += ['--force-enable-assertions']
+        d8_flags += ['--force-enable-assertions']
 
     with (
         build_utils.TempDir() as tmp_dir,
@@ -685,7 +756,7 @@ def main(args):
             options.intermediate
             and options.class_inputs
             and not options.dex_inputs
-            and use_chrome_d8_binary
+            and use_native_binary
             and not options.dump_inputs
         ):
             jar_class_entries, class_service_jars = _ScanClassInputJars(
@@ -695,13 +766,25 @@ def main(args):
             _CreateIntermediateDexJar(
                 options,
                 tmp_dir,
-                dex_cmd,
+                d8_flags,
                 output.name,
                 jar_class_entries,
                 services_map,
             )
         else:
             d8_inputs = options.class_inputs + options.dex_inputs
+            use_chrome_r8 = False
+            if use_native_binary and options.allow_chrome_r8:
+                total_input_size = sum(os.path.getsize(p) for p in d8_inputs)
+                use_chrome_r8 = total_input_size >= _CHROME_R8_MERGE_MIN_SIZE
+            dex_cmd = (
+                _BuildLauncherCmd(
+                    options,
+                    use_native_binary=use_native_binary,
+                    use_chrome_r8=use_chrome_r8,
+                )
+                + d8_flags
+            )
             _CreateFinalDex(
                 d8_inputs,
                 output.name,
