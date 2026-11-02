@@ -10068,6 +10068,7 @@
 <translation id="8708000541097332489">Մաքրել ելնելիս</translation>
 <translation id="870805141700401153">Microsoftի Առանձին կոդի ստորագրում</translation>
 <translation id="8708671767545720562">&amp;Լրացուցիչ տեղեկություններ</translation>
+<translation id="8709234440040320647">(մեկուսացված ռեժիմ)</translation>
 <translation id="8709368517685334931">Ավելի հին գույներ կարող եք գտնել Chrome Web Store-ում</translation>
 <translation id="8710414664106871428">Երևակայական</translation>
 <translation id="8711402221661888347">Համբուրգեր</translation>
@@ -10232,6 +10233,7 @@
 <translation id="8836360711089151515">Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է պահուստավորեք ձեր տվյալները և վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը 1 շաբաթվա ընթացքում։ <ph name="LINK_BEGIN" />Դիտել մանրամասները<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Լքել խումբը}one{Լքել խումբը}other{Լքել խմբերը}}</translation>
 <translation id="8836782447513334597">շարունակելու</translation>
+<translation id="8837072669197607689">Թույլատրել մեկուսացված ռեժիմում</translation>
 <translation id="8837573527470979311">Տեղերով փոխել ներքևի դիտակերպի հետ</translation>
 <translation id="8838601485495657486">Ոչ թափանցիկ</translation>
 <translation id="8838770651474809439">Համբուրգեր</translation>

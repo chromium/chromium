@@ -187,6 +187,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2799223571221894425">Vnovičen zagon</translation>
 <translation id="2803971713792056305">Vaš Chromium</translation>
 <translation id="2816462166102338036">Iščite ta videoposnetek s slikovnim iskanjem</translation>
+<translation id="2819844767470613567">Opozorilo: Chromium razširitvam ne more preprečiti beleženja zgodovine brskanja. Če želite onemogočiti to razširitev v izoliranem načinu, počistite to možnost.</translation>
 <translation id="282591729717417030">Z aplikacijo Chromium v sistemu iOS odkrivajte izdelke s fotoaparatom, spremljajte znižanja cen in več tudi na poti.</translation>
 <translation id="2841525013647267359">Prevedi iz jezika</translation>
 <translation id="2846251086934905009">Napaka pri namestitvi: Namestitveni program se ni dokončal. Namestitev je bila prekinjena.</translation>
@@ -483,6 +484,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5889361821821684993">Chromium redno preverja, ali so v brskalniku na voljo najvarnejše nastavitve Če boste morali kaj pregledati, vam bomo sporočili.</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5896077214220653386">Gemini Enterprise v Chromiumu</translation>
+<translation id="5900507321340749588">Chromium lahko za omogočanje funkcij, kot je zaznavanje prevar, uporablja modele umetne inteligence, ki se izvajajo neposredno v vaši napravi. Če je to izklopljeno, te funkcije morda ne bodo delovale. <ph name="BEGIN_LINK" />Preberite več o umetni inteligenci v napravi<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Prijava v omrežje</translation>
 <translation id="5924017743176219022">Vzpostavljanje povezave z internetom …</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>

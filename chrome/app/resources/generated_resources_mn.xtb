@@ -684,6 +684,7 @@
 <translation id="1523279371236772909">Өнгөрсөн сард үзсэн</translation>
 <translation id="1523978563989812243">Бичвэрийг-ярианд-хувиргах хөдөлгүүр</translation>
 <translation id="1524563461097350801">Үгүй, баярлалаа</translation>
+<translation id="1524903662136734524">Драйваас нэмэх</translation>
 <translation id="1525740877599838384">Байршлыг тогтоохын тулд зөвхөн Wi-Fi ашиглах</translation>
 <translation id="1526274304859009691"><ph name="DEVICE" />-с өргөтгөл болон бусад зүйлээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="1526560967942511387">Гарчиггүй баримт бичиг</translation>
@@ -3207,6 +3208,7 @@
 <translation id="3436118221454753036">ХОУ-аас асуух горим</translation>
 <translation id="3437397693214267762">Outlook Календарь, SharePoint, OneDrive-н файлуудаа харна уу</translation>
 <translation id="3437494162908353428">DevTools-г энэ URL-д зөвшөөрдөггүй.</translation>
+<translation id="3437498061222607130">Та <ph name="USER_EMAIL" /> бүртгэлээрээ Хайлтад нэвтэрсэн байна</translation>
 <translation id="3438633801274389918">Нинжа</translation>
 <translation id="3439153939049640737"><ph name="HOST" />-д таны микрофон руу нэвтрэхийг үргэлж зөвшөөрөх</translation>
 <translation id="3439970425423980614">PDF-ийг урьдчилан харах горимд нээж байна</translation>
@@ -5033,6 +5035,7 @@
 <translation id="4823484602432206655">Хэрэглэгч болон төхөөрөмжийн тохиргоог уншиж, өөрчлөх</translation>
 <translation id="4824037980212326045">Linux-н нөөцлөлт болон сэргээлт</translation>
 <translation id="4824263260587281352"><ph name="KEY_COMBINATION" /> түлхүүрийн хослолыг өөрчлөх</translation>
+<translation id="4824320026281030716">Google Бүртгэл: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Синкийг цуцлах уу?</translation>
 <translation id="4825462365587146530">Шинэ табд Chrome Root Store-н талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="4825532258163983651">Нууц үгийг устгах боломжгүй</translation>
@@ -7886,6 +7889,7 @@
 <translation id="7030304022046916278">URL-г шалгуулахаар Аюулгүй үзэх рүү илгээнэ</translation>
 <translation id="7030695672997239647">Таб дээр баруун талыг товшоод, "Табыг бүлэгт нэмэх"-ийг сонгоод, дараа нь "Шинэ бүлэг"-ийг сонгоно уу</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Цуваа портыг холбосон</translation>
+<translation id="7032334023419126809">Google Бүртгэл: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">Оролт дээд тал нь 62 тэмдэгттэй байх ёстой</translation>
 <translation id="7033731598469029604">Автомат хөтөч</translation>
 <translation id="70356134210715500">Нэвтрэх түлхүүрээ авах</translation>
@@ -9409,6 +9413,7 @@
 <translation id="8199300056570174101">Сүлжээ (Үйлчилгээ) болон Төхөөрөмжийн тодруулга</translation>
 <translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8202827109322349110">Үндсэн засварлагчид нээх</translation>
+<translation id="8203105157044679380">Google Хайлтын самбар</translation>
 <translation id="8203152941016626022">Ойролцоо хуваалцах төхөөрөмжийн нэр</translation>
 <translation id="8203732864715032075">Энэ компьютерийг Мессежэд санахын тулд танд мэдэгдэл болон өгөгдмөлийг илгээнэ. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Баруун талыг товших</translation>
@@ -10079,6 +10084,7 @@
 <translation id="8708000541097332489">Гарахад устга</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">&amp; Илүү их мэдээлэл</translation>
+<translation id="8709234440040320647">(Тусгаарлагдсан горим)</translation>
 <translation id="8709368517685334931">Та Chrome Веб Дэлгүүрээс хуучин өнгөнүүдийг олох боломжтой</translation>
 <translation id="8710414664106871428">Уран зөгнөлт</translation>
 <translation id="8711402221661888347">Pickles</translation>
@@ -10220,6 +10226,7 @@
 <translation id="8818152010000655963">Дэлгэцийн зураг</translation>
 <translation id="8818988764764862764">Цонхыг зүүн тийш зөөсөн</translation>
 <translation id="8819510664278523111">Таны төхөөрөмжийн EID нь <ph name="EID_NUMBER" />, төхөөрөмжийн IMEI нь <ph name="IMEI_NUMBER" /> бөгөөд төхөөрөмжийн серийн дугаар нь <ph name="SERIAL_NUMBER" /> юм. Эдгээр дугаарыг үйлчилгээг идэвхжүүлэхэд туслахад ашиглаж болно.</translation>
+<translation id="8819762137851963556">Хулганын курсорыг олох</translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>
 <translation id="8821045908425223359">IP хаягийг автоматаар тохируулах</translation>
 <translation id="8821206216942230957">Таны бүртгэл Chrome дахь Gemini-д хандах эрхгүй байна</translation>
@@ -10240,6 +10247,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> танаас 1 долоо хоногийн дотор өгөгдлөө хуулбарлаж, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна. <ph name="LINK_BEGIN" />Дэлгэрэнгүйг харах<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Бүлгээс гарах}other{Бүлгүүдээс гарах}}</translation>
 <translation id="8836782447513334597">үргэлжлүүлэх</translation>
+<translation id="8837072669197607689">Тусгаарлагдсан горимд зөвшөөрөх</translation>
 <translation id="8837573527470979311">Доод талын харагдах байдлаар солих</translation>
 <translation id="8838601485495657486">Тунгалаг бус</translation>
 <translation id="8838770651474809439">Гамбургер</translation>

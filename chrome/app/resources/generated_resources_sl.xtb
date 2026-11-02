@@ -10094,6 +10094,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8708000541097332489">Izbriši ob izhodu</translation>
 <translation id="870805141700401153">Microsoftovo podpisovanje posamezne kode</translation>
 <translation id="8708671767545720562">&amp;Več informacij</translation>
+<translation id="8709234440040320647">(Izolirani način)</translation>
 <translation id="8709368517685334931">Starejše barve lahko najdete v Spletni trgovini Chrome</translation>
 <translation id="8710414664106871428">Fantazija</translation>
 <translation id="8711402221661888347">Kumarice</translation>
@@ -10258,6 +10259,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="8836360711089151515"><ph name="MANAGER" /> zahteva, da naredite varnostno kopijo podatkov in vrnete to napravo <ph name="DEVICE_TYPE" /> v enem tednu. <ph name="LINK_BEGIN" />Ogled podrobnosti<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Zapusti skupino}one{Zapusti skupine}two{Zapusti skupine}few{Zapusti skupine}other{Zapusti skupine}}</translation>
 <translation id="8836782447513334597">nadaljevati</translation>
+<translation id="8837072669197607689">Dovoli v izoliranem načinu</translation>
 <translation id="8837573527470979311">Zamenjava s pogledom z dna</translation>
 <translation id="8838601485495657486">Neprosojno</translation>
 <translation id="8838770651474809439">Hamburger</translation>
@@ -10548,6 +10550,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="9043767139743235992">Stik z Googlovo skupino za podporo invalidnim osebam</translation>
 <translation id="9044646465488564462">Z omrežjem se ni bilo mogoče povezati: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Vaš bralni seznam je premaknjen v novo stransko podokno. Preizkusite.</translation>
+<translation id="9046240419485318563">Brskanje po spominu</translation>
 <translation id="9048745018038487540">Izberi vse pisave</translation>
 <translation id="9050666287014529139">Geslo</translation>
 <translation id="905137631551495997">Razširitve</translation>

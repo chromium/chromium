@@ -186,6 +186,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2799223571221894425">Znova spustiť</translation>
 <translation id="2803971713792056305">Váš prehliadač Chromium</translation>
 <translation id="2816462166102338036">Vyhľadať toto video pomocou vyhľadávania podľa obrázkov</translation>
+<translation id="2819844767470613567">Upozornenie: Chromium nemôže zabrániť rozšíreniam v zaznamenávaní vašej histórie prehliadania. Ak chcete rozšírenie v izolovanom režime zakázať, zrušte výber tejto možnosti.</translation>
 <translation id="282591729717417030">Objavujte produkty pomocou kamery, sledujte poklesy cien a využívajte ďalšie funkcie na cestách s Chromiom v systéme iOS.</translation>
 <translation id="2841525013647267359">Preložiť z jazyka</translation>
 <translation id="2846251086934905009">Chyba inštalácie: inštalátor nebol dokončený. Inštalácia bola prerušená.</translation>
@@ -480,6 +481,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="5889361821821684993">Chromium vykonáva pravidelné kontroly s cieľom uistiť sa, že v prehliadači máte najbezpečnejšie nastavenia. Ak bude treba, aby ste niečo skontrolovali, oznámime vám to.</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="5896077214220653386">Gemini Enterprise v prehliadači Chromium</translation>
+<translation id="5900507321340749588">Chromium môže pomocou modelov umelej inteligencie, ktoré sa spúšťajú priamo vo vašom zariadení, poskytovať funkcie, ako je detekcia podvodov. Keď je toto nastavenie vypnuté, tieto funkcie nemusia fungovať. <ph name="BEGIN_LINK" />Ďalšie informácie o umelej inteligencii v zariadení<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – prihlásenie do siete</translation>
 <translation id="5924017743176219022">Pripája sa k internetu…</translation>
 <translation id="5941711191222866238">Minimalizovať</translation>

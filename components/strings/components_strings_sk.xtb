@@ -2231,6 +2231,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4732860731866514038">Sťahuje sa jazykový balíček <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992">Web <ph name="URL" /> chce používať polohu vášho zariadenia</translation>
 <translation id="473414950835101501">Používať vaše kamery</translation>
+<translation id="4735688073239574197">Prejsť nadol</translation>
 <translation id="4736089601076994090">Vyprší: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Reštartujte Chromium</translation>
 <translation id="4736934858538408121">Virtuálna karta</translation>
@@ -3067,6 +3068,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6097297436119286254">Overte svoju totožnosť, aby sa mohli doplniť vaše platobné údaje</translation>
 <translation id="6099269767116481177">22 × 29,5 palca</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Tieto pravidlá sú určené na použitie na úrovni počítača. Správanie týchto pravidiel pri použití ako pravidiel pre používateľov nie je oficiálne podporované a ich podpora bude ukončená.</translation>
 <translation id="6105460996796456817">Vytvoriť web</translation>
 <translation id="6105511947520166941">Nabudúce plaťte cez Pix priamo v Chrome</translation>
 <translation id="6105745639559695088">Prepnúť bočný panel</translation>

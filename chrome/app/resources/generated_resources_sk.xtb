@@ -10059,6 +10059,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8708000541097332489">Vymazať po ukončení</translation>
 <translation id="870805141700401153">Komerčné podpisovanie kódu Microsoft</translation>
 <translation id="8708671767545720562">Ďalšie &amp;informácie</translation>
+<translation id="8709234440040320647">(Izolovaný režim)</translation>
 <translation id="8709368517685334931">Staršie farby nájdete v Internetovom obchode Chrome</translation>
 <translation id="8710414664106871428">Fantasy</translation>
 <translation id="8711402221661888347">Kyslé uhorky</translation>
@@ -10222,6 +10223,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8836360711089151515"><ph name="MANAGER" /> vyžaduje, aby ste zálohovali svoje údaje a zariadenie <ph name="DEVICE_TYPE" /> do týždňa vrátili. <ph name="LINK_BEGIN" />Zobraziť podrobnosti<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Opustiť skupinu}few{Opustiť skupiny}many{Leave Groups}other{Opustiť skupiny}}</translation>
 <translation id="8836782447513334597">pokračovať</translation>
+<translation id="8837072669197607689">Povoliť v izolovanom režime</translation>
 <translation id="8837573527470979311">Vymeniť s dolným zobrazením</translation>
 <translation id="8838601485495657486">Nepriehľadné</translation>
 <translation id="8838770651474809439">Hamburger</translation>
@@ -10512,6 +10514,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9043767139743235992">Kontaktovať podporu Google pre ľudí s postihnutím</translation>
 <translation id="9044646465488564462">Nepodarilo sa pripojiť k sieti: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Čitateľský zoznam bol presunutý na nový bočný panel. Vyskúšajte ho tu.</translation>
+<translation id="9046240419485318563">Prehliadať pamäť</translation>
 <translation id="9048745018038487540">Vybrať všetky písma</translation>
 <translation id="9050666287014529139">Prístupová fráza</translation>
 <translation id="905137631551495997">Rozšírenia</translation>
