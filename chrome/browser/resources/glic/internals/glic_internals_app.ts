@@ -24,6 +24,7 @@ import {                            //
   browserProxyFactory,              //
   FreCompletionWaitMode,            //
   GlicExperimentalTriggeringState,  //
+  GlicProviderType,                 //
 } from '../glic_internals.mojom-webui.js';
 import type {                                   //
              BrowserProxy,                      //
@@ -532,11 +533,15 @@ export class GlicInternalsAppElement extends CrLitElement {
         GlicExperimentalTriggeringState.kReady;
   }
 
-  protected getTableData_(): Array<{label: string, value: boolean}> {
+  protected getTableData_():
+      Array<{label: string, value: boolean, skipped?: boolean}> {
     if (!this.data_ || !this.data_.enablement) {
       return [];
     }
 
+    // The Gemini account eligibility checks are skipped for some providers
+    // (e.g. Gemini Enterprise), and then read as passed.
+    const skipped = !this.data_.enablement.geminiAccountEligibilityChecked;
     return [
       {
         label: 'Enabled by Chrome Flags',
@@ -549,27 +554,33 @@ export class GlicInternalsAppElement extends CrLitElement {
       {
         label: 'Pref or flag based rollout (flag or pref) applies',
         value: this.data_.enablement.isRolledOut,
+        skipped,
       },
       {
         label: 'Account exists and has the Gemini in Chrome capability',
         value: this.data_.enablement.primaryAccountIsCapable,
+        skipped,
       },
       {
         label: 'Account exists and is fully signed-in',
         value: this.data_.enablement.primaryAccountIsFullySignedIn,
+        skipped,
       },
       {
         label:
             'Chrome Enterprise policy allows this feature (or doesn\'t apply)',
         value: this.data_.enablement.allowedByChromePolicy,
+        skipped,
       },
       {
         label: 'Server side admin allows this feature',
         value: this.data_.enablement.allowedByRemoteAdmin,
+        skipped,
       },
       {
         label: 'Server side allows this feature (Not admin policy)',
         value: this.data_.enablement.allowedByRemoteOther,
+        skipped,
       },
       {
         label: 'User did pass the FRE',
@@ -918,6 +929,14 @@ export class GlicInternalsAppElement extends CrLitElement {
       default:
         return 'Unknown';
     }
+  }
+
+  protected isGeminiEnterprise_(): boolean {
+    return this.data_?.provider === GlicProviderType.kGeminiEnterprise;
+  }
+
+  protected getProviderName_(): string {
+    return this.isGeminiEnterprise_() ? 'Gemini Enterprise' : 'Gemini';
   }
 
   protected getDebugSettingsData_():

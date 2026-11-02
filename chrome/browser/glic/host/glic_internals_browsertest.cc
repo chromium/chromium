@@ -6,9 +6,12 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic_internals.mojom.h"
+#include "chrome/browser/glic/host/glic_internals_page_handler.h"
 #include "chrome/browser/glic/host/glic_internals_ui.h"
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/public/features.h"
@@ -28,6 +31,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace glic {
 
@@ -63,6 +67,18 @@ void RevokeGlicConsentFromInternals(content::WebContents* contents,
   )js";
   ASSERT_EQ("ok", content::EvalJs(contents, kRevokeGlicConsent));
   run_loop.Run();
+}
+
+// Returns the data that chrome://glic/internals' page handler reports for the
+// profile of `contents`.
+mojom::InternalsDataPayloadPtr GetInternalsData(
+    content::WebContents* contents) {
+  mojo::Remote<mojom::InternalsPageHandler> remote;
+  GlicInternalsPageHandler handler(contents,
+                                   remote.BindNewPipeAndPassReceiver());
+  base::test::TestFuture<mojom::InternalsDataPayloadPtr> future;
+  remote->GetInternalsDataPayload(future.GetCallback());
+  return future.Take();
 }
 
 }  // namespace
@@ -134,6 +150,36 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsGeicBrowserTest,
             std::to_underlying(prefs::FreStatus::kCompleted));
   EXPECT_EQ(local_state->GetInteger(prefs::kGlicDefaultHotkeyScope),
             std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest, ReportsGeminiProvider) {
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
+
+  mojom::InternalsDataPayloadPtr data =
+      GetInternalsData(chrome_test_utils::GetActiveWebContents(this));
+
+  EXPECT_EQ(data->provider, mojom::GlicProviderType::kGemini);
+  EXPECT_TRUE(data->enablement->gemini_account_eligibility_checked);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInternalsGeicBrowserTest, ReportsGeicProvider) {
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile),
+            GlicProvider::kGeminiEnterprise);
+  content::WebContents* contents =
+      chrome_test_utils::GetActiveWebContents(this);
+
+  mojom::InternalsDataPayloadPtr data = GetInternalsData(contents);
+  EXPECT_EQ(data->provider, mojom::GlicProviderType::kGeminiEnterprise);
+  // Gemini Enterprise skips the Gemini account eligibility checks.
+  EXPECT_FALSE(data->enablement->gemini_account_eligibility_checked);
+
+  // `fre_is_consented` reads the GEiC FRE.
+  EXPECT_FALSE(data->enablement->fre_is_consented);
+  GetGlicProviderSpec(profile).GetFreStore().SetStatus(
+      profile, prefs::FreStatus::kCompleted);
+  EXPECT_TRUE(GetInternalsData(contents)->enablement->fre_is_consented);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,

@@ -41,11 +41,14 @@ export function getHtml(this: GlicInternalsAppElement) {
                   @click="${this.onSectionLinkClick_}">Glic Status</a>
             </div>
             <div class="status-banner-chips">
+              ${this.data_ ? html`
+                <span class="badge badge-neutral">Provider: ${this.getProviderName_()}</span>
+              ` : ''}
               ${this.data_?.debugInfo ? html`
                 <span class="badge badge-neutral">${this.getPlatformString_(this.data_.debugInfo.platform)}</span>
                 <span class="badge badge-neutral">${this.getFormFactorString_(this.data_.debugInfo.formFactor)}</span>
               ` : ''}
-              ${this.data_?.tieredRolloutInfo ? html`
+              ${this.data_?.tieredRolloutInfo && !this.isGeminiEnterprise_() ? html`
                 <span class="badge badge-neutral">Tier: ${this.data_.tieredRolloutInfo.aiSubscriptionTier ?? 'N/A'}</span>
                 ${this.data_.tieredRolloutInfo.subscriptionBenefits.length > 0 ? html`
                   <span class="badge badge-neutral">Benefits: ${this.data_.tieredRolloutInfo.subscriptionBenefits.join(', ')}</span>
@@ -78,9 +81,13 @@ export function getHtml(this: GlicInternalsAppElement) {
               ${this.getTableData_().map(item => html`
                 <tr>
                   <td class="status-cell-left">
-                    <span class="badge ${item.value ? 'badge-success' : 'badge-error'}">
-                      ${item.value ? 'Passed' : 'Blocked'}
-                    </span>
+                    ${item.skipped ? html`
+                      <span class="badge badge-neutral">Skipped</span>
+                    ` : html`
+                      <span class="badge ${item.value ? 'badge-success' : 'badge-error'}">
+                        ${item.value ? 'Passed' : 'Blocked'}
+                      </span>
+                    `}
                   </td>
                   <td class="property-name">${item.label}</td>
                 </tr>
@@ -154,7 +161,11 @@ export function getHtml(this: GlicInternalsAppElement) {
           <a class="section-link" href="#general.rollout"
               @click="${this.onSectionLinkClick_}">Rollout / User Tier & Benefits</a>
         </div>
-        ${this.data_?.tieredRolloutInfo ? html`
+        ${this.isGeminiEnterprise_() ? html`
+          <div style="padding: 16px;">
+            Not applicable: Gemini Enterprise doesn't use the consumer rollout.
+          </div>` :
+        html`${this.data_?.tieredRolloutInfo ? html`
           <table>
             <thead>
               <tr>
@@ -251,7 +262,7 @@ export function getHtml(this: GlicInternalsAppElement) {
               </tr>
             </tbody>
           </table>` :
-          html`<div style="padding: 16px;">Loading...</div>`}
+          html`<div style="padding: 16px;">Loading...</div>`}`}
       </div>
 
       <div id="general.config" class="card">

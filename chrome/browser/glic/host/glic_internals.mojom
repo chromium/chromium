@@ -32,6 +32,14 @@ struct ProfileEnablement {
   // Whether the profile is regular (e.g. not incognito)
   bool is_regular_profile;
 
+  // Whether the Gemini account eligibility checks apply to the profile's
+  // provider (`GlicProviderSpec::RequiresGeminiAccountEligibility()`). If not,
+  // `is_rolled_out`, `primary_account_is_capable`,
+  // `primary_account_is_fully_signed_in`, `allowed_by_chrome_policy`,
+  // `allowed_by_remote_admin` and `allowed_by_remote_other` aren't checked
+  // and are always true.
+  bool gemini_account_eligibility_checked;
+
   // Whether Glic is rolled out to the profile. Rollout can be enabled by the
   // `GlicRollout` flag, or by the `GlicTieredRollout` flag and synced pref.
   bool is_rolled_out;
@@ -134,6 +142,14 @@ struct InternalsDataPayload {
   InternalsDebugInfo debug_info;
   TieredRolloutInfo tiered_rollout_info;
   bool hotkey_global_scope_migrated_v2;
+  // The Glic provider that the profile is latched to.
+  GlicProviderType provider;
+};
+
+// The Glic provider that a profile is latched to (`GlicProvider`).
+enum GlicProviderType {
+  kGemini,
+  kGeminiEnterprise,
 };
 
 struct InternalsDebugInfo {
