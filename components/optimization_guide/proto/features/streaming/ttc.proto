@@ -70,6 +70,18 @@ message TtcServerFrame {
   int64 server_timestamp_ms = 8;
 }
 
+// Model selection preference for multimodal streaming.
+enum ModelPreference {
+  // Unspecified model preference. Server defaults to the default model.
+  MODEL_PREFERENCE_UNSPECIFIED = 0;
+
+  // Fallback streaming model.
+  MODEL_PREFERENCE_FALLBACK = 1;
+
+  // Default streaming model.
+  MODEL_PREFERENCE_DEFAULT = 2;
+}
+
 // Establishes authenticated session capabilities and initial setup.
 message SessionSetupRequest {
   // Optional system persona or instructions to customize assistant behavior.
@@ -80,6 +92,12 @@ message SessionSetupRequest {
 
   // Whether to enable turn metrics.
   bool enable_turn_metrics = 3;
+
+  // Model selection preference for multimodal streaming.
+  // When unset or set to MODEL_PREFERENCE_UNSPECIFIED, the server uses the
+  // default model. Setting this to MODEL_PREFERENCE_FALLBACK explicitly
+  // requests the fallback model.
+  ModelPreference model_preference = 4;
 }
 
 // Acknowledges session readiness and connection status.
