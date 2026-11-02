@@ -12,6 +12,11 @@ export function recordAction(actionName: string) {
   }
 }
 
+export interface UnboundedElement extends HTMLElement {
+  showUnboundedElement?: () => Promise<void>;
+  hideUnboundedElement?: () => Promise<void>;
+}
+
 export interface UnboundedDialog extends HTMLDialogElement {
   showUnboundedElement?: () => Promise<void>;
   hideUnboundedElement?: () => Promise<void>;

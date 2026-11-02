@@ -9,11 +9,12 @@ import 'chrome://contextual-tasks/overflow_menu.js';
 import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {SourcesMenuElement} from 'chrome://contextual-tasks/sources_menu.js';
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
-import type {UnboundedDialog} from 'chrome://contextual-tasks/utils.js';
+import type {UnboundedDialog, UnboundedElement} from 'chrome://contextual-tasks/utils.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
@@ -257,6 +258,90 @@ suite('UnboundedMenuTest', () => {
       menu.close();
       await microtasksFinished();
       assertTrue(hideUnboundedCalled);
+    });
+  });
+
+  suite('ProfileTooltip', () => {
+    setup(async () => {
+      loadTimeData.overrideValues({
+        contextualTasksSidePanelRearchitectureEnabled: true,
+        googleAccount: 'Google Account',
+        profileAvatarUrl: 'data:image/png;base64,fakeImageData',
+      });
+
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+      await microtasksFinished();
+    });
+
+    test('shows and hides unbounded profile tooltip on hover', async () => {
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      const tooltipEl =
+          topToolbar.shadowRoot.querySelector('#profileTooltip')
+              ?.shadowRoot?.querySelector<UnboundedElement>('#tooltip');
+      assertTrue(!!tooltipEl);
+
+      let showUnboundedCalled = false;
+      let hideUnboundedCalled = false;
+      tooltipEl.showUnboundedElement = () => {
+        showUnboundedCalled = true;
+        return Promise.resolve();
+      };
+      tooltipEl.hideUnboundedElement = () => {
+        hideUnboundedCalled = true;
+        return Promise.resolve();
+      };
+
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+      profileIndicator.dispatchEvent(new PointerEvent('pointerenter'));
+      mockTimer.tick(500);
+      mockTimer.uninstall();
+      await microtasksFinished();
+
+      assertTrue(showUnboundedCalled);
+      assertTrue(tooltipEl.hasAttribute('unbounded'));
+      assertTrue(tooltipEl.hasAttribute('open'));
+
+      mockTimer.install();
+      profileIndicator.dispatchEvent(new PointerEvent('pointerleave'));
+      mockTimer.tick(100);
+      mockTimer.uninstall();
+      await microtasksFinished();
+
+      assertTrue(hideUnboundedCalled);
+      assertFalse(tooltipEl.hasAttribute('open'));
+    });
+
+    test('does not use unbounded tooltip if flag is disabled', async () => {
+      loadTimeData.overrideValues({contextualTasksUnboundedMenuEnabled: false});
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      const tooltipEl =
+          topToolbar.shadowRoot.querySelector('#profileTooltip')
+              ?.shadowRoot?.querySelector<UnboundedElement>('#tooltip');
+      assertTrue(!!tooltipEl);
+
+      let showUnboundedCalled = false;
+      tooltipEl.showUnboundedElement = () => {
+        showUnboundedCalled = true;
+        return Promise.resolve();
+      };
+
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+      profileIndicator.dispatchEvent(new PointerEvent('pointerenter'));
+      mockTimer.tick(500);
+      mockTimer.uninstall();
+      await microtasksFinished();
+
+      assertFalse(showUnboundedCalled);
+      assertFalse(tooltipEl.hasAttribute('unbounded'));
+      assertTrue(tooltipEl.hasAttribute('open'));
     });
   });
 });

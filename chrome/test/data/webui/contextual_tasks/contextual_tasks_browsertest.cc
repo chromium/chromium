@@ -723,6 +723,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_TopToolbarTest) {
   RunTest("contextual_tasks/top_toolbar_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, ProfileTooltip) {
+  RunTest("contextual_tasks/profile_tooltip_test.js", "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_OverflowMenu) {
   RunTest("contextual_tasks/overflow_menu_test.js", "mocha.run();");
 }
