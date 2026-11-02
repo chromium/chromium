@@ -915,6 +915,42 @@ TEST_F(PdfViewWebPluginTest, DocumentLoadProgressMultipleSmall) {
   plugin_->DocumentLoadProgress(4, 100);
 }
 
+TEST_F(PdfViewWebPluginTest, DocumentLoadProgressZeroDocSize) {
+  // 0 or 1 available bytes correspond to 0% progress, which is too small of a
+  // change to send a progress message.
+  EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
+  plugin_->DocumentLoadProgress(0, 0);
+  plugin_->DocumentLoadProgress(1, 0);
+  testing::Mock::VerifyAndClearExpectations(client_ptr_);
+
+  // When `doc_size` is 0, progress scales logarithmically up to 100M bytes.
+  {
+    InSequence sequence;
+    EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+      "type": "loadProgress",
+      "progress": 12.5,
+    })")));
+    EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+      "type": "loadProgress",
+      "progress": 25.0,
+    })")));
+    EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+      "type": "loadProgress",
+      "progress": 50.0,
+    })")));
+  }
+  plugin_->DocumentLoadProgress(10, 0);
+  plugin_->DocumentLoadProgress(100, 0);
+  plugin_->DocumentLoadProgress(10'000, 0);
+  testing::Mock::VerifyAndClearExpectations(client_ptr_);
+
+  // 100% progress (at or above 100M bytes) is not sent here because
+  // HandleViewportMessage() sends it.
+  EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
+  plugin_->DocumentLoadProgress(100'000'000, 0);
+  plugin_->DocumentLoadProgress(200'000'000, 0);
+}
+
 TEST_F(PdfViewWebPluginTest, EnableAccessibilityBeforeDocumentLoadComplete) {
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo)
       .Times(0);
