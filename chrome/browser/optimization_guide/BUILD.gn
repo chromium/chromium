@@ -175,6 +175,7 @@ if (!is_android) {
       "//chrome/browser/preloading/prefetch/no_state_prefetch",
       "//chrome/browser/signin/e2e_tests:test_support",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs/organizer",
       "//chrome/browser/ui/webauthn",
       "//chrome/test:test_support",
       "//chrome/test/base:profile_lifecycle_test_utils",

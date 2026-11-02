@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_accessibility_test.h"
 #include "chrome/common/chrome_features.h"
@@ -37,9 +38,11 @@ class BackButtonAccessibilityTest : public ToolbarAccessibilityTest {
           // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
           // Omnibox is enabled and then remove the omnibox features here and
           // below.
+          // TODO(crbug.com/579030694): Investigate lazy loading OrganizerPanel.
           /*disabled_features=*/
           {omnibox::internal::kWebUIOmniboxPopup,
-           omnibox::internal::kWebUIOmniboxAimPopup});
+           omnibox::internal::kWebUIOmniboxAimPopup,
+           organizer_panel::kOrganizerPanel});
     } else {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/
@@ -47,7 +50,8 @@ class BackButtonAccessibilityTest : public ToolbarAccessibilityTest {
           /*disabled_features=*/
           {features::kInitialWebUI, features::kWebUIBackForwardButton,
            features::kWebUIReloadButton, omnibox::internal::kWebUIOmniboxPopup,
-           omnibox::internal::kWebUIOmniboxAimPopup});
+           omnibox::internal::kWebUIOmniboxAimPopup,
+           organizer_panel::kOrganizerPanel});
     }
   }
 

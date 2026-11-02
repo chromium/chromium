@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/optimization_guide/core/delivery/model_store_metadata_entry.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
@@ -251,7 +253,11 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
 class PredictionModelStoreBrowserTest
     : public PredictionModelStoreBrowserTestBase {
  public:
-  PredictionModelStoreBrowserTest() = default;
+  PredictionModelStoreBrowserTest() {
+    // TODO(crbug.com/579030694): Investigate lazy loading OrganizerPanel.
+    scoped_feature_list_.InitAndDisableFeature(
+        organizer_panel::kOrganizerPanel);
+  }
   ~PredictionModelStoreBrowserTest() override = default;
 
   PredictionModelStoreBrowserTest(const PredictionModelStoreBrowserTest&) =

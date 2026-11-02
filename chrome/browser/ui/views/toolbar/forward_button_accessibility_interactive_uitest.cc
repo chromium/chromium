@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_accessibility_test.h"
 #include "chrome/common/chrome_features.h"
@@ -32,18 +34,21 @@ class ForwardButtonAccessibilityTest : public ToolbarAccessibilityTest {
   ForwardButtonAccessibilityTest() {
     // TODO(crbug.com/452061489): Fix tests for when WebUI Omnibox is enabled
     // and remove this explicit disable of WebUI Omnibox.
+    // TODO(crbug.com/579030694): Investigate lazy loading OrganizerPanel.
     if (GetParam()) {
       feature_list_.InitWithFeatures(
           {features::kInitialWebUI, features::kWebUIBackForwardButton,
            features::kWebUIReloadButton},
           {omnibox::internal::kWebUIOmniboxPopup,
-           omnibox::internal::kWebUIOmniboxAimPopup});
+           omnibox::internal::kWebUIOmniboxAimPopup,
+           organizer_panel::kOrganizerPanel});
     } else {
       feature_list_.InitWithFeatures(
           {},
           {features::kInitialWebUI, features::kWebUIBackForwardButton,
            features::kWebUIReloadButton, omnibox::internal::kWebUIOmniboxPopup,
-           omnibox::internal::kWebUIOmniboxAimPopup});
+           omnibox::internal::kWebUIOmniboxAimPopup,
+           organizer_panel::kOrganizerPanel});
     }
   }
 

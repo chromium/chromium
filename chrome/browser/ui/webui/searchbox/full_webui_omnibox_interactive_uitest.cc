@@ -3916,8 +3916,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       AddInstrumentedTab(kTab1, embedded_test_server()->GetURL("/title1.html")),
       WaitForWebContentsReady(kTab1), ClickWebPageBody(kTab1),
       WaitForPopupDismissed(), WaitForPopupTransitionLockout(),
-      WriteClipboardText(u"pasted text"), MoveMouseTo(kOmniboxElementId),
-      ClickMouse(ui_controls::RIGHT),
+      WaitForPopupHandlerReady(), WriteClipboardText(u"pasted text"),
+      MoveMouseTo(kOmniboxElementId), ClickMouse(ui_controls::RIGHT),
 #if BUILDFLAG(IS_MAC)
       // The native context menu runs a nested run loop, and since it is shown
       // from a task no application tasks run until it closes, including this
@@ -3975,7 +3975,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       AddInstrumentedTab(kTab1, embedded_test_server()->GetURL("/title1.html")),
       WaitForWebContentsReady(kTab1), ClickWebPageBody(kTab1),
       WaitForPopupDismissed(), WaitForPopupTransitionLockout(),
-      WriteClipboardText(u"pasted text"), Do([this]() {
+      WaitForPopupHandlerReady(), WriteClipboardText(u"pasted text"),
+      Do([this]() {
         ui::AXActionData action;
         action.action = ax::mojom::Action::kShowContextMenu;
         // Request the context menu the way a screen reader does, via the
