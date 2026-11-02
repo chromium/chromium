@@ -34,7 +34,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #endif
 
@@ -177,10 +176,7 @@ END_METADATA
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest,
                        RunsScheduledLayoutOnAnchoredBubbles) {
   views::View* const anchor_view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kToolbarAppMenuButtonElementId,
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->GetElementContext());
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
 
   // Temporarily owned.
   views::BubbleDialogDelegateView* const bubble =
