@@ -48,6 +48,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
@@ -101,6 +102,9 @@ constexpr char kDisconnectEndpoint[] = "disconnect_endpoint";
 constexpr char kTypesKey[] = "types";
 constexpr char kFormatsKey[] = "formats";
 constexpr char kAccountLabelKey[] = "account_label";
+constexpr char kIdpAccountManagementUrlKey[] = "account_management_url";
+constexpr char kIdpPrivacyPolicyKey[] = "privacy_policy_url";
+constexpr char kIdpTermsOfServiceKey[] = "terms_of_service_url";
 
 // Keys in the specific mode dictionary.
 constexpr char kSupportsUseOtherAccountKey[] = "supports_use_other_account";
@@ -372,6 +376,12 @@ void OnConfigParsed(const GURL& provider,
                                   idp_brand_icon_minimum_size, idp_metadata);
   }
   idp_metadata.idp_login_url = ExtractEndpoint(provider, *result, kLoginUrlKey);
+  idp_metadata.account_management_url =
+      ExtractEndpoint(provider, *result, kIdpAccountManagementUrlKey);
+  idp_metadata.privacy_policy_url =
+      ExtractEndpoint(provider, *result, kIdpPrivacyPolicyKey);
+  idp_metadata.terms_of_service_url =
+      ExtractEndpoint(provider, *result, kIdpTermsOfServiceKey);
 
   if (IsDelegationEnabled()) {
     const base::ListValue* formats = result->FindList(kFormatsKey);

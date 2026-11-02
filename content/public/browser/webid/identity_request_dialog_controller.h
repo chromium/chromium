@@ -126,6 +126,12 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   bool has_filtered_out_account{false};
   // This will be an empty image if fetching failed.
   gfx::Image brand_decoded_icon;
+  // The identity provider's account management page, privacy policy and terms
+  // of service, parsed from the config file. Each is empty if it's missing,
+  // isn't HTTP(S) or isn't same-site with `config_url`.
+  GURL account_management_url;
+  GURL privacy_policy_url;
+  GURL terms_of_service_url;
 };
 
 // This class contains all of the data specific to an identity provider that is

@@ -1467,6 +1467,26 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabel) {
   EXPECT_EQ("l1", idp_metadata.requested_label);
 }
 
+// Tests that the identity provider's account management page, privacy policy
+// and terms of service are parsed from the config file, including relative
+// URLs.
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigIdpLinks) {
+  const char test_json[] = R"({
+    "account_management_url": "https://idp.test/account",
+    "privacy_policy_url": "/privacy",
+    "terms_of_service_url": "terms"
+  })";
+
+  auto [fetch_status, idp_metadata] =
+      SendConfigRequestAndWaitForResponse(test_json);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(GURL("https://idp.test/account"),
+            idp_metadata.account_management_url);
+  EXPECT_EQ(GURL("https://idp.test/privacy"), idp_metadata.privacy_policy_url);
+  EXPECT_EQ(GURL("https://idp.test/terms"), idp_metadata.terms_of_service_url);
+}
+
 // Tests that we send the correct origin for account requests.
 TEST_F(IdpNetworkRequestManagerTest, AccountRequestOrigin) {
   bool called = false;

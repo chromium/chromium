@@ -5,6 +5,7 @@
 #include "content/browser/webid/config_fetcher.h"
 
 #include "base/check.h"
+#include "base/strings/stringprintf.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 #include "net/base/schemeful_site.h"
@@ -25,6 +26,29 @@ void SetError(ConfigFetcher::FetchResult& fetch_result,
               std::optional<std::string> additional_console_error_message) {
   fetch_result.error = ConfigFetcher::FetchError(
       result, token_status, additional_console_error_message);
+}
+
+// Clears `url` and logs a console warning if `url` is non-empty and isn't an
+// HTTP(S) URL same-site with `config_url`. These URLs are shown as links to the
+// identity provider's own pages, so they must be on its site, but they don't
+// need to be on the same origin as the config file.
+void ValidateSameSiteUrl(const GURL& config_url,
+                         GURL& url,
+                         const char* key,
+                         RenderFrameHost& render_frame_host) {
+  if (url.is_empty()) {
+    return;
+  }
+  if (!url.SchemeIsHTTPOrHTTPS() ||
+      !net::SchemefulSite::IsSameSite(config_url, url)) {
+    url = GURL();
+    render_frame_host.AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf(
+            "The FedCM %s is ignored because it is not same-site with the "
+            "config URL.",
+            key));
+  }
 }
 
 }  // namespace
@@ -228,6 +252,16 @@ void ConfigFetcher::OnConfigFetched(
           "with the provided background color");
     }
   }
+
+  ValidateSameSiteUrl(fetch_result.identity_provider_config_url,
+                      idp_metadata.account_management_url,
+                      "account_management_url", *render_frame_host_);
+  ValidateSameSiteUrl(fetch_result.identity_provider_config_url,
+                      idp_metadata.privacy_policy_url, "privacy_policy_url",
+                      *render_frame_host_);
+  ValidateSameSiteUrl(fetch_result.identity_provider_config_url,
+                      idp_metadata.terms_of_service_url, "terms_of_service_url",
+                      *render_frame_host_);
 
   fetch_result.endpoints = endpoints;
   fetch_result.metadata = idp_metadata;

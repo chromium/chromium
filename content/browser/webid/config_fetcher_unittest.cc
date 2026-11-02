@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/http/http_status_code.h"
@@ -19,6 +20,7 @@
 namespace content::webid {
 
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::StrictMock;
 using ::testing::WithArg;
 
@@ -886,6 +888,189 @@ TEST_F(ConfigFetcherTest, RegisteredIdpSkipsWellKnownCheck) {
                     }));
 
   loop.Run();
+}
+
+// Tests that the identity provider's links are accepted if they are same-site,
+// including cross-origin, with the config URL, and that omitted links do not
+// log a console warning.
+TEST_F(ConfigFetcherTest, IdpLinksSameSite) {
+  auto network_manager =
+      std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
+  ConfigFetcher fetcher(*main_rfh(), network_manager.get());
+
+  EXPECT_CALL(*network_manager, FetchConfig)
+      .WillOnce(WithArg<3>(
+          [](IdpNetworkRequestManager::FetchConfigCallback callback) {
+            IdpNetworkRequestManager::Endpoints endpoints;
+            endpoints.token = GURL("https://idp.example/token.php");
+            endpoints.accounts = GURL("https://idp.example/accounts.php");
+
+            IdentityProviderMetadata metadata;
+            metadata.idp_login_url =
+                GURL("https://idp.example/idp_login_url.php");
+            metadata.account_management_url =
+                GURL("https://accounts.idp.example/account");
+            metadata.privacy_policy_url = GURL("https://idp.example/privacy");
+            std::move(callback).Run({ParseStatus::kSuccess, net::HTTP_OK},
+                                    endpoints, metadata);
+          }));
+
+  EXPECT_CALL(*network_manager, FetchWellKnown)
+      .WillOnce(WithArg<1>(
+          [](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.provider_urls = {GURL("https://idp.example/fedcm.json")};
+            std::move(callback).Run({ParseStatus::kSuccess, net::HTTP_OK},
+                                    well_known);
+          }));
+
+  base::RunLoop loop;
+  fetcher.Start(
+      {{GURL("https://idp.example/fedcm.json"),
+        /*force_skip_well_known_enforcement=*/false}},
+      /*icon_ideal_size=*/0,
+      /*icon_minimum_size=*/0,
+      base::BindLambdaForTesting(
+          [&loop](std::vector<ConfigFetcher::FetchResult> result) {
+            ASSERT_EQ(result.size(), 1ul);
+            EXPECT_FALSE(result[0].error);
+            ASSERT_TRUE(result[0].metadata);
+            EXPECT_EQ(result[0].metadata->account_management_url,
+                      GURL("https://accounts.idp.example/account"));
+            EXPECT_EQ(result[0].metadata->privacy_policy_url,
+                      GURL("https://idp.example/privacy"));
+            EXPECT_TRUE(result[0].metadata->terms_of_service_url.is_empty());
+            loop.Quit();
+          }));
+  loop.Run();
+
+  EXPECT_TRUE(
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages().empty());
+}
+
+// Tests that the identity provider's links are ignored with a console warning
+// if they are not same-site with the config URL.
+TEST_F(ConfigFetcherTest, IdpLinksNotSameSite) {
+  auto network_manager =
+      std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
+  ConfigFetcher fetcher(*main_rfh(), network_manager.get());
+
+  EXPECT_CALL(*network_manager, FetchConfig)
+      .WillOnce(WithArg<3>(
+          [](IdpNetworkRequestManager::FetchConfigCallback callback) {
+            IdpNetworkRequestManager::Endpoints endpoints;
+            endpoints.token = GURL("https://idp.example/token.php");
+            endpoints.accounts = GURL("https://idp.example/accounts.php");
+
+            IdentityProviderMetadata metadata;
+            metadata.idp_login_url =
+                GURL("https://idp.example/idp_login_url.php");
+            metadata.account_management_url =
+                GURL("https://other.example/account");
+            metadata.privacy_policy_url = GURL("http://idp.example/privacy");
+            metadata.terms_of_service_url = GURL("javascript:void 0");
+            std::move(callback).Run({ParseStatus::kSuccess, net::HTTP_OK},
+                                    endpoints, metadata);
+          }));
+
+  EXPECT_CALL(*network_manager, FetchWellKnown)
+      .WillOnce(WithArg<1>(
+          [](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.provider_urls = {GURL("https://idp.example/fedcm.json")};
+            std::move(callback).Run({ParseStatus::kSuccess, net::HTTP_OK},
+                                    well_known);
+          }));
+
+  base::RunLoop loop;
+  fetcher.Start(
+      {{GURL("https://idp.example/fedcm.json"),
+        /*force_skip_well_known_enforcement=*/false}},
+      /*icon_ideal_size=*/0,
+      /*icon_minimum_size=*/0,
+      base::BindLambdaForTesting(
+          [&loop](std::vector<ConfigFetcher::FetchResult> result) {
+            ASSERT_EQ(result.size(), 1ul);
+            EXPECT_FALSE(result[0].error);
+            ASSERT_TRUE(result[0].metadata);
+            EXPECT_TRUE(result[0].metadata->account_management_url.is_empty());
+            EXPECT_TRUE(result[0].metadata->privacy_policy_url.is_empty());
+            EXPECT_TRUE(result[0].metadata->terms_of_service_url.is_empty());
+            loop.Quit();
+          }));
+  loop.Run();
+
+  EXPECT_THAT(
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages(),
+      ElementsAre("The FedCM account_management_url is ignored because it is "
+                  "not same-site with the config URL.",
+                  "The FedCM privacy_policy_url is ignored because it is not "
+                  "same-site with the config URL.",
+                  "The FedCM terms_of_service_url is ignored because it is not "
+                  "same-site with the config URL."));
+}
+
+// Tests that the identity provider's links are ignored with a console warning
+// if they aren't HTTP(S), including privileged URLs and URLs whose inner origin
+// is same-site with the config URL.
+TEST_F(ConfigFetcherTest, IdpLinksNotHttp) {
+  auto network_manager =
+      std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
+  ConfigFetcher fetcher(*main_rfh(), network_manager.get());
+
+  EXPECT_CALL(*network_manager, FetchConfig)
+      .WillOnce(WithArg<3>(
+          [](IdpNetworkRequestManager::FetchConfigCallback callback) {
+            IdpNetworkRequestManager::Endpoints endpoints;
+            endpoints.token = GURL("https://idp.example/token.php");
+            endpoints.accounts = GURL("https://idp.example/accounts.php");
+
+            IdentityProviderMetadata metadata;
+            metadata.idp_login_url =
+                GURL("https://idp.example/idp_login_url.php");
+            metadata.account_management_url = GURL("chrome://settings");
+            metadata.privacy_policy_url =
+                GURL("blob:https://idp.example/b9c1d0e8-3f2a-4c5d-9e7f");
+            metadata.terms_of_service_url = GURL("file:///etc/passwd");
+            std::move(callback).Run({ParseStatus::kSuccess, net::HTTP_OK},
+                                    endpoints, metadata);
+          }));
+
+  EXPECT_CALL(*network_manager, FetchWellKnown)
+      .WillOnce(WithArg<1>(
+          [](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.provider_urls = {GURL("https://idp.example/fedcm.json")};
+            std::move(callback).Run({ParseStatus::kSuccess, net::HTTP_OK},
+                                    well_known);
+          }));
+
+  base::RunLoop loop;
+  fetcher.Start(
+      {{GURL("https://idp.example/fedcm.json"),
+        /*force_skip_well_known_enforcement=*/false}},
+      /*icon_ideal_size=*/0,
+      /*icon_minimum_size=*/0,
+      base::BindLambdaForTesting(
+          [&loop](std::vector<ConfigFetcher::FetchResult> result) {
+            ASSERT_EQ(result.size(), 1ul);
+            EXPECT_FALSE(result[0].error);
+            ASSERT_TRUE(result[0].metadata);
+            EXPECT_TRUE(result[0].metadata->account_management_url.is_empty());
+            EXPECT_TRUE(result[0].metadata->privacy_policy_url.is_empty());
+            EXPECT_TRUE(result[0].metadata->terms_of_service_url.is_empty());
+            loop.Quit();
+          }));
+  loop.Run();
+
+  EXPECT_THAT(
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages(),
+      ElementsAre("The FedCM account_management_url is ignored because it is "
+                  "not same-site with the config URL.",
+                  "The FedCM privacy_policy_url is ignored because it is not "
+                  "same-site with the config URL.",
+                  "The FedCM terms_of_service_url is ignored because it is not "
+                  "same-site with the config URL."));
 }
 
 }  // namespace content::webid
