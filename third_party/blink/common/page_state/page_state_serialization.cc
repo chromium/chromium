@@ -331,7 +331,7 @@ std::string ReadStdString(DeserializeObject* obj) {
 }
 
 // Pickles a std::u16string as <int length>:<char*16 data> tuple>.
-void WriteString(const std::u16string& str, SerializeObject* obj) {
+void WriteU16String(const std::u16string& str, SerializeObject* obj) {
   // IMPLEMENTATION WARNING: This is different from Pickle::WriteString16, as
   // that writes the size in 16-bit characters, while this writes the string as
   // data, which writes the size in bytes. This is due to an unfortunate
@@ -343,26 +343,27 @@ void WriteString(const std::u16string& str, SerializeObject* obj) {
 
 // If str is a null optional, this simply pickles a length of -1. Otherwise,
 // delegates to the std::u16string overload.
-void WriteString(const std::optional<std::u16string>& str,
-                 SerializeObject* obj) {
+void WriteU16String(const std::optional<std::u16string>& str,
+                    SerializeObject* obj) {
   if (!str) {
     obj->pickle.WriteInt(-1);
   } else {
-    WriteString(*str, obj);
+    WriteU16String(*str, obj);
   }
 }
 
 // This reads a serialized std::optional<std::u16string> from obj. If a string
 // can't be read, nullptr is returned.
-const char16_t* ReadStringNoCopy(DeserializeObject* obj, int* num_chars) {
+const char16_t* ReadU16StringNoCopy(DeserializeObject* obj, int* num_chars) {
   int length_in_bytes;
   if (!obj->iter.ReadInt(&length_in_bytes)) {
     obj->parse_error = true;
     return nullptr;
   }
 
-  if (length_in_bytes < 0)  // Not an error!  See WriteString(nullopt).
+  if (length_in_bytes < 0) {  // Not an error!  See WriteU16String(nullopt).
     return nullptr;
+  }
 
   const char* data;
   if (!obj->iter.ReadBytes(&data, static_cast<size_t>(length_in_bytes))) {
@@ -375,9 +376,9 @@ const char16_t* ReadStringNoCopy(DeserializeObject* obj, int* num_chars) {
   return reinterpret_cast<const char16_t*>(data);
 }
 
-std::optional<std::u16string> ReadString(DeserializeObject* obj) {
+std::optional<std::u16string> ReadU16String(DeserializeObject* obj) {
   int num_chars;
-  const char16_t* chars = ReadStringNoCopy(obj, &num_chars);
+  const char16_t* chars = ReadU16StringNoCopy(obj, &num_chars);
   std::optional<std::u16string> result;
   if (chars)
     result.emplace(chars, num_chars);
@@ -410,22 +411,23 @@ size_t ReadAndValidateVectorSize(DeserializeObject* obj, size_t element_size) {
 }
 
 // Writes a Vector of strings into a SerializeObject for serialization.
-void WriteStringVector(const std::vector<std::optional<std::u16string>>& data,
-                       SerializeObject* obj) {
+void WriteU16StringVector(
+    const std::vector<std::optional<std::u16string>>& data,
+    SerializeObject* obj) {
   WriteAndValidateVectorSize(data, obj);
   for (size_t i = 0; i < data.size(); ++i) {
-    WriteString(data[i], obj);
+    WriteU16String(data[i], obj);
   }
 }
 
-void ReadStringVector(DeserializeObject* obj,
-                      std::vector<std::optional<std::u16string>>* result) {
+void ReadU16StringVector(DeserializeObject* obj,
+                         std::vector<std::optional<std::u16string>>* result) {
   size_t num_elements =
       ReadAndValidateVectorSize(obj, sizeof(std::optional<std::u16string>));
 
   result->resize(num_elements);
   for (size_t i = 0; i < num_elements; ++i)
-    (*result)[i] = ReadString(obj);
+    (*result)[i] = ReadU16String(obj);
 }
 
 void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
@@ -442,7 +444,7 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
       case network::DataElement::Tag::kFile: {
         const auto& file = element.As<network::DataElementFile>();
         WriteInteger(static_cast<int>(HTTPBodyElementType::kTypeFile), obj);
-        WriteString(file.path().AsUTF16Unsafe(), obj);
+        WriteU16String(file.path().AsUTF16Unsafe(), obj);
         WriteInteger64(static_cast<int64_t>(file.offset()), obj);
         WriteInteger64(static_cast<int64_t>(file.length()), obj);
         WriteReal(file.expected_modification_time().InSecondsFSinceUnixEpoch(),
@@ -469,7 +471,7 @@ void ReadResourceRequestBody(
         AppendDataToRequestBody(request_body, *data);
       }
     } else if (type == HTTPBodyElementType::kTypeFile) {
-      std::optional<std::u16string> file_path = ReadString(obj);
+      std::optional<std::u16string> file_path = ReadU16String(obj);
       int64_t file_start = ReadInteger64(obj);
       int64_t file_length = ReadInteger64(obj);
       double file_modification_time = ReadReal(obj);
@@ -520,21 +522,21 @@ void ReadLegacyFrameState(
   if (obj->version < 14 && !is_top)
     ReadInteger(obj);  // Skip over redundant version field.
 
-  state->url_string = ReadString(obj);
+  state->url_string = ReadU16String(obj);
 
   if (obj->version < 19)
-    ReadString(obj);  // Skip obsolete original url string field.
+    ReadU16String(obj);  // Skip obsolete original url string field.
 
-  state->target = ReadString(obj);
+  state->target = ReadU16String(obj);
   if (obj->version < 25 && state->target) {
     state->target = base::UTF8ToUTF16(UniqueNameHelper::UpdateLegacyNameFromV24(
         base::UTF16ToUTF8(*state->target), unique_name_replacements));
   }
   if (obj->version < 15) {
-    ReadString(obj);  // Skip obsolete parent field.
-    ReadString(obj);  // Skip obsolete title field.
-    ReadString(obj);  // Skip obsolete alternate title field.
-    ReadReal(obj);    // Skip obsolete visited time field.
+    ReadU16String(obj);  // Skip obsolete parent field.
+    ReadU16String(obj);  // Skip obsolete title field.
+    ReadU16String(obj);  // Skip obsolete alternate title field.
+    ReadReal(obj);       // Skip obsolete visited time field.
   }
 
   if (obj->version >= 24) {
@@ -553,9 +555,9 @@ void ReadLegacyFrameState(
     ReadBoolean(obj);  // Skip obsolete target item flag.
     ReadInteger(obj);  // Skip obsolete visit count field.
   }
-  state->referrer = ReadString(obj);
+  state->referrer = ReadU16String(obj);
 
-  ReadStringVector(obj, &state->document_state);
+  ReadU16StringVector(obj, &state->document_state);
 
   if (state->did_save_scroll_or_scale_state)
     state->page_scale_factor = ReadReal(obj);
@@ -590,17 +592,17 @@ void ReadLegacyFrameState(
 
   bool has_state_object = ReadBoolean(obj);
   if (has_state_object)
-    state->state_object = ReadString(obj);
+    state->state_object = ReadU16String(obj);
 
   ReadHttpBody(obj, &state->http_body);
 
   // NOTE: It is a quirk of the format that we still have to read the
   // http_content_type field when the HTTP body is null.  That's why this code
   // is here instead of inside ReadHttpBody.
-  state->http_body.http_content_type = ReadString(obj);
+  state->http_body.http_content_type = ReadU16String(obj);
 
   if (obj->version < 14)
-    ReadString(obj);  // Skip unused referrer string.
+    ReadU16String(obj);  // Skip unused referrer string.
 
 #if BUILDFLAG(IS_ANDROID)
   if (obj->version == 11) {
@@ -648,8 +650,8 @@ void WriteLegacyFrameState(const ExplodedFrameState& state,
   // older versions. Similarly, this should NOT save fields with sensitive
   // data, such as password fields.
 
-  WriteString(state.url_string, obj);
-  WriteString(state.target, obj);
+  WriteU16String(state.url_string, obj);
+  WriteU16String(state.target, obj);
   WriteBoolean(state.did_save_scroll_or_scale_state, obj);
 
   if (state.did_save_scroll_or_scale_state) {
@@ -657,9 +659,9 @@ void WriteLegacyFrameState(const ExplodedFrameState& state,
     WriteInteger(state.scroll_offset.y(), obj);
   }
 
-  WriteString(state.referrer, obj);
+  WriteU16String(state.referrer, obj);
 
-  WriteStringVector(state.document_state, obj);
+  WriteU16StringVector(state.document_state, obj);
 
   if (state.did_save_scroll_or_scale_state)
     WriteReal(state.page_scale_factor, obj);
@@ -678,14 +680,14 @@ void WriteLegacyFrameState(const ExplodedFrameState& state,
   bool has_state_object = state.state_object.has_value();
   WriteBoolean(has_state_object, obj);
   if (has_state_object)
-    WriteString(*state.state_object, obj);
+    WriteU16String(*state.state_object, obj);
 
   WriteHttpBody(state.http_body, obj);
 
   // NOTE: It is a quirk of the format that we still have to write the
   // http_content_type field when the HTTP body is null.  That's why this code
   // is here instead of inside WriteHttpBody.
-  WriteString(state.http_body.http_content_type, obj);
+  WriteU16String(state.http_body.http_content_type, obj);
 
   // Subitems
   const std::vector<ExplodedFrameState>& children = state.children;
@@ -697,7 +699,7 @@ void WriteLegacyFrameState(const ExplodedFrameState& state,
 void WriteLegacyPageState(const ExplodedPageState& state,
                           SerializeObject* obj) {
   WriteInteger(obj->version, obj);
-  WriteStringVector(state.referenced_files, obj);
+  WriteU16StringVector(state.referenced_files, obj);
   WriteLegacyFrameState(state.top, obj, true);
 }
 
@@ -957,7 +959,7 @@ void ReadPageState(DeserializeObject* obj, ExplodedPageState* state) {
   }
 
   if (obj->version >= 14)
-    ReadStringVector(obj, &state->referenced_files);
+    ReadU16StringVector(obj, &state->referenced_files);
 
   std::vector<UniqueNameHelper::Replacement> unique_name_replacements;
   ReadLegacyFrameState(obj, true, &unique_name_replacements, &state->top);
