@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -40,6 +41,11 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
@@ -51,17 +57,25 @@ import org.chromium.url.GURL;
 @EnableFeatures(ChromeFeatureList.TAB_STRIP_LINK_DRAG_DROP)
 public class TabStripLinkDragDelegateTest {
     private static final String LINK_URL = "https://example.com/";
+    private static final String SEARCH_URL = "https://www.google.com/search?q=hello";
     private static final float X_DP = 50f;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private StripLayoutHelper mStripLayoutHelper;
+    @Mock private Profile mProfile;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private AutocompleteController mAutocompleteController;
 
     private TabStripLinkDragDelegate mDelegate;
 
     @Before
     public void setUp() {
-        mDelegate = new TabStripLinkDragDelegate(() -> mStripLayoutHelper);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        AutocompleteController.setInstanceForTesting(mAutocompleteController);
+        when(mTemplateUrlService.getUrlForSearchQuery(anyString())).thenReturn(SEARCH_URL);
+
+        mDelegate = new TabStripLinkDragDelegate(() -> mStripLayoutHelper, () -> mProfile);
     }
 
     private static ClipDescription createClipDescription(String... mimeTypes) {
@@ -86,8 +100,14 @@ public class TabStripLinkDragDelegateTest {
         return intent;
     }
 
+    private void setClassifiedUrl(String text, String url) {
+        AutocompleteMatch match = mock(AutocompleteMatch.class);
+        when(match.getUrl()).thenReturn(new GURL(url));
+        when(mAutocompleteController.classify(text)).thenReturn(match);
+    }
+
     private static GURL extractUrl(Item item) {
-        return TabStripLinkDragDelegate.extractUrlFromDropData(mockDropEvent(item));
+        return TabStripLinkDragDelegate.extractUrlFromItem(item);
     }
 
     @Test
@@ -154,9 +174,11 @@ public class TabStripLinkDragDelegateTest {
     }
 
     @Test
-    public void testOnDrop_nonUrlText_ignored() {
+    public void testOnDrop_noProfile_ignored() {
+        mDelegate = new TabStripLinkDragDelegate(() -> mStripLayoutHelper, () -> null);
+
         assertFalse(
-                "Non-URL text drop should not be handled.",
+                "Text drop without a profile should not be handled.",
                 mDelegate.onDrop(mockDropEvent(new Item("hello world")), X_DP));
         verify(mStripLayoutHelper, never()).handleLinkDrop(anyFloat(), any());
     }
@@ -188,5 +210,57 @@ public class TabStripLinkDragDelegateTest {
         String javascriptUrl = "javascript:alert(1)";
         assertNull(extractUrl(new Item(javascriptUrl, createLinkIntent(javascriptUrl), null)));
         assertNull(extractUrl(new Item(null, null, Uri.parse("content://example/1"))));
+    }
+
+    @Test
+    public void testGetUrlForText_opensClassifiedUrl() {
+        setClassifiedUrl("example.com/foo", "http://example.com/foo");
+
+        GURL url = TabStripLinkDragDelegate.getUrlForText(mProfile, " example.com/foo\n");
+        assertNotNull(url);
+        assertEquals("http://example.com/foo", url.getSpec());
+        verify(mTemplateUrlService, never()).getUrlForSearchQuery(any());
+    }
+
+    @Test
+    public void testGetUrlForText_nonHttpUrl_searches() {
+        String javascriptUrl = "javascript:alert(1)";
+        setClassifiedUrl(javascriptUrl, javascriptUrl);
+
+        assertEquals(
+                new GURL(SEARCH_URL),
+                TabStripLinkDragDelegate.getUrlForText(mProfile, javascriptUrl));
+        verify(mTemplateUrlService).getUrlForSearchQuery(javascriptUrl);
+    }
+
+    @Test
+    public void testGetUrlForText_noClassification_searches() {
+        assertEquals(
+                new GURL(SEARCH_URL), TabStripLinkDragDelegate.getUrlForText(mProfile, "hello"));
+        verify(mTemplateUrlService).getUrlForSearchQuery("hello");
+    }
+
+    @Test
+    public void testGetUrlForText_longText_searchesWithoutClassifying() {
+        String longText = "a".repeat(TabStripLinkDragDelegate.MAX_TEXT_LENGTH_TO_CLASSIFY + 1);
+
+        assertEquals(
+                new GURL(SEARCH_URL), TabStripLinkDragDelegate.getUrlForText(mProfile, longText));
+        verify(mAutocompleteController, never()).classify(any());
+        verify(mTemplateUrlService).getUrlForSearchQuery(longText);
+    }
+
+    @Test
+    public void testGetUrlForText_invalidSearchUrl_returnsNull() {
+        when(mTemplateUrlService.getUrlForSearchQuery("hello")).thenReturn("");
+
+        assertNull(TabStripLinkDragDelegate.getUrlForText(mProfile, "hello"));
+    }
+
+    @Test
+    public void testGetUrlForText_emptyText_returnsNull() {
+        assertNull(TabStripLinkDragDelegate.getUrlForText(mProfile, " \n\t "));
+        verify(mAutocompleteController, never()).classify(any());
+        verify(mTemplateUrlService, never()).getUrlForSearchQuery(any());
     }
 }

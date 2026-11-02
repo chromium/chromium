@@ -129,7 +129,10 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         mStripLayoutVisibilitySupplier = stripLayoutVisibilitySupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mBrowserControlStateProvider = browserControlStateProvider;
-        mLinkDragDelegate = new TabStripLinkDragDelegate(stripLayoutHelperSupplier);
+        mLinkDragDelegate =
+                new TabStripLinkDragDelegate(
+                        stripLayoutHelperSupplier,
+                        () -> getTabModelSelector().getCurrentModel().getProfile());
     }
 
     /**
