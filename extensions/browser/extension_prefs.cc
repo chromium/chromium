@@ -2207,7 +2207,7 @@ const base::DictValue& ExtensionPrefs::GetInstallSignature() const {
 
 void ExtensionPrefs::SetInstallSignature(base::DictValue* signature) {
   if (signature) {
-    prefs_->Set(kInstallSignature, base::Value(std::move(*signature)));
+    prefs_->SetDict(kInstallSignature, std::move(*signature));
     DVLOG(1) << "SetInstallSignature - saving";
   } else {
     DVLOG(1) << "SetInstallSignature - clearing";
