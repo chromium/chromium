@@ -4,17 +4,17 @@
 
 #include "chrome/browser/signin/signin_hats_util.h"
 
+#include <algorithm>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
-#include <vector>
+#include <utility>
 
 #include "base/containers/fixed_flat_set.h"
-#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "base/version_info/channel.h"
@@ -37,7 +37,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_window.h"
@@ -146,71 +145,68 @@ bool IsLocaleAllowedForSurvey() {
 //
 // The given survey might still be suppressed if it has a conflicting feature
 // enabled (used to coordinate surveys associated with similar Chrome triggers).
-bool IsSurveyEnabledForHatsTrigger(const std::string& trigger) {
-  static const base::NoDestructor<
-      absl::flat_hash_map<std::string_view, const base::Feature*>>
-      kHatsTriggerFeatureMap(
-          {{kHatsSurveyTriggerIdentityAddressBubbleSignin,
-            &switches::kChromeIdentitySurveyAddressBubbleSignin},
-           {kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
-            &switches::kChromeIdentitySurveyDiceWebSigninAccepted},
-           {kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
-            &switches::kChromeIdentitySurveyDiceWebSigninDeclined},
-           {kHatsSurveyTriggerIdentityFirstRunSignin,
-            &switches::kChromeIdentitySurveyFirstRunSignin},
-           {kHatsSurveyTriggerIdentityPasswordBubbleSignin,
-            &switches::kChromeIdentitySurveyPasswordBubbleSignin},
-           {kHatsSurveyTriggerIdentityProfileMenuDismissed,
-            &switches::kChromeIdentitySurveyProfileMenuDismissed},
-           {kHatsSurveyTriggerIdentityProfileMenuSignin,
-            &switches::kChromeIdentitySurveyProfileMenuSignin},
-           {kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin,
-            &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin},
-           {kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
-            &switches::kChromeIdentitySurveySigninInterceptProfileSeparation},
-           {kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
-            &switches::kChromeIdentitySurveySigninPromoBubbleDismissed},
-           {kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
-            &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu},
-           {kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
-            &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker},
-           {kHatsSurveyTriggerIdentityFirstRunCompleted,
-            &switches::kBeforeFirstRunDesktopRefreshSurvey},
-           {kHatsSurveyTriggerIdentityRefreshedFirstRunCompleted,
-            &switches::kFirstRunDesktopRefreshSurvey},
-           {kHatsSurveyTriggerFirstRunDesktopRevampCompleted,
-            &switches::kFirstRunDesktopRevampSurvey},
-           {kHatsSurveyTriggerFirstRunDesktopRevampNoFeatureShowcaseCompleted,
-            &switches::kFirstRunDesktopRevampNoFeatureShowcaseSurvey},
-           {kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted,
-            &switches::kPreFirstRunDesktopRefreshSurvey},
-           {kHatsSurveyTriggerPreFirstRunDesktopRefreshNoFeatureShowcaseCompleted,
-            &switches::kPreFirstRunDesktopRefreshNoFeatureShowcaseSurvey}});
-  // Map of HaTS features that are conflicting with each other. Keys are
-  // features that are suppressed if one of the corresponding value features is
-  // enabled.
-  static const base::NoDestructor<absl::flat_hash_map<
-      const base::Feature*, std::vector<const base::Feature*>>>
-      kConflictingFeaturesMap(
-          {{&switches::kChromeIdentitySurveyFirstRunSignin,
-            {&switches::kBeforeFirstRunDesktopRefreshSurvey,
-             &switches::kFirstRunDesktopRefreshSurvey,
-             &switches::kFirstRunDesktopRevampSurvey,
-             &switches::kFirstRunDesktopRevampNoFeatureShowcaseSurvey,
-             &switches::kPreFirstRunDesktopRefreshSurvey,
-             &switches::kPreFirstRunDesktopRefreshNoFeatureShowcaseSurvey}}});
+bool IsSurveyEnabledForHatsTrigger(std::string_view trigger) {
+  static const std::pair<std::string_view, const base::Feature*>
+      kHatsTriggerFeatures[] = {
+          {kHatsSurveyTriggerIdentityAddressBubbleSignin,
+           &switches::kChromeIdentitySurveyAddressBubbleSignin},
+          {kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
+           &switches::kChromeIdentitySurveyDiceWebSigninAccepted},
+          {kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
+           &switches::kChromeIdentitySurveyDiceWebSigninDeclined},
+          {kHatsSurveyTriggerIdentityFirstRunSignin,
+           &switches::kChromeIdentitySurveyFirstRunSignin},
+          {kHatsSurveyTriggerIdentityPasswordBubbleSignin,
+           &switches::kChromeIdentitySurveyPasswordBubbleSignin},
+          {kHatsSurveyTriggerIdentityProfileMenuDismissed,
+           &switches::kChromeIdentitySurveyProfileMenuDismissed},
+          {kHatsSurveyTriggerIdentityProfileMenuSignin,
+           &switches::kChromeIdentitySurveyProfileMenuSignin},
+          {kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin,
+           &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin},
+          {kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
+           &switches::kChromeIdentitySurveySigninInterceptProfileSeparation},
+          {kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
+           &switches::kChromeIdentitySurveySigninPromoBubbleDismissed},
+          {kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
+           &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu},
+          {kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
+           &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker},
+          {kHatsSurveyTriggerIdentityFirstRunCompleted,
+           &switches::kBeforeFirstRunDesktopRefreshSurvey},
+          {kHatsSurveyTriggerIdentityRefreshedFirstRunCompleted,
+           &switches::kFirstRunDesktopRefreshSurvey},
+          {kHatsSurveyTriggerFirstRunDesktopRevampCompleted,
+           &switches::kFirstRunDesktopRevampSurvey},
+          {kHatsSurveyTriggerFirstRunDesktopRevampNoFeatureShowcaseCompleted,
+           &switches::kFirstRunDesktopRevampNoFeatureShowcaseSurvey},
+          {kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted,
+           &switches::kPreFirstRunDesktopRefreshSurvey},
+          {kHatsSurveyTriggerPreFirstRunDesktopRefreshNoFeatureShowcaseCompleted,
+           &switches::kPreFirstRunDesktopRefreshNoFeatureShowcaseSurvey},
+      };
 
-  const auto* feature = base::FindPtrOrNull(*kHatsTriggerFeatureMap, trigger);
-
-  if (!feature) {
+  const auto it = std::ranges::find(
+      kHatsTriggerFeatures, trigger,
+      &std::pair<std::string_view, const base::Feature*>::first);
+  if (it == std::ranges::end(kHatsTriggerFeatures)) {
     // No matching feature for the given trigger.
     return false;
   }
+  const base::Feature* feature = it->second;
 
-  if (auto it = kConflictingFeaturesMap->find(feature);
-      it != kConflictingFeaturesMap->end()) {
-    // If the feature has conflicting features, check if any of them is enabled.
-    for (const auto* conflicting_feature : it->second) {
+  if (feature == &switches::kChromeIdentitySurveyFirstRunSignin) {
+    // Suppress `kChromeIdentitySurveyFirstRunSignin` if any conflicting First
+    // Run survey feature is enabled.
+    static const base::Feature* const kConflictingFeatures[] = {
+        &switches::kBeforeFirstRunDesktopRefreshSurvey,
+        &switches::kFirstRunDesktopRefreshSurvey,
+        &switches::kFirstRunDesktopRevampSurvey,
+        &switches::kFirstRunDesktopRevampNoFeatureShowcaseSurvey,
+        &switches::kPreFirstRunDesktopRefreshSurvey,
+        &switches::kPreFirstRunDesktopRefreshNoFeatureShowcaseSurvey,
+    };
+    for (const base::Feature* conflicting_feature : kConflictingFeatures) {
       if (base::FeatureList::IsEnabled(*conflicting_feature)) {
         return false;
       }
