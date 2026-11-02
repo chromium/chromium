@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_reader.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,9 +27,13 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/selection/features.h"
+#include "chrome/browser/selection/feedback_zip_builder.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -37,12 +42,17 @@
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "components/variations/variations_seed_processor.h"
+#include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1091,6 +1101,7 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   aoi.screenshot.eraseColor(SK_ColorGREEN);
   aoi.bounds = gfx::Rect(10, 20, 30, 40);
   aoi.apc.mutable_main_frame_data()->set_title("Feedback Test Page");
+  aoi.apc.mutable_main_frame_data()->set_url("https://example.com/feedback");
   aoi.selected_text = u"Selected feedback text";
 
   SuggestionsFuture suggestions_future;
@@ -1162,6 +1173,55 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   EXPECT_EQ(proto_aoi.selection().width(), 30);
   EXPECT_EQ(proto_aoi.selection().height(), 40);
   EXPECT_THAT(proto_aoi.annotated_page_content(), EqualsProto(aoi.apc));
+
+  std::string metadata_json;
+  ASSERT_TRUE(base::ReadFileToString(
+      extract_dir.GetPath().AppendASCII("metadata.json"), &metadata_json));
+  std::optional<base::DictValue> metadata_dict = base::JSONReader::ReadDict(
+      metadata_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(metadata_dict.has_value());
+  const std::string* page_url = metadata_dict->FindString("page_url");
+  ASSERT_NE(page_url, nullptr);
+  EXPECT_EQ(*page_url, "https://example.com/feedback");
+
+  const base::DictValue* os_dict = metadata_dict->FindDict("os");
+  ASSERT_NE(os_dict, nullptr);
+  EXPECT_TRUE(os_dict->FindString("type"));
+  EXPECT_TRUE(os_dict->FindString("version"));
+  EXPECT_TRUE(os_dict->FindString("architecture"));
+
+  const base::DictValue* chrome_dict = metadata_dict->FindDict("chrome");
+  ASSERT_NE(chrome_dict, nullptr);
+  EXPECT_TRUE(chrome_dict->FindString("version"));
+  EXPECT_TRUE(chrome_dict->FindString("channel"));
+  EXPECT_TRUE(chrome_dict->FindString("revision"));
+  EXPECT_TRUE(chrome_dict->FindBool("is_official_build").has_value());
+  EXPECT_TRUE(chrome_dict->FindString("locale"));
+
+  const base::DictValue* account_dict = metadata_dict->FindDict("account");
+  ASSERT_NE(account_dict, nullptr);
+  const std::string* account_state = account_dict->FindString("state");
+  ASSERT_NE(account_state, nullptr);
+  EXPECT_EQ(*account_state, "Signed Out");
+  EXPECT_EQ(account_dict->FindBool("is_signed_in"), false);
+  EXPECT_EQ(account_dict->FindBool("is_google_internal_account"), false);
+
+  const base::DictValue* variations_dict =
+      metadata_dict->FindDict("variations");
+  ASSERT_NE(variations_dict, nullptr);
+  EXPECT_TRUE(variations_dict->FindList("active_hashes"));
+  EXPECT_TRUE(variations_dict->FindList("active_names"));
+  EXPECT_TRUE(variations_dict->FindString("command_line"));
+
+  const base::DictValue* params_dict =
+      metadata_dict->FindDict("smart_selection_feature_params");
+  ASSERT_NE(params_dict, nullptr);
+  EXPECT_EQ(params_dict->FindBool("enabled"), true);
+  EXPECT_EQ(params_dict->FindInt("crop_padding"), 15);
+  EXPECT_TRUE(params_dict->FindInt("timeout_ms").has_value());
+  EXPECT_TRUE(params_dict->FindInt("max_screenshot_dimension").has_value());
+  EXPECT_TRUE(params_dict->FindInt("jpeg_quality").has_value());
+  EXPECT_EQ(params_dict->FindBool("append_apc"), true);
 
   service().UnregisterTool(&gemini_tool);
 }
@@ -1244,6 +1304,61 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipWithJpeg) {
   service().UnregisterTool(&gemini_tool);
 }
 
+// Tests that `metadata.json` records `"Sign-in Pending"` when the primary
+// account is signed in with a persistent refresh-token auth error ("Verify it's
+// you").
+TEST(SuggestionServiceAccountMetadataTest, CreateFeedbackZipSigninPending) {
+  content::BrowserTaskEnvironment task_environment;
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment();
+  IdentityTestEnvironmentProfileAdaptor adaptor(profile.get());
+  AccountInfo account =
+      adaptor.identity_test_env()->MakePrimaryAccountAvailable(
+          "user@google.com", signin::ConsentLevel::kSignin);
+  adaptor.identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      account.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetProfile()).WillRepeatedly(Return(profile.get()));
+  EXPECT_CALL(mock_tab, GetContents()).WillRepeatedly(Return(nullptr));
+
+  FeedbackZipBuilder zip_builder;
+  zip_builder.SetTab(mock_tab, /*server_suggestions_enabled=*/true);
+
+  base::ScopedTempDir zip_dir;
+  ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
+  const base::FilePath target_zip_path =
+      zip_dir.GetPath().AppendASCII("signin_pending_feedback.zip");
+
+  TestFuture<std::optional<base::FilePath>> future;
+  zip_builder.CreateZip(target_zip_path, future.GetCallback());
+  std::optional<base::FilePath> zip_path = future.Take();
+  ASSERT_TRUE(zip_path.has_value());
+
+  base::ScopedTempDir extract_dir;
+  ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
+
+  std::string metadata_json;
+  ASSERT_TRUE(base::ReadFileToString(
+      extract_dir.GetPath().AppendASCII("metadata.json"), &metadata_json));
+  std::optional<base::DictValue> metadata_dict = base::JSONReader::ReadDict(
+      metadata_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(metadata_dict.has_value());
+
+  const base::DictValue* account_dict = metadata_dict->FindDict("account");
+  ASSERT_NE(account_dict, nullptr);
+  const std::string* state = account_dict->FindString("state");
+  ASSERT_NE(state, nullptr);
+  EXPECT_EQ(*state, "Sign-in Pending");
+  EXPECT_EQ(account_dict->FindBool("is_signed_in"), true);
+  EXPECT_EQ(account_dict->FindBool("is_google_internal_account"), true);
+}
+
 // Tests that when server suggestions are disabled, `RequestSuggestions`
 // returns a `FeedbackZipBuilder` with no recorded artifacts.
 TEST_F(SuggestionServiceUnitTest,
@@ -1284,6 +1399,14 @@ TEST_F(SuggestionServiceUnitTest,
   ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
   EXPECT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
 
+  std::string metadata_json;
+  ASSERT_TRUE(base::ReadFileToString(
+      extract_dir.GetPath().AppendASCII("metadata.json"), &metadata_json));
+  std::optional<base::DictValue> metadata_dict = base::JSONReader::ReadDict(
+      metadata_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(metadata_dict.has_value());
+  EXPECT_FALSE(metadata_dict->FindByDottedPath(
+      "smart_selection_feature_params.enabled"));
   EXPECT_FALSE(
       base::PathExists(extract_dir.GetPath().AppendASCII("screenshot.png")));
   EXPECT_FALSE(base::PathExists(
@@ -1295,6 +1418,41 @@ TEST_F(SuggestionServiceUnitTest,
       base::PathExists(extract_dir.GetPath().AppendASCII("request.pb")));
 
   service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that `FeedbackZipBuilder::CreateZip` succeeds before any
+// `RequestSuggestions` call and produces a valid ZIP archive containing
+// `metadata.json`.
+TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipBeforeAnyRequest) {
+  FeedbackZipBuilder zip_builder;
+
+  base::ScopedTempDir zip_dir;
+  ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
+  const base::FilePath target_zip_path =
+      zip_dir.GetPath().AppendASCII("feedback_before_request.zip");
+
+  TestFuture<std::optional<base::FilePath>> future;
+  zip_builder.CreateZip(target_zip_path, future.GetCallback());
+
+  std::optional<base::FilePath> zip_path = future.Take();
+  ASSERT_TRUE(zip_path.has_value());
+  EXPECT_EQ(*zip_path, target_zip_path);
+
+  base::ScopedTempDir extract_dir;
+  ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
+  EXPECT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
+
+  EXPECT_TRUE(
+      base::PathExists(extract_dir.GetPath().AppendASCII("metadata.json")));
+  EXPECT_FALSE(
+      base::PathExists(extract_dir.GetPath().AppendASCII("screenshot.png")));
+  EXPECT_FALSE(base::PathExists(
+      extract_dir.GetPath().AppendASCII("mes_screenshot.png")));
+  EXPECT_FALSE(base::PathExists(extract_dir.GetPath().AppendASCII("apc.pb")));
+  EXPECT_FALSE(
+      base::PathExists(extract_dir.GetPath().AppendASCII("selection.txt")));
+  EXPECT_FALSE(
+      base::PathExists(extract_dir.GetPath().AppendASCII("request.pb")));
 }
 
 }  // namespace

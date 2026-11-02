@@ -519,6 +519,8 @@ void SuggestionService::SendServerSuggestionsRequest(
   if (image) {
     feedback_zip_builder.SetMesScreenshot(*std::move(image));
   }
+  feedback_zip_builder.SetTab(
+      tab_.get(), IsFeatureGroupEnabled(kSmartSelectionServerSuggestions));
   feedback_zip_builder.SetScreenshot(processed_area.screenshot);
   feedback_zip_builder.SetApc(processed_area.apc);
   if (processed_area.selected_text.has_value()) {

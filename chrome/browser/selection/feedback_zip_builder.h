@@ -15,6 +15,10 @@
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace selection {
 
 struct EncodedImage;
@@ -30,6 +34,7 @@ class FeedbackZipBuilder {
   FeedbackZipBuilder& operator=(FeedbackZipBuilder&&) noexcept;
   ~FeedbackZipBuilder();
 
+  void SetTab(tabs::TabInterface& tab, bool server_suggestions_enabled);
   void SetScreenshot(SkBitmap screenshot);
   void SetMesScreenshot(EncodedImage mes_screenshot);
   void SetApc(optimization_guide::proto::AnnotatedPageContent apc);
@@ -46,6 +51,8 @@ class FeedbackZipBuilder {
   // - `apc.pb`: the serialized AnnotatedPageContent proto,
   // - `selection.txt`: the UTF-8 text selection,
   // - `request.pb`: the serialized SmartSelectionSuggestionsRequest proto,
+  // - `metadata.json`: client/environment metadata (OS, build, account,
+  //   active variations, and feature parameters),
   // and passes the created ZIP path to `callback` (or `std::nullopt` on
   // failure).
   void CreateZip(
@@ -57,6 +64,7 @@ class FeedbackZipBuilder {
 
   static std::optional<base::FilePath> CreateZipOnThreadPool(
       base::FilePath target_zip_path,
+      std::string metadata_json,
       State state);
 
   std::unique_ptr<State> state_;
