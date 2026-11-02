@@ -298,6 +298,13 @@ public class ActorForegroundServiceManagerIntegrationTest {
 
         assertEquals(2, mPinnedFgsNotificationId);
         assertNull(findNotification(/* tag= */ null, 1));
+        Notification live = findNotification(UNPINNED_TAG, 1);
+        assertNotNull(live);
+        assertTrue(live.extras.getBoolean(ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+
+        shadowOf(Looper.getMainLooper())
+                .idleFor(ActorNotificationService.getDemotionDelayMs() + 1, TimeUnit.MILLISECONDS);
+
         Notification demoted = findNotification(UNPINNED_TAG, 1);
         assertNotNull("The completed task's notification must stay in the shade", demoted);
         assertTrue(isDismissible(demoted));

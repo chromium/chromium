@@ -395,15 +395,10 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         if (unpinnedNotificationId != INVALID_NOTIFICATION_ID
                 && unpinnedNotificationId
                         != ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID) {
-            // The swap removes the old notification. It can no longer be live, so it is demoted now
-            // rather than when its demotion timer expires, or reposted under the unpinned tag.
+            // The swap removes the old notification, so it is reposted under the unpinned tag.
             mNotificationService.onNotificationUnpinned(unpinnedNotificationId);
-            if (mNotificationService.getPendingDemotionTaskIds().contains(unpinnedNotificationId)) {
-                mNotificationService.demoteNow(unpinnedNotificationId);
-            } else {
-                mNotificationService.repostNotification(
-                        unpinnedNotificationId, isWarningMode(unpinnedNotificationId));
-            }
+            mNotificationService.repostNotification(
+                    unpinnedNotificationId, isWarningMode(unpinnedNotificationId));
         }
     }
 

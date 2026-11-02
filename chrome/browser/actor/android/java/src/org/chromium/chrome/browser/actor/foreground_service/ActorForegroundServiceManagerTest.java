@@ -308,7 +308,7 @@ public class ActorForegroundServiceManagerTest {
     }
 
     @Test
-    public void testPinTransfer_DemotesUnpinnedTaskImmediately() {
+    public void testPinTransfer_RepostsUnpinnedTaskWithPendingDemotion() {
         mManager.setKeyedServiceForTesting(mKeyedService);
         int completedTaskId = 1;
         int activeTaskId = 2;
@@ -324,16 +324,13 @@ public class ActorForegroundServiceManagerTest {
         when(mNotificationService.getForegroundNotification(eq(task2), anyBoolean(), anyBoolean()))
                 .thenReturn(notification2);
 
-        when(mNotificationService.getPendingDemotionTaskIds())
-                .thenReturn(Collections.singleton(completedTaskId));
         mManager.onTaskStateChanged(activeTaskId, ActorTaskState.ACTING);
         ShadowLooper.idleMainLooper();
 
         verify(mServiceController)
                 .startOrUpdateForegroundService(
                         eq(activeTaskId), eq(notification2), eq(completedTaskId), eq(true));
-        verify(mNotificationService).demoteNow(completedTaskId);
-        verify(mNotificationService, never()).repostNotification(eq(completedTaskId), anyBoolean());
+        verify(mNotificationService).repostNotification(completedTaskId, /* isWarning= */ false);
     }
 
     @Test
@@ -874,7 +871,7 @@ public class ActorForegroundServiceManagerTest {
     }
 
     @Test
-    public void testTaskCompleted_PendingTaskRemaining_DemotesCompletedNotification() {
+    public void testTaskCompleted_PendingTaskRemaining_RepostsCompletedNotification() {
         mManager.setKeyedServiceForTesting(mKeyedService);
         int taskId = 1;
 
@@ -885,19 +882,17 @@ public class ActorForegroundServiceManagerTest {
         // Active task completes while pending tasks remain.
         when(mTask.isCompleted()).thenReturn(true);
         when(mKeyedService.getActiveTasksCount()).thenReturn(0);
-        when(mNotificationService.getPendingDemotionTaskIds())
-                .thenReturn(Collections.singleton(taskId));
         mManager.onTaskStateChanged(taskId, ActorTaskState.FINISHED);
         ShadowLooper.idleMainLooper();
 
         // Pin transfers to the placeholder notification. The previously pinned task notification
-        // is removed with the foreground state and immediately demoted.
+        // is removed with the foreground state and reposted.
         verify(mServiceController)
                 .startOrUpdateForegroundService(
                         eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
                         any(),
                         eq(taskId),
                         eq(true));
-        verify(mNotificationService).demoteNow(taskId);
+        verify(mNotificationService).repostNotification(taskId, /* isWarning= */ false);
     }
 }
