@@ -6309,4 +6309,26 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(file_info2.is_superceded);
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       WaitForTabFaviconLoad_ResolvesLiveWebContentsFavicon) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url =
+      embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
+  handler_ = nullptr;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EmbedHandlerInSidePanel();
+
+  const int32_t active_tab_id = TabListInterface::From(browser())
+                                    ->GetActiveTab()
+                                    ->GetHandle()
+                                    .raw_value();
+  base::test::TestFuture<const std::optional<GURL>&> favicon_future;
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->WaitForTabFaviconLoad(
+      active_tab_id, favicon_future.GetCallback());
+
+  const std::optional<GURL>& favicon_data_url = favicon_future.Get();
+  ASSERT_TRUE(favicon_data_url.has_value());
+  EXPECT_TRUE(favicon_data_url->SchemeIs("data"));
+}
+
 }  // namespace contextual_tasks
