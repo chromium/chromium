@@ -1134,10 +1134,6 @@ BASE_FEATURE(kNotificationExpansionAnimation,
 // Enables notifications to be shown within context menus.
 BASE_FEATURE(kNotificationsInContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch for https://crbug.com/502771678. Forces OEM apps to receive
-// updates from the Chrome Web Store, which is the safe default.
-BASE_FEATURE(kOemAppsMustUpdateFromWebstore, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable on-device grammar check service.
 BASE_FEATURE(kOnDeviceGrammarCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2452,10 +2448,6 @@ bool IsNssDbClientCertsRollbackEnabled() {
 // up.
 bool AreOngoingProcessesEnabled() {
   return base::FeatureList::IsEnabled(kOngoingProcesses);
-}
-
-bool IsOemAppsMustUpdateFromWebstoreEnabled() {
-  return base::FeatureList::IsEnabled(kOemAppsMustUpdateFromWebstore);
 }
 
 bool IsModifierSplitEnabled() {
