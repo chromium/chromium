@@ -203,10 +203,32 @@ component("native_pixmap_usage") {
   visibility += ozone_external_platform_visibility
 }
 
+# Headers that the platforms include. They are implemented in :platform, which
+# depends on the platforms to link them in, so the platforms depend on this
+# target instead.
+source_set("platform_headers") {
+  public = [
+    "common/stub_client_native_pixmap_factory.h",
+    "public/ozone_platform.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/viz/common/resources:shared_image_format",
+    "//ui/gfx",
+    "//ui/gfx:buffer_types",
+    "//ui/platform_window",
+  ]
+
+  visibility += [ "//ui/ozone/platform/*" ]
+
+  # Out of tree platforms can depend on this.
+  visibility += ozone_external_platform_visibility
+}
+
 source_set("platform") {
   sources = [
     "common/stub_client_native_pixmap_factory.cc",
-    "common/stub_client_native_pixmap_factory.h",
     "platform_constructor_list.h",
     "platform_object_internal.h",
     "platform_selection.cc",
@@ -221,13 +243,13 @@ source_set("platform") {
   public = [
     "platform_object.h",
     "public/client_native_pixmap_factory_ozone.h",
-    "public/ozone_platform.h",
   ]
 
   defines = [ "IS_OZONE_IMPL" ]
 
   public_deps = [
     ":ozone_base",
+    ":platform_headers",
     "//base",
     "//ipc",
     "//services/service_manager/public/cpp",
@@ -247,9 +269,6 @@ source_set("platform") {
   ]
 
   deps += ozone_platform_deps
-
-  # Platforms are always linked into //ui/ozone and can include our headers.
-  allow_circular_includes_from = ozone_platform_deps
 
   # This is used for platform and clipboard tests.
   visibility += [
@@ -317,6 +336,29 @@ source_set("test_support_internal") {
   public_deps = [ "//base/test:test_support" ]
 }
 
+# Header that the platforms' test helpers include. It is implemented in
+# :ui_test_support, which depends on the platforms to link them in.
+source_set("ui_test_support_headers") {
+  testonly = true
+
+  public = [ "public/ozone_ui_controls_test_helper.h" ]
+
+  public_deps = [
+    "//base",
+    "//ui/events:events_base",
+    "//ui/gfx",
+  ]
+
+  # Not public, so that the gtest configs of //ui/base:test_support do not
+  # propagate to the platforms' test helpers.
+  deps = [ "//ui/base:test_support" ]
+
+  visibility += [ "//ui/ozone/platform/*" ]
+
+  # Out of tree platforms can depend on this.
+  visibility += ozone_external_platform_visibility
+}
+
 static_library("ui_test_support") {
   visibility = []
   visibility = [ "//ui/views:test_support" ]
@@ -330,7 +372,9 @@ static_library("ui_test_support") {
     test_constructor_list_cc_file,
   ]
 
-  public = [ "public/ozone_ui_controls_test_helper.h" ]
+  public = []
+
+  public_deps = [ ":ui_test_support_headers" ]
 
   deps = [
     ":generate_test_support_constructor_list",
@@ -340,8 +384,6 @@ static_library("ui_test_support") {
   ]
 
   deps += ozone_platform_ui_test_support_deps
-
-  allow_circular_includes_from = ozone_platform_ui_test_support_deps
 }
 
 source_set("ozone_interactive_ui_tests") {

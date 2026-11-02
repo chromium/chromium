@@ -122,6 +122,8 @@ source_set("gbm") {
     "ozone_platform_drm.h",
   ]
 
+  public_deps = [ "//ui/ozone:platform_headers" ]
+
   deps = [
     "//base",
     "//build/config/linux/libdrm",

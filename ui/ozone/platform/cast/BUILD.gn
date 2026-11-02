@@ -54,6 +54,7 @@ source_set("cast") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/ozone:ozone_base",
+    "//ui/ozone:platform_headers",
     "//ui/ozone/common",
     "//ui/platform_window",
     "//ui/platform_window/stub",

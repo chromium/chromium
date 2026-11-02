@@ -36,7 +36,6 @@
 #include "ui/ozone/platform/flatland/flatland_window_manager.h"
 #include "ui/ozone/platform/flatland/mojom/scenic_gpu_service.mojom.h"
 #include "ui/ozone/platform/flatland/overlay_manager_flatland.h"
-#include "ui/ozone/platform_selection.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"

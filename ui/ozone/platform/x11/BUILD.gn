@@ -85,6 +85,7 @@ source_set("x11") {
     "//ui/gfx/x",
     "//ui/gl",
     "//ui/ozone:ozone_base",
+    "//ui/ozone:platform_headers",
     "//ui/ozone/common",
     "//ui/platform_window",
     "//ui/platform_window/common",
@@ -197,6 +198,8 @@ source_set("test_support") {
     "x11_ozone_ui_controls_test_helper.cc",
     "x11_ozone_ui_controls_test_helper.h",
   ]
+
+  public_deps = [ "//ui/ozone:ui_test_support_headers" ]
 
   deps = [
     "//ui/aura",

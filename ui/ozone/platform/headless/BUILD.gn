@@ -24,6 +24,8 @@ source_set("headless") {
 
   defines = [ "OZONE_IMPLEMENTATION" ]
 
+  public_deps = [ "//ui/ozone:platform_headers" ]
+
   deps = [
     "//base",
     "//build:chromecast_buildflags",

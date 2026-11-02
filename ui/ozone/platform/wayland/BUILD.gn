@@ -316,6 +316,7 @@ source_set("wayland") {
     "//ui/gfx/linux:drm",
     "//ui/linux:linux_ui",
     "//ui/ozone:ozone_base",
+    "//ui/ozone:platform_headers",
     "//ui/ozone/common",
     "//ui/ozone/platform/wayland/mojom",
     "//ui/platform_window",
@@ -655,6 +656,8 @@ source_set("ui_test_support") {
     "test/wayland_ozone_ui_controls_test_helper.cc",
     "test/wayland_ozone_ui_controls_test_helper.h",
   ]
+
+  public_deps = [ "//ui/ozone:ui_test_support_headers" ]
 
   deps = [
     ":wayland_proxy",

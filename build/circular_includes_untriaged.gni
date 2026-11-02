@@ -260,7 +260,5 @@ allow_circular_includes_from_untriaged = [
   "//third_party/pdfium/xfa/fxfa/layout:layout",
   "//third_party/pdfium/xfa/fxfa/parser:parser",
   "//third_party/pdfium/xfa/fxfa:fxfa",
-  "//ui/ozone:platform",
-  "//ui/ozone:ui_test_support",
   "//v8:v8_initializers",
 ]
