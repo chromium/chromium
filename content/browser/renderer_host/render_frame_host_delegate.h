@@ -51,7 +51,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/native_ui_types.h"
@@ -482,7 +482,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual WebContents* ShowCreatedWindow(
       RenderFrameHostImpl* opener,
       int main_frame_widget_route_id,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture);
 

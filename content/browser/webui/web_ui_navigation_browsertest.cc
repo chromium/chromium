@@ -35,6 +35,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/url_constants.h"
 
@@ -54,7 +55,7 @@ blink::mojom::OpenURLParamsPtr CreateOpenURLParams(
     const RenderFrameHostImpl* rfh) {
   auto params = blink::mojom::OpenURLParams::New();
   params->url = url;
-  params->disposition = WindowOpenDisposition::kCurrentTab;
+  params->disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   params->should_replace_current_entry = false;
   params->user_gesture = true;
   params->initiator_state_token = rfh->current_initiator_state_token();

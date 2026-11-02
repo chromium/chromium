@@ -42,6 +42,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/gurl.h"
 
@@ -367,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(
 
   auto params = blink::mojom::OpenURLParams::New();
   params->url = dest_url;
-  params->disposition = WindowOpenDisposition::kCurrentTab;
+  params->disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   params->initiator_state_token =
       root->current_frame_host()->current_initiator_state_token();
   params->initiator_document_token =

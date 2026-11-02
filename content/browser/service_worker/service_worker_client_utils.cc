@@ -50,7 +50,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -579,13 +579,14 @@ void OpenWindow(
       Referrer::SanitizeForRequest(
           url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
       type == WindowType::PAYMENT_HANDLER_WINDOW
-          ? WindowOpenDisposition::kNewPopup
-          : WindowOpenDisposition::kNewForegroundTab,
+          ? ui::mojom::WindowOpenDisposition::kNewPopup
+          : ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, true /* is_renderer_initiated */);
 
-  // Technically this field is equivalent to (disposition == NEW_FOREGROUND_TAB)
-  // && (transition == AUTO_TOPLEVEL) && is_renderer_initiated; this
-  // constellation of params is unique to just service worker navigations.
+  // Technically this field is equivalent to
+  // (disposition == `kNewForegroundTab`) && (transition == AUTO_TOPLEVEL) &&
+  // is_renderer_initiated; this constellation of params is unique to just
+  // service worker navigations.
   params.is_service_worker_open_window = type == WindowType::NEW_TAB_WINDOW;
   params.initiator_origin =
       url::Origin::Create(script_url.DeprecatedGetOriginAsURL());
@@ -690,7 +691,7 @@ void NavigateClient(
       std::string() /* extra_headers */,
       Referrer::SanitizeForRequest(
           url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
-      WindowOpenDisposition::kCurrentTab,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       false /* should_replace_current_entry */, false /* user_gesture */,
       blink::mojom::TriggeringEventInfo::kUnknown,
       std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,

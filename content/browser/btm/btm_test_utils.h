@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace testing {
@@ -277,8 +278,9 @@ class ScopedInitBtmFeature {
 // Waits for a window to open.
 class OpenedWindowObserver : public WebContentsObserver {
  public:
-  explicit OpenedWindowObserver(WebContents* web_contents,
-                                WindowOpenDisposition open_disposition);
+  explicit OpenedWindowObserver(
+      WebContents* web_contents,
+      ui::mojom::WindowOpenDisposition open_disposition);
 
   void Wait() { run_loop_.Run(); }
   WebContents* window() { return window_; }
@@ -289,12 +291,12 @@ class OpenedWindowObserver : public WebContentsObserver {
                            RenderFrameHost* source_render_frame_host,
                            const GURL& url,
                            const Referrer& referrer,
-                           WindowOpenDisposition disposition,
+                           ui::mojom::WindowOpenDisposition disposition,
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
 
-  const WindowOpenDisposition open_disposition_;
+  const ui::mojom::WindowOpenDisposition open_disposition_;
   raw_ptr<WebContents> window_ = nullptr;
   base::RunLoop run_loop_;
 };

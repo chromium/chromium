@@ -97,6 +97,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/font_render_params.h"
@@ -2197,7 +2198,7 @@ TEST_F(WebContentsImplTest, CreateNewWindowBlockedBySystem) {
   contents()->SetDelegate(&delegate);
 
   mojom::CreateNewWindowParams params;
-  params.disposition = WindowOpenDisposition::kNewPictureInPicture;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewPictureInPicture;
 
   FrameTree* result =
       static_cast<WebContentsImpl*>(contents())

@@ -40,7 +40,7 @@
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace blink {
 namespace web_pref {
@@ -354,7 +354,7 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // IPC message handlers.
   void OnShowView(int route_id,
-                  WindowOpenDisposition disposition,
+                  ui::mojom::WindowOpenDisposition disposition,
                   const gfx::Rect& initial_rect,
                   bool user_gesture);
   void OnShowWidget(int widget_route_id, const gfx::Rect& initial_rect);

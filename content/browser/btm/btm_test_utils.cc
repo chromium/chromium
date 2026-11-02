@@ -29,6 +29,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace content {
 
@@ -41,8 +42,8 @@ void CloseTab(WebContents* web_contents) {
 base::expected<WebContents*, std::string> OpenInNewTab(
     WebContents* original_tab,
     const GURL& url) {
-  OpenedWindowObserver tab_observer(original_tab,
-                                    WindowOpenDisposition::kNewForegroundTab);
+  OpenedWindowObserver tab_observer(
+      original_tab, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   if (!ExecJs(original_tab, JsReplace("window.open($1, '_blank');", url))) {
     return base::unexpected("window.open failed");
   }
@@ -362,7 +363,7 @@ ScopedInitBtmFeature::ScopedInitBtmFeature(bool enable,
 
 OpenedWindowObserver::OpenedWindowObserver(
     WebContents* web_contents,
-    WindowOpenDisposition open_disposition)
+    ui::mojom::WindowOpenDisposition open_disposition)
     : WebContentsObserver(web_contents), open_disposition_(open_disposition) {}
 
 void OpenedWindowObserver::DidOpenRequestedURL(
@@ -370,7 +371,7 @@ void OpenedWindowObserver::DidOpenRequestedURL(
     RenderFrameHost* source_render_frame_host,
     const GURL& url,
     const Referrer& referrer,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {

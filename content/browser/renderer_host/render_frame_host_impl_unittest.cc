@@ -62,6 +62,7 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -1598,11 +1599,11 @@ TEST_F(RenderFrameHostImplTest, CapturedMediaStreamAddedRemoved) {
       RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
 }
 
-// Ensure that an invalid WindowOpenDisposition in CreateNewWindow causes a bad
-// message.
+// Ensure that an invalid `ui::mojom::WindowOpenDisposition` in CreateNewWindow
+// causes a bad message.
 TEST_F(RenderFrameHostImplTest, CreateNewWindowInvalidDisposition) {
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
-  params->disposition = WindowOpenDisposition::kUnknown;
+  params->disposition = ui::mojom::WindowOpenDisposition::kUnknown;
   params->features = blink::mojom::WindowFeatures::New();
 
   // The bad message is reported to the process.
@@ -1630,7 +1631,7 @@ class RenderFrameHostImplWindowOpenSplitTabTest
   bool VerifyFeatures(blink::mojom::WindowFeaturesPtr features) {
     mojom::CreateNewWindowParamsPtr params =
         mojom::CreateNewWindowParams::New();
-    params->disposition = WindowOpenDisposition::kNewForegroundTab;
+    params->disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     params->features = std::move(features);
 
     base::HistogramTester histograms;

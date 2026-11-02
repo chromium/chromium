@@ -62,6 +62,7 @@
 #include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -1076,7 +1077,7 @@ void Navigator::RequestOpenURL(
     const scoped_refptr<network::ResourceRequestBody>& post_body,
     const std::string& extra_headers,
     const Referrer& referrer,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     bool should_replace_current_entry,
     bool user_gesture,
     blink::mojom::TriggeringEventInfo triggering_event_info,
@@ -1106,7 +1107,7 @@ void Navigator::RequestOpenURL(
   // Send the navigation to the current FrameTreeNode if it's destined for a
   // subframe in the current tab.  We'll assume it's for the main frame
   // (possibly of a new or different WebContents) otherwise.
-  if (disposition == WindowOpenDisposition::kCurrentTab &&
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab &&
       render_frame_host->GetParentOrOuterDocument()) {
     frame_tree_node_id =
         render_frame_host->frame_tree_node()->frame_tree_node_id();

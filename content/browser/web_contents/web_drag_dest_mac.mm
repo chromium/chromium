@@ -38,7 +38,6 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point.h"
 
 using blink::DragOperationsMask;

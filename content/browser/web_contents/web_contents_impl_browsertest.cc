@@ -145,6 +145,7 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/display/screen.h"
@@ -595,8 +596,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLSubframe) {
   // Navigate with the subframe's FrameTreeNode ID.
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
   OpenURLParams params = OpenURLParams::CreateRendererInitiated(
-      url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
-      Referrer(),
+      url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui::PAGE_TRANSITION_LINK, Referrer(),
       wc->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState(),
       /*started_from_context_menu=*/false, frame_tree_node_id);
   params.initiator_origin = wc->GetPrimaryMainFrame()->GetLastCommittedOrigin();
@@ -624,8 +625,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLNonExistentSubframe) {
   // Navigate with the invalid FrameTreeNode ID.
   const GURL url(embedded_test_server()->GetURL("/title2.html"));
   OpenURLParams params = OpenURLParams::CreateRendererInitiated(
-      url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
-      Referrer(),
+      url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui::PAGE_TRANSITION_LINK, Referrer(),
       wc->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState(),
       /*started_from_context_menu=*/false, frame_tree_node_id);
   params.initiator_origin = wc->GetPrimaryMainFrame()->GetLastCommittedOrigin();
@@ -2033,7 +2034,7 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
       WebContents* source,
       std::unique_ptr<WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override {
@@ -4145,7 +4146,7 @@ class DestroyOpenerOnAddNewContentsDelegate : public WebContentsDelegate {
       WebContents* source,
       std::unique_ptr<WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override {
@@ -5187,7 +5188,7 @@ class MockDidOpenRequestedURLObserver : public WebContentsObserver {
                     RenderFrameHost* source_render_frame_host,
                     const GURL& url,
                     const Referrer& referrer,
-                    WindowOpenDisposition disposition,
+                    ui::mojom::WindowOpenDisposition disposition,
                     ui::PageTransition transition,
                     bool started_from_context_menu,
                     bool renderer_initiated));
@@ -5215,7 +5216,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, CtrlClickSubframeLink) {
                   subframe,      // source_render_frame_host
                   embedded_test_server()->GetURL("/title1.html"),
                   ::testing::Field(&Referrer::url, main_url),
-                  WindowOpenDisposition::kNewForegroundTab,
+                  ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                   ::testing::Truly([](ui::PageTransition arg) {
                     return ui::PageTransitionCoreTypeIs(
                         arg, ui::PAGE_TRANSITION_LINK);

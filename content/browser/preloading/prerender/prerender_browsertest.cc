@@ -143,6 +143,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -5810,7 +5811,8 @@ IN_PROC_BROWSER_TEST_F(
           GetUrl("/empty.html?same_origin_iframe3");
       shell()->web_contents()->OpenURL(
           OpenURLParams::CreateBrowserInitiated(
-              same_origin_subframe_url3, WindowOpenDisposition::kCurrentTab,
+              same_origin_subframe_url3,
+              ui::mojom::WindowOpenDisposition::kCurrentTab,
               ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
               /*started_from_context_menu=*/false,
               child_frame->GetFrameTreeNodeId()),
@@ -7063,7 +7065,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
 }
 
 // Ensures that if we attempt to open a URL while prerendering with a window
-// disposition other than CURRENT_TAB, we fail.
+// disposition other than `kCurrentTab`, we fail.
 IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, SuppressOpenURL) {
   const GURL initial_url = GetUrl("/empty.html");
   const GURL prerendering_url = GetUrl("/empty.html?prerender1");
@@ -7084,8 +7086,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, SuppressOpenURL) {
           *prerender_web_contents, host_id);
   EXPECT_EQ(GetRequestCount(prerendering_url), 1);
   OpenURLParams params = OpenURLParams::CreateRendererInitiated(
-      second_url, WindowOpenDisposition::kNewWindow, ui::PAGE_TRANSITION_LINK,
-      Referrer(),
+      second_url, ui::mojom::WindowOpenDisposition::kNewWindow,
+      ui::PAGE_TRANSITION_LINK, Referrer(),
       prerendered_render_frame_host->GetCurrentInitiatorNavigationState(),
       /*started_from_context_menu=*/false,
       prerendered_render_frame_host->GetFrameTreeNodeId());
@@ -10681,7 +10683,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLFromPrerenderingMainFrame) {
         }));
     auto params = blink::mojom::OpenURLParams::New();
     params->url = GetUrl("/title3.html");
-    params->disposition = WindowOpenDisposition::kCurrentTab;
+    params->disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
     params->should_replace_current_entry = false;
     params->user_gesture = true;
     params->initiator_state_token =
@@ -10727,7 +10729,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLInPrerenderingFrame) {
                                         new_iframe_url);
   shell()->web_contents()->OpenURL(
       OpenURLParams::CreateBrowserInitiated(
-          new_iframe_url, WindowOpenDisposition::kCurrentTab,
+          new_iframe_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
           /*started_from_context_menu=*/false,
           child_frame->GetFrameTreeNodeId()),
@@ -10873,7 +10875,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   {
     shell()->web_contents()->OpenURL(
         OpenURLParams::CreateBrowserInitiated(
-            new_iframe_url, WindowOpenDisposition::kCurrentTab,
+            new_iframe_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
             /*started_from_context_menu=*/false,
             child_frame->GetFrameTreeNodeId()),
@@ -11747,7 +11749,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                                           new_iframe_url);
     shell()->web_contents()->OpenURL(
         OpenURLParams::CreateBrowserInitiated(
-            new_iframe_url, WindowOpenDisposition::kCurrentTab,
+            new_iframe_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui::PAGE_TRANSITION_AUTO_SUBFRAME, Referrer(),
             /*started_from_context_menu=*/false,
             child_frame->GetFrameTreeNodeId()),
@@ -15842,7 +15844,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest,
   // Open a new tab, and the new page clears all settings.
   GURL new_tab_url = GetUrl("/image.html?acceptch-no-value");
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
-      new_tab_url, WindowOpenDisposition::kNewBackgroundTab,
+      new_tab_url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui::PAGE_TRANSITION_LINK);
   auto* new_web_contents =
       web_contents_impl()->OpenURL(params, /*navigation_handle_callback=*/{});

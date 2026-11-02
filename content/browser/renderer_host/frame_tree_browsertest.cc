@@ -59,6 +59,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -2250,9 +2251,9 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureFrameTreeBrowserTest,
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
       shell()->web_contents()->GetPrimaryMainFrame());
 
-  // Create invalid params: NEW_POPUP with pip_options.
+  // Create invalid params: `kNewPopup` with pip_options.
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
-  params->disposition = WindowOpenDisposition::kNewPopup;
+  params->disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
   params->pip_options = blink::mojom::PictureInPictureWindowOptions::New();
 
   RenderProcessHostWatcher crash_observer(

@@ -19,7 +19,7 @@
 #include "net/storage_access_api/status.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class GURL;
 
@@ -134,7 +134,7 @@ class CONTENT_EXPORT Navigator {
       const scoped_refptr<network::ResourceRequestBody>& post_body,
       const std::string& extra_headers,
       const Referrer& referrer,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       bool should_replace_current_entry,
       bool user_gesture,
       blink::mojom::TriggeringEventInfo triggering_event_info,

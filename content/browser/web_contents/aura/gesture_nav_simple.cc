@@ -16,6 +16,7 @@
 #include "content/public/browser/overscroll_configuration.h"
 #include "content/public/browser/preloading.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_not_drawn.h"
@@ -505,7 +506,7 @@ void GestureNavSimple::OnOverscrollModeChange(OverscrollMode old_mode,
   if (ShouldNavigateBack(&controller, mode_)) {
     web_contents_->BackNavigationLikely(
         preloading_predictor::kBackGestureNavigation,
-        WindowOpenDisposition::kCurrentTab);
+        ui::mojom::WindowOpenDisposition::kCurrentTab);
   }
 
   const bool is_touchpad = source == OverscrollSource::TOUCHPAD;

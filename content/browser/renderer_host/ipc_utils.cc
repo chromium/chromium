@@ -30,7 +30,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace content {
 
@@ -39,19 +39,19 @@ namespace {
 // Validates that the specified `disposition` could be legitimately sent by the
 // renderer, as defined by NavigationPolicyToDisposition() in
 // render_frame_impl.cc.
-bool IsValidRendererDisposition(WindowOpenDisposition disposition) {
+bool IsValidRendererDisposition(ui::mojom::WindowOpenDisposition disposition) {
   switch (disposition) {
-    case WindowOpenDisposition::kCurrentTab:
-    case WindowOpenDisposition::kNewForegroundTab:
-    case WindowOpenDisposition::kNewBackgroundTab:
-    case WindowOpenDisposition::kNewPopup:
-    case WindowOpenDisposition::kNewWindow:
-    case WindowOpenDisposition::kSaveToDisk:
-    case WindowOpenDisposition::kNewPictureInPicture:
-    case WindowOpenDisposition::kNewSplitView:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewPopup:
+    case ui::mojom::WindowOpenDisposition::kNewWindow:
+    case ui::mojom::WindowOpenDisposition::kSaveToDisk:
+    case ui::mojom::WindowOpenDisposition::kNewPictureInPicture:
+    case ui::mojom::WindowOpenDisposition::kNewSplitView:
       return true;
     default:
-      // Certain dispositions, such as SWITCH_TO_TAB, are only used internally
+      // Certain dispositions, such as `kSwitchToTab`, are only used internally
       // within the browser process and should not be triggerable by a renderer
       // process. Allowing a compromised renderer to send those could let it
       // manipulate other tabs in unintended ways. See
@@ -449,7 +449,8 @@ bool VerifyCreateNewWindowParams(const RenderFrameHostImpl& current_rfh,
   }
 
   if (params.pip_options &&
-      params.disposition != WindowOpenDisposition::kNewPictureInPicture) {
+      params.disposition !=
+          ui::mojom::WindowOpenDisposition::kNewPictureInPicture) {
     bad_message::ReceivedBadMessage(
         process, bad_message::RFH_CREATE_NEW_WINDOW_INVALID_PIP_OPTIONS);
     return false;

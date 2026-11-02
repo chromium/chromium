@@ -335,7 +335,7 @@
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/text_input_client.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -10817,7 +10817,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
     // Try recording the AdClickMainFrameNavigation use counter for navigation
     // targeting this page's main frame, or targeting a new tab.
-    if (params->disposition != WindowOpenDisposition::kCurrentTab ||
+    if (params->disposition != ui::mojom::WindowOpenDisposition::kCurrentTab ||
         IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
           /*initiator_frame=*/initiator_frame, params->user_gesture,
@@ -10993,7 +10993,8 @@ void RenderFrameHostImpl::CreateNewWindow(
   }
 
   // Only top-most frames can open picture-in-picture windows.
-  if (params->disposition == WindowOpenDisposition::kNewPictureInPicture &&
+  if (params->disposition ==
+          ui::mojom::WindowOpenDisposition::kNewPictureInPicture &&
       !IsOutermostMainFrame()) {
     frame_host_associated_receiver_.ReportBadMessage(
         "Only top-most frames can open picture-in-picture windows.");
@@ -11016,14 +11017,16 @@ void RenderFrameHostImpl::CreateNewWindow(
   GetProcess()->FilterURL(false, &params->target_url);
 
   bool is_accepted_popup_disposition =
-      params->disposition == WindowOpenDisposition::kNewPopup ||
-      params->disposition == WindowOpenDisposition::kNewForegroundTab ||
-      params->disposition == WindowOpenDisposition::kNewBackgroundTab ||
-      params->disposition == WindowOpenDisposition::kNewWindow;
+      params->disposition == ui::mojom::WindowOpenDisposition::kNewPopup ||
+      params->disposition ==
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
+      params->disposition ==
+          ui::mojom::WindowOpenDisposition::kNewBackgroundTab ||
+      params->disposition == ui::mojom::WindowOpenDisposition::kNewWindow;
   bool effective_transient_activation_state =
       HasTransientUserActivation() ||
       (transient_allow_popup_.IsActive() &&
-       params->disposition == WindowOpenDisposition::kNewPopup) ||
+       params->disposition == ui::mojom::WindowOpenDisposition::kNewPopup) ||
       (popup_delegation_token_.IsActive() && is_accepted_popup_disposition);
 
   if (!effective_transient_activation_state && params->allow_popup) {
