@@ -638,14 +638,10 @@ ReadAnythingAppController::GetInitialDistillationMethod() const {
     return *forced_distillation_method_for_testing_;
   }
 
-  // If the current page is a PDF or a Google Doc, or if phrase highlighting is
-  // enabled, override IsReadAnythingWithReadabilityEnabled flag and return
-  // kScreen2x.
-  // TODO: crbug.com/444029483- Update the phrase highlighting implementation
-  // so that it works with Readability.
+  // If the current page is a PDF or a Google Doc, override
+  // IsReadAnythingWithReadabilityEnabled flag and return kScreen2x.
   return IsPdf() || IsGoogleDocs() ||
-                 !features::IsReadAnythingWithReadabilityEnabled() ||
-                 features::IsReadAnythingReadAloudPhraseHighlightingEnabled()
+                 !features::IsReadAnythingWithReadabilityEnabled()
              ? ReadAnythingAppModel::DistillationMethod::kScreen2x
              : ReadAnythingAppModel::DistillationMethod::kReadability;
 }
@@ -2128,8 +2124,7 @@ bool ReadAnythingAppController::IsTranslatePdfEnabled() const {
 // Returns true if the experimental flag allowing testing with alternative
 // distillation methods such as Readability.js is enabled.
 bool ReadAnythingAppController::IsReadabilityEnabled() const {
-  return features::IsReadAnythingWithReadabilityEnabled() &&
-         !features::IsReadAnythingReadAloudPhraseHighlightingEnabled();
+  return features::IsReadAnythingWithReadabilityEnabled();
 }
 
 bool ReadAnythingAppController::IsLineFocusEnabled() const {

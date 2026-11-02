@@ -4779,6 +4779,25 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
+       PhraseHighlightingEnabled_StillUsesReadability) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kReadAnythingWithReadability,
+       features::kReadAnythingReadAloudPhraseHighlighting},
+      {});
+
+  EXPECT_TRUE(controller().IsReadabilityEnabled());
+
+  model().set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
        OnActiveAXTreeIDChanged_UsesScreen2xForPDF) {
   // Simulate default method is readability.
   model().set_current_content_distillation_method(

@@ -507,8 +507,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
                 weak_factory_.GetWeakPtr()));
   }
 
-  if (features::IsReadAnythingWithReadabilityEnabled() &&
-      !features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
+  if (features::IsReadAnythingWithReadabilityEnabled()) {
     // Set the JavaScript world ID.
     if (!dom_distiller::DistillerJavaScriptWorldIdIsSet()) {
       dom_distiller::SetDistillerJavaScriptWorldId(
@@ -1821,18 +1820,13 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   VLOG(1) << "Sending non-pdf tree with id " << rfh->GetAXTreeID();
 
-  // TODO: crbug.com/444029483- Phrase highlighting currently doesn't work
-  // with the TS text segmentation method. Therefore, it doesn't work with
-  // Readability. Until phrase highlighting works with TSTextSegmentation,
-  // default to using Screen2x when the phrase highlighting flag is enabled.
   // Google Docs enforces a strict TrustedHTML Content Security Policy that
   // causes Readability script injection to fail. Avoid requesting Readability
   // distillation when on Google Docs so the renderer can fall back cleanly to
   // Screen2x.
   const bool use_readability =
       features::IsReadAnythingWithReadabilityEnabled() && !is_pdf_with_frame_ &&
-      !IsGoogleDocs(contents->GetLastCommittedURL()) &&
-      !features::IsReadAnythingReadAloudPhraseHighlightingEnabled();
+      !IsGoogleDocs(contents->GetLastCommittedURL());
 
   if (use_readability) {
     readability_distillation_tree_change_start_time_ = base::TimeTicks::Now();
@@ -1872,7 +1866,6 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 bool ReadAnythingUntrustedPageHandler::MaybeStartReadabilityDistillation(
     content::WebContents* content) {
   if (!content || !features::IsReadAnythingWithReadabilityEnabled() ||
-      features::IsReadAnythingReadAloudPhraseHighlightingEnabled() ||
       IsPdfContents(content, !!pdf_observer_) ||
       IsGoogleDocs(content->GetLastCommittedURL())) {
     return false;
@@ -1969,8 +1962,7 @@ void ReadAnythingUntrustedPageHandler::RecordDistillationSchemeHistogram(
 void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
     const dom_distiller::DistilledArticleProto* article_proto) {
   CHECK(features::IsReadAnythingWithReadabilityEnabled() &&
-        !is_pdf_with_frame_ &&
-        !features::IsReadAnythingReadAloudPhraseHighlightingEnabled());
+        !is_pdf_with_frame_);
   if (article_proto && article_proto->pages_size() > 0) {
     readability_title_ = article_proto->title();
 

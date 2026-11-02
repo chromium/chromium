@@ -3046,8 +3046,7 @@ class ReadAnythingUntrustedPageHandlerDistillerTest
   ReadAnythingUntrustedPageHandlerDistillerTest()
       : ReadAnythingUntrustedPageHandlerTest(
             {features::kReadAnythingWithReadability},
-            {features::kReadAnythingReadAloudPhraseHighlighting,
-             features::kReadAnythingDistillerRefactor}) {}
+            {features::kReadAnythingDistillerRefactor}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
@@ -3419,6 +3418,57 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
       handler_->readability_distillation_tree_change_start_time().is_null());
 }
 
+// Phrase highlighting used to force Screen2x. Verifies that Readability
+// distillation still runs end to end when phrase highlighting is enabled.
+// TODO(crbug.com/571979322): Remove this fixture and its tests once
+// kReadAnythingDistillerRefactor is fully launched.
+class ReadAnythingUntrustedPageHandlerDistillerPhraseHighlightingTest
+    : public ReadAnythingUntrustedPageHandlerTest {
+ public:
+  ReadAnythingUntrustedPageHandlerDistillerPhraseHighlightingTest()
+      : ReadAnythingUntrustedPageHandlerTest(
+            {features::kReadAnythingWithReadability,
+             features::kReadAnythingReadAloudPhraseHighlighting},
+            {features::kReadAnythingDistillerRefactor}) {}
+};
+
+// Covers MaybeStartReadabilityDistillation and ProcessDistilledArticle, which
+// previously required phrase highlighting to be disabled.
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerDistillerPhraseHighlightingTest,
+    RequestReadabilityDistillation_SendsContentToPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Wait for the initial distillation triggered by navigation to complete.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return handler_->readability_content().has_value(); }));
+
+  // The distilled content still reaches the renderer through UpdateContent,
+  // even though the request itself discards the callback.
+  base::RunLoop run_loop;
+  std::string received_title;
+  std::string received_content;
+  EXPECT_CALL(page_, UpdateContent(testing::_, testing::_))
+      .WillOnce([&](const std::string& title, const std::string& content) {
+        received_title = title;
+        received_content = content;
+        run_loop.Quit();
+      });
+
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, base::DoNothing());
+  run_loop.Run();
+
+  EXPECT_FALSE(received_title.empty());
+  EXPECT_FALSE(received_content.empty());
+}
+
 class ReadAnythingUntrustedPageHandlerDistillerRefactorTest
     : public ReadAnythingUntrustedPageHandlerTest {
  public:
@@ -3426,7 +3476,7 @@ class ReadAnythingUntrustedPageHandlerDistillerRefactorTest
       : ReadAnythingUntrustedPageHandlerTest(
             {features::kReadAnythingWithReadability,
              features::kReadAnythingDistillerRefactor},
-            {features::kReadAnythingReadAloudPhraseHighlighting}) {}
+            {}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
@@ -3508,6 +3558,49 @@ IN_PROC_BROWSER_TEST_F(
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
       ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // With the refactor, distillation state is owned by the renderer and content
+  // is returned via the callback only.
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
+  EXPECT_CALL(page_, UpdateContent).Times(0);
+
+  base::test::TestFuture<read_anything::mojom::ReadabilityDistillationResult,
+                         const std::string&, const std::string&>
+      future;
+  handler_->RequestReadabilityDistillation(
+      ReadabilityDistillationReason::kRedistill, future.GetCallback());
+
+  auto [result, title, content] = future.Get();
+  EXPECT_EQ(result,
+            read_anything::mojom::ReadabilityDistillationResult::kSuccess);
+  EXPECT_FALSE(title.empty());
+  EXPECT_FALSE(content.empty());
+  page_.receiver_.FlushForTesting();
+}
+
+// Phrase highlighting used to force Screen2x. Verifies that Readability
+// distillation still runs end to end when phrase highlighting is enabled.
+class ReadAnythingUntrustedPageHandlerDistillerRefactorPhraseHighlightingTest
+    : public ReadAnythingUntrustedPageHandlerTest {
+ public:
+  ReadAnythingUntrustedPageHandlerDistillerRefactorPhraseHighlightingTest()
+      : ReadAnythingUntrustedPageHandlerTest(
+            {features::kReadAnythingWithReadability,
+             features::kReadAnythingDistillerRefactor,
+             features::kReadAnythingReadAloudPhraseHighlighting},
+            {}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerDistillerRefactorPhraseHighlightingTest,
+    RequestReadabilityDistillation_Success_RunsCallbackWithContent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+      WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // With the refactor, distillation state is owned by the renderer and content

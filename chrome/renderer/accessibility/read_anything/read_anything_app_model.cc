@@ -1114,8 +1114,7 @@ void ReadAnythingAppModel::ResetTextSize() {
 }
 
 void ReadAnythingAppModel::SetDefaultDistillationMethod() {
-  if (features::IsReadAnythingWithReadabilityEnabled() &&
-      !features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
+  if (features::IsReadAnythingWithReadabilityEnabled()) {
     next_distillation_method_ = DistillationMethod::kReadability;
     current_content_distillation_method_ = DistillationMethod::kReadability;
   } else {
