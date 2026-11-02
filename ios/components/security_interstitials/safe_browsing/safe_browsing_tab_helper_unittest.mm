@@ -182,6 +182,18 @@ class SafeBrowsingTabHelperTest
     }
   }
 
+  // Waits until the unsafe verdict for `url` has been processed and recorded
+  // as a pending decision in `SafeBrowsingUrlAllowList`. Unsafe verdicts reach
+  // `SafeBrowsingTabHelper` through a posted task that displays the blocking
+  // page, so they are not processed when `run_async_callbacks()` returns.
+  [[nodiscard]] bool WaitForPendingUnsafeNavigationDecision(const GURL& url) {
+    return base::test::RunUntil([&] {
+      SafeBrowsingUrlAllowList* allow_list =
+          SafeBrowsingUrlAllowList::FromWebState(&web_state_);
+      return allow_list && allow_list->IsUnsafeNavigationDecisionPending(url);
+    });
+  }
+
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
@@ -827,20 +839,11 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeRedirectChainWithRepeatedURL) {
   RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-    RunSyncCallbacksThenAsyncCallbacks();
-    SimulateMainFrameRedirect();
-
-    web::WebStatePolicyDecider::PolicyDecision response_decision =
-        ShouldAllowResponseUrl(url2);
-    EXPECT_TRUE(response_decision.ShouldCancelNavigation());
-    EXPECT_TRUE(response_decision.ShouldDisplayError());
-  } else {
-    auto request_decision = ShouldAllowRequestUrl(url2);
-    EXPECT_TRUE(request_decision.ShouldCancelNavigation());
-    EXPECT_TRUE(request_decision.ShouldDisplayError());
-  }
+  // Because the unsafe decision for `url2` was recorded even when stale, the
+  // repeated request to `url2` is cancelled immediately at request time.
+  auto request_decision = ShouldAllowRequestUrl(url2);
+  EXPECT_TRUE(request_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(request_decision.ShouldDisplayError());
 }
 
 // Tests the case of a redirection where ShouldAllowRequest is not called on
@@ -1386,6 +1389,761 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeNavigationFailureLateVerdict) {
   auto reload_decision = ShouldAllowRequestUrl(unsafe_url);
   EXPECT_TRUE(reload_decision.ShouldCancelNavigation());
   EXPECT_TRUE(reload_decision.ShouldDisplayError());
+}
+
+// Tests that when a navigation commits and then fails mid-stream (post-commit
+// error page load, which bypasses `ShouldAllowRequest`),
+// `committed_redirect_chain_` is preserved so a late async Safe Browsing
+// verdict still reloads the flagged URL to display the interstitial.
+TEST_P(SafeBrowsingTabHelperTest,
+       PostCommitNavigationFailureLateAsyncVerdictShowsInterstitial) {
+  GURL url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Start navigation to `url`; sync check passes while async check remains in
+  // flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(url).ShouldAllowNavigation());
+
+  // Call #1 (`webView:didCommitNavigation:`): the initial response commits,
+  // moving `to_be_committed_redirect_chain_` into `committed_redirect_chain_`.
+  navigation_manager_->AddItem(url, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item);
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(url);
+  commit_context.SetHasCommitted(true);
+  commit_context.SetError(nil);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url}));
+
+  // Call #2 (`webView:didFailNavigation:withError:` -> error page commit):
+  // the error page commits without calling `ShouldAllowRequest`, reusing the
+  // same navigation context/ID. Because `GetError()` is non-nil and matches the
+  // committed navigation ID, `committed_redirect_chain_` is preserved.
+  commit_context.SetError([NSError
+      errorWithDomain:NSURLErrorDomain
+                 code:NSURLErrorNetworkConnectionLost
+             userInfo:nil]);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url}));
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Now the async verdict arrives (unsafe) and reloads `url`.
+  client_.run_async_callbacks();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return navigation_manager_->LoadURLWithParamsWasCalled(); }));
+
+  auto last_params = navigation_manager_->GetLastLoadURLWithParams();
+  ASSERT_TRUE(last_params.has_value());
+  EXPECT_EQ(url, last_params->url);
+  EXPECT_EQ(static_cast<int>(ui::PAGE_TRANSITION_RELOAD),
+            static_cast<int>(last_params->transition_type));
+
+  auto reload_decision = ShouldAllowRequestUrl(
+      url, /*for_main_frame=*/true, ui::PageTransition::PAGE_TRANSITION_RELOAD);
+  EXPECT_TRUE(reload_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(reload_decision.ShouldDisplayError());
+}
+
+// Tests that when a post-commit navigation failure occurs for a page whose
+// in-flight asynchronous Safe Browsing verdict is SAFE, the redirect chain is
+// preserved and no reload is triggered when the safe async verdict arrives.
+TEST_P(SafeBrowsingTabHelperTest,
+       PostCommitNavigationFailureLateSafeAsyncVerdictDoesNotReload) {
+  GURL url("http://safe.chromium.test");
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Start navigation to `url`; sync check passes while async check remains in
+  // flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(url).ShouldAllowNavigation());
+
+  // Call #1 (`webView:didCommitNavigation:`): the initial response commits.
+  navigation_manager_->AddItem(url, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item);
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(url);
+  commit_context.SetHasCommitted(true);
+  commit_context.SetError(nil);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url}));
+
+  // Call #2 (`webView:didFailNavigation:withError:` -> error page commit):
+  // the error page commits with a non-nil error reusing the same navigation
+  // context/ID, preserving the redirect chain.
+  commit_context.SetError([NSError
+      errorWithDomain:NSURLErrorDomain
+                 code:NSURLErrorNetworkConnectionLost
+             userInfo:nil]);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url}));
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Deliver the async verdict (SAFE). Unlike unsafe verdicts, which post a task
+  // to display the blocking page, a safe verdict reaches
+  // `SafeBrowsingTabHelper` synchronously within `run_async_callbacks()`.
+  client_.run_async_callbacks();
+
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url}));
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+}
+
+// Tests that when a navigation encounters a post-commit failure while an async
+// UNSAFE check is pending, and the user then navigates to a new safe URL, the
+// preserved redirect chain is replaced by the new URL, and a subsequent stale
+// async verdict for the original unsafe URL does not trigger a reload.
+TEST_P(SafeBrowsingTabHelperTest,
+       PostCommitErrorPagePreservedChainReplacedByNextNavigation) {
+  GURL unsafe_url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Start navigation to `unsafe_url`; sync check passes while async check
+  // remains in flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(unsafe_url).ShouldAllowNavigation());
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(unsafe_url).ShouldAllowNavigation());
+
+  // Call #1: `unsafe_url` commits.
+  navigation_manager_->AddItem(unsafe_url, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item1 = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item1);
+  web::FakeNavigationContext commit_context1;
+  commit_context1.SetUrl(unsafe_url);
+  commit_context1.SetHasCommitted(true);
+  commit_context1.SetError(nil);
+  web_state_.OnNavigationFinished(&commit_context1);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({unsafe_url}));
+
+  // Call #2: post-commit error page commits for `unsafe_url`, reusing the
+  // initial navigation context/ID.
+  commit_context1.SetError([NSError
+      errorWithDomain:NSURLErrorDomain
+                 code:NSURLErrorNetworkConnectionLost
+             userInfo:nil]);
+  web_state_.OnNavigationFinished(&commit_context1);
+
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({unsafe_url}));
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // User now navigates to a new safe URL.
+  GURL safe_url("http://safe.chromium.test");
+  EXPECT_TRUE(ShouldAllowRequestUrl(safe_url).ShouldAllowNavigation());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(safe_url).ShouldAllowNavigation());
+
+  navigation_manager_->AddItem(safe_url, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item2 = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item2);
+  web::FakeNavigationContext commit_context2;
+  commit_context2.SetUrl(safe_url);
+  commit_context2.SetHasCommitted(true);
+  commit_context2.SetError(nil);
+  web_state_.OnNavigationFinished(&commit_context2);
+
+  // The redirect chain is now replaced by `{safe_url}`.
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({safe_url}));
+
+  // Deliver the stale async callbacks (containing the unsafe verdict for
+  // `unsafe_url`).
+  client_.run_async_callbacks();
+  ASSERT_TRUE(WaitForPendingUnsafeNavigationDecision(unsafe_url));
+
+  // No reload should have occurred because `unsafe_url` is no longer in the
+  // committed redirect chain.
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+}
+
+// Tests that when a navigation to an async-unsafe URL commits, executes a
+// same-document `history.replaceState` to rewrite the URL to an innocent URL,
+// and subsequently suffers a post-commit navigation failure, the late async
+// UNSAFE verdict reloads the original flagged URL (not the rewritten URL) with
+// a `PAGE_TRANSITION_RELOAD` transition and displays the interstitial.
+TEST_P(SafeBrowsingTabHelperTest,
+       PostCommitNavigationFailureAfterReplaceStateReloadsFlaggedUrl) {
+  GURL flagged_url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost +
+                   "/phishing.html");
+  GURL innocent_url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost +
+                    "/innocent.html");
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Start navigation to `flagged_url`; sync check passes while async check
+  // remains in flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(flagged_url).ShouldAllowNavigation());
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(flagged_url).ShouldAllowNavigation());
+
+  // Call #1: `flagged_url` commits.
+  navigation_manager_->AddItem(flagged_url, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item);
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(flagged_url);
+  commit_context.SetHasCommitted(true);
+  commit_context.SetError(nil);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({flagged_url}));
+
+  // Simulate `history.replaceState({}, '', '/innocent.html')`.
+  item->SetURL(innocent_url);
+  web::FakeNavigationContext replace_state_context;
+  replace_state_context.SetUrl(innocent_url);
+  replace_state_context.SetHasCommitted(true);
+  replace_state_context.SetIsSameDocument(true);
+  web_state_.OnNavigationFinished(&replace_state_context);
+
+  // Call #2: post-commit error page commits (non-same-document, with error),
+  // reusing the initial navigation context/ID.
+  commit_context.SetError([NSError
+      errorWithDomain:NSURLErrorDomain
+                 code:NSURLErrorNetworkConnectionLost
+             userInfo:nil]);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  // The chain is preserved as `{flagged_url}`.
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({flagged_url}));
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Deliver the async verdict (UNSAFE for `flagged_url`).
+  client_.run_async_callbacks();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return navigation_manager_->LoadURLWithParamsWasCalled(); }));
+
+  auto last_params = navigation_manager_->GetLastLoadURLWithParams();
+  ASSERT_TRUE(last_params.has_value());
+  EXPECT_EQ(flagged_url, last_params->url);
+  EXPECT_EQ(static_cast<int>(ui::PAGE_TRANSITION_RELOAD),
+            static_cast<int>(last_params->transition_type));
+
+  auto reload_decision =
+      ShouldAllowRequestUrl(flagged_url, /*for_main_frame=*/true,
+                            ui::PageTransition::PAGE_TRANSITION_RELOAD);
+  EXPECT_TRUE(reload_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(reload_decision.ShouldDisplayError());
+}
+
+// Tests that navigating to and committing an unchecked URL (such as
+// `about:blank`, which bypasses URL checks and has `GetError() == nil`) clears
+// `committed_redirect_chain_` so a late async verdict for the previous page is
+// treated as stale and does not reload over `about:blank`.
+TEST_P(SafeBrowsingTabHelperTest,
+       UncheckedUrlNavigationClearsCommittedRedirectChain) {
+  GURL url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Start and commit a navigation to `url` while its async check is in flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(url).ShouldAllowNavigation());
+
+  navigation_manager_->AddItem(url, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item);
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(url);
+  commit_context.SetHasCommitted(true);
+  commit_context.SetError(nil);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url}));
+
+  // Navigate to and commit an unchecked URL (`about:blank`).
+  GURL about_blank("about:blank");
+  EXPECT_TRUE(ShouldAllowRequestUrl(about_blank).ShouldAllowNavigation());
+  EXPECT_TRUE(ShouldAllowResponseUrl(about_blank).ShouldAllowNavigation());
+  navigation_manager_->AddItem(about_blank, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* about_item = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(about_item);
+  web::FakeNavigationContext about_context;
+  about_context.SetUrl(about_blank);
+  about_context.SetHasCommitted(true);
+  about_context.SetError(nil);
+  web_state_.OnNavigationFinished(&about_context);
+
+  EXPECT_TRUE(tab_helper->GetRedirectChain().empty());
+
+  // Trigger the late async verdict for the previous page; it should be ignored
+  // as stale and must not trigger a reload.
+  client_.run_async_callbacks();
+  ASSERT_TRUE(WaitForPendingUnsafeNavigationDecision(url));
+
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+}
+
+// Tests that when a new navigation to an unchecked URL (such as `about:blank`)
+// fails and commits an error page, its different navigation ID causes
+// `committed_redirect_chain_` to be cleared (rather than preserved), ensuring a
+// late async verdict for the prior page is ignored and does not reload.
+TEST_P(SafeBrowsingTabHelperTest,
+       UncheckedUrlErrorPageClearsCommittedRedirectChain) {
+  GURL url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Start and commit a navigation to `url` while its async check is in flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(url).ShouldAllowNavigation());
+
+  navigation_manager_->AddItem(url, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item);
+  web::FakeNavigationContext commit_context;
+  commit_context.SetUrl(url);
+  commit_context.SetHasCommitted(true);
+  commit_context.SetError(nil);
+  web_state_.OnNavigationFinished(&commit_context);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url}));
+
+  // Simulate a new navigation to an unchecked URL (`about:blank`) that fails
+  // and commits an error page. Because this is a new navigation with a
+  // different navigation ID, `committed_redirect_chain_` is cleared.
+  GURL about_blank("about:blank");
+  navigation_manager_->AddItem(about_blank, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* about_item = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(about_item);
+  web::FakeNavigationContext error_context;
+  error_context.SetUrl(about_blank);
+  error_context.SetHasCommitted(true);
+  error_context.SetError([NSError errorWithDomain:NSURLErrorDomain
+                                             code:NSURLErrorCannotFindHost
+                                         userInfo:nil]);
+  web_state_.OnNavigationFinished(&error_context);
+
+  EXPECT_TRUE(tab_helper->GetRedirectChain().empty());
+
+  // Trigger the late async verdict for the previous page; it should be ignored
+  // as stale and must not trigger a reload.
+  client_.run_async_callbacks();
+  ASSERT_TRUE(WaitForPendingUnsafeNavigationDecision(url));
+
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+}
+
+// Tests that when a new checked navigation fails provisionally and commits an
+// error page, its different navigation ID causes its pending query to replace
+// the previously committed redirect chain (rather than preserving it), so a
+// late async verdict for the prior page is ignored and does not reload.
+TEST_P(SafeBrowsingTabHelperTest,
+       ProvisionalFailureOfCheckedUrlReplacesCommittedRedirectChain) {
+  GURL url_a("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
+  GURL url_b("http://chromium-b.test");
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Start and commit a navigation to `url_a` while its async check is in
+  // flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url_a).ShouldAllowNavigation());
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(url_a).ShouldAllowNavigation());
+
+  navigation_manager_->AddItem(url_a, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item_a = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item_a);
+  web::FakeNavigationContext context_a;
+  context_a.SetUrl(url_a);
+  context_a.SetHasCommitted(true);
+  context_a.SetError(nil);
+  web_state_.OnNavigationFinished(&context_a);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url_a}));
+
+  // Start a checked navigation to `url_b`, which populates
+  // `pending_main_frame_query_`, then fail it before `ShouldAllowResponse()`
+  // and commit its error page with a new navigation context/ID.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url_b).ShouldAllowNavigation());
+
+  navigation_manager_->AddItem(url_b, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item_b = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item_b);
+  web::FakeNavigationContext context_b;
+  context_b.SetUrl(url_b);
+  context_b.SetHasCommitted(true);
+  context_b.SetError([NSError errorWithDomain:NSURLErrorDomain
+                                         code:NSURLErrorCannotFindHost
+                                     userInfo:nil]);
+  ASSERT_NE(context_a.GetNavigationId(), context_b.GetNavigationId());
+  web_state_.OnNavigationFinished(&context_b);
+
+  // `url_b`'s pending query replaces `url_a`'s committed chain.
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url_b}));
+
+  // The late async verdict for `url_a` is stale and must not trigger a reload.
+  client_.run_async_callbacks();
+  ASSERT_TRUE(WaitForPendingUnsafeNavigationDecision(url_a));
+
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+}
+
+// Tests that when an async unsafe verdict arrives for a page that already
+// performed `history.replaceState` before another navigation committed, the
+// stale verdict is recorded so that a subsequent back navigation to the
+// replaced URL is blocked.
+TEST_P(SafeBrowsingTabHelperTest,
+       StaleAsyncUnsafeVerdictBlocksBackNavigationAfterReplaceState) {
+  GURL flagged_url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost +
+                   "/phishing.html");
+  GURL innocent_url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost +
+                    "/innocent.html");
+  GURL url_b("http://chromium-b.test");
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Start and commit `flagged_url` while its async check is in flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(flagged_url).ShouldAllowNavigation());
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(flagged_url).ShouldAllowNavigation());
+
+  navigation_manager_->AddItem(flagged_url, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item_a = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item_a);
+  web::FakeNavigationContext context_a;
+  context_a.SetUrl(flagged_url);
+  context_a.SetHasCommitted(true);
+  context_a.SetError(nil);
+  web_state_.OnNavigationFinished(&context_a);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({flagged_url}));
+
+  // Simulate `history.replaceState` to `innocent_url`.
+  item_a->SetURL(innocent_url);
+  web::FakeNavigationContext replace_state_context;
+  replace_state_context.SetUrl(innocent_url);
+  replace_state_context.SetHasCommitted(true);
+  replace_state_context.SetIsSameDocument(true);
+  web_state_.OnNavigationFinished(&replace_state_context);
+
+  // Start a checked navigation to `url_b`, fail it provisionally before
+  // `ShouldAllowResponse()`, and commit its error page with `context_b`.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url_b).ShouldAllowNavigation());
+
+  navigation_manager_->AddItem(url_b, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item_b = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item_b);
+  web::FakeNavigationContext context_b;
+  context_b.SetUrl(url_b);
+  context_b.SetHasCommitted(true);
+  context_b.SetError([NSError errorWithDomain:NSURLErrorDomain
+                                         code:NSURLErrorCannotFindHost
+                                     userInfo:nil]);
+  ASSERT_NE(context_a.GetNavigationId(), context_b.GetNavigationId());
+  web_state_.OnNavigationFinished(&context_b);
+
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url_b}));
+
+  // Deliver late async verdict for `flagged_url`. It must not reload `url_b`.
+  client_.run_async_callbacks();
+  ASSERT_TRUE(WaitForPendingUnsafeNavigationDecision(flagged_url));
+
+  EXPECT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Simulate a back navigation to `innocent_url`. The recorded unsafe decision
+  // must block it.
+  auto back_decision =
+      ShouldAllowRequestUrl(innocent_url, /*for_main_frame=*/true,
+                            ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK);
+  EXPECT_TRUE(back_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(back_decision.ShouldDisplayError());
+}
+
+// Tests that when a navigation has reached `ShouldAllowResponse()` and
+// populated `to_be_committed_redirect_chain_`, an interim navigation starting
+// and populating `pending_main_frame_query_` does not supersede the committed
+// redirect chain when the first navigation commits.
+TEST_P(SafeBrowsingTabHelperTest,
+       ToBeCommittedRedirectChainPreferredOverPendingMainFrameQuery) {
+  GURL url_a("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
+  GURL url_b("http://chromium-b.test");
+  ASSERT_FALSE(navigation_manager_->LoadURLWithParamsWasCalled());
+
+  // Start `url_a`, let sync check pass, and call
+  // `ShouldAllowResponseUrl(url_a)` so `to_be_committed_redirect_chain_` holds
+  // `{url_a}` while its async check remains in flight.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url_a).ShouldAllowNavigation());
+  ASSERT_FALSE(client_.sync_completion_callbacks_.empty());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(url_a).ShouldAllowNavigation());
+
+  // Before `url_a` commits, `url_b` starts and populates
+  // `pending_main_frame_query_`.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url_b).ShouldAllowNavigation());
+
+  // Commit `url_a`.
+  navigation_manager_->AddItem(url_a, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item_a = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item_a);
+  web::FakeNavigationContext context_a;
+  context_a.SetUrl(url_a);
+  context_a.SetHasCommitted(true);
+  context_a.SetError(nil);
+  web_state_.OnNavigationFinished(&context_a);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url_a}));
+
+  // Run async check which determines `url_a` is unsafe. It should reload
+  // `url_a`.
+  client_.run_async_callbacks();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return navigation_manager_->LoadURLWithParamsWasCalled(); }));
+  auto last_params = navigation_manager_->GetLastLoadURLWithParams();
+  ASSERT_TRUE(last_params.has_value());
+  EXPECT_EQ(url_a, last_params->url);
+  EXPECT_EQ(static_cast<int>(ui::PAGE_TRANSITION_RELOAD),
+            static_cast<int>(last_params->transition_type));
+}
+
+// Tests that a post-commit error page matching the committed navigation ID
+// preserves the committed redirect chain even if an uncommitted navigation
+// started and populated `pending_main_frame_query_` in the interim.
+TEST_P(SafeBrowsingTabHelperTest,
+       PostCommitErrorPageIgnoresInterimUncommittedNavigation) {
+  GURL url_a("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
+  GURL url_b("http://chromium-b.test");
+
+  // Navigation A starts and response is allowed before async check completes.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url_a).ShouldAllowNavigation());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(url_a).ShouldAllowNavigation());
+
+  // Navigation A commits.
+  navigation_manager_->AddItem(url_a, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item_a = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item_a);
+
+  web::FakeNavigationContext context_a;
+  context_a.SetUrl(url_a);
+  context_a.SetHasCommitted(true);
+  context_a.SetError(nil);
+  web_state_.OnNavigationFinished(&context_a);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url_a}));
+
+  // Interim navigation B starts and populates `pending_main_frame_query_`.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url_b).ShouldAllowNavigation());
+
+  // Navigation A subsequently commits an error page (reusing `context_a`).
+  context_a.SetError([NSError errorWithDomain:NSURLErrorDomain
+                                         code:NSURLErrorTimedOut
+                                     userInfo:nil]);
+  web_state_.OnNavigationFinished(&context_a);
+
+  // The committed redirect chain for A must be preserved and not overwritten
+  // by interim query state for B.
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url_a}));
+
+  // Run async check which determines `url_a` is unsafe.
+  client_.run_async_callbacks();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return navigation_manager_->LoadURLWithParamsWasCalled(); }));
+  auto last_params = navigation_manager_->GetLastLoadURLWithParams();
+  ASSERT_TRUE(last_params.has_value());
+  EXPECT_EQ(url_a, last_params->url);
+}
+
+// Tests that a post-commit error page does not clear pending main frame state
+// for a newer navigation.
+TEST_P(SafeBrowsingTabHelperTest,
+       PostCommitErrorPageDoesNotClearNewerPendingQuery) {
+  GURL url_a("http://chromium-a.test");
+  GURL url_c("http://" + FakeSafeBrowsingService::kUnsafeHost);
+
+  // Navigation A starts and response is allowed before async check completes.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url_a).ShouldAllowNavigation());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return client_.sync_completion_callbacks_.empty(); }));
+  }
+  EXPECT_TRUE(ShouldAllowResponseUrl(url_a).ShouldAllowNavigation());
+
+  // Navigation A commits.
+  navigation_manager_->AddItem(url_a, ui::PAGE_TRANSITION_LINK);
+  web::NavigationItem* item_a = navigation_manager_->GetItemAtIndex(
+      navigation_manager_->GetItemCount() - 1);
+  navigation_manager_->SetLastCommittedItem(item_a);
+
+  web::FakeNavigationContext context_a;
+  context_a.SetUrl(url_a);
+  context_a.SetHasCommitted(true);
+  context_a.SetError(nil);
+  web_state_.OnNavigationFinished(&context_a);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url_a}));
+
+  // Request sync-UNSAFE URL C.
+  EXPECT_TRUE(ShouldAllowRequestUrl(url_c).ShouldAllowNavigation());
+
+  // Navigation A subsequently commits an error page (reusing `context_a`).
+  context_a.SetError([NSError errorWithDomain:NSURLErrorDomain
+                                         code:NSURLErrorTimedOut
+                                     userInfo:nil]);
+  web_state_.OnNavigationFinished(&context_a);
+
+  // The committed redirect chain for A must be preserved.
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url_a}));
+
+  RunSyncCallbacksThenAsyncCallbacks();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url_c);
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+
+  NSError* decision_error = response_decision.GetDisplayError();
+  EXPECT_NSEQ(decision_error.domain, kSafeBrowsingErrorDomain);
+  EXPECT_EQ(static_cast<SafeBrowsingErrorCode>(decision_error.code),
+            SafeBrowsingErrorCode::kUnsafeResource);
 }
 
 INSTANTIATE_TEST_SUITE_P(

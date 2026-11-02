@@ -8,9 +8,11 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -144,6 +146,15 @@ class SafeBrowsingQueryManager
   void StoreUnsafeResource(
       const security_interstitials::UnsafeResource& resource);
 
+  // Pauses asynchronous Safe Browsing queries for this `WebState` for testing.
+  // When paused, async query completion callbacks are buffered until
+  // `ResumeAsyncQueriesForTesting()` is called.
+  void PauseAsyncQueriesForTesting();
+
+  // Resumes asynchronous Safe Browsing queries for this `WebState` and runs all
+  // buffered async query completions.
+  void ResumeAsyncQueriesForTesting();
+
  private:
   friend class web::WebStateUserData<SafeBrowsingQueryManager>;
 
@@ -221,6 +232,11 @@ class SafeBrowsingQueryManager
   std::unique_ptr<UrlCheckerClient> url_checker_client_;
   // The results for each active query.
   std::map<const Query, Result> results_;
+  // Whether asynchronous query completions are paused for testing.
+  bool are_async_queries_paused_for_testing_ = false;
+  // Buffered asynchronous query completions while
+  // `are_async_queries_paused_for_testing_` is true.
+  std::vector<base::OnceClosure> paused_async_queries_for_testing_;
   // The observers.
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
   // The weak pointer factory.

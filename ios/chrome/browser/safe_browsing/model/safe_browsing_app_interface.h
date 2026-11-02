@@ -55,6 +55,16 @@ NS_ASSUME_NONNULL_BEGIN
 // info.
 + (BOOL)lastSentPhishingRequestHasIntelligentScanInfo;
 
+// Pauses asynchronous Safe Browsing query completion for the current `WebState`
+// for testing. Returns NO if there is no current `WebState` or it has no
+// `SafeBrowsingQueryManager`, in which case nothing is paused.
++ (BOOL)pauseAsyncQueriesForTesting;
+
+// Resumes asynchronous Safe Browsing query completion for the `WebState` paused
+// by `pauseAsyncQueriesForTesting` and runs buffered query completions for
+// testing.
++ (void)resumeAsyncQueriesForTesting;
+
 @end
 
 NS_ASSUME_NONNULL_END

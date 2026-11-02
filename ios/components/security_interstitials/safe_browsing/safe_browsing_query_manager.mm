@@ -4,7 +4,13 @@
 
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 
+#import <utility>
+#import <vector>
+
+#import "base/check_is_test.h"
 #import "base/check_op.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
@@ -123,6 +129,23 @@ void SafeBrowsingQueryManager::StoreUnsafeResource(
   }
 }
 
+void SafeBrowsingQueryManager::PauseAsyncQueriesForTesting() {  // IN-TEST
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  CHECK_IS_TEST();
+  are_async_queries_paused_for_testing_ = true;
+}
+
+void SafeBrowsingQueryManager::ResumeAsyncQueriesForTesting() {  // IN-TEST
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  CHECK_IS_TEST();
+  are_async_queries_paused_for_testing_ = false;
+  std::vector<base::OnceClosure> paused_queries;
+  paused_queries.swap(paused_async_queries_for_testing_);
+  for (auto& query : paused_queries) {
+    std::move(query).Run();
+  }
+}
+
 #pragma mark Private
 
 void SafeBrowsingQueryManager::UrlCheckFinished(
@@ -131,6 +154,14 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
     bool proceed,
     bool show_error_page,
     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  if (type == QueryType::kAsync && are_async_queries_paused_for_testing_) {
+    paused_async_queries_for_testing_.push_back(base::BindOnce(
+        &SafeBrowsingQueryManager::UrlCheckFinished, weak_factory_.GetWeakPtr(),
+        query, type, proceed, show_error_page, performed_check));
+    return;
+  }
+
   auto query_result_pair = results_.find(query);
   DCHECK(query_result_pair != results_.end());
 

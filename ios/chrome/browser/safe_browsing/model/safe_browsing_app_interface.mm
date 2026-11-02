@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_app_interface.h"
 
 #import "base/check.h"
+#import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/resource_request.h"
@@ -35,6 +37,14 @@ bool g_last_sent_request_has_intelligent_scan_info = false;
 network::TestURLLoaderFactory* GetTestURLLoaderFactory() {
   static base::NoDestructor<network::TestURLLoaderFactory> factory;
   return factory.get();
+}
+
+// Holds a weak pointer to the `WebState` whose asynchronous Safe Browsing
+// queries were paused for testing, so that `resumeAsyncQueriesForTesting`
+// resumes the same `WebState` even if the active tab has changed.
+base::WeakPtr<web::WebState>& GetPausedWebState() {
+  static base::NoDestructor<base::WeakPtr<web::WebState>> web_state;
+  return *web_state;
 }
 }  // namespace
 
@@ -180,6 +190,35 @@ network::TestURLLoaderFactory* GetTestURLLoaderFactory() {
 
 + (BOOL)lastSentPhishingRequestHasIntelligentScanInfo {
   return g_last_sent_request_has_intelligent_scan_info;
+}
+
++ (BOOL)pauseAsyncQueriesForTesting {
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+  if (!web_state) {
+    return NO;
+  }
+  SafeBrowsingQueryManager* query_manager =
+      SafeBrowsingQueryManager::FromWebState(web_state);
+  if (!query_manager) {
+    return NO;
+  }
+  GetPausedWebState() = web_state->GetWeakPtr();
+  query_manager->PauseAsyncQueriesForTesting();
+  return YES;
+}
+
++ (void)resumeAsyncQueriesForTesting {
+  web::WebState* web_state = GetPausedWebState().get();
+  if (!web_state) {
+    return;
+  }
+  SafeBrowsingQueryManager* query_manager =
+      SafeBrowsingQueryManager::FromWebState(web_state);
+  if (!query_manager) {
+    return;
+  }
+  query_manager->ResumeAsyncQueriesForTesting();
+  GetPausedWebState().reset();
 }
 
 @end

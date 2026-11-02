@@ -4,6 +4,7 @@
 
 #import <memory>
 #import <string>
+#import <string_view>
 #import <vector>
 
 #import "base/check.h"
@@ -42,6 +43,7 @@
 #import "ios/testing/test_tag_registry.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/element_selector.h"
+#import "net/base/net_errors.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -102,12 +104,24 @@ constexpr base::TimeDelta kReportUploadTimeout = base::Seconds(15);
 // default action timeouts.
 constexpr base::TimeDelta kClassificationVerdictTimeout = base::Seconds(60);
 
-// Request handler for net::EmbeddedTestServer that returns the request URL's
-// path as the body of the response if the request URL's path starts with
-// "/echo". Otherwise, returns nulltpr to allow other handlers to handle the
-// request.
+// Path for a page that closes the connection after sending partial content,
+// triggering a post-commit navigation failure.
+constexpr std::string_view kPostCommitFailurePath = "/post_commit_failure";
+
+// Request handler for net::EmbeddedTestServer that returns a truncated HTTP
+// response for `kPostCommitFailurePath`, or the request URL's path as the body
+// of the response if the request URL's path starts with "/echo". Otherwise,
+// returns nullptr to allow other handlers to handle the request.
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
+  if (request.relative_url == kPostCommitFailurePath) {
+    // The declared `Content-Length` exceeds the body, so the connection closes
+    // after the headers commit, failing the navigation post-commit.
+    return std::make_unique<net::test_server::RawHttpResponse>(
+        "HTTP/1.1 200 OK\r\nContent-Type: text/html; "
+        "charset=utf-8\r\nContent-Length: 1024\r\n\r\n",
+        "<html><body><h1>Partial</h1>");
+  }
   if (!base::StartsWith(request.relative_url, "/echo",
                         base::CompareCase::SENSITIVE)) {
     return nullptr;
@@ -152,6 +166,8 @@ void EnableEnterpriseUrlFilteringPrefs() {
   GURL _realTimePhishingURL;
   // Text that is found on the real-time phishing page.
   std::string _realTimePhishingContent;
+  // A URL that commits a partial response and then fails mid-body.
+  GURL _postCommitFailureURL;
   // A URL that is flagged by Enterprise real-time lookups.
   GURL _enterpriseWarnURL;
   // Text that is found in the page flagged by Enterprise lookups.
@@ -256,6 +272,13 @@ void EnableEnterpriseUrlFilteringPrefs() {
         std::string("--mark_as_enterprise_warned=") +
         _enterpriseWarnURL.spec());
 
+  } else if (
+      [self isRunningTest:
+                @selector(
+                    testPostCommitFailureLateAsyncVerdictShowsInterstitial)]) {
+    config.additional_args.push_back(
+        std::string("--mark_as_real_time_phishing=") +
+        _postCommitFailureURL.spec());
   } else {
     config.additional_args.push_back(
         std::string("--mark_as_real_time_phishing=") +
@@ -317,6 +340,8 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
   _scamURL = self.testServer->GetURL("/echo_scam_page");
   _scamContent = "scam_page";
+
+  _postCommitFailureURL = self.testServer->GetURL(kPostCommitFailurePath);
 
   // Artificial verdict caching for hash prefix real time causes URLs with the
   // same host to be seen as unsafe. Replacing the host string with localhost
@@ -406,6 +431,7 @@ void EnableEnterpriseUrlFilteringPrefs() {
   // Clear mock scorer in ClientSideDetectionService for test isolation.
   [SafeBrowsingAppInterface clearScorer];
   [SafeBrowsingAppInterface setBypassLocalResourceCheckForTesting:NO];
+  [SafeBrowsingAppInterface resumeAsyncQueriesForTesting];
 
   [super tearDownHelper];
 }
@@ -1460,6 +1486,42 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // contents are loaded.
   [ChromeEarlGrey tapWebStateElementWithID:kPrimaryButtonID];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+}
+
+// Tests that when a navigation suffers a post-commit failure while an
+// asynchronous real-time Safe Browsing check is in flight, the late unsafe
+// verdict reloads the page and presents the Safe Browsing interstitial.
+// `SafeBrowsingQueryManager`'s async queries are paused during the navigation
+// so that the post-commit load error occurs deterministically before the unsafe
+// verdict is delivered.
+- (void)testPostCommitFailureLateAsyncVerdictShowsInterstitial {
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnhanced];
+
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Pause async queries so that the post-commit load error occurs before
+  // the late async verdict is delivered.
+  GREYAssertTrue([SafeBrowsingAppInterface pauseAsyncQueriesForTesting],
+                 @"Failed to pause async Safe Browsing queries.");
+
+  [ChromeEarlGrey loadURL:_postCommitFailureURL waitForCompletion:NO];
+
+  // Wait for the post-commit error page, and assert that the Safe Browsing
+  // interstitial is not showing yet.
+  [ChromeEarlGrey
+      waitForWebStateContainingText:net::ErrorToShortString(
+                                        net::ERR_CONNECTION_CLOSED)];
+  [ChromeEarlGrey
+      waitForWebStateNotContainingText:l10n_util::GetStringUTF8(
+                                           IDS_SAFEBROWSING_HEADING)];
+
+  // Resume the paused async query, delivering the unsafe verdict.
+  [SafeBrowsingAppInterface resumeAsyncQueriesForTesting];
+
+  // The late verdict should reload the page and display the interstitial.
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_SAFEBROWSING_HEADING)];
 }
 
 @end
