@@ -63,13 +63,16 @@ public class AcceleratorManager {
     }
 
     /**
-     * Process a key event.
+     * Processes a key event.
      *
      * @param event The key event to process.
      * @return True if the event was handled.
      */
     public boolean processKeyEvent(KeyEvent event) {
-        return mNativeAcceleratorManagerAndroid != null
+        // Android's ui::KeyEvent conversion does not populate ui::EF_IS_REPEAT, so ignore
+        // key-repeat events here to preserve Android's non-repeating shortcut behavior.
+        return event.getRepeatCount() == 0
+                && mNativeAcceleratorManagerAndroid != null
                 && mAcceleratorsAreRegistered
                 && AcceleratorManagerJni.get()
                         .processKeyEvent(mNativeAcceleratorManagerAndroid, event);

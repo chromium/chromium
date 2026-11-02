@@ -207,6 +207,7 @@ java_cpp_enum("java_enums_srcjar") {
     "../events/back_gesture_event.h",
     "../gfx/android/java_bitmap.h",
     "../gfx/overlay_transform.h",
+    "accelerator_manager_android.h",
     "overscroll_refresh.h",
     "resources/resource_manager.h",
     "resources/system_ui_resource_type.h",
