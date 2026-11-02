@@ -15,6 +15,8 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_V
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_TRANSITION_IS_INCOGNITO;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_TRANSITION_OFFSET;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBILITY_FRACTION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
@@ -54,6 +56,9 @@ import java.util.Objects;
 /** Logic for the toolbar of the Hub. */
 @NullMarked
 public class HubToolbarMediator {
+    // Progress at which a search box shown by both panes switches to the incoming pane's hint.
+    private static final float SEARCH_BOX_HINT_SWITCH_PROGRESS = 0.5f;
+
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
     // LINT.IfChange(HubSearchEntrypoint)
@@ -143,8 +148,16 @@ public class HubToolbarMediator {
     private final Callback<Float> mOnSearchBoxVisibilityFractionChange =
             this::onSearchBoxVisibilityFractionChange;
 
+    private final NullableObservableSupplier<PaneTransitionProgress>
+            mPaneTransitionProgressSupplier;
+    private final Callback<@Nullable PaneTransitionProgress> mOnPaneTransitionProgress =
+            this::onPaneTransitionProgress;
+
     private @Nullable PaneButtonLookup mPaneButtonLookup;
     private boolean mIgnoreTabLayoutSelection;
+    // Ignores search box clicks during a pane transition, since the search box can show the hint of
+    // a pane that is not focused.
+    private boolean mIgnoreSearchBoxClicks;
 
     /** Creates the mediator. */
     public HubToolbarMediator(
@@ -153,12 +166,14 @@ public class HubToolbarMediator {
             PaneManager paneManager,
             Tracker tracker,
             SearchActivityClient searchActivityClient,
-            Runnable exitHubRunnable) {
+            Runnable exitHubRunnable,
+            NullableObservableSupplier<PaneTransitionProgress> paneTransitionProgressSupplier) {
         mContext = context;
         mPropertyModel = propertyModel;
         mPaneManager = paneManager;
         mTracker = tracker;
         mSearchActivityClient = searchActivityClient;
+        mPaneTransitionProgressSupplier = paneTransitionProgressSupplier;
 
         for (@PaneId int paneId : paneManager.getPaneOrderController().getPaneOrder()) {
             Pane pane = paneManager.getPaneForId(paneId);
@@ -206,6 +221,8 @@ public class HubToolbarMediator {
         mSearchBoxVisibilityFractionSupplier.addSyncObserverAndPostIfNonNull(
                 mOnSearchBoxVisibilityFractionChange);
 
+        mPaneTransitionProgressSupplier.addSyncObserver(mOnPaneTransitionProgress);
+
         rebuildPaneSwitcherButtonData();
 
         mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, this::consumeButtonLookup);
@@ -233,6 +250,7 @@ public class HubToolbarMediator {
         mHairlineVisibilitySupplier.removeObserver(mOnHairlineVisibilityChange);
         mManualSearchBoxAnimationSupplier.removeObserver(mOnManualSearchBoxAnimationChange);
         mSearchBoxVisibilityFractionSupplier.removeObserver(mOnSearchBoxVisibilityFractionChange);
+        mPaneTransitionProgressSupplier.removeObserver(mOnPaneTransitionProgress);
     }
 
     /** Returns the button view for a given pane if present. */
@@ -265,9 +283,7 @@ public class HubToolbarMediator {
     }
 
     private void onSearchBoxVisibilityChange(Boolean shouldShow) {
-        int screenWidthDp = mContext.getResources().getConfiguration().screenWidthDp;
-        boolean isTablet = HubUtils.isScreenWidthTablet(screenWidthDp);
-        shouldShow = !isTablet && shouldShow;
+        shouldShow = !isScreenWidthTablet() && shouldShow;
 
         mPropertyModel.set(SEARCH_BOX_VISIBLE, shouldShow);
     }
@@ -345,7 +361,7 @@ public class HubToolbarMediator {
 
         mPropertyModel.set(MENU_BUTTON_VISIBLE, focusedPane.getMenuButtonVisible());
 
-        boolean isIncognito = focusedPaneId == PaneId.INCOGNITO_TAB_SWITCHER;
+        boolean isIncognito = isIncognitoPane(focusedPaneId);
         mPropertyModel.set(IS_INCOGNITO, isIncognito);
 
         int index = 0;
@@ -381,6 +397,8 @@ public class HubToolbarMediator {
     }
 
     private void onSearchClicked() {
+        if (mIgnoreSearchBoxClicks) return;
+
         @PaneId
         int focusedPaneId = assumeNonNull(mPaneManager.getFocusedPaneSupplier().get()).getPaneId();
         // Due to animations when switching between focused panes, there is exists a possibility for
@@ -441,6 +459,79 @@ public class HubToolbarMediator {
 
     private boolean maybeExcludeHubSearchForTabGroupsPane(@PaneId int focusedPaneId) {
         return focusedPaneId != PaneId.TAB_GROUPS;
+    }
+
+    private void onPaneTransitionProgress(@Nullable PaneTransitionProgress progress) {
+        if (progress == null) {
+            mIgnoreSearchBoxClicks = false;
+            mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
+            mPropertyModel.set(SEARCH_BOX_TRANSITION_IS_INCOGNITO, null);
+            return;
+        }
+
+        // The outgoing pane is judged by what is on screen, since pinned tabs can hide its search
+        // box. The incoming pane shows its search box once it is focused.
+        boolean fromHasSearchBox = isSearchBoxShowing(progress.fromPaneId);
+        boolean toHasSearchBox = supportsSearchBox(progress.toPaneId);
+        @PaneId
+        Integer searchBoxPaneId =
+                getTransitionSearchBoxPaneId(progress, fromHasSearchBox, toHasSearchBox);
+        mIgnoreSearchBoxClicks = searchBoxPaneId != null;
+        mPropertyModel.set(
+                SEARCH_BOX_TRANSITION_IS_INCOGNITO,
+                searchBoxPaneId == null ? null : isIncognitoPane(searchBoxPaneId));
+
+        // The search box stays in place when both panes show it, and there is nothing to move
+        // when neither does.
+        if (fromHasSearchBox == toHasSearchBox) {
+            mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, null);
+            return;
+        }
+
+        // The search box moves with the pane that shows it. The outgoing pane moves away from its
+        // resting position, while the incoming pane moves toward it.
+        float offset = toHasSearchBox ? progress.progress - 1.0f : progress.progress;
+        mPropertyModel.set(SEARCH_BOX_TRANSITION_OFFSET, progress.isSwipeLeft ? -offset : offset);
+    }
+
+    /**
+     * Returns the pane whose search box shows during a pane transition, or null if neither pane has
+     * one. When both panes have one, the incoming pane takes over halfway through.
+     */
+    private @Nullable @PaneId Integer getTransitionSearchBoxPaneId(
+            PaneTransitionProgress progress, boolean fromHasSearchBox, boolean toHasSearchBox) {
+        if (fromHasSearchBox && toHasSearchBox) {
+            return progress.progress < SEARCH_BOX_HINT_SWITCH_PROGRESS
+                    ? progress.fromPaneId
+                    : progress.toPaneId;
+        }
+        if (fromHasSearchBox) return progress.fromPaneId;
+        if (toHasSearchBox) return progress.toPaneId;
+        return null;
+    }
+
+    /** Returns whether the pane shows the incognito search hint. */
+    private static boolean isIncognitoPane(@PaneId int paneId) {
+        return paneId == PaneId.INCOGNITO_TAB_SWITCHER;
+    }
+
+    /** Returns whether the pane shows the search box once it is focused. */
+    private boolean supportsSearchBox(@PaneId int paneId) {
+        return !isScreenWidthTablet() && !shouldOmitFocusedPaneForHubSearch(paneId);
+    }
+
+    /** Returns whether the screen is as wide as a tablet's, where search uses the loupe. */
+    private boolean isScreenWidthTablet() {
+        return HubUtils.isScreenWidthTablet(
+                mContext.getResources().getConfiguration().screenWidthDp);
+    }
+
+    /** Returns whether the pane's search box is showing, which pinned tabs can turn off. */
+    private boolean isSearchBoxShowing(@PaneId int paneId) {
+        if (!supportsSearchBox(paneId)) return false;
+
+        Pane pane = mPaneManager.getPaneForId(paneId);
+        return pane != null && pane.getHubSearchBoxVisibilitySupplier().get();
     }
 
     /** Test-only method to trigger configuration change for testing purposes. */

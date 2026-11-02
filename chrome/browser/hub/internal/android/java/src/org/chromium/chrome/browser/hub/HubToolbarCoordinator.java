@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
@@ -56,6 +57,8 @@ public class HubToolbarCoordinator {
      * @param isHubAnimatingSupplier Supplies whether a hub layout animation is running.
      * @param bottomToolbarVisibilitySupplier Supplies bottom toolbar visibility state, can be null.
      * @param exitHubRunnable Used to exit the hub.
+     * @param paneTransitionProgressSupplier Supplies the progress of a swipe or slide between
+     *     panes, or null when no transition is running.
      */
     public HubToolbarCoordinator(
             Activity activity,
@@ -68,7 +71,8 @@ public class HubToolbarCoordinator {
             UserEducationHelper userEducationHelper,
             NonNullObservableSupplier<Boolean> isHubAnimatingSupplier,
             NonNullObservableSupplier<Boolean> bottomToolbarVisibilitySupplier,
-            Runnable exitHubRunnable) {
+            Runnable exitHubRunnable,
+            NullableObservableSupplier<PaneTransitionProgress> paneTransitionProgressSupplier) {
         mHubToolbarView = hubToolbarView;
         mUserEducationHelper = userEducationHelper;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -93,7 +97,8 @@ public class HubToolbarCoordinator {
                         paneManager,
                         tracker,
                         searchActivityClient,
-                        exitHubRunnable);
+                        exitHubRunnable,
+                        paneTransitionProgressSupplier);
 
         // Set up bottom toolbar visibility observer
         mBottomToolbarVisibilitySupplier.addSyncObserverAndPostIfNonNull(

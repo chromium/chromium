@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import org.junit.After;
 import org.junit.Before;
@@ -221,6 +222,7 @@ public class HubCoordinatorUnitTest {
         assertFalse(mIncognitoTabSwitcherBackPressSupplier.hasObservers());
         assertFalse(mTabSupplier.hasObservers());
         assertFalse(mPaneManager.getFocusedPaneSupplier().hasObservers());
+        assertFalse(mHubCoordinator.getPaneTransitionProgressSupplierForTesting().hasObservers());
         mActivityController.close();
     }
 
@@ -710,6 +712,17 @@ public class HubCoordinatorUnitTest {
                 new PaneTransitionProgress(
                         PaneId.INCOGNITO_TAB_SWITCHER, PaneId.TAB_SWITCHER, 0f, false),
                 getPaneTransitionProgress());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_SWIPE_TO_SWITCH_PANE + ":animate_search_box/true")
+    public void testOnSwipeDragProgress_toolbarShowsIncomingPaneHint() {
+        mHubCoordinator.onSwipeDragProgress(0.6f, true);
+
+        TextView searchBoxText = mRootView.findViewById(R.id.search_box_text);
+        assertEquals(
+                mActivityController.get().getString(R.string.hub_search_empty_hint_incognito),
+                searchBoxText.getHint());
     }
 
     private void layOutHub() {

@@ -123,7 +123,8 @@ public class HubToolbarCoordinatorUnitTest {
                         mUserEducationHelper,
                         mIsAnimatingSupplier,
                         mBottomToolbarVisibilitySupplier,
-                        mExitHubRunnable);
+                        mExitHubRunnable,
+                        ObservableSuppliers.alwaysNull());
     }
 
     @Test

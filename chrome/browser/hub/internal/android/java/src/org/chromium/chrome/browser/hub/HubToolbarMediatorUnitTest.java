@@ -30,6 +30,8 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_V
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_TRANSITION_IS_INCOGNITO;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_TRANSITION_OFFSET;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBILITY_FRACTION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
@@ -83,6 +85,7 @@ import java.util.List;
 public class HubToolbarMediatorUnitTest {
     private static final int NARROW_SCREEN_WIDTH_DP = 300;
     private static final int WIDE_SCREEN_WIDTH_DP = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+    private static final float TRANSITION_PROGRESS = 0.4f;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -129,6 +132,8 @@ public class HubToolbarMediatorUnitTest {
             mIncognitoManualSearchBoxAnimationSupplier = ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Float>
             mIncognitoSearchBoxVisibilityFractionSupplier = ObservableSuppliers.createNonNull(0.0f);
+    private final SettableNullableObservableSupplier<PaneTransitionProgress>
+            mPaneTransitionProgressSupplier = ObservableSuppliers.createNullable();
     private PropertyModel mModel;
 
     @Before
@@ -785,13 +790,192 @@ public class HubToolbarMediatorUnitTest {
         assertEquals(0.75f, mModel.get(SEARCH_BOX_VISIBILITY_FRACTION), 0.0f);
     }
 
+    @Test
+    public void testPaneTransition_bothPanesShowSearchBox_staysInPlace() {
+        createMediator();
+
+        setPaneTransition(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER);
+
+        assertNull(mModel.get(SEARCH_BOX_TRANSITION_OFFSET));
+    }
+
+    @Test
+    public void testPaneTransition_bothPanesShowSearchBox_keepsHintBeforeHalfway() {
+        createMediator();
+
+        setPaneTransition(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER);
+
+        assertEquals(false, mModel.get(SEARCH_BOX_TRANSITION_IS_INCOGNITO));
+    }
+
+    @Test
+    public void testPaneTransition_bothPanesShowSearchBox_switchesHintAtHalfway() {
+        createMediator();
+
+        setPaneTransition(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER, 0.5f);
+
+        assertEquals(true, mModel.get(SEARCH_BOX_TRANSITION_IS_INCOGNITO));
+    }
+
+    @Test
+    public void testPaneTransition_toPaneWithoutSearchBox_slidesOut() {
+        createMediator();
+
+        setPaneTransition(PaneId.TAB_SWITCHER, PaneId.CROSS_DEVICE, 0.9f);
+
+        assertEquals(-0.9f, mModel.get(SEARCH_BOX_TRANSITION_OFFSET), 0.0001f);
+    }
+
+    @Test
+    public void testPaneTransition_toPaneWithoutSearchBox_keepsOutgoingHint() {
+        when(mIncognitoTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(ObservableSuppliers.alwaysTrue());
+        createMediator();
+
+        setPaneTransition(PaneId.INCOGNITO_TAB_SWITCHER, PaneId.CROSS_DEVICE, 0.9f);
+
+        assertEquals(true, mModel.get(SEARCH_BOX_TRANSITION_IS_INCOGNITO));
+    }
+
+    @Test
+    public void testPaneTransition_swipeRight_slidesOutToTheRight() {
+        createMediator();
+
+        mPaneTransitionProgressSupplier.set(
+                new PaneTransitionProgress(
+                        PaneId.TAB_SWITCHER, PaneId.CROSS_DEVICE, 0.9f, /* isSwipeLeft= */ false));
+
+        assertEquals(0.9f, mModel.get(SEARCH_BOX_TRANSITION_OFFSET), 0.0001f);
+    }
+
+    @Test
+    public void testPaneTransition_fromPaneWithHiddenSearchBox_slidesIn() {
+        createMediator();
+        mTabSwitcherSearchBoxVisibilitySupplier.set(false);
+
+        setPaneTransition(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER);
+
+        assertEquals(1.0f - TRANSITION_PROGRESS, mModel.get(SEARCH_BOX_TRANSITION_OFFSET), 0.0001f);
+    }
+
+    @Test
+    public void testPaneTransition_toPaneWithHiddenSearchBox_staysInPlace() {
+        when(mIncognitoTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(ObservableSuppliers.alwaysTrue());
+        createMediator();
+        mTabSwitcherSearchBoxVisibilitySupplier.set(false);
+
+        setPaneTransition(PaneId.INCOGNITO_TAB_SWITCHER, PaneId.TAB_SWITCHER);
+
+        assertNull(mModel.get(SEARCH_BOX_TRANSITION_OFFSET));
+    }
+
+    @Test
+    public void testPaneTransition_fromPaneWithoutSearchBox_slidesIn() {
+        // Panes without search keep PaneBase's default visible search box supplier.
+        when(mHistoryPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(ObservableSuppliers.alwaysTrue());
+        createMediator();
+
+        setPaneTransition(PaneId.HISTORY, PaneId.INCOGNITO_TAB_SWITCHER);
+
+        assertEquals(1.0f - TRANSITION_PROGRESS, mModel.get(SEARCH_BOX_TRANSITION_OFFSET), 0.0001f);
+        assertEquals(true, mModel.get(SEARCH_BOX_TRANSITION_IS_INCOGNITO));
+    }
+
+    @Test
+    public void testPaneTransition_tablet_staysInPlace() {
+        mConfiguration.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
+        createMediator();
+
+        setPaneTransition(PaneId.TAB_SWITCHER, PaneId.CROSS_DEVICE);
+
+        assertNull(mModel.get(SEARCH_BOX_TRANSITION_OFFSET));
+        assertNull(mModel.get(SEARCH_BOX_TRANSITION_IS_INCOGNITO));
+    }
+
+    @Test
+    public void testPaneTransition_cleared() {
+        createMediator();
+        setPaneTransition(PaneId.TAB_SWITCHER, PaneId.CROSS_DEVICE);
+
+        mPaneTransitionProgressSupplier.set(null);
+
+        assertNull(mModel.get(SEARCH_BOX_TRANSITION_OFFSET));
+        assertNull(mModel.get(SEARCH_BOX_TRANSITION_IS_INCOGNITO));
+    }
+
+    @Test
+    public void testSearchClick_duringPaneTransition_ignored() {
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        createMediator();
+        mockSearchActivityClient();
+        setPaneTransition(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER);
+
+        mModel.get(SEARCH_LISTENER).run();
+
+        verify(mSearchActivityClient, never()).requestOmniboxForResult(any());
+    }
+
+    @Test
+    public void testSearchClick_duringPaneTransitionOnTablet_launchesSearch() {
+        mConfiguration.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        createMediator();
+        mockSearchActivityClient();
+        setPaneTransition(PaneId.INCOGNITO_TAB_SWITCHER, PaneId.TAB_SWITCHER);
+
+        mModel.get(SEARCH_LISTENER).run();
+
+        verify(mSearchActivityClient).requestOmniboxForResult(any());
+    }
+
+    @Test
+    public void testSearchClick_afterPaneTransition_launchesSearch() {
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        createMediator();
+        mockSearchActivityClient();
+        setPaneTransition(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER);
+        mPaneTransitionProgressSupplier.set(null);
+
+        mModel.get(SEARCH_LISTENER).run();
+
+        verify(mSearchActivityClient).requestOmniboxForResult(any());
+    }
+
+    @Test
+    public void testDestroy_removesPaneTransitionObserver() {
+        HubToolbarMediator mediator = createMediator();
+        assertTrue(mPaneTransitionProgressSupplier.hasObservers());
+
+        mediator.destroy();
+
+        assertFalse(mPaneTransitionProgressSupplier.hasObservers());
+    }
+
     private HubToolbarMediator createMediator() {
         return createMediator(mContext);
     }
 
     private HubToolbarMediator createMediator(Context context) {
         return new HubToolbarMediator(
-                context, mModel, mPaneManager, mTracker, mSearchActivityClient, mExitHubRunnable);
+                context,
+                mModel,
+                mPaneManager,
+                mTracker,
+                mSearchActivityClient,
+                mExitHubRunnable,
+                mPaneTransitionProgressSupplier);
+    }
+
+    private void setPaneTransition(@PaneId int fromPaneId, @PaneId int toPaneId) {
+        setPaneTransition(fromPaneId, toPaneId, TRANSITION_PROGRESS);
+    }
+
+    private void setPaneTransition(@PaneId int fromPaneId, @PaneId int toPaneId, float progress) {
+        mPaneTransitionProgressSupplier.set(
+                new PaneTransitionProgress(
+                        fromPaneId, toPaneId, progress, /* isSwipeLeft= */ true));
     }
 
     private void mockSearchActivityClient() {
