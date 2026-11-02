@@ -831,6 +831,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/570204586")
     // Desktop can't rotate to portrait; it letterboxes the window instead.
     @Restriction(DeviceFormFactor.ONLY_TABLET)
     @Feature({"RenderTest"})
