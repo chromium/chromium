@@ -207,6 +207,9 @@ TEST_F(DataTypeStoreServiceImplTest,
 TEST_F(DataTypeStoreServiceImplTest,
        ShouldWipeAppsAndAppSettingsDataIfFeatureEnabled) {
   base::FilePath temp_path = base::CreateUniqueTempDirectoryScopedToTest();
+  base::test::ScopedFeatureList feature_list_disabled;
+  feature_list_disabled.InitAndDisableFeature(kSyncWipeAppsAndAppSettingsData);
+
   // Put some data for APPS, APP_SETTINGS, and WEB_APPS into the default store.
   {
     auto service =
@@ -227,8 +230,6 @@ TEST_F(DataTypeStoreServiceImplTest,
 
   // Recreate the service with `kSyncWipeAppsAndAppSettingsData` disabled. The
   // data should remain unchanged.
-  base::test::ScopedFeatureList feature_list_disabled;
-  feature_list_disabled.InitAndDisableFeature(kSyncWipeAppsAndAppSettingsData);
   ASSERT_FALSE(
       pref_service_.GetBoolean(prefs::internal::kWipedAppsAndAppSettingsData));
   {

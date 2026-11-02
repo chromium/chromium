@@ -184,14 +184,12 @@ BASE_DECLARE_FEATURE(kSyncMigrateLoopbackServerBookmarksToClientTagHash);
 #if !BUILDFLAG(IS_CHROMEOS)
 // If enabled, prevents registration of controllers for APPS and APP_SETTINGS
 // data types. Used as a kill switch during deprecation.
-// TODO(crbug.com/40267153): Enable `kSyncWipeAppsAndAppSettingsData` when
-// cleaning up this kill switch.
 BASE_DECLARE_FEATURE(kSyncDoNotSyncAppsAndAppSettings);
 
 // If enabled, wipes existing APPS and APP_SETTINGS data and metadata from
 // DataTypeStore on startup.
-// TODO(crbug.com/40267153): Enable by default when cleaning up
-// `kSyncDoNotSyncAppsAndAppSettings`, and remove after enough time.
+// TODO(crbug.com/40267153): Enabled by default in October 2026; remove in a
+// year (around October 2027).
 BASE_DECLARE_FEATURE(kSyncWipeAppsAndAppSettingsData);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
