@@ -12565,5 +12565,32 @@ TEST_F(AIPageContentAgentTest, DetailsSummaryElement) {
                    ->node_interaction_info->is_focusable);
 }
 
+TEST_F(AIPageContentAgentTest, ScriptToolsWithDebuggingAnnotationFiltered) {
+  ScopedWebMCPForTest scoped_webmcp(/*enabled=*/true);
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), "<body></body>",
+      url_test_helpers::ToKURL("https://example.com"));
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(R"JS(
+    document.modelContext.registerTool({
+      name: "regular_tool",
+      description: "A regular tool",
+      execute: () => {},
+    });
+    document.modelContext.registerTool({
+      name: "debugging_tool",
+      description: "A tool for developer debugging",
+      annotations: {debugging: true},
+      execute: () => {},
+    });
+  )JS"));
+
+  GetAIPageContent();
+  Vector<String> names;
+  for (const auto& tool : Content()->frame_data->script_tools) {
+    names.push_back(tool->name);
+  }
+  EXPECT_THAT(names, testing::ElementsAre("regular_tool"));
+}
+
 }  // namespace
 }  // namespace blink

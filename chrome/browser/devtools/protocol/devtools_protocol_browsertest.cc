@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/check_deref.h"
@@ -3567,6 +3569,69 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolPrerenderTest,
   EXPECT_FALSE(result);
   ASSERT_TRUE(error());
   EXPECT_EQ(*error()->FindString("message"), "Not attached to an active page");
+}
+
+class DevToolsProtocolWebMCPTest : public DevToolsProtocolTest {
+ public:
+  DevToolsProtocolWebMCPTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kWebMCP);
+  }
+
+ protected:
+  // Calls Page.getAnnotatedPageContent and returns the names of the main
+  // frame's script tools.
+  std::vector<std::string> GetScriptToolNames() {
+    const base::DictValue* result =
+        SendCommandSync("Page.getAnnotatedPageContent");
+    if (!result) {
+      ADD_FAILURE() << "Page.getAnnotatedPageContent failed";
+      return {};
+    }
+    const std::string* content_base64 = result->FindString("content");
+    std::string decoded_proto;
+    optimization_guide::proto::AnnotatedPageContent apc;
+    if (!content_base64 ||
+        !base::Base64Decode(*content_base64, &decoded_proto) ||
+        !apc.ParseFromString(decoded_proto)) {
+      ADD_FAILURE() << "Failed to decode AnnotatedPageContent";
+      return {};
+    }
+    std::vector<std::string> names;
+    for (const auto& tool : apc.main_frame_data().script_tools()) {
+      names.push_back(tool.name());
+    }
+    return names;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolWebMCPTest,
+                       GetAnnotatedPageContentExcludesDebuggingTools) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/empty.html")));
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"JS(
+    (async () => {
+      await document.modelContext.registerTool({
+        name: "regular_tool",
+        description: "A regular tool",
+        execute: () => {},
+      });
+      await document.modelContext.registerTool({
+        name: "debugging_tool",
+        description: "A tool for developer debugging",
+        annotations: {debugging: true},
+        execute: () => {},
+      });
+    })()
+  )JS"));
+
+  Attach();
+
+  // Debugging tools are only exposed through the WebMCP domain.
+  EXPECT_THAT(GetScriptToolNames(), testing::ElementsAre("regular_tool"));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
