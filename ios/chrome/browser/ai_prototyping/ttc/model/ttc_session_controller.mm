@@ -141,6 +141,9 @@ void TtcSessionController::OnToolCall(
     ttc::ToolResponseCallback tool_response_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (lifecycle_ == TTCSessionLifecycle::kFinished || !actuation_handler_) {
+    if (lifecycle_ != TTCSessionLifecycle::kFinished) {
+      LogActuationUnavailable(tool_request.name);
+    }
     if (tool_response_callback) {
       std::move(tool_response_callback)
           .Run(ttc::ToolResponse::Error(
@@ -451,4 +454,21 @@ void TtcSessionController::LogAppDidEnterBackground() {
   journal_->Log(
       TTCJournalComponent::kSession, "TtcAppDidEnterBackground",
       TTCJournalDetailsBuilder().SetSummary("App entered background").Build());
+}
+
+void TtcSessionController::LogActuationUnavailable(
+    const std::string& tool_name) {
+  if (!journal_) {
+    return;
+  }
+  journal_->LogError(
+      TTCJournalComponent::kActuation, "ActuationDispatchRejected",
+      TTCJournalDetailsBuilder()
+          .SetSummary("Tool rejected: Actuation service not available")
+          .Add("tool_name", tool_name)
+          .Add("result_code",
+               static_cast<int64_t>(
+                   actor::mojom::ActionResultCode::kExecutorDestroyed))
+          .AddError("Actuation service not available")
+          .Build());
 }

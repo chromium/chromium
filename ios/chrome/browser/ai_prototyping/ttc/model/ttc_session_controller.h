@@ -144,6 +144,7 @@ class TtcSessionController : public TtcConversation::Delegate,
                               TTCSessionLifecycle new_lifecycle);
   void LogSessionError(ttc::ErrorCode error);
   void LogAppDidEnterBackground();
+  void LogActuationUnavailable(const std::string& tool_name);
 
   // Underlying conversation coordinator owned by this session controller.
   std::unique_ptr<TtcConversation> conversation_;
