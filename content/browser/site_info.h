@@ -472,8 +472,8 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   // second call will be used to compute a Site URL which is the WebUIType. This
   // allows WebUI to continue to differentiate WebUIType via SiteURL while
   // allowing WebUI with a shared TLD to share a RenderProcessHost.
-  // TODO(crbug.com/40176090): Remove this and replace it with
-  // SiteInstanceGroups once the support lands.
+  // TODO(crbug.com/579199089): Remove this and replace it with
+  // WebUIConfig-based process lock configuration.
   static AgentClusterKey GetAgentClusterKeyForURL(
       const IsolationContext& isolation_context,
       const UrlInfo& url_info,

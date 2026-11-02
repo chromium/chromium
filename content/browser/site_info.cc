@@ -314,8 +314,8 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
   // while the agent_cluster_key_ has a site URL which is the WebUI TLD. This
   // allows WebUI to continue to differentiate WebUIType via site URL while
   // allowing WebUI with a shared TLD to share a RenderProcessHost.
-  // TODO(crbug.com/40176090): Remove this and replace it with
-  // SiteInstanceGroups once the support lands.
+  // TODO(crbug.com/579199089): Remove this and replace it with
+  // WebUIConfig-based process lock configuration.
   if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url)) {
     CHECK(!effective_url.has_value());
     effective_url = url_info.url;
@@ -948,8 +948,8 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   // proceed with regular computations. This allows WebUI to continue to
   // differentiate WebUIType via SiteURL while allowing WebUI with a shared TLD
   // to share a RenderProcessHost.
-  // TODO(crbug.com/40176090): Remove this and replace it with SiteInstance
-  // groups once the support lands.
+  // TODO(crbug.com/579199089): Remove this and replace it with
+  // WebUIConfig-based process lock configuration.
   if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url) &&
       !effective_url.has_value()) {
     WebUIDomains host_domains = GetWebUIDomains(url_info.url);
