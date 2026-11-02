@@ -69,10 +69,9 @@ BASE_DECLARE_FEATURE(kDynamicAimFulfillmentOmnibox);
 BASE_DECLARE_FEATURE(kDynamicAimFulfillment);
 // Which attached inputs may go to the Search results page: "none",
 // "single_image", "multi_image" or "any_combination".
-extern const base::FeatureParam<std::string>
-    kDynamicAimFulfillmentSrpInputPhase;
-// Whether to use the phase sent by the server, when present, instead of
-// `srp_input_phase`.
+extern const base::FeatureParam<std::string> kDynamicAimFulfillmentSrpInputMode;
+// Whether to use the mode sent by the server, when present, instead of
+// `srp_input_mode`.
 extern const base::FeatureParam<bool> kDynamicAimFulfillmentUseServerInputRules;
 // Whether dynamic AIM fulfillment is enabled for the Realbox / Omnibox
 // Composebox: `kDynamicAimFulfillment` and the surface's feature are both

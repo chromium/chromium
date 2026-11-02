@@ -34,7 +34,7 @@ TEST(ComposeboxFeaturesTest, DynamicAimFulfillmentNeedsSurfaceFeature) {
 
 TEST(ComposeboxFeaturesTest, DynamicAimFulfillmentParamDefaults) {
   base::test::ScopedFeatureList feature_list(kDynamicAimFulfillment);
-  EXPECT_EQ(kDynamicAimFulfillmentSrpInputPhase.Get(), "single_image");
+  EXPECT_EQ(kDynamicAimFulfillmentSrpInputMode.Get(), "single_image");
   EXPECT_FALSE(kDynamicAimFulfillmentUseServerInputRules.Get());
 }
 

@@ -79,9 +79,9 @@ const base::FeatureParam<int> kContextMenuAnimationLifetimeLimit(
     "ContextMenuAnimationLifetimeLimit",
     20);
 
-const base::FeatureParam<std::string> kDynamicAimFulfillmentSrpInputPhase(
+const base::FeatureParam<std::string> kDynamicAimFulfillmentSrpInputMode(
     &kDynamicAimFulfillment,
-    "srp_input_phase",
+    "srp_input_mode",
     "single_image");
 
 const base::FeatureParam<bool> kDynamicAimFulfillmentUseServerInputRules(
