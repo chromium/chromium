@@ -27,6 +27,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Builder for creating a {@link ListItem}. */
 @NullMarked
@@ -47,7 +48,7 @@ public class ListItemBuilder {
     private @ColorRes int mIconTintColorStateList;
     private int mStartIconWidth;
     private int mEndIconWidth;
-    private @Nullable List<ListItem> mSubmenuItems;
+    private @Nullable Supplier<List<ListItem>> mSubmenuProvider;
     private @StyleRes int mTextAppearanceStyle;
     private @StyleRes int mSubtitleTextAppearanceStyle;
     private @Px int mVerticalPaddingPx;
@@ -237,7 +238,14 @@ public class ListItemBuilder {
      * @param submenuItems The submenu items that are children of this item.
      */
     public ListItemBuilder withSubmenuItems(List<ListItem> submenuItems) {
-        mSubmenuItems = submenuItems;
+        return withSubmenuProvider(() -> submenuItems);
+    }
+
+    /**
+     * @param submenuProvider The provider supplying submenu items lazily when opened.
+     */
+    public ListItemBuilder withSubmenuProvider(Supplier<List<ListItem>> submenuProvider) {
+        mSubmenuProvider = submenuProvider;
         return this;
     }
 
@@ -278,7 +286,7 @@ public class ListItemBuilder {
 
     /** Builds the {@link ListItem} with the specified properties. */
     public ListItem build() {
-        boolean hasSubmenu = mSubmenuItems != null;
+        boolean hasSubmenu = mSubmenuProvider != null;
         PropertyModel.Builder builder =
                 (hasSubmenu
                                 ? new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
@@ -315,7 +323,7 @@ public class ListItemBuilder {
                     .with(ListMenuItemProperties.END_ICON_ID, mEndIconRes)
                     .with(ListMenuItemProperties.SHOULD_TINT_END_ICON, mShouldTintEndIcon);
         } else {
-            builder.with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, () -> mSubmenuItems);
+            builder.with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, mSubmenuProvider);
         }
 
         if (mShouldTintIcon) {

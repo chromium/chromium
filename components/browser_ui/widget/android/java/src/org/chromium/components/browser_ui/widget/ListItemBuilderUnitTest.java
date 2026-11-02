@@ -37,6 +37,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Unit tests for {@link ListItemBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -213,6 +214,29 @@ public class ListItemBuilderUnitTest {
         assertEquals(
                 submenuItems,
                 listItem.model.get(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER).get());
+    }
+
+    @Test
+    public void testBuild_withSubmenuProvider() {
+        AtomicInteger callCount = new AtomicInteger();
+        List<ListItem> submenuItems = Collections.singletonList(new ListItemBuilder().build());
+        ListItem listItem =
+                new ListItemBuilder()
+                        .withTitle(FAKE_TITLE_STRING)
+                        .withSubmenuProvider(
+                                () -> {
+                                    callCount.incrementAndGet();
+                                    return submenuItems;
+                                })
+                        .build();
+
+        assertEquals(0, callCount.get());
+        assertEquals(ListItemType.MENU_ITEM_WITH_SUBMENU, listItem.type);
+        assertEquals(FAKE_TITLE_STRING, listItem.model.get(ListMenuItemProperties.TITLE));
+        assertEquals(
+                submenuItems,
+                listItem.model.get(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER).get());
+        assertEquals(1, callCount.get());
     }
 
     @Test
