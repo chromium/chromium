@@ -62,8 +62,9 @@ class ProxyServiceController
   // `source` if `source` has an `EnterpriseProxyTabHelper` and the challenged
   // URL is the navigation's URL. If the challenge gets no credentials while
   // that navigation is still pending, its disguised error stays recorded for
-  // the navigation. Without credentials, the request continues without
-  // authenticating, as the protection space is rejected.
+  // the navigation, and the navigation fails with the enterprise proxy error
+  // when enterprise proxy error handling is enabled. Otherwise, the request
+  // continues without authenticating, as the protection space is rejected.
   //
   // `proposed_credential` is ignored: a credential is only proposed after a
   // previous attempt failed, and repeated failures are already bounded by the

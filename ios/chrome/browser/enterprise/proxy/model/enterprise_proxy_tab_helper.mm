@@ -64,10 +64,9 @@ void EnterpriseProxyTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   // Drops the disguised error recorded for this navigation if nothing took it,
-  // e.g. the navigation was stopped. Nothing takes it until the Secure Gateway
-  // error page does in `PrepareErrorPage()`, which runs before a failed
-  // navigation finishes (see the TODO in `RunProxyAuthCallback()` in
-  // proxy_service_controller.mm). Runs before the pending check so that
+  // e.g. the navigation was stopped. A navigation that shows an error page
+  // finishes only after `PrepareErrorPage()` ran, so the Secure Gateway error
+  // page has already taken its error. Runs before the pending check so that
   // replaced navigations are covered.
   error_service_->RemoveDisguisedError(navigation_context->GetNavigationId());
 

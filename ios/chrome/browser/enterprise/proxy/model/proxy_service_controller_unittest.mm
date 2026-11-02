@@ -24,6 +24,7 @@
 #import "components/enterprise/net/core/features.h"
 #import "components/enterprise/net/core/mock_enterprise_proxy_service.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_tab_helper.h"
@@ -207,8 +208,10 @@ NSHTTPURLResponse* Make407Response() {
 class ProxyServiceControllerTest : public PlatformTest {
  public:
   ProxyServiceControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_net::kEnableDynamicRouteFetching);
+    scoped_feature_list_.InitWithFeatures(
+        {enterprise_net::kEnableDynamicRouteFetching,
+         enterprise_net::kEnterpriseProxyErrorHandling},
+        {});
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(EnterpriseProxyServiceFactoryIOS::GetInstance(),
@@ -536,8 +539,26 @@ TEST_F(ProxyServiceControllerTest, ChallengeWithoutFailureResponse) {
 }
 
 // Test that a challenge for the pending navigation's URL that gets no
-// credentials records the error for that navigation.
-TEST_F(ProxyServiceControllerTest, PendingNavigationChallengeRecordsError) {
+// credentials fails the navigation and records the error for it.
+TEST_F(ProxyServiceControllerTest, PendingNavigationChallengeFailsNavigation) {
+  proxy_service_->SetDecision(Decision::kDisguisedError);
+  std::unique_ptr<web::FakeNavigationContext> context =
+      StartNavigation(GURL(base::SysNSStringToUTF8(kDestinationURL)));
+
+  EXPECT_TRUE(HandleDefaultChallenge());
+  ASSERT_TRUE(credentials_future_.IsReady());
+  EXPECT_NSEQ(kEnterpriseProxyErrorDomain, credentials_future_.Get<2>().domain);
+  EXPECT_TRUE(error_service_->TakeDisguisedError(context->GetNavigationId())
+                  .has_value());
+}
+
+// Test that with enterprise proxy error handling disabled, a challenge for the
+// pending navigation's URL that gets no credentials doesn't fail the
+// navigation, but still records the error for it.
+TEST_F(ProxyServiceControllerTest, ErrorHandlingDisabledDoesNotFailNavigation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      enterprise_net::kEnterpriseProxyErrorHandling);
   proxy_service_->SetDecision(Decision::kDisguisedError);
   std::unique_ptr<web::FakeNavigationContext> context =
       StartNavigation(GURL(base::SysNSStringToUTF8(kDestinationURL)));
@@ -550,9 +571,9 @@ TEST_F(ProxyServiceControllerTest, PendingNavigationChallengeRecordsError) {
 }
 
 // Test that a challenge for the pending navigation that is resolved after an
-// access token fetch, while the navigation is still pending, records the error
-// for that navigation.
-TEST_F(ProxyServiceControllerTest, ResolvedWhilePendingRecordsError) {
+// access token fetch, while the navigation is still pending, fails the
+// navigation and records the error for it.
+TEST_F(ProxyServiceControllerTest, ResolvedWhilePendingFailsNavigation) {
   proxy_service_->SetDecision(Decision::kNeedsCredentials);
   proxy_service_->SetFetchResult(CredentialFetchOutcome::kSignInRequired);
   proxy_service_->DeferReply();
@@ -564,7 +585,7 @@ TEST_F(ProxyServiceControllerTest, ResolvedWhilePendingRecordsError) {
   proxy_service_->RunDeferredReply();
 
   ASSERT_TRUE(credentials_future_.IsReady());
-  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_NSEQ(kEnterpriseProxyErrorDomain, credentials_future_.Get<2>().domain);
   EXPECT_TRUE(error_service_->TakeDisguisedError(context->GetNavigationId())
                   .has_value());
 }

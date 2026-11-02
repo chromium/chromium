@@ -16,6 +16,8 @@
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/enterprise/net/core/enterprise_proxy_error_service.h"
+#import "components/enterprise/net/core/features.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_tab_helper.h"
 #import "ios/chrome/browser/enterprise/proxy/model/proxy_auth_challenge_util.h"
 #import "ios/web/public/proxy/proxy_configuration_provider.h"
@@ -31,6 +33,11 @@ namespace {
 // Navigation ID reported for challenges that are not attributed to a
 // navigation. `EnterpriseProxyErrorService` records no error for it.
 constexpr int64_t kUnknownNavigationId = 0;
+
+// Code of the `kEnterpriseProxyErrorDomain` error that fails a navigation. The
+// error carries no details: they are in the disguised error that
+// `EnterpriseProxyErrorService` records for the navigation.
+constexpr NSInteger kEnterpriseProxyErrorCode = 1;
 
 // Returns whether `navigation_id` is the pending main-frame navigation of
 // `web_state`.
@@ -69,8 +76,10 @@ int64_t GetNavigationIdForChallenge(web::WebState* web_state,
 // Adapts the credentials resolved by `enterprise_proxy_error_service` into the
 // `(username, password, error)` triple that
 // `web::WebStateDelegate::ProxyAuthCallback` expects. Without credentials, the
-// error recorded for the navigation `navigation_id` of `web_state` is dropped
-// if that navigation is no longer pending.
+// navigation `navigation_id` of `web_state` is failed with the enterprise proxy
+// error if it is still pending and enterprise proxy error handling is enabled.
+// If that navigation is no longer pending, the disguised error recorded for it
+// is dropped instead.
 void RunProxyAuthCallback(
     enterprise_net::EnterpriseProxyErrorService* enterprise_proxy_error_service,
     base::WeakPtr<web::WebState> web_state,
@@ -89,20 +98,29 @@ void RunProxyAuthCallback(
     return;
   }
 
-  // If the attributed navigation is no longer pending (e.g. it finished or was
-  // replaced while the access token was fetched), nothing will take the error
-  // just recorded for it, so it is dropped.
+  // The web layer fails whichever navigation is pending when the callback
+  // runs. If the attributed navigation is gone (e.g. replaced while the access
+  // token was fetched), the error would fail an unrelated navigation, so it is
+  // dropped instead, along with the disguised error just recorded for it.
   if (!IsPendingNavigation(web_state.get(), navigation_id)) {
     enterprise_proxy_error_service->RemoveDisguisedError(navigation_id);
     std::move(callback).Run(/*username=*/nil, /*password=*/nil, /*error=*/nil);
     return;
   }
 
-  // TODO(crbug.com/543371697): Fail the navigation with a dedicated enterprise
-  // proxy error once `ChromeWebClient::PrepareErrorPage()` shows an error page
-  // for it. Until then, `EnterpriseProxyTabHelper` drops the error recorded for
-  // the navigation when the navigation finishes.
-  std::move(callback).Run(/*username=*/nil, /*password=*/nil, /*error=*/nil);
+  // Without the Secure Gateway error page, the request continues without
+  // credentials, and `EnterpriseProxyTabHelper` drops the disguised error when
+  // the navigation finishes.
+  if (!enterprise_net::IsEnterpriseProxyErrorHandlingEnabled()) {
+    std::move(callback).Run(/*username=*/nil, /*password=*/nil, /*error=*/nil);
+    return;
+  }
+
+  std::move(callback).Run(
+      /*username=*/nil, /*password=*/nil,
+      [NSError errorWithDomain:kEnterpriseProxyErrorDomain
+                          code:kEnterpriseProxyErrorCode
+                      userInfo:nil]);
 }
 
 }  // namespace
