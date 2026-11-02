@@ -46,7 +46,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -257,9 +256,6 @@ void EditingList::Init() {
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque,
       kMainContainerCornerRadius));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kMainContainerCornerRadius,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
                        views::BoxLayout::Orientation::kVertical,
                        gfx::Insets::VH(kEditingListInsideBorderInsets, 0)))
@@ -292,9 +288,11 @@ void EditingList::Init() {
 
   SizeToPreferredSize();
 
-  shadow_ = ash::SystemDecoration::CreateForView(
-      this, ash::SystemDecoration::ShadowType::kElevation12);
-  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kMainContainerCornerRadius));
+  decoration_ = ash::SystemDecoration::CreateForView(
+      this, ash::SystemDecoration::ShadowType::kElevation12,
+      ash::SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(
+      gfx::RoundedCornersF(kMainContainerCornerRadius));
 }
 
 bool EditingList::HasControls() const {
