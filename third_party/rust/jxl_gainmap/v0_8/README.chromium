@@ -1,0 +1,11 @@
+Name: jxl-gainmap
+URL: https://crates.io/crates/jxl-gainmap
+Version: 0.8.0
+Revision: 72ac5b7ce9d9bc1a55b615b4db3fcb8e91ef8ee8
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: BSD-3-Clause
+License File: //third_party/rust/chromium_crates_io/vendor/jxl-gainmap-v0_8/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Gain-map bundle parsing helpers for the jxl decoder

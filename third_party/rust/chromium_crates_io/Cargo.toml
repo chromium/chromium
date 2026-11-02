@@ -129,6 +129,9 @@ features = ["bmp", "ico"]
 version = "0.8.0"
 features = ["all-simd"]
 
+[dependencies.jxl-gainmap]
+version = "0.8.0"
+
 [dependencies.llguidance]
 version = "1.0.0"
 default-features = false
