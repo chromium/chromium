@@ -205,13 +205,17 @@ void XSLStyleSheet::LoadChildSheets() {
       if (IS_XSLT_ELEM(curr) && IS_XSLT_NAME(curr, "import")) {
         xmlChar* uri_ref =
             xsltGetNsProp(curr, (const xmlChar*)"href", XSLT_NAMESPACE);
-        LoadChildSheet(String::FromUtf8((const char*)uri_ref));
-        xmlFree(uri_ref);
+        // The href attribute may be missing, in which case there is no child
+        // sheet to load. libxslt will report the error during compilation.
+        if (uri_ref) {
+          LoadChildSheet(String::FromUtf8((const char*)uri_ref));
+          xmlFree(uri_ref);
 
-        // crbug.com/496271580: LoadChildSheet() can trigger synchronous
-        // destruction of the stylesheet's xmlDoc. Bail out to avoid UAF.
-        if (stylesheet_doc_taken_) {
-          return;
+          // crbug.com/496271580: LoadChildSheet() can trigger synchronous
+          // destruction of the stylesheet's xmlDoc. Bail out to avoid UAF.
+          if (stylesheet_doc_taken_) {
+            return;
+          }
         }
       } else {
         break;
@@ -225,13 +229,15 @@ void XSLStyleSheet::LoadChildSheets() {
           IS_XSLT_NAME(curr, "include")) {
         xmlChar* uri_ref =
             xsltGetNsProp(curr, (const xmlChar*)"href", XSLT_NAMESPACE);
-        LoadChildSheet(String::FromUtf8((const char*)uri_ref));
-        xmlFree(uri_ref);
+        if (uri_ref) {
+          LoadChildSheet(String::FromUtf8((const char*)uri_ref));
+          xmlFree(uri_ref);
 
-        // crbug.com/496271580: LoadChildSheet() can trigger synchronous
-        // destruction of the stylesheet's xmlDoc. Bail out to avoid UAF.
-        if (stylesheet_doc_taken_) {
-          return;
+          // crbug.com/496271580: LoadChildSheet() can trigger synchronous
+          // destruction of the stylesheet's xmlDoc. Bail out to avoid UAF.
+          if (stylesheet_doc_taken_) {
+            return;
+          }
         }
       }
       curr = curr->next;
