@@ -42,7 +42,12 @@ enum class AttemptOtpFillingToolEvent {
   kGmailSmartFeaturesConsentRequired = 19,
   kGoogleSmartFeaturesConsentRequired = 20,
   kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent = 21,
-  kMaxValue = kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent
+  // OTP retrieval timed out after a received token was rejected for its sender
+  // domain.
+  kGmailOtpSenderDomainMismatch = 30,
+  // OTP retrieval timed out without a sender-domain rejection.
+  kOtpRetrievalTimeout = 31,
+  kMaxValue = kOtpRetrievalTimeout
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:AttemptOtpFillingEvent)
 

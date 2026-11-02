@@ -104,7 +104,8 @@ found in the LICENSE file.
   <int value="10" label="FormFillingStatusTabNotAvailable"/>
   <int value="11" label="NoTargetFrameWithOtpFound"/>
   <int value="12" label="(Obsolete) NoActorLogin - Removed in 2026/07"/>
-  <int value="13" label="OtpRetrievalError"/>
+  <int value="13"
+      label="OtpRetrievalError (excludes timeout and sender-domain mismatch)"/>
   <int value="14" label="FormFillingNotSecureBeforeFilling"/>
   <int value="15" label="FillingOtpSuccess"/>
   <int value="16" label="FillingOtpError"/>
@@ -113,6 +114,8 @@ found in the LICENSE file.
   <int value="19" label="GmailSmartFeaturesConsentRequired"/>
   <int value="20" label="GoogleSmartFeaturesConsentRequired"/>
   <int value="21" label="UnableToRetrieveGmailAndGoogleSmartFeaturesConsent"/>
+  <int value="30" label="GmailOtpSenderDomainMismatch"/>
+  <int value="31" label="OtpRetrievalTimeout"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.h:AttemptOtpFillingEvent) -->

@@ -529,8 +529,8 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
       JournalDetailsBuilder().Add("otp_received", result.has_value()).Build());
 
   if (!result.has_value()) {
-    RecordAttemptOtpFillingEvent(
-        AttemptOtpFillingToolEvent::kOtpRetrievalError);
+    AttemptOtpFillingToolEvent event =
+        AttemptOtpFillingToolEvent::kOtpRetrievalError;
     mojom::ActionResultCode code = mojom::ActionResultCode::kOtpRetrievalError;
     std::string message =
         base::StringPrintf("An error occurred during OTP retrieval: %d",
@@ -570,15 +570,21 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
         message = "OTP filling service is not available.";
         break;
       // A sender-domain mismatch is still a timeout for the model: no OTP from
-      // an allowed sender arrived in time.
+      // an allowed sender arrived in time. Only the metric tells them apart.
       case kGmailOtpSenderDomainMismatch:
+        event = AttemptOtpFillingToolEvent::kGmailOtpSenderDomainMismatch;
+        code = mojom::ActionResultCode::kOtpRetrievalTimeout;
+        message = "OTP retrieval timed out.";
+        break;
       case kSubscriptionExpired:
+        event = AttemptOtpFillingToolEvent::kOtpRetrievalTimeout;
         code = mojom::ActionResultCode::kOtpRetrievalTimeout;
         message = "OTP retrieval timed out.";
         break;
       default:
         break;
     }
+    RecordAttemptOtpFillingEvent(event);
     std::move(callback).Run(
         MakeResult(code, /*requires_page_stabilization=*/false, message));
     return;

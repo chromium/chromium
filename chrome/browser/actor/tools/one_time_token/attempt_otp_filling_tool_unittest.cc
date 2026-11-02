@@ -735,7 +735,7 @@ INSTANTIATE_TEST_SUITE_P(
                 kSubscriptionExpired,
             .expected_code = mojom::ActionResultCode::kOtpRetrievalTimeout,
             .expected_message = "OTP retrieval timed out.",
-            .expected_event = AttemptOtpFillingToolEvent::kOtpRetrievalError},
+            .expected_event = AttemptOtpFillingToolEvent::kOtpRetrievalTimeout},
         // A sender-domain mismatch is reported to the model as a timeout.
         RetrieveOtpErrorTestCase{
             .test_name = "GmailOtpSenderDomainMismatch",
@@ -743,7 +743,8 @@ INSTANTIATE_TEST_SUITE_P(
                 kGmailOtpSenderDomainMismatch,
             .expected_code = mojom::ActionResultCode::kOtpRetrievalTimeout,
             .expected_message = "OTP retrieval timed out.",
-            .expected_event = AttemptOtpFillingToolEvent::kOtpRetrievalError}),
+            .expected_event =
+                AttemptOtpFillingToolEvent::kGmailOtpSenderDomainMismatch}),
     [](const testing::TestParamInfo<RetrieveOtpErrorTestCase>& info) {
       return std::string(info.param.test_name);
     });
