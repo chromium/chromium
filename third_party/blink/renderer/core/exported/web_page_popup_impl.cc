@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -293,16 +294,31 @@ class PagePopupChromeClient final : public EmptyChromeClient {
     return popup_->widget_base_->ScrollAnimationTimeline();
   }
 
-  const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
-    CHECK(popup_);
-    // LocalFrame is ignored since there is only 1 frame in a popup.
-    return popup_->GetScreenInfo();
+  const display::ScreenInfo& GetScreenInfo(LocalFrame& frame) const override {
+    return GetScreenInfos(frame).current();
   }
 
   const display::ScreenInfos& GetScreenInfos(LocalFrame&) const override {
     CHECK(popup_);
     // LocalFrame is ignored since there is only 1 frame in a popup.
-    return popup_->widget_base_->screen_infos();
+    const display::ScreenInfos& screen_infos =
+        popup_->widget_base_->screen_infos();
+    if (!RuntimeEnabledFeatures::LimitPopupWidgetHostPositionEnabled() ||
+        !popup_->opener_web_view_) {
+      return screen_infos;
+    }
+    if (auto* main_frame_widget =
+            popup_->opener_web_view_->MainFrameViewWidget()) {
+      int line_of_death = main_frame_widget->ViewRect().y();
+      const gfx::Rect& avail = screen_infos.current().available_rect;
+      if (line_of_death > avail.y() && line_of_death < avail.bottom()) {
+        constrained_screen_infos_ = screen_infos;
+        constrained_screen_infos_.mutable_current().available_rect.Inset(
+            gfx::Insets::TLBR(line_of_death - avail.y(), 0, 0, 0));
+        return constrained_screen_infos_;
+      }
+    }
+    return screen_infos;
   }
 
   gfx::Size MinimumWindowSize() const override { return gfx::Size(0, 0); }
@@ -363,6 +379,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
   }
 
   raw_ptr<WebPagePopupImpl, UnprotectedInRelease | DanglingUntriaged> popup_;
+  mutable display::ScreenInfos constrained_screen_infos_;
 };
 
 // WebPagePopupImpl ----------------------------------------------------------

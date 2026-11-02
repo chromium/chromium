@@ -7900,6 +7900,133 @@ TEST_F(WebViewTest, EmulatingPopupRect) {
   }
 }
 
+TEST_F(WebViewTest, PopupConstrainedByLineOfDeathAndWorkArea) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  StringBuilder html;
+  html.Append("<!DOCTYPE html><select id='select'>");
+  for (int i = 0; i < 30; ++i) {
+    html.Append("<option>Option</option>");
+  }
+  html.Append("</select>");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
+                                     html.ToString().Utf8(), base_url);
+
+  // Set up an 800x600 screen with a 40px taskbar at the bottom (work area
+  // height 560) and position the main frame widget near the bottom of the
+  // screen at y = 400 (line of death = 400).
+  const int kLineOfDeath = 400;
+  const int kWorkAreaBottom = 560;
+  blink::VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  visual_properties.new_size_device_px = gfx::Size(400, 160);
+  visual_properties.visible_viewport_size_device_px = gfx::Size(400, 160);
+  visual_properties.screen_infos.mutable_current().rect = gfx::Rect(800, 600);
+  visual_properties.screen_infos.mutable_current().available_rect =
+      gfx::Rect(0, 0, 800, kWorkAreaBottom);
+  web_view->MainFrameWidget()->ApplyVisualProperties(visual_properties);
+  static_cast<WebFrameWidgetImpl*>(web_view->MainFrameViewWidget())
+      ->SetScreenRects(gfx::Rect(0, kLineOfDeath, 400, 160),
+                       gfx::Rect(0, kLineOfDeath - 50, 400, 210));
+  UpdateAllLifecyclePhases();
+
+  LocalFrame* frame = web_view->MainFrameImpl()->GetFrame();
+  auto* select = To<HTMLSelectElement>(
+      frame->GetDocument()->getElementById(AtomicString("select")));
+  ASSERT_TRUE(select);
+
+  auto* menu = MakeGarbageCollected<InternalPopupMenu>(
+      &frame->GetPage()->GetChromeClient(), *select);
+  scoped_refptr<WebPagePopupImpl> popup = web_view->OpenPagePopup(menu);
+  ASSERT_TRUE(popup);
+  popup->DidShowPopup();
+
+  // Because available space above the <select> is constrained by the line of
+  // death (400), there is more space below the <select> than above it. The
+  // popup should open below the <select> and fit above the taskbar (560).
+  gfx::Rect popup_rect = popup->WindowRect();
+  EXPECT_GE(popup_rect.y(), kLineOfDeath);
+  EXPECT_LE(popup_rect.bottom(), kWorkAreaBottom);
+
+  // Verify that GetScreenInfos does not crash if opener_web_view_ is cleared.
+  web_view->CleanupPagePopup();
+  Document* popup_doc = popup->GetDocument().Unwrap<Document>();
+  EXPECT_FALSE(popup_doc->GetPage()
+                   ->GetChromeClient()
+                   .GetScreenInfos(*popup_doc->GetFrame())
+                   .current()
+                   .available_rect.IsEmpty());
+
+  popup->ClosePopup();
+}
+
+TEST_F(WebViewTest, PopupBrowserConstrainedResize) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  StringBuilder html;
+  html.Append("<!DOCTYPE html><select id='select'>");
+  for (int i = 0; i < 10; ++i) {
+    html.Append(i == 9 ? "<option selected>Long option text</option>"
+                       : "<option>Long option text</option>");
+  }
+  html.Append("</select>");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
+                                     html.ToString().Utf8(), base_url);
+
+  blink::VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  visual_properties.new_size_device_px = gfx::Size(400, 400);
+  visual_properties.visible_viewport_size_device_px = gfx::Size(400, 400);
+  visual_properties.screen_infos.mutable_current().rect = gfx::Rect(800, 600);
+  visual_properties.screen_infos.mutable_current().available_rect =
+      gfx::Rect(0, 0, 800, 600);
+  web_view->MainFrameWidget()->ApplyVisualProperties(visual_properties);
+  UpdateAllLifecyclePhases();
+
+  LocalFrame* frame = web_view->MainFrameImpl()->GetFrame();
+  auto* select = To<HTMLSelectElement>(
+      frame->GetDocument()->getElementById(AtomicString("select")));
+  ASSERT_TRUE(select);
+
+  auto* menu = MakeGarbageCollected<InternalPopupMenu>(
+      &frame->GetPage()->GetChromeClient(), *select);
+  WebPagePopupImpl* popup = web_view->OpenPagePopup(menu);
+  ASSERT_TRUE(popup);
+  popup->DidShowPopup();
+
+  gfx::Rect initial_rect = popup->WindowRect();
+  ASSERT_GT(initial_rect.height(), 60);
+
+  // Simulate the browser constraining the popup's y position and height (e.g.
+  // for an OOPIF popup).
+  const int kConstrainedY = initial_rect.y() + 50;
+  const int kConstrainedHeight = 60;
+  gfx::Rect constrained_rect(initial_rect.x(), kConstrainedY,
+                             initial_rect.width(), kConstrainedHeight);
+  popup->SetScreenRects(constrained_rect, constrained_rect);
+  popup->Resize(constrained_rect.size());
+  Document* popup_doc = popup->GetDocument().Unwrap<Document>();
+  popup_doc->GetPage()->Animate(base::TimeTicks::Now());
+  popup->UpdateLifecycle(WebLifecycleUpdate::kAll, DocumentUpdateReason::kTest);
+
+  // The internal listbox should shrink and scroll the selected option into
+  // view.
+  EXPECT_EQ(popup->WindowRect().y(), kConstrainedY);
+  EXPECT_EQ(popup->WindowRect().height(), kConstrainedHeight);
+  auto* internal_select = popup_doc->QuerySelector(AtomicString("select"));
+  ASSERT_TRUE(internal_select);
+  EXPECT_EQ(internal_select->OffsetHeight(), kConstrainedHeight);
+  EXPECT_GT(internal_select->scrollTop(), 0);
+
+  popup->ClosePopup();
+}
+
 TEST_F(WebViewTest, HiddenButPaintingIsSentToObservers) {
   // kHiddenButPainting should be sent to observers from both the visible and
   // hidden states.

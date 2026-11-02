@@ -425,10 +425,6 @@ BASE_FEATURE(kKeepUnassignedSiteInstanceInOriginalBrowsingInstance,
 // invalid (non-allowlisted) headers in a navigation request.
 BASE_FEATURE(kKillOnInvalidNavigationHeaders, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch for crbug.com/424995036. When enabled, the top of a
-// PopupWidgetHost is constrained to be at or below the line of death.
-BASE_FEATURE(kLimitPopupWidgetHostPosition, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Local Network Access checks for all types of web workers.
 //
 // The exact checks run are the same as for other document subresources, and

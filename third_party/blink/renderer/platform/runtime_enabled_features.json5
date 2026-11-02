@@ -4149,6 +4149,13 @@
       status: "stable",
     },
     {
+      // Kill switch for crbug.com/424995036 and crbug.com/577276073. When
+      // enabled, the top of a PopupWidgetHost is constrained to be at or below
+      // the line of death.
+      name: "LimitPopupWidgetHostPosition",
+      status: "stable",
+    },
+    {
       name: "LineBreakAfterSpaceBeforeOpenTag",
       status: "stable",
     },

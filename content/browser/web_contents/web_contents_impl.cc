@@ -6199,7 +6199,8 @@ WebContents* WebContentsImpl::ShowCreatedWindow(
 }
 
 gfx::Rect WebContentsImpl::ConstrainPopupBounds(const gfx::Rect& bounds) {
-  if (!base::FeatureList::IsEnabled(features::kLimitPopupWidgetHostPosition)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kLimitPopupWidgetHostPosition)) {
     return bounds;
   }
   // Constrain popup bounds so that the top of the popup is at or below the line
@@ -6212,6 +6213,19 @@ gfx::Rect WebContentsImpl::ConstrainPopupBounds(const gfx::Rect& bounds) {
   int line_of_death = view->GetViewBounds().y();
   if (constrained_bounds.y() < line_of_death) {
     constrained_bounds.set_y(line_of_death);
+    if (display::Screen* screen = display::Screen::Get();
+        screen && !screen->IsHeadless()) {
+      const display::Display display =
+          view->GetNativeView()
+              ? screen->GetDisplayNearestView(view->GetNativeView())
+              : screen->GetDisplayMatching(bounds);
+      const gfx::Rect work_area = display.work_area();
+      if (!work_area.IsEmpty() &&
+          constrained_bounds.bottom() > work_area.bottom()) {
+        constrained_bounds.set_height(
+            std::max(0, work_area.bottom() - constrained_bounds.y()));
+      }
+    }
   }
   return constrained_bounds;
 }
