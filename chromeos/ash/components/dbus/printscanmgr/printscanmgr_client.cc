@@ -4,20 +4,19 @@
 
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 
+#include <dbus/dbus-protocol.h>
 #include <stdint.h>
 
-#include <dbus/dbus-protocol.h>
-
-#include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/printscanmgr/fake_printscanmgr_client.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -33,18 +32,17 @@ PrintscanmgrClient* g_instance = nullptr;
 constexpr base::TimeDelta kAutoconfiguredTimeout = base::Seconds(30);
 
 printscanmgr::AddPrinterResult DBusErrorFromString(
-    const std::string& dbus_error_string) {
-  static const base::NoDestructor<
-      std::map<std::string, printscanmgr::AddPrinterResult>>
-      error_string_map({
+    std::string_view dbus_error_string) {
+  static constexpr auto kErrorStringMap =
+      base::MakeFixedFlatMap<std::string_view, printscanmgr::AddPrinterResult>({
           {DBUS_ERROR_NO_REPLY,
            printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_DBUS_NO_REPLY},
           {DBUS_ERROR_TIMEOUT,
            printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_DBUS_TIMEOUT},
       });
 
-  auto it = error_string_map->find(dbus_error_string);
-  return it != error_string_map->end()
+  auto it = kErrorStringMap.find(dbus_error_string);
+  return it != kErrorStringMap.end()
              ? it->second
              : printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_DBUS_GENERIC;
 }
