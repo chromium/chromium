@@ -853,7 +853,22 @@ TEST_F(SaveUpdateBubbleControllerTest, IsSavingBlockedByTrustedVaultError) {
 TEST_F(SaveUpdateBubbleControllerTest, OnTrustedVaultUnlockClicked) {
   PretendPasswordWaiting();
   EXPECT_CALL(*delegate(), StartTrustedVaultErrorResolutionFlow());
-  EXPECT_CALL(*delegate(), SavePasswordAfterTrustedVaultErrorResolution());
+  EXPECT_CALL(*delegate(), SavePasswordAfterTrustedVaultErrorResolution(
+                               pending_password().username_value,
+                               pending_password().password_value));
+  controller()->OnTrustedVaultUnlockClicked();
+}
+
+TEST_F(SaveUpdateBubbleControllerTest, OnTrustedVaultUnlockClicked_Edited) {
+  PretendPasswordWaiting();
+  const std::u16string kNewUsername = u"new_user";
+  const password_manager::PasswordString kNewPassword =
+      password_manager::PasswordString(u"new_password");
+  controller()->OnCredentialEdited(kNewUsername, kNewPassword);
+
+  EXPECT_CALL(*delegate(), StartTrustedVaultErrorResolutionFlow());
+  EXPECT_CALL(*delegate(), SavePasswordAfterTrustedVaultErrorResolution(
+                               kNewUsername, kNewPassword));
   controller()->OnTrustedVaultUnlockClicked();
 }
 

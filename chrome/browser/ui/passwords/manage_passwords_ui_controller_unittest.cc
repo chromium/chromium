@@ -396,7 +396,8 @@ class ManagePasswordsUIControllerTest : public ChromeRenderViewHostTestHarness {
             Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
 
     controller()->OnPasswordSubmitted(std::move(test_form_manager));
-    controller()->SavePasswordAfterTrustedVaultErrorResolution();
+    controller()->SavePasswordAfterTrustedVaultErrorResolution(
+        submitted_form().username_value, submitted_form().password_value);
     ASSERT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
               controller()->GetState());
   }
@@ -635,7 +636,8 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedAfterErrorResolution) {
 
   // This method is being called when the user presses the "Continue" button on
   // the password saving bubble.
-  controller()->SavePasswordAfterTrustedVaultErrorResolution();
+  controller()->SavePasswordAfterTrustedVaultErrorResolution(
+      submitted_form().username_value, submitted_form().password_value);
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             controller()->GetState());
 
@@ -659,6 +661,43 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedAfterErrorResolution) {
   WaitForPasswordStore();
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
   EXPECT_FALSE(controller()->IsShowingBubble());
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       PasswordSavedWithEditsAfterTrustedVaultErrorResolution) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kPasswordSaveInContextErrorResolution};
+
+  const std::u16string kEditedUsername = u"edited_username";
+  const password_manager::PasswordString kEditedPassword(u"edited_password");
+
+  PasswordForm pending_form = submitted_form();
+  std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager =
+      CreateFormManagerWithBestMatches({}, &pending_form);
+  EXPECT_CALL(*test_form_manager, GetPasswordStoreForSaving(_))
+      .WillRepeatedly(
+          Return(password_manager::PasswordForm::Store::kProfileStore));
+  EXPECT_CALL(*test_form_manager, OnUpdateUsernameFromPrompt(kEditedUsername))
+      .WillOnce(SaveArg<0>(&pending_form.username_value));
+  EXPECT_CALL(*test_form_manager, OnUpdatePasswordFromPrompt(kEditedPassword))
+      .WillOnce(SaveArg<0>(&pending_form.password_value));
+  EXPECT_CALL(*test_form_manager, Save());
+
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  controller()->SavePasswordAfterTrustedVaultErrorResolution(kEditedUsername,
+                                                             kEditedPassword);
+
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  controller()->OnErrorStateChanged(
+      client().GetProfilePasswordStore(),
+      password_manager::ActionableError::kNoError);
+  WaitForPasswordStore();
+  EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
 }
 
 // If the user did not start the resolution flow (did not click the "Continue"

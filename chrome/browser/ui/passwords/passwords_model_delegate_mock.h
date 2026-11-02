@@ -140,7 +140,7 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
   MOCK_METHOD(void, OnMouseExited, (), (override));
   MOCK_METHOD(void,
               SavePasswordAfterTrustedVaultErrorResolution,
-              (),
+              (const std::u16string&, const password_manager::PasswordString&),
               (override));
   MOCK_METHOD(void, StartTrustedVaultErrorResolutionFlow, (), (override));
   MOCK_METHOD(bool, IsSavingBlockedByTrustedVaultError, (), (const, override));

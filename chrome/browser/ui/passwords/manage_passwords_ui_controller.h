@@ -229,7 +229,9 @@ class ManagePasswordsUIController
   // Ensures that the password will be saved after resolution of the trusted
   // vault error (or saves the password immediately if the trusted vault error
   // is already resolved).
-  void SavePasswordAfterTrustedVaultErrorResolution() override;
+  void SavePasswordAfterTrustedVaultErrorResolution(
+      const std::u16string& username,
+      const password_manager::PasswordString& password) override;
   // Starts the UI flow that allows to fix the trusted vault error.
   void StartTrustedVaultErrorResolutionFlow() override;
   // Skips user os level authentication during the life time of the returned
@@ -366,6 +368,13 @@ class ManagePasswordsUIController
   // Resets the state tracking automatic password saving after trusted vault
   // error resolution.
   void ResetAutoSaveAfterErrorResolution();
+
+  // Completes saving the password after the trusted vault error is resolved.
+  void CompleteSavePasswordAfterTrustedVaultErrorResolution();
+
+  // Saves the pending password currently held in the form manager and performs
+  // post-save actions.
+  void SavePendingPassword();
 
   // Returns the timeout for the manual save fallback.
   static base::TimeDelta GetTimeoutForSaveFallback();

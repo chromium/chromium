@@ -219,8 +219,12 @@ class PasswordsModelDelegate {
 
   // Model observes the changes of the password manager's error state. By
   // calling this method we instruct the model to save the password after the
-  // trusted vault error state is fixed.
-  virtual void SavePasswordAfterTrustedVaultErrorResolution() = 0;
+  // trusted vault error state is fixed. The `username` and `password` seen on
+  // the UI are sent as parameters, and handled accordingly if the user had
+  // edited them.
+  virtual void SavePasswordAfterTrustedVaultErrorResolution(
+      const std::u16string& username,
+      const password_manager::PasswordString& password) = 0;
 
   // Starts the UI flow for fixing the trusted vault error.
   virtual void StartTrustedVaultErrorResolutionFlow() = 0;
