@@ -40,6 +40,12 @@ class DeveloperToolsPolicyChecker : public KeyedService {
   // matches patterns in both.
   DevToolsAvailability GetDevToolsAvailabilityForUrl(const GURL& url) const;
 
+  // Returns true if the DeveloperToolsAvailabilityAllowlist or
+  // DeveloperToolsAvailabilityBlocklist policy contains at least one pattern,
+  // i.e. `GetDevToolsAvailabilityForUrl()` can return something other than
+  // `kNotSet` for some URL.
+  bool HasUrlRules() const;
+
  private:
   raw_ptr<PrefService> pref_service_;
   URLBlocklistManager url_blocklist_manager_;

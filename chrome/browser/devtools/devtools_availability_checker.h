@@ -109,4 +109,26 @@ bool IsInspectionAllowed(Profile* profile, const GURL& url);
 bool IsInspectionAllowed(Profile* profile,
                          content::DevToolsAgentHost* agent_host);
 
+// Returns true if the DevTools UI URL (`devtools://devtools/...`) is blocked on
+// `profile` by the generic `URLBlocklist` policy. `profile` must not be null.
+bool IsDevToolsUrlBlockedByPolicy(Profile* profile);
+
+// Returns true if at least one policy check that can affect DevTools
+// availability applies to `profile`:
+// - `DeveloperToolsAvailability` (or legacy `DeveloperToolsDisabled`) is set by
+//   policy,
+// - `DeveloperToolsAvailabilityAllowlist` or
+//   `DeveloperToolsAvailabilityBlocklist` is non-empty,
+// - the DevTools UI URL is blocked by `URLBlocklist`
+//   (`IsDevToolsUrlBlockedByPolicy()`), or
+// - effective `DeveloperToolsAvailability` has its default value
+//   (`DisallowedForForceInstalledExtensions`) and either `profile` is managed
+//   (when extensions are enabled, since built-in component extensions are
+//   restricted in managed profiles) or `profile` has an installed extension or
+//   web app restricted under that default (a policy-installed extension, a
+//   kiosk web app, or a policy-installed Isolated Web App).
+// `profile` must not be null. Used to slice DevTools UMA metrics to profiles
+// where policy checks can affect DevTools availability.
+bool HasDevToolsPolicyCheck(Profile* profile);
+
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_AVAILABILITY_CHECKER_H_

@@ -58,4 +58,11 @@ DeveloperToolsPolicyChecker::GetDevToolsAvailabilityForUrl(
   return DevToolsAvailability::kNotSet;
 }
 
+bool DeveloperToolsPolicyChecker::HasUrlRules() const {
+  return !pref_service_->GetList(prefs::kDeveloperToolsAvailabilityAllowlist)
+              .empty() ||
+         !pref_service_->GetList(prefs::kDeveloperToolsAvailabilityBlocklist)
+              .empty();
+}
+
 }  // namespace policy

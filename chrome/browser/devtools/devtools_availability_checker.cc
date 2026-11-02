@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
@@ -13,12 +14,16 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/developer_tools_policy_checker.h"
 #include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
@@ -32,6 +37,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
 #endif
 
@@ -115,6 +121,7 @@ DevToolsBlockReason GetRestrictedExtensionBlockReason(
     return DevToolsBlockReason::kForceInstalledExtension;
   }
   if (extensions::Manifest::IsComponentLocation(extension->location()) &&
+      profile->GetProfilePolicyConnector() &&
       profile->GetProfilePolicyConnector()->IsManaged()) {
     return DevToolsBlockReason::kComponentExtensionInManagedProfile;
   }
@@ -438,4 +445,83 @@ bool IsInspectionAllowed(Profile* profile, const web_app::WebApp* web_app) {
 bool IsInspectionAllowed(Profile* profile, const GURL& url) {
   return GetDevToolsBlockReason(profile, url) ==
          DevToolsBlockReason::kNotBlocked;
+}
+
+bool IsDevToolsUrlBlockedByPolicy(Profile* profile) {
+  CHECK(profile);
+  PolicyBlocklistService* blocklist_service =
+      ChromePolicyBlocklistServiceFactory::GetForProfile(profile);
+  return blocklist_service &&
+         blocklist_service->GetURLBlocklistState(
+             GURL(chrome::kChromeUIDevToolsURL)) ==
+             policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+}
+
+bool HasDevToolsPolicyCheck(Profile* profile) {
+  CHECK(profile);
+  if (policy::DeveloperToolsPolicyHandler::IsAvailabilitySetByPolicy(profile)) {
+    return true;
+  }
+  // Ask the same services that enforce the URL list policies, so this slice
+  // cannot drift from what `GetUrlPoliciesBlockReason()` and
+  // `DevToolsWindow::GetBlockReasonFor()` actually apply. Both services are
+  // null for profiles that opt out of keyed services (e.g.
+  // `TopChromeWebUIProfileImpl`), which also do not receive these policies.
+  policy::DeveloperToolsPolicyChecker* checker =
+      policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(profile);
+  if ((checker && checker->HasUrlRules()) ||
+      IsDevToolsUrlBlockedByPolicy(profile)) {
+    return true;
+  }
+
+  // Even when no `DeveloperTools*` policy is explicitly set and the DevTools
+  // UI URL is not blocklisted, the default
+  // `DisallowedForForceInstalledExtensions` value still enforces policy checks
+  // on managed profiles (for built-in component extensions) or when restricted
+  // extensions or web apps are installed on `profile`.
+  if (policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile) !=
+      Availability::kDisallowedForForceInstalledExtensions) {
+    return false;
+  }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // `ComponentLoader::AddDefaultComponentExtensions()` loads built-in component
+  // extensions (e.g. the Web Store app, the PDF viewer) on every regular
+  // profile, which `GetRestrictedExtensionBlockReason()` blocks when the
+  // profile is managed. Check `IsManaged()` directly to avoid copying
+  // `ExtensionSet` on managed profiles and keep `TestingProfile` aligned with
+  // production profiles.
+  if (profile->GetProfilePolicyConnector() &&
+      profile->GetProfilePolicyConnector()->IsManaged()) {
+    return true;
+  }
+  if (auto* registry = extensions::ExtensionRegistry::Get(profile);
+      registry &&
+      std::ranges::any_of(registry->GenerateInstalledExtensionsSet(),
+                          [profile](const auto& extension) {
+                            return GetRestrictedExtensionBlockReason(
+                                       extension.get(), profile) !=
+                                   DevToolsBlockReason::kNotBlocked;
+                          })) {
+    return true;
+  }
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* web_app_provider =
+          web_app::AreWebAppsEnabled(profile)
+              ? web_app::WebAppProvider::GetForWebApps(profile)
+              : nullptr) {
+    // `WebAppRegistrar::AppSet` only supports range-based `for` loops; its
+    // iterator does not satisfy `std::input_iterator` for `std::ranges`.
+    for (const web_app::WebApp& web_app :
+         web_app_provider->registrar_unsafe().GetAppsIncludingStubs()) {
+      if (web_app.IsKioskInstalledApp() || web_app.IsIwaPolicyInstalledApp()) {
+        return true;
+      }
+    }
+  }
+#endif
+
+  return false;
 }

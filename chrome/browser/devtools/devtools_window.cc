@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -39,7 +40,6 @@
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
-#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/developer_tools_policy_checker.h"
 #include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -184,6 +184,47 @@ void SetPreferencesFromJson(Profile* profile, const std::string& json) {
     update->Set(dict_value.first, std::move(dict_value.second));
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Returns true if `reason` comes from an enterprise policy check rather than a
+// non-policy UI restriction (like kiosk mode or a captive portal sign-in
+// window).
+bool IsPolicyBlockReason(DevToolsBlockReason reason) {
+  switch (reason) {
+    case DevToolsBlockReason::kUrlAllowlistOrBlocklist:
+    case DevToolsBlockReason::kPolicyDisallowed:
+    case DevToolsBlockReason::kForceInstalledExtension:
+    case DevToolsBlockReason::kComponentExtensionInManagedProfile:
+    case DevToolsBlockReason::kKioskWebApp:
+    case DevToolsBlockReason::kPolicyInstalledIsolatedWebApp:
+    case DevToolsBlockReason::kDevToolsUrlBlocklisted:
+      return true;
+    case DevToolsBlockReason::kKioskMode:
+    case DevToolsBlockReason::kCaptivePortalSignin:
+      return false;
+    case DevToolsBlockReason::kNotBlocked:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
+// Records whether an attempt to open a new DevTools window for a tab was
+// allowed by enterprise policy checks.
+// "DevTools.OpenAttempt.AllowedByPolicy" counts every policy-evaluated attempt
+// across all profiles. The ".OnProfileWithPolicyCheck" variant is emitted when
+// at least one policy check can affect DevTools on `profile` (see
+// `HasDevToolsPolicyCheck()`), providing a non-diluted rate denominator to
+// detect spikes or drops in blocks.
+void RecordDevToolsOpenAttemptAllowedByPolicy(Profile* profile, bool allowed) {
+  CHECK(profile);
+  base::UmaHistogramBoolean("DevTools.OpenAttempt.AllowedByPolicy", allowed);
+  if (HasDevToolsPolicyCheck(profile)) {
+    base::UmaHistogramBoolean(
+        "DevTools.OpenAttempt.AllowedByPolicy.OnProfileWithPolicyCheck",
+        allowed);
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // DevToolsToolboxDelegate ----------------------------------------------------
 
@@ -910,15 +951,31 @@ void DevToolsWindow::ToggleDevToolsWindow(
       case DevToolsToggleAction::kNoOp:
         break;
     }
+#if !BUILDFLAG(IS_ANDROID)
+    const DevToolsBlockReason block_reason =
+        GetBlockReasonFor(profile, inspected_web_contents);
+    if (block_reason != DevToolsBlockReason::kNotBlocked) {
+      // `Show()` is a no-op (and returns false) while a dialog is already open
+      // for this tab, so repeated attempts are not counted twice. Non-policy UI
+      // restrictions (e.g. kiosk mode) still show the dialog, but are excluded
+      // from `AllowedByPolicy` so they are not misattributed to policy.
+      if (DevToolsPolicyDialog::Show(inspected_web_contents) &&
+          IsPolicyBlockReason(block_reason)) {
+        RecordDevToolsOpenAttemptAllowedByPolicy(profile, /*allowed=*/false);
+      }
+      return;
+    }
+#endif
     window = Create(profile, inspected_web_contents, kFrontendDefault,
                     std::string(), true, settings, panel, agent->IsAttached(),
                     /* browser_connection */ false, toggled_by);
     if (!window) {
-#if !BUILDFLAG(IS_ANDROID)
-      DevToolsPolicyDialog::Show(inspected_web_contents);
-#endif
+      // Not policy related: no `DevToolsUIBindings` for the frontend.
       return;
     }
+#if !BUILDFLAG(IS_ANDROID)
+    RecordDevToolsOpenAttemptAllowedByPolicy(profile, /*allowed=*/true);
+#endif
     window->bindings_->AttachTo(agent.get());
     do_open = true;
     if (toggled_by != DevToolsOpenedByAction::kUnknown) {
@@ -1349,12 +1406,7 @@ DevToolsBlockReason GetProfileBlockReason(Profile* profile) {
     return DevToolsBlockReason::kKioskMode;
   }
 
-  PolicyBlocklistService* blocklist_service =
-      ChromePolicyBlocklistServiceFactory::GetForProfile(profile);
-  if (blocklist_service &&
-      blocklist_service->GetURLBlocklistState(
-          GURL(chrome::kChromeUIDevToolsURL)) ==
-          policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+  if (IsDevToolsUrlBlockedByPolicy(profile)) {
     return DevToolsBlockReason::kDevToolsUrlBlocklisted;
   }
 

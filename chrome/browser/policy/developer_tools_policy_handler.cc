@@ -6,7 +6,9 @@
 
 #include <optional>
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -179,13 +181,13 @@ DeveloperToolsAvailability GetDevToolsAvailability(const PrefService* pref_sevic
   return static_cast<DeveloperToolsAvailability>(value);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-
 // Returns true if developer tools availability is set by an active policy in
 // |pref_service|.
 bool IsDevToolsAvailabilitySetByPolicy(const PrefService* pref_service) {
   return pref_service->IsManagedPreference(prefs::kDevToolsAvailability);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Returns the most restrictive availability within [|availability_1|,
 // |availability_2|].
@@ -311,6 +313,32 @@ DeveloperToolsPolicyHandler::GetEffectiveAvailability(Profile* profile) {
   }
 #endif
   return availability;
+}
+
+// static
+bool DeveloperToolsPolicyHandler::IsAvailabilitySetByPolicy(Profile* profile) {
+  CHECK(profile);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Mirrors `GetEffectiveAvailability()`: the command-line override takes
+  // precedence over any policy, so no policy is effectively in force.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kForceDevToolsAvailable)) {
+    return false;
+  }
+#endif
+
+  if (IsDevToolsAvailabilitySetByPolicy(profile->GetPrefs())) {
+    return true;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // The primary user's policy also applies to secondary profiles, see
+  // `GetEffectiveAvailability()`.
+  const PrefService* primary_user_prefs = GetPrimaryUserPrefs();
+  return primary_user_prefs &&
+         IsDevToolsAvailabilitySetByPolicy(primary_user_prefs);
+#else
+  return false;
+#endif
 }
 
 }  // namespace policy

@@ -37,6 +37,13 @@ class DeveloperToolsPolicyHandler : public ConfigurationPolicyHandler {
   // Returns the effective developer tools availability for the profile.
   static DeveloperToolsAvailability GetEffectiveAvailability(Profile* profile);
 
+  // Returns true if the DeveloperToolsAvailability (or legacy
+  // DeveloperToolsDisabled) policy is set for `profile`, i.e. the
+  // `kDevToolsAvailability` pref is managed. On ChromeOS this also considers
+  // the primary user's policy, and always returns false when DevTools are
+  // force-enabled via the command line. `profile` must not be null.
+  static bool IsAvailabilitySetByPolicy(Profile* profile);
+
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // This instance should only be used for calling IsValidPolicySet() and not

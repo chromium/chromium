@@ -12,7 +12,9 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -954,5 +956,193 @@ TEST_F(DevToolsAvailabilityCheckerTest,
   EXPECT_EQ(DevToolsBlockReason::kNotBlocked,
             GetDevToolsBlockReason(webui::GetTopChromeWebUIProfile(),
                                    GURL("chrome://webui-toolbar.top-chrome/")));
+  EXPECT_FALSE(HasDevToolsPolicyCheck(webui::GetTopChromeWebUIProfile()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(DevToolsAvailabilityCheckerTest, HasDevToolsPolicyCheck) {
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  // Non-managed user pref does not count as an enabled enterprise policy.
+  profile_->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(policy::DeveloperToolsAvailability::kAllowed));
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  // Reset back to default (kDisallowedForForceInstalledExtensions).
+  profile_->GetPrefs()->ClearPref(prefs::kDevToolsAvailability);
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  // Managed DeveloperToolsAvailability policy counts even at the default enum
+  // value or Allowed.
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kDevToolsAvailability,
+      base::Value(
+          static_cast<int>(policy::DeveloperToolsAvailability::
+                               kDisallowedForForceInstalledExtensions)));
+  EXPECT_TRUE(HasDevToolsPolicyCheck(profile_.get()));
+
+  profile_->GetTestingPrefService()->RemoveManagedPref(
+      prefs::kDevToolsAvailability);
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  // Non-empty allowlist or blocklist counts as an enabled policy. Unlike
+  // kDevToolsAvailability, the lists are not required to be managed: they are
+  // enforced by DeveloperToolsPolicyChecker regardless of their pref source
+  // (see UrlBlockedByPolicy above), and the metric slice must match
+  // enforcement.
+  base::ListValue allowlist;
+  allowlist.Append("allowed.example");
+  profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
+                                std::move(allowlist));
+  EXPECT_FALSE(profile_->GetPrefs()->IsManagedPreference(
+      prefs::kDeveloperToolsAvailabilityAllowlist));
+  EXPECT_TRUE(HasDevToolsPolicyCheck(profile_.get()));
+
+  profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
+                                base::ListValue());
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  base::ListValue blocklist;
+  blocklist.Append("blocked.example");
+  profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
+                                std::move(blocklist));
+  EXPECT_TRUE(HasDevToolsPolicyCheck(profile_.get()));
+
+  profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
+                                base::ListValue());
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+}
+
+TEST_F(DevToolsAvailabilityCheckerTest,
+       HasDevToolsPolicyCheckWithUrlBlocklist) {
+  auto set_url_lists = [&](base::ListValue blocklist,
+                           base::ListValue allowlist = {}) {
+    profile_->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
+                                  std::move(blocklist));
+    profile_->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
+                                  std::move(allowlist));
+    // `URLBlocklistManager` rebuilds its matcher asynchronously on pref
+    // updates once `PolicyBlocklistService` has been created.
+    task_environment_.RunUntilIdle();
+  };
+
+  // Blocking an unrelated origin via the generic URLBlocklist does not affect
+  // DevTools availability.
+  set_url_lists(base::ListValue().Append("blocked.example"));
+  EXPECT_FALSE(IsDevToolsUrlBlockedByPolicy(profile_.get()));
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  // Blocking `devtools://*` prevents the DevTools UI from loading and counts as
+  // an active DevTools policy check on the profile.
+  set_url_lists(base::ListValue().Append("devtools://*"));
+  EXPECT_TRUE(IsDevToolsUrlBlockedByPolicy(profile_.get()));
+  EXPECT_TRUE(HasDevToolsPolicyCheck(profile_.get()));
+
+  // URLBlocklist still blocks the DevTools UI—and therefore still counts—when
+  // effective DeveloperToolsAvailability is overridden away from the default
+  // without a managed DeveloperTools* policy.
+  profile_->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(policy::DeveloperToolsAvailability::kAllowed));
+  EXPECT_TRUE(HasDevToolsPolicyCheck(profile_.get()));
+  profile_->GetPrefs()->ClearPref(prefs::kDevToolsAvailability);
+
+  // Allowlisting `devtools://devtools` via URLAllowlist lifts the block.
+  set_url_lists(/*blocklist=*/base::ListValue().Append("devtools://*"),
+                /*allowlist=*/base::ListValue().Append("devtools://devtools"));
+  EXPECT_FALSE(IsDevToolsUrlBlockedByPolicy(profile_.get()));
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  set_url_lists(/*blocklist=*/{});
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+TEST_F(DevToolsAvailabilityCheckerTest,
+       HasDevToolsPolicyCheckOnManagedProfile) {
+  // Production profiles load built-in component extensions via
+  // ComponentLoader::AddDefaultComponentExtensions(), which are restricted in
+  // managed profiles under the default DeveloperToolsAvailability value.
+  // HasDevToolsPolicyCheck() checks IsManaged() directly so a TestingProfile
+  // without manually registered component extensions behaves the same way.
+  profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+  EXPECT_TRUE(HasDevToolsPolicyCheck(profile_.get()));
+
+  // Not applicable when effective availability is overridden away from
+  // kDisallowedForForceInstalledExtensions without an active policy.
+  profile_->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(policy::DeveloperToolsAvailability::kAllowed));
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+  profile_->GetPrefs()->ClearPref(prefs::kDevToolsAvailability);
+
+  profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+}
+
+TEST_F(DevToolsAvailabilityCheckerTest,
+       HasDevToolsPolicyCheckWithInstalledExtensions) {
+  auto* registry = extensions::ExtensionRegistry::Get(profile_.get());
+  ASSERT_TRUE(registry);
+
+  // Regular user-installed and component extensions are not restricted on an
+  // unmanaged profile under the default DeveloperToolsAvailability value.
+  scoped_refptr<const extensions::Extension> user_extension =
+      extensions::ExtensionBuilder("User Extension").SetID("a").Build();
+  registry->AddEnabled(user_extension);
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  scoped_refptr<const extensions::Extension> component_extension =
+      extensions::ExtensionBuilder("Component Extension")
+          .SetID("b")
+          .SetLocation(extensions::mojom::ManifestLocation::kComponent)
+          .Build();
+  registry->AddEnabled(component_extension);
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  // Policy-installed extension triggers a policy check even when the profile is
+  // unmanaged and no DeveloperTools* policy is explicitly configured.
+  scoped_refptr<const extensions::Extension> policy_extension =
+      extensions::ExtensionBuilder("Policy Extension")
+          .SetID("c")
+          .SetLocation(
+              extensions::mojom::ManifestLocation::kExternalPolicyDownload)
+          .Build();
+  registry->AddEnabled(policy_extension);
+  EXPECT_TRUE(HasDevToolsPolicyCheck(profile_.get()));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(DevToolsAvailabilityCheckerTest,
+       HasDevToolsPolicyCheckWithInstalledWebApps) {
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_.get());
+  auto* fake_provider = web_app::FakeWebAppProvider::Get(profile_.get());
+
+  auto user_app = web_app::test::CreateWebApp(GURL("https://user-app.example/"),
+                                              web_app::WebAppManagement::kSync);
+  const webapps::AppId user_app_id = user_app->app_id();
+  fake_provider->GetRegistrarMutable().registry().emplace(user_app_id,
+                                                          std::move(user_app));
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  auto kiosk_app = web_app::test::CreateWebApp(
+      GURL("https://kiosk-app.example/"), web_app::WebAppManagement::kKiosk);
+  const webapps::AppId kiosk_app_id = kiosk_app->app_id();
+  fake_provider->GetRegistrarMutable().registry().emplace(kiosk_app_id,
+                                                          std::move(kiosk_app));
+  EXPECT_TRUE(HasDevToolsPolicyCheck(profile_.get()));
+
+  fake_provider->GetRegistrarMutable().registry().erase(kiosk_app_id);
+  EXPECT_FALSE(HasDevToolsPolicyCheck(profile_.get()));
+
+  auto policy_iwa =
+      web_app::test::CreateWebApp(GURL("https://policy-iwa.example/"),
+                                  web_app::WebAppManagement::kIwaPolicy);
+  const webapps::AppId policy_iwa_id = policy_iwa->app_id();
+  fake_provider->GetRegistrarMutable().registry().emplace(
+      policy_iwa_id, std::move(policy_iwa));
+  EXPECT_TRUE(HasDevToolsPolicyCheck(profile_.get()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -20,6 +20,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -331,6 +332,43 @@ TEST_P(DeveloperToolsPolicyHandlerWithProfileTest,
   EXPECT_EQ(expected_result(),
             DeveloperToolsPolicyHandler::GetEffectiveAvailability(
                 secondary_profile_));
+}
+
+// A policy set for the primary user also counts as set for secondary
+// profiles, mirroring GetEffectiveAvailability().
+TEST_F(DeveloperToolsPolicyHandlerWithProfileTest,
+       IsAvailabilitySetByPolicyFromPrimaryUser) {
+  EXPECT_FALSE(
+      DeveloperToolsPolicyHandler::IsAvailabilitySetByPolicy(primary_profile_));
+  EXPECT_FALSE(DeveloperToolsPolicyHandler::IsAvailabilitySetByPolicy(
+      secondary_profile_));
+
+  primary_profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kDevToolsAvailability,
+      base::Value(static_cast<int>(Availability::kAllowed)));
+
+  EXPECT_TRUE(
+      DeveloperToolsPolicyHandler::IsAvailabilitySetByPolicy(primary_profile_));
+  EXPECT_TRUE(DeveloperToolsPolicyHandler::IsAvailabilitySetByPolicy(
+      secondary_profile_));
+}
+
+// The command-line override takes precedence over any policy, so no policy
+// is reported as set while it is present.
+TEST_F(DeveloperToolsPolicyHandlerWithProfileTest,
+       IsAvailabilitySetByPolicyForced) {
+  primary_profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kDevToolsAvailability,
+      base::Value(static_cast<int>(Availability::kDisallowed)));
+  EXPECT_TRUE(
+      DeveloperToolsPolicyHandler::IsAvailabilitySetByPolicy(primary_profile_));
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kForceDevToolsAvailable);
+
+  EXPECT_FALSE(
+      DeveloperToolsPolicyHandler::IsAvailabilitySetByPolicy(primary_profile_));
 }
 
 INSTANTIATE_TEST_SUITE_P(

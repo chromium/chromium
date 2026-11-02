@@ -525,6 +525,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.OpenAttempt.AllowedByPolicy{PolicyState}"
+    enum="BooleanAllowed" expires_after="2027-10-27">
+  <owner>mickaczmarczyk@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <component>1937512</component>
+  <summary>
+    Measures the policy-allowance rate of attempts to open a new DevTools window
+    for a tab, {PolicyState}, used to monitor for unexpected spikes or drops in
+    policy blocks. Emits Allowed when DevTools opens, and Not Allowed when an
+    enterprise policy check blocks DevTools for the tab and the DevTools policy
+    dialog is shown; see DevTools.BlockedByPolicy.Reason for which check caused
+    the block.
+
+    Counts both user-initiated opens (menu, shortcut, context menu) and
+    programmatic ones (e.g. --auto-open-devtools-for-tabs, automatic opening for
+    new targets). Not recorded for repeated attempts while the policy dialog is
+    already open on the same tab, for toggling an already-open DevTools window,
+    or when DevTools is unavailable for reasons unrelated to policy (such as
+    --kiosk mode, a ChromeOS captive portal sign-in window, or missing UI
+    bindings). Unlike DevTools.BlockedByPolicy, blocked view-source attempts and
+    non-policy UI blocks are not included, so the Not Allowed counts of the two
+    histograms are not expected to match. Desktop only.
+  </summary>
+  <token key="PolicyState">
+    <variant name=""
+        summary="across all profiles, including unmanaged users where no
+                 policy check affects DevTools"/>
+    <variant name=".OnProfileWithPolicyCheck"
+        summary="on profiles where at least one policy check can affect
+                 DevTools availability: an explicitly configured DevTools
+                 policy (DeveloperToolsAvailability, DeveloperToolsDisabled,
+                 DeveloperToolsAvailabilityAllowlist or
+                 DeveloperToolsAvailabilityBlocklist), devtools://devtools
+                 being on URLBlocklist, a managed profile, an installed
+                 policy-forced extension, a policy-installed Isolated Web
+                 App, or a kiosk web app. Recorded for every open attempt on
+                 such profiles (including on URLs that no rule matches) so
+                 the Allowed share measures the open success rate for that
+                 profile population"/>
+  </token>
+</histogram>
+
 <histogram name="DevTools.OpenedByAction" enum="DevToolsOpenedByAction"
     expires_after="2027-01-18">
   <owner>changhaohan@google.com</owner>

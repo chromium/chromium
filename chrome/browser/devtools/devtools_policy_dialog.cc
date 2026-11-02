@@ -71,10 +71,10 @@ DevToolsPolicyDialog::GetCurrentDialogs() {
 }
 
 // static
-void DevToolsPolicyDialog::Show(content::WebContents* web_contents) {
+bool DevToolsPolicyDialog::Show(content::WebContents* web_contents) {
   CHECK(web_contents, base::NotFatalUntil::M161);
   if (GetCurrentDialogs().count(web_contents)) {
-    return;
+    return false;
   }
 
   // Recorded once per dialog shown, i.e. once per time a user actively tried
@@ -147,6 +147,7 @@ void DevToolsPolicyDialog::Show(content::WebContents* web_contents) {
   if (g_test_observer) {
     g_test_observer->OnDialogShown(GetCurrentDialogs()[web_contents].get());
   }
+  return true;
 }
 
 // static
