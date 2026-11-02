@@ -155,7 +155,17 @@ void UniversalOptOutService::OnOptOutPrefChanged() {
 }
 
 void UniversalOptOutService::OnSeedFetched() {
-  RecordLocationAndUpdateEligibility();
+  if (!base::FeatureList::IsEnabled(
+          features::kUniversalOptOutUpdateOnGeoLocationChanged)) {
+    RecordLocationAndUpdateEligibility();
+  }
+}
+
+void UniversalOptOutService::OnCountryOrAdminAreaChanged() {
+  if (base::FeatureList::IsEnabled(
+          features::kUniversalOptOutUpdateOnGeoLocationChanged)) {
+    RecordLocationAndUpdateEligibility();
+  }
 }
 
 void UniversalOptOutService::OnVariationsServiceDestroyed() {

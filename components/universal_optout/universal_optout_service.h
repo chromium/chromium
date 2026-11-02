@@ -93,6 +93,7 @@ class UniversalOptOutService : public KeyedService,
 
   // variations::VariationsService::Observer:
   void OnSeedFetched() override;
+  void OnCountryOrAdminAreaChanged() override;
   void OnVariationsServiceDestroyed() override;
 
   // Returns whether the profile is eligible for Universal Opt Out.
