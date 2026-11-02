@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/glic/android/glic_helper_android.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/host.h"
@@ -385,6 +386,41 @@ TEST_F(GlicSidePanelUiAndroidTest, CanDragEnter_AndroidKillSwitchDisabled) {
 
   // Should be rejected because kGlicDragAndDropFileUploadAndroid is disabled.
   EXPECT_FALSE(side_panel_ui.CanDragEnter(nullptr, drop_data, ops));
+}
+
+// A Chrome web drag (one carrying a `drag_id`) is accepted only while
+// kGlicWebDragAndDropFileUpload is enabled; OS file drags are unaffected.
+TEST_F(GlicSidePanelUiAndroidTest, CanDragEnter_WebDrag) {
+  SetFreCompleted(true);
+  for (bool web_drag_enabled : {true, false}) {
+    SCOPED_TRACE(web_drag_enabled);
+    base::test::ScopedFeatureList feature_list;
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kGlicDragAndDropFileUpload,
+        features::kGlicDragAndDropFileUploadAndroid};
+    std::vector<base::test::FeatureRef> disabled_features;
+    (web_drag_enabled ? enabled_features : disabled_features)
+        .push_back(features::kGlicWebDragAndDropFileUpload);
+    feature_list.InitWithFeatures(enabled_features, disabled_features);
+
+    GlicSidePanelUi side_panel_ui(profile(),
+                                  base::WeakPtr<tabs::TabInterface>(),
+                                  delegate(), instance_metrics());
+
+    content::DropData drop_data;
+    drop_data.filenames.emplace_back(
+        base::FilePath(FILE_PATH_LITERAL("image.png")),
+        base::FilePath(FILE_PATH_LITERAL("image.png")));
+    blink::DragOperationsMask ops = blink::kDragOperationCopy;
+
+    // An OS file drag is accepted regardless of the web drag flag.
+    EXPECT_TRUE(side_panel_ui.CanDragEnter(nullptr, drop_data, ops));
+
+    // The same payload tagged as a Chrome web drag follows the web drag flag.
+    drop_data.drag_id = base::UnguessableToken::Create();
+    EXPECT_EQ(side_panel_ui.CanDragEnter(nullptr, drop_data, ops),
+              web_drag_enabled);
+  }
 }
 
 // Rejecting Chrome's microphone pre-prompt should fail the request without

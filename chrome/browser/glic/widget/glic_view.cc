@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -107,15 +108,7 @@ bool GlicView::CanDragEnter(content::WebContents* source,
   if (!base::FeatureList::IsEnabled(features::kGlicDragAndDropFileUpload)) {
     return false;
   }
-  // Check for local files or in-memory web image/file contents.
-  // TODO(crbug.com/567183211): Temporarily reject non-file web drags (such as
-  // text and links) until extended drag-and-drop payload types are supported.
-  bool has_files = !data.filenames.empty() || !data.file_system_files.empty();
-  bool has_file_contents = !data.file_contents.empty();
-
-  return has_files ||
-         (has_file_contents && base::FeatureList::IsEnabled(
-                                   features::kGlicWebDragAndDropFileUpload));
+  return IsValidDragPayload(data);
 }
 
 void GlicView::ContentsZoomChange(bool zoom_in) {

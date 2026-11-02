@@ -22,6 +22,13 @@ namespace glic {
 // Returns true if `drop_data` has a Chrome drag ID (`DropData::drag_id`).
 bool IsChromeWebDrag(const content::DropData& drop_data);
 
+// Returns true if `drop_data` carries a payload Glic's drop targets accept at
+// drag enter: files (local or file-system), or in-memory file contents while
+// web drag-and-drop into Glic is enabled; Chrome web drags are accepted only
+// while it is enabled. Shared by the desktop and Android Glic views so neither
+// depends on how its platform populates `DropData`.
+bool IsValidDragPayload(const content::DropData& drop_data);
+
 // Tab feature that records the page context eligibility and source metadata of
 // the originating frame when a web drag starts in the tab's WebContents.
 class GlicWebDragObserver : public tabs::ContentsObservingTabFeature {

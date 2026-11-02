@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
+#include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/search_engines/template_url_service.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/drop_data.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/gfx/animation/animation.h"
 
@@ -123,6 +125,12 @@ void ChromeWebContentsViewDelegateAndroid::DismissContextMenu() {
   if (helper) {
     helper->DismissContextMenu();
   }
+}
+
+void ChromeWebContentsViewDelegateAndroid::OnPerformingDrop(
+    const content::DropData& drop_data,
+    DropCompletionCallback callback) {
+  HandleOnPerformingDrop(web_contents_, drop_data, std::move(callback));
 }
 
 std::unique_ptr<content::WebContentsViewDelegate> CreateWebContentsViewDelegate(

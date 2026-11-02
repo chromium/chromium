@@ -356,9 +356,8 @@ void HandleOnPerformingDrop(
         std::move(files_scan_data)));
   }
 #else
-  // If content analysis is not available, make sure that the renderer never
-  // forces a default action.
-  drop_data.document_is_handling_drag = true;
+  // Without content analysis there is nothing to scan; `cleanup` forwards the
+  // drop unchanged.
   return;
 #endif  // !BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) ||
         // !BUILDFLAG(SAFE_BROWSING_AVAILABLE)

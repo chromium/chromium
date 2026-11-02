@@ -13,9 +13,11 @@ source_set("tab_contents") {
     "//chrome/browser/profiles",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/android:context_menu_helper",
+    "//chrome/browser/ui/tab_contents",
     "//components/dom_distiller/core",
     "//components/search_engines",
     "//content/public/browser",
+    "//content/public/common",
     "//ui/gfx",
   ]
 }
@@ -33,6 +35,7 @@ source_set("unit_tests") {
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/dom_distiller/core",
     "//components/search_engines:test_support",
+    "//content/public/common",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/gfx",

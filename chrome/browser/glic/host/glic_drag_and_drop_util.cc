@@ -115,7 +115,9 @@ glic::mojom::AdditionalContextPtr BuildDragDropAdditionalContext(
   std::vector<glic::mojom::AdditionalContextPartPtr> parts;
 
   auto context_data = mojom::ContextData::New();
-  // TODO(b/448726704): update to use an Image part.
+  // TODO(b/448726704): update to use an Image part. The real type is available
+  // on every platform via `drop_data.file_contents_filename_extension`; on
+  // Android it is the extension the source renderer encoded the image with.
   context_data->mime_type = "image/png";
   context_data->data =
       mojo_base::BigBuffer(base::as_byte_span(drop_data.file_contents));
@@ -241,6 +243,20 @@ GlicDragAndDropContentType GetDragAndDropContentType(
 
 bool IsChromeWebDrag(const content::DropData& drop_data) {
   return drop_data.drag_id.has_value();
+}
+
+bool IsValidDragPayload(const content::DropData& drop_data) {
+  // TODO(crbug.com/567183211): Temporarily reject non-file web drags (such as
+  // text and links) until extended drag-and-drop payload types are supported.
+  const bool has_files =
+      !drop_data.filenames.empty() || !drop_data.file_system_files.empty();
+  if (base::FeatureList::IsEnabled(features::kGlicWebDragAndDropFileUpload)) {
+    return has_files || !drop_data.file_contents.empty();
+  }
+  // With web drag-and-drop off, only OS file drags are accepted: in-memory
+  // file contents are how web image drags arrive on desktop, and on Android a
+  // web image drag enters as a file carrying a Chrome drag ID.
+  return has_files && !IsChromeWebDrag(drop_data);
 }
 
 GlicWebDragObserver::GlicWebDragObserver(tabs::TabInterface& tab)

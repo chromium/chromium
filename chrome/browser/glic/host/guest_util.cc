@@ -109,6 +109,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "ui/android/event_forwarder.h"
+#include "ui/android/view_android.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -305,6 +307,9 @@ void PrepareGlicGuestWebContents(content::WebContents& guest_contents,
 
   PrefsTabHelper::CreateForWebContents(&guest_contents);
   ConfigureGuestZoom(guest_contents);
+#if BUILDFLAG(IS_ANDROID)
+  ConfigureGlicDragAndDropForWebContents(&guest_contents);
+#endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
   // In <webview> mode, WebViewGuest attaches printing helpers via
@@ -763,6 +768,30 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   }
   return true;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ConfigureGlicDragAndDropForWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents ||
+      !base::FeatureList::IsEnabled(features::kGlicDragAndDropFileUpload) ||
+      !base::FeatureList::IsEnabled(
+          features::kGlicDragAndDropFileUploadAndroid)) {
+    return;
+  }
+  if (IsGlicWebUI(web_contents) || IsGlicGuest(web_contents)) {
+    if (auto* view = web_contents->GetNativeView()) {
+      // Enable regardless of `kGlicWebDragAndDropFileUpload` (checked in
+      // `CanDragEnter` and `StartDragAndDropInvoke`) so `DropDataProvider` URIs
+      // never fall back to `DropData::filenames` as unvalidated OS file drops.
+      // `ViewAndroid` creates its `EventForwarder` lazily;
+      // `GetEventForwarder()` creates it if needed so there is a forwarder to
+      // configure.
+      view->GetEventForwarder();
+      view->event_forwarder()->SetAllowIntraAppImageDrops(true);
+    }
+  }
+}
+#endif
 
 bool IsMediaRequestFromGlic(content::BrowserContext* browser_context,
                             const std::string& request_id) {

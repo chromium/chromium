@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/android/tab_contents/chrome_web_contents_view_delegate_android.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/android/device_info.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -19,6 +22,7 @@
 #include "components/search_engines/testing_search_terms_data.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -218,4 +222,33 @@ TEST_F(ChromeWebContentsViewDelegateAndroidTest,
   EXPECT_FALSE(delegate_->ShouldShowBlurTransitionAnimation(&non_srp_handle));
 
   base::android::device_info::reset_is_desktop_for_testing();
+}
+
+// Only web drags onto Gemini in Chrome are handled by the delegate. Drops on
+// ordinary web contents, including web drags, are forwarded synchronously and
+// unchanged, including the renderer's `document_is_handling_drag`.
+TEST_F(ChromeWebContentsViewDelegateAndroidTest,
+       OnPerformingDrop_ForwardsNonGlicDropsUnchanged) {
+  for (bool is_web_drag : {false, true}) {
+    for (bool document_is_handling_drag : {false, true}) {
+      SCOPED_TRACE(testing::Message() << "is_web_drag=" << is_web_drag
+                                      << " document_is_handling_drag="
+                                      << document_is_handling_drag);
+      content::DropData drop_data;
+      drop_data.text = u"dropped text";
+      drop_data.document_is_handling_drag = document_is_handling_drag;
+      if (is_web_drag) {
+        drop_data.drag_id = base::UnguessableToken::Create();
+      }
+
+      base::test::TestFuture<std::optional<content::DropData>> future;
+      delegate_->OnPerformingDrop(drop_data, future.GetCallback());
+
+      ASSERT_TRUE(future.Get().has_value());
+      EXPECT_EQ(future.Get()->text, u"dropped text");
+      EXPECT_EQ(future.Get()->drag_id, drop_data.drag_id);
+      EXPECT_EQ(future.Get()->document_is_handling_drag,
+                document_is_handling_drag);
+    }
+  }
 }

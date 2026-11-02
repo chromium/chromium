@@ -37,6 +37,10 @@ class ChromeWebContentsViewDelegateAndroid
   // WebContentsViewDelegate:
   content::WebDragDestDelegate* GetDragDestDelegate() override;
 
+  // WebContentsViewDelegate:
+  void OnPerformingDrop(const content::DropData& drop_data,
+                        DropCompletionCallback callback) override;
+
   // Determine whether to show a blur animation of the page the user is
   // navigating away from to provide a more seamless transition.
   bool ShouldShowBlurTransitionAnimation(
