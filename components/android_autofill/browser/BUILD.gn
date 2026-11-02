@@ -149,9 +149,12 @@ static_library("browser") {
     "autofill_provider.h",
     "autofill_type_util.cc",
     "autofill_type_util.h",
+    "card_value_validation.cc",
+    "card_value_validation.h",
   ]
   public_deps = [ "//components/autofill/core/browser" ]
   deps = [
+    "//base",
     "//components/autofill/content/browser",
     "//components/password_manager/core/browser/form_parsing",
     "//content/public/browser",
@@ -163,6 +166,7 @@ source_set("unit_tests") {
   sources = [
     "android_autofill_client_unittest.cc",
     "android_autofill_provider_unittest.cc",
+    "card_value_validation_unittest.cc",
     "form_data_android_unittest.cc",
     "form_event_logger_android_unittest.cc",
     "form_field_data_android_unittest.cc",
@@ -172,6 +176,7 @@ source_set("unit_tests") {
     ":browser",
     ":features",
     ":test_support",
+    "//base/test:test_support",
     "//components/autofill/android:keyboard_suppressor",
     "//components/autofill/content/browser:test_support",
     "//components/credential_management/android:features",
