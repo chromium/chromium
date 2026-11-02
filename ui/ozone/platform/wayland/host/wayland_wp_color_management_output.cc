@@ -18,7 +18,7 @@ WaylandWpColorManagementOutput::WaylandWpColorManagementOutput(
     : color_management_output_(color_management_output),
       wayland_output_(wayland_output),
       connection_(connection) {
-  DCHECK(color_management_output_);
+  CHECK(color_management_output_, base::NotFatalUntil::M163);
   static constexpr wp_color_management_output_v1_listener kListener = {
       .image_description_changed = &OnImageDescriptionChanged,
   };
@@ -80,7 +80,7 @@ void WaylandWpColorManagementOutput::OnImageDescriptionChanged(
     void* data,
     wp_color_management_output_v1* management_output) {
   auto* self = static_cast<WaylandWpColorManagementOutput*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->GetCurrentColorSpace();
 }
 

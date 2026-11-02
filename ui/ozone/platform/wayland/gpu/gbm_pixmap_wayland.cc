@@ -46,9 +46,10 @@ bool GbmPixmapWayland::InitializeBuffer(
     viz::SharedImageFormat format,
     NativePixmapUsageSet usage,
     std::optional<gfx::Size> visible_area_size) {
-  DCHECK(!visible_area_size ||
-         ((visible_area_size.value().width() <= size.width()) &&
-          (visible_area_size.value().height() <= size.height())));
+  CHECK(!visible_area_size ||
+            ((visible_area_size.value().width() <= size.width()) &&
+             (visible_area_size.value().height() <= size.height())),
+        base::NotFatalUntil::M163);
   TRACE_EVENT0("wayland", "GbmPixmapWayland::InitializeBuffer");
 
   widget_ = widget;
@@ -197,7 +198,7 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
     const gfx::OverlayPlaneData& overlay_plane_data,
     gfx::GpuFenceHandle acquire_fence) {
-  DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
+  CHECK_NE(widget, gfx::kNullAcceleratedWidget, base::NotFatalUntil::M163);
 
   if (!created_wl_buffer_) {
     CreateDmabufBasedWlBuffer(overlay_plane_data);
@@ -207,10 +208,10 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
 
   auto* surface = buffer_manager_->GetSurface(widget);
   // This must never be hit.
-  DCHECK(surface);
+  CHECK(surface, base::NotFatalUntil::M163);
   GbmSurfacelessWayland* surfaceless =
       static_cast<GbmSurfacelessWayland*>(surface);
-  DCHECK(surfaceless);
+  CHECK(surfaceless, base::NotFatalUntil::M163);
 
   surfaceless->QueueWaylandOverlayConfig({overlay_plane_data,
                                           std::move(acquire_fence), buffer_id_,

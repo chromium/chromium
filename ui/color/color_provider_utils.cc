@@ -926,7 +926,8 @@ bool IsRendererColorMappingEquivalent(
 
   for (const auto& table : kRendererColorIdMap) {
     // The `renderer_color_map_` should map the full set of renderer color ids.
-    DCHECK(renderer_color_map.contains(table.renderer_color_id));
+    CHECK(renderer_color_map.contains(table.renderer_color_id),
+          base::NotFatalUntil::M163);
     if (color_provider->GetColor(table.color_id) !=
         renderer_color_map.at(table.renderer_color_id)) {
       return false;

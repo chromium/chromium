@@ -138,7 +138,7 @@ struct WaylandEventSource::TouchPoint {
 WaylandEventSource::TouchPoint::TouchPoint(gfx::PointF location,
                                            WaylandWindow* current_window)
     : window(current_window), last_known_location(location) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
 }
 
 // WaylandEventSource::PointerScrollData implementation
@@ -187,8 +187,8 @@ void WaylandEventSource::ConvertEventToTarget(EventTarget* new_target,
                                               LocatedEvent* event) {
   auto* current_target = static_cast<WaylandWindow*>(event->target());
   auto* new_target_window = static_cast<WaylandWindow*>(new_target);
-  DCHECK(current_target);
-  DCHECK(new_target_window);
+  CHECK(current_target, base::NotFatalUntil::M163);
+  CHECK(new_target_window, base::NotFatalUntil::M163);
   // GetOriginInScreen returns a location in UI coordinates space, ie:
   // ui_scale'd. OTOH `event` location is assumed to be in Wayland
   // coordinates, thus `diff` must be converted before used below.
@@ -209,7 +209,7 @@ WaylandEventSource::WaylandEventSource(wl_display* display,
           display,
           event_queue,
           use_threaded_polling)) {
-  DCHECK(window_manager_);
+  CHECK(window_manager_, base::NotFatalUntil::M163);
 
   // Observes remove changes to know when touch points can be removed.
   window_manager_->AddObserver(this);
@@ -227,10 +227,11 @@ void WaylandEventSource::StartProcessingEvents() {
 
 void WaylandEventSource::OnKeyboardFocusChanged(WaylandWindow* window,
                                                 bool focused) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
 #if DCHECK_IS_ON()
   if (!focused) {
-    DCHECK_EQ(window, window_manager_->GetCurrentKeyboardFocusedWindow());
+    CHECK_EQ(window, window_manager_->GetCurrentKeyboardFocusedWindow(),
+             base::NotFatalUntil::M163);
   }
 #endif
   window_manager_->SetKeyboardFocusedWindow(focused ? window : nullptr);
@@ -248,7 +249,8 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
     base::TimeTicks timestamp,
     int device_id,
     WaylandKeyboard::KeyEventKind kind) {
-  DCHECK(type == EventType::kKeyPressed || type == EventType::kKeyReleased);
+  CHECK(type == EventType::kKeyPressed || type == EventType::kKeyReleased,
+        base::NotFatalUntil::M163);
 
   DomKey dom_key;
   KeyboardCode key_code;
@@ -385,8 +387,9 @@ void WaylandEventSource::OnPointerButtonEvent(
     wl::EventDispatchPolicy dispatch_policy,
     bool allow_release_of_unpressed_button,
     bool is_synthesized) {
-  DCHECK(type == EventType::kMousePressed || type == EventType::kMouseReleased);
-  DCHECK(HasAnyPointerButtonFlag(changed_button));
+  CHECK(type == EventType::kMousePressed || type == EventType::kMouseReleased,
+        base::NotFatalUntil::M163);
+  CHECK(HasAnyPointerButtonFlag(changed_button), base::NotFatalUntil::M163);
 
   // Ignore release events for buttons that aren't currently pressed. Such
   // events should never happen, but there have been compositor bugs before
@@ -701,7 +704,7 @@ void WaylandEventSource::OnTouchPressEvent(
     base::TimeTicks timestamp,
     PointerId id,
     wl::EventDispatchPolicy dispatch_policy) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   HandleTouchFocusChange(window, true);
 
   // Make sure this touch point wasn't present before.
@@ -889,7 +892,8 @@ void WaylandEventSource::OnTouchFocusChanged(WaylandWindow* window) {
   // touch points to it.
   auto drag_source = connection_->window_drag_controller()->drag_source();
   if (drag_source && window) {
-    DCHECK_EQ(*drag_source, mojom::DragEventSource::kTouch);
+    CHECK_EQ(*drag_source, mojom::DragEventSource::kTouch,
+             base::NotFatalUntil::M163);
     for (auto& touch_point : touch_points_) {
       touch_point.second->window = window;
     }
@@ -987,7 +991,7 @@ void WaylandEventSource::SetRelativePointerMotionEnabled(bool enabled) {
 
 void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta,
                                                  base::TimeTicks timestamp) {
-  DCHECK(relative_pointer_location_.has_value());
+  CHECK(relative_pointer_location_.has_value(), base::NotFatalUntil::M163);
   relative_pointer_location_ = *relative_pointer_location_ + delta;
   OnPointerMotionEvent(*relative_pointer_location_, timestamp,
                        wl::EventDispatchPolicy::kImmediate,
@@ -995,7 +999,7 @@ void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta,
 }
 
 bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
-  DCHECK(HasAnyPointerButtonFlag(button));
+  CHECK(HasAnyPointerButtonFlag(button), base::NotFatalUntil::M163);
   return pointer_flags_ & button;
 }
 
@@ -1077,7 +1081,7 @@ void WaylandEventSource::OnWindowRemoved(WaylandWindow* window) {
 void WaylandEventSource::HandleTouchFocusChange(WaylandWindow* window,
                                                 bool focused,
                                                 std::optional<PointerId> id) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   bool actual_focus = id ? !ShouldUnsetTouchFocus(window, id.value()) : focused;
   window->set_touch_focus(actual_focus);
 }
@@ -1181,7 +1185,7 @@ void WaylandEventSource::EnsurePointerScrollData(
 // that, it needs to be ensured that flings are aborted when new axis events
 // arrive.
 void WaylandEventSource::ProcessPointerScrollData() {
-  DCHECK(pointer_scroll_data_);
+  CHECK(pointer_scroll_data_, base::NotFatalUntil::M163);
   // While it does not make sense for a server to send axis source only,
   // the protocol does not explicitly specify it's illegal. Just skip if
   // that happens.

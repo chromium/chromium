@@ -44,7 +44,7 @@ scoped_refptr<PlatformCursor> BitmapCursorFactory::CreateAnimatedCursor(
     const gfx::Point& hotspot,
     float scale,
     base::TimeDelta frame_delay) {
-  DCHECK_LT(0U, bitmaps.size());
+  CHECK_LT(0U, bitmaps.size(), base::NotFatalUntil::M163);
   return base::MakeRefCounted<BitmapCursor>(type, bitmaps, hotspot, frame_delay,
                                             scale);
 }

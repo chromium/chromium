@@ -54,21 +54,21 @@ WaylandDataDeviceManager::WaylandDataDeviceManager(
     wl_data_device_manager* device_manager,
     WaylandConnection* connection)
     : device_manager_(device_manager), connection_(connection) {
-  DCHECK(connection_);
-  DCHECK(device_manager_);
+  CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK(device_manager_, base::NotFatalUntil::M163);
 }
 
 WaylandDataDeviceManager::~WaylandDataDeviceManager() = default;
 
 WaylandDataDevice* WaylandDataDeviceManager::GetDevice() {
-  DCHECK(connection_->seat());
+  CHECK(connection_->seat(), base::NotFatalUntil::M163);
   if (!device_) {
     device_ = std::make_unique<WaylandDataDevice>(
         connection_,
         wl_data_device_manager_get_data_device(
             device_manager_.get(), connection_->seat()->wl_object()));
   }
-  DCHECK(device_);
+  CHECK(device_, base::NotFatalUntil::M163);
   return device_.get();
 }
 

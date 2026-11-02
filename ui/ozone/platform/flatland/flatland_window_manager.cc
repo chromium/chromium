@@ -18,11 +18,11 @@ FlatlandWindowManager::~FlatlandWindowManager() {
 }
 
 void FlatlandWindowManager::Shutdown() {
-  DCHECK(windows_.IsEmpty());
+  CHECK(windows_.IsEmpty(), base::NotFatalUntil::M163);
 }
 
 std::unique_ptr<PlatformScreen> FlatlandWindowManager::CreateScreen() {
-  DCHECK(windows_.IsEmpty());
+  CHECK(windows_.IsEmpty(), base::NotFatalUntil::M163);
   return std::make_unique<FlatlandScreen>();
 }
 
@@ -32,7 +32,7 @@ int32_t FlatlandWindowManager::AddWindow(FlatlandWindow* window) {
 
 void FlatlandWindowManager::RemoveWindow(int32_t window_id,
                                          FlatlandWindow* window) {
-  DCHECK_EQ(window, windows_.Lookup(window_id));
+  CHECK_EQ(window, windows_.Lookup(window_id), base::NotFatalUntil::M163);
   windows_.Remove(window_id);
 }
 

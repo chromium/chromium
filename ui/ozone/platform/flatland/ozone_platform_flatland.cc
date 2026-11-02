@@ -180,7 +180,8 @@ class OzonePlatformFlatland : public OzonePlatform,
   }
 
   void InitializeGPU(const InitParams& params) override {
-    DCHECK(!surface_factory_ || params.single_process);
+    CHECK(!surface_factory_ || params.single_process,
+          base::NotFatalUntil::M163);
 
     if (!surface_factory_)
       surface_factory_ = std::make_unique<FlatlandSurfaceFactory>();
@@ -235,7 +236,7 @@ class OzonePlatformFlatland : public OzonePlatform,
   }
 
   void ShutdownInMainProcess() {
-    DCHECK(bound_in_main_process_);
+    CHECK(bound_in_main_process_, base::NotFatalUntil::M163);
     surface_factory_->Shutdown();
     flatland_gpu_host_->Shutdown();
     window_manager_->Shutdown();

@@ -39,7 +39,7 @@ void EnsureInstance() {
 
   // TODO(spang): Currently need to leak this object.
   OzonePlatform* pl = platform.release();
-  DCHECK_EQ(g_instance, pl);
+  CHECK_EQ(g_instance, pl, base::NotFatalUntil::M163);
 }
 
 }  // namespace
@@ -184,7 +184,7 @@ OzonePlatform::GetPlatformProperties() {
 
 const OzonePlatform::PlatformRuntimeProperties&
 OzonePlatform::GetPlatformRuntimeProperties() {
-  DCHECK(initialized_ui_ || initialized_gpu_);
+  CHECK(initialized_ui_ || initialized_gpu_, base::NotFatalUntil::M163);
 
   static const PlatformRuntimeProperties properties;
   return properties;
@@ -194,7 +194,7 @@ void OzonePlatform::AddInterfaces(mojo::BinderMap* binders) {}
 
 void OzonePlatform::AfterSandboxEntry() {
   // This should not be called in single-process mode.
-  DCHECK(!single_process_);
+  CHECK(!single_process_, base::NotFatalUntil::M163);
 }
 
 std::unique_ptr<PlatformUserInputMonitor>

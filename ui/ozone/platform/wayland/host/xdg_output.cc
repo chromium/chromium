@@ -58,7 +58,7 @@ void XDGOutput::UpdateMetrics(bool compute_scale_from_size,
 
   const gfx::Size logical_size = logical_size_;
   const gfx::Size physical_size = metrics.physical_size;
-  DCHECK(!physical_size.IsEmpty());
+  CHECK(!physical_size.IsEmpty(), base::NotFatalUntil::M163);
 
   // As per xdg-ouput spec, compositors not scaling the monitor viewport in its
   // compositing space will advertise logical size equal to the physical size

@@ -101,12 +101,12 @@ void FlatlandSurfaceFactory::Initialize(
     mojo::PendingRemote<mojom::ScenicGpuHost> gpu_host) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::AutoLock lock(surface_lock_);
-  DCHECK(surface_map_.empty());
+  CHECK(surface_map_.empty(), base::NotFatalUntil::M163);
 
   main_thread_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
-  DCHECK(main_thread_task_runner_);
+  CHECK(main_thread_task_runner_, base::NotFatalUntil::M163);
 
-  DCHECK(!gpu_host_);
+  CHECK(!gpu_host_, base::NotFatalUntil::M163);
   gpu_host_.Bind(std::move(gpu_host));
 
   flatland_sysmem_buffer_manager_.Initialize(ConnectSysmemAllocator(),
@@ -116,7 +116,7 @@ void FlatlandSurfaceFactory::Initialize(
 void FlatlandSurfaceFactory::Shutdown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::AutoLock lock(surface_lock_);
-  DCHECK(surface_map_.empty());
+  CHECK(surface_map_.empty(), base::NotFatalUntil::M163);
   main_thread_task_runner_ = nullptr;
   gpu_host_.reset();
   flatland_sysmem_buffer_manager_.Shutdown();
@@ -143,7 +143,7 @@ GLOzone* FlatlandSurfaceFactory::GetGLOzone(
 std::unique_ptr<PlatformWindowSurface>
 FlatlandSurfaceFactory::CreatePlatformWindowSurface(
     gfx::AcceleratedWidget window) {
-  DCHECK_NE(window, gfx::kNullAcceleratedWidget);
+  CHECK_NE(window, gfx::kNullAcceleratedWidget, base::NotFatalUntil::M163);
   auto surface = std::make_unique<FlatlandSurface>(this, window);
   main_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FlatlandSurfaceFactory::AttachSurfaceToWindow,
@@ -154,7 +154,7 @@ FlatlandSurfaceFactory::CreatePlatformWindowSurface(
 
 std::unique_ptr<SurfaceOzoneCanvas>
 FlatlandSurfaceFactory::CreateCanvasForWidget(gfx::AcceleratedWidget window) {
-  DCHECK_NE(window, gfx::kNullAcceleratedWidget);
+  CHECK_NE(window, gfx::kNullAcceleratedWidget, base::NotFatalUntil::M163);
   auto result = std::make_unique<FlatlandSurfaceCanvas>(
       flatland_sysmem_buffer_manager_.sysmem_allocator(),
       flatland_sysmem_buffer_manager_.flatland_allocator());
@@ -172,7 +172,8 @@ scoped_refptr<gfx::NativePixmap> FlatlandSurfaceFactory::CreateNativePixmap(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     std::optional<gfx::Size> framebuffer_size) {
-  DCHECK(!framebuffer_size || framebuffer_size == size);
+  CHECK(!framebuffer_size || framebuffer_size == size,
+        base::NotFatalUntil::M163);
 
   VkDevice vk_device = device_queue->GetVulkanDevice();
   NativePixmapUsageSet native_pixmap_usage =
@@ -216,7 +217,7 @@ bool FlatlandSurfaceFactory::IsFormatSupportedForTexturing(
 void FlatlandSurfaceFactory::AddSurface(gfx::AcceleratedWidget widget,
                                         FlatlandSurface* surface) {
   base::AutoLock lock(surface_lock_);
-  DCHECK(!surface_map_.contains(widget));
+  CHECK(!surface_map_.contains(widget), base::NotFatalUntil::M163);
   surface->AssertBelongsToCurrentThread();
   surface_map_.emplace(widget, surface);
 }

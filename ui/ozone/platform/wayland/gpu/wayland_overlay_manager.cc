@@ -35,7 +35,8 @@ void WaylandOverlayManager::CheckOverlaySupport(
 
     // CanHandleCandidate() should never return false if the candidate is
     // the primary plane.
-    DCHECK(can_handle || candidate.plane_z_order != 0);
+    CHECK(can_handle || candidate.plane_z_order != 0,
+          base::NotFatalUntil::M163);
 
     candidate.overlay_handled = can_handle;
   }

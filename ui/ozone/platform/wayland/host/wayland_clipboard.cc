@@ -341,9 +341,9 @@ WaylandClipboard::WaylandClipboard(WaylandConnection* connection,
               manager,
               ClipboardBuffer::kCopyPaste,
               connection)) {
-  DCHECK(manager);
-  DCHECK(connection_);
-  DCHECK(copypaste_clipboard_);
+  CHECK(manager, base::NotFatalUntil::M163);
+  CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK(copypaste_clipboard_, base::NotFatalUntil::M163);
 }
 
 WaylandClipboard::~WaylandClipboard() = default;

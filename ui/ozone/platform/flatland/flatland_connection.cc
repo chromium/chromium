@@ -28,7 +28,7 @@ FlatlandConnection::FlatlandConnection(std::string_view debug_name,
   }
 
   flatland_->SetDebugName(static_cast<std::string>(debug_name));
-  DCHECK(error_callback);
+  CHECK(error_callback, base::NotFatalUntil::M163);
   flatland_.events().OnError =
       [callback = std::move(error_callback)](
           fuchsia::ui::composition::FlatlandError error) mutable {

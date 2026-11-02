@@ -265,9 +265,12 @@ void FlatlandSurface::Present(
   const auto primary_plane_size = primary_plane_pixmap->GetBufferSize();
   const float root_scale =
       static_cast<float>(logical_size_->width()) / primary_plane_size.width();
-  DCHECK_EQ(root_scale, static_cast<float>(logical_size_->height()) /
-                            primary_plane_size.height());
-  DCHECK_EQ(root_scale, 1.f / device_pixel_ratio_.value());
+  CHECK_EQ(
+      root_scale,
+      static_cast<float>(logical_size_->height()) / primary_plane_size.height(),
+      base::NotFatalUntil::M163);
+  CHECK_EQ(root_scale, 1.f / device_pixel_ratio_.value(),
+           base::NotFatalUntil::M163);
   flatland_.flatland()->SetScale(root_transform_id_, {root_scale, root_scale});
 
   // Add to pending frame to track callbacks.
@@ -300,7 +303,7 @@ mojo::PlatformHandle FlatlandSurface::CreateView() {
   fuchsia::ui::views::ViewportCreationToken parent_token;
   fuchsia::ui::views::ViewCreationToken child_token;
   auto status = zx::channel::create(0, &parent_token.value, &child_token.value);
-  DCHECK_EQ(status, ZX_OK);
+  CHECK_EQ(status, ZX_OK, base::NotFatalUntil::M163);
 
   flatland_.flatland()->CreateView(std::move(child_token),
                                    parent_viewport_watcher_.NewRequest());
@@ -311,12 +314,14 @@ mojo::PlatformHandle FlatlandSurface::CreateView() {
 
 void FlatlandSurface::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!logical_size_ || pending_present_closures_.empty());
+  CHECK(!logical_size_ || pending_present_closures_.empty(),
+        base::NotFatalUntil::M163);
 
   logical_size_ =
       gfx::Size(info.logical_size().width, info.logical_size().height);
-  DCHECK_EQ(info.device_pixel_ratio().x, info.device_pixel_ratio().y);
-  DCHECK_GT(info.device_pixel_ratio().x, 0.f);
+  CHECK_EQ(info.device_pixel_ratio().x, info.device_pixel_ratio().y,
+           base::NotFatalUntil::M163);
+  CHECK_GT(info.device_pixel_ratio().x, 0.f, base::NotFatalUntil::M163);
   device_pixel_ratio_ = info.device_pixel_ratio().x;
 
   // Run |pending_present_closures_| that are waiting on |logical_size_| and

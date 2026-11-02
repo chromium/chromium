@@ -70,10 +70,11 @@ uint32_t IdentifyDirection(int hittest) {
 }
 
 bool DrawBitmap(const SkBitmap& bitmap, ui::WaylandShmBuffer* out_buffer) {
-  DCHECK(out_buffer);
-  DCHECK(out_buffer->GetMemory());
-  DCHECK(gfx::Rect(out_buffer->size())
-             .Contains(gfx::Rect(bitmap.width(), bitmap.height())));
+  CHECK(out_buffer, base::NotFatalUntil::M163);
+  CHECK(out_buffer->GetMemory(), base::NotFatalUntil::M163);
+  CHECK(gfx::Rect(out_buffer->size())
+            .Contains(gfx::Rect(bitmap.width(), bitmap.height())),
+        base::NotFatalUntil::M163);
 
   auto* mapped_memory = out_buffer->GetMemory();
   auto size = out_buffer->size();
@@ -98,7 +99,7 @@ bool DrawBitmap(const SkBitmap& bitmap, ui::WaylandShmBuffer* out_buffer) {
 }
 
 void ReadDataFromFD(base::ScopedFD fd, std::vector<uint8_t>* contents) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M163);
   std::array<uint8_t, 1 << 10> buffer;  // 1 kB in bytes.
   ssize_t length;
   while ((length = read(fd.get(), buffer.data(), buffer.size())) > 0) {
@@ -282,8 +283,8 @@ ui::WaylandWindow* RootWindowFromWlSurface(wl_surface* surface) {
 
 gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
                                            ui::WaylandWindow* parent_window) {
-  DCHECK(window);
-  DCHECK(parent_window);
+  CHECK(window, base::NotFatalUntil::M163);
+  CHECK(parent_window, base::NotFatalUntil::M163);
   return wl::TranslateBoundsToParentCoordinates(
       window->GetBoundsInDIP(), parent_window->GetBoundsInDIP());
 }
@@ -314,7 +315,7 @@ void SkColorToWlArray(const SkColor& color, wl_array& array) {
 void SkColorToWlArray(const SkColor4f& color, wl_array& array) {
   for (float component : color.array()) {
     float* ptr = static_cast<float*>(wl_array_add(&array, sizeof(float)));
-    DCHECK(ptr);
+    CHECK(ptr, base::NotFatalUntil::M163);
     *ptr = component;
   }
 }

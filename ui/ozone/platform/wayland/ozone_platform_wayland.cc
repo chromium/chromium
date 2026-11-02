@@ -155,12 +155,14 @@ class OzonePlatformWayland : public OzonePlatform,
   std::unique_ptr<PlatformScreen> CreateScreen() override {
     // The WaylandConnection and the WaylandOutputManager must be created
     // before PlatformScreen.
-    DCHECK(connection_ && connection_->wayland_output_manager());
+    CHECK(connection_ && connection_->wayland_output_manager(),
+          base::NotFatalUntil::M163);
     return connection_->wayland_output_manager()->CreateWaylandScreen();
   }
 
   void InitScreen(PlatformScreen* screen) override {
-    DCHECK(connection_ && connection_->wayland_output_manager());
+    CHECK(connection_ && connection_->wayland_output_manager(),
+          base::NotFatalUntil::M163);
     // InitScreen is always called with the same screen that CreateScreen
     // hands back, so it is safe to cast here.
     connection_->wayland_output_manager()->InitWaylandScreen(
@@ -168,7 +170,7 @@ class OzonePlatformWayland : public OzonePlatform,
   }
 
   PlatformClipboard* GetPlatformClipboard() override {
-    DCHECK(connection_);
+    CHECK(connection_, base::NotFatalUntil::M163);
     return connection_->clipboard();
   }
 
@@ -388,7 +390,7 @@ class OzonePlatformWayland : public OzonePlatform,
 
     static OzonePlatform::PlatformRuntimeProperties properties;
     if (connection_) {
-      DCHECK(has_initialized_ui());
+      CHECK(has_initialized_ui(), base::NotFatalUntil::M163);
       // These properties are set when GetPlatformRuntimeProperties is called on
       // the browser process side.
       properties.supports_server_side_window_decorations =
@@ -429,7 +431,7 @@ class OzonePlatformWayland : public OzonePlatform,
       GetSessionManager();
 
       if (surface_factory_) {
-        DCHECK(has_initialized_gpu());
+        CHECK(has_initialized_gpu(), base::NotFatalUntil::M163);
         properties.supports_native_pixmaps =
             surface_factory_->SupportsNativePixmaps();
       }
@@ -437,7 +439,7 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_global_application_menus =
           connection_->org_kde_kwin_appmenu_manager() != nullptr;
     } else if (buffer_manager_) {
-      DCHECK(has_initialized_gpu());
+      CHECK(has_initialized_gpu(), base::NotFatalUntil::M163);
       // These properties are set when the GetPlatformRuntimeProperties is
       // called on the gpu process side.
       properties.supports_single_pixel_buffer =
@@ -486,7 +488,7 @@ class OzonePlatformWayland : public OzonePlatform,
   void PostCreateMainMessageLoop(
       base::OnceCallback<void()> shutdown_cb,
       scoped_refptr<base::SingleThreadTaskRunner>) override {
-    DCHECK(connection_);
+    CHECK(connection_, base::NotFatalUntil::M163);
     connection_->SetShutdownCb(std::move(shutdown_cb));
   }
 
@@ -504,7 +506,7 @@ class OzonePlatformWayland : public OzonePlatform,
       base::RepeatingCallback<void(KeyEvent* event)> callback,
       std::optional<base::flat_set<DomCode>> dom_codes,
       gfx::AcceleratedWidget accelerated_widget) override {
-    DCHECK(connection_);
+    CHECK(connection_, base::NotFatalUntil::M163);
     auto* seat = connection_->seat();
     auto* window = connection_->window_manager()->GetWindow(accelerated_widget);
     if (!seat || !seat->keyboard() || !window) {

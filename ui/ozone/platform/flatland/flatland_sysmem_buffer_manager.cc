@@ -38,16 +38,16 @@ void FlatlandSysmemBufferManager::Initialize(
     fuchsia::sysmem2::AllocatorHandle sysmem_allocator,
     fuchsia::ui::composition::AllocatorHandle flatland_allocator) {
   base::AutoLock auto_lock(collections_lock_);
-  DCHECK(collections_.empty());
+  CHECK(collections_.empty(), base::NotFatalUntil::M163);
 
-  DCHECK(!sysmem_allocator_);
+  CHECK(!sysmem_allocator_, base::NotFatalUntil::M163);
   sysmem_allocator_.Bind(std::move(sysmem_allocator));
   sysmem_allocator_->SetDebugClientInfo(
       std::move(fuchsia::sysmem2::AllocatorSetDebugClientInfoRequest{}
                     .set_name(GetProcessName() + "-FlatlandSysmemBufferManager")
                     .set_id(base::GetCurrentProcId())));
 
-  DCHECK(!flatland_allocator_);
+  CHECK(!flatland_allocator_, base::NotFatalUntil::M163);
   flatland_allocator_.Bind(std::move(flatland_allocator));
   flatland_allocator_.set_error_handler(base::LogFidlErrorAndExitProcess(
       FROM_HERE, "fuchsia::ui::composition::Allocator"));
@@ -56,7 +56,7 @@ void FlatlandSysmemBufferManager::Initialize(
 
 void FlatlandSysmemBufferManager::Shutdown() {
   base::AutoLock auto_lock(collections_lock_);
-  DCHECK(collections_.empty());
+  CHECK(collections_.empty(), base::NotFatalUntil::M163);
   sysmem_allocator_ = nullptr;
   flatland_allocator_ = nullptr;
 }
@@ -141,7 +141,7 @@ void FlatlandSysmemBufferManager::ImportSysmemBufferCollection(
 
 void FlatlandSysmemBufferManager::RegisterWithFlatlandAllocator(
     fuchsia::ui::composition::RegisterBufferCollectionArgs args) {
-  DCHECK(allocator_task_runner_);
+  CHECK(allocator_task_runner_, base::NotFatalUntil::M163);
   if (!allocator_task_runner_->BelongsToCurrentThread()) {
     allocator_task_runner_->PostTask(
         FROM_HERE,
@@ -198,7 +198,7 @@ FlatlandSysmemBufferManager::GetCollectionByHandle(const zx::eventpair& token) {
 void FlatlandSysmemBufferManager::OnCollectionReleased(zx_koid_t id) {
   base::AutoLock auto_lock(collections_lock_);
   int erased = collections_.erase(id);
-  DCHECK_EQ(erased, 1);
+  CHECK_EQ(erased, 1, base::NotFatalUntil::M163);
 }
 
 }  // namespace ui

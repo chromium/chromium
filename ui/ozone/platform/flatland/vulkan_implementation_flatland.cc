@@ -43,7 +43,7 @@ VulkanImplementationFlatland::~VulkanImplementationFlatland() = default;
 
 bool VulkanImplementationFlatland::InitializeVulkanInstance(
     bool using_surface) {
-  DCHECK(!using_surface);
+  CHECK(!using_surface, base::NotFatalUntil::M163);
 
   base::FilePath path(use_swiftshader() ? "libvk_swiftshader.so"
                                         : "libvulkan.so");

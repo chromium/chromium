@@ -31,7 +31,7 @@ void FlatlandGpuService::Initialize(
   // way to "bind" a pending remote with a pending receiver.
   bool result =
       mojo::FusePipes(std::move(gpu_host_receiver_), std::move(gpu_host));
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M163);
 }
 
 void FlatlandGpuService::AddReceiver(

@@ -67,7 +67,7 @@ std::string NativePixmapUsageToString(NativePixmapUsageSet usage) {
     label.append(name);
   }
 
-  DCHECK(!label.empty());
+  CHECK(!label.empty(), base::NotFatalUntil::M163);
   return label;
 }
 

@@ -91,7 +91,7 @@ void ColorProviderManager::ResetColorProviderCache() {
 
 void ColorProviderManager::AppendColorProviderInitializer(
     ColorProviderInitializerList::CallbackType initializer) {
-  DCHECK(initializer_list_);
+  CHECK(initializer_list_, base::NotFatalUntil::M163);
   ResetColorProviderCache();
 
   initializer_subscriptions_.push_back(
@@ -105,7 +105,7 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(
     base::ElapsedTimer timer;
 
     auto provider = std::make_unique<ColorProvider>();
-    DCHECK(initializer_list_);
+    CHECK(initializer_list_, base::NotFatalUntil::M163);
     if (!initializer_list_->empty()) {
       initializer_list_->Notify(provider.get(), key);
     }
@@ -130,7 +130,7 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(
     RecordColorProviderCacheSize(static_cast<int>(color_providers_.size()));
   }
   ColorProvider* provider = iter->second.get();
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M163);
   return provider;
 }
 

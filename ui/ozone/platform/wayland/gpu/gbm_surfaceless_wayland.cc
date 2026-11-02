@@ -72,7 +72,7 @@ GbmSurfacelessWayland::SolidColorBufferHolder::GetOrCreateSolidColorBuffer(
     inflight_solid_color_buffers_.emplace_back(
         SolidColorBuffer(color, next_buffer_id));
   }
-  DCHECK_GT(next_buffer_id, 0u);
+  CHECK_GT(next_buffer_id, 0u, base::NotFatalUntil::M163);
   return next_buffer_id;
 }
 
@@ -123,7 +123,7 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
 void GbmSurfacelessWayland::QueueWaylandOverlayConfig(
     wl::WaylandOverlayConfig config) {
   auto* frame = unsubmitted_frames_.back().get();
-  DCHECK(frame);
+  CHECK(frame, base::NotFatalUntil::M163);
   TRACE_EVENT("wayland", "GbmSurfacelessWayland::QueueWaylandOverlayConfig",
               "frame_id", frame->frame_id, "buffer_id", config.buffer_id);
   frame->configs.emplace_back(std::move(config));
@@ -149,7 +149,7 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
       frame->schedule_planes_succeeded = false;
       return false;
     }
-    DCHECK(gpu_fence.is_null());
+    CHECK(gpu_fence.is_null(), base::NotFatalUntil::M163);
 
     BufferId buf_id = solid_color_buffers_holder_->GetOrCreateSolidColorBuffer(
         overlay_plane_data.color.value(), buffer_manager_);
@@ -304,7 +304,7 @@ void GbmSurfacelessWayland::FenceRetired(uint32_t frame_id) {
   uint32_t index = frame_id - first_frame_id;
   if (index < unsubmitted_frames_.size()) {
     auto& frame = unsubmitted_frames_[index];
-    DCHECK_EQ(frame->frame_id, frame_id);
+    CHECK_EQ(frame->frame_id, frame_id, base::NotFatalUntil::M163);
     // If the frame doesn't have a completion callback yet, it means it hasn't
     // been presented yet (it's the sentinel frame at the back).
     if (!frame->completion_callback) {

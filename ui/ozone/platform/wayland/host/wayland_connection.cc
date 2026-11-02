@@ -231,7 +231,7 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
 
   // Now that the connection with the display server has been properly
   // estabilished, initialize the event source and input objects.
-  DCHECK(!event_source_);
+  CHECK(!event_source_, base::NotFatalUntil::M163);
   event_source_ = std::make_unique<WaylandEventSource>(
       display(), event_queue_.get(), window_manager(), this,
       use_threaded_polling);
@@ -292,8 +292,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
 }
 
 void WaylandConnection::RoundTripQueue() {
-  DCHECK(event_source_);
-  DCHECK(event_queue_.get());
+  CHECK(event_source_, base::NotFatalUntil::M163);
+  CHECK(event_queue_.get(), base::NotFatalUntil::M163);
   event_source_->RoundTripQueue();
 }
 
@@ -344,7 +344,7 @@ bool WaylandConnection::IsKeyboardAvailable() const {
 }
 
 wl::Object<wl_surface> WaylandConnection::CreateSurface() {
-  DCHECK(compositor_);
+  CHECK(compositor_, base::NotFatalUntil::M163);
   return wl::Object<wl_surface>(
       wl_compositor_create_surface(compositor_.get()));
 }
@@ -457,16 +457,16 @@ void WaylandConnection::UpdateCursor() {
 
 void WaylandConnection::CreateDataObjectsIfReady() {
   if (data_device_manager_ && seat_) {
-    DCHECK(!data_drag_controller_);
+    CHECK(!data_drag_controller_, base::NotFatalUntil::M163);
     data_drag_controller_ = std::make_unique<WaylandDataDragController>(
         this, data_device_manager_.get(), event_source(), event_source());
 
-    DCHECK(!window_drag_controller_);
+    CHECK(!window_drag_controller_, base::NotFatalUntil::M163);
     window_drag_controller_ = std::make_unique<WaylandWindowDragController>(
         this, data_device_manager_.get(), event_source(), event_source(),
         event_source());
 
-    DCHECK(!clipboard_);
+    CHECK(!clipboard_, base::NotFatalUntil::M163);
     clipboard_ =
         std::make_unique<WaylandClipboard>(this, data_device_manager_.get());
   }
@@ -475,7 +475,7 @@ void WaylandConnection::CreateDataObjectsIfReady() {
 base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
                                                            uint32_t tv_sec_lo,
                                                            uint32_t tv_nsec) {
-  DCHECK(presentation());
+  CHECK(presentation(), base::NotFatalUntil::M163);
   // base::TimeTicks::Now() uses CLOCK_MONOTONIC, no need to convert clock
   // domain if wp_presentation also uses it.
   if (presentation_clk_id_ == CLOCK_MONOTONIC) {
@@ -581,7 +581,7 @@ void WaylandConnection::OnGlobal(void* data,
                                  const char* interface,
                                  uint32_t version) {
   auto* self = static_cast<WaylandConnection*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->HandleGlobal(registry, name, interface, version);
 }
 
@@ -619,8 +619,9 @@ void WaylandConnection::OnPing(void* data,
 void WaylandConnection::OnClockId(void* data,
                                   wp_presentation* presentation,
                                   uint32_t clk_id) {
-  DCHECK_EQ(base::TimeTicks::GetClock(),
-            base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
+  CHECK_EQ(base::TimeTicks::GetClock(),
+           base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC,
+           base::NotFatalUntil::M163);
   auto* connection = static_cast<WaylandConnection*>(data);
   connection->presentation_clk_id_ = clk_id;
 }

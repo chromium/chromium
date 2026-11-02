@@ -37,7 +37,7 @@ void WaylandOutputManager::AddWaylandOutput(WaylandOutput::Id output_id,
   // Make sure an output with |output_id| has not been added yet. It's very
   // unlikely to happen, unless a compositor has a bug in the numeric names
   // representation of global objects.
-  DCHECK(!GetOutput(output_id));
+  CHECK(!GetOutput(output_id), base::NotFatalUntil::M163);
   auto wayland_output =
       std::make_unique<WaylandOutput>(output_id, output, connection_);
 
@@ -55,7 +55,7 @@ void WaylandOutputManager::AddWaylandOutput(WaylandOutput::Id output_id,
     wayland_output->InitializeWpColorManagementOutput(wp_color_manager);
   }
 
-  DCHECK(!wayland_output->IsReady());
+  CHECK(!wayland_output->IsReady(), base::NotFatalUntil::M163);
 
   output_list_[output_id] = std::move(wayland_output);
 }
@@ -80,13 +80,14 @@ void WaylandOutputManager::RemoveWaylandOutput(WaylandOutput::Id output_id) {
 
   if (wayland_screen_)
     wayland_screen_->OnOutputRemoved(output_id);
-  DCHECK(output_list_.find(output_id) != output_list_.end());
+  CHECK(output_list_.find(output_id) != output_list_.end(),
+        base::NotFatalUntil::M163);
 
   output_list_.erase(output_id);
 }
 
 void WaylandOutputManager::InitializeAllXdgOutputs() {
-  DCHECK(connection_->xdg_output_manager_v1());
+  CHECK(connection_->xdg_output_manager_v1(), base::NotFatalUntil::M163);
   for (const auto& output : output_list_)
     output.second->InitializeXdgOutput(connection_->xdg_output_manager_v1());
 }

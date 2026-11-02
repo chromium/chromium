@@ -60,14 +60,14 @@ WaylandCursorShape::WaylandCursorShape(wp_cursor_shape_manager_v1* cursor_shape,
 WaylandCursorShape::~WaylandCursorShape() = default;
 
 wp_cursor_shape_device_v1* WaylandCursorShape::GetShapeDevice() {
-  DCHECK(connection_->seat()->pointer());
+  CHECK(connection_->seat()->pointer(), base::NotFatalUntil::M163);
 
   if (!wp_cursor_shape_device_v1_.get()) {
     wl_pointer* pointer = connection_->seat()->pointer()->wl_object();
     wp_cursor_shape_device_v1_.reset(wp_cursor_shape_manager_v1_get_pointer(
         wp_cursor_shape_manager_v1_.get(), pointer));
   }
-  DCHECK(wp_cursor_shape_device_v1_);
+  CHECK(wp_cursor_shape_device_v1_, base::NotFatalUntil::M163);
   return wp_cursor_shape_device_v1_.get();
 }
 
@@ -176,7 +176,7 @@ std::optional<uint32_t> WaylandCursorShape::ShapeFromType(CursorType type) {
 }
 
 void WaylandCursorShape::SetCursorShape(uint32_t shape) {
-  DCHECK(connection_->seat());
+  CHECK(connection_->seat(), base::NotFatalUntil::M163);
 
   // Nothing to do if there is no pointer (mouse) connected.
   if (!connection_->seat()->pointer()) {
@@ -196,7 +196,7 @@ void WaylandCursorShape::SetCursorShape(uint32_t shape) {
 wl::Object<wp_cursor_shape_device_v1>
 WaylandCursorShape::CreateTabletToolShapeDevice(
     zwp_tablet_tool_v2* tablet_tool) {
-  DCHECK(tablet_tool);
+  CHECK(tablet_tool, base::NotFatalUntil::M163);
   // `wp_cursor_shape_manager_v1_` may be null in tests.
   if (!wp_cursor_shape_manager_v1_) {
     return {};

@@ -14,7 +14,7 @@ PlatformGlobalShortcutListenerDelegate::
 PlatformGlobalShortcutListener::PlatformGlobalShortcutListener(
     PlatformGlobalShortcutListenerDelegate* delegate)
     : delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 }
 
 PlatformGlobalShortcutListener::~PlatformGlobalShortcutListener() = default;

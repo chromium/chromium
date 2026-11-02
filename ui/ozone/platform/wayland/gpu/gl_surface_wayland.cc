@@ -39,8 +39,8 @@ GLSurfaceWayland::GLSurfaceWayland(gl::GLDisplayEGL* display,
           nullptr),
       egl_window_(std::move(egl_window)),
       window_(window) {
-  DCHECK(egl_window_);
-  DCHECK(window_);
+  CHECK(egl_window_, base::NotFatalUntil::M163);
+  CHECK(window_, base::NotFatalUntil::M163);
   window_->root_surface()->ForceImmediateStateApplication();
 }
 

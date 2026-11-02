@@ -41,7 +41,7 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   explicit SharedMemoryBuffer(WaylandBufferManagerGpu* buffer_manager)
       : buffer_id_(buffer_manager->AllocateBufferID()),
         buffer_manager_(buffer_manager) {
-    DCHECK(buffer_manager_);
+    CHECK(buffer_manager_, base::NotFatalUntil::M163);
   }
 
   SharedMemoryBuffer(const SharedMemoryBuffer&) = delete;
@@ -92,18 +92,18 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     sk_surface_ = SkSurfaces::WrapPixels(
         SkImageInfo::MakeN32Premul(size.width(), size.height()),
         shm_mapping_.data(), CalculateStride(size.width()), &props);
-    DCHECK(sk_surface_);
+    CHECK(sk_surface_, base::NotFatalUntil::M163);
 
     dirty_region_.setRect(gfx::RectToSkIRect(gfx::Rect(size)));
   }
 
   void OnUse() {
-    DCHECK(!used_);
+    CHECK(!used_, base::NotFatalUntil::M163);
     used_ = true;
   }
 
   void OnRelease() {
-    DCHECK(used_);
+    CHECK(used_, base::NotFatalUntil::M163);
     used_ = false;
   }
 
@@ -113,7 +113,7 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   }
 
   void CopyDirtyRegionFrom(SharedMemoryBuffer* buffer) {
-    DCHECK_NE(this, buffer);
+    CHECK_NE(this, buffer, base::NotFatalUntil::M163);
     const size_t stride = CalculateStride(sk_surface_->width());
     auto dst_span = base::span(shm_mapping_);
     for (SkRegion::Iterator i(dirty_region_); !i.done(); i.next()) {
@@ -214,7 +214,7 @@ WaylandCanvasSurface::PendingFrame::PendingFrame(
       frame_buffer(frame_buffer) {
   // The frame might be invalid if there is no frame buffer. However, if there
   // is a buffer, it must be marked as used.
-  DCHECK(!frame_buffer || frame_buffer->used());
+  CHECK(!frame_buffer || frame_buffer->used(), base::NotFatalUntil::M163);
 }
 
 WaylandCanvasSurface::PendingFrame::~PendingFrame() {
@@ -258,13 +258,13 @@ SkCanvas* WaylandCanvasSurface::GetCanvas() {
   if (!pending_buffer_) {
     // It must be impossible that the maximum number of buffers that can be
     // created is achieved.
-    DCHECK_LE(buffers_.size(), kMaxNumberOfBuffers);
+    CHECK_LE(buffers_.size(), kMaxNumberOfBuffers, base::NotFatalUntil::M163);
     auto buffer = CreateSharedMemoryBuffer();
     pending_buffer_ = buffer.get();
     buffers_.push_back(std::move(buffer));
   }
 
-  DCHECK(pending_buffer_);
+  CHECK(pending_buffer_, base::NotFatalUntil::M163);
   pending_buffer_->OnUse();
   return pending_buffer_->sk_surface()->getCanvas();
 }
@@ -382,7 +382,7 @@ void WaylandCanvasSurface::MaybeProcessUnsubmittedFrames() {
 void WaylandCanvasSurface::OnSubmission(uint32_t frame_id,
                                         const gfx::SwapResult& swap_result,
                                         gfx::GpuFenceHandle release_fence) {
-  DCHECK(release_fence.is_null());
+  CHECK(release_fence.is_null(), base::NotFatalUntil::M163);
   // We may get an OnSubmission callback for a frame that was submitted
   // before a ResizeCanvas call, which clears all our submitted frame. Check to
   // see if we still know about this frame. If we know about this frame
@@ -396,7 +396,7 @@ void WaylandCanvasSurface::OnSubmission(uint32_t frame_id,
     return;
   }
 
-  DCHECK_EQ(size_, submitted_frame_->surface_size);
+  CHECK_EQ(size_, submitted_frame_->surface_size, base::NotFatalUntil::M163);
 
   if (previous_buffer_)
     previous_buffer_->OnRelease();
@@ -418,7 +418,7 @@ void WaylandCanvasSurface::OnPresentation(
 
 std::unique_ptr<WaylandCanvasSurface::SharedMemoryBuffer>
 WaylandCanvasSurface::CreateSharedMemoryBuffer() {
-  DCHECK(!size_.IsEmpty());
+  CHECK(!size_.IsEmpty(), base::NotFatalUntil::M163);
 
   auto canvas_buffer = std::make_unique<SharedMemoryBuffer>(buffer_manager_);
   canvas_buffer->Initialize(size_);

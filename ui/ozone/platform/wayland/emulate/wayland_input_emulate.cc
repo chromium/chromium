@@ -162,7 +162,7 @@ void WaylandInputEmulate::EmulatePointerMotion(
 
     // If we can't use screen coordinates, we must have a surface so we can use
     // surface-local coordinates.
-    DCHECK(screen_coordinates || surface);
+    CHECK(screen_coordinates || surface, base::NotFatalUntil::M163);
 
     target_surface = screen_coordinates ? nullptr : surface;
     // Ignore `force_use_screen_coordinates_once_` for selecting which

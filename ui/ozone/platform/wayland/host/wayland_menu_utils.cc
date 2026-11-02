@@ -15,8 +15,8 @@ WaylandMenuUtils::WaylandMenuUtils(WaylandConnection* connection)
 WaylandMenuUtils::~WaylandMenuUtils() = default;
 
 int WaylandMenuUtils::GetCurrentKeyModifiers() const {
-  DCHECK(connection_);
-  DCHECK(connection_->event_source());
+  CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK(connection_->event_source(), base::NotFatalUntil::M163);
   return connection_->event_source()->keyboard_modifiers();
 }
 

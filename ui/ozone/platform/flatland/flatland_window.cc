@@ -131,7 +131,7 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
     keyboard_client_ = std::make_unique<KeyboardClient>(
         keyboard_fidl_client_, fidl::HLCPPToNatural(CloneViewRef()), this);
   } else {
-    DCHECK(!properties.enable_virtual_keyboard);
+    CHECK(!properties.enable_virtual_keyboard, base::NotFatalUntil::M163);
   }
 }
 
@@ -270,7 +270,8 @@ bool FlatlandWindow::HasCapture() const {
 
 void FlatlandWindow::SetFullscreen(bool fullscreen, int64_t target_display_id) {
   NOTIMPLEMENTED_LOG_ONCE();
-  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
+  CHECK_EQ(target_display_id, display::kInvalidDisplayId,
+           base::NotFatalUntil::M163);
   is_fullscreen_ = fullscreen;
 }
 
@@ -348,7 +349,8 @@ void FlatlandWindow::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
       gfx::Size(info.logical_size().width, info.logical_size().height);
   device_pixel_ratio_ =
       std::max(info.device_pixel_ratio().x, info.device_pixel_ratio().y);
-  DCHECK_EQ(info.device_pixel_ratio().x, info.device_pixel_ratio().y);
+  CHECK_EQ(info.device_pixel_ratio().x, info.device_pixel_ratio().y,
+           base::NotFatalUntil::M163);
 
   if (info.has_inset()) {
     view_inset_ = ConvertInsets(device_pixel_ratio_, info.inset());
@@ -423,7 +425,7 @@ void FlatlandWindow::OnViewRefFocusedWatchResult(
 }
 
 void FlatlandWindow::UpdateSize() {
-  DCHECK(logical_size_);
+  CHECK(logical_size_, base::NotFatalUntil::M163);
   if (pending_attach_surface_content_closure_) {
     std::move(pending_attach_surface_content_closure_).Run();
   }

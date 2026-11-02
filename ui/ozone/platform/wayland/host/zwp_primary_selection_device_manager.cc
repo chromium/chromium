@@ -53,14 +53,14 @@ ZwpPrimarySelectionDeviceManager::ZwpPrimarySelectionDeviceManager(
     zwp_primary_selection_device_manager_v1* manager,
     WaylandConnection* connection)
     : device_manager_(manager), connection_(connection) {
-  DCHECK(connection_);
-  DCHECK(device_manager_);
+  CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK(device_manager_, base::NotFatalUntil::M163);
 }
 
 ZwpPrimarySelectionDeviceManager::~ZwpPrimarySelectionDeviceManager() = default;
 
 ZwpPrimarySelectionDevice* ZwpPrimarySelectionDeviceManager::GetDevice() {
-  DCHECK(connection_->seat());
+  CHECK(connection_->seat(), base::NotFatalUntil::M163);
   if (!device_) {
     device_ = std::make_unique<ZwpPrimarySelectionDevice>(
         connection_,
@@ -68,7 +68,7 @@ ZwpPrimarySelectionDevice* ZwpPrimarySelectionDeviceManager::GetDevice() {
             device_manager_.get(), connection_->seat()->wl_object()));
     connection_->Flush();
   }
-  DCHECK(device_);
+  CHECK(device_, base::NotFatalUntil::M163);
   return device_.get();
 }
 

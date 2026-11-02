@@ -106,8 +106,8 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
   size_t GetNumberOfPlanes() const override { return handle_.planes.size(); }
 
   base::span<uint8_t> GetMemoryAsSpan(size_t plane) override {
-    DCHECK_LT(plane, handle_.planes.size());
-    DCHECK(mapping_);
+    CHECK_LT(plane, handle_.planes.size(), base::NotFatalUntil::M163);
+    CHECK(mapping_, base::NotFatalUntil::M163);
     CHECK(logically_mapped_);
     const size_t offset =
         base::checked_cast<size_t>(handle_.planes[plane].offset);
@@ -117,7 +117,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
   }
 
   int GetStride(size_t plane) const override {
-    DCHECK_LT(plane, handle_.planes.size());
+    CHECK_LT(plane, handle_.planes.size(), base::NotFatalUntil::M163);
     return base::checked_cast<int>(handle_.planes[plane].stride);
   }
 
@@ -143,7 +143,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
     }
     for (const auto& plane : handle.planes) {
       const std::optional<zx_koid_t> plane_koid = base::GetKoid(plane.vmo);
-      DCHECK(plane.vmo.is_valid() || !plane_koid);
+      CHECK(plane.vmo.is_valid() || !plane_koid, base::NotFatalUntil::M163);
       if (plane_koid != first_plane_koid) {
         return nullptr;
       }
@@ -171,14 +171,15 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
     // zx_vmo_get_size() should return a page-aligned size. This is important
     // because we request a page-aligned size in
     // ClientNativePixmapFuchsia::Map().
-    DCHECK_EQ(vmo_size % zx_system_get_page_size(), 0u);
+    CHECK_EQ(vmo_size % zx_system_get_page_size(), 0u,
+             base::NotFatalUntil::M163);
 
     // The CanFitImageForSizeAndFormat() call above should guarantee that the
     // (offset + size) for each plane is <= |last_plane_end|, and since we now
     // know that |last_plane_end| <= |vmo_size|, then (offset + size) for each
     // plane <= |vmo_size|.
     for (const auto& plane : handle.planes) {
-      DCHECK_LE(plane.offset + plane.size, vmo_size);
+      CHECK_LE(plane.offset + plane.size, vmo_size, base::NotFatalUntil::M163);
     }
 #endif
 
@@ -200,8 +201,8 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
   }
 
   void UnmapImpl() {
-    DCHECK(mapping_);
-    DCHECK(logically_mapped_);
+    CHECK(mapping_, base::NotFatalUntil::M163);
+    CHECK(logically_mapped_, base::NotFatalUntil::M163);
 
     // Flush the CPu cache in case the GPU reads the data directly from RAM.
     // Keep the mapping to avoid unnecessary overhead when later reusing the

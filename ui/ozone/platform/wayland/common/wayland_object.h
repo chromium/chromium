@@ -65,7 +65,7 @@ class Object : public std::unique_ptr<T, Deleter> {
 
 template <typename T>
 wl::Object<T> Bind(wl_registry* registry, uint32_t name, uint32_t version) {
-  DCHECK(ObjectTraits<T>::interface);
+  CHECK(ObjectTraits<T>::interface, base::NotFatalUntil::M163);
   return wl::Object<T>(wl::bind_registry<T>(
       registry, name, ObjectTraits<T>::interface, version));
 }

@@ -44,10 +44,10 @@ namespace {
 // Returns SharedImageFormat for given multiplanar `format` and `plane_index`.
 viz::SharedImageFormat GetFormatForPlane(viz::SharedImageFormat format,
                                          int plane_index) {
-  DCHECK(format.is_multi_plane());
-  DCHECK(format.IsValidPlaneIndex(plane_index));
+  CHECK(format.is_multi_plane(), base::NotFatalUntil::M163);
+  CHECK(format.IsValidPlaneIndex(plane_index), base::NotFatalUntil::M163);
   int num_channels = format.NumChannelsInPlane(plane_index);
-  DCHECK_LE(num_channels, 2);
+  CHECK_LE(num_channels, 2, base::NotFatalUntil::M163);
   switch (format.channel_format()) {
     case viz::SharedImageFormat::ChannelFormat::k8:
       return num_channels == 2 ? viz::SinglePlaneFormat::kRG_88
@@ -86,7 +86,7 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
-  DCHECK_GT(texture_id, 0u);
+  CHECK_GT(texture_id, 0u, base::NotFatalUntil::M163);
 
   auto binding =
       std::make_unique<NativePixmapEGLBinding>(size, format, plane_index);
@@ -109,7 +109,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
-  DCHECK(!pixmap_);
+  CHECK(!pixmap_, base::NotFatalUntil::M163);
   viz::SharedImageFormat format =
       plane_index_ ? GetFormatForPlane(format_, *plane_index_) : format_;
   if (GetFourCCFormatFromSharedImageFormat(format) == DRM_FORMAT_INVALID) {
@@ -232,8 +232,10 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
       uint64_t modifier = pixmap->GetFormatModifier();
       if (has_dma_buf_import_modifier &&
           modifier != gfx::NativePixmapHandle::kNoModifier) {
-        DCHECK(attrs_plane < std::size(kPlaneLoModifierAttrs));
-        DCHECK(attrs_plane < std::size(kPlaneHiModifierAttrs));
+        CHECK(attrs_plane < std::size(kPlaneLoModifierAttrs),
+              base::NotFatalUntil::M163);
+        CHECK(attrs_plane < std::size(kPlaneHiModifierAttrs),
+              base::NotFatalUntil::M163);
         attrs.push_back(kPlaneLoModifierAttrs[attrs_plane]);
         PushEGLintOrDie(modifier & 0xffffffff, attrs);
         attrs.push_back(kPlaneHiModifierAttrs[attrs_plane]);

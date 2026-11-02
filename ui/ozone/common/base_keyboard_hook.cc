@@ -15,7 +15,7 @@ BaseKeyboardHook::BaseKeyboardHook(
     KeyEventCallback callback)
     : key_event_callback_(std::move(callback)),
       dom_codes_(std::move(dom_codes)) {
-  DCHECK(key_event_callback_);
+  CHECK(key_event_callback_, base::NotFatalUntil::M163);
 }
 
 BaseKeyboardHook::~BaseKeyboardHook() = default;

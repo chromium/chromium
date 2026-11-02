@@ -41,7 +41,7 @@ void GtkPrimarySelectionDevice::OnDataOffer(
     gtk_primary_selection_device* selection_device,
     gtk_primary_selection_offer* offer) {
   auto* self = static_cast<GtkPrimarySelectionDevice*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->set_data_offer(std::make_unique<GtkPrimarySelectionOffer>(offer));
 }
 
@@ -51,14 +51,14 @@ void GtkPrimarySelectionDevice::OnSelection(
     gtk_primary_selection_device* selection_device,
     gtk_primary_selection_offer* offer) {
   auto* self = static_cast<GtkPrimarySelectionDevice*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   // 'offer' will be null to indicate that the selection is no longer valid,
   // i.e. there is no longer selection data available to be fetched.
   if (!offer) {
     self->ResetDataOffer();
   } else {
-    DCHECK(self->data_offer());
+    CHECK(self->data_offer(), base::NotFatalUntil::M163);
     self->data_offer()->EnsureTextMimeTypeIfNeeded();
   }
 

@@ -42,11 +42,12 @@ BitmapCursor::BitmapCursor(mojom::CursorType type,
       hotspot_(hotspot),
       frame_delay_(frame_delay),
       cursor_image_scale_factor_(cursor_image_scale_factor) {
-  DCHECK_LT(0U, bitmaps.size());
-  DCHECK_LE(base::TimeDelta(), frame_delay);
+  CHECK_LT(0U, bitmaps.size(), base::NotFatalUntil::M163);
+  CHECK_LE(base::TimeDelta(), frame_delay, base::NotFatalUntil::M163);
   // No null bitmap should be in the list. Blank cursors should just be an empty
   // vector.
-  DCHECK(std::ranges::none_of(bitmaps_, &SkBitmap::isNull));
+  CHECK(std::ranges::none_of(bitmaps_, &SkBitmap::isNull),
+        base::NotFatalUntil::M163);
 }
 
 BitmapCursor::BitmapCursor(mojom::CursorType type,

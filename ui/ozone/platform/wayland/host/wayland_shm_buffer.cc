@@ -25,7 +25,7 @@ WaylandShmBuffer& WaylandShmBuffer::operator=(WaylandShmBuffer&& buffer) =
     default;
 
 void WaylandShmBuffer::Initialize(WaylandBufferFactory* buffer_factory) {
-  DCHECK(buffer_factory);
+  CHECK(buffer_factory, base::NotFatalUntil::M163);
 
   SkImageInfo info = SkImageInfo::MakeN32Premul(size_.width(), size_.height());
   int stride = info.minRowBytes();

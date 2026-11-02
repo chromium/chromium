@@ -159,7 +159,7 @@ mojo::PlatformHandle FlatlandSurfaceCanvas::CreateView() {
   fuchsia::ui::views::ViewportCreationToken parent_token;
   fuchsia::ui::views::ViewCreationToken child_token;
   auto status = zx::channel::create(0, &parent_token.value, &child_token.value);
-  DCHECK_EQ(status, ZX_OK);
+  CHECK_EQ(status, ZX_OK, base::NotFatalUntil::M163);
 
   flatland_.flatland()->CreateView(std::move(child_token),
                                    parent_viewport_watcher_.NewRequest());
@@ -270,7 +270,7 @@ void FlatlandSurfaceCanvas::FinalizeBufferAllocation() {
   buffer_collection_.Unbind();
 
   CHECK_GE(buffer_info.buffers().size(), kNumBuffers);
-  DCHECK(import_token_.value.is_valid());
+  CHECK(import_token_.value.is_valid(), base::NotFatalUntil::M163);
 
   for (size_t i = 0; i < kNumBuffers; ++i) {
     fuchsia::ui::composition::ImageProperties image_properties;

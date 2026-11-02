@@ -41,7 +41,7 @@ void ZwpPrimarySelectionDevice::OnDataOffer(
     zwp_primary_selection_device_v1* selection_device,
     zwp_primary_selection_offer_v1* offer) {
   auto* self = static_cast<ZwpPrimarySelectionDevice*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->set_data_offer(std::make_unique<ZwpPrimarySelectionOffer>(offer));
 }
 
@@ -51,14 +51,14 @@ void ZwpPrimarySelectionDevice::OnSelection(
     zwp_primary_selection_device_v1* selection_device,
     zwp_primary_selection_offer_v1* offer) {
   auto* self = static_cast<ZwpPrimarySelectionDevice*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   // 'offer' will be null to indicate that the selection is no longer valid,
   // i.e. there is no longer selection data available to be fetched.
   if (!offer) {
     self->ResetDataOffer();
   } else {
-    DCHECK(self->data_offer());
+    CHECK(self->data_offer(), base::NotFatalUntil::M163);
     self->data_offer()->EnsureTextMimeTypeIfNeeded();
   }
 

@@ -124,34 +124,34 @@ bool XdgToplevel::Initialize() {
 }
 
 void XdgToplevel::SetMaximized() {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   xdg_toplevel_set_maximized(xdg_toplevel_.get());
 }
 
 void XdgToplevel::UnSetMaximized() {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   xdg_toplevel_unset_maximized(xdg_toplevel_.get());
 }
 
 void XdgToplevel::SetFullscreen(WaylandOutput* wayland_output) {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   xdg_toplevel_set_fullscreen(
       xdg_toplevel_.get(),
       wayland_output ? wayland_output->get_output() : nullptr);
 }
 
 void XdgToplevel::UnSetFullscreen() {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   xdg_toplevel_unset_fullscreen(xdg_toplevel_.get());
 }
 
 void XdgToplevel::SetMinimized() {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   xdg_toplevel_set_minimized(xdg_toplevel_.get());
 }
 
 void XdgToplevel::SurfaceMove(WaylandConnection* connection) {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   if (auto serial = GetSerialForMoveResize(connection)) {
     xdg_toplevel_move(xdg_toplevel_.get(), connection->seat()->wl_object(),
                       serial->value);
@@ -160,7 +160,7 @@ void XdgToplevel::SurfaceMove(WaylandConnection* connection) {
 
 void XdgToplevel::SurfaceResize(WaylandConnection* connection,
                                 uint32_t hittest) {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   if (auto serial = GetSerialForMoveResize(connection)) {
     xdg_toplevel_resize(xdg_toplevel_.get(), connection->seat()->wl_object(),
                         serial->value, wl::IdentifyDirection(hittest));
@@ -168,7 +168,7 @@ void XdgToplevel::SurfaceResize(WaylandConnection* connection,
 }
 
 void XdgToplevel::SetTitle(const std::u16string& title) {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
 
   // TODO(crbug.com/40785817): find a better way to handle long titles, or
   // change this logic completely (and at the platform-agnostic level) because a
@@ -192,23 +192,23 @@ void XdgToplevel::SetWindowGeometry(const gfx::Rect& bounds) {
 }
 
 void XdgToplevel::SetMinSize(int32_t width, int32_t height) {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   xdg_toplevel_set_min_size(xdg_toplevel_.get(), width, height);
 }
 
 void XdgToplevel::SetMaxSize(int32_t width, int32_t height) {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   xdg_toplevel_set_max_size(xdg_toplevel_.get(), width, height);
 }
 
 void XdgToplevel::SetAppId(const std::string& app_id) {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   xdg_toplevel_set_app_id(xdg_toplevel_.get(), app_id.c_str());
 }
 
 void XdgToplevel::ShowWindowMenu(WaylandConnection* connection,
                                  const gfx::Point& point) {
-  DCHECK(xdg_toplevel_);
+  CHECK(xdg_toplevel_, base::NotFatalUntil::M163);
   if (auto serial = GetSerialForMoveResize(connection)) {
     xdg_toplevel_show_window_menu(xdg_toplevel_.get(),
                                   connection->seat()->wl_object(),
@@ -221,12 +221,12 @@ void XdgToplevel::SetDecoration(DecorationMode decoration) {
 }
 
 void XdgToplevel::AckConfigure(uint32_t serial) {
-  DCHECK(xdg_surface_);
+  CHECK(xdg_surface_, base::NotFatalUntil::M163);
   xdg_surface_->AckConfigure(serial);
 }
 
 bool XdgToplevel::IsConfigured() {
-  DCHECK(xdg_surface_);
+  CHECK(xdg_surface_, base::NotFatalUntil::M163);
   return xdg_surface_->IsConfigured();
 }
 
@@ -237,7 +237,7 @@ void XdgToplevel::OnToplevelConfigure(void* data,
                                       int32_t height,
                                       wl_array* states) {
   auto* self = static_cast<XdgToplevel*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   WaylandWindow::WindowStates window_states;
   window_states.is_maximized =
@@ -270,7 +270,7 @@ void XdgToplevel::OnToplevelConfigure(void* data,
 // static
 void XdgToplevel::OnToplevelClose(void* data, xdg_toplevel* toplevel) {
   auto* self = static_cast<XdgToplevel*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->window()->OnCloseRequest();
 }
 
@@ -294,7 +294,7 @@ void XdgToplevel::OnDecorationConfigure(void* data,
                                         zxdg_toplevel_decoration_v1* decoration,
                                         uint32_t mode) {
   auto* self = static_cast<XdgToplevel*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->decoration_mode_ = ToDecorationMode(mode);
 }
 
@@ -309,7 +309,7 @@ void XdgToplevel::SetTopLevelDecorationMode(DecorationMode requested_mode) {
 
 void XdgToplevel::InitializeXdgDecoration() {
   if (connection()->xdg_decoration_manager_v1()) {
-    DCHECK(!zxdg_toplevel_decoration_);
+    CHECK(!zxdg_toplevel_decoration_, base::NotFatalUntil::M163);
     zxdg_toplevel_decoration_.reset(
         zxdg_decoration_manager_v1_get_toplevel_decoration(
             connection()->xdg_decoration_manager_v1(), xdg_toplevel_.get()));

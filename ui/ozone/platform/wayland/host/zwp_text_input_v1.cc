@@ -160,7 +160,7 @@ ZwpTextInputV1Impl::ZwpTextInputV1Impl(
 
   obj_ = wl::Object<zwp_text_input_v1>(
       zwp_text_input_manager_v1_create_text_input(text_input_manager));
-  DCHECK(obj_.get());
+  CHECK(obj_.get(), base::NotFatalUntil::M163);
   zwp_text_input_v1_add_listener(obj_.get(), &kTextInputListener, this);
 }
 
@@ -172,7 +172,7 @@ void ZwpTextInputV1Impl::Reset() {
 }
 
 void ZwpTextInputV1Impl::Activate(WaylandWindow* window) {
-  DCHECK(connection_->seat());
+  CHECK(connection_->seat(), base::NotFatalUntil::M163);
   zwp_text_input_v1_activate(obj_.get(), connection_->seat()->wl_object(),
                              window->root_surface()->surface());
 }
@@ -189,7 +189,7 @@ void ZwpTextInputV1Impl::OnClientDestroyed(ZwpTextInputV1Client* context) {
 }
 
 void ZwpTextInputV1Impl::Deactivate() {
-  DCHECK(connection_->seat());
+  CHECK(connection_->seat(), base::NotFatalUntil::M163);
 
   zwp_text_input_v1_deactivate(obj_.get(), connection_->seat()->wl_object());
 }

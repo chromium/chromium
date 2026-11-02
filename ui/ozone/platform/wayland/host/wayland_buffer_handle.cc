@@ -71,10 +71,11 @@ void WaylandBufferHandle::OnExplicitRelease(WaylandSurface* requestor) {
 }
 
 void WaylandBufferHandle::OnWlBufferReleased(wl_buffer* wl_buff) {
-  DCHECK_EQ(wl_buff, wl_buffer_.get());
-  DCHECK(sync_method_ == SyncMethod::kDMAFence ||
-         sync_method_ == SyncMethod::kImplicit);
-  DCHECK_LE(released_callbacks_.size(), 1u);
+  CHECK_EQ(wl_buff, wl_buffer_.get(), base::NotFatalUntil::M163);
+  CHECK(sync_method_ == SyncMethod::kDMAFence ||
+            sync_method_ == SyncMethod::kImplicit,
+        base::NotFatalUntil::M163);
+  CHECK_LE(released_callbacks_.size(), 1u, base::NotFatalUntil::M163);
 
   if (!released_callbacks_.empty()) {
     std::move(released_callbacks_.begin()->second).Run(wl_buff, false);
@@ -89,7 +90,7 @@ base::WeakPtr<WaylandBufferHandle> WaylandBufferHandle::AsWeakPtr() {
 // static
 void WaylandBufferHandle::OnRelease(void* data, wl_buffer* buffer) {
   auto* self = static_cast<WaylandBufferHandle*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->OnWlBufferReleased(buffer);
 }
 
