@@ -5,6 +5,9 @@
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 
 #include <memory>
+#include <set>
+#include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -71,8 +74,6 @@ constexpr char kHandshakeResultHistogram[] =
     "Enterprise.DeviceTrust.Handshake.Result";
 constexpr char kPolicyLevelsHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.PolicyLevel";
-
-const std::set<DTCPolicyLevel> kUserPolicyLevel = {DTCPolicyLevel::kUser};
 
 class MockDeviceTrustNavigationHandle : public content::MockNavigationHandle {
  public:
@@ -225,7 +226,7 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
     base::RunLoop run_loop;
     throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
     EXPECT_CALL(mock_device_trust_service_,
-                BuildChallengeResponse(kChallenge, kUserPolicyLevel, _))
+                BuildChallengeResponse(kChallenge, user_policy_level_, _))
         .WillOnce(
             [&response](
                 const std::string& serialized_challenge,
@@ -277,6 +278,7 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  const std::set<DTCPolicyLevel> user_policy_level_ = {DTCPolicyLevel::kUser};
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -543,7 +545,7 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestTimeout) {
 
   test::MockDeviceTrustService::DeviceTrustCallback captured_callback;
   EXPECT_CALL(mock_device_trust_service_,
-              BuildChallengeResponse(kChallenge, kUserPolicyLevel, _))
+              BuildChallengeResponse(kChallenge, user_policy_level_, _))
       .WillOnce(
           [&captured_callback](
               const std::string& serialized_challenge,
