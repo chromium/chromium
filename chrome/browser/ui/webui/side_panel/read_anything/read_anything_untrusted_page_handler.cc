@@ -1882,12 +1882,7 @@ bool ReadAnythingUntrustedPageHandler::MaybeStartReadabilityDistillation(
   // scripts from leaking.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableAutomation)) {
-    if (!features::IsReadAnythingDistillerRefactorEnabled()) {
-      page_->OnReadabilityDistillationStateChanged(
-          read_anything::mojom::ReadAnythingDistillationState::
-              kDistillationEmpty);
-      page_->UpdateContent("", "");
-    }
+    MaybeSendEmptyReadabilityContent();
     return false;
   }
 
@@ -1899,14 +1894,7 @@ bool ReadAnythingUntrustedPageHandler::MaybeStartReadabilityDistillation(
     VLOG(1) << kReadAnythingPrefix
             << ": URL is not HTTP/HTTPS or is error document, skipping for "
             << url.spec();
-    // Call UpdateContent with empty values so status can be updated from show
-    // loading to no content.
-    if (!features::IsReadAnythingDistillerRefactorEnabled()) {
-      page_->OnReadabilityDistillationStateChanged(
-          read_anything::mojom::ReadAnythingDistillationState::
-              kDistillationEmpty);
-      page_->UpdateContent("", "");
-    }
+    MaybeSendEmptyReadabilityContent();
     return false;
   }
 
@@ -1921,6 +1909,15 @@ bool ReadAnythingUntrustedPageHandler::MaybeStartReadabilityDistillation(
   }
   distiller_delegate_->StartDistillation(dom_distiller_service, content);
   return true;
+}
+
+void ReadAnythingUntrustedPageHandler::MaybeSendEmptyReadabilityContent() {
+  if (features::IsReadAnythingDistillerRefactorEnabled()) {
+    return;
+  }
+  page_->OnReadabilityDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::kDistillationEmpty);
+  page_->UpdateContent(/*title=*/"", /*content=*/"");
 }
 
 void ReadAnythingUntrustedPageHandler::RecordListenToThisPagePlaybackMetric(
@@ -2020,12 +2017,7 @@ void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
           .Run(read_anything::mojom::ReadabilityDistillationResult::kEmpty,
                /*title=*/"", /*content=*/"");
     }
-    if (!features::IsReadAnythingDistillerRefactorEnabled()) {
-      page_->OnReadabilityDistillationStateChanged(
-          read_anything::mojom::ReadAnythingDistillationState::
-              kDistillationEmpty);
-      page_->UpdateContent(/*title=*/"", /*content=*/"");
-    }
+    MaybeSendEmptyReadabilityContent();
   }
   // Reset the tree-change start time once distillation has finished,
   // regardless of whether content was successfully produced.

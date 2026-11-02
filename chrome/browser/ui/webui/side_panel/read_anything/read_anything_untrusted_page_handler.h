@@ -458,6 +458,11 @@ class ReadAnythingUntrustedPageHandler :
   void ProcessDistilledArticle(
       const dom_distiller::DistilledArticleProto* article_proto);
 
+  // Tells the page that Readability distillation produced no content, so it
+  // can update from showing loading to showing no content. No-op when
+  // IsReadAnythingDistillerRefactorEnabled is enabled.
+  void MaybeSendEmptyReadabilityContent();
+
   void EvaluateDistillationQuality(const std::string& distilled_html);
   void OnQualityMetricsEvaluated(
       base::expected<reading_mode::mojom::DistillationMetricsPtr,
