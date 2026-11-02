@@ -2265,7 +2265,7 @@ ci.builder(
             "no_safe_browsing",
             "release_builder",
             "remoteexec",
-            "x86",
+            "x64",
             "no_symbols",
             "win",
         ],
