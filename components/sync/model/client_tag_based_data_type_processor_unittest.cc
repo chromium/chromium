@@ -4184,6 +4184,36 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
 }
 
+// Verifies that disconnecting Sync pauses in-flight attachment uploads and
+// reconnecting resumes them.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldPauseInFlightAttachmentUploadOnDisconnectSync) {
+  InitializeToReadyState();
+  FakeAttachmentUploader* uploader =
+      InstallFakeAttachmentUploader(type_processor());
+
+  // Start an attachment upload and disconnect Sync while the upload is in
+  // flight, which pauses the upload by running its abort callback while
+  // retaining `pending_upload` metadata for resumption.
+  type_processor()->PutWithAttachment(
+      kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
+      std::make_unique<EmptyMetadataChangeList>().get());
+  ASSERT_TRUE(uploader->HasPendingUpload());
+
+  DisconnectSync();
+  EXPECT_FALSE(uploader->HasPendingUpload());
+  EXPECT_EQ(uploader->cancelled_count(), 1);
+
+  // Connecting Sync resumes the paused upload, and disconnecting again pauses
+  // it a second time.
+  OnSyncStarting();
+  ASSERT_TRUE(uploader->HasPendingUpload());
+
+  DisconnectSync();
+  EXPECT_FALSE(uploader->HasPendingUpload());
+  EXPECT_EQ(uploader->cancelled_count(), 2);
+}
+
 // Verifies that a failed attachment upload cancels the pending upload, persists
 // the cleared metadata, deletes the staging file on disk, and unblocks the
 // entity to commit its specifics without the attachment.

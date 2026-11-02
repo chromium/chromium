@@ -137,7 +137,7 @@ void ProcessorEntityTracker::RemoveEntityForStorageKey(
   auto entity_iter = entities_.find(iter->second);
   CHECK(entity_iter != entities_.end());
   DCHECK_EQ(entity_iter->second->storage_key(), storage_key);
-  entity_iter->second->RecordAttachmentUploadCancelled();
+  entity_iter->second->ClearPendingAttachmentUpload();
   entities_.erase(entity_iter);
   storage_key_to_tag_hash_.erase(iter);
 }
@@ -156,7 +156,7 @@ std::vector<std::string> ProcessorEntityTracker::RemoveInactiveCollaborations(
       // updates for inactive collaborations (DataTypeWorker would filter them
       // out).
       CHECK(!entity->storage_key().empty());
-      entity->RecordAttachmentUploadCancelled();
+      entity->ClearPendingAttachmentUpload();
       removed_storage_keys.push_back(entity->storage_key());
       return true;
     }
@@ -239,6 +239,17 @@ ProcessorEntityTracker::GetEntitiesWithLocalChanges(size_t max_entries) {
       if (entities.size() >= max_entries) {
         break;
       }
+    }
+  }
+  return entities;
+}
+
+std::vector<ProcessorEntity*>
+ProcessorEntityTracker::GetEntitiesWithPendingAttachmentUploads() {
+  std::vector<ProcessorEntity*> entities;
+  for (const auto& [client_tag_hash, entity] : entities_) {
+    if (entity->HasPendingAttachmentUpload()) {
+      entities.push_back(entity.get());
     }
   }
   return entities;

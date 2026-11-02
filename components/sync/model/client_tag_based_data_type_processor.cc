@@ -121,6 +121,24 @@ absl::flat_hash_set<ClientTagHash> GetClientTagHashes(
   return client_tag_hashes;
 }
 
+// Aborts any in-flight attachment uploads in `entity_tracker` while retaining
+// `pending_upload` metadata and staging files so uploads can be resumed later.
+void PausePendingAttachmentUploads(ProcessorEntityTracker& entity_tracker) {
+  for (ProcessorEntity* entity :
+       entity_tracker.GetEntitiesWithPendingAttachmentUploads()) {
+    entity->PauseAttachmentUpload();
+  }
+}
+
+// Aborts any in-flight attachment uploads in `entity_tracker`, clears
+// `pending_upload` metadata, and deletes staging files on disk.
+void ClearPendingAttachmentUploads(ProcessorEntityTracker& entity_tracker) {
+  for (ProcessorEntity* entity :
+       entity_tracker.GetEntitiesWithPendingAttachmentUploads()) {
+    entity->ClearPendingAttachmentUpload();
+  }
+}
+
 }  // namespace
 
 ClientTagBasedDataTypeProcessor::ClientTagBasedDataTypeProcessor(
@@ -489,6 +507,7 @@ void ClientTagBasedDataTypeProcessor::ConnectSync(
 
   worker_ = std::move(worker);
 
+  StartOrResumePendingAttachmentUploads();
   NudgeForCommitIfNeeded();
 }
 
@@ -505,6 +524,7 @@ void ClientTagBasedDataTypeProcessor::DisconnectSync() {
 
   if (entity_tracker_) {
     entity_tracker_->ClearTransientSyncState();
+    PausePendingAttachmentUploads(*entity_tracker_);
   }
 }
 
@@ -615,7 +635,7 @@ void ClientTagBasedDataTypeProcessor::PutImpl(
         UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeOrphanMetadata.Put",
                                   DataTypeHistogramValue(type_));
       }
-      entity->RecordAttachmentUploadCancelled();
+      entity->ClearPendingAttachmentUpload();
       // Remove the old storage key from the tracker and the corresponding
       // metadata record.
       metadata_change_list->ClearMetadata(entity->storage_key());
@@ -1424,6 +1444,11 @@ void ClientTagBasedDataTypeProcessor::ResetState(
     case KEEP_METADATA:
       break;
     case CLEAR_METADATA:
+      if (entity_tracker_) {
+        // Abort any in-flight attachment uploads and delete their staged files
+        // on disk before destroying `entity_tracker_`.
+        ClearPendingAttachmentUploads(*entity_tracker_);
+      }
       entity_tracker_.reset();
       break;
   }
@@ -1915,11 +1940,9 @@ void ClientTagBasedDataTypeProcessor::StartOrResumePendingAttachmentUploads() {
     return;
   }
 
-  for (const std::string& storage_key : entity_tracker_->GetAllStorageKeys()) {
-    ProcessorEntity* entity =
-        entity_tracker_->GetEntityForStorageKey(storage_key);
-    if (entity && entity->HasPendingAttachmentUpload() &&
-        !entity->HasAttachmentUploadInProgress()) {
+  for (ProcessorEntity* entity :
+       entity_tracker_->GetEntitiesWithPendingAttachmentUploads()) {
+    if (!entity->HasAttachmentUploadInProgress()) {
       StartOrResumeAttachmentUpload(*entity);
     }
   }
@@ -1952,21 +1975,21 @@ void ClientTagBasedDataTypeProcessor::StartOrResumeAttachmentUpload(
       &ClientTagBasedDataTypeProcessor::OnAttachmentUploadCompleted,
       weak_ptr_factory_for_controller_.GetWeakPtr(), storage_key);
 
-  base::OnceClosure cancel_attachment_upload_callback;
+  base::OnceClosure abort_attachment_upload_callback;
   if (existing_upload_url.is_empty()) {
     AttachmentUploader::UploadUrlCallback upload_url_callback = base::BindOnce(
         &ClientTagBasedDataTypeProcessor::OnAttachmentUploadResumeUrlReceived,
         weak_ptr_factory_for_controller_.GetWeakPtr(), storage_key);
-    cancel_attachment_upload_callback = attachment_uploader_->StartUpload(
+    abort_attachment_upload_callback = attachment_uploader_->StartUpload(
         file_path, std::move(upload_url_callback),
         std::move(completion_callback));
   } else {
-    cancel_attachment_upload_callback = attachment_uploader_->ResumeUpload(
+    abort_attachment_upload_callback = attachment_uploader_->ResumeUpload(
         file_path, existing_upload_url, std::move(completion_callback));
   }
 
   entity.RecordAttachmentUploadStarted(
-      std::move(cancel_attachment_upload_callback));
+      std::move(abort_attachment_upload_callback));
 }
 
 void ClientTagBasedDataTypeProcessor::OnAttachmentUploadResumeUrlReceived(

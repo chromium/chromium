@@ -197,18 +197,21 @@ class ProcessorEntity {
   // - Completed (`RecordAttachmentUploadCompleted()`): Stores the uploaded
   //   `temporary_blob_id`, deletes the staging file, and unblocks the entity
   //   for commit.
-  // - Failed / Cancelled (`RecordAttachmentUploadFailed()` /
-  //   `RecordAttachmentUploadCancelled()`): Clears `pending_upload` from
-  //   metadata, deletes the staging file, and unblocks the entity for commit
-  //   without the attachment (`RecordAttachmentUploadCancelled()` also aborts
-  //   any in-flight network request).
+  // - Paused (`PauseAttachmentUpload()`): Aborts the in-flight network request
+  //   while retaining `pending_upload` and the staging file so the upload can
+  //   be resumed later.
+  // - Failed / Cleared (`RecordAttachmentUploadFailed()` /
+  //   `ClearPendingAttachmentUpload()`): Clears `pending_upload` from metadata,
+  //   deletes the staging file, and unblocks the entity for commit without the
+  //   attachment (`ClearPendingAttachmentUpload()` also aborts any in-flight
+  //   network request).
   //
   // Returns true if an outgoing attachment upload is queued or in progress for
   // this entity and has not yet produced a `temporary_blob_id`.
   bool HasPendingAttachmentUpload() const;
 
   // Returns true if a network attachment upload is currently in flight for this
-  // entity (i.e. a cancellation callback is registered).
+  // entity (i.e. an abort callback is registered).
   bool HasAttachmentUploadInProgress() const;
 
   // Marks that a local attachment upload for `file_path` is queued for this
@@ -218,18 +221,18 @@ class ProcessorEntity {
   // already increments the sequence number for the local change, avoiding
   // double-incrementing). `ProcessorEntity` takes ownership of the staging file
   // at `file_path` (which must be a unique path) and asynchronously deletes it
-  // once the upload completes or is cancelled. Any existing pending attachment
-  // upload is cancelled and its file is deleted.
+  // once the upload completes or is cleared. Any existing pending attachment
+  // upload is cleared and its file is deleted.
   void RecordAttachmentUploadQueued(const base::FilePath& file_path);
 
   // Records that the network attachment upload has started (or resumed) and
-  // registers `cancel_attachment_upload_callback` to abort the active network
-  // upload if the upload is cancelled or replaced.
+  // registers `abort_attachment_upload_callback` to abort the active network
+  // upload if the upload is paused, cleared, or replaced.
   void RecordAttachmentUploadStarted(
-      base::OnceClosure cancel_attachment_upload_callback);
+      base::OnceClosure abort_attachment_upload_callback);
 
   // Records that the in-flight network attachment upload failed, clearing the
-  // registered cancellation callback, clearing `pending_upload` from metadata,
+  // registered abort callback, clearing `pending_upload` from metadata,
   // scheduling deletion of the staging file on disk, and unblocking the entity
   // for commit without the attachment.
   void RecordAttachmentUploadFailed();
@@ -243,12 +246,17 @@ class ProcessorEntity {
   // deletion of the staging file on disk, and unblocking the entity for commit.
   void RecordAttachmentUploadCompleted(const std::string& temporary_blob_id);
 
-  // Cancels any pending attachment upload for this entity, running the
-  // registered cancellation callback, clearing `pending_upload` from metadata,
-  // and scheduling deletion of the staging file on disk. Also called
-  // automatically on local deletion, forced remote update, and when a new
-  // attachment upload replaces an existing pending upload.
-  void RecordAttachmentUploadCancelled();
+  // Clears any pending attachment upload for this entity, aborting any active
+  // network upload, clearing `pending_upload` from metadata, and scheduling
+  // deletion of the staging file on disk. Also called automatically on local
+  // deletion, forced remote update, and when a new attachment upload replaces
+  // an existing pending upload.
+  void ClearPendingAttachmentUpload();
+
+  // Pauses any active network attachment upload by running the registered abort
+  // callback while keeping `pending_upload` and the staging file intact so the
+  // upload can be resumed later.
+  void PauseAttachmentUpload();
 
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
@@ -277,7 +285,7 @@ class ProcessorEntity {
   int64_t commit_requested_sequence_number_;
 
   // Optional callback to abort an in-flight network attachment upload.
-  base::OnceClosure cancel_attachment_upload_callback_;
+  base::OnceClosure abort_attachment_upload_callback_;
 };
 
 }  // namespace syncer

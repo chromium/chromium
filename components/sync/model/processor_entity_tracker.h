@@ -107,6 +107,9 @@ class ProcessorEntityTracker {
   // initialized to commit.
   std::vector<ProcessorEntity*> GetEntitiesWithLocalChanges(size_t max_entries);
 
+  // Returns all entities with pending attachment uploads.
+  std::vector<ProcessorEntity*> GetEntitiesWithPendingAttachmentUploads();
+
   // Returns true if there are any local entities to be committed.
   // TODO(crbug.com/401470426): Investigate if this method can be replaced with
   // `HasUnsyncedChanges()`, else rename it to something more accurate.

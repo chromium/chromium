@@ -503,10 +503,10 @@ TEST_F(ProcessorEntityTrackerTest, ShouldRemoveInactiveCollaborations) {
   EXPECT_EQ(entity_tracker_.size(), 1U);
 }
 
-// Verifies that `RemoveEntityForStorageKey()` cancels any pending attachment
+// Verifies that `RemoveEntityForStorageKey()` clears any pending attachment
 // upload and deletes its staging file for the removed entity.
 TEST_F(ProcessorEntityTrackerTest,
-       ShouldCancelPendingAttachmentUploadOnRemoveEntityForStorageKey) {
+       ShouldClearPendingAttachmentUploadOnRemoveEntityForStorageKey) {
   const base::FilePath file_path = CreateStagingFile();
 
   EntityMetadataMap metadata_map;
@@ -528,10 +528,10 @@ TEST_F(ProcessorEntityTrackerTest,
   EXPECT_FALSE(base::PathExists(file_path));
 }
 
-// Verifies that `RemoveEntityForClientTagHash()` cancels any pending attachment
+// Verifies that `RemoveEntityForClientTagHash()` clears any pending attachment
 // upload and deletes its staging file for the removed entity.
 TEST_F(ProcessorEntityTrackerTest,
-       ShouldCancelPendingAttachmentUploadOnRemoveEntityForClientTagHash) {
+       ShouldClearPendingAttachmentUploadOnRemoveEntityForClientTagHash) {
   const base::FilePath file_path = CreateStagingFile();
 
   EntityMetadataMap metadata_map;
@@ -553,11 +553,11 @@ TEST_F(ProcessorEntityTrackerTest,
   EXPECT_FALSE(base::PathExists(file_path));
 }
 
-// Verifies that `RemoveInactiveCollaborations()` cancels any pending attachment
+// Verifies that `RemoveInactiveCollaborations()` clears any pending attachment
 // upload and deletes its staging file for removed collaborative entities while
 // leaving active collaborative entities' uploads intact.
 TEST_F(ProcessorEntityTrackerTest,
-       ShouldCancelPendingAttachmentUploadOnRemoveInactiveCollaborations) {
+       ShouldClearPendingAttachmentUploadOnRemoveInactiveCollaborations) {
   // Set up two collaborative entities (`kStorageKey1` in an active
   // collaboration and `kStorageKey2` in an inactive collaboration), each with a
   // staged attachment file on disk and an in-flight upload callback.
@@ -594,6 +594,26 @@ TEST_F(ProcessorEntityTrackerTest,
   EXPECT_FALSE(base::PathExists(inactive_file_path));
   EXPECT_FALSE(active_cancel_future.IsReady());
   EXPECT_TRUE(base::PathExists(active_file_path));
+}
+
+// Verifies that `GetEntitiesWithPendingAttachmentUploads()` returns only
+// entities that currently have a pending attachment upload.
+TEST_F(ProcessorEntityTrackerTest,
+       ShouldReturnEntitiesWithPendingAttachmentUploads) {
+  EntityMetadataMap metadata_map;
+  metadata_map.emplace(
+      kStorageKey1,
+      GenerateMetadataWithPendingAttachmentUpload(
+          kStorageKey1, kClientTagHash1, CreateStagingFile()));
+  metadata_map.emplace(kStorageKey2,
+                       GenerateMetadata(kStorageKey2, kClientTagHash2));
+
+  ProcessorEntityTracker tracker(GenerateDataTypeState(),
+                                 std::move(metadata_map));
+  ProcessorEntity* entity1 = tracker.GetEntityForStorageKey(kStorageKey1);
+  ASSERT_THAT(entity1, NotNull());
+  EXPECT_THAT(tracker.GetEntitiesWithPendingAttachmentUploads(),
+              ElementsAre(entity1));
 }
 
 }  // namespace

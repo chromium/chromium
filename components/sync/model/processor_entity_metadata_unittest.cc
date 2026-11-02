@@ -284,9 +284,10 @@ TEST(ProcessorEntityMetadataTest, ShouldRecordAttachmentUploadCompleted) {
       kTemporaryBlobId);
 }
 
-// Verifies that `RecordAttachmentUploadCancelled()` clears `pending_upload` and
-// clears `attachment_metadata` if no `attachment` submessage is present.
-TEST(ProcessorEntityMetadataTest, ShouldRecordAttachmentUploadCancelled) {
+// Verifies that `RecordPendingAttachmentUploadCleared()` clears
+// `pending_upload` and clears `attachment_metadata` if no `attachment`
+// submessage is present.
+TEST(ProcessorEntityMetadataTest, ShouldRecordPendingAttachmentUploadCleared) {
   ProcessorEntityMetadata metadata = ProcessorEntityMetadata::CreateNew(
       ClientTagHash::FromHashed(kHash), kServerId, base::Time::Now());
   metadata.IncrementSequenceNumber();
@@ -294,7 +295,7 @@ TEST(ProcessorEntityMetadataTest, ShouldRecordAttachmentUploadCancelled) {
       base::FilePath::FromUTF8Unsafe(kFilePath));
   metadata.RecordAttachmentUploadResumeUrlReceived(GURL(kUploadUrl));
 
-  metadata.RecordAttachmentUploadCancelled();
+  metadata.RecordPendingAttachmentUploadCleared();
 
   EXPECT_FALSE(metadata.HasPendingAttachmentUpload());
   EXPECT_FALSE(metadata.proto().has_attachment_metadata());

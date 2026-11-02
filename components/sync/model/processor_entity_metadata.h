@@ -165,7 +165,7 @@ class ProcessorEntityMetadata {
 
   // Clears `pending_upload` from metadata if an attachment upload is queued or
   // in progress.
-  void RecordAttachmentUploadCancelled();
+  void RecordPendingAttachmentUploadCleared();
 
  private:
   explicit ProcessorEntityMetadata(sync_pb::EntityMetadata metadata);

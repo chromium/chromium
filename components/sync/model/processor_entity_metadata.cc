@@ -380,7 +380,7 @@ void ProcessorEntityMetadata::RecordAttachmentUploadCompleted(
       temporary_blob_id);
 }
 
-void ProcessorEntityMetadata::RecordAttachmentUploadCancelled() {
+void ProcessorEntityMetadata::RecordPendingAttachmentUploadCleared() {
   if (!HasPendingAttachmentUpload()) {
     return;
   }
