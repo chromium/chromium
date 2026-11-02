@@ -9,6 +9,7 @@
 namespace {
 // Vertical constant for the header label.
 const CGFloat kHeaderLabelVerticalPadding = 10.0f;
+const CGFloat kHeaderLabelHorizontalPadding = 8.0f;
 }  // namespace
 
 @implementation ComposeboxMenuHeaderView
@@ -26,7 +27,9 @@ const CGFloat kHeaderLabelVerticalPadding = 10.0f;
     [self addSubview:_label];
 
     [NSLayoutConstraint activateConstraints:@[
-      [_label.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [_label.leadingAnchor
+          constraintEqualToAnchor:self.leadingAnchor
+                         constant:kHeaderLabelHorizontalPadding],
       [_label.topAnchor constraintEqualToAnchor:self.topAnchor
                                        constant:kHeaderLabelVerticalPadding],
       [_label.bottomAnchor
