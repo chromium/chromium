@@ -6109,6 +6109,8 @@ data/accessibility/html/multi-selectable-expected-fuchsia.txt
 data/accessibility/html/multi-selectable-expected-win.txt
 data/accessibility/html/multi-selectable.html
 data/accessibility/html/name-calc-focusable-expected-blink.txt
+data/accessibility/html/name-calc-focusable-description-list-expected-blink.txt
+data/accessibility/html/name-calc-focusable-description-list.html
 data/accessibility/html/name-calc-focusable.html
 data/accessibility/html/name-from-popovertarget-and-interestfor-expected-android-external.txt
 data/accessibility/html/name-from-popovertarget-and-interestfor-expected-android.txt

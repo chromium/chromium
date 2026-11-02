@@ -8949,6 +8949,11 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kVideo:
       return false;
 
+    case ax::mojom::blink::Role::kDescriptionList:
+      // Description lists are name-from-author, but their contents can
+      // contribute to an ancestor's name.
+      return recursive;
+
     // ----- Conditional: contribute to ancestor only, unless focusable -------
     // Some objects can contribute their contents to ancestor names, but
     // only have their own name if they are focusable
@@ -8983,7 +8988,6 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kContentDeletion:
     case ax::mojom::blink::Role::kContentInsertion:
     case ax::mojom::blink::Role::kDefinition:
-    case ax::mojom::blink::Role::kDescriptionList:
     case ax::mojom::blink::Role::kDetails:
     case ax::mojom::blink::Role::kEmphasis:
     case ax::mojom::blink::Role::kFigcaption:

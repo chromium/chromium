@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+@BLINK-ALLOW:focus*
+@EXECUTE-AND-WAIT-FOR:focusDescriptionList()
+-->
+<dl id="description-list" tabindex="0">
+  <dt>Fruit</dt>
+  <dd>Apples</dd>
+</dl>
+<dl tabindex="0" aria-label="Produce">
+  <dt>Fruit</dt>
+  <dd>Apples</dd>
+</dl>
+<div role="button">
+  <dl>
+    <dt>Color</dt>
+    <dd>Blue</dd>
+  </dl>
+</div>
+
+<script>
+const descriptionList = document.getElementById('description-list');
+document.title = 'description-list-not-focused';
+
+function focusDescriptionList() {
+  descriptionList.focus();
+  document.title = 'description-list-focused';
+  return 'description-list-focused';
+}
+</script>

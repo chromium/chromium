@@ -1,0 +1,51 @@
+rootWebArea focusable name='description-list-not-focused'
+++genericContainer ignored
+++++genericContainer ignored
+++++++descriptionList focusable
+++++++++term name='Fruit'
+++++++++++staticText name='Fruit'
+++++++++++++inlineTextBox name='Fruit'
+++++++++definition
+++++++++++staticText name='Apples'
+++++++++++++inlineTextBox name='Apples'
+++++++descriptionList focusable name='Produce'
+++++++++term name='Fruit'
+++++++++++staticText name='Fruit'
+++++++++++++inlineTextBox name='Fruit'
+++++++++definition
+++++++++++staticText name='Apples'
+++++++++++++inlineTextBox name='Apples'
+++++++button name='Color Blue'
+++++++++descriptionList
+++++++++++term name='Color'
+++++++++++++staticText name='Color'
+++++++++++++++inlineTextBox name='Color'
+++++++++++definition
+++++++++++++staticText name='Blue'
+++++++++++++++inlineTextBox name='Blue'
+=== Start Continuation ===
+rootWebArea focusable name='description-list-focused'
+++genericContainer ignored
+++++genericContainer ignored
+++++++descriptionList focusable
+++++++++term name='Fruit'
+++++++++++staticText name='Fruit'
+++++++++++++inlineTextBox name='Fruit'
+++++++++definition
+++++++++++staticText name='Apples'
+++++++++++++inlineTextBox name='Apples'
+++++++descriptionList focusable name='Produce'
+++++++++term name='Fruit'
+++++++++++staticText name='Fruit'
+++++++++++++inlineTextBox name='Fruit'
+++++++++definition
+++++++++++staticText name='Apples'
+++++++++++++inlineTextBox name='Apples'
+++++++button name='Color Blue'
+++++++++descriptionList
+++++++++++term name='Color'
+++++++++++++staticText name='Color'
+++++++++++++++inlineTextBox name='Color'
+++++++++++definition
+++++++++++++staticText name='Blue'
+++++++++++++++inlineTextBox name='Blue'
