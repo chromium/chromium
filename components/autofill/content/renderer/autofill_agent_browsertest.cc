@@ -2020,6 +2020,62 @@ TEST_F(AutofillAgentTest,
               AutofillSuggestionTriggerSource::kFormControlElementClicked));
 }
 
+// Tests that `ApplyFieldAction` with `FieldActionType::kReplaceAll` fills and
+// previews `FormControlType::kSelectOne` (`<select>`) elements (used by
+// `send_tab_to_self::ReceivedTabFormsFiller`).
+TEST_F(AutofillAgentTest, ApplyFieldAction_SelectOneElement) {
+  using mojom::ActionPersistence;
+  using mojom::FieldActionType;
+
+  LoadHTML(R"(
+    <form id="form_id">
+      <select id="select_id">
+        <option value="">Choose...</option>
+        <option value="US">United States</option>
+        <option value="CA">Canada</option>
+      </select>
+    </form>
+  )");
+
+  WebSelectElement select =
+      GetWebElementById("select_id").DynamicTo<WebSelectElement>();
+  ASSERT_TRUE(select);
+  FieldRendererId field_id = form_util::GetFieldRendererId(select);
+
+  autofill_agent().ApplyFieldAction(FieldActionType::kReplaceAll,
+                                    ActionPersistence::kPreview, field_id,
+                                    u"US");
+  EXPECT_EQ(select.SuggestedValue().Utf16(), u"US");
+  EXPECT_EQ(select.Value().Utf16(), u"");
+  EXPECT_EQ(select.GetAutofillState(), WebAutofillState::kPreviewed);
+
+  autofill_agent().ClearPreviewedForm();
+  EXPECT_TRUE(select.SuggestedValue().IsEmpty());
+  EXPECT_EQ(select.GetAutofillState(), WebAutofillState::kNotFilled);
+
+  autofill_agent().ApplyFieldAction(FieldActionType::kReplaceAll,
+                                    ActionPersistence::kPreview, field_id,
+                                    u"INVALID");
+  EXPECT_TRUE(select.SuggestedValue().IsEmpty());
+  EXPECT_EQ(select.GetAutofillState(), WebAutofillState::kNotFilled);
+
+  autofill_agent().ApplyFieldAction(FieldActionType::kReplaceAll,
+                                    ActionPersistence::kFill, field_id, u"CA");
+  EXPECT_EQ(select.Value().Utf16(), u"CA");
+  EXPECT_EQ(select.GetAutofillState(), WebAutofillState::kAutofilled);
+
+  autofill_agent().ApplyFieldAction(FieldActionType::kSelectAll,
+                                    ActionPersistence::kFill, field_id, u"");
+  EXPECT_EQ(select.Value().Utf16(), u"CA");
+  EXPECT_EQ(select.GetAutofillState(), WebAutofillState::kAutofilled);
+
+  autofill_agent().ApplyFieldAction(FieldActionType::kReplaceAll,
+                                    ActionPersistence::kFill, field_id,
+                                    u"INVALID");
+  EXPECT_TRUE(select.Value().IsEmpty());
+  EXPECT_EQ(select.GetAutofillState(), WebAutofillState::kNotFilled);
+}
+
 // Malicious web pages can attempt to steal saved autofill data via a
 // side-channel brute-force attack by rapidly cycling input prefixes and
 // monitoring :autofill state changes.

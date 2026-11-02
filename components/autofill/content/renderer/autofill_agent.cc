@@ -1399,8 +1399,21 @@ void AutofillAgent::ApplyFieldAction(
   }
 
   if (WebFormControlElement form_control =
-          form_util::GetFormControlByRendererId(field_id);
-      form_control && form_util::IsTextAreaElementOrTextInput(form_control)) {
+          form_util::GetFormControlByRendererId(field_id)) {
+    switch (action_type) {
+      case mojom::FieldActionType::kReplaceAll:
+        if (!form_util::IsAutofillableElement(form_control)) {
+          return;
+        }
+        break;
+      case mojom::FieldActionType::kReplaceSelection:
+      case mojom::FieldActionType::kReplaceSelectionForAtMemory:
+      case mojom::FieldActionType::kSelectAll:
+        if (!form_util::IsTextAreaElementOrTextInput(form_control)) {
+          return;
+        }
+        break;
+    }
     DCHECK(
         form_util::MaybeWasOwnedByFrame(form_control, unsafe_render_frame()));
     ClearPreviewedForm();
