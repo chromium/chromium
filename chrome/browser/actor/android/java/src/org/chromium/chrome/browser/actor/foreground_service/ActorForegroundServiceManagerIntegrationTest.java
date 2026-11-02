@@ -38,6 +38,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -47,9 +48,11 @@ import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.actor.ActorTaskTimeoutManager;
 import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.actor.notifications.ActorNotificationFactory;
 import org.chromium.chrome.browser.actor.notifications.ActorNotificationService;
+import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -58,7 +61,9 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -82,6 +87,7 @@ public class ActorForegroundServiceManagerIntegrationTest {
 
     @Mock private ActorKeyedService mKeyedService;
     @Mock private ActorForegroundServiceController mServiceController;
+    @Mock private ActorTaskTimeoutManager mTimeoutManager;
     @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
     @Mock private Profile mMockProfile;
 
@@ -270,6 +276,17 @@ public class ActorForegroundServiceManagerIntegrationTest {
                 == 0;
     }
 
+    private List<Integer> getPromotedTaskIds() {
+        List<Integer> promotedTaskIds = new ArrayList<>();
+        for (NotificationEntry entry : mNotificationManager.getNotifications()) {
+            if (entry.notification.extras.getBoolean(
+                    ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING)) {
+                promotedTaskIds.add(entry.id);
+            }
+        }
+        return promotedTaskIds;
+    }
+
     @Test
     public void testPinSwap_RepostBeforeSystemCancel_UnpinnedNotificationHasNoServiceFlags() {
         mDefersSystemCancel = true;
@@ -364,5 +381,130 @@ public class ActorForegroundServiceManagerIntegrationTest {
         assertNull(findNotification(UNPINNED_TAG, placeholderId));
         assertNull(findNotification(UNPINNED_TAG, 1));
         verify(mServiceController, never()).stopActorForegroundService(anyInt());
+    }
+
+    @Test
+    public void testSingleLiveNotification_CategoryChangesAndDismissalPromoteNextTask() {
+        ActorTask task1 = createTask(1, "Task 1");
+        ActorTask task2 = createTask(2, "Task 2");
+
+        transitionTask(task1, ActorTaskState.ACTING);
+        assertEquals(1, mPinnedFgsNotificationId);
+        assertEquals(List.of(1), getPromotedTaskIds());
+
+        transitionTask(task2, ActorTaskState.ACTING);
+        assertEquals(1, mPinnedFgsNotificationId);
+        assertEquals(List.of(2), getPromotedTaskIds());
+
+        transitionTask(task1, ActorTaskState.REFLECTING);
+        when(task1.getCurrentActionName()).thenReturn("Step");
+        mManager.onTaskStepProgressUpdated(1, "Step");
+        ShadowLooper.idleMainLooper();
+        assertEquals(List.of(2), getPromotedTaskIds());
+
+        transitionTask(task1, ActorTaskState.WAITING_ON_USER);
+        assertEquals(1, mPinnedFgsNotificationId);
+        assertEquals(List.of(1), getPromotedTaskIds());
+
+        transitionTask(task1, ActorTaskState.FINISHED);
+        assertEquals(2, mPinnedFgsNotificationId);
+        assertEquals(List.of(1), getPromotedTaskIds());
+        assertNotNull(findNotification(UNPINNED_TAG, 1));
+
+        mManager.onNotificationDismissed(1);
+        mNotificationManager.cancel(UNPINNED_TAG, 1);
+        ShadowLooper.idleMainLooper();
+        assertEquals(2, mPinnedFgsNotificationId);
+        assertEquals(List.of(2), getPromotedTaskIds());
+    }
+
+    @Test
+    public void testSingleLiveNotification_CompletedTaskDemotionTimerPromotesRemainingTask() {
+        ActorTask task1 = createTask(1, "Task 1");
+        ActorTask task2 = createTask(2, "Task 2");
+        transitionTask(task1, ActorTaskState.ACTING);
+        transitionTask(task2, ActorTaskState.ACTING);
+
+        transitionTask(task2, ActorTaskState.FINISHED);
+        assertEquals(1, mPinnedFgsNotificationId);
+        assertEquals(List.of(2), getPromotedTaskIds());
+
+        shadowOf(Looper.getMainLooper())
+                .idleFor(ActorNotificationService.getDemotionDelayMs() + 1, TimeUnit.MILLISECONDS);
+
+        assertEquals(1, mPinnedFgsNotificationId);
+        assertEquals(List.of(1), getPromotedTaskIds());
+        Notification task2Demoted = findNotification(/* tag= */ null, 2);
+        assertNotNull(task2Demoted);
+        assertTrue(isDismissible(task2Demoted));
+    }
+
+    @Test
+    public void
+            testSingleLiveNotification_PreemptingCompletedTaskAwaitingDemotion_DemotesImmediately() {
+        ActorTask task1 = createTask(1, "Task 1");
+        ActorTask task2 = createTask(2, "Task 2");
+        transitionTask(task1, ActorTaskState.ACTING);
+        transitionTask(task2, ActorTaskState.ACTING);
+        transitionTask(task2, ActorTaskState.FINISHED);
+        assertEquals(1, mPinnedFgsNotificationId);
+        assertEquals(List.of(2), getPromotedTaskIds());
+        assertTrue(mNotificationService.hasPendingDemotions());
+
+        transitionTask(task1, ActorTaskState.PAUSED_BY_USER);
+
+        assertEquals(1, mPinnedFgsNotificationId);
+        assertEquals(List.of(1), getPromotedTaskIds());
+        assertFalse(mNotificationService.hasPendingDemotions());
+        Notification task2Demoted = findNotification(/* tag= */ null, 2);
+        assertNotNull(task2Demoted);
+        assertTrue(isDismissible(task2Demoted));
+        assertFalse(
+                task2Demoted.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+    }
+
+    @Test
+    public void testSingleLiveNotification_WarningStatePreservedAcrossPreemptionAndRepromotion() {
+        mManager.setTimeoutManagerForTesting(mTimeoutManager);
+        ActorTask task1 = createTask(1, "Task 1");
+        ActorTask task2 = createTask(2, "Task 2");
+        String expectedWarningTitle =
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.actor_notification_title_will_stop_task);
+
+        transitionTask(task1, ActorTaskState.ACTING);
+        when(mTimeoutManager.isWarningMode(1)).thenReturn(true);
+        transitionTask(task1, ActorTaskState.PAUSED_BY_ACTOR);
+        assertEquals(1, mPinnedFgsNotificationId);
+        assertEquals(List.of(1), getPromotedTaskIds());
+        Notification task1LiveWarning = findNotification(/* tag= */ null, 1);
+        assertNotNull(task1LiveWarning);
+        assertEquals(
+                expectedWarningTitle, task1LiveWarning.extras.getString(Notification.EXTRA_TITLE));
+
+        transitionTask(task2, ActorTaskState.ACTING);
+        assertEquals(1, mPinnedFgsNotificationId);
+        assertEquals(List.of(2), getPromotedTaskIds());
+        Notification task1PinnedNonLive = findNotification(/* tag= */ null, 1);
+        assertNotNull(task1PinnedNonLive);
+        assertFalse(
+                task1PinnedNonLive.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertEquals(
+                expectedWarningTitle,
+                task1PinnedNonLive.extras.getString(Notification.EXTRA_TITLE));
+
+        transitionTask(task2, ActorTaskState.FINISHED);
+        mManager.onNotificationDismissed(2);
+        mNotificationManager.cancel(/* tag= */ null, 2);
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(1, mPinnedFgsNotificationId);
+        assertEquals(List.of(1), getPromotedTaskIds());
+        Notification task1Repromoted = findNotification(/* tag= */ null, 1);
+        assertNotNull(task1Repromoted);
+        assertEquals(
+                expectedWarningTitle, task1Repromoted.extras.getString(Notification.EXTRA_TITLE));
     }
 }
