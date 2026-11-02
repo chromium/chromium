@@ -6866,6 +6866,21 @@
             ]
         }
     ],
+    "DynamicPatching": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DynamicPatching"
+                    ]
+                }
+            ]
+        }
+    ],
     "DynamicProfileCountryV2Desktop": [
         {
             "platforms": [
