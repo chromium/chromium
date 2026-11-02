@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
 
@@ -29,19 +28,19 @@ UChar32 ConsumeEscape(CSSTokenizerInputStream& input) {
   input.Advance();
   DCHECK(!IsCSSNewLine(cc));
   if (IsAsciiHexDigit(cc)) {
+    // At most six hex digits, so this cannot overflow.
+    UChar32 code_point = ToAsciiHexValue(cc);
     unsigned consumed_hex_digits = 1;
-    StringBuilder hex_chars;
-    hex_chars.Append(cc);
-    while (consumed_hex_digits < 6 &&
-           IsAsciiHexDigit(input.PeekWithoutReplacement(0))) {
-      cc = input.NextInputChar();
+    while (consumed_hex_digits < 6) {
+      cc = input.PeekWithoutReplacement(0);
+      if (!IsAsciiHexDigit(cc)) {
+        break;
+      }
       input.Advance();
-      hex_chars.Append(cc);
+      code_point = (code_point << 4) | ToAsciiHexValue(cc);
       consumed_hex_digits++;
-    };
+    }
     ConsumeSingleWhitespaceIfNext(input);
-    UChar32 code_point = *HexStringToUint(hex_chars.ReleaseString(),
-                                          NumberParsingOptions::Strict());
     if (code_point == 0 || (0xD800 <= code_point && code_point <= 0xDFFF) ||
         code_point > 0x10FFFF) {
       return kReplacementCharacter;
