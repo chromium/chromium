@@ -333,14 +333,13 @@ CGFloat FakeToolbarHeight() {
 }
 
 CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
-                            UITraitCollection* trait_collection,
-                            bool aim_allowed) {
-  CGFloat header_height =
-      LogoTopPadding(logo_state, trait_collection, aim_allowed) +
-      DoodleHeight(logo_state, trait_collection) +
-      LogoToFakeboxPadding(logo_state, trait_collection) + FakeOmniboxHeight() +
-      ntp_header::kScrolledToTopOmniboxBottomMargin +
-      ceil(HeaderSeparatorHeight());
+                            UITraitCollection* trait_collection) {
+  CGFloat header_height = LogoTopPadding(logo_state, trait_collection) +
+                          DoodleHeight(logo_state, trait_collection) +
+                          LogoToFakeboxPadding(logo_state, trait_collection) +
+                          FakeOmniboxHeight() +
+                          ntp_header::kScrolledToTopOmniboxBottomMargin +
+                          ceil(HeaderSeparatorHeight());
   if (!IsRegularXRegularSizeClass(trait_collection)) {
     return header_height;
   }
@@ -442,8 +441,7 @@ CGFloat BaseQuickActionsTopPadding(UITraitCollection* trait_collection) {
 // feed vertical peeking. `SearchEngineLogoState::kLogo` is used as a consistent
 // baseline so the spacing below the fakebox is identical on doodle days.
 CGFloat RedistributableHeaderSpace(UITraitCollection* trait_collection) {
-  CHECK(content_suggestions::ShouldRedistributeHeaderSpace(
-      /*aim_allowed=*/true));
+  CHECK(content_suggestions::ShouldRedistributeHeaderSpace());
 
   CGFloat redistributable_space =
       BaseLogoTopPadding(SearchEngineLogoState::kLogo, trait_collection) +
@@ -457,24 +455,26 @@ CGFloat RedistributableHeaderSpace(UITraitCollection* trait_collection) {
 
 }  // namespace
 
-// Returns true when AIM is allowed and the active AIM arm eliminates the Quick
-// Actions row or rearranges tiles such that header vertical space needs to be
-// redistributed.
-bool ShouldRedistributeHeaderSpace(bool aim_allowed) {
-  if (!aim_allowed) {
-    return false;
+// Returns true when the active AIM arm eliminates the Quick Actions row or
+// rearranges tiles such that header vertical space needs to be redistributed.
+bool ShouldRedistributeHeaderSpace() {
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kDisabled:
+      return false;
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+    case AimButtonRefactorArm::kNoChips:
+      return true;
   }
-  const AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  return arm == AimButtonRefactorArm::kAimAsModule ||
-         arm == AimButtonRefactorArm::kAimAsMvt ||
-         arm == AimButtonRefactorArm::kNoChips;
 }
 
 CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
-                       UITraitCollection* trait_collection,
-                       bool aim_allowed) {
+                       UITraitCollection* trait_collection) {
   if (logo_state != SearchEngineLogoState::kNone &&
-      ShouldRedistributeHeaderSpace(aim_allowed)) {
+      ShouldRedistributeHeaderSpace()) {
     // Absorb the Doodle-vs-Logo delta in the top padding so the fakebox Y
     // position remains constant across doodle and logo states.
     const CGFloat doodle_offset =
@@ -537,7 +537,7 @@ CGFloat QuickActionsTopPadding(UITraitCollection* trait_collection) {
 }
 
 CGFloat RedistributedHeaderBottomSpacing(UITraitCollection* trait_collection) {
-  CHECK(ShouldRedistributeHeaderSpace(/*aim_allowed=*/true));
+  CHECK(ShouldRedistributeHeaderSpace());
 
   const CGFloat padding = RedistributableHeaderSpace(trait_collection) *
                           kFakeboxBottomRemainingSpaceRatio;

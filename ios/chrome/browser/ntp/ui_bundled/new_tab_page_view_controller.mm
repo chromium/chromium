@@ -1279,13 +1279,6 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 #pragma mark - Private
 
-// Returns whether the vertical space above the logo and below the fakebox
-// should be redistributed for `kAimButtonRefactor` arms where the Quick Actions
-// row is removed.
-- (BOOL)shouldRedistributeHeaderSpace {
-  return content_suggestions::ShouldRedistributeHeaderSpace(_isAIMAllowed);
-}
-
 // Sets the background using the current color palette, or defaults if none is
 // set.
 - (void)applyBackgroundTheme {
@@ -2167,7 +2160,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 // Spacing between the header view and the module directly below it.
 - (CGFloat)headerBottomSpacing {
-  if ([self shouldRedistributeHeaderSpace]) {
+  if (content_suggestions::ShouldRedistributeHeaderSpace()) {
     return content_suggestions::RedistributedHeaderBottomSpacing(
         self.traitCollection);
   }
