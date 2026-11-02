@@ -187,6 +187,11 @@ double Tween::CalculateValue(Tween::Type type, double state) {
       static const gfx::CubicBezier bezier(0.05, 0.7, 0.1, 1);
       return bezier.Solve(state);
     }
+
+    case ACCEL_90_DECEL_5_70: {
+      static const gfx::CubicBezier bezier(0.9, 0, 0.95, 0.3);
+      return bezier.Solve(state);
+    }
   }
 
   NOTREACHED();

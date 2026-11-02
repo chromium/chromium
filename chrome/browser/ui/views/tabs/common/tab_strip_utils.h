@@ -34,4 +34,24 @@ bool CanScrollAlongAxis(const views::View* view,
                         TabStripOrientation orientation,
                         const ui::GestureEvent& event);
 
+// Ref-counted layer ownership for views in the tab strip.
+//
+// Several independent features paint the same child views to layers for the
+// duration of an operation: tab dragging, layout animations, and focus
+// transitions. Each feature acquires a reference while it needs the layer and
+// releases it when done. The view paints to a layer while at least one
+// reference is held, so no feature needs to know which others are in flight.
+//
+// The count is stored as a property on the view, so it travels with the view
+// if it is reparented (for example when a tab moves into or out of a group).
+
+// Increments the layer reference count of `view`. When the count goes from
+// zero to one, `view` is made to paint to a layer that does not fill its bounds
+// opaquely.
+void AcquireViewLayer(views::View* view);
+
+// Decrements the layer reference count of `view`. When the count reaches zero,
+// the layer is destroyed. Must be balanced with a prior AcquireViewLayer().
+void ReleaseViewLayer(views::View* view);
+
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_STRIP_UTILS_H_

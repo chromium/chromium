@@ -231,5 +231,17 @@ TEST(TweenTest, SizeFValueBetweenClampedExtrapolation) {
   EXPECT_SIZEF_EQ(s1, Tween::SizeFValueBetween(kBefore, s1, s2));
 }
 
+// ACCEL_90_DECEL_5_70 is the time-reverse of ACCEL_5_70_DECEL_90, so an exit
+// played on it retraces the enter curve backwards.
+TEST(TweenTest, Accel90Decel570IsTimeReversedAccel570Decel90) {
+  for (int i = 0; i <= 20; ++i) {
+    const double t = i / 20.0;
+    EXPECT_NEAR(
+        Tween::CalculateValue(Tween::ACCEL_90_DECEL_5_70, t),
+        1.0 - Tween::CalculateValue(Tween::ACCEL_5_70_DECEL_90, 1.0 - t), 1e-4)
+        << "t = " << t;
+  }
+}
+
 }  // namespace
 }  // namespace gfx

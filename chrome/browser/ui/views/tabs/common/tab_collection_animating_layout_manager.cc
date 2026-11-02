@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/base/class_property.h"
 #include "ui/compositor/layer.h"
@@ -47,6 +48,29 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kPreviousCollectionBounds)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(
     TabCollectionAnimatingLayoutManager::SourceLayoutInfo,
     kSourceLayoutInfo)
+
+// Set while a layout manager holds a layer reference on the associated View
+// for an add, remove, or collection move animation. See AcquireViewLayer().
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHoldsLayoutAnimationLayer, false)
+
+// Acquires a layer reference for `view` on behalf of layout animations, if one
+// is not already held. A view may be prepared for more than one animation
+// before the first one completes (e.g. added and then removed), but layout
+// animations only ever hold a single reference per view.
+void AcquireLayoutAnimationLayer(views::View* view) {
+  if (!view->GetProperty(kHoldsLayoutAnimationLayer)) {
+    view->SetProperty(kHoldsLayoutAnimationLayer, true);
+    AcquireViewLayer(view);
+  }
+}
+
+// Releases the layer reference taken by AcquireLayoutAnimationLayer(), if any.
+void ReleaseLayoutAnimationLayer(views::View* view) {
+  if (view->GetProperty(kHoldsLayoutAnimationLayer)) {
+    view->ClearProperty(kHoldsLayoutAnimationLayer);
+    ReleaseViewLayer(view);
+  }
+}
 
 TabCollectionAnimatingLayoutManager* GetParentAnimatingLayoutManager(
     const views::View* view) {
@@ -260,8 +284,7 @@ bool TabCollectionAnimatingLayoutManager::OnViewAdded(views::View* host,
       !delegate_->IsViewDragging(*view) &&
       delegate_->ShouldAnimateOpacityForAddAndRemove(*view)) {
     // Added views should animate opacity from invisible to fully opaque.
-    view->SetPaintToLayer();
-    view->layer()->SetFillsBoundsOpaquely(false);
+    AcquireLayoutAnimationLayer(view);
     view->layer()->SetOpacity(0.0f);
   }
   return LayoutManagerBase::OnViewAdded(host, view);
@@ -324,6 +347,14 @@ bool TabCollectionAnimatingLayoutManager::IsViewAnimating(views::View* view) {
          static_cast<TabCollectionAnimatingLayoutManager*>(
              view->GetLayoutManager())
              ->is_animating();
+}
+
+// static
+void TabCollectionAnimatingLayoutManager::HoldLayerWhileParentAnimates(
+    views::View* view) {
+  if (IsViewAnimating(view->parent())) {
+    AcquireLayoutAnimationLayer(view);
+  }
 }
 
 gfx::Size TabCollectionAnimatingLayoutManager::GetMinimumSize(
@@ -641,8 +672,7 @@ void TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView(
 
   if (delegate_->ShouldAnimateOpacityForAddAndRemove(*child_view)) {
     // Removed views should animate opacity from fully opaque to invisible.
-    child_view->SetPaintToLayer();
-    child_view->layer()->SetFillsBoundsOpaquely(false);
+    AcquireLayoutAnimationLayer(child_view);
     child_view->layer()->SetOpacity(1.0f);
   }
 
@@ -657,8 +687,7 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
   // information to determine whether the view was reparented or newly-added.
   if (!delegate_->IsViewDragging(*view_to_reparent) &&
       !previous_bounds_in_screen.IsEmpty()) {
-    view_to_reparent->SetPaintToLayer();
-    view_to_reparent->layer()->SetFillsBoundsOpaquely(false);
+    AcquireLayoutAnimationLayer(view_to_reparent.get());
     view_to_reparent->SetProperty(kPreviousCollectionBounds,
                                   previous_bounds_in_screen);
   }
@@ -1089,9 +1118,7 @@ void TabCollectionAnimatingLayoutManager::ClearViewAnimationMetadata() {
 
 void TabCollectionAnimatingLayoutManager::ClearViewAnimationMetadataForView(
     views::View* view) {
-  if (!delegate_->IsViewDragging(*view)) {
-    view->DestroyLayer();
-  }
+  ReleaseLayoutAnimationLayer(view);
   view->ClearProperty(kPreviousCollectionBounds);
   view->ClearProperty(kSourceLayoutInfo);
 }

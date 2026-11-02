@@ -95,6 +95,12 @@ class TabDragHandler : public TabDragContext,
   // dragged. This method converts `view` to the actual view being dragged.
   views::View* GetDraggedViewForAttachedView(views::View* view) const;
 
+  // Returns the distinct dragged views for `attached_views`, in first-seen
+  // order. Several attached views can map to one dragged view (e.g. the tabs
+  // of a dragged group all map to the group's view).
+  std::vector<views::View*> GetDraggedViews(
+      const std::vector<views::View*>& attached_views) const;
+
   // Returns the starting position of the view when dragging started.
   // The position is in screen coordinates.
   std::optional<gfx::Vector2d> GetOffsetFromSourceAtDragStart(

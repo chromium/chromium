@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_link_drop_handler.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
@@ -44,7 +45,6 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
-#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
 #include "ui/gfx/geometry/point.h"
@@ -485,6 +485,19 @@ views::View* TabDragHandler::GetDraggedViewForAttachedView(
   return group_view;
 }
 
+std::vector<views::View*> TabDragHandler::GetDraggedViews(
+    const std::vector<views::View*>& attached_views) const {
+  std::vector<views::View*> dragged_views;
+  for (views::View* view : attached_views) {
+    views::View* dragged_view = GetDraggedViewForAttachedView(view);
+    CHECK(dragged_view);
+    if (!std::ranges::contains(dragged_views, dragged_view)) {
+      dragged_views.push_back(dragged_view);
+    }
+  }
+  return dragged_views;
+}
+
 std::optional<gfx::Vector2d> TabDragHandler::GetOffsetFromSourceAtDragStart(
     View* view) const {
   gfx::Vector2d* offset = view->GetProperty(kOffsetAtTabDragStart);
@@ -739,11 +752,10 @@ void TabDragHandler::StartedDragging(const std::vector<views::View*>& views) {
   gfx::Point source_view_origin_in_screen =
       source_dragged_view->GetBoundsInScreen().origin();
 
-  for (auto* view : views) {
-    views::View* dragged_view = GetDraggedViewForAttachedView(view);
-    CHECK(dragged_view);
-    dragged_view->SetPaintToLayer();
-    dragged_view->layer()->SetFillsBoundsOpaquely(false);
+  // Several attached views may share one dragged view (e.g. the tabs of a
+  // dragged group), so set up each dragged view once.
+  for (views::View* dragged_view : GetDraggedViews(views)) {
+    AcquireViewLayer(dragged_view);
     gfx::Vector2d offset = dragged_view->GetBoundsInScreen().origin() -
                            source_view_origin_in_screen;
     dragged_view->SetProperty(kOffsetAtTabDragStart, offset);
@@ -766,16 +778,13 @@ void TabDragHandler::StoppedDragging() {
   }
 
   const DragSessionData& drag_data = drag_controller_->GetSessionData();
-  for (views::View* view : drag_data.attached_views()) {
-    views::View* dragged_view = GetDraggedViewForAttachedView(view);
-    CHECK(dragged_view);
-    // If the dragged view's parent is animating, its animating layout manager
-    // will be responsible for destroying the layer once the animation
-    // finishes.
-    if (!TabCollectionAnimatingLayoutManager::IsViewAnimating(
-            dragged_view->parent())) {
-      dragged_view->DestroyLayer();
-    }
+  for (views::View* dragged_view :
+       GetDraggedViews(drag_data.attached_views())) {
+    // The drop may have started a layout animation that slides the dragged
+    // view into its final slot; keep its layer until that animation ends.
+    TabCollectionAnimatingLayoutManager::HoldLayerWhileParentAnimates(
+        dragged_view);
+    ReleaseViewLayer(dragged_view);
     dragged_view->ClearProperty(kOffsetAtTabDragStart);
   }
 

@@ -107,6 +107,11 @@ class ANIMATION_EXPORT Tween {
 
     ACCEL_5_70_DECEL_90,  // Start at peak velocity and very soft
                           // deceleration.
+
+    ACCEL_90_DECEL_5_70,  // Time-reversed ACCEL_5_70_DECEL_90: starts very
+                          // slowly and ends at peak velocity. Use for exit
+                          // transitions that mirror an ACCEL_5_70_DECEL_90
+                          // enter.
   };
 
   Tween(const Tween&) = delete;

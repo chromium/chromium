@@ -6,12 +6,22 @@
 
 #include <cmath>
 
+#include "base/check_op.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
+#include "ui/base/class_property.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+
+namespace {
+
+// Number of outstanding AcquireViewLayer() calls on the view.
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kViewLayerRefCount, 0)
+
+}  // namespace
 
 gfx::Rect GetTabStripViewTargetBounds(const views::View* view) {
   CHECK(view);
@@ -59,4 +69,24 @@ bool CanScrollAlongAxis(const views::View* view,
     return scroll_view->IsVerticalContentOverflowing() && dy >= dx;
   }
   return scroll_view->IsHorizontalContentOverflowing() && dx >= dy;
+}
+
+void AcquireViewLayer(views::View* view) {
+  const int count = view->GetProperty(kViewLayerRefCount);
+  view->SetProperty(kViewLayerRefCount, count + 1);
+  if (count == 0) {
+    view->SetPaintToLayer();
+    view->layer()->SetFillsBoundsOpaquely(false);
+  }
+}
+
+void ReleaseViewLayer(views::View* view) {
+  const int count = view->GetProperty(kViewLayerRefCount);
+  CHECK_GT(count, 0);
+  if (count == 1) {
+    view->ClearProperty(kViewLayerRefCount);
+    view->DestroyLayer();
+  } else {
+    view->SetProperty(kViewLayerRefCount, count - 1);
+  }
 }

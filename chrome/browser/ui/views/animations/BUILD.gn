@@ -8,6 +8,8 @@ source_set("animations") {
   sources = [
     "common_animation_values.cc",
     "common_animation_values.h",
+    "focus_mode_animations.cc",
+    "focus_mode_animations.h",
     "organizer_panel_animations.cc",
     "organizer_panel_animations.h",
     "side_panel_animations.cc",

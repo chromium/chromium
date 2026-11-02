@@ -246,6 +246,7 @@ source_set("unit_tests") {
     "tab_collection_z_order_manager_unittest.cc",
     "tab_group_header_view_unittest.cc",
     "tab_strip_layout_unittest.cc",
+    "tab_strip_utils_unittest.cc",
   ]
   deps = [
     ":common",

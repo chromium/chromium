@@ -119,6 +119,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/views/animations/focus_mode_animations.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
@@ -342,6 +343,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<SidePanelAnimations>());
   browser_animation_controller_->AddAnimationProvider(
       std::make_unique<TabStripAnimations>());
+  browser_animation_controller_->AddAnimationProvider(
+      std::make_unique<FocusModeAnimations>());
   browser_animation_controller_->AddAnimationProvider(
       std::make_unique<OrganizerPanelAnimations>());
 

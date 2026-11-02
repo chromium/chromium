@@ -160,6 +160,12 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
   // TabCollectionAnimatingLayoutManager.
   static bool IsViewAnimating(views::View* view);
 
+  // If `view`'s parent is animating, takes a layer reference on `view` on
+  // behalf of that animation, released when it ends. Lets another holder (e.g.
+  // tab dragging) release its own reference without the layer disappearing
+  // mid-animation.
+  static void HoldLayerWhileParentAnimates(views::View* view);
+
   bool is_animating() const { return is_animating_; }
   AnimationCoordinator& animation_coordinator() {
     return *animation_coordinator_;
