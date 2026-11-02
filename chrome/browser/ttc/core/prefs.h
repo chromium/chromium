@@ -16,6 +16,13 @@ namespace prefs {
 // FRE dialog.
 inline constexpr char kTtcFreCompleted[] = "ttc.fre_completed";
 
+// Boolean. Whether TTC shows captions of the conversation during a session.
+inline constexpr char kTtcCaptionsEnabled[] = "ttc.captions_enabled";
+
+// Boolean. Whether TTC plays a chime when the microphone turns on and off.
+inline constexpr char kTtcMicrophoneChimeEnabled[] =
+    "ttc.microphone_chime_enabled";
+
 }  // namespace prefs
 
 // Registers TTC's profile prefs.

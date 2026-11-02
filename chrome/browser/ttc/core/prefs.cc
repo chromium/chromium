@@ -10,6 +10,8 @@ namespace ttc {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kTtcFreCompleted, false);
+  registry->RegisterBooleanPref(prefs::kTtcCaptionsEnabled, false);
+  registry->RegisterBooleanPref(prefs::kTtcMicrophoneChimeEnabled, true);
 }
 
 }  // namespace ttc
