@@ -37,16 +37,19 @@ class ViewSubregionAnchor;
 
 namespace dictation {
 
-// Tab-scoped controller that shows the dictation IPH next to a medium or large
-// editable field when the user focuses it with the mouse or keyboard. Users who
-// have already completed dictation onboarding or have no microphone never see
-// it.
+// Tab-scoped controller for the dictation IPHs, which are anchored next to a
+// medium or large editable field:
+//  - The discovery IPH shows when the user focuses such a field with the mouse
+//    or keyboard. Users who have already completed dictation onboarding or have
+//    no microphone never see it.
+//  - The hotkey IPH shows when a dictation session invoked on the focused
+//    field ends, once the user has invoked dictation at least twice.
 //
-// The IPH is anchored to a `views::ViewSubregionAnchor` over the focused field
-// in the tab's `ContentsWebView`. The IPH is closed as "ignored" when the user
-// types a few keys, moves to another field, focus leaves the field, the tab is
-// deactivated, the page navigates, or the frame holding the field goes away
-// (e.g. the field's iframe navigates or is removed).
+// The IPHs are anchored to a `views::ViewSubregionAnchor` over the focused
+// field in the tab's `ContentsWebView`. An IPH is closed as "ignored" when the
+// user types a few keys, moves to another field, focus leaves the field, the
+// tab is deactivated, the page navigates, or the frame holding the field goes
+// away (e.g. the field's iframe navigates or is removed).
 class DictationIphController : public tabs::ContentsObservingTabFeature {
  public:
   explicit DictationIphController(tabs::TabInterface& tab);
@@ -74,17 +77,17 @@ class DictationIphController : public tabs::ContentsObservingTabFeature {
   // Returns the user education interface for this tab's window, or nullptr.
   BrowserUserEducationInterface* GetUserEducation() const;
 
-  // Returns whether the dictation IPH is currently showing.
+  // Returns whether either dictation IPH is currently showing.
   bool IsPromoActive() const;
 
   // Returns whether the user has already used dictation (completed onboarding).
-  // Such users are not shown the IPH.
+  // Such users are not shown the discovery IPH.
   bool HasUsedDictation() const;
 
   // Returns whether `node` is the field the anchor is currently tracking.
   bool IsAnchoredNode(const content::GlobalDOMNodeId& node) const;
 
-  // Closes the IPH, or cancels it if it is queued, because the user ignored
+  // Closes either IPH, or cancels it if it is queued, because the user ignored
   // it: they typed in the field, left the field, navigated, or switched tabs.
   void IgnorePromo();
 
@@ -96,6 +99,17 @@ class DictationIphController : public tabs::ContentsObservingTabFeature {
   // IPH. If the field's type isn't known yet, retries up to `retries_left` more
   // times.
   void MaybeShowPromo(int retries_left, bool can_start_promo);
+
+  // Called when a dictation session ends. Shows the hotkey IPH next to
+  // `target`, the field the session was last invoked on, if the anchor is
+  // still on that field and the IPH may show. Feature Engagement only allows
+  // the IPH once dictation has been invoked at least twice.
+  void OnSessionEnded(const content::GlobalDOMNodeId& target);
+
+  // Returns whether the anchor still matches the focused field in `rfh`. The
+  // anchor only moves when focus changes, so the page may have scrolled or the
+  // field may have moved or grown since.
+  bool IsAnchorCurrent(content::RenderFrameHost& rfh) const;
 
   // Tracks the focused field. Only exists while a field is focused.
   std::unique_ptr<views::ViewSubregionAnchor> anchor_;
@@ -113,6 +127,7 @@ class DictationIphController : public tabs::ContentsObservingTabFeature {
   // Retries the medium/large field check; see `MaybeShowPromo()`.
   base::OneShotTimer field_type_retry_timer_;
   base::CallbackListSubscription tab_will_deactivate_subscription_;
+  base::CallbackListSubscription session_ended_subscription_;
 };
 
 }  // namespace dictation
