@@ -253,10 +253,10 @@
     Microphone
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will enable using the microphone to have a voice chat with Gemini">
-    Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps Activity (if it’s on).
+    Use your microphone to chat with Gemini. When you speak to Gemini, audio is saved in Gemini History (if it’s on).
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable using the microphone to have a voice chat with Gemini, but the user's data is not used to improve the model">
-    Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps Activity (if it’s on). Your data is not used to improve generative AI models.
+    Use your microphone to chat with Gemini. When you speak to Gemini, audio is saved in Gemini History (if it’s on). Your data is not used to improve generative AI models.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL_DATA_PROTECTED_ANDROID" desc="Sublabel describing that this setting will enable using the microphone to have a voice chat with Gemini, but the user's data is not used to improve the model" formatter_data="android_java">
     Use your microphone to chat with Gemini. Your data is not used to improve generative AI models.
@@ -279,11 +279,11 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default, but the user's data is not used to improve the model." formatter_data = "android_java">
     The current tab is shared with Gemini when you start a new chat. Your data is not used to improve generative AI models. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more about AI and privacy<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" desc="Name of the Gemini Apps Activity link out." formatter_data="android_java">
-    Gemini Apps Activity
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" desc="Name of the Gemini History link out." formatter_data="android_java">
+    Gemini History
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL" desc="Sublabel describing that this link allows the user to view and manage their activity relating to Gemini Apps." formatter_data="android_java">
-    View and manage your Gemini Apps activity
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_SUBLABEL" desc="Sublabel describing that this link allows the user to view and manage their history relating to Gemini." formatter_data="android_java">
+    View and manage your Gemini history
   </message>
   <message name="IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON" desc="Name of the Gemini Extensions link out." formatter_data="android_java">
     Manage connected apps
