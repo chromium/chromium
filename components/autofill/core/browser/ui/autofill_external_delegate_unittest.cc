@@ -94,8 +94,8 @@
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge_test_util.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -258,8 +258,8 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {
-    std::unique_ptr<EntitySuppressionSyncBridge> bridge =
-        CreateTestEntitySuppressionSyncBridge();
+    std::unique_ptr<PersonalContextEntityMetadataSyncBridge> bridge =
+        CreateTestPersonalContextEntityMetadataSyncBridge();
     CHECK(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
     suppression_manager_ =
         std::make_unique<EntitySuppressionManager>(std::move(bridge));

@@ -115,8 +115,8 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -2760,15 +2760,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        EntitySuppressionsClearedOnAutofillRemoval) {
   base::test::ScopedFeatureList feature_list{
       autofill::features::kAutofillAmbientAutofillSuppression};
-  std::unique_ptr<autofill::EntitySuppressionSyncBridge> bridge =
-      autofill::CreateTestEntitySuppressionSyncBridge();
+  std::unique_ptr<autofill::PersonalContextEntityMetadataSyncBridge> bridge =
+      autofill::CreateTestPersonalContextEntityMetadataSyncBridge();
   ASSERT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
   auto* suppression_manager = static_cast<autofill::EntitySuppressionManager*>(
       autofill::EntitySuppressionManagerFactory::GetInstance()
           ->SetTestingFactoryAndUse(
               GetProfile(),
               base::BindOnce(
-                  [](std::unique_ptr<autofill::EntitySuppressionSyncBridge>
+                  [](std::unique_ptr<
+                         autofill::PersonalContextEntityMetadataSyncBridge>
                          bridge,
                      content::BrowserContext*)
                       -> std::unique_ptr<KeyedService> {

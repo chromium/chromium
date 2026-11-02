@@ -18,8 +18,8 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge_test_util.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_database_params.h"
@@ -84,8 +84,8 @@ class BookmarkStatHelper {
 class ProfileStatisticsAggregatorTest : public testing::Test {
  public:
   ProfileStatisticsAggregatorTest() {
-    std::unique_ptr<autofill::EntitySuppressionSyncBridge> bridge =
-        autofill::CreateTestEntitySuppressionSyncBridge();
+    std::unique_ptr<autofill::PersonalContextEntityMetadataSyncBridge> bridge =
+        autofill::CreateTestPersonalContextEntityMetadataSyncBridge();
     EXPECT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
     entity_suppression_manager_ =
         std::make_unique<autofill::EntitySuppressionManager>(std::move(bridge));

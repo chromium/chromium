@@ -32,8 +32,8 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge_test_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -191,17 +191,15 @@ class ProfileStatisticsBrowserTest : public InProcessBrowserTest {
                   // The default EntitySuppressionManager can't record
                   // suppressions without Sync. The test bridge finishes loading
                   // during browser startup, before the test body runs.
+                  auto create_manager = [](content::BrowserContext*)
+                      -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<autofill::EntitySuppressionManager>(
+                        autofill::
+                            CreateTestPersonalContextEntityMetadataSyncBridge());
+                  };
                   autofill::EntitySuppressionManagerFactory::GetInstance()
-                      ->SetTestingFactory(
-                          context,
-                          base::BindRepeating([](content::BrowserContext*)
-                                                  -> std::unique_ptr<
-                                                      KeyedService> {
-                            return std::make_unique<
-                                autofill::EntitySuppressionManager>(
-                                autofill::
-                                    CreateTestEntitySuppressionSyncBridge());
-                          }));
+                      ->SetTestingFactory(context,
+                                          base::BindRepeating(create_manager));
                 }));
   }
 

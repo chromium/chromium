@@ -41,8 +41,8 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
@@ -73,12 +73,11 @@ class AutofillCounterTest : public InProcessBrowserTest {
     // Sync. The test bridge finishes loading during browser startup, before the
     // test body runs.
     autofill::EntitySuppressionManagerFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindRepeating(
-            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<autofill::EntitySuppressionManager>(
-                  autofill::CreateTestEntitySuppressionSyncBridge());
-            }));
+        context, base::BindRepeating([](content::BrowserContext*)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<autofill::EntitySuppressionManager>(
+              autofill::CreateTestPersonalContextEntityMetadataSyncBridge());
+        }));
   }
 
   void SetUpOnMainThread() override {

@@ -26,7 +26,7 @@ message EntitySuppressionKey {
   // The set of attributes identifying the entity instance.
   repeated Attribute attributes = 2;
 }
-// LINT.ThenChange(//components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.cc:TrimEntitySuppressionKey)
+// LINT.ThenChange(//components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_util.cc:TrimEntitySuppressionKey)
 
 // LINT.IfChange(AutofillEntitySuppressionSpecifics)
 message AutofillEntitySuppressionSpecifics {
@@ -47,4 +47,4 @@ message AutofillEntitySuppressionSpecifics {
   // constraint values of the suppressed entity.
   optional uint32 entity_suppression_hash = 5;
 }
-// LINT.ThenChange(//components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.cc:TrimAutofillEntitySuppressionSpecificsDataForCaching)
+// LINT.ThenChange(//components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_util.cc:TrimAutofillEntitySuppressionSpecificsDataForCaching)

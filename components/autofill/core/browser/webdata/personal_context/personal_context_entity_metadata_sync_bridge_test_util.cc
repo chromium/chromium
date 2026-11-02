@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge_test_util.h"
 
 #include <memory>
 #include <utility>
 
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -21,8 +21,8 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
-std::unique_ptr<EntitySuppressionSyncBridge>
-CreateTestEntitySuppressionSyncBridge() {
+std::unique_ptr<PersonalContextEntityMetadataSyncBridge>
+CreateTestPersonalContextEntityMetadataSyncBridge() {
   auto processor =
       std::make_unique<NiceMock<syncer::MockDataTypeLocalChangeProcessor>>();
   ON_CALL(*processor, IsTrackingMetadata()).WillByDefault(Return(true));
@@ -33,7 +33,7 @@ CreateTestEntitySuppressionSyncBridge() {
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async =
       os_crypt_async::GetTestOSCryptAsyncForTesting(
           /*is_sync_for_unittests=*/true);
-  return std::make_unique<EntitySuppressionSyncBridge>(
+  return std::make_unique<PersonalContextEntityMetadataSyncBridge>(
       std::move(processor),
       syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
       os_crypt_async.get());

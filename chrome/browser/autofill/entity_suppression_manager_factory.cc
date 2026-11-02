@@ -15,7 +15,7 @@
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -63,7 +63,7 @@ EntitySuppressionManagerFactory::BuildServiceInstanceForBrowserContext(
           syncer::AUTOFILL_ENTITY_SUPPRESSION,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel()));
-  auto sync_bridge = std::make_unique<EntitySuppressionSyncBridge>(
+  auto sync_bridge = std::make_unique<PersonalContextEntityMetadataSyncBridge>(
       std::move(change_processor),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       g_browser_process->os_crypt_async());

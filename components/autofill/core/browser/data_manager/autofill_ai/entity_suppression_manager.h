@@ -15,7 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -33,7 +33,7 @@ struct EntitySuppressionEntry;
 // constraints.
 class EntitySuppressionManager final
     : public KeyedService,
-      public EntitySuppressionSyncBridge::Observer {
+      public PersonalContextEntityMetadataSyncBridge::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -41,7 +41,7 @@ class EntitySuppressionManager final
   };
 
   explicit EntitySuppressionManager(
-      std::unique_ptr<EntitySuppressionSyncBridge> sync_bridge);
+      std::unique_ptr<PersonalContextEntityMetadataSyncBridge> sync_bridge);
   EntitySuppressionManager(const EntitySuppressionManager&) = delete;
   EntitySuppressionManager& operator=(const EntitySuppressionManager&) = delete;
   ~EntitySuppressionManager() override;
@@ -82,14 +82,14 @@ class EntitySuppressionManager final
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
 
  private:
-  // EntitySuppressionSyncBridge::Observer:
+  // PersonalContextEntityMetadataSyncBridge::Observer:
   void OnSuppressionsChanged() override;
 
   base::ObserverList<Observer> observers_;
 
-  std::unique_ptr<EntitySuppressionSyncBridge> sync_bridge_;
-  base::ScopedObservation<EntitySuppressionSyncBridge,
-                          EntitySuppressionSyncBridge::Observer>
+  std::unique_ptr<PersonalContextEntityMetadataSyncBridge> sync_bridge_;
+  base::ScopedObservation<PersonalContextEntityMetadataSyncBridge,
+                          PersonalContextEntityMetadataSyncBridge::Observer>
       bridge_observation_{this};
 
   // Maps entity IDs suppressed in the current browser session to their

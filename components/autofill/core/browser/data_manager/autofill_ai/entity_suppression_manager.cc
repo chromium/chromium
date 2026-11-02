@@ -16,7 +16,7 @@
 namespace autofill {
 
 EntitySuppressionManager::EntitySuppressionManager(
-    std::unique_ptr<EntitySuppressionSyncBridge> sync_bridge)
+    std::unique_ptr<PersonalContextEntityMetadataSyncBridge> sync_bridge)
     : sync_bridge_(std::move(sync_bridge)) {
   CHECK(sync_bridge_);
   bridge_observation_.Observe(sync_bridge_.get());

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -24,7 +24,7 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_util.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/base/data_type.h"
@@ -80,10 +80,11 @@ DecryptSuppressionSpecifics(const std::string& encrypted_value,
 
 }  // namespace
 
-EntitySuppressionSyncBridge::EntitySuppressionSyncBridge(
-    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-    syncer::OnceDataTypeStoreFactory store_factory,
-    os_crypt_async::OSCryptAsync* os_crypt_async)
+PersonalContextEntityMetadataSyncBridge::
+    PersonalContextEntityMetadataSyncBridge(
+        std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+        syncer::OnceDataTypeStoreFactory store_factory,
+        os_crypt_async::OSCryptAsync* os_crypt_async)
     : syncer::DataTypeSyncBridge(std::move(change_processor)) {
   CHECK(os_crypt_async);
   // Reading and decrypting local suppression records requires both the
@@ -92,32 +93,36 @@ EntitySuppressionSyncBridge::EntitySuppressionSyncBridge(
   // reading data from the store.
   base::RepeatingClosure barrier = base::BarrierClosure(
       /*num_closures=*/2,
-      base::BindOnce(&EntitySuppressionSyncBridge::OnRequiredServicesReady,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &PersonalContextEntityMetadataSyncBridge::OnRequiredServicesReady,
+          weak_ptr_factory_.GetWeakPtr()));
   os_crypt_async->GetInstance(
-      base::BindOnce(&EntitySuppressionSyncBridge::OnEncryptorReady,
+      base::BindOnce(&PersonalContextEntityMetadataSyncBridge::OnEncryptorReady,
                      weak_ptr_factory_.GetWeakPtr(), barrier));
   std::move(store_factory)
       .Run(syncer::AUTOFILL_ENTITY_SUPPRESSION,
-           base::BindOnce(&EntitySuppressionSyncBridge::OnStoreCreated,
-                          weak_ptr_factory_.GetWeakPtr(), barrier));
+           base::BindOnce(
+               &PersonalContextEntityMetadataSyncBridge::OnStoreCreated,
+               weak_ptr_factory_.GetWeakPtr(), barrier));
 }
 
-EntitySuppressionSyncBridge::~EntitySuppressionSyncBridge() {
+PersonalContextEntityMetadataSyncBridge::
+    ~PersonalContextEntityMetadataSyncBridge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void EntitySuppressionSyncBridge::AddObserver(Observer* observer) {
+void PersonalContextEntityMetadataSyncBridge::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 }
 
-void EntitySuppressionSyncBridge::RemoveObserver(Observer* observer) {
+void PersonalContextEntityMetadataSyncBridge::RemoveObserver(
+    Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
-bool EntitySuppressionSyncBridge::Suppress(
+bool PersonalContextEntityMetadataSyncBridge::Suppress(
     const EntitySuppressionEntry& entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsLoaded());
@@ -154,14 +159,14 @@ bool EntitySuppressionSyncBridge::Suppress(
 
   store_->CommitWriteBatch(
       std::move(batch),
-      base::BindOnce(&EntitySuppressionSyncBridge::ReportErrorIfSet,
+      base::BindOnce(&PersonalContextEntityMetadataSyncBridge::ReportErrorIfSet,
                      weak_ptr_factory_.GetWeakPtr()));
 
   NotifySuppressionsChanged();
   return true;
 }
 
-bool EntitySuppressionSyncBridge::Unsuppress(
+bool PersonalContextEntityMetadataSyncBridge::Unsuppress(
     const EntitySuppressionEntry& entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsLoaded());
@@ -196,15 +201,16 @@ bool EntitySuppressionSyncBridge::Unsuppress(
 
   store_->CommitWriteBatch(
       std::move(batch),
-      base::BindOnce(&EntitySuppressionSyncBridge::ReportErrorIfSet,
+      base::BindOnce(&PersonalContextEntityMetadataSyncBridge::ReportErrorIfSet,
                      weak_ptr_factory_.GetWeakPtr()));
 
   NotifySuppressionsChanged();
   return true;
 }
 
-bool EntitySuppressionSyncBridge::ClearSuppressions(base::Time delete_begin,
-                                                    base::Time delete_end) {
+bool PersonalContextEntityMetadataSyncBridge::ClearSuppressions(
+    base::Time delete_begin,
+    base::Time delete_end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsLoaded());
 
@@ -238,7 +244,7 @@ bool EntitySuppressionSyncBridge::ClearSuppressions(base::Time delete_begin,
 
   store_->CommitWriteBatch(
       std::move(batch),
-      base::BindOnce(&EntitySuppressionSyncBridge::ReportErrorIfSet,
+      base::BindOnce(&PersonalContextEntityMetadataSyncBridge::ReportErrorIfSet,
                      weak_ptr_factory_.GetWeakPtr()));
 
   NotifySuppressionsChanged();
@@ -246,14 +252,14 @@ bool EntitySuppressionSyncBridge::ClearSuppressions(base::Time delete_begin,
 }
 
 base::flat_set<EntitySuppressionKey>
-EntitySuppressionSyncBridge::GetSuppressions() const {
+PersonalContextEntityMetadataSyncBridge::GetSuppressions() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return {base::sorted_unique,
           base::ToVector(metadata_by_entry_,
                          [](const auto& pair) { return pair.first; })};
 }
 
-bool EntitySuppressionSyncBridge::IsSuppressed(
+bool PersonalContextEntityMetadataSyncBridge::IsSuppressed(
     const EntitySuppressionEntry& entry) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (metadata_by_entry_.contains(
@@ -266,7 +272,7 @@ bool EntitySuppressionSyncBridge::IsSuppressed(
       EntitySuppressionKey(LegacyEntitySuppressionEntry(entry)));
 }
 
-size_t EntitySuppressionSyncBridge::CountSuppressionsCreatedBetween(
+size_t PersonalContextEntityMetadataSyncBridge::CountSuppressionsCreatedBetween(
     base::Time begin,
     base::Time end) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -284,24 +290,24 @@ size_t EntitySuppressionSyncBridge::CountSuppressionsCreatedBetween(
       });
 }
 
-bool EntitySuppressionSyncBridge::IsLoaded() const {
+bool PersonalContextEntityMetadataSyncBridge::IsLoaded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_loaded_;
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
-EntitySuppressionSyncBridge::GetControllerDelegate() {
+PersonalContextEntityMetadataSyncBridge::GetControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return change_processor()->GetControllerDelegate();
 }
 
 std::unique_ptr<syncer::MetadataChangeList>
-EntitySuppressionSyncBridge::CreateMetadataChangeList() {
+PersonalContextEntityMetadataSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-bool EntitySuppressionSyncBridge::ApplyRemoteEntry(
+bool PersonalContextEntityMetadataSyncBridge::ApplyRemoteEntry(
     const std::string& storage_key,
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics,
     EntitySuppressionKey key,
@@ -346,8 +352,9 @@ bool EntitySuppressionSyncBridge::ApplyRemoteEntry(
   return false;
 }
 
-bool EntitySuppressionSyncBridge::DeleteOldestSuppressionsAboveLimit(
-    syncer::DataTypeStore::WriteBatch& batch) {
+bool PersonalContextEntityMetadataSyncBridge::
+    DeleteOldestSuppressionsAboveLimit(
+        syncer::DataTypeStore::WriteBatch& batch) {
   if (metadata_by_entry_.size() <= kMaxSuppressions) {
     return false;
   }
@@ -386,7 +393,7 @@ bool EntitySuppressionSyncBridge::DeleteOldestSuppressionsAboveLimit(
 }
 
 std::optional<syncer::ModelError>
-EntitySuppressionSyncBridge::MergeFullSyncData(
+PersonalContextEntityMetadataSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -432,7 +439,7 @@ EntitySuppressionSyncBridge::MergeFullSyncData(
 
   store_->CommitWriteBatch(
       std::move(batch),
-      base::BindOnce(&EntitySuppressionSyncBridge::ReportErrorIfSet,
+      base::BindOnce(&PersonalContextEntityMetadataSyncBridge::ReportErrorIfSet,
                      weak_ptr_factory_.GetWeakPtr()));
 
   if (added_remote_suppressions || deleted_suppressions) {
@@ -443,7 +450,7 @@ EntitySuppressionSyncBridge::MergeFullSyncData(
 }
 
 std::optional<syncer::ModelError>
-EntitySuppressionSyncBridge::ApplyIncrementalSyncChanges(
+PersonalContextEntityMetadataSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -492,7 +499,7 @@ EntitySuppressionSyncBridge::ApplyIncrementalSyncChanges(
 
   store_->CommitWriteBatch(
       std::move(batch),
-      base::BindOnce(&EntitySuppressionSyncBridge::ReportErrorIfSet,
+      base::BindOnce(&PersonalContextEntityMetadataSyncBridge::ReportErrorIfSet,
                      weak_ptr_factory_.GetWeakPtr()));
 
   if (suppressions_changed) {
@@ -502,13 +509,13 @@ EntitySuppressionSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void EntitySuppressionSyncBridge::ApplyDisableSyncChanges(
+void PersonalContextEntityMetadataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsLoaded());
   store_->DeleteAllDataAndMetadata(
       std::move(delete_metadata_change_list),
-      base::BindOnce(&EntitySuppressionSyncBridge::ReportErrorIfSet,
+      base::BindOnce(&PersonalContextEntityMetadataSyncBridge::ReportErrorIfSet,
                      weak_ptr_factory_.GetWeakPtr()));
 
   const bool had_entries = !metadata_by_entry_.empty();
@@ -520,7 +527,7 @@ void EntitySuppressionSyncBridge::ApplyDisableSyncChanges(
 }
 
 std::unique_ptr<syncer::MutableDataBatch>
-EntitySuppressionSyncBridge::GetAllData() {
+PersonalContextEntityMetadataSyncBridge::GetAllData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsLoaded());
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -535,15 +542,17 @@ EntitySuppressionSyncBridge::GetAllData() {
 }
 
 const sync_pb::AutofillEntitySuppressionSpecifics&
-EntitySuppressionSyncBridge::GetPossiblyTrimmedEntitySuppressionSpecifics(
-    const std::string& storage_key) const {
+PersonalContextEntityMetadataSyncBridge::
+    GetPossiblyTrimmedEntitySuppressionSpecifics(
+        const std::string& storage_key) const {
   return change_processor()
       ->GetPossiblyTrimmedRemoteSpecifics(storage_key)
       .autofill_entity_suppression();
 }
 
 std::unique_ptr<syncer::DataBatch>
-EntitySuppressionSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
+PersonalContextEntityMetadataSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   absl::flat_hash_set<std::string> keys_set(std::from_range, storage_keys);
@@ -558,32 +567,32 @@ EntitySuppressionSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
 }
 
 std::unique_ptr<syncer::DataBatch>
-EntitySuppressionSyncBridge::GetAllDataForDebugging() {
+PersonalContextEntityMetadataSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetAllData();
 }
 
-std::string EntitySuppressionSyncBridge::GetClientTag(
+std::string PersonalContextEntityMetadataSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
-std::string EntitySuppressionSyncBridge::GetStorageKey(
+std::string PersonalContextEntityMetadataSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return entity_data.specifics.autofill_entity_suppression().guid();
 }
 
-bool EntitySuppressionSyncBridge::IsEntityDataValid(
+bool PersonalContextEntityMetadataSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   return entity_data.specifics.has_autofill_entity_suppression() &&
          AreEntitySuppressionSpecificsValid(
              entity_data.specifics.autofill_entity_suppression());
 }
 
-sync_pb::EntitySpecifics
-EntitySuppressionSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
-    const sync_pb::EntitySpecifics& entity_specifics) const {
+sync_pb::EntitySpecifics PersonalContextEntityMetadataSyncBridge::
+    TrimAllSupportedFieldsFromRemoteSpecifics(
+        const sync_pb::EntitySpecifics& entity_specifics) const {
   sync_pb::AutofillEntitySuppressionSpecifics
       trimmed_entity_suppression_specifics =
           TrimAutofillEntitySuppressionSpecificsDataForCaching(
@@ -602,7 +611,7 @@ EntitySuppressionSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   return trimmed_entity_specifics;
 }
 
-void EntitySuppressionSyncBridge::OnStoreCreated(
+void PersonalContextEntityMetadataSyncBridge::OnStoreCreated(
     base::RepeatingClosure barrier,
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore> store) {
@@ -616,7 +625,7 @@ void EntitySuppressionSyncBridge::OnStoreCreated(
   barrier.Run();
 }
 
-void EntitySuppressionSyncBridge::OnEncryptorReady(
+void PersonalContextEntityMetadataSyncBridge::OnEncryptorReady(
     base::RepeatingClosure barrier,
     scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -633,17 +642,17 @@ void EntitySuppressionSyncBridge::OnEncryptorReady(
   barrier.Run();
 }
 
-void EntitySuppressionSyncBridge::OnRequiredServicesReady() {
+void PersonalContextEntityMetadataSyncBridge::OnRequiredServicesReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!store_ || !encryptor_) {
     return;
   }
-  store_->ReadAllDataAndMetadata(
-      base::BindOnce(&EntitySuppressionSyncBridge::OnReadAllDataAndMetadata,
-                     weak_ptr_factory_.GetWeakPtr()));
+  store_->ReadAllDataAndMetadata(base::BindOnce(
+      &PersonalContextEntityMetadataSyncBridge::OnReadAllDataAndMetadata,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EntitySuppressionSyncBridge::OnReadAllDataAndMetadata(
+void PersonalContextEntityMetadataSyncBridge::OnReadAllDataAndMetadata(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
@@ -690,14 +699,15 @@ void EntitySuppressionSyncBridge::OnReadAllDataAndMetadata(
   if (DeleteOldestSuppressionsAboveLimit(*batch)) {
     store_->CommitWriteBatch(
         std::move(batch),
-        base::BindOnce(&EntitySuppressionSyncBridge::ReportErrorIfSet,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(
+            &PersonalContextEntityMetadataSyncBridge::ReportErrorIfSet,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   NotifySuppressionsChanged();
 }
 
-void EntitySuppressionSyncBridge::ReportErrorIfSet(
+void PersonalContextEntityMetadataSyncBridge::ReportErrorIfSet(
     const std::optional<syncer::ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -705,7 +715,7 @@ void EntitySuppressionSyncBridge::ReportErrorIfSet(
   }
 }
 
-void EntitySuppressionSyncBridge::NotifySuppressionsChanged() {
+void PersonalContextEntityMetadataSyncBridge::NotifySuppressionsChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observers_) {
     observer.OnSuppressionsChanged();

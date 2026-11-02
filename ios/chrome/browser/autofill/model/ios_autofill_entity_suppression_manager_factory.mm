@@ -10,7 +10,7 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#import "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
+#import "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/report_unrecoverable_error.h"
@@ -43,10 +43,12 @@ IOSAutofillEntitySuppressionManagerFactory::BuildServiceInstanceFor(
           syncer::AUTOFILL_ENTITY_SUPPRESSION,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               ::GetChannel()));
-  auto sync_bridge = std::make_unique<autofill::EntitySuppressionSyncBridge>(
-      std::move(change_processor),
-      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
-      GetApplicationContext()->GetOSCryptAsync());
+  auto sync_bridge =
+      std::make_unique<autofill::PersonalContextEntityMetadataSyncBridge>(
+          std::move(change_processor),
+          DataTypeStoreServiceFactory::GetForProfile(profile)
+              ->GetStoreFactory(),
+          GetApplicationContext()->GetOSCryptAsync());
   return std::make_unique<autofill::EntitySuppressionManager>(
       std::move(sync_bridge));
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_util.h"
 
 #include <array>
 #include <memory>
@@ -48,7 +48,7 @@ EntitySuppressionEntry CreateTestPassportEntry() {
 
 // Tests that converting an `EntitySuppressionHash` to specifics and back
 // preserves all data, without syncing full hashes.
-TEST(EntitySuppressionSyncUtilTest, RoundTripConversion) {
+TEST(PersonalContextEntityMetadataSyncUtilTest, RoundTripConversion) {
   const EntitySuppressionKey original_key = kTestHash;
   const base::Time creation_time =
       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1234567890));
@@ -70,7 +70,7 @@ TEST(EntitySuppressionSyncUtilTest, RoundTripConversion) {
 
 // Tests that `CreateSpecificsFromEntitySuppressionKey` preserves unknown
 // fields from `base_specifics`.
-TEST(EntitySuppressionSyncUtilTest,
+TEST(PersonalContextEntityMetadataSyncUtilTest,
      CreateSpecificsFromEntitySuppressionKey_MergesBaseSpecifics) {
   sync_pb::AutofillEntitySuppressionSpecifics base_specifics;
   AddUnknownFieldToProto(base_specifics, "unknown_field");
@@ -88,7 +88,7 @@ TEST(EntitySuppressionSyncUtilTest,
 }
 
 // Tests that `EntityData` is correctly created from specifics.
-TEST(EntitySuppressionSyncUtilTest, CreateEntityData) {
+TEST(PersonalContextEntityMetadataSyncUtilTest, CreateEntityData) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateSpecificsFromEntitySuppressionKey("test-guid-1234", kTestHash,
                                               base::Time::Now(),
@@ -106,7 +106,8 @@ TEST(EntitySuppressionSyncUtilTest, CreateEntityData) {
 
 // Tests that `EntityData` is correctly created directly from an
 // `EntitySuppressionKey`.
-TEST(EntitySuppressionSyncUtilTest, CreateEntityDataFromEntitySuppressionKey) {
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     CreateEntityDataFromEntitySuppressionKey) {
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityDataFromEntitySuppressionKey("test-guid-1234", kTestHash,
                                                base::Time::Now(),
@@ -120,7 +121,7 @@ TEST(EntitySuppressionSyncUtilTest, CreateEntityDataFromEntitySuppressionKey) {
 }
 
 // Tests that specifics with an empty GUID are considered invalid.
-TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsEmptyGuid) {
+TEST(PersonalContextEntityMetadataSyncUtilTest, InvalidSpecificsEmptyGuid) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateSpecificsFromEntitySuppressionKey("", kTestHash, base::Time::Now(),
                                               /*base_specifics=*/{});
@@ -130,7 +131,7 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsEmptyGuid) {
 
 // Tests that specifics missing an entity suppression key are considered
 // invalid.
-TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsMissingKey) {
+TEST(PersonalContextEntityMetadataSyncUtilTest, InvalidSpecificsMissingKey) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics;
   specifics.set_guid("test-guid-1234");
 
@@ -139,7 +140,7 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsMissingKey) {
 
 // Tests that `TrimAutofillEntitySuppressionSpecificsDataForCaching` clears all
 // supported fields.
-TEST(EntitySuppressionSyncUtilTest,
+TEST(PersonalContextEntityMetadataSyncUtilTest,
      TrimAutofillEntitySuppressionSpecificsDataForCaching) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateSpecificsFromEntitySuppressionKey("test-guid-1234", kTestHash,
@@ -165,7 +166,7 @@ CreateLegacyTestPassportSpecifics() {
 // preserves its full hashes.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
-TEST(EntitySuppressionSyncUtilTest, LegacyRoundTripConversion) {
+TEST(PersonalContextEntityMetadataSyncUtilTest, LegacyRoundTripConversion) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateLegacyTestPassportSpecifics();
 
@@ -179,7 +180,8 @@ TEST(EntitySuppressionSyncUtilTest, LegacyRoundTripConversion) {
 // Tests that specifics with an unknown entity type name are considered invalid.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
-TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsUnknownEntityType) {
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     InvalidSpecificsUnknownEntityType) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateLegacyTestPassportSpecifics();
   specifics.mutable_entity_suppression_key()->set_entity_type_name(
@@ -192,7 +194,8 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsUnknownEntityType) {
 // invalid.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
-TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsUnknownAttributeType) {
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     InvalidSpecificsUnknownAttributeType) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateLegacyTestPassportSpecifics();
   specifics.mutable_entity_suppression_key()->mutable_attributes(0)->set_name(
@@ -205,7 +208,8 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsUnknownAttributeType) {
 // invalid.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
-TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsInvalidHashSize) {
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     InvalidSpecificsInvalidHashSize) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateLegacyTestPassportSpecifics();
   specifics.mutable_entity_suppression_key()
@@ -218,7 +222,8 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsInvalidHashSize) {
 // Tests that specifics with duplicate attribute types are considered invalid.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
-TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsDuplicateAttributes) {
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     InvalidSpecificsDuplicateAttributes) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics =
       CreateLegacyTestPassportSpecifics();
   sync_pb::EntitySuppressionKey::Attribute* dup_attr =
@@ -233,7 +238,8 @@ TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsDuplicateAttributes) {
 // Tests that specifics with empty attributes are considered invalid.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
-TEST(EntitySuppressionSyncUtilTest, InvalidSpecificsEmptyAttributes) {
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     InvalidSpecificsEmptyAttributes) {
   sync_pb::AutofillEntitySuppressionSpecifics specifics;
   specifics.set_guid("test-guid-1234");
   specifics.mutable_entity_suppression_key()->set_entity_type_name("passport");

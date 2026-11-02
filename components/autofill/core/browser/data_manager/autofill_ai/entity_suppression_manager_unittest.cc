@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/test/data_type_store_test_util.h"
@@ -46,7 +46,7 @@ class EntitySuppressionManagerTest : public testing::Test {
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
     ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
         .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
-    auto bridge = std::make_unique<EntitySuppressionSyncBridge>(
+    auto bridge = std::make_unique<PersonalContextEntityMetadataSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         os_crypt_async_.get());
@@ -260,7 +260,8 @@ TEST_F(EntitySuppressionManagerTest,
   manager().AddObserver(&observer);
 
   EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(1);
-  EntitySuppressionSyncBridge::Observer& bridge_observer = manager();
+  PersonalContextEntityMetadataSyncBridge::Observer& bridge_observer =
+      manager();
   bridge_observer.OnSuppressionsChanged();
 }
 
@@ -367,7 +368,7 @@ TEST_F(EntitySuppressionManagerTest, BridgeNotLoaded) {
   EXPECT_CALL(mock_processor(), ReportError)
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   os_crypt_async::OSCryptAsync os_crypt_async_without_keys({});
-  auto bridge = std::make_unique<EntitySuppressionSyncBridge>(
+  auto bridge = std::make_unique<PersonalContextEntityMetadataSyncBridge>(
       mock_processor().CreateForwardingProcessor(),
       syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
       &os_crypt_async_without_keys);

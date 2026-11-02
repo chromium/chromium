@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
 
 #include <array>
 #include <memory>
@@ -20,7 +20,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_util.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -101,14 +101,15 @@ std::unique_ptr<syncer::EntityChange> CreateUpdateChange(
                 guid, ToKey(entry), base::Time::Now(), /*base_specifics=*/{})));
 }
 
-class MockBridgeObserver : public EntitySuppressionSyncBridge::Observer {
+class MockBridgeObserver
+    : public PersonalContextEntityMetadataSyncBridge::Observer {
  public:
   MOCK_METHOD(void, OnSuppressionsChanged, (), (override));
 };
 
-class EntitySuppressionSyncBridgeTest : public testing::Test {
+class PersonalContextEntityMetadataSyncBridgeTest : public testing::Test {
  public:
-  EntitySuppressionSyncBridgeTest()
+  PersonalContextEntityMetadataSyncBridgeTest()
       : os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting(
             /*is_sync_for_unittests=*/true)),
         store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
@@ -124,7 +125,7 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
   }
 
   void CreateBridge() {
-    bridge_ = std::make_unique<EntitySuppressionSyncBridge>(
+    bridge_ = std::make_unique<PersonalContextEntityMetadataSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         os_crypt_async_.get());
@@ -202,7 +203,7 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
     return records ? std::move(*records) : syncer::DataTypeStore::RecordList();
   }
 
-  EntitySuppressionSyncBridge& bridge() { return *bridge_; }
+  PersonalContextEntityMetadataSyncBridge& bridge() { return *bridge_; }
   NiceMock<MockBridgeObserver>& observer() { return observer_; }
   const os_crypt_async::Encryptor& encryptor() { return *encryptor_; }
   NiceMock<syncer::MockDataTypeLocalChangeProcessor>& mock_processor() {
@@ -221,12 +222,13 @@ class EntitySuppressionSyncBridgeTest : public testing::Test {
   std::unique_ptr<syncer::DataTypeStore> store_;
   NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   NiceMock<MockBridgeObserver> observer_;
-  std::unique_ptr<EntitySuppressionSyncBridge> bridge_;
+  std::unique_ptr<PersonalContextEntityMetadataSyncBridge> bridge_;
 };
 
 // Tests that when the encryptor has no usable key, the bridge reports an error
 // instead of loading.
-TEST_F(EntitySuppressionSyncBridgeTest, EncryptionUnavailableReportsError) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       EncryptionUnavailableReportsError) {
   EXPECT_CALL(mock_processor(), ModelReadyToSync).Times(0);
   EXPECT_CALL(mock_processor(),
               ReportError(Property(
@@ -235,7 +237,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, EncryptionUnavailableReportsError) {
                       kAutofillEntitySuppressionEncryptionUnavailable)));
 
   os_crypt_async::OSCryptAsync os_crypt_async_without_keys({});
-  EntitySuppressionSyncBridge bridge(
+  PersonalContextEntityMetadataSyncBridge bridge(
       mock_processor().CreateForwardingProcessor(),
       syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store().get()),
       &os_crypt_async_without_keys);
@@ -246,7 +248,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, EncryptionUnavailableReportsError) {
 
 // Tests that pre-existing encrypted records in the store are loaded and
 // decrypted upon bridge creation.
-TEST_F(EntitySuppressionSyncBridgeTest, InitialLoadFromStore) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest, InitialLoadFromStore) {
   EntitySuppressionEntry entry = CreatePassportEntry();
   WriteToStore("guid1", entry);
 
@@ -260,7 +262,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, InitialLoadFromStore) {
 }
 
 // Tests that suppression entries written to the store are encrypted.
-TEST_F(EntitySuppressionSyncBridgeTest, DataIsEncryptedInStore) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest, DataIsEncryptedInStore) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
   ASSERT_TRUE(bridge().Suppress(entry));
@@ -280,7 +282,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, DataIsEncryptedInStore) {
 
 // Tests that locally suppressing an entry adds it to local suppressions,
 // commits it to Sync, and notifies observers.
-TEST_F(EntitySuppressionSyncBridgeTest, LocalSuppress) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest, LocalSuppress) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
   ASSERT_TRUE(bridge().GetSuppressions().empty());
@@ -296,7 +298,8 @@ TEST_F(EntitySuppressionSyncBridgeTest, LocalSuppress) {
 
 // Tests that unsuppressing an entry deletes it from local state, commits
 // the deletion to Sync, and notifies observers.
-TEST_F(EntitySuppressionSyncBridgeTest, LocalSuppressAndUnsuppress) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       LocalSuppressAndUnsuppress) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
   ASSERT_TRUE(bridge().Suppress(entry));
@@ -314,7 +317,8 @@ TEST_F(EntitySuppressionSyncBridgeTest, LocalSuppressAndUnsuppress) {
 
 // Tests that unsuppressing a non-existing entry returns `false` without
 // calling Sync or notifying observers.
-TEST_F(EntitySuppressionSyncBridgeTest, LocalUnsuppressNonExistingEntry) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       LocalUnsuppressNonExistingEntry) {
   CreateBridge();
 
   EXPECT_CALL(mock_processor(), Delete).Times(0);
@@ -324,7 +328,8 @@ TEST_F(EntitySuppressionSyncBridgeTest, LocalUnsuppressNonExistingEntry) {
 
 // Tests that incremental remote additions update local suppressions and
 // notify observers.
-TEST_F(EntitySuppressionSyncBridgeTest, ApplyIncrementalSyncChanges_Add) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       ApplyIncrementalSyncChanges_Add) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
   ASSERT_TRUE(bridge().GetSuppressions().empty());
@@ -340,7 +345,8 @@ TEST_F(EntitySuppressionSyncBridgeTest, ApplyIncrementalSyncChanges_Add) {
 
 // Tests that incremental remote deletions remove suppressions locally and
 // notify observers.
-TEST_F(EntitySuppressionSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       ApplyIncrementalSyncChanges_Delete) {
   CreateBridge();
   EntitySuppressionEntry entry1 = CreatePassportEntry();
   EntitySuppressionEntry entry2 = CreateDriversLicenseEntry();
@@ -364,7 +370,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
 
 // Tests that disabling sync clears all local suppressions and notifies
 // observers.
-TEST_F(EntitySuppressionSyncBridgeTest, ApplyDisableSyncChanges) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest, ApplyDisableSyncChanges) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
   EXPECT_TRUE(bridge().Suppress(entry));
@@ -378,7 +384,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, ApplyDisableSyncChanges) {
 
 // Tests that local-only entries created prior to initial sync are uploaded
 // to Sync during `MergeFullSyncData`.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        MergeFullSyncData_UploadsLocalOnlyEntries) {
   EntitySuppressionEntry local_entry = CreatePassportEntry();
   WriteToStore("local_guid", local_entry);
@@ -394,7 +400,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that `MergeFullSyncData` combines distinct local and remote entries
 // and notifies observers.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        MergeFullSyncData_RemoteAndLocalEntries) {
   EntitySuppressionEntry local_entry = CreatePassportEntry();
   WriteToStore("local_guid", local_entry);
@@ -415,7 +421,8 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that attempting to suppress an already suppressed entry returns
 // `false` and performs no operations.
-TEST_F(EntitySuppressionSyncBridgeTest, Suppress_DuplicateEntryReturnsFalse) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       Suppress_DuplicateEntryReturnsFalse) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
   ASSERT_TRUE(bridge().Suppress(entry));
@@ -427,7 +434,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, Suppress_DuplicateEntryReturnsFalse) {
 
 // Tests that Suppress returns false without modifying local state or notifying
 // observers when Sync is not tracking metadata.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        Suppress_ReturnsFalseWhenSyncNotTrackingMetadata) {
   CreateBridge();
   ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(false));
@@ -440,7 +447,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that Unsuppress returns false without deleting local state or notifying
 // observers when Sync is not tracking metadata.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        Unsuppress_ReturnsFalseWhenSyncNotTrackingMetadata) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
@@ -458,7 +465,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 // Tests that `MergeFullSyncData` deduplicates matching local and remote
 // entries deterministically using lexicographical tie-breaking without
 // redundant uploads.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        MergeFullSyncData_DeduplicatesMatchingEntriesWithDifferentGuids) {
   EntitySuppressionEntry entry = CreatePassportEntry();
   WriteToStore("guid2", entry);
@@ -482,7 +489,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that when the local GUID is smaller than the remote duplicate GUID in
 // `MergeFullSyncData`, the local GUID wins and is uploaded to Sync.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        MergeFullSyncData_LocalWinsWhenSmallerGuid) {
   EntitySuppressionEntry entry = CreatePassportEntry();
   WriteToStore("guid1", entry);
@@ -506,7 +513,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that duplicate entries within the remote initial sync payload are
 // deduplicated deterministically.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        MergeFullSyncData_RemotePayloadContainsDuplicates) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
@@ -526,7 +533,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 // Tests that incremental remote additions matching an existing local entry
 // deduplicate deterministically using smaller GUID.
 TEST_F(
-    EntitySuppressionSyncBridgeTest,
+    PersonalContextEntityMetadataSyncBridgeTest,
     ApplyIncrementalSyncChanges_DeduplicatesMatchingEntriesWithDifferentGuids) {
   EntitySuppressionEntry entry = CreatePassportEntry();
   WriteToStore("guid2", entry);
@@ -548,7 +555,7 @@ TEST_F(
 
 // Tests that duplicate entries within an incremental update cause
 // deletion of the larger duplicate in Sync.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        ApplyIncrementalSyncChanges_RemotePayloadContainsDuplicates) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
@@ -568,7 +575,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that ACTION_UPDATE changes are ignored since entity suppressions are
 // immutable.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        ApplyIncrementalSyncChanges_IgnoresUpdates) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
@@ -594,7 +601,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 // Tests that ClearSuppressions with a full time range deletes all entries from
 // local state and store, commits deletions to Sync, and notifies observers
 // once.
-TEST_F(EntitySuppressionSyncBridgeTest, ClearSuppressions) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest, ClearSuppressions) {
   WriteToStore("guid1", CreatePassportEntry());
   WriteToStore("guid2", CreateDriversLicenseEntry());
   CreateBridge();
@@ -611,7 +618,8 @@ TEST_F(EntitySuppressionSyncBridgeTest, ClearSuppressions) {
 
 // Tests that ClearSuppressions only deletes entries whose creation time falls
 // within [delete_begin, delete_end].
-TEST_F(EntitySuppressionSyncBridgeTest, ClearSuppressions_TimeRange) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       ClearSuppressions_TimeRange) {
   const base::Time t1 =
       base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(100));
   const base::Time t2 =
@@ -635,7 +643,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, ClearSuppressions_TimeRange) {
 
 // Tests that ClearSuppressions returns false and does not notify observers
 // when there are no matching suppressions.
-TEST_F(EntitySuppressionSyncBridgeTest, ClearSuppressions_Empty) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest, ClearSuppressions_Empty) {
   CreateBridge();
   ASSERT_TRUE(bridge().GetSuppressions().empty());
 
@@ -646,7 +654,8 @@ TEST_F(EntitySuppressionSyncBridgeTest, ClearSuppressions_Empty) {
 
 // Tests that CountSuppressionsCreatedBetween only counts entries whose
 // creation time falls within the inclusive range [begin, end].
-TEST_F(EntitySuppressionSyncBridgeTest, CountSuppressionsCreatedBetween) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       CountSuppressionsCreatedBetween) {
   const base::Time t1 =
       base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(100));
   const base::Time t2 =
@@ -689,7 +698,8 @@ TEST_F(EntitySuppressionSyncBridgeTest, CountSuppressionsCreatedBetween) {
 
 // Tests that CountSuppressionsCreatedBetween returns zero when there are no
 // suppressions.
-TEST_F(EntitySuppressionSyncBridgeTest, CountSuppressionsCreatedBetween_Empty) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       CountSuppressionsCreatedBetween_Empty) {
   CreateBridge();
   ASSERT_TRUE(bridge().GetSuppressions().empty());
 
@@ -700,7 +710,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, CountSuppressionsCreatedBetween_Empty) {
 
 // Tests that suppressions above the limit, e.g. stored by builds without the
 // limit, are deleted on load.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        Load_DeletesOldestSuppressionsAboveLimit) {
   EntitySuppressionEntry oldest_entry = CreatePassportEntry();
   EntitySuppressionEntry second_oldest_entry = CreateDriversLicenseEntry();
@@ -724,7 +734,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that suppressing an entry at the limit deletes the oldest suppression
 // from local storage and Sync.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        Suppress_DeletesOldestSuppressionAtLimit) {
   EntitySuppressionEntry oldest_entry = CreatePassportEntry();
   WriteToStore("oldest_guid", oldest_entry,
@@ -745,7 +755,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that `MergeFullSyncData` deletes the oldest suppressions above the
 // limit and doesn't upload deleted local-only suppressions.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        MergeFullSyncData_DeletesOldestSuppressionsAboveLimit) {
   EntitySuppressionEntry oldest_entry = CreatePassportEntry();
   WriteToStore("oldest_guid", oldest_entry,
@@ -772,7 +782,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that remote additions above the limit, e.g. from clients without the
 // limit, delete the oldest suppressions from local storage and Sync.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        ApplyIncrementalSyncChanges_DeletesOldestSuppressionsAboveLimit) {
   EntitySuppressionEntry oldest_entry = CreatePassportEntry();
   WriteToStore("oldest_guid", oldest_entry,
@@ -796,7 +806,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that of suppressions with equal creation times, the one with the larger
 // GUID is deleted, so that all clients delete the same suppressions.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        DeletesLargerGuidFirstForEqualCreationTimes) {
   EntitySuppressionEntry entry_a = CreatePassportEntry();
   EntitySuppressionEntry entry_b = CreateDriversLicenseEntry();
@@ -814,7 +824,8 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 }
 
 // Tests that a load without corrupt records logs zero dropped records.
-TEST_F(EntitySuppressionSyncBridgeTest, Metrics_LoadWithoutDroppedRecords) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       Metrics_LoadWithoutDroppedRecords) {
   WriteToStore("guid1", CreatePassportEntry());
   base::HistogramTester histogram_tester;
 
@@ -828,7 +839,8 @@ TEST_F(EntitySuppressionSyncBridgeTest, Metrics_LoadWithoutDroppedRecords) {
 
 // Tests that records which cannot be decrypted, parsed or converted are dropped
 // on load and that the reasons and the dropped count are logged.
-TEST_F(EntitySuppressionSyncBridgeTest, Metrics_LoadWithDroppedRecords) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       Metrics_LoadWithDroppedRecords) {
   EntitySuppressionEntry valid_entry = CreatePassportEntry();
   WriteToStore("guid1", valid_entry);
   WriteRawToStore("guid2", "not encrypted");
@@ -855,7 +867,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, Metrics_LoadWithDroppedRecords) {
 
 // Tests that `TrimAllSupportedFieldsFromRemoteSpecifics()` correctly trims all
 // supported fields from the specifics.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        TrimAllSupportedFieldsFromRemoteSpecifics) {
   CreateBridge();
   sync_pb::EntitySpecifics entity_specifics;
@@ -873,7 +885,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that supported fields and nested messages are successfully trimmed but
 // that unsupported fields are preserved.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        TrimAllSupportedFieldsFromRemoteSpecifics_PreserveUnsupportedFields) {
   CreateBridge();
   sync_pb::EntitySpecifics trimmed_entity_specifics;
@@ -908,7 +920,7 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 }
 
 // Tests that `GetDataForCommit()` includes unknown fields from the server.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        GetDataForCommit_PreservesUnknownFields) {
   WriteToStore("guid1", CreatePassportEntry());
   CreateBridge();
@@ -932,7 +944,8 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 
 // Tests that `Suppress()` includes unknown fields from the server when
 // calling `Put()`.
-TEST_F(EntitySuppressionSyncBridgeTest, LocalSuppress_PreservesUnknownFields) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       LocalSuppress_PreservesUnknownFields) {
   CreateBridge();
 
   sync_pb::EntitySpecifics base_specifics;
@@ -956,7 +969,7 @@ TEST_F(EntitySuppressionSyncBridgeTest, LocalSuppress_PreservesUnknownFields) {
 // entry and is committed unchanged.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
-TEST_F(EntitySuppressionSyncBridgeTest,
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
        LegacyEntryFromStore_IsSuppressedAndCommittedUnchanged) {
   EntitySuppressionEntry entry = CreatePassportEntry();
   const sync_pb::AutofillEntitySuppressionSpecifics specifics =
@@ -982,7 +995,8 @@ TEST_F(EntitySuppressionSyncBridgeTest,
 // Tests that unsuppressing an entry also deletes its legacy record.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
-TEST_F(EntitySuppressionSyncBridgeTest, LegacyEntryFromStore_IsUnsuppressed) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       LegacyEntryFromStore_IsUnsuppressed) {
   EntitySuppressionEntry entry = CreatePassportEntry();
   WriteEncryptedToStore("guid1",
                         CreateSpecificsFromEntitySuppressionKey(
@@ -1004,7 +1018,8 @@ TEST_F(EntitySuppressionSyncBridgeTest, LegacyEntryFromStore_IsUnsuppressed) {
 // Tests that a legacy record with full hashes from Sync suppresses its entry.
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer
 // supported.
-TEST_F(EntitySuppressionSyncBridgeTest, LegacyEntryFromSync_IsSuppressed) {
+TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
+       LegacyEntryFromSync_IsSuppressed) {
   CreateBridge();
   EntitySuppressionEntry entry = CreatePassportEntry();
   syncer::EntityChangeList add_changes;

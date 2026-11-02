@@ -43,8 +43,8 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
@@ -990,8 +990,8 @@ TEST_F(BaseAutofillAiTest, KeyMetrics_PerRecordType) {
 class AutofillAiPersonalContextSuppressionTest : public BaseAutofillAiTest {
  public:
   AutofillAiPersonalContextSuppressionTest() {
-    std::unique_ptr<EntitySuppressionSyncBridge> bridge =
-        CreateTestEntitySuppressionSyncBridge();
+    std::unique_ptr<PersonalContextEntityMetadataSyncBridge> bridge =
+        CreateTestPersonalContextEntityMetadataSyncBridge();
     EXPECT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
     suppression_manager_ =
         std::make_unique<EntitySuppressionManager>(std::move(bridge));

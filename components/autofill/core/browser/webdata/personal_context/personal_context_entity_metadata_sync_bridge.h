@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PERSONAL_CONTEXT_ENTITY_SUPPRESSION_SYNC_BRIDGE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PERSONAL_CONTEXT_ENTITY_SUPPRESSION_SYNC_BRIDGE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PERSONAL_CONTEXT_PERSONAL_CONTEXT_ENTITY_METADATA_SYNC_BRIDGE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PERSONAL_CONTEXT_PERSONAL_CONTEXT_ENTITY_METADATA_SYNC_BRIDGE_H_
 
 #include <memory>
 #include <optional>
@@ -42,8 +42,9 @@ namespace autofill {
 
 // Sync bridge for the `AUTOFILL_ENTITY_SUPPRESSION` data type.
 // Handles encrypted persistence at rest and Sync integration.
-// Owned by `EntitySuppressionManager`, one instance per profile.
-class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
+// Owned by `PersonalContextEntityMetadataManager`, one instance per profile.
+class PersonalContextEntityMetadataSyncBridge
+    : public syncer::DataTypeSyncBridge {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -51,14 +52,15 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
     virtual void OnSuppressionsChanged() {}
   };
 
-  EntitySuppressionSyncBridge(
+  PersonalContextEntityMetadataSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceDataTypeStoreFactory store_factory,
       os_crypt_async::OSCryptAsync* os_crypt_async);
-  EntitySuppressionSyncBridge(const EntitySuppressionSyncBridge&) = delete;
-  EntitySuppressionSyncBridge& operator=(const EntitySuppressionSyncBridge&) =
-      delete;
-  ~EntitySuppressionSyncBridge() override;
+  PersonalContextEntityMetadataSyncBridge(
+      const PersonalContextEntityMetadataSyncBridge&) = delete;
+  PersonalContextEntityMetadataSyncBridge& operator=(
+      const PersonalContextEntityMetadataSyncBridge&) = delete;
+  ~PersonalContextEntityMetadataSyncBridge() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -186,9 +188,10 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
   // In-memory mapping from `EntitySuppressionKey` to its metadata.
   base::flat_map<EntitySuppressionKey, EntryMetadata> metadata_by_entry_;
 
-  base::WeakPtrFactory<EntitySuppressionSyncBridge> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PersonalContextEntityMetadataSyncBridge>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PERSONAL_CONTEXT_ENTITY_SUPPRESSION_SYNC_BRIDGE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PERSONAL_CONTEXT_PERSONAL_CONTEXT_ENTITY_METADATA_SYNC_BRIDGE_H_

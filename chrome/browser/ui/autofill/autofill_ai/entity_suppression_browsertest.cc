@@ -25,8 +25,8 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -62,7 +62,7 @@ class EntitySuppressionBrowserTest : public InProcessBrowserTest {
         base::BindRepeating(
             [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
               return std::make_unique<EntitySuppressionManager>(
-                  CreateTestEntitySuppressionSyncBridge());
+                  CreateTestPersonalContextEntityMetadataSyncBridge());
             }));
   }
 

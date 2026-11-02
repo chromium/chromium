@@ -30,8 +30,8 @@
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/test_utils/personal_context_test_util.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
@@ -197,8 +197,8 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
         {{features::kAutofillAmbientAutofillSupportedEntityTypes.name,
           kSupportedEntityTypes}});
     personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
-    std::unique_ptr<EntitySuppressionSyncBridge> bridge =
-        CreateTestEntitySuppressionSyncBridge();
+    std::unique_ptr<PersonalContextEntityMetadataSyncBridge> bridge =
+        CreateTestPersonalContextEntityMetadataSyncBridge();
     EXPECT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
     suppression_manager_ =
         std::make_unique<EntitySuppressionManager>(std::move(bridge));
