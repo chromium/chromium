@@ -53,6 +53,7 @@ struct ScriptTool {
   string? title;
   string description;
   string? input_schema;
+  string? output_schema;
   ScriptToolAnnotations? annotations;
   // See the documentation in `model_context.idl` for more about this member.
   array<url.mojom.Origin> exposed_origins;

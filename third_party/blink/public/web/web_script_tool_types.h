@@ -41,6 +41,7 @@ struct WebScriptToolError {
 struct WebScriptToolDeclaration {
   WebString description;
   WebString input_schema;
+  WebString output_schema;
   std::optional<bool> read_only;
   std::optional<bool> untrusted_content;
   std::optional<bool> consequential;

@@ -33,11 +33,12 @@
   readonly attribute Window? window;
   readonly attribute USVString origin;
 
-  // Both of the below members are null when the tool was registered without
+  // All of the below members are null when the tool was registered without
   // them.
   //
   // `[CachedAttribute]` is OK because these are immutable; `IsSnapshotDirty()`
   // always returns false, and the cache is never invalidated.
   [CallWith=ScriptState, CachedAttribute=IsSnapshotDirty] readonly attribute object? inputSchema;
+  [CallWith=ScriptState, CachedAttribute=IsSnapshotDirty] readonly attribute object? outputSchema;
   [CallWith=ScriptState, CachedAttribute=IsSnapshotDirty] readonly attribute object? annotations;
 };

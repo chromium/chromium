@@ -10800,6 +10800,7 @@ interface Tool
     getter inputSchema
     getter name
     getter origin
+    getter outputSchema
     getter title
     getter window
     method constructor

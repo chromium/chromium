@@ -16,7 +16,8 @@ namespace blink {
 Tool::Tool(DOMWindow* window,
            scoped_refptr<const SecurityOrigin> origin,
            mojom::blink::ScriptToolPtr script_tool,
-           const ScriptValue& input_schema)
+           const ScriptValue& input_schema,
+           const ScriptValue& output_schema)
     : window_(window),
       origin_(std::move(origin)),
       script_tool_(std::move(script_tool)) {
@@ -31,6 +32,10 @@ Tool::Tool(DOMWindow* window,
   if (!input_schema.IsEmpty()) {
     input_schema_.Reset(input_schema.GetIsolate(), input_schema.V8Value());
   }
+  CHECK_EQ(script_tool_->output_schema.IsNull(), output_schema.IsEmpty());
+  if (!output_schema.IsEmpty()) {
+    output_schema_.Reset(output_schema.GetIsolate(), output_schema.V8Value());
+  }
 }
 
 Tool::~Tool() = default;
@@ -38,6 +43,7 @@ Tool::~Tool() = default;
 void Tool::Trace(Visitor* visitor) const {
   visitor->Trace(window_);
   visitor->Trace(input_schema_);
+  visitor->Trace(output_schema_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -68,6 +74,14 @@ ScriptObject Tool::inputSchema(ScriptState* script_state) const {
     return ScriptObject::CreateNull(isolate);
   }
   return ScriptObject(isolate, input_schema_.Get(isolate));
+}
+
+ScriptObject Tool::outputSchema(ScriptState* script_state) const {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  if (output_schema_.IsEmpty()) {
+    return ScriptObject::CreateNull(isolate);
+  }
+  return ScriptObject(isolate, output_schema_.Get(isolate));
 }
 
 ScriptObject Tool::annotations(ScriptState* script_state) const {

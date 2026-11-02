@@ -61,6 +61,7 @@ mojom::ActionResultPtr OnToolExecuted(
   script_tool_response->tool->name = name;
   script_tool_response->tool->description = tool->description.Utf8();
   script_tool_response->tool->input_schema = tool->input_schema.Utf8();
+  script_tool_response->tool->output_schema = tool->output_schema.Utf8();
   if (tool->read_only.has_value() || tool->untrusted_content.has_value() ||
       tool->consequential.has_value() || tool->debugging.has_value()) {
     script_tool_response->tool->annotations =

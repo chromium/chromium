@@ -12,6 +12,7 @@ dictionary ModelContextTool {
   USVString title;
   required DOMString description;
   object inputSchema;
+  object outputSchema;
   required ToolExecuteCallback execute;
   ToolAnnotations annotations;
 };

@@ -42,13 +42,15 @@ class CORE_EXPORT Tool final : public ScriptWrappable {
  public:
   // `window` is the (non-null) window of the document that registered the
   // tool, and `origin` is that document's origin; `script_tool` is a snapshot
-  // of the tool's state. `input_schema` is `script_tool->input_schema` already
-  // parsed into a script value, and is empty iff `script_tool->input_schema` is
-  // null.
+  // of the tool's state. `input_schema` and `output_schema` are
+  // `script_tool->input_schema` and `script_tool->output_schema` already parsed
+  // into script values, and are each empty iff the corresponding `script_tool`
+  // member is null.
   Tool(DOMWindow* window,
        scoped_refptr<const SecurityOrigin> origin,
        mojom::blink::ScriptToolPtr script_tool,
-       const ScriptValue& input_schema);
+       const ScriptValue& input_schema,
+       const ScriptValue& output_schema);
   ~Tool() override;
 
   // Not web-exposed. The stable identity of the underlying registered tool.
@@ -66,14 +68,15 @@ class CORE_EXPORT Tool final : public ScriptWrappable {
   // `window_`.
   DOMWindow* window() const;
   String origin() const;
-  // Both of these return null if the tool was registered without the
-  // corresponding member.
+  // These return null if the tool was registered without the corresponding
+  // member.
   ScriptObject inputSchema(ScriptState* script_state) const;
+  ScriptObject outputSchema(ScriptState* script_state) const;
   ScriptObject annotations(ScriptState* script_state) const;
 
-  // The `[CachedAttribute]` invalidation predicate for `inputSchema` and
-  // `annotations`. `this` is an immutable snapshot, so the cached V8 values are
-  // never stale.
+  // The `[CachedAttribute]` invalidation predicate for `inputSchema`,
+  // `outputSchema`, and `annotations`. `this` is an immutable snapshot, so the
+  // cached V8 values are never stale.
   bool IsSnapshotDirty() const { return false; }
 
   void Trace(Visitor* visitor) const override;
@@ -95,6 +98,7 @@ class CORE_EXPORT Tool final : public ScriptWrappable {
   const scoped_refptr<const SecurityOrigin> origin_;
   mojom::blink::ScriptToolPtr script_tool_;
   TraceWrapperV8Reference<v8::Value> input_schema_;
+  TraceWrapperV8Reference<v8::Value> output_schema_;
 };
 
 }  // namespace blink

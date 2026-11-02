@@ -105,6 +105,12 @@ std::unique_ptr<protocol::WebMCP::Tool> InspectorWebMCPAgent::BuildProtocolTool(
       tool->setInputSchema(std::move(parsed));
     }
   }
+  if (auto output_schema = tool_data.ScriptTool().output_schema) {
+    if (auto parsed =
+            protocol::DictionaryValue::cast(ParseJSON(output_schema))) {
+      tool->setOutputSchema(std::move(parsed));
+    }
+  }
 
   if (auto annotations = BuildAnnotations(tool_data.ScriptTool().annotations,
                                           tool_data.BackingFormElement())) {

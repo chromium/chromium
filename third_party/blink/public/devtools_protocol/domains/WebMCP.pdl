@@ -40,6 +40,8 @@ experimental domain WebMCP
       string description
       # Schema for the tool's input parameters.
       optional object inputSchema
+      # Schema for the tool's output structure.
+      optional object outputSchema
       # Optional annotations for the tool.
       optional Annotation annotations
       # Frame identifier associated with the tool registration.

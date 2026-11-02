@@ -378,10 +378,21 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
     }
   }
 
-  // Serializing `inputSchema` above can run script (e.g., a `toJSON()` method)
-  // that makes the document inactive, for example by removing its iframe. The
-  // rest of this method requires an active document (e.g., it uses
-  // `model_context_host_remote_`), so check again.
+  String output_schema;
+  if (tool->hasOutputSchema()) {
+    output_schema = ValidateAndStringifyValue(
+        script_state, PassThroughException(script_state->GetIsolate()),
+        tool->outputSchema(), "output schema");
+    if (!output_schema) {
+      // Exception already thrown by ValidateAndStringifyValue.
+      return EmptyPromise();
+    }
+  }
+
+  // Serializing `inputSchema` or `outputSchema` above can run script (e.g., a
+  // `toJSON()` method) that makes the document inactive, for example by
+  // removing its iframe. The rest of this method requires an active document
+  // (e.g., it uses `model_context_host_remote_`), so check again.
   if (!document_->IsActive()) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state,
@@ -447,6 +458,7 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
   script_tool->title = tool->hasTitle() ? tool->title() : String();
   script_tool->description = tool->description();
   script_tool->input_schema = input_schema;
+  script_tool->output_schema = output_schema;
   script_tool->exposed_origins = std::move(exposed_origins);
 
   if (tool->hasAnnotations()) {
@@ -517,6 +529,7 @@ std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
   const mojom::blink::ScriptTool& script_tool = tool_data->ScriptTool();
   declaration.description = script_tool.description;
   declaration.input_schema = script_tool.input_schema;
+  declaration.output_schema = script_tool.output_schema;
   if (script_tool.annotations) {
     declaration.read_only = script_tool.annotations->read_only;
     declaration.untrusted_content = script_tool.annotations->untrusted_content;
@@ -1073,8 +1086,8 @@ void ModelContext::OnGetScriptToolsCompleted(
   HeapVector<Member<Tool>> result_tools;
   result_tools.ReserveInitialCapacity(tools.size());
 
-  // Parsing each tool's input schema, and handing the parsed value to `Tool`,
-  // both require the resolver's context to be entered.
+  // Parsing each tool's input and output schemas, and handing the parsed values
+  // to `Tool`, both require the resolver's context to be entered.
   ScriptState* script_state = resolver->GetScriptState();
   ScriptState::Scope scope(script_state);
 
@@ -1100,9 +1113,20 @@ void ModelContext::OnGetScriptToolsCompleted(
       }
     }
 
+    ScriptValue output_schema;
+    if (!t->output_schema.IsNull()) {
+      v8::TryCatch try_catch(script_state->GetIsolate());
+      auto script_object =
+          JSONStringToScriptObject(script_state, t->output_schema);
+      output_schema = script_object;
+      if (try_catch.HasCaught() || output_schema.IsEmpty()) {
+        continue;
+      }
+    }
+
     result_tools.push_back(MakeGarbageCollected<Tool>(
         frame->DomWindow(), std::move(exposed_tool->origin), std::move(t),
-        input_schema));
+        input_schema, output_schema));
   }
 
   resolver->Resolve(result_tools);
