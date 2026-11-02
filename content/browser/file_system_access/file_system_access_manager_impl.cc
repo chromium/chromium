@@ -2166,6 +2166,16 @@ void FileSystemAccessManagerImpl::DidChooseDirectory(
   }
 
   storage::FileSystemURL url = CreateFileSystemURLFromPath(entry);
+  // The URL is only cracked now, after the permission prompt. If `entry` is on
+  // an external mount point that was revoked in the meantime, e.g. because the
+  // volume was unmounted on ChromeOS while the prompt was showing, the URL is
+  // invalid. Handles must not be created for such invalid URLs.
+  if (!url.is_valid()) {
+    std::move(callback).Run(file_system_access_error::FromFileError(
+                                base::File::FILE_ERROR_NOT_FOUND),
+                            std::move(result_entries));
+    return;
+  }
 
   result_entries.push_back(blink::mojom::FileSystemAccessEntry::New(
       blink::mojom::FileSystemAccessHandle::NewDirectory(CreateDirectoryHandle(
