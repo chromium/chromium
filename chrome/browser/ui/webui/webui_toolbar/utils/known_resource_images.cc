@@ -31,6 +31,7 @@ std::optional<std::string_view> GetKnownResourceImageUrl(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {IDR_GOOGLE_G_GRADIENT_16_ALT,
        "chrome://theme/IDR_GOOGLE_G_GRADIENT_16_ALT"},
+      {IDR_GOOGLE_G_GRADIENT_20, "chrome://theme/IDR_GOOGLE_G_GRADIENT_20"},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
 

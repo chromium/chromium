@@ -381,6 +381,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"internal-icons:google_lens_monochrome_logo", IconType::kIconSet}},
           {{&vector_icons::kPageInsightsIcon},
            {"internal-icons:page_insights", IconType::kIconSet}},
+          {{&vector_icons::kGoogleGLogoIcon},
+           {"internal-icons:google_g_logo", IconType::kIconSet}},
           {{&vector_icons::kGoogleGLogoMonochromeIcon},
            {"internal-icons:google_g_logo_monochrome", IconType::kIconSet}},
 #endif

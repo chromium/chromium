@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/known_resource_images.h"
 #include "chrome/common/chrome_features.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -664,29 +665,17 @@ void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
     ui::ImageModel maybe_new_icon =
         UpdateLocationIcon(mojo_security_level, is_text_dangerous);
     if (!maybe_new_icon.IsEmpty()) {
-      bool icon_handled = false;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      if (auto maybe_resource_id =
-              location_bar::MaybeGetGradientGoogleSuperGIcon(maybe_new_icon)) {
-        if (*maybe_resource_id == IDR_GOOGLE_G_GRADIENT_16_ALT) {
-          location_icon_ = toolbar_delegate_->GetIconTable().RegisterColorUrl(
-              "chrome://theme/IDR_GOOGLE_G_GRADIENT_16_ALT");
-        } else {
-          CHECK_EQ(*maybe_resource_id, IDR_GOOGLE_G_GRADIENT_20,
-                   base::NotFatalUntil::M162);
-          location_icon_ = toolbar_delegate_->GetIconTable().RegisterColorUrl(
-              "chrome://theme/IDR_GOOGLE_G_GRADIENT_20");
-        }
+      if (location_bar::MaybeGetGradientGoogleSuperGIcon(maybe_new_icon)) {
+        // Verify IconTable knows how to optimally handle the icon.
+        CHECK(webui_toolbar::GetKnownResourceImageUrl(maybe_new_icon));
         // Google logo icons aren't clickable.
         is_clickable = false;
-        icon_handled = true;
       }
 #endif
-      if (!icon_handled) {
-        location_icon_ =
-            toolbar_delegate_->GetIconTable().RegisterImageModelTryReuse(
-                maybe_new_icon, location_icon_);
-      }
+      location_icon_ =
+          toolbar_delegate_->GetIconTable().RegisterImageModelTryReuse(
+              maybe_new_icon, location_icon_);
     }
   }
 
