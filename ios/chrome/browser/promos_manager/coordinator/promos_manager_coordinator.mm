@@ -601,8 +601,6 @@
         [[FullscreenSigninPromoDisplayHandler alloc] init];
   }
 
-  // Welcome Back promo handler.
-
   // Safari Import remind me later handler.
   if (ShouldShowSafariDataImportEntryPoint(self.profile->GetPrefs())) {
     _displayHandlerPromos[promos_manager::Promo::SafariImportRemindMeLater] =

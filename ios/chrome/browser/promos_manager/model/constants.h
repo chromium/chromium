@@ -46,7 +46,7 @@ enum class Promo {
   StaySafeDefaultBrowser = 15,    // "Stay Safe" default browser promo.
   PostDefaultAbandonment = 16,    // Post-default browser abandonment alert.
   FullscreenSignin = 17,          // Fullscreen sign-in promo.
-  WelcomeBack = 18,               // Welcome Back promo.
+  // WelcomeBack = 18,               // Obsolete. Welcome Back promo.
   // BWGPromo = 19,                   // Obsolete. BWG promo.
   SafariImportRemindMeLater =
       20,                       // Reminder for the Safari import entry point.

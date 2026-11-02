@@ -272,7 +272,7 @@ chromium-metrics-reviews@google.com.
       summary="&quot;Stay Safe&quot; default browser promo."/>
   <variant name="Test"
       summary="Test promo used for testing purposes (e.g. unit tests)"/>
-  <variant name="WelcomeBack" summary="Welcome Back promo."/>
+  <variant name="WelcomeBack" summary="(Obsolete) Welcome Back promo."/>
   <variant name="WhatsNew" summary="What's New Promo"/>
 </variants>
 
