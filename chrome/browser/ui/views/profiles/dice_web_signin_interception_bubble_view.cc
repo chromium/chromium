@@ -165,8 +165,11 @@ void RecordChromeSigninInterceptResult(
   base::UmaHistogramMediumTimes(reaction_time_histogram_name,
                                 base::TimeTicks::Now() - start_time);
 
-  // Only record user action on successful signin inputs.
-  if (result == SigninInterceptionResult::kAccepted) {
+  // Only record user action on successful signin inputs for the intercept
+  // bubble.
+  if (result == SigninInterceptionResult::kAccepted &&
+      interception_type ==
+          WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
     RecordSigninUserActionForAccessPoint(
         signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
   }
@@ -367,7 +370,10 @@ void DiceWebSigninInterceptionBubbleView::SetHeightAndShowWidget(int height) {
 
   if (IsChromeSignin()) {
     chrome_signin_bubble_shown_time_ = base::TimeTicks::Now();
-    RecordMetricsChromeSigninInterceptStarted();
+    if (bubble_parameters_.interception_type ==
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+      RecordMetricsChromeSigninInterceptStarted();
+    }
   }
 }
 

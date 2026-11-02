@@ -743,6 +743,12 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
   EXPECT_FALSE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
+
   SignIn(GetIdentityManager()
              ->FindExtendedAccountInfoByAccountId(account_id)
              .GetCoreAccountInfo());
@@ -750,6 +756,10 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
   // Verify that the primary account has been set.
   EXPECT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Started", signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 }
 
 IN_PROC_BROWSER_TEST_F(

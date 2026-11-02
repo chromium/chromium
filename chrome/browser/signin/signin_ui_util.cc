@@ -284,6 +284,7 @@ void SignInFromSingleAccountPromo(Profile* profile,
   }
 
   // If the account's refresh token are fine, sign in directly.
+  signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
   signin_metrics::LogSignInStarted(
       access_point, *ProfileMetricsServiceFactory::GetForProfile(profile));
   IdentityManagerFactory::GetForProfile(profile)

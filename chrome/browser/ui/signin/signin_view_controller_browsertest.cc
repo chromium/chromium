@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -1550,6 +1551,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
                        ShowChromeSigninBubble_Accepted) {
   AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{},
@@ -1576,6 +1578,9 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   EXPECT_EQ(
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       account.GetAccountId());
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Started",
+                                      signin_metrics::AccessPoint::kMenu, 1);
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed",
                                       signin_metrics::AccessPoint::kMenu, 1);
   histogram_tester.ExpectUniqueSample(
@@ -1586,12 +1591,18 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       "Signin.Intercept.ChromeSigninNonIntercept.ResponseTimeAccepted", 1);
   histogram_tester.ExpectTotalCount(
       "Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 0);
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Signin_Impression_FromChromeSigninInterceptBubble"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Signin_Signin_FromChromeSigninInterceptBubble"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount("Signin_Signin_FromMenu"));
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
                        ShowChromeSigninBubble_Declined) {
   AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{},
@@ -1615,6 +1626,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
 
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
   histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
   histogram_tester.ExpectUniqueSample(
       "Signin.InterceptResult.ChromeSigninNonIntercept",
@@ -1624,6 +1637,11 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       "Signin.Intercept.ChromeSigninNonIntercept.ResponseTimeDeclined", 1);
   histogram_tester.ExpectTotalCount(
       "Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 0);
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Signin_Impression_FromChromeSigninInterceptBubble"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Signin_Signin_FromChromeSigninInterceptBubble"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("Signin_Signin_FromMenu"));
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
