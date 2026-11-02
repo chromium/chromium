@@ -74,7 +74,7 @@ public final class FullscreenSigninPromoLauncher {
                         signinAndHistorySyncActivityLauncher,
                         SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO,
                         /* shouldCallTrackerDismissed= */ ChromeFeatureList
-                                .sInterruptiveIphCooldownGroup
+                                .sUserEducationInterruptiveCooldownGroup
                                 .isEnabled());
         if (intent == null) {
             return false;
@@ -277,7 +277,7 @@ public final class FullscreenSigninPromoLauncher {
      * the promo UI is dismissed.
      */
     private static boolean shouldTriggerFullscreenPromo(Profile profile) {
-        if (!ChromeFeatureList.sInterruptiveIphCooldownGroup.isEnabled()) {
+        if (!ChromeFeatureList.sUserEducationInterruptiveCooldownGroup.isEnabled()) {
             return true;
         }
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);

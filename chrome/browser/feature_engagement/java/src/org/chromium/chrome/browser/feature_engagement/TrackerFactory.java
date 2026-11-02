@@ -42,7 +42,7 @@ public final class TrackerFactory {
         // PromotionsEnabled.yaml when ready to launch.
         tracker.setEnterprisePolicyBlocksPromotionsSupplier(
                 () -> {
-                    if (!ChromeFeatureList.sAndroidUserEducationFramework.isEnabled()) {
+                    if (!ChromeFeatureList.sUserEducationFramework.isEnabled()) {
                         return false;
                     }
                     PrefService localState = LocalStatePrefs.get();
@@ -50,8 +50,9 @@ public final class TrackerFactory {
                 });
         tracker.setAggressivelyCooldownIphsSupplier(
                 () ->
-                        ChromeFeatureList.sAndroidUserEducationFramework.isEnabled()
-                                && ChromeFeatureList.sAggressivelyCooldownIphs.isEnabled());
+                        ChromeFeatureList.sUserEducationFramework.isEnabled()
+                                && ChromeFeatureList.sUserEducationAggressivelyCooldownIphs
+                                        .isEnabled());
         return tracker;
     }
 

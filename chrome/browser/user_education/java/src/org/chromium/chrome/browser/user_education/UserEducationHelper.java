@@ -163,7 +163,8 @@ public class UserEducationHelper {
         mTextBubble = null;
         final boolean shouldTrigger;
         if (BLUE_BUBBLE_COOLDOWN_FEATURES.contains(featureName)) {
-            boolean isCooldownEnabled = ChromeFeatureList.sBlueBubbleIphCooldownGroup.isEnabled();
+            boolean isCooldownEnabled =
+                    ChromeFeatureList.sUserEducationBlueBubbleCooldownGroup.isEnabled();
             FeatureProperties featureProperties =
                     new FeatureProperties(
                             UiFormat.BLUE_BUBBLE,

@@ -70,12 +70,12 @@ public class TrackerImpl implements Tracker {
     private long mNativePtr;
 
     // Whether the PromotionsEnabled enterprise policy currently blocks promotions. Defaults to
-    // false; flag-guarded by kAndroidUserEducationFramework in TrackerFactory.
+    // false; flag-guarded by kUserEducationFramework in TrackerFactory.
     private BooleanSupplier mEnterprisePolicyBlocksPromotionsSupplier =
             SupplierUtils.alwaysFalseBooleanSupplier();
 
-    // Defaults to false; flag-guarded by kAndroidUserEducationFramework and
-    // kAggressivelyCooldownIphs in TrackerFactory.
+    // Defaults to false; flag-guarded by kUserEducationFramework and
+    // kUserEducationAggressivelyCooldownIphs in TrackerFactory.
     private BooleanSupplier mAggressivelyCooldownIphsSupplier =
             SupplierUtils.alwaysFalseBooleanSupplier();
 

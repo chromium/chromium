@@ -116,7 +116,8 @@ public class RestoreTabsFeatureHelper {
         // successfully, IPH must show. Alternatively, the former lets the logic know if the promo
         // is expected to show, which can help determine if it is being shown for the first or
         // second time.
-        boolean isCooldownEnabled = ChromeFeatureList.sInterruptiveIphCooldownGroup.isEnabled();
+        boolean isCooldownEnabled =
+                ChromeFeatureList.sUserEducationInterruptiveCooldownGroup.isEnabled();
         FeatureProperties featureProperties =
                 new FeatureProperties(
                         UiFormat.BOTTOM_SHEET,

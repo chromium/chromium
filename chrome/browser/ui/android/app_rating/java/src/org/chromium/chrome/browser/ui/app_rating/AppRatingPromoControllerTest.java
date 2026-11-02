@@ -182,7 +182,7 @@ public class AppRatingPromoControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_APP_RATING_PROMPT)
-    @DisableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    @DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
     public void testOnSegmentationResultReceived_HighEngagement() {
         Assert.assertTrue(
                 "Promo should potentially be shown if all conditions are met.",
@@ -215,7 +215,7 @@ public class AppRatingPromoControllerTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.ANDROID_APP_RATING_PROMPT,
-        ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP
+        ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
     })
     public void testOnSegmentationResultReceived_HighEngagement_CooldownGroupEnabled() {
         Assert.assertTrue(

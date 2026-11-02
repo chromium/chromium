@@ -288,7 +288,6 @@ public abstract class ChromeFeatureList {
     public static final String ACTOR_LOGIN_PERMISSIONS_UI = "ActorLoginPermissionsUi";
     public static final String ACTOR_NOTIFICATION_INTENT_ROUTING = "ActorNotificationIntentRouting";
     public static final String ACTOR_STEP_PROGRESS_NOTIFICATION = "ActorStepProgressNotification";
-    public static final String AGGRESSIVELY_COOLDOWN_IPHS = "AggressivelyCooldownIphs";
     public static final String AI_OVERLAY_DIALOG = "AiOverlayDialog";
     public static final String ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE =
             "AllocInstanceIdIncreasedDefaultRange";
@@ -373,7 +372,6 @@ public abstract class ChromeFeatureList {
             "AndroidToolbarCaptureOnDesktop";
     public static final String ANDROID_UNIFIED_KEYBOARD_SHORTCUTS =
             "AndroidUnifiedKeyboardShortcuts";
-    public static final String ANDROID_USER_EDUCATION_FRAMEWORK = "AndroidUserEducationFramework";
     public static final String ANDROID_VERTICAL_TABS = "AndroidVerticalTabs";
     public static final String ANDROID_WINDOW_MANAGEMENT_WEB_API = "AndroidWindowManagementWebApi";
     public static final String ANDROID_XR_IMMERSIVE_PLAYER = "AndroidXrImmersivePlayer";
@@ -469,7 +467,6 @@ public abstract class ChromeFeatureList {
     public static final String BACK_GESTURE_REFLECTS_DESKTOP_BEHAVIOR =
             "BackGestureReflectsDesktopBehavior";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
-    public static final String BLUE_BUBBLE_IPH_COOLDOWN_GROUP = "BlueBubbleIphCooldownGroup";
     public static final String BOOKMARKS_BAR_CONTEXT_MENU = "BookmarksBarContextMenu";
     public static final String BOOKMARKS_BAR_NTP = "BookmarksBarNTP";
     public static final String BOOKMARK_PANE_ANDROID = "BookmarkPaneAndroid";
@@ -710,7 +707,6 @@ public abstract class ChromeFeatureList {
     public static final String INLINE_PDF_V2 = "InlinePdfV2";
     public static final String INLINE_PDF_V2_DOWNLOAD = "InlinePdfV2Download";
     public static final String INLINE_PDF_V2_INCOGNITO = "InlinePdfV2Incognito";
-    public static final String INTERRUPTIVE_IPH_COOLDOWN_GROUP = "InterruptiveIphCooldownGroup";
     public static final String IN_APP_UPDATE_FLOW = "InAppUpdateFlow";
     public static final String IN_APP_WINDOW_MANAGER_DEPRECATION = "InAppWindowManagerDeprecation";
     public static final String IPH_BOOKMARK_BAR_VISIBILITY = "IPH_BookmarkBarVisibility";
@@ -939,6 +935,13 @@ public abstract class ChromeFeatureList {
     public static final String UNIVERSAL_KEYBOARD_HANDLING = "UniversalKeyboardHandling";
     public static final String UNIVERSAL_OPT_OUT = "UniversalOptOut";
     public static final String UNIVERSAL_OPT_OUT_SETTINGS = "UniversalOptOutSettings";
+    public static final String USER_EDUCATION_AGGRESSIVELY_COOLDOWN_IPHS =
+            "UserEducationAggressivelyCooldownIphs";
+    public static final String USER_EDUCATION_BLUE_BUBBLE_COOLDOWN_GROUP =
+            "UserEducationBlueBubbleCooldownGroup";
+    public static final String USER_EDUCATION_FRAMEWORK = "UserEducationFramework";
+    public static final String USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP =
+            "UserEducationInterruptiveCooldownGroup";
     public static final String USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION =
             "UseActivityManagerForTabActivation";
     public static final String USE_ALTERNATE_HISTORY_SYNC_ILLUSTRATION =
@@ -1769,8 +1772,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ACTOR_NOTIFICATION_INTENT_ROUTING, false);
     public static final MutableFlagWithSafeDefault sActorStepProgressNotification =
             newMutableFlagWithSafeDefault(ACTOR_STEP_PROGRESS_NOTIFICATION, true);
-    public static final MutableFlagWithSafeDefault sAggressivelyCooldownIphs =
-            newMutableFlagWithSafeDefault(AGGRESSIVELY_COOLDOWN_IPHS, false);
     public static final MutableFlagWithSafeDefault sAlwaysDrawCompositedToolbarHairline =
             newMutableFlagWithSafeDefault(ALWAYS_DRAW_COMPOSITED_TOOLBAR_HAIRLINE, true);
     public static final MutableFlagWithSafeDefault sAndroidActorTaskTimeout =
@@ -1795,16 +1796,12 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_TIPS_NOTIFICATIONS_V2, false);
     public static final MutableFlagWithSafeDefault sAndroidUnifiedKeyboardShortcuts =
             newMutableFlagWithSafeDefault(ANDROID_UNIFIED_KEYBOARD_SHORTCUTS, false);
-    public static final MutableFlagWithSafeDefault sAndroidUserEducationFramework =
-            newMutableFlagWithSafeDefault(ANDROID_USER_EDUCATION_FRAMEWORK, false);
     public static final MutableFlagWithSafeDefault sAndroidZoomImmersive =
             newMutableFlagWithSafeDefault(ANDROID_ZOOM_IMMERSIVE, false);
     public static final MutableFlagWithSafeDefault sAutofillCardScanningBugfixes =
             newMutableFlagWithSafeDefault(AUTOFILL_CARD_SCANNING_BUGFIXES, true);
     public static final MutableFlagWithSafeDefault sAuxiliarySearchHistoryDonation =
             newMutableFlagWithSafeDefault(AUXILIARY_SEARCH_HISTORY_DONATION, false);
-    public static final MutableFlagWithSafeDefault sBlueBubbleIphCooldownGroup =
-            newMutableFlagWithSafeDefault(BLUE_BUBBLE_IPH_COOLDOWN_GROUP, false);
     public static final MutableFlagWithSafeDefault sBookmarksBarContextMenu =
             newMutableFlagWithSafeDefault(BOOKMARKS_BAR_CONTEXT_MENU, false);
     public static final MutableFlagWithSafeDefault sBookmarksBarNTP =
@@ -1853,8 +1850,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(INLINE_PDF_V2_DOWNLOAD, false);
     public static final MutableFlagWithSafeDefault sInlinePdfV2Incognito =
             newMutableFlagWithSafeDefault(INLINE_PDF_V2_INCOGNITO, false);
-    public static final MutableFlagWithSafeDefault sInterruptiveIphCooldownGroup =
-            newMutableFlagWithSafeDefault(INTERRUPTIVE_IPH_COOLDOWN_GROUP, false);
     public static final MutableFlagWithSafeDefault sIphBookmarkBarVisibility =
             newMutableFlagWithSafeDefault(IPH_BOOKMARK_BAR_VISIBILITY, false);
     public static final MutableFlagWithSafeDefault sLongScreenshotsNoMemoryCheck =
@@ -1925,6 +1920,14 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TRIM_MEMORY_BACKGROUND_IS_SEVERE, false);
     public static final MutableFlagWithSafeDefault sUndoableTabClosureRework =
             newMutableFlagWithSafeDefault(UNDOABLE_TAB_CLOSURE_REWORK, false);
+    public static final MutableFlagWithSafeDefault sUserEducationAggressivelyCooldownIphs =
+            newMutableFlagWithSafeDefault(USER_EDUCATION_AGGRESSIVELY_COOLDOWN_IPHS, false);
+    public static final MutableFlagWithSafeDefault sUserEducationBlueBubbleCooldownGroup =
+            newMutableFlagWithSafeDefault(USER_EDUCATION_BLUE_BUBBLE_COOLDOWN_GROUP, false);
+    public static final MutableFlagWithSafeDefault sUserEducationFramework =
+            newMutableFlagWithSafeDefault(USER_EDUCATION_FRAMEWORK, false);
+    public static final MutableFlagWithSafeDefault sUserEducationInterruptiveCooldownGroup =
+            newMutableFlagWithSafeDefault(USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP, false);
     public static final MutableFlagWithSafeDefault sXplatSyncedSetupThemes =
             newMutableFlagWithSafeDefault(XPLAT_SYNCED_SETUP_THEMES, false);
     // keep-sorted end

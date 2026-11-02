@@ -140,7 +140,7 @@ public class RestoreTabsFeatureHelperUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    @DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
     public void testRestoreTabsFeatureHelper_hasValidSyncedDevices() {
         // Setup mock data
         ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0);
@@ -178,7 +178,7 @@ public class RestoreTabsFeatureHelperUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
     public void testRestoreTabsFeatureHelper_hasValidSyncedDevices_cooldownGroupEnabled() {
         ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0);
         List<ForeignSessionTab> tabs = new ArrayList<>();

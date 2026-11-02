@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TipsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+@DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
 public class TipsUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -430,7 +430,7 @@ public class TipsUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
     public void testShouldShowTipsOptInPromo_CooldownGroupEnabledBypassesSharedPreferencesCaps() {
         when(mSharedPreferences.readInt(
                         ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0))
@@ -451,7 +451,7 @@ public class TipsUtilsUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS,
-        ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP
+        ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
     })
     public void testMaybeShowTipsOptInPromo_CooldownGroupEnabledAndNullProfile_DoesNotShow() {
         NotificationProxyUtils.setNotificationEnabledForTest(false);

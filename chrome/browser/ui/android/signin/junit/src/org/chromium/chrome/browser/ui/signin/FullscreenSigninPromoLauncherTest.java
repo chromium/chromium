@@ -73,7 +73,7 @@ import java.util.concurrent.TimeUnit;
 @DisableFeatures({
     SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO,
     SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY,
-    ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP
+    ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
 })
 @EnableFeatures(
         SigninFeatures.FULLSCREEN_SIGN_IN_PROMO_USE_DATE
@@ -490,7 +490,7 @@ public class FullscreenSigninPromoLauncherTest {
      * SigninAndHistorySyncActivityLauncherImpl#canStartSigninAndHistorySyncOrShowError}
      */
     @Test
-    @EnableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
     public void testSigninFlowFailsToLaunch() {
         TrackerFactory.setTrackerForTests(mTrackerMock);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -514,7 +514,7 @@ public class FullscreenSigninPromoLauncherTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
     public void testCooldownGroupEnabledAndAllowedShouldLaunchPromo() {
         TrackerFactory.setTrackerForTests(mTrackerMock);
         mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
@@ -553,7 +553,7 @@ public class FullscreenSigninPromoLauncherTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    @EnableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
     public void testCooldownGroupEnabledAndBlockedShouldNotLaunchPromo() {
         TrackerFactory.setTrackerForTests(mTrackerMock);
         mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);

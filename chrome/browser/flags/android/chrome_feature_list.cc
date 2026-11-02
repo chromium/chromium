@@ -256,7 +256,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kActorLiveNotification,
     &kActorNotificationIntentRouting,
     &kActorStepProgressNotification,
-    &kAggressivelyCooldownIphs,
     &kAllocInstanceIdIncreasedDefaultRange,
     &kAllowMultipleMediaNotifications,
     &kAlwaysDrawCompositedToolbarHairline,
@@ -307,7 +306,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidToolbarCaptureOnDesktop,
     &kAndroidToolbarScrollAblation,
     &kAndroidUnifiedKeyboardShortcuts,
-    &kAndroidUserEducationFramework,
     &kAndroidVerticalTabs,
     &kAndroidXRUsesSurfaceControl,
     &kAndroidXrImmersivePlayer,
@@ -333,7 +331,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAvoidRecreateOnTouchscreenOrColorModeChange,
     &kBackGestureReflectsDesktopBehavior,
     &kBlockIntentsWhileLocked,
-    &kBlueBubbleIphCooldownGroup,
     &kBookmarkPaneAndroid,
     &kBookmarkWidgetV2,
     &kBookmarksBarContextMenu,
@@ -455,7 +452,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInlinePdfV2,
     &kInlinePdfV2Download,
     &kInlinePdfV2Incognito,
-    &kInterruptiveIphCooldownGroup,
     &kKeyboardEscBackNavigation,
     &kLensOnQuickActionSearchWidget,
     &kLinkHoverStatusBar,
@@ -570,6 +566,10 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUseWebUiBookmarksAndroid,
     &kUseWebUiNtp3PDSE,
     &kUseWebUiNtpAndroid,
+    &kUserEducationAggressivelyCooldownIphs,
+    &kUserEducationBlueBubbleCooldownGroup,
+    &kUserEducationFramework,
+    &kUserEducationInterruptiveCooldownGroup,
     &kVerifyStartupSigninState,
     &kVirtualKeyboardResizesContentTransientOvershootFix,
     &kVirtualKeyboardTransientInnerHeightFix,
@@ -699,7 +699,6 @@ BASE_FEATURE(kAccountPickerDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLiveNotification, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorNotificationIntentRouting, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorStepProgressNotification, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kAggressivelyCooldownIphs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAllocInstanceIdIncreasedDefaultRange, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAllowMultipleMediaNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 // Don't clean up this flag yet, BCIV is launched, so this needs to be enabled by
@@ -762,7 +761,6 @@ BASE_FEATURE(kAndroidThemeResourceProvider, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidToolbarCaptureOnDesktop, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidToolbarScrollAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidUnifiedKeyboardShortcuts, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidUserEducationFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidVerticalTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidXRUsesSurfaceControl, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidXrImmersivePlayer, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -788,7 +786,6 @@ BASE_FEATURE(kAuxiliarySearchHistoryDonation, base::FEATURE_DISABLED_BY_DEFAULT)
 BASE_FEATURE(kAvoidRecreateOnTouchscreenOrColorModeChange, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBackGestureReflectsDesktopBehavior, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBlockIntentsWhileLocked, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kBlueBubbleIphCooldownGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBookmarkPaneAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 // Splits the bookmark widget into separate implementations: API 29/30 keep the
 // RemoteViewsService-backed collection, while API 31+ uses
@@ -916,7 +913,6 @@ BASE_FEATURE(kIncognitoScreenshot, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInlinePdfV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInlinePdfV2Download, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInlinePdfV2Incognito, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kInterruptiveIphCooldownGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kKeyboardEscBackNavigation, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLensOnQuickActionSearchWidget, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLinkHoverStatusBar, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1043,6 +1039,10 @@ BASE_FEATURE(kUsePLinkInHelp, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseWebUiBookmarksAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseWebUiNtp3PDSE, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseWebUiNtpAndroid, BUILDFLAG(IS_DESKTOP_ANDROID) ? base::FEATURE_ENABLED_BY_DEFAULT : base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUserEducationAggressivelyCooldownIphs, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUserEducationBlueBubbleCooldownGroup, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUserEducationFramework, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUserEducationInterruptiveCooldownGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 // Verify sign-in state on startup.
 BASE_FEATURE(kVerifyStartupSigninState, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kVirtualKeyboardResizesContentTransientOvershootFix, base::FEATURE_ENABLED_BY_DEFAULT);
