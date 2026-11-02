@@ -108,10 +108,14 @@ constexpr CGFloat kBlurEffectBackgroundControlsOpacity = 0.95;
 
 - (CGFloat)resolveDetentValueForSheetPresentation:
     (id<UISheetPresentationControllerDetentResolutionContext>)context {
+  UINavigationBar* navigationBar = self.navigationController.navigationBar;
   CGFloat bottomPadding = kBottomPadding;
+  CGFloat topContentInset = navigationBar.frame.size.height;
   if (self.view.window.traitCollection.horizontalSizeClass ==
       UIUserInterfaceSizeClassRegular) {
     bottomPadding = kMainStackViewInset;
+    // The navigation bar may not start at the top of the sheet.
+    topContentInset = CGRectGetMaxY(navigationBar.frame);
   }
 
   CGFloat bottomPaddingAboveSafeArea =
@@ -119,9 +123,7 @@ constexpr CGFloat kBlurEffectBackgroundControlsOpacity = 0.95;
   return [self.mainStackView
              systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
              .height +
-         kTopPadding +
-         self.navigationController.navigationBar.frame.size.height +
-         bottomPaddingAboveSafeArea;
+         kTopPadding + topContentInset + bottomPaddingAboveSafeArea;
 }
 
 #pragma mark - UI actions
