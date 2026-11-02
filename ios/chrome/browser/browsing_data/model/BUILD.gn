@@ -31,6 +31,7 @@ source_set("model") {
     "//components/browser_sync",
     "//components/browsing_data/core",
     "//components/browsing_data/core:cookie_or_cache_deletion_choice",
+    "//components/content_settings/core/browser",
     "//components/desktop_to_mobile_promos",
     "//components/history/core/browser",
     "//components/language/core/browser",
@@ -44,6 +45,7 @@ source_set("model") {
     "//components/translate/core/browser",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/cross_platform_promos/model:data_remover",
     "//ios/chrome/browser/external_files/model",
@@ -65,6 +67,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/sync/model",
@@ -93,6 +96,8 @@ source_set("counters") {
   sources = [
     "cache_counter.cc",
     "cache_counter.h",
+    "site_settings_counter.h",
+    "site_settings_counter.mm",
     "tabs_counter.h",
     "tabs_counter.mm",
   ]
@@ -100,6 +105,8 @@ source_set("counters") {
     ":util",
     "//base",
     "//components/browsing_data/core",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
@@ -130,6 +137,7 @@ source_set("unit_tests") {
     "browsing_data_remover_impl_unittest.mm",
     "browsing_data_remover_observer_bridge_unittest.mm",
     "cache_counter_unittest.cc",
+    "site_settings_counter_unittest.mm",
     "system_snapshots_cleaner_unittest.mm",
     "tabs_closure_util_unittest.mm",
   ]
@@ -141,6 +149,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/browsing_data/core",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//components/open_from_clipboard",
     "//components/open_from_clipboard:test_support",
     "//components/pref_registry",
@@ -149,6 +159,7 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/sessions/model:fake",
@@ -159,6 +170,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
@@ -171,6 +183,7 @@ source_set("unit_tests") {
     "//net",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }
 

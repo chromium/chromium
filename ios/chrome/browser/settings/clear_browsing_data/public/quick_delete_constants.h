@@ -35,6 +35,9 @@ extern NSString* const kQuickDeleteBrowsingDataCacheIdentifier;
 // The accessibility identifier for the autofill cell in the quick delete
 // browsing data page.
 extern NSString* const kQuickDeleteBrowsingDataAutofillIdentifier;
+// The accessibility identifier for the site settings cell in the quick delete
+// browsing data page.
+extern NSString* const kQuickDeleteBrowsingDataSiteSettingsIdentifier;
 
 // The accessibility identifier for the Browsing data footer string in the quick
 // delete browsing data page.

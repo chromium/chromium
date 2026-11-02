@@ -20,7 +20,9 @@
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browsing_data/model/cache_counter.h"
+#import "ios/chrome/browser/browsing_data/model/site_settings_counter.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/model/web_history_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -66,6 +68,11 @@ CreateCounterForProfileAndPref(ProfileIOS* profile,
         /*entity_data_manager=*/nullptr,
         /*entity_suppression_manager=*/nullptr,
         SyncServiceFactory::GetForProfile(profile));
+  }
+
+  if (pref_name == browsing_data::prefs::kDeleteSiteSettings) {
+    return std::make_unique<SiteSettingsCounter>(
+        ios::HostContentSettingsMapFactory::GetForProfile(profile));
   }
 
   if (pref_name == browsing_data::prefs::kCloseTabs) {

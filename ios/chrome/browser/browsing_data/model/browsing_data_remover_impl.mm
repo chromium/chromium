@@ -27,6 +27,10 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/browser/permission_settings_info.h"
+#import "components/content_settings/core/browser/permission_settings_registry.h"
+#import "components/content_settings/core/browser/website_settings_info.h"
 #import "components/desktop_to_mobile_promos/features.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -47,6 +51,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/system_snapshots_cleaner.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_data_remover.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
@@ -74,6 +79,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/tracing/ios_tracing_controller.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
@@ -142,6 +148,21 @@ void ClearCookies(
   cookie_store->DeleteAllCreatedInTimeRangeAsync(
       creation_range,
       base::BindOnce(&DeleteCallbackAdapter, std::move(callback)));
+}
+
+// Removes the user-set exceptions of every permission setting type (e.g.
+// camera, microphone) modified within [`delete_begin`, `delete_end`).
+// TODO(crbug.com/580896516): Also clear per-site zoom levels and the Translate
+// "never translate" site list, matching Desktop/Android.
+void RemoveSiteSettings(HostContentSettingsMap* host_content_settings_map,
+                        base::Time delete_begin,
+                        base::Time delete_end) {
+  for (const content_settings::PermissionSettingsInfo* info :
+       *content_settings::PermissionSettingsRegistry::GetInstance()) {
+    host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+        info->website_settings_info()->type(), delete_begin, delete_end,
+        HostContentSettingsMap::PatternSourcePredicate());
+  }
 }
 
 std::set<Browser*> GetAllBrowsersForProfile(ProfileIOS* profile) {
@@ -718,6 +739,15 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     // existing data. As browsing data is being cleared, it is fine to clear the
     // last username, as there will be no data to be merged.
     profile_->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSignedInUsername);
+  }
+
+  if (IsDomainLevelSitePermissionsEnabled() &&
+      IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS)) {
+    base::RecordAction(
+        base::UserMetricsAction("ClearBrowsingData_ContentSettings"));
+    RemoveSiteSettings(
+        ios::HostContentSettingsMapFactory::GetForProfile(profile_).get(),
+        delete_begin, delete_end);
   }
 
   // Remove stored zoom levels.

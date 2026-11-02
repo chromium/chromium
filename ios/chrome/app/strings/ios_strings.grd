@@ -2738,6 +2738,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_DATA" desc="Summary of the site data to be deleted when deleting browsing data. Should be lower case since it's shown in a list of browsing data items descriptions. [iOS only]">
        site data
       </message>
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_SETTINGS" desc="Summary of the site settings (per-site permissions and content settings exceptions, such as camera, microphone or pop-up access) to be deleted when deleting browsing data. Should be lower case since it's shown in a list of browsing data items descriptions. [iOS only]">
+        site settings
+      </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS" desc="Summary of the suggestions to be deleted when deleting browsing data. [iOS only]">
        {COUNT, plural,
           =1 {1 other}

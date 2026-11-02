@@ -24,7 +24,9 @@ void FakeBrowsingDataRemover::RemoveInRange(base::Time start_time,
                                             base::Time end_time,
                                             BrowsingDataRemoveMask remove_mask,
                                             base::OnceClosure callback,
-                                            RemovalParams params) {}
+                                            RemovalParams params) {
+  last_remove_mask_ = remove_mask;
+}
 
 void FakeBrowsingDataRemover::SetCachedTabsInfo(
     tabs_closure_util::WebStateIDToTime cached_tabs_info) {}

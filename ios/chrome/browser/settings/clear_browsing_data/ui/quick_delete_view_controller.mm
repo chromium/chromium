@@ -94,6 +94,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   BOOL _siteDataSelected;
   BOOL _cacheSelected;
   BOOL _autofillSelected;
+  BOOL _siteSettingsSelected;
 }
 @end
 
@@ -272,6 +273,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // browsing data type.
 }
 
+- (void)setSiteSettingsSummary:(NSString*)siteSettingsSummary {
+  // No-op: This ViewController doesn't show the individual summaries for each
+  // browsing data type.
+}
+
 - (void)setHistorySelection:(BOOL)selected {
   _historySelected = selected;
   [self updatePrimaryActionButtonEnabledStatus];
@@ -294,6 +300,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 - (void)setAutofillSelection:(BOOL)selected {
   _autofillSelected = selected;
+  [self updatePrimaryActionButtonEnabledStatus];
+}
+
+- (void)setSiteSettingsSelection:(BOOL)selected {
+  _siteSettingsSelected = selected;
   [self updatePrimaryActionButtonEnabledStatus];
 }
 
@@ -357,7 +368,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)updatePrimaryActionButtonEnabledStatus {
   self.primaryActionButton.enabled = _historySelected || _tabsSelected ||
                                      _siteDataSelected || _cacheSelected ||
-                                     _autofillSelected;
+                                     _autofillSelected || _siteSettingsSelected;
 }
 
 // Action handler that executes when a voiceover announcement ends.

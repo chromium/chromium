@@ -13,13 +13,21 @@
 #import "base/scoped_observation.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/test/simple_test_clock.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/common/content_settings.h"
+#import "components/content_settings/core/common/content_settings_types.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -47,6 +55,13 @@ const char kFullDeletionHistogram[] =
     "History.ClearBrowsingData.Duration.FullDeletion";
 const char kTimeRangeDeletionHistogram[] =
     "History.ClearBrowsingData.Duration.TimeRangeDeletion";
+
+// URLs used to create site settings exceptions.
+const char kRecentSiteURL[] = "https://recent.example.com";
+const char kOldSiteURL[] = "https://old.example.com";
+
+// Age of a site settings exception that falls outside of the last hour.
+constexpr base::TimeDelta kOldSiteSettingAge = base::Days(2);
 
 // Observer used to validate that BrowsingDataRemoverImpl notifies its
 // observers.
@@ -88,6 +103,7 @@ class BrowsingDataRemoverImplTest : public PlatformTest {
   BrowsingDataRemoverImplTest()
       : profile_(TestProfileIOS::Builder().Build()),
         browsing_data_remover_(profile_.get()) {
+    GetHostContentSettingsMap()->SetClockForTesting(&clock_);
     DCHECK_EQ(ClipboardRecentContent::GetInstance(), nullptr);
     ClipboardRecentContent::SetInstance(
         std::make_unique<FakeClipboardRecentContent>());
@@ -104,7 +120,40 @@ class BrowsingDataRemoverImplTest : public PlatformTest {
   }
 
  protected:
+  // Returns the `HostContentSettingsMap` of `profile_`.
+  HostContentSettingsMap* GetHostContentSettingsMap() {
+    return ios::HostContentSettingsMapFactory::GetForProfile(profile_.get())
+        .get();
+  }
+
+  // Sets the camera permission for `url` to `setting`, recorded as modified at
+  // `modified_time`.
+  void SetCameraSetting(const GURL& url,
+                        ContentSetting setting,
+                        base::Time modified_time) {
+    clock_.SetNow(modified_time);
+    GetHostContentSettingsMap()->SetContentSettingDefaultScope(
+        url, url, ContentSettingsType::MEDIASTREAM_CAMERA, setting);
+  }
+
+  // Returns the camera permission for `url`.
+  ContentSetting GetCameraSetting(const GURL& url) {
+    return GetHostContentSettingsMap()->GetContentSetting(
+        url, url, ContentSettingsType::MEDIASTREAM_CAMERA);
+  }
+
+  // Removes `mask` for `time_period` and waits for the removal to complete.
+  void RemoveAndWait(browsing_data::TimePeriod time_period,
+                     BrowsingDataRemoveMask mask) {
+    base::RunLoop run_loop;
+    browsing_data_remover_.Remove(time_period, mask, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   web::WebTaskEnvironment task_environment_;
+  // Declared before `profile_` so that it outlives the
+  // `HostContentSettingsMap` that references it.
+  base::SimpleTestClock clock_;
   std::unique_ptr<ProfileIOS> profile_;
   BrowsingDataRemoverImpl browsing_data_remover_;
 };
@@ -276,4 +325,62 @@ TEST_F(BrowsingDataRemoverImplTest,
     base::RunLoop().RunUntilIdle();
     return remaining_calls == 0;
   }));
+}
+
+// Tests that site settings are removed for all time when requested.
+TEST_F(BrowsingDataRemoverImplTest, RemovesSiteSettings) {
+  base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
+  const GURL recent_url(kRecentSiteURL);
+  const GURL old_url(kOldSiteURL);
+  const base::Time now = base::Time::Now();
+  SetCameraSetting(recent_url, CONTENT_SETTING_ALLOW, now);
+  SetCameraSetting(old_url, CONTENT_SETTING_BLOCK, now - kOldSiteSettingAge);
+
+  RemoveAndWait(browsing_data::TimePeriod::ALL_TIME,
+                BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS);
+
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetCameraSetting(recent_url));
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetCameraSetting(old_url));
+}
+
+// Tests that only site settings modified within the deletion period are
+// removed.
+TEST_F(BrowsingDataRemoverImplTest, RemovesSiteSettingsInTimePeriod) {
+  base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
+  const GURL recent_url(kRecentSiteURL);
+  const GURL old_url(kOldSiteURL);
+  const base::Time now = base::Time::Now();
+  SetCameraSetting(recent_url, CONTENT_SETTING_ALLOW, now);
+  SetCameraSetting(old_url, CONTENT_SETTING_BLOCK, now - kOldSiteSettingAge);
+
+  RemoveAndWait(browsing_data::TimePeriod::LAST_HOUR,
+                BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS);
+
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetCameraSetting(recent_url));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetCameraSetting(old_url));
+}
+
+// Tests that site settings are kept when they are not part of the removal mask.
+TEST_F(BrowsingDataRemoverImplTest, KeepsSiteSettingsWhenNotRequested) {
+  base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
+  const GURL url(kRecentSiteURL);
+  SetCameraSetting(url, CONTENT_SETTING_ALLOW, base::Time::Now());
+
+  RemoveAndWait(browsing_data::TimePeriod::ALL_TIME, kRemoveMask);
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetCameraSetting(url));
+}
+
+// Tests that site settings are kept when the domain-level site permissions
+// feature is disabled.
+TEST_F(BrowsingDataRemoverImplTest, KeepsSiteSettingsWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDomainLevelSitePermissions);
+  const GURL url(kRecentSiteURL);
+  SetCameraSetting(url, CONTENT_SETTING_ALLOW, base::Time::Now());
+
+  RemoveAndWait(browsing_data::TimePeriod::ALL_TIME,
+                BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS);
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetCameraSetting(url));
 }

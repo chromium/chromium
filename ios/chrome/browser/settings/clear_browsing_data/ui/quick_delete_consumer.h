@@ -41,6 +41,9 @@ enum class TimePeriod;
 // Sets the ViewController with the autofill summary.
 - (void)setAutofillSummary:(NSString*)autofillSummary;
 
+// Sets the ViewController with the site settings summary.
+- (void)setSiteSettingsSummary:(NSString*)siteSettingsSummary;
+
 // Sets the boolean value for the history pref selection.
 - (void)setHistorySelection:(BOOL)selected;
 
@@ -55,6 +58,9 @@ enum class TimePeriod;
 
 // Sets the boolean value for the autofill pref selection.
 - (void)setAutofillSelection:(BOOL)selected;
+
+// Sets the boolean value for the site settings pref selection.
+- (void)setSiteSettingsSelection:(BOOL)selected;
 
 // Shows a loading UI while the deletion is in progress.
 - (void)deletionInProgress;

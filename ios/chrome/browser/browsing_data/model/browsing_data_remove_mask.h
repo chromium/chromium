@@ -32,6 +32,7 @@ enum class BrowsingDataRemoveMask {
   CLOSE_TABS = 1 << 16,
   REMOVE_ORIGIN_PRIVATE_FILE_SYSTEM = 1 << 17,
   REMOVE_SERVICE_WORKERS = 1 << 18,
+  REMOVE_SITE_SETTINGS = 1 << 19,
 
   // "Site data" includes cookies, indexed DBs, local storage, webSQL, cache
   // storage, and visited links.
@@ -47,14 +48,14 @@ enum class BrowsingDataRemoveMask {
   REMOVE_ALL = REMOVE_SITE_DATA | REMOVE_CACHE | REMOVE_DOWNLOADS |
                REMOVE_FORM_DATA | REMOVE_HISTORY | REMOVE_PASSWORDS |
                REMOVE_BOOKMARKS | REMOVE_READING_LIST |
-               REMOVE_LAST_USER_ACCOUNT,
+               REMOVE_LAST_USER_ACCOUNT | REMOVE_SITE_SETTINGS,
 
   // Includes all the available remove options that support partial deletion.
   // Does not include closing tabs as tabs should only be closed by explicit
   // user action.
-  REMOVE_ALL_FOR_TIME_PERIOD = REMOVE_SITE_DATA | REMOVE_CACHE |
-                               REMOVE_FORM_DATA | REMOVE_HISTORY |
-                               REMOVE_PASSWORDS | REMOVE_LAST_USER_ACCOUNT,
+  REMOVE_ALL_FOR_TIME_PERIOD =
+      REMOVE_SITE_DATA | REMOVE_CACHE | REMOVE_FORM_DATA | REMOVE_HISTORY |
+      REMOVE_PASSWORDS | REMOVE_LAST_USER_ACCOUNT | REMOVE_SITE_SETTINGS,
 };
 // LINT.ThenChange(//chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h:DataTypes)
 

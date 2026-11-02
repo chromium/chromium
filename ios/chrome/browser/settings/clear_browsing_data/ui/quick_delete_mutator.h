@@ -39,6 +39,10 @@ enum class TimePeriod;
 // for the autofill type.
 - (void)updateAutofillSelection:(BOOL)selected;
 
+// Called on confirming the browsing data types selection with the user choice
+// for the site settings type.
+- (void)updateSiteSettingsSelection:(BOOL)selected;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_CLEAR_BROWSING_DATA_UI_QUICK_DELETE_MUTATOR_H_

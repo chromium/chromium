@@ -19,7 +19,9 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/browsing_data/model/fake_browsing_data_remover.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -36,6 +38,7 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -108,14 +111,20 @@ class QuickDeleteMediatorTest : public PlatformTest {
   // Creates a QuickDeleteMediator with a given `template_url_service`.
   // `template_url_service` can be a nullptr.
   void CreateMediator(raw_ptr<TemplateURLService> template_url_service) {
+    CreateMediator(template_url_service,
+                   BrowsingDataRemoverFactory::GetForProfile(profile_));
+  }
+
+  // Creates a QuickDeleteMediator with a given `template_url_service` and
+  // `browsing_data_remover`. `template_url_service` can be a nullptr.
+  void CreateMediator(raw_ptr<TemplateURLService> template_url_service,
+                      BrowsingDataRemover* browsing_data_remover) {
     fake_browsing_data_counter_wrapper_producer_ =
         [[FakeBrowsingDataCounterWrapperProducer alloc]
             initWithProfile:profile_];
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_);
-    BrowsingDataRemover* browsing_data_remover =
-        BrowsingDataRemoverFactory::GetForProfile(profile_);
     DiscoverFeedService* discover_feed_service =
         DiscoverFeedServiceFactory::GetForProfile(profile_);
     if (template_url_service) {
@@ -138,6 +147,16 @@ class QuickDeleteMediatorTest : public PlatformTest {
 
   // Creates a QuickDeleteMediator with a valid template URL Service.
   void CreateMediator() { CreateMediator(template_url_service_); }
+
+  // Replaces `mediator_` with one using `fake_browsing_data_remover_`, triggers
+  // the deletion and returns the removal mask that was used.
+  BrowsingDataRemoveMask TriggerDeletionWithFakeRemover() {
+    [mediator_ disconnect];
+    CreateMediator(template_url_service_, &fake_browsing_data_remover_);
+    mediator_.consumer = consumer_;
+    [mediator_ triggerDeletionIfPossible];
+    return fake_browsing_data_remover_.GetLastUsedRemovalMask();
+  }
 
   ~QuickDeleteMediatorTest() override {
     EXPECT_OCMOCK_VERIFY(consumer_);
@@ -167,6 +186,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     prefs()->SetBoolean(browsing_data::prefs::kDeleteCookies, false);
     prefs()->SetBoolean(browsing_data::prefs::kDeleteCache, false);
     prefs()->SetBoolean(browsing_data::prefs::kDeleteFormData, false);
+    prefs()->SetBoolean(browsing_data::prefs::kDeleteSiteSettings, false);
   }
 
   browsing_data::TimePeriod time_range() {
@@ -257,6 +277,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
   raw_ptr<AuthenticationService> auth_service_;
   raw_ptr<history::HistoryService> history_service_;
   raw_ptr<TemplateURLService> template_url_service_;
+  FakeBrowsingDataRemover fake_browsing_data_remover_;
 };
 
 // Tests the construction of the browsing history summary with different inputs.
@@ -568,6 +589,89 @@ TEST_F(QuickDeleteMediatorTest, TestSummaryWithSeveralTypes) {
   OCMExpect([consumer_ setBrowsingDataSummary:expectedSummary]);
   TriggerUpdateUICallbackForHistoryResults(num_unique_domains);
   TriggerUpdateUICallbackForTabsResults(num_tabs);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that site settings are offered for deletion and included in the summary
+// when the domain-level site permissions feature is enabled.
+TEST_F(QuickDeleteMediatorTest, TestSiteSettingsSelectedWithFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteSiteSettings, true);
+
+  OCMExpect([consumer_ setSiteSettingsSelection:YES]);
+  mediator_.consumer = consumer_;
+  EXPECT_TRUE([fake_browsing_data_counter_wrapper_producer_ registeredPrefNames]
+                  .contains(browsing_data::prefs::kDeleteSiteSettings));
+
+  // The mediator capitalizes the first letter of the summary.
+  NSString* siteSettingsSummary = l10n_util::GetNSString(
+      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_SETTINGS);
+  NSString* expectedSummary =
+      [[[siteSettingsSummary substringToIndex:1] uppercaseString]
+          stringByAppendingString:[siteSettingsSummary substringFromIndex:1]];
+  OCMExpect([consumer_ setBrowsingDataSummary:expectedSummary]);
+  TriggerUpdateUICallbackForHistoryResults(0);
+  TriggerUpdateUICallbackForTabsResults(0);
+  TriggerUpdateUICallbackForAutofillResults(0, 0, 0);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that a stale site settings selection is ignored when the domain-level
+// site permissions feature is disabled.
+TEST_F(QuickDeleteMediatorTest, TestSiteSettingsIgnoredWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDomainLevelSitePermissions);
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteSiteSettings, true);
+
+  OCMExpect([consumer_ setSiteSettingsSelection:NO]);
+  mediator_.consumer = consumer_;
+  EXPECT_FALSE(
+      [fake_browsing_data_counter_wrapper_producer_ registeredPrefNames]
+          .contains(browsing_data::prefs::kDeleteSiteSettings));
+
+  OCMExpect([consumer_ setBrowsingDataSummary:
+                           l10n_util::GetNSString(
+                               IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)]);
+  TriggerUpdateUICallbackForHistoryResults(0);
+  TriggerUpdateUICallbackForTabsResults(0);
+  TriggerUpdateUICallbackForAutofillResults(0, 0, 0);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that site settings are removed when selected and the domain-level site
+// permissions feature is enabled.
+TEST_F(QuickDeleteMediatorTest, TestDeletionIncludesSiteSettings) {
+  base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteSiteSettings, true);
+
+  EXPECT_TRUE(
+      IsRemoveDataMaskSet(TriggerDeletionWithFakeRemover(),
+                          BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS));
+}
+
+// Tests that a stale site settings selection doesn't remove site settings when
+// the domain-level site permissions feature is disabled.
+TEST_F(QuickDeleteMediatorTest, TestDeletionExcludesSiteSettingsWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDomainLevelSitePermissions);
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteSiteSettings, true);
+  // Select another data type since the deletion requires a non-empty mask.
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteCookies, true);
+
+  EXPECT_FALSE(
+      IsRemoveDataMaskSet(TriggerDeletionWithFakeRemover(),
+                          BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS));
+}
+
+// Tests that updating the site settings selection updates the pref and the
+// consumer.
+TEST_F(QuickDeleteMediatorTest, TestUpdateSiteSettingsSelection) {
+  base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
+  mediator_.consumer = consumer_;
+
+  OCMExpect([consumer_ setSiteSettingsSelection:YES]);
+  [mediator_ updateSiteSettingsSelection:YES];
+  EXPECT_TRUE(prefs()->GetBoolean(browsing_data::prefs::kDeleteSiteSettings));
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
