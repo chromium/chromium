@@ -6332,10 +6332,13 @@ suite('OmniboxPopupSearchboxTest', function() {
  // also check that the input stays flush with the icon on the leading side.
 
  // Sets a URL long enough to overflow the input, with the caret at its end
- // (which scrolls the input to its max scroll offset).
- async function setLongUrlWithCaretAtEnd() {
+ // (which scrolls the input to its max scroll offset), or with all of it
+ // selected (which shows its start).
+ async function setLongUrlWithCaretAtEnd(selectAll = false) {
    const text = 'https://example.com/' +
        'foo/bar/baz/eggs/spam/'.repeat(20);
+   const selection = selectAll ? {start: 0, end: text.length} :
+                                 {start: text.length, end: text.length};
    callbackRouter.setInputState(createDefaultOmniboxInputState({
      text,
      urlEmphasis: {
@@ -6346,7 +6349,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        schemeStrikeThrough: false,
        schemeDangerous: false,
      },
-     selection: {start: text.length, end: text.length},
+     selection,
      isFocused: true,
    }));
    await microtasksFinished();
@@ -6439,6 +6442,94 @@ suite('OmniboxPopupSearchboxTest', function() {
          assertTrue(isVisible(searchbox.$.composeButton));
          assertMirrorAlignedWithInput(uiDir, 'after showing again');
        });
+ });
+
+ // An <input> clips its text, and so its selection highlight, to its content
+ // box, so the #mirror must clip its (overflowing) text there too: no more and
+ // no less. Uses an IntersectionObserver (which applies the clips of the
+ // #mirror and its ancestors, but ignores the input painted above it) to
+ // measure the #mirror's text that isn't clipped away and, in the same frame,
+ // the input, since the layout can still change asynchronously (e.g. the AIM
+ // button collapses to its icon-only variant once a later update notices that
+ // the text overflows). Allows 1px for rounding.
+ async function assertMirrorTextClippedLikeInput(step: string) {
+   const input = searchbox.$.input.inputElement;
+   const mirror = $$<HTMLElement>(searchbox.$.input, '#mirror');
+   assertTrue(!!mirror);
+   const spans = Array.from(mirror.children);
+   assertTrue(spans.length > 0);
+   const targets = [input, ...spans];
+   const rects: DOMRectReadOnly[] = [];
+   let contentLeft = 0;
+   let contentRight = 0;
+   await new Promise<void>(resolve => {
+     let pending = targets.length;
+     const observer = new IntersectionObserver(entries => {
+       for (const entry of entries) {
+         if (entry.target === input) {
+           const style = getComputedStyle(input);
+           contentLeft = entry.boundingClientRect.left +
+               parseFloat(style.borderLeftWidth) +
+               parseFloat(style.paddingLeft);
+           contentRight = entry.boundingClientRect.right -
+               parseFloat(style.borderRightWidth) -
+               parseFloat(style.paddingRight);
+         } else if (entry.intersectionRect.width > 0) {
+           rects.push(entry.intersectionRect);
+         }
+       }
+       pending -= entries.length;
+       if (pending <= 0) {
+         observer.disconnect();
+         resolve();
+       }
+     });
+     targets.forEach(target => observer.observe(target));
+   });
+   assertTrue(rects.length > 0, `${step}: some #mirror text should be visible`);
+   const left = Math.min(...rects.map(rect => rect.left));
+   const right = Math.max(...rects.map(rect => rect.right));
+   assertTrue(
+       Math.abs(left - contentLeft) <= 1,
+       `${step}: #mirror text starts at ${left}px, input text at ${
+           contentLeft}px`);
+   assertTrue(
+       Math.abs(right - contentRight) <= 1,
+       `${step}: #mirror text ends at ${right}px, input text at ${
+           contentRight}px`);
+ }
+
+ // While the AIM button is hidden, the input's padding leaves a gap at the end
+ // of the row, in which the input paints neither text nor selection. E.g. with
+ // all of a long URL selected (as after focusing the omnibox), the #mirror
+ // must not paint the URL's overflowing end into the gap, past the end of the
+ // selection highlight. In RTL UIs, the gap is on the left, next to the
+ // overflowing start of a scrolled (LTR) URL.
+ [false, true].forEach(aimButtonVisible => {
+   ['ltr', 'rtl'].forEach(uiDir => {
+     test(
+         `MirrorTextIsClippedLikeInput_AimButton${
+             aimButtonVisible ? 'Visible' : 'Hidden'}_${uiDir.toUpperCase()}`,
+         async () => {
+           searchbox.dir = uiDir;
+           testProxy.page.setAimButtonVisible(aimButtonVisible);
+           await microtasksFinished();
+
+           await setLongUrlWithCaretAtEnd(/*selectAll=*/ true);
+           assertEquals(aimButtonVisible, isVisible(searchbox.$.composeButton));
+           const input = searchbox.$.input.inputElement;
+           assertEquals(0, input.selectionStart);
+           assertEquals(input.value.length, input.selectionEnd);
+           assertEquals(0, input.scrollLeft);
+           await assertMirrorTextClippedLikeInput('all selected');
+           assertEquals(aimButtonVisible, isVisible(searchbox.$.composeButton));
+
+           await setLongUrlWithCaretAtEnd();
+           assertTrue(input.scrollLeft > 0, 'input should be scrolled');
+           await assertMirrorTextClippedLikeInput('caret at end');
+           assertEquals(aimButtonVisible, isVisible(searchbox.$.composeButton));
+         });
+   });
  });
 
  // The popup stays open, but unfocused, when the user edits the text and then

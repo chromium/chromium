@@ -177,6 +177,19 @@ cr-searchbox-input::part(mirror) {
   padding-left: 18px;
 }
 
+/* An <input> clips its text, and so its selection, to its content box, but an
+ * overflow: hidden <div> like #mirror clips to its padding box. So clip #mirror
+ * to its content box too, or it paints overflowing text into the gap, e.g.
+ * past the end of the selection highlight when all of a long URL is selected.
+ * #mirror ignores pointer events, so this doesn't change hit-testing. */
+:host(:not([aim-button-visible_]):dir(ltr)) cr-searchbox-input::part(mirror) {
+  clip-path: inset(0 18px 0 0);
+}
+
+:host(:not([aim-button-visible_]):dir(rtl)) cr-searchbox-input::part(mirror) {
+  clip-path: inset(0 0 0 18px);
+}
+
 /* When the window is inactive (top container has focus), the selection should
    still be the same color. */
 cr-searchbox-input::part(searchbox-input)::selection,
