@@ -119,7 +119,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/video_conference:video_conference",
   "//chrome/browser/chromeos/enterprise/cloud_storage:cloud_storage",
   "//chrome/browser/chromeos/policy/dlp:dlp",
-  "//chrome/browser/chromeos/reporting:reporting",
   "//chrome/browser/content_settings:content_settings",
   "//chrome/browser/enterprise/data_controls:data_controls",
   "//chrome/browser/extensions:extensions",

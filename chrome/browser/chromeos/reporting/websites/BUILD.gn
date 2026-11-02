@@ -22,6 +22,7 @@ static_library("websites") {
   deps = [
     "//base",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/chromeos/reporting",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/login/session",
     "//components/prefs",

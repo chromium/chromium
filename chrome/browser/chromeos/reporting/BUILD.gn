@@ -18,7 +18,6 @@ static_library("reporting") {
 
   deps = [
     "//base",
-    "//chrome/browser/chromeos/reporting/websites",
     "//chrome/browser/profiles:profile",
     "//components/content_settings/core/common",
     "//components/pref_registry",
@@ -27,9 +26,6 @@ static_library("reporting") {
     "//components/reporting/proto:metric_data_proto",
     "//url",
   ]
-
-  allow_circular_includes_from =
-      [ "//chrome/browser/chromeos/reporting/websites" ]
 }
 
 source_set("unit_tests") {
