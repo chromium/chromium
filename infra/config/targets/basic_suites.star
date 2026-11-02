@@ -180,6 +180,21 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "chromeos_disk_usage_tast_test",
+    tests = {
+        "disk_usage_tast_test": targets.legacy_test_config(
+            ci_only = True,
+            skylab = targets.skylab(
+                timeout_sec = 3600,
+                cros_test_names = ["tast.platform.ReportDiskUsage"],
+                strip_chrome = True,
+            ),
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "chromeos_integration_tests_suite",
     tests = {
         "chromeos_integration_tests": targets.legacy_test_config(

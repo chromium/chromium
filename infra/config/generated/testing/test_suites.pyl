@@ -1037,6 +1037,28 @@
       },
     },
 
+    'chromeos_disk_usage_tast_test': {
+      'disk_usage_tast_test': {
+        'test_common': {
+          'merge': {
+            'script': '//tools/perf/process_perf_results.py',
+            'args': [
+              '--upload-skia-json',
+            ],
+          },
+        },
+        'ci_only': True,
+        'skylab': {
+          'timeout_sec': 3600,
+          'strip_chrome': True,
+          'cros_test_names': [
+            'tast.platform.ReportDiskUsage',
+          ],
+        },
+        'experiment_percentage': 100,
+      },
+    },
+
     'chromeos_integration_tests_suite': {
       'chromeos_integration_tests': {
         'skylab': {
@@ -3531,6 +3553,14 @@
       'chromeos_chrome_flaky_tast_tests': {
         'mixins': [
           'skylab-20-tests-per-shard',
+          'skylab-rdb-tast',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
+      'chromeos_disk_usage_tast_test': {
+        'mixins': [
           'skylab-rdb-tast',
         ],
         'variants': [

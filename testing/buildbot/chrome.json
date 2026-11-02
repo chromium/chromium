@@ -204,6 +204,33 @@
         "timeout_sec": 7200,
         "use_lkgm": true,
         "variant_id": "LKGM"
+      },
+      {
+        "ci_only": true,
+        "cros_board": "betty",
+        "cros_test_names": [
+          "tast.platform.ReportDiskUsage"
+        ],
+        "dut_pool": "vmlab",
+        "experiment_percentage": 100,
+        "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "module_name": "//chromeos:disk_usage_tast_test",
+        "module_scheme": "tast",
+        "name": "disk_usage_tast_test LKGM",
+        "resultdb": {
+          "result_format": "tast"
+        },
+        "strip_chrome": true,
+        "test": "disk_usage_tast_test",
+        "test_id_prefix": "ninja://chromeos:disk_usage_tast_test/",
+        "timeout_sec": 3600,
+        "use_lkgm": true,
+        "variant_id": "LKGM"
       }
     ]
   },

@@ -28,6 +28,6 @@ pkg.depend(
         repo = "infra/chromium",
         ref = "refs/heads/main",
         path = "starlark-libs/chromium-luci",
-        revision = "352a5c647413dd05dc3ff8b28df99ae8d5327acb",
+        revision = "1ac486c7d3604e72ef386ec198865877529c342b",
     ),
 )

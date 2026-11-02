@@ -162,6 +162,14 @@ targets.legacy_matrix_compound_suite(
                 "CROS_LKGM",
             ],
         ),
+        "chromeos_disk_usage_tast_test": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-rdb-tast",
+            ],
+            variants = [
+                "CROS_LKGM",
+            ],
+        ),
     },
 )
 
