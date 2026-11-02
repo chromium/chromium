@@ -565,13 +565,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest, DISABLED_Precheck) {
   EXPECT_EQ("success", GetPageFragment());
 }
 
-// Flaky on mac, see https://crbug.com/794645.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OneShotRecognition DISABLED_OneShotRecognition
-#else
-#define MAYBE_OneShotRecognition OneShotRecognition
-#endif
-IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest, MAYBE_OneShotRecognition) {
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest, OneShotRecognition) {
   // Set up a test server, with two response handlers.
   net::test_server::ControllableHttpResponse upstream_response(
       embedded_test_server(), "/foo/up?", true /* relative_url_is_prefix */);
