@@ -96,6 +96,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
@@ -231,6 +232,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/password_manager/factories/password_manager_settings_service_factory.h"
+#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #else
 #include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"
@@ -532,10 +534,17 @@ ProfileImpl::ProfileImpl(
 
 #if BUILDFLAG(IS_ANDROID)
   auto* startup_data = g_browser_process->startup_data();
-  CHECK(startup_data && startup_data->GetProfileKey(),
-        base::NotFatalUntil::M162);
-  TakePrefsFromStartupData();
-  async_prefs = false;
+  if (profiles::IsAndroidMultiprofileStartupDataEnabled() && startup_data &&
+      !startup_data->GetProfileKey()) {
+    // StartupData pre-creates objects only for the first profile, which has
+    // already taken them over.
+    LoadPrefsForNormalStartup(async_prefs);
+  } else {
+    CHECK(startup_data && startup_data->GetProfileKey(),
+          base::NotFatalUntil::M162);
+    TakePrefsFromStartupData();
+    async_prefs = false;
+  }
 #else
   LoadPrefsForNormalStartup(async_prefs);
 #endif
@@ -596,6 +605,12 @@ ProfileImpl::ProfileImpl(
 #if BUILDFLAG(IS_ANDROID)
 void ProfileImpl::TakePrefsFromStartupData() {
   auto* startup_data = g_browser_process->startup_data();
+  if (profiles::IsAndroidMultiprofileStartupDataEnabled()) {
+    // StartupData's prefs, policy cache and proto databases live in its
+    // profile directory, so only the profile at that path may take them over.
+    // The first profile created must therefore be the startup profile.
+    CHECK_EQ(startup_data->GetProfileKey()->GetPath(), GetPath());
+  }
 
   // On Android, it is possible that the ProfileKey has been build before the
   // ProfileImpl is created. The ownership of all these pre-created objects
@@ -618,6 +633,21 @@ void ProfileImpl::TakePrefsFromStartupData() {
 
 void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   key_ = std::make_unique<ProfileKey>(GetPath());
+#if BUILDFLAG(IS_ANDROID)
+  // On Android this is only called when
+  // profiles::IsAndroidMultiprofileStartupDataEnabled() is true (see the
+  // constructor), so the flag doesn't need to be checked again here.
+  //
+  // Some SimpleKeyedServices created with the browser context services (e.g.
+  // the image fetcher) need the key's ProtoDatabaseProvider before the default
+  // StoragePartition exists. StartupData provides it for the startup profile;
+  // create it here for any other profile. The StoragePartition takes it over in
+  // TakeDefaultProtoDatabaseProvider().
+  default_proto_db_provider_ =
+      std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
+          GetPath(), /*is_in_memory=*/false);
+  key_->SetProtoDatabaseProvider(default_proto_db_provider_.get());
+#endif
   pref_registry_ = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
 
   policy::ChromeBrowserPolicyConnector* connector =
@@ -1529,8 +1559,13 @@ ProfileImpl::GetOriginTrialsControllerDelegate() {
 std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
 ProfileImpl::TakeDefaultProtoDatabaseProvider() {
 #if BUILDFLAG(IS_ANDROID)
-  // On Android StartupData creates proto database provider for the profile
-  // before profile is created, so move ownership to storage partition.
+  // On Android the proto database provider is created before the profile's
+  // StoragePartition, by StartupData for the startup profile or by
+  // LoadPrefsForNormalStartup() for any other profile, so move ownership to
+  // the storage partition.
+  if (default_proto_db_provider_) {
+    return std::move(default_proto_db_provider_);
+  }
   return g_browser_process->startup_data()->TakeProtoDatabaseProvider();
 #else
   return nullptr;

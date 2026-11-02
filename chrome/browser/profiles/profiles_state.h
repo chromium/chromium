@@ -37,6 +37,15 @@ namespace profiles {
 // Checks if multiple profiles is enabled.
 bool IsMultipleProfilesEnabled();
 
+#if BUILDFLAG(IS_ANDROID)
+// Returns whether Android profile startup supports multiple profiles
+// (features::kAndroidMultiprofileStartupData). Android startup code paths that
+// are only needed for multiple profiles should check this instead of a feature
+// directly, so the gating lives in one place. This is independent of
+// IsMultipleProfilesEnabled(), which follows kAndroidMultiprofile on Android.
+bool IsAndroidMultiprofileStartupDataEnabled();
+#endif
+
 // Returns the path to the default profile directory, based on the given
 // user data directory.
 base::FilePath GetDefaultProfileDir(const base::FilePath& user_data_dir);

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -66,6 +67,13 @@ bool IsMultipleProfilesEnabled() {
   return true;
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool IsAndroidMultiprofileStartupDataEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kAndroidMultiprofileStartupData);
+}
+#endif
 
 base::FilePath GetDefaultProfileDir(const base::FilePath& user_data_dir) {
   base::FilePath default_profile_dir(user_data_dir);

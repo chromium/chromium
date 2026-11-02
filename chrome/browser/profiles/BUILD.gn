@@ -1367,7 +1367,12 @@ if (is_android) {
 
     deps = [
       ":profile_manager",
+      ":profile_test_util",
+      ":profiles",
       "//base",
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/common:chrome_features",
       "//chrome/test:test_support",
       "//content/test:test_support",
       "//testing/gtest",

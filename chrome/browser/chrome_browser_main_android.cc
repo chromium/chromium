@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/child_process_crash_observer_android.h"
@@ -62,15 +63,22 @@ int ChromeBrowserMainPartsAndroid::PreCreateThreads() {
 
 void ChromeBrowserMainPartsAndroid::PostProfileInit(Profile* profile,
                                                     bool is_initial_profile) {
-  CHECK(is_initial_profile,
-        base::NotFatalUntil::M162);  // No multiprofile on Android, only the
-                                     // initial call should happen.
+  // Only the initial profile is loaded unless profile startup supports
+  // multiple profiles.
+  CHECK(
+      is_initial_profile || profiles::IsAndroidMultiprofileStartupDataEnabled(),
+      base::NotFatalUntil::M162);
+  ChromeBrowserMainParts::PostProfileInit(profile, is_initial_profile);
+
+  // The Android-specific work below is process-wide, or only for the initial
+  // profile, so it must run once.
+  if (!is_initial_profile) {
+    return;
+  }
 
   // Get the OS Data Saver setting. This will be needed later on, so we want to
   // fetch this setting as soon as possible to avoid blocking on it.
   data_saver::FetchDataSaverOSSettingAsynchronously();
-
-  ChromeBrowserMainParts::PostProfileInit(profile, is_initial_profile);
 
   // Idempotent.  Needs to be called once on startup.  If
   // InitializeClipboardAndroidFromLocalState() is called multiple times (e.g.,

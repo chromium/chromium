@@ -16,11 +16,17 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -145,4 +151,45 @@ IN_PROC_BROWSER_TEST_F(ProfileDeleteMediaBrowserTest, DeleteMediaCache) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   FileDestructionWatcher destruction_watcher(media_cache_path);
   destruction_watcher.WaitForDestruction();
+}
+
+// Android builds the startup profile's ProfileKey, PrefService and
+// ProtoDatabaseProvider in StartupData before any Profile exists. With
+// AndroidMultiprofileStartupData enabled, a second regular profile must load
+// its own data instead of taking over (already consumed) StartupData.
+class ProfileAndroidSecondProfileBrowserTest : public AndroidBrowserTest {
+ public:
+  ProfileAndroidSecondProfileBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kAndroidMultiprofileStartupData);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(crbug.com/579838538): Enable once loading a second profile on Android
+// no longer hits other single-profile assumptions: crrev.com/c/8687937,
+// crrev.com/c/8693665 and crrev.com/c/8688777.
+IN_PROC_BROWSER_TEST_F(ProfileAndroidSecondProfileBrowserTest,
+                       DISABLED_SecondProfileLoadsItsOwnData) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* startup_profile = TabModelList::models()[0]->GetProfile();
+  ASSERT_TRUE(startup_profile);
+
+  // ProfileManager::GenerateNextProfileDirectoryPath() requires
+  // profiles::IsMultipleProfilesEnabled(), which follows kAndroidMultiprofile
+  // and is not enabled in this test.
+  base::FilePath second_path =
+      profile_manager->user_data_dir().AppendASCII("Profile 1");
+  Profile& second_profile =
+      profiles::testing::CreateProfileSync(profile_manager, second_path);
+
+  ASSERT_TRUE(second_profile.GetProfileKey());
+  EXPECT_NE(startup_profile->GetProfileKey(), second_profile.GetProfileKey());
+  EXPECT_EQ(second_path, second_profile.GetProfileKey()->GetPath());
+  EXPECT_NE(startup_profile->GetProfileKey()->GetProtoDatabaseProvider(),
+            second_profile.GetProfileKey()->GetProtoDatabaseProvider());
+  ASSERT_TRUE(second_profile.GetPrefs());
+  EXPECT_NE(startup_profile->GetPrefs(), second_profile.GetPrefs());
 }
