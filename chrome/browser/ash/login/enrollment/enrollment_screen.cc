@@ -45,6 +45,7 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
 #include "chromeos/ash/components/login/session/process_shutdown.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -169,8 +170,13 @@ EnrollmentScreen::EnrollmentScreen(
 
 EnrollmentScreen::~EnrollmentScreen() {
   scoped_network_observation_.Reset();
-  CHECK(!enrollment_launcher_ || IsProcessShuttingDown() ||
-            ash::BrowserController::GetInstance()->IsTryingToQuit() ||
+  const bool is_terminating =
+      IsProcessShuttingDown() ||
+      (ash::BrowserController::GetInstance() &&
+       ash::BrowserController::GetInstance()->IsTryingToQuit()) ||
+      (SessionTerminationManager::Get() &&
+       SessionTerminationManager::Get()->IsAppTerminating());
+  CHECK(!enrollment_launcher_ || is_terminating ||
             DBusThreadManager::Get()->IsUsingFakes(),
         base::NotFatalUntil::M161);
 }

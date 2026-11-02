@@ -34,6 +34,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/session/scoped_process_shutting_down_override_for_testing.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -115,6 +116,8 @@ class EnrollmentScreenBaseTest : public testing::Test {
     enrollment_screen_->SetEnrollmentConfig(config);
     enrollment_screen_->set_tpm_updater_for_testing(base::DoNothing());
   }
+
+  void ResetEnrollmentScreen() { enrollment_screen_.reset(); }
 
   // Fast forwards time by the specified amount.
   void FastForwardTime(base::TimeDelta time) {
@@ -1051,6 +1054,35 @@ TEST_F(EnrollmentScreenLicenseTest, TokenEnrollmentPicksPrescribedLicense) {
 
   SetUpEnrollmentScreen(config);
   ShowEnrollmentScreen();
+}
+
+using EnrollmentScreenTest = EnrollmentScreenBaseTest;
+
+// Regression test for crbug.com/578879534: destroying EnrollmentScreen while it
+// still owns an EnrollmentLauncher (e.g., on the enrollment confirmation step
+// when SessionTerminationManager triggers LoginDisplayHost teardown via
+// OnAppTerminating()) must satisfy the destructor CHECK even before
+// IsProcessShuttingDown() or BrowserController::IsTryingToQuit() is set.
+TEST_F(EnrollmentScreenTest, DestroyWithActiveLauncherDuringAppTermination) {
+  SessionTerminationManager session_termination_manager;
+
+  policy::EnrollmentConfig config;
+  config.mode = policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
+
+  ExpectEnrollmentConfig(config.mode);
+  ExpectAttestationBasedEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
+  // Keep EnrollmentScreen on the confirmation step without calling
+  // OnConfirmationClosed(), so `enrollment_launcher_` remains alive.
+  EXPECT_CALL(mock_enrollment_launcher(), ClearAuth(_, _)).Times(0);
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_FALSE(last_screen_result().has_value());
+
+  session_termination_manager.GetClosureNotifyingAppTerminating().Run();
+  ResetEnrollmentScreen();
 }
 
 }  // namespace ash

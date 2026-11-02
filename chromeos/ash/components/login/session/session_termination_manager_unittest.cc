@@ -67,4 +67,35 @@ TEST_F(SessionTerminationManagerTest, RebootForRemoteCommandTest) {
   EXPECT_EQ(1, power_client_->num_request_restart_calls());
 }
 
+TEST_F(SessionTerminationManagerTest, IsAppTerminatingTest) {
+  class TestObserver : public SessionTerminationManager::Observer {
+   public:
+    explicit TestObserver(SessionTerminationManager* manager)
+        : manager_(manager) {}
+    ~TestObserver() override = default;
+
+    void OnAppTerminating() override {
+      was_terminating_in_observer_ = manager_->IsAppTerminating();
+    }
+
+    bool was_terminating_in_observer() const {
+      return was_terminating_in_observer_;
+    }
+
+   private:
+    raw_ptr<SessionTerminationManager> manager_;
+    bool was_terminating_in_observer_ = false;
+  };
+
+  TestObserver observer(&session_termination_manager_);
+  session_termination_manager_.AddObserver(&observer);
+
+  EXPECT_FALSE(session_termination_manager_.IsAppTerminating());
+  session_termination_manager_.GetClosureNotifyingAppTerminating().Run();
+  EXPECT_TRUE(observer.was_terminating_in_observer());
+  EXPECT_TRUE(session_termination_manager_.IsAppTerminating());
+
+  session_termination_manager_.RemoveObserver(&observer);
+}
+
 }  // namespace ash

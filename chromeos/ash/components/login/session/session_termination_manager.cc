@@ -103,6 +103,10 @@ SessionTerminationManager::GetClosureNotifyingAppTerminating() {
                         weak_factory_.GetWeakPtr());
 }
 
+bool SessionTerminationManager::IsAppTerminating() const {
+  return is_app_terminating_;
+}
+
 // static
 bool SessionTerminationManager::IsSendingStopRequestToSessionManager() {
   return g_send_stop_request_to_session_manager;
@@ -150,6 +154,7 @@ void SessionTerminationManager::RebootIfNecessaryProcessReply(
 }
 
 void SessionTerminationManager::OnAppTerminating() {
+  is_app_terminating_ = true;
   observers_.Notify(&Observer::OnAppTerminating);
 }
 

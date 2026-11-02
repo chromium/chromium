@@ -42,7 +42,9 @@
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/login/session/process_shutdown.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -192,7 +194,13 @@ EnrollmentLauncherImpl::EnrollmentLauncherImpl(
 }
 
 EnrollmentLauncherImpl::~EnrollmentLauncherImpl() {
-  CHECK(IsProcessShuttingDown() || oauth_status_ == OAUTH_NOT_STARTED ||
+  const bool is_terminating =
+      IsProcessShuttingDown() ||
+      (ash::BrowserController::GetInstance() &&
+       ash::BrowserController::GetInstance()->IsTryingToQuit()) ||
+      (SessionTerminationManager::Get() &&
+       SessionTerminationManager::Get()->IsAppTerminating());
+  CHECK(is_terminating || oauth_status_ == OAUTH_NOT_STARTED ||
             (oauth_status_ == OAUTH_FINISHED &&
              (success_ || oauth_data_cleared_)),
         base::NotFatalUntil::M161);
