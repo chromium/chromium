@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/autofill/enhanced_autofill_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_suggestions_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/content_settings_coordinator.h"
@@ -73,7 +72,6 @@
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -1801,11 +1799,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 - (void)showAutofillSettingsFromNotice {
-  if (IsYourSavedInfoSettingsPageIosEnabled()) {
-    [self showAutofillSettings];
-  } else {
-    [self showProfileSettingsFromViewController:nil];
-  }
+  [self showAutofillSettings];
 }
 
 - (void)showSuggestionsFromGemini {
@@ -1815,14 +1809,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                browser:self.browser];
   _suggestionsFromGeminiCoordinator.delegate = self;
   [_suggestionsFromGeminiCoordinator start];
-}
-
-- (void)showEnhancedAutofillSettings {
-  EnhancedAutofillTableViewController* controller =
-      [[EnhancedAutofillTableViewController alloc]
-          initWithBrowser:self.browser];
-  ConfigureHandlers(controller, self.browser->GetCommandDispatcher());
-  [self pushViewController:controller animated:self.viewControllers.count > 0];
 }
 
 - (void)showUniversalOptOutSettings {

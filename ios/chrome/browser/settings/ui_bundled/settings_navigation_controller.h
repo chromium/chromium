@@ -399,9 +399,6 @@ extern NSString* const kSettingsDoneButtonId;
 // Shows the Suggestions from Gemini settings UI (no back button).
 - (void)showSuggestionsFromGemini;
 
-// Shows the Enhanced Autofill settings UI (no back button).
-- (void)showEnhancedAutofillSettings;
-
 // Notifies this `SettingsNavigationController` of a dismissal such
 // that it has a possibility to do necessary clean up.
 - (void)cleanUpSettings;
