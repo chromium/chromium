@@ -124,19 +124,21 @@ class CustomFormControlScriptIndexDirectoryTest : public ::testing::Test {
  protected:
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
-  // Writes `content` to `path`, relative to the temporary directory.
-  void WriteFile(std::string_view path, std::string_view content) {
+  // Writes `content` to `path`, relative to the temporary directory. Returns
+  // false if that fails.
+  [[nodiscard]] bool WriteFile(std::string_view path,
+                               std::string_view content) {
     const base::FilePath file_path =
         temp_dir_.GetPath().Append(base::FilePath::FromUTF8Unsafe(path));
-    ASSERT_TRUE(base::CreateDirectory(file_path.DirName()));
-    ASSERT_TRUE(base::WriteFile(file_path, content));
+    return base::CreateDirectory(file_path.DirName()) &&
+           base::WriteFile(file_path, content);
   }
 
-  // Runs `InitializeFromDirectory()` and waits until it has finished.
-  void InitializeFromDirectory() {
+  // Runs `InitializeFromDirectory()` and waits until it has finished. Returns
+  // false if it doesn't finish.
+  [[nodiscard]] bool InitializeFromDirectory() {
     index_.InitializeFromDirectory(temp_dir_.GetPath());
-    ASSERT_TRUE(base::test::RunUntil([&]() { return index_.is_initialized(); }))
-        << "Timed out waiting for the scripts to be read";
+    return base::test::RunUntil([&]() { return index_.is_initialized(); });
   }
 
   std::optional<std::string> FindScript(std::string_view url) {
@@ -155,7 +157,7 @@ class CustomFormControlScriptIndexDirectoryTest : public ::testing::Test {
 
 TEST_F(CustomFormControlScriptIndexDirectoryTest,
        LoadsValidEntriesAndSkipsInvalidOnes) {
-  WriteFile(
+  ASSERT_TRUE(WriteFile(
       "index.json",
       "["
       // Valid entries:
@@ -178,11 +180,11 @@ TEST_F(CustomFormControlScriptIndexDirectoryTest,
       R"({"host": "noname.com"},)"
       // - Not an object.
       R"("not an object")"
-      "]");
-  WriteFile("a.js", "script_a");
-  WriteFile("b.js", "script_b");
-  WriteFile("dir/c.js", "script_c");
-  InitializeFromDirectory();
+      "]"));
+  ASSERT_TRUE(WriteFile("a.js", "script_a"));
+  ASSERT_TRUE(WriteFile("b.js", "script_b"));
+  ASSERT_TRUE(WriteFile("dir/c.js", "script_c"));
+  ASSERT_TRUE(InitializeFromDirectory());
 
   EXPECT_THAT(FindScript("https://shop.example.com/buy"),
               Optional(std::string("script_a")));
@@ -202,7 +204,7 @@ TEST_F(CustomFormControlScriptIndexDirectoryTest,
 // Tests that a `script_path` with an absolute path is skipped, even if it
 // points to a file inside the directory.
 TEST_F(CustomFormControlScriptIndexDirectoryTest, SkipsAbsoluteScriptPath) {
-  WriteFile("a.js", "script_a");
+  ASSERT_TRUE(WriteFile("a.js", "script_a"));
   base::DictValue relative_entry;
   relative_entry.Set("host", "relative.com");
   relative_entry.Set("script_path", "a.js");
@@ -215,8 +217,8 @@ TEST_F(CustomFormControlScriptIndexDirectoryTest, SkipsAbsoluteScriptPath) {
   list.Append(std::move(absolute_entry));
   std::optional<std::string> json = base::WriteJson(list);
   ASSERT_TRUE(json);
-  WriteFile("index.json", *json);
-  InitializeFromDirectory();
+  ASSERT_TRUE(WriteFile("index.json", *json));
+  ASSERT_TRUE(InitializeFromDirectory());
 
   EXPECT_THAT(FindScript("https://relative.com/"),
               Optional(std::string("script_a")));
@@ -225,25 +227,25 @@ TEST_F(CustomFormControlScriptIndexDirectoryTest, SkipsAbsoluteScriptPath) {
 
 TEST_F(CustomFormControlScriptIndexDirectoryTest, EmptyListClearsEntries) {
   index().SetEntries({{.host = "example.org", .script = "old_script"}});
-  WriteFile("index.json", "[]");
-  InitializeFromDirectory();
+  ASSERT_TRUE(WriteFile("index.json", "[]"));
+  ASSERT_TRUE(InitializeFromDirectory());
   EXPECT_EQ(FindScript("https://example.org/"), std::nullopt);
 }
 
 TEST_F(CustomFormControlScriptIndexDirectoryTest,
        KeepsEntriesIfIndexIsMissingOrInvalid) {
   index().SetEntries({{.host = "example.org", .script = "old_script"}});
-  InitializeFromDirectory();  // No index.json.
+  ASSERT_TRUE(InitializeFromDirectory());  // No index.json.
   EXPECT_THAT(FindScript("https://example.org/"),
               Optional(std::string("old_script")));
 
-  WriteFile("ok.js", "script_body");
+  ASSERT_TRUE(WriteFile("ok.js", "script_body"));
   for (const char* json :
        {"not json", R"({"host": "a.com", "script_path": "ok.js"})",
         R"([{"host": "a.com", "script_path": "ok.js"},])"}) {
     SCOPED_TRACE(json);
-    WriteFile("index.json", json);
-    InitializeFromDirectory();
+    ASSERT_TRUE(WriteFile("index.json", json));
+    ASSERT_TRUE(InitializeFromDirectory());
     EXPECT_THAT(FindScript("https://example.org/"),
                 Optional(std::string("old_script")));
   }
