@@ -598,6 +598,13 @@ foreach(_target_type,
         public_deps = []
       }
 
+      if (_target_type == "static_library" && defined(complete_static_lib) &&
+          complete_static_lib &&
+          filter_include(configs,
+                         [ "//build/config/sanitizers:alloc_token" ]) != []) {
+        deps += [ "//build/config:alloc_token_aliases" ]
+      }
+
       if (!defined(use_libcxx_modules)) {
         use_libcxx_modules = is_clang
       }
@@ -723,6 +730,11 @@ foreach(_target_type,
         # (This explicit list is so that grepping for these configs finds where
         # they are used.)
         deps += [ "//build/config:${_target_type}_deps" ]
+
+        if (filter_include(configs,
+                           [ "//build/config/sanitizers:alloc_token" ]) != []) {
+          deps += [ "//build/config:alloc_token_aliases" ]
+        }
       } else {
         # The default deps provide the __alloc_token_* fallbacks, so don't
         # instrument the sources of binaries without them.

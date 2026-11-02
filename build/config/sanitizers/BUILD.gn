@@ -780,11 +780,11 @@ config("alloc_token") {
   }
 }
 
-# Weak fallbacks of the __alloc_token_* functions, linked into every binary via
-# //build/config:common_deps. These are source_sets so that the fallbacks are
+# Weak fallbacks of the __alloc_token_* functions, linked into binaries that
+# use the alloc_token config. These are source_sets so that the fallbacks are
 # linked, and exported, even if the binary itself doesn't reference them.
 source_set("alloc_token_aliases") {
-  visibility = [ "//build/config:common_deps_without_libcxx" ]
+  visibility = [ "//build/config:alloc_token_aliases" ]
   if (use_alloc_token) {
     sources = [ "//build/sanitizers/alloc_token_aliases.c" ]
   }
@@ -792,7 +792,7 @@ source_set("alloc_token_aliases") {
 }
 
 source_set("alloc_token_aliases_cxx") {
-  visibility = [ "//build/config:common_deps" ]
+  visibility = [ "//build/config:alloc_token_aliases" ]
   if (use_alloc_token) {
     sources = [ "//build/sanitizers/alloc_token_aliases_cxx.cc" ]
   }

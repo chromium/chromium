@@ -552,6 +552,8 @@ if (is_win) {
 
     sources = [ "app/chrome_exe_main_mac.c" ]
 
+    configs -= [ "//build/config/sanitizers:alloc_token" ]
+
     deps = [
       "//base:compiler_specific",
       "//build:branding_buildflags",
