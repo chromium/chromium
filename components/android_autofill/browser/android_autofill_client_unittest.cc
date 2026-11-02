@@ -67,6 +67,9 @@ TEST_F(AndroidAutofillClientTest, TestAblationStudyReturnsDefault) {
 // to a different page so that the binding is not stale.
 TEST_F(AndroidAutofillClientTest,
        DisconnectsCredentialManagerBindingOnNavigation) {
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.test"), main_rfh());
+
   credential_management::ContentCredentialManager* credential_manager =
       client()->GetContentCredentialManager();
   ASSERT_TRUE(credential_manager);
@@ -81,7 +84,7 @@ TEST_F(AndroidAutofillClientTest,
   EXPECT_TRUE(credential_manager->HasBinding());
 
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://example.test"), main_rfh());
+      GURL("https://other.test"), main_rfh());
 
   // Binding is disconnected after navigation. This is the main purpose of this
   // test.

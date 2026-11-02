@@ -7,3 +7,10 @@ include_rules = [
   "+third_party/jni_zero/jni_zero.h",
   "+content/public/browser",
 ]
+
+specific_include_rules = {
+  "content_credential_manager_unittest\.cc": [
+    "+content/public/test",
+    "+mojo/public/cpp/test_support",
+  ],
+}

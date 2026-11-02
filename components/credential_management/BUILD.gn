@@ -8,6 +8,8 @@ source_set("browser") {
   sources = [
     "content_credential_manager.cc",
     "content_credential_manager.h",
+    "features.cc",
+    "features.h",
   ]
 
   deps = [
@@ -27,6 +29,9 @@ source_set("unit_tests") {
     ":browser",
     "//base/test:test_support",
     "//components/password_manager/core/common",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
   ]
 }

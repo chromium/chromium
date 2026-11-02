@@ -6,12 +6,17 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/credential_management/features.h"
 #include "components/password_manager/core/browser/credential_manager_impl.h"
+#include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "url/origin.h"
 
 namespace {
 void LogGetCredentialsMetrics(
@@ -57,6 +62,21 @@ void ContentCredentialManager::BindRequest(
   DCHECK_EQ(frame_host->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kActive);
 
+  if (base::FeatureList::IsEnabled(
+          features::kCredentialManagerRejectUnauthorizedProcessOrOrigin)) {
+    if (frame_host->GetLastCommittedOrigin().opaque()) {
+      return;
+    }
+    if (frame_host->GetProcess()->IsPdf() ||
+        !content::ChildProcessSecurityPolicy::GetInstance()
+             ->CanAccessDataForOrigin(
+                 frame_host->GetProcess()->GetID().GetUnsafeValue(),
+                 frame_host->GetLastCommittedOrigin())) {
+      mojo::ReportBadMessage(
+          "CredentialManager is not allowed for this process or origin.");
+      return;
+    }
+  }
   // Disable BackForwardCache for this page.
   // This is necessary because ContentCredentialManager::DisconnectBinding()
   // will be called when the page is navigated away from, leaving it
