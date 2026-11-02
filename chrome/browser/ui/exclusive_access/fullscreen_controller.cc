@@ -207,8 +207,9 @@ void FullscreenController::EnterFullscreenModeForTab(
   // could cause requestFullscreen promises to hang. If we are in this function,
   // the renderer expects a visual property update to call
   // |blink::FullscreenController::DidEnterFullscreen| to resolve promises.
-  CHECK(CanEnterFullscreenModeForTab(requesting_frame),
-        base::NotFatalUntil::M162);
+  // CHECK-exclusion: CanEnterFullscreenModeForTab() can return false when
+  // EnterFullscreenModeForTab() is called on Android (crbug.com/576177579).
+  DCHECK(CanEnterFullscreenModeForTab(requesting_frame));
   auto* web_contents = WebContents::FromRenderFrameHost(requesting_frame);
   CHECK(web_contents, base::NotFatalUntil::M162);
 
