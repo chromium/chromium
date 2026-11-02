@@ -690,12 +690,15 @@ ComposeboxSuggestionLimit::~ComposeboxSuggestionLimit() = default;
 // Feature to enable the short suggest path.
 BASE_FEATURE(SuggestPathClientConfig::kUseShortSuggestPathV1,
              "OmniboxUseShortSuggestPathV1",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(std::string,
-                   kSuggestPathClient,
-                   &SuggestPathClientConfig::kUseShortSuggestPathV1,
-                   "OmniboxSuggestPathClient",
-                   "");
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(
+    std::string,
+    kSuggestPathClient,
+    &SuggestPathClientConfig::kUseShortSuggestPathV1,
+    "OmniboxSuggestPathClient",
+    "chrome-omni,chrome,chrome-ntp-action,chrome-cobrowse-compose,"
+    "chrome-multimodal,chrome-contextual,"
+    "chrome-android-search-resumption-module,chrome-compose,chrome-mobile-aim");
 
 SuggestPathClientConfig::SuggestPathClientConfig() {
   enabled = base::FeatureList::IsEnabled(kUseShortSuggestPathV1);

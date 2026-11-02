@@ -196,7 +196,7 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_ZeroPrefixSuggest) {
   EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
       net::SiteForCookies::FromUrl(resource_request.url)))
       << resource_request.site_for_cookies.ToDebugString();
-  const std::string kRequestUrl = "https://www.google.com/complete/search";
+  const std::string kRequestUrl = "https://www.google.com/complete/s";
   EXPECT_EQ(kRequestUrl,
             resource_request.url.spec().substr(0, kRequestUrl.size()));
 }
@@ -225,7 +225,7 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_Suggest) {
   EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
       net::SiteForCookies::FromUrl(resource_request.url)))
       << resource_request.site_for_cookies.ToDebugString();
-  const std::string kRequestUrl = "https://www.google.com/complete/search";
+  const std::string kRequestUrl = "https://www.google.com/complete/s";
   EXPECT_EQ(kRequestUrl,
             resource_request.url.spec().substr(0, kRequestUrl.size()));
 }
@@ -279,7 +279,7 @@ TEST_F(RemoteSuggestionsServiceTest, BypassCache) {
   EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
       net::SiteForCookies::FromUrl(resource_request.url)))
       << resource_request.site_for_cookies.ToDebugString();
-  const std::string kRequestUrl = "https://www.google.com/complete/search";
+  const std::string kRequestUrl = "https://www.google.com/complete/s";
   EXPECT_EQ(kRequestUrl,
             resource_request.url.spec().substr(0, kRequestUrl.size()));
 }
