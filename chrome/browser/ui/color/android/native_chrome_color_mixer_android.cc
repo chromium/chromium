@@ -20,4 +20,18 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorNavMenuItemSelected] = {ui::kColorSysOnSecondaryContainer};
   mixer[kColorNavMenuItemBackgroundSelected] = {
       ui::kColorSysSecondaryContainer};
+
+  // History page colors. They map onto the Material roles that
+  // ColorProviderBridgeImpl reads from the Android theme.
+  const bool dark_mode =
+      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
+  mixer[kColorHistoryPageCardBackground] = {
+      dark_mode ? ui::kColorSysSurface : ui::kColorSysSurfaceContainerLowest};
+  mixer[kColorHistoryPageMenuBackground] = {
+      dark_mode ? ui::kColorSysSurfaceContainerHigh : ui::kColorSysSurface};
+  mixer[kColorHistoryPageSearchFieldBackground] = {
+      dark_mode ? ui::kColorSysSurfaceContainerHigh
+                : ui::kColorSysSurfaceContainerLowest};
+  mixer[kColorHistoryPageSelectionToolbarBackground] = {
+      dark_mode ? ui::kColorSysSurface : ui::kColorSysSurfaceContainerHigh};
 }
