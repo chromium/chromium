@@ -96,12 +96,15 @@ SyncedTabDelegateAndroid::ReadPlaceholderTabSnapshotIfItShouldSync(
 }
 
 void SyncedTabDelegateAndroid::SetWebContents(
-    content::WebContents* web_contents) {
-  TabContentsSyncedTabDelegate::SetWebContents(web_contents);
+    content::WebContents* web_contents,
+    tasks::TaskTabHelper* task_tab_helper,
+    SupervisedUserNavigationObserver* supervised_user_navigation_observer) {
+  TabContentsSyncedTabDelegate::SetWebContents(
+      web_contents, task_tab_helper, supervised_user_navigation_observer);
 }
 
 void SyncedTabDelegateAndroid::ResetWebContents() {
-  TabContentsSyncedTabDelegate::SetWebContents(nullptr);
+  TabContentsSyncedTabDelegate::SetWebContents(nullptr, nullptr, nullptr);
 }
 
 SessionID SyncedTabDelegateAndroid::SessionIdFromAndroidId(int android_tab_id) {

@@ -306,7 +306,11 @@ sync_sessions::SyncedTabDelegate* TabAndroid::GetSyncedTabDelegate() {
     synced_tab_delegate_ =
         std::make_unique<browser_sync::SyncedTabDelegateAndroid>(this);
     if (web_contents_) {
-      synced_tab_delegate_->SetWebContents(web_contents_.get());
+      synced_tab_delegate_->SetWebContents(
+          web_contents_.get(),
+          tab_features_ ? tab_features_->task_tab_helper() : nullptr,
+          tab_features_ ? tab_features_->supervised_user_navigation_observer()
+                        : nullptr);
     }
   }
   return synced_tab_delegate_.get();
@@ -463,7 +467,9 @@ void TabAndroid::InitWebContents(
       ->SetPopulatorFactory(jcontext_menu_populator_factory);
 
   if (synced_tab_delegate_) {
-    synced_tab_delegate_->SetWebContents(web_contents_.get());
+    synced_tab_delegate_->SetWebContents(
+        web_contents_.get(), tab_features_->task_tab_helper(),
+        tab_features_->supervised_user_navigation_observer());
   }
 
   // Verify that the WebContents this tab represents matches the expected
@@ -648,11 +654,11 @@ tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
   }
 
   ResetTabAlertController();
-  tab_features_.reset();
-  web_contents_.reset();
   if (synced_tab_delegate_) {
     synced_tab_delegate_->ResetWebContents();
   }
+  tab_features_.reset();
+  web_contents_.reset();
   content_layer_.reset();
 
   return tabs::TabDestroyStatus::FAST_SHUTDOWN;
@@ -684,6 +690,9 @@ std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
   WillRemoveWebContentsFromTab(web_contents(), clear_delegate);
 
   ResetTabAlertController();
+  if (synced_tab_delegate_) {
+    synced_tab_delegate_->ResetWebContents();
+  }
   tab_features_.reset();
   std::unique_ptr<content::WebContents> released_contents =
       std::move(web_contents_);
@@ -697,9 +706,6 @@ std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
     ClearSessionId();
   }
 
-  if (synced_tab_delegate_) {
-    synced_tab_delegate_->ResetWebContents();
-  }
   content_layer_.reset();
   return released_contents;
 }

@@ -13,7 +13,6 @@
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 #include "components/sync_sessions/synced_window_delegates_getter.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -123,22 +122,10 @@ bool TabContentsSyncedTabDelegate::ProfileHasChildAccount() const {
 
 const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
 TabContentsSyncedTabDelegate::GetBlockedNavigations() const {
-  tabs::TabInterface* const tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents_);
-  SupervisedUserNavigationObserver* navigation_observer =
-      tab ? SupervisedUserNavigationObserver::From(tab) : nullptr;
-#if BUILDFLAG(IS_ANDROID)
-  // TabHelpers::AttachTabHelpers() will not be called for a placeholder tab's
-  // WebContents that is temporarily created from a serialized state in
-  // SyncedTabDelegateAndroid::ReadPlaceholderTabSnapshotIfItShouldSync(). When
-  // this occurs, early-out and return a nullptr.
-  if (!navigation_observer) {
+  if (!supervised_user_navigation_observer_) {
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
-  CHECK(navigation_observer, base::NotFatalUntil::M162);
-
-  return &navigation_observer->blocked_navigations();
+  return &supervised_user_navigation_observer_->blocked_navigations();
 }
 
 bool TabContentsSyncedTabDelegate::ShouldSync(
@@ -149,16 +136,10 @@ bool TabContentsSyncedTabDelegate::ShouldSync(
   }
 
   if (ProfileHasChildAccount()) {
-#if BUILDFLAG(IS_ANDROID)
     auto* blocked_navigations = GetBlockedNavigations();
     if (blocked_navigations && !blocked_navigations->empty()) {
       return true;
     }
-#else
-    if (!GetBlockedNavigations()->empty()) {
-      return true;
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   if (IsInitialBlankNavigation()) {
@@ -184,30 +165,27 @@ bool TabContentsSyncedTabDelegate::ShouldSync(
 
 int64_t TabContentsSyncedTabDelegate::GetTaskIdForNavigationId(
     int nav_id) const {
-  const tasks::TaskTabHelper* task_tab_helper = this->task_tab_helper();
-  if (task_tab_helper &&
-      task_tab_helper->get_task_id_for_navigation(nav_id) != nullptr) {
-    return task_tab_helper->get_task_id_for_navigation(nav_id)->id();
+  if (task_tab_helper_ &&
+      task_tab_helper_->get_task_id_for_navigation(nav_id) != nullptr) {
+    return task_tab_helper_->get_task_id_for_navigation(nav_id)->id();
   }
   return -1;
 }
 
 int64_t TabContentsSyncedTabDelegate::GetParentTaskIdForNavigationId(
     int nav_id) const {
-  const tasks::TaskTabHelper* task_tab_helper = this->task_tab_helper();
-  if (task_tab_helper &&
-      task_tab_helper->get_task_id_for_navigation(nav_id) != nullptr) {
-    return task_tab_helper->get_task_id_for_navigation(nav_id)->parent_id();
+  if (task_tab_helper_ &&
+      task_tab_helper_->get_task_id_for_navigation(nav_id) != nullptr) {
+    return task_tab_helper_->get_task_id_for_navigation(nav_id)->parent_id();
   }
   return -1;
 }
 
 int64_t TabContentsSyncedTabDelegate::GetRootTaskIdForNavigationId(
     int nav_id) const {
-  const tasks::TaskTabHelper* task_tab_helper = this->task_tab_helper();
-  if (task_tab_helper &&
-      task_tab_helper->get_task_id_for_navigation(nav_id) != nullptr) {
-    return task_tab_helper->get_task_id_for_navigation(nav_id)->root_id();
+  if (task_tab_helper_ &&
+      task_tab_helper_->get_task_id_for_navigation(nav_id) != nullptr) {
+    return task_tab_helper_->get_task_id_for_navigation(nav_id)->root_id();
   }
   return -1;
 }
@@ -221,15 +199,10 @@ content::WebContents* TabContentsSyncedTabDelegate::web_contents() {
 }
 
 void TabContentsSyncedTabDelegate::SetWebContents(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    tasks::TaskTabHelper* task_tab_helper,
+    SupervisedUserNavigationObserver* supervised_user_navigation_observer) {
   web_contents_ = web_contents;
-}
-
-const tasks::TaskTabHelper* TabContentsSyncedTabDelegate::task_tab_helper()
-    const {
-  if (web_contents_ == nullptr) {
-    return nullptr;
-  }
-  return tasks::TaskTabHelper::From(
-      tabs::TabInterface::MaybeGetFromContents(web_contents_));
+  task_tab_helper_ = task_tab_helper;
+  supervised_user_navigation_observer_ = supervised_user_navigation_observer;
 }

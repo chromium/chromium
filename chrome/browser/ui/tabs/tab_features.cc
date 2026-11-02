@@ -835,18 +835,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   security_state_event_observer_ =
       std::make_unique<SecurityStateEventObserver>(tab.GetContents());
 
-  sync_sessions_router_ =
-      std::make_unique<sync_sessions::SyncSessionsRouterTabHelper>(
-          tab.GetContents(),
-          sync_sessions::SyncSessionsWebContentsRouterFactory::GetForProfile(
-              profile),
-          ChromeTranslateClient::FromWebContents(tab.GetContents()),
-          favicon::ContentFaviconDriver::FromWebContents(tab.GetContents()));
-
-  browser_synced_tab_delegate_ =
-      GetUserDataFactory().CreateInstance<BrowserSyncedTabDelegate>(
-          tab, tab, tab.GetContents());
-
   focus_tab_after_navigation_helper_ =
       std::make_unique<FocusTabAfterNavigationHelper>(tab.GetContents());
 
@@ -1319,6 +1307,19 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }
 #endif
 
+  browser_synced_tab_delegate_ =
+      GetUserDataFactory().CreateInstance<BrowserSyncedTabDelegate>(
+          tab, tab, tab.GetContents(), task_tab_helper_.get(),
+          supervised_user_navigation_observer_.get());
+
+  sync_sessions_router_ =
+      std::make_unique<sync_sessions::SyncSessionsRouterTabHelper>(
+          tab.GetContents(),
+          sync_sessions::SyncSessionsWebContentsRouterFactory::GetForProfile(
+              profile),
+          ChromeTranslateClient::FromWebContents(tab.GetContents()),
+          favicon::ContentFaviconDriver::FromWebContents(tab.GetContents()));
+
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   offline_page_tab_helper_ =
       GetUserDataFactory().CreateInstance<offline_pages::OfflinePageTabHelper>(
@@ -1687,23 +1688,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
         new_contents, contextual_cueing_service);
   }
 
-  sync_sessions_router_.reset();
-  sync_sessions_router_ =
-      std::make_unique<sync_sessions::SyncSessionsRouterTabHelper>(
-          new_contents,
-          sync_sessions::SyncSessionsWebContentsRouterFactory::GetForProfile(
-              profile),
-          ChromeTranslateClient::FromWebContents(new_contents),
-          favicon::ContentFaviconDriver::FromWebContents(new_contents));
-
-  // The reset() must happen first so that the old instance deregisters
-  // itself from the UnownedUserDataHost before the new instance registers
-  // itself.
-  browser_synced_tab_delegate_.reset();
-  browser_synced_tab_delegate_ =
-      GetUserDataFactory().CreateInstance<BrowserSyncedTabDelegate>(
-          *tab, *tab, new_contents);
-
   if (permission_indicators_tab_data_) {
     permission_indicators_tab_data_ =
         std::make_unique<permissions::PermissionIndicatorsTabData>(
@@ -1963,6 +1947,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
       GetUserDataFactory().CreateInstance<SoundContentSettingObserver>(
           *tab, *tab, new_contents);
 
+  // Reset `sync_sessions_router_` and `browser_synced_tab_delegate_` before
+  // resetting `task_tab_helper_` and `supervised_user_navigation_observer_` so
+  // `browser_synced_tab_delegate_` never holds dangling pointers to them.
+  sync_sessions_router_.reset();
+  browser_synced_tab_delegate_.reset();
+
   task_tab_helper_.reset();
   task_tab_helper_ = GetUserDataFactory().CreateInstance<tasks::TaskTabHelper>(
       *tab, *tab, new_contents);
@@ -2010,6 +2000,19 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
         GetUserDataFactory().CreateInstance<SupervisedUserNavigationObserver>(
             *tab, *tab, new_contents);
   }
+
+  browser_synced_tab_delegate_ =
+      GetUserDataFactory().CreateInstance<BrowserSyncedTabDelegate>(
+          *tab, *tab, new_contents, task_tab_helper_.get(),
+          supervised_user_navigation_observer_.get());
+
+  sync_sessions_router_ =
+      std::make_unique<sync_sessions::SyncSessionsRouterTabHelper>(
+          new_contents,
+          sync_sessions::SyncSessionsWebContentsRouterFactory::GetForProfile(
+              profile),
+          ChromeTranslateClient::FromWebContents(new_contents),
+          favicon::ContentFaviconDriver::FromWebContents(new_contents));
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   offline_page_tab_helper_.reset();
