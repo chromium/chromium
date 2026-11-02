@@ -198,6 +198,7 @@ source_set("browser_tests") {
     ":impl",
     ":metrics",
     ":test_support",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/browser_ui:glow",
     "//chrome/browser/glic/selection",
@@ -210,7 +211,10 @@ source_set("browser_tests") {
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/views/dictation",
     "//chrome/browser/ui/views/tabs:tab",
+    "//chrome/browser/user_education",
     "//chrome/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//components/tabs:test_support",
     "//content/test:test_support",
   ]

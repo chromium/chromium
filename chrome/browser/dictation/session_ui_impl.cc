@@ -45,6 +45,9 @@ UiState ToUiState(SessionState state) {
       return UiState::kTranscribing;
     case SessionState::kFinalizing:
       return UiState::kFinalizing;
+    case SessionState::kEnded:
+      // The UI is destroyed with the session instead.
+      NOTREACHED();
   }
 }
 
@@ -180,6 +183,10 @@ void SessionUiImpl::OnStartedStream(content::GlobalDOMNodeId target_id) {
 }
 
 void SessionUiImpl::OnSessionStateChanged(SessionState state) {
+  if (state == SessionState::kEnded) {
+    // The UI is about to be destroyed with the session.
+    return;
+  }
   UiState ui_state = ToUiState(state);
   bubble_ui_->SetState(ui_state);
   if (overlay_view_) {
@@ -209,6 +216,9 @@ void SessionUiImpl::OnToggleActiveStreamClicked() {
       break;
     case SessionState::kFinalizing:
       // The toggle button should be disabled while finalizing.
+      NOTREACHED();
+    case SessionState::kEnded:
+      // The UI is destroyed with the session.
       NOTREACHED();
   }
 }

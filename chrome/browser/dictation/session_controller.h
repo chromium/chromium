@@ -84,8 +84,17 @@ class SessionController : public SessionUiDelegate,
   // Updates the audio level in the UI.
   void UpdateAudioLevel(float audio_level);
 
+  // Stops any stream, moves to `SessionState::kEnded`, then asks the delegate
+  // to destroy the session, and so `this`. Every session ends through here.
+  void EndSessionSynchronously();
+
   StreamProvider* attached_stream_provider() const {
     return attached_stream_provider_.get();
+  }
+
+  // The target the latest stream was started on, if any.
+  const std::optional<TargetDetails>& last_used_target_details() const {
+    return last_used_target_details_;
   }
 
   SessionUi* ui_for_testing() { return ui_.get(); }
@@ -97,7 +106,6 @@ class SessionController : public SessionUiDelegate,
  private:
   void MoveToState(SessionState new_state);
   void EndSessionAsynchronously();
-  void EndSessionSynchronously();
   void PurgeToDeleteStreamProviders();
   content::BrowserContext* GetBrowserContext() const;
 

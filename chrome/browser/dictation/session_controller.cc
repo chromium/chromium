@@ -413,10 +413,10 @@ void SessionController::MoveToState(SessionState new_state) {
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<SessionState>>
       allowed_transitions(base::StateTransitions<SessionState>(
-          {{kInactive, {kStreamInitializing}},
+          {{kInactive, {kStreamInitializing, kEnded}},
            {kStreamInitializing, {kInactive, kTranscribing, kFinalizing}},
            {kTranscribing, {kInactive, kFinalizing}},
-           {kFinalizing, {kInactive, kStreamInitializing}}}));
+           {kFinalizing, {kInactive, kStreamInitializing, kEnded}}}));
   DCHECK_STATE_TRANSITION(allowed_transitions, /*old_state=*/state_,
                           /*new_state=*/new_state);
 #endif  // DCHECK_IS_ON()
@@ -469,6 +469,11 @@ void SessionController::EndSessionAsynchronously() {
 
 void SessionController::EndSessionSynchronously() {
   auto_session_end_timer_.Stop();
+  // Stop the stream now, as `kEnded` can't be left once entered.
+  if (attached_stream_provider_) {
+    EndDictationStream(DictationStreamEndTrigger::kDestructor);
+  }
+  MoveToState(SessionState::kEnded);
   delegate_->EndSession();
   // WARNING: `this` is deleted, do not add code below here.
 }

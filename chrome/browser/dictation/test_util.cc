@@ -15,6 +15,7 @@
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/hotkey_manager.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
+#include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -414,7 +415,9 @@ ScopedFakeGlobalAcceleratorListener::ScopedFakeGlobalAcceleratorListener(
 ScopedFakeGlobalAcceleratorListener::~ScopedFakeGlobalAcceleratorListener() {
   // End the session first so that nothing remains registered with
   // `listener_` once the default listener is restored.
-  service_->EndSession();
+  if (SessionController* const controller = service_->session_controller()) {
+    controller->EndSessionSynchronously();
+  }
 }
 
 }  // namespace dictation
