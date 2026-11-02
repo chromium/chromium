@@ -50,6 +50,7 @@ public class EdgeToEdgeUtils {
     private static @Nullable Boolean sIsTargetSdkEnforceEdgeToEdge;
     private static boolean sAlwaysDrawWebEdgeToEdgeForTesting;
     private static @Nullable Boolean sHas3ButtonNavBarForTesting;
+    private static @Nullable Boolean sIsEdgeToEdgeAutomotiveEnabledForTesting;
 
     private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible2";
     private static final String INELIGIBLE_REASON_HISTOGRAM =
@@ -216,9 +217,13 @@ public class EdgeToEdgeUtils {
      * Whether the edge-to-edge feature is enabled on automotive. Restricted to Android 16+, where
      * edge-to-edge is enforced by the OS. Older automotive OS versions are excluded to avoid opting
      * in to edge-to-edge where the OS does not require it, since OEM system bar configurations on
-     * those versions vary and are not covered by CI.
+     * those versions vary and are not covered by CI. Tests may override the result via {@link
+     * #setEdgeToEdgeAutomotiveEnabledForTesting(Boolean)}.
      */
     public static boolean isEdgeToEdgeAutomotiveEnabled() {
+        if (sIsEdgeToEdgeAutomotiveEnabledForTesting != null) {
+            return sIsEdgeToEdgeAutomotiveEnabledForTesting;
+        }
         return Build.VERSION.SDK_INT >= VERSION_CODES.BAKLAVA
                 && ChromeFeatureList.sEdgeToEdgeAutomotive.isEnabled();
     }
@@ -664,6 +669,15 @@ public class EdgeToEdgeUtils {
     public static void setHas3ButtonNavBarForTesting(Boolean has3ButtonNavBar) {
         sHas3ButtonNavBarForTesting = has3ButtonNavBar;
         ResettersForTesting.register(() -> sHas3ButtonNavBarForTesting = null);
+    }
+
+    /**
+     * Overrides {@link #isEdgeToEdgeAutomotiveEnabled()}, bypassing both the feature flag and the
+     * Android 16+ restriction. The restriction targets OEM devices in the field, not test bots.
+     */
+    public static void setEdgeToEdgeAutomotiveEnabledForTesting(Boolean enabled) {
+        sIsEdgeToEdgeAutomotiveEnabledForTesting = enabled;
+        ResettersForTesting.register(() -> sIsEdgeToEdgeAutomotiveEnabledForTesting = null);
     }
 
     /** Returns whether the insets indicate that the device is in gesture navigation mode. */
