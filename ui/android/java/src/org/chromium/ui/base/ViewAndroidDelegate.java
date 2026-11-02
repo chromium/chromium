@@ -686,8 +686,9 @@ public class ViewAndroidDelegate {
     }
 
     public static void setDragAndDropDelegateForTest(DragAndDropDelegate testDelegate) {
+        DragAndDropDelegate oldValue = sDragAndDropDelegateForTesting;
         sDragAndDropDelegateForTesting = testDelegate;
-        ResettersForTesting.register(() -> sDragAndDropDelegateForTesting = null);
+        ResettersForTesting.register(() -> sDragAndDropDelegateForTesting = oldValue);
     }
 
     @CalledByNative

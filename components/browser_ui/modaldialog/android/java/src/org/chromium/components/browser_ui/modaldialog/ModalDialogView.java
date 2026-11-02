@@ -923,8 +923,9 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     public static void disableButtonTapProtectionForTesting() {
+        boolean oldValue = sDisableButtonTapProtectionForTesting;
         sDisableButtonTapProtectionForTesting = true;
-        ResettersForTesting.register(() -> sDisableButtonTapProtectionForTesting = false);
+        ResettersForTesting.register(() -> sDisableButtonTapProtectionForTesting = oldValue);
     }
 
     @Override

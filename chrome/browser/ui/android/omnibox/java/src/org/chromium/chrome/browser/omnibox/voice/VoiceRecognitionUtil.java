@@ -119,8 +119,9 @@ public class VoiceRecognitionUtil {
      * finished.
      */
     public static void setIsVoiceSearchEnabledForTesting(@Nullable Boolean isVoiceSearchEnabled) {
+        Boolean oldValue = sIsVoiceSearchEnabledForTesting;
         sIsVoiceSearchEnabledForTesting = isVoiceSearchEnabled;
-        ResettersForTesting.register(() -> sIsVoiceSearchEnabledForTesting = null);
+        ResettersForTesting.register(() -> sIsVoiceSearchEnabledForTesting = oldValue);
     }
 
     public static void setHasRecognitionIntentHandlerForTesting(

@@ -88,12 +88,6 @@ public class OmniboxCapabilities {
                 && DeviceInput.supportsPrecisionPointer();
     }
 
-    /** Modifies the output of {@link #hasDesktopExperience(Context)} for testing. */
-    public static void setHasDesktopExperienceForTesting(Boolean hasDesktopExperience) {
-        sHasDesktopExperienceForTesting = hasDesktopExperience;
-        ResettersForTesting.register(() -> sHasDesktopExperienceForTesting = null);
-    }
-
     /**
      * Return whether the device is in a desktop platform or is a tablet with a precision pointer.
      *
@@ -126,9 +120,17 @@ public class OmniboxCapabilities {
         return !isDesktopPlatform();
     }
 
+    /** Modifies the output of {@link #hasDesktopExperience(Context)} for testing. */
+    public static void setHasDesktopExperienceForTesting(Boolean hasDesktopExperience) {
+        Boolean oldValue = sHasDesktopExperienceForTesting;
+        sHasDesktopExperienceForTesting = hasDesktopExperience;
+        ResettersForTesting.register(() -> sHasDesktopExperienceForTesting = oldValue);
+    }
+
     /** Modifies the output of {@link #isDesktopPlatform()} for testing. */
     public static void setIsDesktopPlatformForTesting(Boolean isDesktopPlatform) {
+        Boolean oldValue = sIsDesktopPlatformForTesting;
         sIsDesktopPlatformForTesting = isDesktopPlatform;
-        ResettersForTesting.register(() -> sIsDesktopPlatformForTesting = null);
+        ResettersForTesting.register(() -> sIsDesktopPlatformForTesting = oldValue);
     }
 }

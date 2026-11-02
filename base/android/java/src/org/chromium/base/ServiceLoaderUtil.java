@@ -89,7 +89,14 @@ public final class ServiceLoaderUtil {
         if (sOverridesForTesting == null) {
             sOverridesForTesting = new ArrayMap<>();
         }
-        sOverridesForTesting.put(clazz, instance);
-        ResettersForTesting.register(() -> sOverridesForTesting.remove(clazz));
+        Object oldValue = sOverridesForTesting.put(clazz, instance);
+        ResettersForTesting.register(
+                () -> {
+                    if (oldValue == null) {
+                        sOverridesForTesting.remove(clazz);
+                    } else {
+                        sOverridesForTesting.put(clazz, oldValue);
+                    }
+                });
     }
 }

@@ -51,8 +51,9 @@ public class GlicUtils {
 
     /** Sets whether the Glic side panel form factor is supported for testing. */
     public static void setIsSidePanelFormFactorForTesting(@Nullable Boolean isFormFactorSupported) {
+        Boolean oldValue = sIsSidePanelFormFactorForTesting;
         sIsSidePanelFormFactorForTesting = isFormFactorSupported;
-        ResettersForTesting.register(() -> sIsSidePanelFormFactorForTesting = null);
+        ResettersForTesting.register(() -> sIsSidePanelFormFactorForTesting = oldValue);
     }
 
     /**

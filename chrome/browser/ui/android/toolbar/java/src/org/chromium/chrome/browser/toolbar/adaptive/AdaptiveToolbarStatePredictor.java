@@ -300,7 +300,8 @@ public class AdaptiveToolbarStatePredictor {
 
     /** For testing only. */
     public static void setToolbarStateForTesting(Integer toolbarState) {
+        Integer oldValue = sToolbarStateForTesting;
         sToolbarStateForTesting = toolbarState;
-        ResettersForTesting.register(() -> sToolbarStateForTesting = null);
+        ResettersForTesting.register(() -> sToolbarStateForTesting = oldValue);
     }
 }

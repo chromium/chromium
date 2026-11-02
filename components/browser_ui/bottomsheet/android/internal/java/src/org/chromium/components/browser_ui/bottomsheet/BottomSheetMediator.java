@@ -1128,8 +1128,9 @@ class BottomSheetMediator implements TouchHandler {
      * @param isSmallScreen Whether the screen should be considered small for testing.
      */
     static void setSmallScreenForTesting(boolean isSmallScreen) {
+        Boolean oldValue = sIsSmallScreenForTesting;
         sIsSmallScreenForTesting = isSmallScreen;
-        ResettersForTesting.register(() -> sIsSmallScreenForTesting = null);
+        ResettersForTesting.register(() -> sIsSmallScreenForTesting = oldValue);
     }
 
     /** Returns whether the screen is considered small, disabling the half state. */

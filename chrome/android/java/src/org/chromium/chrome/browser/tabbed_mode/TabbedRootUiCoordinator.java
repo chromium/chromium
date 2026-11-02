@@ -3310,8 +3310,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     public static void setDisableTopControlsAnimationsForTesting(boolean disable) {
+        boolean oldValue = sDisableTopControlsAnimationForTesting;
         sDisableTopControlsAnimationForTesting = disable;
-        ResettersForTesting.register(() -> sDisableTopControlsAnimationForTesting = false);
+        ResettersForTesting.register(() -> sDisableTopControlsAnimationForTesting = oldValue);
     }
 
     /* package */ void initializeBookmarkBarCoordinatorForTesting() {

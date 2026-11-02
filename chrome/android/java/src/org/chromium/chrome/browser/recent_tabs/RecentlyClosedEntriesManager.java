@@ -768,8 +768,9 @@ public class RecentlyClosedEntriesManager {
 
     public static void setRecentlyClosedTabManagerForTests(
             @Nullable RecentlyClosedTabManager manager) {
+        RecentlyClosedTabManager oldValue = sRecentlyClosedTabManagerForTests;
         sRecentlyClosedTabManagerForTests = manager;
-        ResettersForTesting.register(() -> sRecentlyClosedTabManagerForTests = null);
+        ResettersForTesting.register(() -> sRecentlyClosedTabManagerForTests = oldValue);
     }
 
     public static void setMaxEntriesForTests(int maxEntries) {

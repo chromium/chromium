@@ -150,7 +150,8 @@ public class NightModeUtils {
     }
 
     public static void setNightModeSupportedForTesting(@Nullable Boolean nightModeSupported) {
+        Boolean oldValue = sNightModeSupportedForTest;
         sNightModeSupportedForTest = nightModeSupported;
-        ResettersForTesting.register(() -> sNightModeSupportedForTest = null);
+        ResettersForTesting.register(() -> sNightModeSupportedForTest = oldValue);
     }
 }
