@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyDouble;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -20,6 +19,7 @@ import android.os.Bundle;
 
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,20 +32,20 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappGeolocationBridge.NativeInstalledWebappGeolocationBridge;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for {@link InstalledWebappGeolocationBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class InstalledWebappGeolocationBridgeTest {
-    private static final long NATIVE_POINTER = 12;
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private GURL mScope;
     private GURL mOtherScope;
 
     @Mock private TrustedWebActivityClient mTrustedWebActivityClient;
     @Mock private InstalledWebappGeolocationBridge.Natives mNativeMock;
+    @Mock private JniRawPtr<NativeInstalledWebappGeolocationBridge> mNativePointer;
 
     private InstalledWebappGeolocationBridge mGeolocation;
 
@@ -59,7 +59,7 @@ public class InstalledWebappGeolocationBridgeTest {
         mOtherScope = JUnitTestGURLs.URL_2;
 
         TrustedWebActivityClient.setInstanceForTesting(mTrustedWebActivityClient);
-        mGeolocation = new InstalledWebappGeolocationBridge(NATIVE_POINTER, mScope);
+        mGeolocation = new InstalledWebappGeolocationBridge(mNativePointer, mScope);
     }
 
     @Test
@@ -83,6 +83,7 @@ public class InstalledWebappGeolocationBridgeTest {
     public void noLocationUpdate_stopBeforeStart() {
         installTrustedWebActivityService(mScope);
         mGeolocation.stopAndDestroy();
+        verify(mNativePointer).release();
         mGeolocation.start(/* highAccuracy= */ false);
         verifyNoLocationUpdate();
     }
@@ -157,7 +158,7 @@ public class InstalledWebappGeolocationBridgeTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mNativeMock)
                 .onNewLocationAvailable(
-                        eq(NATIVE_POINTER),
+                        eq(mNativePointer),
                         eq(1.0d),
                         eq(-2.1d),
                         eq(0.03d),
@@ -173,14 +174,14 @@ public class InstalledWebappGeolocationBridgeTest {
 
     private void verifyGetLocationError() {
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mNativeMock).onNewErrorAvailable(eq(NATIVE_POINTER), anyString());
+        verify(mNativeMock).onNewErrorAvailable(eq(mNativePointer), anyString());
     }
 
     private void verifyNoLocationUpdate() {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mNativeMock, never())
                 .onNewLocationAvailable(
-                        anyInt(),
+                        any(),
                         anyDouble(),
                         anyDouble(),
                         anyDouble(),

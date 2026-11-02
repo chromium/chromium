@@ -10,7 +10,10 @@ import android.text.TextUtils;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
@@ -21,21 +24,23 @@ import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.url.GURL;
 
 /**
- * Provides Trusted Web Activity Client App location for native. The C++ counterpart is the
- * {@code installed_webapp_geolocation_bridge.h}. The InstalledWebappGeolocationBridge is
- * responsible for converting start and stop location command from the native to the corresponding
- * TWA client app via {@link TrustedWebActivityClient}, and notify the native part when there is
- * a location result.
+ * Provides Trusted Web Activity Client App location for native. The C++ counterpart is the {@code
+ * installed_webapp_geolocation_bridge.h}. The InstalledWebappGeolocationBridge is responsible for
+ * converting start and stop location command from the native to the corresponding TWA client app
+ * via {@link TrustedWebActivityClient}, and notify the native part when there is a location result.
  * Lifecycle: The native part is responsible for controlling its lifecycle. A new instance will be
  * created for each new geolocation request. This class should not be used after "stopAndDestroy" is
  * called.
  */
 @NullMarked
 public class InstalledWebappGeolocationBridge {
+    @JniType("::InstalledWebappGeolocationBridge")
+    interface NativeInstalledWebappGeolocationBridge extends JniTypeToken {}
+
     static final String EXTRA_NEW_LOCATION_AVAILABLE_CALLBACK = "onNewLocationAvailable";
     public static final String EXTRA_NEW_LOCATION_ERROR_CALLBACK = "onNewLocationError";
 
-    private long mNativePointer;
+    private @Nullable JniRawPtr<NativeInstalledWebappGeolocationBridge> mNativePointer;
     private final GURL mUrl;
 
     private final TrustedWebActivityCallback mLocationUpdateCallback =
@@ -59,15 +64,16 @@ public class InstalledWebappGeolocationBridge {
                 }
             };
 
-    InstalledWebappGeolocationBridge(long nativePtr, GURL url) {
+    InstalledWebappGeolocationBridge(
+            JniRawPtr<NativeInstalledWebappGeolocationBridge> nativePtr, GURL url) {
         mNativePointer = nativePtr;
         mUrl = url;
     }
 
     @CalledByNative
-    public static @Nullable InstalledWebappGeolocationBridge create(long nativePtr, GURL url) {
-        if (url == null) return null;
-
+    public static InstalledWebappGeolocationBridge create(
+            JniRawPtr<NativeInstalledWebappGeolocationBridge> nativePtr, GURL url) {
+        assert url != null;
         return new InstalledWebappGeolocationBridge(nativePtr, url);
     }
 
@@ -80,12 +86,15 @@ public class InstalledWebappGeolocationBridge {
 
     @CalledByNative
     public void stopAndDestroy() {
-        mNativePointer = 0;
+        if (mNativePointer != null) {
+            mNativePointer.release();
+            mNativePointer = null;
+        }
         TrustedWebActivityClient.getInstance().stopLocationUpdates(mUrl.getSpec());
     }
 
     private void notifyNewGeoposition(@Nullable Bundle bundle) {
-        if (bundle == null || mNativePointer == 0) return;
+        if (bundle == null || mNativePointer == null) return;
 
         double latitude = bundle.getDouble("latitude");
         double longitude = bundle.getDouble("longitude");
@@ -117,14 +126,14 @@ public class InstalledWebappGeolocationBridge {
     }
 
     private void notifyNewGeopositionError(String message) {
-        if (mNativePointer == 0) return;
+        if (mNativePointer == null) return;
         InstalledWebappGeolocationBridgeJni.get().onNewErrorAvailable(mNativePointer, message);
     }
 
     @NativeMethods
     interface Natives {
         void onNewLocationAvailable(
-                long nativeInstalledWebappGeolocationBridge,
+                JniPtr<NativeInstalledWebappGeolocationBridge> self,
                 double latitude,
                 double longitude,
                 double timeStamp,
@@ -138,7 +147,7 @@ public class InstalledWebappGeolocationBridge {
                 double speed);
 
         void onNewErrorAvailable(
-                long nativeInstalledWebappGeolocationBridge,
+                JniPtr<NativeInstalledWebappGeolocationBridge> self,
                 @JniType("std::string") String message);
     }
 }

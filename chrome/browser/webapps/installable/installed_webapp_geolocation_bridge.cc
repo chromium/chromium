@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/webapps/installable/installed_webapp_geolocation_context.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -41,7 +42,7 @@ void InstalledWebappGeolocationBridge::StartListeningForUpdates() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (java_ref_.is_null()) {
     java_ref_.Reset(InstalledWebappGeolocationBridgeJni::create(
-        env, reinterpret_cast<intptr_t>(this),
+        env, jni_zero::MakeRaw(this),
         url::GURLAndroid::FromNativeGURL(env, origin_.GetURL())));
   }
   java_ref_->start(env, high_accuracy_);
