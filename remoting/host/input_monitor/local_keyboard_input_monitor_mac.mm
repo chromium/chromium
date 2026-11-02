@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/input_monitor/local_keyboard_input_monitor.h"
+#include "remoting/host/input_monitor/local_keyboard_input_monitor_mac.h"
 
 #import <AppKit/AppKit.h>
 #include <unistd.h>
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/apple/scoped_cftyperef.h"
@@ -22,9 +24,37 @@
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/host/input_monitor/local_keyboard_input_monitor.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace remoting {
+
+std::optional<uint32_t> GetLocalKeyboardEventUsbKeycode(CGEventType type,
+                                                        CGEventRef event) {
+  if (!event) {
+    return std::nullopt;
+  }
+  // Ignore kCGEventFlagsChanged (and any non-key event types). Legitimate local
+  // keyboard activity triggers kCGEventKeyDown/kCGEventKeyUp, whereas macOS
+  // WindowServer synthesizes kCGEventFlagsChanged events with pid == 0 and
+  // keycode == 0 during application switches (e.g. via Cmd+Tab).
+  if (type != kCGEventKeyDown && type != kCGEventKeyUp) {
+    return std::nullopt;
+  }
+
+  // Filter out events injected by the CRD host process, while capturing
+  // hardware events (pid == 0) and synthetic events from other local software
+  // (e.g. accessibility and assistive tools).
+  int64_t pid = CGEventGetIntegerValueField(event, kCGEventSourceUnixProcessID);
+  if (pid == getpid()) {
+    return std::nullopt;
+  }
+
+  int mac_keycode = static_cast<int>(
+      CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode));
+  return ui::KeycodeConverter::NativeKeycodeToUsbKeycode(mac_keycode);
+}
+
 namespace {
 
 class LocalKeyboardInputMonitorMac : public LocalKeyboardInputMonitor {
@@ -95,16 +125,10 @@ static CGEventRef LocalKeyboardEvent([[maybe_unused]] CGEventTapProxy proxy,
     return event;
   }
 
-  // Filter out events injected by the CRD host process, while capturing
-  // hardware events (pid == 0) and synthetic events from other local software
-  // (e.g. accessibility and assistive tools).
-  int64_t pid = CGEventGetIntegerValueField(event, kCGEventSourceUnixProcessID);
-  if (pid != getpid()) {
-    int mac_keycode = static_cast<int>(
-        CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode));
-    uint32_t usb_keycode =
-        ui::KeycodeConverter::NativeKeycodeToUsbKeycode(mac_keycode);
-    [manager localKeyPressed:usb_keycode];
+  std::optional<uint32_t> usb_keycode =
+      remoting::GetLocalKeyboardEventUsbKeycode(type, event);
+  if (usb_keycode.has_value()) {
+    [manager localKeyPressed:*usb_keycode];
   }
   return event;
 }
@@ -116,9 +140,8 @@ static CGEventRef LocalKeyboardEvent([[maybe_unused]] CGEventTapProxy proxy,
   if ((self = [super init])) {
     _monitor = monitor;
 
-    const CGEventMask keyboard_mask = CGEventMaskBit(kCGEventKeyDown) |
-                                      CGEventMaskBit(kCGEventKeyUp) |
-                                      CGEventMaskBit(kCGEventFlagsChanged);
+    const CGEventMask keyboard_mask =
+        CGEventMaskBit(kCGEventKeyDown) | CGEventMaskBit(kCGEventKeyUp);
 
     _keyboardMachPort.reset(CGEventTapCreate(
         kCGSessionEventTap, kCGHeadInsertEventTap, kCGEventTapOptionListenOnly,

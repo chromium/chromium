@@ -41,6 +41,7 @@ source_set("input_monitor") {
   }
 
   if (is_mac) {
+    public += [ "local_keyboard_input_monitor_mac.h" ]
     sources += [
       "local_hotkey_input_monitor_mac.mm",
       "local_keyboard_input_monitor_mac.mm",
