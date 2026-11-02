@@ -1535,6 +1535,7 @@ void DiceWebSigninInterceptor::OnAccountPreviewPreferenceReceived(
                           elapsed_time);
 
   bubble_parameters.account_preview_preference = std::move(preference);
+  bubble_parameters.account_preview_fetch_duration = elapsed_time;
   MaybeShowSigninInterceptionBubble(
       bubble_parameters, std::move(state_->interception_bubble_callback_));
 }

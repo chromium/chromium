@@ -183,7 +183,9 @@ class WebSigninInterceptor {
           bool show_managed_disclaimer = false,
           std::optional<
               signin::AccountPreviewDataService::AccountPreviewPreference>
-              account_preview_preference = std::nullopt);
+              account_preview_preference = std::nullopt,
+          std::optional<base::TimeDelta> account_preview_fetch_duration =
+              std::nullopt);
 
       BubbleParameters(const BubbleParameters& copy);
       BubbleParameters& operator=(const BubbleParameters&);
@@ -201,6 +203,7 @@ class WebSigninInterceptor {
       bool show_managed_disclaimer;
       std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
           account_preview_preference;
+      std::optional<base::TimeDelta> account_preview_fetch_duration;
     };
 
     virtual ~Delegate() = default;

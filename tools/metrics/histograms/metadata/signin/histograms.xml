@@ -2661,7 +2661,7 @@ prefs when the profile is loaded.  -->
 <histogram name="Signin.Intercept.AccountPreview.ResponseTime" units="ms"
     expires_after="2027-06-01">
   <owner>rsult@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the duration between requesting account preview preferences for an
     intercepted account and receiving the preference response (or reaching the
@@ -2672,7 +2672,7 @@ prefs when the profile is loaded.  -->
 <histogram name="Signin.Intercept.AccountPreview.TimedOut"
     enum="BooleanTimedOut" expires_after="2027-06-01">
   <owner>rsult@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records whether requesting account preview preferences for an intercepted
     account timed out before receiving the preference response. Recorded before
@@ -2838,6 +2838,7 @@ prefs when the profile is loaded.  -->
     enum="SigninInterceptResult" expires_after="2027-04-11">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the outcome of the signin interception bubble. Recorded when the
     bubble is closed, either after the user did an explicit action through the
@@ -2859,10 +2860,71 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram
+    name="Signin.InterceptResult.{InterceptType}.{Duration}Delay{Personalized}"
+    enum="SigninInterceptResult" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the outcome of the {InterceptType} signin interception bubble,
+    sliced by the {Duration} delay spent fetching account preview preferences
+    before showing the bubble and whether the bubble subtitle was
+    {Personalized}. Recorded when the bubble is closed.
+  </summary>
+  <token key="InterceptType">
+    <variant name="ChromeSignin" summary="Chrome Signin"/>
+    <variant name="ChromeSigninNonIntercept"
+        summary="non-intercept Chrome Signin"/>
+    <variant name="MultiUser" summary="MultiUser"/>
+  </token>
+<!-- LINT.IfChange(AccountPreviewDelayDurationVariant) -->
+
+  <token key="Duration">
+    <variant name="Long" summary="long (600ms+)"/>
+    <variant name="Medium" summary="medium (300-600ms)"/>
+    <variant name="Short" summary="short (0-300ms)"/>
+  </token>
+<!-- LINT.ThenChange(//chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.cc:AccountPreviewDelayDurationVariant) -->
+
+  <token key="Personalized">
+    <variant name="" summary="personalized or not personalized"/>
+    <variant name=".NotPersonalized"
+        summary="not personalized with sync preview data"/>
+    <variant name=".Personalized"
+        summary="personalized with sync preview data"/>
+  </token>
+</histogram>
+
+<!-- Defined separately from the {Duration}Delay histogram above because
+     empty variants for both tokens would duplicate the base histograms. -->
+
+<histogram name="Signin.InterceptResult.{InterceptType}.{Personalized}"
+    enum="SigninInterceptResult" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the outcome of the {InterceptType} signin interception bubble,
+    sliced by whether the bubble subtitle was {Personalized}. Recorded when the
+    bubble is closed.
+  </summary>
+  <token key="InterceptType">
+    <variant name="ChromeSignin" summary="Chrome Signin"/>
+    <variant name="ChromeSigninNonIntercept"
+        summary="non-intercept Chrome Signin"/>
+    <variant name="MultiUser" summary="MultiUser"/>
+  </token>
+  <token key="Personalized">
+    <variant name="NotPersonalized"
+        summary="not personalized with sync preview data"/>
+    <variant name="Personalized" summary="personalized with sync preview data"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.InterceptResult.{InterceptType}{SigninState}"
     enum="SigninInterceptResult" expires_after="2027-04-11">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the outcome of the signin interception bubble. Recorded when the
     bubble is closed, either after the user did an explicit action through the

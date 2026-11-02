@@ -200,6 +200,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   base::HistogramTester::CountsMap expected_histogram_total_count = {
       {"Signin.InterceptResult.MultiUser", 1},
       {"Signin.InterceptResult.MultiUser.NoSync", 1},
+      {"Signin.InterceptResult.MultiUser.NotPersonalized", 1},
   };
   EXPECT_THAT(
       histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
@@ -240,6 +241,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   base::HistogramTester::CountsMap expected_histogram_total_count = {
       {"Signin.InterceptResult.MultiUser", 1},
       {"Signin.InterceptResult.MultiUser.NoSync", 1},
+      {"Signin.InterceptResult.MultiUser.NotPersonalized", 1},
   };
   EXPECT_THAT(
       histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
@@ -304,6 +306,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   base::HistogramTester::CountsMap expected_histogram_total_count = {
       {"Signin.InterceptResult.MultiUser", 1},
       {"Signin.InterceptResult.MultiUser.NoSync", 1},
+      {"Signin.InterceptResult.MultiUser.NotPersonalized", 1},
   };
   EXPECT_THAT(
       histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
@@ -353,6 +356,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   base::HistogramTester::CountsMap expected_histogram_total_count = {
       {"Signin.InterceptResult.MultiUser", 1},
       {"Signin.InterceptResult.MultiUser.NoSync", 1},
+      {"Signin.InterceptResult.MultiUser.NotPersonalized", 1},
   };
   EXPECT_THAT(
       histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
@@ -398,6 +402,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   base::HistogramTester::CountsMap expected_histogram_total_count = {
       {"Signin.InterceptResult.MultiUser", 1},
       {"Signin.InterceptResult.MultiUser.NoSync", 1},
+      {"Signin.InterceptResult.MultiUser.NotPersonalized", 1},
   };
   EXPECT_THAT(
       histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
@@ -444,6 +449,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   base::HistogramTester::CountsMap expected_histogram_total_count = {
       {"Signin.InterceptResult.MultiUser", 1},
       {"Signin.InterceptResult.MultiUser.NoSync", 1},
+      {"Signin.InterceptResult.MultiUser.NotPersonalized", 1},
   };
   EXPECT_THAT(
       histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
@@ -512,6 +518,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   base::HistogramTester::CountsMap expected_histogram_total_count = {
       {"Signin.InterceptResult.MultiUser", 1},
       {"Signin.InterceptResult.MultiUser.NoSync", 1},
+      {"Signin.InterceptResult.MultiUser.NotPersonalized", 1},
   };
   EXPECT_THAT(
       histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/cancelable_callback.h"
 #include "base/check_deref.h"
@@ -13,8 +14,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -24,6 +27,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/signin/account_preview_utils.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -220,6 +224,61 @@ class ForcedEnterpriseSigninInterceptionHandle
       weak_ptr_factory_{this};
 };
 
+// LINT.IfChange(AccountPreviewDelayDurationVariant)
+std::string_view GetDelayDurationVariant(base::TimeDelta duration) {
+  static constexpr char kShortDelayHistogramVariant[] = ".ShortDelay";
+  static constexpr char kMediumDelayHistogramVariant[] = ".MediumDelay";
+  static constexpr char kLongDelayHistogramVariant[] = ".LongDelay";
+
+  if (duration < base::Milliseconds(300)) {
+    return kShortDelayHistogramVariant;
+  }
+  if (duration < base::Milliseconds(600)) {
+    return kMediumDelayHistogramVariant;
+  }
+  return kLongDelayHistogramVariant;
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:AccountPreviewDelayDurationVariant)
+
+// Mirrors the subtitle resolution in `DiceWebSigninInterceptHandler` to check
+// whether `account_preview_preference` actually produces a personalized
+// subtitle for the interception bubble (as opposed to containing only data
+// types not used by the bubble), avoiding plumbing UI state back through the
+// interception delegate callbacks.
+bool IsInterceptBubblePersonalized(
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters) {
+  if (!bubble_parameters.account_preview_preference.has_value()) {
+    return false;
+  }
+
+  switch (bubble_parameters.interception_type) {
+    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
+    case WebSigninInterceptor::SigninInterceptionType::
+        kChromeSigninNonIntercept: {
+      std::optional<std::string> subtitle =
+          signin::GetAccountPreviewPromoSubtitle(
+              *bubble_parameters.account_preview_preference);
+      return subtitle.has_value() && !subtitle->empty();
+    }
+    case WebSigninInterceptor::SigninInterceptionType::kMultiUser: {
+      std::optional<std::string> subtitle =
+          signin::GetAccountPreviewProfileSeparationSubtitle(
+              bubble_parameters.primary_account.GetGivenName().value_or(""),
+              bubble_parameters.intercepted_account.GetEmail(),
+              *bubble_parameters.account_preview_preference);
+      return subtitle.has_value() && !subtitle->empty();
+    }
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
+    case WebSigninInterceptor::SigninInterceptionType::
+        kEnterpriseAcceptManagement:
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 DiceWebSigninInterceptorDelegate::DiceWebSigninInterceptorDelegate() = default;
@@ -401,5 +460,29 @@ void DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
   if (signin_util::IsSigninPending(identity_manager)) {
     base::UmaHistogramEnumeration(
         base::StrCat({histogram_base_name, ".SigninPending"}), result);
+  }
+
+  // Record histograms sliced by account preview fetch delay and bubble
+  // personalization. The unsuffixed base histogram (`histogram_base_name`) is
+  // already recorded at the start of this function.
+  if (bubble_parameters.IsChromeSignin() ||
+      bubble_parameters.interception_type ==
+          WebSigninInterceptor::SigninInterceptionType::kMultiUser) {
+    std::string_view personalized_variant =
+        IsInterceptBubblePersonalized(bubble_parameters) ? ".Personalized"
+                                                         : ".NotPersonalized";
+    base::UmaHistogramEnumeration(
+        base::StrCat({histogram_base_name, personalized_variant}), result);
+
+    if (bubble_parameters.account_preview_fetch_duration.has_value()) {
+      std::string_view delay_variant = GetDelayDurationVariant(
+          *bubble_parameters.account_preview_fetch_duration);
+      base::UmaHistogramEnumeration(
+          base::StrCat({histogram_base_name, delay_variant}), result);
+      base::UmaHistogramEnumeration(
+          base::StrCat(
+              {histogram_base_name, delay_variant, personalized_variant}),
+          result);
+    }
   }
 }

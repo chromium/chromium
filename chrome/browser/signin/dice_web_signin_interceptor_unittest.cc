@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -141,7 +142,11 @@ MatchBubbleParameters(
       testing::Field("account_preview_preference",
                      &WebSigninInterceptor::Delegate::BubbleParameters::
                          account_preview_preference,
-                     parameters.account_preview_preference));
+                     parameters.account_preview_preference),
+      testing::Field("account_preview_fetch_duration",
+                     &WebSigninInterceptor::Delegate::BubbleParameters::
+                         account_preview_fetch_duration,
+                     parameters.account_preview_fetch_duration));
 }
 
 void MakeValidAccountCapabilities(AccountInfo* info) {
@@ -2649,6 +2654,7 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
       .form_factor =
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE};
 
+  constexpr base::TimeDelta kFetchDuration = base::Milliseconds(150);
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       GetInterceptionType(),
       /*intercepted_account=*/account_info,
@@ -2656,7 +2662,8 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
       /*profile_highlight_color=*/SkColor(),
       /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/false,
-      /*account_preview_preference=*/pref);
+      /*account_preview_preference=*/pref,
+      /*account_preview_fetch_duration=*/kFetchDuration);
 
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
@@ -2670,6 +2677,7 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
 
   EXPECT_TRUE(raw_fake_service->has_pending_callback());
+  task_environment()->FastForwardBy(kFetchDuration);
   raw_fake_service->TriggerCallback(pref);
 
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
@@ -2751,6 +2759,8 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
   MakeValidAccountInfo(&account_info);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
+  const base::TimeDelta kTimeout =
+      switches::kAccountPreviewPreferredAccountInterceptFetchTimeout.Get();
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       GetInterceptionType(),
       /*intercepted_account=*/account_info,
@@ -2758,7 +2768,8 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
       /*profile_highlight_color=*/SkColor(),
       /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/false,
-      /*account_preview_preference=*/std::nullopt);
+      /*account_preview_preference=*/std::nullopt,
+      /*account_preview_fetch_duration=*/kTimeout);
 
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
@@ -2772,8 +2783,7 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
 
   EXPECT_TRUE(raw_fake_service->has_pending_callback());
-  task_environment()->FastForwardBy(
-      switches::kAccountPreviewPreferredAccountInterceptFetchTimeout.Get());
+  task_environment()->FastForwardBy(kTimeout);
 
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
   histogram_tester.ExpectUniqueSample(
@@ -2814,7 +2824,8 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
       /*profile_highlight_color=*/SkColor(),
       /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/false,
-      /*account_preview_preference=*/std::nullopt);
+      /*account_preview_preference=*/std::nullopt,
+      /*account_preview_fetch_duration=*/base::Seconds(0));
 
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
@@ -2892,7 +2903,8 @@ TEST_P(DiceWebSigninInterceptorTestWithAccountPreview,
       /*profile_highlight_color=*/SkColor(),
       /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/false,
-      /*account_preview_preference=*/pref_b);
+      /*account_preview_preference=*/pref_b,
+      /*account_preview_fetch_duration=*/base::Milliseconds(0));
 
   // Interception 1 starts for Account A.
   interceptor()->MaybeInterceptWebSignin(
