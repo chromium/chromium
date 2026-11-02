@@ -123,7 +123,6 @@ id<GREYMatcher> ImportButton() {
 /// reminder.
 - (void)testFirstRunAndReminder {
   if (@available(iOS 18.2, *)) {
-    [[self class] testForStartup];
     AppLaunchConfiguration firstRunConfig =
         [self appConfigurationNoOverrideBehavior];
     /// Show the First Run UI at startup.
