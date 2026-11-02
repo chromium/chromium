@@ -1129,13 +1129,6 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
 
     HTML_BEGIN_STATE(kProcessingInstructionTargetState) {
       CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
-      const HTMLToken::DataVector target =
-          token_.GetProcessingInstructionTarget();
-      auto is_reserved = [&]() {
-        const String target_as_string = target.AsString();
-        return EqualIgnoringAsciiCase(target_as_string, "xml") ||
-               EqualIgnoringAsciiCase(target_as_string, "xml-stylesheet");
-      };
       if (cc == kEndOfFileMarker) {
         ParseError();
         return EmitEndOfFile(source);
@@ -1143,6 +1136,12 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         token_.AppendToProcessingInstructionTarget(cc);
         HTML_CONSUME(kProcessingInstructionTargetState);
       } else {
+        auto is_reserved = [&]() {
+          const String target_as_string =
+              token_.GetProcessingInstructionTarget().AsString();
+          return EqualIgnoringAsciiCase(target_as_string, "xml") ||
+                 EqualIgnoringAsciiCase(target_as_string, "xml-stylesheet");
+        };
         if (!(IsTokenizerWhitespace(cc) || cc == '>' || cc == '?') ||
             is_reserved()) {
           ParseError();

@@ -55,6 +55,23 @@ TEST(HTMLTokenizerTest, ProcessingInstruction) {
   EXPECT_EQ("data", String(token->Data().AsString()));
 }
 
+// Regression test for crbug.com/578804516: tokenizing a long processing
+// instruction target should not copy the target buffer on every character.
+TEST(HTMLTokenizerTest, ProcessingInstructionLongTarget) {
+  test::TaskEnvironment task_environment;
+  HTMLParserOptions options;
+  std::unique_ptr<HTMLTokenizer> tokenizer =
+      std::make_unique<HTMLTokenizer>(options);
+  std::string long_target(100000, 'a');
+  SegmentedString input(String("<?" + long_target + " data?>"));
+  HTMLToken* token = tokenizer->NextToken(input);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(HTMLToken::kProcessingInstruction, token->GetType());
+  EXPECT_EQ(String(long_target),
+            token->GetProcessingInstructionTarget().AsString());
+  EXPECT_EQ("data", String(token->Data().AsString()));
+}
+
 // Regression test for crbug.com/40727112: an incomplete markup declaration at
 // end of input becomes a bogus comment instead of being dropped.
 TEST(HTMLTokenizerTest, IncompleteDoctypeAtEndOfInput) {
