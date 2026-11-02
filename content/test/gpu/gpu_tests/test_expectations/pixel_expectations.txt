@@ -421,6 +421,7 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
 
 
+crbug.com/546131821 [ android-14 android-pixel-6 ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ RetryOnFailure ]
 crbug.com/546131821 [ android-14 android-pixel-6 ] Pixel_VideoStreamFrom2DCanvas [ RetryOnFailure ]
 crbug.com/546131821 [ android-14 android-pixel-6 ] Pixel_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
 
@@ -565,6 +566,7 @@ crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ]
 crbug.com/536977902 [ mac apple-angle-metal-renderer:-apple-m2 asan ] * [ RetryOnFailure ]
 
 crbug.com/544795245 [ mac apple-angle-metal-renderer:-apple-m2 asan ] Pixel_ViewTransitionsCapture [ Failure ]
+crbug.com/544795245 [ mac amd-0x7340 angle-metal debug ] Pixel_ViewTransitionsCapture [ Failure ]
 
 # 32-bit GPU process virtual address space exhaustion (E_OUTOFMEMORY)
 crbug.com/417782068 [ win nvidia-0x2184 target-cpu-32 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
