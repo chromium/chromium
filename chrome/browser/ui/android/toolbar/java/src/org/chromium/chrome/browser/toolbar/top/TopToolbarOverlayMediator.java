@@ -697,6 +697,16 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
 
         if (getControlsPosition() == ControlsPosition.BOTTOM) {
             contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewportHeight);
+            // The native ToolbarLayer places the capture at |contentOffset - (captureHeight -
+            // hairlineHeight)|, i.e. it assumes the hairline is the bottom-most part of the
+            // capture, as it is for a top-anchored toolbar. When the toolbar is bottom-anchored
+            // the hairline is captured *above* the toolbar instead, so the toolbar rows would be
+            // drawn one hairline height lower than the Android view (visible as a vertical jump
+            // when switching between the view and the composited layer, e.g. at the start of a
+            // toolbar swipe). Shift the offset up by the hairline height to compensate.
+            // TODO(https://crbug.com/454338286): Remove once positioning no longer relies on
+            // LEGACY_CONTENT_OFFSET.
+            contentOffset -= mBrowserControlsVisibilityManager.getTopControlsHairlineHeight();
             applyContentOffsetToModel(contentOffset);
             return;
         }
