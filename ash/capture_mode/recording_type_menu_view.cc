@@ -6,7 +6,6 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -20,7 +19,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
-#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -54,10 +52,7 @@ gfx::Size GetIdealSize(views::View* contents_view) {
 RecordingTypeMenuView::RecordingTypeMenuView(
     base::RepeatingClosure on_option_selected_callback)
     : CaptureModeMenuGroup(this, kMenuPadding),
-      on_option_selected_callback_(std::move(on_option_selected_callback)),
-      shadow_(SystemDecoration::CreateForView(
-          this,
-          SystemDecoration::ShadowType::kElevation12)) {
+      on_option_selected_callback_(std::move(on_option_selected_callback)) {
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(kRoundedCorners);
   SetBackground(views::CreateSolidBackground(
@@ -71,6 +66,11 @@ RecordingTypeMenuView::RecordingTypeMenuView(
     layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
+  decoration_ = SystemDecoration::CreateForView(
+      this, SystemDecoration::ShadowType::kElevation12,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(kRoundedCorners);
+
   AddOption(
       &kCaptureModeVideoIcon,
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_VIDEO_RECORD),
@@ -78,12 +78,6 @@ RecordingTypeMenuView::RecordingTypeMenuView(
   AddOption(&kCaptureGifIcon,
             l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_GIF_RECORD),
             ToInt(RecordingType::kGif));
-
-  capture_mode_util::SetHighlightBorder(
-      this, kCornerRadius,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow);
-
-  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kCornerRadius));
 }
 
 RecordingTypeMenuView::~RecordingTypeMenuView() = default;

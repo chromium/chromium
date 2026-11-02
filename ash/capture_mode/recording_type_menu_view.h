@@ -53,7 +53,7 @@ class ASH_EXPORT RecordingTypeMenuView : public CaptureModeMenuGroup,
   // bound to a function in the `CaptureModeSession` that closes the menu.
   base::RepeatingClosure on_option_selected_callback_;
 
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 };
 
 }  // namespace ash

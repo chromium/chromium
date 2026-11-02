@@ -178,7 +178,7 @@ class ASH_EXPORT CaptureModeSettingsView
   // If set, it will be called when the settings menu is refreshed.
   base::OnceClosure on_settings_menu_refreshed_callback_for_test_;
 
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 
   base::WeakPtrFactory<CaptureModeSettingsView> weak_ptr_factory_{this};
 };

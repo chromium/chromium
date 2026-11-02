@@ -15,7 +15,6 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/screen_util.h"
@@ -34,7 +33,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -120,9 +118,10 @@ CaptureModeSettingsView::CaptureModeSettingsView(
     : ScrollView(views::ScrollView::ScrollWithLayers::kEnabled),
       capture_mode_session_(session),
       active_behavior_(active_behavior),
-      shadow_(SystemDecoration::CreateForView(
+      decoration_(SystemDecoration::CreateForView(
           this,
-          SystemDecoration::ShadowType::kElevation12)) {
+          SystemDecoration::ShadowType::kElevation12,
+          SystemDecoration::HighlightBorderMode::kHighlightBorder)) {
   auto* controller = CaptureModeController::Get();
 
   SetContents(std::make_unique<views::View>());
@@ -256,11 +255,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(
   contents()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  capture_mode_util::SetHighlightBorder(
-      this, kCornerRadius,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow);
-
-  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kCornerRadius));
+  decoration_->SetRoundedCorners(kRoundedCorners);
 }
 
 CaptureModeSettingsView::~CaptureModeSettingsView() {
