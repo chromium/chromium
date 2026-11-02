@@ -48,9 +48,9 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/paint_recorder.h"
@@ -648,7 +648,7 @@ void BrowserRootView::NavigateToDroppedUrls(
                           ui::PAGE_TRANSITION_LINK);
     params.tabstrip_index = insertion_index;
     base::RecordAction(base::UserMetricsAction("Tab_DropURLOnTab"));
-    params.disposition = WindowOpenDisposition::kCurrentTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
     params.initiator_origin = event.data().GetRendererTaintedOrigin();
     params.source_contents = model->GetWebContentsAt(insertion_index);
     params.window_action = NavigateParams::WindowAction::kShowWindow;
@@ -663,7 +663,7 @@ void BrowserRootView::NavigateToDroppedUrls(
                           ui::PAGE_TRANSITION_LINK);
     params.tabstrip_index = insertion_index;
     base::RecordAction(base::UserMetricsAction("Tab_DropURLBetweenTabs"));
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     if (drop_info->index->group_inclusion ==
             DropIndex::GroupInclusion::kIncludeInGroup &&
         insertion_index < model->count()) {

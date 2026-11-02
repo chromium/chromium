@@ -57,9 +57,9 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_test_api.h"
 #include "ui/events/base_event_utils.h"
@@ -331,11 +331,11 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, IconDataChanged) {
   TestWebContentsObserver observer(web_contents);
   base::RunLoop run_loop;
   observer.SetStartLoadingCallback(run_loop.QuitClosure());
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/title1.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK),
-      base::DoNothing());
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/title1.html"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_LINK),
+                     base::DoNothing());
   run_loop.Run();
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));

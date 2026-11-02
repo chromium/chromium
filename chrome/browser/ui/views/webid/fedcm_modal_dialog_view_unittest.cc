@@ -15,7 +15,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace webid {
 
@@ -99,7 +99,7 @@ class TestDelegate : public content::WebContentsDelegate {
 
   int opened() const { return opened_; }
   gfx::Rect bounds() const { return bounds_; }
-  WindowOpenDisposition disposition() const { return disposition_; }
+  ui::mojom::WindowOpenDisposition disposition() const { return disposition_; }
 
  private:
   int opened_ = 0;
@@ -108,7 +108,8 @@ class TestDelegate : public content::WebContentsDelegate {
   base::OnceClosure on_open_url_from_tab_;
   base::OnceClosure on_activate_contents_;
   gfx::Rect bounds_;
-  WindowOpenDisposition disposition_{WindowOpenDisposition::kUnknown};
+  ui::mojom::WindowOpenDisposition disposition_{
+      ui::mojom::WindowOpenDisposition::kUnknown};
 };
 
 }  // namespace
@@ -170,7 +171,8 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowInFullscreen) {
 
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
-  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab, delegate.disposition());
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+            delegate.disposition());
 }
 
 TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedByInvalidUrl) {

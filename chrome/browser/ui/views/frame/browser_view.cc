@@ -326,12 +326,12 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/debug_utils.h"
@@ -2589,7 +2589,8 @@ base::CallbackListSubscription BrowserView::AddOnLinkOpeningFromGestureCallback(
   return link_opened_from_gesture_callbacks_.Add(callback);
 }
 
-void BrowserView::LinkOpeningFromGesture(WindowOpenDisposition disposition) {
+void BrowserView::LinkOpeningFromGesture(
+    ui::mojom::WindowOpenDisposition disposition) {
   link_opened_from_gesture_callbacks_.Notify(disposition);
 }
 

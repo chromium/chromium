@@ -24,7 +24,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/controls/button/label_button.h"
 
 class TabCollectionNodeInteractiveUiTest
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeInteractiveUiTest,
   for (size_t i = 0; i < 5; i++) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeInteractiveUiTest,
   for (size_t i = 0; i < 2; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

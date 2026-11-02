@@ -31,7 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest,
     views::test::WidgetDestroyedWaiter waiter(GetDialogWidget());
     content::TestNavigationObserver reload_observer(
         browser()->GetTabStripModel()->GetActiveWebContents());
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     reload_observer.Wait();
 
     waiter.Wait();

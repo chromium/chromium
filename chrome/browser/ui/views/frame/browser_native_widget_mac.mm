@@ -70,9 +70,9 @@
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
@@ -628,7 +628,7 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
 
 bool BrowserNativeWidgetMac::WillExecuteCommand(
     int32_t command,
-    WindowOpenDisposition window_open_disposition,
+    ui::mojom::WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder) {
   if (!browser_view_) {
     return false;
@@ -665,7 +665,7 @@ bool BrowserNativeWidgetMac::WillExecuteCommand(
 
 bool BrowserNativeWidgetMac::ExecuteCommand(
     int32_t command,
-    WindowOpenDisposition window_open_disposition,
+    ui::mojom::WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder) {
   if (!WillExecuteCommand(command, window_open_disposition,
                           is_before_first_responder)) {

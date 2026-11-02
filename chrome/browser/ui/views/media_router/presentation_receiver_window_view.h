@@ -24,6 +24,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -89,9 +90,10 @@ class PresentationReceiverWindowView final
       final;
 
   // CommandUpdaterDelegate overrides.
-  void HandleCommandWithDisposition(int id,
-                                    WindowOpenDisposition disposition,
-                                    base::TimeTicks time_stamp) final;
+  void HandleCommandWithDisposition(
+      int id,
+      ui::mojom::WindowOpenDisposition disposition,
+      base::TimeTicks time_stamp) final;
 
   // ChromeLocationBarModelDelegate overrides.
   content::WebContents* GetActiveWebContents() const final;

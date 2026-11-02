@@ -34,8 +34,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/test/views_test_utils.h"
 
 namespace webid {
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(FedCmActorBrowserTest,
 
   // Open a new unrelated tab in the foreground.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), other_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), other_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   base::test::TestFuture<content::WebContents*> future_popup_contents =
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(FedCmActorBrowserTest,
 
   // Open a new unrelated tab in the foreground.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), other_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), other_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Enter fullscreen mode.
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(FedCmActorBrowserTest,
 
   // Open a new unrelated tab in the foreground.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), other_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), other_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   base::test::TestFuture<content::WebContents*> future_popup_contents =
@@ -625,7 +625,8 @@ IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputDisabledForModalDialog) {
 
   // If we make a new tab input should be enabled.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_FALSE(browser()
                    ->GetActiveTabInterface()

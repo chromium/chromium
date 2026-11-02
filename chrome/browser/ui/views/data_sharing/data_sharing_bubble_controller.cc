@@ -24,8 +24,8 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "net/base/url_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -39,13 +39,13 @@ content::WebContents* OpenLinkInNewWindow(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {
   NavigateParams params(/*a_browser=*/nullptr, std::move(new_contents));
   params.initiating_profile =
       Profile::FromBrowserContext(source->GetBrowserContext());
-  params.disposition = WindowOpenDisposition::kNewWindow;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   Navigate(&params);
   return params.navigated_or_inserted_contents;
 }
@@ -68,7 +68,7 @@ class DataSharingBubbleDialogView : public WebUIBubbleDialogView {
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
@@ -81,7 +81,7 @@ content::WebContents* DataSharingBubbleDialogView::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {

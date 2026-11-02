@@ -16,8 +16,8 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
@@ -44,7 +44,8 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
           for (int i = 0; i < kTabCountThreshold; i++) {
             NavigateParams params(browser(), GURL("about:blank"),
                                   ui::PAGE_TRANSITION_LINK);
-            params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+            params.disposition =
+                ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
             Navigate(&params);
           }
         }),

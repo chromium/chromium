@@ -35,10 +35,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/views/controls/separator.h"
@@ -99,7 +99,7 @@ class PasskeyUpgradeBubbleController : public PasswordBubbleControllerBase {
         std::string(base::i18n::GetDefaultIcuLocale().tag_string()));
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            learn_more_url, WindowOpenDisposition::kNewForegroundTab,
+            learn_more_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_LINK);
     web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
   }

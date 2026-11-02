@@ -49,8 +49,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
@@ -619,7 +619,7 @@ void RecentActivityRowView::ReopenTab() {
           group_id.value())) {
     tab_groups::SavedTabGroupUtils::OpenTabInBrowser(
         GURL(tab_url.value()), browser, browser->GetProfile(),
-        WindowOpenDisposition::kNewBackgroundTab, std::nullopt,
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab, std::nullopt,
         group_id.value());
   }
 }

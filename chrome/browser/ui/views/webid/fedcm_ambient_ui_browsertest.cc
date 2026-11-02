@@ -27,8 +27,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/event.h"
 
 namespace webid {
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, ReloadPage) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver navigation(web_contents);
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   navigation.Wait();
 
   // The FedCM request should be dismissed on navigation/reload.

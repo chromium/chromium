@@ -50,8 +50,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/text_elider.h"
 
 // A line in the static menu definitions.
@@ -645,13 +645,14 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
     if (item->session_id.is_valid() && service) {
       service->RestoreEntryById(BrowserLiveTabContext::From(browser_),
                                 item->session_id,
-                                WindowOpenDisposition::kUnknown);
+                                ui::mojom::WindowOpenDisposition::kUnknown);
     } else {
       CHECK(item->url.is_valid(), base::NotFatalUntil::M162);
-      browser_->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                            item->url, WindowOpenDisposition::kNewForegroundTab,
-                            ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-                        /*navigation_handle_callback=*/{});
+      browser_->OpenURL(
+          content::OpenURLParams::CreateBrowserInitiated(
+              item->url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+              ui::PAGE_TRANSITION_AUTO_BOOKMARK),
+          /*navigation_handle_callback=*/{});
     }
   } else if (profile_commands_.contains(command_id)) {
     avatar_menu_->SwitchToProfile(profile_commands_[command_id], false);

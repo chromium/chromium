@@ -27,8 +27,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
   // Create a new foreground tab that covers |web_contents|.
   GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_NE(initiator_, browser()->GetTabStripModel()->GetActiveWebContents());
 

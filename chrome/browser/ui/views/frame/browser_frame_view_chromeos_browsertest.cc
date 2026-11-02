@@ -138,9 +138,9 @@
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer_solid_color.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -562,7 +562,7 @@ class WebAppFrameViewChromeOSTest
   BrowserView* CreateWebAppPopup(BrowserWindowInterface* parent_browser) {
     NavigateParams navigate_params(parent_browser, GetAppURL(),
                                    ui::PAGE_TRANSITION_LINK);
-    navigate_params.disposition = WindowOpenDisposition::kNewPopup;
+    navigate_params.disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
 
     content::TestNavigationObserver navigation_observer(GetAppURL());
     navigation_observer.StartWatchingNewWebContents();
@@ -2245,7 +2245,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               app_id, apps::LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::kCurrentTab,
+              ui::mojom::WindowOpenDisposition::kCurrentTab,
               apps::LaunchSource::kFromTest));
   ASSERT_TRUE(web_contents);
   BrowserWindowInterface* browser =

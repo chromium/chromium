@@ -32,7 +32,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 // These are regression tests for possible crashes.
 
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardControllerTest, HoverCardLabel_DomainIsUrl) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://example.com"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   HoverCardAnchorTarget* const target_tab = GetHoverCardAnchorTargetAt(1);

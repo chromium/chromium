@@ -14,8 +14,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -72,9 +72,9 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
   }
   bool is_fullscreen = delegate->GetDisplayMode(source_window_) ==
                        blink::mojom::DisplayMode::kFullscreen;
-  WindowOpenDisposition disposition =
-      is_fullscreen ? WindowOpenDisposition::kNewForegroundTab
-                    : WindowOpenDisposition::kNewPopup;
+  ui::mojom::WindowOpenDisposition disposition =
+      is_fullscreen ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+                    : ui::mojom::WindowOpenDisposition::kNewPopup;
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(

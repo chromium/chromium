@@ -21,8 +21,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/url_constants.h"
 
 MultiContentsViewDelegateImpl::MultiContentsViewDelegateImpl(
@@ -121,7 +121,7 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
   NavigateParams params(&browser_.get(), filtered_urls.front(),
                         ui::PAGE_TRANSITION_LINK);
   params.tabstrip_index = new_tab_idx;
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   params.initiator_origin = event.data().GetRendererTaintedOrigin();
   if (active_tab->IsPinned()) {
     params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;

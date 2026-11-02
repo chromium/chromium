@@ -45,7 +45,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/win/hwnd_util.h"
 
 typedef extensions::ExtensionBrowserTest BrowserWindowPropertyManagerTest;
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
       browser()->GetProfile(),
       apps::AppLaunchParams(extension->id(),
                             apps::LaunchContainer::kLaunchContainerWindow,
-                            WindowOpenDisposition::kNewForegroundTab,
+                            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                             apps::LaunchSource::kFromTest),
       base::IgnoreArgs<content::WebContents*>(done.QuitClosure()));
   done.Run();
