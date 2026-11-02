@@ -53,6 +53,7 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
@@ -138,13 +139,17 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
     @Mock private AutofillPaymentMethodsDelegate.Natives mNativeMock;
+
+    @Mock
+    private JniUniquePtr<AutofillPaymentMethodsDelegate.NativeAutofillPaymentMethodsDelegate>
+            mNativeAutofillPaymentMethodsDelegate;
+
     @Mock private Callback<String> mServerIbanManageLinkOpenerCallback;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     @Mock private PackageManagerDelegate mPackageManagerDelegate;
 
     // Card Issuer values that map to the browser CreditCard.Issuer enum.
     private static final int CARD_ISSUER_UNKNOWN = 0;
-    private static final long NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE = 100L;
     private static final List<String> CARD_ISSUER_NETWORKS = Arrays.asList("visa", "mastercard");
 
     private static final CreditCard SAMPLE_CARD_VISA =
@@ -1042,7 +1047,7 @@ public class AutofillPaymentMethodsFragmentTest {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
         AutofillPaymentMethodsDelegateJni.setInstanceForTesting(mNativeMock);
         when(mNativeMock.init(any(Profile.class)))
-                .thenReturn(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
+                .thenReturn(mNativeAutofillPaymentMethodsDelegate);
 
         SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
         Preference deleteSavedCvcsPreference =
@@ -1059,7 +1064,7 @@ public class AutofillPaymentMethodsFragmentTest {
                 .inRoot(isDialog())
                 .perform(click());
 
-        verify(mNativeMock).deleteSavedCvcs(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
+        verify(mNativeMock).deleteSavedCvcs(mNativeAutofillPaymentMethodsDelegate);
     }
 
     @Test

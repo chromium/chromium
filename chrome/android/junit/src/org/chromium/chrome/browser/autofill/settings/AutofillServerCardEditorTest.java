@@ -38,6 +38,7 @@ import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -94,8 +95,6 @@ import org.chromium.url.GURL;
 @EnableFeatures(ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE)
 public class AutofillServerCardEditorTest {
 
-    private static final long NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE = 100L;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -107,6 +106,10 @@ public class AutofillServerCardEditorTest {
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private Callback<String> mServerCardEditLinkOpenerCallback;
     @Mock private AutofillPaymentMethodsDelegate.Natives mNativeMock;
+
+    @Mock
+    private JniUniquePtr<AutofillPaymentMethodsDelegate.NativeAutofillPaymentMethodsDelegate>
+            mNativeAutofillPaymentMethodsDelegate;
 
     private static final CreditCard SAMPLE_VIRTUAL_CARD_ENROLLED_CARD =
             new CreditCard(
@@ -202,7 +205,7 @@ public class AutofillServerCardEditorTest {
     public void setUp() {
         AutofillPaymentMethodsDelegateJni.setInstanceForTesting(mNativeMock);
         when(mNativeMock.init(any(Profile.class)))
-                .thenReturn(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
+                .thenReturn(mNativeAutofillPaymentMethodsDelegate);
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         ProfileManagerUtilsJni.setInstanceForTesting(mProfileManagerUtilsJni);
@@ -320,7 +323,7 @@ public class AutofillServerCardEditorTest {
                 MockitoHelper.callbackCaptor();
         verify(mNativeMock)
                 .initVirtualCardEnrollment(
-                        ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
+                        ArgumentMatchers.eq(mNativeAutofillPaymentMethodsDelegate),
                         ArgumentMatchers.eq(234L),
                         callbackArgumentCaptor.capture());
         // Return VirtualCardEnrollmentFields via the callback to show the dialog.
@@ -377,7 +380,7 @@ public class AutofillServerCardEditorTest {
                 MockitoHelper.callbackCaptor();
         verify(mNativeMock)
                 .enrollOfferedVirtualCard(
-                        ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
+                        ArgumentMatchers.eq(mNativeAutofillPaymentMethodsDelegate),
                         booleanCallbackArgumentCaptor.capture());
         // Return enrollment update status "successful" via the callback.
         Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback =
@@ -429,7 +432,7 @@ public class AutofillServerCardEditorTest {
                 MockitoHelper.callbackCaptor();
         verify(mNativeMock)
                 .initVirtualCardEnrollment(
-                        ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
+                        ArgumentMatchers.eq(mNativeAutofillPaymentMethodsDelegate),
                         ArgumentMatchers.eq(234L),
                         callbackArgumentCaptor.capture());
         // Return VirtualCardEnrollmentFields via the callback to show the dialog.
@@ -454,7 +457,7 @@ public class AutofillServerCardEditorTest {
                 MockitoHelper.callbackCaptor();
         verify(mNativeMock)
                 .enrollOfferedVirtualCard(
-                        ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
+                        ArgumentMatchers.eq(mNativeAutofillPaymentMethodsDelegate),
                         booleanCallbackArgumentCaptor.capture());
         // Return enrollment update status "failure" via the callback.
         Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback =
@@ -505,7 +508,7 @@ public class AutofillServerCardEditorTest {
                 MockitoHelper.callbackCaptor();
         verify(mNativeMock)
                 .initVirtualCardEnrollment(
-                        ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
+                        ArgumentMatchers.eq(mNativeAutofillPaymentMethodsDelegate),
                         ArgumentMatchers.eq(234L),
                         callbackArgumentCaptor.capture());
         // Return VirtualCardEnrollmentFields via the callback to show the dialog.
@@ -541,7 +544,7 @@ public class AutofillServerCardEditorTest {
         // the dialog.
         verify(mNativeMock, times(0))
                 .enrollOfferedVirtualCard(
-                        eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE), MockitoHelper.anyCallback());
+                        eq(mNativeAutofillPaymentMethodsDelegate), MockitoHelper.anyCallback());
     }
 
     @Test
@@ -570,7 +573,7 @@ public class AutofillServerCardEditorTest {
                 MockitoHelper.callbackCaptor();
         verify(mNativeMock)
                 .initVirtualCardEnrollment(
-                        ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
+                        ArgumentMatchers.eq(mNativeAutofillPaymentMethodsDelegate),
                         ArgumentMatchers.eq(234L),
                         callbackArgumentCaptor.capture());
         // Return VirtualCardEnrollmentFields via the callback to show the dialog.
@@ -593,7 +596,7 @@ public class AutofillServerCardEditorTest {
         mActivityScenario.close();
 
         // Verify that the native delegate is not cleaned up while the server call is in progress.
-        verify(mNativeMock, never()).cleanup(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
+        verify(mNativeAutofillPaymentMethodsDelegate, never()).destroy();
 
         // Verify that enrollment is called with the correct parameters even after the editor is
         // closed.
@@ -601,7 +604,7 @@ public class AutofillServerCardEditorTest {
                 MockitoHelper.callbackCaptor();
         verify(mNativeMock)
                 .enrollOfferedVirtualCard(
-                        ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
+                        ArgumentMatchers.eq(mNativeAutofillPaymentMethodsDelegate),
                         booleanCallbackArgumentCaptor.capture());
         // Return enrollment update status "successful" via the callback.
         Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback =
@@ -610,7 +613,7 @@ public class AutofillServerCardEditorTest {
 
         // Ensure that the callback is run after receiving the server response and that the native
         // delegate is cleaned up.
-        verify(mNativeMock).cleanup(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
+        verify(mNativeAutofillPaymentMethodsDelegate).destroy();
     }
 
     @Test
@@ -735,7 +738,7 @@ public class AutofillServerCardEditorTest {
                 MockitoHelper.callbackCaptor();
         verify(mNativeMock)
                 .unenrollVirtualCard(
-                        ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
+                        ArgumentMatchers.eq(mNativeAutofillPaymentMethodsDelegate),
                         ArgumentMatchers.eq(123L),
                         booleanCallbackArgumentCaptor.capture());
         // Return enrollment update status "successful" via the callback.
@@ -792,7 +795,7 @@ public class AutofillServerCardEditorTest {
                 MockitoHelper.callbackCaptor();
         verify(mNativeMock)
                 .unenrollVirtualCard(
-                        ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
+                        ArgumentMatchers.eq(mNativeAutofillPaymentMethodsDelegate),
                         ArgumentMatchers.eq(123L),
                         booleanCallbackArgumentCaptor.capture());
         // Return enrollment update status "failure" via the callback.
@@ -846,7 +849,7 @@ public class AutofillServerCardEditorTest {
         mActivityScenario.close();
 
         // Verify that the native delegate is not cleaned up while the server call is in progress.
-        verify(mNativeMock, never()).cleanup(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
+        verify(mNativeAutofillPaymentMethodsDelegate, never()).destroy();
 
         // Verify that unenrollment is called with the correct parameters even after the editor is
         // closed.
@@ -854,7 +857,7 @@ public class AutofillServerCardEditorTest {
                 MockitoHelper.callbackCaptor();
         verify(mNativeMock)
                 .unenrollVirtualCard(
-                        ArgumentMatchers.eq(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE),
+                        ArgumentMatchers.eq(mNativeAutofillPaymentMethodsDelegate),
                         ArgumentMatchers.eq(123L),
                         booleanCallbackArgumentCaptor.capture());
         // Return enrollment update status "successful" via the callback.
@@ -863,7 +866,7 @@ public class AutofillServerCardEditorTest {
         ThreadUtils.runOnUiThreadBlocking(virtualCardEnrollmentUpdateResponseCallback.bind(true));
         // Ensure that the callback is run after receiving the server response and that the native
         // delegate is cleaned up.
-        verify(mNativeMock).cleanup(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
+        verify(mNativeAutofillPaymentMethodsDelegate).destroy();
     }
 
     @Test
@@ -876,7 +879,7 @@ public class AutofillServerCardEditorTest {
         mActivityScenario.close();
 
         // Ensure that the native delegate is cleaned up when the test has finished.
-        verify(mNativeMock).cleanup(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
+        verify(mNativeAutofillPaymentMethodsDelegate).destroy();
     }
 
     @Test

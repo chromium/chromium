@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -69,15 +70,9 @@ AutofillPaymentMethodsDelegate::~AutofillPaymentMethodsDelegate() = default;
 
 // Initializes an instance of AutofillPaymentMethodsDelegate from the
 // Java side.
-static int64_t JNI_AutofillPaymentMethodsDelegate_Init(JNIEnv* env,
-                                                       Profile* profile) {
-  AutofillPaymentMethodsDelegate* instance =
-      new AutofillPaymentMethodsDelegate(profile);
-  return reinterpret_cast<intptr_t>(instance);
-}
-
-void AutofillPaymentMethodsDelegate::Cleanup(JNIEnv* env) {
-  delete this;
+static jni_zero::JniUniquePtr<AutofillPaymentMethodsDelegate>
+JNI_AutofillPaymentMethodsDelegate_Init(JNIEnv* env, Profile* profile) {
+  return jni_zero::MakeUnique<AutofillPaymentMethodsDelegate>(profile);
 }
 
 void AutofillPaymentMethodsDelegate::InitVirtualCardEnrollment(

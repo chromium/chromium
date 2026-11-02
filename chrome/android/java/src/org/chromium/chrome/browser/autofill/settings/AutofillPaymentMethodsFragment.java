@@ -788,6 +788,10 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mAutofillPaymentMethodsDelegate != null) {
+            mAutofillPaymentMethodsDelegate.cleanup();
+            mAutofillPaymentMethodsDelegate = null;
+        }
         if (mReauthenticatorBridge != null) {
             mReauthenticatorBridge.destroy();
             mReauthenticatorBridge = null;

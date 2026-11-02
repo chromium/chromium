@@ -36,9 +36,6 @@ class AutofillPaymentMethodsDelegate {
   AutofillPaymentMethodsDelegate& operator=(
       const AutofillPaymentMethodsDelegate&) = delete;
 
-  // Cleans up and deletes the native delegate object. Called by Java.
-  void Cleanup(JNIEnv* env);
-
   // Trigger enrollment/unenrollment action.
   void InitVirtualCardEnrollment(JNIEnv* env,
                                  int64_t instrument_id,
