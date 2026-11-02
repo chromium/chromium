@@ -192,6 +192,9 @@ void PostPermissionDecision(web::WebStatePermissionDecisionHandler handler,
 void OnRequestGeolocationPermissionResponse(
     web::WebStatePermissionDecisionHandler handler,
     OverlayResponse* response) {
+  if (handler) {
+    handler(web::PermissionDecisionDeny);
+  }
   if (response) {
     auto* info = response->GetInfo<GeolocationPromptDialogResponse>();
     if (info && info->tapped_settings()) {
@@ -201,8 +204,6 @@ void OnRequestGeolocationPermissionResponse(
                     options:@{}
           completionHandler:nil];
     }
-
-    handler(web::PermissionDecisionDeny);
   }
 }
 
@@ -507,8 +508,8 @@ void WebStateDelegateBrowserAgent::RequestGeolocationPermission(
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<GeolocationPromptDialogRequest>();
 
-  request->GetCallbackManager()->AddCompletionCallback(base::BindOnce(
-      &OnRequestGeolocationPermissionResponse, std::move(handler)));
+  request->GetCallbackManager()->AddCompletionCallback(
+      base::BindOnce(&OnRequestGeolocationPermissionResponse, handler));
 
   OverlayRequestQueue::FromWebState(source, OverlayModality::kWebContentArea)
       ->AddRequest(std::move(request));

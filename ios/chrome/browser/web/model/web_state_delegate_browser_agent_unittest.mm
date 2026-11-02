@@ -758,13 +758,16 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state.get(), OverlayModality::kWebContentArea);
 
-  // First request should present the dialog.
-  delegate()->RequestGeolocationPermission(web_state.get(), GURL(kURL1),
-                                           ^(web::PermissionDecision decision){
-                                           });
+  // First request should present the dialog and resolve the callback with
+  // PermissionDecisionDeny when the dialog is dismissed.
+  base::test::TestFuture<web::PermissionDecision> first_decision;
+  delegate()->RequestGeolocationPermission(
+      web_state.get(), GURL(kURL1),
+      base::CallbackToBlock(first_decision.GetCallback()));
   EXPECT_EQ(1U, queue->size());
   queue->CancelAllRequests();
   EXPECT_EQ(0U, queue->size());
+  EXPECT_EQ(web::PermissionDecisionDeny, first_decision.Get());
 
   // A subsequent request should immediately deny without presenting a dialog.
   base::test::TestFuture<web::PermissionDecision> second_decision;
