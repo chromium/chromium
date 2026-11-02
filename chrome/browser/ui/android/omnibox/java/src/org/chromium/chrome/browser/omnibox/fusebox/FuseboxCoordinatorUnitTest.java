@@ -204,6 +204,7 @@ public class FuseboxCoordinatorUnitTest {
                         mBackPressManager,
                         isForcedPhoneStyleOmnibox);
         coordinator.setUrlTextWrappingSupplier(mUrlTextWrappingSupplier);
+        coordinator.setOnInteractionCompletedCallback(mOnInteractionCompletedCallback);
         return coordinator;
     }
 
@@ -434,15 +435,12 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.setMediatorForTesting(mMediator);
         doReturn(false).when(mMediator).wasPopupItemSelected();
 
-        mCoordinator.setOnInteractionCompletedCallback(mOnInteractionCompletedCallback);
-
         var viewHolder = assumeNonNull(mCoordinator.getViewHolderForTesting());
         viewHolder.plusButton.setVisibility(View.VISIBLE);
         mCoordinator.onContextPopupDismissed();
 
-        verify(mMediator).handleHidePopup();
+        verify(mMediator).onPopupDismissed();
         assertTrue(viewHolder.plusButton.isFocused());
-        verify(mOnInteractionCompletedCallback).onResult(false);
     }
 
     @Test
@@ -453,15 +451,12 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.setMediatorForTesting(mMediator);
         doReturn(true).when(mMediator).wasPopupItemSelected();
 
-        mCoordinator.setOnInteractionCompletedCallback(mOnInteractionCompletedCallback);
-
         var viewHolder = assumeNonNull(mCoordinator.getViewHolderForTesting());
         viewHolder.plusButton.setVisibility(View.VISIBLE);
         mCoordinator.onContextPopupDismissed();
 
-        verify(mMediator).handleHidePopup();
+        verify(mMediator).onPopupDismissed();
         assertFalse(viewHolder.plusButton.isFocused());
-        verify(mOnInteractionCompletedCallback).onResult(true);
     }
 
     @Test

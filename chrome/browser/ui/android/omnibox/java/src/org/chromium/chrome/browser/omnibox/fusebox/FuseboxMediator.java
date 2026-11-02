@@ -39,6 +39,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -142,6 +143,7 @@ class FuseboxMediator implements BackPressHandler {
 
     private final NonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier;
     private final Callback<Boolean> mOnTextWrappingChanged = _ -> updateFuseboxState();
+    private final Callback<Boolean> mOnInteractionCompletedCallback;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private @Nullable Profile mProfile;
     private @Nullable AutocompleteInput mInput;
@@ -150,9 +152,8 @@ class FuseboxMediator implements BackPressHandler {
     private @Nullable FuseboxMetrics mMetrics;
     private @Nullable PropertyModel mScrimModel;
     private boolean mPopupItemSelected;
-    private @Nullable Runnable mOnFirstPickerInteractionCanceledCallback;
-    private @Nullable Runnable mOnPickerInteractionSucceededCallback;
     private boolean mNeedUnfocusOnCancel;
+    private boolean mIsPickerPending;
     private @Nullable DriveConsentDialog mDriveConsentDialog;
 
     private final ListObserver<Void> mListObserver =
@@ -180,7 +181,7 @@ class FuseboxMediator implements BackPressHandler {
             ScrimManager scrimManager,
             Supplier<@Nullable View> scrimAnchorViewSupplier,
             BackPressManager backPressManager,
-            @Nullable Runnable onFirstPickerInteractionCanceledCallback,
+            Callback<Boolean> onInteractionCompletedCallback,
             SettableNonNullObservableSupplier<Boolean> hasAttachmentsSupplier,
             NonNullObservableSupplier<Boolean> urlTextWrappingSupplier) {
         mContext = context;
@@ -195,7 +196,7 @@ class FuseboxMediator implements BackPressHandler {
         mScrimManager = scrimManager;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
         mBackPressManager = backPressManager;
-        mOnFirstPickerInteractionCanceledCallback = onFirstPickerInteractionCanceledCallback;
+        mOnInteractionCompletedCallback = onInteractionCompletedCallback;
         mIsDesktopPlatform = OmniboxCapabilities.isDesktopPlatform();
         mHasAttachmentsSupplier = hasAttachmentsSupplier;
         mUrlTextWrappingSupplier = urlTextWrappingSupplier;
@@ -265,16 +266,25 @@ class FuseboxMediator implements BackPressHandler {
         return mPopupItemSelected;
     }
 
-    public void setOnFirstPickerInteractionCanceledCallback(Runnable callback) {
-        mOnFirstPickerInteractionCanceledCallback = callback;
+    boolean isPickerPendingForTesting() {
+        return mIsPickerPending;
+    }
+
+    private void notifyInteractionCompleted(boolean actionTaken) {
+        mOnInteractionCompletedCallback.onResult(actionTaken);
     }
 
     /**
-     * Sets a callback invoked when a picker launched directly on focus (without the popup) returns
-     * content, signaling that the Omnibox should now be focused.
+     * Starts a picker interaction launched from the popup. Must be called before the picker is
+     * launched: hidePopup() synchronously dismisses the popup, and the pending flag keeps that
+     * dismissal from completing the interaction.
      */
-    public void setOnPickerInteractionSucceededCallback(Runnable callback) {
-        mOnPickerInteractionSucceededCallback = callback;
+    @RequiresNonNull("mMetrics")
+    private void beginPickerInteraction(@FuseboxAttachmentButtonType int buttonType) {
+        mIsPickerPending = true;
+        mPopupItemSelected = true;
+        hidePopup();
+        mMetrics.notifyAttachmentButtonUsed(buttonType);
     }
 
     boolean handleKeyEvent(int keyCode, KeyEvent event) {
@@ -377,6 +387,7 @@ class FuseboxMediator implements BackPressHandler {
      */
     /* package */ void beginInput(FuseboxSessionState session) {
         mPopupItemSelected = false;
+        mIsPickerPending = false;
         mMetrics = session.getMetrics();
         mProfile = assertNonNull(session.getProfile());
         setController(session.getComposeboxQueryControllerBridge());
@@ -395,6 +406,7 @@ class FuseboxMediator implements BackPressHandler {
         setAutocompleteInput(null);
         mProfile = null;
         mMetrics = null;
+        mIsPickerPending = false;
         destroyDriveConsentDialog();
         updateFuseboxState();
     }
@@ -408,6 +420,7 @@ class FuseboxMediator implements BackPressHandler {
         mInput = input;
         if (mInput == null) {
             mNeedUnfocusOnCancel = false;
+            mIsPickerPending = false;
         }
 
         if (mInput != null) {
@@ -693,6 +706,17 @@ class FuseboxMediator implements BackPressHandler {
         return scrimModel;
     }
 
+    /**
+     * Called when the context popup window is dismissed. Completes the interaction unless a picker
+     * launched from the popup is still pending.
+     */
+    void onPopupDismissed() {
+        handleHidePopup();
+        if (!mIsPickerPending) {
+            notifyInteractionCompleted(mPopupItemSelected);
+        }
+    }
+
     /** Hides the popup if currently shown. */
     /* package */ boolean handleHidePopup() {
         if (mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.HIDDEN) {
@@ -853,7 +877,7 @@ class FuseboxMediator implements BackPressHandler {
         updateFuseboxState();
         mHasAttachmentsSupplier.set(!mModelList.isEmpty());
         updateAttachmentsVisibility();
-        if (mNeedUnfocusOnCancel && hasUserAddedAttachments()) {
+        if (!mIsPickerPending && mNeedUnfocusOnCancel && hasUserAddedAttachments()) {
             mNeedUnfocusOnCancel = false;
         }
     }
@@ -861,14 +885,12 @@ class FuseboxMediator implements BackPressHandler {
     private void onTabPickerClicked() {
         if (!isInInputSession()) return;
 
-        mPopupItemSelected = true;
-        hidePopup();
-        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
-        TabLoadingService.getInstance().checkpointLoadDurations(mModelList.getAttachedTabIds());
-
         Intent intent = ChromeItemPickerUtils.createChromeItemPickerIntent(mContext);
         if (intent == null) return;
         ProfileIntentUtils.addProfileToIntent(mProfile, intent);
+
+        beginPickerInteraction(FuseboxAttachmentButtonType.TAB_PICKER);
+        TabLoadingService.getInstance().checkpointLoadDurations(mModelList.getAttachedTabIds());
 
         ArrayList<Integer> tabIds = new ArrayList<>(mModelList.getAttachedTabIds());
         intent.putIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS, tabIds);
@@ -885,22 +907,20 @@ class FuseboxMediator implements BackPressHandler {
     }
 
     private void handlePickerCanceled() {
+        mIsPickerPending = false;
         if (!isInInputSession()) return;
         if (mNeedUnfocusOnCancel) {
             mNeedUnfocusOnCancel = false;
-            if (mOnFirstPickerInteractionCanceledCallback != null) {
-                mOnFirstPickerInteractionCanceledCallback.run();
-            }
+            notifyInteractionCompleted(/* actionTaken= */ false);
         }
     }
 
     private void handlePickerSucceeded() {
+        mIsPickerPending = false;
         if (!isInInputSession()) return;
         if (mNeedUnfocusOnCancel) {
             mNeedUnfocusOnCancel = false;
-            if (mOnPickerInteractionSucceededCallback != null) {
-                mOnPickerInteractionSucceededCallback.run();
-            }
+            notifyInteractionCompleted(/* actionTaken= */ true);
         }
     }
 
@@ -931,6 +951,7 @@ class FuseboxMediator implements BackPressHandler {
         if (!mModelList.isEmpty()) {
             maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
         }
+        handlePickerSucceeded();
     }
 
     @VisibleForTesting
@@ -1014,9 +1035,7 @@ class FuseboxMediator implements BackPressHandler {
     private void onCameraClicked() {
         if (!isInInputSession()) return;
 
-        mPopupItemSelected = true;
-        hidePopup();
-        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CAMERA);
+        beginPickerInteraction(FuseboxAttachmentButtonType.CAMERA);
 
         if (mPermissionDelegate.hasPermission(Manifest.permission.CAMERA)) {
             launchCamera();
@@ -1027,6 +1046,8 @@ class FuseboxMediator implements BackPressHandler {
                         if (grantResults.length > 0
                                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                             launchCamera();
+                        } else {
+                            handlePickerCanceled();
                         }
                     });
         }
@@ -1127,6 +1148,7 @@ class FuseboxMediator implements BackPressHandler {
                                     startTime,
                                     FuseboxAttachmentButtonType.CAMERA);
                     uploadAndAddAttachment(attachment);
+                    handlePickerSucceeded();
                 },
                 R.string.low_memory_error);
     }
@@ -1134,9 +1156,7 @@ class FuseboxMediator implements BackPressHandler {
     private void onImagePickerClicked() {
         if (!isInInputSession()) return;
 
-        mPopupItemSelected = true;
-        hidePopup();
-        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
+        beginPickerInteraction(FuseboxAttachmentButtonType.GALLERY);
 
         Intent intent;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -1186,9 +1206,7 @@ class FuseboxMediator implements BackPressHandler {
     private void onDrivePickerClicked() {
         if (!isInInputSession()) return;
 
-        mPopupItemSelected = true;
-        hidePopup();
-        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.DRIVE_FILES);
+        beginPickerInteraction(FuseboxAttachmentButtonType.DRIVE_FILES);
 
         Profile requestProfile = mProfile;
         DriveDisclaimerBridge.checkConsentStatus(
@@ -1199,6 +1217,7 @@ class FuseboxMediator implements BackPressHandler {
         if (!isInInputSession()
                 || mProfile != requestProfile
                 || mInput.getDisplayState() == DisplayState.DRAFTING_NO_FOCUS) {
+            handlePickerCanceled();
             return;
         }
 
@@ -1286,6 +1305,7 @@ class FuseboxMediator implements BackPressHandler {
                                                     FuseboxAttachmentButtonType.DRIVE_FILES));
                                 }
                             }
+                            handlePickerSucceeded();
                         },
                         exception -> {
                             FuseboxMetrics.recordDrivePickerOutcome(
@@ -1297,9 +1317,7 @@ class FuseboxMediator implements BackPressHandler {
     private void onFilePickerClicked() {
         if (!isInInputSession()) return;
 
-        mPopupItemSelected = true;
-        hidePopup();
-        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.FILES);
+        beginPickerInteraction(FuseboxAttachmentButtonType.FILES);
 
         String mimeType =
                 ChromeFeatureList.sLensSendRawFileMediaTypes.isEnabled()
@@ -1336,6 +1354,7 @@ class FuseboxMediator implements BackPressHandler {
                                     FuseboxAttachmentButtonType.FILES);
                         }
                     }
+                    handlePickerSucceeded();
                 },
                 /* errorId= */ android.R.string.cancel);
     }

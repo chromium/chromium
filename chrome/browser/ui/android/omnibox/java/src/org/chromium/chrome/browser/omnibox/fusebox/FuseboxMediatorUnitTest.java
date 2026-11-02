@@ -29,9 +29,11 @@ import static org.mockito.Mockito.when;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -138,6 +140,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -278,8 +281,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private ScrimManager mScrimManager;
     @Mock private BackPressManager mBackPressManager;
-    @Mock private Runnable mOnFirstPickerInteractionCanceledCallback;
-    @Mock private Runnable mOnPickerInteractionSucceededCallback;
+    @Mock private Callback<Boolean> mOnInteractionCompletedCallback;
     @Mock private KeyEvent mKeyEvent;
     @Mock private Runnable mOnRemoveRunnable;
     @Mock private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
@@ -292,6 +294,7 @@ public class FuseboxMediatorUnitTest {
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
+    @Captor private ArgumentCaptor<PermissionCallback> mPermissionCallbackCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mScrimModelCaptor;
 
     private Context mContext;
@@ -428,10 +431,9 @@ public class FuseboxMediatorUnitTest {
                         mScrimManager,
                         SupplierUtils.ofNull(),
                         mBackPressManager,
-                        mOnFirstPickerInteractionCanceledCallback,
+                        mOnInteractionCompletedCallback,
                         mHasAttachmentsSupplier,
                         mUrlTextWrappingSupplier);
-        mMediator.setOnPickerInteractionSucceededCallback(mOnPickerInteractionSucceededCallback);
     }
 
     /* Useful for testing logic in the mediator's constructor. */
@@ -1136,6 +1138,42 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testOnPopupDismissed_noItemSelected_notifiesInteractionCompletedFalse() {
+        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.FLOATING);
+        mMediator.onPopupDismissed();
+
+        assertEquals(PopupState.HIDDEN, mModel.get(FuseboxProperties.POPUP_STATE));
+        verify(mOnInteractionCompletedCallback).onResult(false);
+    }
+
+    @Test
+    public void testOnPopupDismissed_itemSelected_notifiesInteractionCompletedTrue() {
+        mMediator.onPlusButtonClicked();
+        clickToolButton(ToolMode.TOOL_MODE_CANVAS);
+        clearInvocations(mOnInteractionCompletedCallback);
+
+        mMediator.onPopupDismissed();
+
+        assertEquals(PopupState.HIDDEN, mModel.get(FuseboxProperties.POPUP_STATE));
+        verify(mOnInteractionCompletedCallback).onResult(true);
+    }
+
+    @Test
+    public void testOnPopupDismissed_pickerPending_doesNotNotifyInteractionCompleted() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.FLOATING);
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
+        assertTrue(mMediator.isPickerPendingForTesting());
+        clearInvocations(mOnInteractionCompletedCallback);
+
+        mMediator.onPopupDismissed();
+
+        verify(mOnInteractionCompletedCallback, never()).onResult(anyBoolean());
+    }
+
+    @Test
     public void testBackPressHandler() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
         recreateMediator();
@@ -1669,7 +1707,7 @@ public class FuseboxMediatorUnitTest {
 
         assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
         assertEquals(0, mAttachments.size());
-        verify(mOnFirstPickerInteractionCanceledCallback).run();
+        verify(mOnInteractionCompletedCallback).onResult(false);
     }
 
     @Test
@@ -2198,7 +2236,7 @@ public class FuseboxMediatorUnitTest {
 
         mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
 
-        verify(mOnFirstPickerInteractionCanceledCallback).run();
+        verify(mOnInteractionCompletedCallback).onResult(false);
     }
 
     @Test
@@ -2208,7 +2246,7 @@ public class FuseboxMediatorUnitTest {
 
         mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
 
-        verify(mOnFirstPickerInteractionCanceledCallback, never()).run();
+        verify(mOnInteractionCompletedCallback, never()).onResult(anyBoolean());
     }
 
     @Test
@@ -2217,10 +2255,9 @@ public class FuseboxMediatorUnitTest {
         recreateMediator();
 
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_TAB);
-
         mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
 
-        verify(mOnFirstPickerInteractionCanceledCallback, never()).run();
+        verify(mOnInteractionCompletedCallback, never()).onResult(anyBoolean());
     }
 
     @Test
@@ -2233,7 +2270,7 @@ public class FuseboxMediatorUnitTest {
 
         mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
 
-        verify(mOnFirstPickerInteractionCanceledCallback, never()).run();
+        verify(mOnInteractionCompletedCallback, never()).onResult(anyBoolean());
     }
 
     @Test
@@ -2248,7 +2285,7 @@ public class FuseboxMediatorUnitTest {
 
         mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
 
-        verify(mOnFirstPickerInteractionCanceledCallback, never()).run();
+        verify(mOnInteractionCompletedCallback, never()).onResult(anyBoolean());
     }
 
     @Test
@@ -2264,7 +2301,7 @@ public class FuseboxMediatorUnitTest {
         Intent mockIntent = new Intent();
         mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, mockIntent);
 
-        verify(mOnFirstPickerInteractionCanceledCallback).run();
+        verify(mOnInteractionCompletedCallback).onResult(false);
     }
 
     @Test
@@ -2279,7 +2316,7 @@ public class FuseboxMediatorUnitTest {
         Intent mockIntent = new Intent();
         mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, mockIntent);
 
-        verify(mOnFirstPickerInteractionCanceledCallback).run();
+        verify(mOnInteractionCompletedCallback).onResult(false);
     }
 
     @Test
@@ -2310,8 +2347,7 @@ public class FuseboxMediatorUnitTest {
                 .showCancelableIntent(any(Intent.class), mIntentCallbackCaptor.capture(), any());
         mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_CANCELED, null);
 
-        verify(mOnFirstPickerInteractionCanceledCallback).run();
-        verify(mOnPickerInteractionSucceededCallback, never()).run();
+        verify(mOnInteractionCompletedCallback).onResult(false);
     }
 
     @Test
@@ -2324,8 +2360,7 @@ public class FuseboxMediatorUnitTest {
         Intent result = new Intent().setData(Uri.parse("content://media/external/images/1"));
         mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, result);
 
-        verify(mOnPickerInteractionSucceededCallback).run();
-        verify(mOnFirstPickerInteractionCanceledCallback, never()).run();
+        verify(mOnInteractionCompletedCallback).onResult(true);
     }
 
     @Test
@@ -2339,7 +2374,52 @@ public class FuseboxMediatorUnitTest {
         Intent result = new Intent().setData(Uri.parse("content://media/external/images/1"));
         mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_OK, result);
 
-        verify(mOnPickerInteractionSucceededCallback, never()).run();
+        verify(mOnInteractionCompletedCallback, never()).onResult(anyBoolean());
+    }
+
+    @Test
+    public void testIsPickerPending_tabPicker() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+
+        assertFalse(mMediator.isPickerPendingForTesting());
+        mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED).run();
+        assertTrue(mMediator.isPickerPendingForTesting());
+
+        mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
+        assertFalse(mMediator.isPickerPendingForTesting());
+    }
+
+    @Test
+    public void testIsPickerPending_imagePicker() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+
+        assertFalse(mMediator.isPickerPendingForTesting());
+        mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
+        assertTrue(mMediator.isPickerPendingForTesting());
+
+        verify(mWindowAndroid)
+                .showCancelableIntent(any(Intent.class), mIntentCallbackCaptor.capture(), any());
+        mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_CANCELED, null);
+        assertFalse(mMediator.isPickerPendingForTesting());
+    }
+
+    @Test
+    public void testCameraPermissionDenied_completesInteractionFalse() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        doReturn(false).when(mWindowAndroid).hasPermission(any());
+        recreateMediator();
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run();
+        verify(mWindowAndroid).requestPermissions(any(), mPermissionCallbackCaptor.capture());
+        mPermissionCallbackCaptor
+                .getValue()
+                .onRequestPermissionsResult(
+                        new String[] {Manifest.permission.CAMERA},
+                        new int[] {PackageManager.PERMISSION_DENIED});
+
+        verify(mOnInteractionCompletedCallback).onResult(false);
     }
 
     @Test

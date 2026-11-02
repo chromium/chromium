@@ -481,9 +481,6 @@ public class LocationBarMediator
                         mCallbackController.makeCancelable(
                                 (present) -> updateNavigateButtonVisibility()));
         mFuseboxCoordinator.setOnInteractionCompletedCallback(this::onFuseboxInteractionCompleted);
-        mFuseboxCoordinator.setOnFirstPickerInteractionCanceledCallback(this::endInput);
-        mFuseboxCoordinator.setOnPickerInteractionSucceededCallback(
-                () -> onFuseboxInteractionCompleted(/* actionTaken= */ true));
         mLocationBarLayout
                 .getActivationChip()
                 .setOnClickListener(v -> onActivationChipClicked(/* viaKeyboard= */ false));
