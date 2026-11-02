@@ -127,9 +127,18 @@ class SyncToSigninMigrationTestBase {
     sync_prefs_->SetSelectedTypesForSyncingUser(
         settings->IsSyncEverythingEnabled(),
         settings->GetRegisteredSelectableTypes(), settings->GetSelectedTypes());
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+    sync_prefs_->SetSelectedOsTypes(settings->IsSyncAllOsTypesEnabled(),
+                                    settings->GetRegisteredSelectableOsTypes(),
+                                    settings->GetSelectedOsTypes());
+    if (settings->IsSyncFeatureDisabledViaDashboard()) {
+      sync_prefs_->SetSyncFeatureDisabledViaDashboard();
+    } else {
+      sync_prefs_->ClearSyncFeatureDisabledViaDashboard();
+    }
+#else
     sync_prefs_->SetInitialSyncFeatureSetupComplete();
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     if (include_status_recorder) {
       // Populate migration-specific Sync status prefs.
@@ -551,6 +560,52 @@ TEST_P(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
       pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
           .empty());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(SyncToSigninMigrationTest, SyncActive_KeepsOsTypes) {
+  // Sync is active, with a custom selection of OS data types.
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+  sync_service_.GetUserSettings()->SetSelectedOsTypes(
+      /*sync_all_os_types=*/false,
+      {syncer::UserSelectableOsType::kOsWifiConfigurations});
+  RecordStateToPrefs();
+
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // The user should have been migrated, with the OS data types unchanged.
+  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  EXPECT_FALSE(sync_prefs_->IsSyncAllOsTypesEnabled());
+  EXPECT_EQ(sync_prefs_->GetSelectedOsTypes(),
+            syncer::UserSelectableOsTypeSet(
+                {syncer::UserSelectableOsType::kOsWifiConfigurations}));
+}
+
+TEST_P(SyncToSigninMigrationTest, SyncDisabledViaDashboard_DisablesOsTypes) {
+  // The user is signed in and opted in to Sync, but Sync-the-feature was reset
+  // via the dashboard (with all browser and OS data types enabled by default).
+  sync_service_.MimicDashboardClear();
+  ASSERT_FALSE(sync_service_.IsSyncFeatureEnabled());
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
+  RecordStateToPrefs();
+  ASSERT_TRUE(sync_prefs_->IsSyncFeatureDisabledViaDashboard());
+  ASSERT_TRUE(sync_prefs_->IsSyncAllOsTypesEnabled());
+
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // The user should have been migrated, with all OS data types turned off while
+  // browser data types remain enabled and `disabled_via_dashboard` stays set.
+  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  EXPECT_TRUE(sync_prefs_->IsSyncFeatureDisabledViaDashboard());
+  EXPECT_FALSE(sync_prefs_->IsSyncAllOsTypesEnabled());
+  EXPECT_TRUE(sync_prefs_->GetSelectedOsTypes().empty());
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id).empty());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayNotPassed) {
   // Sync-the-feature is enabled, but in the "paused" state due to a persistent

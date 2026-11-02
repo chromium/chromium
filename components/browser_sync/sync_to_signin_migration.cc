@@ -298,7 +298,8 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
   pref_service->ClearPref(prefs::kGoogleServicesSyncingUserMigrationType);
 
   // Selected-data-types prefs: No reverse migration - the user will just go
-  // back to their previous Sync settings.
+  // back to their previous Sync settings (except on ChromeOS, where current
+  // browser and OS settings are preserved).
 
   // Bookmarks: The forward migration is an atomic file move. Either that
   // happened, in which case the Sync machinery will clean up the account store
@@ -320,6 +321,24 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
   pref_service->ClearPref(
       syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Turns off all OS data types if `kSyncDisabledViaDashboard` is set. OS data
+// types don't support separate local and account storage, so otherwise, local
+// OS data would get uploaded to the account once Sync-the-transport starts
+// running. Signed-in non-syncing users get the same treatment when this pref is
+// set, see `SyncUserSettingsImpl::SetSyncFeatureDisabledViaDashboard()`.
+void DisableOsTypesIfSyncDisabledViaDashboard(PrefService* pref_service) {
+  syncer::SyncPrefs sync_prefs(pref_service);
+  if (!sync_prefs.IsSyncFeatureDisabledViaDashboard()) {
+    return;
+  }
+  sync_prefs.SetSelectedOsTypes(
+      /*sync_all_os_types=*/false,
+      /*registered_types=*/syncer::UserSelectableOsTypeSet::All(),
+      /*selected_types=*/syncer::UserSelectableOsTypeSet());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void RecordReadingListPrefMigrationState(ReadingListPrefMigrationState state) {
@@ -659,6 +678,12 @@ void MaybeMigrateSyncingUserToSignedInInternal(
   // Migrate the global data type prefs (used for Sync-the-feature) over to the
   // account-specific ones.
   syncer::SyncPrefs::MigrateGlobalDataTypePrefsToAccount(pref_service, gaia_id);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // The OS data type prefs aren't account-specific, so they carry over as-is,
+  // unless `kSyncDisabledViaDashboard` is set.
+  DisableOsTypesIfSyncDisabledViaDashboard(pref_service);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Ensure the prefs changes are persisted as soon as possible. (They get
   // persisted on shutdown anyway, but better make sure.)
