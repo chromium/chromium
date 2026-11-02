@@ -404,6 +404,13 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // and the account is non-enterprise (or for Glic dev).
   static bool IsShareImageEnabledForProfile(Profile* profile);
 
+  // Returns true if the profile can be launched from OS-level entry points
+  // (the OS launcher and the OS-global hotkey): Glic is enabled and consented
+  // for the profile (see IsEnabledAndConsentForProfile()), and its provider
+  // supports `GlicFeature::kOsEntryPoints` (e.g. not Gemini Enterprise). This
+  // value can change at runtime.
+  static bool IsOsEntryPointEnabledForProfile(Profile* profile);
+
   // Whether the live mode and floaty window are enabled by flags.
   static bool IsLiveAndFloatyEnabledByFlags();
 

@@ -16,7 +16,9 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,6 +46,36 @@ constexpr LocalHotkeyManager::Command kSupportedCommands[] = {
     LocalHotkeyManager::Command::kPanelToggle,
     LocalHotkeyManager::Command::kCaptureRegion,
 };
+
+// Whether `profile`'s provider supports OS-level entry points, including the
+// OS-global hotkey registered by `GlicBackgroundModeManager`. When it doesn't
+// (e.g. Gemini Enterprise), the hotkey is only handled here, while a Chrome
+// window is focused.
+bool SupportsOsEntryPoints(Profile* profile) {
+  return GetGlicProviderSpec(profile).SupportsFeature(
+      GlicFeature::kOsEntryPoints);
+}
+
+// Whether `profile`'s panel toggle hotkey is scoped globally, i.e. registered
+// as an OS-global hotkey by `GlicBackgroundModeManager` rather than handled by
+// `InstanceIndependentHotkeyManager` inside Chrome. This is the case when the
+// local scope feature is disabled or the user selected Global scope, unless
+// `profile`'s provider doesn't support OS-level entry points.
+bool IsPanelToggleHotkeyGlobal(Profile* profile) {
+  if (!SupportsOsEntryPoints(profile)) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope)) {
+    return true;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  PrefService* const local_state = g_browser_process->local_state();
+  return !local_state ||
+         local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled);
+#endif
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 BrowserWindowInterface* GetLastActiveBrowser(Profile* profile) {
@@ -85,6 +117,7 @@ InstanceIndependentHotkeyManager::~InstanceIndependentHotkeyManager() = default;
 
 void InstanceIndependentHotkeyManager::UpdateHotkeyRegistration() {
   const bool registration_allowed =
+      !SupportsOsEntryPoints(profile_) ||
       base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope) ||
       GlicLauncherConfiguration::IsLauncherIconEnabled();
   if (registration_allowed &&
@@ -154,17 +187,13 @@ bool InstanceIndependentHotkeyManager::AcceleratorPressed(
     LocalHotkeyManager::Command command) {
   switch (command) {
     case LocalHotkeyManager::Command::kPanelToggle: {
-      // If the hotkey is scoped globally (e.g., because the local scope
-      // feature is disabled or the user selected Global scope), let this local
-      // manager pass through (return false) to avoid handling it locally inside
-      // Chrome.
-      PrefService* const local_state = g_browser_process->local_state();
-      if (!base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope) ||
-          !local_state
-#if !BUILDFLAG(IS_ANDROID)
-          || local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled)
-#endif
-      ) {
+      // If the hotkey is scoped globally, let this local manager pass through
+      // (return false) to avoid handling it locally inside Chrome. Profiles
+      // whose provider doesn't support OS-level entry points never register
+      // the global hotkey, so it is always handled locally for them. If
+      // another profile has the global hotkey registered, the OS delivers the
+      // key to it first and it launches that other profile.
+      if (IsPanelToggleHotkeyGlobal(profile_)) {
         return false;
       }
       coordinator_->Toggle(GetActiveGlicEligibleBrowser(profile_),

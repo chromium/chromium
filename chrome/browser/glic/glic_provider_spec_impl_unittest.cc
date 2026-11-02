@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,6 +43,13 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsSsrFollowsGeicSsr) {
     EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
                      ->SupportsSsr());
   }
+}
+
+TEST(GlicProviderSpecImplTest, OnlyGeminiSupportsOsEntryPoints) {
+  EXPECT_TRUE(CreateGlicProviderSpec(GlicProvider::kGemini, {})
+                  ->SupportsFeature(GlicFeature::kOsEntryPoints));
+  EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                   ->SupportsFeature(GlicFeature::kOsEntryPoints));
 }
 
 }  // namespace

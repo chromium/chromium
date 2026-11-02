@@ -32,8 +32,11 @@ class GlicProfileManager : public ProfileManagerObserver,
   GlicProfileManager(const GlicProfileManager&) = delete;
   GlicProfileManager& operator=(const GlicProfileManager&) = delete;
 
-  // Return the profile that should be used to open glic. May be null if there
-  // is no eligible profile.
+  // Return the profile that should be used to open glic from an OS-level entry
+  // point (the OS launcher, the OS-global hotkey or the "glic-open-on-startup"
+  // switch). Only profiles for which
+  // `GlicEnabling::IsOsEntryPointEnabledForProfile()` is true are considered.
+  // May be null if there is no eligible profile.
   Profile* GetProfileForLaunch() const;
 
   // Used in GlicMultiInstance. Called when a GlicFloatingUi is shown and closes

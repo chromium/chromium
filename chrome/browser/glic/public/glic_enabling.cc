@@ -1415,6 +1415,13 @@ bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
 }
 
 // static
+bool GlicEnabling::IsOsEntryPointEnabledForProfile(Profile* profile) {
+  return GetGlicProviderSpec(profile).SupportsFeature(
+             GlicFeature::kOsEntryPoints) &&
+         IsEnabledAndConsentForProfile(profile);
+}
+
+// static
 std::unique_ptr<GlicEnabling> GlicEnabling::CreateForTesting(  // IN-TEST
     Profile* profile,
     ProfileAttributesStorage* profile_attributes_storage) {

@@ -10,7 +10,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
@@ -300,6 +302,47 @@ IN_PROC_BROWSER_TEST_F(
   // Verify that the panel is not showing.
   WaitForDuration(base::Milliseconds(300));
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+}
+
+// Gemini Enterprise doesn't support the OS-global hotkey, so the hotkey is
+// always handled locally, even when the local scope feature is disabled.
+class InstanceIndependentHotkeyManagerGeminiEnterpriseBrowserTest
+    : public InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest {
+ private:
+  ScopedGlicProviderOverride provider_override_{
+      GlicProvider::kGeminiEnterprise};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    InstanceIndependentHotkeyManagerGeminiEnterpriseBrowserTest,
+    AcceleratorPressedLaunchesGlicWhenLauncherDisabled) {
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               false);
+
+  EXPECT_TRUE(
+      coordinator().GetHotkeyManagerForTesting()->CanHandleAccelerators());
+
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
+
+  ASSERT_OK(WaitForGlicOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InstanceIndependentHotkeyManagerGeminiEnterpriseBrowserTest,
+    AcceleratorPressedLaunchesGlicWhenGlobalScopeEnabled) {
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+#if !BUILDFLAG(IS_ANDROID)
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kGlicHotkeyGlobalScopeEnabled, true);
+#endif
+
+  EXPECT_TRUE(
+      coordinator().GetHotkeyManagerForTesting()->CanHandleAccelerators());
+
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
+
+  ASSERT_OK(WaitForGlicOpen());
 }
 
 }  // namespace

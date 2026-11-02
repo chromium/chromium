@@ -347,8 +347,10 @@ void GlicBackgroundModeManager::UpdateState() {
 bool GlicBackgroundModeManager::IsEnabledInAnyLoadedProfile() {
   for (const auto& pair : profile_observers_) {
     Profile* profile = pair.first;
+    // Only profiles that the OS launcher and the global hotkey can launch
+    // (e.g. not Gemini Enterprise) enable them.
     if (!IsProfileDirectoryMarkedForDeletion(profile->GetPath()) &&
-        glic::GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
+        GlicEnabling::IsOsEntryPointEnabledForProfile(profile)) {
       return true;
     }
   }

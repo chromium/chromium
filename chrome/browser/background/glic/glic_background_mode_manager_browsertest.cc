@@ -9,7 +9,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -109,5 +113,36 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
   }));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Latches every profile to Gemini Enterprise, which doesn't support the OS
+// launcher or the global hotkey.
+class GlicBackgroundModeManagerGeminiEnterpriseBrowserTest
+    : public GlicBackgroundModeManagerBrowserTest {
+ private:
+  ScopedGlicProviderOverride provider_override_{
+      GlicProvider::kGeminiEnterprise};
+};
+
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerGeminiEnterpriseBrowserTest,
+                       DoesNotEnterBackgroundMode) {
+  auto* keep_alive_registry = KeepAliveRegistry::GetInstance();
+  auto* profile_manager = g_browser_process->profile_manager();
+  Profile* profile = GetProfile();
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile),
+            GlicProvider::kGeminiEnterprise);
+  ASSERT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(profile));
+
+  // Neither the launcher pref nor the global hotkey scope enables the OS
+  // launcher or the global hotkey.
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kGlicHotkeyGlobalScopeEnabled, true);
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+
+  EXPECT_FALSE(
+      keep_alive_registry->IsOriginRegistered(KeepAliveOrigin::GLIC_LAUNCHER));
+  EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
+      profile, ProfileKeepAliveOrigin::kGlicView));
+}
 
 }  // namespace glic

@@ -15,8 +15,16 @@ enum class GlicFeature {
   kLive,
   // Sharing images with Glic.
   kShareImage,
+  // OS-level entry points that live outside of Chrome's windows: the OS
+  // launcher (status tray / menu bar icon) and the OS-global hotkey. Profiles
+  // whose provider doesn't support these are never selected by those entry
+  // points (see `GlicEnabling::IsOsEntryPointEnabledForProfile()`). Their
+  // hotkey is instead handled while one of their Chrome windows is focused (see
+  // `InstanceIndependentHotkeyManager`), unless another profile has the
+  // OS-global hotkey registered, in which case that profile is launched.
+  kOsEntryPoints,
 
-  kMaxValue = kShareImage,
+  kMaxValue = kOsEntryPoints,
 };
 
 }  // namespace glic

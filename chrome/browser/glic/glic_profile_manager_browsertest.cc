@@ -19,10 +19,13 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -285,6 +288,38 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
     EXPECT_EQ(profile0, profile_manager->GetProfileForLaunch());
   }
 }
+
+// ChromeOS does not support creating multiple profiles without user session
+// setup.
+#if !BUILDFLAG(IS_CHROMEOS)
+// Profiles whose provider doesn't support OS-level entry points, like Gemini
+// Enterprise, are never selected for launch, even if they are the most recently
+// used.
+IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
+                       ProfileForLaunch_SkipsGeminiEnterpriseProfiles) {
+  auto* profile0 = browser()->GetProfile();
+  ASSERT_TRUE(GlicEnabling::IsOsEntryPointEnabledForProfile(profile0));
+
+  auto* profile_manager = g_browser_process->profile_manager();
+  const base::FilePath enterprise_profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  ScopedGlicProviderOverride provider_override(GlicProvider::kGeminiEnterprise,
+                                               enterprise_profile_path);
+  Profile& enterprise_profile = profiles::testing::CreateProfileSync(
+      profile_manager, enterprise_profile_path);
+  ASSERT_EQ(GlicProviderLatch::GetProvider(enterprise_profile),
+            GlicProvider::kGeminiEnterprise);
+  ASSERT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(&enterprise_profile));
+  EXPECT_FALSE(
+      GlicEnabling::IsOsEntryPointEnabledForProfile(&enterprise_profile));
+
+  // The Gemini Enterprise profile is the most recently used profile, but it
+  // isn't eligible, so profile0 is still selected.
+  auto* enterprise_browser = CreateBrowser(&enterprise_profile);
+  ui_test_utils::WaitForBrowserSetLastActive(enterprise_browser);
+  EXPECT_EQ(profile0, GlicProfileManager::GetInstance()->GetProfileForLaunch());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

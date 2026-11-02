@@ -154,6 +154,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
     switch (feature) {
       case GlicFeature::kLive:
       case GlicFeature::kShareImage:
+      case GlicFeature::kOsEntryPoints:
         return false;
     }
     NOTREACHED();
