@@ -20,7 +20,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/global_request_id.h"
-#include "content/public/browser/reduce_accept_language_utils.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -197,10 +196,7 @@ void PrefetchResource(network::mojom::NetworkContext* network_context,
       network_restrictions_id);
 }
 
-std::string ComputeAcceptLanguageHeaderValue(const url::Origin& page_origin,
-                                             const GURL& request,
-                                             Profile* profile,
-                                             const PrefService* prefs) {
+std::string ComputeAcceptLanguageHeaderValue(const PrefService* prefs) {
   // This first bit loads the user's languages from preferences. This is adapted
   // from ProfileNetworkContextService::ComputeAcceptLanguage().
   std::string language_pref = "en";
@@ -214,23 +210,6 @@ std::string ComputeAcceptLanguageHeaderValue(const url::Origin& page_origin,
   // TODO(crbug.com/342445996): If we decide to support incognito mode, we
   // should set `language_pref` to language::GetFirstLanguage(language_pref) in
   // incognito mode.
-
-  // Reduce the number of languages in the header if the feature is enabled.
-  //
-  // This copied from one of the two versions in
-  // //content/browser/renderer_host/navigation_request.cc. We don't bother to
-  // check for devtools overrides or origin trials here.
-  // TODO(crbug.com/342445996): Reduce the number of copies of this code in
-  // the codebase.
-  if (auto reduce_accept_lang_utils =
-          content::ReduceAcceptLanguageUtils::Create(profile)) {
-    std::optional<std::string> reduced_accept_language =
-        reduce_accept_lang_utils.value().LookupReducedAcceptLanguage(
-            page_origin, url::Origin::Create(request));
-    if (reduced_accept_language) {
-      language_pref = reduced_accept_language.value();
-    }
-  }
 
   const std::string lang = net::HttpUtil::ExpandLanguageList(language_pref);
   return net::HttpUtil::GenerateAcceptLanguageHeader(lang);
@@ -273,6 +252,7 @@ void PerformNetworkContextPrefetch(Profile* profile,
 
   const PrefService* prefs = profile->GetPrefs();
   const std::string user_agent = embedder_support::GetUserAgent();
+  const std::string accept_language = ComputeAcceptLanguageHeaderValue(prefs);
 
   for (const auto& [url, destination, network_restrictions_id, _] : requests) {
     auto resource_type = GetResourceTypeForPrefetch(destination);
@@ -289,10 +269,6 @@ void PerformNetworkContextPrefetch(Profile* profile,
       continue;
     }
 
-    // TODO(crbug.com/342445996): Usually requests will have the same origin, so
-    // maybe cache (origin, accept_langage) to avoid wasteful recalculation?
-    const std::string accept_language =
-        ComputeAcceptLanguageHeaderValue(page_origin, url, profile, prefs);
     PrefetchResource(network_context, ua_metadata, user_agent, accept_language,
                      resource_type.value(), page, page_origin, url, destination,
                      network_restrictions_id);
