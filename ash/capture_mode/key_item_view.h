@@ -44,8 +44,9 @@ class KeyItemView : public views::View {
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
 
-  // The shadow around each key item UI component in the combo.
-  std::unique_ptr<SystemDecoration> shadow_;
+  // The shadow and highlight border around each key item UI component in the
+  // combo.
+  std::unique_ptr<SystemDecoration> decoration_;
 };
 
 }  // namespace ash

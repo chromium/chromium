@@ -60,7 +60,7 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
 
   raw_ptr<IconButton> settings_button_ = nullptr;
   raw_ptr<IconButton> close_button_ = nullptr;
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 };
 
 }  // namespace ash
