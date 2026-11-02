@@ -18,7 +18,6 @@ static_library("printing") {
 
   deps = [
     "//base",
-    "//chromeos/components/print_management/mojom",
     "//printing:printing_base",
     "//printing/backend",
     "//url",

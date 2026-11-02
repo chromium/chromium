@@ -12,11 +12,3 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
 ]
-
-specific_include_rules = {
-  # Used to assert equality between chromeos::PrinterErrorCode and
-  # chromeos.printing.printing_manager.mojom.PrinterErrorCode values.
-  "printer_error_codes\\.cc": [
-    "+chromeos/components/print_management/mojom/printing_manager.mojom.h",
-  ],
-}

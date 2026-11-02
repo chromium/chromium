@@ -4,60 +4,9 @@
 
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 
-#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
-#include "printing/backend/cups_jobs.h"
 #include "printing/printer_status.h"
 
 namespace chromeos {
-
-namespace {
-
-#ifndef STATIC_ASSERT_ENUM
-#define STATIC_ASSERT_ENUM(a, b)                            \
-  static_assert(static_cast<int>(a) == static_cast<int>(b), \
-                "mismatching enums: " #a)
-#endif
-
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::NO_ERROR,
-    printing::printing_manager::mojom::PrinterErrorCode::kNoError);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::PAPER_JAM,
-    printing::printing_manager::mojom::PrinterErrorCode::kPaperJam);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::OUT_OF_PAPER,
-    printing::printing_manager::mojom::PrinterErrorCode::kOutOfPaper);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::OUT_OF_INK,
-    printing::printing_manager::mojom::PrinterErrorCode::kOutOfInk);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::DOOR_OPEN,
-    printing::printing_manager::mojom::PrinterErrorCode::kDoorOpen);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::PRINTER_UNREACHABLE,
-    printing::printing_manager::mojom::PrinterErrorCode::kPrinterUnreachable);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::TRAY_MISSING,
-    printing::printing_manager::mojom::PrinterErrorCode::kTrayMissing);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::OUTPUT_FULL,
-    printing::printing_manager::mojom::PrinterErrorCode::kOutputFull);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::STOPPED,
-    printing::printing_manager::mojom::PrinterErrorCode::kStopped);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::FILTER_FAILED,
-    printing::printing_manager::mojom::PrinterErrorCode::kFilterFailed);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::UNKNOWN_ERROR,
-    printing::printing_manager::mojom::PrinterErrorCode::kUnknownError);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::CLIENT_UNAUTHORIZED,
-    printing::printing_manager::mojom::PrinterErrorCode::kClientUnauthorized);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::EXPIRED_CERTIFICATE,
-    printing::printing_manager::mojom::PrinterErrorCode::kExpiredCertificate);
-}  // namespace
 
 using PrinterReason = ::printing::PrinterStatus::PrinterReason;
 
