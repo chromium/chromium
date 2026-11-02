@@ -43,6 +43,7 @@ TEST_F(IsolatedModeSettingsServiceTest,
 }
 
 TEST_F(IsolatedModeSettingsServiceTest, DoesNotReplaceIncognitoWithPolicyOnly) {
+  feature_list_.InitAndDisableFeature(kEnableEnterpriseIsolatedMode);
   pref_service_.SetInteger(kEnterpriseIsolatedModeSettings,
                            static_cast<int>(IsolatedModeSetting::kEnabled));
   IsolatedModeSettingsService service(&pref_service_,
@@ -61,6 +62,7 @@ TEST_F(IsolatedModeSettingsServiceTest, ReplacesIncognitoWithFeatureAndPolicy) {
 
 TEST_F(IsolatedModeSettingsServiceTest,
        ReplacesIncognitoWithCommandLineSwitch) {
+  feature_list_.InitAndDisableFeature(kEnableEnterpriseIsolatedMode);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kForceEnterpriseIsolatedModeReplacesIncognito);
 
@@ -111,6 +113,7 @@ TEST_F(IsolatedModeSettingsServiceTest, Milestone2EnabledIgnoresPrefService) {
 
 TEST_F(IsolatedModeSettingsServiceTest,
        ScopedIsolatedModeOverrideForTestingPreCreation) {
+  feature_list_.InitAndDisableFeature(kEnableEnterpriseIsolatedMode);
   {
     // Default override enables Isolated Mode for newly created services even
     // when the feature and policy are unset.
