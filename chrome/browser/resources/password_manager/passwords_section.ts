@@ -197,7 +197,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         this.setSavedPasswordsListener_);
     this.setSavedPasswordsListener_ = null;
     assert(this.authTimedOutListener_);
-    window.removeEventListener('hashchange', this.authTimedOutListener_);
+    window.removeEventListener('auth-timed-out', this.authTimedOutListener_);
     this.authTimedOutListener_ = null;
   }
 
