@@ -418,13 +418,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   );
 }
 
-// Flaky on mac, https://crbug.com/1055282
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SiblingFramesZoom DISABLED_SiblingFramesZoom
-#else
-#define MAYBE_SiblingFramesZoom SiblingFramesZoom
-#endif
-IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, MAYBE_SiblingFramesZoom) {
+IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SiblingFramesZoom) {
   std::string top_level_host("a.com");
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b,b)"));
