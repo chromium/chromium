@@ -524,12 +524,11 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
 
   ImageContextImpl* image_context_impl =
       static_cast<ImageContextImpl*>(image_context);
-  images_in_current_paint_.push_back(image_context_impl);
 
-  const auto& sync_tokens = image_context->sync_tokens();
-
-  if (image_context->has_image())
+  if (image_context->has_image()) {
+    images_in_current_paint_.push_back(image_context_impl);
     return;
+  }
 
   auto format = image_context->format();
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
@@ -540,12 +539,15 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
     MakePromiseSkImageMultiPlane(image_context_impl);
   }
 
-  for (const auto& sync_token : sync_tokens) {
-    if (sync_token.HasData()) {
-      resource_sync_tokens_.push_back(sync_token);
+  if (image_context->has_image()) {
+    for (const auto& sync_token : image_context->sync_tokens()) {
+      if (sync_token.HasData()) {
+        resource_sync_tokens_.push_back(sync_token);
+      }
     }
+    image_context->ClearSyncTokens();
+    images_in_current_paint_.push_back(image_context_impl);
   }
-  image_context->ClearSyncTokens();
 }
 
 void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
@@ -584,7 +586,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
         texture_info, color_info, origin, graphite_use_volatile_promise_images_,
         FulfillGraphite, CleanUp, ReleaseGraphite, fulfill);
     LOG_IF(ERROR, !image) << "Failed to create the promise sk image";
-    image_context->SetImage(std::move(image), {texture_info});
+    if (image) {
+      image_context->SetImage(std::move(image), {texture_info});
+    }
   } else {
     CHECK(gr_context_thread_safe_);
     GrBackendFormat backend_format =
@@ -596,7 +600,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
         image_context->origin(), color_type, image_context->alpha_type(),
         image_context->GetSkColorSpace(), FulfillGanesh, CleanUp, fulfill);
     LOG_IF(ERROR, !image) << "Failed to create the promise sk image";
-    image_context->SetImage(std::move(image), {backend_format});
+    if (image) {
+      image_context->SetImage(std::move(image), {backend_format});
+    }
   }
 }
 
@@ -648,7 +654,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
         graphite_use_volatile_promise_images_, FulfillGraphite, CleanUpArray,
         ReleaseGraphite, fulfill_array_ptr, fulfill_ptrs.data());
     LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
-    image_context->SetImage(std::move(image), std::move(texture_infos));
+    if (image) {
+      image_context->SetImage(std::move(image), std::move(texture_infos));
+    }
   } else {
     CHECK(gr_context_thread_safe_);
     std::vector<GrBackendFormat> formats;
@@ -671,7 +679,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
         image_context->GetSkColorSpace(), FulfillGanesh, CleanUp,
         fulfills.data());
     LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
-    image_context->SetImage(std::move(image), std::move(formats));
+    if (image) {
+      image_context->SetImage(std::move(image), std::move(formats));
+    }
   }
 }
 
