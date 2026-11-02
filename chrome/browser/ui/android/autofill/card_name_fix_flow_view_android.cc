@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -31,10 +33,6 @@ void CardNameFixFlowViewAndroid::OnUserAccept(JNIEnv* env,
 
 void CardNameFixFlowViewAndroid::OnUserDismiss(JNIEnv* env) {
   controller_->OnDismissed();
-}
-
-void CardNameFixFlowViewAndroid::PromptDismissed(JNIEnv* env) {
-  delete this;
 }
 
 void CardNameFixFlowViewAndroid::Show() {
@@ -82,7 +80,8 @@ CardNameFixFlowViewAndroid::GetOrCreateJavaObject() {
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
 
   return java_object_internal_ = Java_AutofillNameFixFlowBridge_create(
-             env, reinterpret_cast<intptr_t>(this), controller_->GetTitleText(),
+             env, jni_zero::MakeUnique(base::WrapUnique(this)),
+             controller_->GetTitleText(),
              controller_->GetInferredCardholderName(),
              controller_->GetSaveButtonLabel(),
              ResourceMapper::MapToJavaDrawableId(controller_->GetIconId()),

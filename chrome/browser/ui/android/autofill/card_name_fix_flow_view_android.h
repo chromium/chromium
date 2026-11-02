@@ -29,19 +29,17 @@ class CardNameFixFlowViewAndroid : public CardNameFixFlowView {
   CardNameFixFlowViewAndroid(const CardNameFixFlowViewAndroid&) = delete;
   CardNameFixFlowViewAndroid& operator=(const CardNameFixFlowViewAndroid&) =
       delete;
+  ~CardNameFixFlowViewAndroid() override;
 
   void OnUserAccept(JNIEnv* env,
                     const std::u16string& name);
   void OnUserDismiss(JNIEnv* env);
-  void PromptDismissed(JNIEnv* env);
 
   // CardNameFixFlowView implementation.
   void Show() override;
   void ControllerGone() override;
 
  private:
-  ~CardNameFixFlowViewAndroid() override;
-
   // Returns either the fully initialized java counterpart of this bridge or
   // a is_null() reference if the creation failed. By using this method, the
   // bridge will try to recreate the java object if it failed previously (e.g.

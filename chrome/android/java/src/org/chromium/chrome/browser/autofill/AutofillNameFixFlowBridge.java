@@ -12,7 +12,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
@@ -27,7 +30,11 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 @JNINamespace("autofill")
 @NullMarked
 final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelegate {
-    private long mNativeCardNameFixFlowViewAndroid;
+    @JniType("::autofill::CardNameFixFlowViewAndroid")
+    interface NativeCardNameFixFlowViewAndroid extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativeCardNameFixFlowViewAndroid>
+            mNativeCardNameFixFlowViewAndroid;
     private final @Nullable Activity mActivity;
     private final String mTitle;
     private final String mInferredName;
@@ -37,7 +44,7 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
 
     @VisibleForTesting
     AutofillNameFixFlowBridge(
-            long nativeCardNameFixFlowViewAndroid,
+            JniUniquePtr<NativeCardNameFixFlowViewAndroid> nativeCardNameFixFlowViewAndroid,
             String title,
             String inferredName,
             String confirmButtonLabel,
@@ -60,7 +67,7 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
 
     @CalledByNative
     private static AutofillNameFixFlowBridge create(
-            long nativeNameFixFlowPrompt,
+            JniUniquePtr<NativeCardNameFixFlowViewAndroid> nativeNameFixFlowPrompt,
             @JniType("std::u16string") String title,
             @JniType("std::u16string") String inferredName,
             @JniType("std::u16string") String confirmButtonLabel,
@@ -77,25 +84,26 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
 
     @Override
     public void onPromptDismissed() {
-        if (mNativeCardNameFixFlowViewAndroid == 0) return;
-        long nativePtr = mNativeCardNameFixFlowViewAndroid;
-        // The native pointer is zeroed out here before calling promptDismissed to ensure
+        if (mNativeCardNameFixFlowViewAndroid == null) return;
+        JniUniquePtr<NativeCardNameFixFlowViewAndroid> nativePtr =
+                mNativeCardNameFixFlowViewAndroid;
+        // The native pointer is nulled out here before calling destroy() to ensure
         // that any subsequent UI events triggered during the dismissal flow (like focus
         // changes or text watcher events) are dropped instead of attempting to call
         // JNI methods on a dangling pointer.
-        mNativeCardNameFixFlowViewAndroid = 0;
-        AutofillNameFixFlowBridgeJni.get().promptDismissed(nativePtr);
+        mNativeCardNameFixFlowViewAndroid = null;
+        nativePtr.destroy();
     }
 
     @Override
     public void onUserDismiss() {
-        if (mNativeCardNameFixFlowViewAndroid == 0) return;
+        if (mNativeCardNameFixFlowViewAndroid == null) return;
         AutofillNameFixFlowBridgeJni.get().onUserDismiss(mNativeCardNameFixFlowViewAndroid);
     }
 
     @Override
     public void onUserAcceptCardholderName(String name) {
-        if (mNativeCardNameFixFlowViewAndroid == 0) return;
+        if (mNativeCardNameFixFlowViewAndroid == null) return;
         AutofillNameFixFlowBridgeJni.get().onUserAccept(mNativeCardNameFixFlowViewAndroid, name);
     }
 
@@ -131,11 +139,10 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
 
     @NativeMethods
     interface Natives {
-        void promptDismissed(long nativeCardNameFixFlowViewAndroid);
-
-        void onUserDismiss(long nativeCardNameFixFlowViewAndroid);
+        void onUserDismiss(JniPtr<NativeCardNameFixFlowViewAndroid> self);
 
         void onUserAccept(
-                long nativeCardNameFixFlowViewAndroid, @JniType("std::u16string") String name);
+                JniPtr<NativeCardNameFixFlowViewAndroid> self,
+                @JniType("std::u16string") String name);
     }
 }

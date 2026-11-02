@@ -8,12 +8,14 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -28,9 +30,11 @@ public class AutofillNameFixFlowBridgeTest {
 
     @Mock private AutofillNameFixFlowBridge.Natives mNativeMock;
 
+    @Mock
+    private JniUniquePtr<AutofillNameFixFlowBridge.NativeCardNameFixFlowViewAndroid> mNativePtr;
+
     private WindowAndroid mWindowAndroid;
     private AutofillNameFixFlowBridge mBridge;
-    private static final long NATIVE_POINTER = 12345L;
 
     @Before
     public void setUp() {
@@ -41,7 +45,7 @@ public class AutofillNameFixFlowBridgeTest {
 
         mBridge =
                 new AutofillNameFixFlowBridge(
-                        NATIVE_POINTER,
+                        mNativePtr,
                         /* title= */ "Title",
                         /* inferredName= */ "Inferred Name",
                         /* confirmButtonLabel= */ "Confirm",
@@ -57,19 +61,19 @@ public class AutofillNameFixFlowBridgeTest {
     @Test
     public void testOnUserDismiss_CallsJni() {
         mBridge.onUserDismiss();
-        verify(mNativeMock).onUserDismiss(NATIVE_POINTER);
+        verify(mNativeMock).onUserDismiss(mNativePtr);
     }
 
     @Test
     public void testOnUserAcceptCardholderName_CallsJni() {
         mBridge.onUserAcceptCardholderName("New Name");
-        verify(mNativeMock).onUserAccept(NATIVE_POINTER, "New Name");
+        verify(mNativeMock).onUserAccept(mNativePtr, "New Name");
     }
 
     @Test
     public void testOnPromptDismissed_CallsJniAndClearsPointer() {
         mBridge.onPromptDismissed();
-        verify(mNativeMock).promptDismissed(NATIVE_POINTER);
+        verify(mNativePtr).destroy();
 
         // Subsequent calls should not reach JNI.
         mBridge.onUserDismiss();
@@ -77,6 +81,6 @@ public class AutofillNameFixFlowBridgeTest {
         mBridge.onPromptDismissed();
 
         // Verify no other calls were made to JNI after the first dismiss.
-        org.mockito.Mockito.verifyNoMoreInteractions(mNativeMock);
+        Mockito.verifyNoMoreInteractions(mNativeMock, mNativePtr);
     }
 }
