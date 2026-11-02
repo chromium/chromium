@@ -322,14 +322,24 @@ bool PopulateSecuritySignalsDict(
 }  // namespace
 
 std::string GetSecuritySignalsInReport(
-    const em::ChromeProfileReportRequest& chrome_profile_report_request,
-    bool include_policy_summary) {
+    const em::ChromeProfileReportRequest& chrome_profile_report_request) {
   base::DictValue signals_dict;
   bool is_complete =
       PopulateSecuritySignalsDict(chrome_profile_report_request, signals_dict);
   // Incomplete reports are serialized compactly. This format is part of the
   // attestation content binding, so it must not change.
   int options = is_complete ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0;
+
+  std::string signals_json;
+  base::JSONWriter::WriteWithOptions(signals_dict, options, &signals_json);
+  return signals_json;
+}
+
+base::DictValue GetSecuritySignalsDictInReport(
+    const em::ChromeProfileReportRequest& chrome_profile_report_request,
+    bool include_policy_summary) {
+  base::DictValue signals_dict;
+  PopulateSecuritySignalsDict(chrome_profile_report_request, signals_dict);
 
   if (include_policy_summary &&
       chrome_profile_report_request.has_browser_report()) {
@@ -345,13 +355,10 @@ std::string GetSecuritySignalsInReport(
           base::StringPrintf("[%d %s collected but omitted for readability]",
                              policy_count,
                              policy_count == 1 ? "policy" : "policies"));
-      options = base::JSONWriter::OPTIONS_PRETTY_PRINT;
     }
   }
 
-  std::string signals_json;
-  base::JSONWriter::WriteWithOptions(signals_dict, options, &signals_json);
-  return signals_json;
+  return signals_dict;
 }
 
 int GetCurrentContentBindingsVersion() {

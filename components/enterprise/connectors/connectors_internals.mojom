@@ -5,6 +5,7 @@
 module connectors_internals.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/values.mojom";
 
 // Set of values to represent whether the key manager is supported and, if so,
 // fully initialized or not.
@@ -154,21 +155,26 @@ struct ClientCertificateState {
   ClientIdentity? managed_browser_identity;
 };
 
-// Describes where the signals in `SignalsReportingState.signals_json` came
-// from.
+// Describes where the security signals in `Signals` came from.
 enum SignalsSource {
-  // No signals are available.
-  kNone = 0,
-
   // The signals were included in the last report that was successfully
   // uploaded since the browser started.
-  kLastUploadedReport = 1,
+  kLastUploadedReport = 0,
 
   // The signals were collected on-demand to be displayed on this page and were
   // never uploaded. Signals that are only collected as part of an upload (e.g.
   // client certificates, which require a challenge from the server) are
   // omitted.
-  kCollectedOnDemand = 2,
+  kCollectedOnDemand = 1,
+};
+
+// Security signals and where they came from.
+struct Signals {
+  // The security signals.
+  mojo_base.mojom.DictionaryValue values;
+
+  // Where `values` came from.
+  SignalsSource source;
 };
 
 struct SignalsReportingState {
@@ -195,12 +201,8 @@ struct SignalsReportingState {
   // context.
   bool can_collect_all_fields;
 
-  // JSON string containing the security signals. See `signals_source` for
-  // where they came from.
-  string? signals_json;
-
-  // Where the signals in `signals_json` came from.
-  SignalsSource signals_source;
+  // The security signals, if any are available.
+  Signals? signals;
 };
 
 struct ProvisioningDomainConfig {

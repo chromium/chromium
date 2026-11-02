@@ -59,7 +59,7 @@ TEST(ReportUtilTest, GetSecuritySignalsInReportWithoutCertificates) {
   EXPECT_EQ(dict->FindBool("certificates_were_truncated"), false);
 }
 
-TEST(ReportUtilTest, GetSecuritySignalsInReportWithPolicySummary) {
+TEST(ReportUtilTest, GetSecuritySignalsDictInReportWithPolicySummary) {
   em::ChromeProfileReportRequest request;
   auto* profile_info =
       request.mutable_browser_report()->add_chrome_user_profile_infos();
@@ -68,63 +68,73 @@ TEST(ReportUtilTest, GetSecuritySignalsInReportWithPolicySummary) {
   profile_info->add_chrome_policies()->set_name("Policy2");
   profile_info->add_certificates()->set_data("cert_data");
 
-  std::string json_string =
-      GetSecuritySignalsInReport(request, /*include_policy_summary=*/true);
-  std::optional<base::DictValue> dict =
-      base::JSONReader::ReadDict(json_string, /*options=*/0);
-  ASSERT_TRUE(dict.has_value());
+  base::DictValue dict =
+      GetSecuritySignalsDictInReport(request, /*include_policy_summary=*/true);
 
   // Policies are summarized rather than listed.
-  const std::string* chrome_policies = dict->FindString("chrome_policies");
+  const std::string* chrome_policies = dict.FindString("chrome_policies");
   ASSERT_TRUE(chrome_policies);
   EXPECT_EQ(*chrome_policies,
             "[2 policies collected but omitted for readability]");
-  EXPECT_EQ(json_string.find("Policy1"), std::string::npos);
+  EXPECT_EQ(dict.DebugString().find("Policy1"), std::string::npos);
 
-  // All the fields from the output without the summary are also included.
+  // All the fields from `GetSecuritySignalsInReport()` are also included.
   std::optional<base::DictValue> signals_dict = base::JSONReader::ReadDict(
       GetSecuritySignalsInReport(request), /*options=*/0);
   ASSERT_TRUE(signals_dict.has_value());
   for (const auto [key, value] : *signals_dict) {
-    const base::Value* debug_value = dict->Find(key);
+    const base::Value* debug_value = dict.Find(key);
     ASSERT_TRUE(debug_value) << key;
     EXPECT_EQ(*debug_value, value) << key;
   }
-  EXPECT_EQ(dict->FindInt("certificates_count"), 1);
+  EXPECT_EQ(dict.FindInt("certificates_count"), 1);
 }
 
-TEST(ReportUtilTest, GetSecuritySignalsInReportWithPolicySummarySinglePolicy) {
+TEST(ReportUtilTest,
+     GetSecuritySignalsDictInReportWithPolicySummarySinglePolicy) {
   em::ChromeProfileReportRequest request;
   auto* profile_info =
       request.mutable_browser_report()->add_chrome_user_profile_infos();
   profile_info->mutable_profile_signals_report();
   profile_info->add_chrome_policies()->set_name("Policy1");
 
-  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
-      GetSecuritySignalsInReport(request, /*include_policy_summary=*/true),
-      /*options=*/0);
-  ASSERT_TRUE(dict.has_value());
+  base::DictValue dict =
+      GetSecuritySignalsDictInReport(request, /*include_policy_summary=*/true);
 
-  const std::string* chrome_policies = dict->FindString("chrome_policies");
+  const std::string* chrome_policies = dict.FindString("chrome_policies");
   ASSERT_TRUE(chrome_policies);
   EXPECT_EQ(*chrome_policies,
             "[1 policy collected but omitted for readability]");
 }
 
-TEST(ReportUtilTest, GetSecuritySignalsInReportWithPolicySummaryNoPolicies) {
+TEST(ReportUtilTest,
+     GetSecuritySignalsDictInReportWithPolicySummaryNoPolicies) {
   em::ChromeProfileReportRequest request;
   auto* profile_info =
       request.mutable_browser_report()->add_chrome_user_profile_infos();
   profile_info->mutable_profile_signals_report();
 
-  std::string json_string =
-      GetSecuritySignalsInReport(request, /*include_policy_summary=*/true);
-  EXPECT_EQ(json_string, GetSecuritySignalsInReport(request));
+  base::DictValue dict =
+      GetSecuritySignalsDictInReport(request, /*include_policy_summary=*/true);
+  EXPECT_FALSE(dict.Find("chrome_policies"));
+  EXPECT_EQ(dict, GetSecuritySignalsDictInReport(request));
+}
 
-  std::optional<base::DictValue> dict =
-      base::JSONReader::ReadDict(json_string, /*options=*/0);
-  ASSERT_TRUE(dict.has_value());
-  EXPECT_FALSE(dict->Find("chrome_policies"));
+TEST(ReportUtilTest, GetSecuritySignalsDictInReportWithoutPolicySummary) {
+  em::ChromeProfileReportRequest request;
+  auto* profile_info =
+      request.mutable_browser_report()->add_chrome_user_profile_infos();
+  profile_info->mutable_profile_signals_report();
+  profile_info->add_chrome_policies()->set_name("Policy1");
+
+  base::DictValue dict = GetSecuritySignalsDictInReport(request);
+  EXPECT_FALSE(dict.Find("chrome_policies"));
+
+  // Same fields as `GetSecuritySignalsInReport()`.
+  std::optional<base::DictValue> signals_dict = base::JSONReader::ReadDict(
+      GetSecuritySignalsInReport(request), /*options=*/0);
+  ASSERT_TRUE(signals_dict.has_value());
+  EXPECT_EQ(dict, *signals_dict);
 }
 
 // The default output is used for policy logging and the attestation content

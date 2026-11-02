@@ -14,6 +14,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
@@ -100,8 +101,9 @@ std::string HashAndEncodeString(const std::string& spki_bytes);
 connectors_internals::mojom::Int32ValuePtr ToMojomValue(
     std::optional<int> integer_value);
 
-// Returns a JSON string representation of the given `request`.
-std::string GetJsonForReportRequest(
+// Returns the security signals in the given profile report `request`, including
+// a summary of its policies.
+base::DictValue GetSignalsForReportRequest(
     const enterprise_reporting::ReportRequest& request);
 
 // Returns a formatted date and time string from `timestamp`, or an empty string
@@ -132,9 +134,10 @@ CreateDeviceTrustStateWithNoKey(
     connectors_internals::mojom::ConsentMetadataPtr consent_metadata);
 
 // Creates a SignalsReportingState populated with preference timestamps and
-// scheduler status. If `report_scheduler` successfully uploaded a report with
-// security signals since it was created, the state is also populated with
-// those signals (`SignalsSource::kLastUploadedReport`).
+// scheduler status. If signals reporting is enabled and `report_scheduler`
+// successfully uploaded a report with security signals since it was created,
+// the state is also populated with those signals
+// (`SignalsSource::kLastUploadedReport`).
 connectors_internals::mojom::SignalsReportingStatePtr
 CreateSignalsReportingState(
     const PrefService* profile_prefs,
@@ -143,8 +146,8 @@ CreateSignalsReportingState(
     std::optional<std::string> error_info = std::nullopt);
 
 // Processes the result of a profile report generation, returning a pair of
-// (error_message, signals_json). Exactly one of the two will be populated.
-std::pair<std::optional<std::string>, std::optional<std::string>>
+// (error_message, signals). Exactly one of the two will be populated.
+std::pair<std::optional<std::string>, std::optional<base::DictValue>>
 ProcessReportGenerationResult(
     base::expected<enterprise_reporting::ReportRequestQueue,
                    enterprise_reporting::ReportGenerationError> result);

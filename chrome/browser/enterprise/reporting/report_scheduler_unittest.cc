@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1078,13 +1077,8 @@ class EnabledProfileSecuritySignalsReportSchedulerTest
   // Returns the "certificates_count" of the last uploaded signals, or
   // std::nullopt if there are none.
   std::optional<int> GetLastUploadedCertificatesCount() {
-    const std::optional<std::string>& signals_json =
-        scheduler_->GetLastUploadedSignalsJson();
-    if (!signals_json) {
-      return std::nullopt;
-    }
-    std::optional<base::DictValue> signals =
-        base::JSONReader::ReadDict(*signals_json, base::JSON_PARSE_RFC);
+    const std::optional<base::DictValue>& signals =
+        scheduler_->GetLastUploadedSignals();
     return signals ? signals->FindInt("certificates_count") : std::nullopt;
   }
 
@@ -1940,7 +1934,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 // Tests that the signals included in a successfully uploaded report are kept so
 // that they can be displayed on chrome://connectors-internals.
 TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
-       LastUploadedSignalsJsonSetAfterSuccessfulUpload) {
+       LastUploadedSignalsSetAfterSuccessfulUpload) {
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
       .WillOnce(WithArgs<0>(
           ScheduleProfileRequestWithCertificatesGeneratorCallback(2)));
@@ -1952,7 +1946,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateSchedulerForSignalsOnlyProfile();
-  EXPECT_FALSE(scheduler_->GetLastUploadedSignalsJson());
+  EXPECT_FALSE(scheduler_->GetLastUploadedSignals());
 
   // Fast forward to let the startup report complete.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1963,7 +1957,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 // Tests that a failed upload does not override the signals from the last
 // successful upload.
 TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
-       LastUploadedSignalsJsonNotUpdatedAfterFailedUpload) {
+       LastUploadedSignalsNotUpdatedAfterFailedUpload) {
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
       .WillOnce(WithArgs<0>(
           ScheduleProfileRequestWithCertificatesGeneratorCallback(2)))
@@ -2002,7 +1996,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 // Tests that no signals are kept when the uploaded report does not contain
 // security signals.
 TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
-       LastUploadedSignalsJsonNotSetForReportWithoutSignals) {
+       LastUploadedSignalsNotSetForReportWithoutSignals) {
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
       .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
   EXPECT_CALL(*uploader_,
@@ -2020,13 +2014,13 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   // Fast forward to let the startup report complete.
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  EXPECT_FALSE(scheduler_->GetLastUploadedSignalsJson());
+  EXPECT_FALSE(scheduler_->GetLastUploadedSignals());
 }
 
 // Tests that the signals from the last successful upload are cleared when the
 // scheduler is stopped after signals reporting is disabled.
 TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
-       LastUploadedSignalsJsonClearedWhenReportingStops) {
+       LastUploadedSignalsClearedWhenReportingStops) {
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
       .WillOnce(WithArgs<0>(
           ScheduleProfileRequestWithCertificatesGeneratorCallback(2)));
@@ -2056,7 +2050,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   // the scheduler is stopped.
   SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
   scheduler_->OnDMTokenUpdated();
-  EXPECT_FALSE(scheduler_->GetLastUploadedSignalsJson());
+  EXPECT_FALSE(scheduler_->GetLastUploadedSignals());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

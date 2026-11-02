@@ -7,10 +7,10 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {PageHandlerInterface, SignalsReportingState} from './connectors_internals.mojom-webui.js';
 import {SignalsSource} from './connectors_internals.mojom-webui.js';
+import {mojoDictionaryToJsonString} from './connectors_utils.js';
 import {getTemplate} from './signals_reporting.html.js';
 
 const SignalsSourceStringMap: Record<SignalsSource, string> = {
-  [SignalsSource.kNone]: 'None',
   [SignalsSource.kLastUploadedReport]: 'Last successful upload',
   [SignalsSource.kCollectedOnDemand]: 'Collected on demand',
 };
@@ -90,9 +90,14 @@ export class SignalsReportingElement extends CustomElement {
     this.lastUploadSuccessTimestamp = state.lastUploadSuccessTimestamp;
     this.lastSignalsUploadConfigString = state.lastSignalsUploadConfig;
     this.canCollectAllFieldsString = `${state.canCollectAllFields}`;
-    this.signalsSourceString =
-        SignalsSourceStringMap[state.signalsSource] || 'None';
-    this.signalsJsonString = state.signalsJson || '{}';
+    if (state.signals) {
+      this.signalsSourceString =
+          SignalsSourceStringMap[state.signals.source] || 'None';
+      this.signalsJsonString = mojoDictionaryToJsonString(state.signals.values);
+    } else {
+      this.signalsSourceString = 'None';
+      this.signalsJsonString = '{}';
+    }
   }
 
   private fetchSignalsReportingState() {

@@ -152,9 +152,7 @@ TEST_F(ConnectorsInternalsUtilsTest, CreateSignalsReportingState_WithPrefs) {
   EXPECT_FALSE(state->last_upload_success_timestamp.empty());
 
   // Without a scheduler, there are no uploaded signals to show.
-  EXPECT_FALSE(state->signals_json.has_value());
-  EXPECT_EQ(state->signals_source,
-            connectors_internals::mojom::SignalsSource::kNone);
+  EXPECT_FALSE(state->signals);
 }
 
 TEST_F(ConnectorsInternalsUtilsTest, ProcessReportGenerationResult_Success) {
@@ -168,13 +166,10 @@ TEST_F(ConnectorsInternalsUtilsTest, ProcessReportGenerationResult_Success) {
 
   enterprise_reporting::ReportRequestQueue queue;
   queue.push(std::move(request));
-  auto [error_info, signals_json] =
+  auto [error_info, signals] =
       ProcessReportGenerationResult(base::ok(std::move(queue)));
 
   EXPECT_FALSE(error_info.has_value());
-  ASSERT_TRUE(signals_json.has_value());
-  std::optional<base::DictValue> signals =
-      base::JSONReader::ReadDict(*signals_json, base::JSON_PARSE_RFC);
   ASSERT_TRUE(signals.has_value());
   EXPECT_EQ(signals->FindInt("certificates_count"), 0);
   const std::string* chrome_policies = signals->FindString("chrome_policies");
@@ -186,8 +181,7 @@ TEST_F(ConnectorsInternalsUtilsTest, ProcessReportGenerationResult_Success) {
 TEST_F(ConnectorsInternalsUtilsTest, ProcessReportGenerationResult_Error) {
   auto result = base::unexpected(
       enterprise_reporting::ReportGenerationError::kProfileEmptyReport);
-  auto [error_info, signals_json] =
-      ProcessReportGenerationResult(std::move(result));
+  auto [error_info, signals] = ProcessReportGenerationResult(std::move(result));
 
   ASSERT_TRUE(error_info.has_value());
   EXPECT_EQ(*error_info,
@@ -195,18 +189,17 @@ TEST_F(ConnectorsInternalsUtilsTest, ProcessReportGenerationResult_Error) {
                 "Report generation failed with error code: %d",
                 static_cast<int>(enterprise_reporting::ReportGenerationError::
                                      kProfileEmptyReport)));
-  EXPECT_FALSE(signals_json.has_value());
+  EXPECT_FALSE(signals.has_value());
 }
 
 TEST_F(ConnectorsInternalsUtilsTest, ProcessReportGenerationResult_EmptyQueue) {
   enterprise_reporting::ReportRequestQueue queue;
   auto result = base::ok(std::move(queue));
-  auto [error_info, signals_json] =
-      ProcessReportGenerationResult(std::move(result));
+  auto [error_info, signals] = ProcessReportGenerationResult(std::move(result));
 
   ASSERT_TRUE(error_info.has_value());
   EXPECT_EQ(*error_info, "Report generator returned an empty queue.");
-  EXPECT_FALSE(signals_json.has_value());
+  EXPECT_FALSE(signals.has_value());
 }
 
 #if BUILDFLAG(ENTERPRISE_PROXY)

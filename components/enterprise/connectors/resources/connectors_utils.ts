@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {DictionaryValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
+
 import type {Int32Value} from './connectors_internals.mojom-webui.js';
 import {KeyTrustLevel, KeyType} from './connectors_internals.mojom-webui.js';
 
@@ -37,4 +39,47 @@ export function keySyncCodeToString(
     return `Success (${value})`;
   }
   return `Failure (${value})`;
+}
+
+// Converts a `mojo_base.mojom.Value` union (e.g. `{boolValue: true}`,
+// `{listValue: {storage: [...]}}`) into the equivalent plain JS value.
+function mojoValueToJs(value: Value): unknown {
+  if (value.nullValue !== undefined) {
+    return null;
+  }
+  if (value.boolValue !== undefined) {
+    return value.boolValue;
+  }
+  if (value.intValue !== undefined) {
+    return value.intValue;
+  }
+  if (value.doubleValue !== undefined) {
+    return value.doubleValue;
+  }
+  if (value.stringValue !== undefined) {
+    return value.stringValue;
+  }
+  if (value.binaryValue !== undefined) {
+    return value.binaryValue;
+  }
+  if (value.listValue !== undefined) {
+    return value.listValue.storage.map(mojoValueToJs);
+  }
+  if (value.dictionaryValue !== undefined) {
+    return mojoDictionaryToJs(value.dictionaryValue);
+  }
+  return undefined;
+}
+
+function mojoDictionaryToJs(dictionary: DictionaryValue):
+    Record<string, unknown> {
+  return Object.fromEntries(
+      Object.entries(dictionary.storage)
+          .map(([key, item]) => [key, mojoValueToJs(item)]));
+}
+
+// Returns a readable, pretty-printed JSON string for `dictionary`.
+export function mojoDictionaryToJsonString(dictionary: DictionaryValue):
+    string {
+  return JSON.stringify(mojoDictionaryToJs(dictionary), null, 2);
 }

@@ -216,9 +216,9 @@ connectors_internals::mojom::Int32ValuePtr ToMojomValue(
                        : nullptr;
 }
 
-std::string GetJsonForReportRequest(
+base::DictValue GetSignalsForReportRequest(
     const enterprise_reporting::ReportRequest& request) {
-  return enterprise_reporting::GetSecuritySignalsInReport(
+  return enterprise_reporting::GetSecuritySignalsDictInReport(
       request.GetChromeProfileReportRequest(),
       /*include_policy_summary=*/true);
 }
@@ -321,13 +321,11 @@ CreateSignalsReportingState(
   // Prefer showing exactly what was last uploaded, as some signals (e.g. client
   // certificates) are only collected as part of an upload. Cached signals are
   // not shown when signals reporting is disabled.
-  std::optional<std::string> signals_json;
-  auto signals_source = connectors_internals::mojom::SignalsSource::kNone;
-  if (signals_report_enabled &&
-      report_scheduler->GetLastUploadedSignalsJson()) {
-    signals_json = report_scheduler->GetLastUploadedSignalsJson();
-    signals_source =
-        connectors_internals::mojom::SignalsSource::kLastUploadedReport;
+  connectors_internals::mojom::SignalsPtr signals;
+  if (signals_report_enabled && report_scheduler->GetLastUploadedSignals()) {
+    signals = connectors_internals::mojom::Signals::New(
+        report_scheduler->GetLastUploadedSignals()->Clone(),
+        connectors_internals::mojom::SignalsSource::kLastUploadedReport);
   }
 
   return connectors_internals::mojom::SignalsReportingState::New(
@@ -335,10 +333,10 @@ CreateSignalsReportingState(
       std::move(last_upload_attempt_time_string),
       std::move(last_upload_success_time_string),
       std::move(last_signals_upload_config), can_collect_all_signals,
-      std::move(signals_json), signals_source);
+      std::move(signals));
 }
 
-std::pair<std::optional<std::string>, std::optional<std::string>>
+std::pair<std::optional<std::string>, std::optional<base::DictValue>>
 ProcessReportGenerationResult(
     base::expected<enterprise_reporting::ReportRequestQueue,
                    enterprise_reporting::ReportGenerationError> result) {
@@ -354,7 +352,7 @@ ProcessReportGenerationResult(
   enterprise_reporting::ReportRequestQueue requests = std::move(result).value();
   std::unique_ptr<enterprise_reporting::ReportRequest> request =
       std::move(requests.front());
-  return {std::nullopt, GetJsonForReportRequest(*request)};
+  return {std::nullopt, GetSignalsForReportRequest(*request)};
 }
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
