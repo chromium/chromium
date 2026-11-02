@@ -766,7 +766,7 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
 }
 
 // Adding a script to the popup window should not crash.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        AddScriptToPictureInPictureWindow) {
   LoadTabAndEnterPictureInPicture(browser());
 
@@ -1263,7 +1263,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(window_bounds.origin(), expected_origin);
 }
 
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        DoNotDeferMediaLoadIfWindowOpened) {
   LoadTabAndEnterPictureInPicture(browser());
   auto* opener_web_contents = window_controller()->GetWebContents();
@@ -1282,7 +1282,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(true, EvalJs(opener_web_contents, "loadAndPlayVideo();"));
 }
 
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        MatchMediaQuery) {
   LoadTabAndEnterPictureInPicture(browser());
   auto* opener_web_contents = window_controller()->GetWebContents();
