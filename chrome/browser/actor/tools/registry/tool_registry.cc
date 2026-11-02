@@ -107,10 +107,10 @@ base::span<const ToolDefinition> ToolRegistry::GetAllTools() const {
 }
 
 std::vector<const ToolDefinition*> ToolRegistry::GetToolsByIds(
-    const std::set<ToolId>& ids) const {
+    ToolIdSet ids) const {
   std::vector<const ToolDefinition*> matching_tools;
   for (const ToolDefinition& tool : GetStaticToolCatalog().tools) {
-    if (ids.contains(tool.id)) {
+    if (ids.Has(tool.id)) {
       matching_tools.push_back(&tool);
     }
   }

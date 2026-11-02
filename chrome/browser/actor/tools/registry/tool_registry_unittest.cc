@@ -1059,9 +1059,9 @@ TEST(ToolRegistryTest, NameToToolIdReturnsNulloptForUnknownName) {
   EXPECT_EQ(ToolRegistry::NameToToolId("unknown_tool"), std::nullopt);
 }
 
-TEST(ToolRegistryTest, GetToolsByIdsReturnsEmptyForUnknownId) {
+TEST(ToolRegistryTest, GetToolsByIdsReturnsEmptyForEmptySet) {
   ToolRegistry registry;
-  EXPECT_TRUE(registry.GetToolsByIds({kUnrecognizedToolId}).empty());
+  EXPECT_TRUE(registry.GetToolsByIds({}).empty());
 }
 
 TEST(ToolRegistryCompletenessTest, AllRegisteredToolsHaveKnownToolIds) {
@@ -1124,6 +1124,15 @@ TEST(ToolRegistryCompletenessTest, AllRegisteredToolsRoundTripById) {
     EXPECT_EQ(registry.GetToolsByIds({tool.id}),
               std::vector<const ToolDefinition*>{&tool});
   }
+}
+
+TEST(ToolRegistryCompletenessTest, GetToolsByIdsAllReturnsAllRegisteredTools) {
+  ToolRegistry registry;
+  std::vector<const ToolDefinition*> expected;
+  for (const ToolDefinition& tool : registry.GetAllTools()) {
+    expected.push_back(&tool);
+  }
+  EXPECT_EQ(registry.GetToolsByIds(ToolIdSet::All()), expected);
 }
 
 TEST(ToolRegistryCompletenessTest, AllRegisteredToolsConvertToProto) {

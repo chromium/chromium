@@ -6,14 +6,16 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_REGISTRY_TOOL_REGISTRY_H_
 
 #include <optional>
-#include <set>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 
 namespace actor {
+
+using ToolIdSet = base::EnumSet<ToolId, ToolId::kMinValue, ToolId::kMaxValue>;
 
 // Registry of shared browser tools exposed by ActorKeyedService.
 class ToolRegistry {
@@ -36,9 +38,8 @@ class ToolRegistry {
   base::span<const ToolDefinition> GetAllTools() const;
 
   // Returns pointers to the registered tool definitions whose `ToolId` is in
-  // `ids`. Unrecognized IDs in `ids` are ignored.
-  std::vector<const ToolDefinition*> GetToolsByIds(
-      const std::set<ToolId>& ids) const;
+  // `ids`. Unregistered IDs in `ids` are ignored.
+  std::vector<const ToolDefinition*> GetToolsByIds(ToolIdSet ids) const;
 };
 
 }  // namespace actor

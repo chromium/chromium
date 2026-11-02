@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -16,7 +15,6 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
-#include "base/no_destructor.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -254,28 +252,20 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   // TODO(b/573150754): Add kClick, kType, and kSelectOption once MES supports
   // rewriting dom_node_id for TOCTOU checks and ProcessToolCall() dispatches
   // their registry names.
-  static const base::NoDestructor<std::set<actor::ToolId>> kSupportedToolIds({
-      actor::ToolId::kPerformSearch,
-      actor::ToolId::kGoBack,
-      actor::ToolId::kGoForward,
-      actor::ToolId::kReloadPage,
-      actor::ToolId::kFindAndHighlight,
-      actor::ToolId::kPlayVideo,
-      actor::ToolId::kPauseVideo,
-      actor::ToolId::kSeekToTimestamp,
-      actor::ToolId::kTranslatePage,
-      actor::ToolId::kPromptGeminiPanel,
-      actor::ToolId::kCloseGeminiPanel,
-      actor::ToolId::kCloseTab,
-      actor::ToolId::kSwitchTab,
-      actor::ToolId::kOpenUrl,
-      actor::ToolId::kEnterFullscreen,
-      actor::ToolId::kExitFullscreen,
+  static constexpr actor::ToolIdSet kSupportedToolIds = {
+      actor::ToolId::kPerformSearch,    actor::ToolId::kGoBack,
+      actor::ToolId::kGoForward,        actor::ToolId::kReloadPage,
+      actor::ToolId::kFindAndHighlight, actor::ToolId::kPlayVideo,
+      actor::ToolId::kPauseVideo,       actor::ToolId::kSeekToTimestamp,
+      actor::ToolId::kTranslatePage,    actor::ToolId::kPromptGeminiPanel,
+      actor::ToolId::kCloseGeminiPanel, actor::ToolId::kCloseTab,
+      actor::ToolId::kSwitchTab,        actor::ToolId::kOpenUrl,
+      actor::ToolId::kEnterFullscreen,  actor::ToolId::kExitFullscreen,
       actor::ToolId::kOpenKnownPage,
-  });
+  };
 
   std::vector<const actor::ToolDefinition*> actor_tools =
-      actor_service->tool_registry().GetToolsByIds(*kSupportedToolIds);
+      actor_service->tool_registry().GetToolsByIds(kSupportedToolIds);
 
   // Legacy tools defined below: click_element, set_text, select_option,
   // scroll_page, and get_screenshot.

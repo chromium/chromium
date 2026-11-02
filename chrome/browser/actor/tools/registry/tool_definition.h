@@ -23,6 +23,7 @@ namespace actor {
 enum class ToolId {
   // Navigates the active tab to a specified URL.
   kNavigate = 0,
+  kMinValue = kNavigate,
   // Clicks an element on the active page by DOM node ID.
   kClick = 1,
   // Switches to an open tab in the active browser window matching a query.
@@ -104,7 +105,6 @@ enum class ToolId {
   kOpenUrl = 39,
   kMaxValue = kOpenUrl,
 };
-
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
 // building instances with `ToolDefinitionBuilder`.
 struct ToolDefinition {

@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -2265,23 +2264,15 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  const std::set<actor::ToolId> kExpectedToolIds = {
-      actor::ToolId::kOpenUrl,
-      actor::ToolId::kPerformSearch,
-      actor::ToolId::kGoBack,
-      actor::ToolId::kGoForward,
-      actor::ToolId::kReloadPage,
-      actor::ToolId::kFindAndHighlight,
-      actor::ToolId::kPlayVideo,
-      actor::ToolId::kPauseVideo,
-      actor::ToolId::kSeekToTimestamp,
-      actor::ToolId::kTranslatePage,
-      actor::ToolId::kCloseTab,
-      actor::ToolId::kSwitchTab,
-      actor::ToolId::kEnterFullscreen,
-      actor::ToolId::kExitFullscreen,
-      actor::ToolId::kOpenKnownPage,
-      actor::ToolId::kPromptGeminiPanel,
+  static constexpr actor::ToolIdSet kExpectedToolIds = {
+      actor::ToolId::kOpenUrl,          actor::ToolId::kPerformSearch,
+      actor::ToolId::kGoBack,           actor::ToolId::kGoForward,
+      actor::ToolId::kReloadPage,       actor::ToolId::kFindAndHighlight,
+      actor::ToolId::kPlayVideo,        actor::ToolId::kPauseVideo,
+      actor::ToolId::kSeekToTimestamp,  actor::ToolId::kTranslatePage,
+      actor::ToolId::kCloseTab,         actor::ToolId::kSwitchTab,
+      actor::ToolId::kEnterFullscreen,  actor::ToolId::kExitFullscreen,
+      actor::ToolId::kOpenKnownPage,    actor::ToolId::kPromptGeminiPanel,
       actor::ToolId::kCloseGeminiPanel,
   };
 
