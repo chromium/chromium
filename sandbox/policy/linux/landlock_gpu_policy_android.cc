@@ -5,12 +5,14 @@
 #include "sandbox/policy/linux/landlock_gpu_policy_android.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/android/android_info.h"
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
 #include "sandbox/linux/services/thread_helpers.h"
@@ -43,6 +45,12 @@ bool AddRulesToPolicy(int ruleset_fd,
                           0)) {
       PLOG(ERROR) << "landlock_add_rule() failed for " << path;
       success = false;
+    } else if (path.starts_with("/proc/")) {
+      // Keep `O_PATH` FDs open to pin `procfs` dentries in the VFS dcache;
+      // otherwise dcache reclaim causes `procfs` to allocate a new inode on
+      // lookup and orphans the inode-bound Landlock rule.
+      static base::NoDestructor<std::vector<base::ScopedFD>> pinned_proc_fds;
+      pinned_proc_fds->push_back(std::move(parent_fd));
     }
   }
   return success;
