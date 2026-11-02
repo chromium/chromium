@@ -766,5 +766,134 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   error_toast_run_loop.Run();
 }
 
+// Tests that programmatic text insertion via document.execCommand('insertText')
+// does not mark the email field as user-edited or trigger email verification on
+// focus loss, whereas genuine user typing does.
+IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
+                       ExecCommandDoesNotTriggerVerification) {
+  GURL url =
+      embedded_test_server()->GetURL("/autofill/email_verification.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+  EnableEmailVerificationFeatureForFrame(main_frame);
+
+  // Mark email as already allowed in prefs.
+  PrefService* prefs = client()->GetPrefs();
+  base::DictValue state;
+  base::DictValue email_dict;
+  email_dict.Set("allowed", true);
+  email_dict.Set("issuer_site", "https://example.com");
+  email_dict.Set("timestamp", true);
+  state.Set("test@example.com", std::move(email_dict));
+  prefs->SetDict(prefs::kAutofillEmailVerificationState, std::move(state));
+
+  MockEmailVerifier* verifier_ptr = SetupMockEmailVerifier(main_frame);
+  TestEmailVerificationAutofillClient* mock_client = client();
+
+  BrowserAutofillManager* manager = GetBrowserAutofillManager(main_frame);
+  const FormStructure* form_structure = WaitForMatchingForm(
+      manager, base::BindRepeating([](const FormStructure& form) {
+        return std::ranges::any_of(
+            form.fields(), [](const std::unique_ptr<AutofillField>& field) {
+              return field->Type().GetAddressType() == EMAIL_ADDRESS;
+            });
+      }));
+  ASSERT_TRUE(form_structure);
+
+  // Add a second text control to the form so shifting focus to it triggers
+  // OnAfterFocusOnFormField -> OnFieldLostFocus for the email field.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "const other = document.createElement('input');"
+      "other.type = 'text';"
+      "other.id = 'other_field';"
+      "document.getElementById('testform').appendChild(other);"));
+
+  // 1. Negative path: Programmatic execCommand('insertText') followed by blur
+  // should not be treated as a user edit and should not trigger verification.
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable).Times(0);
+  EXPECT_CALL(*verifier_ptr, Verify).Times(0);
+  EXPECT_CALL(*mock_client, ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(*mock_client, ShowEmailVerificationLoadingToast).Times(0);
+
+  {
+    TestAutofillManagerWaiter focus_waiter(
+        *manager, {AutofillManagerEvent::kFocusOnFormField});
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(),
+        "const email = document.getElementById('email');"
+        "email.focus();"
+        "document.execCommand('insertText', false, 'test@example.com');"));
+    ASSERT_TRUE(focus_waiter.Wait(1));
+  }
+
+  {
+    TestAutofillManagerWaiter blur_waiter(
+        *manager, {AutofillManagerEvent::kFocusOnFormField});
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(), "document.getElementById('other_field').focus();"));
+    ASSERT_TRUE(blur_waiter.Wait(1));
+  }
+
+  EXPECT_EQ(form_structure->field(0)->last_modifier(), std::nullopt);
+  testing::Mock::VerifyAndClearExpectations(verifier_ptr);
+  testing::Mock::VerifyAndClearExpectations(mock_client);
+
+  // 2. Positive path: Genuine user typing followed by blur marks the field as
+  // user-edited and triggers verification.
+  const std::string kTestToken = "typed_token_123";
+  EmailVerifier::Result result;
+  result.email = "test@example.com";
+  result.issuer_origin = url::Origin::Create(GURL("https://example.com"));
+  result.issuance_endpoint = GURL("https://example.com/issuance");
+  result.signing_alg_values_supported.push_back("RS256");
+
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _, _))
+      .WillOnce(RunOnceCallback<2>(
+          result, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(100)));
+  EXPECT_CALL(
+      *verifier_ptr,
+      Verify(testing::Field(&EmailVerifier::Result::email, "test@example.com"),
+             "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(
+          kTestToken, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(200)));
+  EXPECT_CALL(*mock_client, ShowEmailVerificationLoadingToast);
+  base::RunLoop toast_run_loop;
+  EXPECT_CALL(*mock_client, ShowEmailVerifiedToast(GURL("https://example.com")))
+      .WillOnce([&](const GURL&) { toast_run_loop.Quit(); });
+
+  {
+    TestAutofillManagerWaiter focus_waiter(
+        *manager, {AutofillManagerEvent::kFocusOnFormField});
+    ASSERT_TRUE(
+        content::ExecJs(web_contents(),
+                        "const email = document.getElementById('email');"
+                        "email.value = '';"
+                        "email.focus();"));
+    ASSERT_TRUE(focus_waiter.Wait(1));
+  }
+
+  for (char16_t ch : std::u16string_view(u"test@example.com")) {
+    content::SimulateCharTyped(web_contents(), ch);
+  }
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return form_structure->field(0)->last_modifier() == FieldModifier::kUser &&
+           form_structure->field(0)->value() == u"test@example.com";
+  }));
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('other_field').focus();"));
+  toast_run_loop.Run();
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('testform').requestSubmit();"));
+  EXPECT_EQ(
+      kTestToken,
+      content::EvalJs(web_contents(), "window.tokenPromise").ExtractString());
+}
+
 }  // namespace
 }  // namespace autofill

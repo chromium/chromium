@@ -860,6 +860,50 @@ TEST_F(AutofillAgentTest, SelectControlChanged) {
   std::move(run_loop).Run();
 }
 
+// Tests that `document.execCommand('insertText', ...)` on a focused text field
+// with transient user activation does not trigger
+// `mojom::AutofillDriver::TextFieldValueChanged`, whereas user input does.
+TEST_F(AutofillAgentTest, TextFieldValueChangedIgnoresExecCommand) {
+  LoadHTML(
+      "<html>"
+      "<form>"
+      "<input type='email' id='email'>"
+      "<button type='button' id='button'>Continue</button>"
+      "</form>"
+      "</html>");
+  WaitForFormsSeen();
+
+  EXPECT_CALL(autofill_driver(), TextFieldValueChanged).Times(0);
+
+  // Give the frame transient user activation via an ordinary click.
+  ASSERT_TRUE(SimulateElementClick("button"));
+  ExecuteJavaScriptForTests(
+      "var email = document.getElementById('email');"
+      "email.focus();"
+      "document.execCommand('insertText', false, 'sample@example.com');");
+  task_environment_.RunUntilIdle();
+
+  WebInputElement email_element = GetInputElementById("email");
+  EXPECT_EQ(email_element.Value().Utf16(), u"sample@example.com");
+  EXPECT_FALSE(autofill_agent().field_data_manager().DidUserType(
+      GetFieldRendererIdById("email")));
+
+  // Genuine user typing into the field still notifies the driver.
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      autofill_driver(),
+      TextFieldValueChanged(
+          Property(&FormData::fields,
+                   ElementsAre(test::FormFieldDescriptionEq(
+                       {.name = u"email", .value = u"typed@example.com"}))),
+          GetFieldRendererIdById("email"), _))
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  SimulateUserInputChangeForElement(email_element, "typed@example.com");
+  std::move(run_loop).Run();
+  EXPECT_TRUE(autofill_agent().field_data_manager().DidUserType(
+      GetFieldRendererIdById("email")));
+}
+
 // A test fixture that sets the autofill agent's `focus_requires_scroll` config
 // option to false, which allows `DidChangeScrollOffset` to notify the driver.
 class AutofillAgentTestWithoutFocusRequiresScroll : public AutofillAgentTest {

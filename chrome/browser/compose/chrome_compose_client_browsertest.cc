@@ -250,11 +250,8 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
   }
 
   void InsertText() {
-    std::string js =
-        "var el = document.getElementById('test_field');"
-        "el.focus();"
-        "document.execCommand('insertText', false, 'a');";
-    ASSERT_TRUE(content::ExecJs(web_contents(), js));
+    FocusField();
+    content::SimulateCharTyped(web_contents(), u'a');
   }
 
   // Focuses the textarea with id 'test_field' in the DOM.

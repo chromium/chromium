@@ -1343,19 +1343,22 @@ bool ChromeClientImpl::HandleKeyboardEventOnEditableElement(
 void ChromeClientImpl::DidChangeValueInTextField(
     HTMLFormControlElement& element) {
   Document& doc = element.GetDocument();
+  // Value changes caused by |document.execCommand| calls should not be
+  // interpreted as a user action. See https://crbug.com/764760.
+  if (doc.IsRunningExecCommand()) {
+    return;
+  }
+
   if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
     fill_client->TextFieldValueChanged(WebFormControlElement(&element));
   }
 
-  // Value changes caused by |document.execCommand| calls should not be
-  // interpreted as a user action. See https://crbug.com/764760.
-  if (!doc.IsRunningExecCommand()) {
-    UseCounter::Count(doc, doc.GetExecutionContext()->IsSecureContext()
-                               ? WebFeature::kFieldEditInSecureContext
-                               : WebFeature::kFieldEditInNonSecureContext);
-    // The resource coordinator is not available in some tests.
-    if (auto* rc = doc.GetResourceCoordinator())
-      rc->SetHadFormInteraction();
+  UseCounter::Count(doc, doc.GetExecutionContext()->IsSecureContext()
+                             ? WebFeature::kFieldEditInSecureContext
+                             : WebFeature::kFieldEditInNonSecureContext);
+  // The resource coordinator is not available in some tests.
+  if (auto* rc = doc.GetResourceCoordinator()) {
+    rc->SetHadFormInteraction();
   }
 }
 
