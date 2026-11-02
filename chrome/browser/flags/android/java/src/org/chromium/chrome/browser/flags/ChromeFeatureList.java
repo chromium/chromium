@@ -1764,7 +1764,7 @@ public abstract class ChromeFeatureList {
     // MutableFlagWithSafeDefault instances.
     // keep-sorted start group_prefixes=["public static final MutableFlagWithSafeDefault"]
     public static final MutableFlagWithSafeDefault sActorLiveNotification =
-            newMutableFlagWithSafeDefault(ACTOR_LIVE_NOTIFICATION, false);
+            newMutableFlagWithSafeDefault(ACTOR_LIVE_NOTIFICATION, true);
     public static final MutableFlagWithSafeDefault sActorNotificationIntentRouting =
             newMutableFlagWithSafeDefault(ACTOR_NOTIFICATION_INTENT_ROUTING, false);
     public static final MutableFlagWithSafeDefault sActorStepProgressNotification =
