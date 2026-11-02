@@ -152,7 +152,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     body_->SetText(body_text);
 
     views::StyledLabel::RangeStyleInfo style;
-    style.override_color_id = cros_tokens::kTextColorPrimary;
+    style.override_color = cros_tokens::kTextColorPrimary;
     body_->AddStyleRange(gfx::Range(0, offset), style);
 
     views::StyledLabel::RangeStyleInfo link_style =
@@ -165,7 +165,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
                 GURL(phonehub::kPhoneHubLearnMoreLink),
                 NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                 NewWindowDelegate::Disposition::kNewForegroundTab)));
-    link_style.override_color_id = cros_tokens::kTextColorProminent;
+    link_style.override_color = cros_tokens::kTextColorProminent;
     body_->AddStyleRange(gfx::Range(offset, offset + learn_more_link.length()),
                          link_style);
 

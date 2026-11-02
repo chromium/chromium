@@ -197,7 +197,7 @@ void GameDashboardWelcomeDialog::AddShortcutInfoRow() {
   views::StyledLabel::RangeStyleInfo text_style;
   text_style.custom_font = TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosButton2);
-  text_style.override_color_id = cros_tokens::kCrosSysPrimary;
+  text_style.override_color = cros_tokens::kCrosSysPrimary;
   styled_label->AddStyleRange(gfx::Range(0u, inline_icon_offset), text_style);
   styled_label->AddStyleRange(
       gfx::Range(inline_icon_offset + 1u, styled_label->GetText().size()),

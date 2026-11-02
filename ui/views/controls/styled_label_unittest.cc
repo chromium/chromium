@@ -460,6 +460,33 @@ TEST_F(StyledLabelInWidgetTest, SetBackgroundColorIdReactsToThemeChange) {
             LabelAt(styled, 0)->GetBackgroundColor());
 }
 
+TEST_F(StyledLabelInWidgetTest, OverrideColorWithColorIdReactsToThemeChange) {
+  StyledLabel* styled = InitStyledLabel("text");
+  styled->SetAutoColorReadabilityEnabled(false);
+
+  StyledLabel::RangeStyleInfo style_info;
+  style_info.override_color = ui::kColorAlertHighSeverity;
+  styled->AddStyleRange(gfx::Range(0u, 4u), style_info);
+
+  styled->SetBounds(0, 0, 1000, 1000);
+  test::RunScheduledLayout(styled);
+
+  ASSERT_THAT(styled->children(), SizeIs(1u));
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
+  const SkColor dark_color =
+      widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity);
+  EXPECT_EQ(dark_color, LabelAt(styled, 0)->GetEnabledColor());
+
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
+  const SkColor light_color =
+      widget()->GetColorProvider()->GetColor(ui::kColorAlertHighSeverity);
+  EXPECT_EQ(light_color, LabelAt(styled, 0)->GetEnabledColor());
+
+  ASSERT_NE(dark_color, light_color);
+}
+
 TEST_F(StyledLabelTest, StyledRangeWithTooltip) {
   const std::string text("This is a test block of text, ");
   const std::string tooltip_text("this should have a tooltip,");

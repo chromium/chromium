@@ -611,9 +611,7 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
         style_info.text_style.value_or(default_text_style_));
   }
 
-  if (style_info.override_color_id) {
-    result->SetEnabledColor(style_info.override_color_id.value());
-  } else if (style_info.override_color) {
+  if (style_info.override_color) {
     result->SetEnabledColor(style_info.override_color.value());
   } else if (default_enabled_color_id_) {
     result->SetEnabledColor(default_enabled_color_id_.value());

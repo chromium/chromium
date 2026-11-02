@@ -55,7 +55,7 @@ void MakeSectionBold(views::StyledLabel* label,
       style.custom_font = label->GetFontList().Derive(
           0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD);
     }
-    style.override_color_id = cros_tokens::kTextColorPrimary;
+    style.override_color = cros_tokens::kTextColorPrimary;
     return style;
   };
 

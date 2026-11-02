@@ -1570,7 +1570,7 @@ class ComponentHandler<views::StyledLabel> : public ViewHandlerBase {
             std::string color_name = color_str->substr(8);
             std::optional<ui::ColorId> color_id = ui::NameToColorId(color_name);
             if (color_id) {
-              style_info.override_color_id = *color_id;
+              style_info.override_color = *color_id;
             }
           } else {
             std::optional<SkColor> color = ParseColor(color_u16, styled_label);

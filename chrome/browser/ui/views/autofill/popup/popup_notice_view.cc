@@ -196,12 +196,12 @@ PopupNoticeView::PopupNoticeView(
 
   views::StyledLabel::RangeStyleInfo title_style;
   title_style.text_style = views::style::STYLE_BODY_5_MEDIUM;
-  title_style.override_color_id = ui::kColorSysOnSurface;
+  title_style.override_color = ui::kColorSysOnSurface;
   description_->AddStyleRange(gfx::Range(0, title_text.length()), title_style);
 
   views::StyledLabel::RangeStyleInfo subtitle_style;
   subtitle_style.text_style = views::style::STYLE_BODY_5;
-  subtitle_style.override_color_id = ui::kColorSysOnSurfaceSubtle;
+  subtitle_style.override_color = ui::kColorSysOnSurfaceSubtle;
   description_->AddStyleRange(
       gfx::Range(title_text.length() + 1,
                  title_text.length() + 1 + subtitle_text.length()),
@@ -212,7 +212,7 @@ PopupNoticeView::PopupNoticeView(
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &PopupNoticeView::OnLinkClicked, base::Unretained(this)));
   link_style.text_style = views::style::STYLE_LINK_5;
-  link_style.override_color_id = ui::kColorSysPrimary;
+  link_style.override_color = ui::kColorSysPrimary;
   description_->AddStyleRange(gfx::Range(link_start, full_text_length),
                               link_style);
 

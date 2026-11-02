@@ -120,7 +120,7 @@ void InsertFooterContentV2LabelStyledText(
   // Create text style.
   views::StyledLabel::RangeStyleInfo text_style;
   text_style.custom_font = Resolve(TypographyToken::kCrosAnnotation1);
-  text_style.override_color_id = cros_tokens::kCrosSysOnSurfaceVariant;
+  text_style.override_color = cros_tokens::kCrosSysOnSurfaceVariant;
 
   // When the clipboard history menu is *not* shown from a Ctrl+V long press
   // event, set text based on keyboard layout, caching the offset where an

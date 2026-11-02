@@ -483,8 +483,7 @@ views::StyledLabel::RangeStyleInfo GetLinkTextStyle(
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           std::move(press_link_callback));
-  link_style.override_color_id =
-      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant);
+  link_style.override_color = cros_tokens::kCrosSysOnSurfaceVariant;
   return link_style;
 }
 

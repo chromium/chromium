@@ -64,10 +64,7 @@ class VIEWS_EXPORT StyledLabel : public View {
 
     // Overrides the text color given by |text_style| for this range.
     // DEPRECATED: Use TextStyle.
-    std::optional<SkColor> override_color;
-
-    // Overrides the text color given by |text_style| for this range.
-    std::optional<ui::ColorId> override_color_id;
+    std::optional<ui::ColorVariant> override_color;
 
     // A callback to be called when this link is clicked. Only used if
     // |text_style| is style::STYLE_LINK.

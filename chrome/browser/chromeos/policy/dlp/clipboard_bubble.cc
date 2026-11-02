@@ -158,7 +158,7 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   // Set the styling of the main text.
   // TODO(crbug.com/1150741): Handle RTL.
   views::StyledLabel::RangeStyleInfo message_style;
-  message_style.override_color_id = cros_tokens::kTextColorPrimary;
+  message_style.override_color = cros_tokens::kTextColorPrimary;
 
   label_->SetText(full_text);
   label_->AddStyleRange(gfx::Range(0, main_message_length), message_style);
@@ -167,7 +167,7 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           base::BindRepeating(&OnLearnMoreLinkClicked));
-  link_style.override_color_id = cros_tokens::kLinkColor;
+  link_style.override_color = cros_tokens::kLinkColor;
 
   label_->AddStyleRange(gfx::Range(main_message_length, full_text.size()),
                         link_style);
