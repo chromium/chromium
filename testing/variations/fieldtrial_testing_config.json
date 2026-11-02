@@ -18546,7 +18546,8 @@
                     ],
                     "disable_features": [
                         "ForwardMemoryPressureToBlinkIsolates"
-                    ]
+                    ],
+                    "disable_benchmarking": true
                 }
             ]
         }
