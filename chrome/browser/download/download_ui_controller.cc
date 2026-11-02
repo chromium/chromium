@@ -95,7 +95,10 @@ class DownloadBubbleUIControllerDelegate
   // |profile| is required to outlive DownloadBubbleUIControllerDelegate.
   explicit DownloadBubbleUIControllerDelegate(Profile* profile)
       : profile_(profile) {
-    if (profile_->IsOffTheRecord()) {
+    // Enterprise Isolated Mode follows the regular profile's "Ask where to
+    // save each file" setting instead of always prompting like Incognito.
+    if (profile_->IsOffTheRecord() &&
+        !profile_->IsEnterpriseIsolatedModeProfile()) {
       profile_->GetPrefs()->SetBoolean(prefs::kPromptForDownload, true);
     }
   }

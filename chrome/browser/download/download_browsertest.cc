@@ -1282,11 +1282,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedDownloadTest, IsolatedModeDownload) {
   GURL url =
       embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
 
-  // Since |isolated_browser| is a separate browser, we have to set it up
-  // explicitly.
-  isolated_browser->GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kPromptForDownload, false);
-
   DownloadAndWait(isolated_browser, url);
 
   // We should still have 2 windows.
@@ -1301,6 +1296,78 @@ IN_PROC_BROWSER_TEST_F(IsolatedDownloadTest, IsolatedModeDownload) {
   base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
   CheckDownload(browser(), file, file);
 }
+
+// The download bubble UI (not used on ChromeOS) forces Incognito to prompt for
+// the download location, but Isolated Mode follows the regular profile's
+// setting.
+#if !BUILDFLAG(IS_CHROMEOS)
+// Test that Incognito always prompts for the download location, regardless of
+// the regular profile's setting.
+IN_PROC_BROWSER_TEST_F(DownloadTest, IncognitoForcesPromptForDownload) {
+  SetPromptForDownload(browser(), false);
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito);
+  ASSERT_TRUE(incognito->GetProfile()->IsIncognitoProfile());
+  // Make sure the download UI controller is initialized for the profile.
+  ASSERT_TRUE(DownloadManagerForBrowser(incognito));
+
+  EXPECT_TRUE(incognito->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kPromptForDownload));
+}
+
+// Test that Isolated Mode follows the regular profile's "Ask where to save each
+// file" setting instead of always prompting like Incognito.
+IN_PROC_BROWSER_TEST_F(IsolatedDownloadTest,
+                       FollowsRegularProfilePromptForDownload) {
+  SetPromptForDownload(browser(), false);
+  BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(isolated_browser);
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  // Make sure the download UI controller is initialized for the profile.
+  ASSERT_TRUE(DownloadManagerForBrowser(isolated_browser));
+  // DownloadTestBase only intercepts file choosers for the regular profile.
+  // Intercept them for the Isolated Mode profile too, so an unexpected prompt
+  // cancels the download instead of opening a native dialog.
+  DownloadTestFileActivityObserver file_activity_observer(
+      isolated_browser->GetProfile());
+
+  PrefService* isolated_prefs = isolated_browser->GetProfile()->GetPrefs();
+  EXPECT_FALSE(isolated_prefs->GetBoolean(prefs::kPromptForDownload));
+
+  SetPromptForDownload(browser(), true);
+  EXPECT_TRUE(isolated_prefs->GetBoolean(prefs::kPromptForDownload));
+  SetPromptForDownload(browser(), false);
+  EXPECT_FALSE(isolated_prefs->GetBoolean(prefs::kPromptForDownload));
+
+  // A download in Isolated Mode completes without a file chooser. The pref is
+  // intentionally not set on the Isolated Mode profile itself.
+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url =
+      embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
+  std::unique_ptr<content::DownloadTestObserver> observer(
+      CreateWaiter(isolated_browser, 1));
+  ui_test_utils::NavigateToURLWithDisposition(
+      isolated_browser, url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  observer->WaitForFinished();
+  EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
+  EXPECT_FALSE(file_activity_observer.TestAndResetDidShowFileChooser());
+
+  // Enabling "Ask where to save each file" on the regular profile makes
+  // Isolated Mode show the file chooser.
+  SetPromptForDownload(browser(), true);
+  file_activity_observer.EnableFileChooser(true);
+  observer.reset(CreateWaiter(isolated_browser, 1));
+  ui_test_utils::NavigateToURLWithDisposition(
+      isolated_browser, url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  observer->WaitForFinished();
+  EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
+  EXPECT_TRUE(file_activity_observer.TestAndResetDidShowFileChooser());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Download one file on-record, then download the same file off-record, and test
 // that the filename is deduplicated.  The previous test tests for a specific
