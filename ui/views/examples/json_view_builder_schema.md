@@ -42,7 +42,6 @@ Any time [`JsonViewBuilder`](file:///C:/src/chromium/src/ui/views/examples/json_
             "StyledLabel",
             "TabbedPane",
             "TableLayoutView",
-            "TableView",
             "Textarea",
             "Textfield",
             "Throbber",
@@ -356,19 +355,6 @@ Any time [`JsonViewBuilder`](file:///C:/src/chromium/src/ui/views/examples/json_
         "vertical_resize": { "type": "number", "default": 0.0 }
       }
     },
-    "TableViewColumn": {
-      "type": "object",
-      "properties": {
-        "id": { "type": "integer" },
-        "title": { "type": "string" },
-        "alignment": { "type": "string", "enum": ["LEFT", "CENTER", "RIGHT"], "default": "LEFT" },
-        "width": { "type": "integer", "default": -1 },
-        "percent": { "type": "number" },
-        "min_width": { "type": "integer" },
-        "sortable": { "type": "boolean", "default": true }
-      },
-      "required": ["title"]
-    },
     "StyledLabelRange": {
       "type": "object",
       "properties": {
@@ -431,7 +417,6 @@ All views inherit these properties:
 | **`SmoothedThrobber`** | • `StartDelayMs` (`integer`): Delay before animating.<br>• `StopDelayMs` (`integer`): Delay before stopping.<br>• `running` (`boolean`): Start/stop animation. |
 | **`ScrollView`** | • `UseContentsPreferredSize` (`boolean`): Uses the contents' preferred size when laying out if one exists.<br>• `HorizontalScrollBarMode` (`string`): `kDisabled`, `kHiddenButEnabled`, `kEnabled`.<br>• `VerticalScrollBarMode` (`string`): `kDisabled`, `kHiddenButEnabled`, `kEnabled`.<br>• `AllowKeyboardScrolling` (`boolean`): Enable arrow key scrolling.<br>• `DrawOverflowIndicator` (`boolean`): Draw overflow edge indicators.<br>• `HasFocusIndicator` (`boolean`): Show focus indicator.<br>• `TreatAllScrollEventsAsHorizontal` (`boolean`): Treat all scroll events as horizontal.<br>• **Children rule**: Must have exactly one child in `children` (installed as the scroll contents). |
 | **`TabbedPane`** | • `SelectedTabIndex` (`integer`): 0-based selected tab index.<br>• `DrawTabDivider` (`boolean`): Draw line divider below tab strip.<br>• **Children rule**: Each child represents a tab page and can specify `"title"` or `"TabTitle"`. |
-| **`TableView`** | • `TableType` (`string`): `TEXT_ONLY` or `ICON_AND_TEXT`.<br>• `SingleSelection` (`boolean`): Single row selection mode.<br>• `columns` (`array`): Column definitions (`id`, `title`, `alignment`, `width`, `percent`, `min_width`, `sortable`).<br>• `rows` / `data` (`array`): 2D array of row cell values `[["Cell 0,0", "Cell 0,1"], ...]`. |
 | **`BoxLayoutView`** / **`FlexLayoutView`** / **`TableLayoutView`** | • Host views that incorporate layout managers and expose layout properties directly on the view. |
 
 ---

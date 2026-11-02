@@ -34,7 +34,6 @@
 #include "ui/views/controls/slider.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
-#include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
@@ -767,50 +766,6 @@ TEST_F(JsonViewBuilderTest, TestTabbedPane) {
       views::AsViewClass<views::Label>(tabbed_pane->GetTabContents(1));
   ASSERT_NE(label2, nullptr);
   EXPECT_EQ(label2->GetText(), u"Advanced Settings Content");
-}
-
-TEST_F(JsonViewBuilderTest, TestTableView) {
-  const char kJson[] = R"({
-    "type": "TableView",
-    "properties": {
-      "TableType": "TEXT_ONLY",
-      "SingleSelection": true,
-      "columns": [
-        { "id": 0, "title": "Fruit", "percent": 0.5, "sortable": true },
-        { "id": 1, "title": "Color", "percent": 0.3, "alignment": "CENTER" },
-        { "id": 2, "title": "Price", "percent": 0.2, "alignment": "RIGHT" }
-      ],
-      "rows": [
-        ["Apple", "Red", "$1.20"],
-        ["Banana", "Yellow", "$0.50"],
-        ["Kiwi", "Green", "$2.00"]
-      ]
-    }
-  })";
-
-  std::string error_msg;
-  auto result = base::JSONReader::ReadAndReturnValueWithError(
-      kJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(result.has_value()) << result.error().message;
-
-  std::unique_ptr<views::View> view =
-      JsonViewBuilder::BuildView(result->GetDict(), &error_msg);
-  ASSERT_NE(view, nullptr) << error_msg;
-
-  bool apply_ok = JsonViewBuilder::ApplyPropertiesRecursive(
-      view.get(), result->GetDict(), &error_msg);
-  EXPECT_TRUE(apply_ok) << error_msg;
-
-  views::TableView* table_view =
-      views::AsViewClass<views::TableView>(view.get());
-  ASSERT_NE(table_view, nullptr);
-  EXPECT_EQ(table_view->GetRowCount(), 3u);
-  EXPECT_TRUE(table_view->GetSingleSelection());
-  EXPECT_EQ(table_view->model()->GetText(0, 0), u"Apple");
-  EXPECT_EQ(table_view->model()->GetText(0, 1), u"Red");
-  EXPECT_EQ(table_view->model()->GetText(0, 2), u"$1.20");
-  EXPECT_EQ(table_view->model()->GetText(1, 0), u"Banana");
-  EXPECT_EQ(table_view->model()->GetText(2, 0), u"Kiwi");
 }
 
 TEST_F(JsonViewBuilderTest, TestIsDialogOrBubbleSpec) {

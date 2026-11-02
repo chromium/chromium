@@ -39,7 +39,6 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/table_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
@@ -69,7 +68,6 @@
 #include "ui/views/controls/slider.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
-#include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
@@ -88,52 +86,6 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
-
-namespace views::examples {
-
-class JsonTableModel : public ui::TableModel {
- public:
-  JsonTableModel(std::vector<ui::TableColumn> columns,
-                 std::vector<std::vector<std::u16string>> rows)
-      : columns_(std::move(columns)), rows_(std::move(rows)) {}
-  ~JsonTableModel() override = default;
-
-  size_t RowCount() const override { return rows_.size(); }
-
-  std::u16string GetText(size_t row, int column_id) const override {
-    if (row >= rows_.size()) {
-      return u"";
-    }
-    for (size_t col_idx = 0; col_idx < columns_.size(); ++col_idx) {
-      if (columns_[col_idx].id == column_id) {
-        if (col_idx < rows_[row].size()) {
-          return rows_[row][col_idx];
-        }
-        break;
-      }
-    }
-    return u"";
-  }
-
-  void SetObserver(ui::TableModelObserver* observer) override {
-    observer_ = observer;
-  }
-
-  int CompareValues(size_t row1, size_t row2, int column_id) const override {
-    std::u16string text1 = GetText(row1, column_id);
-    std::u16string text2 = GetText(row2, column_id);
-    return text1.compare(text2);
-  }
-
- private:
-  std::vector<ui::TableColumn> columns_;
-  std::vector<std::vector<std::u16string>> rows_;
-  raw_ptr<ui::TableModelObserver> observer_ = nullptr;
-};
-
-}  // namespace views::examples
-
-DEFINE_UI_CLASS_PROPERTY_TYPE(views::examples::JsonTableModel*)
 
 DEFINE_ENUM_CONVERTERS(
     views::InsetsMetric,
@@ -306,8 +258,6 @@ DEFINE_ENUM_CONVERTERS(ui::mojom::DialogButton,
 namespace views::examples {
 
 namespace {
-
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(JsonTableModel, kJsonTableModelKey)
 
 std::optional<SkColor> ParseColor(const std::u16string& str,
                                   const views::View* view) {
@@ -1497,124 +1447,6 @@ class ComponentHandler<views::TabbedPane> : public ViewHandlerBase {
   }
 };
 
-// Specialization: TableView
-template <>
-class ComponentHandler<views::TableView> : public ViewHandlerBase {
- public:
-  static ComponentHandler<views::TableView>* GetInstance() {
-    static base::NoDestructor<ComponentHandler<views::TableView>> instance;
-    return instance.get();
-  }
-
-  static ViewHandlerBase* GetBaseInstance() { return GetInstance(); }
-
-  std::unique_ptr<views::View> Instantiate(const base::DictValue& dict,
-                                           std::string* error_msg) override {
-    return std::make_unique<views::TableView>();
-  }
-
-  bool ApplyProperties(views::View* view,
-                       const base::DictValue& dict,
-                       std::string* error_msg) override {
-    auto* table_view = views::AsViewClass<views::TableView>(view);
-    if (!table_view) {
-      *error_msg = "View is not a TableView";
-      return false;
-    }
-
-    const base::DictValue* properties = dict.FindDict("properties");
-    if (properties) {
-      const base::ListValue* columns_list = properties->FindList("columns");
-      const base::ListValue* rows_list = properties->FindList("rows");
-      if (!rows_list) {
-        rows_list = properties->FindList("data");
-      }
-      if (columns_list || rows_list) {
-        std::vector<ui::TableColumn> columns;
-        if (columns_list) {
-          int default_id = 0;
-          for (const auto& col_val : *columns_list) {
-            if (col_val.is_dict()) {
-              columns.push_back(
-                  ParseTableColumn(col_val.GetDict(), default_id++));
-            }
-          }
-        }
-        std::vector<std::vector<std::u16string>> rows;
-        if (rows_list) {
-          rows = ParseTableRows(*rows_list);
-        }
-        if (columns.empty() && !rows.empty()) {
-          size_t max_cols = 0;
-          for (const auto& r : rows) {
-            max_cols = std::max(max_cols, r.size());
-          }
-          for (size_t c = 0; c < max_cols; ++c) {
-            ui::TableColumn col;
-            col.id = static_cast<int>(c);
-            col.title = base::UTF8ToUTF16(base::StringPrintf("Column %zu", c));
-            col.sortable = true;
-            columns.push_back(col);
-          }
-        }
-        auto table_model =
-            std::make_unique<JsonTableModel>(columns, std::move(rows));
-        table_view->SetProperty(kJsonTableModelKey, std::move(table_model));
-        table_view->SetColumns(columns);
-        table_view->SetModel(table_view->GetProperty(kJsonTableModelKey));
-      }
-    }
-
-    return ApplyStandardProperties(view, dict, error_msg,
-                                   {"columns", "rows", "data"});
-  }
-
- private:
-  static ui::TableColumn ParseTableColumn(const base::DictValue& dict,
-                                          int default_id) {
-    ui::TableColumn col;
-    col.id = dict.FindInt("id").value_or(default_id);
-    const std::string* title_str = dict.FindString("title");
-    if (title_str) {
-      col.title = base::UTF8ToUTF16(*title_str);
-    }
-    const std::string* align_str = dict.FindString("alignment");
-    if (align_str) {
-      if (base::EqualsCaseInsensitiveASCII(*align_str, "RIGHT")) {
-        col.alignment = ui::TableColumn::RIGHT;
-      } else if (base::EqualsCaseInsensitiveASCII(*align_str, "CENTER")) {
-        col.alignment = ui::TableColumn::CENTER;
-      } else {
-        col.alignment = ui::TableColumn::LEFT;
-      }
-    }
-    col.width = dict.FindInt("width").value_or(-1);
-    if (std::optional<double> pct = dict.FindDouble("percent")) {
-      col.percent = static_cast<float>(*pct);
-    }
-    if (std::optional<int> min_w = dict.FindInt("min_width")) {
-      col.min_visible_width = *min_w;
-    }
-    col.sortable = dict.FindBool("sortable").value_or(true);
-    return col;
-  }
-
-  static std::vector<std::vector<std::u16string>> ParseTableRows(
-      const base::ListValue& list) {
-    std::vector<std::vector<std::u16string>> rows;
-    for (const auto& row_val : list) {
-      std::vector<std::u16string> row_cells;
-      if (row_val.is_list()) {
-        for (const auto& cell_val : row_val.GetList()) {
-          row_cells.push_back(JsonValueToU16String(cell_val));
-        }
-      }
-      rows.push_back(std::move(row_cells));
-    }
-    return rows;
-  }
-};
-
 // Specialization: StyledLabel
 class StyledLabelHorizontalAlignmentProperty : public DynamicProperty {
  public:
@@ -2295,7 +2127,6 @@ static constexpr auto kViewRegistry = base::MakeFixedFlatMap<std::string_view,
     {"TabbedPane", &ComponentHandler<views::TabbedPane>::GetBaseInstance},
     {"TableLayoutView",
      &ComponentHandler<views::TableLayoutView>::GetBaseInstance},
-    {"TableView", &ComponentHandler<views::TableView>::GetBaseInstance},
     {"Textarea", &ComponentHandler<views::Textarea>::GetBaseInstance},
     {"Textfield", &ComponentHandler<views::Textfield>::GetBaseInstance},
     {"Throbber", &ComponentHandler<views::Throbber>::GetBaseInstance},
