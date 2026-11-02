@@ -8,6 +8,8 @@ source_set("model") {
     "enterprise_network_auth_service_factory_ios.mm",
     "enterprise_proxy_blocking_page.h",
     "enterprise_proxy_blocking_page.mm",
+    "enterprise_proxy_error.h",
+    "enterprise_proxy_error.mm",
     "enterprise_proxy_error_service_factory_ios.h",
     "enterprise_proxy_error_service_factory_ios.mm",
     "enterprise_proxy_service_factory_ios.h",

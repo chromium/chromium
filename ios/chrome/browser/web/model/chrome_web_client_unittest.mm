@@ -11,6 +11,9 @@
 
 #import "base/check_deref.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/ios/ns_error_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/run_loop.h"
 #import "base/strings/string_split.h"
@@ -19,6 +22,11 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/captive_portal/core/captive_portal_detector.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/enterprise/net/core/enterprise_proxy_error_data.h"
+#import "components/enterprise/net/core/enterprise_proxy_error_service.h"
+#import "components/enterprise/net/core/features.h"
+#import "components/enterprise/net/core/mock_enterprise_proxy_service.h"
+#import "components/keyed_service/core/keyed_service.h"
 #import "components/lookalikes/core/lookalike_url_util.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model.h"
@@ -34,6 +42,9 @@
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_service_factory_ios.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_java_script_feature.h"
@@ -67,12 +78,14 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/net_errors.h"
 #import "net/http/http_status_code.h"
+#import "net/log/net_log_with_source.h"
 #import "net/ssl/ssl_info.h"
 #import "net/test/cert_test_util.h"
 #import "net/test/test_data_directory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/public/mojom/fetch_api.mojom.h"
 #import "services/network/test/test_url_loader_factory.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -108,6 +121,18 @@ NSError* CreateTestError() {
                NSURLErrorFailingURLErrorKey :
                    [NSURL URLWithString:base::SysUTF8ToNSString(kTestUrl)]
              }]);
+}
+
+// Navigation failed with the enterprise proxy error.
+constexpr int64_t kEnterpriseProxyNavigationId = 1;
+constexpr char kEnterpriseProxyUrl[] = "https://proxy.example.com/";
+// Any code works, as `PrepareErrorPage()` only looks at the domain of the
+// enterprise proxy error.
+constexpr NSInteger kEnterpriseProxyErrorCode = 1;
+
+std::unique_ptr<KeyedService> BuildMockEnterpriseProxyService(ProfileIOS*) {
+  return std::make_unique<
+      testing::NiceMock<enterprise_net::MockEnterpriseProxyService>>();
 }
 }  // namespace
 
@@ -620,6 +645,99 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForHttpsOnlyModeError) {
   NSString* back_to_safety_string =
       l10n_util::GetNSString(IDS_HTTPS_ONLY_MODE_BACK_BUTTON);
   EXPECT_TRUE([page containsString:back_to_safety_string])
+      << base::SysNSStringToUTF8(page);
+}
+
+// Fixture with the enterprise proxy services that the enterprise proxy error
+// page needs.
+class ChromeWebClientEnterpriseProxyTest : public PlatformTest {
+ protected:
+  ChromeWebClientEnterpriseProxyTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {enterprise_net::kEnableDynamicRouteFetching,
+         enterprise_net::kEnterpriseProxyErrorHandling},
+        {});
+
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(EnterpriseProxyServiceFactoryIOS::GetInstance(),
+                              base::BindOnce(&BuildMockEnterpriseProxyService));
+    builder.AddTestingFactory(
+        EnterpriseProxyErrorServiceFactoryIOS::GetInstance(),
+        EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+    error_service_ =
+        EnterpriseProxyErrorServiceFactoryIOS::GetForProfile(profile_.get());
+
+    web_state_.SetBrowserState(profile_.get());
+    web_state_.SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
+    security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
+        &web_state_);
+  }
+
+  // Runs `PrepareErrorPage()` for `kEnterpriseProxyNavigationId`, failed with
+  // the enterprise proxy error, and returns the error page HTML. The web layer
+  // appends that error as the final underlying error of a net error.
+  NSString* PrepareEnterpriseProxyErrorPage() {
+    __block NSString* page = nil;
+    ChromeWebClient web_client;
+    web_client.PrepareErrorPage(
+        &web_state_, GURL(kTestUrl),
+        base::ios::ErrorWithAppendedUnderlyingError(
+            CreateTestError(),
+            [NSError errorWithDomain:kEnterpriseProxyErrorDomain
+                                code:kEnterpriseProxyErrorCode
+                            userInfo:nil]),
+        /*is_post=*/false,
+        /*is_off_the_record=*/false,
+        /*info=*/std::nullopt, kEnterpriseProxyNavigationId,
+        base::BindOnce(^(NSString* error_html) {
+          page = error_html;
+        }));
+    return page;
+  }
+
+  // Declared first so that the feature state is set before any other member
+  // inspects it.
+  base::test::ScopedFeatureList scoped_feature_list_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<enterprise_net::EnterpriseProxyErrorService> error_service_ = nullptr;
+  web::FakeWebState web_state_;
+};
+
+// Tests that `PrepareErrorPage` shows the Secure Gateway interstitial for an
+// enterprise proxy error, and takes the disguised error recorded for the
+// navigation.
+TEST_F(ChromeWebClientEnterpriseProxyTest,
+       PrepareErrorPageForEnterpriseProxyError) {
+  error_service_->RecordDisguisedError(
+      kEnterpriseProxyNavigationId,
+      enterprise_net::EnterpriseProxyErrorData(
+          GURL(kTestUrl), GURL(kEnterpriseProxyUrl), net::HTTP_BAD_GATEWAY,
+          enterprise_net::EnterpriseProxyErrorData::ErrorCategory::kOther),
+      net::NetLogWithSource());
+
+  NSString* page = PrepareEnterpriseProxyErrorPage();
+
+  NSString* heading =
+      l10n_util::GetNSString(IDS_ENTERPRISE_PROXY_OTHER_ERROR_HEADING);
+  EXPECT_TRUE([page containsString:heading]) << base::SysNSStringToUTF8(page);
+  EXPECT_FALSE(error_service_->TakeDisguisedError(kEnterpriseProxyNavigationId)
+                   .has_value());
+}
+
+// Tests that `PrepareErrorPage` shows the generic error page for a failed
+// tunnel connection for an enterprise proxy error when no disguised error is
+// recorded for the navigation.
+TEST_F(ChromeWebClientEnterpriseProxyTest,
+       PrepareErrorPageForEnterpriseProxyErrorWithoutRecordedError) {
+  NSString* page = PrepareEnterpriseProxyErrorPage();
+
+  ASSERT_TRUE(page);
+  NSString* error_string = base::SysUTF8ToNSString(
+      net::ErrorToShortString(net::ERR_TUNNEL_CONNECTION_FAILED));
+  EXPECT_TRUE([page containsString:error_string])
       << base::SysNSStringToUTF8(page);
 }
 
