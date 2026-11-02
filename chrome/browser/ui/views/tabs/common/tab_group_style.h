@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 // Default styling of tab groups.
 class TabGroupStyle {
@@ -21,6 +22,21 @@ class TabGroupStyle {
       TabStripOrientation orientation = TabStripOrientation::kHorizontal);
   static int GetFocusedChipCornerRadius(
       TabStripOrientation orientation = TabStripOrientation::kHorizontal);
+
+  // Corner radii for the group header and the Unfocus button, which sit
+  // against each other when a group is focused (the header follows the Unfocus
+  // button: below it in a vertical strip, after it in a horizontal one). The
+  // corners where they meet flatten to a small radius when focused and
+  // interpolate according to `animation_progress` (0.0 unfocused to 1.0
+  // focused) during a focus transition.
+  static gfx::RoundedCornersF GetHeaderCornerRadii(
+      TabStripOrientation orientation,
+      bool in_focused_state,
+      std::optional<float> animation_progress = std::nullopt);
+  static gfx::RoundedCornersF GetUnfocusButtonCornerRadii(
+      TabStripOrientation orientation,
+      std::optional<float> animation_progress = std::nullopt);
+
   static int GetEmptyChipSize();
   static int GetFocusedChipHeight();
   static gfx::Point GetTitleChipOffset(

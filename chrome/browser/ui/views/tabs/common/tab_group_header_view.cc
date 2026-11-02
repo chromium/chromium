@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 
-#include "base/i18n/rtl.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -35,6 +34,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -260,7 +260,7 @@ gfx::Size TabGroupHeaderView::CalculatePreferredSize(
     non_label_width += attention_indicator_->GetPreferredSize().width() +
                        (margins ? margins->width() : 0);
   }
-  non_label_width += GetHeaderInsets().width();
+  non_label_width += GetTargetHeaderInsets().width();
 
   int label_width =
       group_header_label_ ? group_header_label_->GetPreferredSize().width() : 0;
@@ -584,6 +584,16 @@ void TabGroupHeaderView::OnTabCountChanged() {
   }
 }
 
+void TabGroupHeaderView::SetFocusAnimationProgress(
+    std::optional<float> progress) {
+  if (focus_animation_progress_ == progress) {
+    return;
+  }
+  focus_animation_progress_ = progress;
+  SetInteriorMargin(GetHeaderInsets());
+  UpdateBackground();
+}
+
 void TabGroupHeaderView::UpdateIsCollapsed() {
   const bool is_collapsed = tab_group_visual_data_.is_collapsed();
   if (is_collapsed) {
@@ -667,7 +677,6 @@ void TabGroupHeaderView::UpdateColors() {
   if (!GetColorProvider()) {
     return;
   }
-  const SkColor background_color = GetBackgroundColor();
   const SkColor foreground_color = GetForegroundColor();
 
   // Update label.
@@ -711,9 +720,17 @@ void TabGroupHeaderView::UpdateColors() {
         foreground_color, kIconSize));
   }
 
-  // Update background.
-  SetBackground(
-      views::CreateRoundedRectBackground(background_color, GetCornerRadii()));
+  UpdateBackground();
+}
+
+void TabGroupHeaderView::UpdateBackground() {
+  if (!GetColorProvider()) {
+    return;
+  }
+  SetBackground(views::CreateRoundedRectBackground(
+      GetBackgroundColor(), TabGroupStyle::GetHeaderCornerRadii(
+                                orientation_, delegate_->IsGroupFocused(),
+                                focus_animation_progress_)));
 }
 
 void TabGroupHeaderView::UpdateEditorBubbleButtonVisibility(
@@ -791,30 +808,33 @@ int TabGroupHeaderView::GetCornerRadius() const {
              : TabGroupStyle::GetChipCornerRadius(orientation_);
 }
 
-gfx::RoundedCornersF TabGroupHeaderView::GetCornerRadii() const {
-  const float radius = GetCornerRadius();
-  if (!delegate_->IsGroupFocused()) {
-    return gfx::RoundedCornersF(radius);
-  }
-  constexpr float kFlatRadius = 2.0f;
-  if (orientation_ == TabStripOrientation::kVertical) {
-    return gfx::RoundedCornersF(kFlatRadius, kFlatRadius, radius, radius);
-  }
-  return base::i18n::IsRTL()
-             ? gfx::RoundedCornersF(radius, kFlatRadius, kFlatRadius, radius)
-             : gfx::RoundedCornersF(kFlatRadius, radius, radius, kFlatRadius);
-}
-
 int TabGroupHeaderView::GetHorizontalInset() const {
   return TabGroupStyle::GetInsetsForHeaderChip(orientation_).left();
 }
 
-gfx::Insets TabGroupHeaderView::GetHeaderInsets() const {
+gfx::Insets TabGroupHeaderView::GetTargetHeaderInsets() const {
   if (orientation_ == TabStripOrientation::kHorizontal &&
       delegate_->IsGroupFocused()) {
     return TabGroupStyle::GetInsetsForFocusedHeaderChip();
   }
   return gfx::Insets::VH(0, GetHorizontalInset());
+}
+
+gfx::Insets TabGroupHeaderView::GetHeaderInsets() const {
+  if (orientation_ == TabStripOrientation::kHorizontal &&
+      focus_animation_progress_.has_value()) {
+    const float p = *focus_animation_progress_;
+    const gfx::Insets unfocused = gfx::Insets::VH(0, GetHorizontalInset());
+    const gfx::Insets focused = TabGroupStyle::GetInsetsForFocusedHeaderChip();
+    return gfx::Insets::TLBR(
+        gfx::Tween::LinearIntValueBetween(p, unfocused.top(), focused.top()),
+        gfx::Tween::LinearIntValueBetween(p, unfocused.left(), focused.left()),
+        gfx::Tween::LinearIntValueBetween(p, unfocused.bottom(),
+                                          focused.bottom()),
+        gfx::Tween::LinearIntValueBetween(p, unfocused.right(),
+                                          focused.right()));
+  }
+  return GetTargetHeaderInsets();
 }
 
 BEGIN_METADATA(TabGroupHeaderView)

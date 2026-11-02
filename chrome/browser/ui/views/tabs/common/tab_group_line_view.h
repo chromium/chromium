@@ -28,6 +28,10 @@ class TabGroupLineView : public views::View {
   TabGroupLineView& operator=(const TabGroupLineView&) = delete;
   ~TabGroupLineView() override;
 
+  // Sets the opacity applied to the line color when painting. Used to fade the
+  // line in as part of the focus mode exit animation.
+  void SetOpacity(float opacity);
+
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
@@ -47,6 +51,7 @@ class TabGroupLineView : public views::View {
   std::optional<SkPath> GetActiveOverlinePath(float scale) const;
 
   const raw_ref<TabGroupView> tab_group_view_;
+  float opacity_ = 1.0f;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_LINE_VIEW_H_

@@ -601,6 +601,10 @@ bool TabGroupView::IsGroupFocused() const {
          GetTabGroup().id();
 }
 
+float TabGroupView::GetFocusProgress() const {
+  return IsGroupFocused() ? 1.0f : 0.0f;
+}
+
 bool TabGroupView::IsUnfocusButtonFocused() const {
   return unfocus_header_ && unfocus_header_->HasFocus();
 }

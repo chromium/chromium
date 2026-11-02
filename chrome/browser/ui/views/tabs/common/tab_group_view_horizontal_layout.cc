@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_layout_utils.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -127,25 +128,30 @@ views::ProposedLayout TabGroupViewHorizontalLayout::CalculateProposedLayout(
   // Place the group header.
   int header_width = 0;
   if (TabGroupView().group_header_) {
-    const bool is_focused = TabGroupView().IsGroupFocused();
-    const int header_height = is_focused ? TabGroupStyle::GetFocusedChipHeight()
-                                         : TabGroupStyle::GetEmptyChipSize();
+    // The header chip grows taller and the Unfocus button slides in ahead of
+    // it as the group gains focus; both reverse as it loses focus.
+    const float focus_progress = TabGroupView().GetFocusProgress();
+    const int focused_height = TabGroupStyle::GetFocusedChipHeight();
+    const int header_height = gfx::Tween::LinearIntValueBetween(
+        focus_progress, TabGroupStyle::GetEmptyChipSize(), focused_height);
     const int header_y = TabGroupStyle::GetTitleChipOffset(header_height).y();
     int x_offset = 0;
     if (TabGroupView().unfocus_header_) {
-      if (is_focused) {
-        const int unfocus_width =
-            TabGroupView()
-                .unfocus_header_
-                ->GetPreferredSize(views::SizeBounds({}, header_height))
-                .width();
-        gfx::Rect unfocus_bounds(0, header_y, unfocus_width, header_height);
-        layouts.child_layouts.emplace_back(TabGroupView().unfocus_header_.get(),
-                                           true, unfocus_bounds);
-        x_offset = unfocus_width + kFocusedHeadersGap;
-      } else {
-        layouts.child_layouts.emplace_back(TabGroupView().unfocus_header_.get(),
-                                           false, gfx::Rect());
+      const int full_unfocus_width =
+          TabGroupView()
+              .unfocus_header_
+              ->GetPreferredSize(views::SizeBounds({}, focused_height))
+              .width();
+      const int unfocus_width = gfx::Tween::LinearIntValueBetween(
+          focus_progress, 0, full_unfocus_width);
+      const bool unfocus_visible = unfocus_width > 0;
+      layouts.child_layouts.emplace_back(
+          TabGroupView().unfocus_header_.get(), unfocus_visible,
+          unfocus_visible ? gfx::Rect(0, header_y, unfocus_width, header_height)
+                          : gfx::Rect());
+      if (unfocus_visible) {
+        x_offset = unfocus_width + gfx::Tween::LinearIntValueBetween(
+                                       focus_progress, 0, kFocusedHeadersGap);
       }
     }
     const int main_header_width =

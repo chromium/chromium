@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/i18n/rtl.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -47,8 +48,17 @@ TabGroupLineView::TabGroupLineView(TabGroupView& tab_group_view)
 
 TabGroupLineView::~TabGroupLineView() = default;
 
+void TabGroupLineView::SetOpacity(float opacity) {
+  if (opacity_ == opacity) {
+    return;
+  }
+  opacity_ = opacity;
+  SchedulePaint();
+}
+
 void TabGroupLineView::OnPaint(gfx::Canvas* canvas) {
-  if (!tab_group_view_->GetColorProvider() || !tab_group_view_->GetWidget()) {
+  if (opacity_ <= 0.0f || !tab_group_view_->GetColorProvider() ||
+      !tab_group_view_->GetWidget()) {
     return;
   }
 
@@ -56,6 +66,10 @@ void TabGroupLineView::OnPaint(gfx::Canvas* canvas) {
       tab_group_view_->GetColorProvider()->GetColor(GetTabGroupTabStripColorId(
           tab_group_view_->tab_group_visual_data().color(),
           tab_group_view_->GetWidget()->ShouldPaintAsActive()));
+  if (opacity_ < 1.0f) {
+    color = SkColorSetA(color,
+                        base::ClampRound<U8CPU>(SkColorGetA(color) * opacity_));
+  }
 
   if (tab_group_view_->orientation() == TabStripOrientation::kVertical) {
     PaintVertical(canvas, color);

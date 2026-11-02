@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -56,22 +57,27 @@ views::ProposedLayout TabGroupViewVerticalLayout::CalculateProposedLayout(
   }
 
   if (TabGroupView().unfocus_header_) {
-    if (TabGroupView().IsGroupFocused()) {
-      gfx::Rect unfocus_bounds;
-      unfocus_bounds.set_x(header_bounds.x());
-      unfocus_bounds.set_y(height);
-      unfocus_bounds.set_height(kGroupHeaderHeight);
-      if (size_bounds.width().is_bounded()) {
-        unfocus_bounds.set_width(size_bounds.width().value() -
-                                 unfocus_bounds.x());
-      }
-      layouts.child_layouts.emplace_back(TabGroupView().unfocus_header_.get(),
-                                         true, unfocus_bounds);
-      height += unfocus_bounds.height() + kFocusedHeadersGap;
+    // The Unfocus button grows in above the header as the group gains focus
+    // and shrinks away as it loses focus.
+    const float focus_progress = TabGroupView().GetFocusProgress();
+    gfx::Rect unfocus_bounds;
+    unfocus_bounds.set_x(header_bounds.x());
+    unfocus_bounds.set_y(height);
+    unfocus_bounds.set_height(gfx::Tween::LinearIntValueBetween(
+        focus_progress, 0, kGroupHeaderHeight));
+    if (size_bounds.width().is_bounded()) {
+      unfocus_bounds.set_width(size_bounds.width().value() -
+                               unfocus_bounds.x());
+    }
+    const bool unfocus_visible = unfocus_bounds.height() > 0;
+    layouts.child_layouts.emplace_back(
+        TabGroupView().unfocus_header_.get(), unfocus_visible,
+        unfocus_visible ? unfocus_bounds : gfx::Rect());
+    if (unfocus_visible) {
+      height +=
+          unfocus_bounds.height() + gfx::Tween::LinearIntValueBetween(
+                                        focus_progress, 0, kFocusedHeadersGap);
       width = std::max(width, unfocus_bounds.width());
-    } else {
-      layouts.child_layouts.emplace_back(TabGroupView().unfocus_header_.get(),
-                                         false, gfx::Rect());
     }
   }
 

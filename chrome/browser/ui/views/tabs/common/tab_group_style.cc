@@ -6,11 +6,14 @@
 
 #include <optional>
 
+#include "base/i18n/rtl.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace {
 
@@ -19,6 +22,7 @@ constexpr int kEmptyChipSize = 20;
 constexpr int kFocusedChipHeight = 28;
 constexpr int kCornerRadius = 6;
 constexpr int kFocusedCornerRadius = 10;
+constexpr int kFocusedInnerCornerRadius = 2;
 constexpr int kVerticalCornerRadius = 8;
 constexpr int kVerticalHeaderChipHorizontalInset = 8;
 constexpr int kTabGroupOverlapAdjustment = 2;
@@ -46,6 +50,49 @@ int TabGroupStyle::GetFocusedChipCornerRadius(TabStripOrientation orientation) {
   return orientation == TabStripOrientation::kHorizontal
              ? kFocusedCornerRadius
              : kVerticalCornerRadius;
+}
+
+// static
+gfx::RoundedCornersF TabGroupStyle::GetHeaderCornerRadii(
+    TabStripOrientation orientation,
+    bool in_focused_state,
+    std::optional<float> animation_progress) {
+  const float resting_radius = GetChipCornerRadius(orientation);
+  if (!animation_progress.has_value() && !in_focused_state) {
+    return gfx::RoundedCornersF(resting_radius);
+  }
+  const float progress = animation_progress.value_or(1.0f);
+  const float inner_radius = gfx::Tween::FloatValueBetween(
+      progress, resting_radius, kFocusedInnerCornerRadius);
+  const float outer_radius = gfx::Tween::FloatValueBetween(
+      progress, resting_radius, GetFocusedChipCornerRadius(orientation));
+  if (orientation == TabStripOrientation::kVertical) {
+    return gfx::RoundedCornersF(inner_radius, inner_radius, outer_radius,
+                                outer_radius);
+  }
+  return base::i18n::IsRTL() ? gfx::RoundedCornersF(outer_radius, inner_radius,
+                                                    inner_radius, outer_radius)
+                             : gfx::RoundedCornersF(inner_radius, outer_radius,
+                                                    outer_radius, inner_radius);
+}
+
+// static
+gfx::RoundedCornersF TabGroupStyle::GetUnfocusButtonCornerRadii(
+    TabStripOrientation orientation,
+    std::optional<float> animation_progress) {
+  const float resting_radius = GetChipCornerRadius(orientation);
+  const float progress = animation_progress.value_or(1.0f);
+  const float inner_radius = gfx::Tween::FloatValueBetween(
+      progress, resting_radius, kFocusedInnerCornerRadius);
+  const float outer_radius = GetFocusedChipCornerRadius(orientation);
+  if (orientation == TabStripOrientation::kVertical) {
+    return gfx::RoundedCornersF(outer_radius, outer_radius, inner_radius,
+                                inner_radius);
+  }
+  return base::i18n::IsRTL() ? gfx::RoundedCornersF(inner_radius, outer_radius,
+                                                    outer_radius, inner_radius)
+                             : gfx::RoundedCornersF(outer_radius, inner_radius,
+                                                    inner_radius, outer_radius);
 }
 
 // static

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/i18n/rtl.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -25,7 +25,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -48,6 +48,7 @@ TabGroupUnfocusButton::TabGroupUnfocusButton(Delegate& delegate,
   SetAppearDisabledInInactiveWidget(false);
   SetProperty(views::kElementIdentifierKey, kUnfocusTabGroupButtonElementId);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label()->SetElideBehavior(gfx::NO_ELIDE);
   const gfx::Insets insets =
       orientation_ == TabStripOrientation::kHorizontal
           ? TabGroupStyle::GetInsetsForFocusedUnfocusChip()
@@ -82,32 +83,34 @@ void TabGroupUnfocusButton::SetGroupColorData(
   UpdateColors();
 }
 
+void TabGroupUnfocusButton::SetFocusAnimationState(
+    std::optional<float> corner_progress,
+    float label_opacity) {
+  if (focus_corner_progress_ == corner_progress &&
+      label_opacity_ == label_opacity) {
+    return;
+  }
+  focus_corner_progress_ = corner_progress;
+  label_opacity_ = label_opacity;
+  UpdateColors();
+}
+
 void TabGroupUnfocusButton::UpdateColors() {
   if (!GetColorProvider()) {
     return;
   }
-  const SkColor bg = GetBackgroundColor();
-  const SkColor fg = GetForegroundColor();
-  SetEnabledTextColors(fg);
+  const SkColor text_color = GetTextColor();
+  SetEnabledTextColors(text_color);
 
   if (is_collapsed_) {
-    SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kFilterTiltShiftIcon, fg, kIconSize));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(kFilterTiltShiftIcon,
+                                                 text_color, kIconSize));
   }
 
-  const float radius = TabGroupStyle::GetFocusedChipCornerRadius(orientation_);
-  constexpr float kFlatRadius = 2.0f;
-  gfx::RoundedCornersF radii;
-  if (orientation_ == TabStripOrientation::kVertical) {
-    radii = gfx::RoundedCornersF(radius, radius, kFlatRadius, kFlatRadius);
-  } else {
-    radii =
-        base::i18n::IsRTL()
-            ? gfx::RoundedCornersF(kFlatRadius, radius, radius, kFlatRadius)
-            : gfx::RoundedCornersF(radius, kFlatRadius, kFlatRadius, radius);
-  }
-  SetBackground(views::CreateRoundedRectBackground(bg, radii));
+  SetBackground(views::CreateRoundedRectBackground(
+      GetBackgroundColor(), TabGroupStyle::GetUnfocusButtonCornerRadii(
+                                orientation_, focus_corner_progress_)));
 }
 
 SkColor TabGroupUnfocusButton::GetBackgroundColor() const {
@@ -144,6 +147,15 @@ SkColor TabGroupUnfocusButton::GetForegroundColor() const {
   return color_utils::GetColorWithMaxContrast(bg);
 }
 
+SkColor TabGroupUnfocusButton::GetTextColor() const {
+  const SkColor fg = GetForegroundColor();
+  if (label_opacity_ >= 1.0f) {
+    return fg;
+  }
+  return SkColorSetA(fg,
+                     base::ClampRound<U8CPU>(SkColorGetA(fg) * label_opacity_));
+}
+
 void TabGroupUnfocusButton::UpdateCollapsedState() {
   const int collapsed_width =
       tabs::kVerticalTabStripCollapsedWidth -
@@ -161,8 +173,8 @@ void TabGroupUnfocusButton::UpdateTextAndIcon() {
   if (is_collapsed_) {
     SetText(std::u16string());
     SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(
-                      kFilterTiltShiftIcon, GetForegroundColor(), kIconSize));
+                  ui::ImageModel::FromVectorIcon(kFilterTiltShiftIcon,
+                                                 GetTextColor(), kIconSize));
   } else {
     SetText(l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON));
     SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());

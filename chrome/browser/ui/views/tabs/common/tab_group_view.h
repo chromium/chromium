@@ -98,6 +98,12 @@ class TabGroupView : public TabCollectionZOrderManager,
 
   bool IsCollapsed() const;
 
+  // Progress of this group's focus mode layout, from 0.0 (unfocused layout) to
+  // 1.0 (focused layout). The group layouts size the Unfocus button, its gap,
+  // and (horizontally) the header chip height from this so that intermediate
+  // values produce intermediate layouts.
+  float GetFocusProgress() const;
+
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndex(
       const gfx::Point& point_in_local_coords);
 

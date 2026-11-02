@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_UNFOCUS_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_UNFOCUS_BUTTON_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
@@ -33,6 +35,13 @@ class TabGroupUnfocusButton : public views::LabelButton {
 
   void SetGroupColorData(tab_groups::TabGroupColorId color_id,
                          bool is_ephemeral);
+
+  // Sets the focus transition state. `corner_progress` goes from 0.0 (corners
+  // abutting the header fully rounded) to 1.0 (flattened, as when focused);
+  // `nullopt` restores the resting focused shape. `label_opacity` is applied
+  // to the text and collapsed icon color.
+  void SetFocusAnimationState(std::optional<float> corner_progress,
+                              float label_opacity);
   void UpdateColors();
   void UpdateAccessibleName();
 
@@ -49,6 +58,8 @@ class TabGroupUnfocusButton : public views::LabelButton {
  private:
   SkColor GetBackgroundColor() const;
   SkColor GetForegroundColor() const;
+  // Foreground color with `label_opacity_` applied.
+  SkColor GetTextColor() const;
   void UpdateCollapsedState();
   void UpdateTextAndIcon();
 
@@ -57,6 +68,8 @@ class TabGroupUnfocusButton : public views::LabelButton {
   tab_groups::TabGroupColorId color_id_ = tab_groups::TabGroupColorId::kGrey;
   bool is_ephemeral_ = false;
   bool is_collapsed_ = false;
+  std::optional<float> focus_corner_progress_;
+  float label_opacity_ = 1.0f;
   base::CallbackListSubscription paint_as_active_subscription_;
 };
 

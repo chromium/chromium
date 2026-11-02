@@ -251,6 +251,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     ":impl",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/frame",
