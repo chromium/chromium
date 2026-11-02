@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import android.content.Intent;
+import android.view.WindowManager;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -19,6 +20,21 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
  */
 @NullMarked
 public class SendTabToSelfShareTargetActivity extends AsyncInitializationActivity {
+    @Override
+    protected void performPreInflationStartup() {
+        super.performPreInflationStartup();
+        // Ensure this invisible activity never intercepts touch or key events in the underlying
+        // app while waiting for the send operation to complete. Setting alpha = 0f is also required
+        // on Android 12+ (API 31+) so InputDispatcher does not block cross-UID touches passing
+        // through this FLAG_NOT_TOUCHABLE window.
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.flags |=
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        params.alpha = 0f;
+        getWindow().setAttributes(params);
+    }
+
     @Override
     protected void triggerLayoutInflation() {
         // This activity has no layout. Signal inflation completion immediately.
@@ -44,7 +60,9 @@ public class SendTabToSelfShareTargetActivity extends AsyncInitializationActivit
             ProfileProvider profileProvider = getProfileProviderSupplier().get();
             if (profileProvider != null) {
                 Profile profile = profileProvider.getOriginalProfile();
-                OtherDevicesShortcutController.handleShareTargetIntent(this, intent, profile);
+                OtherDevicesShortcutController.handleShareTargetIntent(
+                        this, intent, profile, this::finish);
+                return;
             }
         }
         finish();

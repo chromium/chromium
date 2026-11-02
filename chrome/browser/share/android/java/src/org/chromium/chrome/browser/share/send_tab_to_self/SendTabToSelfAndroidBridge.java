@@ -20,6 +20,7 @@ import org.jni_zero.JniTypeToken;
 import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -60,6 +61,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -114,6 +116,7 @@ public class SendTabToSelfAndroidBridge {
      * @param targetDeviceName The name of the target device.
      * @param url The URL being shared.
      * @param title The title of the page being shared.
+     * @param entryPoint The entry point from which the share was triggered.
      */
     public static void sendTabToDevice(
             Profile profile,
@@ -123,15 +126,91 @@ public class SendTabToSelfAndroidBridge {
             String url,
             String title,
             @ShareEntryPoint int entryPoint) {
-        SendTabToSelfAndroidBridgeJni.get()
-                .sendTabToDevice(
-                        profile,
-                        webContents,
-                        targetDeviceSyncCacheGuid,
-                        url,
-                        title,
-                        result -> showPostSendUi(profile, webContents, result, targetDeviceName),
-                        entryPoint);
+        sendTabsToDevice(
+                profile,
+                webContents,
+                targetDeviceSyncCacheGuid,
+                targetDeviceName,
+                Collections.singletonList(url),
+                title,
+                entryPoint,
+                /* onComplete= */ null);
+    }
+
+    /**
+     * Sends one or more URLs to the target device and shows a single post-send UI once all sends
+     * complete.
+     *
+     * @param profile The profile to use for sending.
+     * @param webContents The web contents of the current tab, or null if not available.
+     * @param targetDeviceSyncCacheGuid The GUID of the target device.
+     * @param targetDeviceName The name of the target device.
+     * @param urls The list of URLs being shared.
+     * @param title The title of the page being shared (only used when sharing a single URL), or
+     *     null.
+     * @param entryPoint The entry point from which the share was triggered.
+     * @param onComplete Optional callback invoked after the post-send UI is shown.
+     */
+    public static void sendTabsToDevice(
+            Profile profile,
+            @Nullable WebContents webContents,
+            String targetDeviceSyncCacheGuid,
+            String targetDeviceName,
+            List<String> urls,
+            @Nullable String title,
+            @ShareEntryPoint int entryPoint,
+            @Nullable Runnable onComplete) {
+        ThreadUtils.assertOnUiThread();
+        if (urls.isEmpty()) {
+            if (onComplete != null) onComplete.run();
+            return;
+        }
+
+        String effectiveTitle = (urls.size() == 1 && title != null) ? title : "";
+        CommitConfirmationCallback callback =
+                new CommitConfirmationCallback() {
+                    private int mRemaining = urls.size();
+                    private boolean mHasSuccess;
+                    private @Nullable @SendTabToSelfResult Integer mFirstFailure;
+
+                    @Override
+                    public void onResult(@SendTabToSelfResult int result) {
+                        ThreadUtils.assertOnUiThread();
+                        if (result == SendTabToSelfResult.SUCCESS) {
+                            mHasSuccess = true;
+                        } else if (result != SendTabToSelfResult.SUCCESS_THROTTLED
+                                && mFirstFailure == null) {
+                            mFirstFailure = result;
+                        }
+                        mRemaining--;
+                        if (mRemaining == 0) {
+                            // On partial failure, intentionally surface the failure rather than
+                            // claiming full success (there are no partial-failure strings, and
+                            // retrying already-sent URLs is safely deduplicated via
+                            // SUCCESS_THROTTLED).
+                            @SendTabToSelfResult
+                            int finalResult =
+                                    mFirstFailure != null
+                                            ? mFirstFailure
+                                            : (mHasSuccess
+                                                    ? SendTabToSelfResult.SUCCESS
+                                                    : SendTabToSelfResult.SUCCESS_THROTTLED);
+                            showPostSendUi(profile, webContents, finalResult, targetDeviceName);
+                            if (onComplete != null) onComplete.run();
+                        }
+                    }
+                };
+        for (String url : urls) {
+            SendTabToSelfAndroidBridgeJni.get()
+                    .sendTabToDevice(
+                            profile,
+                            webContents,
+                            targetDeviceSyncCacheGuid,
+                            url,
+                            effectiveTitle,
+                            callback,
+                            entryPoint);
+        }
     }
 
     private static void showPostSendUi(
@@ -168,13 +247,13 @@ public class SendTabToSelfAndroidBridge {
             }
         }
 
-        // Fallback: Get the window from the last focused activity. This is used when the tab was
-        // shared via a DirectSend action in the system Share Sheet triggered by Chrome.
+        // Fallback: Get the window from a visible SnackbarManageable activity. This is used when
+        // the tab was shared via a Direct Share action in the system Share Sheet triggered from
+        // Chrome (where SendTabToSelfShareTargetActivity may currently be on top of a PAUSED
+        // ChromeTabbedActivity).
         if (snackbarManager == null) {
-            Activity currentActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-            if (currentActivity instanceof SnackbarManageable
-                    && !currentActivity.isFinishing()
-                    && !currentActivity.isDestroyed()) {
+            Activity currentActivity = findVisibleSnackbarManageableActivity();
+            if (currentActivity != null) {
                 snackbarManager = ((SnackbarManageable) currentActivity).getSnackbarManager();
                 context = currentActivity;
             }
@@ -191,11 +270,39 @@ public class SendTabToSelfAndroidBridge {
         return true;
     }
 
+    private static @Nullable Activity findVisibleSnackbarManageableActivity() {
+        Activity lastFocused = ApplicationStatus.getLastTrackedFocusedActivity();
+        if (isUsableSnackbarManageableActivity(lastFocused)) {
+            return lastFocused;
+        }
+        if (!ApplicationStatus.isInitialized()) return null;
+        Activity pausedCandidate = null;
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (!isUsableSnackbarManageableActivity(activity)) continue;
+            if (ApplicationStatus.getStateForActivity(activity) == ActivityState.RESUMED) {
+                return activity;
+            }
+            if (pausedCandidate == null) {
+                pausedCandidate = activity;
+            }
+        }
+        return pausedCandidate;
+    }
+
+    private static boolean isUsableSnackbarManageableActivity(@Nullable Activity activity) {
+        if (!(activity instanceof SnackbarManageable)
+                || activity.isFinishing()
+                || activity.isDestroyed()) {
+            return false;
+        }
+        if (!ApplicationStatus.isInitialized()) return true;
+        @ActivityState int state = ApplicationStatus.getStateForActivity(activity);
+        return state == ActivityState.RESUMED || state == ActivityState.PAUSED;
+    }
+
     // Shows the post-send toast; to be used as a fallback if the snackbar can't be shown.
     private static void showPostSendFallbackToast(
-            @SendTabToSelfResult int result,
-            String targetDeviceName,
-            @Nullable String userEmail) {
+            @SendTabToSelfResult int result, String targetDeviceName, @Nullable String userEmail) {
         Context context = ContextUtils.getApplicationContext();
         String message = getSnackbarMessage(context, result, targetDeviceName, userEmail);
         // Note: `org.chromium.ui.widget.Toast` does not work in this situation (where Chrome is not

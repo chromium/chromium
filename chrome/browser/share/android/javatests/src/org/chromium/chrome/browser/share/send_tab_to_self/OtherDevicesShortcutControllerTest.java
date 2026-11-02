@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -70,6 +72,7 @@ public class OtherDevicesShortcutControllerTest {
 
     @Mock private Profile mProfile;
     @Mock private SendTabToSelfAndroidBridge.Natives mNativeMock;
+    @Mock private SendTabToSelfMetricsRecorder.Natives mMetricsRecorderMock;
     @Mock private IdentityManager mIdentityManager;
 
     private Context mContext;
@@ -79,6 +82,7 @@ public class OtherDevicesShortcutControllerTest {
         mContext = ContextUtils.getApplicationContext();
 
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
+        SendTabToSelfMetricsRecorderJni.setInstanceForTesting(mMetricsRecorderMock);
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
     }
@@ -145,10 +149,18 @@ public class OtherDevicesShortcutControllerTest {
 
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         Intent intent = createShareTargetIntent(SHORTCUT_ID_1, URL, TITLE);
+        Runnable onComplete = mock(Runnable.class);
 
-        OtherDevicesShortcutController.handleShareTargetIntent(activity, intent, mProfile);
+        OtherDevicesShortcutController.handleShareTargetIntent(
+                activity, intent, mProfile, onComplete);
         RobolectricUtil.runAllBackgroundAndUi();
 
+        verify(mMetricsRecorderMock)
+                .recordEntryPointInvoked(eq(ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE));
+
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback> callbackCaptor =
+                ArgumentCaptor.forClass(
+                        SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
         verify(mNativeMock)
                 .sendTabToDevice(
                         eq(mProfile),
@@ -156,8 +168,12 @@ public class OtherDevicesShortcutControllerTest {
                         eq(DEVICE_GUID_1),
                         eq(URL),
                         eq(TITLE),
-                        any(),
+                        callbackCaptor.capture(),
                         eq(ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE));
+        verify(onComplete, never()).run();
+
+        callbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS);
+        verify(onComplete).run();
     }
 
     @Test
@@ -177,9 +193,18 @@ public class OtherDevicesShortcutControllerTest {
         String url1 = "https://example1.com";
         String url2 = "https://example2.com";
         Intent intent = createShareTargetIntent(SHORTCUT_ID_1, url1 + " " + url2, TITLE);
+        Runnable onComplete = mock(Runnable.class);
 
-        OtherDevicesShortcutController.handleShareTargetIntent(activity, intent, mProfile);
+        OtherDevicesShortcutController.handleShareTargetIntent(
+                activity, intent, mProfile, onComplete);
         RobolectricUtil.runAllBackgroundAndUi();
+
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback> callbackCaptor1 =
+                ArgumentCaptor.forClass(
+                        SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback> callbackCaptor2 =
+                ArgumentCaptor.forClass(
+                        SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
 
         verify(mNativeMock)
                 .sendTabToDevice(
@@ -188,7 +213,7 @@ public class OtherDevicesShortcutControllerTest {
                         eq(DEVICE_GUID_1),
                         eq(url1),
                         eq(""),
-                        any(),
+                        callbackCaptor1.capture(),
                         eq(ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE));
         verify(mNativeMock)
                 .sendTabToDevice(
@@ -197,8 +222,14 @@ public class OtherDevicesShortcutControllerTest {
                         eq(DEVICE_GUID_1),
                         eq(url2),
                         eq(""),
-                        any(),
+                        callbackCaptor2.capture(),
                         eq(ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE));
+
+        verify(onComplete, never()).run();
+        callbackCaptor1.getValue().onResult(SendTabToSelfResult.SUCCESS);
+        verify(onComplete, never()).run();
+        callbackCaptor2.getValue().onResult(SendTabToSelfResult.SUCCESS);
+        verify(onComplete).run();
     }
 
     @Test
@@ -218,10 +249,15 @@ public class OtherDevicesShortcutControllerTest {
         String url1 = "https://example1.com";
         String url2 = "https://example2.com";
         Intent intent = createShareTargetIntent(SHORTCUT_ID_1, url1 + " " + url2, TITLE);
+        Runnable onComplete = mock(Runnable.class);
 
-        OtherDevicesShortcutController.handleShareTargetIntent(activity, intent, mProfile);
+        OtherDevicesShortcutController.handleShareTargetIntent(
+                activity, intent, mProfile, onComplete);
         RobolectricUtil.runAllBackgroundAndUi();
 
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback> callbackCaptor =
+                ArgumentCaptor.forClass(
+                        SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
         // When the feature is disabled, only a single URL is extracted via getUrlFromIntent.
         verify(mNativeMock)
                 .sendTabToDevice(
@@ -230,17 +266,14 @@ public class OtherDevicesShortcutControllerTest {
                         eq(DEVICE_GUID_1),
                         eq(url2),
                         eq(TITLE),
-                        any(),
+                        callbackCaptor.capture(),
                         eq(ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE));
         verify(mNativeMock, never())
-                .sendTabToDevice(
-                        any(),
-                        any(),
-                        any(),
-                        eq(url1),
-                        any(),
-                        any(),
-                        anyInt());
+                .sendTabToDevice(any(), any(), any(), eq(url1), any(), any(), anyInt());
+
+        verify(onComplete, never()).run();
+        callbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS);
+        verify(onComplete).run();
     }
 
     @Test
@@ -255,12 +288,30 @@ public class OtherDevicesShortcutControllerTest {
 
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         Intent intent = createShareTargetIntent(SHORTCUT_ID_1, URL, TITLE);
+        Runnable onComplete = mock(Runnable.class);
 
-        OtherDevicesShortcutController.handleShareTargetIntent(activity, intent, mProfile);
+        OtherDevicesShortcutController.handleShareTargetIntent(
+                activity, intent, mProfile, onComplete);
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mNativeMock, never())
                 .sendTabToDevice(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(onComplete).run();
+    }
+
+    @Test
+    public void handleShareTargetIntent_EmptyUrls() {
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        Intent intent = createShareTargetIntent(SHORTCUT_ID_1, "not a url", TITLE);
+        Runnable onComplete = mock(Runnable.class);
+
+        OtherDevicesShortcutController.handleShareTargetIntent(
+                activity, intent, mProfile, onComplete);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mNativeMock, never())
+                .sendTabToDevice(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(onComplete).run();
     }
 
     @Test
@@ -268,12 +319,15 @@ public class OtherDevicesShortcutControllerTest {
     public void handleShareTargetIntent_FeatureDisabled() {
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         Intent intent = createShareTargetIntent(SHORTCUT_ID_1, URL, TITLE);
+        Runnable onComplete = mock(Runnable.class);
 
-        OtherDevicesShortcutController.handleShareTargetIntent(activity, intent, mProfile);
+        OtherDevicesShortcutController.handleShareTargetIntent(
+                activity, intent, mProfile, onComplete);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mNativeMock, org.mockito.Mockito.never())
+        verify(mNativeMock, never())
                 .sendTabToDevice(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(onComplete).run();
     }
 
     @Test

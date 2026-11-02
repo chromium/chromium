@@ -32,6 +32,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -142,6 +143,16 @@ public class OtherDevicesShortcutController implements Destroyable {
         return true;
     }
 
+    private static class TargetDevice {
+        final String mGuid;
+        final String mName;
+
+        TargetDevice(String guid, String name) {
+            mGuid = guid;
+            mName = name;
+        }
+    }
+
     /**
      * Handles the ACTION_SEND intent when a "Send Tab to Self" DirectShare target is selected.
      * Meant to be called from SendTabToSelfShareTargetActivity.
@@ -151,12 +162,20 @@ public class OtherDevicesShortcutController implements Destroyable {
      * @param activity The activity receiving the intent. This should be
      *     SendTabToSelfShareTargetActivity in practice.
      * @param intent The intent to handle.
+     * @param profile The profile to use for sending.
+     * @param onComplete Callback invoked on the UI thread once the share operation completes (or is
+     *     aborted).
      */
-    static void handleShareTargetIntent(Activity activity, Intent intent, Profile profile) {
+    static void handleShareTargetIntent(
+            Activity activity, Intent intent, Profile profile, Runnable onComplete) {
         if (!ChromeFeatureList.sSendTabToSelfDynamicShortcuts.isEnabled()) {
+            onComplete.run();
             return;
         }
-        if (!isShareTargetIntent(intent)) return;
+        if (!isShareTargetIntent(intent)) {
+            onComplete.run();
+            return;
+        }
 
         String shortcutId = intent.getStringExtra(Intent.EXTRA_SHORTCUT_ID);
         assert shortcutId != null; // Guaranteed by isShareTargetIntent().
@@ -173,7 +192,10 @@ public class OtherDevicesShortcutController implements Destroyable {
                             ? Collections.emptyList()
                             : Collections.singletonList(url);
         }
-        if (urls.isEmpty()) return;
+        if (urls.isEmpty()) {
+            onComplete.run();
+            return;
+        }
 
         // Title is allowed to be empty, and only makes sense if there's a single URL.
         String title = urls.size() == 1 ? intent.getStringExtra(Intent.EXTRA_SUBJECT) : null;
@@ -181,43 +203,52 @@ public class OtherDevicesShortcutController implements Destroyable {
         // Accessing the shortcut from ShortcutManager should be done on a background thread.
         sTaskRunner.execute(
                 () -> {
-                    ShortcutManager shortcutManager =
-                            appContext.getSystemService(ShortcutManager.class);
-                    if (shortcutManager == null) return;
-                    ShortcutInfo selectedShortcut = null;
-                    // Search through dynamic shortcuts for a match.
-                    for (ShortcutInfo shortcut : shortcutManager.getDynamicShortcuts()) {
-                        if (shortcutId.equals(shortcut.getId())) {
-                            selectedShortcut = shortcut;
-                            break;
-                        }
-                    }
-                    if (selectedShortcut == null) return;
-
-                    PersistableBundle extras = selectedShortcut.getExtras();
-                    if (extras == null) return;
-
-                    String targetDeviceSyncCacheGuid = extras.getString(EXTRA_DEVICE_GUID);
-                    if (TextUtils.isEmpty(targetDeviceSyncCacheGuid)) return;
-
-                    String targetDeviceName = extras.getString(EXTRA_DEVICE_NAME);
-                    if (TextUtils.isEmpty(targetDeviceName)) return;
-
+                    TargetDevice targetDevice = findTargetDeviceForShortcut(appContext, shortcutId);
                     PostTask.postTask(
                             TaskTraits.UI_DEFAULT,
                             () -> {
-                                for (String url : urls) {
-                                    SendTabToSelfAndroidBridge.sendTabToDevice(
-                                            profile,
-                                            null,
-                                            targetDeviceSyncCacheGuid,
-                                            targetDeviceName,
-                                            url,
-                                            title != null ? title : "",
-                                            ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE);
+                                if (targetDevice == null) {
+                                    onComplete.run();
+                                    return;
                                 }
+                                SendTabToSelfMetricsRecorder.recordEntryPointInvoked(
+                                        ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE);
+                                SendTabToSelfAndroidBridge.sendTabsToDevice(
+                                        profile,
+                                        null,
+                                        targetDevice.mGuid,
+                                        targetDevice.mName,
+                                        urls,
+                                        title,
+                                        ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE,
+                                        onComplete);
                             });
                 });
+    }
+
+    private static @Nullable TargetDevice findTargetDeviceForShortcut(
+            Context appContext, String shortcutId) {
+        ShortcutManager shortcutManager = appContext.getSystemService(ShortcutManager.class);
+        if (shortcutManager == null) return null;
+
+        ShortcutInfo selectedShortcut = null;
+        // Search through dynamic shortcuts for a match.
+        for (ShortcutInfo shortcut : shortcutManager.getDynamicShortcuts()) {
+            if (shortcutId.equals(shortcut.getId())) {
+                selectedShortcut = shortcut;
+                break;
+            }
+        }
+        if (selectedShortcut == null) return null;
+
+        PersistableBundle extras = selectedShortcut.getExtras();
+        if (extras == null) return null;
+
+        String guid = extras.getString(EXTRA_DEVICE_GUID);
+        String name = extras.getString(EXTRA_DEVICE_NAME);
+        if (TextUtils.isEmpty(guid) || TextUtils.isEmpty(name)) return null;
+
+        return new TargetDevice(guid, name);
     }
 
     public OtherDevicesShortcutController(Profile profile) {

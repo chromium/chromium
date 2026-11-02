@@ -1244,6 +1244,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/share/ShareHelperMultiInstanceUnitTest.java",
       "src/org/chromium/chrome/browser/share/ShareHelperUnitTest.java",
       "src/org/chromium/chrome/browser/share/link_to_text/CopyLinkToHighlightTest.java",
+      "src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfShareTargetActivityTest.java",
     ]
 
     deps = [
