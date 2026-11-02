@@ -1700,21 +1700,21 @@ void DevToolsUIBindings::SetDevicesDiscoveryConfig(
   if (!parsed_port_forwarding) {
     return;
   }
-  std::optional<base::Value> parsed_network = base::JSONReader::Read(
+  std::optional<base::ListValue> parsed_network = base::JSONReader::ReadList(
       network_discovery_config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  if (!parsed_network || !parsed_network->is_list()) {
+  if (!parsed_network) {
     return;
   }
   profile_->GetPrefs()->SetBoolean(prefs::kDevToolsDiscoverUsbDevicesEnabled,
                                    discover_usb_devices);
   profile_->GetPrefs()->SetBoolean(prefs::kDevToolsPortForwardingEnabled,
                                    port_forwarding_enabled);
-  profile_->GetPrefs()->Set(prefs::kDevToolsPortForwardingConfig,
-                            base::Value(std::move(*parsed_port_forwarding)));
+  profile_->GetPrefs()->SetDict(prefs::kDevToolsPortForwardingConfig,
+                                *std::move(parsed_port_forwarding));
   profile_->GetPrefs()->SetBoolean(prefs::kDevToolsDiscoverTCPTargetsEnabled,
                                    network_discovery_enabled);
-  profile_->GetPrefs()->Set(prefs::kDevToolsTCPDiscoveryConfig,
-                            *parsed_network);
+  profile_->GetPrefs()->SetList(prefs::kDevToolsTCPDiscoveryConfig,
+                                *std::move(parsed_network));
 }
 
 void DevToolsUIBindings::DevicesDiscoveryConfigUpdated() {
