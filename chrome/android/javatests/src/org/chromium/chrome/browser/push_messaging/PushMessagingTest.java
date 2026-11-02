@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
@@ -34,6 +35,8 @@ import org.chromium.chrome.browser.notifications.NotificationTestRule;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
 import org.chromium.components.content_settings.ContentSetting;
@@ -55,7 +58,15 @@ import java.util.concurrent.TimeoutException;
 public class PushMessagingTest implements PushMessagingServiceObserver.Listener {
     @Rule public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
-    @Rule public NotificationTestRule mNotificationTestRule = new NotificationTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final NotificationTestRule mNotificationTestRule =
+            new NotificationTestRule(mActivityTestRule);
+
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mNotificationTestRule).around(mActivityTestRule);
 
     private static final String PUSH_TEST_PAGE =
             "/chrome/test/data/push_messaging/push_messaging_test_android.html";
@@ -71,6 +82,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
 
     @Before
     public void setUp() {
+        mActivityTestRule.startOnNtp();
         final PushMessagingServiceObserver.Listener listener = this;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -78,7 +90,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
                     PushMessagingServiceObserver.setListenerForTesting(listener);
                 });
         mPushTestPage = mEmbeddedTestServerRule.getServer().getURL(PUSH_TEST_PAGE);
-        mNotificationTestRule.loadUrl(mPushTestPage);
+        mActivityTestRule.loadUrl(mPushTestPage);
     }
 
     @After
@@ -108,7 +120,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         Assert.assertEquals("\"denied\"", runScriptBlocking("Notification.permission"));
 
         // Reload page to ensure the block is persisted.
-        mNotificationTestRule.loadUrl(mPushTestPage);
+        mActivityTestRule.loadUrl(mPushTestPage);
 
         // PushManager.subscribePush() should fail immediately without showing a prompt.
         runScriptAndWaitForTitle(
@@ -138,14 +150,14 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     runScript("subscribePush()");
 
         // Dismissing the prompt should cause subscribe() to fail.
-        PermissionTestRule.waitForDialog(mNotificationTestRule.getActivity());
+        PermissionTestRule.waitForDialog(mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mNotificationTestRule.getActivity().onBackPressed();
+                    mActivityTestRule.getActivity().onBackPressed();
                 });
 
         waitForTitle(
-                mNotificationTestRule.getActivityTab(),
+                mActivityTestRule.getActivityTab(),
                 "subscribe fail: NotAllowedError: Registration failed - permission denied");
 
         // Notifications permission should still be prompt.
@@ -157,18 +169,18 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         runScript("subscribePush()");
 
         // Denying the prompt should cause subscribe() to fail.
-        PermissionTestRule.waitForDialog(mNotificationTestRule.getActivity());
+        PermissionTestRule.waitForDialog(mActivityTestRule.getActivity());
         PermissionTestRule.replyToDialog(
-                PermissionTestRule.PromptDecision.DENY, mNotificationTestRule.getActivity());
+                PermissionTestRule.PromptDecision.DENY, mActivityTestRule.getActivity());
         waitForTitle(
-                mNotificationTestRule.getActivityTab(),
+                mActivityTestRule.getActivityTab(),
                 "subscribe fail: NotAllowedError: Registration failed - permission denied");
 
         // This should have caused notifications permission to become denied.
         Assert.assertEquals("\"denied\"", runScriptBlocking("Notification.permission"));
 
         // Reload page to ensure the block is persisted.
-        mNotificationTestRule.loadUrl(mPushTestPage);
+        mActivityTestRule.loadUrl(mPushTestPage);
 
         // PushManager.subscribePush() should now fail immediately without showing a permission
         // prompt.
@@ -199,10 +211,10 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         runScript("subscribePush()");
 
         // Accepting the prompt should cause subscribe() to succeed.
-        PermissionTestRule.waitForDialog(mNotificationTestRule.getActivity());
+        PermissionTestRule.waitForDialog(mActivityTestRule.getActivity());
         PermissionTestRule.replyToDialog(
-                PermissionTestRule.PromptDecision.ALLOW, mNotificationTestRule.getActivity());
-        waitForTitle(mNotificationTestRule.getActivityTab(), "subscribe ok");
+                PermissionTestRule.PromptDecision.ALLOW, mActivityTestRule.getActivity());
+        waitForTitle(mActivityTestRule.getActivityTab(), "subscribe ok");
 
         // This should have caused notifications permission to become granted.
         Assert.assertEquals("\"granted\"", runScriptBlocking("Notification.permission"));
@@ -239,8 +251,8 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     @DisabledTest(message = "https://crbug.com/40513652")
     public void testDefaultNotification() throws TimeoutException {
         // Start off using the tab loaded in setUp().
-        Assert.assertEquals(1, mNotificationTestRule.getActivity().getCurrentTabModel().getCount());
-        Tab tab = mNotificationTestRule.getActivityTab();
+        Assert.assertEquals(1, mActivityTestRule.getActivity().getCurrentTabModel().getCount());
+        Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertEquals(mPushTestPage, tab.getUrl().getSpec());
         Assert.assertFalse(tab.isHidden());
 
@@ -252,9 +264,9 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
                 FakeInstanceIDWithSubtype.getSubtypeAndAuthorizedEntityOfOnlyToken();
 
         // Make the tab invisible by opening another one with a different origin.
-        mNotificationTestRule.loadUrlInNewTab(ABOUT_BLANK);
-        Assert.assertEquals(2, mNotificationTestRule.getActivity().getCurrentTabModel().getCount());
-        Assert.assertEquals(ABOUT_BLANK, mNotificationTestRule.getActivityTab().getUrl().getSpec());
+        mActivityTestRule.loadUrlInNewTab(ABOUT_BLANK);
+        Assert.assertEquals(2, mActivityTestRule.getActivity().getCurrentTabModel().getCount());
+        Assert.assertEquals(ABOUT_BLANK, mActivityTestRule.getActivityTab().getUrl().getSpec());
         Assert.assertTrue(tab.isHidden());
 
         // The first time a push event is fired and no notification is shown from the service
@@ -281,13 +293,13 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
 
     /** Runs {@code script} in the current tab but does not wait for the result. */
     private void runScript(String script) {
-        JavaScriptUtils.executeJavaScript(mNotificationTestRule.getWebContents(), script);
+        JavaScriptUtils.executeJavaScript(mActivityTestRule.getWebContents(), script);
     }
 
     /** Runs {@code script} in the current tab and returns its synchronous result in JSON format. */
     private String runScriptBlocking(String script) throws TimeoutException {
         return JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                mNotificationTestRule.getWebContents(), script);
+                mActivityTestRule.getWebContents(), script);
     }
 
     /**
@@ -295,7 +307,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
      * expectedTitle}.
      */
     private void runScriptAndWaitForTitle(String script, String expectedTitle) {
-        runScriptAndWaitForTitle(script, expectedTitle, mNotificationTestRule.getActivityTab());
+        runScriptAndWaitForTitle(script, expectedTitle, mActivityTestRule.getActivityTab());
     }
 
     /**

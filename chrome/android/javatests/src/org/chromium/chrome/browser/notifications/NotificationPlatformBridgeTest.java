@@ -31,6 +31,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureOverrides;
@@ -53,6 +54,8 @@ import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
@@ -80,10 +83,20 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures(ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)
 public class NotificationPlatformBridgeTest {
-    @Rule public NotificationTestRule mNotificationTestRule = new NotificationTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final NotificationTestRule mNotificationTestRule =
+            new NotificationTestRule(mActivityTestRule);
+
+    public final PermissionTestRule mPermissionTestRule =
+            new PermissionTestRule(mActivityTestRule.getActivityTestRule());
 
     @Rule
-    public PermissionTestRule mPermissionTestRule = new PermissionTestRule(mNotificationTestRule);
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mNotificationTestRule)
+                    .around(mActivityTestRule)
+                    .around(mPermissionTestRule);
 
     private static final String NOTIFICATION_TEST_PAGE =
             "/chrome/test/data/notifications/android_test.html";
@@ -111,13 +124,14 @@ public class NotificationPlatformBridgeTest {
 
     @Before
     public void setUp() {
+        mActivityTestRule.startOnNtp();
         SiteEngagementService.setParamValuesForTesting();
-        mNotificationTestRule.loadUrl(mPermissionTestRule.getURL(NOTIFICATION_TEST_PAGE));
+        mActivityTestRule.loadUrl(mPermissionTestRule.getURL(NOTIFICATION_TEST_PAGE));
     }
 
     @SuppressWarnings("MissingFail")
     private void waitForTitle(String expectedTitle) {
-        Tab tab = mNotificationTestRule.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         TabTitleObserver titleObserver = new TabTitleObserver(tab, expectedTitle);
         try {
             titleObserver.waitForTitleUpdate(TITLE_UPDATE_TIMEOUT_SECONDS);
@@ -162,11 +176,11 @@ public class NotificationPlatformBridgeTest {
 
         PermissionTestRule.PermissionUpdateWaiter updateWaiter =
                 new PermissionTestRule.PermissionUpdateWaiter(
-                        "denied: ", mNotificationTestRule.getActivity());
+                        "denied: ", mActivityTestRule.getActivity());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+                    mActivityTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
                 });
 
         mPermissionTestRule.runDenyTest(
@@ -181,7 +195,7 @@ public class NotificationPlatformBridgeTest {
         checkThatShowNotificationIsDenied();
 
         // Reload page to ensure the block is persisted.
-        mNotificationTestRule.loadUrl(mPermissionTestRule.getURL(NOTIFICATION_TEST_PAGE));
+        mActivityTestRule.loadUrl(mPermissionTestRule.getURL(NOTIFICATION_TEST_PAGE));
 
         // Notification.requestPermission() should immediately pass denied to the callback without
         // showing a dialog.
@@ -206,11 +220,11 @@ public class NotificationPlatformBridgeTest {
 
         PermissionTestRule.PermissionUpdateWaiter updateWaiter =
                 new PermissionTestRule.PermissionUpdateWaiter(
-                        "granted: ", mNotificationTestRule.getActivity());
+                        "granted: ", mActivityTestRule.getActivity());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+                    mActivityTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
                 });
 
         mPermissionTestRule.runAllowTest(
@@ -221,7 +235,7 @@ public class NotificationPlatformBridgeTest {
                 false);
 
         // Reload page to ensure the grant is persisted.
-        mNotificationTestRule.loadUrl(mPermissionTestRule.getURL(NOTIFICATION_TEST_PAGE));
+        mActivityTestRule.loadUrl(mPermissionTestRule.getURL(NOTIFICATION_TEST_PAGE));
 
         // Notifications permission should now be granted, and showing should succeed.
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
@@ -721,7 +735,7 @@ public class NotificationPlatformBridgeTest {
         Assert.assertEquals(
                 "Expected the notification test page to be the sole tab in the current model",
                 1,
-                getTabCountOnUiThread(mNotificationTestRule.getActivity().getCurrentTabModel()));
+                getTabCountOnUiThread(mActivityTestRule.getActivity().getCurrentTabModel()));
 
         Notification notification =
                 showAndGetNotification("MyNotification", "{ data: 'ACTION_CREATE_TAB' }");
@@ -739,7 +753,7 @@ public class NotificationPlatformBridgeTest {
                 () -> {
                     Criteria.checkThat(
                             "Expected a new tab to be created",
-                            mNotificationTestRule.getActivity().getCurrentTabModel().getCount(),
+                            mActivityTestRule.getActivity().getCurrentTabModel().getCount(),
                             Matchers.is(2));
                 });
         // This metric only applies on N+, where we schedule a job to handle the click.
@@ -1976,7 +1990,7 @@ public class NotificationPlatformBridgeTest {
     }
 
     private String runJavaScript(String code) throws TimeoutException {
-        return mNotificationTestRule.runJavaScriptCodeInCurrentTab(code);
+        return mActivityTestRule.runJavaScriptCodeInCurrentTab(code);
     }
 
     /** Get Notification related actions, filter all other actions to avoid flakes. */

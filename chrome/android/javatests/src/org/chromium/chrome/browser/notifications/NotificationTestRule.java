@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
-
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.rules.ExternalResource;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -17,7 +14,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
@@ -36,16 +33,22 @@ import java.util.concurrent.TimeoutException;
  *
  * <p>Web Notifications are only supported on Android JellyBean and beyond.
  */
-public class NotificationTestRule extends ChromeTabbedActivityTestRule {
+public class NotificationTestRule extends ExternalResource {
     /** The maximum time to wait for a criteria to become valid. */
     private static final long MAX_TIME_TO_POLL_MS = 6000L;
 
     /** The polling interval to wait between checking for a satisfied criteria. */
     private static final long POLLING_INTERVAL_MS = 50;
 
+    private final BaseCtaTransitTestRule mCtaTestRule;
     private MockNotificationManagerProxy mMockNotificationManager;
 
-    private void setUp() {
+    public NotificationTestRule(BaseCtaTransitTestRule ctaTestRule) {
+        mCtaTestRule = ctaTestRule;
+    }
+
+    @Override
+    protected void before() {
         // Ensure startup notification channels (such as ChannelId.BROWSER) exist in the real
         // Android NotificationManager so foreground services calling Service.startForeground() do
         // not crash with RemoteServiceException ("invalid channel for service notification") when
@@ -59,7 +62,6 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
         // The NotificationPlatformBridge must be overriden prior to the browser process starting.
         mMockNotificationManager = new MockNotificationManagerProxy();
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
-        startMainActivityWithURL(getOriginalNativeNtpUrl());
         ModalDialogView.disableButtonTapProtectionForTesting();
     }
 
@@ -81,7 +83,7 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
                             ProfileManager.getLastUsedRegularProfile(), setting);
                 });
 
-        String permission = runJavaScriptCodeInCurrentTab("Notification.permission");
+        String permission = mCtaTestRule.runJavaScriptCodeInCurrentTab("Notification.permission");
         if (setting == ContentSetting.ALLOW) {
             Assert.assertEquals("\"granted\"", permission);
         } else if (setting == ContentSetting.BLOCK) {
@@ -141,18 +143,5 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
                 },
                 MAX_TIME_TO_POLL_MS,
                 POLLING_INTERVAL_MS);
-    }
-
-    @Override
-    public Statement apply(final Statement base, Description description) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        setUp();
-                        base.evaluate();
-                    }
-                },
-                description);
     }
 }

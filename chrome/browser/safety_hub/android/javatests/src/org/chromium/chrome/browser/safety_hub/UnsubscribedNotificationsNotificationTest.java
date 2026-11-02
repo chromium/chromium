@@ -16,8 +16,10 @@ import androidx.test.filters.SmallTest;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
@@ -36,6 +38,8 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsHostFragment;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -55,7 +59,20 @@ import java.util.List;
 // For some reason these tests are flaky on earlier versions of Android.
 @MinAndroidSdkLevel(Build.VERSION_CODES.S)
 public final class UnsubscribedNotificationsNotificationTest {
-    @Rule public NotificationTestRule mNotificationTestRule = new NotificationTestRule();
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final NotificationTestRule mNotificationTestRule =
+            new NotificationTestRule(mCtaTestRule);
+
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mNotificationTestRule).around(mCtaTestRule);
+
+    @Before
+    public void setUp() {
+        mCtaTestRule.startOnNtp();
+    }
 
     @Test
     @SmallTest
