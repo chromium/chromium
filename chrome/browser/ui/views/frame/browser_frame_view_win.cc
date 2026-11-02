@@ -833,7 +833,9 @@ void BrowserFrameViewWin::InitThrobberIcons() {
     for (int i = 0; i < kThrobberIconCount; ++i) {
       throbber_icons_[i] =
           ui::LoadThemeIconFromResourcesDataDLL(IDI_THROBBER_01 + i);
-      CHECK(throbber_icons_[i], base::NotFatalUntil::M162);
+      // TODO(crbug.com/578876437): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(throbber_icons_[i]);
     }
     initialized = true;
   }
