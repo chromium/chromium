@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/blend_mode.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
@@ -729,7 +730,61 @@ BaseRenderingContext2D::UnacceleratedSnapshot() {
 
 scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
   if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
-    return shared_image_provider_->Snapshot();
+    if (!shared_image_provider_->IsValid()) {
+      return nullptr;
+    }
+
+    if (!shared_image_provider_->cached_snapshot_) {
+      shared_image_provider_->EndWriteAccess(/*surface=*/nullptr);
+
+      // The |release_callback| keeps a ref on this resource to ensure the
+      // backing shared image is kept alive until the lifetime of the image.
+      // Note that the code in CanvasResourceProvider::RecycleResource also uses
+      // the ref-count on the resource as a proxy for a read lock to allow
+      // recycling the resource once all refs have been released.
+      auto& resource = shared_image_provider_->resource_;
+      auto release_callback = blink::BindOnce(
+          [](scoped_refptr<CanvasResourceSharedImage>&& resource,
+             const gpu::SyncToken& sync_token, bool lost_resource) {
+            CHECK(resource);
+
+            resource->WaitSyncToken(sync_token);
+            if (lost_resource) {
+              resource->NotifyResourceLost();
+            }
+
+            CanvasResource::DropRefOnOwningThread(std::move(resource));
+          },
+          resource);
+
+      const auto& client_shared_image = resource->GetSharedImage();
+
+      shared_image_provider_->cached_snapshot_ =
+          AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+              client_shared_image, resource->sync_token(),
+              client_shared_image->alpha_type(), resource->hdr_metadata_,
+              resource->context_provider_wrapper_, resource->owning_thread_ref_,
+              resource->owning_thread_task_runner_,
+              std::move(release_callback));
+
+      // We'll record its content_id to be used by the FlushForImageListener.
+      // This will be needed in EnsureResourceReadyForDraw(), but we are doing
+      // it now, as we don't know if later on we will be in the same thread the
+      // cached_snapshot_ was created and we wouldn't be able to
+      // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
+      // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
+      // other contexts know to flush to avoid unnecessary copy-on-writes.
+      if (shared_image_provider_->cached_snapshot_) {
+        shared_image_provider_->cached_content_id_ =
+            shared_image_provider_->cached_snapshot_
+                ->PaintImageForCurrentFrame()
+                .GetContentIdForFrame(0u);
+      }
+    }
+
+    DCHECK(shared_image_provider_->cached_snapshot_);
+    DCHECK(!shared_image_provider_->current_resource_has_write_access_);
+    return shared_image_provider_->cached_snapshot_;
   }
   if (!IsBackingValid()) {
     return nullptr;
@@ -1441,7 +1496,13 @@ void BaseRenderingContext2D::OnFlushForImage(
     if (Recorder()->getRecordingCanvas().IsCachingImage(content_id)) {
       FlushCanvas(FlushReason::kOther);
     }
-    shared_image_provider_->OnFlushForImage(content_id);
+    if (shared_image_provider_->cached_snapshot_ &&
+        shared_image_provider_->cached_snapshot_->PaintImageForCurrentFrame()
+                .GetContentIdForFrame(0) == content_id) {
+      // This handles the case where the cached snapshot is referenced by an
+      // ImageBitmap that is being transferred to a worker.
+      shared_image_provider_->cached_snapshot_.reset();
+    }
   }
 }
 

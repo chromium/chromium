@@ -3978,9 +3978,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, FlushForImage) {
 
   src_context->fillRect(0, 0, 10, 10);
 
-  PaintImage paint_image = src_context->GetSharedImageProviderForTesting()
-                               ->Snapshot()
-                               ->PaintImageForCurrentFrame();
+  PaintImage paint_image =
+      src_context->PaintRenderingResultsToSnapshot(kBackBuffer)
+          ->PaintImageForCurrentFrame();
   PaintImage::ContentId src_content_id = paint_image.GetContentIdForFrame(0u);
 
   MemoryManagedPaintCanvas& dst_canvas = const_cast<MemoryManagedPaintCanvas&>(

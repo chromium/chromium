@@ -39,7 +39,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
-#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
@@ -306,74 +305,6 @@ void Canvas2DResourceProvider::EndWriteAccess(SkSurface* surface) {
   }
 
   current_resource_has_write_access_ = false;
-}
-
-scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot() {
-  TRACE_EVENT0("blink", "Canvas2DResourceProvider::Snapshot");
-  CHECK(is_accelerated_);
-  if (!IsValid()) {
-    return nullptr;
-  }
-
-  if (!cached_snapshot_) {
-    EndWriteAccess(/*surface=*/nullptr);
-
-    // The |release_callback| keeps a ref on this resource to ensure the backing
-    // shared image is kept alive until the lifetime of the image.
-    // Note that the code in CanvasResourceProvider::RecycleResource also uses
-    // the ref-count on the resource as a proxy for a read lock to allow
-    // recycling the resource once all refs have been released.
-    auto release_callback = base::BindOnce(
-        [](scoped_refptr<CanvasResourceSharedImage>&& resource,
-           const gpu::SyncToken& sync_token, bool lost_resource) {
-          CHECK(resource);
-
-          resource->WaitSyncToken(sync_token);
-          if (lost_resource) {
-            resource->NotifyResourceLost();
-          }
-
-          CanvasResource::DropRefOnOwningThread(std::move(resource));
-        },
-        resource_);
-
-    const auto& client_shared_image = resource_->GetSharedImage();
-
-    cached_snapshot_ =
-        AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-            client_shared_image, resource_->sync_token(),
-            client_shared_image->alpha_type(), resource_->hdr_metadata_,
-            resource_->context_provider_wrapper_, resource_->owning_thread_ref_,
-            resource_->owning_thread_task_runner_, std::move(release_callback));
-
-    // We'll record its content_id to be used by the FlushForImageListener.
-    // This will be needed in EnsureResourceReadyForDraw(), but we are doing it
-    // now, as we don't know if later on we will be in the same thread the
-    // cached_snapshot_ was created and we wouldn't be able to
-    // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
-    // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
-    // other contexts know to flush to avoid unnecessary copy-on-writes.
-    if (cached_snapshot_) {
-      cached_content_id_ =
-          cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(
-              0u);
-    }
-  }
-
-  DCHECK(cached_snapshot_);
-  DCHECK(!current_resource_has_write_access_);
-  return cached_snapshot_;
-}
-
-void Canvas2DResourceProvider::OnFlushForImage(
-    cc::PaintImage::ContentId content_id) {
-  if (cached_snapshot_ &&
-      cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
-          content_id) {
-    // This handles the case where the cached snapshot is referenced by an
-    // ImageBitmap that is being transferred to a worker.
-    cached_snapshot_.reset();
-  }
 }
 
 void Canvas2DResourceProvider::OnMemoryDump(

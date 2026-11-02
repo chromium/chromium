@@ -137,10 +137,8 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   scoped_refptr<ExportedCanvasResource> ProduceCanvasResource(
       SkSurface* surface);
-  void OnFlushForImage(cc::PaintImage::ContentId content_id);
 
   bool IsValid() const;
-  scoped_refptr<StaticBitmapImage> Snapshot();
 
   // Notifies before any unaccelerated drawing will be done on the resource used
   // by this provider.
