@@ -236,9 +236,7 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
   EXPECT_EQ(hang_watcher.GetHangCount(), 0);
 }
 
-// TODO(crbug.com/385732561): Test is flaky.
-TEST_F(HangWatcherTest,
-       DISABLED_NewInnerWatchHangsInScopeAfterInvalidationDetectsHang) {
+TEST_F(HangWatcherTest, NewInnerWatchHangsInScopeAfterInvalidationDetectsHang) {
   ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
