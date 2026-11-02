@@ -5,6 +5,7 @@
 #include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 
 #include <algorithm>
+#include <numeric>
 #include <ranges>
 #include <utility>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/pdf/renderer/pdf_accessibility_text_utils.h"
 #include "pdf/accessibility_structs.h"
@@ -60,6 +62,21 @@ constexpr float kGlyphCrossingInsetPx = 1.0f;
 // cover to count as running alongside or through its text, so lines that only
 // overlap at their ends are ignored.
 constexpr float kMinVerticalCoverageRatio = 0.5f;
+
+// Pages with more horizontal or vertical lines than this (maps, CAD drawings,
+// dense charts) are skipped to bound the cost of grouping lines.
+constexpr size_t kMaxRulingLinesPerDirection = 1000;
+
+// How far apart, in pixels, a horizontal and a vertical line can be and still
+// count as meeting. Strokes at a corner often stop slightly short.
+constexpr float kLineConnectionTolerancePx = 3.0f;
+
+// Line positions within this many pixels of a cluster's first position become
+// one row or column boundary, so slightly offset cell borders line up.
+constexpr float kClusterTolerancePx = 5.0f;
+
+// Minimum number of rows and of columns in a table.
+constexpr size_t kMinTableRowsAndColumns = 2;
 
 // An axis-aligned line segment. `position` is the fixed perpendicular
 // coordinate (y for horizontal, x for vertical), and `start` to `end` is the
@@ -385,6 +402,133 @@ void RemapTextRunRange(base::span<const uint32_t> first_split_run_indices,
   range.count = end - start;
 }
 
+// Disjoint-set (union-find) structure used to group connected line indices.
+class DisjointSet {
+ public:
+  explicit DisjointSet(size_t n) : parent_(n) {
+    std::ranges::iota(parent_, 0u);
+  }
+
+  size_t Find(size_t i) {
+    while (parent_[i] != i) {
+      // Shorten the path as it walks.
+      parent_[i] = parent_[parent_[i]];
+      i = parent_[i];
+    }
+    return i;
+  }
+
+  void Union(size_t i, size_t j) {
+    size_t root_i = Find(i);
+    size_t root_j = Find(j);
+    if (root_i != root_j) {
+      parent_[root_i] = root_j;
+    }
+  }
+
+ private:
+  std::vector<size_t> parent_;
+};
+
+// Horizontal and vertical lines connected to each other through touching or
+// crossing lines, i.e. one candidate table. Has at least one horizontal and one
+// vertical line. Holds indices into `h_lines` and `v_lines`.
+struct LineGroup {
+  std::vector<size_t> horizontal_indices;
+  std::vector<size_t> vertical_indices;
+};
+
+// Returns whether horizontal `h_line` and vertical `v_line` touch or cross,
+// allowing either to fall short of the other by at most
+// `kLineConnectionTolerancePx`.
+bool LinesConnect(const RulingLine& h_line, const RulingLine& v_line) {
+  const float x = v_line.start.x();
+  const float y = h_line.start.y();
+  return x >= h_line.start.x() - kLineConnectionTolerancePx &&
+         x <= h_line.end.x() + kLineConnectionTolerancePx &&
+         y >= v_line.start.y() - kLineConnectionTolerancePx &&
+         y <= v_line.end.y() + kLineConnectionTolerancePx;
+}
+
+// Groups horizontal and vertical lines that touch or cross within
+// `kLineConnectionTolerancePx`. `v_lines` must be sorted by x. Lines that
+// touch no other line are dropped. For example, these lines form two groups:
+//
+//   +----+----+       +----+
+//   |    |    |       |    |       ------
+//   +----+----+       +----+
+//   |    |    |
+//   |         |
+//   +---------+
+//
+// The middle vertical line stops short of the bottom line, but within the
+// tolerance, so it joins the left group. The box is farther away, so it forms
+// its own group. The line on the right touches nothing, so it's dropped.
+std::vector<LineGroup> GroupConnectedLines(
+    base::span<const RulingLine> h_lines,
+    base::span<const RulingLine> v_lines) {
+  const size_t num_h_lines = h_lines.size();
+  const size_t num_v_lines = v_lines.size();
+  DisjointSet uf(num_h_lines + num_v_lines);
+
+  // Join each horizontal line with the vertical lines it connects to. Only
+  // vertical lines within the horizontal line's x-range, padded by
+  // `kLineConnectionTolerancePx`, can connect, so binary search for those.
+  for (size_t h_idx = 0; h_idx < num_h_lines; ++h_idx) {
+    const RulingLine& h_line = h_lines[h_idx];
+    const gfx::Range candidates = GetVerticalLineIndicesInXRange(
+        v_lines, gfx::RangeF(h_line.start.x() - kLineConnectionTolerancePx,
+                             h_line.end.x() + kLineConnectionTolerancePx));
+    for (size_t v_idx = candidates.start(); v_idx < candidates.end(); ++v_idx) {
+      if (LinesConnect(h_line, v_lines[v_idx])) {
+        uf.Union(h_idx, num_h_lines + v_idx);
+      }
+    }
+  }
+
+  // Collect the lines of each connected group. `uf.Find()` returns the same ID
+  // for every line in a group, so that ID is used as the group's index.
+  std::vector<LineGroup> groups(num_h_lines + num_v_lines);
+  for (size_t h_idx = 0; h_idx < num_h_lines; ++h_idx) {
+    groups[uf.Find(h_idx)].horizontal_indices.push_back(h_idx);
+  }
+  for (size_t v_idx = 0; v_idx < num_v_lines; ++v_idx) {
+    groups[uf.Find(num_h_lines + v_idx)].vertical_indices.push_back(v_idx);
+  }
+
+  // Keep only groups with both horizontal and vertical lines.
+  std::erase_if(groups, [](const LineGroup& group) {
+    return group.horizontal_indices.empty() || group.vertical_indices.empty();
+  });
+  return groups;
+}
+
+// Groups nearby values in `coords` and returns each group's mean, in ascending
+// order. A group spans up to `kClusterTolerancePx` from its smallest value.
+// For example, {0, 30, 34, 60} gives {0, 32, 60}.
+std::vector<float> ClusterCoordinates(std::vector<float> coords) {
+  std::ranges::sort(coords);
+  std::vector<float> clusters;
+  for (auto it = coords.begin(); it != coords.end();) {
+    auto cluster_end =
+        std::upper_bound(it, coords.end(), *it + kClusterTolerancePx);
+    clusters.push_back(std::accumulate(it, cluster_end, 0.0f) /
+                       static_cast<float>(std::distance(it, cluster_end)));
+    it = cluster_end;
+  }
+  return clusters;
+}
+
+// Returns the fixed coordinate of each line in `indices`: y for horizontal
+// lines, x for vertical lines.
+std::vector<float> LinePositions(base::span<const RulingLine> lines,
+                                 base::span<const size_t> indices) {
+  return base::ToVector(indices, [&](size_t idx) {
+    const RulingLine& line = lines[idx];
+    return line.is_horizontal ? line.start.y() : line.start.x();
+  });
+}
+
 }  // namespace
 
 std::vector<RulingLine> ExtractRulingLines(
@@ -470,6 +614,42 @@ void RemapTextRunIndices(base::span<const uint32_t> first_split_run_indices,
   for (chrome_pdf::AccessibilityImageInfo& image : page_objects.images) {
     image.text_run_index = first_split_run_indices[image.text_run_index];
   }
+}
+
+std::vector<RulingGrid> DetectRulingGrids(
+    base::span<const RulingLine> ruling_lines) {
+  const base::span<const RulingLine> v_lines = GetVerticalLines(ruling_lines);
+  // `GetVerticalLines()` checks that horizontal lines come first.
+  const base::span<const RulingLine> h_lines =
+      ruling_lines.first(ruling_lines.size() - v_lines.size());
+  if (h_lines.size() > kMaxRulingLinesPerDirection ||
+      v_lines.size() > kMaxRulingLinesPerDirection || h_lines.empty() ||
+      v_lines.empty()) {
+    return {};
+  }
+
+  // For each group of connected lines, compute the row and column boundaries.
+  // Collect groups with at least 2x2 cells into `grids`.
+  std::vector<RulingGrid> grids;
+  for (const LineGroup& group : GroupConnectedLines(h_lines, v_lines)) {
+    std::vector<float> row_boundaries =
+        ClusterCoordinates(LinePositions(h_lines, group.horizontal_indices));
+    if (row_boundaries.size() < kMinTableRowsAndColumns + 1) {
+      continue;
+    }
+
+    std::vector<float> column_boundaries =
+        ClusterCoordinates(LinePositions(v_lines, group.vertical_indices));
+    if (column_boundaries.size() < kMinTableRowsAndColumns + 1) {
+      continue;
+    }
+
+    grids.push_back(RulingGrid{
+        .row_boundaries = std::move(row_boundaries),
+        .column_boundaries = std::move(column_boundaries),
+    });
+  }
+  return grids;
 }
 
 }  // namespace pdf

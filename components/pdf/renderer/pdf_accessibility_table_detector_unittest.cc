@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "pdf/accessibility_structs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +72,24 @@ void ExpectTextRun(const chrome_pdf::AccessibilityTextRunInfo& run,
   EXPECT_EQ(start_index, run.start_index);
   EXPECT_EQ(len, run.len);
   EXPECT_EQ(bounds, run.bounds);
+}
+
+// Boundaries of a grid with 30 px cells.
+constexpr float kThreeCellBoundaries[] = {0, 30, 60, 90};
+
+// Returns full-span ruling lines for a grid with the given column (`xs`) and
+// row (`ys`) boundaries.
+std::vector<RulingLine> CreateGridLines(base::span<const float> xs,
+                                        base::span<const float> ys) {
+  std::vector<RulingLine> lines;
+  lines.reserve(xs.size() + ys.size());
+  for (float y : ys) {
+    lines.push_back(CreateHLine(y, xs.front(), xs.back()));
+  }
+  for (float x : xs) {
+    lines.push_back(CreateVLine(x, ys.front(), ys.back()));
+  }
+  return lines;
 }
 
 }  // namespace
@@ -376,6 +395,138 @@ TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitRightToLeft) {
 
   EXPECT_FALSE(Split({CreateSegment(145, 95, 145, 117)}));
   EXPECT_EQ(2u, text_runs_.size());
+}
+
+TEST(PdfAccessibilityTableDetectorTest, DetectsGridBoundaries) {
+  std::vector<RulingLine> ruling_lines =
+      CreateGridLines(kThreeCellBoundaries, kThreeCellBoundaries);
+
+  EXPECT_THAT(
+      DetectRulingGrids(ruling_lines),
+      testing::ElementsAre(RulingGrid{.row_boundaries = {0, 30, 60, 90},
+                                      .column_boundaries = {0, 30, 60, 90}}));
+}
+
+TEST(PdfAccessibilityTableDetectorTest, DetectsGridWithMoreColumnsThanRows) {
+  constexpr float kRowBoundaries[] = {0, 30, 60};
+  std::vector<RulingLine> ruling_lines =
+      CreateGridLines(kThreeCellBoundaries, kRowBoundaries);
+
+  EXPECT_THAT(
+      DetectRulingGrids(ruling_lines),
+      testing::ElementsAre(RulingGrid{.row_boundaries = {0, 30, 60},
+                                      .column_boundaries = {0, 30, 60, 90}}));
+}
+
+TEST(PdfAccessibilityTableDetectorTest, DetectsGridWithMoreRowsThanColumns) {
+  constexpr float kColumnBoundaries[] = {0, 30, 60};
+  std::vector<RulingLine> ruling_lines =
+      CreateGridLines(kColumnBoundaries, kThreeCellBoundaries);
+
+  EXPECT_THAT(
+      DetectRulingGrids(ruling_lines),
+      testing::ElementsAre(RulingGrid{.row_boundaries = {0, 30, 60, 90},
+                                      .column_boundaries = {0, 30, 60}}));
+}
+
+TEST(PdfAccessibilityTableDetectorTest, MergedCellKeepsAllBoundaries) {
+  // 3x3 grid where the middle row's first two cells are merged: the vertical
+  // line at x = 30 skips y = 30 to 60. Every row still gets every column
+  // boundary, and the merged cell spans two grid cells.
+  std::vector<RulingLine> ruling_lines = {
+      CreateHLine(0, 0, 90),   CreateHLine(30, 0, 90), CreateHLine(60, 0, 90),
+      CreateHLine(90, 0, 90),  CreateVLine(0, 0, 90),  CreateVLine(30, 0, 30),
+      CreateVLine(30, 60, 90), CreateVLine(60, 0, 90), CreateVLine(90, 0, 90),
+  };
+
+  EXPECT_THAT(
+      DetectRulingGrids(ruling_lines),
+      testing::ElementsAre(RulingGrid{.row_boundaries = {0, 30, 60, 90},
+                                      .column_boundaries = {0, 30, 60, 90}}));
+}
+
+TEST(PdfAccessibilityTableDetectorTest, RejectsSingleBox) {
+  // 1x1 box: R = 1, C = 1.
+  std::vector<RulingLine> ruling_lines = {
+      CreateHLine(0, 0, 100),
+      CreateHLine(50, 0, 100),
+      CreateVLine(0, 0, 50),
+      CreateVLine(100, 0, 50),
+  };
+
+  EXPECT_TRUE(DetectRulingGrids(ruling_lines).empty());
+}
+
+TEST(PdfAccessibilityTableDetectorTest, RejectsExcessiveLinesGuardrail) {
+  std::vector<RulingLine> ruling_lines;
+  // 1,001 horizontal lines.
+  for (int i = 0; i <= 1000; ++i) {
+    ruling_lines.push_back(CreateHLine(i, 0, 100));
+  }
+  // 3 vertical lines.
+  ruling_lines.push_back(CreateVLine(0, 0, 1000));
+  ruling_lines.push_back(CreateVLine(50, 0, 1000));
+  ruling_lines.push_back(CreateVLine(100, 0, 1000));
+
+  EXPECT_TRUE(DetectRulingGrids(ruling_lines).empty());
+}
+
+TEST(PdfAccessibilityTableDetectorTest, ConnectsLinesWithinTolerance) {
+  // Vertical lines that stop 3 px short of the outer horizontals still form one
+  // grid.
+  std::vector<RulingLine> ruling_lines = {
+      CreateHLine(0, 0, 60), CreateHLine(30, 0, 60), CreateHLine(60, 0, 60),
+      CreateVLine(0, 3, 57), CreateVLine(30, 3, 57), CreateVLine(60, 3, 57),
+  };
+
+  EXPECT_THAT(
+      DetectRulingGrids(ruling_lines),
+      testing::ElementsAre(RulingGrid{.row_boundaries = {0, 30, 60},
+                                      .column_boundaries = {0, 30, 60}}));
+}
+
+TEST(PdfAccessibilityTableDetectorTest, DoesNotConnectLinesBeyondTolerance) {
+  // With a 4 px gap, no grid.
+  std::vector<RulingLine> ruling_lines = {
+      CreateHLine(0, 0, 60), CreateHLine(30, 0, 60), CreateHLine(60, 0, 60),
+      CreateVLine(0, 4, 56), CreateVLine(30, 4, 56), CreateVLine(60, 4, 56),
+  };
+
+  EXPECT_TRUE(DetectRulingGrids(ruling_lines).empty());
+}
+
+TEST(PdfAccessibilityTableDetectorTest, MergesNearbyBoundaries) {
+  // An interior vertical line split into two pieces at x = 30 and x = 34 gives
+  // a single boundary at 32, the mean.
+  std::vector<RulingLine> ruling_lines = {
+      CreateHLine(0, 0, 60),  CreateHLine(30, 0, 60), CreateHLine(60, 0, 60),
+      CreateVLine(0, 0, 60),  CreateVLine(30, 0, 30), CreateVLine(34, 30, 60),
+      CreateVLine(60, 0, 60),
+  };
+
+  EXPECT_THAT(
+      DetectRulingGrids(ruling_lines),
+      testing::ElementsAre(RulingGrid{.row_boundaries = {0, 30, 60},
+                                      .column_boundaries = {0, 32, 60}}));
+}
+
+TEST(PdfAccessibilityTableDetectorTest, SeparatesDisconnectedGrids) {
+  // Two grids far apart give two results.
+  std::vector<RulingLine> ruling_lines = {
+      CreateHLine(0, 0, 60),   CreateHLine(30, 0, 60),
+      CreateHLine(60, 0, 60),  CreateHLine(100, 0, 60),
+      CreateHLine(130, 0, 60), CreateHLine(160, 0, 60),
+      CreateVLine(0, 0, 60),   CreateVLine(0, 100, 160),
+      CreateVLine(30, 0, 60),  CreateVLine(30, 100, 160),
+      CreateVLine(60, 0, 60),  CreateVLine(60, 100, 160),
+  };
+
+  EXPECT_THAT(DetectRulingGrids(ruling_lines),
+              testing::UnorderedElementsAre(
+                  RulingGrid{.row_boundaries = {0, 30, 60},
+                             .column_boundaries = {0, 30, 60}},
+                  RulingGrid{.row_boundaries = {100, 130, 160},
+                             .column_boundaries = {0, 30, 60}}));
 }
 
 }  // namespace pdf

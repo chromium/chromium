@@ -67,6 +67,33 @@ SplitTextRunsResult SplitTextRunsAtVerticalDividers(
 void RemapTextRunIndices(base::span<const uint32_t> first_split_run_indices,
                          chrome_pdf::AccessibilityPageObjects& page_objects);
 
+// A grid drawn with ruling lines. Boundaries are ascending, in page-relative
+// pixels (the same space as `chrome_pdf::AccessibilityTextRunInfo::bounds`).
+// Each vector has at least 3 entries, so the grid has at least 2x2 cells. For
+// example:
+//
+//        0    30   60   90
+//     0  +----+----+----+
+//        |    |    |    |   row_boundaries:    {0, 30, 60}
+//    30  +----+----+----+   column_boundaries: {0, 30, 60, 90}
+//        |    |    |    |
+//    60  +----+----+----+
+//
+// A line that spans only part of the grid still adds a boundary across the
+// whole grid, so every row has the same columns.
+struct RulingGrid {
+  friend bool operator==(const RulingGrid&, const RulingGrid&) = default;
+
+  std::vector<float> row_boundaries;
+  std::vector<float> column_boundaries;
+};
+
+// Finds grids formed by horizontal and vertical ruling lines that touch or
+// cross. Doesn't look at text. `ruling_lines` must be ordered as returned by
+// `ExtractRulingLines()`. Returns grids in no particular order.
+std::vector<RulingGrid> DetectRulingGrids(
+    base::span<const RulingLine> ruling_lines);
+
 }  // namespace pdf
 
 #endif  // COMPONENTS_PDF_RENDERER_PDF_ACCESSIBILITY_TABLE_DETECTOR_H_
