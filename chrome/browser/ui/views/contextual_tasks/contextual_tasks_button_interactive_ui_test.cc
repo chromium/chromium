@@ -2960,6 +2960,106 @@ IN_PROC_BROWSER_TEST_F(
           ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksPinnedButtonActiveIndicatorInteractiveTest,
+    NavigatingTabWhenPanelClosedDismissesActiveThreadOnPinnedButton) {
+  raw_ptr<PinnedActionToolbarButton> pinned_button = nullptr;
+  base::Uuid initial_task_id;
+
+  auto VerifyActiveIndicator = [&](bool expected_active) {
+    ASSERT_NE(pinned_button, nullptr);
+    actions::ActionItem* const action_item =
+        actions::ActionManager::Get().FindAction(
+            kActionSidePanelShowContextualTasks,
+            BrowserActions::From(browser())->root_action_item());
+    ASSERT_NE(action_item, nullptr);
+    EXPECT_EQ(action_item->GetProperty(kActionItemUnderlineIndicatorKey),
+              expected_active);
+    ASSERT_NE(pinned_button->GetStatusIndicatorForTesting(), nullptr);
+    EXPECT_EQ(pinned_button->GetStatusIndicatorForTesting()->GetVisible(),
+              expected_active);
+  };
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0), Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WithView(kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+               [](views::View* view) {
+                 if (auto* container =
+                         views::AsViewClass<PinnedToolbarActionsContainer>(
+                             view->parent())) {
+                   container->GetAnimatingLayoutManager()->ResetLayout();
+                 }
+                 view->GetWidget()->LayoutRootViewIfNecessary();
+               }),
+      CheckView(kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+                [&pinned_button](PinnedActionToolbarButton* b) {
+                  pinned_button = b;
+                  return true;
+                }),
+      CreateTaskForTab(0), Do([&]() {
+        content::WebContents* const web_contents =
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
+        initial_task_id =
+            GetContextualTasksService()
+                ->GetContextualTaskForTab(
+                    sessions::SessionTabHelper::IdForTab(web_contents))
+                ->GetTaskId();
+      }),
+      SimulateOpeningContextualTaskSidePanel(),
+      Do([&]() { VerifyActiveIndicator(true); }),
+      // Navigating while the side panel is open keeps the active thread.
+      NavigateWebContents(
+          kFirstTab,
+          embedded_test_server()->GetURL("example.com", "/title2.html")),
+      Do([&]() {
+        VerifyActiveIndicator(true);
+        content::WebContents* const web_contents =
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
+        EXPECT_TRUE(GetContextualTasksService()
+                        ->GetContextualTaskForTab(
+                            sessions::SessionTabHelper::IdForTab(web_contents))
+                        .has_value());
+      }),
+      // Close the side panel: the active thread and indicator remain.
+      SimulateClosingContextualTaskSidePanel(),
+      Do([&]() { VerifyActiveIndicator(true); }),
+      // Navigating while the side panel is closed dismisses the active thread,
+      // clears the active indicator, and cleans up the cached WebContents.
+      NavigateWebContents(
+          kFirstTab,
+          embedded_test_server()->GetURL("example.com", "/title3.html")),
+      Do([&]() {
+        VerifyActiveIndicator(false);
+        content::WebContents* const web_contents =
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
+        EXPECT_FALSE(GetContextualTasksService()
+                         ->GetContextualTaskForTab(
+                             sessions::SessionTabHelper::IdForTab(web_contents))
+                         .has_value());
+        auto* panel_controller =
+            contextual_tasks::ContextualTasksPanelController::From(browser());
+        ASSERT_NE(panel_controller, nullptr);
+        EXPECT_TRUE(panel_controller->GetPanelWebContentsList().empty());
+      }),
+      // Clicking the permanent pin button now opens a fresh zero-state thread.
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      Do([&]() {
+        content::WebContents* const web_contents =
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
+        std::optional<contextual_tasks::ContextualTask> new_task =
+            GetContextualTasksService()->GetContextualTaskForTab(
+                sessions::SessionTabHelper::IdForTab(web_contents));
+        ASSERT_TRUE(new_task.has_value());
+        EXPECT_NE(initial_task_id, new_task->GetTaskId());
+      }));
+}
+
 class ContextualTasksPinnedButtonActiveIndicatorWithContextMenuInteractiveTest
     : public ContextualTasksPinnedButtonActiveIndicatorInteractiveTest {
  public:
