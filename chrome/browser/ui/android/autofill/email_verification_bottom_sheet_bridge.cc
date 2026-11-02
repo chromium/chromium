@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/android/autofill/email_verification_bottom_sheet_bridge.h"
 
-#include <cstdint>
 #include <string>
 #include <utility>
 
@@ -14,6 +13,7 @@
 #include "base/check_deref.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -74,8 +74,7 @@ void EmailVerificationBottomSheetBridge::RequestShowContent(
   JNIEnv* env = base::android::AttachCurrentThread();
   java_email_verification_bottom_sheet_bridge_ =
       Java_EmailVerificationBottomSheetBridge_Constructor(
-          env, reinterpret_cast<intptr_t>(this),
-          window_android->GetJavaObject());
+          env, jni_zero::MakeRaw(this), window_android->GetJavaObject());
 
   std::u16string title =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_TITLE);
@@ -114,7 +113,12 @@ void EmailVerificationBottomSheetBridge::OnUiAccepted(JNIEnv* env) {
 
 void EmailVerificationBottomSheetBridge::OnUiDismissed(JNIEnv* env,
                                                        int reason) {
-  java_email_verification_bottom_sheet_bridge_.Reset();
+  if (java_email_verification_bottom_sheet_bridge_) {
+    Java_EmailVerificationBottomSheetBridge_destroy(
+        base::android::AttachCurrentThread(),
+        java_email_verification_bottom_sheet_bridge_);
+    java_email_verification_bottom_sheet_bridge_.Reset();
+  }
   on_accepted_callback_.Reset();
   if (on_dismissed_callback_) {
     std::move(on_dismissed_callback_)

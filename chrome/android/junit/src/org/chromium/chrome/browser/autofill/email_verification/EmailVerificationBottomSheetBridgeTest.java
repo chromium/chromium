@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,6 +30,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
+import org.chromium.chrome.browser.autofill.email_verification.EmailVerificationBottomSheetBridge.NativeEmailVerificationBottomSheetBridge;
 import org.chromium.components.autofill.EmailVerificationPermissionUiStatus;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -39,7 +41,6 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for {@link EmailVerificationBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class EmailVerificationBottomSheetBridgeTest {
-    private static final long MOCK_POINTER = 0xb00fb00f;
     private static final String TEST_TITLE = "Verify this email automatically?";
     private static final String TEST_DESCRIPTION =
             "While you're signed in, google.com can confirm test@example.com on supported sites so"
@@ -47,6 +48,7 @@ public final class EmailVerificationBottomSheetBridgeTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private JniRawPtr<NativeEmailVerificationBottomSheetBridge> mMockPointer;
     @Mock private EmailVerificationBottomSheetBridge.Natives mBridgeNatives;
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private AnchoredDialogCoordinator mAnchoredDialogCoordinator;
@@ -62,7 +64,7 @@ public final class EmailVerificationBottomSheetBridgeTest {
         mWindow = new WindowAndroid(activity, /* occlusionTrackingAllowed= */ true);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         AnchoredDialogCoordinatorProvider.attach(mWindow, mAnchoredDialogCoordinator);
-        mBridge = new EmailVerificationBottomSheetBridge(MOCK_POINTER, mWindow);
+        mBridge = new EmailVerificationBottomSheetBridge(mMockPointer, mWindow);
     }
 
     @After
@@ -79,7 +81,7 @@ public final class EmailVerificationBottomSheetBridgeTest {
         verify(mBottomSheetController)
                 .requestShowContent(
                         any(EmailVerificationBottomSheetContent.class), /* animate= */ eq(true));
-        verify(mBridgeNatives).onUiShown(MOCK_POINTER);
+        verify(mBridgeNatives).onUiShown(mMockPointer);
     }
 
     @Test
@@ -100,12 +102,12 @@ public final class EmailVerificationBottomSheetBridgeTest {
                         Robolectric.buildActivity(Activity.class).create().get(),
                         /* occlusionTrackingAllowed= */ true);
         EmailVerificationBottomSheetBridge bridge =
-                new EmailVerificationBottomSheetBridge(MOCK_POINTER, unattachedWindow);
+                new EmailVerificationBottomSheetBridge(mMockPointer, unattachedWindow);
 
         bridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
 
         verify(mBridgeNatives)
-                .onUiDismissed(MOCK_POINTER, EmailVerificationPermissionUiStatus.OTHER);
+                .onUiDismissed(mMockPointer, EmailVerificationPermissionUiStatus.OTHER);
         unattachedWindow.destroy();
     }
 
@@ -121,7 +123,7 @@ public final class EmailVerificationBottomSheetBridgeTest {
                         /* animate= */ eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
         verify(mBridgeNatives)
-                .onUiDismissed(MOCK_POINTER, EmailVerificationPermissionUiStatus.OTHER);
+                .onUiDismissed(mMockPointer, EmailVerificationPermissionUiStatus.OTHER);
     }
 
     @Test
@@ -137,7 +139,7 @@ public final class EmailVerificationBottomSheetBridgeTest {
                         /* animate= */ eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
         verify(mBridgeNatives)
-                .onUiDismissed(MOCK_POINTER, EmailVerificationPermissionUiStatus.ALLOWED);
+                .onUiDismissed(mMockPointer, EmailVerificationPermissionUiStatus.ALLOWED);
     }
 
     @Test
@@ -150,7 +152,7 @@ public final class EmailVerificationBottomSheetBridgeTest {
                         any(EmailVerificationBottomSheetContent.class),
                         /* animate= */ eq(false),
                         eq(StateChangeReason.NONE));
-        verify(mBridgeNatives, never()).onUiDismissed(eq(MOCK_POINTER), anyInt());
+        verify(mBridgeNatives, never()).onUiDismissed(eq(mMockPointer), anyInt());
     }
 
     @Test
@@ -175,7 +177,7 @@ public final class EmailVerificationBottomSheetBridgeTest {
     public void testOnUiShown_callsNativeOnUiShown() {
         mBridge.onUiShown();
 
-        verify(mBridgeNatives).onUiShown(MOCK_POINTER);
+        verify(mBridgeNatives).onUiShown(mMockPointer);
     }
 
     @Test
@@ -191,7 +193,7 @@ public final class EmailVerificationBottomSheetBridgeTest {
     public void testOnUiAccepted_callsNativeOnUiAccepted() {
         mBridge.onUiAccepted();
 
-        verify(mBridgeNatives).onUiAccepted(MOCK_POINTER);
+        verify(mBridgeNatives).onUiAccepted(mMockPointer);
     }
 
     @Test
@@ -223,7 +225,7 @@ public final class EmailVerificationBottomSheetBridgeTest {
 
         mBridge.onUiDismissed(EmailVerificationPermissionUiStatus.USER_ABORTED);
         verify(mBridgeNatives)
-                .onUiDismissed(MOCK_POINTER, EmailVerificationPermissionUiStatus.USER_ABORTED);
+                .onUiDismissed(mMockPointer, EmailVerificationPermissionUiStatus.USER_ABORTED);
     }
 
     @Test
