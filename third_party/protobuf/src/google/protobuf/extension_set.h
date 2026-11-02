@@ -903,8 +903,13 @@ class PROTOBUF_EXPORT ExtensionSet {
   // Same as insert for the large map.
   std::pair<Extension*, bool> InternalInsertIntoLargeMap(int key);
 
+  void ForEachLargeMap(absl::FunctionRef<void(int, Extension&)> func,
+                       absl::FunctionRef<void(const void*)> prefetch_func);
+  void ForEachLargeMapConst(
+      absl::FunctionRef<void(int, const Extension&)> func,
+      absl::FunctionRef<void(const void*)> prefetch_func) const;
   void ForEachNoPrefetchLargeMap(absl::FunctionRef<void(int, Extension&)> func);
-  void ForEachNoPrefetchLargeMap(
+  void ForEachNoPrefetchLargeMapConst(
       absl::FunctionRef<void(int, const Extension&)> func) const;
 
   // Grows the flat_capacity_.
@@ -971,8 +976,7 @@ class PROTOBUF_EXPORT ExtensionSet {
   template <typename KeyValueFunctor, typename PrefetchFunctor>
   void ForEach(KeyValueFunctor func, PrefetchFunctor prefetch_func) {
     if (ABSL_PREDICT_FALSE(is_large())) {
-      ForEachNoPrefetchLargeMap(
-          absl::FunctionRef<void(int, Extension&)>(func));
+      ForEachLargeMap(std::move(func), std::move(prefetch_func));
       return;
     }
     ForEachPrefetchImpl(flat_begin(), flat_end(), std::move(func),
@@ -982,8 +986,7 @@ class PROTOBUF_EXPORT ExtensionSet {
   template <typename KeyValueFunctor, typename PrefetchFunctor>
   void ForEach(KeyValueFunctor func, PrefetchFunctor prefetch_func) const {
     if (ABSL_PREDICT_FALSE(is_large())) {
-      ForEachNoPrefetchLargeMap(
-          absl::FunctionRef<void(int, const Extension&)>(func));
+      ForEachLargeMapConst(std::move(func), std::move(prefetch_func));
       return;
     }
     ForEachPrefetchImpl(flat_begin(), flat_end(), std::move(func),
@@ -1002,8 +1005,7 @@ class PROTOBUF_EXPORT ExtensionSet {
   template <typename KeyValueFunctor>
   void ForEachNoPrefetch(KeyValueFunctor func) {
     if (ABSL_PREDICT_FALSE(is_large())) {
-      ForEachNoPrefetchLargeMap(
-          absl::FunctionRef<void(int, Extension&)>(func));
+      ForEachNoPrefetchLargeMap(std::move(func));
       return;
     }
     ForEachNoPrefetch(flat_begin(), flat_end(), std::move(func));
@@ -1013,8 +1015,7 @@ class PROTOBUF_EXPORT ExtensionSet {
   template <typename KeyValueFunctor>
   void ForEachNoPrefetch(KeyValueFunctor func) const {
     if (ABSL_PREDICT_FALSE(is_large())) {
-      ForEachNoPrefetchLargeMap(
-          absl::FunctionRef<void(int, const Extension&)>(func));
+      ForEachNoPrefetchLargeMapConst(std::move(func));
       return;
     }
     ForEachNoPrefetch(flat_begin(), flat_end(), std::move(func));
@@ -1206,6 +1207,9 @@ class PROTOBUF_EXPORT ExtensionSet {
     assert(!is_large());
     return map_.flat + flat_size_;
   }
+  LargeRep* large_rep();
+  const LargeRep* large_rep() const;
+  static size_t LargeRepSize();
 
   static KeyValue* AllocateFlatMap(Arena* arena,
                                    uint16_t powerof2_flat_capacity);

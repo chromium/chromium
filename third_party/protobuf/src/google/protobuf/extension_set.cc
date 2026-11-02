@@ -27,6 +27,7 @@
 #include "absl/base/optimization.h"
 #include "absl/container/btree_map.h"
 #include "absl/container/flat_hash_set.h"
+#include "absl/functional/function_ref.h"
 #include "absl/functional/overload.h"
 #include "absl/hash/hash.h"
 #include "absl/log/absl_check.h"
@@ -55,6 +56,19 @@ struct ExtensionSet::LargeRep : public ExtensionSet::LargeRepBase {
   using LargeMap = absl::btree_map<int, Extension>;
   LargeMap large;
 };
+
+ExtensionSet::LargeRep* ExtensionSet::large_rep() {
+  ABSL_DCHECK(is_large());
+  return static_cast<LargeRep*>(map_.large);
+}
+
+const ExtensionSet::LargeRep* ExtensionSet::large_rep() const {
+  ABSL_DCHECK(is_large());
+  return static_cast<const LargeRep*>(map_.large);
+}
+
+size_t ExtensionSet::LargeRepSize() { return sizeof(LargeRep); }
+
 namespace {
 
 inline WireFormatLite::FieldType real_type(FieldType type) {
@@ -196,7 +210,7 @@ ExtensionSet::~ExtensionSet() {
 
   ForEach([](int /* number */, Extension& ext) { ext.Free(); }, PrefetchNta{});
   if (ABSL_PREDICT_FALSE(is_large())) {
-    delete static_cast<LargeRep*>(map_.large);
+    delete large_rep();
   } else {
     DeleteFlatMap(map_.flat, flat_capacity_);
   }
@@ -235,8 +249,7 @@ void ExtensionSet::DeleteFlatMap(const ExtensionSet::KeyValue* flat,
 bool ExtensionSet::IsEmpty() const {
   if (IsCompletelyEmpty()) return true;
   if (ABSL_PREDICT_FALSE(is_large())) {
-    auto* large_rep = static_cast<const LargeRep*>(map_.large);
-    for (const auto& kv : large_rep->large) {
+    for (const auto& kv : large_rep()->large) {
       if (kv.second.IsSet()) return false;
     }
     return true;
@@ -875,10 +888,9 @@ void ExtensionSet::InternalMergeFromSlow(Arena* arena,
       GrowCapacity(arena, SizeOfUnion(flat_begin(), flat_end(),
                                       other.flat_begin(), other.flat_end()));
     } else {
-      auto* other_large = static_cast<const LargeRep*>(other.map_.large);
       GrowCapacity(arena, SizeOfUnion(flat_begin(), flat_end(),
-                                      other_large->large.begin(),
-                                      other_large->large.end()));
+                                      other.large_rep()->large.begin(),
+                                      other.large_rep()->large.end()));
     }
   }
   other.ForEach(
@@ -1128,8 +1140,7 @@ bool ExtensionSet::IsInitialized(Arena* arena,
   // Extensions are never required.  However, we need to check that all
   // embedded messages are initialized.
   if (ABSL_PREDICT_FALSE(is_large())) {
-    auto* large_rep = static_cast<const LargeRep*>(map_.large);
-    for (const auto& kv : large_rep->large) {
+    for (const auto& kv : large_rep()->large) {
       if (!kv.second.IsInitialized(this, extendee, kv.first, arena)) {
         return false;
       }
@@ -1208,9 +1219,8 @@ uint8_t* ExtensionSet::_InternalSerializeImplLarge(
     const MessageLite* extendee, int start_field_number, int end_field_number,
     uint8_t* target, io::EpsCopyOutputStream* stream) const {
   assert(is_large());
-  auto* large_rep = static_cast<const LargeRep*>(map_.large);
-  const auto& end = large_rep->large.end();
-  for (auto it = large_rep->large.lower_bound(start_field_number);
+  const auto& end = large_rep()->large.end();
+  for (auto it = large_rep()->large.lower_bound(start_field_number);
        it != end && it->first < end_field_number; ++it) {
     target = it->second.InternalSerializeFieldWithCachedSizesToArray(
         extendee, this, it->first, target, stream);
@@ -1561,9 +1571,8 @@ const ExtensionSet::Extension* ExtensionSet::FindOrNull(int key) const {
 const ExtensionSet::Extension* ExtensionSet::FindOrNullInLargeMap(
     int key) const {
   assert(is_large());
-  auto* large_rep = static_cast<const LargeRep*>(map_.large);
-  auto it = large_rep->large.find(key);
-  if (it != large_rep->large.end()) {
+  LargeRep::LargeMap::const_iterator it = large_rep()->large.find(key);
+  if (it != large_rep()->large.end()) {
     return &it->second;
   }
   return nullptr;
@@ -1583,27 +1592,34 @@ ExtensionSet::Extension* ExtensionSet::FindOrNullInLargeMap(int key) {
 ABSL_ATTRIBUTE_NOINLINE
 std::pair<ExtensionSet::Extension*, bool>
 ExtensionSet::InternalInsertIntoLargeMap(int key) {
-  ABSL_DCHECK(is_large());
-  auto* large_rep = static_cast<LargeRep*>(map_.large);
-  auto maybe = large_rep->large.insert({key, Extension()});
-  if (maybe.second) {
-    ++large_rep->size;
-  }
-  return {&maybe.first->second, maybe.second};
+  auto [it, inserted] = large_rep()->large.insert({key, Extension()});
+  large_rep()->size += inserted;
+  return {&it->second, inserted};
+}
+
+void ExtensionSet::ForEachLargeMap(
+    absl::FunctionRef<void(int, Extension&)> func,
+    absl::FunctionRef<void(const void*)> prefetch_func) {
+  ForEachPrefetchImpl(large_rep()->large.begin(), large_rep()->large.end(),
+                      func, prefetch_func);
+}
+
+void ExtensionSet::ForEachLargeMapConst(
+    absl::FunctionRef<void(int, const Extension&)> func,
+    absl::FunctionRef<void(const void*)> prefetch_func) const {
+  ForEachPrefetchImpl(large_rep()->large.begin(), large_rep()->large.end(),
+                      func, prefetch_func);
 }
 
 void ExtensionSet::ForEachNoPrefetchLargeMap(
     absl::FunctionRef<void(int, Extension&)> func) {
-  auto* large_rep = static_cast<LargeRep*>(map_.large);
-  ForEachNoPrefetch(large_rep->large.begin(), large_rep->large.end(), func);
+  ForEachNoPrefetch(large_rep()->large.begin(), large_rep()->large.end(), func);
 }
 
-void ExtensionSet::ForEachNoPrefetchLargeMap(
+void ExtensionSet::ForEachNoPrefetchLargeMapConst(
     absl::FunctionRef<void(int, const Extension&)> func) const {
-  auto* large_rep = static_cast<const LargeRep*>(map_.large);
-  ForEachNoPrefetch(large_rep->large.begin(), large_rep->large.end(), func);
+  ForEachNoPrefetch(large_rep()->large.begin(), large_rep()->large.end(), func);
 }
-
 
 std::pair<ExtensionSet::Extension*, bool> ExtensionSet::Insert(Arena* arena,
                                                                int key) {
@@ -1655,12 +1671,12 @@ void ExtensionSet::GrowCapacity(Arena* arena, size_t minimum_new_capacity) {
   KeyValue* end = flat_end();
   AllocatedData new_map;
   if (new_flat_capacity > kMaximumFlatCapacity) {
-    auto* large_rep = Arena::Create<LargeRep>(arena);
-    auto hint = large_rep->large.begin();
+    LargeRep* large_rep = Arena::Create<LargeRep>(arena);
+    LargeRep::LargeMap::iterator hint = large_rep->large.begin();
     for (const KeyValue* it = begin; it != end; ++it) {
       hint = large_rep->large.insert(hint, {it->first, it->second});
     }
-    large_rep->size = end - begin;
+    large_rep->size = flat_size_;
     new_map.large = large_rep;
     flat_size_ = static_cast<uint16_t>(-1);
     ABSL_DCHECK(is_large());
@@ -1692,8 +1708,7 @@ void ExtensionSet::InternalReserveSmallCapacityFromEmpty(
 
 void ExtensionSet::Erase(int key) {
   if (ABSL_PREDICT_FALSE(is_large())) {
-    auto* large_rep = static_cast<LargeRep*>(map_.large);
-    large_rep->size -= large_rep->large.erase(key);
+    large_rep()->size -= large_rep()->large.erase(key);
     return;
   }
   KeyValue* end = flat_end();
