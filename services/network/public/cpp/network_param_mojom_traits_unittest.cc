@@ -6,9 +6,11 @@
 
 #include <vector>
 
+#include "build/buildflag.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/net_buildflags.h"
 #include "services/network/public/mojom/network_param.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,32 +24,19 @@ TEST(ProxyChain, SerializeAndDeserializeInvalid) {
   EXPECT_EQ(original, copied);
 }
 
-// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
-// chains if support is enabled for all builds.
 TEST(ProxyChain, SerializeAndDeserialize) {
   const net::ProxyChain kChains[] = {
       net::ProxyChain::Direct(),
       net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
           net::ProxyServer::SCHEME_HTTPS, "foo1", 80)),
-      net::ProxyChain::ForIpProtection({
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+      net::ProxyChain({
           net::ProxyServer::FromSchemeHostAndPort(
               net::ProxyServer::SCHEME_HTTPS, "foo1", 80),
           net::ProxyServer::FromSchemeHostAndPort(
               net::ProxyServer::SCHEME_HTTPS, "foo2", 80),
       }),
-      net::ProxyChain::ForIpProtection({}),
-      net::ProxyChain::ForIpProtection({
-          net::ProxyServer::FromSchemeHostAndPort(
-              net::ProxyServer::SCHEME_HTTPS, "foo1", 80),
-          net::ProxyServer::FromSchemeHostAndPort(
-              net::ProxyServer::SCHEME_HTTPS, "foo2", 80),
-      }),
-      net::ProxyChain::ForIpProtection(
-          {
-              net::ProxyServer::FromSchemeHostAndPort(
-                  net::ProxyServer::SCHEME_HTTPS, "foo1", 80),
-          },
-          /*chain_id=*/3),
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
   };
   for (auto& original : kChains) {
     SCOPED_TRACE(original.ToDebugString());
@@ -67,24 +56,9 @@ TEST(ProxyChain, DeserializeProxyChainWithInvalidState) {
   network::mojom::ProxyChainPtr mojom_chain = network::mojom::ProxyChain::New();
   std::vector<net::ProxyServer> proxy_servers{net::ProxyServer()};
   mojom_chain->proxy_servers = std::make_optional(std::move(proxy_servers));
-  mojom_chain->ip_protection_chain_id =
-      net::ProxyChain::kNotIpProtectionChainId;
 
   net::ProxyChain copied;
   // Deserialization should fail gracefully without crashing.
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<network::mojom::ProxyChain>(
-      mojom_chain, copied));
-}
-
-// Same as above but for an IP Protection proxy chain.
-TEST(ProxyChain, DeserializeProxyChainWithInvalidStateIpProtection) {
-  network::mojom::ProxyChainPtr mojom_chain = network::mojom::ProxyChain::New();
-  std::vector<net::ProxyServer> proxy_servers{net::ProxyServer()};
-  mojom_chain->proxy_servers = std::make_optional(std::move(proxy_servers));
-  mojom_chain->ip_protection_chain_id =
-      net::ProxyChain::kMaxIpProtectionChainId;
-
-  net::ProxyChain copied;
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<network::mojom::ProxyChain>(
       mojom_chain, copied));
 }

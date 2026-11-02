@@ -466,11 +466,10 @@ NET_ERROR(ECH_FALLBACK_CERTIFICATE_INVALID, -184)
 // and thus the proxy chain should not be marked as bad. This is in contrast to
 // ERR_TUNNEL_CONNECTION_FAILED which is used for general purpose errors
 // connecting to the proxy and by the proxy request response handling when a
-// proxy delegate doesn't indicate via a different error code whether proxy
-// fallback should occur. Note that for IP Protection proxies this error code
-// causes the proxy to be marked as bad since the preference is to fail open for
-// general purpose errors, but for other proxies this error does not cause the
-// proxy to be marked as bad.
+// proxy delegate doesn't indicate via a different error code whether the
+// failure was specific to the destination. By default, neither error code
+// causes the proxy chain to be marked as bad, though a ProxyDelegate may
+// override fallback behavior via CanFalloverToNextProxyOverride().
 NET_ERROR(PROXY_UNABLE_TO_CONNECT_TO_DESTINATION, -186)
 
 // Some implementations of ProxyDelegate query a separate entity to know whether

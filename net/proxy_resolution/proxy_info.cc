@@ -75,13 +75,6 @@ std::string ProxyInfo::ToPacString() const {
   return proxy_list_.ToPacString();
 }
 
-bool ProxyInfo::is_for_ip_protection() const {
-  if (is_empty()) {
-    return false;
-  }
-  return proxy_chain().is_for_ip_protection();
-}
-
 std::string ProxyInfo::ToDebugString() const {
   return proxy_list_.ToDebugString();
 }

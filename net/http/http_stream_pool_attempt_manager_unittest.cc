@@ -7672,25 +7672,17 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReportBadProxyAfterSuccessOnDirect) {
   EXPECT_THAT(it->second.net_error, IsError(ERR_PROXY_CONNECTION_FAILED));
 }
 
-TEST_F(HttpStreamPoolAttemptManagerTest, DirectProxyInfoForIpProtection) {
-  const auto kIpProtectionDirectChain =
-      ProxyChain::ForIpProtection(std::vector<ProxyServer>());
+TEST_F(HttpStreamPoolAttemptManagerTest, DirectProxyInfo) {
   ProxyInfo proxy_info;
-  proxy_info.UseProxyChain(kIpProtectionDirectChain);
-
-  resolver()
-      ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
-      .CompleteStartSynchronously(OK);
-  StaticSocketDataProvider data;
-  socket_factory()->AddSocketDataProvider(&data);
+  proxy_info.UseDirectWithBypassedProxy();
 
   StreamRequester requester;
-  requester.set_proxy_info(proxy_info).RequestStream(pool());
-  requester.WaitForResult();
-  EXPECT_THAT(requester.result(), Optional(IsOk()));
-  EXPECT_EQ(requester.used_proxy_info().ToDebugString(),
-            proxy_info.ToDebugString());
+  requester.set_destination("https://a.test").set_proxy_info(proxy_info);
+  CreateFakeSpdySession(requester.GetStreamKey());
+
+  requester.RequestStream(pool());
+  EXPECT_THAT(requester.WaitForResult(), IsOk());
+  EXPECT_TRUE(requester.used_proxy_info().did_bypass_proxy());
 }
 
 // Regression test for crbug.com/369744951. Ensures that destroying

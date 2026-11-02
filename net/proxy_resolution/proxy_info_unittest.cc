@@ -59,26 +59,6 @@ TEST(ProxyInfoTest, UseVsOverrideProxyList) {
   EXPECT_EQ("PROXY bar.com:80", info.proxy_list().ToDebugString());
 }
 
-TEST(ProxyInfoTest, IsForIpProtection) {
-  ProxyInfo info;
-
-  ProxyChain regular_proxy_chain =
-      ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP, "foo", 80);
-  info.UseProxyChain(regular_proxy_chain);
-  EXPECT_FALSE(info.is_for_ip_protection());
-
-  ProxyChain ip_protection_proxy_chain = ProxyChain::ForIpProtection({
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "proxy1",
-                                         std::nullopt),
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "proxy2",
-                                         std::nullopt),
-  });
-  info.UseProxyChain(ip_protection_proxy_chain);
-  EXPECT_TRUE(info.is_for_ip_protection());
-  info.UseProxyChain(regular_proxy_chain);
-  EXPECT_FALSE(info.is_for_ip_protection());
-}
-
 TEST(ProxyInfoTest, UseProxyChain) {
   ProxyInfo info;
   ProxyChain proxy_chain =

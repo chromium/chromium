@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "net/base/features.h"
 #include "net/base/hex_utils.h"
 #include "net/base/host_port_pair.h"
@@ -39,6 +40,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/transport_security_state.h"
+#include "net/net_buildflags.h"
 #include "net/nqe/network_quality_estimator_test_util.h"
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_session_pool.h"
@@ -79,22 +81,28 @@ enum HttpProxyType { HTTP, HTTPS, SPDY };
 
 const char kHttpProxyHost[] = "httpproxy.example.test";
 const char kHttpsProxyHost[] = "httpsproxy.example.test";
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 const char kQuicProxyHost[] = "quicproxy.example.test";
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 const char kHttpsNestedProxyHost[] = "last-hop-https-proxy.example.test";
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 const ProxyServer kHttpProxyServer{ProxyServer::SCHEME_HTTP,
                                    HostPortPair(kHttpProxyHost, 80)};
 const ProxyServer kHttpsProxyServer{ProxyServer::SCHEME_HTTPS,
                                     HostPortPair(kHttpsProxyHost, 443)};
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 const ProxyServer kHttpsNestedProxyServer{
     ProxyServer::SCHEME_HTTPS, HostPortPair(kHttpsNestedProxyHost, 443)};
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 const ProxyChain kHttpProxyChain{kHttpProxyServer};
 const ProxyChain kHttpsProxyChain{kHttpsProxyServer};
-// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
-// chains if support is enabled for all builds.
-const ProxyChain kHttpsNestedProxyChain =
-    ProxyChain::ForIpProtection({{kHttpsProxyServer, kHttpsNestedProxyServer}});
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+const ProxyChain kHttpsNestedProxyChain({kHttpsProxyServer,
+                                         kHttpsNestedProxyServer});
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 constexpr char kTestHeaderName[] = "Foo";
 // Note: `kTestSpdyHeaderName` should be a lowercase version of
@@ -352,6 +360,7 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
                             delegate, priority);
   }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
   // Creates an HttpProxyConnectJob corresponding to `kHttpsNestedProxyChain`.
   // This is done by working backwards through the proxy chain and creating
   // socket params such that connect jobs will be created recursively with
@@ -369,6 +378,7 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
                            kHttpsNestedProxyChain, last_hop_proxy_server_index),
         delegate, priority);
   }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
   std::unique_ptr<HttpProxyConnectJob> CreateConnectJob(
       scoped_refptr<HttpProxySocketParams> http_proxy_socket_params,
@@ -816,6 +826,7 @@ TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeadersAsync) {
       ProxyChain(proxy_server), 0, kResponseHeaderName, kResponseHeaderValue);
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Test HTTP CONNECTs and SPDY CONNECTs through two proxies
 // (HTTPS -> HTTPS -> HTTPS and SPDY -> SPDY -> HTTPS).
 TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeaders) {
@@ -972,10 +983,9 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeaders) {
     EXPECT_THAT(
         sessions,
         UnorderedElementsAre(
+            Key(Property(&SpdySessionKey::proxy_chain, ProxyChain::Direct())),
             Key(Property(&SpdySessionKey::proxy_chain,
-                         ProxyChain::ForIpProtection({}))),
-            Key(Property(&SpdySessionKey::proxy_chain,
-                         ProxyChain::ForIpProtection({kHttpsProxyServer})))));
+                         ProxyChain({kHttpsProxyServer})))));
   }
 }
 
@@ -1151,6 +1161,7 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeadersAsync) {
       kHttpsNestedProxyChain, /*chain_index=*/1, kResponseHeaderName,
       second_hop_proxy_server_uri, /*call_index=*/1);
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 TEST_P(HttpProxyConnectJobTest,
        ProxyDelegateOnTunnelHeadersReceivedSucceedsAsync) {
@@ -2726,6 +2737,7 @@ TEST_P(HttpProxyConnectJobTest, ProxyPoolTimeoutWithExperimentDefaultParams) {
   EXPECT_LT(rtt_estimate, GetNestedConnectionTimeout());
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // A Mock QuicSessionPool which can intercept calls to RequestSession.
 class MockQuicSessionPool : public QuicSessionPool {
  public:
@@ -2795,8 +2807,8 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestQuicProxy) {
   // Create params for a single-hop QUIC proxy. This consists of an
   // HttpProxySocketParams, an SSLSocketParams from which a few values are used,
   // and a TransportSocketParams which is totally unused but must be non-null.
-  ProxyChain proxy_chain = ProxyChain::ForIpProtection({ProxyServer(
-      ProxyServer::SCHEME_QUIC, HostPortPair(kQuicProxyHost, 443))});
+  ProxyChain proxy_chain({ProxyServer(ProxyServer::SCHEME_QUIC,
+                                      HostPortPair(kQuicProxyHost, 443))});
   SSLConfig quic_proxy_ssl_config;
   // The SSLConfig is expected to have already had
   // `disable_cert_verification_network_fetches` set to true since this is a
@@ -2844,8 +2856,8 @@ TEST_F(HttpProxyConnectQuicJobTest, QuicProxyRequestUsesRfcV1) {
       quic::ParsedQuicVersion::RFCv2(), quic::ParsedQuicVersion::RFCv1()};
   common_connect_job_params_->quic_supported_versions = &supported_versions;
 
-  ProxyChain proxy_chain = ProxyChain::ForIpProtection({ProxyServer(
-      ProxyServer::SCHEME_QUIC, HostPortPair(kQuicProxyHost, 443))});
+  ProxyChain proxy_chain({ProxyServer(ProxyServer::SCHEME_QUIC,
+                                      HostPortPair(kQuicProxyHost, 443))});
   SSLConfig quic_proxy_ssl_config;
   quic_proxy_ssl_config.disable_cert_verification_network_fetches = true;
 
@@ -2882,12 +2894,13 @@ TEST_F(HttpProxyConnectQuicJobTest, QuicProxyRequestUsesRfcV1) {
   common_connect_job_params_->quic_supported_versions = nullptr;
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Test that a QUIC session is properly requested from the QuicSessionPool,
 // including a ProxyChain containing additional QUIC proxies, but excluding any
 // proxies later in the chain.
 TEST_F(HttpProxyConnectQuicJobTest, RequestMultipleQuicProxies) {
   // Create params for a two-proxy QUIC proxy, as a prefix of a larger chain.
-  ProxyChain proxy_chain = ProxyChain::ForIpProtection({
+  ProxyChain proxy_chain({
       ProxyServer(ProxyServer::SCHEME_QUIC, HostPortPair("qproxy1", 443)),
       // The proxy_chain_index points to this ProxyServer:
       ProxyServer(ProxyServer::SCHEME_QUIC, HostPortPair("qproxy2", 443)),
@@ -2923,5 +2936,7 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestMultipleQuicProxies) {
 
   EXPECT_THAT(connect_job->Connect(), test::IsError(ERR_IO_PENDING));
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 }  // namespace net

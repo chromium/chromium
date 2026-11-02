@@ -25,6 +25,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -60,6 +61,7 @@
 #include "net/http/http_stream_pool_test_util.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_with_source.h"
+#include "net/net_buildflags.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
@@ -1071,6 +1073,7 @@ TEST_P(HttpStreamFactoryTest, NoProxyFallbackOnTunnelFail) {
   EXPECT_EQ(0u, retry_info.size());
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // List of errors that are used in the tests related to QUIC proxy.
 const int quic_proxy_test_mock_errors[] = {
     ERR_PROXY_CONNECTION_FAILED,
@@ -1093,9 +1096,8 @@ const int quic_proxy_test_mock_errors[] = {
 // Tests that a bad QUIC proxy is added to the list of bad proxies.
 TEST_P(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
   for (int quic_proxy_test_mock_error : quic_proxy_test_mock_errors) {
-    auto quic_proxy_chain =
-        ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-            ProxyServer::SCHEME_QUIC, "bad", 99)});
+    auto quic_proxy_chain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+        ProxyServer::SCHEME_QUIC, "bad", 99)});
     std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
             {quic_proxy_chain, ProxyChain::Direct()},
@@ -1166,6 +1168,7 @@ TEST_P(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
         << quic_proxy_test_mock_error;
   }
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 // BidirectionalStreamImpl::Delegate to wait until response headers are
 // received.
@@ -1194,6 +1197,7 @@ class TestBidirectionalDelegate : public BidirectionalStreamImpl::Delegate {
   quiche::HttpHeaderBlock response_headers_;
 };
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 struct QuicTestParams {
   QuicTestParams(quic::ParsedQuicVersion quic_version,
                  bool happy_eyeballs_v3_enabled)
@@ -1219,16 +1223,18 @@ std::vector<QuicTestParams> GetTestParams() {
   }
   return params;
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 }  // namespace
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 TEST_P(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
   for (int num_streams = 1; num_streams < 3; ++num_streams) {
     GURL url = GURL("https://www.google.com");
 
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-            {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+            {ProxyChain({ProxyServer::FromSchemeHostAndPort(
                 ProxyServer::SCHEME_QUIC, "quic_proxy", 443)})},
             TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -1256,9 +1262,8 @@ TEST_P(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
     auto session =
         std::make_unique<HttpNetworkSession>(session_params, session_context);
     HttpNetworkSessionPeer peer(session.get());
-    ProxyChain proxy_chain =
-        ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-            ProxyServer::SCHEME_QUIC, "quic_proxy", 443)});
+    ProxyChain proxy_chain({ProxyServer::FromSchemeHostAndPort(
+        ProxyServer::SCHEME_QUIC, "quic_proxy", 443)});
     CommonConnectJobParams common_connect_job_params =
         session->CreateCommonConnectJobParams();
     auto http_proxy_pool =
@@ -1273,6 +1278,7 @@ TEST_P(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
     EXPECT_EQ(num_streams, http_proxy_pool_ptr->last_num_streams());
   }
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 namespace {
 
@@ -2219,6 +2225,7 @@ TEST_P(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
   EXPECT_TRUE(requester.used_proxy_info().is_direct());
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // Tests for creating an HTTP stream via QUIC.
 class HttpStreamFactoryQuicTest
     : public TestWithTaskEnvironment,
@@ -2411,7 +2418,7 @@ TEST_P(HttpStreamFactoryQuicTest, RequestHttpStreamOverQuicProxy) {
   GURL kRequestUrl("https://www.example.org");
   session_deps().proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          {ProxyChain({ProxyServer::FromSchemeHostAndPort(
               ProxyServer::SCHEME_QUIC, "qproxy.example.org", 8888)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -2495,6 +2502,7 @@ TEST_P(HttpStreamFactoryQuicTest, RequestHttpStreamOverQuicProxy) {
   proxy_quic_data.ExpectAllWriteDataConsumed();
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Check that requesting an HTTP stream over a two QUIC proxies sends the
 // correct set of QUIC packets.
 TEST_P(HttpStreamFactoryQuicTest, RequestHttpStreamOverTwoQuicProxies) {
@@ -2503,7 +2511,7 @@ TEST_P(HttpStreamFactoryQuicTest, RequestHttpStreamOverTwoQuicProxies) {
   session_deps().proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {
-              ProxyChain::ForIpProtection(
+              ProxyChain(
                   {ProxyServer::FromSchemeHostAndPort(
                        ProxyServer::SCHEME_QUIC, "qproxy1.example.org", 8888),
                    ProxyServer::FromSchemeHostAndPort(
@@ -2641,6 +2649,8 @@ TEST_P(HttpStreamFactoryQuicTest, RequestHttpStreamOverTwoQuicProxies) {
   proxy_quic_data.ExpectAllReadDataConsumed();
   proxy_quic_data.ExpectAllWriteDataConsumed();
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 // BidirectionalStream::Delegate that waits for response headers or a failure.
 class WaitForHeadersBidirectionalStreamDelegate

@@ -28,6 +28,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_timing_info.h"
@@ -50,6 +51,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "net/net_buildflags.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job_factory.h"
@@ -6052,13 +6054,12 @@ TEST_P(ClientSocketPoolBaseRefreshTest,
   EXPECT_EQ(1u, pool_->IdleSocketCountInGroup(kGroupId));
 }
 
-// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
-// chains if support is enabled for all builds.
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 TEST_F(ClientSocketPoolBaseTest, RefreshProxyRefreshesAllGroups) {
   // Create a proxy chain containing `myproxy` (which is refreshed) and
   // nonrefreshedproxy (which is not), verifying that if any proxy in a chain is
   // refreshed, all groups are refreshed.
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       PacResultElementToProxyServer("HTTPS myproxy:70"),
       PacResultElementToProxyServer("HTTPS nonrefreshedproxy:70"),
   });
@@ -6136,6 +6137,7 @@ TEST_F(ClientSocketPoolBaseTest, RefreshProxyRefreshesAllGroups) {
   EXPECT_EQ(0, pool_->IdleSocketCount());
   EXPECT_FALSE(pool_->HasGroupForTesting(kGroupId1));
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 TEST_F(ClientSocketPoolBaseTest, RefreshBothPrivacyAndNormalSockets) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);

@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -26,6 +27,7 @@
 #include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "net/net_buildflags.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_proxy_client_socket_test_base.h"
@@ -50,6 +52,8 @@ using testing::AnyNumber;
 using testing::Return;
 
 namespace net::test {
+
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 class EstablishedCryptoStream : public quic::test::MockQuicCryptoStream {
  public:
@@ -942,5 +946,7 @@ INSTANTIATE_TEST_SUITE_P(
     QuicProxyDatagramClientSocketWriteWithoutConnectResponseTest,
     ::testing::ValuesIn(AllSupportedQuicVersions()),
     ::testing::PrintToStringParamName());
+
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 }  // namespace net::test

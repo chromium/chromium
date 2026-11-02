@@ -97,10 +97,6 @@ class NET_EXPORT ProxyInfo {
     return did_bypass_proxy_;
   }
 
-  // Returns true if the first proxy chain corresponds to one used for IP
-  // Protection. For more info, see `ProxyChain::is_for_ip_protection()`.
-  bool is_for_ip_protection() const;
-
   // Returns the first valid proxy chain. is_empty() must be false to be able
   // to call this function.
   const ProxyChain& proxy_chain() const { return proxy_list_.First(); }

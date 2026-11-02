@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "build/buildflag.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -16,6 +17,7 @@
 #include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/x509_certificate.h"
+#include "net/net_buildflags.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/quic_context.h"
@@ -34,6 +36,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net::test {
+
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 class QuicSessionPoolProxyJobTest
     : public QuicSessionPoolTestBase,
@@ -110,7 +114,7 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
                            endpoint_maker.MakeInitialSettingsPacket(1)));
   socket_factory_->AddSocketDataProvider(&socket_data);
 
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy_origin.host(), 443),
   });
@@ -149,7 +153,7 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
   // Check that the session to the proxy is keyed by an empty NAK and always
   // uses RFCv1.
   QuicChromiumClientSession* proxy_session = GetActiveSession(
-      proxy_origin, PRIVACY_MODE_DISABLED, nak, ProxyChain::ForIpProtection({}),
+      proxy_origin, PRIVACY_MODE_DISABLED, nak, ProxyChain::Direct(),
       SessionUsage::kProxy, /*require_dns_https_alpn=*/false,
       /*disable_cert_verification_network_fetches=*/true);
   ASSERT_TRUE(proxy_session);
@@ -165,6 +169,7 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
       "Net.HttpProxy.ConnectLatency.Http3.Quic.Success", 1);
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -316,7 +321,7 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
 
   socket_factory_->AddSocketDataProvider(&socket_data);
 
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy1_origin.host(), 443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
@@ -359,7 +364,7 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
   auto proxy_nak = NetworkAnonymizationKey();
   QuicChromiumClientSession* proxy1_session =
       GetActiveSession(proxy1_origin, PRIVACY_MODE_DISABLED, proxy_nak,
-                       ProxyChain::ForIpProtection({}), SessionUsage::kProxy,
+                       ProxyChain::Direct(), SessionUsage::kProxy,
                        /*require_dns_https_alpn=*/false,
                        /*disable_cert_verification_network_fetches=*/true);
   ASSERT_TRUE(proxy1_session);
@@ -370,7 +375,7 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
   // Check that the session to proxy2 uses the endpoint NAK and RFCv1.
   QuicChromiumClientSession* proxy2_session = GetActiveSession(
       proxy2_origin, PRIVACY_MODE_DISABLED, endpoint_nak,
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+      ProxyChain({ProxyServer::FromSchemeHostAndPort(
           ProxyServer::SCHEME_QUIC, proxy1_origin.host(), 443)}),
       SessionUsage::kProxy, /*require_dns_https_alpn=*/false,
       /*disable_cert_verification_network_fetches=*/true);
@@ -417,7 +422,7 @@ TEST_P(QuicSessionPoolProxyJobTest, PoolDeletedDuringSessionCreation) {
   verify_details.cert_verify_result.is_issued_by_known_root = true;
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
 
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy1_origin.host(), 443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
@@ -446,6 +451,7 @@ TEST_P(QuicSessionPoolProxyJobTest, PoolDeletedDuringSessionCreation) {
   // crash (see crbug.com/374777473).
   pool_.reset();
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 TEST_P(QuicSessionPoolProxyJobTest, CreateProxySessionFails) {
   Initialize();
@@ -471,7 +477,7 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxySessionFails) {
   socket_data.AddWriteError("creation-fails", ERR_SOCKET_NOT_CONNECTED).Sync();
   socket_factory_->AddSocketDataProvider(&socket_data);
 
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy_origin.host(), 443),
   });
@@ -515,7 +521,7 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateSessionFails) {
   socket_data.AddPause("nothing-happens");
   socket_factory_->AddSocketDataProvider(&socket_data);
 
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy_origin.host(), 443),
   });
@@ -622,7 +628,7 @@ TEST_P(QuicSessionPoolProxyJobTest,
   QuicSocketDataProvider socket_data_alt_addr(version_);
   socket_factory_->AddSocketDataProvider(&socket_data_alt_addr);
 
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy_origin.host(), 443),
   });
@@ -713,7 +719,7 @@ TEST_P(QuicSessionPoolProxyJobTest, RequestSessionAgainInCallback) {
           endpoint_maker.MakeInitialSettingsPacket(1)));
   socket_factory_->AddSocketDataProvider(&successful_request_socket_data);
 
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, proxy.host(),
                                          443),
   });
@@ -758,5 +764,7 @@ TEST_P(QuicSessionPoolProxyJobTest, RequestSessionAgainInCallback) {
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return successful_request_socket_data.AllDataConsumed(); }));
 }
+
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 }  // namespace net::test

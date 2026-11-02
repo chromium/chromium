@@ -146,13 +146,7 @@ bool StructTraits<network::mojom::ProxyChainDataView, net::ProxyChain>::Read(
   }
 
   if (proxy_servers.has_value()) {
-    int chain_id = data.ip_protection_chain_id();
-    if (chain_id != net::ProxyChain::kNotIpProtectionChainId) {
-      *out =
-          net::ProxyChain::ForIpProtection(std::move(*proxy_servers), chain_id);
-    } else {
-      *out = net::ProxyChain(std::move(*proxy_servers));
-    }
+    *out = net::ProxyChain(std::move(*proxy_servers));
     if (!out->IsValid()) {
       return false;
     }

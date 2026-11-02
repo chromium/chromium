@@ -26,6 +26,7 @@
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "net/base/auth.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/completion_once_callback.h"
@@ -62,6 +63,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "net/net_buildflags.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
@@ -4938,6 +4940,7 @@ TEST_P(SpdyNetworkTransactionTest,
   }
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Same as HTTP11RequiredProxyRetry above except for nested proxies where
 // HTTP_1_1_REQUIRED is received from the first proxy in the chain.
 TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxyFirstProxyRetry) {
@@ -4948,8 +4951,7 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxyFirstProxyRetry) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
+  const ProxyChain kNestedProxyChain({kProxyServer1, kProxyServer2});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -5061,8 +5063,6 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxyFirstProxyRetry) {
 
 // Same as above except for nested proxies where HTTP_1_1_REQUIRED is received
 // from the second proxy in the chain.
-// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
-// chains if support is enabled for all builds.
 TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxySecondProxyRetry) {
   request_.method = "GET";
 
@@ -5070,8 +5070,7 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxySecondProxyRetry) {
                                   HostPortPair("proxy1.test", 70)};
   const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
                                   HostPortPair("proxy2.test", 71)};
-  const ProxyChain kNestedProxyChain =
-      ProxyChain::ForIpProtection({{kProxyServer1, kProxyServer2}});
+  const ProxyChain kNestedProxyChain({kProxyServer1, kProxyServer2});
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -5227,6 +5226,7 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxySecondProxyRetry) {
   ASSERT_THAT(ReadTransaction(helper.trans(), &response_data), IsOk());
   EXPECT_EQ("hello", response_data);
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 // Test to make sure we can correctly connect through a proxy.
 TEST_P(SpdyNetworkTransactionTest, ProxyConnect) {

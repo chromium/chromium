@@ -158,10 +158,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
                            SetProxyInfoInResponse_Proxied);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
                            SetProxyInfoInResponse_Empty);
-  FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponse_IpProtectionProxied);
-  FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponse_IpProtectionDirect);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateReceived);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateSent);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateOverflow);

@@ -4,9 +4,6 @@
 
 #include "net/http/proxy_fallback.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
@@ -26,17 +23,6 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
     }
   }
 
-  if (proxy_chain.is_for_ip_protection()) {
-    // Log the error.
-    // Useful to know if errors not handled below are passed to this function.
-    if (const int chain_id = proxy_chain.ip_protection_chain_id();
-        chain_id != ProxyChain::kNotIpProtectionChainId) {
-      base::UmaHistogramSparse(
-          base::StrCat({"Net.IpProtection.CanFalloverToNextProxy2.Error.Chain",
-                        base::NumberToString(chain_id)}),
-          error);
-    }
-  }
   *final_error = error;
   const auto& proxy_servers = proxy_chain.proxy_servers();
   const bool has_quic_proxy = std::any_of(
@@ -101,13 +87,11 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
     case ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION:
       return false;
     case ERR_TUNNEL_CONNECTION_FAILED:
-      // Tunnel connection failures not indicated by
-      // ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION are only considered grounds
-      // for fallback when connecting to an IP Protection proxy. Other browsers
-      // similarly don't fallback, and some client's PAC configurations rely on
-      // this for some degree of content blocking. See https://crbug.com/680837
-      // for details.
-      return proxy_chain.is_for_ip_protection();
+      // Tunnel connection failures are not considered grounds for fallback.
+      // Other browsers similarly don't fallback, and some clients' PAC
+      // configurations rely on this for some degree of content blocking. See
+      // https://crbug.com/680837 for details.
+      return false;
 
     case ERR_SOCKS_CONNECTION_HOST_UNREACHABLE:
       // Remap the SOCKS-specific "host unreachable" error to a more

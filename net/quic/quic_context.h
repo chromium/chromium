@@ -34,8 +34,7 @@ inline NET_EXPORT_PRIVATE quic::ParsedQuicVersion
 SupportedQuicVersionForProxying() {
   // Assume that all QUIC proxies use RFCv1, as the current support for proxy
   // configuration does not allow any way to indicate what version they
-  // support. RFCv1 is commonly supported and is valid for IP Protection
-  // proxies, but this may not be true more broadly.
+  // support.
   return quic::ParsedQuicVersion::RFCv1();
 }
 

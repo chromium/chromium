@@ -25,6 +25,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
@@ -55,6 +56,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "net/net_buildflags.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/proxy_resolution/proxy_resolver.h"
@@ -772,6 +774,7 @@ class QuicNetworkTransactionTest
     EXPECT_EQ(HttpConnectionInfo::kHTTP1_1, response->connection_info);
   }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
   void CheckWasSpdyResponse(HttpNetworkTransaction* trans) {
     const HttpResponseInfo* response = trans->GetResponseInfo();
     ASSERT_TRUE(response != nullptr);
@@ -782,6 +785,7 @@ class QuicNetworkTransactionTest
     EXPECT_TRUE(response->was_alpn_negotiated);
     EXPECT_EQ(HttpConnectionInfo::kHTTP2, response->connection_info);
   }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
   void CheckResponseData(HttpNetworkTransaction* trans,
                          std::string_view expected) {
@@ -804,6 +808,7 @@ class QuicNetworkTransactionTest
     CheckResponseData(&trans, expected);
   }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
   void SendRequestAndExpectHttpResponseFromProxy(
       std::string_view expected,
       uint16_t port,
@@ -831,6 +836,7 @@ class QuicNetworkTransactionTest
     ASSERT_TRUE(proxy_chain.IsValid());
     ASSERT_FALSE(proxy_chain.is_direct());
   }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
   void SendRequestAndExpectQuicResponse(std::string_view expected,
                                         std::string_view status_line) {
@@ -1962,13 +1968,13 @@ TEST_P(QuicNetworkTransactionTest, 408Response) {
   SendRequestAndExpectQuicResponse(kQuicRespData, "HTTP/1.1 408");
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 TEST_P(QuicNetworkTransactionTest, QuicProxy) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
 
-  const auto kQuicProxyChain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
+  const auto kQuicProxyChain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -2066,9 +2072,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyWithCert) {
   const std::string kProxyHost = "proxy.example.org";
 
   session_params_.enable_quic = true;
-  const auto kQuicProxyChain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, kProxyHost, 70)});
+  const auto kQuicProxyChain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, kProxyHost, 70)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -2156,6 +2161,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyWithCert) {
   SendRequestAndExpectHttpResponseFromProxy(
       kHttpRespData, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 TEST_P(QuicNetworkTransactionTest, AlternativeServicesDifferentHost) {
   context_.params()->allow_remote_alt_svc = true;
@@ -6298,6 +6304,7 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnect) {
   SendRequestAndExpectHttpResponse(kHttpRespData);
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnectProxy) {
   if (version_.AlpnDeferToRFCv1()) {
     // These versions currently do not support Alt-Svc.
@@ -6325,9 +6332,8 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnectProxy) {
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
 
   const char kProxyHost[] = "myproxy.org";
-  const auto kQuicProxyChain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, kProxyHost, 443)});
+  const auto kQuicProxyChain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, kProxyHost, 443)});
   const auto kHttpsProxyChain = ProxyChain::FromSchemeHostAndPort(
       ProxyServer::SCHEME_HTTPS, kProxyHost, 443);
   proxy_resolution_service_ =
@@ -6349,6 +6355,7 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnectProxy) {
   EXPECT_THAT(session_->proxy_resolution_service()->proxy_retry_info(),
               ElementsAre(Key(kQuicProxyChain)));
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 TEST_P(QuicNetworkTransactionTest, SecureResourceOverSecureQuic) {
   client_maker_->set_hostname("www.example.org");
@@ -7282,14 +7289,14 @@ TEST_P(QuicNetworkTransactionWithDestinationTest,
   EXPECT_TRUE(AllDataConsumed());
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // Performs an HTTPS/1.1 request over QUIC proxy tunnel.
 TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
 
-  const auto kQuicProxyChain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
+  const auto kQuicProxyChain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -7385,9 +7392,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
 
-  const auto kQuicProxyChain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
+  const auto kQuicProxyChain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -7478,9 +7484,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectQuicServer) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
 
-  const auto kQuicProxyChain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
+  const auto kQuicProxyChain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -7619,6 +7624,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectQuicServer) {
   EXPECT_TRUE(socket_data.AllDataConsumed());
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Performs an HTTP/3 request over QUIC proxy tunnel with two proxies.
 TEST_P(QuicNetworkTransactionTest, DoubleProxyConnectQuicServer) {
   session_params_.enable_quic = true;
@@ -7627,11 +7633,11 @@ TEST_P(QuicNetworkTransactionTest, DoubleProxyConnectQuicServer) {
   const GURL kProxy1Url("https://proxy1.example.org");
   const GURL kProxy2Url("https://proxy2.example.org");
 
-  const auto kQuicProxyChain = ProxyChain::ForIpProtection(
-      {ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                          kProxy1Url.host(), 70),
-       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
-                                          kProxy2Url.host(), 80)});
+  const auto kQuicProxyChain =
+      ProxyChain({ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                                     kProxy1Url.host(), 70),
+                  ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                                     kProxy2Url.host(), 80)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -7866,6 +7872,7 @@ TEST_P(QuicNetworkTransactionTest, DoubleProxyConnectQuicServer) {
   EXPECT_EQ(trans.GetResponseInfo()->proxy_chain, kQuicProxyChain);
   EXPECT_TRUE(socket_data.AllDataConsumed());
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 // Performs an 'http://' request over QUIC proxy tunnel, where the endpoint
 // has AlternativeService info, but that is not used for HTTP
@@ -7873,9 +7880,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpServer) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
 
-  const auto kQuicProxyChain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
+  const auto kQuicProxyChain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -7972,9 +7978,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
 
-  const auto kQuicProxyChain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
+  const auto kQuicProxyChain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -8098,9 +8103,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
 
-  const auto kQuicProxyChain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
+  const auto kQuicProxyChain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -8258,8 +8262,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectNoReuseDifferentChains) {
 
   const ProxyServer kQuicProxyServer{ProxyServer::SCHEME_QUIC,
                                      HostPortPair("proxy.example.org", 443)};
-  const ProxyChain kQuicProxyChain =
-      ProxyChain::ForIpProtection({kQuicProxyServer});
+  const ProxyChain kQuicProxyChain{kQuicProxyServer};
 
   proxy_delegate_ = std::make_unique<TestProxyDelegate>();
   proxy_delegate_->set_proxy_chain(kQuicProxyChain);
@@ -8418,7 +8421,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectFailure) {
   session_params_.enable_quic = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          {ProxyChain({ProxyServer::FromSchemeHostAndPort(
               ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -8472,7 +8475,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyQuicConnectionError) {
   session_params_.enable_quic = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          {ProxyChain({ProxyServer::FromSchemeHostAndPort(
               ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -8514,9 +8517,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectBadCertificate) {
   DisablePriorityHeader();
   session_params_.enable_quic = true;
 
-  const auto kQuicProxyChain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
+  const auto kQuicProxyChain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -8647,7 +8649,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyUserAgent) {
   session_params_.enable_quic = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          {ProxyChain({ProxyServer::FromSchemeHostAndPort(
               ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -8700,7 +8702,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyRequestPriority) {
   session_params_.enable_quic = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          {ProxyChain({ProxyServer::FromSchemeHostAndPort(
               ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -8746,7 +8748,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyMultipleRequestsError) {
   session_params_.enable_quic = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          {ProxyChain({ProxyServer::FromSchemeHostAndPort(
               ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -8815,7 +8817,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
   session_params_.enable_quic = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          {ProxyChain({ProxyServer::FromSchemeHostAndPort(
               ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -8991,6 +8993,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
     EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
   }
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 // Test that NetworkAnonymizationKey is respected by QUIC connections, when
 // kPartitionConnectionsByNetworkIsolationKey is enabled.
@@ -9275,6 +9278,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
   }
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // Test that two requests to the same origin over QUIC tunnels use different
 // QUIC sessions if their NetworkIsolationKeys don't match, and
 // kPartitionConnectionsByNetworkIsolationKey is enabled.
@@ -9285,7 +9289,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
   session_params_.enable_quic = true;
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          {ProxyChain({ProxyServer::FromSchemeHostAndPort(
               ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)})},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -9390,6 +9394,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
   EXPECT_TRUE(mock_quic_data[1]->AllReadDataConsumed());
   EXPECT_TRUE(mock_quic_data[1]->AllWriteDataConsumed());
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 TEST_P(QuicNetworkTransactionTest, AllowHTTP1FalseProhibitsH1) {
   MockRead http_reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING),

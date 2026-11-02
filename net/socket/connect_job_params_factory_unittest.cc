@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
@@ -21,6 +22,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_proxy_connect_job.h"
+#include "net/net_buildflags.h"
 #include "net/socket/connect_job_factory.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socks_connect_job.h"
@@ -500,12 +502,13 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaHttpsProxy) {
       AlpnProtoStringsForMode(alpn_mode()));
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // A connection to an HTTP endpoint via an QUIC proxy sets up an
 // HttpProxySocketParams, wrapping almost-unused SSLSocketParams, intending to
 // use GET to the proxy. This is not tunneled.
 TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaQuicProxy) {
   const url::SchemeHostPort kEndpoint(url::kHttpScheme, "test", 82);
-  ProxyChain proxy_chain = ProxyChain::ForIpProtection({
+  ProxyChain proxy_chain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "proxy",
                                          443),
   });
@@ -526,6 +529,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaQuicProxy) {
       HostPortPair::FromSchemeHostPort(kEndpoint), proxy_chain,
       /*proxy_chain_index=*/0, tunnel, kEndpointNak, secure_dns_policy());
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 // A connection to an HTTPS endpoint via an HTTPS proxy,
 // sets up an SSLSocketParams, wrapping HttpProxySocketParams, wrapping
@@ -580,6 +584,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxy) {
       AlpnProtoStringsForMode(alpn_mode()));
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // A connection to an HTTPS endpoint via a QUIC proxy,
 // sets up an SSLSocketParams, wrapping HttpProxySocketParams, wrapping
 // SSLSocketParams. This is always tunneled.
@@ -590,7 +595,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaQuicProxy) {
   }
 
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 82);
-  ProxyChain proxy_chain = ProxyChain::ForIpProtection({
+  ProxyChain proxy_chain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "proxy",
                                          443),
   });
@@ -618,6 +623,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaQuicProxy) {
       /*proxy_chain_index=*/0,
       /*tunnel=*/true, kEndpointNak, secure_dns_policy());
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 // A connection to an HTTPS endpoint via an HTTP proxy
 // sets up an SSLSocketParams, wrapping HttpProxySocketParams, wrapping
@@ -734,11 +740,12 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaSOCKSProxy) {
       HostPortPair("proxy", 999), secure_dns_policy(), kProxyDnsNak, {});
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // A connection to an HTTP endpoint via a two-proxy HTTPS chain
 // sets up the required parameters.
 TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaHttpsProxyViaHttpsProxy) {
   const url::SchemeHostPort kEndpoint(url::kHttpScheme, "test", 82);
-  ProxyChain proxy_chain = ProxyChain::ForIpProtection({
+  ProxyChain proxy_chain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "proxya",
                                          443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "proxyb",
@@ -805,7 +812,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaHttpsProxy) {
   }
 
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 82);
-  ProxyChain proxy_chain = ProxyChain::ForIpProtection({
+  ProxyChain proxy_chain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "proxya",
                                          443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "proxyb",
@@ -871,6 +878,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaHttpsProxy) {
       AlpnProtoStringsForMode(alpn_mode()));
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // A connection to an HTTPS endpoint via a two-proxy chain mixing QUIC and HTTPS
 // sets up the required parameters.
 TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaQuicProxy) {
@@ -880,7 +888,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaQuicProxy) {
   }
 
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 82);
-  ProxyChain proxy_chain = ProxyChain::ForIpProtection({
+  ProxyChain proxy_chain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "proxya",
                                          443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "proxyb",
@@ -939,7 +947,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaQuicProxyViaQuicProxy) {
   }
 
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 82);
-  ProxyChain proxy_chain = ProxyChain::ForIpProtection({
+  ProxyChain proxy_chain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "proxya",
                                          443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "proxyb",
@@ -980,7 +988,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaMixedProxyChain) {
   }
 
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 82);
-  ProxyChain proxy_chain = ProxyChain::ForIpProtection({
+  ProxyChain proxy_chain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "proxya",
                                          443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "proxyb",
@@ -1050,6 +1058,8 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaMixedProxyChain) {
       /*proxy_chain_index=*/1,
       /*tunnel=*/true, NetworkAnonymizationKey(), secure_dns_policy());
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 INSTANTIATE_TEST_SUITE_P(
     All,

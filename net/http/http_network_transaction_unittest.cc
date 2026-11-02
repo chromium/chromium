@@ -439,8 +439,6 @@ std::vector<TestParams> GetTestParams() {
 
 }  // namespace
 
-// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
-// chains if support is enabled for all builds.
 class HttpNetworkTransactionTestBase : public PlatformTest,
                                        public WithTaskEnvironment {
  public:
@@ -667,8 +665,10 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
                                base::Unretained(this), delta);
   }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
   void HttpsNestedProxyNoSocketReuseHelper(const ProxyChain& chain1,
                                            const ProxyChain& chain2);
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
   const CommonConnectJobParams dummy_connect_job_params_;
 
@@ -730,12 +730,13 @@ class HttpNetworkTransactionTest
 
   base::HistogramTester histogram_tester_;
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
   const ProxyServer proxy_server_1_{ProxyServer::SCHEME_HTTPS,
                                     HostPortPair("proxy1.test", 70)};
   const ProxyServer proxy_server_2_{ProxyServer::SCHEME_HTTPS,
                                     HostPortPair("proxy2.test", 71)};
-  const ProxyChain nested_proxy_chain_{
-      ProxyChain::ForIpProtection({{proxy_server_1_, proxy_server_2_}})};
+  const ProxyChain nested_proxy_chain_{{proxy_server_1_, proxy_server_2_}};
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
   const ProxyChain example_proxy_server_chain_{ProxyServer{
       ProxyServer::SCHEME_HTTPS, HostPortPair("www.example.org", 443)}};
 };
@@ -7072,6 +7073,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyGet) {
   EXPECT_FALSE(response->ssl_info.cert);
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Test a simple GET (for an HTTP endpoint) through two HTTPS proxies
 // (HTTPS -> HTTPS -> HTTP). This should tunnel through both proxies.
 TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyGet) {
@@ -7169,6 +7171,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyGet) {
   // not be reported as a property of the origin.
   EXPECT_FALSE(response->ssl_info.cert);
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 // Test a SPDY GET (for an HTTP endpoint) through an HTTPS (SPDY) proxy
 // (SPDY -> HTTP).
@@ -7254,6 +7257,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
   EXPECT_FALSE(response->ssl_info.cert);
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Test a SPDY GET (for an HTTP endpoint) through two HTTPS (SPDY) proxies
 // (SPDY -> SPDY -> HTTP).
 TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
@@ -7416,8 +7420,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
-  const ProxyChain kSameServerNestedProxyChain =
-      ProxyChain::ForIpProtection({{proxy_server_1_, proxy_server_1_}});
+  const ProxyChain kSameServerNestedProxyChain{
+      {proxy_server_1_, proxy_server_1_}};
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kSameServerNestedProxyChain);
@@ -7652,6 +7656,7 @@ TEST_P(HttpNetworkTransactionTest, NestedProxyHttpOverSpdyProtocolError) {
   rv = callback.WaitForResult();
   ASSERT_THAT(rv, IsError(ERR_HTTP2_PROTOCOL_ERROR));
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 // Test that a proxy server requesting a client auth cert doesn't cause a crash.
 // TODO(crbug.com/40284947): This test can be deleted once we no longer
@@ -7718,6 +7723,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsClientAuthCertNeededNoCrash) {
   EXPECT_FALSE(cert_request_info);
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Test that the first proxy server in a multi-proxy chain requesting a client
 // auth cert doesn't cause a crash.
 // TODO(crbug.com/40284947): Support client auth certificates for
@@ -8138,6 +8144,7 @@ TEST_P(HttpNetworkTransactionTest,
   EXPECT_EQ(cert_request_info->host_and_port,
             HostPortPair("www.example.org", 443));
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 // Verifies that a session which races and wins against the owning transaction
 // (completing prior to host resolution), doesn't fail the transaction.
@@ -8398,6 +8405,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectHttps) {
   EXPECT_EQ(kRespData, response_data);
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Test a SPDY CONNECT through two HTTPS (SPDY) proxies to an HTTPS (non-SPDY)
 // server (SPDY -> SPDY -> HTTPS).
 TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyConnectHttps) {
@@ -8881,6 +8889,7 @@ TEST_P(HttpNetworkTransactionTest,
   spdy_data.ExpectAllReadDataConsumed();
   spdy_data.ExpectAllWriteDataConsumed();
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 // Test a SPDY CONNECT through an HTTPS Proxy to a SPDY server (SPDY -> SPDY).
 TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectSpdy) {
@@ -8979,6 +8988,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectSpdy) {
   EXPECT_EQ(kUploadData, response_data);
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Test a SPDY CONNECT for an HTTPS (non-SPDY) endpoint through an HTTPS
 // (non-SPDY) proxy and HTTPS (SPDY) proxy chain (HTTPS -> SPDY -> HTTPS).
 TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectSpdy) {
@@ -9207,6 +9217,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectHttps) {
   ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
   EXPECT_EQ(kRespData, response_data);
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 // Test a SPDY CONNECT failure through an HTTPS (SPDY) proxy
 // (SPDY -> HTTPS/SPDY).
@@ -9268,6 +9279,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectFailure) {
   // TODO(juliatuttle): Anything else to check here?
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Test a SPDY CONNECT failure through two HTTPS (SPDY) proxies where the
 // connection to the first proxy fails (SPDY -> HTTPS/SPDY -> HTTPS/SPDY).
 TEST_P(HttpNetworkTransactionTest,
@@ -9638,8 +9650,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseSecondHop) {
 // establish a tunnel through the same proxies with the order reversed, ensure
 // that socket re-use does not occur (HTTPS A -> HTTPS B != HTTPS B -> HTTPS A).
 TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseReversedChain) {
-  const ProxyChain kReversedChain =
-      ProxyChain::ForIpProtection({{proxy_server_2_, proxy_server_1_}});
+  const ProxyChain kReversedChain{{proxy_server_2_, proxy_server_1_}};
 
   HttpsNestedProxyNoSocketReuseHelper(nested_proxy_chain_, kReversedChain);
 }
@@ -9658,10 +9669,8 @@ TEST_P(HttpNetworkTransactionTest,
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  const ProxyChain kFirstHopOnlyChain =
-      ProxyChain::ForIpProtection({proxy_server_1_});
-  const ProxyChain kSecondHopOnlyChain =
-      ProxyChain::ForIpProtection({proxy_server_2_});
+  const ProxyChain kFirstHopOnlyChain{proxy_server_1_};
+  const ProxyChain kSecondHopOnlyChain{proxy_server_2_};
 
   session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
@@ -10323,6 +10332,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuseAfterError) {
   ASSERT_THAT(ReadTransaction(&trans2, &response_data), IsOk());
   EXPECT_EQ(kRespData, response_data);
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 // Test the case where a proxied H2 session doesn't exist when an auth challenge
 // is observed, but does exist by the time auth credentials are provided. In
@@ -21594,7 +21604,6 @@ TEST_P(HttpNetworkTransactionTest, ProxyGet) {
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100u, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(response->WasFetchedViaProxy());
-  EXPECT_FALSE(response->proxy_chain.is_for_ip_protection());
   EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
                        HostPortPair::FromString("myproxy:70")),
             response->proxy_chain);
@@ -30000,7 +30009,6 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Direct) {
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
   EXPECT_EQ(response_info.WasFetchedViaProxy(), false);
-  EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), false);
   EXPECT_EQ(response_info.proxy_chain, ProxyChain::Direct());
 }
 
@@ -30013,7 +30021,6 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Proxied) {
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
   EXPECT_EQ(response_info.WasFetchedViaProxy(), true);
-  EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), false);
   EXPECT_EQ(response_info.proxy_chain, proxy_chain);
 }
 
@@ -30024,68 +30031,8 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Empty) {
   HttpNetworkTransaction::SetProxyInfoInResponse(empty_proxy_info,
                                                  &response_info);
   EXPECT_EQ(response_info.WasFetchedViaProxy(), false);
-  EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), false);
   EXPECT_FALSE(response_info.proxy_chain.IsValid());
 }
-
-// Test behavior of SetProxyInfoInResponse with a proxied connection for IP
-// protection.
-TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtectionProxied) {
-  ProxyInfo proxy_info;
-  ProxyChain ip_protection_proxy_chain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_HTTPS, "prx", 443)});
-  proxy_info.UseProxyChain(ip_protection_proxy_chain);
-  HttpResponseInfo response_info;
-  HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
-  EXPECT_EQ(response_info.WasFetchedViaProxy(), true);
-  EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), true);
-  EXPECT_EQ(response_info.proxy_chain, ip_protection_proxy_chain);
-}
-
-// Test behavior of SetProxyInfoInResponse with a direct connection for IP
-// protection.
-TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtectionDirect) {
-  ProxyInfo proxy_info;
-  const ProxyChain kIpProtectionDirectChain = ProxyChain::ForIpProtection({});
-  proxy_info.UseProxyChain(kIpProtectionDirectChain);
-  HttpResponseInfo response_info;
-  HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
-  EXPECT_EQ(response_info.WasFetchedViaProxy(), false);
-  EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), true);
-  EXPECT_EQ(response_info.proxy_chain, kIpProtectionDirectChain);
-}
-
-class IpProtectionProxyDelegate : public TestProxyDelegate {
- public:
-  IpProtectionProxyDelegate() {
-    set_extra_header_name(HttpRequestHeaders::kAuthorization);
-  }
-
-  // ProxyDelegate implementation:
-  void OnResolveProxy(const GURL& url,
-                      const NetworkAnonymizationKey& network_anonymization_key,
-                      const std::string& method,
-                      const ProxyRetryInfoMap& proxy_retry_info,
-                      ProxyInfo* result) override {
-    ProxyList proxy_list;
-    proxy_list.AddProxyChain(proxy_chain());
-
-    // For IP Protection we always want to fallback to direct, so emulate the
-    // behavior of NetworkServiceProxyDelegate where a direct chain will always
-    // be added as the last ProxyList entry.
-    if (!proxy_chain().is_direct()) {
-      proxy_list.AddProxyChain(ProxyChain::Direct());
-    }
-
-    result->UseProxyList(proxy_list);
-  }
-
-  static std::string GetAuthorizationHeaderValue(
-      const ProxyServer& proxy_server) {
-    return GetExtraHeaderValue(proxy_server);
-  }
-};
 
 TEST_P(HttpNetworkTransactionTest, EarlyHintsWithAltSvcHeader) {
   AddScopedFeatureList().InitWithFeatures(

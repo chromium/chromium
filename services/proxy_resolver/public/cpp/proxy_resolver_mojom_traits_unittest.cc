@@ -4,9 +4,11 @@
 
 #include <vector>
 
+#include "build/buildflag.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/net_buildflags.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/network/public/cpp/network_param_mojom_traits.h"
 #include "services/network/public/mojom/network_param.mojom.h"
@@ -15,8 +17,6 @@
 
 namespace network {
 
-// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
-// chains if support is enabled for all builds.
 TEST(ProxyInfo, SerializeAndDeserialize) {
   std::vector<net::ProxyInfo> infos;
 
@@ -29,14 +29,16 @@ TEST(ProxyInfo, SerializeAndDeserialize) {
       net::ProxyServer::SCHEME_HTTPS, "foo1", 443));
   infos.push_back(std::move(single_proxy_chain));
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
   net::ProxyInfo multi_proxy_chain;
-  multi_proxy_chain.UseProxyChain(net::ProxyChain::ForIpProtection({
+  multi_proxy_chain.UseProxyChain(net::ProxyChain({
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                               "foo1", 443),
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                               "foo2", 443),
   }));
   infos.push_back(std::move(multi_proxy_chain));
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
   for (const auto& original : infos) {
     // Only the underlying ProxyList gets copied, so only use methods that pull

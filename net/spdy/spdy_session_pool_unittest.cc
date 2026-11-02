@@ -21,6 +21,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "net/base/network_handle.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/session_usage.h"
@@ -31,6 +32,7 @@
 #include "net/http/http_network_session.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
+#include "net/net_buildflags.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
@@ -2049,17 +2051,16 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
   }
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // Tests the OnSSLConfigForServersChanged() method matches SpdySessions
 // containing proxy chains.
-// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
-// chains if support is enabled for all builds.
 TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithProxyChain) {
   const MockConnect connect_data(SYNCHRONOUS, OK);
   const MockRead reads[] = {
       MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
   };
 
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
                                          "proxya", 443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
@@ -2095,6 +2096,7 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithProxyChain) {
   // The unavailable session is closed.
   EXPECT_FALSE(session);
 }
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 // Tests the OnSSLConfigForServersChanged() method when there are streams open.
 TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {

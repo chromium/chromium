@@ -108,10 +108,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     return c.proxy_servers_if_valid();
   }
 
-  static int ip_protection_chain_id(const net::ProxyChain& c) {
-    return c.ip_protection_chain_id();
-  }
-
   static bool Read(network::mojom::ProxyChainDataView data,
                    net::ProxyChain* out);
 };

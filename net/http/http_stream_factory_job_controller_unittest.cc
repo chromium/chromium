@@ -26,6 +26,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -152,6 +153,7 @@ void AbslStringify(Sink& sink, TcpErrorPhase e) {
   }
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // Phases in which errors will happen for QUIC tests.
 enum class QuicErrorPhase { kHostResolution, kProxySession, kUdpConnect };
 
@@ -170,6 +172,7 @@ void AbslStringify(Sink& sink, QuicErrorPhase e) {
       break;
   }
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 class FailingProxyResolverFactory : public ProxyResolverFactory {
  public:
@@ -221,15 +224,14 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
   base::DictValue empty_dict_;
 };
 
-// A `TestProxyDelegate` which always sets a `ProxyChain` with
-// `is_for_ip_protection` set to true on the `ProxyInfo` it receives in
-// `OnResolveProxy()`.
-class TestProxyDelegateForIpProtection : public TestProxyDelegate {
+// A `TestProxyDelegate` that returns
+// `ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION` when receiving a 502 response to
+// a tunnel request.
+class TestProxyDelegateUnableToConnectToDestination : public TestProxyDelegate {
  public:
-  TestProxyDelegateForIpProtection() {
-    set_proxy_chain(
-        ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-            ProxyServer::SCHEME_HTTPS, "ip-pro", 443)}));
+  TestProxyDelegateUnableToConnectToDestination() {
+    set_proxy_chain(ProxyChain({ProxyServer::FromSchemeHostAndPort(
+        ProxyServer::SCHEME_HTTPS, "proxy", 443)}));
     set_extra_header_name(HttpRequestHeaders::kAuthorization);
   }
   void OnResolveProxy(const GURL& url,
@@ -238,9 +240,8 @@ class TestProxyDelegateForIpProtection : public TestProxyDelegate {
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
     ProxyList proxy_list;
-    CHECK(proxy_chain().is_for_ip_protection());
     proxy_list.AddProxyChain(proxy_chain());
-    proxy_list.AddProxyChain(ProxyChain::ForIpProtection({}));
+    proxy_list.AddProxyChain(ProxyChain::Direct());
     result->UseProxyList(proxy_list);
   }
   net::Error OnTunnelHeadersReceived(
@@ -1169,8 +1170,6 @@ TEST_F(HttpStreamFactoryJobControllerTest, NoSupportedProxies) {
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
-// chains if support is enabled for all builds.
 class JobControllerReconsiderProxyAfterErrorTest
     : public HttpStreamFactoryJobControllerTestBase {
  public:
@@ -1204,6 +1203,7 @@ class JobControllerReconsiderProxyAfterErrorTest
     factory_ = session_->http_stream_factory();
   }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
   std::unique_ptr<MockQuicChromiumClientSession> CreateMockQUICProxySession(
       url::SchemeHostPort server) {
     const IPEndPoint kIpEndPoint = IPEndPoint(IPAddress::IPv4AllZeros(), 0);
@@ -1236,7 +1236,7 @@ class JobControllerReconsiderProxyAfterErrorTest
 
     QuicSessionKey session_key(
         server.host(), server.port(), PRIVACY_MODE_DISABLED,
-        ProxyChain::ForIpProtection({}, 0), SessionUsage::kProxy, SocketTag(),
+        ProxyChain::Direct(), SessionUsage::kProxy, SocketTag(),
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
         /*require_dns_https_alpn=*/false,
         /*disable_cert_verification_network_fetches=*/true,
@@ -1284,6 +1284,7 @@ class JobControllerReconsiderProxyAfterErrorTest
 
     return new_session;
   }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
   std::unique_ptr<HttpStreamRequest> CreateJobController(
       const HttpRequestInfo& request_info) {
@@ -1306,8 +1307,10 @@ class JobControllerReconsiderProxyAfterErrorTest
         HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
   }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
  protected:
   std::vector<raw_ptr<MockQuicChromiumClientSession>> mock_proxy_sessions_;
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
  private:
   // Use real Jobs so that Job::Resume() is not mocked out. When main job is
@@ -1927,6 +1930,7 @@ TEST_P(JobControllerReconsiderProxyAfterErrorHttpsProxyTest,
   }
 }
 
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 constexpr TcpProxyTestCase kFirstNestedHttpsProxyTestCases[] = {
     // These largely correspond to the list of errors in
     // CanFalloverToNextProxy() which can occur with an HTTPS proxy.
@@ -1973,19 +1977,16 @@ TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
                                      HostPortPair("badproxyserver", 99)};
   const ProxyServer kBadProxyServer2{
       ProxyServer::SCHEME_HTTPS, HostPortPair("badfallbackproxyserver", 98)};
-  const ProxyChain kNestedProxyChain1 =
-      ProxyChain::ForIpProtection({{kBadProxyServer1, kGoodProxyServer}});
-  const ProxyChain kNestedProxyChain2 =
-      ProxyChain::ForIpProtection({{kBadProxyServer2, kGoodProxyServer}});
-  const ProxyChain kDirectIpProtectionProxyChain =
-      ProxyChain::ForIpProtection({});
+  const ProxyChain kNestedProxyChain1({kBadProxyServer1, kGoodProxyServer});
+  const ProxyChain kNestedProxyChain2({kBadProxyServer2, kGoodProxyServer});
+  const ProxyChain kDirectProxyChain = ProxyChain::Direct();
 
   CreateSessionDeps();
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain1);
   proxy_list.AddProxyChain(kNestedProxyChain2);
-  proxy_list.AddProxyChain(kDirectIpProtectionProxyChain);
+  proxy_list.AddProxyChain(kDirectProxyChain);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
@@ -1996,7 +1997,7 @@ TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
   if (triggers_ssl_connect_job_retry_logic) {
     proxy_list.Clear();
     proxy_list.AddProxyChain(kNestedProxyChain1);
-    proxy_list.AddProxyChain(kDirectIpProtectionProxyChain);
+    proxy_list.AddProxyChain(kDirectProxyChain);
     ProxyConfig proxy_config2 = ProxyConfig::CreateForTesting(proxy_list);
 
     proxy_resolution_service =
@@ -2146,9 +2147,8 @@ TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
     // The idle socket should have been added back to the socket pool. Close it,
     // so the next loop iteration creates a new socket instead of reusing the
     // idle one.
-    auto* socket_pool =
-        session_->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
-                                kDirectIpProtectionProxyChain);
+    auto* socket_pool = session_->GetSocketPool(
+        HttpNetworkSession::SocketPoolType::kNormal, kDirectProxyChain);
     EXPECT_EQ(1, socket_pool->IdleSocketCount());
     socket_pool->CloseIdleSockets("Close socket reason");
   }
@@ -2195,19 +2195,16 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
                                      HostPortPair("badproxyserver", 99)};
   const ProxyServer kBadProxyServer2{
       ProxyServer::SCHEME_HTTPS, HostPortPair("badfallbackproxyserver", 98)};
-  const ProxyChain kNestedProxyChain1 =
-      ProxyChain::ForIpProtection({{kGoodProxyServer, kBadProxyServer1}});
-  const ProxyChain kNestedProxyChain2 =
-      ProxyChain::ForIpProtection({{kGoodProxyServer, kBadProxyServer2}});
-  const ProxyChain kDirectIpProtectionProxyChain =
-      ProxyChain::ForIpProtection({});
+  const ProxyChain kNestedProxyChain1({kGoodProxyServer, kBadProxyServer1});
+  const ProxyChain kNestedProxyChain2({kGoodProxyServer, kBadProxyServer2});
+  const ProxyChain kDirectProxyChain = ProxyChain::Direct();
 
   CreateSessionDeps();
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain1);
   proxy_list.AddProxyChain(kNestedProxyChain2);
-  proxy_list.AddProxyChain(kDirectIpProtectionProxyChain);
+  proxy_list.AddProxyChain(kDirectProxyChain);
   ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
 
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
@@ -2218,7 +2215,7 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
   if (triggers_ssl_connect_job_retry_logic) {
     proxy_list.Clear();
     proxy_list.AddProxyChain(kNestedProxyChain1);
-    proxy_list.AddProxyChain(kDirectIpProtectionProxyChain);
+    proxy_list.AddProxyChain(kDirectProxyChain);
     ProxyConfig proxy_config2 = ProxyConfig::CreateForTesting(proxy_list);
 
     proxy_resolution_service =
@@ -2389,77 +2386,14 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
     // The idle socket should have been added back to the socket pool. Close it,
     // so the next loop iteration creates a new socket instead of reusing the
     // idle one.
-    auto* socket_pool =
-        session_->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
-                                kDirectIpProtectionProxyChain);
+    auto* socket_pool = session_->GetSocketPool(
+        HttpNetworkSession::SocketPoolType::kNormal, kDirectProxyChain);
     EXPECT_EQ(1, socket_pool->IdleSocketCount());
     socket_pool->CloseIdleSockets("Close socket reason");
   }
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
-
-// Test proxy fallback logic for an IP Protection request.
-TEST_F(JobControllerReconsiderProxyAfterErrorTest,
-       FallbackOnTunnelConnectionFailedForIpProtection) {
-  GURL dest_url = GURL("https://www.example.com");
-
-  CreateSessionDeps();
-
-  std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
-      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  auto test_proxy_delegate =
-      std::make_unique<TestProxyDelegateForIpProtection>();
-
-  // Before starting the test, verify that there are no proxies marked as bad.
-  ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
-
-  static constexpr char kTunnelRequest[] =
-      "CONNECT www.example.com:443 HTTP/1.1\r\n"
-      "Host: www.example.com:443\r\n"
-      "Proxy-Connection: keep-alive\r\n"
-      "User-Agent: test-ua\r\n"
-      "Authorization: https://ip-pro:443\r\n\r\n";
-  const MockWrite kTunnelWrites[] = {{ASYNC, kTunnelRequest}};
-  std::vector<MockRead> reads;
-
-  // Generate errors for the first proxy server.
-  std::unique_ptr<StaticSocketDataProvider> socket_data_proxy_main_job;
-  std::unique_ptr<SSLSocketDataProvider> ssl_data_proxy_main_job;
-  reads.emplace_back(ASYNC, ERR_TUNNEL_CONNECTION_FAILED);
-  socket_data_proxy_main_job =
-      std::make_unique<StaticSocketDataProvider>(reads, kTunnelWrites);
-  ssl_data_proxy_main_job = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
-
-  session_deps_.socket_factory->AddSocketDataProvider(
-      socket_data_proxy_main_job.get());
-  session_deps_.socket_factory->AddSSLSocketDataProvider(
-      ssl_data_proxy_main_job.get());
-
-  // After proxying fails, the request should fall back to using DIRECT, and
-  // succeed.
-  SSLSocketDataProvider ssl_data_first_request(ASYNC, OK);
-  StaticSocketDataProvider socket_data_direct_first_request;
-  socket_data_direct_first_request.set_connect_data(MockConnect(ASYNC, OK));
-  session_deps_.socket_factory->AddSocketDataProvider(
-      &socket_data_direct_first_request);
-  session_deps_.socket_factory->AddSSLSocketDataProvider(
-      &ssl_data_first_request);
-
-  HttpRequestInfo request_info;
-  request_info.method = "GET";
-  request_info.url = dest_url;
-
-  Initialize(std::move(proxy_resolution_service),
-             std::move(test_proxy_delegate));
-
-  std::unique_ptr<HttpStreamRequest> request =
-      CreateJobController(request_info);
-  ASSERT_TRUE(request_delegate_->WaitForHttpStream());
-
-  // Verify that request was fetched without proxy.
-  EXPECT_TRUE(request_delegate_->used_proxy_info().is_direct());
-}
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 
 // Test that if the proxy delegate returns
 // net::ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION in its
@@ -2475,7 +2409,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   auto test_proxy_delegate =
-      std::make_unique<TestProxyDelegateForIpProtection>();
+      std::make_unique<TestProxyDelegateUnableToConnectToDestination>();
 
   // Before starting the test, verify that there are no proxies marked as bad.
   ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
@@ -2485,7 +2419,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       "Host: www.example.com:443\r\n"
       "Proxy-Connection: keep-alive\r\n"
       "User-Agent: test-ua\r\n"
-      "Authorization: https://ip-pro:443\r\n\r\n";
+      "Authorization: https://proxy:443\r\n\r\n";
 
   MockWrite writes[] = {{ASYNC, kProxyTunnelRequest}};
   MockRead reads[] = {
@@ -2653,14 +2587,14 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSocks5ProxyTest, Test) {
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // Tests that ERR_MSG_TOO_BIG is retryable for QUIC proxy.
 TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
-  auto quic_proxy_chain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, "bad", 99)});
+  auto quic_proxy_chain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, "bad", 99)});
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
-          {quic_proxy_chain, ProxyChain::ForIpProtection({})},
+          {quic_proxy_chain, ProxyChain::Direct()},
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Before starting the test, verify that there are no proxies marked as bad.
@@ -2743,13 +2677,10 @@ TEST_P(JobControllerReconsiderProxyAfterErrorQuicProxyTest, Test) {
 
   CreateSessionDeps();
 
-  auto quic_proxy_chain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, proxy_server.host(), proxy_server.port())});
-  auto quic_proxy_chain2 =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, proxy_server2.host(),
-          proxy_server2.port())});
+  auto quic_proxy_chain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, proxy_server.host(), proxy_server.port())});
+  auto quic_proxy_chain2 = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, proxy_server2.host(), proxy_server2.port())});
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {quic_proxy_chain, quic_proxy_chain2, ProxyChain::Direct()},
@@ -2863,6 +2794,7 @@ TEST_P(JobControllerReconsiderProxyAfterErrorQuicProxyTest, Test) {
   }
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 // Same as test above except that this is testing the retry behavior for
 // non-QUIC proxy on ERR_MSG_TOO_BIG.
@@ -6781,6 +6713,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // Test that for a proxied session no DNS APLN H3 job is created (since we don't
 // want to perform DNS resolution corresponding to requests that will be
 // proxied).
@@ -6793,9 +6726,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   Initialize(HttpRequestInfo());
 
-  auto proxy_chain =
-      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-          ProxyServer::SCHEME_QUIC, "proxy", 99)});
+  auto proxy_chain = ProxyChain({ProxyServer::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_QUIC, "proxy", 99)});
 
   auto* test_proxy_delegate =
       static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
@@ -6812,6 +6744,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   request_.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
        MainJobSucceedsDnsAlpnH3JobSucceeds) {

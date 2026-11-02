@@ -37,6 +37,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
@@ -66,6 +67,7 @@
 #include "net/http/transport_security_state_test_util.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "net/net_buildflags.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
@@ -1626,6 +1628,7 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
   }
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // QUIC sessions tunneled through a proxy chain do not share ServerNetworkStats
 // with direct sessions to the same destination, since the observed RTT depends
 // on the path.
@@ -1634,7 +1637,7 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsProxyChain) {
 
   GURL proxy(kProxy1Url);
   auto proxy_origin = url::SchemeHostPort(proxy);
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy_origin.host(), 443),
   });
@@ -1719,6 +1722,7 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsProxyChain) {
   socket_data.ExpectAllReadDataConsumed();
   socket_data.ExpectAllWriteDataConsumed();
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 TEST_P(QuicSessionPoolTest, MemoryPressureGlobalExclusion) {
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
@@ -5685,6 +5689,7 @@ void QuicSessionPoolTest::TestMigrationOnNetworkDisconnected(
   socket_data1.ExpectAllWriteDataConsumed();
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // This test verifies a direct session carrying a proxied session migrates when
 // the default network disconnects, but the proxied session does not migrate.
 TEST_P(QuicSessionPoolTest,
@@ -5702,7 +5707,7 @@ TEST_P(QuicSessionPoolTest,
 
   GURL proxy(kProxy1Url);
   auto proxy_origin = url::SchemeHostPort(proxy);
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy_origin.host(), 443),
   });
@@ -5801,7 +5806,7 @@ TEST_P(QuicSessionPoolTest,
   // Ensure that the session to the proxy is alive and active.
   QuicChromiumClientSession* proxy_session = GetActiveSession(
       proxy_origin, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-      ProxyChain::ForIpProtection({}), SessionUsage::kProxy,
+      ProxyChain::Direct(), SessionUsage::kProxy,
       /*require_dns_https_alpn=*/false,
       /*disable_cert_verification_network_fetches=*/true);
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), proxy_session));
@@ -5923,7 +5928,7 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
 
   GURL proxy(kProxy1Url);
   auto proxy_origin = url::SchemeHostPort(proxy);
-  auto proxy_chain = ProxyChain::ForIpProtection({
+  auto proxy_chain = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy_origin.host(), 443),
   });
@@ -6019,7 +6024,7 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
   // Ensure that the session to the proxy is alive and active.
   QuicChromiumClientSession* proxy_session = GetActiveSession(
       proxy_origin, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-      ProxyChain::ForIpProtection({}), SessionUsage::kProxy,
+      ProxyChain::Direct(), SessionUsage::kProxy,
       /*require_dns_https_alpn=*/false,
       /*disable_cert_verification_network_fetches=*/true);
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), proxy_session));
@@ -6132,6 +6137,7 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
   EXPECT_TRUE(socket_data.AllDataConsumed());
   EXPECT_TRUE(socket_data1.AllDataConsumed());
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 // This test receives NCN signals in the following order:
 // - default network disconnected
@@ -17020,6 +17026,7 @@ TEST_P(QuicSessionPoolWithDestinationTest,
   socket_data2.ExpectAllWriteDataConsumed();
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 // `QuicSessionRequest` is not pooled if the `proxy_chain` field differs.
 TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   Initialize();
@@ -17105,13 +17112,13 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
                             endpoint_maker2.MakeInitialSettingsPacket(1)));
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  auto proxy_chain1 = ProxyChain::ForIpProtection({
+  auto proxy_chain1 = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy1_origin.host(), 443),
   });
   EXPECT_TRUE(proxy_chain1.IsValid());
 
-  auto proxy_chain2 = ProxyChain::ForIpProtection({
+  auto proxy_chain2 = ProxyChain({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
                                          proxy2_origin.host(), 443),
   });
@@ -17162,6 +17169,7 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   socket_data2.ExpectAllReadDataConsumed();
   socket_data2.ExpectAllWriteDataConsumed();
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 // `QuicSessionRequest` is not pooled if the `session_usage` field differs.
 TEST_P(QuicSessionPoolWithDestinationTest, DifferentSessionUsage) {

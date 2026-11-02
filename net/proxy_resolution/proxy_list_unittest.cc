@@ -124,38 +124,6 @@ TEST(ProxyListTest, RemoveProxiesWithoutScheme) {
   }
 }
 
-TEST(ProxyListTest, RemoveProxiesWithoutSchemeWithProxyChains) {
-  const auto kProxyChainFooHttps = ProxyChain::ForIpProtection({
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
-                                         "foo-a", 443),
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
-                                         "foo-b", 443),
-  });
-  const auto kProxyChainBarMixed = ProxyChain::ForIpProtection({
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_QUIC,
-                                         "bar-a", 443),
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
-                                         "bar-b", 443),
-  });
-  const ProxyChain kProxyChainGraultSocks = ProxyChain::FromSchemeHostAndPort(
-      ProxyServer::Scheme::SCHEME_SOCKS4, "grault", 443);
-
-  ProxyList list;
-  list.AddProxyChain(kProxyChainFooHttps);
-  list.AddProxyChain(kProxyChainBarMixed);
-  list.AddProxyChain(kProxyChainGraultSocks);
-  list.AddProxyChain(ProxyChain::Direct());
-
-  // Remove anything that isn't entirely HTTPS.
-  list.RemoveProxiesWithoutScheme(ProxyServer::SCHEME_HTTPS);
-
-  std::vector<net::ProxyChain> expected = {
-      kProxyChainFooHttps,
-      ProxyChain::Direct(),
-  };
-  EXPECT_EQ(list.AllChains(), expected);
-}
-
 TEST(ProxyListTest, DeprioritizeBadProxyChains_EmptyMap) {
   // Call DeprioritizeBadProxyChains with an empty map -- should have no effect.
   ProxyList list;
@@ -322,57 +290,34 @@ TEST(ProxyListTest, ToPacString) {
   list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
       ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
   EXPECT_EQ(list.ToPacString(), "HTTPS foo:443");
-  // ToPacString should fail for proxy chains.
-  list.AddProxyChain(ProxyChain::ForIpProtection({
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
-                                         "foo-a", 443),
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
-                                         "foo-b", 443),
-  }));
-  EXPECT_DEATH_IF_SUPPORTED(list.ToPacString(), "");
 }
 
 TEST(ProxyListTest, ToDebugString) {
   ProxyList list;
   list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
       ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
-  list.AddProxyChain(ProxyChain::ForIpProtection({
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
-                                         "foo-a", 443),
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
-                                         "foo-b", 443),
-  }));
 
-  EXPECT_EQ(
-      list.ToDebugString(),
-      "HTTPS foo:443;[https://foo-a:443, https://foo-b:443] (IP Protection)");
+  EXPECT_EQ(list.ToDebugString(), "HTTPS foo:443");
 }
 
 TEST(ProxyListTest, ToValue) {
   ProxyList list;
   list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
       ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
-  list.AddProxyChain(ProxyChain::ForIpProtection({
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
-                                         "foo-a", 443),
-      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
-                                         "foo-b", 443),
-  }));
 
   base::Value expected(base::Value::Type::LIST);
   base::ListValue& exp_list = expected.GetList();
   exp_list.Append("[https://foo:443]");
-  exp_list.Append("[https://foo-a:443, https://foo-b:443] (IP Protection)");
 
   EXPECT_EQ(list.ToValue(), expected);
 }
 
 #if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // The following tests are for non-release builds where multi-proxy chains are
-// permitted outside of Ip Protection.
+// permitted.
 
-TEST(ProxyListTest,
-     NonIpProtectionMultiProxyChainRemoveProxiesWithoutSchemeWithProxyChains) {
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+TEST(ProxyListTest, MultiProxyChainRemoveProxiesWithoutSchemeWithProxyChains) {
   const ProxyChain kProxyChainFooHttps({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
                                          "foo-a", 443),
@@ -403,15 +348,15 @@ TEST(ProxyListTest,
   };
   EXPECT_EQ(list.AllChains(), expected);
 }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
 // `ToPacString` should only be called if the list contains no multi-proxy
 // chains, as those cannot be represented in PAC syntax. This is not an issue in
 // release builds because a `ProxyChain` constructed with multiple proxy servers
-// would automatically default to an empty, invalid
-// `ProxyChain` (unless for Ip Protection); however, in non-release builds,
-// multi-proxy chains are permitted which means they must be CHECKED when this
-// function is called.
-TEST(ProxyListTest, NonIpProtectionMultiProxyChainToPacString) {
+// would automatically default to an empty, invalid `ProxyChain`; however, in
+// non-release builds, multi-proxy chains are permitted which means they must be
+// CHECKED when this function is called.
+TEST(ProxyListTest, MultiProxyChainToPacString) {
   ProxyList list;
   list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
       ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
@@ -426,7 +371,7 @@ TEST(ProxyListTest, NonIpProtectionMultiProxyChainToPacString) {
   EXPECT_DEATH_IF_SUPPORTED(list.ToPacString(), "");
 }
 
-TEST(ProxyListTest, NonIpProtectionMultiProxyChainToDebugString) {
+TEST(ProxyListTest, MultiProxyChainToDebugString) {
   ProxyList list;
   list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
       ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
@@ -441,7 +386,7 @@ TEST(ProxyListTest, NonIpProtectionMultiProxyChainToDebugString) {
             "HTTPS foo:443;[https://foo-a:443, https://foo-b:443]");
 }
 
-TEST(ProxyListTest, NonIpProtectionMultiProxyChainToValue) {
+TEST(ProxyListTest, MultiProxyChainToValue) {
   ProxyList list;
   list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
       ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));

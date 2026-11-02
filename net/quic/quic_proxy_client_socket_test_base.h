@@ -267,8 +267,8 @@ class QuicProxyClientSocketTestBase
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
   quic::test::MockConnectionIdGenerator connection_id_generator_;
 
-  ProxyChain proxy_chain_ = ProxyChain::ForIpProtection(
-      {{ProxyServer::SCHEME_QUIC, HostPortPair("proxy.example.com", 443)}});
+  ProxyChain proxy_chain_{
+      {ProxyServer::SCHEME_QUIC, HostPortPair("proxy.example.com", 443)}};
 
   std::string user_agent_;
   url::SchemeHostPort proxy_endpoint_;

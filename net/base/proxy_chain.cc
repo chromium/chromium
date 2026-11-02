@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/buildflag.h"
 #include "net/base/proxy_server.h"
@@ -59,8 +58,10 @@ ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list)
 // static
 std::optional<ProxyChain> ProxyChain::InitFromPickle(
     base::PickleIterator& pickle_iter) {
-  int ip_protection_chain_id;
-  if (!pickle_iter.ReadInt(&ip_protection_chain_id)) {
+  // Read and discard the deprecated `ip_protection_chain_id` field to preserve
+  // backwards compatibility with ProxyChains persisted to the HTTP cache.
+  int unused_ip_protection_chain_id;
+  if (!pickle_iter.ReadInt(&unused_ip_protection_chain_id)) {
     return std::nullopt;
   }
   size_t chain_length = 0;
@@ -73,9 +74,7 @@ std::optional<ProxyChain> ProxyChain::InitFromPickle(
     proxy_server_list.push_back(ProxyServer::CreateFromPickle(&pickle_iter));
   }
 
-  ProxyChain chain =
-      ProxyChain(std::move(proxy_server_list), ip_protection_chain_id,
-                 /*opaque_data=*/std::nullopt);
+  ProxyChain chain(std::move(proxy_server_list));
   if (!chain.IsValid()) {
     return std::nullopt;
   }
@@ -84,7 +83,10 @@ std::optional<ProxyChain> ProxyChain::InitFromPickle(
 
 void ProxyChain::Persist(base::Pickle* pickle) const {
   DCHECK(IsValid());
-  pickle->WriteInt(ip_protection_chain_id_);
+  // Write a dummy value (-1, formerly `kNotIpProtectionChainId`) for the
+  // removed `ip_protection_chain_id_` field to preserve the pickle format for
+  // ProxyChains persisted to the HTTP cache.
+  pickle->WriteInt(-1);
   if (length() > static_cast<size_t>(INT_MAX) - 1) {
     pickle->WriteInt(0);
     return;
@@ -111,7 +113,7 @@ std::pair<ProxyChain, const ProxyServer&> ProxyChain::SplitLast() const {
   DCHECK_NE(length(), 0u);
   ProxyChain new_chain =
       ProxyChain({proxy_server_list_->begin(), proxy_server_list_->end() - 1},
-                 ip_protection_chain_id_, opaque_data_);
+                 opaque_data_);
   CHECK(new_chain.IsValid());
   return std::make_pair(std::move(new_chain),
                         std::ref(proxy_server_list_->back()));
@@ -122,7 +124,7 @@ ProxyChain ProxyChain::Prefix(size_t len) const {
   DCHECK_LE(len, length());
   auto new_chain = ProxyChain(
       {proxy_server_list_->begin(), proxy_server_list_->begin() + len},
-      ip_protection_chain_id_, opaque_data_);
+      opaque_data_);
   CHECK(new_chain.IsValid());
   return new_chain;
 }
@@ -152,12 +154,6 @@ std::string ProxyChain::ToDebugString() const {
     debug_string += ProxyServerToProxyUri(proxy_server);
   }
   debug_string = base::StrCat({"[", debug_string, "]"});
-  if (ip_protection_chain_id_ == 0) {
-    debug_string += " (IP Protection)";
-  } else if (ip_protection_chain_id_ >= 0) {
-    debug_string += base::StringPrintf(" (IP Protection chain %d)",
-                                       ip_protection_chain_id_);
-  }
 
   if (opaque_data_.has_value()) {
     debug_string += base::StringPrintf(" (Opaque data %d)", *opaque_data_);
@@ -165,44 +161,9 @@ std::string ProxyChain::ToDebugString() const {
   return debug_string;
 }
 
-std::string ProxyChain::GetHistogramSuffix() const {
-  auto scheme_to_string = [](ProxyServer::Scheme scheme) {
-    switch (scheme) {
-      case ProxyServer::SCHEME_INVALID:
-        return "INVALID";
-      case ProxyServer::SCHEME_HTTP:
-        return "HTTP";
-      case ProxyServer::SCHEME_SOCKS4:
-        return "SOCKS4";
-      case ProxyServer::SCHEME_SOCKS5:
-        return "SOCKS5";
-      case ProxyServer::SCHEME_HTTPS:
-        return "HTTPS";
-      case ProxyServer::SCHEME_QUIC:
-        return "QUIC";
-    }
-  };
-
-  if (is_for_ip_protection()) {
-    return base::StrCat(
-        {"Chain", base::NumberToString(ip_protection_chain_id()),
-         is_direct()
-             ? ""
-             : base::StrCat({".", scheme_to_string(First().scheme())})});
-  }
-
-  if (is_direct()) {
-    return "Direct";
-  }
-
-  return scheme_to_string(First().scheme());
-}
-
 ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list,
-                       int ip_protection_chain_id,
                        std::optional<int> opaque_data)
     : proxy_server_list_(std::move(proxy_server_list)),
-      ip_protection_chain_id_(ip_protection_chain_id),
       opaque_data_(opaque_data) {
   if (!IsValidInternal()) {
     *this = ProxyChain();
@@ -216,8 +177,7 @@ bool ProxyChain::IsValidInternal() const {
   if (is_direct()) {
     return true;
   }
-  bool should_allow_quic =
-      is_for_ip_protection() || ShouldAllowQuicForAllChains();
+  bool should_allow_quic = ShouldAllowQuicForAllChains();
   if (is_single_proxy()) {
     bool is_valid = proxy_server_list_.value().at(0).is_valid();
     if (proxy_server_list_.value().at(0).is_quic()) {
@@ -227,14 +187,7 @@ bool ProxyChain::IsValidInternal() const {
   }
   DCHECK(is_multi_proxy());
 
-#if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
-  // A chain can only be multi-proxy in release builds if it is for ip
-  // protection.
-  if (!is_for_ip_protection() && is_multi_proxy()) {
-    return false;
-  }
-#endif  // !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
-
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
   // Verify that the chain is zero or more SCHEME_QUIC servers followed by zero
   // or more SCHEME_HTTPS servers.
   bool seen_quic = false;
@@ -253,9 +206,10 @@ bool ProxyChain::IsValidInternal() const {
     }
   }
 
-  // QUIC is only allowed for IP protection unless in debug builds where it is
-  // generally available.
   return !seen_quic || should_allow_quic;
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 }
 
 std::ostream& operator<<(std::ostream& os, const ProxyChain& proxy_chain) {
