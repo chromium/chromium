@@ -92,6 +92,7 @@ class MODULES_EXPORT BaseRenderingContext2D
       public CanvasMemoryDumpClient,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
+      public BitmapGpuChannelLostObserver,
       public ScopedRasterTimer::Host {
  public:
   // MemoryManagedPaintRecorder::Client implementation.
@@ -418,6 +419,9 @@ class MODULES_EXPORT BaseRenderingContext2D
   // viz::ContextLostObserver implementation.
   void OnContextLost() override;
 
+  // BitmapGpuChannelLostObserver implementation.
+  void OnGpuChannelLost() override;
+
   void NotifyGpuContextLostTask(base::WeakPtr<Canvas2DResourceProvider>);
 
   void RasterRecordToSharedImage(cc::PaintRecord last_recording);
@@ -439,6 +443,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   // surface may be called upon to rasterize a texture-backed resource, which
   // must be bound to a GPU context for the current thread.
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+      shared_image_interface_provider_;
   // `raster_context_provider_` holds a reference on the shared
   // `RasterContextProvider`, to keep it alive until it notifies us after the
   // GPU context is lost. Without this, instances of this class would not get

@@ -12,7 +12,6 @@
 #include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -20,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -129,21 +127,6 @@ void Canvas2DResourceProvider::SetResourceRecyclingEnabled(bool value) {
   if (!resource_recycling_enabled_) {
     ClearUnusedResources();
   }
-}
-
-void Canvas2DResourceProvider::OnGpuChannelLost() {
-  if (notified_context_lost_) {
-    return;
-  }
-  ClearUnusedResources();
-  // Notify the owner of this resource provider that the GPU context was
-  // lost. The call is done in a separate task, so that the owner can delete
-  // this resource provider if needed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Canvas2DResourceProvider::NotifyGpuContextLostTask,
-                     CreateWeakPtr()));
-  notified_context_lost_ = true;
 }
 
 bool Canvas2DResourceProvider::ShouldReplaceTargetBuffer(
@@ -443,15 +426,6 @@ void Canvas2DResourceProvider::OnMemoryDump(
   image_pool_->OnMemoryDump(pmd, cached_path);
 }
 
-void Canvas2DResourceProvider::NotifyGpuContextLostTask(
-    base::WeakPtr<Canvas2DResourceProvider> provider) {
-  if (provider && provider->context_lost_callback_) {
-    // Move `provider` as hint that it shouldn't be reused after this point.
-    // The owner of the provider can delete it in `context_lost_callback_`.
-    std::move(std::move(provider)->context_lost_callback_).Run();
-  }
-}
-
 Canvas2DResourceProvider::Canvas2DResourceProvider(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -537,15 +511,12 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    base::OnceClosure context_lost_callback)
+    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider)
     : is_accelerated_(false),
       shared_image_interface_provider_(
           shared_image_interface_provider->GetWeakPtr()),
-      hdr_metadata_(hdr_metadata),
-      context_lost_callback_(std::move(context_lost_callback)) {
+      hdr_metadata_(hdr_metadata) {
   CHECK(shared_image_interface_provider_);
-  shared_image_interface_provider_->AddGpuChannelLostObserver(this);
   auto* sii = shared_image_interface_provider_->SharedImageInterface();
   CHECK(sii);
   gpu::ImageInfo image_info(
@@ -560,9 +531,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
 Canvas2DResourceProvider::~Canvas2DResourceProvider() {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
-  }
-  if (shared_image_interface_provider_) {
-    shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
   }
 
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",

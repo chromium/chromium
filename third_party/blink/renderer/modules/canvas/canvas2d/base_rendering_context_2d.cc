@@ -203,6 +203,9 @@ BaseRenderingContext2D::~BaseRenderingContext2D() {
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
   }
+  if (shared_image_interface_provider_) {
+    shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
+  }
 }
 
 const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {
@@ -244,6 +247,10 @@ void BaseRenderingContext2D::ResetBacking() {
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
     raster_context_provider_.reset();
+  }
+  if (shared_image_interface_provider_) {
+    shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
+    shared_image_interface_provider_.reset();
   }
   if (Host()) {
     Host()->UpdateMemoryUsage();
@@ -459,13 +466,16 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
   shared_image_provider_ = std::make_unique<Canvas2DResourceProvider>(
       Host()->Size(), format, color_params_.GetAlphaType(),
       color_params_.GetGfxColorSpace(), color_params_.GetGfxHdrMetadata(),
-      shared_image_interface_provider,
-      blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
-                      WrapWeakPersistent(Host())));
+      shared_image_interface_provider);
   CreateSoftwareSurface();
   if (!surface_) {
     shared_image_provider_.reset();
+    return;
   }
+
+  shared_image_interface_provider_ =
+      shared_image_interface_provider->GetWeakPtr();
+  shared_image_interface_provider_->AddGpuChannelLostObserver(this);
 }
 
 void BaseRenderingContext2D::CreateSoftwareSurface() {
@@ -569,6 +579,10 @@ void BaseRenderingContext2D::OnContextLost() {
                       WrapWeakPersistent(this),
                       shared_image_provider_->CreateWeakPtr()));
   shared_image_provider_->notified_context_lost_ = true;
+}
+
+void BaseRenderingContext2D::OnGpuChannelLost() {
+  OnContextLost();
 }
 
 void BaseRenderingContext2D::NotifyGpuContextLostTask(

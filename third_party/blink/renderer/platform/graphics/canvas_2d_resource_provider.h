@@ -11,7 +11,6 @@
 
 #include "base/byte_size.h"
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -99,8 +98,7 @@ enum class CanvasResourceProviderType {
 // * by Canvas2D.
 class PLATFORM_EXPORT Canvas2DResourceProvider
     : public CanvasResourceSharedImage::Client,
-      public WebGraphicsContext3DProviderWrapper::DestructionObserver,
-      public BitmapGpuChannelLostObserver {
+      public WebGraphicsContext3DProviderWrapper::DestructionObserver {
  public:
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
@@ -119,8 +117,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       const gfx::HDRMetadata& hdr_metadata,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-      base::OnceClosure context_lost_callback = {});
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider);
 
   ~Canvas2DResourceProvider() override;
 
@@ -190,17 +187,12 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
     return context_provider_wrapper_;
   }
 
-  // BitmapGpuChannelLostObserver implementation.
-  void OnGpuChannelLost() override;
-
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
 
   void EnsureResourceReadyForDraw();
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
-
-  static void NotifyGpuContextLostTask(base::WeakPtr<Canvas2DResourceProvider>);
 
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
@@ -236,8 +228,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   int max_inflight_resources_ = 0;
 
   gfx::HDRMetadata hdr_metadata_;
-
-  base::OnceClosure context_lost_callback_;
 
   base::WeakPtrFactory<Canvas2DResourceProvider> weak_ptr_factory_{this};
 };
