@@ -3160,7 +3160,6 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
 
   const ProcessState* process_state =
       process_states_.GetProcessStateForQuery(child_id);
-  ProcessLock expected_process_lock;
   std::string failure_reason;
 
   if (!process_state) {
@@ -3215,10 +3214,14 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
 
   // Returning false here will often result in a renderer kill.  Set some crash
   // keys that will help understand the circumstances of that kill.
+  // Note: Unlike CanCommitMaybeOpaqueNewOrigin(), this function does not
+  // compute an expected ProcessLock; pass "{  no-site-info }" (matching
+  // ProcessLock().ToString()) to preserve continuity with existing crash
+  // queries.
   // TODO(crbug.com/476412562): Find a way to scope these keys so that they do
   // not appear in later unrelated crash reports.
   LogCanAccessDataForOriginCrashKeys(
-      expected_process_lock.ToString(),
+      /*expected_process_lock=*/"{  no-site-info }",
       GetKilledProcessOriginLock(process_state),
       url.DeprecatedGetOriginAsURL().spec(), failure_reason,
       keep_alive_durations, shutdown_delay_ref_count, process_rfh_count,
