@@ -73,8 +73,7 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
 
   RecentlyClosedTabsBridge(const RecentlyClosedTabsBridge&) = delete;
   RecentlyClosedTabsBridge& operator=(const RecentlyClosedTabsBridge&) = delete;
-
-  void Destroy(JNIEnv* env);
+  ~RecentlyClosedTabsBridge() override;
 
   bool GetRecentlyClosedEntries(JNIEnv* env,
                                 const base::android::JavaRef<jobject>& jentries,
@@ -99,7 +98,6 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
       sessions::TabRestoreService* service) override;
 
  private:
-  ~RecentlyClosedTabsBridge() override;
 
   // Construct and initialize tab_restore_service_ if it's NULL.
   // tab_restore_service_ may still be NULL, however, in incognito mode.

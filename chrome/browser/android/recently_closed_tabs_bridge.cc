@@ -27,6 +27,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/android/gurl_android.h"
 
@@ -299,10 +300,6 @@ RecentlyClosedTabsBridge::~RecentlyClosedTabsBridge() {
   }
 }
 
-void RecentlyClosedTabsBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
-
 bool RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
     JNIEnv* env,
     const JavaRef<jobject>& jentries_list,
@@ -452,12 +449,12 @@ void RecentlyClosedTabsBridge::RestoreAndroidTabGroups(
   }
 }
 
-static int64_t JNI_RecentlyClosedBridge_Init(JNIEnv* env,
-                                             const JavaRef<jobject>& jbridge,
-                                             Profile* profile) {
-  RecentlyClosedTabsBridge* bridge = new RecentlyClosedTabsBridge(
+static jni_zero::JniUniquePtr<RecentlyClosedTabsBridge>
+JNI_RecentlyClosedBridge_Init(JNIEnv* env,
+                              const JavaRef<jobject>& jbridge,
+                              Profile* profile) {
+  return jni_zero::MakeUnique<RecentlyClosedTabsBridge>(
       ScopedJavaGlobalRef<jobject>(env, jbridge), profile);
-  return reinterpret_cast<intptr_t>(bridge);
 }
 
 }  // namespace recent_tabs

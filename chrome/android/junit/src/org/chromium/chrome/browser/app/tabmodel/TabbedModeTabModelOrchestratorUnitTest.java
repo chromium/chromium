@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import android.util.Pair;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -104,6 +105,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
     private CipherFactory mCipherFactory;
+    private JniUniquePtr<RecentlyClosedBridge.NativeRecentlyClosedTabsBridge>
+            mNativeRecentlyClosedBridge;
 
     // TabbedModeTabModelOrchestrator running on Android S where tab merging into other instance
     // is not performed.
@@ -137,7 +140,8 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         mCipherFactory = new CipherFactory();
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
         RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);
-        when(mRecentlyClosedBridgeJni.init(any(), any())).thenReturn(1L);
+        mNativeRecentlyClosedBridge = JniUniquePtr.createForTesting(1L);
+        when(mRecentlyClosedBridgeJni.init(any(), any())).thenReturn(mNativeRecentlyClosedBridge);
         TabStateStorageServiceFactory.setForTesting(mTabStateStorageService);
         PersistentStoreCleanerFactory.setForTesting(mPersistentStoreCleaner);
     }
@@ -147,6 +151,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         // TabbedModeTabModelOrchestrator gets a new TabModelSelector from TabWindowManagerSingleton
         // for every test case, so TabWindowManagerSingleton has to be reset to avoid running out of
         // assignment slots.
+        mNativeRecentlyClosedBridge.destroy();
         ArchivedTabModelOrchestrator.setInstanceForTesting(null);
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         MultiWindowTestUtils.resetInstanceInfo();

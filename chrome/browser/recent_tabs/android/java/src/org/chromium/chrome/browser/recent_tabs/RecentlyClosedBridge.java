@@ -8,7 +8,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Token;
@@ -27,7 +30,10 @@ import java.util.List;
 @JNINamespace("recent_tabs")
 @NullMarked
 public class RecentlyClosedBridge implements RecentlyClosedTabManager {
-    private long mNativeBridge;
+    @JniType("::recent_tabs::RecentlyClosedTabsBridge")
+    public interface NativeRecentlyClosedTabsBridge extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativeRecentlyClosedTabsBridge> mNativeBridge;
     private final TabModelSelector mTabModelSelector;
 
     private @Nullable Runnable mEntriesUpdatedRunnable;
@@ -117,9 +123,9 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
     @Override
     public void destroy() {
-        assert mNativeBridge != 0;
-        RecentlyClosedBridgeJni.get().destroy(mNativeBridge);
-        mNativeBridge = 0;
+        assert mNativeBridge != null;
+        mNativeBridge.destroy();
+        mNativeBridge = null;
         mEntriesUpdatedRunnable = null;
     }
 
@@ -130,6 +136,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
     @Override
     public @Nullable List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount) {
+        assert mNativeBridge != null;
         List<RecentlyClosedEntry> entries = new ArrayList<>();
         boolean received =
                 RecentlyClosedBridgeJni.get()
@@ -153,6 +160,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @Override
     public boolean openRecentlyClosedTab(
             TabModel tabModel, RecentlyClosedTab recentTab, int windowOpenDisposition) {
+        assert mNativeBridge != null;
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
         commitTabClosuresInRegularModel();
         return RecentlyClosedBridgeJni.get()
@@ -162,6 +170,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
     @Override
     public boolean openRecentlyClosedEntry(TabModel tabModel, RecentlyClosedEntry recentEntry) {
+        assert mNativeBridge != null;
         assert mTabModelSelector.getModel(tabModel.isIncognitoBranded()) == tabModel
                 && recentEntry instanceof SessionRecentlyClosedEntry;
         commitTabClosuresInRegularModel();
@@ -173,6 +182,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
     @Override
     public void openMostRecentlyClosedEntry(TabModel tabModel) {
+        assert mNativeBridge != null;
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
         commitTabClosuresInRegularModel();
         RecentlyClosedBridgeJni.get().openMostRecentlyClosedEntry(mNativeBridge, tabModel);
@@ -180,12 +190,14 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
     @Override
     public void clearRecentlyClosedEntries() {
+        assert mNativeBridge != null;
         RecentlyClosedBridgeJni.get().clearRecentlyClosedEntries(mNativeBridge);
     }
 
     @Override
     public void clearLeastRecentlyUsedClosedEntries(int numToRemove) {
         if (numToRemove == 0) return;
+        assert mNativeBridge != null;
         RecentlyClosedBridgeJni.get()
                 .clearLeastRecentlyUsedClosedEntries(mNativeBridge, numToRemove);
     }
@@ -199,32 +211,32 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(RecentlyClosedBridge self, @JniType("Profile*") Profile profile);
-
-        void destroy(long nativeRecentlyClosedTabsBridge);
+        JniUniquePtr<NativeRecentlyClosedTabsBridge> init(
+                RecentlyClosedBridge self, @JniType("Profile*") Profile profile);
 
         boolean getRecentlyClosedEntries(
-                long nativeRecentlyClosedTabsBridge,
+                JniPtr<NativeRecentlyClosedTabsBridge> self,
                 List<RecentlyClosedEntry> entries,
                 int maxEntryCount);
 
         boolean openRecentlyClosedTab(
-                long nativeRecentlyClosedTabsBridge,
+                JniPtr<NativeRecentlyClosedTabsBridge> self,
                 @JniType("TabModel*") TabModel tabModel,
                 int tabSessionId,
                 int windowOpenDisposition);
 
         boolean openRecentlyClosedEntry(
-                long nativeRecentlyClosedTabsBridge,
+                JniPtr<NativeRecentlyClosedTabsBridge> self,
                 @JniType("TabModel*") TabModel tabModel,
                 int sessionId);
 
         boolean openMostRecentlyClosedEntry(
-                long nativeRecentlyClosedTabsBridge, @JniType("TabModel*") TabModel tabModel);
+                JniPtr<NativeRecentlyClosedTabsBridge> self,
+                @JniType("TabModel*") TabModel tabModel);
 
-        void clearRecentlyClosedEntries(long nativeRecentlyClosedTabsBridge);
+        void clearRecentlyClosedEntries(JniPtr<NativeRecentlyClosedTabsBridge> self);
 
         void clearLeastRecentlyUsedClosedEntries(
-                long nativeRecentlyClosedTabsBridge, int numToRemove);
+                JniPtr<NativeRecentlyClosedTabsBridge> self, int numToRemove);
     }
 }

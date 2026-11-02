@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
@@ -43,6 +42,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -131,7 +131,6 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link TabSearchOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSearchOverlayCoordinatorUnitTest {
-    private static final long NATIVE_BRIDGE = 1L;
     private static final String RECENTLY_CLOSED_URL = "https://www.example.com/";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -171,6 +170,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private InsetObserver mInsetObserver;
     @Mock private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
+    private JniUniquePtr<RecentlyClosedBridge.NativeRecentlyClosedTabsBridge> mNativeBridge;
 
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
@@ -288,6 +288,9 @@ public class TabSearchOverlayCoordinatorUnitTest {
             verify(mBackPressManager).removeHandler(mCoordinator);
             verify(mActivityLifecycleDispatcher).unregister(mCoordinator);
             assertNull(mSuggestionsChangeObserver);
+        }
+        if (mNativeBridge != null) {
+            mNativeBridge.destroy();
         }
         ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
     }
@@ -576,7 +579,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 createRecentlyClosedTab(/* sessionId= */ 2, RECENTLY_CLOSED_URL),
                 createRecentlyClosedTab(/* sessionId= */ 3, RECENTLY_CLOSED_URL));
         when(mRecentlyClosedBridgeJni.openRecentlyClosedTab(
-                        NATIVE_BRIDGE, mTabModel, 2, WindowOpenDisposition.NEW_FOREGROUND_TAB))
+                        mNativeBridge, mTabModel, 2, WindowOpenDisposition.NEW_FOREGROUND_TAB))
                 .thenReturn(true);
 
         var watcher =
@@ -585,7 +588,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertTrue(loadRecentlyClosedTab());
         watcher.assertExpected();
         assertNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
-        verify(mRecentlyClosedBridgeJni).destroy(NATIVE_BRIDGE);
+        mNativeBridge = null;
     }
 
     @Test
@@ -600,7 +603,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertTrue(loadRecentlyClosedTab());
         watcher.assertExpected();
         verify(mRecentlyClosedBridgeJni, never())
-                .openRecentlyClosedTab(anyLong(), any(), anyInt(), anyInt());
+                .openRecentlyClosedTab(any(), any(), anyInt(), anyInt());
         assertNotNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
     }
 
@@ -727,7 +730,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
     }
 
     private void setRecentlyClosedTabs(RecentlyClosedTab... tabs) {
-        when(mRecentlyClosedBridgeJni.init(any(), any())).thenReturn(NATIVE_BRIDGE);
+        mNativeBridge = JniUniquePtr.createForTesting(1L);
+        when(mRecentlyClosedBridgeJni.init(any(), any())).thenReturn(mNativeBridge);
         doAnswer(
                         invocation -> {
                             List<RecentlyClosedEntry> entries = invocation.getArgument(1);
@@ -735,7 +739,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
                             return true;
                         })
                 .when(mRecentlyClosedBridgeJni)
-                .getRecentlyClosedEntries(eq(NATIVE_BRIDGE), any(), anyInt());
+                .getRecentlyClosedEntries(eq(mNativeBridge), any(), anyInt());
     }
 
     private boolean loadRecentlyClosedTab() {

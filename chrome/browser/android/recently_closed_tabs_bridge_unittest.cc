@@ -206,7 +206,7 @@ TEST(RecentlyClosedTabsBridge_TabIterator, EmptyWindow) {
 class RecentlyClosedTabsBridgeTest : public ChromeRenderViewHostTestHarness {
  protected:
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
-  raw_ptr<recent_tabs::RecentlyClosedTabsBridge> bridge_ = nullptr;
+  std::unique_ptr<recent_tabs::RecentlyClosedTabsBridge> bridge_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   void SetUp() override {
@@ -216,14 +216,11 @@ class RecentlyClosedTabsBridgeTest : public ChromeRenderViewHostTestHarness {
     CreateService();
     ASSERT_TRUE(tab_restore_service_);
 
-    bridge_ = new RecentlyClosedTabsBridge(nullptr, profile());
+    bridge_ = std::make_unique<RecentlyClosedTabsBridge>(nullptr, profile());
   }
 
   void TearDown() override {
-    if (bridge_) {
-      bridge_->Destroy(nullptr);
-      bridge_ = nullptr;
-    }
+    bridge_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
