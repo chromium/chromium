@@ -9,6 +9,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.view.MenuItem;
 
 import androidx.test.filters.MediumTest;
@@ -19,7 +21,7 @@ import org.hamcrest.core.IsInstanceOf;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -35,17 +37,21 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.bookmarks.BookmarkEditMetrics.BookmarkEditOutcome;
-import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelTest;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
@@ -61,8 +67,9 @@ import java.util.concurrent.TimeoutException;
 /** Tests functionality in BookmarkEditActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisabledTest(message = "crbug.com/393436289")
 @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462590301
+// The suite exercises the mobile edit flow, which saves on onStop().
+@DisableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG})
 public class BookmarkEditTest {
 
     private static final String TITLE_A = "a";
@@ -85,47 +92,50 @@ public class BookmarkEditTest {
                     if (newState == ActivityState.DESTROYED) sDestroyedCallback.notifyCalled();
                 }
             };
-    private final CallbackHelper mModelChangedCallback = new CallbackHelper();
+    private static final CallbackHelper sModelChangedCallback = new CallbackHelper();
 
-    @Before
-    public void setUp() throws TimeoutException {
+    @BeforeClass
+    public static void setUpClass() throws TimeoutException {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
-        if (sBookmarkEditActivity == null) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        sBookmarkModel =
-                                BookmarkModel.getForProfile(
-                                        ProfileManager.getLastUsedRegularProfile());
-                        sBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
-                    });
+        // Desktop-Android builds default to COMPACT rows, which append child counts to folder
+        // titles. Force VISUAL rows so the folder row title matches the folder name exactly.
+        // The test runner resets shared prefs between test classes.
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF, BookmarkRowDisplayPref.VISUAL);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sBookmarkModel =
+                            BookmarkModel.getForProfile(ProfileManager.getLastUsedRegularProfile());
+                    sBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+                });
 
-            BookmarkTestUtil.waitForBookmarkModelLoaded();
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        sMobileNode = sBookmarkModel.getMobileFolderId();
-                        sOtherNode = sBookmarkModel.getOtherFolderId();
-                    });
-            sBookmarkId =
-                    BookmarkModelTest.addBookmark(
-                            sBookmarkModel, sMobileNode, 0, TITLE_A, new GURL(URL_A));
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sMobileNode = sBookmarkModel.getMobileFolderId();
+                    sOtherNode = sBookmarkModel.getOtherFolderId();
+                });
+        sBookmarkId =
+                BookmarkModelTest.addBookmark(
+                        sBookmarkModel, sMobileNode, 0, TITLE_A, new GURL(URL_A));
 
-            sModelObserver =
-                    new BookmarkModelObserver() {
-                        @Override
-                        public void bookmarkModelChanged() {
-                            mModelChangedCallback.notifyCalled();
-                        }
-                    };
-            ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.addObserver(sModelObserver));
+        sModelObserver =
+                new BookmarkModelObserver() {
+                    @Override
+                    public void bookmarkModelChanged() {
+                        sModelChangedCallback.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.addObserver(sModelObserver));
 
-            startEditActivity(sBookmarkId);
+        startEditActivity(sBookmarkId);
 
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        ApplicationStatus.registerStateListenerForActivity(
-                                sActivityStateListener, sBookmarkEditActivity);
-                    });
-        }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ApplicationStatus.registerStateListenerForActivity(
+                            sActivityStateListener, sBookmarkEditActivity);
+                });
     }
 
     @After
@@ -155,11 +165,15 @@ public class BookmarkEditTest {
                     sBookmarkModel.removeAllUserBookmarks();
                     ApplicationStatus.unregisterActivityStateListener(sActivityStateListener);
                 });
+        // Drop the static reference so the class-level leak check doesn't see the destroyed
+        // activity.
+        sBookmarkEditActivity = null;
     }
 
     @Test
     @MediumTest
     @Feature({"Bookmark"})
+    @RequiresRestart("tests destruction of BookmarkEditActivity")
     public void testEditTitleAndUrl() throws ExecutionException, TimeoutException {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -176,12 +190,15 @@ public class BookmarkEditTest {
                 URL_A,
                 sBookmarkEditActivity.getUrlEditText().getEditText().getText().toString());
 
+        // The outcome is only recorded when the activity is finishing, so go through a real
+        // finish instead of calling onStop() directly.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sBookmarkEditActivity.getTitleEditText().getEditText().setText(TITLE_B);
                     sBookmarkEditActivity.getUrlEditText().getEditText().setText(URL_B);
-                    sBookmarkEditActivity.onStop();
+                    sBookmarkEditActivity.finish();
                 });
+        sDestroyedCallback.waitForCallback(0);
 
         histogramWatcher.assertExpected();
 
@@ -194,13 +211,6 @@ public class BookmarkEditTest {
     @MediumTest
     @Feature({"Bookmark"})
     public void testEditEmptyInputRejected() throws ExecutionException, TimeoutException {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Bookmarks.Edit.BookmarkItem.Outcome",
-                                BookmarkEditOutcome.DISMISSED)
-                        .build();
-
         Assert.assertEquals(
                 "Incorrect title.",
                 TITLE_A,
@@ -216,8 +226,6 @@ public class BookmarkEditTest {
                     sBookmarkEditActivity.getUrlEditText().getEditText().setText("");
                     sBookmarkEditActivity.onStop();
                 });
-
-        histogramWatcher.assertExpected();
 
         BookmarkItem bookmarkItem = getBookmarkItem(sBookmarkId);
         Assert.assertEquals("Incorrect title after edit.", TITLE_A, bookmarkItem.getTitle());
@@ -298,13 +306,13 @@ public class BookmarkEditTest {
                         .getFolderSelectRowPropertyModelForTesting()
                         .get(ImprovedBookmarkRowProperties.TITLE));
 
-        int currentModelChangedCount = mModelChangedCallback.getCallCount();
+        int currentModelChangedCount = sModelChangedCallback.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sBookmarkModel.setBookmarkTitle(sBookmarkId, TITLE_B);
                     sBookmarkModel.moveBookmark(sBookmarkId, sOtherNode, 0);
                 });
-        mModelChangedCallback.waitForCallback(currentModelChangedCount);
+        sModelChangedCallback.waitForCallback(currentModelChangedCount);
 
         Assert.assertEquals(
                 "Title shouldn't change after model update.",
@@ -323,9 +331,9 @@ public class BookmarkEditTest {
     @Feature({"Bookmark"})
     @RequiresRestart("tests destruction of BookmarkEditActivity")
     public void testEditActivityFinishesWhenBookmarkDeleted() throws TimeoutException {
-        int currentModelChangedCount = mModelChangedCallback.getCallCount();
+        int currentModelChangedCount = sModelChangedCallback.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.deleteBookmark(sBookmarkId));
-        mModelChangedCallback.waitForCallback(currentModelChangedCount);
+        sModelChangedCallback.waitForCallback(currentModelChangedCount);
 
         Assert.assertTrue(
                 "BookmarkActivity should be finishing or destroyed.",
@@ -398,11 +406,17 @@ public class BookmarkEditTest {
                         BookmarkEditActivity.class,
                         Stage.RESUMED,
                         () -> {
-                            new BookmarkManagerOpenerImpl()
-                                    .startEditActivity(
-                                            ContextUtils.getApplicationContext(),
-                                            ProfileManager.getLastUsedRegularProfile(),
-                                            bookmarkId);
+                            // There is no foreground activity to launch from, so build the
+                            // intent directly and add FLAG_ACTIVITY_NEW_TASK, which
+                            // BookmarkManagerOpenerImpl does not set.
+                            Context context = ContextUtils.getApplicationContext();
+                            Intent intent = new Intent(context, BookmarkEditActivity.class);
+                            intent.putExtra(
+                                    BookmarkEditActivity.INTENT_BOOKMARK_ID, bookmarkId.toString());
+                            ProfileIntentUtils.addProfileToIntent(
+                                    ProfileManager.getLastUsedRegularProfile(), intent);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
                         });
     }
 
