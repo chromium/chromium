@@ -411,7 +411,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   // the mediator stays in flight for as long as the mediator owns it. Records
   // the wrappers weakly, in creation order, in `started_page_context_wrappers_`
   // so that tests can check whether the mediator still owns them.
-  // TODO(crbug.com/568219593): Inject page context extraction into the
+  // TODO(crbug.com/580766535): Inject page context extraction into the
   // mediator and use a fake instead of swizzling `PageContextWrapper`.
   void StubPageContextExtraction() {
     page_context_extraction_swizzler_ = std::make_unique<ScopedBlockSwizzler>(
