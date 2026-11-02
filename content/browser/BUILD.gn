@@ -871,6 +871,8 @@ source_set("browser") {
     "devtools/protocol/devtools_network_resource_loader.h",
     "devtools/protocol/digital_credentials_handler.cc",
     "devtools/protocol/digital_credentials_handler.h",
+    "devtools/protocol/display_capture_launcher.cc",
+    "devtools/protocol/display_capture_launcher.h",
     "devtools/protocol/dom_handler.cc",
     "devtools/protocol/dom_handler.h",
     "devtools/protocol/emulation_handler.cc",
