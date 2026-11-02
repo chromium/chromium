@@ -16,7 +16,6 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/request_handler_base.h"
-#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 
@@ -28,16 +27,9 @@ constexpr size_t kMaxPagePrintUploadSizeMetricsKB = 500 * 1024;
 
 bool ShouldNotUploadLargePage(const AnalysisSettings& settings,
                               size_t page_size) {
-  size_t max_page_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnableNewUploadSizeLimit)) {
-    max_page_size_bytes =
-        1024 * 1024 *
-        enterprise_connectors::kMaxContentAnalysisFileSizeMB.Get();
-  }
-
   return settings.cloud_or_local_settings.is_cloud_analysis() &&
-         page_size > max_page_size_bytes && settings.block_large_files;
+         page_size > BinaryUploadService::kMaxUploadSizeBytes &&
+         settings.block_large_files;
 }
 
 PagePrintRequestHandler::TestFactory* TestFactoryStorage() {

@@ -4,18 +4,25 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 
+#include "base/feature_list.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/features.h"
 
 namespace enterprise_connectors {
 
 namespace {
 
-constexpr size_t kMaxPageSize = 50 * 1024 * 1024;
+size_t GetMaxPageSizeBytes() {
+  if (base::FeatureList::IsEnabled(kEnableNewUploadSizeLimit)) {
+    return 1024 * 1024 * kMaxContentAnalysisFileSizeMB.Get();
+  }
+  return BinaryUploadService::kMaxUploadSizeBytes;
+}
 
 }  // namespace
 
@@ -43,7 +50,8 @@ void PagePrintAnalysisRequest::GetRequestData(DataCallback callback) {
 
   std::move(callback).Run(
       // Only enforce a max size for cloud scans.
-      data.size >= kMaxPageSize && cloud_or_local_settings().is_cloud_analysis()
+      data.size > GetMaxPageSizeBytes() &&
+              cloud_or_local_settings().is_cloud_analysis()
           ? ScanRequestUploadResult::kFileTooLarge
           : ScanRequestUploadResult::kSuccess,
       std::move(data));
