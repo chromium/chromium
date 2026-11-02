@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_features.h"
@@ -20,7 +21,10 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "url/gurl.h"
@@ -88,6 +92,12 @@ class BookmarkNodeDataTest : public testing::Test {
   BookmarkNodeDataTest& operator=(const BookmarkNodeDataTest&) = delete;
 
   void SetUp() override {
+#if !BUILDFLAG(IS_APPLE)
+    // On macOS, `BookmarkNodeData` writes directly to `NSPasteboard` rather
+    // than going through `ui::Clipboard`, so tests like `WriteToClipboardURL`
+    // require the platform clipboard.
+    ui::TestClipboard::CreateForCurrentThread();
+#endif
     model_ = TestBookmarkClient::CreateModel();
     test::WaitForBookmarkModelToLoad(model_.get());
     bool success = profile_dir_.CreateUniqueTempDir();
@@ -698,6 +708,41 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickleNewFormat) {
   EXPECT_EQ(2u, meta_info_map->size());
   EXPECT_EQ("somevalue", meta_info_map->at("somekey"));
   EXPECT_EQ("someothervalue", meta_info_map->at("someotherkey"));
+}
+
+TEST_F(BookmarkNodeDataTest, ReadFromClipboard_FallbackPreservesProfilePath) {
+  const GURL url("http://google.com");
+  const std::u16string title(u"google.com");
+
+  // Write both a URL and a pickle with a profile path but 0 elements.
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteURL(ui::ClipboardUrlInfo{.url = url, .title = title});
+
+    base::Pickle pickle;
+    GetProfilePath().WriteToPickle(&pickle);
+    pickle.WriteUInt32(0);  // makes legacy_format = false
+    pickle.WriteUInt32(0);  // element_count = 0, makes is_valid() = false
+    scw.WritePickledData(pickle,
+                         ui::ClipboardFormatType::BookmarkEntriesType());
+  }
+
+  base::test::TestFuture<std::unique_ptr<BookmarkNodeData>> future;
+  BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer::kCopyPaste,
+                                      future.GetCallback());
+
+  std::unique_ptr<BookmarkNodeData> read_data = future.Take();
+  ASSERT_TRUE(read_data);
+  EXPECT_TRUE(read_data->is_valid());
+  ASSERT_EQ(1u, read_data->size());
+  EXPECT_EQ(url, read_data->elements[0].url);
+#if !BUILDFLAG(IS_WIN)
+  // The Windows clipboard does not store a title alongside a URL.
+  EXPECT_EQ(title, read_data->elements[0].title);
+#endif
+
+  // If the profile path was preserved, this should be true.
+  EXPECT_TRUE(read_data->IsFromProfilePath(GetProfilePath()));
 }
 #endif
 
