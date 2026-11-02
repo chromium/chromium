@@ -29,6 +29,8 @@ source_set("browser") {
     "form_fetch_batcher.mm",
     "form_suggestion.h",
     "form_suggestion.mm",
+    "form_suggestion_conversion.h",
+    "form_suggestion_conversion.mm",
     "form_suggestion_provider.h",
     "form_suggestion_provider_query.h",
     "form_suggestion_provider_query.mm",
@@ -154,6 +156,7 @@ source_set("unit_tests") {
     "autofill_xhr_sumission_detection_unittest.mm",
     "credit_card_save_metrics_ios_unittest.mm",
     "form_fetch_batcher_unittest.mm",
+    "form_suggestion_conversion_unittest.mm",
     "form_suggestion_provider_query_unittest.mm",
     "password_autofill_agent_unittest.mm",
   ]

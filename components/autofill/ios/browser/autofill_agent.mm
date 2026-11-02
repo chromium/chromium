@@ -36,10 +36,8 @@
 #import "base/uuid.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
-#import "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #import "components/autofill/core/browser/autofill_field.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -63,6 +61,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/form_suggestion_conversion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/browser/password_autofill_agent.h"
 #import "components/autofill/ios/common/features.h"
@@ -71,12 +70,10 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
-#import "components/feature_engagement/public/feature_constants.h"
 #import "components/grit/components_resources.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
-#import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -87,13 +84,9 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "third_party/abseil-cpp/absl/functional/overload.h"
-#import "ui/base/l10n/l10n_util_mac.h"
-#import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/geometry/rect.h"
-#import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
-using autofill::AtMemoryAction;
 using autofill::AutofillFormFeaturesJavaScriptFeature;
 using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
@@ -105,7 +98,6 @@ using autofill::FormFieldData;
 using autofill::FormGlobalId;
 using autofill::FormHandlersJavaScriptFeature;
 using autofill::FormRendererId;
-using autofill::MayPerformAtMemoryAction;
 using autofill::Section;
 using autofill::Suggestion;
 using autofill::SuggestionType;
@@ -115,7 +107,6 @@ using ActivityType = autofill::FormActivityParams::ActivityType;
 using base::NumberToString;
 using base::SysNSStringToUTF16;
 using base::SysNSStringToUTF8;
-using base::SysUTF16ToNSString;
 using base::SysUTF8ToNSString;
 
 namespace {
@@ -138,23 +129,6 @@ struct AutofillData {
 // standard announcements have already been started and thus would not interrupt
 // the enqueued utterance.
 constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
-
-// The correct icon size to use in suggestions. Used to ensure images are scaled
-// appropriately.
-constexpr CGFloat kSuggestionIconWidth = 32;
-
-// Gets the icon that will be used for the specified suggestion.
-SuggestionIconType GetSuggestionIconType(const Suggestion& suggestion,
-                                         BOOL hasValue) {
-  if (suggestion.icon == Suggestion::Icon::kUndo) {
-    return SuggestionIconType::kUndoAutofill;
-  } else if (suggestion.icon == Suggestion::Icon::kHome && hasValue) {
-    return SuggestionIconType::kAccountHome;
-  } else if (suggestion.icon == Suggestion::Icon::kWork && hasValue) {
-    return SuggestionIconType::kAccountWork;
-  }
-  return SuggestionIconType::kNone;
-}
 
 bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   auto it =
@@ -627,236 +601,12 @@ bool HasGuid(const Suggestion::Payload& payload) {
   }
 
   // Convert the suggestions into an NSArray for the keyboard.
-  NSMutableArray<FormSuggestion*>* suggestions = [[NSMutableArray alloc] init];
-  for (size_t index = 0; index < popup_suggestions.size(); ++index) {
-    const Suggestion& popup_suggestion = popup_suggestions[index];
-    // Convert Autofill popup suggestions into keyboard accessory suggestions
-    // (`FormSuggestion`). Only fillable or actionable types (e.g. address,
-    // credit card, autocomplete, undo) are processed; non-fillable items like
-    // headers or separators are omitted.
-    NSString* value = nil;
-    NSString* minorValue = nil;
-    NSString* displayDescription = nil;
-    UIImage* icon = nil;
-
-    switch (popup_suggestion.type) {
-      case SuggestionType::kAddressEntry:
-      case SuggestionType::kAddressFieldByFieldFilling:
-      case SuggestionType::kAutocompleteEntry:
-      case SuggestionType::kCreditCardEntry:
-      case SuggestionType::kFillAutofillAi:
-      case SuggestionType::kSaveAndFillCreditCardEntry:
-      case SuggestionType::kVirtualCreditCardEntry:
-        if ((!base::FeatureList::IsEnabled(
-                 autofill::features::
-                     kAutofillEnableBottomSheetScanCardAndFill) &&
-             popup_suggestion.type ==
-                 SuggestionType::kSaveAndFillCreditCardEntry)) {
-          break;
-        }
-
-        // `value` will contain the text to be filled in the selected element
-        // while `displayDescription` will contain a summary of the data to be
-        // filled in the other elements.
-        value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-        if (!popup_suggestion.labels.empty() &&
-            !popup_suggestion.labels.front().empty()) {
-          DCHECK_EQ(popup_suggestion.labels.size(), 1U);
-          DCHECK_EQ(popup_suggestion.labels[0].size(), 1U);
-          displayDescription =
-              SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
-        }
-
-        if (!popup_suggestion.minor_texts.empty()) {
-          // For Virtual Cards, the `main_text` is just "Virtual card" so we
-          // need to include the `minor_text` (which is the card name + last 4
-          // digits || card holder's name) as the `minorValue`.
-          minorValue =
-              SysUTF16ToNSString(popup_suggestion.minor_texts[0].value);
-        }
-
-        // Only show icon for credit card suggestions.
-        if (delegate && delegate->GetMainFillingProduct() ==
-                            autofill::FillingProduct::kCreditCard) {
-          icon = [self createIcon:popup_suggestion];
-        }
-        break;
-
-      case SuggestionType::kUndo:
-        // There's no information to set, but this will not be discarded because
-        // `suggestionIconType` will be set below.
-        break;
-
-      case SuggestionType::kFetchingAmbientData:
-        value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-        break;
-
-      case SuggestionType::kAccountStoragePasswordEntry:
-      case SuggestionType::kAddressEntryOnTyping:
-      case SuggestionType::kAllLoyaltyCardsEntry:
-      case SuggestionType::kAllSavedPasswordsEntry:
-      case SuggestionType::kAtMemoryAiDisclosure:
-      case SuggestionType::kAtMemoryFetching:
-      case SuggestionType::kAtMemoryGenericError:
-      case SuggestionType::kAtMemoryInactivityNudge:
-      case SuggestionType::kAtMemoryNoConnection:
-      case SuggestionType::kAtMemoryOpenGemini:
-      case SuggestionType::kAtMemorySearchAffordance:
-      case SuggestionType::kAtMemorySearchResult:
-      case SuggestionType::kAtMemoryShortcutSettingsPromo:
-      case SuggestionType::kAtMemorySourceAttribution:
-      case SuggestionType::kAutocompleteAtMemoryButton:
-      case SuggestionType::kAutofillAiOtherOrders:
-      case SuggestionType::kAutofillAiOtherShipments:
-      case SuggestionType::kAutofillAiPrivateInferenceNotice:
-      case SuggestionType::kAutofillAiSourceAttribution:
-      case SuggestionType::kBackupPasswordEntry:
-      case SuggestionType::kBnplEntry:
-      case SuggestionType::kBnplFootnote:
-      case SuggestionType::kComposeDisable:
-      case SuggestionType::kComposeGoToSettings:
-      case SuggestionType::kComposeNeverShowOnThisSiteAgain:
-      case SuggestionType::kComposeProactiveNudge:
-      case SuggestionType::kComposeResumeNudge:
-      case SuggestionType::kComposeSavedStateNotification:
-      case SuggestionType::kDatalistEntry:
-      case SuggestionType::kDevtoolsTestAddressByCountry:
-      case SuggestionType::kDevtoolsTestAddressEntry:
-      case SuggestionType::kDevtoolsTestAddresses:
-      case SuggestionType::kFillPassword:
-      case SuggestionType::kFreeformFooter:
-      case SuggestionType::kGeneratePasswordEntry:
-      case SuggestionType::kGmailOneTimePasswordEntry:
-      case SuggestionType::kIbanEntry:
-      case SuggestionType::kIdentityCredential:
-      case SuggestionType::kInsecureContextPaymentDisabledMessage:
-      case SuggestionType::kLoadingThrobber:
-      case SuggestionType::kLoyaltyCardEntry:
-      case SuggestionType::kManageAddress:
-      case SuggestionType::kManageAutofillAi:
-      case SuggestionType::kManageAutofillAiIdentityDocs:
-      case SuggestionType::kManageAutofillAiShopping:
-      case SuggestionType::kManageAutofillAiTravel:
-      case SuggestionType::kManageCreditCard:
-      case SuggestionType::kManageIban:
-      case SuggestionType::kManageLoyaltyCard:
-      case SuggestionType::kManageOffers:
-      case SuggestionType::kManageEnhancedAutofill:
-      case SuggestionType::kMaximizeCreditCardBenefitsEntry:
-      case SuggestionType::kMerchantPromoCodeEntry:
-      case SuggestionType::kOneTimePasswordEntry:
-      case SuggestionType::kOpenGmailForOtps:
-      case SuggestionType::kPasswordEntry:
-      case SuggestionType::kPasswordFieldByFieldFilling:
-      case SuggestionType::kPendingStateSignin:
-      case SuggestionType::kPendingStateTrustedVaultError:
-      case SuggestionType::kPersonalContextNotice:
-      case SuggestionType::kRemoveAutofillAi:
-      case SuggestionType::kScanCreditCard:
-      case SuggestionType::kSeparator:
-      case SuggestionType::kTitle:
-      case SuggestionType::kTroubleSigningInEntry:
-      case SuggestionType::kViewPasswordDetails:
-      case SuggestionType::kWebauthnCredential:
-      case SuggestionType::kWebauthnPasskeyQrCode:
-      case SuggestionType::kWebauthnSignInWithAnotherDevice:
-        break;
-    }
-
-    SuggestionIconType suggestionIconType =
-        GetSuggestionIconType(popup_suggestion, value.length > 0);
-
-    // Skip if there is no text or icon to show.
-    if (!value && !icon && suggestionIconType == SuggestionIconType::kNone) {
-      continue;
-    }
-
-    NSString* acceptanceA11yAnnouncement =
-        popup_suggestion.acceptance_a11y_announcement.has_value()
-            ? SysUTF16ToNSString(*popup_suggestion.acceptance_a11y_announcement)
-            : nil;
-
-    autofill::FieldType fieldByFieldFillingTypeUsed =
-        (popup_suggestion.field_by_field_filling_type_used
-             ? *popup_suggestion.field_by_field_filling_type_used
-             : autofill::FieldType::EMPTY_TYPE);
-
-    FormSuggestionMetadata metadata;
-    metadata.suggestion_delegate = delegate;
-    metadata.form_id = formId;
-    metadata.field_id = fieldId;
-    metadata.popup_suggestion_index = index;
-
-    FormSuggestion* suggestion =
-        [FormSuggestion suggestionWithValue:value
-                                 minorValue:minorValue
-                         displayDescription:displayDescription
-                                       icon:icon
-                                       type:popup_suggestion.type
-                                    payload:popup_suggestion.payload
-                fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
-                             requiresReauth:NO
-                 acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
-                                   metadata:metadata];
-
-    suggestion.featureForIPH = SuggestionFeatureForIPH::kUnknown;
-    suggestion.suggestionIconType = suggestionIconType;
-    if (popup_suggestion.iph_metadata.feature ==
-        &feature_engagement::
-            kIPHAutofillExternalAccountProfileSuggestionFeature) {
-      suggestion.featureForIPH =
-          SuggestionFeatureForIPH::kAutofillExternalAccountProfile;
-    } else if (popup_suggestion.iph_metadata.feature ==
-               &feature_engagement::
-                   kIPHAutofillHomeWorkProfileSuggestionFeature) {
-      suggestion.featureForIPH =
-          SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion;
-    } else if (popup_suggestion.iph_metadata.feature ==
-               &feature_engagement::
-                   kIPHAutofillAccountNameEmailSuggestionFeature) {
-      suggestion.featureForIPH =
-          SuggestionFeatureForIPH::kAccountNameEmailSuggestion;
-    } else if (popup_suggestion.iph_metadata.feature ==
-               &feature_engagement::
-                   kIPH_AutofillAmbientAutofillSpiiDisclaimer) {
-      suggestion.featureForIPH =
-          SuggestionFeatureForIPH::kAutofillAmbientAutofillSpiiDisclaimer;
-    }
-
-    // Put the Undo suggestion at the front of the suggestions.
-    if (popup_suggestion.type == SuggestionType::kUndo) {
-      [suggestions insertObject:suggestion atIndex:0];
-    } else {
-      [suggestions addObject:suggestion];
-    }
-  }
-
-  if (suggestions.count > 0 && _webState) {
-    autofill::AutofillClientIOS* client =
-        autofill::AutofillClientIOS::FromWebState(_webState);
-    if (client &&
-        MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, *client)) {
-      FormSuggestionMetadata metadata;
-      metadata.suggestion_delegate = delegate;
-      metadata.form_id = formId;
-      metadata.field_id = fieldId;
-      FormSuggestion* atMemorySuggestion = [FormSuggestion
-                  suggestionWithValue:
-                      l10n_util::GetNSString(
-                          IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_TITLE)
-                           minorValue:nil
-                   displayDescription:nil
-                                 icon:nil
-                                 type:autofill::SuggestionType::
-                                          kAutocompleteAtMemoryButton
-                              payload:autofill::Suggestion::Payload()
-          fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
-                       requiresReauth:NO
-           acceptanceA11yAnnouncement:nil
-                             metadata:metadata];
-      [suggestions addObject:atMemorySuggestion];
-    }
-  }
+  autofill::AutofillClientIOS* client =
+      _webState ? autofill::AutofillClientIOS::FromWebState(_webState)
+                : nullptr;
+  NSArray<FormSuggestion*>* suggestions =
+      autofill::FormSuggestionsFromAutofillSuggestions(
+          popup_suggestions, delegate, formId, fieldId, client);
 
   // Primary autofill suggestions carry their delegate directly in
   // `FormSuggestionMetadata` for stateless routing. `_lastReceivedDelegate`,
@@ -1293,38 +1043,6 @@ bool HasGuid(const Suggestion::Payload& payload) {
   }
   driver->TextFieldValueChanged(form, {form.host_frame(), fieldIdentifier},
                                 base::TimeTicks::Now());
-}
-
-// Helper method to create icons for payment cards.
-- (UIImage*)createIcon:(Suggestion)popup_suggestion {
-  // If available, the custom icon for the card is preferred over the
-  // generic network icon. The network icon may also be missing, in
-  // which case we do not set an icon at all.
-  if (auto* custom_icon =
-          std::get_if<gfx::Image>(&popup_suggestion.custom_icon);
-      custom_icon && !custom_icon->IsEmpty()) {
-    UIImage* icon = custom_icon->ToUIImage();
-
-    // On iOS, the keyboard accessory wants smaller icons than the default
-    // 40x24 size, so we resize them to 32x20, if the provided icon is
-    // larger than that.
-    if (icon && (icon.size.width > kSuggestionIconWidth)) {
-      // For a simple image resize, we can keep the same underlying image
-      // and only adjust the ratio.
-      CGFloat ratio = icon.size.width / kSuggestionIconWidth;
-      return [UIImage imageWithCGImage:[icon CGImage]
-                                 scale:icon.scale * ratio
-                           orientation:icon.imageOrientation];
-    }
-    return icon;
-  } else if (popup_suggestion.icon != Suggestion::Icon::kNoIcon) {
-    const int resourceID =
-        autofill::CreditCard::IconResourceId(popup_suggestion.icon);
-    return ui::ResourceBundle::GetSharedInstance()
-        .GetNativeImageNamed(resourceID)
-        .ToUIImage();
-  }
-  return nil;
 }
 
 // Returns the autofill manager associated with a web::WebState instance.
