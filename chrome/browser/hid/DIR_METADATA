@@ -1,1 +1,2 @@
+mixins: "//agents/knowledge_base/rules/device/COMMON_METADATA"
 mixins: "//third_party/blink/renderer/modules/hid/COMMON_METADATA"
