@@ -213,6 +213,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/577466171
     public void testSendTabToSelfMessageBannerClickOpensSingleTab() {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         injectSendTabToSelfEntity(
