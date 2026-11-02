@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +20,10 @@
 #include "ui/views/widget/widget_observer.h"
 
 class MediaToolbarButton;
+
+namespace ui {
+class TrackedElement;
+}  // namespace ui
 
 namespace media_router {
 
@@ -86,6 +91,7 @@ class MediaRouterDialogControllerViews
   void ShowGlobalMediaControlsDialogAsync(
       std::unique_ptr<StartPresentationContext> context);
   void ShowGlobalMediaControlsDialog();
+  void OnMediaButtonShown(ui::TrackedElement* element);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns the media button from the browser that initiates the request to
@@ -120,6 +126,8 @@ class MediaRouterDialogControllerViews
   const raw_ptr<MediaRouterUIService> media_router_ui_service_;
 
   bool hide_media_button_for_testing_ = false;
+
+  base::CallbackListSubscription media_button_shown_subscription_;
 
   base::ScopedClosureRunner fullscreen_blocker_;
 

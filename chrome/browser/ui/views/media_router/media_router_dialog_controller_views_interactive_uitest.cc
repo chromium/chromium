@@ -16,8 +16,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_toolbar_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/media_router/browser/media_router_metrics.h"
@@ -29,6 +31,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
@@ -71,9 +74,12 @@ class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
 
  protected:
   void ShowDialogForPresentation() {
+    base::RunLoop run_loop;
+    dialog_controller_->SetDialogCreationCallbackForTesting(
+        run_loop.QuitClosure());
     dialog_controller_->ShowMediaRouterDialogForPresentation(
         CreateStartPresentationContext(initiator_));
-    base::RunLoop().RunUntilIdle();
+    run_loop.Run();
   }
 
   raw_ptr<WebContents, AcrossTasksDanglingUntriaged> initiator_;
@@ -98,6 +104,13 @@ void MediaRouterDialogControllerViewsTest::OpenMediaRouterDialog() {
   // Show the media router dialog for the initiator.
   dialog_controller_->ShowMediaRouterDialog(
       MediaRouterDialogActivationLocation::PAGE);
+  // Dialog creation is asynchronous when anchored to the WebUI toolbar.
+  if (!dialog_controller_->IsShowingMediaRouterDialog()) {
+    base::RunLoop run_loop;
+    dialog_controller_->SetDialogCreationCallbackForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
   ASSERT_TRUE(dialog_controller_->IsShowingMediaRouterDialog());
 }
 
@@ -171,7 +184,13 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialog) {
   ShowDialogForPresentation();
   ASSERT_TRUE(MediaDialogView::IsShowing());
   auto* view = MediaDialogView::GetDialogViewForTesting();
-  ASSERT_TRUE(view->GetAnchorView());
+  MediaToolbarButton* const media_button =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar()
+          ->media_button();
+  ASSERT_TRUE(media_button);
+  EXPECT_TRUE(view->IsSameAnchor(media_button->GetBubbleAnchor()));
+  EXPECT_EQ(views::BubbleBorder::TOP_RIGHT, view->arrow());
 }
 
 IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialogInWebApp) {

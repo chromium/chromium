@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -24,9 +26,11 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/views/bubble/bubble_anchor.h"
 
@@ -173,6 +177,7 @@ bool MediaRouterDialogControllerViews::IsShowingMediaRouterDialog() const {
 }
 
 void MediaRouterDialogControllerViews::Reset() {
+  media_button_shown_subscription_ = {};
   // If |ui_| is null, Reset() has already been called for Cast dialogs.
   if (ui_) {
     if (GetActionController()) {
@@ -276,6 +281,8 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialogAsync(
 }
 
 void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog() {
+  media_button_shown_subscription_ = {};
+
   Profile* const profile =
       Profile::FromBrowserContext(initiator()->GetBrowserContext());
   MediaNotificationService* const service =
@@ -283,10 +290,28 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog() {
   MediaToolbarButton* const media_button = GetMediaButton();
   // If there exists a media button, anchor the dialog to this media button.
   if (media_button) {
+    tabs::TabInterface* const tab =
+        tabs::TabInterface::MaybeGetFromContents(initiator());
+    BrowserWindowInterface* const browser =
+        tab ? tab->GetBrowserWindowInterface() : nullptr;
+    BrowserElements* const elements =
+        browser ? BrowserElements::From(browser) : nullptr;
+    if (elements && !elements->GetElement(kToolbarMediaButtonElementId)) {
+      media_button_shown_subscription_ =
+          ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+              kToolbarMediaButtonElementId, elements->GetContext(),
+              base::BindRepeating(
+                  &MediaRouterDialogControllerViews::OnMediaButtonShown,
+                  weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
     scoped_widget_observations_.AddObservation(MediaDialogView::ShowDialog(
         media_button->GetBubbleAnchor(), views::BubbleBorder::TOP_RIGHT,
         service, profile, initiator(),
         global_media_controls::GlobalMediaControlsEntryPoint::kPresentation));
+    if (dialog_creation_callback_) {
+      dialog_creation_callback_.Run();
+    }
     return;
   }
   BrowserWindowInterface* const browser =
@@ -311,6 +336,14 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog() {
             global_media_controls::GlobalMediaControlsEntryPoint::
                 kPresentation));
   }
+  if (dialog_creation_callback_) {
+    dialog_creation_callback_.Run();
+  }
+}
+
+void MediaRouterDialogControllerViews::OnMediaButtonShown(
+    ui::TrackedElement* element) {
+  ShowGlobalMediaControlsDialog();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
