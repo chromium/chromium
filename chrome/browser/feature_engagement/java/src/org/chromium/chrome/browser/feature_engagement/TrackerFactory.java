@@ -40,13 +40,13 @@ public final class TrackerFactory {
         Tracker tracker = TrackerFactoryJni.get().getTrackerForProfile(profile);
         // TODO(crbug.com/571067805): Move `android` from `future_on` to `supported_on` in
         // PromotionsEnabled.yaml when ready to launch.
-        tracker.setPromotionsEnabledSupplier(
+        tracker.setEnterprisePolicyBlocksPromotionsSupplier(
                 () -> {
                     if (!ChromeFeatureList.sAndroidUserEducationFramework.isEnabled()) {
-                        return true;
+                        return false;
                     }
                     PrefService localState = LocalStatePrefs.get();
-                    return localState == null || localState.getBoolean(Pref.PROMOTIONS_ENABLED);
+                    return localState != null && !localState.getBoolean(Pref.PROMOTIONS_ENABLED);
                 });
         tracker.setAggressivelyCooldownIphsSupplier(
                 () ->

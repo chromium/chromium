@@ -67,7 +67,7 @@ public class TrackerImplTest {
     public void testFailsOwnRules_delegatesToNative() {
         when(mTrackerJniMock.wouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE)).thenReturn(false);
         when(mTrackerJniMock.shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE)).thenReturn(false);
-        mTracker.setPromotionsEnabledSupplier(() -> false);
+        mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
 
         FeatureProperties props = new FeatureProperties(UiFormat.DIALOG, true, true, true);
         assertFalse(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
@@ -82,7 +82,7 @@ public class TrackerImplTest {
 
     @Test
     public void testBlockedByEnterprisePolicy() {
-        mTracker.setPromotionsEnabledSupplier(() -> false);
+        mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
         FeatureProperties props =
                 new FeatureProperties(
                         UiFormat.DIALOG,
@@ -118,7 +118,7 @@ public class TrackerImplTest {
 
     @Test
     public void testBypassEnterprisePolicy() {
-        mTracker.setPromotionsEnabledSupplier(() -> false);
+        mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
         FeatureProperties props =
                 new FeatureProperties(
                         UiFormat.DIALOG,

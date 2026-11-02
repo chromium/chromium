@@ -69,8 +69,10 @@ public class TrackerImpl implements Tracker {
     /** The pointer to the feature_engagement::TrackerImplAndroid JNI bridge. */
     private long mNativePtr;
 
-    // Defaults to true; flag-guarded by kAndroidUserEducationFramework in TrackerFactory.
-    private BooleanSupplier mPromotionsEnabledSupplier = SupplierUtils.alwaysTrueBooleanSupplier();
+    // Whether the PromotionsEnabled enterprise policy currently blocks promotions. Defaults to
+    // false; flag-guarded by kAndroidUserEducationFramework in TrackerFactory.
+    private BooleanSupplier mEnterprisePolicyBlocksPromotionsSupplier =
+            SupplierUtils.alwaysFalseBooleanSupplier();
 
     // Defaults to false; flag-guarded by kAndroidUserEducationFramework and
     // kAggressivelyCooldownIphs in TrackerFactory.
@@ -88,8 +90,8 @@ public class TrackerImpl implements Tracker {
     }
 
     @Override
-    public void setPromotionsEnabledSupplier(BooleanSupplier supplier) {
-        mPromotionsEnabledSupplier = supplier;
+    public void setEnterprisePolicyBlocksPromotionsSupplier(BooleanSupplier supplier) {
+        mEnterprisePolicyBlocksPromotionsSupplier = supplier;
     }
 
     @Override
@@ -184,7 +186,7 @@ public class TrackerImpl implements Tracker {
 
         // 2. Enterprise policy check.
         if (featureProperties.isBlockedByEnterprisePolicy()
-                && !mPromotionsEnabledSupplier.getAsBoolean()) {
+                && mEnterprisePolicyBlocksPromotionsSupplier.getAsBoolean()) {
             RecordUserAction.record("InProductHelp.ShouldTriggerHelpUI." + feature);
             RecordUserAction.record(
                     "InProductHelp.ShouldTriggerHelpUIResult.NotTriggered." + feature);
@@ -353,7 +355,7 @@ public class TrackerImpl implements Tracker {
 
     @Override
     public boolean wouldTriggerHelpUi(String feature) {
-        if (!mPromotionsEnabledSupplier.getAsBoolean()) {
+        if (mEnterprisePolicyBlocksPromotionsSupplier.getAsBoolean()) {
             return false;
         }
         assert mNativePtr != 0;

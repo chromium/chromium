@@ -32,10 +32,10 @@ public interface Tracker {
     }
 
     /**
-     * Sets a supplier that provides whether promotions are enabled (e.g. via the PromotionsEnabled
-     * enterprise policy).
+     * Sets a supplier that provides whether the PromotionsEnabled enterprise policy currently
+     * blocks promotions. Defaults to never blocking.
      */
-    default void setPromotionsEnabledSupplier(BooleanSupplier supplier) {}
+    default void setEnterprisePolicyBlocksPromotionsSupplier(BooleanSupplier supplier) {}
 
     /**
      * Sets a supplier that provides whether legacy {@link #shouldTriggerHelpUi(String)} callers
