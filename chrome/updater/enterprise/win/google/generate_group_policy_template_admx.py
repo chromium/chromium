@@ -377,7 +377,7 @@ ADMX_APP_POLICY_TEMPLATE = '''\
       <supportedOn ref="Sup_GoogleUpdate138_0_7200_0" />
       <elements>
         <enum id="Part_MajorVersion"
-             valueName="MajorVerionRollout%(AppGuid)s" required="true">
+             valueName="MajorVersionRollout%(AppGuid)s" required="true">
           <item displayName="$(string.Name_RolloutDefault)">
             <value>
               <decimal value="0" />
@@ -405,7 +405,7 @@ ADMX_APP_POLICY_TEMPLATE = '''\
       <supportedOn ref="Sup_GoogleUpdate138_0_7200_0" />
       <elements>
         <enum id="Part_MinorVersion"
-             valueName="MinorVerionRollout%(AppGuid)s" required="true">
+             valueName="MinorVersionRollout%(AppGuid)s" required="true">
           <item displayName="$(string.Name_RolloutDefault)">
             <value>
               <decimal value="0" />
