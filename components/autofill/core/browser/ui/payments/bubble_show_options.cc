@@ -18,7 +18,7 @@ FilledCardInformationBubbleOptions::~FilledCardInformationBubbleOptions() =
 
 bool FilledCardInformationBubbleOptions::IsValid() const {
   return !masked_card_name.empty() && !masked_card_number_last_four.empty() &&
-         filled_card.HasValidCardNumber() && filled_card.HasNameOnCard() &&
+         filled_card.HasValidCardNumber() &&
          filled_card.HasValidExpirationDate() && !cvc.empty() &&
          !card_image.IsEmpty();
 }

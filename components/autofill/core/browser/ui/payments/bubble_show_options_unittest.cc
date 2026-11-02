@@ -52,11 +52,12 @@ TEST_F(BubbleShowOptionsTest, FilledCardInformationBubbleOptionsIsValid) {
     EXPECT_FALSE(options.IsValid());
   }
 
-  // Missing virtual card cardholder name.
+  // Cardholder name is optional (for example, some synced server cards do not
+  // have a cardholder name), so `options` is still valid when it is empty.
   {
     auto options = CreateFilledCardInformationBubbleOptions();
     options.filled_card.SetRawInfo(CREDIT_CARD_NAME_FULL, /*value=*/u"");
-    EXPECT_FALSE(options.IsValid());
+    EXPECT_TRUE(options.IsValid());
   }
 
   // Missing valid virtual card expiration month.

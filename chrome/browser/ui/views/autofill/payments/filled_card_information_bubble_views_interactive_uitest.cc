@@ -498,6 +498,16 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
+                       CardholderNameButtonHiddenWhenEmpty) {
+  CreditCard card = test::GetVirtualCard();
+  card.SetRawInfo(CREDIT_CARD_NAME_FULL, /*value=*/u"");
+  ShowBubble(&card, u"123");
+  ASSERT_TRUE(GetBubbleViews());
+  EXPECT_FALSE(GetBubbleViews()->fields_to_buttons_map_.contains(
+      FilledCardInformationBubbleField::kCardholderName));
+}
+
+IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
                        BnplFlowAffirm) {
   CreditCard card;
   test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",

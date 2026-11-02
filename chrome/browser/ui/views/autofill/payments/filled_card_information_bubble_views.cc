@@ -290,12 +290,16 @@ void FilledCardInformationBubbleViews::AddCardDetailButtons(
       FilledCardInformationBubbleField::kExpirationYear));
 
   // Cardholder name.
-  auto* cardholder_name_container =
-      parent->AddChildView(CreateButtonContainer());
-  cardholder_name_container->AddChildView(
-      CreateRowItemLabel(controller_->GetCardholderNameFieldLabel()));
-  cardholder_name_container->AddChildView(CreateRowItemButtonForField(
-      FilledCardInformationBubbleField::kCardholderName));
+  if (!controller_
+           ->GetValueForField(FilledCardInformationBubbleField::kCardholderName)
+           .empty()) {
+    auto* cardholder_name_container =
+        parent->AddChildView(CreateButtonContainer());
+    cardholder_name_container->AddChildView(
+        CreateRowItemLabel(controller_->GetCardholderNameFieldLabel()));
+    cardholder_name_container->AddChildView(CreateRowItemButtonForField(
+        FilledCardInformationBubbleField::kCardholderName));
+  }
 
   // CVC.
   auto* cvc_container = parent->AddChildView(CreateButtonContainer());
