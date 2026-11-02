@@ -4,6 +4,8 @@
 
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
 
+#import <optional>
+
 #import "base/check.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/web_state/ui/crw_content_view.h"
@@ -76,9 +78,9 @@ UIView* GetFirstResponderSubview(UIView* view) {
   // Cached so they also apply to content views set later, e.g. when a web view
   // is created after its WebState was configured.
   BOOL _shouldUseViewContentInset;
-  BOOL _hasViewportInsets;
-  UIEdgeInsets _minimumViewportInset;
-  UIEdgeInsets _maximumViewportInset;
+  std::optional<UIEdgeInsets> _minimumViewportInset;
+  std::optional<UIEdgeInsets> _maximumViewportInset;
+  std::optional<UIEdgeInsets> _obscuredInsets;
 }
 @synthesize contentView = _contentView;
 @synthesize ignoreObscuredInsets = _ignoreObscuredInsets;
@@ -197,6 +199,7 @@ UIView* GetFirstResponderSubview(UIView* view) {
   // notified synchronously, see the configured content view.
   [self applyShouldUseViewContentInset];
   [self applyViewportInsets];
+  [self applyObscuredInsets];
   [_contentViewScrollViewProxy setScrollView:contentView.scrollView];
 }
 
@@ -248,13 +251,13 @@ UIView* GetFirstResponderSubview(UIView* view) {
   if (_ignoreObscuredInsets) {
     return;
   }
+  _obscuredInsets = obscuredInsets;
   [_contentView setObscuredInsets:obscuredInsets
                   initialVelocity:initialVelocity];
 }
 
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset
            maximumViewportInset:(UIEdgeInsets)maxInset {
-  _hasViewportInsets = YES;
   _minimumViewportInset = minInset;
   _maximumViewportInset = maxInset;
   [self applyViewportInsets];
@@ -272,11 +275,23 @@ UIView* GetFirstResponderSubview(UIView* view) {
 
 // Applies the cached viewport insets to the content view, if they were set.
 - (void)applyViewportInsets {
-  if (!_hasViewportInsets) {
+  if (!_minimumViewportInset || !_maximumViewportInset) {
     return;
   }
-  [_contentView setMinimumViewportInset:_minimumViewportInset
-                   maximumViewportInset:_maximumViewportInset];
+  [_contentView setMinimumViewportInset:*_minimumViewportInset
+                   maximumViewportInset:*_maximumViewportInset];
+}
+
+// Applies the cached `obscuredInsets` to the content view, if they were set.
+- (void)applyObscuredInsets {
+  if (!_obscuredInsets || _ignoreObscuredInsets) {
+    return;
+  }
+  CRWContentView* contentView = _contentView;
+  UIEdgeInsets obscuredInsets = *_obscuredInsets;
+  [UIView performWithoutAnimation:^{
+    [contentView setObscuredInsets:obscuredInsets];
+  }];
 }
 
 @end

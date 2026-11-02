@@ -20,6 +20,8 @@
 @property(nonatomic, readonly) UIEdgeInsets maximumViewportInset;
 // The number of calls to `setMinimumViewportInset:maximumViewportInset:`.
 @property(nonatomic, readonly) int viewportInsetsCallCount;
+// The number of calls to `setObscuredInsets:initialVelocity:`.
+@property(nonatomic, readonly) int obscuredInsetsCallCount;
 @end
 
 @implementation CRWFakeContentView
@@ -33,9 +35,14 @@
   return YES;
 }
 
+- (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
+  [self setObscuredInsets:obscuredInsets initialVelocity:0.0];
+}
+
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets
           initialVelocity:(CGFloat)initialVelocity {
   _obscuredInsets = obscuredInsets;
+  _obscuredInsetsCallCount++;
 }
 
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset
@@ -79,15 +86,18 @@ TEST_F(CRWWebViewProxyImplTest, ContentViewPresent) {
   EXPECT_TRUE(fakeContentView.shouldUseViewContentInset);
 }
 
-// Tests that `shouldUseViewContentInset` and the viewport insets set before a
-// content view exists are applied once it is set, which happens for WebStates
-// shown before their web view is created (e.g. windows opened by DOM).
+// Tests that `shouldUseViewContentInset`, viewport insets, and `obscuredInsets`
+// set before a content view exists are applied once it is set, which happens
+// for WebStates shown before their web view is created (e.g. windows opened by
+// DOM or navigating away from the NTP).
 TEST_F(CRWWebViewProxyImplTest, AppliesCachedValuesToLaterContentView) {
   CRWWebViewProxyImpl* proxy = [[CRWWebViewProxyImpl alloc] init];
   const UIEdgeInsets minInset = UIEdgeInsetsMake(10, 0, 0, 0);
   const UIEdgeInsets maxInset = UIEdgeInsetsMake(20, 0, 30, 0);
+  const UIEdgeInsets obscuredInsets = UIEdgeInsetsMake(20, 0, 30, 0);
   proxy.shouldUseViewContentInset = YES;
   [proxy setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+  proxy.obscuredInsets = obscuredInsets;
 
   CRWFakeContentView* fakeContentView = [[CRWFakeContentView alloc] init];
   proxy.contentView = fakeContentView;
@@ -96,6 +106,8 @@ TEST_F(CRWWebViewProxyImplTest, AppliesCachedValuesToLaterContentView) {
       minInset, fakeContentView.minimumViewportInset));
   EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
       maxInset, fakeContentView.maximumViewportInset));
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(obscuredInsets,
+                                            fakeContentView.obscuredInsets));
 
   // A replacement content view receives the same values.
   CRWFakeContentView* replacementContentView =
@@ -106,6 +118,8 @@ TEST_F(CRWWebViewProxyImplTest, AppliesCachedValuesToLaterContentView) {
       minInset, replacementContentView.minimumViewportInset));
   EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
       maxInset, replacementContentView.maximumViewportInset));
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+      obscuredInsets, replacementContentView.obscuredInsets));
 }
 
 // Tests that the cached values are re-applied to a content view set after the
@@ -116,8 +130,10 @@ TEST_F(CRWWebViewProxyImplTest, AppliesCachedValuesAfterContentViewCleared) {
   proxy.contentView = initialContentView;
   const UIEdgeInsets minInset = UIEdgeInsetsMake(10, 0, 0, 0);
   const UIEdgeInsets maxInset = UIEdgeInsetsMake(20, 0, 30, 0);
+  const UIEdgeInsets obscuredInsets = UIEdgeInsetsMake(20, 0, 30, 0);
   proxy.shouldUseViewContentInset = YES;
   [proxy setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+  proxy.obscuredInsets = obscuredInsets;
 
   [proxy clearContentViewAndAddPlaceholder:YES];
   EXPECT_FALSE(proxy.shouldUseViewContentInset);
@@ -130,6 +146,8 @@ TEST_F(CRWWebViewProxyImplTest, AppliesCachedValuesAfterContentViewCleared) {
       minInset, fakeContentView.minimumViewportInset));
   EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
       maxInset, fakeContentView.maximumViewportInset));
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(obscuredInsets,
+                                            fakeContentView.obscuredInsets));
 }
 
 // Tests that the last `shouldUseViewContentInset` value is the one applied to
@@ -145,13 +163,14 @@ TEST_F(CRWWebViewProxyImplTest, AppliesLatestShouldUseViewContentInset) {
   EXPECT_FALSE(fakeContentView.shouldUseViewContentInset);
 }
 
-// Tests that viewport insets are not forwarded to a new content view if they
-// were never set.
+// Tests that viewport and obscured insets are not forwarded to a new content
+// view if they were never set.
 TEST_F(CRWWebViewProxyImplTest, DoesNotApplyUnsetViewportInsets) {
   CRWWebViewProxyImpl* proxy = [[CRWWebViewProxyImpl alloc] init];
   CRWFakeContentView* fakeContentView = [[CRWFakeContentView alloc] init];
   proxy.contentView = fakeContentView;
   EXPECT_EQ(0, fakeContentView.viewportInsetsCallCount);
+  EXPECT_EQ(0, fakeContentView.obscuredInsetsCallCount);
 }
 
 // Tests allowsBackForwardNavigationGestures property is delegated to

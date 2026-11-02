@@ -587,12 +587,6 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 
   id<CRWWebViewProxy> webView =
       WebViewProxyTabHelper::FromWebState(self.webState)->GetWebViewProxy();
-  CRWWebViewScrollViewProxy* scrollView = webView.scrollViewProxy;
-
-  if (UIEdgeInsetsEqualToEdgeInsets(insets, scrollView.contentInset) &&
-      UIEdgeInsetsEqualToEdgeInsets(insets, webView.obscuredInsets)) {
-    return;
-  }
 
   _updatingInsets = YES;
   if (_browserAgent->invalidating_inset_range()) {

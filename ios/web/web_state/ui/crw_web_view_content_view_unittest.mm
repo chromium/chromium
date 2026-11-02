@@ -330,4 +330,151 @@ TEST_F(CRWWebViewContentViewTest, ViewportInsetsDeduplicatedWhenUnchanged) {
   EXPECT_EQ(1, insetCallCount);
 }
 
+// Tests that `safeAreaInsetsDidChange` re-applies viewport insets and scroll
+// view `contentInset` when safe area insets are propagated after initial setup.
+TEST_F(CRWWebViewContentViewTest,
+       SafeAreaInsetsDidChangeUpdatesViewportAndContentInsets) {
+  if (!@available(iOS 26, *)) {
+    GTEST_SKIP() << "kContentInset mode is only supported on iOS 26+";
+  }
+  CRWWebView* webView =
+      [[CRWWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 1000)];
+  webView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  id mockWebView = OCMPartialMock(webView);
+
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  contentView.webViewResizingType = WebViewResizingType::kContentInset;
+
+  UIWindow* window = [[UIWindow alloc] init];
+  [window addSubview:contentView];
+  contentView.frame = CGRectMake(0, 0, 800, 1000);
+  [contentView layoutIfNeeded];
+
+  id mockContentView = OCMPartialMock(contentView);
+  __block UIEdgeInsets currentSafeArea = UIEdgeInsetsZero;
+  OCMStub([mockContentView safeAreaInsets]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:&currentSafeArea];
+  });
+
+  const UIEdgeInsets minInset = UIEdgeInsetsMake(20, 0, 0, 0);
+  const UIEdgeInsets maxInset = UIEdgeInsetsMake(70, 0, 50, 0);
+  const UIEdgeInsets obscuredInsets = UIEdgeInsetsMake(70, 0, 50, 0);
+
+  [[[mockWebView expect] andForwardToRealObject]
+      setMinimumViewportInset:minInset
+         maximumViewportInset:maxInset];
+  [mockContentView setMinimumViewportInset:minInset
+                      maximumViewportInset:maxInset];
+  [mockContentView setObscuredInsets:obscuredInsets];
+  EXPECT_OCMOCK_VERIFY(mockWebView);
+  EXPECT_TRUE(
+      UIEdgeInsetsEqualToEdgeInsets(obscuredInsets, scrollView.contentInset));
+
+  // Simulate UIKit propagating non-zero horizontal `safeAreaInsets` after the
+  // content view is attached to the hierarchy.
+  currentSafeArea = UIEdgeInsetsMake(0, 62, 21, 62);
+  const UIEdgeInsets expectedMinInset = UIEdgeInsetsMake(20, 62, 0, 62);
+  const UIEdgeInsets expectedMaxInset = UIEdgeInsetsMake(70, 62, 50, 62);
+  const UIEdgeInsets expectedContentInset = UIEdgeInsetsMake(70, 62, 50, 62);
+
+  [[[mockWebView expect] andForwardToRealObject]
+      setMinimumViewportInset:expectedMinInset
+         maximumViewportInset:expectedMaxInset];
+  [mockContentView safeAreaInsetsDidChange];
+  EXPECT_OCMOCK_VERIFY(mockWebView);
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(expectedContentInset,
+                                            scrollView.contentInset));
+}
+
+// Tests that `safeAreaInsetsDidChange` updates `webView.frame` in `kFrame`
+// mode when `safeAreaInsets` changes after `obscuredInsets` was set.
+TEST_F(CRWWebViewContentViewTest,
+       SafeAreaInsetsDidChangeUpdatesFrameInFrameMode) {
+  CRWWebView* webView = [[CRWWebView alloc] init];
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  contentView.webViewResizingType = WebViewResizingType::kFrame;
+  contentView.frame = CGRectMake(0, 0, 800, 600);
+
+  id mockContentView = OCMPartialMock(contentView);
+  __block UIEdgeInsets currentSafeArea = UIEdgeInsetsZero;
+  OCMStub([mockContentView safeAreaInsets]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:&currentSafeArea];
+  });
+
+  const UIEdgeInsets obscuredInsets = UIEdgeInsetsMake(50, 0, 0, 0);
+  [mockContentView setObscuredInsets:obscuredInsets];
+  EXPECT_TRUE(CGRectEqualToRect(CGRectMake(0, 50, 800, 550), webView.frame));
+
+  currentSafeArea = UIEdgeInsetsMake(0, 20, 0, 30);
+  [mockContentView safeAreaInsetsDidChange];
+  EXPECT_TRUE(CGRectEqualToRect(CGRectMake(20, 50, 750, 550), webView.frame));
+}
+
+// Tests that PDF `kFrame` mode waits for `setMinimumViewportInset:` before
+// adjusting `webView.frame` and `scrollView.contentInset`, and updates
+// `scrollView.contentInset` when `safeAreaInsetsDidChange` fires.
+TEST_F(CRWWebViewContentViewTest,
+       PdfFrameModeDefersInsetsUntilViewportInsetsSet) {
+  const CGRect kContainerBounds = CGRectMake(0, 0, 800, 600);
+  const CGRect kExpectedFrame = CGRectMake(0, 50, 800, 550);
+  const UIEdgeInsets kMinInset = UIEdgeInsetsMake(20, 0, 0, 0);
+  const UIEdgeInsets kMaxInset = UIEdgeInsetsMake(50, 0, 40, 0);
+  const UIEdgeInsets kObscuredInsets = UIEdgeInsetsMake(50, 0, 40, 0);
+  const UIEdgeInsets kExpectedInitialContentInset =
+      UIEdgeInsetsMake(0, 0, 40, 0);
+  const UIEdgeInsets kSafeArea = UIEdgeInsetsMake(0, 20, 0, 30);
+  const UIEdgeInsets kExpectedSafeAreaContentInset =
+      UIEdgeInsetsMake(0, 20, 40, 30);
+
+  CRWWebView* webView = [[CRWWebView alloc] initWithFrame:kContainerBounds];
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  contentView.webViewResizingType = WebViewResizingType::kFrame;
+  contentView.frame = kContainerBounds;
+  contentView.mimeType = @"application/pdf";
+
+  id mockContentView = OCMPartialMock(contentView);
+  __block UIEdgeInsets currentSafeArea = UIEdgeInsetsZero;
+  OCMStub([mockContentView safeAreaInsets]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:&currentSafeArea];
+  });
+
+  // Calling `setObscuredInsets:` before `setMinimumViewportInset:` caches
+  // `obscuredInsets` without applying partial PDF adjustments.
+  [mockContentView setObscuredInsets:kObscuredInsets];
+  EXPECT_TRUE(CGRectEqualToRect(kContainerBounds, webView.frame));
+  EXPECT_TRUE(
+      UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, scrollView.contentInset));
+
+  // Once `setMinimumViewportInset:maximumViewportInset:` is called, both the
+  // frame and reduced PDF `contentInset` are applied.
+  [mockContentView setMinimumViewportInset:kMinInset
+                      maximumViewportInset:kMaxInset];
+  EXPECT_TRUE(CGRectEqualToRect(kExpectedFrame, webView.frame));
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(kExpectedInitialContentInset,
+                                            scrollView.contentInset));
+
+  // Propagating `safeAreaInsets` updates the horizontal PDF `contentInset`.
+  currentSafeArea = kSafeArea;
+  [mockContentView safeAreaInsetsDidChange];
+  EXPECT_TRUE(CGRectEqualToRect(kExpectedFrame, webView.frame));
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(kExpectedSafeAreaContentInset,
+                                            scrollView.contentInset));
+}
+
 }  // namespace

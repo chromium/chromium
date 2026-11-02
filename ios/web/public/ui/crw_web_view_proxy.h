@@ -26,7 +26,9 @@
 // Web view's obscured insets. Setting this property also updates
 // `UIScrollView.contentInset` and `contentOffset` (on iOS 26+) or resizes the
 // web view's frame (on earlier iOS versions) in addition to updating the
-// underlying web view's `obscuredContentInsets`. If `ignoreObscuredInsets` is
+// underlying web view's `obscuredContentInsets`. The value persists across
+// content view changes: it is also applied to content views set later, e.g.
+// when the web view is created after this is set. If `ignoreObscuredInsets` is
 // set to `YES` then setting this property will not have any effect.
 @property(nonatomic, assign) UIEdgeInsets obscuredInsets;
 
