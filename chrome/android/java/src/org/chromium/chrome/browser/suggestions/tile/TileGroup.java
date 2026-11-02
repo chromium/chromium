@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -1089,6 +1090,7 @@ public class TileGroup implements MostVisitedSites.Observer {
                     prefs.readInt(
                             ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, /* defaultValue= */ 0);
             prefs.writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, /* value= */ -1);
+            RecordUserAction.record("Suggestions.AIM.Unpinned");
 
             // Writing the preference alone does not reload tiles (there is no native call here to
             // trigger loadTiles()), so re-run loadTiles() on the cached suggestions to drop the
@@ -1099,6 +1101,7 @@ public class TileGroup implements MostVisitedSites.Observer {
                     () -> {
                         prefs.writeInt(
                                 ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, savedAiIndex);
+                        RecordUserAction.record("Suggestions.AIM.UndoUnpin");
                         reloadTilesFromCurrentSuggestions();
                     });
         }

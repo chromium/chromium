@@ -57,6 +57,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -140,6 +141,7 @@ public class TileGroupUnitTest {
     private FakeMostVisitedSites mMostVisitedSites;
     private FakeImageFetcher mImageFetcher;
     private TileRenderer mTileRenderer;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
@@ -151,6 +153,7 @@ public class TileGroupUnitTest {
         mTileRenderer =
                 new TileRenderer(mContext, TileStyle.MODERN, TILE_TITLE_LINES, mImageFetcher);
         mMostVisitedSites = new FakeMostVisitedSites();
+        mUserActionTester = new UserActionTester();
 
         doAnswer(
                         invocation -> {
@@ -166,6 +169,7 @@ public class TileGroupUnitTest {
     public void tearDown() {
         AndroidPrerenderManager.clearAndroidPrerenderManagerForTesting();
         TemplateUrlServiceFactory.setInstanceForTesting(null);
+        mUserActionTester.tearDown();
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX);
     }
@@ -820,6 +824,8 @@ public class TileGroupUnitTest {
                 -1,
                 ChromeSharedPreferences.getInstance()
                         .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, 0));
+        assertEquals(1, mUserActionTester.getActionCount("Suggestions.AIM.Unpinned"));
+        assertEquals(0, mUserActionTester.getActionCount("Suggestions.AIM.UndoUnpin"));
         verify(mTileGroupObserver).onTileCountChanged();
         verify(mTileGroupObserver).onTileDataChanged();
 
@@ -842,6 +848,8 @@ public class TileGroupUnitTest {
                 0,
                 ChromeSharedPreferences.getInstance()
                         .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1));
+        assertEquals(1, mUserActionTester.getActionCount("Suggestions.AIM.Unpinned"));
+        assertEquals(1, mUserActionTester.getActionCount("Suggestions.AIM.UndoUnpin"));
         verify(mTileGroupObserver).onTileCountChanged();
         verify(mTileGroupObserver).onTileDataChanged();
 
