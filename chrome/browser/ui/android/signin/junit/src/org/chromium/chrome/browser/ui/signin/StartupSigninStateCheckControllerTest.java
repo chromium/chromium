@@ -65,6 +65,7 @@ public class StartupSigninStateCheckControllerTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private EnterpriseSignalsDisclaimerController mDisclaimerController;
     @Captor private ArgumentCaptor<Callback<Boolean>> mIsAccountManagedCallbackCaptor;
+    @Captor private ArgumentCaptor<Runnable> mRunAfterOperationRunnableCaptor;
     @Captor private ArgumentCaptor<EnterpriseSignalsDisclaimerController.Listener> mListenerCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mDialogModelCaptor;
 
@@ -338,6 +339,24 @@ public class StartupSigninStateCheckControllerTest {
 
         verify(mDisclaimerController, never()).show(any(), any(), anyInt(), any());
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testOnDestroy_beforePendingOperationCompletesOnDecline_doesNotSignOut() {
+        setUpUnconsentedManagedAccount();
+        doAnswer(invocation -> null).when(mSigninManager).runAfterOperationInProgress(any());
+
+        mController.onFinishNativeInitialization();
+        EnterpriseSignalsDisclaimerController.Listener listener = captureDisclaimerListener();
+        listener.onDeclined();
+        verify(mSigninManager)
+                .runAfterOperationInProgress(mRunAfterOperationRunnableCaptor.capture());
+
+        mController.onDestroy();
+        mRunAfterOperationRunnableCaptor.getValue().run();
+
+        verify(mSigninManager, never()).signOut(anyInt());
     }
 
     @Test
