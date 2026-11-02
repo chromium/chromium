@@ -193,13 +193,13 @@ class ClientSidePhishingModelTest : public testing::Test {
     EXPECT_FLOAT_EQ(target_embeddings[2].threshold, .9);
     // Verify embeddings match.
     int EXPECTED_SIZE = 64;
-    EXPECT_THAT(target_embeddings[0].embedding.value_float(),
+    EXPECT_THAT(target_embeddings[0].embedding,
                 testing::AllOf(testing::SizeIs(EXPECTED_SIZE),
                                testing::Each(testing::FloatEq(.1))));
-    EXPECT_THAT(target_embeddings[1].embedding.value_float(),
+    EXPECT_THAT(target_embeddings[1].embedding,
                 testing::AllOf(testing::SizeIs(EXPECTED_SIZE),
                                testing::Each(testing::FloatEq(.2))));
-    EXPECT_THAT(target_embeddings[2].embedding.value_float(),
+    EXPECT_THAT(target_embeddings[2].embedding,
                 testing::AllOf(testing::SizeIs(EXPECTED_SIZE),
                                testing::Each(testing::FloatEq(.3))));
   }

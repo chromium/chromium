@@ -38,7 +38,6 @@ include_rules = [
   "+services/network/network_context.h",
   "+services/network/public",
   "+services/service_manager/public/cpp",
-  "+tensorflow_lite_support/cc/port/statusor.h",
   "+third_party/blink/public/common/loader/url_loader_throttle.h",
   "+third_party/blink/public/mojom/loader",
   "+third_party/blink/public/mojom/site_engagement",

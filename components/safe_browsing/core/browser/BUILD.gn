@@ -110,8 +110,6 @@ source_set("client_side_detection_service_base") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
-    "//third_party/tflite_support",
-    "//third_party/tflite_support:tflite_support_proto",
     "//url",
   ]
 }

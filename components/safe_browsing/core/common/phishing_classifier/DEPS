@@ -1,0 +1,4 @@
+include_rules = [
+  "+third_party/tflite",
+  "+third_party/tflite_support",
+]

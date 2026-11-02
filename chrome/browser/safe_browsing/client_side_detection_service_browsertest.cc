@@ -5,6 +5,8 @@
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/path_service.h"
 #include "base/test/bind.h"
@@ -191,11 +193,11 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
   // Setup TargetEmbeddings.
   float threshold = 0.95;
-  tflite::task::vision::FeatureVector target_fv;
+  std::vector<float> target_embedding;
   for (int i = 0; i < 64; ++i) {
-    target_fv.add_value_float(i / 100.0);
+    target_embedding.push_back(i / 100.0);
   }
-  TargetEmbedding target(target_fv, threshold);
+  TargetEmbedding target(std::move(target_embedding), threshold);
   std::vector<TargetEmbedding> test_targets;
   test_targets.push_back(std::move(target));
 
@@ -260,11 +262,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
   // Setup TargetEmbeddings.
   float threshold = 0.95;
-  tflite::task::vision::FeatureVector target_fv;
-  for (int i = 0; i < 64; ++i) {
-    target_fv.add_value_float(0.1);
-  }
-  TargetEmbedding target(target_fv, threshold);
+  std::vector<float> target_embedding(64, 0.1f);
+  TargetEmbedding target(std::move(target_embedding), threshold);
   std::vector<TargetEmbedding> test_targets;
   test_targets.push_back(std::move(target));
   csd_service->SetTargetImageEmbeddingsForTesting(std::move(test_targets));

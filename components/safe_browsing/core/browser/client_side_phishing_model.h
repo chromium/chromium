@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_CLIENT_SIDE_PHISHING_MODEL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/containers/span.h"
@@ -21,7 +22,6 @@
 #include "components/safe_browsing/core/browser/csd_model_type.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
-#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/embeddings.pb.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -31,9 +31,14 @@ namespace safe_browsing {
 
 // Holds an embedding we are targeting.
 struct TargetEmbedding {
-  TargetEmbedding(tflite::task::vision::FeatureVector embedding,
-                  float threshold);
-  tflite::task::vision::FeatureVector embedding;
+  TargetEmbedding(std::vector<float> embedding, float threshold);
+  TargetEmbedding(const TargetEmbedding&);
+  TargetEmbedding& operator=(const TargetEmbedding&);
+  TargetEmbedding(TargetEmbedding&&);
+  TargetEmbedding& operator=(TargetEmbedding&&);
+  ~TargetEmbedding();
+
+  std::vector<float> embedding;
   float threshold;
 };
 

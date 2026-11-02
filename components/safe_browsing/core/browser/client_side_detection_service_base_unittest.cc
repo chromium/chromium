@@ -556,6 +556,32 @@ TEST_F(ClientSideDetectionServiceBaseTest,
   EXPECT_TRUE(service_->IsSubscribedToImageEmbeddingModelUpdates());
 }
 
+TEST_F(ClientSideDetectionServiceBaseTest, CosineSimilaritySucceeds) {
+  std::vector<float> u = {1.0f, 0.0f, 0.0f, 0.0f};
+  std::vector<float> v = {0.5f, 0.5f, 0.5f, 0.5f};
+
+  EXPECT_EQ(ClientSideDetectionServiceBase::ComputeCosineSimilarity(u, v), 0.5);
+}
+
+TEST_F(ClientSideDetectionServiceBaseTest, CosineSimilarityFailsWithZeroNorm) {
+  std::vector<float> u = {0.0f, 0.0f};
+  std::vector<float> v = {0.1f, 0.2f};
+
+  EXPECT_EQ(ClientSideDetectionServiceBase::ComputeCosineSimilarity(u, v),
+            std::nullopt);
+  EXPECT_EQ(ClientSideDetectionServiceBase::ComputeCosineSimilarity(v, u),
+            std::nullopt);
+}
+
+TEST_F(ClientSideDetectionServiceBaseTest,
+       CosineSimilarityFailsWithDifferentFeatureVectorSizes) {
+  std::vector<float> u = {0.1f};
+  std::vector<float> v = {0.1f, 0.2f};
+
+  EXPECT_EQ(ClientSideDetectionServiceBase::ComputeCosineSimilarity(u, v),
+            std::nullopt);
+}
+
 class ClientSideDetectionServiceBaseLimitTest
     : public ClientSideDetectionServiceBaseTest,
       public testing::WithParamInterface<bool> {

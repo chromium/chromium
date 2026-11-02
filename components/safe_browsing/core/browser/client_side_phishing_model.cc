@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -259,9 +260,13 @@ void RecordImageEmbeddingModelUpdateSuccess(bool success) {
 
 }  // namespace
 
-TargetEmbedding::TargetEmbedding(tflite::task::vision::FeatureVector embedding,
-                                 float threshold)
+TargetEmbedding::TargetEmbedding(std::vector<float> embedding, float threshold)
     : embedding(std::move(embedding)), threshold(threshold) {}
+TargetEmbedding::TargetEmbedding(const TargetEmbedding&) = default;
+TargetEmbedding& TargetEmbedding::operator=(const TargetEmbedding&) = default;
+TargetEmbedding::TargetEmbedding(TargetEmbedding&&) = default;
+TargetEmbedding& TargetEmbedding::operator=(TargetEmbedding&&) = default;
+TargetEmbedding::~TargetEmbedding() = default;
 
 // --- ClientSidePhishingModel methods ---
 
@@ -622,11 +627,9 @@ void ClientSidePhishingModel::OnImageEmbeddingModelFileAndEmbeddingListLoaded(
     // Build list of TargetEmbeddings.
     for (const EmbeddingList::Embedding& embedding :
          model_and_list.second.value().image_embeddings()) {
-      tflite::task::vision::FeatureVector feature_vector;
-      for (float embedding_value : embedding.value()) {
-        feature_vector.add_value_float(embedding_value);
-      }
-      target_image_embeddings_.emplace_back(feature_vector,
+      std::vector<float> embedding_vector(embedding.value().begin(),
+                                          embedding.value().end());
+      target_image_embeddings_.emplace_back(std::move(embedding_vector),
                                             embedding.threshold());
     }
   }

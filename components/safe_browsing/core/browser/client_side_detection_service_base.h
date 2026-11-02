@@ -169,6 +169,13 @@ class ClientSideDetectionServiceBase : public KeyedService {
   // Performs visual embedding classification on the verdict.
   void ClassifyThroughEmbeddings(ClientPhishingRequest* verdict);
 
+  // Computes the cosine similarity between two equal-sized feature vectors, or
+  // returns `std::nullopt` if their sizes differ, either is empty, or either
+  // has a 0 norm.
+  static std::optional<double> ComputeCosineSimilarity(
+      base::span<const float> u,
+      base::span<const float> v);
+
   // Returns the URL that will be used for phishing requests.
   static GURL GetClientReportUrl(const std::string& report_url);
 

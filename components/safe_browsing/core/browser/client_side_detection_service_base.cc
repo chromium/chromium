@@ -5,7 +5,11 @@
 #include "components/safe_browsing/core/browser/client_side_detection_service_base.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
+#include <optional>
+#include <ranges>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -34,8 +38,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "tensorflow_lite_support/cc/port/statusor.h"
-#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -607,33 +609,47 @@ void ClientSideDetectionServiceBase::ClassifyThroughEmbeddings(
   verdict->mutable_image_feature_embedding()->set_embedding_model_version(
       client_side_phishing_model_->GetImageEmbeddingModelVersion());
 
-  // Create a FeatureVector from the ImageFeatureEmbedding.
-  tflite::task::vision::FeatureVector feature_vector;
-  for (float image_embedding_value :
-       verdict->image_feature_embedding().embedding_value()) {
-    feature_vector.add_value_float(image_embedding_value);
-  }
-
-  // Compare newly made FeatureVector to target image embeddings.
+  // Compare ImageFeatureEmbedding to target image embeddings.
   for (const TargetEmbedding& target_image_embedding :
        target_image_embeddings) {
-    tflite::support::StatusOr<double> similarity =
-        tflite::task::vision::ImageEmbedder::CosineSimilarity(
-            target_image_embedding.embedding, feature_vector);
-    if (similarity.ok() &&
-        similarity.value() >= target_image_embedding.threshold) {
+    std::optional<double> similarity_score = ComputeCosineSimilarity(
+        std::ranges::subrange(
+            verdict->image_feature_embedding().embedding_value()),
+        target_image_embedding.embedding);
+    if (similarity_score.has_value() &&
+        *similarity_score >= target_image_embedding.threshold) {
       verdict->set_is_phishing(true);
       ClientPhishingRequest::EmbeddingMatchMetadata embedding_match_metadata;
-      const auto& value_floats = target_image_embedding.embedding.value_float();
       embedding_match_metadata.set_id(
           ClientSidePhishingModel::GetHashFromEmbedding(
-              std::vector<float>(value_floats.begin(), value_floats.end())));
-      embedding_match_metadata.set_score(similarity.value());
+              target_image_embedding.embedding));
+      embedding_match_metadata.set_score(*similarity_score);
       *verdict->mutable_target_image_embedding_score() =
           embedding_match_metadata;
       break;
     }
   }
+}
+
+// static
+std::optional<double> ClientSideDetectionServiceBase::ComputeCosineSimilarity(
+    base::span<const float> u,
+    base::span<const float> v) {
+  if (u.size() != v.size() || u.empty()) {
+    return std::nullopt;
+  }
+  double dot_product = 0.0;
+  double norm_u = 0.0;
+  double norm_v = 0.0;
+  for (size_t i = 0; i < u.size(); ++i) {
+    dot_product += u[i] * v[i];
+    norm_u += u[i] * u[i];
+    norm_v += v[i] * v[i];
+  }
+  if (norm_u <= 0.0 || norm_v <= 0.0) {
+    return std::nullopt;
+  }
+  return dot_product / std::sqrt(norm_u * norm_v);
 }
 
 // static

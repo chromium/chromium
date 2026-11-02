@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service.h"
 
+#import <utility>
 #import <vector>
 
 #import "base/callback_list.h"
@@ -621,12 +622,12 @@ TEST_F(ClientSideDetectionServiceTest, NoImageEmbeddingMatch) {
 
   // Setup TargetEmbeddings.
   constexpr float threshold = 0.95f;
-  tflite::task::vision::FeatureVector target_fv;
+  std::vector<float> target_embedding;
   for (int i = 0; i < 64; ++i) {
-    target_fv.add_value_float(i / 100.0);
+    target_embedding.push_back(i / 100.0);
   }
   std::vector<TargetEmbedding> test_targets;
-  test_targets.push_back(TargetEmbedding(target_fv, threshold));
+  test_targets.emplace_back(std::move(target_embedding), threshold);
   csd_service_->SetTargetImageEmbeddingsForTesting(std::move(test_targets));
 
   // ClientPhishingRequest's image embedding doesn't meet threshold.
@@ -657,12 +658,9 @@ TEST_F(ClientSideDetectionServiceTest, ImageEmbeddingMatch) {
 
   // Setup TargetEmbeddings.
   constexpr float threshold = 0.95f;
-  tflite::task::vision::FeatureVector target_fv;
-  for (int i = 0; i < 64; ++i) {
-    target_fv.add_value_float(0.1);
-  }
+  std::vector<float> target_embedding(64, 0.1f);
   std::vector<TargetEmbedding> test_targets;
-  test_targets.push_back(TargetEmbedding(target_fv, threshold));
+  test_targets.emplace_back(std::move(target_embedding), threshold);
   csd_service_->SetTargetImageEmbeddingsForTesting(std::move(test_targets));
 
   // Add an image_feature_embedding that will match.
@@ -689,12 +687,12 @@ TEST_F(ClientSideDetectionServiceTest, ImageEmbeddingSkipped_AlreadyPhishing) {
 
   // Setup TargetEmbeddings.
   constexpr float threshold = 0.95f;
-  tflite::task::vision::FeatureVector target_fv;
+  std::vector<float> target_embedding;
   for (int i = 0; i < 64; ++i) {
-    target_fv.add_value_float(i / 100.0);
+    target_embedding.push_back(i / 100.0);
   }
   std::vector<TargetEmbedding> test_targets;
-  test_targets.push_back(TargetEmbedding(target_fv, threshold));
+  test_targets.emplace_back(std::move(target_embedding), threshold);
   csd_service_->SetTargetImageEmbeddingsForTesting(std::move(test_targets));
 
   ClientPhishingRequest request;
