@@ -22,7 +22,7 @@ enum class CrossDeviceSigninPromoEntryPoint {
   kForeignTabs = 4,
   kMaxValue = kForeignTabs,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:CrossDeviceSigninPromoEntryPoint)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:CrossDeviceSigninPromoEntryPoint)
 
 // These values are persisted to UMA logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -37,7 +37,7 @@ enum class CrossDeviceSigninPromoShouldShowResult {
   kAlreadyShownAfterDismissalLimitReached = 6,
   kMaxValue = kAlreadyShownAfterDismissalLimitReached,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:CrossDeviceSigninPromoShouldShowResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:CrossDeviceSigninPromoShouldShowResult)
 
 // Returns whether the cross-device sign-in promo should start being shown at
 // `entry_point`: the user is eligible (signed in with no error, without a

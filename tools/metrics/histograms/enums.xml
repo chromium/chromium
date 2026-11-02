@@ -2736,32 +2736,6 @@ shown properly on the user-facing crash UI.
   <int value="2" label="ExpectationNotMet"/>
 </enum>
 
-<!-- LINT.IfChange(CrossDeviceSigninPromoEntryPoint) -->
-
-<enum name="CrossDeviceSigninPromoEntryPoint">
-  <int value="0" label="ProfileMenu"/>
-  <int value="1" label="HistoryPage"/>
-  <int value="2" label="SendTabToSelf"/>
-  <int value="3" label="WhatsNewPage"/>
-  <int value="4" label="ForeignTabs"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/signin/cross_device_signin_promo_manager.h:CrossDeviceSigninPromoEntryPoint) -->
-
-<!-- LINT.IfChange(CrossDeviceSigninPromoShouldShowResult) -->
-
-<enum name="CrossDeviceSigninPromoShouldShowResult">
-  <int value="0" label="CanShow"/>
-  <int value="1" label="NotSignedIn"/>
-  <int value="2" label="HasMobileDevice"/>
-  <int value="3" label="DataTypeNotEnabled"/>
-  <int value="4" label="ShownLimitReached"/>
-  <int value="5" label="CooldownActive"/>
-  <int value="6" label="AlreadyShownAfterDismissalLimitReached"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/signin/cross_device_signin_promo_manager.h:CrossDeviceSigninPromoShouldShowResult) -->
-
 <!-- Keep this in sync with CrostiniDiskImageType in crostini_simple_types.h -->
 
 <enum name="CryptohomeRecoveryResult">
