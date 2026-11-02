@@ -480,6 +480,7 @@ source_set("browser_tests") {
       "//components/search_engines",
       "//components/search_engines:test_support",
       "//components/sessions",
+      "//components/url_formatter",
       "//components/webapps/browser",
       "//components/webapps/common",
       "//content/public/browser",
