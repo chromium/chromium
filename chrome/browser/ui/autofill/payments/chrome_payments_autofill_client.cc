@@ -345,9 +345,7 @@ void ChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
     SaveCreditCardOptions options,
     UploadSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/575133530): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(options.show_prompt);
+  CHECK(options.show_prompt);
   signin::IdentityManager* identity_manager = client_->GetIdentityManager();
   if (!identity_manager) {
     return;

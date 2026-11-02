@@ -87,7 +87,7 @@ using SaveCardOfferUserDecision =
 using SaveCardPromptOffer = autofill_metrics::SaveCardPromptOffer;
 using SaveCardPromptResult = autofill_metrics::SaveCardPromptResult;
 
-constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
+constexpr bool is_mobile_build = BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS);
 
 // If |name| consists of three whitespace-separated parts and the second of the
 // three parts is a single character or a single character followed by a period,
@@ -685,7 +685,7 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
   // This function also sets up the value of `save_card_prompt_offer_decision_`.
   show_save_prompt_ = !DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
 
-  if (!is_ios || show_save_prompt_.value_or(true)) {
+  if (!is_mobile_build || show_save_prompt_.value_or(true)) {
     payments::PaymentsAutofillClient::SaveCreditCardOptions options =
         payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_show_prompt(show_save_prompt_.value())
@@ -1024,12 +1024,6 @@ void CreditCardSaveManager::OnDidGetDetailsForUpdateCard(
 }
 
 void CreditCardSaveManager::OfferCardLocalSave() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  bool is_mobile_build = true;
-#else
-  bool is_mobile_build = false;
-#endif  // #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
   payments::PaymentsAutofillClient::CardSaveType card_save_type =
       payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
   // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
@@ -1087,7 +1081,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
 }
 
 void CreditCardSaveManager::OfferCvcLocalSave() {
-  if (!is_ios || show_save_prompt_.value_or(true)) {
+  if (!is_mobile_build || show_save_prompt_.value_or(true)) {
     payments::PaymentsAutofillClient::SaveCreditCardOptions options =
         payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_show_prompt(show_save_prompt_.value_or(false))
@@ -1105,12 +1099,6 @@ void CreditCardSaveManager::OfferCvcLocalSave() {
 }
 
 void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  bool is_mobile_build = true;
-#else
-  bool is_mobile_build = false;
-#endif  // #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
   payments::PaymentsAutofillClient::CardSaveType card_save_type =
       payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
   // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
