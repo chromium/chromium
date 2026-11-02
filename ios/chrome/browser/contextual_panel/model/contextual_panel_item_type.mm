@@ -10,8 +10,6 @@ std::string StringForItemType(ContextualPanelItemType item_type) {
   switch (item_type) {
     case ContextualPanelItemType::SamplePanelItem:
       return "SamplePanelItem";
-    case ContextualPanelItemType::PriceInsightsItem:
-      return "PriceInsightsItem";
     case ContextualPanelItemType::ReaderModeItem:
       return "ReaderModeItem";
   }

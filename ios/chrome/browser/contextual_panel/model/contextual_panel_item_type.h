@@ -11,7 +11,7 @@
 // LINT.IfChange(ContextualPanelItemType)
 enum class ContextualPanelItemType {
   SamplePanelItem = 0,
-  PriceInsightsItem = 1,
+  // PriceInsightsItem = 1,  // Obsolete.
   ReaderModeItem = 2,
   kMaxValue = ReaderModeItem,
 };

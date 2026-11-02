@@ -18,7 +18,6 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/price_insights/model:feature",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",

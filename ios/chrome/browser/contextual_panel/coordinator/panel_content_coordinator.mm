@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_coordinator.h"
 
 #import "base/memory/raw_ptr.h"
-#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_block_modulator.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_mediator.h"
@@ -127,8 +126,6 @@
           initWithBaseViewController:_viewController
                              browser:self.browser
                    itemConfiguration:configuration];
-    case ContextualPanelItemType::PriceInsightsItem:
-      NOTREACHED();
     case ContextualPanelItemType::ReaderModeItem:
       // Reader mode is not using the contextual panel. Instead it only uses the
       // contextual panel entry point which does not require a modulator.

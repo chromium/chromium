@@ -1,6 +1,0 @@
-include_rules = [
-  # keep-sorted start
-  "+ios/chrome/browser/commerce/model",
-  "+ios/chrome/browser/contextual_panel/model",
-  # keep-sorted end
-]

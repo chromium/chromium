@@ -612,8 +612,6 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
       case ContextualPanelItemType::SamplePanelItem:
         badgeType = LocationBarBadgeType::kContextualPanelEntryPointSample;
         break;
-      case ContextualPanelItemType::PriceInsightsItem:
-        NOTREACHED();
       case ContextualPanelItemType::ReaderModeItem:
         badgeType = LocationBarBadgeType::kReaderMode;
         break;

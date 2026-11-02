@@ -869,8 +869,6 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
     case ContextualPanelItemType::SamplePanelItem:
       badgeType = LocationBarBadgeType::kContextualPanelEntryPointSample;
       break;
-    case ContextualPanelItemType::PriceInsightsItem:
-      NOTREACHED();
     case ContextualPanelItemType::ReaderModeItem:
       badgeType = LocationBarBadgeType::kReaderMode;
       break;

@@ -58,7 +58,6 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(ContextualPanelItemType) -->
 
 <variants name="ContextualPanelItemType">
-  <variant name="PriceInsightsItem" summary="Price insights item"/>
   <variant name="ReaderModeItem" summary="Reader mode item"/>
   <variant name="SamplePanelItem" summary="Sample panel item"/>
 </variants>
@@ -6750,41 +6749,6 @@ chromium-metrics-reviews@google.com.
     <variant name="14"/>
     <variant name="28"/>
   </token>
-</histogram>
-
-<histogram name="IOS.PriceInsights.Model.CanTrack" enum="Boolean"
-    expires_after="2027-03-01">
-  <owner>cheickcisse@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <summary>
-    Whether or not the current URL and the user are eligible for tracking on
-    page load.
-  </summary>
-</histogram>
-
-<histogram name="IOS.PriceInsights.Model.IsSubscribed" enum="Boolean"
-    expires_after="2027-03-01">
-  <owner>cheickcisse@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <summary>
-    Whether or not the current url is currently being tracked on page load.
-  </summary>
-</histogram>
-
-<histogram name="IOS.PriceInsights.Model.PriceInsightsInfo"
-    enum="BooleanAvailable" expires_after="2027-03-01">
-  <owner>cheickcisse@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <summary>
-    Whether or not PriceInsightsInfo was available on page load.
-  </summary>
-</histogram>
-
-<histogram name="IOS.PriceInsights.Model.ProductInfo" enum="BooleanAvailable"
-    expires_after="2027-03-01">
-  <owner>cheickcisse@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <summary>Whether or not ProductInfo was available on page load.</summary>
 </histogram>
 
 <histogram name="IOS.Process.ActivePrewarm" enum="Boolean"
