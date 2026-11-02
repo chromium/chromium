@@ -34,6 +34,7 @@
 #include <ostream>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
@@ -1300,6 +1301,31 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     return children_;
   }
 
+  // Range adapter for `AXObject::children_`, sets `AXObject::children_guarded_`
+  // while alive to avoid re-entrant modification of `children_`.
+  class GuardedChildren {
+    STACK_ALLOCATED();
+
+   public:
+    explicit GuardedChildren(AXObject& object)
+        : children_(object.children_),
+          guarded_(&object.children_guarded_, true) {}
+
+    auto begin() const { return children_.begin(); }
+    auto end() const { return children_.end(); }
+
+   private:
+    const AXObjectVector& children_;
+    base::AutoReset<bool> guarded_;
+  };
+
+  // Like CachedChildrenIncludingIgnored(), but holds a reentrancy guard on this
+  // object for the loop, so nested calls can't clear or rebuild its children_
+  // while the loop runs.
+  GuardedChildren GuardedCachedChildrenIncludingIgnored() {
+    return GuardedChildren(*this);
+  }
+
   // Sets the parent AXObject directly. If the parent of this object is known,
   // this can be faster than using ComputeParent().
   void SetParent(AXObject* new_parent);
@@ -1612,6 +1638,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // When true, actions may use more expensive layout-based computations.
   // e.g. DefaultActionVerb::kClickInHitTest.
   bool use_layout_based_action_ = false;
+  // While true children_ is being walked and must not be cleared or rebuilt.
+  bool children_guarded_ = false;
 
   // The final role, taking into account the ARIA role and native role.
   ax::mojom::blink::Role role_;

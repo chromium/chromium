@@ -1999,10 +1999,12 @@ void AXObjectCacheImpl::RemoveIncludedSubtree(AXObject* object,
 
   {
     base::AutoReset<bool> in_remove_subtree(&in_remove_subtree_, true);
-    for (const auto& ax_child : object->CachedChildrenIncludingIgnored()) {
+    for (const auto& ax_child :
+         object->GuardedCachedChildrenIncludingIgnored()) {
       RemoveIncludedSubtree(ax_child, /*remove_root=*/true);
     }
-    if (remove_root) {
+    // Removing the children can remove |object|.
+    if (remove_root && !object->IsDetached()) {
       Remove(object, /*notify_parent=*/false);
     }
   }
@@ -2110,7 +2112,8 @@ void AXObjectCacheImpl::RemoveSubtreeInternal(
 
   // When removing children, use the cached children to avoid creating a child
   // just to destroy it.
-  for (AXObject* ax_included_child : object->CachedChildrenIncludingIgnored()) {
+  for (AXObject* ax_included_child :
+       object->GuardedCachedChildrenIncludingIgnored()) {
     if (ax_included_child->ParentObjectIfPresent() != object) {
       continue;
     }
@@ -2126,6 +2129,11 @@ void AXObjectCacheImpl::RemoveSubtreeInternal(
     } else {
       RemoveIncludedSubtree(ax_included_child, /* remove_root */ true);
     }
+  }
+
+  // Removing the children can remove |object|.
+  if (object->IsDetached()) {
+    return;
   }
 
   // The code below uses ChildrenChangedWithCleanLayout() instead of
