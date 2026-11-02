@@ -6310,6 +6310,10 @@
       status: "stable",
     },
     {
+      name: "SyncCrossDocumentAnimationTiming",
+      status: "stable",
+    },
+    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
     },
