@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -90,8 +89,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::FilePath path = temp_dir_.GetPath().Append(
-        ash::BrowserContextHelper::GetUserBrowserContextDirName(
-            GetTestUserHash()));
+        user_manager::User::GetDirName(GetTestUserHash()));
     SetBrowserContextPath(path);
 
     ApiUnitTest::SetUp();

@@ -63,8 +63,7 @@ class ProfileHelper {
   // could not be extracted from |profile|.
   static std::string GetUserIdHashFromProfile(const Profile* profile);
 
-  // DEPRECATED. Please use
-  // ash::BrowserContextHelper::GetUserBrowserContextDirName() instead.
+  // DEPRECATED. Please use user_manager::User::GetDirName() instead.
   // Returns user profile dir in a format [u-user_id_hash].
   static base::FilePath GetUserProfileDir(const std::string& user_id_hash);
 

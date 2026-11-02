@@ -1278,7 +1278,6 @@ source_set("unit_tests") {
       "//ash/constants",
       "//chrome/common:constants",
       "//chromeos:test_support",
-      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/dbus:test_support",
       "//chromeos/ash/components/dbus/audio",
       "//chromeos/ash/components/dbus/debug_daemon",

@@ -168,12 +168,6 @@ user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
   return nullptr;
 }
 
-// static
-std::string BrowserContextHelper::GetUserBrowserContextDirName(
-    std::string_view user_id_hash) {
-  return user_manager::User::GetDirName(user_id_hash);
-}
-
 base::FilePath BrowserContextHelper::GetBrowserContextPathByUserIdHash(
     std::string_view user_id_hash) {
   // Fails if Chrome runs with "--login-manager", but not "--login-profile", and
@@ -185,7 +179,7 @@ base::FilePath BrowserContextHelper::GetBrowserContextPathByUserIdHash(
       << "user_id_hash is empty, probably need to add "
          "--login-profile=user@example.com-hash to command line parameters";
   return delegate_->GetUserDataDir()->Append(
-      GetUserBrowserContextDirName(user_id_hash));
+      user_manager::User::GetDirName(user_id_hash));
 }
 
 base::FilePath BrowserContextHelper::GetSigninBrowserContextPath() const {

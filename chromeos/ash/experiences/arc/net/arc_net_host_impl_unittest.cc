@@ -8,7 +8,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
@@ -20,6 +19,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -134,11 +134,10 @@ class ArcNetHostImplTest : public testing::Test {
 
     const std::string userhash =
         user_manager::UserManager::Get()->FindUser(account_id)->username_hash();
-    // Use BrowserContextHelper to construct the "/profile/u-" path consistently
+    // Use User::GetDirName() to construct the "/profile/u-" path consistently
     // with production.
     const std::string profile_path =
-        "/profile/" +
-        ash::BrowserContextHelper::GetUserBrowserContextDirName(userhash);
+        "/profile/" + user_manager::User::GetDirName(userhash);
     helper_->profile_test()->AddProfile(profile_path, userhash);
     ash::NetworkHandler::Get()
         ->managed_network_configuration_handler()

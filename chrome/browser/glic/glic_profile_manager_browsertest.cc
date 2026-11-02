@@ -50,12 +50,12 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "components/account_id/account_id_literal.h"  // nogncheck
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -130,8 +130,8 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
 
       base::FilePath user_data_dir =
           base::PathService::CheckedGet(chrome::DIR_USER_DATA);
-      base::FilePath profile_dir = user_data_dir.AppendASCII(
-          ash::BrowserContextHelper::GetUserBrowserContextDirName(userhash));
+      base::FilePath profile_dir =
+          user_data_dir.AppendASCII(user_manager::User::GetDirName(userhash));
       new_profile =
           g_browser_process->profile_manager()->GetProfile(profile_dir);
     }

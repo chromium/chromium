@@ -516,7 +516,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/audio",
-    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/dlcservice",

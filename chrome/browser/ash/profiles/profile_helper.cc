@@ -103,8 +103,7 @@ std::string ProfileHelper::GetUserIdHashFromProfile(const Profile* profile) {
 // static
 base::FilePath ProfileHelper::GetUserProfileDir(
     const std::string& user_id_hash) {
-  return base::FilePath(
-      BrowserContextHelper::GetUserBrowserContextDirName(user_id_hash));
+  return base::FilePath(user_manager::User::GetDirName(user_id_hash));
 }
 
 // static

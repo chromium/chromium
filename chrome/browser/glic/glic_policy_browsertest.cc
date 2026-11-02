@@ -63,11 +63,11 @@
 #include "ash/constants/ash_switches.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"  // nogncheck
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using glic::prefs::GlicActuationOnWebPolicyState;
@@ -169,7 +169,7 @@ class GlicPolicyTest : public PolicyTest {
       base::FilePath user_data_directory;
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
       base::FilePath profile_dir = user_data_directory.AppendASCII(
-          ash::BrowserContextHelper::GetUserBrowserContextDirName(userhash2));
+          user_manager::User::GetDirName(userhash2));
       profile_2_ =
           g_browser_process->profile_manager()->GetProfile(profile_dir);
       ASSERT_EQ(kAccountId2, *ash::AnnotatedAccountId::Get(profile_2_.get()));

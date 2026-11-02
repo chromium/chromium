@@ -31,11 +31,11 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"  // nogncheck
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -162,8 +162,7 @@ class PageColorsControllerBrowserTest : public MixinBasedInProcessBrowserTest {
     return profiles::testing::CreateProfileSync(
         profile_manager,
         profile_manager->user_data_dir().AppendASCII(
-            ash::BrowserContextHelper::GetUserBrowserContextDirName(
-                secondary_user_hash)));
+            user_manager::User::GetDirName(secondary_user_hash)));
 #else
     return profiles::testing::CreateProfileSync(
         profile_manager, profile_manager->GenerateNextProfileDirectoryPath());

@@ -929,8 +929,7 @@ base::FilePath ProfileManager::GetInitialProfileDir() {
     // IsLoggedIn check above ensures |user| is non-null.
     const auto* user = manager->GetActiveUser();
     return base::FilePath(
-        ash::BrowserContextHelper::GetUserBrowserContextDirName(
-            user->username_hash()));
+        user_manager::User::GetDirName(user->username_hash()));
   }
 #endif
   base::FilePath relative_profile_dir;

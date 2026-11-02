@@ -251,33 +251,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                          BrowserContextHelperAccountIdTest,
                          ::testing::Bool());
 
-TEST_F(BrowserContextHelperTest, GetUserBrowserContextDirName) {
-  constexpr struct {
-    const char* expect;
-    const char* user_id_hash;
-  } kTestData[] = {
-      // Regular case.
-      {"u-abcde123456", "abcde123456"},
-
-      // Special case for the legacy path.
-      {"user", "user"},
-
-      // Special case for testing.
-      {"test-user", "test-user"},
-  };
-  for (const auto& test_case : kTestData) {
-    EXPECT_EQ(test_case.expect,
-              BrowserContextHelper::GetUserBrowserContextDirName(
-                  test_case.user_id_hash));
-  }
-}
-
 TEST_F(BrowserContextHelperTest, GetBrowserContextPathByUserIdHash) {
   auto delegate = std::make_unique<FakeBrowserContextHelperDelegate>();
   auto* delegate_ptr = delegate.get();
   BrowserContextHelper helper(std::move(delegate));
 
-  // u- prefix is expected. See GetUserBrowserContextDirName for details.
+  // u- prefix is expected. See user_manager::User::GetDirName for details.
   EXPECT_EQ(delegate_ptr->GetUserDataDir()->Append("u-0123456789"),
             helper.GetBrowserContextPathByUserIdHash("0123456789"));
   // Special use name case.

@@ -38,11 +38,11 @@
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
@@ -512,8 +512,7 @@ class MultiProfileDriveFileSystemExtensionApiTest
         kSecondProfileHash, /*new_user=*/false,
         /*has_active_session=*/false);
     base::FilePath profile_dir = user_data_directory.AppendASCII(
-        ash::BrowserContextHelper::GetUserBrowserContextDirName(
-            kSecondProfileHash));
+        user_manager::User::GetDirName(kSecondProfileHash));
     second_profile_ =
         g_browser_process->profile_manager()->GetProfile(profile_dir);
 

@@ -57,6 +57,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -334,8 +335,7 @@ void TestSystemTrayIsVisible() {
 // This profile should NOT be an OTR profile.
 IN_PROC_BROWSER_TEST_F(LoginUserTest, UserPassed) {
   Profile* profile = browser()->GetProfile();
-  std::string profile_base_name =
-      BrowserContextHelper::GetUserBrowserContextDirName("hash");
+  std::string profile_base_name = user_manager::User::GetDirName("hash");
   EXPECT_EQ(profile_base_name, profile->GetBaseName().value());
   EXPECT_FALSE(profile->IsOffTheRecord());
 

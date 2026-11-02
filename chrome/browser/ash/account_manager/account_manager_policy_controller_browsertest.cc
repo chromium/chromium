@@ -32,6 +32,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -78,8 +79,8 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     // Prep private fields.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
-    profile_builder.SetPath(temp_dir_.GetPath().AppendASCII(
-        BrowserContextHelper::GetUserBrowserContextDirName(
+    profile_builder.SetPath(
+        temp_dir_.GetPath().AppendASCII(user_manager::User::GetDirName(
             user_manager::TestHelper::GetFakeUsernameHash(account_id))));
     profile_builder.SetProfileName(kFakePrimaryUsername);
     profile_ = IdentityTestEnvironmentProfileAdaptor::
