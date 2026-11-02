@@ -31,6 +31,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     isPasswordManagerPinAvailable: boolean,
     isCloudAuthenticatorConnected: boolean,
     changePasswordManagerPinSuccessful: boolean,
+    copyPlaintextBackupPasswordSuccessful: boolean,
     disconnectCloudAuthenticatorSuccessful: boolean,
     isConnectedToCloudAuthenticator: boolean,
     deleteAllPasswordManagerData: boolean,
@@ -133,6 +134,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       isPasswordManagerPinAvailable: false,
       isCloudAuthenticatorConnected: false,
       changePasswordManagerPinSuccessful: false,
+      copyPlaintextBackupPasswordSuccessful: true,
       disconnectCloudAuthenticatorSuccessful: false,
       isConnectedToCloudAuthenticator: true,
       deleteAllPasswordManagerData: true,
@@ -263,7 +265,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   copyPlaintextBackupPassword(id: number) {
     this.methodCalled('copyPlaintextBackupPassword', {id});
-    return Promise.resolve(true);
+    return Promise.resolve(this.data.copyPlaintextBackupPasswordSuccessful);
   }
 
   addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {

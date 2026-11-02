@@ -94,8 +94,11 @@ export class BackupPasswordDetailsCardElement extends
   private onCopyPasswordClick_() {
     PasswordManagerImpl.getInstance()
         .copyPlaintextBackupPassword(this.password.id)
-        .then(() => this.showToast_(this.i18n('passwordCopiedToClipboard')))
-        .catch(() => {});
+        .then(success => {
+          if (success) {
+            this.showToast_(this.i18n('passwordCopiedToClipboard'));
+          }
+        });
     PasswordManagerImpl.getInstance().extendAuthValidity();
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSWORD_COPY_BUTTON_CLICKED);

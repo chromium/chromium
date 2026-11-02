@@ -97,6 +97,23 @@ suite('BackupPasswordDetailsCardTest', function() {
     await flushTasks();
   });
 
+  test(
+      'Copy password does not dispatch value-copied on failure',
+      async function() {
+        passwordManager.data.copyPlaintextBackupPasswordSuccessful = false;
+        const card = await createCardElement();
+        let valueCopiedFired = false;
+        card.addEventListener('value-copied', () => {
+          valueCopiedFired = true;
+        });
+
+        card.$.copyPasswordButton.click();
+        await passwordManager.whenCalled('copyPlaintextBackupPassword');
+        await flushTasks();
+
+        assertFalse(valueCopiedFired);
+      });
+
   test('Delete password', async function() {
     const password = createPasswordEntry({
       url: 'test.com',
