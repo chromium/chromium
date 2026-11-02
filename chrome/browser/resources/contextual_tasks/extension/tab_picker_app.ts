@@ -90,6 +90,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   protected accessor sharingTabsText_: string = '';
 
+  private resizeObserver_: ResizeObserver|null = null;
   private closeTimer_: number|null = null;
   private frameScreenOffset_: {x: number, y: number}|null = null;
   private pointerDownOnTrigger_: boolean = false;
@@ -114,6 +115,15 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     super.connectedCallback();
     this.setFocusOutlineVisible_(false);
     this.darkMode = this.isDarkModeEnabled_();
+    this.resizeObserver_ = new ResizeObserver(() => {
+      try {
+        window.requestResize?.();
+      } catch {
+        // Ignore NotAllowedError when loaded outside a responsive iframe (e.g.,
+        // when opening the extension page directly via chrome-extension://).
+      }
+    });
+    this.resizeObserver_.observe(this);
     this.updateSharingTabsText_();
     this.fetchTabSuggestions_(/*recordInitialLoadLatency=*/ true);
 
@@ -155,6 +165,8 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     ++this.fetchSuggestionsRequestId_;
     this.cancelCloseTimer_();
     this.inputState = null;
+    this.resizeObserver_?.disconnect();
+    this.resizeObserver_ = null;
     const callbackRouter =
         ExtensionBrowserProxyImpl.getInstance().callbackRouter;
     for (const id of this.extensionListenerIds_) {
@@ -623,6 +635,10 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 }
 
 declare global {
+  interface Window {
+    requestResize?: () => void;
+  }
+
   interface HTMLElementTagNameMap {
     'tab-picker-app': TabPickerAppElement;
   }

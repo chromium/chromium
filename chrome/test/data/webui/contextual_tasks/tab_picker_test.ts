@@ -1596,4 +1596,25 @@ suite('TabPickerTest', () => {
 
         errorApp.remove();
       });
+
+  test(
+      'Calls window.requestResize on resize and ignores NotAllowedError',
+      async () => {
+        let resizeCalled = false;
+        const resizePromise = new Promise<void>(resolve => {
+          window.requestResize = () => {
+            resizeCalled = true;
+            setTimeout(resolve, 0);
+            throw new DOMException('Not allowed', 'NotAllowedError');
+          };
+        });
+
+        try {
+          app.style.height = '76px';
+          await resizePromise;
+          assertTrue(resizeCalled);
+        } finally {
+          delete window.requestResize;
+        }
+      });
 });
