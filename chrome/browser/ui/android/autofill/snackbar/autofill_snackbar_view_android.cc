@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -34,7 +35,7 @@ void AutofillSnackbarViewAndroid::Show() {
   }
 
   java_object_.Reset(Java_AutofillSnackbarController_create(
-      env, reinterpret_cast<intptr_t>(this), window_android));
+      env, jni_zero::MakeRaw(this), window_android));
   Java_AutofillSnackbarController_show(
       env, java_object_, controller_->GetMessageText(),
       controller_->GetActionButtonText(),

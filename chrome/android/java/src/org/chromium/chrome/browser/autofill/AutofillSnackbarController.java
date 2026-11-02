@@ -10,7 +10,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -28,43 +31,59 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("autofill")
 @NullMarked
 public class AutofillSnackbarController implements SnackbarManager.SnackbarController {
+    @JniType("::autofill::AutofillSnackbarViewAndroid")
+    interface NativeAutofillSnackbarViewAndroid extends JniTypeToken {}
+
     private final SnackbarManager mSnackbarManager;
-    private long mNativeAutofillSnackbarView;
+    private @Nullable JniRawPtr<NativeAutofillSnackbarViewAndroid> mNativeAutofillSnackbarView;
+    private @Nullable JniRawPtr<NativeAutofillSnackbarViewAndroid> mNativeViewInCall;
 
     @VisibleForTesting
-    AutofillSnackbarController(long nativeAutofillSnackbarView, SnackbarManager snackbarManager) {
+    AutofillSnackbarController(
+            JniRawPtr<NativeAutofillSnackbarViewAndroid> nativeAutofillSnackbarView,
+            SnackbarManager snackbarManager) {
         this.mNativeAutofillSnackbarView = nativeAutofillSnackbarView;
         this.mSnackbarManager = snackbarManager;
     }
 
-    private long takeNativePtr() {
-        long nativeView = mNativeAutofillSnackbarView;
-        mNativeAutofillSnackbarView = 0;
+    private @Nullable JniRawPtr<NativeAutofillSnackbarViewAndroid> takeNativePtr() {
+        JniRawPtr<NativeAutofillSnackbarViewAndroid> nativeView = mNativeAutofillSnackbarView;
+        mNativeAutofillSnackbarView = null;
         return nativeView;
     }
 
     @Override
     public void onAction(@Nullable Object actionData) {
-        long nativeView = takeNativePtr();
-        if (nativeView == 0) {
+        JniRawPtr<NativeAutofillSnackbarViewAndroid> nativeView = takeNativePtr();
+        if (nativeView == null) {
             return;
         }
         // Native OnActionClicked runs both the action callback and the dismiss callback.
+        mNativeViewInCall = nativeView;
         AutofillSnackbarControllerJni.get().onActionClicked(nativeView);
+        if (mNativeViewInCall != null) {
+            mNativeViewInCall.release();
+            mNativeViewInCall = null;
+        }
     }
 
     @Override
     public void onDismissNoAction(@Nullable Object actionData) {
-        long nativeView = takeNativePtr();
-        if (nativeView == 0) {
+        JniRawPtr<NativeAutofillSnackbarViewAndroid> nativeView = takeNativePtr();
+        if (nativeView == null) {
             return;
         }
+        mNativeViewInCall = nativeView;
         AutofillSnackbarControllerJni.get().onDismissed(nativeView);
+        if (mNativeViewInCall != null) {
+            mNativeViewInCall.release();
+            mNativeViewInCall = null;
+        }
     }
 
     @CalledByNative
     static AutofillSnackbarController create(
-            long nativeAutofillSnackbarView,
+            JniRawPtr<NativeAutofillSnackbarViewAndroid> nativeAutofillSnackbarView,
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
         assumeNonNull(snackbarManager);
@@ -111,16 +130,23 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
     /** Dismiss the autofill snackbar if it's showing. No-op if it's not showing. */
     @CalledByNative
     void dismiss() {
-        if (takeNativePtr() == 0) {
+        if (mNativeViewInCall != null) {
+            mNativeViewInCall.release();
+            mNativeViewInCall = null;
             return;
         }
+        JniRawPtr<NativeAutofillSnackbarViewAndroid> nativeView = takeNativePtr();
+        if (nativeView == null) {
+            return;
+        }
+        nativeView.release();
         mSnackbarManager.dismissSnackbars(this);
     }
 
     @NativeMethods
     interface Natives {
-        void onActionClicked(long nativeAutofillSnackbarViewAndroid);
+        void onActionClicked(JniPtr<NativeAutofillSnackbarViewAndroid> self);
 
-        void onDismissed(long nativeAutofillSnackbarViewAndroid);
+        void onDismissed(JniPtr<NativeAutofillSnackbarViewAndroid> self);
     }
 }
