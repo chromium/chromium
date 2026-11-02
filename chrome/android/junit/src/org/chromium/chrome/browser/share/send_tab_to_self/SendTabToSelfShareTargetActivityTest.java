@@ -120,6 +120,7 @@ public class SendTabToSelfShareTargetActivityTest {
 
     @Test
     public void testFinishesOnlyAfterSendCompletes() {
+        when(mNativeMock.isModelReady(mProfile)).thenReturn(true);
         when(mNativeMock.getAllTargetDeviceInfos(mProfile))
                 .thenReturn(
                         List.of(

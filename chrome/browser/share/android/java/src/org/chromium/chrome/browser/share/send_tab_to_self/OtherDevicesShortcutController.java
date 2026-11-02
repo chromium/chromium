@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge.SendTabToSelfModelObserver;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.AccountInfo;
@@ -73,6 +74,9 @@ public class OtherDevicesShortcutController implements Destroyable {
 
     // Limit to 2 devices to avoid overcrowding the share sheet and the launcher.
     private static final int MAX_SHORTCUTS = 2;
+
+    // Maximum time to wait for SendTabToSelfModel to become ready on cold start before proceeding.
+    private static final long MODEL_READY_TIMEOUT_MS = 5000;
 
     private static final String TAG = "SttsShortcut";
 
@@ -213,15 +217,18 @@ public class OtherDevicesShortcutController implements Destroyable {
                                 }
                                 SendTabToSelfMetricsRecorder.recordEntryPointInvoked(
                                         ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE);
-                                SendTabToSelfAndroidBridge.sendTabsToDevice(
+                                runWhenModelReadyOrTimeout(
                                         profile,
-                                        null,
-                                        targetDevice.mGuid,
-                                        targetDevice.mName,
-                                        urls,
-                                        title,
-                                        ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE,
-                                        onComplete);
+                                        () ->
+                                                SendTabToSelfAndroidBridge.sendTabsToDevice(
+                                                        profile,
+                                                        null,
+                                                        targetDevice.mGuid,
+                                                        targetDevice.mName,
+                                                        urls,
+                                                        title,
+                                                        ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE,
+                                                        onComplete));
                             });
                 });
     }
@@ -249,6 +256,40 @@ public class OtherDevicesShortcutController implements Destroyable {
         if (TextUtils.isEmpty(guid) || TextUtils.isEmpty(name)) return null;
 
         return new TargetDevice(guid, name);
+    }
+
+    private static void runWhenModelReadyOrTimeout(Profile profile, Runnable callback) {
+        if (SendTabToSelfAndroidBridge.isModelReady(profile)) {
+            callback.run();
+            return;
+        }
+        new ModelReadyWaiter(profile, callback);
+    }
+
+    private static class ModelReadyWaiter implements SendTabToSelfModelObserver, Runnable {
+        private final Runnable mCallback;
+        private final long mObserverPtr;
+        private boolean mHasRun;
+
+        ModelReadyWaiter(Profile profile, Runnable callback) {
+            mCallback = callback;
+            mObserverPtr = SendTabToSelfAndroidBridge.addModelObserver(profile, this);
+            assert mObserverPtr != 0;
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this, MODEL_READY_TIMEOUT_MS);
+        }
+
+        @Override
+        public void onModelReady() {
+            run();
+        }
+
+        @Override
+        public void run() {
+            if (mHasRun) return;
+            mHasRun = true;
+            SendTabToSelfAndroidBridge.removeModelObserver(mObserverPtr);
+            mCallback.run();
+        }
     }
 
     public OtherDevicesShortcutController(Profile profile) {
