@@ -189,7 +189,6 @@ source_set("unit_tests") {
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/signin/public/identity_manager",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/content_suggestions/safety_check/model:prefs",
     "//ios/chrome/browser/safety_check/model:constants",

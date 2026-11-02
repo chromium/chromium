@@ -10,7 +10,6 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/personal_context/core/personal_context_prefs.h"
 #import "components/policy/core/common/policy_pref_names.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -35,11 +34,6 @@ class BrowserPrefsTest : public PlatformTest {
  protected:
   BrowserPrefsTest() {
     RegisterProfilePrefs(pref_service_.registry());
-
-    // TODO(crbug.com/369296278): Remove this line ~one year after full launch.
-    // Manually register IdentityManagerFactory preferences as ProfilePrefs do
-    // not register KeyedService factories prefs.
-    signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
   }
 
   PrefService* local_state() {
