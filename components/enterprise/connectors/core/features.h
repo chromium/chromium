@@ -83,6 +83,10 @@ BASE_DECLARE_FEATURE_PARAM(int, kCdpAttributionMaxActorsPerTab);
 // Post-detach TTL retention window for external CDP actors on a tab.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kCdpAttributionDetachedActorTtl);
 
+// Maximum number of concurrent pending OS process tree extraction tasks before
+// new attachment extractions are shed.
+BASE_DECLARE_FEATURE_PARAM(int, kCdpAttributionMaxPendingExtractions);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_

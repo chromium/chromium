@@ -91,4 +91,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kEventReportingCdpAttribution,
                    /*default_value=*/base::Seconds(30));
 
+BASE_FEATURE_PARAM(int,
+                   kCdpAttributionMaxPendingExtractions,
+                   &kEventReportingCdpAttribution,
+                   /*default_value=*/16);
+
 }  // namespace enterprise_connectors

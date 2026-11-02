@@ -5,14 +5,21 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_CDP_ACTOR_SESSION_TRACKER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_CDP_ACTOR_SESSION_TRACKER_H_
 
+#include <cstddef>
 #include <optional>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
-#include "base/thread_annotations.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "net/base/ip_endpoint.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -22,14 +29,25 @@ class WebContents;
 
 namespace enterprise_connectors {
 
+struct ProcessTree;
+
 // Tracks DevTools session attachments, first CDP command dispatches, and
-// detachments across the browser, updating per-tab `TabCdpActorTracker`
-// buffers.
+// detachments across the browser, owns serialized background OS process tree
+// extractions with bounded queue shedding, and updates per-tab
+// `TabCdpActorTracker` buffers.
 //
 // Instances are sequence-affine (`SEQUENCE_CHECKER`) and must be constructed,
 // called, and destroyed on the same sequence (the browser UI thread).
 class CdpActorSessionTracker {
  public:
+  // Callbacks invoked on `extraction_task_runner_` to extract the OS
+  // `ProcessTree` for Pipe and WebSocket CDP sessions. Guaranteed to remain
+  // `base::RepeatingCallback` aliases so callers may bind and pass custom
+  // extractors via `SetExtractorsForTesting()`.
+  using PipeExtractorCallback = base::RepeatingCallback<ProcessTree()>;
+  using WebSocketExtractorCallback =
+      base::RepeatingCallback<ProcessTree(const net::IPEndPoint&)>;
+
   enum class SessionCategory {
     kIgnored,
     kDevToolsUi,
@@ -86,6 +104,14 @@ class CdpActorSessionTracker {
   // `channel` is used only as an opaque map key and is not dereferenced.
   void OnClientDetached(content::DevToolsAgentHostClientChannel* channel);
 
+  // Test hooks for injecting custom OS process tree extractors, a custom task
+  // runner, and inspecting internal queue state.
+  void SetExtractorsForTesting(
+      PipeExtractorCallback pipe_extractor,
+      WebSocketExtractorCallback websocket_extractor,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
+  size_t GetPendingExtractionsCountForTesting() const;
+
  private:
   struct TrackedChannel {
     TrackedChannel() = delete;
@@ -102,14 +128,33 @@ class CdpActorSessionTracker {
     std::optional<net::IPEndPoint> remote_endpoint;
     base::WeakPtr<content::WebContents> web_contents;
     bool has_handled_command = false;
+    base::ProcessId resolved_leaf_pid = base::kNullProcessId;
   };
 
+  void ActivatePipeSession(content::WebContents* web_contents);
+  void ActivateWebSocketSession(content::WebContents* web_contents,
+                                std::optional<net::IPEndPoint> remote_endpoint);
+
+  void StartExtraction(std::optional<net::IPEndPoint> remote_endpoint,
+                       base::WeakPtr<content::WebContents> web_contents);
+  void OnExtractionCompleted(std::optional<net::IPEndPoint> remote_endpoint,
+                             base::WeakPtr<content::WebContents> web_contents,
+                             ProcessTree tree);
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  scoped_refptr<base::SequencedTaskRunner> extraction_task_runner_;
+  PipeExtractorCallback pipe_extractor_;
+  WebSocketExtractorCallback websocket_extractor_;
+
+  size_t pending_extractions_count_ = 0;
 
   // Active attached channels mapped to their tracked target state for command
   // activation and cleanup on `OnClientDetached()`.
   base::flat_map<const content::DevToolsAgentHostClientChannel*, TrackedChannel>
-      active_channels_ GUARDED_BY_CONTEXT(sequence_checker_);
+      active_channels_;
+
+  base::WeakPtrFactory<CdpActorSessionTracker> weak_factory_{this};
 };
 
 }  // namespace enterprise_connectors

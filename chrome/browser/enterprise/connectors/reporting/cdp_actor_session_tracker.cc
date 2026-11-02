@@ -4,14 +4,23 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/cdp_actor_session_tracker.h"
 
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/tab_cdp_actor_tracker.h"
@@ -21,6 +30,7 @@
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/connectors/core/process_extractor.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_types.h"
 #include "content/public/browser/browser_context.h"
@@ -37,6 +47,20 @@ namespace {
 
 using ::chrome::cros::reporting::proto::EventInitiatorInfo;
 using ::chrome::cros::reporting::proto::ExternalProcessInfo;
+
+base::ProcessId GetLeafPidFromTree(const ProcessTree& tree) {
+  if (tree.process_nodes.empty()) {
+    return base::kNullProcessId;
+  }
+  return tree.process_nodes.front().process_id;
+}
+
+size_t GetMaxPendingExtractions() {
+  const int param = kCdpAttributionMaxPendingExtractions.Get();
+  return param > 0 ? static_cast<size_t>(param)
+                   : static_cast<size_t>(
+                         kCdpAttributionMaxPendingExtractions.default_value);
+}
 
 }  // namespace
 
@@ -57,7 +81,13 @@ CdpActorSessionTracker::TrackedChannel::operator=(TrackedChannel&&) noexcept =
 
 CdpActorSessionTracker::TrackedChannel::~TrackedChannel() = default;
 
-CdpActorSessionTracker::CdpActorSessionTracker() = default;
+CdpActorSessionTracker::CdpActorSessionTracker()
+    : extraction_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
+      pipe_extractor_(base::BindRepeating(&ExtractProcessTreeForPipe)),
+      websocket_extractor_(
+          base::BindRepeating(&ExtractProcessTreeForWebSocket)) {}
 
 CdpActorSessionTracker::~CdpActorSessionTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -151,7 +181,7 @@ bool CdpActorSessionTracker::IsEligibleBrowserContext(
 // static
 std::optional<EventInitiatorInfo> CdpActorSessionTracker::GetEventInitiatorInfo(
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_contents ||
       !base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) {
     return std::nullopt;
@@ -242,17 +272,11 @@ void CdpActorSessionTracker::OnCommandHandled(
       break;
     case SessionCategory::kExternalPipe:
       it->second.has_handled_command = true;
-      TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
-          ->buffer()
-          .OnExternalActorAttached(ExternalProcessInfo::TRANSPORT_TYPE_PIPE);
+      ActivatePipeSession(web_contents);
       break;
     case SessionCategory::kExternalWebSocket:
       it->second.has_handled_command = true;
-      TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
-          ->buffer()
-          .OnExternalActorAttached(
-              ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
-              it->second.remote_endpoint);
+      ActivateWebSocketSession(web_contents, it->second.remote_endpoint);
       break;
   }
 }
@@ -290,16 +314,127 @@ void CdpActorSessionTracker::OnClientDetached(
     case SessionCategory::kExternalPipe:
       if (tracked.has_handled_command) {
         tab_tracker->buffer().OnExternalActorDetached(
-            ExternalProcessInfo::TRANSPORT_TYPE_PIPE);
+            ExternalProcessInfo::TRANSPORT_TYPE_PIPE, std::nullopt,
+            tracked.resolved_leaf_pid);
       }
       break;
     case SessionCategory::kExternalWebSocket:
       if (tracked.has_handled_command) {
         tab_tracker->buffer().OnExternalActorDetached(
             ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
-            tracked.remote_endpoint);
+            tracked.remote_endpoint, tracked.resolved_leaf_pid);
       }
       break;
+  }
+}
+
+void CdpActorSessionTracker::SetExtractorsForTesting(
+    PipeExtractorCallback pipe_extractor,
+    WebSocketExtractorCallback websocket_extractor,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pipe_extractor) {
+    pipe_extractor_ = std::move(pipe_extractor);
+  }
+  if (websocket_extractor) {
+    websocket_extractor_ = std::move(websocket_extractor);
+  }
+  if (task_runner) {
+    extraction_task_runner_ = std::move(task_runner);
+  }
+}
+
+size_t CdpActorSessionTracker::GetPendingExtractionsCountForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pending_extractions_count_;
+}
+
+void CdpActorSessionTracker::ActivatePipeSession(
+    content::WebContents* web_contents) {
+  // Register placeholder immediately while background extraction runs.
+  TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
+      ->buffer()
+      .OnExternalActorAttached(ExternalProcessInfo::TRANSPORT_TYPE_PIPE);
+  StartExtraction(/*remote_endpoint=*/std::nullopt, web_contents->GetWeakPtr());
+}
+
+void CdpActorSessionTracker::ActivateWebSocketSession(
+    content::WebContents* web_contents,
+    std::optional<net::IPEndPoint> remote_endpoint) {
+  // Register placeholder immediately while background extraction runs.
+  TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
+      ->buffer()
+      .OnExternalActorAttached(ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+                               remote_endpoint);
+  if (remote_endpoint.has_value()) {
+    StartExtraction(*remote_endpoint, web_contents->GetWeakPtr());
+  }
+}
+
+void CdpActorSessionTracker::StartExtraction(
+    std::optional<net::IPEndPoint> remote_endpoint,
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (pending_extractions_count_ >= GetMaxPendingExtractions()) {
+    // Bounded queue shedding: drop background walk when queue is saturated.
+    return;
+  }
+
+  ++pending_extractions_count_;
+  base::OnceCallback<ProcessTree()> extractor_task =
+      remote_endpoint.has_value()
+          ? base::BindOnce(websocket_extractor_, *remote_endpoint)
+          : base::OnceCallback<ProcessTree()>(pipe_extractor_);
+
+  extraction_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, std::move(extractor_task),
+      base::BindOnce(&CdpActorSessionTracker::OnExtractionCompleted,
+                     weak_factory_.GetWeakPtr(), std::move(remote_endpoint),
+                     std::move(web_contents)));
+}
+
+void CdpActorSessionTracker::OnExtractionCompleted(
+    std::optional<net::IPEndPoint> remote_endpoint,
+    base::WeakPtr<content::WebContents> web_contents,
+    ProcessTree tree) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pending_extractions_count_ > 0) {
+    --pending_extractions_count_;
+  }
+
+  const SessionCategory expected_category =
+      remote_endpoint.has_value() ? SessionCategory::kExternalWebSocket
+                                  : SessionCategory::kExternalPipe;
+  const ExternalProcessInfo::TransportType transport_type =
+      remote_endpoint.has_value()
+          ? ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET
+          : ExternalProcessInfo::TRANSPORT_TYPE_PIPE;
+
+  const base::ProcessId leaf_pid = GetLeafPidFromTree(tree);
+  bool updated_initiating_tab = false;
+  for (auto& [channel, tracked] : active_channels_) {
+    if (tracked.category == expected_category && tracked.has_handled_command &&
+        tracked.remote_endpoint == remote_endpoint) {
+      tracked.resolved_leaf_pid = leaf_pid;
+      if (content::WebContents* tracked_wc = tracked.web_contents.get()) {
+        if (tracked_wc == web_contents.get()) {
+          updated_initiating_tab = true;
+        }
+        if (auto* tab_tracker =
+                TabCdpActorTracker::FromWebContents(tracked_wc)) {
+          tab_tracker->buffer().UpdateExternalActorProcessTree(
+              transport_type, remote_endpoint, tree);
+        }
+      }
+    }
+  }
+
+  if (!updated_initiating_tab) {
+    if (content::WebContents* wc = web_contents.get()) {
+      if (auto* tab_tracker = TabCdpActorTracker::FromWebContents(wc)) {
+        tab_tracker->buffer().UpdateExternalActorProcessTree(
+            transport_type, remote_endpoint, std::move(tree));
+      }
+    }
   }
 }
 
