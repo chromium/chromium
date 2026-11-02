@@ -109,6 +109,50 @@ base::expected<void, ConnectToServerError> CheckServerElevated(
   return base::ok();
 }
 
+// A user install's server runs as the same user as its callers, and the pipe
+// name `\\.\pipe\mojo.<PRODUCT>User` is shared by every user on the machine.
+// `VerifyServerPrivilege` only compares integrity levels, so without this
+// check another standard user holding the name would be accepted as the
+// server (and then trusted as an ipcz broker peer). Require the server to run
+// as this user, or to be privileged (SYSTEM/Administrators-owned).
+base::expected<void, ConnectToServerError> CheckServerSameUser(
+    HANDLE pipe_handle) {
+  DWORD pid = 0;
+  if (!::GetNamedPipeServerProcessId(pipe_handle, &pid)) {
+    PLOG(ERROR) << "Failed to get named pipe server process ID";
+    return base::unexpected(ConnectToServerError::kRetryable);
+  }
+
+  base::win::ScopedHandle process(
+      ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
+  if (!process.is_valid()) {
+    if (::GetLastError() != ERROR_ACCESS_DENIED) {
+      PLOG(ERROR) << "Failed to open named pipe server process " << pid;
+      return base::unexpected(ConnectToServerError::kRetryable);
+    }
+    // This user can always open its own updater. Unlike the system scope,
+    // the default pipe name offers no owner-based fallback, so a server that
+    // cannot be identified is rejected.
+    return base::unexpected(ConnectToServerError::kRejected);
+  }
+
+  std::optional<base::win::AccessToken> server_token =
+      base::win::AccessToken::FromProcess(process.get());
+  std::optional<base::win::AccessToken> client_token =
+      base::win::AccessToken::FromCurrentProcess();
+  if (!server_token || !client_token) {
+    LOG(ERROR) << "Failed to get access tokens for server process " << pid;
+    return base::unexpected(ConnectToServerError::kRetryable);
+  }
+  if (!IsUserScopeServerTrusted(server_token->User(), server_token->Owner(),
+                                client_token->User())) {
+    LOG(ERROR) << "Rejecting user-scope server process " << pid
+               << ": it does not run as this user.";
+    return base::unexpected(ConnectToServerError::kRejected);
+  }
+  return base::ok();
+}
+
 // `::WaitNamedPipeW` reports ERROR_FILE_NOT_FOUND only when NPFS has no pipe
 // registered under the name, and ERROR_PATH_NOT_FOUND when the prefix
 // directory itself is absent; a pipe that exists but is busy reports
@@ -230,6 +274,16 @@ void ConnectMojoImpl(
 
 }  // namespace
 
+bool IsUserScopeServerTrusted(const base::win::Sid& server_user,
+                              const base::win::Sid& server_owner,
+                              const base::win::Sid& client_user) {
+  return server_user == client_user ||
+         server_owner ==
+             base::win::Sid(base::win::WellKnownSid::kLocalSystem) ||
+         server_owner ==
+             base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators);
+}
+
 ConnectToServerError ClassifyDialError(HRESULT hr) {
   // DCOM reports a caller that lacks launch or activation permission for the
   // class as `E_ACCESSDENIED`. That is a configuration or identity problem,
@@ -265,6 +319,13 @@ ConnectToUpdateService(
                 pipe_name_type);
         !elevated.has_value()) {
       return base::unexpected(elevated.error());
+    }
+  } else {
+    if (base::expected<void, ConnectToServerError> same_user =
+            CheckServerSameUser(
+                connected_endpoint.platform_handle().GetHandle().get());
+        !same_user.has_value()) {
+      return base::unexpected(same_user.error());
     }
   }
   return connected_endpoint;

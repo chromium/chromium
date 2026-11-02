@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/types/expected.h"
+#include "base/win/sid.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
@@ -44,6 +45,14 @@ enum class ConnectToServerError {
 // errors are `kRejected`; everything else is `kRetryable`.
 ConnectToServerError ClassifyDialError(HRESULT hr);
 
+// Whether a user-scope server whose token user is `server_user` and whose
+// token owner is `server_owner` may be trusted by a client running as
+// `client_user`: the server must run as the same user, or be privileged
+// (owned by SYSTEM or Administrators).
+bool IsUserScopeServerTrusted(const base::win::Sid& server_user,
+                              const base::win::Sid& server_owner,
+                              const base::win::Sid& client_user);
+
 // Connect to the server.
 void ConnectMojo(
     UpdaterScope scope,
@@ -54,8 +63,9 @@ void ConnectMojo(
         connected_callback);
 
 // Connects to the named pipe for `server_name` and `pipe_name_type`, verifying
-// server privilege (and elevation when `scope` is a system install). Only
-// `ConnectMojo` uses this in production; it is exposed here for tests.
+// server privilege (and elevation when `scope` is a system install, or user
+// identity when `scope` is a user install). Only `ConnectMojo` uses this in
+// production; it is exposed here for tests.
 base::expected<mojo::PlatformChannelEndpoint, ConnectToServerError>
 ConnectToUpdateService(
     UpdaterScope scope,

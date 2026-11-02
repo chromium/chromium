@@ -193,6 +193,37 @@ TEST_F(UpdateServiceDialerWinTest,
   EXPECT_EQ(result.error(), ConnectToServerError::kRejected);
 }
 
+TEST_F(UpdateServiceDialerWinTest,
+       ConnectToUpdateServiceUserScopeAcceptsSameUserServer) {
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = mojo::NamedPlatformChannel::GenerateRandomServerName();
+  mojo::NamedPlatformChannel server(options);
+
+  base::expected<mojo::PlatformChannelEndpoint, ConnectToServerError> result =
+      ConnectToUpdateService(UpdaterScope::kUser, options.server_name,
+                             PipeNameType::kDefault);
+  EXPECT_TRUE(result.has_value());
+}
+
+TEST_F(UpdateServiceDialerWinTest,
+       IsUserScopeServerTrustedRequiresSameUserOrPrivilegedServer) {
+  const base::win::Sid user_a =
+      *base::win::Sid::FromSddlString(L"S-1-5-21-1-2-3-1001");
+  const base::win::Sid user_b =
+      *base::win::Sid::FromSddlString(L"S-1-5-21-1-2-3-1002");
+  const base::win::Sid system(base::win::WellKnownSid::kLocalSystem);
+  const base::win::Sid admins(base::win::WellKnownSid::kBuiltinAdministrators);
+
+  // The same user is trusted.
+  EXPECT_TRUE(IsUserScopeServerTrusted(user_a, user_a, user_a));
+  // Another standard user squatting the pipe name is not, even though it runs
+  // at the same (Medium) integrity level.
+  EXPECT_FALSE(IsUserScopeServerTrusted(user_b, user_b, user_a));
+  // Privileged servers are trusted regardless of user.
+  EXPECT_TRUE(IsUserScopeServerTrusted(system, system, user_a));
+  EXPECT_TRUE(IsUserScopeServerTrusted(user_b, admins, user_a));
+}
+
 TEST_F(UpdateServiceDialerWinTest, ClassifyDialErrorAccessDeniedRejects) {
   EXPECT_EQ(ClassifyDialError(E_ACCESSDENIED), ConnectToServerError::kRejected);
 }
