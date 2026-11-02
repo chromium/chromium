@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
+#include "chrome/browser/glic/navigation_capture/glic_promotion_source_navigation_observer.h"
 
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/navigation_capture/synthetic_trial_constants.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
@@ -67,8 +68,8 @@ IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
 
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
             kGlicPromotionSourceNonZss);
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(kGlicPromotionSourceTrialName,
+                                                  kGlicPromotionSourceNonZss));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
@@ -96,15 +97,15 @@ IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
 
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
             kGlicPromotionSourceNonZss);
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(kGlicPromotionSourceTrialName,
+                                                  kGlicPromotionSourceNonZss));
 
   // Visiting the same source again should not change the tag.
   EXPECT_TRUE(OpenTabWithLink(non_zss_url));
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
             kGlicPromotionSourceNonZss);
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(kGlicPromotionSourceTrialName,
+                                                  kGlicPromotionSourceNonZss));
 
   // Visiting a different recognized source (zss) tags the user as "Multiple".
   GURL zss_url = marketing_server_.GetURL("/title1.html?source=zss");
@@ -134,14 +135,14 @@ IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
   PrefService* prefs = GetProfile()->GetPrefs();
   EXPECT_TRUE(prefs->GetString(prefs::kGlicPromotionSourceCohort).empty());
 
-  GURL non_zss_url = marketing_server_.GetURL(
-      "/title1.html?some_other_campaign=true");
+  GURL non_zss_url =
+      marketing_server_.GetURL("/title1.html?some_other_campaign=true");
   EXPECT_TRUE(OpenTabWithLink(non_zss_url));
 
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
             kGlicPromotionSourceNonZss);
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(kGlicPromotionSourceTrialName,
+                                                  kGlicPromotionSourceNonZss));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
@@ -152,8 +153,8 @@ IN_PROC_BROWSER_TEST_F(GlicPromotionSourceNavigationObserverBrowserTest,
   PrefService* prefs = GetProfile()->GetPrefs();
   EXPECT_EQ(prefs->GetString(prefs::kGlicPromotionSourceCohort),
             kGlicPromotionSourceNonZss);
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      kGlicPromotionSourceTrialName, kGlicPromotionSourceNonZss));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(kGlicPromotionSourceTrialName,
+                                                  kGlicPromotionSourceNonZss));
 }
 
 }  // namespace glic

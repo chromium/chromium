@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_MARKETING_PAGE_TAB_HELPER_H_
-#define CHROME_BROWSER_GLIC_GLIC_MARKETING_PAGE_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_MARKETING_PAGE_TAB_HELPER_H_
+#define CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_MARKETING_PAGE_TAB_HELPER_H_
 
 #include "content/public/browser/web_contents_observer.h"
 
@@ -27,4 +27,4 @@ class GlicMarketingPageTabHelper : public content::WebContentsObserver {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_MARKETING_PAGE_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_MARKETING_PAGE_TAB_HELPER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_navigation_throttle.h"
+#include "chrome/browser/glic/navigation_capture/glic_navigation_throttle.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"

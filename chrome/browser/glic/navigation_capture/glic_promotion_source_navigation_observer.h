@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_PROMOTION_SOURCE_NAVIGATION_OBSERVER_H_
-#define CHROME_BROWSER_GLIC_GLIC_PROMOTION_SOURCE_NAVIGATION_OBSERVER_H_
+#ifndef CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_PROMOTION_SOURCE_NAVIGATION_OBSERVER_H_
+#define CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_PROMOTION_SOURCE_NAVIGATION_OBSERVER_H_
 
 #include "base/callback_list.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -16,17 +16,6 @@ class TabInterface;
 }  // namespace tabs
 
 namespace glic {
-
-// Synthetic trial name for tracking referral acquisition source.
-inline constexpr char kGlicPromotionSourceTrialName[] =
-    "GlicPromotionSourceSynthetic";
-
-// Group names for the GlicPromotionSourceSynthetic trial.
-inline constexpr char kGlicPromotionSourceNonZss[] = "NonZss";
-inline constexpr char kGlicPromotionSourceZss[] = "zss";
-inline constexpr char kGlicPromotionSourceMultiple[] = "Multiple";
-inline constexpr char kGlicPromotionSourceMultiProfileDetected[] =
-    "MultiProfileDetected";
 
 // A tab feature that observes navigations to the Glic promotion marketing page
 // and registers synthetic field trials for referral acquisition sources
@@ -61,4 +50,4 @@ class GlicPromotionSourceNavigationObserver
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_PROMOTION_SOURCE_NAVIGATION_OBSERVER_H_
+#endif  // CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_PROMOTION_SOURCE_NAVIGATION_OBSERVER_H_

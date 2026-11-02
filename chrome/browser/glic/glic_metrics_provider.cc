@@ -13,7 +13,7 @@
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
-#include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
+#include "chrome/browser/glic/navigation_capture/synthetic_trial_constants.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/service/glic_onboarding_status.h"

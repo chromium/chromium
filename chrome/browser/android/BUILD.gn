@@ -180,6 +180,7 @@ source_set("tabs_impl") {
     "//chrome/browser/finds",
     "//chrome/browser/finds/core",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/navigation_capture",
     "//chrome/browser/history",
     "//chrome/browser/history_clusters",
     "//chrome/browser/loader",

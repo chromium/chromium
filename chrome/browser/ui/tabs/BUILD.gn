@@ -573,6 +573,7 @@ if (!is_android) {
       "//chrome/browser/file_system_access",
       "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/glic/navigation_capture",
       "//chrome/browser/glic/suggestions",
       "//chrome/browser/history",
       "//chrome/browser/history_clusters",

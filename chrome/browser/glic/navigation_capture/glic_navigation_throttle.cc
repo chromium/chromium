@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_navigation_throttle.h"
+#include "chrome/browser/glic/navigation_capture/glic_navigation_throttle.h"
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -17,7 +17,6 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -113,7 +112,8 @@ GURL GetGlicWebContinuityOriginatingHostUrl() {
 void GlicNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
   // We won't create a throttle if:
-  // - kApiGlicAccessFromWebContinuity is enabled (as it uses the API instead of throttle).
+  // - kApiGlicAccessFromWebContinuity is enabled (as it uses the API instead of
+  // throttle).
   // - Neither kGlicGeminiContinueURLRedirect nor kGlicWebContinuity is enabled.
   // extensions_features (where kApiGlicAccessFromWebContinuity is defined) are
   // not compiled on Android because extensions are disabled there. However,
@@ -124,7 +124,8 @@ void GlicNavigationThrottle::MaybeCreateAndAdd(
       extensions_features::kApiGlicAccessFromWebContinuity);
 #endif
   if (api_access_enabled ||
-      (!base::FeatureList::IsEnabled(features::kGlicGeminiContinueURLRedirect) &&
+      (!base::FeatureList::IsEnabled(
+           features::kGlicGeminiContinueURLRedirect) &&
        !base::FeatureList::IsEnabled(features::kGlicWebContinuity))) {
     return;
   }
@@ -296,6 +297,9 @@ void GlicNavigationThrottle::LogCaptureResult(
   std::string_view status_string = is_glic_enabled && is_web_continuity_enabled
                                        ? "GlicWebContinuityFeatureEnabled"
                                        : "GlicWebContinuityFeatureDisabled";
+  // TODO(crbug.com/578592102): Look into whether this should use
+  // GlicMetricsReporter.
+  // Justification: (suppress CheckGlicMetrics)
   base::UmaHistogramEnumeration(
       base::StrCat({"Glic.NavigationCapture.", status_string}), result);
 }

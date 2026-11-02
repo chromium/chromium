@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_NAVIGATION_THROTTLE_H_
-#define CHROME_BROWSER_GLIC_GLIC_NAVIGATION_THROTTLE_H_
+#ifndef CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_NAVIGATION_THROTTLE_H_
+#define CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_NAVIGATION_THROTTLE_H_
 
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -38,4 +38,4 @@ class GlicNavigationThrottle : public content::NavigationThrottle {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_NAVIGATION_THROTTLE_H_
+#endif  // CHROME_BROWSER_GLIC_NAVIGATION_CAPTURE_GLIC_NAVIGATION_THROTTLE_H_
