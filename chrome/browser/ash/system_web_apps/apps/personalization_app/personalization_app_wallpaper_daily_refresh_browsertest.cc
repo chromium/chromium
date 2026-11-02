@@ -215,10 +215,11 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
   ASSERT_EQ(WallpaperType::kDaily, original_info.type);
   EXPECT_EQ(kCollectionId, original_info.collection_id);
-  // Fast forwards to the next day. Extra 1 minuter is used to account for
-  // delays.
+  // Fast forwards to the next day. Extra time (up to 25 hours + 1 minute) is
+  // used to account for daylight saving time (e.g. 25-hour Autumn fallback
+  // days) and delays.
   const bool checkpoint_change =
-      FastForwardBy(base::Hours(24) + base::Minutes(1));
+      FastForwardBy(base::Hours(25) + base::Minutes(1));
   ASSERT_TRUE(checkpoint_change);
   base::RunLoop loop;
   WallpaperChangedWaiter waiter(loop.QuitClosure());
@@ -280,10 +281,11 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
         << "Expect same collection";
   }
   {
-    // Forwards another half day. Extra 1 minute is used to account for delays.
-    // Expects a new wallpaper is set.
+    // Forwards another half day. Extra time (up to 13 hours + 1 minute) is
+    // used to account for daylight saving time (e.g. 25-hour Autumn fallback
+    // days) and delays. Expects a new wallpaper is set.
     const auto checkpoint_change =
-        FastForwardBy(base::Hours(12) + base::Minutes(1));
+        FastForwardBy(base::Hours(13) + base::Minutes(1));
     EXPECT_TRUE(checkpoint_change);
     base::RunLoop loop;
     WallpaperChangedWaiter waiter(loop.QuitClosure());
@@ -317,10 +319,11 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
   ASSERT_EQ(WallpaperType::kDailyGooglePhotos, original_info.type);
   EXPECT_EQ(kAlbumId, original_info.collection_id);
-  // Fast forwards to the next day. Extra 1 minute is used to account for
-  // delays.
+  // Fast forwards to the next day. Extra time (up to 25 hours + 1 minute) is
+  // used to account for daylight saving time (e.g. 25-hour Autumn fallback
+  // days) and delays.
   const bool checkpoint_change =
-      FastForwardBy(base::Hours(24) + base::Minutes(1));
+      FastForwardBy(base::Hours(25) + base::Minutes(1));
   ASSERT_TRUE(checkpoint_change);
   base::RunLoop loop;
   WallpaperChangedWaiter waiter(loop.QuitClosure());
