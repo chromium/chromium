@@ -108,6 +108,12 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabGroupItem;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabItem;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListItem;
 import org.chromium.chrome.browser.tasks.tab_management.labels.TabCardLabelData;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -375,6 +381,7 @@ public class TabListMediator implements TabListNotificationHandler {
             mPriceWelcomeMessageControllerSupplier;
     private final @Nullable DataSharingTabManager mDataSharingTabManager;
     private final TabModelObserver mTabModelObserver;
+    private final TabListDataObserver mTabListDataObserver;
     private final TabListLayoutDelegate mTabListLayoutDelegate;
     private final TabListObserverManager mObserverManager;
     private final TabActionListener mTabClosedListener;
@@ -632,6 +639,8 @@ public class TabListMediator implements TabListNotificationHandler {
         }
         mObserverManager = new TabListObserverManager(mTabListLayoutDelegate);
 
+        // TODO(crbug.com/562590772): Remove mTabModelObserver once all surfaces use
+        // TabListDataProvider.
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -727,6 +736,47 @@ public class TabListMediator implements TabListNotificationHandler {
                             int targetIndex = mTabListLayoutDelegate.getInsertionIndexOfTab(tab);
                             mModelList.moveItem(index, targetIndex);
                         }
+                    }
+                };
+
+        mTabListDataObserver =
+                new TabListDataObserver() {
+                    @Override
+                    public void onDataReset(List<? extends TabListItem> items) {
+                        onProviderDataReset(items);
+                    }
+
+                    @Override
+                    public void onItemsInserted(
+                            List<? extends TabListItem> items, @Nullable TabListItem after) {
+                        // TODO(crbug.com/562590772): Attach per-tab observers for inserted items.
+                    }
+
+                    @Override
+                    public void onItemsRemoved(List<? extends TabListItem> items) {
+                        // TODO(crbug.com/562590772): Detach per-tab observers for removed items,
+                        // including tabs already removed from TabModel.
+                    }
+
+                    @Override
+                    public void onItemsMoved(
+                            List<? extends TabListItem> items, @Nullable TabListItem after) {
+                        // TODO(crbug.com/562590772): Handle moved items.
+                    }
+
+                    @Override
+                    public void onItemUpdated(TabListItem item, @PayloadType int payload) {
+                        // TODO(crbug.com/562590772): Handle updated items.
+                    }
+
+                    @Override
+                    public void onTabClosureUndone(@TabId int tabId) {
+                        // TODO(crbug.com/562590772): Handle tab closure undone.
+                    }
+
+                    @Override
+                    public void onTabClosureCommitted(@TabId int tabId) {
+                        // TODO(crbug.com/562590772): Handle tab closure committed.
                     }
                 };
 
@@ -981,6 +1031,11 @@ public class TabListMediator implements TabListNotificationHandler {
 
         mCurrentTabModelSupplier.addSyncObserverAndCallIfNonNull(mOnTabModelChanged);
 
+        TabListDataProvider dataProvider = mTabListConfig.dataProvider;
+        if (dataProvider != null) {
+            dataProvider.addObserver(mTabListDataObserver);
+        }
+
         mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(originalProfile);
         if (mTabGroupSyncService != null) {
             mDataSharingService = DataSharingServiceFactory.getForProfile(originalProfile);
@@ -1132,17 +1187,39 @@ public class TabListMediator implements TabListNotificationHandler {
      */
     public void resetWithListOfTabs(
             @Nullable List<Tab> tabs, @Nullable List<String> tabGroupSyncIds, boolean quickMode) {
-        mInBatchReset = true;
-        mTrackPricesOnTabsEnabledForBatch = null;
+        TabListDataProvider dataProvider = mTabListConfig.dataProvider;
         mTrackingTabs = tabs != null;
         TabModel tabModel = mCurrentTabModelSupplier.get();
+        if (tabs == null) {
+            removeObservers(tabModel);
+        }
+
+        if (dataProvider != null) {
+            assert tabGroupSyncIds == null
+                    : "Saved tab group sync IDs are not yet supported with TabListDataProvider.";
+            if (tabs == null) {
+                dataProvider.stop();
+                clearProviderTabCards();
+                return;
+            }
+            assert tabModel != null;
+            recordPriceAnnotationsEnabledMetrics();
+            // TODO(crbug.com/562590772): Support areItemsUnchanged + quickMode in-place refresh
+            // in onProviderDataReset.
+            dataProvider.requestDataReset();
+            return;
+        }
+
+        mInBatchReset = true;
+        mTrackPricesOnTabsEnabledForBatch = null;
+
+        // TODO(crbug.com/562590772): Remove the legacy TabModel-backed tab/group path
+        // (addObservers, areTabsUnchanged, addTabCardToModel, insertChildTabs,
+        // mTabModelObserver, mTabGroupModelFilterObserver) once Flat, Grouped, and Nested
+        // use TabListDataProvider; only tabGroupSyncIds (saved tab groups) will remain.
         if (tabs != null) {
             assert tabModel != null;
             addObservers(tabModel, tabs);
-        } else {
-            removeObservers(tabModel);
-        }
-        if (tabs != null) {
             recordPriceAnnotationsEnabledMetrics();
         }
         // Only update tabs in place if there are no saved tab groups to be shown.
@@ -1247,6 +1324,10 @@ public class TabListMediator implements TabListNotificationHandler {
     /** Prepares the tab list for hiding by detaching observers before the exit animation. */
     void prepareHiding() {
         if (!mTrackingTabs) return;
+        TabListDataProvider dataProvider = mTabListConfig.dataProvider;
+        if (dataProvider != null) {
+            dataProvider.stop();
+        }
         removeObservers(mCurrentTabModelSupplier.get());
         mTrackingTabs = false;
     }
@@ -1523,6 +1604,10 @@ public class TabListMediator implements TabListNotificationHandler {
             mModelList.removeObserver(mListObserver);
         }
         removeObservers(mCurrentTabModelSupplier.get());
+        TabListDataProvider dataProvider = mTabListConfig.dataProvider;
+        if (dataProvider != null) {
+            dataProvider.removeObserver(mTabListDataObserver);
+        }
         mCurrentTabModelSupplier.removeObserver(mOnTabModelChanged);
 
         if (mComponentCallbacks != null) {
@@ -2597,6 +2682,8 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     private void addObservers(TabModel tabModel, List<Tab> tabs) {
+        if (mTabListConfig.dataProvider != null) return;
+
         boolean supportsTabGroups = mTabListConfig.supportsTabGroups;
         for (Tab tab : tabs) {
             Token tabGroupId = tab.getTabGroupId();
@@ -2626,6 +2713,66 @@ public class TabListMediator implements TabListNotificationHandler {
         tabModel.removeObserver(mTabModelObserver);
         mObserverManager.removeTabGroupObserver(tabModel);
     }
+
+    // TabListDataProvider consumer methods.
+
+    /** Removes all tab and tab group cards, leaving non-tab items such as message cards. */
+    private void clearProviderTabCards() {
+        for (int i = mModelList.size() - 1; i >= 0; i--) {
+            if (TabProperties.isTabOrTabGroup(mModelList.get(i).model)) {
+                mModelList.removeAt(i);
+            }
+        }
+        mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Rebuilds the tab and tab group cards from a full snapshot emitted by the {@link
+     * TabListDataProvider}, preserving any non-tab items (e.g. message cards).
+     *
+     * @param items The snapshot of items to display, in display order.
+     */
+    private void onProviderDataReset(List<? extends TabListItem> items) {
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        if (!mTrackingTabs || tabModel == null) return;
+
+        assert !mSuppressUpdateLayout;
+        mSuppressUpdateLayout = true;
+        mInBatchReset = true;
+        mTrackPricesOnTabsEnabledForBatch = null;
+        removeObservers(tabModel);
+        int insertionIndex = mModelList.tabRegionStart();
+        clearProviderTabCards();
+        mTabListLayoutDelegate.reset();
+
+        for (TabListItem item : items) {
+            if (item instanceof TabItem tabItem) {
+                Tab tab = tabModel.getTabById(tabItem.getTabId());
+                if (tab == null) continue;
+                addTabInfoToModelForTab(tab, insertionIndex);
+                addObserversForTab(tab);
+                insertionIndex++;
+            } else if (item instanceof TabGroupItem groupItem) {
+                Token tabGroupId = groupItem.getTabGroupId();
+                List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
+                if (groupTabs.isEmpty()) continue;
+                addTabInfoToModelForGroup(groupTabs.get(0), tabGroupId, insertionIndex);
+                for (Tab groupTab : groupTabs) {
+                    addObserversForTab(groupTab);
+                }
+                insertionIndex++;
+            } else {
+                assert false : "Unsupported TabListItem: " + item;
+            }
+        }
+
+        mInBatchReset = false;
+        mTrackPricesOnTabsEnabledForBatch = null;
+        mSuppressUpdateLayout = false;
+        updateLayout();
+    }
+
+    // End TabListDataProvider consumer methods.
 
     /**
      * @param itemIdentifier The itemIdentifier to match.

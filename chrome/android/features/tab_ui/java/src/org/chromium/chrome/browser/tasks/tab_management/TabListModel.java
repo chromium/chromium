@@ -230,6 +230,19 @@ public class TabListModel extends ModelList {
     }
 
     /**
+     * Returns the index of the first TAB or TAB_GROUP card in the {@link TabListModel}, i.e. where
+     * the tab region begins after any leading non-tab items (e.g. message cards).
+     *
+     * @return The index of the first tab or tab group card, or {@link #size()} if there are none.
+     */
+    public int tabRegionStart() {
+        for (int i = 0; i < size(); i++) {
+            if (TabProperties.isTabOrTabGroup(get(i).model)) return i;
+        }
+        return size();
+    }
+
+    /**
      * Returns the tab group ID of the tab group card at the given index, or null if the index is
      * out of bounds or the card is not a tab group header.
      *

@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabItemHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 
@@ -79,6 +80,12 @@ public class TabListConfig {
     /** Manager for active tab underline indicators (e.g. for Glic), or null if not supported. */
     public final @Nullable TabUnderlineManager tabUnderlineManager;
 
+    /**
+     * Provider of tab list data. When non-null, the mediator is driven by the provider's snapshots
+     * instead of observing the tab model directly.
+     */
+    public final @Nullable TabListDataProvider dataProvider;
+
     private TabListConfig(Builder builder) {
         layoutType = builder.mLayoutType;
         tabUiType = builder.mTabUiType;
@@ -93,6 +100,7 @@ public class TabListConfig {
         railCollapseStateSupplier = builder.mRailCollapseStateSupplier;
         tabHoverListener = builder.mTabHoverListener;
         tabUnderlineManager = builder.mTabUnderlineManager;
+        dataProvider = builder.mDataProvider;
     }
 
     /** Builder to construct {@link TabListConfig}. */
@@ -111,6 +119,7 @@ public class TabListConfig {
                 mRailCollapseStateSupplier;
         private @Nullable TabHoverListener mTabHoverListener;
         private @Nullable TabUnderlineManager mTabUnderlineManager;
+        private @Nullable TabListDataProvider mDataProvider;
 
         /**
          * @param layoutType The {@link TabListLayoutType} for the tab list.
@@ -235,6 +244,15 @@ public class TabListConfig {
          */
         public Builder setTabUnderlineManager(@Nullable TabUnderlineManager tabUnderlineManager) {
             mTabUnderlineManager = tabUnderlineManager;
+            return this;
+        }
+
+        /**
+         * @param dataProvider The {@link TabListDataProvider} backing the tab list, or null.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setDataProvider(@Nullable TabListDataProvider dataProvider) {
+            mDataProvider = dataProvider;
             return this;
         }
 

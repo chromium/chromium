@@ -79,6 +79,36 @@ public class TabListModelUnitTest {
     }
 
     @Test
+    public void testTabRegionStart() {
+        TabListModel tabListModel = new TabListModel();
+        assertEquals(0, tabListModel.tabRegionStart());
+
+        // Only message cards: the tab region starts after all of them.
+        tabListModel.add(listItemWithType(ModelType.MESSAGE));
+        assertEquals(1, tabListModel.tabRegionStart());
+        tabListModel.add(listItemWithType(ModelType.MESSAGE));
+        assertEquals(tabListModel.size(), tabListModel.tabRegionStart());
+
+        // Leading message cards are skipped.
+        tabListModel.add(listItemWithType(ModelType.TAB_GROUP));
+        assertEquals(2, tabListModel.tabRegionStart());
+        tabListModel.add(listItemWithType(ModelType.TAB));
+        assertEquals(2, tabListModel.tabRegionStart());
+
+        // Trailing message cards are ignored.
+        tabListModel.add(listItemWithType(ModelType.MESSAGE));
+        assertEquals(2, tabListModel.tabRegionStart());
+
+        // Tabs only: the tab region starts at the beginning.
+        tabListModel.clear();
+        assertEquals(0, tabListModel.tabRegionStart());
+        tabListModel.add(listItemWithType(ModelType.TAB));
+        assertEquals(0, tabListModel.tabRegionStart());
+        tabListModel.add(listItemWithType(ModelType.TAB_GROUP));
+        assertEquals(0, tabListModel.tabRegionStart());
+    }
+
+    @Test
     public void testArchivedTabGroupHelpers() {
         TabListModel tabListModel = new TabListModel();
 
