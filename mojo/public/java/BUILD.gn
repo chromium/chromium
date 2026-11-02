@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("system_java") {
   sources = [
@@ -81,4 +82,23 @@ android_library("base_java") {
     "//mojo/public/java/system:system_impl_java",
     "//mojo/public/mojom/base:base_java",
   ]
+}
+
+# The single JNI boundary used by mojom(generate_jni = true) bindings. The
+# native half lives in //mojo/public/cpp/bindings:jni_bridge.
+android_library("jni_transport_java") {
+  sources =
+      [ "bindings/src/org/chromium/mojo/bindings/jni/MojoJniTransport.java" ]
+
+  deps = [
+    "//build/android:build_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  srcjar_deps = [ ":jni_transport_jni" ]
+}
+
+generate_jni("jni_transport_jni") {
+  sources =
+      [ "bindings/src/org/chromium/mojo/bindings/jni/MojoJniTransport.java" ]
 }

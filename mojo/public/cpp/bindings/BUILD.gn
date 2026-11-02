@@ -317,6 +317,22 @@ source_set("protobuf_support") {
   ]
 }
 
+if (is_android) {
+  # Native half of the JNI transport used by mojom(generate_jni = true)
+  # bindings. See //mojo/public/java:jni_transport_java.
+  source_set("jni_bridge") {
+    sources = [
+      "mojo_jni_bridge.cc",
+      "mojo_jni_bridge.h",
+    ]
+    public_deps = [
+      ":bindings",
+      "//base",
+    ]
+    deps = [ "//mojo/public/java:jni_transport_jni" ]
+  }
+}
+
 if (use_blink) {
   component("wtf_support") {
     sources = [

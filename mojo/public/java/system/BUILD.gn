@@ -92,6 +92,7 @@ source_set("test_support") {
 generate_jni("mojo_javatests_jni") {
   testonly = true
   sources = [
+    "javatests/src/org/chromium/mojo/bindings/MojoJniBridgeTestUtil.java",
     "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTestUtil.java",
     "javatests/src/org/chromium/mojo/bindings/ValidationTestUtil.java",
   ]
@@ -110,6 +111,8 @@ android_library("mojo_javatests") {
     "javatests/src/org/chromium/mojo/bindings/ExecutorFactoryTest.java",
     "javatests/src/org/chromium/mojo/bindings/InterfacesTest.java",
     "javatests/src/org/chromium/mojo/bindings/MessageHeaderTest.java",
+    "javatests/src/org/chromium/mojo/bindings/MojoJniBridgeTest.java",
+    "javatests/src/org/chromium/mojo/bindings/MojoJniBridgeTestUtil.java",
     "javatests/src/org/chromium/mojo/bindings/NameGeneratorTest.java",
     "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTest.java",
     "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTestUtil.java",
@@ -135,6 +138,7 @@ android_library("mojo_javatests") {
     "//mojo/public/interfaces/bindings/tests:test_mojom_import2_java",
     "//mojo/public/interfaces/bindings/tests:test_mojom_import_java",
     "//mojo/public/java:bindings_java",
+    "//mojo/public/java:jni_transport_java",
     "//mojo/public/java:system_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -149,6 +153,7 @@ shared_library_with_jni("mojo_java_unittests") {
 
   sources = [
     "javatests/init_library.cc",
+    "javatests/mojo_jni_bridge_test_util.cc",
     "javatests/nullable_value_types_test_util.cc",
     "javatests/validation_test_util.cc",
   ]
@@ -160,6 +165,7 @@ shared_library_with_jni("mojo_java_unittests") {
     "//base",
     "//base/test:test_support",
     "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings:jni_bridge",
     "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils",
     "//mojo/public/cpp/bindings/tests:test_types",
     "//mojo/public/cpp/test_support:test_utils",

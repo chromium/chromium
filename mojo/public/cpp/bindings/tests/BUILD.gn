@@ -109,6 +109,14 @@ source_set("tests") {
     data = [ "//mojo/public/interfaces/bindings/tests/data/validation/" ]
   }
 
+  if (is_android) {
+    sources += [ "mojo_jni_bridge_unittest.cc" ]
+    deps += [
+      "//mojo/public/cpp/bindings:jni_bridge",
+      "//mojo/public/java:jni_transport_java",
+    ]
+  }
+
   if (!use_blink) {
     assert_no_deps = [ "//third_party/blink/*" ]
   } else {
