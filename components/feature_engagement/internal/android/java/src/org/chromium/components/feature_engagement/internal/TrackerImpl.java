@@ -4,6 +4,8 @@
 
 package org.chromium.components.feature_engagement.internal;
 
+import static org.chromium.components.feature_engagement.internal.EnterprisePolicyBypassAllowlist.isAllowedToBypassEnterprisePolicy;
+
 import androidx.annotation.CheckResult;
 import androidx.annotation.VisibleForTesting;
 
@@ -186,8 +188,7 @@ public class TrackerImpl implements Tracker {
         }
 
         // 2. Enterprise policy check.
-        if (featureProperties.isBlockedByEnterprisePolicy()
-                && mEnterprisePolicyBlocksPromotionsSupplier.getAsBoolean()) {
+        if (isBlockedByEnterprisePolicy(feature)) {
             RecordUserAction.record("InProductHelp.ShouldTriggerHelpUI." + feature);
             RecordUserAction.record(
                     "InProductHelp.ShouldTriggerHelpUIResult.NotTriggered." + feature);
@@ -356,11 +357,21 @@ public class TrackerImpl implements Tracker {
 
     @Override
     public boolean wouldTriggerHelpUi(String feature) {
-        if (mEnterprisePolicyBlocksPromotionsSupplier.getAsBoolean()) {
+        if (isBlockedByEnterprisePolicy(feature)) {
             return false;
         }
         assert mNativePtr != 0;
         return TrackerImplJni.get().wouldTriggerHelpUi(mNativePtr, feature);
+    }
+
+    /**
+     * Returns whether {@code feature} is currently blocked by the PromotionsEnabled enterprise
+     * policy, i.e. the policy blocks promotions and the feature is not allowed to bypass it (see
+     * {@link EnterprisePolicyBypassAllowlist}).
+     */
+    private boolean isBlockedByEnterprisePolicy(String feature) {
+        return mEnterprisePolicyBlocksPromotionsSupplier.getAsBoolean()
+                && !isAllowedToBypassEnterprisePolicy(feature);
     }
 
     @Override

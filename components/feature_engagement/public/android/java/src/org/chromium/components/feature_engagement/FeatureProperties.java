@@ -24,8 +24,8 @@ public class FeatureProperties {
      * Constructs a {@link FeatureProperties} instance.
      *
      * @param format The {@link UiFormat} of the user education surface.
-     * @param isBlockedByEnterprisePolicy Whether the feature is blocked when the PromotionsEnabled
-     *     enterprise policy disables promotions.
+     * @param isBlockedByEnterprisePolicy Ignored; enterprise policy bypass is controlled centrally
+     *     by {@code EnterprisePolicyBypassAllowlist}.
      * @param isBlockedByCooldownGroup Whether the feature is blocked by the cooldown group for its
      *     format type.
      * @param blocksCooldownGroup Whether triggering this feature contributes to the cooldown group
@@ -50,7 +50,11 @@ public class FeatureProperties {
     /**
      * Returns whether the feature is blocked when the PromotionsEnabled enterprise policy disables
      * promotions.
+     *
+     * @deprecated No longer used by {@link Tracker}. Enterprise policy bypass is controlled
+     *     centrally by {@code EnterprisePolicyBypassAllowlist}.
      */
+    @Deprecated
     public boolean isBlockedByEnterprisePolicy() {
         return mIsBlockedByEnterprisePolicy;
     }

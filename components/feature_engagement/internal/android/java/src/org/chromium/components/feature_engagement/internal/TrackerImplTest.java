@@ -117,7 +117,8 @@ public class TrackerImplTest {
     }
 
     @Test
-    public void testBypassEnterprisePolicy() {
+    public void testBypassEnterprisePolicy_allowlistedFeature() {
+        String allowlistedFeature = FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE;
         mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
         FeatureProperties props =
                 new FeatureProperties(
@@ -126,8 +127,25 @@ public class TrackerImplTest {
                         /* isBlockedByCooldownGroup= */ true,
                         /* blocksCooldownGroup= */ false);
 
-        assertTrue(mTracker.shouldTriggerHelpUi(TEST_FEATURE, props));
-        verify(mTrackerJniMock).shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
+        assertTrue(mTracker.shouldTriggerHelpUi(allowlistedFeature, props));
+        verify(mTrackerJniMock).shouldTriggerHelpUi(NATIVE_PTR, allowlistedFeature);
+    }
+
+    @Test
+    public void testWouldTriggerHelpUi_blockedByEnterprisePolicy() {
+        mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
+
+        assertFalse(mTracker.wouldTriggerHelpUi(TEST_FEATURE));
+        verify(mTrackerJniMock, never()).wouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
+    }
+
+    @Test
+    public void testWouldTriggerHelpUi_bypassEnterprisePolicy_allowlistedFeature() {
+        String allowlistedFeature = FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE;
+        mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
+
+        assertTrue(mTracker.wouldTriggerHelpUi(allowlistedFeature));
+        verify(mTrackerJniMock).wouldTriggerHelpUi(NATIVE_PTR, allowlistedFeature);
     }
 
     @Test
