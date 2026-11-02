@@ -21,6 +21,8 @@ found in the LICENSE file.
     <dimen name="sync_promo_account_image_size_with_ai_tier_ring"
         tools:ignore="UnusedResources">54dp</dimen>
     <!-- go/keep-sorted end -->
+    <!-- Size of the avatar in the central account card in account settings. -->
+    <dimen name="account_management_picture_size">60dp</dimen>
     <!-- Signin fre uma dialog dimensions -->
     <!-- go/keep-sorted start -->
     <dimen name="signin_fre_uma_dialog_button_padding">16dp</dimen>

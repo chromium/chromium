@@ -404,8 +404,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         IdentityManager identityManager = getIdentityManager(profile);
         centralAccountCardPreference.initialize(
                 assumeNonNull(identityManager.getPrimaryAccountInfo()),
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                        getContext(), identityManager));
+                ProfileDataCache.createWithoutBadge(
+                        getContext(), identityManager, R.dimen.account_management_picture_size));
     }
 
     private void setupIdentityErrorCardPreference(Profile profile) {
