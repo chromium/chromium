@@ -23,7 +23,7 @@ void RendererControllerProxy::BindRendererController(
     mojo::PendingAssociatedReceiver<mojom::RendererController>
         pending_receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(on_mojo_disconnection_);
+  CHECK(on_mojo_disconnection_, base::NotFatalUntil::M163);
   browser_process_receiver_.Bind(std::move(pending_receiver));
   browser_process_receiver_.set_disconnect_handler(
       std::move(on_mojo_disconnection_));
@@ -32,7 +32,7 @@ void RendererControllerProxy::BindRendererController(
 mojo::PendingReceiver<media::mojom::Renderer>
 RendererControllerProxy::GetReceiver() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(renderer_process_pending_receiver_);
+  CHECK(renderer_process_pending_receiver_, base::NotFatalUntil::M163);
 
   if (set_playback_controller_cb_) {
     std::move(set_playback_controller_cb_).Run();
@@ -46,7 +46,7 @@ void RendererControllerProxy::SetPlaybackController(
         browser_process_renderer_controls,
     SetPlaybackControllerCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!set_playback_controller_cb_);
+  CHECK(!set_playback_controller_cb_, base::NotFatalUntil::M163);
   set_playback_controller_cb_ = std::move(callback);
 
   CHECK(mojo::FusePipes(std::move(browser_process_renderer_controls),

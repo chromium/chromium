@@ -33,22 +33,22 @@ ReceiverSessionImpl::ReceiverSessionImpl(
       client_(client),
       weak_factory_(this) {
   // TODO(crbug.com/40771653): Validate the provided codecs against build flags.
-  DCHECK(message_port_provider_);
+  CHECK(message_port_provider_, base::NotFatalUntil::M163);
 }
 
 ReceiverSessionImpl::~ReceiverSessionImpl() = default;
 
 void ReceiverSessionImpl::StartStreamingAsync(
     mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector) {
-  DCHECK(!IsCastRemotingEnabled());
+  CHECK(!IsCastRemotingEnabled(), base::NotFatalUntil::M163);
   StartStreamingAsyncInternal(std::move(demuxer_connector));
 }
 
 void ReceiverSessionImpl::StartStreamingAsync(
     mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector,
     mojo::AssociatedRemote<mojom::RendererController> renderer_controller) {
-  DCHECK(IsCastRemotingEnabled());
-  DCHECK(!renderer_control_config_);
+  CHECK(IsCastRemotingEnabled(), base::NotFatalUntil::M163);
+  CHECK(!renderer_control_config_, base::NotFatalUntil::M163);
   external_renderer_controls_ =
       std::make_unique<RendererControllerImpl>(base::BindOnce(
           &ReceiverSessionImpl::OnMojoDisconnect, weak_factory_.GetWeakPtr()));
@@ -60,7 +60,7 @@ void ReceiverSessionImpl::StartStreamingAsync(
 
 void ReceiverSessionImpl::StartStreamingAsyncInternal(
     mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector) {
-  DCHECK(SocketFactoryGetter::IsSet());
+  CHECK(SocketFactoryGetter::IsSet(), base::NotFatalUntil::M163);
 
   DVLOG(1) << __func__;
   demuxer_connector_ = std::move(demuxer_connector);
@@ -73,7 +73,7 @@ void ReceiverSessionImpl::StartStreamingAsyncInternal(
 
 ReceiverSession::RendererController*
 ReceiverSessionImpl::GetRendererControls() {
-  DCHECK(external_renderer_controls_);
+  CHECK(external_renderer_controls_, base::NotFatalUntil::M163);
   return external_renderer_controls_.get();
 }
 
@@ -90,9 +90,11 @@ void ReceiverSessionImpl::OnSessionInitialization(
     std::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
     std::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer) {
   DVLOG(1) << __func__;
-  DCHECK_EQ(!!initialization_info.audio_stream_info, !!audio_pipe_consumer);
-  DCHECK_EQ(!!initialization_info.video_stream_info, !!video_pipe_consumer);
-  DCHECK(audio_pipe_consumer || video_pipe_consumer);
+  CHECK_EQ(!!initialization_info.audio_stream_info, !!audio_pipe_consumer,
+           base::NotFatalUntil::M163);
+  CHECK_EQ(!!initialization_info.video_stream_info, !!video_pipe_consumer,
+           base::NotFatalUntil::M163);
+  CHECK(audio_pipe_consumer || video_pipe_consumer, base::NotFatalUntil::M163);
 
   mojom::AudioStreamInitializationInfoPtr audio_info;
   if (audio_pipe_consumer) {
@@ -141,14 +143,14 @@ void ReceiverSessionImpl::OnSessionInitialization(
 void ReceiverSessionImpl::OnAudioBufferReceived(
     media::mojom::DecoderBufferPtr buffer) {
   DVLOG(3) << __func__;
-  DCHECK(audio_demuxer_stream_data_provider_);
+  CHECK(audio_demuxer_stream_data_provider_, base::NotFatalUntil::M163);
   audio_demuxer_stream_data_provider_->ProvideBuffer(std::move(buffer));
 }
 
 void ReceiverSessionImpl::OnVideoBufferReceived(
     media::mojom::DecoderBufferPtr buffer) {
   DVLOG(3) << __func__;
-  DCHECK(video_demuxer_stream_data_provider_);
+  CHECK(video_demuxer_stream_data_provider_, base::NotFatalUntil::M163);
   video_demuxer_stream_data_provider_->ProvideBuffer(std::move(buffer));
 }
 
@@ -166,11 +168,15 @@ void ReceiverSessionImpl::OnSessionReinitialization(
     std::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
     std::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer) {
   DVLOG(1) << __func__;
-  DCHECK(audio_pipe_consumer || video_pipe_consumer);
-  DCHECK_EQ(!!audio_pipe_consumer, !!initialization_info.audio_stream_info);
-  DCHECK_EQ(!!video_pipe_consumer, !!initialization_info.video_stream_info);
-  DCHECK_EQ(!!audio_pipe_consumer, !!audio_demuxer_stream_data_provider_);
-  DCHECK_EQ(!!video_pipe_consumer, !!video_demuxer_stream_data_provider_);
+  CHECK(audio_pipe_consumer || video_pipe_consumer, base::NotFatalUntil::M163);
+  CHECK_EQ(!!audio_pipe_consumer, !!initialization_info.audio_stream_info,
+           base::NotFatalUntil::M163);
+  CHECK_EQ(!!video_pipe_consumer, !!initialization_info.video_stream_info,
+           base::NotFatalUntil::M163);
+  CHECK_EQ(!!audio_pipe_consumer, !!audio_demuxer_stream_data_provider_,
+           base::NotFatalUntil::M163);
+  CHECK_EQ(!!video_pipe_consumer, !!video_demuxer_stream_data_provider_,
+           base::NotFatalUntil::M163);
 
   if (audio_pipe_consumer) {
     if (!audio_demuxer_stream_data_provider_->config().Matches(
@@ -222,8 +228,9 @@ void ReceiverSessionImpl::OnSessionEnded() {
 }
 
 void ReceiverSessionImpl::PreloadBuffersAndStartPlayback() {
-  DCHECK(audio_demuxer_stream_data_provider_ ||
-         video_demuxer_stream_data_provider_);
+  CHECK(audio_demuxer_stream_data_provider_ ||
+            video_demuxer_stream_data_provider_,
+        base::NotFatalUntil::M163);
   DVLOG(1) << __func__;
 
   if (audio_demuxer_stream_data_provider_) {
@@ -265,7 +272,7 @@ void ReceiverSessionImpl::OnMojoDisconnect() {
 ReceiverSessionImpl::RendererControllerImpl::RendererControllerImpl(
     base::OnceCallback<void()> on_mojo_disconnect)
     : on_mojo_disconnect_(std::move(on_mojo_disconnect)) {
-  DCHECK(on_mojo_disconnect_);
+  CHECK(on_mojo_disconnect_, base::NotFatalUntil::M163);
 }
 
 ReceiverSessionImpl::RendererControllerImpl::~RendererControllerImpl() =
@@ -276,7 +283,7 @@ bool ReceiverSessionImpl::RendererControllerImpl::IsValid() const {
 }
 
 void ReceiverSessionImpl::RendererControllerImpl::SetVolume(float volume) {
-  DCHECK(IsValid());
+  CHECK(IsValid(), base::NotFatalUntil::M163);
 
   renderer_controls_->SetVolume(volume);
 }

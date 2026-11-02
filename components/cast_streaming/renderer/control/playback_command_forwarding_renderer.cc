@@ -34,7 +34,7 @@ class RendererCommandForwarder : public media::mojom::Renderer {
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : owning_renderer_(owning_renderer),
         playback_controller_(this, std::move(playback_controller)) {
-    DCHECK(owning_renderer_);
+    CHECK(owning_renderer_, base::NotFatalUntil::M163);
 
     playback_controller_.set_disconnect_handler(base::BindPostTask(
         std::move(task_runner),
@@ -93,8 +93,8 @@ PlaybackCommandForwardingRenderer::PlaybackCommandForwardingRenderer(
       pending_renderer_controls_(std::move(pending_renderer_controls)),
       task_runner_(std::move(task_runner)),
       weak_factory_(this) {
-  DCHECK(real_renderer_);
-  DCHECK(pending_renderer_controls_);
+  CHECK(real_renderer_, base::NotFatalUntil::M163);
+  CHECK(pending_renderer_controls_, base::NotFatalUntil::M163);
   InitializeSendTimestampUpdateCaller();
 }
 
@@ -105,7 +105,7 @@ void PlaybackCommandForwardingRenderer::Initialize(
     media::MediaResource* media_resource,
     media::RendererClient* client,
     media::PipelineStatusCallback init_cb) {
-  DCHECK(!init_cb_);
+  CHECK(!init_cb_, base::NotFatalUntil::M163);
 
   upstream_renderer_client_ = client;
   init_cb_ = std::move(init_cb);
@@ -131,11 +131,11 @@ void PlaybackCommandForwardingRenderer::SetLatencyHint(
 void PlaybackCommandForwardingRenderer::Flush(base::OnceClosure flush_cb) {}
 
 void PlaybackCommandForwardingRenderer::StartPlayingFrom(base::TimeDelta time) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 }
 
 void PlaybackCommandForwardingRenderer::SetPlaybackRate(double playback_rate) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 }
 
 void PlaybackCommandForwardingRenderer::SetVolume(float volume) {}
@@ -150,8 +150,8 @@ media::RendererType PlaybackCommandForwardingRenderer::GetRendererType() {
 
 void PlaybackCommandForwardingRenderer::OnRealRendererInitializationComplete(
     media::PipelineStatus status) {
-  DCHECK(init_cb_);
-  DCHECK(!playback_controller_);
+  CHECK(init_cb_, base::NotFatalUntil::M163);
+  CHECK(!playback_controller_, base::NotFatalUntil::M163);
 
   playback_controller_ = std::make_unique<RendererCommandForwarder>(
       this, std::move(pending_renderer_controls_), task_runner_);
@@ -170,13 +170,13 @@ void PlaybackCommandForwardingRenderer::MojoRendererInitialize(
         std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
         streams,
     media::mojom::Renderer::InitializeCallback callback) {
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M163);
 
   // NOTE: To maintain existing functionality, and ensure mirroring continues
   // working as currently written with or without this Renderer, the mirroring
   // data stream is provided through the standard Initialize() call, not passed
   // over the mojo pipe here
-  DCHECK(!streams || streams.value().empty());
+  CHECK(!streams || streams.value().empty(), base::NotFatalUntil::M163);
 
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(
@@ -268,7 +268,7 @@ void PlaybackCommandForwardingRenderer::OnFallback(
     media::PipelineStatus status) {}
 
 void PlaybackCommandForwardingRenderer::OnEnded() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   if (remote_renderer_client_) {
     remote_renderer_client_->OnEnded();
@@ -280,7 +280,7 @@ void PlaybackCommandForwardingRenderer::OnEnded() {
 
 void PlaybackCommandForwardingRenderer::OnStatisticsUpdate(
     const media::PipelineStatistics& stats) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   if (remote_renderer_client_) {
     remote_renderer_client_->OnStatisticsUpdate(stats);
@@ -293,7 +293,7 @@ void PlaybackCommandForwardingRenderer::OnStatisticsUpdate(
 void PlaybackCommandForwardingRenderer::OnBufferingStateChange(
     media::BufferingState state,
     media::BufferingStateChangeReason reason) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   if (remote_renderer_client_) {
     remote_renderer_client_->OnBufferingStateChange(state, reason);
@@ -304,7 +304,7 @@ void PlaybackCommandForwardingRenderer::OnBufferingStateChange(
 }
 
 void PlaybackCommandForwardingRenderer::OnWaiting(media::WaitingReason reason) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   if (remote_renderer_client_) {
     remote_renderer_client_->OnWaiting(reason);
@@ -316,7 +316,7 @@ void PlaybackCommandForwardingRenderer::OnWaiting(media::WaitingReason reason) {
 
 void PlaybackCommandForwardingRenderer::OnAudioConfigChange(
     const media::AudioDecoderConfig& config) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   if (remote_renderer_client_) {
     remote_renderer_client_->OnAudioConfigChange(config);
@@ -328,7 +328,7 @@ void PlaybackCommandForwardingRenderer::OnAudioConfigChange(
 
 void PlaybackCommandForwardingRenderer::OnVideoConfigChange(
     const media::VideoDecoderConfig& config) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   if (remote_renderer_client_) {
     remote_renderer_client_->OnVideoConfigChange(config);
@@ -340,7 +340,7 @@ void PlaybackCommandForwardingRenderer::OnVideoConfigChange(
 
 void PlaybackCommandForwardingRenderer::OnVideoNaturalSizeChange(
     const gfx::Size& size) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   if (remote_renderer_client_) {
     remote_renderer_client_->OnVideoNaturalSizeChange(size);
@@ -351,7 +351,7 @@ void PlaybackCommandForwardingRenderer::OnVideoNaturalSizeChange(
 }
 
 void PlaybackCommandForwardingRenderer::OnVideoOpacityChange(bool opaque) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   if (remote_renderer_client_) {
     remote_renderer_client_->OnVideoOpacityChange(opaque);
@@ -363,7 +363,7 @@ void PlaybackCommandForwardingRenderer::OnVideoOpacityChange(bool opaque) {
 
 void PlaybackCommandForwardingRenderer::OnVideoFrameRateChange(
     std::optional<int> fps) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   // media::mojom::RendererClient does not support this call.
   if (upstream_renderer_client_) {
@@ -372,7 +372,7 @@ void PlaybackCommandForwardingRenderer::OnVideoFrameRateChange(
 }
 
 void PlaybackCommandForwardingRenderer::SendTimestampUpdate() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   if (!remote_renderer_client_) {
     return;
@@ -404,7 +404,7 @@ void PlaybackCommandForwardingRenderer::InitializeSendTimestampUpdateCaller() {
 }
 
 void PlaybackCommandForwardingRenderer::OnMojoDisconnect() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   OnError(media::PIPELINE_ERROR_DISCONNECTED);
   real_renderer_.reset();

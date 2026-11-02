@@ -44,9 +44,9 @@ RpcDemuxerStreamHandler::RpcDemuxerStreamHandler(
       client_(client),
       handle_factory_(std::move(handle_factory)),
       process_message_cb_(std::move(process_message_cb)) {
-  DCHECK(task_runner_);
-  DCHECK(handle_factory_);
-  DCHECK(process_message_cb_);
+  CHECK(task_runner_, base::NotFatalUntil::M163);
+  CHECK(handle_factory_, base::NotFatalUntil::M163);
+  CHECK(process_message_cb_, base::NotFatalUntil::M163);
 }
 
 RpcDemuxerStreamHandler::~RpcDemuxerStreamHandler() = default;
@@ -190,10 +190,12 @@ RpcDemuxerStreamHandler::MessageProcessor::MessageProcessor(
       remote_handle_(remote_handle),
       type_(type),
       weak_factory_(this) {
-  DCHECK(task_runner_);
-  DCHECK(client_);
-  DCHECK_NE(local_handle_, RpcMessenger::kInvalidHandle);
-  DCHECK_NE(remote_handle_, RpcMessenger::kInvalidHandle);
+  CHECK(task_runner_, base::NotFatalUntil::M163);
+  CHECK(client_, base::NotFatalUntil::M163);
+  CHECK_NE(local_handle_, RpcMessenger::kInvalidHandle,
+           base::NotFatalUntil::M163);
+  CHECK_NE(remote_handle_, RpcMessenger::kInvalidHandle,
+           base::NotFatalUntil::M163);
 }
 
 RpcDemuxerStreamHandler::MessageProcessor::~MessageProcessor() = default;
@@ -269,7 +271,7 @@ RpcDemuxerStreamHandler::MessageProcessor::GetWeakPtr() {
 
 void RpcDemuxerStreamHandler::MessageProcessor::EnableBitstreamConverter(
     BitstreamConverterEnabledCB cb) {
-  DCHECK(!bitstream_converter_enabled_cb_);
+  CHECK(!bitstream_converter_enabled_cb_, base::NotFatalUntil::M163);
   bitstream_converter_enabled_cb_ = std::move(cb);
 
   auto message =

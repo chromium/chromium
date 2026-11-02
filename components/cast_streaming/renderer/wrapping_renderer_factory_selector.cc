@@ -14,7 +14,7 @@ namespace cast_streaming {
 
 WrappingRendererFactorySelector::WrappingRendererFactorySelector(
     ResourceProvider* resource_provider) {
-  DCHECK(resource_provider);
+  CHECK(resource_provider, base::NotFatalUntil::M163);
 
   // The receiver is unbound once the RendererController connection has been
   // lost; there is nothing to forward commands from in that case.

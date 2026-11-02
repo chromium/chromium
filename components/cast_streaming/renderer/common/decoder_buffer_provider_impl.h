@@ -51,9 +51,10 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
         client_(client),
         task_runner_(std::move(task_runner)),
         weak_factory_(this) {
-    DCHECK(task_runner_);
-    DCHECK(client_);
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_, base::NotFatalUntil::M163);
+    CHECK(client_, base::NotFatalUntil::M163);
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M163);
 
     buffer_reader_ = std::make_unique<media::cast::DecoderBufferReader>(
         base::BindRepeating(
@@ -63,14 +64,16 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
   }
 
   ~DecoderBufferProviderImpl() override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M163);
     if (deletion_callback_) {
       std::move(deletion_callback_).Run();
     }
   }
 
   base::WeakPtr<DecoderBufferProviderImpl<TConfigType>> GetWeakPtr() {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M163);
     return weak_factory_.GetWeakPtr();
   }
 
@@ -78,19 +81,22 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
   bool IsValid() const override { return true; }
 
   void GetConfigAsync(GetConfigCb callback) const override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M163);
     std::move(callback).Run(config_);
   }
 
   void ReadBufferAsync(NewBufferCb callback) override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    DCHECK(!new_buffer_callback_);
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M163);
+    CHECK(!new_buffer_callback_, base::NotFatalUntil::M163);
     new_buffer_callback_ = std::move(callback);
     RequestBuffer();
   }
 
   void SetInvalidationCallback(DeletionCb callback) override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M163);
     deletion_callback_ = std::move(callback);
   }
 
@@ -105,7 +111,7 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
       return;
     }
 
-    DCHECK(new_buffer_callback_);
+    CHECK(new_buffer_callback_, base::NotFatalUntil::M163);
     if (!buffer) {
       buffer_reader_->ClearReadPending();
       std::move(new_buffer_callback_).Run(nullptr);
@@ -117,14 +123,16 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
   // Callback provided to |buffer_reader_| to be called when a new |buffer| is
   // available for processing.
   void OnBufferRead(scoped_refptr<media::DecoderBuffer> buffer) {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    DCHECK(new_buffer_callback_);
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M163);
+    CHECK(new_buffer_callback_, base::NotFatalUntil::M163);
     std::move(new_buffer_callback_).Run(std::move(buffer));
   }
 
   // Requests a new buffer be provided at some point in the future.
   void RequestBuffer() {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    CHECK(task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M163);
     buffer_reader_->ReadBufferAsync();
     client_->RequestBufferAsync(base::BindOnce(
         &DecoderBufferProviderImpl<TConfigType>::OnMojoBufferReceived,

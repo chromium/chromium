@@ -114,8 +114,8 @@ class DemuxerStreamDataProvider : public DemuxerStreamTraits<TMojoReceiverType>,
       return;
     }
 
-    DCHECK(current_callback_);
-    DCHECK(!next_stream_info_);
+    CHECK(current_callback_, base::NotFatalUntil::M163);
+    CHECK(!next_stream_info_, base::NotFatalUntil::M163);
     std::move(current_callback_)
         .Run(GetBufferResponseType::element_type::NewBuffer(std::move(buffer)));
   }
@@ -142,7 +142,7 @@ class DemuxerStreamDataProvider : public DemuxerStreamTraits<TMojoReceiverType>,
       DLOG(WARNING) << "Overwriting previous preload_buffer_cb_";
     }
 
-    DCHECK(!current_callback_);
+    CHECK(!current_callback_, base::NotFatalUntil::M163);
     preload_buffer_cb_ = std::move(callback);
     request_buffer_.Run(
         base::BindOnce(&DemuxerStreamClient::OnNoBuffersAvailable, client_));

@@ -33,8 +33,8 @@ StreamConsumer::StreamConsumer(
                     base::SequencedTaskRunner::GetCurrentDefault()),
       on_new_frame_(std::move(on_new_frame)),
       decoder_buffer_factory_(std::move(decoder_buffer_factory)) {
-  DCHECK(receiver_);
-  DCHECK(decoder_buffer_factory_);
+  CHECK(receiver_, base::NotFatalUntil::M163);
+  CHECK(decoder_buffer_factory_, base::NotFatalUntil::M163);
 
   receiver_->SetConsumer(this);
   MojoResult result =
@@ -52,8 +52,8 @@ StreamConsumer::StreamConsumer(
 StreamConsumer::~StreamConsumer() = default;
 
 void StreamConsumer::ReadFrame(base::OnceClosure no_frames_available_cb) {
-  DCHECK(!is_read_pending_);
-  DCHECK(!no_frames_available_cb_);
+  CHECK(!is_read_pending_, base::NotFatalUntil::M163);
+  CHECK(!no_frames_available_cb_, base::NotFatalUntil::M163);
   is_read_pending_ = true;
   no_frames_available_cb_ = std::move(no_frames_available_cb);
   MaybeSendNextFrame();
@@ -67,14 +67,14 @@ void StreamConsumer::CloseDataPipeOnError() {
 }
 
 void StreamConsumer::OnPipeWritable(MojoResult result) {
-  DCHECK(data_pipe_);
+  CHECK(data_pipe_, base::NotFatalUntil::M163);
 
   if (result != MOJO_RESULT_OK) {
     CloseDataPipeOnError();
     return;
   }
 
-  DCHECK(pending_buffer_);
+  CHECK(pending_buffer_, base::NotFatalUntil::M163);
   size_t bytes_written = 0;
   base::span<const uint8_t> remaining_data =
       base::span<const uint8_t>(*pending_buffer_)

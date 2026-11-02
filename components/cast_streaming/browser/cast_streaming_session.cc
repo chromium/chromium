@@ -103,8 +103,8 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
                    GetReceiverStreamingEndpoint()),
       client_(client),
       weak_factory_(this) {
-  DCHECK(task_runner);
-  DCHECK(client_);
+  CHECK(task_runner, base::NotFatalUntil::M163);
+  CHECK(client_, base::NotFatalUntil::M163);
 
   cast_message_port_converter_ = CastMessagePortConverter::Create(
       std::move(message_port_provider),
@@ -114,7 +114,7 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
 
   // This will fail if the "trivial" implementation of
   // CastMessagePortConverter::Create is linked.
-  DCHECK(cast_message_port_converter_);
+  CHECK(cast_message_port_converter_, base::NotFatalUntil::M163);
 
   receiver_session_ = std::make_unique<openscreen::cast::ReceiverSession>(
       *this, environment_, cast_message_port_converter_->GetMessagePort(),
@@ -141,7 +141,7 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
 void CastStreamingSession::ReceiverSessionClient::GetAudioBuffer(
     base::OnceClosure no_frames_available_cb) {
   if (preloaded_audio_buffer_) {
-    DCHECK(preloaded_audio_buffer_.value());
+    CHECK(preloaded_audio_buffer_.value(), base::NotFatalUntil::M163);
     if (client_) {
       client_->OnAudioBufferReceived(
           std::move(preloaded_audio_buffer_.value()));
@@ -161,7 +161,7 @@ void CastStreamingSession::ReceiverSessionClient::GetAudioBuffer(
 void CastStreamingSession::ReceiverSessionClient::GetVideoBuffer(
     base::OnceClosure no_frames_available_cb) {
   if (preloaded_video_buffer_) {
-    DCHECK(preloaded_video_buffer_.value());
+    CHECK(preloaded_video_buffer_.value(), base::NotFatalUntil::M163);
     if (client_) {
       client_->OnVideoBufferReceived(
           std::move(preloaded_video_buffer_.value()));
@@ -180,8 +180,8 @@ void CastStreamingSession::ReceiverSessionClient::GetVideoBuffer(
 
 void CastStreamingSession::ReceiverSessionClient::PreloadAudioBuffer(
     media::mojom::DecoderBufferPtr buffer) {
-  DCHECK(!preloaded_audio_buffer_);
-  DCHECK(buffer);
+  CHECK(!preloaded_audio_buffer_, base::NotFatalUntil::M163);
+  CHECK(buffer, base::NotFatalUntil::M163);
 
   DVLOG(1) << "Audio buffer preloaded!";
 
@@ -194,8 +194,8 @@ void CastStreamingSession::ReceiverSessionClient::PreloadAudioBuffer(
 
 void CastStreamingSession::ReceiverSessionClient::PreloadVideoBuffer(
     media::mojom::DecoderBufferPtr buffer) {
-  DCHECK(!preloaded_video_buffer_);
-  DCHECK(buffer);
+  CHECK(!preloaded_video_buffer_, base::NotFatalUntil::M163);
+  CHECK(buffer, base::NotFatalUntil::M163);
 
   DVLOG(1) << "Video buffer preloaded!";
 
@@ -217,7 +217,7 @@ CastStreamingSession::ReceiverSessionClient::~ReceiverSessionClient() {
 
 void CastStreamingSession::ReceiverSessionClient::OnInitializationTimeout() {
   DVLOG(1) << __func__;
-  DCHECK(!is_initialized_);
+  CHECK(!is_initialized_, base::NotFatalUntil::M163);
   is_initialized_ = true;
   EndSession();
 }
@@ -225,7 +225,7 @@ void CastStreamingSession::ReceiverSessionClient::OnInitializationTimeout() {
 std::optional<mojo::ScopedDataPipeConsumerHandle>
 CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
     const StreamingInitializationInfo& initialization_info) {
-  DCHECK(initialization_info.audio_stream_info);
+  CHECK(initialization_info.audio_stream_info, base::NotFatalUntil::M163);
 
   // Create the audio data pipe.
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
@@ -264,7 +264,7 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
 std::optional<mojo::ScopedDataPipeConsumerHandle>
 CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
     const StreamingInitializationInfo& initialization_info) {
-  DCHECK(initialization_info.video_stream_info);
+  CHECK(initialization_info.video_stream_info, base::NotFatalUntil::M163);
 
   // Create the video data pipe.
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
@@ -307,12 +307,14 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
 void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
     StreamingInitializationInfo initialization_info) {
   DVLOG(1) << __func__;
-  DCHECK_EQ(initialization_info.session, receiver_session_.get());
-  DCHECK(!initialization_info.is_remoting || IsCastRemotingEnabled());
+  CHECK_EQ(initialization_info.session, receiver_session_.get(),
+           base::NotFatalUntil::M163);
+  CHECK(!initialization_info.is_remoting || IsCastRemotingEnabled(),
+        base::NotFatalUntil::M163);
 
   // If a Flush() call is ongoing, its unsafe to begin streaming data, so
   // instead stall this call until the Flush() call has completed.
-  DCHECK(!start_session_cb_);
+  CHECK(!start_session_cb_, base::NotFatalUntil::M163);
   if (is_flush_pending_) {
     start_session_cb_ = base::BindOnce(
         &CastStreamingSession::ReceiverSessionClient::StartStreamingSession,
@@ -418,7 +420,7 @@ void CastStreamingSession::ReceiverSessionClient::OnNegotiated(
 void CastStreamingSession::ReceiverSessionClient::OnRemotingNegotiated(
     const openscreen::cast::ReceiverSession* session,
     openscreen::cast::ReceiverSession::RemotingNegotiation negotiation) {
-  DCHECK(playback_command_dispatcher_);
+  CHECK(playback_command_dispatcher_, base::NotFatalUntil::M163);
   playback_command_dispatcher_->OnRemotingSessionNegotiated(
       negotiation.messenger);
   playback_command_dispatcher_->ConfigureRemotingAsync(
@@ -468,7 +470,7 @@ void CastStreamingSession::ReceiverSessionClient::OnReceiversDestroying(
 }
 
 void CastStreamingSession::ReceiverSessionClient::OnFlushComplete() {
-  DCHECK(is_flush_pending_);
+  CHECK(is_flush_pending_, base::NotFatalUntil::M163);
 
   DVLOG(1) << "Flush() Complete!";
   is_flush_pending_ = false;
@@ -493,7 +495,7 @@ void CastStreamingSession::ReceiverSessionClient::OnFlushUntil(
 void CastStreamingSession::ReceiverSessionClient::OnError(
     const openscreen::cast::ReceiverSession* session,
     const openscreen::Error& error) {
-  DCHECK_EQ(session, receiver_session_.get());
+  CHECK_EQ(session, receiver_session_.get(), base::NotFatalUntil::M163);
   LOG(ERROR) << error;
   if (!is_initialized_) {
     is_initialized_ = true;
@@ -550,8 +552,8 @@ void CastStreamingSession::Start(
     ReceiverSession::MessagePortProvider message_port_provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   DVLOG(1) << __func__;
-  DCHECK(client);
-  DCHECK(!receiver_session_);
+  CHECK(client, base::NotFatalUntil::M163);
+  CHECK(!receiver_session_, base::NotFatalUntil::M163);
   receiver_session_ = std::make_unique<ReceiverSessionClient>(
       client, std::move(renderer_controls), std::move(av_constraints),
       std::move(message_port_provider), task_runner);
@@ -559,13 +561,13 @@ void CastStreamingSession::Start(
 
 void CastStreamingSession::Stop() {
   DVLOG(1) << __func__;
-  DCHECK(receiver_session_);
+  CHECK(receiver_session_, base::NotFatalUntil::M163);
   receiver_session_.reset();
 }
 
 AudioDemuxerStreamDataProvider::RequestBufferCB
 CastStreamingSession::GetAudioBufferRequester() {
-  DCHECK(receiver_session_);
+  CHECK(receiver_session_, base::NotFatalUntil::M163);
   return base::BindRepeating(
       &CastStreamingSession::ReceiverSessionClient::GetAudioBuffer,
       receiver_session_->GetWeakPtr());
@@ -573,7 +575,7 @@ CastStreamingSession::GetAudioBufferRequester() {
 
 VideoDemuxerStreamDataProvider::RequestBufferCB
 CastStreamingSession::GetVideoBufferRequester() {
-  DCHECK(receiver_session_);
+  CHECK(receiver_session_, base::NotFatalUntil::M163);
   return base::BindRepeating(
       &CastStreamingSession::ReceiverSessionClient::GetVideoBuffer,
       receiver_session_->GetWeakPtr());
@@ -581,7 +583,7 @@ CastStreamingSession::GetVideoBufferRequester() {
 
 CastStreamingSession::PreloadBufferCB
 CastStreamingSession::GetAudioBufferPreloader() {
-  DCHECK(receiver_session_);
+  CHECK(receiver_session_, base::NotFatalUntil::M163);
   return base::BindRepeating(
       &CastStreamingSession::ReceiverSessionClient::PreloadAudioBuffer,
       receiver_session_->GetWeakPtr());
@@ -589,7 +591,7 @@ CastStreamingSession::GetAudioBufferPreloader() {
 
 CastStreamingSession::PreloadBufferCB
 CastStreamingSession::GetVideoBufferPreloader() {
-  DCHECK(receiver_session_);
+  CHECK(receiver_session_, base::NotFatalUntil::M163);
   return base::BindRepeating(
       &CastStreamingSession::ReceiverSessionClient::PreloadVideoBuffer,
       receiver_session_->GetWeakPtr());

@@ -63,8 +63,8 @@ class BufferRequester
         task_runner_(std::move(task_runner)),
         remote_(std::move(pending_remote)),
         weak_factory_(this) {
-    DCHECK(client_);
-    DCHECK(task_runner_);
+    CHECK(client_, base::NotFatalUntil::M163);
+    CHECK(task_runner_, base::NotFatalUntil::M163);
 
     // Unretained is safe here because |client| is expected to outlive this
     // instance.
@@ -85,7 +85,7 @@ class BufferRequester
           TMojoRemoteType>::ConfigType>::Client::BufferProviderRequestCB;
   void RequestBufferAsync(BufferProviderRequestCB on_buffer_received) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(!buffer_request_cb_);
+    CHECK(!buffer_request_cb_, base::NotFatalUntil::M163);
     buffer_request_cb_ = std::move(on_buffer_received);
     remote_->GetBuffer(base::BindOnce(&BufferRequester::OnGetBufferDone,
                                       weak_factory_.GetWeakPtr()));
@@ -103,8 +103,8 @@ class BufferRequester
       typename Traits::GetBufferResponseType get_buffer_response) {
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(buffer_provider_);
-    DCHECK(buffer_request_cb_);
+    CHECK(buffer_provider_, base::NotFatalUntil::M163);
+    CHECK(buffer_request_cb_, base::NotFatalUntil::M163);
 
     if (!get_buffer_response) {
       std::move(buffer_request_cb_).Run(nullptr);
@@ -118,7 +118,7 @@ class BufferRequester
       OnNewConfig(std::move(data_stream_info->decoder_config),
                   std::move(data_stream_info->data_pipe));
     } else {
-      DCHECK(get_buffer_response->is_buffer());
+      CHECK(get_buffer_response->is_buffer(), base::NotFatalUntil::M163);
       std::move(buffer_request_cb_)
           .Run(std::move(get_buffer_response->get_buffer()));
     }

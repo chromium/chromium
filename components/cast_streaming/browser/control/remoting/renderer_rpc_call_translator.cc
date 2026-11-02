@@ -18,7 +18,7 @@ RendererRpcCallTranslator::RendererRpcCallTranslator(
       renderer_client_receiver_(this),
       renderer_(std::move(renderer)),
       weak_factory_(this) {
-  DCHECK(flush_until_cb_);
+  CHECK(flush_until_cb_, base::NotFatalUntil::M163);
 }
 
 RendererRpcCallTranslator::~RendererRpcCallTranslator() = default;

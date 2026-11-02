@@ -60,7 +60,7 @@ class CastMessagePortConverterImpl : public CastMessagePortConverter {
 
   openscreen::cast::MessagePort& GetMessagePort() override {
     if (!openscreen_port_) {
-      DCHECK(message_port_);
+      CHECK(message_port_, base::NotFatalUntil::M163);
       openscreen_port_ = std::make_unique<CastMessagePortImpl>(
           std::move(message_port_), std::move(on_close_));
     }
@@ -232,7 +232,7 @@ bool CastMessagePortImpl::OnMessage(
   DVLOG(3) << __func__;
 
   // If |client_| was cleared, |message_port_| should have been reset.
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M163);
 
   if (!ports.empty()) {
     // We should never receive any ports for Cast Streaming.

@@ -122,7 +122,7 @@ void PlaybackCommandDispatcher::TryStartPlayback(base::TimeDelta timestamp) {
 
 void PlaybackCommandDispatcher::OnRemotingSessionNegotiated(
     openscreen::cast::RpcMessenger* messenger) {
-  DCHECK(messenger);
+  CHECK(messenger, base::NotFatalUntil::M163);
 
   messenger_ = messenger;
   RegisterHandleForCallbacks(
@@ -144,10 +144,10 @@ void PlaybackCommandDispatcher::ConfigureRemotingAsync(
     Dispatcher* dispatcher,
     const openscreen::cast::ReceiverSession* session,
     openscreen::cast::ReceiverSession::ConfiguredReceivers receivers) {
-  DCHECK(dispatcher);
-  DCHECK(session);
-  DCHECK(demuxer_stream_handler_);
-  DCHECK(!streaming_init_info_);
+  CHECK(dispatcher, base::NotFatalUntil::M163);
+  CHECK(session, base::NotFatalUntil::M163);
+  CHECK(demuxer_stream_handler_, base::NotFatalUntil::M163);
+  CHECK(!streaming_init_info_, base::NotFatalUntil::M163);
 
   streaming_dispatcher_ = dispatcher;
   receiver_session_ = session;
@@ -179,9 +179,10 @@ void PlaybackCommandDispatcher::OnRemotingSessionEnded() {
 void PlaybackCommandDispatcher::SendRemotingRpcMessageToRemote(
     openscreen::cast::RpcMessenger::Handle handle,
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK_NE(handle, openscreen::cast::RpcMessenger::kInvalidHandle);
-  DCHECK(message);
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK_NE(handle, openscreen::cast::RpcMessenger::kInvalidHandle,
+           base::NotFatalUntil::M163);
+  CHECK(message, base::NotFatalUntil::M163);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   if (!messenger_) {
     return;
@@ -202,8 +203,8 @@ void PlaybackCommandDispatcher::SendRemotingRpcMessageToRemote(
 
 void PlaybackCommandDispatcher::ProcessRemotingRpcMessageFromRemote(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(message);
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(message, base::NotFatalUntil::M163);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
 
   DVLOG(1) << "ProcessRemotingRpcMessageFromRemote() type=" << message->proc()
            << ", handle=" << message->handle();
@@ -235,7 +236,7 @@ void PlaybackCommandDispatcher::ProcessRemotingRpcMessageFromRemote(
 
 openscreen::cast::RpcMessenger::Handle
 PlaybackCommandDispatcher::AcquireHandle() {
-  DCHECK(messenger_);
+  CHECK(messenger_, base::NotFatalUntil::M163);
   auto handle = messenger_->GetUniqueHandle();
   RegisterHandleForCallbacks(handle);
   return handle;
@@ -243,7 +244,7 @@ PlaybackCommandDispatcher::AcquireHandle() {
 
 void PlaybackCommandDispatcher::RegisterHandleForCallbacks(
     openscreen::cast::RpcMessenger::Handle handle) {
-  DCHECK(messenger_);
+  CHECK(messenger_, base::NotFatalUntil::M163);
   messenger_->RegisterMessageReceiverCallback(
       handle, [ptr = weak_factory_.GetWeakPtr()](
                   std::unique_ptr<openscreen::cast::RpcMessage> message) {
@@ -267,11 +268,12 @@ void PlaybackCommandDispatcher::OnSetPlaybackControllerDone() {
 void PlaybackCommandDispatcher::RpcAcquireRendererAsync(
     openscreen::cast::RpcMessenger::Handle remote_handle,
     AcquireRendererCB cb) {
-  DCHECK(renderer_call_translator_);
+  CHECK(renderer_call_translator_, base::NotFatalUntil::M163);
   renderer_call_translator_->set_remote_handle(remote_handle);
 
   const auto local_handle = renderer_call_translator_->local_handle();
-  DCHECK_NE(local_handle, openscreen::cast::RpcMessenger::kInvalidHandle);
+  CHECK_NE(local_handle, openscreen::cast::RpcMessenger::kInvalidHandle,
+           base::NotFatalUntil::M163);
   acquire_renderer_cb_ = base::BindOnce(std::move(cb), local_handle);
 
   if (has_set_playback_controller_call_returned_) {
@@ -312,8 +314,8 @@ void PlaybackCommandDispatcher::OnNewAudioConfig(
 
 void PlaybackCommandDispatcher::OnNewVideoConfig(
     media::VideoDecoderConfig config) {
-  DCHECK(streaming_init_info_);
-  DCHECK(streaming_dispatcher_);
+  CHECK(streaming_init_info_, base::NotFatalUntil::M163);
+  CHECK(streaming_dispatcher_, base::NotFatalUntil::M163);
   if (!streaming_init_info_->video_stream_info) {
     LOG(ERROR) << "Received Video config for a remoting session where video is "
                   "not supported";
@@ -325,7 +327,7 @@ void PlaybackCommandDispatcher::OnNewVideoConfig(
 }
 
 void PlaybackCommandDispatcher::MaybeStartStreamingSession() {
-  DCHECK(streaming_init_info_);
+  CHECK(streaming_init_info_, base::NotFatalUntil::M163);
   const bool is_audio_config_ready =
       !streaming_init_info_->audio_stream_info ||
       !streaming_init_info_->audio_stream_info->config.Matches(
@@ -338,22 +340,22 @@ void PlaybackCommandDispatcher::MaybeStartStreamingSession() {
     return;
   }
 
-  DCHECK(demuxer_stream_handler_);
+  CHECK(demuxer_stream_handler_, base::NotFatalUntil::M163);
   if (streaming_init_info_->audio_stream_info) {
     auto client = demuxer_stream_handler_->GetAudioClient();
-    DCHECK(client);
+    CHECK(client, base::NotFatalUntil::M163);
     streaming_init_info_->audio_stream_info->demuxer_stream_client =
         std::move(client);
   }
   if (streaming_init_info_->video_stream_info) {
     auto client = demuxer_stream_handler_->GetVideoClient();
-    DCHECK(client);
+    CHECK(client, base::NotFatalUntil::M163);
     streaming_init_info_->video_stream_info->demuxer_stream_client =
         std::move(client);
   }
 
   // |streaming_init_info_| is intentionally copied here.
-  DCHECK(streaming_dispatcher_);
+  CHECK(streaming_dispatcher_, base::NotFatalUntil::M163);
   streaming_dispatcher_->StartStreamingSession(streaming_init_info_.value());
 }
 

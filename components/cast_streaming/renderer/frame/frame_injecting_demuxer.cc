@@ -132,7 +132,7 @@ class FrameInjectingDemuxerStream
   // Called by |current_buffer_provider_->ReadBufferAsync()|.
   void OnNewBuffer(scoped_refptr<media::DecoderBuffer> buffer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(!!pending_read_cb_ != was_read_aborted_);
+    CHECK(!!pending_read_cb_ != was_read_aborted_, base::NotFatalUntil::M163);
 
     was_read_aborted_ = false;
     if (!pending_read_cb_) {
@@ -155,7 +155,7 @@ class FrameInjectingDemuxerStream
   // Called by |current_buffer_provider_->GetConfigAsync()|.
   void OnNewConfig(ConfigType config) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(!!pending_read_cb_ != was_read_aborted_);
+    CHECK(!!pending_read_cb_ != was_read_aborted_, base::NotFatalUntil::M163);
 
     decoder_config_ = std::move(config);
     was_read_aborted_ = false;
@@ -203,8 +203,9 @@ class FrameInjectingDemuxerStream
   void Read(uint32_t /*count*/, ReadCB read_cb) final {
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(!pending_read_cb_);
-    DCHECK(!buffer_requester_ || current_buffer_provider_);
+    CHECK(!pending_read_cb_, base::NotFatalUntil::M163);
+    CHECK(!buffer_requester_ || current_buffer_provider_,
+          base::NotFatalUntil::M163);
 
     pending_read_cb_ = std::move(read_cb);
 
@@ -320,7 +321,7 @@ FrameInjectingDemuxer::FrameInjectingDemuxer(
     : media_task_runner_(std::move(media_task_runner)),
       config_buffer_(std::move(config_buffer)) {
   DVLOG(1) << __func__;
-  DCHECK(config_buffer_);
+  CHECK(config_buffer_, base::NotFatalUntil::M163);
 }
 
 FrameInjectingDemuxer::~FrameInjectingDemuxer() {
@@ -331,8 +332,9 @@ void FrameInjectingDemuxer::OnStreamsInitializedOnMediaThread(
     mojom::AudioStreamInitializationInfoPtr audio_stream_info,
     mojom::VideoStreamInitializationInfoPtr video_stream_info) {
   DVLOG(1) << __func__;
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(initialized_cb_);
+  CHECK(media_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
+  CHECK(initialized_cb_, base::NotFatalUntil::M163);
 
   if (!audio_stream_info && !video_stream_info) {
     std::move(initialized_cb_).Run(media::DEMUXER_ERROR_COULD_NOT_OPEN);
@@ -363,8 +365,9 @@ void FrameInjectingDemuxer::OnStreamsInitializedOnMediaThread(
 }
 
 void FrameInjectingDemuxer::OnStreamInitializationComplete() {
-  DCHECK_GE(pending_stream_initialization_callbacks_, 1);
-  DCHECK(initialized_cb_);
+  CHECK_GE(pending_stream_initialization_callbacks_, 1,
+           base::NotFatalUntil::M163);
+  CHECK(initialized_cb_, base::NotFatalUntil::M163);
 
   pending_stream_initialization_callbacks_--;
   if (pending_stream_initialization_callbacks_ != 0) {
@@ -378,7 +381,8 @@ void FrameInjectingDemuxer::OnStreamInitializationComplete() {
 std::vector<raw_ptr<media::DemuxerStream>>
 FrameInjectingDemuxer::GetAllStreams() {
   DVLOG(1) << __func__;
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(media_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
 
   std::vector<raw_ptr<media::DemuxerStream>> streams;
   if (video_stream_) {
@@ -402,7 +406,8 @@ void FrameInjectingDemuxer::Initialize(
     media::DemuxerHost* host,
     media::PipelineStatusCallback status_cb) {
   DVLOG(1) << __func__;
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(media_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
   host_ = host;
 
   // Live streams have infinite duration.
@@ -417,7 +422,8 @@ void FrameInjectingDemuxer::Initialize(
 
 void FrameInjectingDemuxer::AbortPendingReads() {
   DVLOG(2) << __func__;
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(media_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
 
   if (timestamp_tracker_) {
     timestamp_tracker_->ResetPosition();
@@ -452,7 +458,8 @@ bool FrameInjectingDemuxer::IsSeekable() const {
 
 void FrameInjectingDemuxer::Stop() {
   DVLOG(1) << __func__;
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(media_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
 
   if (audio_stream_) {
     audio_stream_.reset();

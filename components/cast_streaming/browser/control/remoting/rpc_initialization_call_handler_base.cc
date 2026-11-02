@@ -13,7 +13,7 @@ namespace cast_streaming::remoting {
 RpcInitializationCallHandlerBase::RpcInitializationCallHandlerBase(
     RpcProcessMessageCB message_processor)
     : message_processor_(std::move(message_processor)), weak_factory_(this) {
-  DCHECK(message_processor_);
+  CHECK(message_processor_, base::NotFatalUntil::M163);
 }
 
 RpcInitializationCallHandlerBase::~RpcInitializationCallHandlerBase() = default;

@@ -67,7 +67,7 @@ void DemuxerConnector::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::DemuxerConnector> receiver) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!demuxer_connector_receiver_.is_bound());
+  CHECK(!demuxer_connector_receiver_.is_bound(), base::NotFatalUntil::M163);
 
   config_buffer_ = base::MakeRefCounted<DemuxerStreamConfigBuffer>();
   demuxer_connector_receiver_.Bind(std::move(receiver));
@@ -109,8 +109,8 @@ void DemuxerConnector::OnReceiverDisconnected() {
 void DemuxerConnector::EnableReceiver(EnableReceiverCallback callback) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!enable_receiver_callback_);
-  DCHECK(callback);
+  CHECK(!enable_receiver_callback_, base::NotFatalUntil::M163);
+  CHECK(callback, base::NotFatalUntil::M163);
 
   enable_receiver_callback_ = std::move(callback);
   MaybeCallEnableReceiverCallback();

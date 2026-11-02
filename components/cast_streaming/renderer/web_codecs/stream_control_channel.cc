@@ -17,8 +17,8 @@ StreamControlChannel::StreamControlChannel(
     : client_(client),
       task_runner_(std::move(task_runner)),
       receiver_(this, std::move(receiver), task_runner_) {
-  DCHECK(client_);
-  DCHECK(task_runner_);
+  CHECK(client_, base::NotFatalUntil::M163);
+  CHECK(task_runner_, base::NotFatalUntil::M163);
 }
 
 StreamControlChannel::~StreamControlChannel() = default;

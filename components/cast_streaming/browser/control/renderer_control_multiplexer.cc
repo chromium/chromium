@@ -34,8 +34,8 @@ RendererControlMultiplexer::~RendererControlMultiplexer() = default;
 
 void RendererControlMultiplexer::RegisterController(
     mojo::PendingReceiver<media::mojom::Renderer> controls) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(controls);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
+  CHECK(controls, base::NotFatalUntil::M163);
   auto bound_controls =
       std::make_unique<mojo::Receiver<media::mojom::Renderer>>(
           this, std::move(controls));
@@ -52,7 +52,7 @@ void RendererControlMultiplexer::TryStartPlayback(base::TimeDelta time) {
 
 void RendererControlMultiplexer::TryStartPlaybackAfterDelay(
     base::TimeDelta time) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
   if (is_playback_ongoing_) {
     return;
   }
@@ -62,7 +62,7 @@ void RendererControlMultiplexer::TryStartPlaybackAfterDelay(
 }
 
 void RendererControlMultiplexer::StartPlayingFrom(base::TimeDelta time) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
   if (!is_playback_ongoing_) {
     DVLOG(1) << "Will start playing from time: " << time;
     renderer_remote_->StartPlayingFrom(time);
@@ -71,19 +71,19 @@ void RendererControlMultiplexer::StartPlayingFrom(base::TimeDelta time) {
 }
 
 void RendererControlMultiplexer::SetPlaybackRate(double playback_rate) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
   renderer_remote_->SetPlaybackRate(playback_rate);
 }
 
 void RendererControlMultiplexer::SetVolume(float volume) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
   renderer_remote_->SetVolume(volume);
 }
 
 void RendererControlMultiplexer::SetCdm(
     const std::optional<::base::UnguessableToken>& cdm_id,
     SetCdmCallback callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
   renderer_remote_->SetCdm(cdm_id, std::move(callback));
 }
 
@@ -98,13 +98,13 @@ void RendererControlMultiplexer::Initialize(
         std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
         streams,
     InitializeCallback callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
   renderer_remote_->Initialize(std::move(client), std::move(streams),
                                std::move(callback));
 }
 
 void RendererControlMultiplexer::Flush(FlushCallback callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
   renderer_remote_->Flush(
       base::BindOnce(&RendererControlMultiplexer::OnFlushComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -115,7 +115,7 @@ void RendererControlMultiplexer::OnMojoDisconnect() {
 }
 
 void RendererControlMultiplexer::OnFlushComplete(FlushCallback callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M163);
   is_playback_ongoing_ = false;
   std::move(callback).Run();
 }

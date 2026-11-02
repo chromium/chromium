@@ -13,7 +13,7 @@ PlaybackCommandForwardingRendererFactory::
     PlaybackCommandForwardingRendererFactory(
         mojo::PendingReceiver<media::mojom::Renderer> pending_renderer_controls)
     : pending_renderer_controls_(std::move(pending_renderer_controls)) {
-  DCHECK(pending_renderer_controls_);
+  CHECK(pending_renderer_controls_, base::NotFatalUntil::M163);
 }
 
 PlaybackCommandForwardingRendererFactory::
@@ -21,7 +21,7 @@ PlaybackCommandForwardingRendererFactory::
 
 void PlaybackCommandForwardingRendererFactory::SetWrappedRendererFactory(
     media::RendererFactory* wrapped_factory) {
-  DCHECK(!has_create_been_called_);
+  CHECK(!has_create_been_called_, base::NotFatalUntil::M163);
   real_renderer_factory_ = wrapped_factory;
 }
 
@@ -33,8 +33,8 @@ PlaybackCommandForwardingRendererFactory::CreateRenderer(
     media::VideoRendererSink* video_renderer_sink,
     media::RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space) {
-  DCHECK(pending_renderer_controls_);
-  DCHECK(real_renderer_factory_);
+  CHECK(pending_renderer_controls_, base::NotFatalUntil::M163);
+  CHECK(real_renderer_factory_, base::NotFatalUntil::M163);
   has_create_been_called_ = true;
   return std::make_unique<PlaybackCommandForwardingRenderer>(
       real_renderer_factory_->CreateRenderer(
