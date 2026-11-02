@@ -12,6 +12,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -24,7 +25,7 @@ int MediaCapturePickerManagerBridge::next_fake_id_ = 1;
 MediaCapturePickerManagerBridge::MediaCapturePickerManagerBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_MediaCapturePickerManagerBridge_create(
-      env, reinterpret_cast<intptr_t>(this)));
+      env, jni_zero::MakeRaw(this)));
 }
 
 MediaCapturePickerManagerBridge::~MediaCapturePickerManagerBridge() {

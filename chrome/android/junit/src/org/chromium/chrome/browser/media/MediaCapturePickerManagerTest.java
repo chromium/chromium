@@ -14,6 +14,7 @@ import android.content.Context;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -144,8 +145,10 @@ public class MediaCapturePickerManagerTest {
 
     @Test
     public void testBridge_liveVsDestroyed() {
-        MediaCapturePickerManagerBridge bridge = MediaCapturePickerManagerBridge.create(1L);
-        doReturn(false).when(mBridgeNatives).shouldFilterWebContents(1L, mWebContents);
+        JniRawPtr<MediaCapturePickerManagerBridge.NativeMediaCapturePickerManagerBridge> nativePtr =
+                JniRawPtr.createForTesting(1L);
+        MediaCapturePickerManagerBridge bridge = MediaCapturePickerManagerBridge.create(nativePtr);
+        doReturn(false).when(mBridgeNatives).shouldFilterWebContents(nativePtr, mWebContents);
 
         assertFalse(bridge.isRequestDestroyed());
         assertFalse(bridge.shouldFilterWebContents(mWebContents));
@@ -153,11 +156,11 @@ public class MediaCapturePickerManagerTest {
         bridge.onPickTab(mWebContents, /* audioShare= */ true);
         bridge.onPickWindow();
         bridge.onPickScreen();
-        verify(mBridgeNatives).shouldFilterWebContents(1L, mWebContents);
-        verify(mBridgeNatives).onCancel(1L);
-        verify(mBridgeNatives).onPickTab(1L, mWebContents, true);
-        verify(mBridgeNatives).onPickWindow(1L);
-        verify(mBridgeNatives).onPickScreen(1L);
+        verify(mBridgeNatives).shouldFilterWebContents(nativePtr, mWebContents);
+        verify(mBridgeNatives).onCancel(nativePtr);
+        verify(mBridgeNatives).onPickTab(nativePtr, mWebContents, true);
+        verify(mBridgeNatives).onPickWindow(nativePtr);
+        verify(mBridgeNatives).onPickScreen(nativePtr);
 
         bridge.destroy();
 
