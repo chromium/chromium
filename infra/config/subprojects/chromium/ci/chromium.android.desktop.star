@@ -300,7 +300,7 @@ ci.thin_tester(
             ),
             "chrome_public_test_apk_desktop": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 3,
+                    shards = 6,
                 ),
             ),
             "chrome_public_unit_test_apk": targets.mixin(
