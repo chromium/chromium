@@ -98,6 +98,11 @@ views::View* ShelfTooltipManager::GetCurrentAnchorView() const {
 }
 
 void ShelfTooltipManager::ShowTooltip(views::View* view) {
+  ShowTooltipInternal(view, /*show_app_menu=*/true);
+}
+
+void ShelfTooltipManager::ShowTooltipInternal(views::View* view,
+                                              bool show_app_menu) {
   if (!IsVisible()) {
     RecordGrowthCampaignsHoverEvent();
   }
@@ -113,6 +118,22 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
 
   if (!ShouldShowTooltipForView(view)) {
     return;
+  }
+
+  aura::Window* preview_window = nullptr;
+  if (features::IsWindowPreviewOnShelfEnabled()) {
+    base::expected<aura::Window*, ShelfTooltipDelegate::NoPreviewReason>
+        result = shelf_tooltip_delegate_->GetPreviewWindowOrShowAppMenu(
+            view, show_app_menu);
+    if (result.has_value()) {
+      preview_window = result.value();
+    } else if (result.error() ==
+               ShelfTooltipDelegate::NoPreviewReason::kUseAppMenu) {
+      if (!show_app_menu) {
+        ShowTooltipWithDelay(view);
+      }
+      return;
+    }
   }
 
   const ShelfAlignment alignment = shelf_->alignment();
@@ -139,11 +160,8 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
   bubble_->set_highlight_button_when_shown(false);
   bubble_->GetWidget()->Show();
 
-  if (features::IsWindowPreviewOnShelfEnabled()) {
-    if (aura::Window* open_window =
-            shelf_tooltip_delegate_->GetSingleOpenWindowForShelfView(view)) {
-      ShowPreviewBubble(open_window);
-    }
+  if (preview_window) {
+    ShowPreviewBubble(preview_window);
   }
 }
 
@@ -223,7 +241,7 @@ void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
 
   timer_.Stop();
   if (IsVisible() && should_show && bubble_->GetAnchorView() != view) {
-    ShowTooltip(view);
+    ShowTooltipInternal(view, /*show_app_menu=*/false);
   } else if (!IsVisible() && should_show) {
     ShowTooltipWithDelay(view);
   } else if (IsVisible() &&

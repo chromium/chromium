@@ -13,6 +13,7 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_bubble.h"
+#include "ash/shelf/shelf_menu_model_adapter.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
@@ -363,7 +364,11 @@ TEST_F(ShelfTooltipManagerWindowPreviewTest, MultipleWindowsNoPreviewBubble) {
   std::unique_ptr<aura::Window> window2 = CreateWindowForShelfItem(id);
 
   tooltip_manager_->ShowTooltip(button);
-  EXPECT_TRUE(tooltip_manager_->IsVisible());
+  // An application menu is opened upon hover instead of a tooltip bubble.
+  EXPECT_FALSE(tooltip_manager_->IsVisible());
+  EXPECT_TRUE(shelf_view_->IsShowingMenu());
+  EXPECT_TRUE(
+      shelf_view_->shelf_menu_model_adapter_for_testing()->opened_by_hover());
   EXPECT_EQ(nullptr, tooltip_manager_->preview_bubble());
 }
 

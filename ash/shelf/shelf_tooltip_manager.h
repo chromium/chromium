@@ -87,6 +87,8 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
   // A helper function to check for shelf visibility and view validity.
   bool ShouldShowTooltipForView(views::View* view);
 
+  void ShowTooltipInternal(views::View* view, bool show_app_menu);
+
   // A helper function to close the tooltip on mouse and touch press events.
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 

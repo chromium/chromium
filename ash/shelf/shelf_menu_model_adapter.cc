@@ -38,7 +38,8 @@ ShelfMenuModelAdapter::ShelfMenuModelAdapter(
     base::OnceClosure on_menu_closed_callback,
     bool is_tablet_mode,
     bool for_application_menu_items,
-    base::WeakPtr<ShelfItemDelegate> item_delegate)
+    base::WeakPtr<ShelfItemDelegate> item_delegate,
+    bool opened_by_hover)
     : AppMenuModelAdapter(app_id,
                           std::move(model),
                           menu_owner->GetWidget(),
@@ -46,13 +47,35 @@ ShelfMenuModelAdapter::ShelfMenuModelAdapter(
                           std::move(on_menu_closed_callback),
                           is_tablet_mode),
       for_application_menu_items_(for_application_menu_items),
+      opened_by_hover_(opened_by_hover),
       item_delegate_(std::move(item_delegate)),
       menu_owner_(menu_owner) {
   menu_owner_observation_.Observe(menu_owner_);
 }
 
 ShelfMenuModelAdapter::~ShelfMenuModelAdapter() {
+  close_menu_timer_.Stop();
   CloseHoverBubble(/*animate=*/false);
+  RemovePreTargetHandler();
+}
+
+void ShelfMenuModelAdapter::Run(const gfx::Rect& menu_anchor_rect,
+                                views::MenuAnchorPosition menu_anchor_position,
+                                int run_types) {
+  AppMenuModelAdapter::Run(menu_anchor_rect, menu_anchor_position, run_types);
+  if (features::IsWindowPreviewOnShelfEnabled() &&
+      for_application_menu_items_ && IsShowingMenu()) {
+    // The menu holds mouse capture, so observe events on `aura::Env` while the
+    // menu is shown to keep the hover bubble open while the mouse is over it,
+    // to close the preview bubble on 'Esc' before the menu controller sees it,
+    // and to auto-close the menu if it was opened by hover. Register with
+    // `kSystem` so this handler is prepended ahead of
+    // `MenuPreTargetHandlerAura` (which also registers with `kSystem` on
+    // `aura::Env` when the menu opens).
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        this, ui::EventTarget::Priority::kSystem);
+    is_pre_target_handler_ = true;
+  }
 }
 
 views::MenuItemView* ShelfMenuModelAdapter::AppendMenuItem(
@@ -71,7 +94,9 @@ views::MenuItemView* ShelfMenuModelAdapter::AppendMenuItem(
 }
 
 void ShelfMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
+  close_menu_timer_.Stop();
   CloseHoverBubble(/*animate=*/false);
+  RemovePreTargetHandler();
   selection_subscriptions_.clear();
   menu_owner_observation_.Reset();
   menu_owner_ = nullptr;
@@ -91,11 +116,10 @@ void ShelfMenuModelAdapter::OnMenuItemSelectedChanged(
   if (!item->IsSelected()) {
     if (hover_anchor_view_ == item) {
       hover_anchor_view_ = nullptr;
-      if (preview_bubble_ &&
-          preview_bubble_->IsPointOverBubble(
+      if (IsPointOverHoverBubble(
               display::Screen::Get()->GetCursorScreenPoint())) {
-        // The item is unselected because the mouse moved onto the preview
-        // bubble. Keep it open until the mouse leaves the bubble.
+        // The item is unselected because the mouse moved onto the hover bubble.
+        // Keep it open until the mouse leaves the bubble.
         hover_timer_.Stop();
       } else if (preview_bubble_ || tooltip_bubble_) {
         // Delay closing slightly so that if another menu item is selected
@@ -162,14 +186,6 @@ void ShelfMenuModelAdapter::ShowHoverBubble() {
         anchor_view, result.value(),
         base::BindOnce(&ShelfMenuModelAdapter::Cancel, base::Unretained(this)));
     bubble = preview_bubble_;
-    // Track mouse events to keep the preview bubble open while the mouse is
-    // over it. Also track key events to close the preview bubble on 'Esc'
-    // before the menu controller sees it. Register with `kSystem` on
-    // `aura::Env` so this handler is prepended ahead of
-    // `MenuPreTargetHandlerAura` (which also registers with `kSystem` on
-    // `aura::Env`).
-    aura::Env::GetInstance()->AddPreTargetHandler(
-        this, ui::EventTarget::Priority::kSystem);
   } else {
     // Anchor the tooltip beside the menu, on the same side as the preview
     // bubble, so the two line up as the user moves between items.
@@ -191,7 +207,6 @@ void ShelfMenuModelAdapter::CloseHoverBubble(bool animate) {
   hover_timer_.Stop();
   hover_anchor_view_ = nullptr;
   if (preview_bubble_) {
-    aura::Env::GetInstance()->RemovePreTargetHandler(this);
     if (animate) {
       preview_bubble_.ExtractAsDangling()->FadeOutAndClose();
     } else {
@@ -204,9 +219,6 @@ void ShelfMenuModelAdapter::CloseHoverBubble(bool animate) {
 }
 
 void ShelfMenuModelAdapter::OnHoverBubbleClosing() {
-  if (preview_bubble_) {
-    aura::Env::GetInstance()->RemovePreTargetHandler(this);
-  }
   preview_bubble_ = nullptr;
   tooltip_bubble_ = nullptr;
   hover_anchor_view_ = nullptr;
@@ -219,23 +231,81 @@ void ShelfMenuModelAdapter::StartCloseHoverBubbleTimer() {
                                     base::Unretained(this), /*animate=*/true));
 }
 
-void ShelfMenuModelAdapter::OnMouseEvent(ui::MouseEvent* event) {
-  if (!preview_bubble_) {
-    return;
+void ShelfMenuModelAdapter::RemovePreTargetHandler() {
+  if (is_pre_target_handler_) {
+    aura::Env::GetInstance()->RemovePreTargetHandler(this);
+    is_pre_target_handler_ = false;
   }
-  if (event->type() == ui::EventType::kMouseMoved) {
-    if (preview_bubble_->IsPointOverBubble(
-            event->target()->GetScreenLocation(*event))) {
-      // Keep the preview bubble open while the mouse is over it.
+}
+
+void ShelfMenuModelAdapter::OnMouseEvent(ui::MouseEvent* event) {
+  const gfx::Point screen_location = event->target()->GetScreenLocation(*event);
+  const bool has_bubble = preview_bubble_ || tooltip_bubble_;
+  if (has_bubble && event->type() == ui::EventType::kMouseMoved) {
+    if (IsPointOverHoverBubble(screen_location)) {
+      // Keep the hover bubble open while the mouse is over it.
       hover_timer_.Stop();
     } else if (!hover_anchor_view_ && !hover_timer_.IsRunning()) {
-      // The mouse left the preview bubble without selecting a menu item.
+      // The mouse left the hover bubble without selecting a menu item.
       StartCloseHoverBubbleTimer();
     }
+  }
+
+  if (!opened_by_hover_) {
+    return;
+  }
+
+  // TODO(crbug.com/557057572): Handle mouse presses while a hover-opened menu
+  // is showing consistently. Currently `MenuHost` holds mouse capture, so
+  // clicking the shelf item before the hover delay opens a click-pinned menu,
+  // whereas clicking it after the hover menu opens consumes the click and
+  // closes the menu.
+  const bool is_mouse_move_or_exit =
+      event->type() == ui::EventType::kMouseMoved ||
+      event->type() == ui::EventType::kMouseDragged ||
+      event->type() == ui::EventType::kMouseExited;
+  if (!is_mouse_move_or_exit) {
+    return;
+  }
+
+  if (IsPointInAllowedBounds(screen_location)) {
+    close_menu_timer_.Stop();
+    return;
+  }
+
+  // If the mouse moved to another visible button on the shelf, close the menu
+  // immediately so that the next item can respond to hover without delay.
+  // Query `shelf_container` (`ScrollableShelfContainerView`) so hit-testing is
+  // clipped to `visible_space()` in overflow mode and skips the separator and
+  // inter-button gaps.
+  views::View* shelf_view = menu_owner_ ? menu_owner_->parent() : nullptr;
+  views::View* shelf_container = shelf_view ? shelf_view->parent() : nullptr;
+  if (shelf_container) {
+    gfx::Point point_in_container = screen_location;
+    views::View::ConvertPointFromScreen(shelf_container, &point_in_container);
+    views::View* tooltip_handler =
+        shelf_container->GetTooltipHandlerForPoint(point_in_container);
+    if (tooltip_handler && tooltip_handler->parent() == shelf_view &&
+        !menu_owner_->Contains(tooltip_handler)) {
+      close_menu_timer_.Start(FROM_HERE, base::TimeDelta(),
+                              base::BindOnce(&ShelfMenuModelAdapter::Cancel,
+                                             base::Unretained(this)));
+      return;
+    }
+  }
+
+  if (!close_menu_timer_.IsRunning()) {
+    close_menu_timer_.Start(
+        FROM_HERE, kCloseMenuDelay,
+        base::BindOnce(&ShelfMenuModelAdapter::Cancel, base::Unretained(this)));
   }
 }
 
 void ShelfMenuModelAdapter::OnKeyEvent(ui::KeyEvent* event) {
+  if (event->type() == ui::EventType::kKeyPressed) {
+    close_menu_timer_.Stop();
+  }
+
   // Only consume unmodified 'Esc' (ignoring lock flags like Caps Lock) so
   // modified shortcuts (e.g. Shift+Esc) still propagate.
   if (preview_bubble_ && event->type() == ui::EventType::kKeyPressed &&
@@ -245,6 +315,26 @@ void ShelfMenuModelAdapter::OnKeyEvent(ui::KeyEvent* event) {
     event->SetHandled();
     event->StopPropagation();
   }
+}
+
+bool ShelfMenuModelAdapter::IsPointInAllowedBounds(
+    const gfx::Point& screen_point) {
+  if (menu_owner_ && menu_owner_->GetBoundsInScreen().Contains(screen_point)) {
+    return true;
+  }
+  views::Widget* menu_widget = GetSubmenuWidget();
+  if (menu_widget && menu_widget->IsVisible() &&
+      menu_widget->GetWindowBoundsInScreen().Contains(screen_point)) {
+    return true;
+  }
+  return IsPointOverHoverBubble(screen_point);
+}
+
+bool ShelfMenuModelAdapter::IsPointOverHoverBubble(
+    const gfx::Point& screen_point) const {
+  return (preview_bubble_ &&
+          preview_bubble_->IsPointOverBubble(screen_point)) ||
+         (tooltip_bubble_ && tooltip_bubble_->IsPointOverBubble(screen_point));
 }
 
 int ShelfMenuModelAdapter::GetCommandIdForHistograms(int command_id) {

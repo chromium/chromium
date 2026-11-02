@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/view_observer.h"
 
 namespace views {
@@ -46,6 +47,11 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
   // in place if another item is selected immediately afterwards.
   static constexpr base::TimeDelta kClosePreviewDelay = base::Milliseconds(150);
 
+  // Delay before closing the application menu when the mouse leaves the
+  // allowed bounds (shelf item button, menu, and preview bubble). Allows
+  // smoothly crossing gaps between the shelf button, menu, and preview bubble.
+  static constexpr base::TimeDelta kCloseMenuDelay = base::Milliseconds(250);
+
   ShelfMenuModelAdapter(const std::string& app_id,
                         std::unique_ptr<ui::SimpleMenuModel> model,
                         views::View* menu_owner,
@@ -53,7 +59,8 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
                         base::OnceClosure on_menu_closed_callback,
                         bool is_tablet_mode,
                         bool for_application_menu_items,
-                        base::WeakPtr<ShelfItemDelegate> item_delegate);
+                        base::WeakPtr<ShelfItemDelegate> item_delegate,
+                        bool opened_by_hover);
 
   ShelfMenuModelAdapter(const ShelfMenuModelAdapter&) = delete;
   ShelfMenuModelAdapter& operator=(const ShelfMenuModelAdapter&) = delete;
@@ -61,6 +68,9 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
   ~ShelfMenuModelAdapter() override;
 
   // AppMenuModelAdapter:
+  void Run(const gfx::Rect& menu_anchor_rect,
+           views::MenuAnchorPosition menu_anchor_position,
+           int run_types) override;
   int GetCommandIdForHistograms(int command_id) override;
   void RecordHistogramOnMenuClosed() override;
 
@@ -74,14 +84,16 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
   void OnViewIsDeleting(views::View* observed_view) override;
 
   // ui::EventHandler:
-  // Registered as an aura::Env pre-target handler while the preview bubble is
-  // shown, since the menu holds mouse capture and the bubble itself does not
-  // receive events.
+  // Registered as an aura::Env pre-target handler while an application menu is
+  // shown (when `kWindowPreviewOnShelf` is enabled), since the menu holds mouse
+  // capture and neither the hover bubble nor the shelf receives events.
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
   // Whether this is showing a menu for |view|.
   bool IsShowingMenuForView(const views::View& view) const;
+
+  bool opened_by_hover() const { return opened_by_hover_; }
 
   ShelfWindowPreviewBubble* preview_bubble() { return preview_bubble_.get(); }
   ShelfBubble* tooltip_bubble() { return tooltip_bubble_.get(); }
@@ -100,8 +112,24 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
   // Starts the timer to close the hover bubble after kClosePreviewDelay.
   void StartCloseHoverBubbleTimer();
 
+  void RemovePreTargetHandler();
+
+  bool IsPointInAllowedBounds(const gfx::Point& screen_point);
+
+  // Returns true if `screen_point` is over the preview or tooltip bubble.
+  bool IsPointOverHoverBubble(const gfx::Point& screen_point) const;
+
   // True if this adapter was created for the shelf application menu items.
   const bool for_application_menu_items_;
+
+  // True if this menu was opened on mouse hover.
+  const bool opened_by_hover_;
+
+  // True while `this` is registered as an `aura::Env` pre-target handler.
+  bool is_pre_target_handler_ = false;
+
+  // Timer to delay closing the menu when the mouse leaves allowed bounds.
+  base::OneShotTimer close_menu_timer_;
 
   // Delegate for retrieving windows associated with application menu items.
   base::WeakPtr<ShelfItemDelegate> item_delegate_;

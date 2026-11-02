@@ -150,8 +150,9 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   bool ShouldShowTooltipForView(const views::View* view) const override;
   bool ShouldHideTooltip(const gfx::Point& cursor_location,
                          views::View* delegate_view) const override;
-  aura::Window* GetSingleOpenWindowForShelfView(
-      const views::View* view) override;
+  base::expected<aura::Window*, NoPreviewReason> GetPreviewWindowOrShowAppMenu(
+      views::View* view,
+      bool show_app_menu) override;
   std::u16string GetTitleForView(const views::View* view) const override;
   views::View* GetViewForEvent(const ui::Event& event) override;
 
@@ -550,7 +551,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                 const ShelfID& shelf_id,
                 const gfx::Point& click_point,
                 bool context_menu,
-                ui::mojom::MenuSourceType source_type);
+                ui::mojom::MenuSourceType source_type,
+                bool opened_by_hover = false);
 
   // Callback for MenuRunner.
   // |source| is either a ShelfView or a ShelfAppButton.

@@ -46,9 +46,9 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   ~AppMenuModelAdapter() override;
 
   // Builds the view tree and shows the menu.
-  void Run(const gfx::Rect& menu_anchor_rect,
-           views::MenuAnchorPosition menu_anchor_position,
-           int run_types);
+  virtual void Run(const gfx::Rect& menu_anchor_rect,
+                   views::MenuAnchorPosition menu_anchor_position,
+                   int run_types);
   // Whether this is showing a menu.
   bool IsShowingMenu() const;
 
