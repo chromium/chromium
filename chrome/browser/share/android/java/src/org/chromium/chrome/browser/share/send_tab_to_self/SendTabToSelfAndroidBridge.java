@@ -16,6 +16,8 @@ import android.text.TextUtils;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
@@ -68,6 +70,9 @@ import java.util.List;
 @JNINamespace("send_tab_to_self")
 @NullMarked
 public class SendTabToSelfAndroidBridge {
+    @JniType("::send_tab_to_self::TargetDeviceListWaiter")
+    interface NativeTargetDeviceListWaiter extends JniTypeToken {}
+
     /** Interface for a callback to receive the result of a send tab to self operation. */
     @FunctionalInterface
     public interface CommitConfirmationCallback {
@@ -292,16 +297,11 @@ public class SendTabToSelfAndroidBridge {
         return SendTabToSelfAndroidBridgeJni.get().getEntryPointDisplayReason(profile, url);
     }
 
-    public static long addTargetDeviceListWaiter(
+    public static JniUniquePtr<NativeTargetDeviceListWaiter> addTargetDeviceListWaiter(
             Profile profile, String url, Runnable onTargetDeviceListReady) {
         ThreadUtils.assertOnUiThread();
         return SendTabToSelfAndroidBridgeJni.get()
                 .addTargetDeviceListWaiter(profile, url, onTargetDeviceListReady);
-    }
-
-    public static void removeTargetDeviceListWaiter(long waiterPtr) {
-        ThreadUtils.assertOnUiThread();
-        SendTabToSelfAndroidBridgeJni.get().removeTargetDeviceListWaiter(waiterPtr);
     }
 
     /**
@@ -767,11 +767,9 @@ public class SendTabToSelfAndroidBridge {
 
         boolean isModelReady(@JniType("Profile*") Profile profile);
 
-        long addTargetDeviceListWaiter(
+        JniUniquePtr<NativeTargetDeviceListWaiter> addTargetDeviceListWaiter(
                 @JniType("Profile*") Profile profile,
                 @JniType("std::string") String url,
                 @JniType("base::OnceClosure") Runnable onTargetDeviceListReady);
-
-        void removeTargetDeviceListWaiter(long waiterPtr);
     }
 }

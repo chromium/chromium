@@ -37,6 +37,7 @@
 #include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -344,7 +345,8 @@ static jboolean JNI_SendTabToSelfAndroidBridge_IsModelReady(JNIEnv* env,
   return model && model->IsReady();
 }
 
-static int64_t JNI_SendTabToSelfAndroidBridge_AddTargetDeviceListWaiter(
+static jni_zero::JniUniquePtr<TargetDeviceListWaiter>
+JNI_SendTabToSelfAndroidBridge_AddTargetDeviceListWaiter(
     JNIEnv* env,
     Profile* profile,
     const std::string& url,
@@ -357,18 +359,8 @@ static int64_t JNI_SendTabToSelfAndroidBridge_AddTargetDeviceListWaiter(
   // TargetDeviceListWaiter executes `on_target_device_list_ready`
   // asynchronously, ensuring Java receives the native pointer before the
   // callback runs.
-  auto waiter = std::make_unique<TargetDeviceListWaiter>(
+  return jni_zero::MakeUnique<TargetDeviceListWaiter>(
       sync_service, service, GURL(url), std::move(on_target_device_list_ready));
-
-  // Transfer ownership to Java, which will call RemoveTargetDeviceListWaiter
-  // when the callback fires or the bottom sheet is closed.
-  return reinterpret_cast<int64_t>(waiter.release());
-}
-
-static void JNI_SendTabToSelfAndroidBridge_RemoveTargetDeviceListWaiter(
-    JNIEnv* env,
-    int64_t waiter_ptr) {
-  delete reinterpret_cast<TargetDeviceListWaiter*>(waiter_ptr);
 }
 
 static void JNI_SendTabToSelfAndroidBridge_FillWebContents(

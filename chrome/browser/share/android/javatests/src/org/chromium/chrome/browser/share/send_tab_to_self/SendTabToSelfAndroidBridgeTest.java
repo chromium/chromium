@@ -20,6 +20,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -283,21 +284,18 @@ public class SendTabToSelfAndroidBridgeTest {
     @Test
     public void testAddTargetDeviceListWaiter() {
         Runnable runnable = mock(Runnable.class);
-        when(mNativeMock.addTargetDeviceListWaiter(eq(mProfile), eq(URL), eq(runnable)))
-                .thenReturn(12345L);
-        long waiterPtr =
-                SendTabToSelfAndroidBridge.addTargetDeviceListWaiter(mProfile, URL, runnable);
-        verify(mNativeMock).addTargetDeviceListWaiter(eq(mProfile), eq(URL), eq(runnable));
-        Assert.assertEquals(12345L, waiterPtr);
-    }
-
-    // Tests that removing a target device list waiter invokes the native JNI method with the
-    // expected pointer.
-    @Test
-    public void testRemoveTargetDeviceListWaiter() {
-        long waiterPtr = 12345L;
-        SendTabToSelfAndroidBridge.removeTargetDeviceListWaiter(waiterPtr);
-        verify(mNativeMock).removeTargetDeviceListWaiter(eq(waiterPtr));
+        JniUniquePtr<SendTabToSelfAndroidBridge.NativeTargetDeviceListWaiter> expectedWaiter =
+                JniUniquePtr.createForTesting(12345L);
+        try {
+            when(mNativeMock.addTargetDeviceListWaiter(eq(mProfile), eq(URL), eq(runnable)))
+                    .thenReturn(expectedWaiter);
+            JniUniquePtr<SendTabToSelfAndroidBridge.NativeTargetDeviceListWaiter> waiterPtr =
+                    SendTabToSelfAndroidBridge.addTargetDeviceListWaiter(mProfile, URL, runnable);
+            verify(mNativeMock).addTargetDeviceListWaiter(eq(mProfile), eq(URL), eq(runnable));
+            Assert.assertEquals(expectedWaiter, waiterPtr);
+        } finally {
+            expectedWaiter.destroy();
+        }
     }
 
     // Tests that sending a tab to a device shows a success snackbar with the target device name

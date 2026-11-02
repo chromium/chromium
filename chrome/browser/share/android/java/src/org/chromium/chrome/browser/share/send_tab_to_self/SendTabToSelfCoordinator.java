@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
 
+import org.jni_zero.JniUniquePtr;
+
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -23,6 +25,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge.NativeTargetDeviceListWaiter;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -120,7 +123,7 @@ public class SendTabToSelfCoordinator
     private @Nullable EnhancedTargetDevicePickerView mView;
 
     private final @ShareEntryPoint int mEntryPoint;
-    private long mNativeTargetDeviceListWaiterPtr;
+    private @Nullable JniUniquePtr<NativeTargetDeviceListWaiter> mNativeTargetDeviceListWaiter;
 
     public SendTabToSelfCoordinator(
             Context context,
@@ -306,7 +309,7 @@ public class SendTabToSelfCoordinator
 
     private void waitForTargetDeviceList(Callback<@PostSigninOperationResult Integer> onComplete) {
         destroyTargetDeviceListWaiter();
-        mNativeTargetDeviceListWaiterPtr =
+        mNativeTargetDeviceListWaiter =
                 SendTabToSelfAndroidBridge.addTargetDeviceListWaiter(
                         mProfile,
                         mUrl,
@@ -317,10 +320,9 @@ public class SendTabToSelfCoordinator
     }
 
     private void destroyTargetDeviceListWaiter() {
-        if (mNativeTargetDeviceListWaiterPtr != 0) {
-            SendTabToSelfAndroidBridge.removeTargetDeviceListWaiter(
-                    mNativeTargetDeviceListWaiterPtr);
-            mNativeTargetDeviceListWaiterPtr = 0;
+        if (mNativeTargetDeviceListWaiter != null) {
+            mNativeTargetDeviceListWaiter.destroy();
+            mNativeTargetDeviceListWaiter = null;
         }
     }
 
