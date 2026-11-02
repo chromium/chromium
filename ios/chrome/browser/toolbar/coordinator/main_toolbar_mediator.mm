@@ -130,7 +130,7 @@ inline LayoutStateToolbarPassKey PassKey() {
   if (!IsChromeNextIaEnabled()) {
     return;
   }
-  // TODO(crbug.com/553750745): Once the legacy toolbar is removed, unify
+  // TODO(crbug.com/580850056): Once the legacy toolbar is removed, unify
   // toolbar position observation in BrowserLayoutState.
   BOOL isBottom =
       [self isBottomOmniboxPrefEnabled] && !_browserLayoutState.tabStripVisible;
