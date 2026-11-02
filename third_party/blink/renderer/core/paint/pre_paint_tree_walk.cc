@@ -1123,9 +1123,6 @@ void PrePaintTreeWalk::WalkFragmentainer(
   PrePaintTreeWalkContext fragmentainer_context(
       parent_context, parent_context.NeedsTreeBuilderContext());
 
-  fragmentainer_context.is_parent_first_for_node =
-      fragmentainer.IsFirstForNode();
-
   if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
     // Always keep track of the current innermost fragmentainer we're handling,
     // as they may serve as containing blocks for OOF descendants.
@@ -1281,36 +1278,15 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
         continue;
       }
 
-      if (layout_inline_child->FirstChild()) {
-        // We have to enter culled inlines for every block fragment where any of
-        // their children has a representation.
-        if (!parent_fragment->HasItems())
-          continue;
+      // We have to enter culled inlines for every block fragment where any of
+      // their children has a representation.
+      if (!parent_fragment->HasItems()) {
+        continue;
+      }
 
-        bool child_has_any_items;
-        if (!parent_fragment->Items()->IsContainerForCulledInline(
-                *layout_inline_child, &is_first_for_node, &is_last_for_node,
-                &child_has_any_items)) {
-          if (child_has_any_items) {
-            continue;
-          }
-          // The inline has no fragment items inside, although it does have
-          // child objects. This may happen for an AREA elements with
-          // out-of-flow positioned children.
-          //
-          // Set the first/last flags, since they may have been messed up above.
-          // This means that we're going to visit the descendants for every
-          // container fragment that has items, but this harmless, and rare.
-          is_first_for_node = true;
-          is_last_for_node = true;
-        }
-      } else {
-        // Childless and culled. This can happen for AREA elements, if nothing
-        // else. Enter them when visiting the parent for the first time.
-        if (!context.is_parent_first_for_node)
-          continue;
-        is_first_for_node = true;
-        is_last_for_node = true;
+      if (!parent_fragment->Items()->IsContainerForCulledInline(
+              *layout_inline_child, &is_first_for_node, &is_last_for_node)) {
+        continue;
       }
 
       // Inlines will pass their containing block fragment (and its incoming
@@ -1538,9 +1514,6 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   }
 
   if (!child_walk_blocked) {
-    if (pre_paint_info)
-      context.is_parent_first_for_node = pre_paint_info->is_first_for_node;
-
     WalkChildren(object, physical_fragment, context, is_inside_fragment_child);
 
     if (const auto* layout_embedded_content =

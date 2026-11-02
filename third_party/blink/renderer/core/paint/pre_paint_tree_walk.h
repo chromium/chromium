@@ -109,11 +109,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
     ContainerTimingPaintAttributionTracker*
         container_timing_paint_attribution_tracker = nullptr;
 
-    // True if we're visiting the parent for the first time, i.e. when we're in
-    // the first fragmentainer where the parent occurs (or if we're not
-    // fragmented at all).
-    bool is_parent_first_for_node = true;
-
     // Whether we are inside an active unbounded element.
     bool inside_active_unbounded = false;
 

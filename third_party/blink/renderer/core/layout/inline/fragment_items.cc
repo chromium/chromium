@@ -360,8 +360,7 @@ const FragmentItem* FragmentItems::EndOfReusableItems(
 bool FragmentItems::IsContainerForCulledInline(
     const LayoutInline& layout_inline,
     bool* is_first_container,
-    bool* is_last_container,
-    bool* child_has_any_child_items) const {
+    bool* is_last_container) const {
   DCHECK(!layout_inline.HasInlineFragments());
   const wtf_size_t start_idx = size_of_earlier_fragments_;
   const wtf_size_t end_idx = EndItemIndex();
@@ -369,7 +368,6 @@ bool FragmentItems::IsContainerForCulledInline(
   bool found_item = false;
   bool has_float_ahead = false;
   *is_first_container = true;
-  *child_has_any_child_items = false;
   for (const LayoutObject* descendant = layout_inline.FirstChild(); descendant;
        descendant = next_descendant) {
     wtf_size_t item_idx = descendant->FirstInlineFragmentItemIndex();
@@ -379,7 +377,6 @@ bool FragmentItems::IsContainerForCulledInline(
       next_descendant = descendant->NextInPreOrder(&layout_inline);
     if (!item_idx)
       continue;
-    *child_has_any_child_items = true;
 
     // |FirstInlineFragmentItemIndex| is 1-based. Convert to 0-based index.
     item_idx--;
