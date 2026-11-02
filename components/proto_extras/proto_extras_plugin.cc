@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <cstdlib>
+#include <iostream>
+#include <set>
 #include <string>
 
-#include "base/check.h"
-#include "base/containers/flat_set.h"
-#include "base/files/file_path.h"
-#include "base/logging.h"
-#include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/proto_extras/proto_extras_options.pb.h"
+#include "third_party/abseil-cpp/absl/base/optimization.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/code_generator.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/cpp/helpers.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/cpp/names.h"
@@ -35,6 +32,7 @@ using google::protobuf::compiler::cpp::FieldName;
 using google::protobuf::compiler::cpp::Namespace;
 using google::protobuf::compiler::cpp::NamespaceOpener;
 using google::protobuf::compiler::cpp::QualifiedClassName;
+using google::protobuf::compiler::cpp::StripProto;
 using google::protobuf::compiler::cpp::UnderscoresToCamelCase;
 using google::protobuf::io::Printer;
 using google::protobuf::io::ZeroCopyOutputStream;
@@ -46,7 +44,7 @@ struct ProtoExtrasGeneratorOptions {
 };
 
 bool GetAllClassNames(const Descriptor& message,
-                      base::flat_set<std::string>& class_names) {
+                      std::set<std::string>& class_names) {
   class_names.insert(ClassName(&message));
   for (int i = 0; i < message.nested_type_count(); i++) {
     if (!GetAllClassNames(*message.nested_type(i), class_names)) {
@@ -87,9 +85,10 @@ void FieldToMapKeyFunction(const FieldDescriptor* field, Printer* printer) {
       case TYPE_FLOAT:
       case TYPE_MESSAGE:
       case TYPE_GROUP:
-        NOTREACHED() << "Invalid protobuf map key type.";
+        std::cerr << "Invalid protobuf map key type.\n";
+        std::abort();
     }
-    NOTREACHED();
+    ABSL_UNREACHABLE();
   };
   printer->Print(conversion_function());
 }
@@ -128,20 +127,23 @@ void FieldToValueFunction(const FieldDescriptor* field, Printer* printer) {
               return "";
             }
           case kCord:
-            CHECK(output_bytes) << "kCord is only supported for bytes fields.";
+            if (!output_bytes) {
+              std::cerr << "kCord is only supported for bytes fields.\n";
+              std::abort();
+            }
             // If cord support is enabled for strings, this should probably
             // return "std::string".
             return "::proto_extras::Base64EncodeCord";
         }
       }
       case CPPTYPE_ENUM:
-        return base::StrCat({QualifiedClassName(field->enum_type()), "_Name"});
+        return QualifiedClassName(field->enum_type()) + "_Name";
       case CPPTYPE_MESSAGE:
         // The ToValue function for the message is in the namespace of the
         // nested message itself.
-        return base::StrCat({Namespace(field->message_type()), "::ToValue"});
+        return Namespace(field->message_type()) + "::ToValue";
     }
-    NOTREACHED();
+    ABSL_UNREACHABLE();
   };
   printer->Print(conversion_function());
 }
@@ -279,7 +281,7 @@ void CreateEqualityOperatorDefinition(
             printer->Emit(
                 {{"oneof_name", oneof->name()},
                  {"message_type", message_type},
-                 {"captital_oneof_name", base::ToUpperASCII(oneof->name())},
+                 {"captital_oneof_name", absl::AsciiStrToUpper(oneof->name())},
                  {"body",
                   [&]() {
                     for (int j = 0; j < oneof->field_count(); ++j) {
@@ -390,7 +392,10 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
                 const std::string& command_line_options,
                 GeneratorContext* context,
                 std::string* error) const override {
-    CHECK(file);
+    if (!file) {
+      std::cerr << "Check failed: file is null.\n";
+      std::abort();
+    }
 
     ProtoExtrasGeneratorOptions generator_options{
         .generate_to_value_serialization =
@@ -401,37 +406,42 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
     };
     // The current design of this library assumes that only one of the
     // serialization options is enabled.
-    CHECK(generator_options.generate_to_value_serialization ^
-          generator_options.generate_equality ^
-          generator_options.generate_stream_operator);
-
-    base::FilePath proto_file_path = base::FilePath::FromASCII(file->name());
-    base::FilePath::StringType file_suffix;
-    if (generator_options.generate_to_value_serialization) {
-      file_suffix = FILE_PATH_LITERAL(".to_value");
-    } else if (generator_options.generate_stream_operator) {
-      file_suffix = FILE_PATH_LITERAL(".ostream");
-    } else {
-      CHECK(generator_options.generate_equality);
-      file_suffix = FILE_PATH_LITERAL(".equal");
+    if (generator_options.generate_to_value_serialization +
+            generator_options.generate_equality +
+            generator_options.generate_stream_operator !=
+        1) {
+      std::cerr << "Check failed: only one serialization option can be "
+                   "enabled.\n";
+      std::abort();
     }
 
-    base::FilePath h_file_path =
-        proto_file_path.ReplaceExtension(file_suffix + FILE_PATH_LITERAL(".h"));
-    base::FilePath cc_file_path = proto_file_path.ReplaceExtension(
-        file_suffix + FILE_PATH_LITERAL(".cc"));
+    std::string proto_file_path(file->name());
+    std::string base_file_path = StripProto(proto_file_path);
+    std::string file_suffix;
+    if (generator_options.generate_to_value_serialization) {
+      file_suffix = ".to_value";
+    } else if (generator_options.generate_stream_operator) {
+      file_suffix = ".ostream";
+    } else {
+      file_suffix = ".equal";
+    }
+
+    std::string h_file_path = base_file_path + file_suffix + ".h";
+    std::string cc_file_path = base_file_path + file_suffix + ".cc";
 
     const std::unique_ptr<ZeroCopyOutputStream> h_stream(
-        context->Open(h_file_path.AsUTF8Unsafe()));
+        context->Open(h_file_path));
     const std::unique_ptr<ZeroCopyOutputStream> cc_stream(
-        context->Open(cc_file_path.AsUTF8Unsafe()));
+        context->Open(cc_file_path));
 
     Printer h_printer(h_stream.get(), Printer::Options{'$', nullptr});
     Printer cc_printer(cc_stream.get(), Printer::Options{'$', nullptr});
 
-    std::string include_guard =
-        base::ToUpperASCII(h_file_path.AsUTF8Unsafe()) + "_";
-    CHECK(base::ReplaceChars(include_guard, ".-/\\", "_", &include_guard));
+    std::string include_guard = absl::AsciiStrToUpper(h_file_path) + "_";
+    std::ranges::replace_if(
+        include_guard,
+        [](char c) { return c == '.' || c == '-' || c == '/' || c == '\\'; },
+        '_');
 
     auto forward_declarations = [&]() {
       if (generator_options.generate_to_value_serialization) {
@@ -439,7 +449,7 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
         h_printer.Print("class DictValue;\nclass Value;\n");
       }
       NamespaceOpener ns(Namespace(file), &h_printer);
-      base::flat_set<std::string> forward_declarations;
+      std::set<std::string> forward_declarations;
       for (int i = 0; i < file->message_type_count(); i++) {
         GetAllClassNames(*file->message_type(i), forward_declarations);
       }
@@ -451,7 +461,7 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
     h_printer.Emit(
         {
             {"include_guard", include_guard},
-            {"proto_file_path", proto_file_path.AsUTF8Unsafe()},
+            {"proto_file_path", proto_file_path},
             {"includes",
              [&] {
                if (generator_options.generate_stream_operator) {
@@ -488,20 +498,16 @@ $function_declarations$
 )");
 
     // Determine the #includes for the implementation file.
-    base::flat_set<std::string> impl_system_includes;
+    std::set<std::string> impl_system_includes;
     bool needs_pb_h = generator_options.generate_to_value_serialization ||
                       generator_options.generate_equality;
-    base::flat_set<std::string> impl_user_includes;
+    std::set<std::string> impl_user_includes;
     if (needs_pb_h) {
-      impl_user_includes.insert(
-          proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("pb.h"))
-              .AsUTF8Unsafe());
+      impl_user_includes.insert(base_file_path + ".pb.h");
     }
     if (generator_options.generate_stream_operator) {
       impl_system_includes.insert("<ostream>");
-      impl_user_includes.insert(
-          proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("to_value.h"))
-              .AsUTF8Unsafe());
+      impl_user_includes.insert(base_file_path + ".to_value.h");
       impl_user_includes.insert("base/values.h");
     }
     if (generator_options.generate_to_value_serialization) {
@@ -511,30 +517,21 @@ $function_declarations$
       impl_user_includes.insert("components/proto_extras/proto_extras_lib.h");
     }
     for (int i = 0; i < file->dependency_count(); i++) {
-      base::FilePath dependency_proto_file_path =
-          base::FilePath::FromASCII(file->dependency(i)->name());
+      std::string dependency_base_file_path =
+          StripProto(file->dependency(i)->name());
       if (needs_pb_h) {
-        impl_user_includes.insert(
-            dependency_proto_file_path
-                .ReplaceExtension(FILE_PATH_LITERAL("pb.h"))
-                .AsUTF8Unsafe());
+        impl_user_includes.insert(dependency_base_file_path + ".pb.h");
       }
       if (generator_options.generate_to_value_serialization) {
-        impl_user_includes.insert(
-            dependency_proto_file_path
-                .ReplaceExtension(FILE_PATH_LITERAL("to_value.h"))
-                .AsUTF8Unsafe());
+        impl_user_includes.insert(dependency_base_file_path + ".to_value.h");
       } else if (generator_options.generate_equality) {
-        impl_user_includes.insert(
-            dependency_proto_file_path
-                .ReplaceExtension(FILE_PATH_LITERAL("equal.h"))
-                .AsUTF8Unsafe());
+        impl_user_includes.insert(dependency_base_file_path + ".equal.h");
       }
     }
     cc_printer.Emit(
         {
-            {"proto_file_path", proto_file_path.AsUTF8Unsafe()},
-            {"header_file_path", h_file_path.AsUTF8Unsafe()},
+            {"proto_file_path", proto_file_path},
+            {"header_file_path", h_file_path},
             {"system_includes",
              [&] {
                for (const auto& include : impl_system_includes) {

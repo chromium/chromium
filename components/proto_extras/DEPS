@@ -2,3 +2,9 @@ include_rules = [
   "+base",
   "+third_party/protobuf/src/google/protobuf",
 ]
+
+specific_include_rules = {
+  "proto_(test_)?extras_plugin\\.cc": [
+    "-base",
+  ],
+}

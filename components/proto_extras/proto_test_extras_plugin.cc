@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <cstdlib>
+#include <iostream>
 #include <set>
 #include <string>
 
-#include "base/check.h"
-#include "base/files/file_path.h"
-#include "base/logging.h"
-#include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/code_generator.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/cpp/helpers.h"
 #include "third_party/protobuf/src/google/protobuf/compiler/cpp/names.h"
@@ -33,6 +29,7 @@ using google::protobuf::compiler::cpp::FieldName;
 using google::protobuf::compiler::cpp::Namespace;
 using google::protobuf::compiler::cpp::NamespaceOpener;
 using google::protobuf::compiler::cpp::QualifiedClassName;
+using google::protobuf::compiler::cpp::StripProto;
 using google::protobuf::io::Printer;
 using google::protobuf::io::ZeroCopyOutputStream;
 
@@ -61,36 +58,37 @@ class ProtoGmockGenerator : public google::protobuf::compiler::CodeGenerator {
                 const std::string& options,  // Options from build system
                 GeneratorContext* context,
                 std::string* error) const override {
-    CHECK(file);
+    if (!file) {
+      std::cerr << "Check failed: file is null.\n";
+      std::abort();
+    }
 
-    base::FilePath proto_file_path = base::FilePath::FromASCII(file->name());
+    std::string proto_file_path(file->name());
+    std::string base_file_path = StripProto(proto_file_path);
 
-    base::FilePath h_file_path =
-        proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("test.h"));
+    std::string h_file_path = base_file_path + ".test.h";
     const std::unique_ptr<ZeroCopyOutputStream> h_stream(
-        context->Open(h_file_path.AsUTF8Unsafe()));
+        context->Open(h_file_path));
     Printer h_printer(h_stream.get(), Printer::Options{'$', nullptr});
 
-    std::string include_guard =
-        base::ToUpperASCII(h_file_path.AsUTF8Unsafe()) + "_";
-    CHECK(base::ReplaceChars(include_guard, ".-/\\", "_", &include_guard));
+    std::string include_guard = absl::AsciiStrToUpper(h_file_path) + "_";
+    std::ranges::replace_if(
+        include_guard,
+        [](char c) { return c == '.' || c == '-' || c == '/' || c == '\\'; },
+        '_');
 
     std::set<std::string> includes = {
-        "testing/gmock/include/gmock/gmock.h",
-        proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("pb.h"))
-            .AsUTF8Unsafe(),
+        "testing/gmock/include/gmock/gmock.h", base_file_path + ".pb.h",
         "components/proto_extras/proto_matchers.h"};
     for (int i = 0; i < file->dependency_count(); i++) {
-      base::FilePath dependency_proto_file_path =
-          base::FilePath::FromASCII(file->dependency(i)->name());
-      includes.insert(dependency_proto_file_path
-                          .ReplaceExtension(FILE_PATH_LITERAL("test.h"))
-                          .AsUTF8Unsafe());
+      std::string dependency_base_file_path =
+          StripProto(file->dependency(i)->name());
+      includes.insert(dependency_base_file_path + ".test.h");
     }
 
     h_printer.Emit(
         {{"include_guard", include_guard},
-         {"proto_file_path", proto_file_path.AsUTF8Unsafe()},
+         {"proto_file_path", proto_file_path},
          {"includes",
           [&] {
             for (const auto& include : includes) {
@@ -139,19 +137,15 @@ $print_to_declarations$
 #endif  // $include_guard$
 )");
 
-    base::FilePath cc_file_path =
-        proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("test.cc"));
+    std::string cc_file_path = base_file_path + ".test.cc";
     const std::unique_ptr<ZeroCopyOutputStream> cc_stream(
-        context->Open(cc_file_path.AsUTF8Unsafe()));
+        context->Open(cc_file_path));
     Printer cc_printer(cc_stream.get(), Printer::Options{'$', nullptr});
     cc_printer.Emit(
-        {{"proto_file_path", proto_file_path.AsUTF8Unsafe()},
-         {"header",
-          proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("test.h"))
-              .AsUTF8Unsafe()},
-         {"to_value_header",
-          proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("to_value.h"))
-              .AsUTF8Unsafe()},
+        {{"proto_file_path", proto_file_path},
+         {"header", h_file_path},
+         {"base_values_header", "base/values.h"},
+         {"to_value_header", base_file_path + ".to_value.h"},
          {"equals_proto_definitions",
           [&] {
             NamespaceOpener ns(Namespace(file), &cc_printer);
@@ -174,7 +168,7 @@ $print_to_declarations$
 
 #include <ostream>
 
-#include "base/values.h"
+#include "$base_values_header$"
 #include "$to_value_header$"
 
 $equals_proto_definitions$
@@ -187,12 +181,11 @@ $print_to_definitions$
   }
 
   std::string UniqueMatcherName(const Descriptor& message) const {
-    return base::StrCat({"Equals", ClassName(&message)});
+    return "Equals" + ClassName(&message);
   }
 
   std::string QualifiedMatcher(const Descriptor& message) const {
-    return base::StrCat(
-        {Namespace(&message), "::", "Equals", ClassName(&message)});
+    return Namespace(&message) + "::Equals" + ClassName(&message);
   }
 
   void PrintFieldMatcher(const FieldDescriptor& field,

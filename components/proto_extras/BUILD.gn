@@ -10,19 +10,27 @@ if (current_toolchain == host_toolchain) {
     sources = [ "proto_extras_plugin.cc" ]
     deps = [
       ":proto_extras_options_proto",
-      "//base",
+      "//third_party/abseil-cpp:absl",
       "//third_party/protobuf:protoc_cpp",
       "//third_party/protobuf:protoc_lib",
     ]
+
+    # Do not depend on //base so the plugin can link alongside protoc
+    # without waiting for libbase.so (and its Rust dependencies) in component
+    # builds. Use "//base" rather than "//base/*" because Windows component
+    # builds pull in //base/allocator/partition_allocator/* via
+    # //build/config:shared_library_deps.
+    assert_no_deps = [ "//base" ]
   }
 
   executable("proto_test_extras_plugin") {
     sources = [ "proto_test_extras_plugin.cc" ]
     deps = [
-      "//base",
+      "//third_party/abseil-cpp:absl",
       "//third_party/protobuf:protoc_cpp",
       "//third_party/protobuf:protoc_lib",
     ]
+    assert_no_deps = [ "//base" ]
   }
 }
 
