@@ -39,11 +39,13 @@ class SessionRoutingConfig {
   static base::FilePath GetDefaultConfigFilePath();
 
   // Synchronously loads and validates the config file from `path`.
-  // - Returns `base::ok(std::nullopt)` if the file does not exist (`ENOENT`).
+  // - Returns `base::ok(std::nullopt)` if the file or its parent directory
+  //   does not exist.
   // - Returns `base::ok(SessionRoutingConfig)` if the file is secure and valid.
-  // - Returns `base::unexpected(Loggable)` if the file exists on disk but fails
-  //   ownership/permission/symlink security checks, contains malformed JSON, or
-  //   violates the schema.
+  // - Returns `base::unexpected(Loggable)` if the file or its parent directory
+  //   fails the ownership/permission/symlink security checks of
+  //   ReadSecureFile(), or if the file contains malformed JSON or violates the
+  //   schema.
   // `is_corp_host` selects the routing mode when `sessionUser` is not set:
   // `kMatchCorpClientUsername` on corp hosts, `kRejectAll` otherwise.
   static base::expected<std::optional<SessionRoutingConfig>, Loggable>

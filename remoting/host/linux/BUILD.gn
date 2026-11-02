@@ -200,6 +200,17 @@ source_set("host_types") {
   deps = [ "//base" ]
 }
 
+source_set("secure_file_reader") {
+  sources = [
+    "secure_file_reader.cc",
+    "secure_file_reader.h",
+  ]
+  deps = [
+    "//base",
+    "//remoting/base",
+  ]
+}
+
 source_set("remoting_migrate_host_main_impl") {
   sources = [ "migrate_host_main.cc" ]
   deps = [
@@ -367,6 +378,7 @@ static_library("platform_impls") {
     ":gvariant",
     ":pipewire_loader",
     ":remote_session_info_main_headers",
+    ":secure_file_reader",
     ":utils",
     ":x11",
     ":x11_display_utils",
@@ -491,6 +503,7 @@ source_set("unit_tests") {
     "pipewire_mouse_cursor_capturer_unittest.cc",
     "pulse_audio_capturer_unittest.cc",
     "remote_display_session_manager_unittest.cc",
+    "secure_file_reader_unittest.cc",
     "session_routing_config_unittest.cc",
     "systemd_utils_unittest.cc",
     "test_util.cc",
@@ -519,6 +532,7 @@ source_set("unit_tests") {
 
   deps = [
     ":platform_impls",
+    ":secure_file_reader",
     ":utils",
     ":x11_display_utils",
     "dbus_interfaces:interface_headers",

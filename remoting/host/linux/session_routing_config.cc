@@ -4,8 +4,6 @@
 
 #include "remoting/host/linux/session_routing_config.h"
 
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 
 #include <algorithm>
@@ -13,16 +11,12 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <utility>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -30,6 +24,7 @@
 #include "remoting/base/errors.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/base/loggable.h"
+#include "remoting/host/linux/secure_file_reader.h"
 #include "remoting/signaling/signaling_id_util.h"
 
 namespace remoting {
@@ -64,92 +59,18 @@ base::expected<std::optional<SessionRoutingConfig>, Loggable>
 SessionRoutingConfig::LoadAndValidate(const base::FilePath& path,
                                       bool is_corp_host,
                                       uid_t expected_owner_uid) {
-  base::ScopedFD fd(HANDLE_EINTR(
-      open(path.value().c_str(), O_RDONLY | O_NOFOLLOW | O_CLOEXEC)));
-  if (!fd.is_valid()) {
-    int open_errno = errno;
-    if (open_errno == ENOENT) {
-      return base::ok(std::nullopt);
-    }
-    if (open_errno == ELOOP) {
-      return base::unexpected(Loggable(
-          FROM_HERE,
-          base::StringPrintf(
-              "Session routing config '%s' is a symbolic link, which is not "
-              "allowed.",
-              path.value().c_str())));
-    }
-    return base::unexpected(Loggable(
-        FROM_HERE, base::StringPrintf(
-                       "Failed to open session routing config '%s': %s",
-                       path.value().c_str(),
-                       logging::SystemErrorCodeToString(open_errno).c_str())));
+  auto content =
+      ReadSecureFile(path, expected_owner_uid, kMaxConfigFileSizeBytes);
+  if (!content.has_value()) {
+    return std::move(content).error().UnexpectedWithContext(
+        FROM_HERE, "While reading session routing config");
   }
-
-  struct stat stat_buf;
-  if (fstat(fd.get(), &stat_buf) != 0) {
-    return base::unexpected(Loggable(
-        FROM_HERE,
-        base::StringPrintf("Failed to stat session routing config '%s': %s",
-                           path.value().c_str(),
-                           logging::SystemErrorCodeToString(errno).c_str())));
-  }
-
-  if (!S_ISREG(stat_buf.st_mode)) {
-    return base::unexpected(Loggable(
-        FROM_HERE,
-        base::StringPrintf("Session routing config '%s' is not a regular file.",
-                           path.value().c_str())));
-  }
-
-  if (stat_buf.st_uid != expected_owner_uid) {
-    return base::unexpected(Loggable(
-        FROM_HERE,
-        base::StringPrintf(
-            "Session routing config '%s' has owner UID %u (expected %u).",
-            path.value().c_str(), stat_buf.st_uid, expected_owner_uid)));
-  }
-
-  if ((stat_buf.st_mode & (S_IWGRP | S_IWOTH)) != 0) {
-    return base::unexpected(Loggable(
-        FROM_HERE,
-        base::StringPrintf("Session routing config '%s' is writable by group "
-                           "or others (mode: 0%o).",
-                           path.value().c_str(), stat_buf.st_mode & 07777)));
-  }
-
-  if (stat_buf.st_size > static_cast<off_t>(kMaxConfigFileSizeBytes)) {
-    return base::unexpected(Loggable(
-        FROM_HERE,
-        base::StringPrintf("Session routing config '%s' exceeds size limit "
-                           "(%ld bytes > %zu bytes).",
-                           path.value().c_str(),
-                           static_cast<long>(stat_buf.st_size),
-                           kMaxConfigFileSizeBytes)));
-  }
-
-  base::ScopedFILE file(fdopen(fd.get(), "r"));
-  if (!file) {
-    return base::unexpected(Loggable(
-        FROM_HERE,
-        base::StringPrintf("Failed to fdopen session routing config '%s': %s",
-                           path.value().c_str(),
-                           logging::SystemErrorCodeToString(errno).c_str())));
-  }
-  // `file` now owns the underlying file descriptor.
-  std::ignore = fd.release();
-
-  std::string content;
-  if (!base::ReadStreamToStringWithMaxSize(file.get(), kMaxConfigFileSizeBytes,
-                                           &content)) {
-    return base::unexpected(Loggable(
-        FROM_HERE,
-        base::StringPrintf("Failed to read session routing config '%s'.",
-                           path.value().c_str())));
+  if (!content->has_value()) {
+    return base::ok(std::nullopt);
   }
 
   auto json = base::JSONReader::ReadAndReturnValueWithError(
-      content, base::JSON_PARSE_RFC);
+      **content, base::JSON_PARSE_RFC);
   if (!json.has_value()) {
     return base::unexpected(Loggable(
         FROM_HERE, base::StringPrintf(

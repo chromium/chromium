@@ -106,6 +106,14 @@ TEST_F(SessionRoutingConfigTest, WorldWritableFails) {
   EXPECT_FALSE(result.has_value());
 }
 
+TEST_F(SessionRoutingConfigTest, GroupWritableParentDirectoryFails) {
+  base::FilePath config_file = CreateConfigFile(kValidSessionUserJson, 0600);
+  ASSERT_TRUE(base::SetPosixFilePermissions(temp_dir_.GetPath(), 0770));
+  auto result = SessionRoutingConfig::LoadAndValidate(
+      config_file, /*is_corp_host=*/false, current_uid_);
+  EXPECT_FALSE(result.has_value());
+}
+
 TEST_F(SessionRoutingConfigTest, ValidPermissionsPass) {
   // 0600
   base::FilePath config_file = CreateConfigFile(kValidSessionUserJson, 0600);
