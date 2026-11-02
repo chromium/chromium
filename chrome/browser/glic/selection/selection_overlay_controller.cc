@@ -459,16 +459,18 @@ std::vector<int> SelectionOverlayController::GetPolylineCounts() const {
 void SelectionOverlayController::BindOverlay(
     mojo::PendingReceiver<selection::SelectionOverlayPageHandler> receiver,
     mojo::PendingRemote<selection::SelectionOverlayPage> page) {
-  CHECK_EQ(state(), State::kStartingWebUI) << base::ToString(state());
+  // The tab may have been backgrounded while the WebUI was starting.
+  CHECK(state() == State::kStartingWebUI || state() == State::kBackground)
+      << base::ToString(state());
 
   session_->receiver.Bind(std::move(receiver));
   session_->receiver.set_disconnect_handler(base::BindOnce(
       &SelectionOverlayController::Reset, session_weak_factory_.GetWeakPtr()));
   session_->page.Bind(std::move(page));
 
-  if (overlay_web_view_) {
+  if (views::WebView* web_view = GetOverlayWebView()) {
     session_->overlay_web_view_focus_subscription =
-        overlay_web_view_->AddWebContentsFocusedCallback(base::BindRepeating(
+        web_view->AddWebContentsFocusedCallback(base::BindRepeating(
             &SelectionOverlayController::OnOverlayWebViewFocused,
             session_weak_factory_.GetWeakPtr()));
   }

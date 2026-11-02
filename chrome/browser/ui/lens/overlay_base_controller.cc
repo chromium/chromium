@@ -766,9 +766,12 @@ void OverlayBaseController::HideOverlay(bool /*entering_background*/) {
 }
 
 void OverlayBaseController::InitializeOverlayImpl() {
+  // A backgrounded overlay shows its bubble once the tab is foregrounded.
+  const bool backgrounded = state_ == State::kBackground;
+
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
-  if (ShouldShowPreselectionBubble()) {
+  if (!backgrounded && ShouldShowPreselectionBubble()) {
     ShowPreselectionBubble();
   }
 
@@ -784,6 +787,10 @@ void OverlayBaseController::InitializeOverlayImpl() {
             live_page_widget_host);
   }
 
+  if (backgrounded) {
+    backgrounded_state_ = State::kOverlay;
+    return;
+  }
   state_ = State::kOverlay;
 }
 

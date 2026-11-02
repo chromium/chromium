@@ -1744,4 +1744,40 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   EXPECT_EQ(tabs->GetTabCount(), initial_tab_count);
 }
 
+// Backgrounding the tab while the overlay WebUI is starting must not crash
+// when the WebUI binds, and the overlay initialized in the background (with its
+// blur) must show again when the tab comes back.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
+                       BackgroundedWhileStartingWebUI) {
+  tabs::TabInterface* other_tab = CreateAndActivateTab(GetSimpleTestUrl());
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+                          SelectionOverlayController::State::kStartingWebUI,
+                          "Timeout waiting for kStartingWebUI"));
+
+  // The WebUI binds and initializes while the tab is in the background.
+  GetTabListInterface()->ActivateTab(other_tab->GetHandle());
+  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+                          SelectionOverlayController::State::kBackground,
+                          "Timeout waiting for kBackground"));
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->backgrounded_state_for_testing(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for the overlay to initialize in the background"));
+
+  GetTabListInterface()->ActivateTab(tab->GetHandle());
+  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timeout waiting for kOverlay"));
+  ASSERT_TRUE(controller->GetOverlayViewForTesting());
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+  EXPECT_TRUE(controller->GetLensOverlayBlurLayerDelegateForTesting());
+}
+
 }  // namespace glic
