@@ -1316,9 +1316,6 @@ ios_builder(
             "components_unittests iPhone 16 27.0": targets.mixin(
                 ci_only = True,
             ),
-            "ios_chrome_integration_eg2tests_module iPhone 16 27.0": targets.mixin(
-                ci_only = True,
-            ),
             "ios_chrome_unittests iPad (A16) 27.0": targets.mixin(
                 ci_only = True,
             ),

@@ -967,6 +967,9 @@
 ### ios_chrome_all_eg2tests_module iPhone 16 26.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
+### ios_chrome_all_eg2tests_module iPhone 16 27.0
+* [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
+
 ### ios_components_unittests iPhone 16 26.5
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 

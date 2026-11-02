@@ -5507,15 +5507,6 @@ targets.bundle(
             variants = [
                 "SIM_IPHONE_15_18_5",
                 "SIM_IPHONE_16_26_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_vm_eg2_cq_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "mac_26_vm_optional",
-            ],
-            variants = [
                 "SIM_IPHONE_16_27_0",
             ],
         ),
@@ -5542,31 +5533,6 @@ targets.bundle(
             ],
         ),
     ],
-)
-
-# This is essentially ios_eg2_cq_tests but runs on more shards without
-# parallel simulator clones, because VMs have fewer cores / worse performance
-# than bare metal under --clones 2 contention.
-# TODO(crbug.com/427497507): remove once we have launced more VMs.
-targets.bundle(
-    name = "ios_vm_eg2_cq_tests",
-    targets = [
-        "ios_chrome_integration_eg2tests_module",
-        "ios_web_shell_eg2tests_module",
-    ],
-    per_test_modifications = {
-        "ios_chrome_integration_eg2tests_module": [
-            targets.mixin(
-                args = [
-                    "--clones",
-                    "1",
-                ],
-                swarming = targets.swarming(
-                    shards = 18,
-                ),
-            ),
-        ],
-    },
 )
 
 targets.bundle(
