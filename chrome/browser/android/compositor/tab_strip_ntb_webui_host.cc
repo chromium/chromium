@@ -87,7 +87,6 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(
               tab_model,
               TabModel::TabLaunchType::FROM_CHROME_UI))) {
   TabModelList::AddObserver(this);
-  profile_observation_.Observe(tab_model->GetProfile());
   const GURL url(chrome::kChromeUITabStripNtbURL);
   web_contents_ = CreateWebContents(tab_model->GetProfile(), url);
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
@@ -114,23 +113,14 @@ TabStripNtbWebUiHost::~TabStripNtbWebUiHost() {
   Reset();
 }
 
-void TabStripNtbWebUiHost::OnProfileWillBeDestroyed(Profile* profile) {
-  // IncognitoTabModelImpl notifies IncognitoProfileDestroyer::didBecomeEmpty()
-  // before destroying the delegate TabModel (and firing OnTabModelRemoved).
-  // Tear down the WebContents here during MaybeSendDestroyedNotification() so
-  // its RenderProcessHost is unregistered before ProfileDestroyer checks for
-  // live hosts.
-  Reset();
-}
-
 void TabStripNtbWebUiHost::OnTabModelRemoved(TabModel* tab_model) {
   if (tab_model != tab_model_) {
     return;
   }
-  // An incognito window destroys its TabModel as soon as its last tab closes
-  // (even when another incognito window keeps the OTR Profile alive), before
-  // the window itself is torn down. Tear down the WebContents and service now
-  // so that the adapters' TabModel references do not dangle.
+  // An incognito window destroys its TabModel as soon as its last tab closes,
+  // before the window is torn down. Tear down the WebContents and service now
+  // so that the WebContents does not keep a RenderProcessHost for the
+  // off-the-record Profile alive and block ProfileDestroyer.
   Reset();
 }
 
@@ -138,7 +128,6 @@ void TabStripNtbWebUiHost::Reset() {
   if (!web_contents_) {
     return;
   }
-  profile_observation_.Reset();
   input_event_observation_.Reset();
   java_coordinator_.Reset();
   Observe(nullptr);
