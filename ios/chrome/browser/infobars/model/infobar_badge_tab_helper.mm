@@ -132,9 +132,7 @@ void InfobarBadgeTabHelper::UnregisterInfobar(infobars::InfoBar* infobar) {
         infobar_accept_observations =
             infobar_accept_observer_.scoped_observations();
     InfoBarIOS* infobar_ios = static_cast<InfoBarIOS*>(infobar);
-    // TODO(crbug.com/330899285): Fix the root cause of infobar not being
-    // observed, and replace the entire conditional by a direct tall to
-    // `RemoveObservation`.
+    // Defensively ensure the infobar is currently observed before removal.
     if (infobar_accept_observations.IsObservingSource(infobar_ios)) {
       infobar_accept_observations.RemoveObservation(infobar_ios);
     } else {
@@ -188,8 +186,7 @@ void InfobarBadgeTabHelper::InfobarAcceptanceObserver::DidUpdateAcceptedState(
 void InfobarBadgeTabHelper::InfobarAcceptanceObserver::InfobarDestroyed(
     InfoBarIOS* infobar) {
   InfoBarIOS* infobar_ios = static_cast<InfoBarIOS*>(infobar);
-  // TODO(crbug.com/330899285): Fix the root cause of infobar not being
-  // observed, and remove the `else` condition.
+  // Defensively ensure the infobar is currently observed before removal.
   if (scoped_observations_.IsObservingSource(infobar_ios)) {
     scoped_observations_.RemoveObservation(infobar_ios);
   } else {
@@ -243,8 +240,7 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarReplaced(
         infobar_accept_observations =
             infobar_accept_observer_->scoped_observations();
     InfoBarIOS* old_infobar_ios = static_cast<InfoBarIOS*>(old_infobar);
-    // TODO(crbug.com/330899285): Fix the root cause of infobar not being
-    // observed, and remove the `else` condition.
+    // Defensively ensure the infobar is currently observed before removal.
     if (infobar_accept_observations.IsObservingSource(old_infobar_ios)) {
       infobar_accept_observations.RemoveObservation(old_infobar_ios);
     } else {
