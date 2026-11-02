@@ -5,7 +5,6 @@
 #include "components/webcrypto/fuzzer_support.h"
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_executor.h"
@@ -77,8 +76,7 @@ blink::WebCryptoKeyUsageMask GetCompatibleKeyUsages(
              : blink::kWebCryptoKeyUsageSign;
 }
 
-void ImportEcKeyFromDerFuzzData(const uint8_t* data,
-                                size_t size,
+void ImportEcKeyFromDerFuzzData(base::span<const uint8_t> data,
                                 blink::WebCryptoKeyFormat format) {
   DCHECK(format == blink::kWebCryptoKeyFormatSpki ||
          format == blink::kWebCryptoKeyFormatPkcs8);
@@ -98,8 +96,8 @@ void ImportEcKeyFromDerFuzzData(const uint8_t* data,
 
   blink::WebCryptoKey key;
   webcrypto::Status status = webcrypto::ImportKey(
-      format, UNSAFE_TODO(base::span(data, size)),
-      CreateEcImportAlgorithm(algorithm_id, curve), true, usages, &key);
+      format, data, CreateEcImportAlgorithm(algorithm_id, curve), true, usages,
+      &key);
 
   // These errors imply a bad setup of parameters, and means ImportKey() may not
   // be testing the actual parsing.
@@ -109,16 +107,14 @@ void ImportEcKeyFromDerFuzzData(const uint8_t* data,
             Status::ErrorCreateKeyBadUsages().error_details());
 }
 
-void ImportEcKeyFromRawFuzzData(const uint8_t* data, size_t size) {
+void ImportEcKeyFromRawFuzzData(base::span<const uint8_t> data) {
   EnsureInitialized();
 
   // There are 3 possible EC named curves. Consume the first byte to decide on
   // the curve.
   uint8_t curve_index = 0;
-  if (size > 0) {
-    curve_index = data[0];
-    UNSAFE_TODO(data++);
-    size--;
+  if (!data.empty()) {
+    curve_index = data.take_first_elem();
   }
 
   blink::WebCryptoNamedCurve curve;
@@ -143,7 +139,7 @@ void ImportEcKeyFromRawFuzzData(const uint8_t* data, size_t size) {
 
   blink::WebCryptoKey key;
   webcrypto::Status status = webcrypto::ImportKey(
-      blink::kWebCryptoKeyFormatRaw, UNSAFE_TODO(base::span(data, size)),
+      blink::kWebCryptoKeyFormatRaw, data,
       CreateEcImportAlgorithm(algorithm_id, curve), true, usages, &key);
 
   // These errors imply a bad setup of parameters, and means ImportKey() may not
@@ -154,8 +150,7 @@ void ImportEcKeyFromRawFuzzData(const uint8_t* data, size_t size) {
             Status::ErrorCreateKeyBadUsages().error_details());
 }
 
-void ImportRsaKeyFromDerFuzzData(const uint8_t* data,
-                                 size_t size,
+void ImportRsaKeyFromDerFuzzData(base::span<const uint8_t> data,
                                  blink::WebCryptoKeyFormat format) {
   DCHECK(format == blink::kWebCryptoKeyFormatSpki ||
          format == blink::kWebCryptoKeyFormatPkcs8);
@@ -176,9 +171,8 @@ void ImportRsaKeyFromDerFuzzData(const uint8_t* data,
 
   blink::WebCryptoKey key;
   webcrypto::Status status = webcrypto::ImportKey(
-      format, UNSAFE_TODO(base::span(data, size)),
-      CreateRsaHashedImportAlgorithm(algorithm_id, hash_id), true, usages,
-      &key);
+      format, data, CreateRsaHashedImportAlgorithm(algorithm_id, hash_id), true,
+      usages, &key);
 
   // These errors imply a bad setup of parameters, and means ImportKey() may not
   // be testing the actual parsing.
