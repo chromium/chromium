@@ -647,26 +647,6 @@ TEST_F(ActiveTaskContextProviderImplTest, ObserverNotifiedOnDestruction) {
   local_provider.reset();
 }
 
-class ActiveTaskContextProviderImplFeatureDisabledTest
-    : public ActiveTaskContextProviderImplTest {
- public:
-  void InitializeFeatureList() override {
-    feature_list_.InitWithFeatures(
-        {}, {kContextualTasksSidePanel, kContextualTasks});
-  }
-};
-
-TEST_F(ActiveTaskContextProviderImplFeatureDisabledTest,
-       RefreshContextWhenFeatureDisabled) {
-  EXPECT_CALL(*contextual_tasks_panel_controller_,
-              GetSessionHandleForActiveTabOrPanel())
-      .Times(0);
-  EXPECT_CALL(observer_, OnContextTabsChanged(std::set<tabs::TabHandle>()))
-      .Times(1);
-
-  provider_->RefreshContext();
-}
-
 class ActiveTaskContextProviderImplSidePanelOnlyTest
     : public ActiveTaskContextProviderImplTest {
  public:

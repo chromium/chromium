@@ -1750,8 +1750,7 @@ class ContextualTasksEphemeralButtonCobrowseDisabledInteractiveTest
   }
 
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
-    return {{contextual_tasks::kContextualTasksSidePanel, {}},
-            {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+    return {{contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
              {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
             {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}}};
   }

@@ -472,6 +472,11 @@ class ContextualTasksLensInteractionBrowserTestBase
 
   ui::UserDataFactory::ScopedOverride controller_override_;
 
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
@@ -1269,47 +1274,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
   histogram_tester.ExpectTotalCount("ContextualSearch.ErrorPageShown.Lens", 0);
 }
 
-class ContextualTasksRoutingEnabledTest
-    : public ContextualTasksLensInteractionBrowserTestBase {
- public:
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    feature_list_.InitWithFeaturesAndParameters(
-        {{contextual_tasks::kContextualTasks,
-          {{"ContextualTasksEnableLensInContextualTasks", "false"}}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-         {lens::features::kLensOverlay, {}},
-         {lens::features::kLensOverlayContextualSearchbox, {}}},
-        {lens::features::kLensSidePanelUnification});
-    InProcessBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksRoutingEnabledTest,
-                       RoutingEnabledIfEligibleAndInvocationIsComposeBox) {
-  auto* controller = GetLensSearchController();
-  ASSERT_TRUE(controller);
-
-  controller->OpenLensOverlay(
-      lens::LensOverlayInvocationSource::kContextualTasksComposebox);
-
-  EXPECT_TRUE(controller->should_route_to_contextual_tasks());
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksRoutingEnabledTest,
-                       RoutingDisabledIfInvocationIsNotComposeBox) {
-  auto* controller = GetLensSearchController();
-  ASSERT_TRUE(controller);
-
-  controller->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
-
-  EXPECT_FALSE(controller->should_route_to_contextual_tasks());
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksRoutingEnabledTest,
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTestBase,
                        UpdatePageContextDoesNotCrashWhenQueryControllerIsOff) {
   WaitForPaint();
 
@@ -1330,51 +1295,19 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksRoutingEnabledTest,
   run_loop.Run();
 }
 
-class ContextualTasksRoutingIneligibleTest
-    : public ContextualTasksLensInteractionBrowserTestBase {
- public:
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    feature_list_.InitWithFeatures(
-        {contextual_tasks::kContextualTasks, lens::features::kLensOverlay,
-         lens::features::kLensOverlayContextualSearchbox},
-        {contextual_tasks::kContextualTasksForceEntryPointEligibility,
-         lens::features::kLensSidePanelUnification});
-    InProcessBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksRoutingIneligibleTest,
-                       RoutingDisabledIfIneligibleEvenIfComposeBox) {
-  auto* controller = GetLensSearchController();
-  ASSERT_TRUE(controller);
-
-  controller->OpenLensOverlay(
-      lens::LensOverlayInvocationSource::kContextualTasksComposebox);
-
-  EXPECT_FALSE(controller->should_route_to_contextual_tasks());
-}
-
 class OmniboxContextualSuggestionPrivacyNoticeBypassBrowserTest
     : public ContextualTasksLensInteractionBrowserTestBase {
  public:
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}},
-                              {contextual_tasks::kContextualTasksContext, {}},
-                              {contextual_tasks::
-                                   kContextualTasksForceEntryPointEligibility,
-                               {}},
+        /*enabled_features=*/{{contextual_tasks::kContextualTasksContext, {}},
                               {lens::features::kLensOverlay, {}},
                               {lens::features::kLensOverlayContextualSearchbox,
                                {}},
                               {omnibox::kWebUIOmniboxAskGAboutThisPage,
                                {{"Omnibox_AskGBypassPrivacyNotice", "true"}}}},
-        /*disabled_features=*/{lens::features::kLensSidePanelUnification});
+        /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();
   }
 
@@ -1442,12 +1375,7 @@ class LensSearchControllerStartZeroStateSessionTest
     : public InProcessBrowserTest {
  public:
   LensSearchControllerStartZeroStateSessionTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{contextual_tasks::kContextualTasks,
-                              contextual_tasks::
-                                  kContextualTasksForceEntryPointEligibility,
-                              lens::features::kLensSidePanelUnification},
-        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
+    feature_list_.InitAndDisableFeature(omnibox::kAimServerEligibilityEnabled);
   }
 
   bool IsContextualTasksSidePanelOpen() {
