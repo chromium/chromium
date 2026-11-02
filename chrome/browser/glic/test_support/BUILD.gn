@@ -32,6 +32,8 @@ source_set("test_support") {
     "mock_glic_instance_coordinator.h",
     "mock_glic_keyed_service.cc",
     "mock_glic_keyed_service.h",
+    "scoped_geic_test_features.cc",
+    "scoped_geic_test_features.h",
     "scoped_glic_provider_override.cc",
     "scoped_glic_provider_override.h",
     "scoped_page_context_eligibility.cc",

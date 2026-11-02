@@ -4,7 +4,6 @@
 
 #include "base/callback_list.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/scoped_geic_test_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_helper.h"
@@ -122,15 +122,8 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, NormalIconIsGlicIcon) {
 // With Gemini Enterprise enabled for the profile, the button shows the GEiC
 // icon instead.
 class GlicButtonGeicIconTest : public GlicButtonTest {
- public:
-  GlicButtonGeicIconTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGeic,
-        {{"geic-guest-url", "https://business.gemini.google/panel"}});
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
+  ScopedGeicTestFeatures geic_features_{/*enable_fre=*/false};
 };
 
 IN_PROC_BROWSER_TEST_F(GlicButtonGeicIconTest, NormalIconIsGeicIcon) {

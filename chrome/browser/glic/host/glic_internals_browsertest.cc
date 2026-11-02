@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/test_support/scoped_geic_test_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -35,9 +36,6 @@ namespace {
 constexpr char kWaitForInternalsLoaded[] = R"js(
   customElements.whenDefined('glic-internals-app').then(() => true)
 )js";
-
-constexpr char kGeicGuestUrl[] =
-    "https://business.gemini.google/side-panel?configId=abc";
 
 // Loads chrome://glic/internals in `contents`, revokes Glic consent through the
 // page handler, and waits until `pref_name` in `prefs` changes.
@@ -81,20 +79,9 @@ class GlicInternalsBrowserTest : public PlatformBrowserTest {
 
 // Enables GEiC and the GEiC FRE before the profile is created, so that the
 // profile is latched to Gemini Enterprise.
-// TODO(b/576661278): Use a shared helper for GEiC browser test setup.
-class GlicInternalsGeicBrowserTest : public PlatformBrowserTest {
- public:
-  GlicInternalsGeicBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlic, {}},
-         {features::kGeic,
-          {{"enabled", "true"}, {"geic-guest-url", kGeicGuestUrl}}},
-         {features::kGeicFre, {}}},
-        {});
-  }
-
+class GlicInternalsGeicBrowserTest : public GlicInternalsBrowserTest {
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedGeicTestFeatures geic_features_{/*enable_fre=*/true};
 };
 
 IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,

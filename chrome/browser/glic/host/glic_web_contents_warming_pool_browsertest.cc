@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/scoped_geic_test_features.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -349,14 +350,8 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingDisabledBrowserTest, NoWarming) {
 }
 
 class GlicWarmingPoolGeicBrowserTest : public GlicWarmingPoolBrowserTest {
- public:
-  GlicWarmingPoolGeicBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGeic, {{"geic-guest-url", "https://www.example.com/geic"}});
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
+  ScopedGeicTestFeatures geic_features_{/*enable_fre=*/false};
 };
 
 // TODO(b/496609005): Skip on ChromeOS due to profile ineligibility timeouts.

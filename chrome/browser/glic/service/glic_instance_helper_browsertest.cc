@@ -9,9 +9,9 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
-#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/scoped_geic_test_features.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -193,15 +193,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceHelperBrowserTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 class GlicInstanceHelperGeicBrowserTest : public GlicBrowserTest {
- public:
-  GlicInstanceHelperGeicBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGeic,
-        {{"geic-guest-url", "https://business.gemini.google/side-panel"}});
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
+  ScopedGeicTestFeatures geic_features_{/*enable_fre=*/false};
 };
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceHelperGeicBrowserTest,
