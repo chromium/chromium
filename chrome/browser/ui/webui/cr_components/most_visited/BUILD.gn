@@ -28,7 +28,6 @@ source_set("most_visited") {
     "//chrome/browser/preloading/new_tab_page_preload",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
-    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common/search:mojo_bindings",
     "//components/history/core/browser",
@@ -46,9 +45,6 @@ source_set("most_visited") {
   ]
   if (!is_android) {
     deps += [ "//chrome/browser/web_applications" ]
-  } else {
-    # most_visited_handler.cc includes android/tab_features.h.
-    deps += [ "//chrome/browser/android:tabs_public" ]
   }
 }
 

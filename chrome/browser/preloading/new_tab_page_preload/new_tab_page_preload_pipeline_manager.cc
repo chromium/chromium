@@ -7,14 +7,25 @@
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
+DEFINE_USER_DATA(NewTabPagePreloadPipelineManager);
+
 NewTabPagePreloadPipelineManager::NewTabPagePreloadPipelineManager(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 NewTabPagePreloadPipelineManager::~NewTabPagePreloadPipelineManager() = default;
+
+// static
+NewTabPagePreloadPipelineManager* NewTabPagePreloadPipelineManager::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void NewTabPagePreloadPipelineManager::StartPrefetch(const GURL& url) {
   EnsurePipelineForUrl(url);

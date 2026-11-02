@@ -8,10 +8,15 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
 namespace content {
 class WebContents;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 // Roles:
@@ -19,7 +24,10 @@ class WebContents;
 // - Manages preload pipelines per WebContents.
 class NewTabPagePreloadPipelineManager : public content::WebContentsObserver {
  public:
-  explicit NewTabPagePreloadPipelineManager(content::WebContents* contents);
+  DECLARE_USER_DATA(NewTabPagePreloadPipelineManager);
+
+  NewTabPagePreloadPipelineManager(tabs::TabInterface& tab,
+                                   content::WebContents* contents);
   ~NewTabPagePreloadPipelineManager() override;
 
   // Not movable nor copyable.
@@ -31,6 +39,8 @@ class NewTabPagePreloadPipelineManager : public content::WebContentsObserver {
       delete;
   NewTabPagePreloadPipelineManager& operator=(
       const NewTabPagePreloadPipelineManager&) = delete;
+
+  static NewTabPagePreloadPipelineManager* From(tabs::TabInterface* tab);
 
   // content::WebContentsObserver
   void DidFinishNavigation(
@@ -52,6 +62,9 @@ class NewTabPagePreloadPipelineManager : public content::WebContentsObserver {
   void EnsurePipelineForUrl(const GURL& url);
 
   std::unique_ptr<NewTabPagePreloadPipeline> pipeline_;
+
+  ui::ScopedUnownedUserData<NewTabPagePreloadPipelineManager>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_NEW_TAB_PAGE_PRELOAD_NEW_TAB_PAGE_PRELOAD_PIPELINE_MANAGER_H_

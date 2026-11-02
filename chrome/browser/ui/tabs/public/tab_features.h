@@ -497,10 +497,6 @@ class TabFeatures {
     return bookmarkbar_preload_pipeline_manager_.get();
   }
 
-  NewTabPagePreloadPipelineManager* new_tab_page_preload_pipeline_manager() {
-    return new_tab_page_preload_pipeline_manager_.get();
-  }
-
   site_engagement::SiteEngagementService::Helper* site_engagement_helper() {
     return site_engagement_helper_.get();
   }

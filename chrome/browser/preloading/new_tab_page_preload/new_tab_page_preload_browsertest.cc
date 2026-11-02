@@ -21,7 +21,6 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -106,10 +105,8 @@ class NewTabPagePreloadBrowserTest : public PlatformBrowserTest {
   }
 
   NewTabPagePreloadPipelineManager* GetNewTabPagePreloadPipelineManager() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->new_tab_page_preload_pipeline_manager();
+    return NewTabPagePreloadPipelineManager::From(
+        browser()->GetActiveTabInterface());
   }
 
   void SimulateNewTabNavigation(const GURL& url) {

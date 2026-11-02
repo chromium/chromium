@@ -823,9 +823,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      chrome::ChromeUINewTabURLAsGURL()));
   GURL prerender_url = GetUrl("/simple.html");
 
-  std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
-      std::make_unique<NewTabPagePreloadPipelineManager>(
-          GetActiveWebContents());
+  auto* ntp_preload_manager = NewTabPagePreloadPipelineManager::From(
+      chrome_test_utils::GetActiveTab(this));
   ntp_preload_manager->StartPrerender(
       prerender_url,
       chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
@@ -859,9 +858,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      chrome::ChromeUINewTabURLAsGURL()));
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html?prerender");
 
-  std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
-      std::make_unique<NewTabPagePreloadPipelineManager>(
-          GetActiveWebContents());
+  auto* ntp_preload_manager = NewTabPagePreloadPipelineManager::From(
+      chrome_test_utils::GetActiveTab(this));
   ntp_preload_manager->StartPrerender(
       prerender_url,
       chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
@@ -897,9 +895,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      chrome::ChromeUINewTabURLAsGURL()));
   GURL prerender_url = GetUrl("/simple.html");
 
-  std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
-      std::make_unique<NewTabPagePreloadPipelineManager>(
-          GetActiveWebContents());
+  auto* ntp_preload_manager = NewTabPagePreloadPipelineManager::From(
+      chrome_test_utils::GetActiveTab(this));
 
   ntp_preload_manager->StartPrerender(
       prerender_url,
@@ -943,9 +940,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
                                      chrome::ChromeUINewTabURLAsGURL()));
   GURL prerender_url = GetUrl("/simple.html?prerender");
 
-  std::unique_ptr<NewTabPagePreloadPipelineManager> ntp_preload_manager =
-      std::make_unique<NewTabPagePreloadPipelineManager>(
-          GetActiveWebContents());
+  auto* ntp_preload_manager = NewTabPagePreloadPipelineManager::From(
+      chrome_test_utils::GetActiveTab(this));
 
   ntp_preload_manager->StartPrerender(
       prerender_url,

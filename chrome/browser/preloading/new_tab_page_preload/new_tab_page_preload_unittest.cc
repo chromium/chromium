@@ -11,6 +11,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/preloading_test_util.h"
@@ -56,7 +57,7 @@ class NewTabPagePreloadPipelineManagerTest
 
     new_tab_page_preload_manager_ =
         std::make_unique<NewTabPagePreloadPipelineManager>(
-            GetActiveWebContents());
+            tab_, GetActiveWebContents());
   }
 
   content::WebContents* GetActiveWebContents() { return web_contents(); }
@@ -67,13 +68,16 @@ class NewTabPagePreloadPipelineManagerTest
                   "&oq=" + original_query);
   }
 
-  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
+  void TearDown() override {
+    new_tab_page_preload_manager_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
 
  protected:
   GURL GetUrl(const std::string& path) { return test_server_.GetURL(path); }
 
   NewTabPagePreloadPipelineManager* new_tab_page_preload_manager() {
-    return new_tab_page_preload_manager_.get();
+    return NewTabPagePreloadPipelineManager::From(&tab_);
   }
 
  private:
@@ -83,6 +87,7 @@ class NewTabPagePreloadPipelineManagerTest
 
   net::EmbeddedTestServer test_server_;
 
+  tabs::MockTabInterface tab_;
   std::unique_ptr<NewTabPagePreloadPipelineManager>
       new_tab_page_preload_manager_;
 };

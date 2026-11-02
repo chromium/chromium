@@ -24,14 +24,6 @@
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
-#include "ui/base/page_transition_types.h"
-// Android uses a different implementation of tab features.
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_features.h"
-#else
-#include "chrome/browser/ui/tabs/public/tab_features.h"
-#endif
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/history/core/browser/features.h"
 #include "components/ntp_tiles/constants.h"
@@ -45,6 +37,8 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/constants.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -448,8 +442,7 @@ void MostVisitedHandler::OnIconMadeAvailable(const GURL& site_url) {}
 NewTabPagePreloadPipelineManager*
 MostVisitedHandler::GetNewTabPagePreloadPipelineManager() {
   tabs::TabInterface* tab = webui::GetTabInterface(web_contents_);
-  return tab ? tab->GetTabFeatures()->new_tab_page_preload_pipeline_manager()
-             : nullptr;
+  return NewTabPagePreloadPipelineManager::From(tab);
 }
 
 bool MostVisitedHandler::MaybeRemoveStaleShortcuts() {

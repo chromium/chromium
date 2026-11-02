@@ -8,7 +8,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -47,8 +46,7 @@ void AndroidPrerenderManager::StopPrerendering(JNIEnv* env, TabAndroid* tab) {
 // static
 NewTabPagePreloadPipelineManager*
 AndroidPrerenderManager::GetNewTabPagePreloadPipelineManager(TabAndroid* tab) {
-  return tab ? tab->GetTabFeatures()->new_tab_page_preload_pipeline_manager()
-             : nullptr;
+  return NewTabPagePreloadPipelineManager::From(tab);
 }
 
 static void JNI_AndroidPrerenderManager_StartPrerendering(

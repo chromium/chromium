@@ -1003,7 +1003,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       GetUserDataFactory().CreateInstance<ContextHighlightTabFeature>(tab, tab);
 
   new_tab_page_preload_pipeline_manager_ =
-      std::make_unique<NewTabPagePreloadPipelineManager>(tab.GetContents());
+      GetUserDataFactory().CreateInstance<NewTabPagePreloadPipelineManager>(
+          tab, tab, tab.GetContents());
 
   vr_tab_helper_ =
       GetUserDataFactory().CreateInstance<vr::VrTabHelper>(tab, tab);
@@ -1730,7 +1731,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   if (new_tab_page_preload_pipeline_manager_) {
     new_tab_page_preload_pipeline_manager_.reset();
     new_tab_page_preload_pipeline_manager_ =
-        std::make_unique<NewTabPagePreloadPipelineManager>(new_contents);
+        GetUserDataFactory().CreateInstance<NewTabPagePreloadPipelineManager>(
+            *tab, *tab, new_contents);
   }
 
   if (glic_selection_observer_) {

@@ -319,7 +319,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   }
 
   new_tab_page_preload_pipeline_manager_ =
-      std::make_unique<NewTabPagePreloadPipelineManager>(web_contents);
+      GetUserDataFactory().CreateInstance<NewTabPagePreloadPipelineManager>(
+          *tab, *tab, web_contents);
 
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsFirstDialogUi)) {
