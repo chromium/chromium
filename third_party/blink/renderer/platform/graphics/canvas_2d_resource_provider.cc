@@ -40,7 +40,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
-#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
@@ -224,37 +223,6 @@ void Canvas2DResourceProvider::OnContextDestroyed() {
   if (image_pool_) {
     image_pool_->Clear();
   }
-}
-
-scoped_refptr<ExportedCanvasResource>
-Canvas2DResourceProvider::ProduceCanvasResource(SkSurface* surface) {
-  TRACE_EVENT0("blink", "Canvas2DResourceProvider::ProduceCanvasResource");
-
-  if (IsSoftware()) {
-    DCHECK(surface);
-    scoped_refptr<CanvasResourceSharedImage> output_resource =
-        NewOrRecycledResource();
-    if (!output_resource) {
-      return nullptr;
-    }
-
-    output_resource->UploadSoftwareRenderingResults(surface);
-
-    return base::MakeRefCounted<ExportedCanvasResource>(
-        std::move(output_resource));
-  }
-
-  if (IsGpuContextLost()) {
-    return nullptr;
-  }
-
-  // We are about to give the caller read access to this resource (and its
-  // backing SharedImage). Hence, we must make sure that we give up any write
-  // access.
-  EndWriteAccess(surface);
-
-  return resource_ ? base::MakeRefCounted<ExportedCanvasResource>(resource_)
-                   : nullptr;
 }
 
 bool Canvas2DResourceProvider::IsValid() const {

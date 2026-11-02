@@ -48,7 +48,6 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(kAppendCpuUsages);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasResourceIsWebGPUCompatible);
 
 class BaseRenderingContext2D;
-class ExportedCanvasResource;
 class CanvasResourceSharedImage;
 class Canvas2DResourceProvider;
 class CanvasImageProvider;
@@ -134,9 +133,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const;
-
-  scoped_refptr<ExportedCanvasResource> ProduceCanvasResource(
-      SkSurface* surface);
 
   bool IsValid() const;
 

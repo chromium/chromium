@@ -3668,14 +3668,12 @@ TEST_P(CanvasRenderingContext2DTestLowLatency, LowLatencyIsSingleBuffered) {
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_TRUE(
       Context2D()->GetSharedImageProviderForTesting()->IsSingleBuffered());
-  auto frame1_resource =
-      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource(
-          /*surface=*/nullptr);
+  auto frame1_resource = Context2D()->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
-  auto frame2_resource =
-      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource(
-          /*surface=*/nullptr);
+  auto frame2_resource = Context2D()->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource->GetSharedImageForTesting(),
             frame2_resource->GetSharedImageForTesting());
@@ -3714,14 +3712,12 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_TRUE(
       Context2D()->GetSharedImageProviderForTesting()->IsSingleBuffered());
-  auto frame1_resource =
-      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource(
-          /*surface=*/nullptr);
+  auto frame1_resource = Context2D()->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
-  auto frame2_resource =
-      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource(
-          /*surface=*/nullptr);
+  auto frame2_resource = Context2D()->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource->GetSharedImageForTesting(),
             frame2_resource->GetSharedImageForTesting());
