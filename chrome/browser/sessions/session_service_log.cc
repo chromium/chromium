@@ -187,10 +187,10 @@ bool DeserializeEvent(const base::DictValue& serialized_event,
 
 void SaveEventsToPrefs(Profile* profile,
                        const std::list<SessionServiceEvent>& events) {
-  base::Value serialized_events(base::Value::Type::LIST);
+  auto serialized_events = base::ListValue::with_capacity(events.size());
   for (const SessionServiceEvent& event : events)
-    serialized_events.GetList().Append(SerializeEvent(event));
-  profile->GetPrefs()->Set(kEventPrefKey, serialized_events);
+    serialized_events.Append(SerializeEvent(event));
+  profile->GetPrefs()->SetList(kEventPrefKey, std::move(serialized_events));
 }
 
 }  // namespace
