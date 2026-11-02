@@ -508,8 +508,9 @@ void PrintDialogGtk::ShowDialog(
   signal_ = ScopedGSignal(
       dialog_, "response",
       base::BindRepeating(&PrintDialogGtk::OnResponse, base::Unretained(this)));
-  gtk_widget_show(dialog_);
 
+  // ShowGtkWindow() maps the dialog once its transient parent is in effect,
+  // which is asynchronous on Wayland.
   platform_->ShowGtkWindow(GTK_WINDOW(dialog_.get()));
 }
 

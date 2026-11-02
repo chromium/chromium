@@ -5,17 +5,20 @@
 #ifndef UI_GTK_WAYLAND_GTK_UI_PLATFORM_WAYLAND_H_
 #define UI_GTK_WAYLAND_GTK_UI_PLATFORM_WAYLAND_H_
 
+#include <map>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/glib/scoped_gobject.h"
+#include "ui/base/glib/scoped_gsignal.h"
 #include "ui/gtk/gtk_ui_platform.h"
 
 namespace gtk {
 
-class GtkUiPlatformWayland : public GtkUiPlatform {
+class COMPONENT_EXPORT(GTK) GtkUiPlatformWayland : public GtkUiPlatform {
  public:
   GtkUiPlatformWayland();
   GtkUiPlatformWayland(const GtkUiPlatformWayland&) = delete;
@@ -35,10 +38,22 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
   bool IncludeScaleInCursorSize() const override;
 
  private:
+  struct PendingTransient {
+    // Whether ShowGtkWindow() was called while the parent was being exported.
+    bool show_requested = false;
+    ScopedGSignal destroy_signal;
+  };
+
   // Called when xdg-foreign exports a parent window passed in
   // SetGtkWidgetTransientFor.
   void OnHandleSetTransient(ScopedGObject<GtkWidget> widget_ref,
                             std::string handle);
+
+  void OnWidgetDestroyed(GtkWidget* widget);
+
+  // Widgets passed to SetGtkWidgetTransientFor() whose parent handle has not
+  // arrived yet.
+  std::map<GtkWidget*, PendingTransient> pending_transients_;
 
   base::WeakPtrFactory<GtkUiPlatformWayland> weak_factory_{this};
 };

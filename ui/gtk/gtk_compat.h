@@ -86,7 +86,7 @@ void GtkRenderIcon(GtkStyleContext* context,
                    double x,
                    double y);
 
-GtkWidget* GtkToplevelWindowNew();
+COMPONENT_EXPORT(GTK) GtkWidget* GtkToplevelWindowNew();
 
 void GtkCssProviderLoadFromData(GtkCssProvider* css_provider,
                                 const char* data,

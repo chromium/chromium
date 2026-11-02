@@ -205,7 +205,7 @@ GtkIconTheme* GetDefaultIconTheme();
 [[nodiscard]] COMPONENT_EXPORT(GTK) base::ScopedClosureRunner
     PrependIconThemeSearchPathForTesting(const base::FilePath& path);
 
-void GtkWindowDestroy(GtkWidget* widget);
+COMPONENT_EXPORT(GTK) void GtkWindowDestroy(GtkWidget* widget);
 
 GtkWidget* GetDummyWindow();
 

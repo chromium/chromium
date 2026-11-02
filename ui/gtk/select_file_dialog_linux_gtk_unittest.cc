@@ -6,6 +6,9 @@
 
 #include <gtk/gtk.h>
 
+#include <memory>
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
@@ -40,6 +43,39 @@ class TestListener : public ui::SelectFileDialog::Listener {
   std::vector<base::FilePath> selected_paths_;
 };
 
+// Records the windows passed to ShowGtkWindow(). When `defer_show_` is set,
+// leaves them unmapped, like GtkUiPlatformWayland does while a transient
+// parent is being exported.
+class TestGtkUiPlatform : public GtkUiPlatformStub {
+ public:
+  TestGtkUiPlatform() = default;
+  ~TestGtkUiPlatform() override = default;
+
+  void ShowGtkWindow(GtkWindow* window) override {
+    shown_windows_.push_back(window);
+    if (!defer_show_) {
+      GtkUiPlatformStub::ShowGtkWindow(window);
+    }
+  }
+
+  void set_defer_show(bool defer_show) { defer_show_ = defer_show; }
+  const std::vector<GtkWindow*>& shown_windows() const {
+    return shown_windows_;
+  }
+
+ private:
+  bool defer_show_ = false;
+  std::vector<GtkWindow*> shown_windows_;
+};
+
+// Reads the "visible" property through GObject, since GTK functions are only
+// reachable from inside the gtk component.
+bool IsVisible(GtkWidget* widget) {
+  gboolean visible = FALSE;
+  g_object_get(widget, "visible", &visible, nullptr);
+  return visible;
+}
+
 }  // namespace
 
 class SelectFileDialogLinuxGtkTest : public testing::Test {
@@ -51,7 +87,7 @@ class SelectFileDialogLinuxGtkTest : public testing::Test {
  protected:
   void SetUp() override {
     SelectFileDialogLinuxGtk::ResetForTesting();
-    platform_ = std::make_unique<GtkUiPlatformStub>();
+    platform_ = std::make_unique<TestGtkUiPlatform>();
     listener_ = std::make_unique<TestListener>();
     dialog_ = base::MakeRefCounted<SelectFileDialogLinuxGtk>(
         listener_.get(), nullptr, platform_.get());
@@ -80,7 +116,7 @@ class SelectFileDialogLinuxGtkTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<GtkUiPlatformStub> platform_;
+  std::unique_ptr<TestGtkUiPlatform> platform_;
   std::unique_ptr<TestListener> listener_;
   scoped_refptr<SelectFileDialogLinuxGtk> dialog_;
 };
@@ -198,6 +234,28 @@ TEST_F(SelectFileDialogLinuxGtkTest, CancelModeClearsActivationKeys) {
 
   EXPECT_TRUE(GetDialogWidget());
   EXPECT_TRUE(IsRunning(nullptr));
+}
+
+// Tests that the dialog leaves mapping to GtkUiPlatform::ShowGtkWindow(), so
+// that the platform can wait for the transient parent before the dialog
+// appears.
+TEST_F(SelectFileDialogLinuxGtkTest, PlatformMapsDialog) {
+  platform_->set_defer_show(true);
+
+  dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, u"Open File",
+                      base::FilePath(), nullptr, 0,
+                      base::FilePath::StringType(), nullptr);
+
+  GtkWidget* widget = GetDialogWidget();
+  ASSERT_TRUE(widget);
+  ASSERT_EQ(platform_->shown_windows().size(), 1u);
+  GtkWindow* window = platform_->shown_windows()[0];
+  EXPECT_EQ(reinterpret_cast<GtkWidget*>(window), widget);
+  EXPECT_FALSE(IsVisible(widget));
+
+  // The platform maps the dialog once the transient parent is in effect.
+  platform_->GtkUiPlatformStub::ShowGtkWindow(window);
+  EXPECT_TRUE(IsVisible(widget));
 }
 
 }  // namespace gtk

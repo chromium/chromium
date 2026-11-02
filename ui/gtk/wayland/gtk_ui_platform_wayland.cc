@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
@@ -39,6 +40,16 @@ GdkWindow* GtkUiPlatformWayland::GetGdkWindow(
 void GtkUiPlatformWayland::SetGtkWidgetTransientFor(
     GtkWidget* widget,
     gfx::AcceleratedWidget parent) {
+  // The parent is set asynchronously, once xdg-foreign has exported it. Until
+  // then, ShowGtkWindow() defers presenting `widget`: a dialog mapped without
+  // its parent is a regular toplevel to the compositor, which places, stacks
+  // and activates it independently of the browser window.
+  pending_transients_.insert_or_assign(
+      widget, PendingTransient{.destroy_signal = ScopedGSignal(
+                                   widget, "destroy",
+                                   base::BindRepeating(
+                                       &GtkUiPlatformWayland::OnWidgetDestroyed,
+                                       weak_factory_.GetWeakPtr()))});
   ui::LinuxUiDelegate::GetInstance()->ExportWindowHandle(
       parent, base::BindOnce(&GtkUiPlatformWayland::OnHandleSetTransient,
                              weak_factory_.GetWeakPtr(), WrapGObject(widget)));
@@ -49,15 +60,38 @@ void GtkUiPlatformWayland::ClearTransientFor(gfx::AcceleratedWidget parent) {
 }
 
 void GtkUiPlatformWayland::ShowGtkWindow(GtkWindow* window) {
+  if (auto it = pending_transients_.find(GTK_WIDGET(window));
+      it != pending_transients_.end()) {
+    it->second.show_requested = true;
+    return;
+  }
   // TODO(crbug.com/40650162): Check if gtk_window_present_with_time is needed
   // here as well, similarly to what is done in X11 impl.
   gtk_window_present(window);
+}
+
+void GtkUiPlatformWayland::OnWidgetDestroyed(GtkWidget* widget) {
+  pending_transients_.erase(widget);
 }
 
 void GtkUiPlatformWayland::OnHandleSetTransient(
     ScopedGObject<GtkWidget> widget_ref,
     std::string handle) {
   GtkWidget* widget = widget_ref.get();
+  auto it = pending_transients_.find(widget);
+  if (it == pending_transients_.end()) {
+    // `widget` was destroyed while its parent was being exported.
+    return;
+  }
+  const bool show_requested = it->second.show_requested;
+  pending_transients_.erase(it);
+  // Present the dialog even if exporting the parent failed, so that it is
+  // never lost.
+  absl::Cleanup present = [widget, show_requested] {
+    if (show_requested) {
+      gtk_window_present(GTK_WINDOW(widget));
+    }
+  };
   auto handle_no_prefix = base::RemovePrefix(handle, "wayland:");
   if (!handle_no_prefix || handle_no_prefix->empty()) {
     return;

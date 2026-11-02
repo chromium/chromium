@@ -83,8 +83,8 @@ void GtkUiPlatformX11::ClearTransientFor(gfx::AcceleratedWidget parent) {
 }
 
 void GtkUiPlatformX11::ShowGtkWindow(GtkWindow* window) {
-  // We need to call gtk_window_present after making the widgets visible to make
-  // sure window gets correctly raised and gets focus.
+  // gtk_window_present_with_time() also maps `window`, so it gets correctly
+  // raised and gets focus.
   DCHECK(ui::X11EventSource::HasInstance());
   gtk_window_present_with_time(
       window,

@@ -41,8 +41,10 @@ class GtkUiPlatform {
                                         gfx::AcceleratedWidget parent) = 0;
   virtual void ClearTransientFor(gfx::AcceleratedWidget parent) = 0;
 
-  // Presents |window|, doing all the necessary platform-specific operations
-  // needed, if any.
+  // Shows and presents `window`, doing all the necessary platform-specific
+  // operations needed, if any. Callers must not show `window` themselves: if
+  // SetGtkWidgetTransientFor() was called for it, this may defer mapping it
+  // until the transient parent is in effect.
   virtual void ShowGtkWindow(GtkWindow* window) = 0;
 
   // Creates a new IME context or may return nullptr.

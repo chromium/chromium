@@ -192,10 +192,8 @@ component("gtk") {
   }
 
   if (ozone_platform_wayland) {
-    sources += [
-      "wayland/gtk_ui_platform_wayland.cc",
-      "wayland/gtk_ui_platform_wayland.h",
-    ]
+    public += [ "wayland/gtk_ui_platform_wayland.h" ]
+    sources += [ "wayland/gtk_ui_platform_wayland.cc" ]
   }
 
   # TODO: This should be removed.
@@ -235,6 +233,10 @@ if (use_gtk) {
       "//ui/native_theme",
       "//ui/shell_dialogs",
     ]
+
+    if (ozone_platform_wayland) {
+      sources += [ "wayland/gtk_ui_platform_wayland_unittest.cc" ]
+    }
   }
 } else {
   group("gtk_unittests") {
