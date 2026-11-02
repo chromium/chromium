@@ -11,7 +11,11 @@ export function getHtml(this: NewTabButtonElement) {
 <cr-icon-button id="button"
     aria-label="$i18n{newTabButtonAccName}"
     title="$i18n{newTabButtonAccName}"
-    @click="${this.onClick}">
+    @click="${this.onClick}"
+    @pointerenter="${this.onHoveredPointerenter}"
+    @pointerleave="${this.onHoveredPointerleave}"
+    @pointercancel="${this.onHoveredPointercancel}"
+    @pointerdown="${this.onHoveredPointerdown}">
 </cr-icon-button>
 <!--_html_template_end_-->`;
 }

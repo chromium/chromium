@@ -4,6 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -18,6 +19,12 @@
 
 cr-icon-button {
   --cr-icon-button-fill-color: var(--color-sys-on-surface);
+  --cr-icon-button-hover-background-color: transparent;
   --cr-icon-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/></svg>");
   margin: 0;
+}
+
+:host([hovered]) cr-icon-button {
+  --cr-icon-button-hover-background-color: var(--cr-hover-background-color);
+  background-color: var(--cr-hover-background-color);
 }

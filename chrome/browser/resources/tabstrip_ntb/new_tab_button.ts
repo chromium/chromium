@@ -26,6 +26,14 @@ export class NewTabButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
+      // Driven by pointer events so touch taps don't leave a sticky :hover
+      // state.
+      // TODO(crbug.com/580976841): Remove this state once blink implements
+      // better support for hovering with touch screens.
+      hovered: {
+        type: Boolean,
+        reflect: true,
+      },
       visible: {
         type: Boolean,
         reflect: true,
@@ -33,7 +41,9 @@ export class NewTabButtonElement extends CrLitElement {
     };
   }
 
+  accessor hovered: boolean = false;
   accessor visible: boolean = true;
+
   private setButtonVisibleListenerId_: number|null = null;
 
   override connectedCallback() {
@@ -58,6 +68,24 @@ export class NewTabButtonElement extends CrLitElement {
     // No position or URL: the tab is appended and opens the default new tab
     // page.
     BrowserProxy.getInstance().tabStripService.createTabAt(null, null);
+  }
+
+  protected onHoveredPointerenter(e: PointerEvent) {
+    this.hovered = e.pointerType === 'mouse' || e.pointerType === 'pen';
+  }
+
+  protected onHoveredPointerleave() {
+    this.hovered = false;
+  }
+
+  protected onHoveredPointercancel() {
+    this.hovered = false;
+  }
+
+  protected onHoveredPointerdown(e: PointerEvent) {
+    if (e.pointerType === 'touch') {
+      this.hovered = false;
+    }
   }
 }
 

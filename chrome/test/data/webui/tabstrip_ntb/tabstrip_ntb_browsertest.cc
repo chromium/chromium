@@ -83,7 +83,8 @@ IN_PROC_BROWSER_TEST_F(TabStripNtbBrowserTest, ServiceSetBeforeConstruction) {
 IN_PROC_BROWSER_TEST_F(TabStripNtbBrowserTest,
                        CallsBeforeServiceIsSetAreDelivered) {
   base::UserActionTester user_action_tester;
-  RunTest("tabstrip_ntb/new_tab_button_test.js", "mocha.run()");
+  RunTest("tabstrip_ntb/new_tab_button_test.js",
+          "runMochaTest('NewTabButtonTest', 'ClicksNewTabButton')");
 
   TabStripNtbUI::SetTabStripServiceForWebContents(
       chrome_test_utils::GetActiveWebContents(this), tab_strip_service_.get());
