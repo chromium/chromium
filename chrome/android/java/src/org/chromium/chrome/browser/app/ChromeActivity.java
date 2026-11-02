@@ -1980,16 +1980,17 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @SuppressWarnings("NullAway")
     @Override
     protected final void onDestroy() {
-        // Destroy all ChromeAndroidTaskFeatures scoped to this ChromeActivity.
-        // For one ChromeAndroidTaskFeature, its native code may hold pointers
-        // to other native objects that are destroyed later in this method,
-        // such as the native TabListInterface, the native BrowserWindowInterface, etc.
-        // Therefore, ChromeAndroidTaskFeatures should be destroyed first to
-        // prevent issues like dereferencing a non-null but invalid pointer.
-        ChromeAndroidTask chromeAndroidTask = mChromeAndroidTaskSupplier.get();
-        if (chromeAndroidTask != null) {
-            var activityWindowAndroid = getWindowAndroid();
-            chromeAndroidTask.removeAllFeaturesForActivity(activityWindowAndroid);
+        // Destroy all ChromeAndroidTaskFeatures and browser windows scoped to this ChromeActivity
+        // first. Their native code may hold pointers to native objects destroyed later in this
+        // method, such as the TabListInterface, and native code must never see a
+        // BrowserWindowInterface whose TabListInterface has already been destroyed.
+        //
+        // The ActivityWindowAndroid is null if the launch was aborted in onCreate() (see
+        // AsyncInitializationActivity#onCreateInternal), in which case there is nothing to remove.
+        ActivityWindowAndroid activityWindowAndroid = getWindowAndroid();
+        if (activityWindowAndroid != null) {
+            ChromeAndroidTaskTrackerFactory.getInstance()
+                    .onActivityDestroyStarted(activityWindowAndroid);
         }
 
         SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();

@@ -789,12 +789,6 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public void removeAllFeaturesForActivity(ActivityWindowAndroid activityWindowAndroid) {
-        ThreadUtils.assertOnUiThread();
-        removeAllFeaturesForActivityInternal(activityWindowAndroid);
-    }
-
-    @Override
     public List<Profile> getValidProfilesForActivity(ActivityWindowAndroid activityWindowAndroid) {
         ThreadUtils.assertOnUiThread();
 

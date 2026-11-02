@@ -181,6 +181,15 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     }
 
     @Override
+    public void onActivityDestroyStarted(ActivityWindowAndroid activityWindowAndroid) {
+        ThreadUtils.assertOnUiThread();
+        var task = mTasks.get(getTaskId(activityWindowAndroid));
+        if (task != null) {
+            task.removeActivityScopedObjects(activityWindowAndroid);
+        }
+    }
+
+    @Override
     public void onActivityWindowAndroidDestroy(ActivityWindowAndroid activityWindowAndroid) {
         ThreadUtils.assertOnUiThread();
         int taskId = getTaskId(activityWindowAndroid);
@@ -189,8 +198,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         if (task == null) {
             return;
         }
-
-        task.removeActivityScopedObjects(activityWindowAndroid);
 
         // Destroy the ChromeAndroidTask if there is no ActivityWindowAndroid associated with it.
         //

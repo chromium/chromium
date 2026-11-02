@@ -125,15 +125,6 @@ public interface ChromeAndroidTask {
             ChromeAndroidTaskFeatureKey featureKey, Supplier<@Nullable T> featureSupplier);
 
     /**
-     * Removes all {@link ChromeAndroidTaskFeature}s associated with the given {@link
-     * ActivityWindowAndroid}.
-     *
-     * @param activityWindowAndroid The associated activity.
-     * @see #addFeature
-     */
-    void removeAllFeaturesForActivity(ActivityWindowAndroid activityWindowAndroid);
-
-    /**
      * Returns the currently <i>valid</i> {@link Profile}s in the {@code Activity} represented by
      * the given {@link ActivityWindowAndroid}.
      *

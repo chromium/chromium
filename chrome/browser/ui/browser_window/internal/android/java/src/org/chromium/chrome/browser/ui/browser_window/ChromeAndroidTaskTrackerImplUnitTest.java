@@ -599,6 +599,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 chromeAndroidTask.getTopActivityWindowAndroid());
 
         // Act.
+        mChromeAndroidTaskTracker.onActivityDestroyStarted(
+                activityScopedObjects2.mActivityWindowAndroid);
         mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(
                 activityScopedObjects2.mActivityWindowAndroid);
 
@@ -622,6 +624,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                         BrowserWindowType.NORMAL, activityScopedObjects, /* pendingId= */ null);
 
         // Act.
+        mChromeAndroidTaskTracker.onActivityDestroyStarted(
+                activityScopedObjects.mActivityWindowAndroid);
         mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(
                 activityScopedObjects.mActivityWindowAndroid);
 

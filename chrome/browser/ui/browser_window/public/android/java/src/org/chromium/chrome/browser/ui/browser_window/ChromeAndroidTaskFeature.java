@@ -102,7 +102,7 @@ public interface ChromeAndroidTaskFeature {
      *
      * @see ChromeAndroidTask#destroy()
      * @see ChromeAndroidTaskTracker#remove(int)
-     * @see ChromeAndroidTask#removeAllFeaturesForActivity
+     * @see ChromeAndroidTaskTracker#onActivityDestroyStarted
      */
     void onFeatureRemoved();
 

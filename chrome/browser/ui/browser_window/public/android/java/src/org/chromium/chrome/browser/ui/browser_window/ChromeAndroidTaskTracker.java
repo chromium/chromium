@@ -72,7 +72,25 @@ public interface ChromeAndroidTaskTracker {
     void remove(int taskId);
 
     /**
-     * Called when an {@link ActivityWindowAndroid} is destroyed.
+     * Called first thing when a {@code ChromeActivity} starts being destroyed.
+     *
+     * <p>Removes the {@code Activity}'s {@link ChromeAndroidTaskFeature}s and then its browser
+     * windows, before the {@code Activity} destroys objects they may point to, such as its
+     * TabModels. The {@link ChromeAndroidTask} stays registered until {@link
+     * #onActivityWindowAndroidDestroy} is called.
+     *
+     * @param activityWindowAndroid The {@link ActivityWindowAndroid} of the {@code Activity} that
+     *     is being destroyed.
+     */
+    void onActivityDestroyStarted(ActivityWindowAndroid activityWindowAndroid);
+
+    /**
+     * Called when an {@link ActivityWindowAndroid} is destroyed, after {@link
+     * #onActivityDestroyStarted}.
+     *
+     * <p>Removes and destroys the {@link ChromeAndroidTask} if no {@code Activity} remains in it.
+     * This happens after the {@code Activity}'s other objects are destroyed, as they may still use
+     * the {@link ChromeAndroidTask}.
      *
      * @param activityWindowAndroid The {@link ActivityWindowAndroid} that is being destroyed.
      */

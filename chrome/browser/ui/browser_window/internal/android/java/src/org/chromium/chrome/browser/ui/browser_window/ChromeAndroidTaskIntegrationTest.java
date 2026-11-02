@@ -1054,6 +1054,10 @@ public class ChromeAndroidTaskIntegrationTest {
      * ActivityLifecycleDispatcher}. Since they often pass {@link ChromeAndroidTask} to JNI bridges
      * on initialization (as BrowserWindowInterface), the lifetime of {@link ChromeAndroidTask} must
      * be longer than that of those objects.
+     *
+     * <p>By then, the {@link ChromeAndroidTask} must no longer expose the {@code Activity}'s
+     * browser windows, as their TabModels (and the native {@code TabListInterface}s) are already
+     * destroyed (b/578132340).
      */
     @Test
     @MediumTest
@@ -1071,7 +1075,12 @@ public class ChromeAndroidTaskIntegrationTest {
                                         @Override
                                         public void onDestroy() {
                                             // Assert.
-                                            assertNotNull(getChromeAndroidTask(taskId));
+                                            var chromeAndroidTask = getChromeAndroidTask(taskId);
+                                            assertNotNull(chromeAndroidTask);
+                                            assertEquals(
+                                                    Collections.emptyList(),
+                                                    chromeAndroidTask
+                                                            .getAllNativeBrowserWindowPtrs());
                                         }
                                     });
                 });
