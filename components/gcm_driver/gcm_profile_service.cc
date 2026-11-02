@@ -12,8 +12,6 @@
 #include "build/build_config.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_driver_constants.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(USE_GCM_FROM_PLATFORM)
@@ -39,7 +37,6 @@ GCMProfileService::GCMProfileService(
 }
 #else
 GCMProfileService::GCMProfileService(
-    PrefService* prefs,
     base::FilePath path,
     base::RepeatingCallback<void(
         base::WeakPtr<GCMProfileService>,
@@ -56,8 +53,7 @@ GCMProfileService::GCMProfileService(
     os_crypt_async::OSCryptAsync* os_crypt_async)
     : url_loader_factory_(std::move(url_loader_factory)) {
   driver_ = CreateGCMDriverDesktop(
-      std::move(gcm_client_factory), prefs,
-      path.Append(gcm_driver::kGCMStoreDirname),
+      std::move(gcm_client_factory), path.Append(gcm_driver::kGCMStoreDirname),
       base::BindRepeating(get_socket_factory_callback,
                           weak_ptr_factory_.GetWeakPtr()),
       url_loader_factory_, network_connection_tracker, channel,

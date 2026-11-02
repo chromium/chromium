@@ -8,8 +8,6 @@
 #include "base/values.h"
 #include "components/gcm_driver/gcm_client.h"
 
-class PrefService;
-
 namespace gcm {
 class GCMProfileService;
 }
@@ -18,8 +16,7 @@ namespace gcm_driver {
 
 // Returns the GCM infos for the gcm-internals WebUI.
 base::DictValue SetGCMInternalsInfo(const gcm::GCMClient::GCMStatistics* stats,
-                                    gcm::GCMProfileService* profile_service,
-                                    PrefService* prefs);
+                                    gcm::GCMProfileService* profile_service);
 
 }  // namespace gcm_driver
 

@@ -22,7 +22,6 @@ static_library("instance_id") {
     "//base",
     "//components/gcm_driver:gcm_buildflags",
     "//components/keyed_service/core",
-    "//components/prefs",
     "//crypto",
     "//services/network/public/mojom",
   ]

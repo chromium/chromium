@@ -44,8 +44,7 @@ class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
  private:
   // Return all of the GCM related infos to the gcm-internals page by calling
   // Javascript callback function `gcm-internals.returnInfo()`.
-  void ReturnResults(PrefService* prefs,
-                     gcm::GCMProfileService* profile_service,
+  void ReturnResults(gcm::GCMProfileService* profile_service,
                      const gcm::GCMClient::GCMStatistics* stats) const;
 
   // Request all of the GCM related infos through gcm profile service.
@@ -68,11 +67,10 @@ GcmInternalsUIMessageHandler::GcmInternalsUIMessageHandler()
 GcmInternalsUIMessageHandler::~GcmInternalsUIMessageHandler() {}
 
 void GcmInternalsUIMessageHandler::ReturnResults(
-    PrefService* prefs,
     gcm::GCMProfileService* profile_service,
     const gcm::GCMClient::GCMStatistics* stats) const {
   base::DictValue results =
-      gcm_driver::SetGCMInternalsInfo(stats, profile_service, prefs);
+      gcm_driver::SetGCMInternalsInfo(stats, profile_service);
 
   base::Value event_name(gcm_driver::kSetGcmInternalsInfo);
   base::ValueView args[] = {event_name, results};
@@ -93,7 +91,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue& args) {
       IOSChromeGCMProfileServiceFactory::GetForProfile(profile);
 
   if (!profile_service || !profile_service->driver()) {
-    ReturnResults(profile->GetPrefs(), nullptr, nullptr);
+    ReturnResults(nullptr, nullptr);
   } else {
     profile_service->driver()->GetGCMStatistics(
         base::BindOnce(
@@ -114,7 +112,7 @@ void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue& args) {
       IOSChromeGCMProfileServiceFactory::GetForProfile(profile);
 
   if (!profile_service) {
-    ReturnResults(profile->GetPrefs(), nullptr, nullptr);
+    ReturnResults(nullptr, nullptr);
     return;
   }
   // Get fresh stats after changing recording setting.
@@ -133,7 +131,7 @@ void GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished(
       IOSChromeGCMProfileServiceFactory::GetForProfile(profile);
 
   DCHECK(profile_service);
-  ReturnResults(profile->GetPrefs(), profile_service, &stats);
+  ReturnResults(profile_service, &stats);
 }
 
 void GcmInternalsUIMessageHandler::RegisterMessages() {

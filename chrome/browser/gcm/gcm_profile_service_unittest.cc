@@ -81,7 +81,7 @@ std::unique_ptr<KeyedService> BuildGCMProfileService(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
   return std::make_unique<gcm::GCMProfileService>(
-      profile->GetPrefs(), profile->GetPath(),
+      profile->GetPath(),
       base::BindRepeating(&RequestProxyResolvingSocketFactory, profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),

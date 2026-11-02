@@ -55,7 +55,7 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
   return std::make_unique<gcm::GCMProfileService>(
-      profile->GetPrefs(), profile->GetStatePath(),
+      profile->GetStatePath(),
       // This callback may be invoked on a background sequence, but it calls
       // a method of ProfileIOS which is a sequence-affine object, so wrap
       // the callback in BindPostTask(...) to ensure the method happens on

@@ -13,7 +13,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom-forward.h"
 
-class PrefService;
 namespace base {
 class FilePath;
 }
@@ -34,7 +33,6 @@ class GCMClientFactory;
 
 std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
     std::unique_ptr<GCMClientFactory> gcm_client_factory,
-    PrefService* prefs,
     const base::FilePath& store_path,
     base::RepeatingCallback<void(
         mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>

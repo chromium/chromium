@@ -29,8 +29,6 @@
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -166,7 +164,6 @@ class GCMDriverTest : public testing::Test {
  private:
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   base::ScopedTempDir temp_dir_;
-  TestingPrefServiceSimple prefs_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   base::Thread io_thread_;
@@ -248,7 +245,7 @@ void GCMDriverTest::CreateDriver() {
       std::unique_ptr<GCMClientFactory>(new FakeGCMClientFactory(
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           io_thread_.task_runner())),
-      chrome_build_info, &prefs_, temp_dir_.GetPath(), base::DoNothing(),
+      chrome_build_info, temp_dir_.GetPath(), base::DoNothing(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
       network::TestNetworkConnectionTracker::GetInstance(),

@@ -255,7 +255,7 @@ gcm::GCMDriver& PushMessagingServiceImpl::GetGCMDriver() {
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
     gcm_driver_ = gcm::CreateGCMDriverDesktop(
-        std::make_unique<gcm::GCMClientFactory>(), /*prefs=*/nullptr,
+        std::make_unique<gcm::GCMClientFactory>(),
         parent_context_.IsOffTheRecord()
             ? base::FilePath("/tmp")
             : parent_context_.GetPath().Append(gcm_driver::kGCMStoreDirname),

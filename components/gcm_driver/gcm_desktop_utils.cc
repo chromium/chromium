@@ -20,7 +20,6 @@ namespace gcm {
 
 std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
     std::unique_ptr<GCMClientFactory> gcm_client_factory,
-    PrefService* prefs,
     const base::FilePath& store_path,
     base::RepeatingCallback<void(
         mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
@@ -35,7 +34,7 @@ std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   return std::unique_ptr<GCMDriver>(new GCMDriverDesktop(
       std::move(gcm_client_factory),
-      fcm::GetChromeBuildInfo(channel, product_category_for_subtypes), prefs,
+      fcm::GetChromeBuildInfo(channel, product_category_for_subtypes),
       store_path, get_socket_factory_callback, std::move(url_loader_factory),
       network_connection_tracker, ui_task_runner, io_task_runner,
       blocking_task_runner, os_crypt_async));

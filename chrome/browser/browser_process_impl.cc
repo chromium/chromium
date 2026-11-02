@@ -1926,7 +1926,7 @@ void BrowserProcessImpl::CreateGCMDriver() {
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   gcm_driver_ = gcm::CreateGCMDriverDesktop(
-      base::WrapUnique(new gcm::GCMClientFactory), local_state(), store_path,
+      base::WrapUnique(new gcm::GCMClientFactory), store_path,
       base::BindRepeating(&RequestProxyResolvingSocketFactory),
       system_network_context_manager()->GetSharedURLLoaderFactory(),
       content::GetNetworkConnectionTracker(), chrome::GetChannel(),

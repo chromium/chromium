@@ -21,8 +21,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
-class PrefService;
-
 namespace base {
 class SequencedTaskRunner;
 }
@@ -50,7 +48,6 @@ class GCMProfileService : public KeyedService {
       scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
 #else
   GCMProfileService(
-      PrefService* prefs,
       base::FilePath path,
       base::RepeatingCallback<void(
           base::WeakPtr<GCMProfileService>,

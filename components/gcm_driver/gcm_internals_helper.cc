@@ -111,8 +111,7 @@ base::ListValue DecryptionFailureInfoToList(
 }  // namespace
 
 base::DictValue SetGCMInternalsInfo(const gcm::GCMClient::GCMStatistics* stats,
-                                    gcm::GCMProfileService* profile_service,
-                                    PrefService* prefs) {
+                                    gcm::GCMProfileService* profile_service) {
   base::DictValue results;
 
   if (stats) {

@@ -819,7 +819,7 @@ void ApplicationContextImpl::CreateGCMDriver() {
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   gcm_driver_ = gcm::CreateGCMDriverDesktop(
-      std::make_unique<gcm::GCMClientFactory>(), GetLocalState(), store_path,
+      std::make_unique<gcm::GCMClientFactory>(), store_path,
       // This callback may be invoked on a background sequence, but it calls a
       // method of ApplicationContextImpl which is a sequence-affine object,
       // so wrap the call in BindPostTask(...) to ensure the method happens on

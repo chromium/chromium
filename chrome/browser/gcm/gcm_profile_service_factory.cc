@@ -169,7 +169,7 @@ GCMProfileServiceFactory::BuildServiceInstanceForBrowserContext(
                                                 blocking_task_runner);
 #else
   service = std::make_unique<GCMProfileService>(
-      profile->GetPrefs(), profile->GetPath(),
+      profile->GetPath(),
       base::BindRepeating(&RequestProxyResolvingSocketFactory,
                           profile->GetWeakPtr()),
       profile->GetDefaultStoragePartition()

@@ -469,7 +469,6 @@ void GCMDriverDesktop::IOWorker::RecordDecryptionFailure(
 GCMDriverDesktop::GCMDriverDesktop(
     std::unique_ptr<GCMClientFactory> gcm_client_factory,
     const fcm::ChromeBuildInfo& chrome_build_info,
-    PrefService* prefs,
     const base::FilePath& store_path,
     base::RepeatingCallback<void(
         mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>

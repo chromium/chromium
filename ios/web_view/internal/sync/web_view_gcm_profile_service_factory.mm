@@ -94,7 +94,7 @@ WebViewGCMProfileServiceFactory::BuildServiceInstanceFor(
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
   return std::make_unique<gcm::GCMProfileService>(
-      browser_state->GetPrefs(), browser_state->GetStatePath(),
+      browser_state->GetStatePath(),
       base::BindRepeating(&RequestProxyResolvingSocketFactory, context),
       browser_state->GetSharedURLLoaderFactory(),
       ApplicationContext::GetInstance()->GetNetworkConnectionTracker(),
