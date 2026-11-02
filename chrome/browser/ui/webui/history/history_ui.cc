@@ -49,7 +49,6 @@
 #include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"  // nogncheck
 #include "components/tabs/public/tab_interface.h"
@@ -154,7 +153,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
                                             ? "webui-refresh-2026"
                                             : "");
 
-  // Platform-specific data sources (e.g. history clusters, embeddings).
+  // Platform-specific data sources (e.g. history clusters).
   history::PopulatePlatformDataSource(source, profile);
 
   return source;
@@ -228,23 +227,6 @@ scoped_refptr<base::RefCountedMemory> HistoryUI::GetFaviconResourceBytes(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void HistoryUI::BindInterface(
-    mojo::PendingReceiver<history_embeddings::mojom::PageHandlerFactory>
-        pending_page_handler_factory) {
-  history_embeddings_handler_factory_receiver_.reset();
-  history_embeddings_handler_factory_receiver_.Bind(
-      std::move(pending_page_handler_factory));
-}
-
-void HistoryUI::CreatePageHandler(
-    mojo::PendingRemote<history_embeddings::mojom::Page> page,
-    mojo::PendingReceiver<history_embeddings::mojom::PageHandler> receiver) {
-  history_embeddings_handler_ = std::make_unique<HistoryEmbeddingsHandler>(
-      std::move(receiver), std::move(page),
-      Profile::FromWebUI(web_ui())->GetWeakPtr(), web_ui(),
-      /*for_side_panel=*/false);
-}
-
 void HistoryUI::BindInterface(
     mojo::PendingReceiver<history_clusters::mojom::PageHandlerFactory>
         pending_page_handler_factory) {

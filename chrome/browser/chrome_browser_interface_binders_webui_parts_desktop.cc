@@ -16,7 +16,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_post_rearchitecture.h"
 #include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
-#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
@@ -138,7 +137,6 @@
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
-#include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 #include "ui/webui/resources/cr_components/search/plural_string_provider.mojom.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
@@ -286,10 +284,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
           history_clusters::mojom::PageHandlerFactory, HistoryUI,
           HistoryClustersSidePanelUI>(map);
     }
-  }
-  if (history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        history_embeddings::mojom::PageHandlerFactory, HistoryUI>(map);
   }
 
   if (HistorySidePanelCoordinator::IsSupported()) {

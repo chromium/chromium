@@ -240,17 +240,8 @@ export class HistoryListElement extends HistoryListElementBase {
     this.closeMenu_();
 
     if (info.term && !this.queryState.incremental) {
-      let resultsLabelId;
-      if (loadTimeData.getBoolean('enableHistoryEmbeddings')) {
-        // Differentiate screen reader messages if embeddings are enabled so
-        // that the messages specify these are results for exact matches not
-        // embeddings results.
-        resultsLabelId = results.length === 1 ? 'searchResultExactMatch' :
-                                                'searchResultExactMatches';
-      } else {
-        resultsLabelId =
-            results.length === 1 ? 'searchResult' : 'searchResults';
-      }
+      const resultsLabelId =
+          results.length === 1 ? 'searchResult' : 'searchResults';
       const message = loadTimeData.getStringF(
           'foundSearchResults', results.length,
           loadTimeData.getString(resultsLabelId), info.term);

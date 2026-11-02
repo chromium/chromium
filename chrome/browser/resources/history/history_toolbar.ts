@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
-import 'chrome://resources/cr_components/history_embeddings/icons.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
@@ -18,7 +17,6 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './history_toolbar.css.js';
 import {getHtml} from './history_toolbar.html.js';
-import {TABBED_PAGES} from './router.js';
 
 export interface HistoryToolbarElement {
   $: {
@@ -164,47 +162,6 @@ export class HistoryToolbarElement extends CrLitElement {
 
   protected numberOfItemsSelected_(count: number): string {
     return count > 0 ? loadTimeData.getStringF('itemsSelected', count) : '';
-  }
-
-  protected computeSearchIconOverride_(): string|undefined {
-    if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
-        TABBED_PAGES.includes(this.selectedPage)) {
-      return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'history-embeddings:search-spark' :
-          'history-embeddings:search-old';
-    }
-
-    return undefined;
-  }
-
-  protected computeSearchInputAriaDescriptionOverride_(): string|undefined {
-    if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
-        TABBED_PAGES.includes(this.selectedPage)) {
-      return loadTimeData.getString('historyEmbeddingsDisclaimer');
-    }
-
-    return undefined;
-  }
-
-  protected computeSearchPrompt_(): string {
-    if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
-        TABBED_PAGES.includes(this.selectedPage)) {
-      if (loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers')) {
-        const possiblePrompts = [
-          'historyEmbeddingsSearchPrompt',
-          'historyEmbeddingsAnswersSearchAlternativePrompt1',
-          'historyEmbeddingsAnswersSearchAlternativePrompt2',
-          'historyEmbeddingsAnswersSearchAlternativePrompt3',
-          'historyEmbeddingsAnswersSearchAlternativePrompt4',
-        ];
-        const randomIndex = Math.floor(Math.random() * possiblePrompts.length);
-        return loadTimeData.getString(possiblePrompts[randomIndex]!);
-      }
-
-      return loadTimeData.getString('historyEmbeddingsSearchPrompt');
-    }
-
-    return loadTimeData.getString('searchPrompt');
   }
 }
 

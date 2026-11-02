@@ -15,7 +15,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
@@ -30,7 +29,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
-#include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_types.h"
@@ -149,10 +147,6 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
                                IDS_HISTORY_TURN_ON_SYNC_BUTTON);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  bool enable_history_embeddings =
-      history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile);
-  source->AddBoolean(kEnableHistoryEmbeddingsKey, enable_history_embeddings);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);

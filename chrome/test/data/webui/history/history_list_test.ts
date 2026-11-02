@@ -1134,25 +1134,15 @@ suite('HistoryListTest', function() {
       return (await a11yMessagesEventPromise).detail.messages[0];
     }
 
-    let singleResultMessage =
+    const singleResultMessage =
         await getMessagesForResults('some query', [TEST_HISTORY_RESULTS[0]!]);
     assertEquals(
         'Found 1 search result for \'some query\'', singleResultMessage);
 
-    let multipleResultsMessage =
+    const multipleResultsMessage =
         await getMessagesForResults('new query', TEST_HISTORY_RESULTS);
     assertEquals(
         'Found 4 search results for \'new query\'', multipleResultsMessage);
-
-    loadTimeData.overrideValues({enableHistoryEmbeddings: true});
-    singleResultMessage =
-        await getMessagesForResults('some query', [TEST_HISTORY_RESULTS[0]!]);
-    assertEquals('Found 1 exact match for \'some query\'', singleResultMessage);
-
-    multipleResultsMessage =
-        await getMessagesForResults('new query', TEST_HISTORY_RESULTS);
-    assertEquals(
-        'Found 4 exact matches for \'new query\'', multipleResultsMessage);
   });
 
   test('ScrollingLoadsMore', async () => {

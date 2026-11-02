@@ -2,32 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {HistoryEmbeddingsUserActions, QUERY_RESULT_MINIMUM_AGE} from 'chrome://resources/cr_components/history/constants.js';
 import type {QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {RESULTS_PER_PAGE} from './constants.js';
 
-// Converts a JS Date object to a human readable string in the format of
-// YYYY-MM-DD for the query.
-export function convertDateToQueryValue(date: Date) {
-  const fullYear = date.getFullYear();
-  const month = date.getMonth() + 1; /* Month is 0-indexed. */
-  const day = date.getDate();
-
-  function twoDigits(value: number): string {
-    return value >= 10 ? `${value}` : `0${value}`;
-  }
-
-  return `${fullYear}-${twoDigits(month)}-${twoDigits(day)}`;
-}
-
 export type ChangeQueryEvent = CustomEvent<{
   search: string | null,
-  after: string | null,
+  after?: string | null,
   includeUserVisits?: boolean,
   includeActorVisits?: boolean,
   clientIds?: string[],
@@ -75,13 +59,6 @@ export class HistoryQueryManagerElement extends CrLitElement {
     value: [],
   };
   private eventTracker_: EventTracker = new EventTracker();
-  /**
-   * When this is non-null, that means there's a QueryResult that's pending
-   * metrics logging since this debouncer timestamp. The debouncing is needed
-   * because queries are issued as the user types, and we want to skip logging
-   * these trivial queries the user typed through.
-   */
-  private resultPendingMetricsTimestamp_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -89,16 +66,10 @@ export class HistoryQueryManagerElement extends CrLitElement {
         document, 'change-query', this.onChangeQuery_.bind(this));
     this.eventTracker_.add(
         document, 'query-history', this.onQueryHistory_.bind(this));
-    this.eventTracker_.add(document, 'visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        this.flushDebouncedQueryResultMetric_();
-      }
-    });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.flushDebouncedQueryResultMetric_();
     this.eventTracker_.removeAll();
   }
 
@@ -113,20 +84,11 @@ export class HistoryQueryManagerElement extends CrLitElement {
       incremental: incremental,
     };
 
-    let afterTimestamp;
-    if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
-        this.queryState.after) {
-      const afterDate = new Date(this.queryState.after);
-      afterDate.setHours(0, 0, 0, 0);
-      afterTimestamp = afterDate.getTime();
-    }
-
     const browserProxy = BrowserProxyImpl.getInstance();
     const promise = incremental ?
         browserProxy.handler.queryHistoryContinuation() :
         browserProxy.handler.queryHistory(
-            this.queryState.searchTerm, RESULTS_PER_PAGE,
-            afterTimestamp ? afterTimestamp : null,
+            this.queryState.searchTerm, RESULTS_PER_PAGE, null,
             this.queryState.includeUserVisits,
             this.queryState.includeActorVisits, this.queryState.clientIds);
     // Ignore rejected (cancelled) queries.
@@ -141,13 +103,6 @@ export class HistoryQueryManagerElement extends CrLitElement {
         changes.search !== this.queryState.searchTerm) {
       this.queryState = {...this.queryState, searchTerm: changes.search};
       this.searchTermChanged_();
-      needsUpdate = true;
-    }
-
-    if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
-        changes.after !== null && changes.after !== this.queryState.after &&
-        (Boolean(changes.after) || Boolean(this.queryState.after))) {
-      this.queryState = {...this.queryState, after: changes.after};
       needsUpdate = true;
     }
 
@@ -207,31 +162,10 @@ export class HistoryQueryManagerElement extends CrLitElement {
   }
 
   private searchTermChanged_() {
-    this.flushDebouncedQueryResultMetric_();
-
     // TODO(tsergeant): Ignore incremental searches in this metric.
     if (this.queryState.searchTerm) {
       BrowserProxyImpl.getInstance().recordAction('Search');
-      this.resultPendingMetricsTimestamp_ = performance.now();
     }
-  }
-
-  /**
-   * Flushes any pending query result metric waiting to be logged.
-   */
-  private flushDebouncedQueryResultMetric_() {
-    if (this.resultPendingMetricsTimestamp_ &&
-        (performance.now() - this.resultPendingMetricsTimestamp_) >=
-            QUERY_RESULT_MINIMUM_AGE) {
-      BrowserProxyImpl.getInstance().recordHistogram(
-          'History.Embeddings.UserActions',
-          HistoryEmbeddingsUserActions.NON_EMPTY_QUERY_HISTORY_SEARCH,
-          HistoryEmbeddingsUserActions.END);
-    }
-
-    // Clear this regardless if it was recorded or not, because we don't want
-    // to "try again" to record the same query.
-    this.resultPendingMetricsTimestamp_ = null;
   }
 }
 

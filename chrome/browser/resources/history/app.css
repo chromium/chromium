@@ -22,11 +22,6 @@
   overflow: hidden;
 }
 
-:host([enable-history-embeddings_]) {
-  --first-card-padding-top: 0;
-  --first-cluster-padding-top: 0;
-}
-
 :host-context([webui-refresh-2026]) {
   #tabs {
     border-color: var(--color-history-page-separator);
@@ -49,37 +44,6 @@
 #content,
 #content > * {
   height: 100%;
-}
-
-#historyEmbeddingsDisclaimer {
-  box-sizing: border-box;
-  width: 100%;
-  margin: 0 auto;
-  padding: 6px 10px 8px;
-  color: var(--cr-secondary-text-color);
-  font-size: 11px;
-  font-weight: 400;
-  text-wrap: pretty;
-}
-
-#historyEmbeddingsDisclaimer[narrow] {
-  padding-inline: 24px;
-  max-width: none;
-}
-
-#historyEmbeddingsDisclaimer:not([narrow])
-    #historyEmbeddingsDisclaimerContent {
-  max-width: 680px;
-}
-
-cr-history-embeddings-filter-chips {
-  margin: 0 auto;
-  padding: 16px 8px;
-}
-
-cr-history-embeddings-filter-chips ~ #tabsContent {
-  --first-card-padding-top: 8px;
-  --first-cluster-padding-top: 8px;
 }
 
 #tabsContainer {
@@ -112,19 +76,6 @@ cr-history-embeddings-filter-chips ~ #tabsContent {
     * the shadow should stretch across both the sidebar and the content
     * area, below the entirety of the toolbar. */
   position-anchor: --main-container;
-}
-
-/* Both history-list and history-clusters have their own empty states
-  * that show a text message indicating there are no results. Hide the
-  * entire components to hide these messages if there are history
-  * embeddings results. */
-:host([has-history-embeddings-results_]) history-list[is-empty],
-:host([has-history-embeddings-results_]) history-clusters[is-empty] {
-  display: none;
-}
-
-cr-history-embeddings {
-  margin-block-end: var(--card-padding-between);
 }
 
 <if expr="is_android">

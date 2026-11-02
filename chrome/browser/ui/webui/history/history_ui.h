@@ -27,7 +27,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
-#include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace base {
@@ -40,8 +39,6 @@ class BrowsingHistoryHandler;
 namespace history_clusters {
 class HistoryClustersHandler;
 }
-
-class HistoryEmbeddingsHandler;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace page_image_service {
@@ -66,7 +63,6 @@ class HistoryUI
     : public ui::MojoWebUIController,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
 #if !BUILDFLAG(IS_ANDROID)
-      public history_embeddings::mojom::PageHandlerFactory,
       public history_clusters::mojom::PageHandlerFactory,
 #endif  // !BUILDFLAG(IS_ANDROID)
       public user_education::mojom::UserEducationMixedTrustHandlerFactory,
@@ -104,17 +100,8 @@ class HistoryUI
 
 #if !BUILDFLAG(IS_ANDROID)
   void BindInterface(
-      mojo::PendingReceiver<history_embeddings::mojom::PageHandlerFactory>
-          pending_page_handler_factory);
-  void BindInterface(
       mojo::PendingReceiver<history_clusters::mojom::PageHandlerFactory>
           pending_page_handler_factory);
-
-  // history_embeddings::mojom::PageHandlerFactory:
-  void CreatePageHandler(
-      mojo::PendingRemote<history_embeddings::mojom::Page> page,
-      mojo::PendingReceiver<history_embeddings::mojom::PageHandler> receiver)
-      override;
 
   // history_clusters::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -168,11 +155,8 @@ class HistoryUI
       history_cross_device_signin_promo_handler_;
 
 #if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<HistoryEmbeddingsHandler> history_embeddings_handler_;
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
-  mojo::Receiver<history_embeddings::mojom::PageHandlerFactory>
-      history_embeddings_handler_factory_receiver_{this};
   mojo::Receiver<history_clusters::mojom::PageHandlerFactory>
       history_clusters_handler_factory_receiver_{this};
 #endif  // !BUILDFLAG(IS_ANDROID)
