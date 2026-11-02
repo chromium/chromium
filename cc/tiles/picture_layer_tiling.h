@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <map>
 #include <memory>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -28,6 +27,7 @@
 #include "cc/tiles/tile_priority.h"
 #include "cc/tiles/tiling_coverage_iterator.h"
 #include "cc/trees/occlusion.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -35,7 +35,7 @@ namespace base {
 namespace trace_event {
 class TracedValue;
 }
-}
+}  // namespace base
 
 namespace cc {
 
@@ -191,8 +191,10 @@ class CC_EXPORT PictureLayerTiling {
   const TilingData& TilingDataForTesting() const { return tiling_data_; }
   std::vector<Tile*> AllTilesForTesting() const {
     std::vector<Tile*> all_tiles;
-    for (TileMap::const_iterator it = tiles_.begin(); it != tiles_.end(); ++it)
-      all_tiles.push_back(it->second.get());
+    all_tiles.reserve(tiles_.size());
+    for (const auto& [index, tile] : tiles_) {
+      all_tiles.push_back(tile.get());
+    }
     return all_tiles;
   }
 
@@ -221,7 +223,7 @@ class CC_EXPORT PictureLayerTiling {
                                       const gfx::Rect& eventually_rect,
                                       bool evicts_tiles = false);
 
-  using TileMap = std::unordered_map<TileIndex, std::unique_ptr<Tile>>;
+  using TileMap = absl::flat_hash_map<TileIndex, std::unique_ptr<Tile>>;
 
   // Iterates over the tiles of a PictureLayerTiling. Order of iteration is not
   // defined.

@@ -10,8 +10,6 @@
 
 #include <memory>
 #include <set>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -36,6 +34,8 @@
 #include "cc/tiles/tile_draw_info.h"
 #include "cc/tiles/tile_manager_settings.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -408,7 +408,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   bool use_gpu_rasterization_;
   raw_ptr<RasterQueryQueue> pending_raster_queries_ = nullptr;
 
-  std::unordered_map<Tile::Id, raw_ptr<Tile, CtnExperimental>> tiles_;
+  absl::flat_hash_map<Tile::Id, raw_ptr<Tile, CtnExperimental>> tiles_;
 
   bool all_tiles_that_need_to_be_rasterized_are_scheduled_;
   MemoryHistory::Entry memory_stats_from_last_assign_;
@@ -435,14 +435,14 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   uint64_t prepare_tiles_count_;
   uint64_t next_tile_id_;
 
-  std::unordered_set<raw_ptr<Tile, CtnExperimental>> pending_gpu_work_tiles_;
+  absl::flat_hash_set<raw_ptr<Tile, CtnExperimental>> pending_gpu_work_tiles_;
   uint64_t pending_required_for_activation_callback_id_ = 0;
   uint64_t pending_required_for_draw_callback_id_ = 0;
   // If true, we should re-compute tile requirements in
   // CheckPendingGpuWorkAndIssueSignals.
   bool pending_tile_requirements_dirty_ = false;
 
-  std::unordered_map<Tile::Id, std::vector<DrawImage>> scheduled_draw_images_;
+  absl::flat_hash_map<Tile::Id, std::vector<DrawImage>> scheduled_draw_images_;
   std::vector<scoped_refptr<TileTask>> locked_image_tasks_;
 
   // Number of tiles with a checker-imaged resource or active raster tasks which

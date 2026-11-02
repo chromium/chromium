@@ -839,6 +839,7 @@ void TileManager::SetTileTaskManagerForTesting(
 
 std::vector<Tile*> TileManager::AllTilesForTesting() const {
   std::vector<Tile*> tiles;
+  tiles.reserve(tiles_.size());
   for (auto& tile_pair : tiles_) {
     tiles.push_back(tile_pair.second);
   }
@@ -1801,9 +1802,8 @@ std::unique_ptr<Tile> TileManager::CreateTile(const Tile::CreateInfo& info,
   DCHECK(tile_task_manager_);
   std::unique_ptr<Tile> tile(
       new Tile(this, info, layer_id, source_frame_number, flags));
-  DCHECK(!tiles_.contains(tile->id()));
-
-  tiles_[tile->id()] = tile.get();
+  const bool inserted = tiles_.try_emplace(tile->id(), tile.get()).second;
+  DCHECK(inserted);
   return tile;
 }
 
@@ -2131,17 +2131,16 @@ void TileManager::CheckPendingGpuWorkAndIssueSignals() {
   std::vector<const ResourcePool::InUsePoolResource*> required_for_draw;
   bool ready_tile_required_for_draw = false;
 
-  for (auto it = pending_gpu_work_tiles_.begin();
-       it != pending_gpu_work_tiles_.end();) {
-    Tile* tile = *it;
+  absl::erase_if(pending_gpu_work_tiles_, [&](Tile* tile) {
     DCHECK(tile->draw_info().has_resource());
     const ResourcePool::InUsePoolResource& resource =
         tile->draw_info().GetResource();
 
     // Update requirements first so that if the tile has become required
     // it will force a redraw.
-    if (pending_tile_requirements_dirty_)
+    if (pending_tile_requirements_dirty_) {
       tile->tiling()->UpdateRequiredStatesOnTile(tile);
+    }
 
     if (global_state_.tree_priority != SMOOTHNESS_TAKES_PRIORITY ||
         raster_buffer_provider_->IsResourceReadyToDraw(resource)) {
@@ -2149,20 +2148,21 @@ void TileManager::CheckPendingGpuWorkAndIssueSignals() {
       client_->NotifyTileStateChanged(tile, /*update_damage=*/true,
                                       /*set_needs_redraw=*/false);
       ready_tile_required_for_draw |= tile->required_for_draw();
-      it = pending_gpu_work_tiles_.erase(it);
-      continue;
+      return true;
     }
 
     // TODO(ericrk): If a tile in our list no longer has valid tile priorities,
     // it may still report that it is required, and unnecessarily delay
     // activation. crbug.com/687265
-    if (tile->required_for_activation())
+    if (tile->required_for_activation()) {
       required_for_activation.push_back(&resource);
-    if (tile->required_for_draw())
+    }
+    if (tile->required_for_draw()) {
       required_for_draw.push_back(&resource);
+    }
 
-    ++it;
-  }
+    return false;
+  });
 
   if (required_for_activation.empty()) {
     pending_required_for_activation_callback_id_ = 0;

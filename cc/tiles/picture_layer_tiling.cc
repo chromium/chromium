@@ -90,7 +90,7 @@ Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
 
   std::unique_ptr<Tile> tile = client_->CreateTile(info);
   Tile* tile_ptr = tile.get();
-  tiles_[index] = std::move(tile);
+  tiles_.try_emplace(index, std::move(tile));
   return tile_ptr;
 }
 
@@ -106,9 +106,9 @@ void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {
                                  include_borders);
        iter; ++iter) {
     TileIndex index(iter.index());
-    auto find = tiles_.find(index);
-    if (find != tiles_.end())
+    if (tiles_.contains(index)) {
       continue;
+    }
 
     Tile::CreateInfo info = CreateInfoForTile(index.i, index.j);
     if (ShouldCreateTileAt(info)) {
@@ -144,11 +144,20 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
 
   resolution_ = pending_twin->resolution_;
 
-  while (!pending_twin->tiles_.empty()) {
-    auto pending_iter = pending_twin->tiles_.begin();
-    pending_iter->second->set_tiling(this);
-    tiles_[pending_iter->first] = std::move(pending_iter->second);
-    pending_twin->tiles_.erase(pending_iter);
+  if (!pending_twin->tiles_.empty()) {
+    if (tiles_.empty()) {
+      for (auto& [index, tile] : pending_twin->tiles_) {
+        tile->set_tiling(this);
+      }
+      tiles_ = std::move(pending_twin->tiles_);
+    } else {
+      tiles_.reserve(tiles_.size() + pending_twin->tiles_.size());
+      for (auto& [index, tile] : pending_twin->tiles_) {
+        tile->set_tiling(this);
+        tiles_[index] = std::move(tile);
+      }
+    }
+    pending_twin->tiles_.clear();
   }
 
   if (all_tiles_done_ && !pending_twin->all_tiles_done_) {
@@ -830,6 +839,7 @@ PictureLayerTiling::ComputePriorityRectTypeForTile(const Tile* tile) const {
 
 void PictureLayerTiling::GetAllPrioritizedTilesForTracing(
     std::vector<PrioritizedTile>* prioritized_tiles) const {
+  prioritized_tiles->reserve(prioritized_tiles->size() + tiles_.size());
   for (const auto& tile_pair : tiles_) {
     Tile* tile = tile_pair.second.get();
     prioritized_tiles->push_back(MakePrioritizedTile(
