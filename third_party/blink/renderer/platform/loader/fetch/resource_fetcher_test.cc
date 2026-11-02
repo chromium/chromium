@@ -1868,12 +1868,6 @@ TEST_F(ResourceFetcherTestBase, PopulateResourceRequestPermissionsPolicy) {
           /*parent_policy=*/nullptr,
           /*header_policy=*/
           {{{network::mojom::PermissionsPolicyFeature::
-                 kBrowsingTopics, /*allowed_origins=*/
-             {*network::OriginWithPossibleWildcards::FromOrigin(origin)},
-             /*self_if_matches=*/std::nullopt,
-             /*matches_all_origins=*/false,
-             /*matches_opaque_src=*/false},
-            {network::mojom::PermissionsPolicyFeature::
                  kPrivateStateTokenIssuance,
              /*allowed_origins=*/{},
              /*self_if_matches=*/std::nullopt,
@@ -1906,12 +1900,6 @@ TEST_F(ResourceFetcherTestBase,
           /*parent_policy=*/nullptr,
           /*header_policy=*/
           {{{network::mojom::PermissionsPolicyFeature::
-                 kBrowsingTopics, /*allowed_origins=*/
-             {*network::OriginWithPossibleWildcards::FromOrigin(origin)},
-             /*self_if_matches=*/std::nullopt,
-             /*matches_all_origins=*/false,
-             /*matches_opaque_src=*/false},
-            {network::mojom::PermissionsPolicyFeature::
                  kPrivateStateTokenIssuance,
              /*allowed_origins=*/{},
              /*self_if_matches=*/std::nullopt,

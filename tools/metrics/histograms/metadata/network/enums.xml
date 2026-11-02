@@ -1463,7 +1463,7 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="original_destination"/>
   <int value="26" label="request_body"/>
   <int value="27" label="keepalive"/>
-  <int value="28" label="browsing_topics"/>
+  <int value="28" label="browsing_topics (deprecated)"/>
   <int value="29" label="ad_auction_headers (deprecated)"/>
   <int value="30" label="shared_storage_writable_eligible (deprecated)"/>
   <int value="31" label="has_user_gesture"/>
@@ -2235,7 +2235,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="range"/>
   <int value="21" label="request-id"/>
   <int value="22" label="rtt"/>
-  <int value="23" label="sec-browsing-topics"/>
+  <int value="23" label="sec-browsing-topics (deprecated)"/>
   <int value="24" label="sec-ch-device-memory"/>
   <int value="25" label="sec-ch-dpr"/>
   <int value="26" label="sec-ch-prefers-color-scheme"/>

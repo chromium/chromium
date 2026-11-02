@@ -44,7 +44,7 @@ enum class RequestHeader {
   kRange = 20,
   kRequestId = 21,
   kRtt = 22,
-  kSecBrowsingTopics = 23,
+  // DEPRECATED: kSecBrowsingTopics = 23,
   kSecChDeviceMemory = 24,
   kSecChDpr = 25,
   kSecChPrefersColorScheme = 26,

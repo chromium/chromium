@@ -165,10 +165,6 @@ bool ContainsForbiddenSecurityHeader(net::HttpRequestHeaders& headers,
     if (base::EqualsCaseInsensitiveASCII(name, "Sec-GPC")) {
       return value == "1";
     }
-    // Browsing Topics API headers contain structured interest tokens.
-    if (base::EqualsCaseInsensitiveASCII(name, "Sec-Browsing-Topics")) {
-      return value.size() < 1024;
-    }
     // Shared Storage fetch headers use structured boolean "?1".
     if (base::EqualsCaseInsensitiveASCII(name, "Sec-Shared-Storage-Writable")) {
       return value == "?1";

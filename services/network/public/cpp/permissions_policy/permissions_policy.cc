@@ -21,16 +21,6 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "url/gurl.h"
 
-namespace {
-
-const std::array<network::mojom::PermissionsPolicyFeature, 2>
-    kDefinedOptInFeatures = {
-        network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
-        network::mojom::PermissionsPolicyFeature::
-            kBrowsingTopicsBackwardCompatible};
-
-}  // namespace
-
 namespace network {
 
 PermissionsPolicy::Allowlist::Allowlist() = default;
@@ -251,11 +241,8 @@ bool PermissionsPolicy::IsFeatureEnabled(
 // Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20230717/
 bool PermissionsPolicy::IsFeatureEnabledForOrigin(
     network::mojom::PermissionsPolicyFeature feature,
-    const url::Origin& origin,
-    bool override_default_policy_to_all) const {
+    const url::Origin& origin) const {
   DCHECK(feature_list_->contains(feature));
-  DCHECK(!override_default_policy_to_all ||
-         std::ranges::contains(kDefinedOptInFeatures, feature));
 
   // 9.9.2: If policy’s inherited policy for feature is Disabled, return
   // "Disabled".
@@ -270,12 +257,6 @@ bool PermissionsPolicy::IsFeatureEnabledForOrigin(
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end()) {
     return allowlist->second.Contains(origin);
-  }
-
-  // Proposed algorithm change in
-  // https://github.com/w3c/webappsec-permissions-policy/pull/499.
-  if (override_default_policy_to_all) {
-    return true;
   }
 
   const network::PermissionsPolicyFeatureDefault default_policy =

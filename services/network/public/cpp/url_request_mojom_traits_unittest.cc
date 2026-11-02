@@ -160,13 +160,6 @@ TEST_F(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
           /*parent_policy=*/nullptr,
           /*header_policy=*/
           {{{network::mojom::PermissionsPolicyFeature::
-                 kBrowsingTopics, /*allowed_origins=*/
-             {*network::OriginWithPossibleWildcards::FromOrigin(
-                 url::Origin::Create(original.url))},
-             /*self_if_matches=*/std::nullopt,
-             /*matches_all_origins=*/false,
-             /*matches_opaque_src=*/false},
-            {network::mojom::PermissionsPolicyFeature::
                  kClientHintDPR, /*allowed_origins=*/
              {*network::OriginWithPossibleWildcards::FromOrigin(
                  url::Origin::Create(original.url))},

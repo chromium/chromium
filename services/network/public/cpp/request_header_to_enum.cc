@@ -36,7 +36,6 @@ constexpr auto kHeaderMap =
         {"range", RequestHeader::kRange},
         {"request-id", RequestHeader::kRequestId},
         {"rtt", RequestHeader::kRtt},
-        {"sec-browsing-topics", RequestHeader::kSecBrowsingTopics},
         {"sec-ch-device-memory", RequestHeader::kSecChDeviceMemory},
         {"sec-ch-dpr", RequestHeader::kSecChDpr},
         {"sec-ch-prefers-color-scheme",

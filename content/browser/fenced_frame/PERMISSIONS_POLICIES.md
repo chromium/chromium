@@ -462,18 +462,6 @@ Its
 [`layoutchange`](https://github.com/WICG/keyboard-map/blob/main/explainer.md#layoutchange-event)
 event originates from if the system changes its keyboard layout.
 
-### ✅ Browsing Topics: no risk
-*Feature: kBrowsingTopics, kBrowsingTopicsBackwardCompatible*
-
-No arbitrary data can be logged as a browsing topic; there are a [fixed number
-of
-topics](https://privacysandbox.com/proposals/topics/#:~:text=The%20updated%20list%20contains%20around%20469%20topics)
-that can be joined. The browser also [has the final
-say](https://privacysandbox.com/proposals/topics/#:~:text=For%20example%2C%20the%20browser%20would%20match%20a%20sports%20website%20with%20the%20topic%20%22Sports%22.)
-on what topics are shown to a context, which prevents arbitrary data from being
-exfiltrated out of a frame. The fixed number of topics removes any potential
-fingerprinting vectors.
-
 ### 🖐️ Local Fonts: fingerprinting risk, no exfiltration risk
 *Feature: kLocalFonts*
 

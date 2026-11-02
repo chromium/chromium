@@ -182,7 +182,7 @@ TEST(URLRequestMojomTraitsPerfTest,
           /*parent_policy=*/parent_policy.get(),
           /*header_policy=*/
           {{{network::mojom::PermissionsPolicyFeature::
-                 kBrowsingTopics, /*allowed_origins=*/
+                 kGeolocation, /*allowed_origins=*/
              {*network::OriginWithPossibleWildcards::FromOrigin(
                  url::Origin::Create(GURL(kPolicyUrlB)))},
              /*self_if_matches=*/std::nullopt,

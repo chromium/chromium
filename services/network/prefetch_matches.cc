@@ -177,7 +177,7 @@ enum class FieldsForUma {
   kOriginalDestination = 25,
   kRequestBody = 26,
   kKeepalive = 27,
-  kBrowsingTopics = 28,
+  // DEPRECATED: kBrowsingTopics = 28,
   // DEPRECATED: kAdAuctionHeaders = 29,
   // DEPRECATED: kSharedStorageWritableEligible = 30,
   kHasUserGesture = 31,

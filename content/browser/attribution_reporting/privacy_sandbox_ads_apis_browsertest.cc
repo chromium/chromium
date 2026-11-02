@@ -93,10 +93,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsM1OverrideBrowserTest,
                        NoOT_FeatureDetected) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("https://example.test/title1.html")));
 
-  EXPECT_EQ(true, EvalJs(shell(),
-                         "document.featurePolicy.features().includes('"
-                         "browsing-topics')"));
-
   EXPECT_EQ(true, EvalJs(shell(), "document.browsingTopics !== undefined"));
   EXPECT_EQ(true,
             EvalJs(shell(), "window.HTMLFencedFrameElement !== undefined"));
@@ -119,9 +115,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest,
                        OverrideWithoutFeature_IDLNotExposed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("https://example.test/title1.html")));
 
-  EXPECT_EQ(false, EvalJs(shell(),
-                          "document.featurePolicy.features().includes('"
-                          "browsing-topics')"));
   EXPECT_EQ(false,
             EvalJs(shell(), "window.HTMLFencedFrameElement !== undefined"));
 }

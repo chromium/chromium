@@ -241,17 +241,10 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
   bool IsFeatureEnabled(network::mojom::PermissionsPolicyFeature feature) const;
 
   // Returns whether or not the given feature is enabled by this policy for a
-  // specific origin. If `override_default_policy_to_all` is true (rare), then
-  // replace the default policy with '*' in the query. This should only be
-  // used by a handful of features that access x-origin data that said origin
-  // has expressly opted into. In this scenario, the caller could have just as
-  // easily created an x-origin iframe with allow=feature, and since the
-  // recipient origin has opted in, they would have called the feature in said
-  // iframe. If true, the feature must be defined in `kDefinedOptInFeatures`.
+  // specific origin.
   bool IsFeatureEnabledForOrigin(
       network::mojom::PermissionsPolicyFeature feature,
-      const url::Origin& origin,
-      bool override_default_policy_to_all = false) const;
+      const url::Origin& origin) const;
 
   // Returns whether the document with this policy can delegate the given
   // feature to `origin`, e.g. via an iframe's `allow` attribute or a worker's

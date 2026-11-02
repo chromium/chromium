@@ -77,7 +77,6 @@ domain Page
       autofill
       autoplay
       bluetooth
-      browsing-topics
       camera
       captured-surface-control
       ch-dpr
@@ -131,7 +130,6 @@ domain Page
       hid
       identity-credentials-get
       idle-detection
-      interest-cohort
       keyboard-map
       language-detector
       language-model

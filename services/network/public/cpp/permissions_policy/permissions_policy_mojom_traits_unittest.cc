@@ -64,13 +64,6 @@ TEST(PermissionsPolicyMojomTraitsTest, Roundtrips_PermissionsPolicy) {
           /*parent_policy=*/parent_policy.get(),
           /*header_policy=*/
           {{{network::mojom::PermissionsPolicyFeature::
-                 kBrowsingTopics, /*allowed_origins=*/
-             {*network::OriginWithPossibleWildcards::FromOrigin(
-                 url::Origin::Create(GURL(kUrlB)))},
-             /*self_if_matches=*/std::nullopt,
-             /*matches_all_origins=*/false,
-             /*matches_opaque_src=*/false},
-            {network::mojom::PermissionsPolicyFeature::
                  kGamepad, /*allowed_origins=*/
              {*network::OriginWithPossibleWildcards::FromOrigin(
                  url::Origin::Create(GURL(kUrlA)))},
