@@ -22,6 +22,8 @@ class CONTENT_EXPORT InProcessVideoCaptureProvider
       scoped_refptr<base::SingleThreadTaskRunner> device_task_runner);
 
   std::unique_ptr<VideoCaptureDeviceLauncher> CreateDeviceLauncher() override;
+  std::unique_ptr<VideoCaptureDeviceLauncher>
+  CreateDeviceLauncherWithSharedMemoryBuffers() override;
 
   void OpenNativeScreenCapturePicker(
       DesktopMediaID::Type type,

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_PROVIDER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_PROVIDER_H_
 
+#include "content/common/content_export.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
@@ -20,7 +21,7 @@ class VideoCaptureDeviceLauncher;
 
 // Note: GetDeviceInfosAsync is only relevant for devices with
 // MediaStreamType == DEVICE_VIDEO_CAPTURE, i.e. camera devices.
-class VideoCaptureProvider {
+class CONTENT_EXPORT VideoCaptureProvider {
  public:
   using GetDeviceInfosCallback = base::OnceCallback<void(
       media::mojom::DeviceEnumerationResult result_code,
@@ -34,6 +35,13 @@ class VideoCaptureProvider {
 
   virtual std::unique_ptr<VideoCaptureDeviceLauncher>
   CreateDeviceLauncher() = 0;
+
+  // Like CreateDeviceLauncher(), but the launched screen, window, and tab
+  // capture devices deliver their frames in shared memory instead of GPU
+  // buffers. Use this for consumers in the browser process that read the pixels
+  // on the CPU. The default implementation returns CreateDeviceLauncher().
+  virtual std::unique_ptr<VideoCaptureDeviceLauncher>
+  CreateDeviceLauncherWithSharedMemoryBuffers();
 
   // Opens a native screen capture picker on platforms where
   // NativeScreenCapturePicker is available. It is an error to call this method

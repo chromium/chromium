@@ -85,6 +85,16 @@ VideoCaptureProviderSwitcher::CreateDeviceLauncher() {
       other_types_capture_provider_->CreateDeviceLauncher());
 }
 
+std::unique_ptr<VideoCaptureDeviceLauncher>
+VideoCaptureProviderSwitcher::CreateDeviceLauncherWithSharedMemoryBuffers() {
+  // Only the provider for other types launches screen, window, and tab
+  // capture devices.
+  return std::make_unique<VideoCaptureDeviceLauncherSwitcher>(
+      media_device_capture_provider_->CreateDeviceLauncher(),
+      other_types_capture_provider_
+          ->CreateDeviceLauncherWithSharedMemoryBuffers());
+}
+
 void VideoCaptureProviderSwitcher::OpenNativeScreenCapturePicker(
     DesktopMediaID::Type type,
     base::OnceCallback<void(DesktopMediaID::Id)> created_callback,

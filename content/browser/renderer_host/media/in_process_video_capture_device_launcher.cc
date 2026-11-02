@@ -40,6 +40,7 @@
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 #include "content/browser/media/capture/desktop_capture_device_uma_types.h"
 #include "content/browser/media/capture/web_contents_video_capture_device.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-shared.h"
 #if !BUILDFLAG(IS_IOS)
 #if defined(USE_AURA)
 #include "content/browser/media/capture/aura_window_video_capture_device.h"
@@ -271,7 +272,7 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
       start_capture_closure = base::BindOnce(
           &InProcessVideoCaptureDeviceLauncher::DoStartTabCaptureOnDeviceThread,
-          device_id, params, std::move(receiver),
+          device_id, params, prefer_shared_memory_buffers_, std::move(receiver),
           std::move(after_start_capture_callback));
       break;
 
@@ -312,11 +313,11 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
               std::move(callback).Run(std::move(device));
             },
             desktop_id, std::move(after_start_capture_callback));
-        start_capture_closure =
-            base::BindOnce(&InProcessVideoCaptureDeviceLauncher::
-                               DoStartTabCaptureOnDeviceThread,
-                           device_id, params, std::move(receiver),
-                           std::move(after_start_capture_callback));
+        start_capture_closure = base::BindOnce(
+            &InProcessVideoCaptureDeviceLauncher::
+                DoStartTabCaptureOnDeviceThread,
+            device_id, params, prefer_shared_memory_buffers_,
+            std::move(receiver), std::move(after_start_capture_callback));
         break;
       }
 
@@ -328,11 +329,11 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
         TRACE_EVENT_INSTANT(
             TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
             "UsingVizFrameSinkCapturer");
-        start_capture_closure =
-            base::BindOnce(&InProcessVideoCaptureDeviceLauncher::
-                               DoStartVizFrameSinkWindowCaptureOnDeviceThread,
-                           desktop_id, params, std::move(receiver),
-                           std::move(after_start_capture_callback));
+        start_capture_closure = base::BindOnce(
+            &InProcessVideoCaptureDeviceLauncher::
+                DoStartVizFrameSinkWindowCaptureOnDeviceThread,
+            desktop_id, params, prefer_shared_memory_buffers_,
+            std::move(receiver), std::move(after_start_capture_callback));
         break;
       }
 #endif  // defined(USE_AURA) || BUILDFLAG(IS_MAC)
@@ -350,7 +351,8 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       const bool wgc_may_be_used =
           desktop_id.type == DesktopMediaID::TYPE_WINDOW ||
           IsWgcEnabledForScreenCapture();
-      if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcUsingTexture) &&
+      if (!prefer_shared_memory_buffers_ &&
+          base::FeatureList::IsEnabled(features::kWebRtcAllowWgcUsingTexture) &&
           wgc_may_be_used) {
         buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
         max_buffer_count = 10;
@@ -379,6 +381,12 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   state_ = State::DEVICE_START_IN_PROGRESS;
   device_task_runner_->PostTask(FROM_HERE, std::move(start_capture_closure));
 #endif
+}
+
+void InProcessVideoCaptureDeviceLauncher::SetPreferSharedMemoryBuffers() {
+  CHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK(state_ == State::READY_TO_LAUNCH);
+  prefer_shared_memory_buffers_ = true;
 }
 
 void InProcessVideoCaptureDeviceLauncher::AbortLaunch() {
@@ -469,11 +477,18 @@ void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(
 void InProcessVideoCaptureDeviceLauncher::DoStartTabCaptureOnDeviceThread(
     const std::string& device_id,
     const media::VideoCaptureParams& params,
+    bool prefer_shared_memory_buffers,
     std::unique_ptr<media::VideoFrameReceiver> receiver,
     ReceiveDeviceCallback result_callback) {
   std::unique_ptr<WebContentsVideoCaptureDevice> video_capture_device =
       WebContentsVideoCaptureDevice::Create(device_id);
   if (video_capture_device) {
+    if (prefer_shared_memory_buffers) {
+      // FrameSinkVideoCaptureDevice defaults to kPreferMappableSharedImage
+      // when unset; kDefault requests shared memory buffers from viz.
+      video_capture_device->SetBufferFormatPreference(
+          viz::mojom::BufferFormatPreference::kDefault);
+    }
     video_capture_device->AllocateAndStartWithReceiver(params,
                                                        std::move(receiver));
   }
@@ -485,6 +500,7 @@ void InProcessVideoCaptureDeviceLauncher::
     DoStartVizFrameSinkWindowCaptureOnDeviceThread(
         const DesktopMediaID& device_id,
         const media::VideoCaptureParams& params,
+        bool prefer_shared_memory_buffers,
         std::unique_ptr<media::VideoFrameReceiver> receiver,
         ReceiveDeviceCallback result_callback) {
   std::unique_ptr<FrameSinkVideoCaptureDevice> video_capture_device;
@@ -496,6 +512,12 @@ void InProcessVideoCaptureDeviceLauncher::
       std::make_unique<ViewsWidgetVideoCaptureDeviceMac>(device_id);
 #endif
   if (video_capture_device) {
+    if (prefer_shared_memory_buffers) {
+      // FrameSinkVideoCaptureDevice defaults to kPreferMappableSharedImage
+      // when unset; kDefault requests shared memory buffers from viz.
+      video_capture_device->SetBufferFormatPreference(
+          viz::mojom::BufferFormatPreference::kDefault);
+    }
     video_capture_device->AllocateAndStartWithReceiver(params,
                                                        std::move(receiver));
     IncrementDesktopCaptureCounters(device_id);

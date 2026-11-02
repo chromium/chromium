@@ -49,6 +49,11 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
 
   void AbortLaunch() override;
 
+  // Asks the launched screen, window, or tab capture device to deliver its
+  // frames in shared memory instead of GPU buffers. Must be called before
+  // LaunchDeviceAsync().
+  void SetPreferSharedMemoryBuffers();
+
  private:
   using ReceiveDeviceCallback = base::OnceCallback<void(
       std::unique_ptr<media::VideoCaptureDevice> device)>;
@@ -72,6 +77,7 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
   static void DoStartTabCaptureOnDeviceThread(
       const std::string& device_id,
       const media::VideoCaptureParams& params,
+      bool prefer_shared_memory_buffers,
       std::unique_ptr<media::VideoFrameReceiver> receiver,
       ReceiveDeviceCallback result_callback);
 
@@ -79,6 +85,7 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
   static void DoStartVizFrameSinkWindowCaptureOnDeviceThread(
       const DesktopMediaID& device_id,
       const media::VideoCaptureParams& params,
+      bool prefer_shared_memory_buffers,
       std::unique_ptr<media::VideoFrameReceiver> receiver,
       ReceiveDeviceCallback result_callback);
 #endif  // defined(USE_AURA) || BUILDFLAG(IS_MAC)
@@ -114,6 +121,8 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
 
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
   State state_;
+  // See SetPreferSharedMemoryBuffers().
+  bool prefer_shared_memory_buffers_ = false;
   raw_ptr<NativeScreenCapturePicker> native_screen_capture_picker_;
   base::WeakPtrFactory<InProcessVideoCaptureDeviceLauncher> weak_factory_{this};
 };

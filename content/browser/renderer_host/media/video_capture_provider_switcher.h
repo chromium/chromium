@@ -24,6 +24,8 @@ class CONTENT_EXPORT VideoCaptureProviderSwitcher
   void GetDeviceInfosAsync(GetDeviceInfosCallback result_callback) override;
 
   std::unique_ptr<VideoCaptureDeviceLauncher> CreateDeviceLauncher() override;
+  std::unique_ptr<VideoCaptureDeviceLauncher>
+  CreateDeviceLauncherWithSharedMemoryBuffers() override;
 
   void OpenNativeScreenCapturePicker(
       content::DesktopMediaID::Type type,

@@ -46,6 +46,14 @@ InProcessVideoCaptureProvider::CreateDeviceLauncher() {
       device_task_runner_, native_screen_capture_picker_.get());
 }
 
+std::unique_ptr<VideoCaptureDeviceLauncher>
+InProcessVideoCaptureProvider::CreateDeviceLauncherWithSharedMemoryBuffers() {
+  auto launcher = std::make_unique<InProcessVideoCaptureDeviceLauncher>(
+      device_task_runner_, native_screen_capture_picker_.get());
+  launcher->SetPreferSharedMemoryBuffers();
+  return launcher;
+}
+
 void InProcessVideoCaptureProvider::OpenNativeScreenCapturePicker(
     DesktopMediaID::Type type,
     base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
