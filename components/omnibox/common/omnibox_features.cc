@@ -767,7 +767,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
 // If enabled, X-Geo headers are sent using the platform-agnostic C++
 // implementation. On Android, enabling this flag will disable the legacy Java
 // implementation.
-BASE_FEATURE(kPlatformAgnosticXGeo, DISABLED);
+BASE_FEATURE(kPlatformAgnosticXGeo, ENABLED);
 
 // If enabled, URL-what-you-typed matches are made the default match instead of
 // matches for the same URL with different casing, so verbatim input casing is

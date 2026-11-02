@@ -517,10 +517,21 @@ class SearchPrefetchServiceEnabledBrowserTest
       attempt_entry_builder_;
 };
 
+class SearchPrefetchXGeoDisabledBrowserTest
+    : public SearchPrefetchServiceEnabledBrowserTest {
+ public:
+  SearchPrefetchXGeoDisabledBrowserTest() {
+    xgeo_feature_list_.InitAndDisableFeature(omnibox::kPlatformAgnosticXGeo);
+  }
+
+ private:
+  base::test::ScopedFeatureList xgeo_feature_list_;
+};
+
 // Verifies that when the kPlatformAgnosticXGeo flag is disabled, Desktop
 // clients do not attach the X-Geo header to prefetch requests (while Android
 // clients continue to do so via legacy logic).
-IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoDisabledBrowserTest,
                        PrefetchSendsXGeoHeader_FlagDisabled) {
   base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
