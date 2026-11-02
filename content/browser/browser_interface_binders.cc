@@ -31,6 +31,7 @@
 #include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
+#include "content/browser/cross_origin_storage/cross_origin_storage_manager_impl.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer.h"
 #include "content/browser/device_posture/device_posture_provider_impl.h"
 #include "content/browser/eye_dropper_chooser_impl.h"
@@ -899,6 +900,28 @@ void BindImageCaptureImpl(
   ImageCaptureImpl::Create(frame_host, std::move(receiver));
 }
 
+void BindCrossOriginStorageManager(
+    RenderFrameHost* frame_host,
+    mojo::PendingReceiver<blink::mojom::CrossOriginStorageManager> receiver) {
+  CrossOriginStorageManagerImpl::BindForFrame(frame_host, std::move(receiver));
+}
+
+void BindCrossOriginStorageManagerForDedicatedWorker(
+    DedicatedWorkerHost* host,
+    mojo::PendingReceiver<blink::mojom::CrossOriginStorageManager> receiver) {
+  CrossOriginStorageManagerImpl::BindForWorker(host, host->GetProcessHost(),
+                                               host->GetWorkerStorageKey(),
+                                               std::move(receiver));
+}
+
+void BindCrossOriginStorageManagerForSharedWorker(
+    SharedWorkerHost* host,
+    mojo::PendingReceiver<blink::mojom::CrossOriginStorageManager> receiver) {
+  CrossOriginStorageManagerImpl::BindForWorker(host, host->GetProcessHost(),
+                                               host->GetWorkerStorageKey(),
+                                               std::move(receiver));
+}
+
 void BindDevicePostureProvider(
     RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::DevicePostureProvider> receiver) {
@@ -1064,6 +1087,11 @@ void PopulateBinderMapWithContext(
                                         host->GetWeakDocumentPtr()),
                                     std::move(receiver));
       }));
+
+  if (base::FeatureList::IsEnabled(blink::features::kCrossOriginStorage)) {
+    map->Add<blink::mojom::CrossOriginStorageManager>(
+        base::BindRepeating(&BindCrossOriginStorageManager));
+  }
 
   map->Add<blink::mojom::DedicatedWorkerHostFactory>(
       &BindRenderFrameHostImpl<
@@ -1586,6 +1614,11 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
   // |DedicatedWorkerHost::broker_|.
   map->Add<blink::mojom::IdleManager>(base::BindRepeating(
       &DedicatedWorkerHost::CreateIdleManager, base::Unretained(host)));
+  if (base::FeatureList::IsEnabled(blink::features::kCrossOriginStorage)) {
+    map->Add<blink::mojom::CrossOriginStorageManager>(
+        base::BindRepeating(&BindCrossOriginStorageManagerForDedicatedWorker,
+                            base::Unretained(host)));
+  }
   map->Add<blink::mojom::DedicatedWorkerHostFactory>(
       base::BindRepeating(&DedicatedWorkerHost::CreateNestedDedicatedWorker,
                           base::Unretained(host)));
@@ -1775,6 +1808,10 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
                           base::Unretained(host), /*rfh=*/nullptr));
   map->Add<blink::mojom::LockManager>(base::BindRepeating(
       &SharedWorkerHost::CreateLockManager, base::Unretained(host)));
+  if (base::FeatureList::IsEnabled(blink::features::kCrossOriginStorage)) {
+    map->Add<blink::mojom::CrossOriginStorageManager>(base::BindRepeating(
+        &BindCrossOriginStorageManagerForSharedWorker, base::Unretained(host)));
+  }
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {

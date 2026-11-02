@@ -33,6 +33,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/cross_origin_storage/cross_origin_storage_file_handle_impl.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access.pb.h"
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
@@ -422,6 +423,15 @@ bool IsValidTransferToken(FileSystemAccessTransferTokenImpl* token,
     return false;
   }
 
+  // Cross-Origin Storage handles cannot be transferred into contexts that
+  // forbid unpartitioned storage access (such as credentialless iframes and
+  // fenced frames) or third-party partitioned contexts.
+  if (token->cross_origin_storage_data().has_value() &&
+      (expected_storage_key.ForbidsUnpartitionedStorageAccess() ||
+       expected_storage_key.IsThirdPartyContext())) {
+    return false;
+  }
+
   // kFileSystemTypeTemporary is the sandboxed OPFS backend. OPFS handles are
   // partitioned by StorageKey, so the redeeming context's StorageKey must match
   // the token's, not just its origin.
@@ -449,6 +459,10 @@ HandleType HandleTypeFromFileInfo(base::File::Error result,
 void HandleTransferTokenAsDefaultDirectory(
     FileSystemAccessTransferTokenImpl* token,
     PathInfo& info) {
+  if (token->cross_origin_storage_data().has_value()) {
+    return;
+  }
+
   auto token_url_type = token->url().type();
   auto token_url_mount_type = token->url().mount_type();
 
@@ -1330,6 +1344,7 @@ void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!resolved_token || resolved_token->origin().opaque() ||
+      resolved_token->cross_origin_storage_data().has_value() ||
       !IsValidTransferToken(resolved_token, storage_key,
                             resolved_token->type())) {
     std::move(callback).Run({});
@@ -1728,6 +1743,22 @@ void FileSystemAccessManagerImpl::CreateTransferToken(
 }
 
 void FileSystemAccessManagerImpl::CreateTransferToken(
+    const CrossOriginStorageFileHandleImpl& file,
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
+        receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto token_impl = std::make_unique<FileSystemAccessTransferTokenImpl>(
+      file.origin(),
+      FileSystemAccessTransferTokenImpl::CrossOriginStorageData(
+          file.registry(), file.blob_storage_context(), file.hash(),
+          file.access_spec(), file.is_writable(), file.may_read()),
+      this, std::move(receiver));
+  auto token = token_impl->token();
+  transfer_tokens_.emplace(token, std::move(token_impl));
+}
+
+void FileSystemAccessManagerImpl::CreateTransferToken(
     const FileSystemAccessDirectoryHandleImpl& directory,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
         receiver) {
@@ -1771,6 +1802,12 @@ void FileSystemAccessManagerImpl::DidResolveTransferTokenForFileHandle(
     // cannot determine which render process is compromised. Is it the post
     // message sender or receiver? Because of this, the FileSystemAccessManager
     // closes the FileHandle pipe and ignores the error.
+    return;
+  }
+
+  if (resolved_token->cross_origin_storage_data().has_value()) {
+    file_receivers_.Add(resolved_token->CreateCrossOriginStorageFileHandle(),
+                        std::move(file_handle_receiver));
     return;
   }
 
@@ -2487,17 +2524,18 @@ void FileSystemAccessManagerImpl::ResolveTransferToken(
         transfer_token,
     ResolveTransferTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ResolveTransferToken(std::move(transfer_token),
-                       base::BindOnce(
-                           [](ResolveTransferTokenCallback callback,
-                              FileSystemAccessTransferTokenImpl* token) {
-                             if (!token) {
-                               std::move(callback).Run(std::nullopt);
-                               return;
-                             }
-                             std::move(callback).Run(token->url());
-                           },
-                           std::move(callback)));
+  ResolveTransferToken(
+      std::move(transfer_token),
+      base::BindOnce(
+          [](ResolveTransferTokenCallback callback,
+             FileSystemAccessTransferTokenImpl* token) {
+            if (!token || token->cross_origin_storage_data().has_value()) {
+              std::move(callback).Run(std::nullopt);
+              return;
+            }
+            std::move(callback).Run(token->url());
+          },
+          std::move(callback)));
 }
 
 base::WeakPtr<FileSystemAccessManagerImpl>

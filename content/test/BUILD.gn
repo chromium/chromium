@@ -1505,6 +1505,7 @@ test("content_browsertests") {
     "../browser/code_cache/inline_script_code_cache_browsertest.cc",
     "../browser/content_index/content_index_browsertest.cc",
     "../browser/content_security_policy_browsertest.cc",
+    "../browser/cross_origin_storage/cross_origin_storage_browsertest.cc",
     "../browser/cross_site_transfer_browsertest.cc",
     "../browser/data_decoder_browsertest.cc",
     "../browser/declarative_performance_observer/declarative_performance_observer_browsertest.cc",

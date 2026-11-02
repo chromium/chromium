@@ -31,9 +31,6 @@ union CrossOriginStorageOrigins {
   // Explicit list of up to 100 allowed potentially trustworthy HTTP(S)
   // origins. An empty array corresponds to `origins: []` (same-site access
   // only).
-  // TODO(crbug.com/547302825): Ensure CrossOriginStorageManager::getFileHandle
-  // in Blink enforces !origin->IsPotentiallyTrustworthy() (throwing TypeError)
-  // before or when wiring up the browser service.
   array<url.mojom.Origin> origins;
 };
 

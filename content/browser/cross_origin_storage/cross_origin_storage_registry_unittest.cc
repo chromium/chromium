@@ -211,30 +211,37 @@ class CrossOriginStorageStagingWriterTest : public testing::Test {
 
 TEST_F(CrossOriginStorageStagingWriterTest, AppendAndFinishMatchesDigest) {
   base::FilePath staging_path;
-  CrossOriginStorageStagingWriter::Result result;
   {
-    CrossOriginStorageStagingWriter writer = CreateWriter(&staging_path);
+    CrossOriginStorageStagingWriter::Result result;
+    {
+      CrossOriginStorageStagingWriter writer = CreateWriter(&staging_path);
 
-    const std::string chunk1 = "hello ";
-    const std::string chunk2 = "world";
-    EXPECT_EQ(writer.Append(std::vector<uint8_t>(chunk1.begin(), chunk1.end())),
-              CrossOriginStorageStatus::kSuccess);
-    EXPECT_EQ(writer.Append(std::vector<uint8_t>(chunk2.begin(), chunk2.end())),
-              CrossOriginStorageStatus::kSuccess);
+      const std::string chunk1 = "hello ";
+      const std::string chunk2 = "world";
+      EXPECT_EQ(
+          writer.Append(std::vector<uint8_t>(chunk1.begin(), chunk1.end())),
+          CrossOriginStorageStatus::kSuccess);
+      EXPECT_EQ(
+          writer.Append(std::vector<uint8_t>(chunk2.begin(), chunk2.end())),
+          CrossOriginStorageStatus::kSuccess);
 
-    result = writer.Finish();
-    // Calling Discard() after Finish() must not delete the finished file since
-    // Finish() transfers path ownership to the caller.
-    writer.Discard();
+      result = writer.Finish();
+      // Calling Discard() after Finish() must not delete the finished file
+      // since Finish() transfers path ownership to the caller.
+      writer.Discard();
+    }
+    // Destroying `writer` after `Finish()` must preserve the closed staging
+    // file on disk so `Commit()` can move it into the cache.
+    ASSERT_EQ(result.status, CrossOriginStorageStatus::kSuccess);
+    EXPECT_EQ(result.size, 11);
+    EXPECT_EQ(result.path, staging_path);
+    CrossOriginStorageHash expected = ComputeHashForString("hello world");
+    EXPECT_TRUE(expected.MatchesDigest(result.digest));
+    EXPECT_TRUE(base::PathExists(staging_path));
   }
-  // Destroying `writer` after `Finish()` must preserve the closed staging file
-  // on disk so `Commit()` can move it into the cache.
-  ASSERT_EQ(result.status, CrossOriginStorageStatus::kSuccess);
-  EXPECT_EQ(result.size, 11);
-  EXPECT_EQ(result.path, staging_path);
-  CrossOriginStorageHash expected = ComputeHashForString("hello world");
-  EXPECT_TRUE(expected.MatchesDigest(result.digest));
-  EXPECT_TRUE(base::PathExists(staging_path));
+  // Destroying `Result` without calling `ReleasePath()` must automatically
+  // delete the staging file.
+  EXPECT_FALSE(base::PathExists(staging_path));
 }
 
 TEST_F(CrossOriginStorageStagingWriterTest,
@@ -293,6 +300,25 @@ TEST_F(CrossOriginStorageStagingWriterTest,
   EXPECT_EQ(result.size, static_cast<int64_t>(kFinalSize));
   CrossOriginStorageHash expected = ComputeHashForString(expected_payload);
   EXPECT_TRUE(expected.MatchesDigest(result.digest));
+}
+
+TEST_F(CrossOriginStorageStagingWriterTest,
+       FinishAbortsRehashAndDiscardsWhenCancelled) {
+  base::FilePath staging_path;
+  CrossOriginStorageStagingWriter writer = CreateWriter(&staging_path);
+
+  const std::string payload = "sparse write content";
+  ASSERT_EQ(
+      writer.WriteAtOffset(10, base::as_byte_span(std::string_view(payload))),
+      CrossOriginStorageStatus::kSuccess);
+
+  auto cancelled =
+      base::MakeRefCounted<CrossOriginStorageStagingWriter::CancellationFlag>();
+  cancelled->data.store(true, std::memory_order_relaxed);
+  CrossOriginStorageStagingWriter::Result result = writer.Finish(cancelled);
+  EXPECT_EQ(result.status, CrossOriginStorageStatus::kOperationFailed);
+  EXPECT_TRUE(result.path.empty());
+  EXPECT_FALSE(base::PathExists(staging_path));
 }
 
 TEST_F(CrossOriginStorageStagingWriterTest, MaxSizeEnforcement) {
@@ -381,6 +407,7 @@ class CrossOriginStorageRegistryTest : public testing::Test {
     base::test::TestFuture<CrossOriginStorageStagingWriter::Result>
         finish_future;
     writer.AsyncCall(&CrossOriginStorageStagingWriter::Finish)
+        .WithArgs(nullptr)
         .Then(finish_future.GetCallback());
     CrossOriginStorageStagingWriter::Result write_result = finish_future.Take();
     EXPECT_EQ(write_result.status, CrossOriginStorageStatus::kSuccess);
@@ -766,6 +793,7 @@ TEST_F(CrossOriginStorageRegistryTest,
   base::test::TestFuture<CrossOriginStorageStagingWriter::Result>
       finish_future_2;
   writer_2.AsyncCall(&CrossOriginStorageStagingWriter::Finish)
+      .WithArgs(nullptr)
       .Then(finish_future_2.GetCallback());
   CrossOriginStorageStagingWriter::Result res_2 = finish_future_2.Take();
   ASSERT_EQ(res_2.status, CrossOriginStorageStatus::kSuccess);
@@ -820,8 +848,10 @@ TEST_F(CrossOriginStorageRegistryTest,
   base::test::TestFuture<CrossOriginStorageStagingWriter::Result>
       finish_future_4;
   writer_3.AsyncCall(&CrossOriginStorageStagingWriter::Finish)
+      .WithArgs(nullptr)
       .Then(finish_future_3.GetCallback());
   writer_4.AsyncCall(&CrossOriginStorageStagingWriter::Finish)
+      .WithArgs(nullptr)
       .Then(finish_future_4.GetCallback());
   auto res_3 = finish_future_3.Take();
   auto res_4 = finish_future_4.Take();

@@ -78,6 +78,7 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!resolved_token ||
+      resolved_token->cross_origin_storage_data().has_value() ||
       resolved_token->origin() != binding_context_.storage_key.origin()) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(

@@ -58,6 +58,7 @@ class FileSystemContext;
 
 namespace content {
 class ChromeBlobStorageContext;
+class CrossOriginStorageFileHandleImpl;
 class FileSystemAccessAccessHandleHostImpl;
 class FileSystemAccessDataTransferTokenImpl;
 class FileSystemAccessDirectoryHandleImpl;
@@ -289,6 +290,10 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // Create a transfer token for a specific file or directory.
   void CreateTransferToken(
       const FileSystemAccessFileHandleImpl& file,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
+          receiver);
+  void CreateTransferToken(
+      const CrossOriginStorageFileHandleImpl& file,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
   void CreateTransferToken(

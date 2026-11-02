@@ -515,6 +515,11 @@ void FileSystemAccessFileHandleImpl::IsSameEntryImpl(
     return;
   }
 
+  if (other->cross_origin_storage_data().has_value()) {
+    std::move(callback).Run(file_system_access_error::Ok(), false);
+    return;
+  }
+
   // The two handles are the same if they serialize to the same value.
   auto serialization = manager()->SerializeURL(
       url(), FileSystemAccessPermissionContext::HandleType::kFile);

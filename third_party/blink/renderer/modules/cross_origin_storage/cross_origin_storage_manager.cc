@@ -132,7 +132,7 @@ ScriptPromise<FileSystemFileHandle> CrossOriginStorageManager::getFileHandle(
         scoped_refptr<const SecurityOrigin> origin =
             SecurityOrigin::Create(parsed_url);
         if (!parsed_url.IsValid() || !parsed_url.ProtocolIsInHttpFamily() ||
-            !origin || origin->IsOpaque()) {
+            !origin || !origin->IsPotentiallyTrustworthy()) {
           exception_state.ThrowTypeError(
               StrCat({"Invalid origin string: '", str, "'."}));
           return EmptyPromise();
@@ -162,7 +162,7 @@ ScriptPromise<FileSystemFileHandle> CrossOriginStorageManager::getFileHandle(
         scoped_refptr<const SecurityOrigin> origin =
             SecurityOrigin::Create(parsed_url);
         if (!parsed_url.IsValid() || !parsed_url.ProtocolIsInHttpFamily() ||
-            !origin || origin->IsOpaque()) {
+            !origin || !origin->IsPotentiallyTrustworthy()) {
           exception_state.ThrowTypeError(StrCat(
               {"Invalid origin in origins sequence: '", origin_str, "'."}));
           return EmptyPromise();

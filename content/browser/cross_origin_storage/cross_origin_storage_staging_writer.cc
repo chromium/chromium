@@ -10,8 +10,12 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 
 namespace content {
 
@@ -38,13 +42,46 @@ size_t DigestSizeForAlgorithm(
 }  // namespace
 
 CrossOriginStorageStagingWriter::Result::Result() = default;
-CrossOriginStorageStagingWriter::Result::Result(const Result&) = default;
+
+CrossOriginStorageStagingWriter::Result::Result(Result&& other)
+    : status(other.status),
+      size(other.size),
+      path(other.ReleasePath()),
+      digest(std::move(other.digest)) {}
+
 CrossOriginStorageStagingWriter::Result&
-CrossOriginStorageStagingWriter::Result::operator=(const Result&) = default;
-CrossOriginStorageStagingWriter::Result::Result(Result&&) = default;
-CrossOriginStorageStagingWriter::Result&
-CrossOriginStorageStagingWriter::Result::operator=(Result&&) = default;
-CrossOriginStorageStagingWriter::Result::~Result() = default;
+CrossOriginStorageStagingWriter::Result::operator=(Result&& other) {
+  if (this != &other) {
+    DeletePathIfOwned();
+    status = other.status;
+    size = other.size;
+    path = other.ReleasePath();
+    digest = std::move(other.digest);
+  }
+  return *this;
+}
+
+CrossOriginStorageStagingWriter::Result::~Result() {
+  DeletePathIfOwned();
+}
+
+base::FilePath CrossOriginStorageStagingWriter::Result::ReleasePath() {
+  return std::exchange(path, base::FilePath());
+}
+
+void CrossOriginStorageStagingWriter::Result::DeletePathIfOwned() {
+  base::FilePath to_delete = ReleasePath();
+  if (to_delete.empty()) {
+    return;
+  }
+  if (base::ThreadPoolInstance::Get()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::GetDeleteFileCallback(std::move(to_delete)));
+  } else {
+    base::DeleteFile(to_delete);
+  }
+}
 
 CrossOriginStorageStagingWriter::CrossOriginStorageStagingWriter(
     blink::mojom::CrossOriginStorageAlgorithm algorithm,
@@ -56,6 +93,7 @@ CrossOriginStorageStagingWriter::CrossOriginStorageStagingWriter(
       file_(std::move(file)),
       hasher_(HashKindForAlgorithm(algorithm)),
       max_size_bytes_(max_size_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!file_.IsValid()) {
     DLOG(ERROR) << "Invalid COS staging file: " << path_.value();
     status_ = CrossOriginStorageStatus::kOperationFailed;
@@ -64,6 +102,7 @@ CrossOriginStorageStagingWriter::CrossOriginStorageStagingWriter(
 }
 
 CrossOriginStorageStagingWriter::~CrossOriginStorageStagingWriter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the job was torn down without an explicit Finish()/Discard() (for
   // example because the renderer disconnected mid-upload), make sure the
   // partial file does not linger in the staging directory.
@@ -73,13 +112,15 @@ CrossOriginStorageStagingWriter::~CrossOriginStorageStagingWriter() {
 }
 
 CrossOriginStorageStatus CrossOriginStorageStagingWriter::Append(
-    std::vector<uint8_t> data) {
-  return WriteAtOffset(static_cast<uint64_t>(size_), std::move(data));
+    base::span<const uint8_t> data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return WriteAtOffset(static_cast<uint64_t>(size_), data);
 }
 
 CrossOriginStorageStatus CrossOriginStorageStagingWriter::WriteAtOffset(
     uint64_t offset,
-    std::vector<uint8_t> data) {
+    base::span<const uint8_t> data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status_ != CrossOriginStorageStatus::kSuccess) {
     return status_;
   }
@@ -93,7 +134,7 @@ CrossOriginStorageStatus CrossOriginStorageStagingWriter::WriteAtOffset(
     DLOG(ERROR) << "COS staging write exceeds maximum resource size: "
                 << path_.value();
     status_ = CrossOriginStorageStatus::kQuotaExceeded;
-    Discard();
+    DiscardStagingFile();
     return status_;
   }
 
@@ -115,7 +156,7 @@ CrossOriginStorageStatus CrossOriginStorageStagingWriter::WriteAtOffset(
     if (!file_.WriteAndCheck(write_offset, chunk)) {
       DLOG(ERROR) << "Failed to write to COS staging file: " << path_.value();
       status_ = CrossOriginStorageStatus::kOperationFailed;
-      Discard();
+      DiscardStagingFile();
       return status_;
     }
     write_offset += static_cast<int64_t>(chunk_len);
@@ -129,8 +170,135 @@ CrossOriginStorageStatus CrossOriginStorageStagingWriter::WriteAtOffset(
   return CrossOriginStorageStatus::kSuccess;
 }
 
+void CrossOriginStorageStagingWriter::WriteStream(
+    uint64_t offset,
+    mojo::ScopedDataPipeConsumerHandle stream,
+    scoped_refptr<CancellationFlag> cancelled,
+    WriteStreamCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (status_ != CrossOriginStorageStatus::kSuccess) {
+    std::move(callback).Run(status_, 0);
+    return;
+  }
+  if (finished_ || active_write_callback_) {
+    std::move(callback).Run(CrossOriginStorageStatus::kOperationFailed, 0);
+    return;
+  }
+
+  if (WriteAtOffset(offset, {}) != CrossOriginStorageStatus::kSuccess) {
+    std::move(callback).Run(status_, 0);
+    return;
+  }
+
+  current_offset_ = offset;
+  active_stream_ = std::move(stream);
+  active_write_callback_ = std::move(callback);
+  active_write_cancelled_ = std::move(cancelled);
+  bytes_written_in_call_ = 0;
+
+  DrainDataPipe();
+}
+
+void CrossOriginStorageStagingWriter::OnDataPipeReadable(
+    MojoResult /*result*/,
+    const mojo::HandleSignalsState& /*state*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DrainDataPipe();
+}
+
+void CrossOriginStorageStagingWriter::DrainDataPipe() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  while (true) {
+    if (active_write_cancelled_ &&
+        active_write_cancelled_->data.load(std::memory_order_relaxed)) {
+      data_pipe_watcher_.reset();
+      active_stream_.reset();
+      active_write_cancelled_.reset();
+      status_ = CrossOriginStorageStatus::kOperationAborted;
+      Discard();
+      if (active_write_callback_) {
+        std::move(active_write_callback_).Run(status_, 0);
+      }
+      return;
+    }
+
+    if (status_ != CrossOriginStorageStatus::kSuccess || finished_) {
+      data_pipe_watcher_.reset();
+      active_stream_.reset();
+      active_write_cancelled_.reset();
+      if (active_write_callback_) {
+        std::move(active_write_callback_)
+            .Run(status_ != CrossOriginStorageStatus::kSuccess
+                     ? status_
+                     : CrossOriginStorageStatus::kOperationFailed,
+                 0);
+      }
+      return;
+    }
+
+    base::span<const uint8_t> buffer;
+    MojoResult rv =
+        active_stream_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
+    if (rv == MOJO_RESULT_SHOULD_WAIT) {
+      if (!data_pipe_watcher_) {
+        data_pipe_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+            FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+            base::SequencedTaskRunner::GetCurrentDefault());
+        data_pipe_watcher_->Watch(
+            active_stream_.get(),
+            MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+            MOJO_WATCH_CONDITION_SATISFIED,
+            base::BindRepeating(
+                &CrossOriginStorageStagingWriter::OnDataPipeReadable,
+                base::Unretained(this)));
+      }
+      data_pipe_watcher_->ArmOrNotify();
+      return;
+    }
+    if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
+      data_pipe_watcher_.reset();
+      active_stream_.reset();
+      active_write_cancelled_.reset();
+      uint64_t bytes_written = bytes_written_in_call_;
+      bytes_written_in_call_ = 0;
+      std::move(active_write_callback_)
+          .Run(CrossOriginStorageStatus::kSuccess, bytes_written);
+      return;
+    }
+    if (rv != MOJO_RESULT_OK) {
+      data_pipe_watcher_.reset();
+      active_stream_.reset();
+      active_write_cancelled_.reset();
+      status_ = CrossOriginStorageStatus::kOperationFailed;
+      DiscardStagingFile();
+      if (active_write_callback_) {
+        std::move(active_write_callback_).Run(status_, 0);
+      }
+      return;
+    }
+
+    size_t chunk_size = buffer.size();
+    CrossOriginStorageStatus write_status =
+        WriteAtOffset(current_offset_, buffer);
+    active_stream_->EndReadData(chunk_size);
+    if (write_status != CrossOriginStorageStatus::kSuccess) {
+      data_pipe_watcher_.reset();
+      active_stream_.reset();
+      active_write_cancelled_.reset();
+      if (active_write_callback_) {
+        std::move(active_write_callback_).Run(write_status, 0);
+      }
+      return;
+    }
+
+    bytes_written_in_call_ += chunk_size;
+    current_offset_ += chunk_size;
+  }
+}
+
 CrossOriginStorageStatus CrossOriginStorageStagingWriter::Truncate(
     uint64_t length) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status_ != CrossOriginStorageStatus::kSuccess) {
     return status_;
   }
@@ -141,7 +309,7 @@ CrossOriginStorageStatus CrossOriginStorageStagingWriter::Truncate(
   if (!base::CheckedNumeric<uint64_t>(length).AssignIfValid(&new_size) ||
       new_size < 0 || new_size > max_size_bytes_) {
     status_ = CrossOriginStorageStatus::kQuotaExceeded;
-    Discard();
+    DiscardStagingFile();
     return status_;
   }
   if (new_size == size_) {
@@ -150,7 +318,7 @@ CrossOriginStorageStatus CrossOriginStorageStagingWriter::Truncate(
   if (!file_.SetLength(new_size)) {
     DLOG(ERROR) << "Failed to truncate COS staging file: " << path_.value();
     status_ = CrossOriginStorageStatus::kOperationFailed;
-    Discard();
+    DiscardStagingFile();
     return status_;
   }
   if (new_size == 0) {
@@ -163,12 +331,19 @@ CrossOriginStorageStatus CrossOriginStorageStagingWriter::Truncate(
   return CrossOriginStorageStatus::kSuccess;
 }
 
-CrossOriginStorageStagingWriter::Result
-CrossOriginStorageStagingWriter::Finish() {
+CrossOriginStorageStagingWriter::Result CrossOriginStorageStagingWriter::Finish(
+    scoped_refptr<CancellationFlag> cancelled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Result result;
+  if (cancelled && cancelled->data.load(std::memory_order_relaxed)) {
+    status_ = CrossOriginStorageStatus::kOperationFailed;
+    DiscardStagingFile();
+    result.status = status_;
+    return result;
+  }
   if (status_ != CrossOriginStorageStatus::kSuccess) {
     // Do not leave a partially written file behind.
-    Discard();
+    DiscardStagingFile();
     result.status = status_;
     return result;
   }
@@ -179,10 +354,10 @@ CrossOriginStorageStagingWriter::Finish() {
 
   result.digest.resize(DigestSizeForAlgorithm(algorithm_));
   if (needs_rehash_) {
-    if (!RehashFromDisk(result.digest)) {
+    if (!RehashFromDisk(result.digest, cancelled.get())) {
       result.digest.clear();
       status_ = CrossOriginStorageStatus::kOperationFailed;
-      Discard();
+      DiscardStagingFile();
       result.status = status_;
       return result;
     }
@@ -194,7 +369,7 @@ CrossOriginStorageStagingWriter::Finish() {
     DLOG(ERROR) << "Failed to flush COS staging file: " << path_.value();
     result.digest.clear();
     status_ = CrossOriginStorageStatus::kOperationFailed;
-    Discard();
+    DiscardStagingFile();
     result.status = status_;
     return result;
   }
@@ -210,11 +385,16 @@ CrossOriginStorageStagingWriter::Finish() {
   return result;
 }
 
-bool CrossOriginStorageStagingWriter::RehashFromDisk(base::span<uint8_t> out) {
+bool CrossOriginStorageStagingWriter::RehashFromDisk(
+    base::span<uint8_t> out,
+    const CancellationFlag* cancelled) {
   crypto::hash::Hasher disk_hasher(HashKindForAlgorithm(algorithm_));
   std::vector<uint8_t> buffer(kRehashBufferSize);
   int64_t offset = 0;
   while (offset < size_) {
+    if (cancelled && cancelled->data.load(std::memory_order_relaxed)) {
+      return false;
+    }
     const size_t to_read = static_cast<size_t>(
         std::min<int64_t>(size_ - offset, kRehashBufferSize));
     std::optional<size_t> bytes_read =
@@ -232,9 +412,19 @@ bool CrossOriginStorageStagingWriter::RehashFromDisk(base::span<uint8_t> out) {
 }
 
 void CrossOriginStorageStagingWriter::Discard() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status_ == CrossOriginStorageStatus::kSuccess) {
     status_ = CrossOriginStorageStatus::kOperationFailed;
   }
+  data_pipe_watcher_.reset();
+  active_stream_.reset();
+  active_write_cancelled_.reset();
+  active_write_callback_.Reset();
+  DiscardStagingFile();
+}
+
+void CrossOriginStorageStagingWriter::DiscardStagingFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   finished_ = true;
   if (file_.IsValid()) {
     file_.Close();
