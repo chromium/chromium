@@ -1686,11 +1686,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "browser-launch-metadata-reporting",
-    "owners": [ "qiutanw@google.com", "cbe-eng@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "browsing-data-model-clank",
     "owners": [
       "alimariam@google.com",

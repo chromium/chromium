@@ -9447,12 +9447,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kBrowserInitiatedAutomaticPictureInPicture)},
 
-    {"browser-launch-metadata-reporting",
-     flag_descriptions::kBrowserLaunchMetadataReportingName,
-     flag_descriptions::kBrowserLaunchMetadataReportingDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(enterprise_reporting::kBrowserLaunchMetadataReporting)},
-
     {"picture-in-picture-mute-control",
      flag_descriptions::kPictureInPictureMuteControlName,
      flag_descriptions::kPictureInPictureMuteControlDescription, kOsDesktop,
