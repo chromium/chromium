@@ -25,6 +25,7 @@ import android.content.ServiceConnection;
 
 import androidx.core.app.ServiceCompat;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -90,6 +91,12 @@ public class ActorForegroundServiceControllerImplTest {
         ApplicationStatus.destroyForJUnitTests();
         ApplicationStatus.initialize(RuntimeEnvironment.getApplication());
         TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
+    }
+
+    @After
+    public void tearDown() {
+        TabModelSelectorSupplier.setInstanceForTesting(null);
+        ApplicationStatus.destroyForJUnitTests();
     }
 
     @Test
@@ -369,6 +376,7 @@ public class ActorForegroundServiceControllerImplTest {
     public void testIsActivityVisibleForTabs_WithTabs_NoSilenceWhenTabNotInActivity() {
         int tabId = 123;
         ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
         when(mTabModelSelector.getTabById(tabId)).thenReturn(null);
 
         assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(tabId)));
@@ -377,6 +385,7 @@ public class ActorForegroundServiceControllerImplTest {
     @Test
     public void testIsActivityVisibleForTabs_NoSilenceWhenInPiP() {
         ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
         assertTrue(mController.isActivityVisibleForTabs(Collections.emptySet()));
 
         mChromeActivity.enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
@@ -388,6 +397,7 @@ public class ActorForegroundServiceControllerImplTest {
     @Test
     public void testIsActivityVisibleForTabs_NoSilenceWhenInIncognito() {
         ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
 
         assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(123)));
@@ -397,7 +407,34 @@ public class ActorForegroundServiceControllerImplTest {
     public void testIsActivityVisibleForTabs_SettingsActivity_NotVisible() {
         SettingsActivity settingsActivity = Robolectric.buildActivity(SettingsActivity.class).get();
         ApplicationStatus.onStateChangeForTesting(settingsActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(settingsActivity, ActivityState.RESUMED);
         assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(123)));
+    }
+
+    @Test
+    public void testIsActivityVisibleForTabs_NoSilenceWhenActivityStopped() {
+        int tabId = 123;
+        when(mTabModelSelector.getTabById(tabId)).thenReturn(mTab);
+
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
+        assertFalse(mController.isActivityVisibleForTabs(Collections.emptySet()));
+        assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(tabId)));
+
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.STARTED);
+        assertTrue(mController.isActivityVisibleForTabs(Collections.emptySet()));
+        assertTrue(mController.isActivityVisibleForTabs(Collections.singleton(tabId)));
+
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
+        assertTrue(mController.isActivityVisibleForTabs(Collections.emptySet()));
+        assertTrue(mController.isActivityVisibleForTabs(Collections.singleton(tabId)));
+
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.PAUSED);
+        assertTrue(mController.isActivityVisibleForTabs(Collections.emptySet()));
+        assertTrue(mController.isActivityVisibleForTabs(Collections.singleton(tabId)));
+
+        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.STOPPED);
+        assertFalse(mController.isActivityVisibleForTabs(Collections.emptySet()));
+        assertFalse(mController.isActivityVisibleForTabs(Collections.singleton(tabId)));
     }
 
     @Test
