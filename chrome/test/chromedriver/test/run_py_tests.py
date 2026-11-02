@@ -149,6 +149,15 @@ _OS_SPECIFIC_FILTER['mac'] = [
   'ChromeDriverSecureContextTest.testCreateVirtualSensorWithMinimumFrequency',
   'ChromeDriverSecureContextTest.testGetVirtualSensorInformation',
   'ChromeDriverSecureContextTest.testUpdateVirtualSensor',
+  # Flaky on Mac due to window focus / fullscreen issues:
+  # crbug.com/572141419, crbug.com/572144209, crbug.com/572163035,
+  # crbug.com/572169088, crbug.com/572166637, crbug.com/572171585
+  'ChromeDriverTest.testFocusInFirstTab',
+  'ChromeDriverTest.testWindowFullScreen',
+  'ChromeDriverW3cTest.testSendKeysToElementDoesNotAppend',
+  'ComputePressureSpecificTest.testRemoveVirtualPressureSourceWhileInUse',
+  'ComputePressureSpecificTest.testUpdateVirtualPressure',
+  'PureBidiTest.testFocusInFirstTab',
 ]
 
 _BROWSER_SPECIFIC_FILTER = {}
