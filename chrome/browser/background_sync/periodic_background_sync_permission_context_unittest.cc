@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -54,14 +53,6 @@ class MockPeriodicBackgroundSyncPermissionContext
   }
 #endif
 
-  GURL GetDefaultSearchEngineUrl() const override {
-    return default_search_engine_url_;
-  }
-
-  void set_default_search_engine_url(const GURL& default_search_engine_url) {
-    default_search_engine_url_ = default_search_engine_url;
-  }
-
   MOCK_METHOD(void,
               OnContentSettingChanged,
               (const ContentSettingsPattern& primary_pattern,
@@ -74,7 +65,6 @@ class MockPeriodicBackgroundSyncPermissionContext
 #if BUILDFLAG(IS_ANDROID)
   std::set<GURL> installed_twas_;
 #endif
-  GURL default_search_engine_url_;
 };
 
 class PeriodicBackgroundSyncPermissionContextTest
@@ -146,10 +136,6 @@ class PeriodicBackgroundSyncPermissionContextTest
   void SetUpPwaAndContentSettings(const GURL& url) {
     InstallPwa(url);
     SetBackgroundSyncContentSetting(url, CONTENT_SETTING_ALLOW);
-  }
-
-  void SetDefaultSearchEngineUrl(const GURL& url) {
-    mock_permission_context_->set_default_search_engine_url(url);
   }
 
   std::unique_ptr<MockPeriodicBackgroundSyncPermissionContext>
@@ -238,42 +224,5 @@ TEST_F(PeriodicBackgroundSyncPermissionContextTest, OnWebAppUninstalled) {
   web_app::test::UninstallWebApp(profile(), app_id);
 }
 #endif
-
-TEST_F(PeriodicBackgroundSyncPermissionContextTest, DefaultSearchEngine) {
-  GURL requesting_origin("https://example.com");
-
-  // 1. Flag disabled (by default)
-  SetDefaultSearchEngineUrl(GURL("https://example.com/foo?q=asdf"));
-  EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
-}
-
-class PeriodicBackgroundSyncPermissionContextWithPermissionTest
-    : public PeriodicBackgroundSyncPermissionContextTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kPeriodicSyncPermissionForDefaultSearchEngine};
-};
-
-TEST_F(PeriodicBackgroundSyncPermissionContextWithPermissionTest,
-       DefaultSearchEngine) {
-  GURL requesting_origin("https://example.com");
-  SetDefaultSearchEngineUrl(GURL("https://example.com/foo?q=asdf"));
-
-  // No default search engine.
-  SetDefaultSearchEngineUrl(GURL());
-  EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
-
-  // Default search engine doesn't match.
-  SetDefaultSearchEngineUrl(GURL("https://differentexample.com"));
-  EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
-
-  // Default search engine matches.
-  SetDefaultSearchEngineUrl(GURL("https://example.com/foo?q=asdf"));
-  EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_ALLOW);
-
-  // Default search engine matches but no BACKGROUND_SYNC permission.
-  SetBackgroundSyncContentSetting(requesting_origin, CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
-}
 
 }  // namespace

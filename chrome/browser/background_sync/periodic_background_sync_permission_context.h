@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/content_setting_permission_context_base.h"
@@ -20,12 +19,6 @@
 namespace content {
 class BrowserContext;
 }
-
-namespace features {
-
-BASE_DECLARE_FEATURE(kPeriodicSyncPermissionForDefaultSearchEngine);
-
-}  // namespace features
 
 namespace permissions {
 struct PermissionPromptDecision;
@@ -71,7 +64,6 @@ class PeriodicBackgroundSyncPermissionContext
 #if BUILDFLAG(IS_ANDROID)
   virtual bool IsTwaInstalled(const GURL& origin) const;
 #endif
-  virtual GURL GetDefaultSearchEngineUrl() const;
 
  private:
   // ContentSettingPermissionContextBase implementation.

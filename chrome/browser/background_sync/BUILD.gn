@@ -39,11 +39,8 @@ source_set("impl") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/engagement",
     "//chrome/browser/metrics",
-    "//chrome/browser/search_engines",
     "//chrome/browser/webapps/installable",
-    "//chrome/common:chrome_features",
     "//components/content_settings/core/browser",
-    "//components/search_engines",
     "//services/network/public/mojom:mojom_permissions_policy",
   ]
   if (is_android) {
@@ -61,7 +58,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":background_sync",
-    "//base/test:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/history",
     "//chrome/test:test_support",

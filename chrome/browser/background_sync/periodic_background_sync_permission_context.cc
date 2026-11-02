@@ -4,20 +4,14 @@
 
 #include "chrome/browser/background_sync/periodic_background_sync_permission_context.h"
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/webapps/installable/installable_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_prompt_decision.h"
-#include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
-#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/shortcut_helper.h"
@@ -28,16 +22,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
-
-namespace features {
-
-// If enabled, the installability criteria for granting PBS permission is
-// dropped and the content setting is checked. This only applies if the
-// requesting origin matches that of the browser's default search engine.
-BASE_FEATURE(kPeriodicSyncPermissionForDefaultSearchEngine,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace features
 
 PeriodicBackgroundSyncPermissionContext::
     PeriodicBackgroundSyncPermissionContext(
@@ -78,19 +62,6 @@ bool PeriodicBackgroundSyncPermissionContext::IsTwaInstalled(
 }
 #endif
 
-GURL PeriodicBackgroundSyncPermissionContext::GetDefaultSearchEngineUrl()
-    const {
-  auto* template_url_service = TemplateURLServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context()));
-  CHECK(template_url_service, base::NotFatalUntil::M161);
-
-  const TemplateURL* default_search_engine =
-      template_url_service->GetDefaultSearchProvider();
-  return default_search_engine ? default_search_engine->GenerateSearchURL(
-                                     template_url_service->search_terms_data())
-                               : GURL();
-}
-
 ContentSetting
 PeriodicBackgroundSyncPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
@@ -105,17 +76,11 @@ PeriodicBackgroundSyncPermissionContext::GetContentSettingStatusInternal(
     return CONTENT_SETTING_ALLOW;
 #endif
 
-  bool can_bypass_install_requirement =
-      base::FeatureList::IsEnabled(
-          features::kPeriodicSyncPermissionForDefaultSearchEngine) &&
-      url::IsSameOriginWith(GetDefaultSearchEngineUrl(), requesting_origin);
-
-  if (!can_bypass_install_requirement && !IsPwaInstalled(requesting_origin)) {
+  if (!IsPwaInstalled(requesting_origin)) {
     return CONTENT_SETTING_BLOCK;
   }
 
-  // |requesting_origin| either has an installed PWA or matches the default
-  // search engine's origin. Check one-shot Background Sync content setting.
+  // PWA installed. Check for one-shot Background Sync content setting.
   // Expected values are CONTENT_SETTING_BLOCK or CONTENT_SETTING_ALLOW.
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());
