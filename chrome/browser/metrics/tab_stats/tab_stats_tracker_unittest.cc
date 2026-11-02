@@ -21,7 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/test_vertical_tab_strip_state_controller_delegate.h"
 #include "chrome/common/pref_names.h"
@@ -45,10 +45,12 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#include "ui/android/window_android.h"
 #else
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -387,6 +389,7 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 #if BUILDFLAG(IS_ANDROID)
     test_tab_model_ = std::make_unique<OwningTestTabModel>(profile());
+    test_tab_model_->SetIsActiveModel(true);
     test_tab_model_->AddEmptyTab(0);
     tab_strip_interface_ =
         std::make_unique<TabStripInterface>(test_tab_model_.get());
@@ -457,19 +460,17 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+    ResetMainAndroidTabModel();
+#else
     static_cast<BrowserCollectionObserver*>(
         GlobalBrowserCollection::GetInstance()->GetPlatformDelegate())
         ->OnBrowserClosed(&mock_browser_window_interface_);
-#endif
     tab_stats_tracker_->RemoveTabs(tab_strip_interface_->GetTabCount(),
                                    tab_strip_modifier_.get());
 
     tab_strip_modifier_.reset();
     tab_strip_interface_.reset();
-#if BUILDFLAG(IS_ANDROID)
-    test_tab_model_.reset();
-#else
     vertical_tab_strip_state_controller_.reset();
     mock_browser_user_education_interface_.reset();
     DestroyBrowserActionsSafely(std::move(browser_actions_));
@@ -481,6 +482,17 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
     tab_stats_tracker_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void ResetMainAndroidTabModel() {
+    if (test_tab_model_) {
+      test_tab_model_->ForceCloseAllTabs();
+    }
+    tab_strip_modifier_.reset();
+    tab_strip_interface_.reset();
+    test_tab_model_.reset();
+  }
+#endif
 
   std::vector<HistogramBucket> GetHistogramBuckets(
       std::string_view histogram_name) {
@@ -960,6 +972,8 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
 
   ExpectBucketedSample(UmaStatsReportingDelegate::kTabCountHistogramName,
                        expected_tab_count, 1);
+  ExpectBucketedSample(UmaStatsReportingDelegate::kTabCount2HistogramName,
+                       expected_tab_count, 1);
 #if !BUILDFLAG(IS_ANDROID)
   ExpectBucketedSample(
       base::StrCat(
@@ -973,6 +987,16 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
 #endif
   ExpectBucketedSample(UmaStatsReportingDelegate::kWindowCountHistogramName,
                        expected_window_count, 1);
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, `AddWindows()` only mutates `TabStatsDataStore` directly,
+  // whereas `kWindowCount2HistogramName` scans active standard `TabModel`s in
+  // `TabModelList` (`test_tab_model_`).
+  ExpectBucketedSample(UmaStatsReportingDelegate::kWindowCount2HistogramName, 1,
+                       1);
+#else
+  ExpectBucketedSample(UmaStatsReportingDelegate::kWindowCount2HistogramName,
+                       expected_window_count, 1);
+#endif
 
   expected_tab_count =
       tab_stats_tracker_->RemoveTabs(4, tab_strip_modifier_.get());
@@ -980,8 +1004,17 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
 
   tab_stats_tracker_->OnHeartbeatEvent();
 
+  ExpectBucketedSample(UmaStatsReportingDelegate::kTabCount2HistogramName,
+                       expected_tab_count, 1);
   ExpectBucketedSample(UmaStatsReportingDelegate::kWindowCountHistogramName,
                        expected_window_count, 1);
+#if BUILDFLAG(IS_ANDROID)
+  ExpectBucketedSample(UmaStatsReportingDelegate::kWindowCount2HistogramName, 1,
+                       2);
+#else
+  ExpectBucketedSample(UmaStatsReportingDelegate::kWindowCount2HistogramName,
+                       expected_window_count, 1);
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1200,5 +1233,110 @@ TEST_F(TabStatsTrackerTest, RecordKeyboardTabSwitchModeDaily) {
       UmaStatsReportingDelegate::kKeyboardTabSwitchModeHistogramName, 2);
 }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(TabStatsTrackerTest,
+       HeartbeatMetricsAndroidFrozenHeadlessAndBackgroundState) {
+  // `test_tab_model_` starts active with 1 live tab. Add 1 more live tab and 3
+  // frozen tabs (`web_contents == nullptr`) for 5 open tabs in the window.
+  test_tab_model_->AddEmptyTab(1);
+  for (size_t i = 0; i < 3; ++i) {
+    test_tab_model_->AddTabFromWebContents(/*web_contents=*/nullptr, 2 + i);
+  }
+
+  // Add a `kHeadless` model with 4 frozen tabs, an unassociated inactive empty
+  // `kStandard` model (e.g., unused regular model in a dedicated OTR window),
+  // and an empty regular model in an Incognito Custom Tab. All three inflate
+  // legacy `Tabs.WindowCount` but must be excluded from `Tabs.WindowCount2` and
+  // `Tabs.TabCount2`.
+  OwningTestTabModel headless_model(profile(),
+                                    chrome::android::ActivityType::kTabbed,
+                                    TabModel::TabModelType::kHeadless);
+  for (size_t i = 0; i < 4; ++i) {
+    headless_model.AddTabFromWebContents(/*web_contents=*/nullptr, i);
+  }
+  OwningTestTabModel unused_empty_model(profile());
+  OwningTestTabModel empty_incognito_cct_regular_model(
+      profile(), chrome::android::ActivityType::kCustomTab,
+      TabModel::TabModelType::kStandard,
+      chrome::android::CustomTabProfileType::kIncognito);
+  empty_incognito_cct_regular_model.SetIsActiveModel(true);
+
+  {
+    base::HistogramTester histogram_tester;
+    tab_stats_tracker_->OnHeartbeatEvent();
+
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCountHistogramName, 4, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kTabCountHistogramName, 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCount2HistogramName, 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kTabCount2HistogramName, 5, 1);
+  }
+
+  // Closing all tabs while keeping `test_tab_model_` active (empty Tab Switcher
+  // in an open window) still reports 1 window and 0 tabs.
+  test_tab_model_->ForceCloseAllTabs();
+  {
+    base::HistogramTester histogram_tester;
+    tab_stats_tracker_->OnHeartbeatEvent();
+
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCount2HistogramName, 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kTabCount2HistogramName, 0, 1);
+  }
+
+  // Once the last active browser window is closed (`window_count == 0`),
+  // `*Count2` heartbeat metrics are suppressed.
+  ResetMainAndroidTabModel();
+  {
+    base::HistogramTester histogram_tester;
+    tab_stats_tracker_->OnHeartbeatEvent();
+
+    histogram_tester.ExpectUniqueSample(
+        UmaStatsReportingDelegate::kWindowCountHistogramName, 3, 1);
+    histogram_tester.ExpectTotalCount(
+        UmaStatsReportingDelegate::kWindowCount2HistogramName, 0);
+    histogram_tester.ExpectTotalCount(
+        UmaStatsReportingDelegate::kTabCount2HistogramName, 0);
+  }
+}
+
+TEST_F(TabStatsTrackerTest,
+       HeartbeatMetricsDeduplicatesModelsViaWebContentsTopLevelWindowFallback) {
+  ResetMainAndroidTabModel();
+
+  auto scoped_window = ui::WindowAndroid::CreateForTesting();
+
+  // Attach regular and OTR models without `BrowserWindowInterface` associations
+  // to the same `ui::WindowAndroid` via their tabs' native views.
+  OwningTestTabModel regular_model(profile());
+  regular_model.SetIsActiveModel(true);
+  TabAndroid* regular_tab = regular_model.AddEmptyTab(0);
+  scoped_window->get()->AddChild(regular_tab->web_contents()->GetNativeView());
+
+  OwningTestTabModel incognito_model(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  TabAndroid* incognito_tab = incognito_model.AddEmptyTab(0);
+  scoped_window->get()->AddChild(
+      incognito_tab->web_contents()->GetNativeView());
+
+  base::HistogramTester histogram_tester;
+  tab_stats_tracker_->OnHeartbeatEvent();
+
+  histogram_tester.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kWindowCountHistogramName, 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kWindowCount2HistogramName, 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kTabCount2HistogramName, 2, 1);
+
+  regular_tab->web_contents()->GetNativeView()->RemoveFromParent();
+  incognito_tab->web_contents()->GetNativeView()->RemoveFromParent();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace metrics

@@ -2939,6 +2939,27 @@ chromium-metrics-reviews@google.com.
   <token key="TabStripMode" variants="TabStripMode"/>
 </histogram>
 
+<histogram name="Tabs.TabCount2" units="tabs" expires_after="2027-10-24">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Counts the total number of open tabs across all active Chrome windows,
+    reported every 5 minutes when Chrome is not running in the background with
+    no windows. Successor to Tabs.TabCount.
+
+    On Android, this is recorded when at least one standard browser window
+    (ChromeTabbedActivity, Custom Tab, or WebAPK/TWA) is open in memory. It sums
+    TabModel::GetTabCount() across active standard tab models
+    (TabModelType::kStandard), including frozen/unloaded tabs whose WebContents
+    is not currently instantiated while excluding headless
+    (TabModelType::kHeadless) and archived (TabModelType::kArchived) tab models.
+
+    On non-Android platforms, this reports the exact same count as
+    Tabs.TabCount.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabCountActiveWindow" units="tabs" expires_after="never">
 <!-- expires-never: usage drives tab optimization and analysis. -->
 
@@ -3011,7 +3032,10 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     Counts the number of tabs across all windows, reported every 5 minutes.
-    Desktop only.
+
+    Warning: On Android, this metric only counts tabs with an initialized
+    WebContents, under-counting frozen/unloaded background tabs in open windows.
+    Prefer Tabs.TabCount2 for Android and cross-platform analyses.
   </summary>
   <token key="BatteryState" variants="BatteryState"/>
 </histogram>
@@ -3955,6 +3979,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.WindowCount2" units="windows" expires_after="2027-10-24">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Counts the number of open Chrome windows, reported every 5 minutes when
+    Chrome is not running in the background with no windows. Successor to
+    Tabs.WindowCount.
+
+    On Android, this is recorded when at least one standard browser window
+    (ChromeTabbedActivity, Custom Tab, or WebAPK/TWA) is open in memory, fixing
+    two issues present in Tabs.WindowCount: (1) excludes headless tab models
+    (TabModelType::kHeadless) created for persisted background window instances
+    as well as unused regular tab models in off-the-record windows, and (2)
+    deduplicates regular and incognito tab models sharing the same physical
+    window (ui::WindowAndroid / Activity).
+
+    On non-Android platforms, this reports the exact same count as
+    Tabs.WindowCount.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.WindowCount{BatteryState}" units="windows"
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
@@ -3962,7 +4008,12 @@ chromium-metrics-reviews@google.com.
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Counts the number of Chrome windows, reported every 5 minutes. Desktop only.
+    Counts the number of Chrome windows, reported every 5 minutes.
+
+    Warning: On Android, this metric counts all registered TabModels, which
+    includes headless tab models created for persisted background window
+    instances and double-counts windows that have both regular and incognito tab
+    models. Prefer Tabs.WindowCount2 for Android and cross-platform analyses.
   </summary>
   <token key="BatteryState" variants="BatteryState"/>
 </histogram>

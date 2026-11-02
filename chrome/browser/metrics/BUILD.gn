@@ -346,6 +346,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/android/metrics:jni_headers",
       "//chrome/browser/notifications:jni_headers",
+      "//chrome/browser/ui/browser_window",
     ]
     if (current_cpu == "arm") {
       deps += [ "//third_party/cpu_features:ndk_compat" ]
@@ -642,6 +643,7 @@ source_set("unit_tests") {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui/android/tab_model:test_support",
       "//services/metrics/public/cpp:test_support",
+      "//ui/android",
     ]
   } else {
     sources += [

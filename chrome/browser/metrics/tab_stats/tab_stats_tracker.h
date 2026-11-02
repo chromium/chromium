@@ -100,6 +100,8 @@ class TabStatsTracker :
                            TabDeletionGetsHandledProperly);
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TabsAndWindowsAreCountedAccurately);
+  FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
+                           HeartbeatWindowAndTabCount2Metrics);
 #if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TestCalculateAndRecordNativeWindowVisibilities);
@@ -132,6 +134,8 @@ class TabStatsTracker :
     // tabs/windows.
     static constexpr char kTabCountHistogramName[] = "Tabs.TabCount";
     static constexpr char kWindowCountHistogramName[] = "Tabs.WindowCount";
+    static constexpr char kTabCount2HistogramName[] = "Tabs.TabCount2";
+    static constexpr char kWindowCount2HistogramName[] = "Tabs.WindowCount2";
 
     // The name of the histogram that records each window's width, in DIPs.
     static constexpr char kWindowWidthHistogramName[] = "Tabs.WindowWidth";

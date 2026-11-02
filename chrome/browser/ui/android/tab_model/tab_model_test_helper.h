@@ -175,7 +175,9 @@ class OwningTestTabModel : public TabModel {
       Profile* profile,
       chrome::android::ActivityType activity_type =
           chrome::android::ActivityType::kTabbed,
-      TabModelType tab_model_type = TabModelType::kStandard);
+      TabModelType tab_model_type = TabModelType::kStandard,
+      std::optional<chrome::android::CustomTabProfileType>
+          custom_tab_profile_type = std::nullopt);
 
   ~OwningTestTabModel() override;
 
