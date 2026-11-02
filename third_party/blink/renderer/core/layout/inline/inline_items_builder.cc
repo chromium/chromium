@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
@@ -23,7 +22,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 
 namespace blink {
-class HTMLAreaElement;
 
 template <typename MappingBuilder>
 InlineItemsBuilderTemplate<MappingBuilder>::InlineItemsBuilderTemplate(
@@ -1672,9 +1670,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
         InlineItem& item = *(*items_)[i];
         if (i == open_item_index) {
           DCHECK_EQ(i, current_box->item_index);
-          // TODO(kojii): <area> element fails to hit-test when we don't cull.
-          if (!IsA<HTMLAreaElement>(item.GetLayoutObject()->GetNode()))
-            item.SetShouldCreateBoxFragment();
+          item.SetShouldCreateBoxFragment();
           break;
         }
         DCHECK_GT(i, current_box->item_index);

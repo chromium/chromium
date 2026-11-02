@@ -70,9 +70,6 @@ TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
           xxxxxxxxxxxxxxxxxxx
           xxxxxxxxxxxxxxxxxxx
         </span>
-        <!-- <area> is display:none by default, but it may be shown by the
-             author, in which case it is a childless culled inline. -->
-        <area id="area" style="display:inline">
         <br><br><br>
       </div>
     </div>
@@ -83,13 +80,10 @@ TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
       DynamicTo<LayoutInline>(GetLayoutObjectByElementId("culled1"));
   const auto* culled2 =
       DynamicTo<LayoutInline>(GetLayoutObjectByElementId("culled2"));
-  const auto* area =
-      DynamicTo<LayoutInline>(GetLayoutObjectByElementId("area"));
 
   ASSERT_TRUE(container);
   ASSERT_TRUE(culled1);
   ASSERT_TRUE(culled2);
-  ASSERT_TRUE(area);
 
   ASSERT_EQ(container->PhysicalFragmentCount(), 7u);
   const PhysicalBoxFragment* fragment = container->GetPhysicalFragment(0);
@@ -101,9 +95,6 @@ TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
   EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
       *culled2, &is_first, &is_last, &has_any_child));
   EXPECT_TRUE(has_any_child);
-  EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
-      *area, &is_first, &is_last, &has_any_child));
-  EXPECT_FALSE(has_any_child);
 
   fragment = container->GetPhysicalFragment(1);
   ASSERT_TRUE(fragment->Items());
@@ -115,9 +106,6 @@ TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
   EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
       *culled2, &is_first, &is_last, &has_any_child));
   EXPECT_TRUE(has_any_child);
-  EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
-      *area, &is_first, &is_last, &has_any_child));
-  EXPECT_FALSE(has_any_child);
 
   fragment = container->GetPhysicalFragment(2);
   ASSERT_TRUE(fragment->Items());
@@ -129,9 +117,6 @@ TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
   EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
       *culled2, &is_first, &is_last, &has_any_child));
   EXPECT_TRUE(has_any_child);
-  EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
-      *area, &is_first, &is_last, &has_any_child));
-  EXPECT_FALSE(has_any_child);
 
   fragment = container->GetPhysicalFragment(3);
   ASSERT_TRUE(fragment->Items());
@@ -145,9 +130,6 @@ TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
   EXPECT_TRUE(is_first);
   EXPECT_FALSE(is_last);
   EXPECT_TRUE(has_any_child);
-  EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
-      *area, &is_first, &is_last, &has_any_child));
-  EXPECT_FALSE(has_any_child);
 
   fragment = container->GetPhysicalFragment(4);
   ASSERT_TRUE(fragment->Items());
@@ -159,9 +141,6 @@ TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
   EXPECT_FALSE(is_first);
   EXPECT_FALSE(is_last);
   EXPECT_TRUE(has_any_child);
-  EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
-      *area, &is_first, &is_last, &has_any_child));
-  EXPECT_FALSE(has_any_child);
 
   fragment = container->GetPhysicalFragment(5);
   ASSERT_TRUE(fragment->Items());
@@ -173,9 +152,6 @@ TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
   EXPECT_FALSE(is_first);
   EXPECT_TRUE(is_last);
   EXPECT_TRUE(has_any_child);
-  EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
-      *area, &is_first, &is_last, &has_any_child));
-  EXPECT_FALSE(has_any_child);
 
   fragment = container->GetPhysicalFragment(6);
   ASSERT_TRUE(fragment->Items());
@@ -185,9 +161,6 @@ TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
   EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
       *culled2, &is_first, &is_last, &has_any_child));
   EXPECT_TRUE(has_any_child);
-  EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(
-      *area, &is_first, &is_last, &has_any_child));
-  EXPECT_FALSE(has_any_child);
 }
 
 }  // namespace blink
