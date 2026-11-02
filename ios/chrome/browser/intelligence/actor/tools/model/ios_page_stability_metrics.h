@@ -10,6 +10,7 @@
 #import "base/time/time.h"
 #import "components/actor/core/page_stability_metrics.h"
 #import "components/page_content_annotations/core/page_stability_state.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 
 namespace actor {
 
@@ -33,25 +34,6 @@ enum class PageStabilityOutcome {
   kMaxValue = kWebFrameGoingAway,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSPageStabilityOutcome)
-
-// Histogram recording the final stability check outcome.
-inline constexpr std::string_view kIOSActorPageStabilityOutcomeMetricName =
-    "IOS.Actor.PageStability.Outcome";
-
-// Histogram recording the total time to reach stability.
-inline constexpr std::string_view
-    kIOSActorPageStabilityTotalTimeToStableMetricName =
-        "IOS.Actor.PageStability.TotalTimeToStable";
-
-// Histogram recording the time from active monitoring to stability.
-inline constexpr std::string_view
-    kIOSActorPageStabilityTimeFromMonitoringToStableMetricName =
-        "IOS.Actor.PageStability.TimeFromMonitoringToStable";
-
-// Histogram recording total time until frame destruction.
-inline constexpr std::string_view
-    kIOSActorPageStabilityTotalTimeToWebFrameGoingAwayMetricName =
-        "IOS.Actor.PageStability.TotalTimeToWebFrameGoingAway";
 
 // iOS-specific implementation of `PageStabilityMetrics` that records
 // timing metrics and stability outcomes.

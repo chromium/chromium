@@ -327,6 +327,63 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Actor.ObservationDelay.DidNavigate" enum="Boolean"
+    expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records whether the iOS ObservationDelayController's DidStartNavigation()
+    occurred. Recorded when the observation delay is completed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.ObservationDelay.DidTimeout" enum="Boolean"
+    expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records whether the iOS ObservationDelayController's Wait() timed out.
+    Recorded when the observation delay is completed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.ObservationDelay.LcpDelayNeeded" enum="Boolean"
+    expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records whether an additional delay for Largest Contentful Paint (LCP) was
+    applied during the iOS observation delay. Recorded when the observation
+    delay is completed without navigation or timeout.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.ObservationDelay.StateDuration.{State}" units="ms"
+    expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Measures the duration of {State} in the iOS ObservationDelayController's
+    state machine. Not recorded for timeouts or when a navigation occurs.
+  </summary>
+  <token key="State">
+    <variant name="DelayForLcp"/>
+    <variant name="WaitForAutofillPredictions"/>
+    <variant name="WaitForLoadCompletion"/>
+    <variant name="WaitForPageStability"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.Actor.ObservationDelay.TotalWaitDuration" units="ms"
+    expires_after="2027-04-15">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Measures the total time from when Wait() is called until the iOS observation
+    delay completes. Not recorded for timeouts or when a navigation occurs.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Actor.PageStability.Outcome"
     enum="IOSPageStabilityOutcome" expires_after="2027-02-25">
   <owner>kaklilu@google.com</owner>

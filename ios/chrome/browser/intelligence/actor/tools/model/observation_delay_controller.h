@@ -28,6 +28,7 @@ namespace actor {
 
 class AggregatedJournal;
 class PageStabilityMonitor;
+class ObservationDelayMetrics;
 
 // Observes a page during tool-use and determines when the page has settled
 // after an action and is ready for an observation.
@@ -144,6 +145,8 @@ class ObservationDelayController : public web::WebStateObserver {
   size_t navigation_count_ = 0;
 
   std::unique_ptr<PageStabilityMonitor> page_stability_monitor_;
+
+  std::unique_ptr<ObservationDelayMetrics> metrics_;
 
   StateChangeTestingCallback state_change_testing_callback_;
 

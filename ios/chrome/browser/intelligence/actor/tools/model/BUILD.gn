@@ -530,9 +530,12 @@ source_set("page_stability") {
     "ios_page_stability_monitor_delegate.mm",
     "observation_delay_controller.h",
     "observation_delay_controller.mm",
+    "observation_delay_metrics.h",
+    "observation_delay_metrics.mm",
     "page_stability_monitor.h",
     "page_stability_monitor.mm",
   ]
+  public_deps = [ "//ios/chrome/browser/intelligence/actor/tools/public" ]
   deps = [
     ":java_script_features",
     "//base",
@@ -543,7 +546,6 @@ source_set("page_stability") {
     "//components/autofill/ios/browser",
     "//components/page_content_annotations/core",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
-    "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",

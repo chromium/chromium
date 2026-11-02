@@ -20,6 +20,7 @@
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/ios_page_stability_monitor_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_metrics.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_monitor.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -74,6 +75,8 @@ void ObservationDelayController::Wait(base::WeakPtr<web::WebState> web_state,
     UpdateTargetFrameIfNeeded();
   }
   ready_callback_ = std::move(callback);
+  metrics_ = std::make_unique<ObservationDelayMetrics>();
+  metrics_->Start();
   // Schedule a kDidTimeout state transition to happen later.
   PostMoveToStateClosure(State::kDidTimeout, GetActorObservationDelayTimeout())
       .Run();
@@ -150,6 +153,10 @@ void ObservationDelayController::MoveToState(State state) {
             .Build();
     journal_->Log(GURL(), task_id_, "ObservationDelay: State Change",
                   std::move(details));
+  }
+
+  if (metrics_) {
+    metrics_->WillMoveToState(state, state_);
   }
 
   state_ = state;
@@ -238,6 +245,9 @@ void ObservationDelayController::DelayForLcp() {
   if (!web_frame_ || !ShouldDelayForLcp()) {
     PostMoveToStateClosure(State::kWaitForAutofillPredictions).Run();
     return;
+  }
+  if (metrics_) {
+    metrics_->OnLcpDelayApplied();
   }
   PageStabilityJavaScriptFeature::GetInstance()->WaitForLcp(
       web_frame_, /*timeout=*/GetActorPageStabilityLcpDelay(),

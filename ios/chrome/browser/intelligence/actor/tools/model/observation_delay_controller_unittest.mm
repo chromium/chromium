@@ -8,11 +8,13 @@
 
 #import "base/run_loop.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -383,6 +385,101 @@ TEST_F(ObservationDelayControllerTest, OnAutofillPredictionsFinished_Success) {
           ObservationDelayController::State::kDelayForLcp,
           ObservationDelayController::State::kWaitForAutofillPredictions,
           ObservationDelayController::State::kDone));
+}
+
+// Test that ObservationDelayMetrics are recorded on successful completion.
+TEST_F(ObservationDelayControllerTest, RecordsMetricsOnSuccess) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ObservationDelayController::Result> future;
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetLoading(true);
+
+  controller_->Wait(/*web_state=*/fake_web_state->GetWeakPtr(),
+                    /*web_frame=*/nullptr, future.GetCallback());
+  WaitForState(ObservationDelayController::State::kWaitForLoadCompletion);
+  TriggerDidStopLoading(fake_web_state.get());
+  EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorObservationDelayDidTimeoutMetricName, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorObservationDelayDidNavigateMetricName, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorObservationDelayLcpDelayNeededMetricName, false, 1);
+
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayTotalWaitDurationMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForPageStabilityMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationDelayForLcpMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
+      1);
+}
+
+// Test that ObservationDelayMetrics are recorded properly on timeout.
+TEST_F(ObservationDelayControllerTest, RecordsMetricsOnTimeout) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ObservationDelayController::Result> future;
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetLoading(true);
+
+  controller_->Wait(/*web_state=*/fake_web_state->GetWeakPtr(),
+                    /*web_frame=*/nullptr, future.GetCallback());
+  WaitForState(ObservationDelayController::State::kWaitForLoadCompletion);
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorObservationDelayDidTimeoutMetricName, true, 1);
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorObservationDelayDidNavigateMetricName, false, 1);
+
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayTotalWaitDurationMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForPageStabilityMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
+      0);
+}
+
+// Test that ObservationDelayMetrics are recorded properly on navigation.
+TEST_F(ObservationDelayControllerTest, RecordsMetricsOnNavigation) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ObservationDelayController::Result> future;
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetLoading(true);
+
+  controller_->Wait(/*web_state=*/fake_web_state->GetWeakPtr(),
+                    /*web_frame=*/nullptr, future.GetCallback());
+  WaitForState(ObservationDelayController::State::kWaitForLoadCompletion);
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  TriggerDidStartNavigation(fake_web_state.get(), &context);
+  EXPECT_EQ(future.Get(), ObservationDelayController::Result::kPageNavigated);
+
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorObservationDelayDidTimeoutMetricName, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorObservationDelayDidNavigateMetricName, true, 1);
+
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayTotalWaitDurationMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForPageStabilityMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
+      0);
 }
 
 }  // namespace actor
