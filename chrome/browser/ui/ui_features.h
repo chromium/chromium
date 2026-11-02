@@ -24,6 +24,9 @@ bool ShouldUseActionsForBrowserCommands();
 
 BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 
+BASE_DECLARE_FEATURE(kBrowserWindowListenerObservation);
+bool IsBrowserWindowListenerObservationEnabled();
+
 BASE_DECLARE_FEATURE(kCtrlTabMru);
 
 BASE_DECLARE_FEATURE(kFastFaviconDisplay);

@@ -31,6 +31,19 @@ BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 #endif  // BUILDFLAG(IS_WIN)
 );
 
+// Controls the rollout of window-scoped, listener-style observation for
+// browser window UI. When enabled, consumers subscribe to window-scoped
+// features such as BrowserWindowThemeObserver and BrowserWindowZoomObserver
+// via Register*Callback() methods (returning base::CallbackListSubscription)
+// instead of inheriting legacy observer interfaces like ThemeServiceObserver,
+// ui::NativeThemeObserver and zoom::ZoomObserver directly.
+BASE_FEATURE(kBrowserWindowListenerObservation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsBrowserWindowListenerObservationEnabled() {
+  return base::FeatureList::IsEnabled(kBrowserWindowListenerObservation);
+}
+
 BASE_FEATURE(kCtrlTabMru, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Skip the UI update coalescing delay when the favicon arrives after a
