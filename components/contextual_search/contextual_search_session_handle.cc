@@ -8,6 +8,7 @@
 #include <optional>
 #include <ranges>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -36,6 +38,28 @@
 #include "third_party/lens_server_proto/modality_chip_props.pb.h"
 
 namespace contextual_search {
+
+namespace {
+
+// Some platforms do not report a MIME type for HEIC/HEIF files (e.g. uppercase
+// `.HEIC` on Linux, or Windows without the HEIF extension installed). Infers
+// the MIME type from the file extension so these are uploaded as images.
+std::string_view InferHeifMimeTypeFromFileName(std::string_view file_name) {
+  size_t dot_index = file_name.rfind('.');
+  if (dot_index == std::string_view::npos) {
+    return "";
+  }
+  std::string_view extension = file_name.substr(dot_index + 1);
+  if (base::EqualsCaseInsensitiveASCII(extension, "heic")) {
+    return "image/heic";
+  }
+  if (base::EqualsCaseInsensitiveASCII(extension, "heif")) {
+    return "image/heif";
+  }
+  return "";
+}
+
+}  // namespace
 
 // static
 bool TabInfo::ContainsToken(base::span<const TabInfo> tabs,
@@ -338,6 +362,9 @@ void ContextualSearchSessionHandle::StartFileContextUploadFlow(
   }
 
   lens::MimeType mime_type;
+  if (file_mime_type.empty()) {
+    file_mime_type = std::string(InferHeifMimeTypeFromFileName(file_name));
+  }
   bool mime_type_has_image = file_mime_type.find("image") != std::string::npos;
 
   if (lens::features::IsLensSendRawFileMediaTypesEnabled()) {

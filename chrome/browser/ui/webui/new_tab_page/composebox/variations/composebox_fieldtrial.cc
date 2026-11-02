@@ -59,7 +59,7 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   // The current list of image types that Lens Backend supports
   image_upload->set_mime_types_allowed(
       "image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,"
-      "image/heic");
+      "image/heic,.heic,.heif");
   auto* attachment_upload = composebox->mutable_attachment_upload();
   // File upload size limit: 100 MiB.
   attachment_upload->set_max_size_bytes(100 * 1024 * 1024);

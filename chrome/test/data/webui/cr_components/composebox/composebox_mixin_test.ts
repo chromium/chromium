@@ -1398,6 +1398,26 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
+      'processFiles infers HEIC MIME type when file type is empty',
+      async () => {
+        // Some platforms report an empty type for uppercase `.HEIC` files.
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(new File(['test'], 'IMG_1234.HEIC', {type: ''}));
+
+        element.processFiles(dataTransfer.files);
+        await searchboxHandler.whenCalled('addFileContext');
+        await element.updateComplete;
+
+        assertEquals(
+            'image/heic',
+            searchboxHandler.getArgs('addFileContext')[0][0].mimeType);
+        assertEquals(1, element.attachedContext.size);
+        const attachment = [...element.attachedContext.values()][0]!;
+        assertEquals('image/heic', attachment.type);
+        assertEquals(InputType.kLensImage, attachment.inputType);
+      });
+
+  test(
       'updates state does not toggle off tool mode when already in that mode',
       async () => {
         const inputState =

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -121,6 +123,15 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
   if (is_image) {
     std::vector<base::FilePath::StringType> extensions;
     net::GetExtensionsForMimeType("image/*", &extensions);
+    // HEIC/HEIF extensions are only known to `net` via the platform MIME
+    // database, which may not include them (e.g. Windows without the HEIF
+    // extension installed). Add them explicitly so they are not filtered out.
+    for (const auto* heif_extension :
+         {FILE_PATH_LITERAL("heic"), FILE_PATH_LITERAL("heif")}) {
+      if (!std::ranges::contains(extensions, heif_extension)) {
+        extensions.emplace_back(heif_extension);
+      }
+    }
     file_types.extensions.push_back(extensions);
   } else if (!lens::features::IsLensSendRawFileMediaTypesEnabled()) {
     file_types.extensions = {{FILE_PATH_LITERAL("pdf")}};
@@ -146,6 +157,27 @@ size_t GetMaxAttachmentSizeBytes() {
                         .attachment_upload()
                         .max_size_bytes();
   return max_size > 0 ? max_size : kDefaultMaxFileSizeBytes;
+}
+
+std::string GetMimeTypeForFile(const base::FilePath& path, bool is_image) {
+  std::string mime_type;
+  base::FilePath::StringType ext = path.FinalExtension();
+  if (ext.starts_with(FILE_PATH_LITERAL('.'))) {
+    net::GetMimeTypeFromExtension(ext.substr(1), &mime_type);
+  }
+  if (!mime_type.empty()) {
+    return mime_type;
+  }
+  // Some platforms do not report a MIME type for HEIC/HEIF files (e.g.
+  // uppercase `.HEIC` on Linux, or Windows without the HEIF extension
+  // installed). Infer it so these are not mislabeled as PNG and decoded.
+  if (path.MatchesExtension(FILE_PATH_LITERAL(".heic"))) {
+    return "image/heic";
+  }
+  if (path.MatchesExtension(FILE_PATH_LITERAL(".heif"))) {
+    return "image/heif";
+  }
+  return is_image ? "image/png" : "application/pdf";
 }
 
 std::unique_ptr<FileData> ReadFileData(const base::FilePath& path,
@@ -174,13 +206,7 @@ std::unique_ptr<FileData> ReadFileData(const base::FilePath& path,
     return file_data;
   }
 
-  base::FilePath::StringType ext = path.FinalExtension();
-  if (ext.starts_with(FILE_PATH_LITERAL('.'))) {
-    net::GetMimeTypeFromExtension(ext.substr(1), &file_data->mime_type);
-  }
-  if (file_data->mime_type.empty()) {
-    file_data->mime_type = is_image ? "image/png" : "application/pdf";
-  }
+  file_data->mime_type = GetMimeTypeForFile(path, is_image);
   return file_data;
 }
 
@@ -190,7 +216,9 @@ bool IsImageFile(const base::FilePath& path) {
          path.MatchesExtension(FILE_PATH_LITERAL(".jpeg")) ||
          path.MatchesExtension(FILE_PATH_LITERAL(".webp")) ||
          path.MatchesExtension(FILE_PATH_LITERAL(".gif")) ||
-         path.MatchesExtension(FILE_PATH_LITERAL(".bmp"));
+         path.MatchesExtension(FILE_PATH_LITERAL(".bmp")) ||
+         path.MatchesExtension(FILE_PATH_LITERAL(".heic")) ||
+         path.MatchesExtension(FILE_PATH_LITERAL(".heif"));
 }
 
 }  // namespace

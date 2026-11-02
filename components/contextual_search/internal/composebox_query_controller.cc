@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -423,6 +424,14 @@ std::string ImageTypeToString(
   }
 }
 
+bool IsHeicMimeType(std::optional<std::string_view> mime_type) {
+  if (!mime_type.has_value()) {
+    return false;
+  }
+  return base::EqualsCaseInsensitiveASCII(*mime_type, "image/heic") ||
+         base::EqualsCaseInsensitiveASCII(*mime_type, "image/heif");
+}
+
 }  // namespace
 
 bool ComposeboxQueryController::HasC2paMetadata(
@@ -442,8 +451,7 @@ bool ComposeboxQueryController::IsSupportedC2paMimeType(
          base::EqualsCaseInsensitiveASCII(*mime_type, "image/jpg") ||
          base::EqualsCaseInsensitiveASCII(*mime_type, "image/png") ||
          base::EqualsCaseInsensitiveASCII(*mime_type, "image/webp") ||
-         base::EqualsCaseInsensitiveASCII(*mime_type, "image/heic") ||
-         base::EqualsCaseInsensitiveASCII(*mime_type, "image/heif");
+         IsHeicMimeType(mime_type);
 }
 
 std::optional<lens::ImageData>
@@ -1582,10 +1590,14 @@ void ComposeboxQueryController::
 
   int max_processed_dimension = std::max(image_data.image_metadata().width(),
                                          image_data.image_metadata().height());
-  base::UmaHistogramCustomCounts(
-      base::StrCat({"Lens.Composebox.ImageUpload.",
-                    ImageTypeToString(image_type), ".ProcessedMaxDimension"}),
-      max_processed_dimension, 1, 10000, 50);
+  // Images sent as raw bytes (e.g. HEIC/HEIF) are not processed on the client,
+  // so their dimensions are unknown.
+  if (max_processed_dimension > 0) {
+    base::UmaHistogramCustomCounts(
+        base::StrCat({"Lens.Composebox.ImageUpload.",
+                      ImageTypeToString(image_type), ".ProcessedMaxDimension"}),
+        max_processed_dimension, 1, 10000, 50);
+  }
   lens::LensOverlayServerRequest request;
   auto* objects_request = request.mutable_objects_request();
   objects_request->mutable_request_context()->mutable_request_id()->CopyFrom(
@@ -2404,6 +2416,28 @@ void ComposeboxQueryController::CreateImageUploadRequest(
     RequestBodyProtoCreatedCallback callback) {
 #if !BUILDFLAG(IS_IOS)
   CHECK(image_options.has_value());
+
+  // Blink's image decoder does not support HEIC/HEIF on non-iOS platforms.
+  // Bypass client-side decoding, downscaling, and re-encoding and send raw
+  // bytes so the Lens server transcodes the image (matching AIM Web).
+  if (IsHeicMimeType(mime_type_string)) {
+    auto ref_counted_logs =
+        base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+    lens::ImageData image_data_proto;
+    if (!image_data.empty()) {
+      base::UmaHistogramBoolean(
+          base::StrCat({"Lens.Composebox.ImageUpload.",
+                        ImageTypeToString(image_type), ".C2paDetected"}),
+          HasC2paMetadata(image_data));
+      image_data_proto.mutable_payload()->mutable_image_bytes()->assign(
+          image_data.begin(), image_data.end());
+    }
+    CreateFileUploadRequestProtoWithImageDataAndContinue(
+        request_id, CreateClientContext(), ref_counted_logs,
+        std::move(callback), page_url, page_title, file_name, image_type,
+        std::move(image_data_proto));
+    return;
+  }
 
   auto refcounted_image_data =
       base::MakeRefCounted<base::RefCountedData<std::vector<uint8_t>>>(

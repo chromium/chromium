@@ -71,7 +71,7 @@ TEST_F(NtpComposeboxFieldTrialConfigTest,
   EXPECT_EQ(image_upload.image_compression_quality(), 40);
   EXPECT_THAT(image_upload.mime_types_allowed(),
               "image/avif,image/bmp,image/jpeg,image/png,image/webp,image/"
-              "heif,image/heic");
+              "heif,image/heic,.heic,.heif");
 
   auto attachment_upload = config.composebox().attachment_upload();
   // File upload size limit: 100 MiB.
@@ -230,7 +230,7 @@ TEST_F(NtpComposeboxFieldTrialConfigTest,
   // Check that both default mime type lists were cleared.
   EXPECT_THAT(config.composebox().image_upload().mime_types_allowed(),
               "image/avif,image/bmp,image/jpeg,image/png,image/webp,"
-              "image/heif,image/heic");
+              "image/heif,image/heic,.heic,.heif");
   EXPECT_THAT(config.composebox().attachment_upload().mime_types_allowed(),
               ".pdf,application/pdf");
 

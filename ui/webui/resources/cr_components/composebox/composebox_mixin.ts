@@ -22,7 +22,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, isValidTabId, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordRichImageSuggestClicked, recordSingleTabMenuItemAction, recordToolModeSelection, recordToolModeShown, recordUserAction, SingleTabMenuItemAction, SingleTabType, SubmitButtonIconType, TabSuggestionsState, VoiceSearchAction} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getFileMimeType, getLoadTimeBoolean, isContextUploadStatusTerminal, isValidTabId, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordRichImageSuggestClicked, recordSingleTabMenuItemAction, recordToolModeSelection, recordToolModeShown, recordUserAction, SingleTabMenuItemAction, SingleTabType, SubmitButtonIconType, TabSuggestionsState, VoiceSearchAction} from './common.js';
 import type {BrowserFileUpload, ComposeboxFuseboxActionRequest, ComposeboxState, ContextualUpload, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import {AimButtonMode} from './composebox_aim_button.js';
@@ -2761,6 +2761,7 @@ export const ComposeboxEmbedderMixin =
               new Map();
           for (const file of files) {
             let token: UnguessableToken;
+            const mimeType = getFileMimeType(file);
             try {
               const fileBuffer = await file.arrayBuffer();
               const bigBuffer: BigBuffer = {
@@ -2770,7 +2771,7 @@ export const ComposeboxEmbedderMixin =
                   {
                     fileName: file.name,
                     imageDataUrl: null,
-                    mimeType: file.type,
+                    mimeType,
                     isDeletable: true,
                     selectionTime: new Date(),
                     thumbnailUrl: null,
@@ -2785,10 +2786,11 @@ export const ComposeboxEmbedderMixin =
             }
 
             const attachment = ComposeboxFile.createFromFile(
-                token, file, ContextUploadStatus.kNotUploaded, {
+                token, {name: file.name, type: mimeType},
+                ContextUploadStatus.kNotUploaded, {
                   dataUrl: null,
-                  objectUrl: (file.type.includes('image') ||
-                              file.type.includes('video')) ?
+                  objectUrl: (mimeType.includes('image') ||
+                              mimeType.includes('video')) ?
                       URL.createObjectURL(file) :
                       null,
                   iconName: null,
@@ -2976,10 +2978,11 @@ export const ComposeboxEmbedderMixin =
           }
 
           for (const file of files) {
-            const inputType = this.getInputType(file.type);
+            const fileType = getFileMimeType(file);
+            const inputType = this.getInputType(fileType);
             const currentTypeCount = counts.get(inputType) || 0;
             const error = this.getValidationError(
-                inputType, file.type, file.size, totalCount, currentTypeCount);
+                inputType, fileType, file.size, totalCount, currentTypeCount);
 
             if (error !== ProcessFilesError.NONE) {
               errorToDisplay = Math.max(errorToDisplay, error);

@@ -1731,6 +1731,8 @@ TEST_F(ComposeboxQueryControllerTest, IsSupportedC2paMimeType) {
   EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("IMAGE/JPEG"));
   EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/PNG"));
   EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/WebP"));
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("IMAGE/HEIC"));
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/HEIF"));
 
   // Unsupported MIME types
   EXPECT_FALSE(ComposeboxQueryController::IsSupportedC2paMimeType("image/bmp"));
@@ -1745,6 +1747,81 @@ TEST_F(ComposeboxQueryControllerTest, IsSupportedC2paMimeType) {
 }
 
 #if !BUILDFLAG(IS_IOS)
+TEST_F(ComposeboxQueryControllerTest,
+       UploadHeicImageFileRequestBypassesDecode) {
+  base::HistogramTester histogram_tester;
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kImage;
+  input_data->mime_type_string = "image/heic";
+  input_data->context_input = std::vector<lens::ContextualInput>();
+
+  // Arbitrary raw HEIC header bytes that Blink's `ImageDecoder` cannot decode.
+  std::vector<uint8_t> heic_bytes = {'f', 't', 'y',  'p',  'h',  'e',
+                                     'i', 'c', 0x00, 0x01, 0x02, 0x03};
+  input_data->context_input->push_back(
+      lens::ContextualInput(heic_bytes, lens::MimeType::kImage));
+  input_data->file_name = "test_photo.heic";
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kImage);
+
+  std::optional<lens::LensOverlayServerRequest> last_request =
+      controller().last_sent_file_upload_request();
+  ASSERT_TRUE(last_request.has_value());
+  const lens::ImageData& image_data =
+      last_request->objects_request().image_data();
+  std::string expected_bytes(heic_bytes.begin(), heic_bytes.end());
+  EXPECT_EQ(image_data.payload().image_bytes(), expected_bytes);
+  EXPECT_EQ(image_data.image_metadata().width(), 0);
+  EXPECT_EQ(image_data.image_metadata().height(), 0);
+  EXPECT_EQ(image_data.image_metadata().file_name(), "test_photo.heic");
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ImageUpload.File.C2paDetected", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ImageUpload.File.DownscaleAndEncodeFailed", false, 1);
+  // The raw HEIC bytes have unknown dimensions, so no dimension is recorded.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Composebox.ImageUpload.File.ProcessedMaxDimension", 0);
+}
+
+TEST_F(ComposeboxQueryControllerTest, UploadEmptyHeicImageFileRequestFailure) {
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kImage;
+  input_data->mime_type_string = "image/heif";
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kImage));
+  input_data->file_name = "empty.heif";
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kImage,
+                    ContextUploadStatus::kValidationFailed,
+                    ContextUploadErrorType::kImageProcessingError,
+                    /*expect_suggest_signals_ready=*/false);
+}
+
 TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paBypass) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList local_feature_list;

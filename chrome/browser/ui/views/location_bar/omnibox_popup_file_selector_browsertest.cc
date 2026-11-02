@@ -177,6 +177,30 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
+                       ImageDialogIncludesHeifExtensions) {
+  auto* factory = ui::FakeSelectFileDialog::RegisterFactory();
+  factory->SetOpenCallback(base::DoNothing());
+  auto* omnibox_controller = BrowserWindow::FromBrowser(browser())
+                                 ->GetLocationBar()
+                                 ->GetOmniboxController();
+  MockOmniboxEditModel mock_edit_model(omnibox_controller);
+  OmniboxPopupFileSelector file_selector(
+      browser()->GetWindow()->GetNativeWindow());
+
+  file_selector.OpenFileUploadDialog(
+      browser()->GetTabStripModel()->GetActiveWebContents(),
+      /*is_image=*/true, &mock_edit_model, std::nullopt,
+      /*was_ai_mode_open=*/false);
+
+  ui::FakeSelectFileDialog* dialog = factory->GetLastDialog();
+  ASSERT_TRUE(dialog);
+  ASSERT_EQ(dialog->file_types().extensions.size(), 1u);
+  const auto& extensions = dialog->file_types().extensions[0];
+  EXPECT_THAT(extensions, testing::Contains(FILE_PATH_LITERAL("heic")));
+  EXPECT_THAT(extensions, testing::Contains(FILE_PATH_LITERAL("heif")));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
                        RecordHistogramOnFileSelected) {
   base::HistogramTester histogram_tester;
 
@@ -246,6 +270,49 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   file_selector.MultiFilesSelected(files);
 
   // Assert.
+  SearchboxContextData* searchbox_context_data =
+      SearchboxContextData::From(browser());
+  ASSERT_TRUE(searchbox_context_data);
+
+  auto context = searchbox_context_data->TakePendingContext();
+  ASSERT_TRUE(context);
+  ASSERT_EQ(context->file_infos.size(), 1u);
+
+  const auto& file_attachment = context->file_infos[0]->get_file_attachment();
+  EXPECT_EQ(file_attachment->error_type.value(),
+            contextual_search::ContextUploadErrorType::
+                kBrowserProcessingMaxImagesExceededError);
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
+                       UploadLimitExceededForHeicTriggersMaxImagesError) {
+  auto* omnibox_controller = BrowserWindow::FromBrowser(browser())
+                                 ->GetLocationBar()
+                                 ->GetOmniboxController();
+  MockOmniboxEditModel mock_edit_model(omnibox_controller);
+
+  OmniboxPopupFileSelector file_selector(
+      browser()->GetWindow()->GetNativeWindow());
+
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Open as a generic file upload (`is_image = false`) so `IsImageFile` is
+  // exercised on the `.HEIC` extension.
+  file_selector.OpenFileUploadDialog(web_contents,
+                                     /*is_image=*/false, &mock_edit_model,
+                                     std::nullopt,
+                                     /*was_ai_mode_open=*/false);
+
+  std::vector<ui::SelectedFileInfo> files;
+  for (int i = 0; i < 11; ++i) {
+    base::FilePath path(FILE_PATH_LITERAL("IMG_1234.HEIC"));
+    files.emplace_back(path, path);
+  }
+
+  EXPECT_CALL(mock_edit_model, OpenAiMode(testing::_)).Times(0);
+
+  file_selector.MultiFilesSelected(files);
+
   SearchboxContextData* searchbox_context_data =
       SearchboxContextData::From(browser());
   ASSERT_TRUE(searchbox_context_data);

@@ -126,6 +126,57 @@ TEST_F(ContextualSearchSessionHandleTest,
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
+       StartFileContextUploadFlow_InfersHeicMimeTypeFromExtension) {
+  base::UnguessableToken token = handle_->CreateContextToken();
+
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _))
+      .WillOnce([](const base::UnguessableToken& file_token,
+                   std::unique_ptr<lens::ContextualInputData> input_data,
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(input_data->primary_content_type, lens::MimeType::kImage);
+        EXPECT_EQ(input_data->mime_type_string, "image/heic");
+      });
+
+  mojo_base::BigBuffer buffer;
+  handle_->StartFileContextUploadFlow(token, "IMG_1234.HEIC", "",
+                                      std::move(buffer), std::nullopt);
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       StartFileContextUploadFlow_InfersHeifMimeTypeFromExtension) {
+  base::UnguessableToken token = handle_->CreateContextToken();
+
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _))
+      .WillOnce([](const base::UnguessableToken& file_token,
+                   std::unique_ptr<lens::ContextualInputData> input_data,
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(input_data->primary_content_type, lens::MimeType::kImage);
+        EXPECT_EQ(input_data->mime_type_string, "image/heif");
+      });
+
+  mojo_base::BigBuffer buffer;
+  handle_->StartFileContextUploadFlow(token, "photo.heif", "",
+                                      std::move(buffer), std::nullopt);
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       StartFileContextUploadFlow_EmptyMimeTypeUnknownExtension) {
+  base::UnguessableToken token = handle_->CreateContextToken();
+
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _))
+      .WillOnce([](const base::UnguessableToken& file_token,
+                   std::unique_ptr<lens::ContextualInputData> input_data,
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(input_data->primary_content_type, lens::MimeType::kUnknown);
+        EXPECT_EQ(input_data->mime_type_string, "");
+      });
+
+  mojo_base::BigBuffer buffer;
+  handle_->StartFileContextUploadFlow(token, "notes.xyz", "", std::move(buffer),
+                                      std::nullopt);
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
        StartDriveContextUploadFlow_ValidToken) {
   base::UnguessableToken token = handle_->CreateContextToken();
   std::string test_drive_id = "test_drive_id";

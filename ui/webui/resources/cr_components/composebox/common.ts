@@ -686,6 +686,39 @@ export function getLoadTimeBoolean(id: string, defaultValue: boolean): boolean {
                                         defaultValue;
 }
 
+// MIME types of HEIC/HEIF images, keyed by lowercase file extension.
+const HEIF_MIME_TYPES_BY_EXTENSION = new Map<string, string>([
+  ['heic', 'image/heic'],
+  ['heif', 'image/heif'],
+]);
+
+function getLowercaseExtension(fileName?: string): string {
+  if (!fileName) {
+    return '';
+  }
+  const dotIndex = fileName.lastIndexOf('.');
+  return dotIndex === -1 ? '' : fileName.slice(dotIndex + 1).toLowerCase();
+}
+
+// Returns the MIME type of `file`. Some platforms do not report a MIME type
+// for HEIC/HEIF files (e.g. uppercase `.HEIC` on Linux, or Windows without the
+// HEIF extension installed), so infer it from the file extension in that case.
+export function getFileMimeType(file: {name?: string, type?: string}): string {
+  if (file.type) {
+    return file.type;
+  }
+  return HEIF_MIME_TYPES_BY_EXTENSION.get(getLowercaseExtension(file.name)) ??
+      '';
+}
+
+// Returns true if `file` is a HEIC/HEIF image, which Chrome cannot render in
+// an <img> element.
+export function isHeifImage(file: {name?: string, type?: string}): boolean {
+  const type = (file.type ?? '').toLowerCase();
+  return type === 'image/heic' || type === 'image/heif' ||
+      HEIF_MIME_TYPES_BY_EXTENSION.has(getLowercaseExtension(file.name));
+}
+
 export function isContextUploadStatusTerminal(status: ContextUploadStatus):
     boolean {
   switch (status) {

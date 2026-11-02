@@ -1028,7 +1028,10 @@ bool GetIsContextualTasksNextboxContextMenuEnabled() {
 
 const base::FeatureParam<std::string> kContextualTasksNextboxImageFileTypes{
     &kContextualTasksContextMenu, "ContextualTasksNextboxImageFileTypes",
-    "image/jpeg,image/png"};
+    // The `.heic` and `.heif` extensions are listed explicitly because the
+    // file picker cannot map the HEIC/HEIF MIME types to extensions on all
+    // platforms (e.g. Windows without the HEIF extension installed).
+    "image/jpeg,image/png,image/heic,image/heif,.heic,.heif"};
 
 const base::FeatureParam<std::string>
     kContextualTasksNextboxAttachmentFileTypes{

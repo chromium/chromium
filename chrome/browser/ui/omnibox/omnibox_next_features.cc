@@ -241,7 +241,7 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   image_upload->set_image_compression_quality(40);
   image_upload->set_mime_types_allowed(
       "image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,image/"
-      "heic");
+      "heic,.heic,.heif");
 
   auto* attachment_upload = composebox->mutable_attachment_upload();
   // File upload size limit: 100 MiB.
