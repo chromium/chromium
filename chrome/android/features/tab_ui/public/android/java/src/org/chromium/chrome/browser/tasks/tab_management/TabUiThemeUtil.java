@@ -139,6 +139,16 @@ public class TabUiThemeUtil {
     }
 
     /**
+     * Returns the color of the drop indicator shown when a link is dragged onto the tab strip,
+     * which is colorOutline. Incognito uses the dark theme's colorOutline.
+     */
+    public static @ColorInt int getLinkDropIndicatorColor(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.baseline_neutral_variant_60)
+                : SemanticColorUtils.getColorOutline(context);
+    }
+
+    /**
      * Returns the color used for the shared group notification bubble.
      *
      * @param context {@link Context} used to retrieve color.

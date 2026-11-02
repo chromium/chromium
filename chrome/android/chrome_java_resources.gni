@@ -345,6 +345,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_tab_close_tabstrip_20dp.xml",
   "java/res/drawable/ic_tab_close_tabstrip_24dp.xml",
   "java/res/drawable/ic_tab_icon_24dp.xml",
+  "java/res/drawable/ic_tab_strip_drop_arrow.xml",
   "java/res/drawable/ic_toolbar_24dp.xml",
   "java/res/drawable/ic_toolbar_share_offset_24dp.xml",
   "java/res/drawable/ic_translate.xml",

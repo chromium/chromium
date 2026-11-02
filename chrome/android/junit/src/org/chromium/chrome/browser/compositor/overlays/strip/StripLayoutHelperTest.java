@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -7764,6 +7765,199 @@ public class StripLayoutHelperTest {
         verifyLinkDropInsertsAt(
                 getLinkDropTrailingEdge(views[views.length - 1]) + 20f,
                 /* expectedIndex= */ mModel.getCount());
+    }
+
+    /** Returns the expected drop indicator position for the gap between two adjacent views. */
+    private static float getLinkDropGapX(StripLayoutView prev, StripLayoutView next) {
+        return (getLinkDropTrailingEdge(prev) + getLinkDropLeadingEdge(next)) / 2f;
+    }
+
+    /**
+     * Verifies that the drop indicator for a link dragged to {@code xDp} is at {@code expected}.
+     */
+    private void assertLinkDropIndicatorAt(float expectedXDp, float xDp) {
+        mStripLayoutHelper.handleLinkDragWithin(xDp);
+        assertTrue(mStripLayoutHelper.isLinkDropIndicatorVisible());
+        assertEquals(expectedXDp, mStripLayoutHelper.getLinkDropIndicatorXDp(), EPSILON);
+    }
+
+    @Test
+    public void testHandleLinkDragWithin_IndicatorPosition() {
+        doTestHandleLinkDragWithinIndicatorPosition(/* rtl= */ false);
+    }
+
+    @Test
+    public void testHandleLinkDragWithin_IndicatorPosition_Rtl() {
+        doTestHandleLinkDragWithinIndicatorPosition(/* rtl= */ true);
+    }
+
+    private void doTestHandleLinkDragWithinIndicatorPosition(boolean rtl) {
+        initializeTest(rtl, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 5);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutView lastView = views[views.length - 1];
+        float towardEnd = rtl ? -1f : 1f;
+
+        // Inserting a new tab points at the gap it goes into.
+        assertLinkDropIndicatorAt(
+                getLinkDropGapX(views[1], views[2]), getLinkDropX(views[2], 0.1f));
+        assertLinkDropIndicatorAt(
+                getLinkDropGapX(views[2], views[3]), getLinkDropX(views[2], 0.9f));
+
+        // Loading into a tab points at the middle of the tab.
+        assertLinkDropIndicatorAt(getLinkDropX(views[2], 0.5f), getLinkDropX(views[2], 0.3f));
+
+        // Inserting at the start or the end points at the edge of the first or last view.
+        assertLinkDropIndicatorAt(
+                getLinkDropLeadingEdge(views[0]),
+                getLinkDropLeadingEdge(views[0]) - towardEnd * 5f);
+        assertLinkDropIndicatorAt(
+                getLinkDropTrailingEdge(lastView),
+                getLinkDropTrailingEdge(lastView) + towardEnd * 20f);
+    }
+
+    @Test
+    public void testHandleLinkDragWithin_IndicatorAtExpandedGroupTitle() {
+        initializeTest(/* tabIndex= */ 0);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        // Views: tab 0, group title, tab 1, tab 2, tab 3, tab 4.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // Before the group, or as the group's first tab.
+        assertLinkDropIndicatorAt(
+                getLinkDropGapX(views[0], views[1]), getLinkDropX(views[1], 0.25f));
+        assertLinkDropIndicatorAt(
+                getLinkDropGapX(views[1], views[2]), getLinkDropX(views[1], 0.75f));
+    }
+
+    @Test
+    public void testHandleLinkDragWithin_IndicatorAtCollapsedGroupTitle() {
+        initializeTest(/* tabIndex= */ 0);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        mStripLayoutHelper.collapseTabGroupForTesting(
+                (StripLayoutGroupTitle) views[1], /* isCollapsed= */ true);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        // Views: tab 0, group title, collapsed tab 1, collapsed tab 2, tab 3, tab 4.
+        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // Before or after the collapsed group.
+        assertLinkDropIndicatorAt(
+                getLinkDropGapX(views[0], views[1]), getLinkDropX(views[1], 0.25f));
+        assertLinkDropIndicatorAt(
+                getLinkDropGapX(views[1], views[4]), getLinkDropX(views[1], 0.75f));
+    }
+
+    @Test
+    public void testHandleLinkDragWithin_IndicatorWithTabsScrolledUnderPinnedTabs() {
+        doTestHandleLinkDragWithinIndicatorWithTabsScrolledUnderPinnedTabs(/* rtl= */ false);
+    }
+
+    @Test
+    public void testHandleLinkDragWithin_IndicatorWithTabsScrolledUnderPinnedTabs_Rtl() {
+        doTestHandleLinkDragWithinIndicatorWithTabsScrolledUnderPinnedTabs(/* rtl= */ true);
+    }
+
+    private void doTestHandleLinkDragWithinIndicatorWithTabsScrolledUnderPinnedTabs(boolean rtl) {
+        // Use enough tabs for the strip to scroll.
+        initializeTest(rtl, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 20);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        tabs[0].setIsPinned(true);
+        // Resize to apply the pinned tab width.
+        resizeStripAndUpdateLayout(STRIP_WIDTH_LANDSCAPE);
+        float towardEnd = rtl ? -1f : 1f;
+
+        // Scroll the unpinned tabs so that tab 1 is fully hidden under the pinned tab, and only the
+        // trailing 40% of tab 2 is visible past it. In RTL, the scroll offset moves tabs left.
+        float pinnedTabEnd = getLinkDropTrailingEdge(tabs[0]);
+        float tab2Width =
+                Math.abs(getLinkDropTrailingEdge(tabs[2]) - getLinkDropLeadingEdge(tabs[2]));
+        float desiredTab2Leading = pinnedTabEnd - towardEnd * 0.6f * tab2Width;
+        mStripLayoutHelper.setScrollOffsetForTesting(
+                towardEnd * (desiredTab2Leading - getLinkDropLeadingEdge(tabs[2])));
+        assertTrue(
+                "Tab 1 should be fully hidden under the pinned tab.",
+                towardEnd * (pinnedTabEnd - getLinkDropTrailingEdge(tabs[1])) >= 0f);
+
+        // A drop at the end of the pinned tab inserts before tab 2. The indicator points at the end
+        // of the pinned tab, rather than at the hidden gap between tab 1 and tab 2.
+        assertLinkDropIndicatorAt(pinnedTabEnd, getLinkDropX(tabs[0], 0.9f));
+
+        // Only the visible part of tab 2, which starts at the end of the pinned tab, is used to
+        // find its middle half.
+        float visibleTab2Width = Math.abs(getLinkDropTrailingEdge(tabs[2]) - pinnedTabEnd);
+
+        // A drop over the leading quarter of the visible part inserts before tab 2.
+        float xDp = pinnedTabEnd + towardEnd * 0.1f * visibleTab2Width;
+        assertNull(mStripLayoutHelper.getLinkDropTabToLoadInto(xDp));
+        assertLinkDropIndicatorAt(pinnedTabEnd, xDp);
+
+        // A drop over the middle half of the visible part loads into tab 2, and the indicator
+        // points at the center of the visible part.
+        float visibleTab2Center = pinnedTabEnd + towardEnd * 0.5f * visibleTab2Width;
+        for (float fraction : new float[] {0.3f, 0.5f, 0.7f}) {
+            xDp = pinnedTabEnd + towardEnd * fraction * visibleTab2Width;
+            assertEquals(tabs[2], mStripLayoutHelper.getLinkDropTabToLoadInto(xDp));
+            assertLinkDropIndicatorAt(visibleTab2Center, xDp);
+        }
+    }
+
+    @Test
+    public void testHandleLinkDragEvents_UpdatesIndicator() {
+        initializeTest(/* tabIndex= */ 0);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertFalse(mStripLayoutHelper.isLinkDropIndicatorVisible());
+        clearInvocations(mRenderHost);
+
+        // Entering shows the indicator.
+        mStripLayoutHelper.handleLinkDragEnter(getLinkDropX(views[2], 0.1f));
+        assertTrue(mStripLayoutHelper.isLinkDropIndicatorVisible());
+        assertEquals(
+                getLinkDropGapX(views[1], views[2]),
+                mStripLayoutHelper.getLinkDropIndicatorXDp(),
+                EPSILON);
+        verify(mRenderHost).requestRender();
+
+        // Moving to a new target moves the indicator.
+        assertLinkDropIndicatorAt(getLinkDropX(views[2], 0.5f), getLinkDropX(views[2], 0.5f));
+        verify(mRenderHost, times(2)).requestRender();
+
+        // Moving within the same target doesn't request another render.
+        mStripLayoutHelper.handleLinkDragWithin(getLinkDropX(views[2], 0.6f));
+        verify(mRenderHost, times(2)).requestRender();
+
+        // Exiting hides the indicator.
+        mStripLayoutHelper.handleLinkDragExit();
+        assertFalse(mStripLayoutHelper.isLinkDropIndicatorVisible());
+        verify(mRenderHost, times(3)).requestRender();
+    }
+
+    @Test
+    public void testHandleLinkDrop_HidesIndicator() {
+        initializeTest(/* tabIndex= */ 0);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        float xDp = getLinkDropX(views[2], 0.5f);
+        mStripLayoutHelper.handleLinkDragEnter(xDp);
+        assertTrue(mStripLayoutHelper.isLinkDropIndicatorVisible());
+
+        mStripLayoutHelper.handleLinkDrop(xDp, JUnitTestGURLs.EXAMPLE_URL);
+        assertFalse(mStripLayoutHelper.isLinkDropIndicatorVisible());
+    }
+
+    @Test
+    public void testTabModelSelected_HidesLinkDropIndicator() {
+        initializeTest(/* tabIndex= */ 0);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        mStripLayoutHelper.handleLinkDragEnter(getLinkDropX(views[2], 0.5f));
+        assertTrue(mStripLayoutHelper.isLinkDropIndicatorVisible());
+
+        mStripLayoutHelper.tabModelSelected(false);
+        assertFalse(mStripLayoutHelper.isLinkDropIndicatorVisible());
     }
 
     private class TestTabRemover implements TabRemover {

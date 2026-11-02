@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.Str
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnLongClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -840,5 +841,66 @@ public class TabStripSceneLayerTest {
                         eq(
                                 MaterialColors.getColor(
                                         mContext, R.attr.colorPrimary, /* defaultValue= */ 0)));
+    }
+
+    @Test
+    public void testPushAndUpdateStrip_PushesLinkDropIndicator() {
+        mTabStripSceneLayer.pushAndUpdateStrip(
+                mStripLayoutHelperManager,
+                mTrailingButtonsCoordinator,
+                mLayerTitleCache,
+                mResourceManager,
+                mStripLayoutTabs,
+                null,
+                1.f,
+                0,
+                -1,
+                Color.YELLOW,
+                0.f,
+                0.f,
+                0.f,
+                0.f);
+        verify(mTabStripSceneMock)
+                .updateLinkDropIndicator(
+                        eq(1L),
+                        eq(R.drawable.ic_tab_strip_drop_arrow),
+                        anyFloat(),
+                        /* visible= */ eq(false),
+                        anyInt());
+    }
+
+    @Test
+    public void testPushLinkDropIndicator_Visible() {
+        // Use a density other than 1 to verify the dp to px conversion.
+        TabStripSceneLayer sceneLayer =
+                new TabStripSceneLayer(/* density= */ 2.f, /* activityCreationUptimeMs= */ 0L);
+        when(mTabStripSceneMock.init(sceneLayer)).thenReturn(2L);
+        sceneLayer.initializeNativeForTesting();
+        when(mStripLayoutHelper.isLinkDropIndicatorVisible()).thenReturn(true);
+        when(mStripLayoutHelper.getLinkDropIndicatorXDp()).thenReturn(50.f);
+
+        sceneLayer.pushLinkDropIndicator(mStripLayoutHelperManager);
+        verify(mTabStripSceneMock)
+                .updateLinkDropIndicator(
+                        2L,
+                        R.drawable.ic_tab_strip_drop_arrow,
+                        /* centerXPx= */ 100.f,
+                        /* visible= */ true,
+                        /* tint= */ SemanticColorUtils.getColorOutline(mContext));
+    }
+
+    @Test
+    public void testPushLinkDropIndicator_Incognito() {
+        when(mStripLayoutHelperManager.isIncognito()).thenReturn(true);
+        when(mStripLayoutHelper.isLinkDropIndicatorVisible()).thenReturn(true);
+
+        mTabStripSceneLayer.pushLinkDropIndicator(mStripLayoutHelperManager);
+        verify(mTabStripSceneMock)
+                .updateLinkDropIndicator(
+                        eq(1L),
+                        eq(R.drawable.ic_tab_strip_drop_arrow),
+                        anyFloat(),
+                        /* visible= */ eq(true),
+                        /* tint= */ eq(mContext.getColor(R.color.baseline_neutral_variant_60)));
     }
 }

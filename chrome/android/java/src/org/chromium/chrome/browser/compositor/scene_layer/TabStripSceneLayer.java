@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTrailingButtonsCoordinator;
@@ -156,6 +157,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     topPaddingPx);
             pushGroupIndicators(stripLayoutGroupTitlesToRender, layerTitleCache);
             pushStripTabs(layoutHelper, layerTitleCache, stripLayoutTabsToRender, selectedTabId);
+            pushLinkDropIndicator(layoutHelper);
         }
         TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr);
     }
@@ -502,6 +504,19 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         }
     }
 
+    @VisibleForTesting
+    /* package */ void pushLinkDropIndicator(StripLayoutHelperManager layoutHelper) {
+        StripLayoutHelper activeHelper = layoutHelper.getActiveStripLayoutHelper();
+        TabStripSceneLayerJni.get()
+                .updateLinkDropIndicator(
+                        mNativePtr,
+                        R.drawable.ic_tab_strip_drop_arrow,
+                        activeHelper.getLinkDropIndicatorXDp() * mDpToPx,
+                        activeHelper.isLinkDropIndicatorVisible(),
+                        TabUiThemeUtil.getLinkDropIndicatorColor(
+                                layoutHelper.getContext(), layoutHelper.isIncognito()));
+    }
+
     @Override
     public void destroy() {
         super.destroy();
@@ -653,6 +668,13 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 boolean isKeyboardFocused,
                 @DrawableRes int keyboardFocusRingResourceId,
                 @ColorInt int keyboardFocusRingColor);
+
+        void updateLinkDropIndicator(
+                long nativeTabStripSceneLayer,
+                @DrawableRes int resourceId,
+                float centerXPx,
+                boolean visible,
+                @ColorInt int tint);
 
         void updateTabStripFade(
                 long nativeTabStripSceneLayer,

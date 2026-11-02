@@ -183,6 +183,14 @@ class TabStripSceneLayer : public SceneLayer {
                              int32_t keyboard_focus_ring_resource_id,
                              int32_t keyboard_focus_ring_color);
 
+  // Shows the link drop indicator centered at |center_x_px| at the top of the
+  // tab strip, or hides it if |visible| is false.
+  void UpdateLinkDropIndicator(JNIEnv* env,
+                               int32_t resource_id,
+                               float center_x_px,
+                               bool visible,
+                               int32_t tint);
+
   void UpdateTabStripFade(JNIEnv* env,
                           bool is_left,
                           int32_t fade_color,
@@ -377,6 +385,8 @@ class TabStripSceneLayer : public SceneLayer {
   scoped_refptr<cc::slim::UIResourceLayer> tab_search_button_background_;
   scoped_refptr<cc::slim::UIResourceLayer>
       tab_search_button_keyboard_focus_ring_;
+  // Arrow showing where a link dragged over the tab strip will be dropped.
+  scoped_refptr<cc::slim::UIResourceLayer> link_drop_indicator_;
   scoped_refptr<cc::slim::SolidColorLayer> scrim_layer_;
 
   unsigned write_index_ = 0;

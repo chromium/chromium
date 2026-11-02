@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The Material Symbols arrow_downward glyph, cropped so that it is flush with the viewport. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="640"
+    android:viewportHeight="640">
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M280,0L280,487L56,263L0,320L320,640L640,320L584,263L360,487L360,0L280,0Z"/>
+</vector>

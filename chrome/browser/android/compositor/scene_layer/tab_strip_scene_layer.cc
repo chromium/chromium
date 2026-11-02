@@ -4,6 +4,9 @@
 
 #include "chrome/browser/android/compositor/scene_layer/tab_strip_scene_layer.h"
 
+#include <algorithm>
+#include <cmath>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/android/token_android.h"
@@ -132,6 +135,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       tab_search_button_background_(cc::slim::UIResourceLayer::Create()),
       tab_search_button_keyboard_focus_ring_(
           cc::slim::UIResourceLayer::Create()),
+      link_drop_indicator_(cc::slim::UIResourceLayer::Create()),
       scrim_layer_(cc::slim::SolidColorLayer::Create()),
       content_tree_(nullptr) {
   new_tab_button_->SetIsDrawable(true);
@@ -233,6 +237,12 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(tab_search_button_background_);
   tab_strip_layer_->AddChild(tab_search_button_);
   tab_strip_layer_->AddChild(tab_search_button_keyboard_focus_ring_);
+
+  // Add the link drop indicator last so that it draws above everything else in
+  // the tab strip.
+  link_drop_indicator_->SetIsDrawable(true);
+  link_drop_indicator_->SetHideLayerAndSubtree(true);
+  tab_strip_layer_->AddChild(link_drop_indicator_);
 
   layer()->AddChild(background_layer_);
 }
@@ -601,6 +611,35 @@ void TabStripSceneLayer::UpdateTabSearchButton(
                          should_apply_hover_highlight, button_alpha,
                          tab_search_button_keyboard_focus_ring_,
                          is_keyboard_focused, keyboard_focus_ring_drawable);
+}
+
+void TabStripSceneLayer::UpdateLinkDropIndicator(JNIEnv* env,
+                                                 int32_t resource_id,
+                                                 float center_x_px,
+                                                 bool visible,
+                                                 int32_t tint) {
+  CHECK(resource_manager_, base::NotFatalUntil::M161);
+  ui::Resource* resource =
+      visible ? resource_manager_->GetStaticResourceWithTint(resource_id, tint)
+              : nullptr;
+  if (!resource) {
+    link_drop_indicator_->SetHideLayerAndSubtree(true);
+    return;
+  }
+
+  gfx::Size size = resource->size();
+  link_drop_indicator_->SetUIResourceId(resource->ui_resource()->id());
+  link_drop_indicator_->SetBounds(size);
+
+  // Draw the arrow at the top of the tab strip, pointing down, and keep it
+  // within the bounds of the tab strip.
+  const float max_x = std::max(
+      0.f,
+      static_cast<float>(tab_strip_layer_->bounds().width() - size.width()));
+  const float x =
+      std::clamp(std::round(center_x_px - size.width() / 2.f), 0.f, max_x);
+  link_drop_indicator_->SetPosition(gfx::PointF(x, 0));
+  link_drop_indicator_->SetHideLayerAndSubtree(false);
 }
 
 void TabStripSceneLayer::UpdateGlicActorButton(
