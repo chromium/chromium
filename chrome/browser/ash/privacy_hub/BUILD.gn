@@ -12,9 +12,9 @@ static_library("privacy_hub") {
 
   deps = [
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/browser/profiles",
     "//chromeos/ash/experiences/settings_ui",
     "//components/session_manager/core",
+    "//components/user_manager",
   ]
 
   public_deps = [

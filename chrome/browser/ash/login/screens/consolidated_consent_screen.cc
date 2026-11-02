@@ -203,8 +203,11 @@ bool ConsolidatedConsentScreen::MaybeSkip(WizardContext& context) {
   }
 
   // Do not skip the screen, if the system location toggle can be configured by
-  // the active user. Returns false when the Privacy Hub Location is disabled.
-  if (ash::privacy_hub_util::IsCrosLocationOobeNegotiationNeeded()) {
+  // the user being onboarded. Returns false when the Privacy Hub Location is
+  // disabled.
+  CHECK(context.onboarding_account_id.has_value());
+  if (ash::privacy_hub_util::IsCrosLocationOobeNegotiationNeeded(
+          *context.onboarding_account_id)) {
     return false;
   }
 

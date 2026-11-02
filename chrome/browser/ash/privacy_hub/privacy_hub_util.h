@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings_types.mojom.h"
 
+class AccountId;
 class AppAccessNotifier;
 
 namespace ash {
@@ -56,10 +57,11 @@ void TrackGeolocationAttempted(const std::string& name);
 // Notifies the Privacy Hub controller.
 void TrackGeolocationRelinquished(const std::string& name);
 
-// Checks if the user can modify the ChromeOS system location toggle in the OOBE
-// consents screen. Returns true, if the underlying pref is not managed.
-// Returns false if the Privacy Hub Location feature flag is not enabled.
-bool IsCrosLocationOobeNegotiationNeeded();
+// Checks if the user `account_id` belongs to can modify the ChromeOS system
+// location toggle in the OOBE consents screen. Returns true, if the underlying
+// pref is not managed. Returns false if the Privacy Hub Location feature flag
+// is not enabled.
+bool IsCrosLocationOobeNegotiationNeeded(const AccountId& account_id);
 
 // Returns the effective system geolocation access level.
 GeolocationAccessLevel GetSystemGeolocationAccessLevel();

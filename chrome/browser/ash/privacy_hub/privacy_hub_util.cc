@@ -26,14 +26,13 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::privacy_hub_util {
@@ -207,19 +206,16 @@ void TrackGeolocationRelinquished(const std::string& name) {
   }
 }
 
-bool IsCrosLocationOobeNegotiationNeeded() {
+bool IsCrosLocationOobeNegotiationNeeded(const AccountId& account_id) {
   // No negotiation needed, if the PH Location feature is not yet enabled.
   if (!ash::features::IsCrosPrivacyHubLocationEnabled()) {
     return false;
   }
 
-  const Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (profile->GetPrefs()->IsManagedPreference(
-          ash::prefs::kUserGeolocationAccessLevel)) {
-    return false;
-  }
-
-  return true;
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id));
+  return !CHECK_DEREF(user.GetProfilePrefs())
+              .IsManagedPreference(ash::prefs::kUserGeolocationAccessLevel);
 }
 
 GeolocationAccessLevel GetSystemGeolocationAccessLevel() {
