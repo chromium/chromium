@@ -10,8 +10,8 @@ export function getHtml(this: SettingsSafetyHubModuleElement) {
   return html`<!--_html_template_start_-->
 <div id="headerWrapper">
   ${this.headerIcon ? html`
-    <cr-icon id="headerIcon"
-      icon="${this.headerIcon}" class="${this.headerIconColor}">
+    <cr-icon id="headerIcon" icon="${this.headerIcon}"
+        class="${this.headerIconColor}">
     </cr-icon>
   ` : ''}
   <div id="headerTextWrapper">
@@ -39,8 +39,8 @@ ${this.sites && this.sites.length ? html`
         </div>
         ${this.buttonIcon ? html`
           <cr-icon-button iron-icon="${this.buttonIcon}" id="mainButton"
-              data-index="${index}"
-              @click="${this.onItemButtonClick_}" actionable
+              data-index="${index}" @click="${this.onItemButtonClick_}"
+              actionable
               aria-label="${this.getButtonAriaLabelForOrigin_(item.origin)}"
               @focus="${this.onMainButtonFocus_}"
               @mouseenter="${this.onMainButtonMouseenter_}">

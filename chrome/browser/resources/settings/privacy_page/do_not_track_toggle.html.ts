@@ -8,20 +8,18 @@ import type {SettingsDoNotTrackToggleElement} from './do_not_track_toggle.js';
 
 export function getHtml(this: SettingsDoNotTrackToggleElement) {
   return html`<!--_html_template_start_-->
-<settings-toggle-button id="toggle" class="toggle"
-    label="$i18n{doNotTrack}"
+<settings-toggle-button id="toggle" class="toggle" label="$i18n{doNotTrack}"
     pref-key="enable_do_not_track"
     @settings-boolean-control-change="${this.onSettingsBooleanControlChange_}"
-    sub-label="${this.doNotTrackSublabel_}"
-    icon="settings:forward"
-    no-set-pref>
+    sub-label="${this.doNotTrackSublabel_}" icon="settings:forward" no-set-pref>
 </settings-toggle-button>
 ${this.showDialog_ ? html`
-  <cr-dialog id="confirmDialog"
-      close-text="$i18n{close}" @cancel="${this.onDialogCancel_}"
-      @close="${this.onDialogClose_}" show-on-attach>
+  <cr-dialog id="confirmDialog" close-text="$i18n{close}"
+      @cancel="${this.onDialogCancel_}" @close="${this.onDialogClose_}"
+      show-on-attach>
     <div slot="title">$i18n{doNotTrackDialogTitle}</div>
-    <div slot="body">$i18n{doNotTrackDialogMessage}
+    <div slot="body">
+      $i18n{doNotTrackDialogMessage}
       <a href="$i18nRaw{doNotTrackLearnMoreURL}" target="_blank"
           aria-description="$i18n{opensInNewTab}"
           aria-label="$i18n{doNotTrackDialogLearnMoreA11yLabel}">
@@ -36,6 +34,7 @@ ${this.showDialog_ ? html`
         $i18n{confirm}
       </cr-button>
     </div>
-  </cr-dialog>` : ''}
+  </cr-dialog>
+` : ''}
 <!--_html_template_end_-->`;
 }

@@ -8,98 +8,96 @@ import type {SettingsSecurityKeysBioEnrollDialogElement} from './security_keys_b
 
 export function getHtml(this: SettingsSecurityKeysBioEnrollDialogElement) {
   return html`<!--_html_template_start_-->
-    <cr-dialog id="dialog" close-text="$i18n{cancel}" ignore-popstate
-        @close="${this.onDialogClose_}">
-      <div slot="title">${this.dialogTitle_()}</div>
+<cr-dialog id="dialog" close-text="$i18n{cancel}" ignore-popstate
+    @close="${this.onDialogClose_}">
+  <div slot="title">${this.dialogTitle_()}</div>
 
-      <div slot="body">
-        <cr-page-selector attr-for-selected="id" .selected="${this.dialogPage_}"
-            @iron-select="${this.onIronSelect_}">
-          <div id="initial">
-            <p>$i18n{securityKeysTouchToContinue}</p>
-            <div class="spinner"></div>
-          </div>
-
-          <div id="pinPrompt">
-            <settings-security-keys-pin-field id="pin"
-                .minPinLength="${this.minPinLength_}">
-            </settings-security-keys-pin-field>
-          </div>
-
-          <div id="enrollments">
-            <div id="header" class="list-item column-header">
-              <h3 class="header-label">${this.enrollmentsHeader_()}</h3>
-              <cr-button id="addButton" @click="${this.onAddButtonClick_}"
-                  class="secondary-button header-aligned-button">
-                $i18n{add}
-              </cr-button>
-            </div>
-
-            <div id="container" class="cr-separators" role="list">
-              ${this.enrollments_.map((item, index) => html`
-                <div class="list-item" ?first="${!index}" role="listitem">
-                  <cr-icon id="darkIcon"
-                      icon="fingerprint-icon:fingerprint-scanned-dark-custom">
-                  </cr-icon>
-                  <cr-icon id="lightIcon"
-                      icon="fingerprint-icon:fingerprint-scanned-light-custom">
-                  </cr-icon>
-                  <div class="name">
-                    ${item.name}
-                  </div>
-                  <cr-icon-button class="icon-clear"
-                      aria-label="$i18n{securityKeysBioEnrollmentDelete}"
-                      data-index="${index}"
-                      @click="${this.onDeleteEnrollmentClick_}"
-                      ?disabled="${this.deleteInProgress_}">
-                  </cr-icon-button>
-                </div>
-              `)}
-            </div>
-          </div>
-
-          <div id="enroll">
-            <p>${this.progressArcLabel_}</p>
-            <fingerprint-progress-arc id="arc" autoplay>
-            </fingerprint-progress-arc>
-          </div>
-
-          <div id="chooseName">
-            <p>$i18n{securityKeysBioEnrollmentChooseName}</p>
-            <cr-input type="text" id="enrollmentName"
-                .maxlength="${this.enrollmentNameMaxUtf8Length_}"
-                .value="${this.recentEnrollmentName_}"
-                @value-changed="${this.onRecentEnrollmentNameValueChanged_}"
-                label="$i18n{securityKeysBioEnrollmentNameLabel}"
-                error-message="${this.enrollmentNameError_}"
-                ?invalid="${this.isNonEmpty_()}"
-                spellcheck="false">
-            </cr-input>
-          </div>
-
-          <div id="error">${this.errorMsg_}</div>
-        </cr-page-selector>
+  <div slot="body">
+    <cr-page-selector attr-for-selected="id" .selected="${this.dialogPage_}"
+        @iron-select="${this.onIronSelect_}">
+      <div id="initial">
+        <p>$i18n{securityKeysTouchToContinue}</p>
+        <div class="spinner"></div>
       </div>
 
-      <div slot="button-container">
-        <cr-button id="cancelButton" class="cancel-button"
-            @click="${this.onCancelButtonClick_}"
-            ?hidden="${!this.cancelButtonVisible_}"
-            ?disabled="${this.cancelButtonDisabled_}">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button id="confirmButton" class="action-button"
-            ?hidden="${!this.confirmButtonVisible_}"
-            ?disabled="${this.confirmButtonDisabled_}"
-            @click="${this.onConfirmButtonClick_}">
-          ${this.confirmButtonLabel_}
-        </cr-button>
-        <cr-button id="doneButton" class="action-button"
-            @click="${this.onDoneButtonClick_}"
-            ?hidden="${!this.doneButtonVisible_}">
-          $i18n{done}
-        </cr-button>
+      <div id="pinPrompt">
+        <settings-security-keys-pin-field id="pin"
+            .minPinLength="${this.minPinLength_}">
+        </settings-security-keys-pin-field>
       </div>
-    </cr-dialog>
+
+      <div id="enrollments">
+        <div id="header" class="list-item column-header">
+          <h3 class="header-label">${this.enrollmentsHeader_()}</h3>
+          <cr-button id="addButton" @click="${this.onAddButtonClick_}"
+              class="secondary-button header-aligned-button">
+            $i18n{add}
+          </cr-button>
+        </div>
+
+        <div id="container" class="cr-separators" role="list">
+          ${this.enrollments_.map((item, index) => html`
+            <div class="list-item" ?first="${!index}" role="listitem">
+              <cr-icon id="darkIcon"
+                  icon="fingerprint-icon:fingerprint-scanned-dark-custom">
+              </cr-icon>
+              <cr-icon id="lightIcon"
+                  icon="fingerprint-icon:fingerprint-scanned-light-custom">
+              </cr-icon>
+              <div class="name">
+                ${item.name}
+              </div>
+              <cr-icon-button class="icon-clear"
+                  aria-label="$i18n{securityKeysBioEnrollmentDelete}"
+                  data-index="${index}"
+                  @click="${this.onDeleteEnrollmentClick_}"
+                  ?disabled="${this.deleteInProgress_}">
+              </cr-icon-button>
+            </div>
+          `)}
+        </div>
+      </div>
+
+      <div id="enroll">
+        <p>${this.progressArcLabel_}</p>
+        <fingerprint-progress-arc id="arc" autoplay></fingerprint-progress-arc>
+      </div>
+
+      <div id="chooseName">
+        <p>$i18n{securityKeysBioEnrollmentChooseName}</p>
+        <cr-input type="text" id="enrollmentName"
+            .maxlength="${this.enrollmentNameMaxUtf8Length_}"
+            .value="${this.recentEnrollmentName_}"
+            @value-changed="${this.onRecentEnrollmentNameValueChanged_}"
+            label="$i18n{securityKeysBioEnrollmentNameLabel}"
+            error-message="${this.enrollmentNameError_}"
+            ?invalid="${this.isNonEmpty_()}" spellcheck="false">
+        </cr-input>
+      </div>
+
+      <div id="error">${this.errorMsg_}</div>
+    </cr-page-selector>
+  </div>
+
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button"
+        @click="${this.onCancelButtonClick_}"
+        ?hidden="${!this.cancelButtonVisible_}"
+        ?disabled="${this.cancelButtonDisabled_}">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="confirmButton" class="action-button"
+        ?hidden="${!this.confirmButtonVisible_}"
+        ?disabled="${this.confirmButtonDisabled_}"
+        @click="${this.onConfirmButtonClick_}">
+      ${this.confirmButtonLabel_}
+    </cr-button>
+    <cr-button id="doneButton" class="action-button"
+        @click="${this.onDoneButtonClick_}"
+        ?hidden="${!this.doneButtonVisible_}">
+      $i18n{done}
+    </cr-button>
+  </div>
+</cr-dialog>
 <!--_html_template_end_-->`;
 }

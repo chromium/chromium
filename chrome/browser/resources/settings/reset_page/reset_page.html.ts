@@ -7,12 +7,12 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SettingsResetPageElement} from './reset_page.js';
 
 export function getHtml(this: SettingsResetPageElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <settings-section page-title="$i18n{resetPageTitle}"
     class="cr-centered-card-container">
   <cr-link-row id="resetProfile" label="$i18n{resetTrigger}"
-      @click="${this.onShowResetProfileDialogClick_}"></cr-link-row>
+      @click="${this.onShowResetProfileDialogClick_}">
+  </cr-link-row>
   <cr-lazy-render-lit id="resetProfileDialog"
       .template="${() => html`
         <settings-reset-profile-dialog
@@ -22,5 +22,4 @@ export function getHtml(this: SettingsResetPageElement) {
   </cr-lazy-render-lit>
 </settings-section>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

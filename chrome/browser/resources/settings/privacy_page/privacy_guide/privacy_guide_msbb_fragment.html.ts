@@ -7,12 +7,10 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PrivacyGuideMsbbFragmentElement} from './privacy_guide_msbb_fragment.js';
 
 export function getHtml(this: PrivacyGuideMsbbFragmentElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="settings-fragment-header" focus-element tabindex="-1">
   <picture>
-    <source
-        srcset="./images/privacy_guide/msbb_graphic_dark_v2.svg"
+    <source srcset="./images/privacy_guide/msbb_graphic_dark_v2.svg"
         media="(prefers-color-scheme: dark)">
     <img alt="" src="./images/privacy_guide/msbb_graphic_v2.svg">
   </picture>
@@ -35,8 +33,8 @@ export function getHtml(this: PrivacyGuideMsbbFragmentElement) {
       </h3>
       <ul class="icon-bulleted-list">
         <li>
-          <cr-icon icon="settings20:flash-on-filled"
-              aria-hidden="true"></cr-icon>
+          <cr-icon icon="settings20:flash-on-filled" aria-hidden="true">
+          </cr-icon>
           <div class="secondary">
             $i18n{privacyGuideMsbbFeatureDescription1}
           </div>
@@ -77,5 +75,4 @@ export function getHtml(this: PrivacyGuideMsbbFragmentElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

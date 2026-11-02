@@ -11,8 +11,7 @@ export function getHtml(this: SettingsToggleButtonElement) {
 <div id="outerRow" ?no-sub-label="${!this.subLabel}">
   ${this.icon ? html`
     <span id="icon" aria-hidden="true">
-      <cr-icon slot="icon" icon="${this.icon}">
-      </cr-icon>
+      <cr-icon slot="icon" icon="${this.icon}"></cr-icon>
     </span>
   ` : ''}
   <div class="flex" id="labelWrapper" ?hidden="${!this.label}">
@@ -20,8 +19,7 @@ export function getHtml(this: SettingsToggleButtonElement) {
     <div class="cr-secondary-text label" id="sub-label">
       ${this.subLabelIcon ? html`
         <span id="sub-label-icon" aria-hidden="true">
-          <cr-icon slot="icon" icon="${this.subLabelIcon}">
-          </cr-icon>
+          <cr-icon slot="icon" icon="${this.subLabelIcon}"></cr-icon>
         </span>
       ` : ''}
       <span id="sub-label-text" aria-hidden="${!this.ariaShowSublabel}">
@@ -52,10 +50,8 @@ export function getHtml(this: SettingsToggleButtonElement) {
         icon-aria-label="${this.label}">
     </cr-policy-pref-indicator>
   ` : ''}
-  <cr-toggle id="control" ?checked="${this.checked}"
-      @change="${this.onChange_}"
-      aria-label="${this.getAriaLabel_()}"
-      aria-describedby="sub-label-text"
+  <cr-toggle id="control" ?checked="${this.checked}" @change="${this.onChange_}"
+      aria-label="${this.getAriaLabel_()}" aria-describedby="sub-label-text"
       ?disabled="${this.controlDisabled()}">
   </cr-toggle>
   <slot name="more-actions-after"></slot>

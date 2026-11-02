@@ -10,36 +10,28 @@ export function getHtml(this: SecurityKeysSubpageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{securityKeysTitle}"
     route-path="${this.routePath}">
-  <cr-link-row
-      id="setPINButton"
-      class="hr"
-      label="$i18n{securityKeysSetPIN}"
-      sub-label="$i18n{securityKeysSetPINDesc}"
-      @click="${this.onSetPinClick_}"></cr-link-row>
-  <cr-link-row
-      id="credentialManagementButton"
-      class="hr"
+  <cr-link-row id="setPINButton" class="hr" label="$i18n{securityKeysSetPIN}"
+      sub-label="$i18n{securityKeysSetPINDesc}" @click="${this.onSetPinClick_}">
+  </cr-link-row>
+  <cr-link-row id="credentialManagementButton" class="hr"
       label="$i18n{securityKeysCredentialManagementLabel}"
       sub-label="$i18n{securityKeysCredentialManagementDesc}"
-      @click="${this.onCredentialManagementClick_}"></cr-link-row>
+      @click="${this.onCredentialManagementClick_}">
+  </cr-link-row>
   ${this.enableBioEnrollment_ ? html`
-    <cr-link-row
-        id="bioEnrollButton"
-        class="hr"
+    <cr-link-row id="bioEnrollButton" class="hr"
         label="$i18n{securityKeysBioEnrollmentSubpageLabel}"
         sub-label="$i18n{securityKeysBioEnrollmentSubpageDescription}"
         @click="${this.onBioEnrollClick_}">
     </cr-link-row>
   ` : ''}
-  <cr-link-row
-      id="resetButton"
-      class="hr"
-      label="$i18n{securityKeysReset}"
-      sub-label="$i18n{securityKeysResetDesc}"
-      @click="${this.onResetClick_}"></cr-link-row>
+  <cr-link-row id="resetButton" class="hr" label="$i18n{securityKeysReset}"
+      sub-label="$i18n{securityKeysResetDesc}" @click="${this.onResetClick_}">
+  </cr-link-row>
 
   ${this.showSetPINDialog_ ? html`
-    <settings-security-keys-set-pin-dialog @close="${this.onSetPinDialogClose_}">
+    <settings-security-keys-set-pin-dialog
+        @close="${this.onSetPinDialogClose_}">
     </settings-security-keys-set-pin-dialog>
   ` : ''}
 

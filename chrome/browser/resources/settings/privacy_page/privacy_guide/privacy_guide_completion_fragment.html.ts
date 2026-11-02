@@ -7,12 +7,10 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PrivacyGuideCompletionFragmentElement} from './privacy_guide_completion_fragment.js';
 
 export function getHtml(this: PrivacyGuideCompletionFragmentElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="welcome-completion-header">
   <picture>
-    <source
-        srcset="./images/privacy_guide/completion_banner_dark_v2.svg"
+    <source srcset="./images/privacy_guide/completion_banner_dark_v2.svg"
         media="(prefers-color-scheme: dark)">
     <img alt="" src="./images/privacy_guide/completion_banner_v2.svg">
   </picture>
@@ -24,22 +22,23 @@ export function getHtml(this: PrivacyGuideCompletionFragmentElement) {
 ${this.shouldShowAiSettings_ ? html`
   <cr-link-row id="aiRow" using-slotted-label
       sub-label="$i18n{privacyGuideCompletionCardAiSettingsLabel}"
-      start-icon="settings20:button-magic" external @click="${this.onAiRowClick_}">
+      start-icon="settings20:button-magic" external
+      @click="${this.onAiRowClick_}">
     <div slot="label" class="label">$i18n{aiPageTitle}</div>
   </cr-link-row>
   <div aria-disabled="true" role="none">
     <a id="aiRowLink" href="ai" target="_blank" tabindex="-1"
-        aria-disabled="true" role="none"></a>
+        aria-disabled="true" role="none">
+    </a>
   </div>
 ` : ''}
 ${this.shouldShowWaa_ ? html`
   <cr-link-row id="waaRow" using-slotted-label
       sub-label="$i18n{privacyGuideCompletionCardWaaSubLabel}"
-      start-icon="settings:devices" external
-      @click="${this.onWaaClick_}">
-      <div slot="label" class="label">
-        $i18n{privacyGuideCompletionCardWaaLabel}
-      </div>
+      start-icon="settings:devices" external @click="${this.onWaaClick_}">
+    <div slot="label" class="label">
+      $i18n{privacyGuideCompletionCardWaaLabel}
+    </div>
   </cr-link-row>
 ` : ''}
 <div class="footer">
@@ -52,5 +51,4 @@ ${this.shouldShowWaa_ ? html`
   </cr-button>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

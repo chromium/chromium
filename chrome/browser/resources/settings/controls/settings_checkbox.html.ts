@@ -10,13 +10,15 @@ export function getHtml(this: SettingsCheckboxElement) {
   return html`<!--_html_template_start_-->
 <div id="outerRow" ?no-sub-label="${!this.hasSubLabel_()}">
   <cr-checkbox id="checkbox" ?checked="${this.checked}"
-      @change="${this.onChange_}"
-      ?disabled="${this.controlDisabled()}"
+      @change="${this.onChange_}" ?disabled="${this.controlDisabled()}"
       aria-label="${this.label}">
-    <div id="label">${this.label} <slot></slot></div>
+    <div id="label">${this.label}
+      <slot></slot>
+    </div>
     <div id="subLabel" class="cr-secondary-text">
       <div .innerHTML="${this.sanitizeInnerHtml_()}"
-          @click="${this.onSubLabelClick_}"></div>
+          @click="${this.onSubLabelClick_}">
+      </div>
       ${this.subLabel}
     </div>
   </cr-checkbox>

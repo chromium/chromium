@@ -7,16 +7,17 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SettingsResetProfileBannerElement} from './reset_profile_banner.js';
 
 export function getHtml(this: SettingsResetProfileBannerElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" close-text="$i18n{close}"
-    ignore-popstate @cancel="${this.onCancel_}">
+<cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate
+    @cancel="${this.onCancel_}">
   <div slot="title">$i18n{resetAutomatedDialogTitle}</div>
   <div slot="body">
     $i18n{resetAutomatedDialogBody}
     <div id="tamperedPrefsList" ?hidden="${!this.showTamperedPrefsList}">
       <ul id="prefs">
-        ${this.tamperedPrefs.map(item => html`<li>${item}</li>`)}
+        ${this.tamperedPrefs.map(item => html`
+          <li>${item}</li>
+        `)}
       </ul>
     </div>
   </div>
@@ -33,5 +34,4 @@ export function getHtml(this: SettingsResetProfileBannerElement) {
   </div>
 </cr-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

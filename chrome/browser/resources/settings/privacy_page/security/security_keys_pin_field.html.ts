@@ -12,16 +12,14 @@ export function getHtml(this: SettingsSecurityKeysPinFieldElement) {
 <cr-input id="pin" .value="${this.value_}"
     @value-changed="${this.onPinValueChanged_}"
     min-length="${this.minPinLength}" max-length="255" spellcheck="false"
-    @input="${this.onPinInput_}"
-    ?invalid="${this.isNonEmpty_()}"
-    label="$i18n{securityKeysPIN}"
-    type="${this.inputType_()}"
+    @input="${this.onPinInput_}" ?invalid="${this.isNonEmpty_()}"
+    label="$i18n{securityKeysPIN}" type="${this.inputType_()}"
     error-message="${this.error_}">
   <cr-icon-button slot="suffix" id="showButton"
-      class="${this.showButtonClass_()}"
-      title="${this.showButtonTitle_()}"
+      class="${this.showButtonClass_()}" title="${this.showButtonTitle_()}"
       focus-row-control focus-type="showPassword"
-      @click="${this.onShowButtonClick_}"></cr-icon-button>
+      @click="${this.onShowButtonClick_}">
+  </cr-icon-button>
 </cr-input>
 <!--_html_template_end_-->`;
 }

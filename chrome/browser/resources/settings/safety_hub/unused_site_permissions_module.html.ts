@@ -9,12 +9,9 @@ import type {SettingsSafetyHubUnusedSitePermissionsModuleElement} from './unused
 export function getHtml(
     this: SettingsSafetyHubUnusedSitePermissionsModuleElement) {
   return html`<!--_html_template_start_-->
-<settings-safety-hub-module
-    id="module"
-    animated
+<settings-safety-hub-module id="module" animated
     @sh-module-item-button-click="${this.onShModuleItemButtonClick_}"
-    header="${this.headerString_}"
-    .subheader="${this.subheaderString_}"
+    header="${this.headerString_}" .subheader="${this.subheaderString_}"
     button-aria-label-id="safetyHubUnusedSitePermissionsAllowAgainAriaLabel"
     button-icon="settings20:undo"
     button-tooltip-text="$i18n{safetyHubUnusedSitePermissionsAllowAgainLabel}"
@@ -27,8 +24,7 @@ export function getHtml(
     </cr-button>
     <cr-icon-button id="moreActionButton" class="icon-more-vert"
         @click="${this.onMoreActionClick_}"
-        ?hidden="${this.shouldShowCompletionInfo_}"
-        title="$i18n{moreActions}"
+        ?hidden="${this.shouldShowCompletionInfo_}" title="$i18n{moreActions}"
         aria-description="${this.headerString_}">
     </cr-icon-button>
     <cr-icon-button id="bulkUndoButton" iron-icon="settings20:undo"

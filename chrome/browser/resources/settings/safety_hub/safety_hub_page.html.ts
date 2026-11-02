@@ -30,8 +30,8 @@ export function getHtml(this: SettingsSafetyHubPageElement) {
     </settings-safety-hub-card>
     <settings-safety-hub-card id="safeBrowsing" class="card box"
         .data="${this.safeBrowsingCardData_}"
-        @click="${this.onSafeBrowsingClick_}"
-        tabindex="0" @keydown="${this.onSafeBrowsingKeydown_}" role="link"
+        @click="${this.onSafeBrowsingClick_}" tabindex="0"
+        @keydown="${this.onSafeBrowsingKeydown_}" role="link"
         aria-description="$i18n{safetyHubSBNavigationAriaLabel}">
     </settings-safety-hub-card>
   </div>
@@ -52,19 +52,16 @@ export function getHtml(this: SettingsSafetyHubPageElement) {
         subheader="$i18n{safetyHubEmptyStateModuleSubheader}"
         header-icon="cr:check">
     </settings-safety-hub-module>
-    <settings-safety-hub-module
-        id="userEducationModule"
+    <settings-safety-hub-module id="userEducationModule"
         @sh-module-item-link-click="${this.onShModuleItemLinkClick_}"
-        class="module box"
-        header="$i18n{safetyHubUserEduModuleHeader}"
+        class="module box" header="$i18n{safetyHubUserEduModuleHeader}"
         header-icon="settings20:lightbulb-2"
         .sites="${this.userEducationItemList_}">
     </settings-safety-hub-module>
   ` : ''}
 <if expr="not is_chromeos">
   ${this.shouldShowRelaunchDialog ? html`
-    <relaunch-confirmation-dialog
-        .restartType="${RestartType.RELAUNCH}"
+    <relaunch-confirmation-dialog .restartType="${RestartType.RELAUNCH}"
         @close="${this.onRelaunchDialogClose}" is-version-update>
     </relaunch-confirmation-dialog>
   ` : ''}

@@ -7,12 +7,10 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PrivacyGuideWelcomeFragmentElement} from './privacy_guide_welcome_fragment.js';
 
 export function getHtml(this: PrivacyGuideWelcomeFragmentElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="welcome-completion-header">
   <picture>
-    <source
-        srcset="./images/privacy_guide/welcome_banner_dark.svg"
+    <source srcset="./images/privacy_guide/welcome_banner_dark.svg"
         media="(prefers-color-scheme: dark)">
     <img alt="" src="./images/privacy_guide/welcome_banner.svg">
   </picture>
@@ -28,5 +26,4 @@ export function getHtml(this: PrivacyGuideWelcomeFragmentElement) {
   </cr-button>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

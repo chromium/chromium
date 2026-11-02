@@ -8,17 +8,10 @@ import type {ControlledRadioButtonElement} from './controlled_radio_button.js';
 
 export function getHtml(this: ControlledRadioButtonElement) {
   return html`<!--_html_template_start_-->
-<div
-    aria-checked="${this.getAriaChecked()}"
-    aria-describedby="slotted-content"
-    aria-disabled="${this.getAriaDisabled()}"
-    aria-labelledby="label"
-    class="disc-wrapper"
-    id="button"
-    part="disc"
-    role="radio"
-    tabindex="${this.getButtonTabIndex()}"
-    @keydown="${this.onInputKeydown}">
+<div aria-checked="${this.getAriaChecked()}" aria-describedby="slotted-content"
+    aria-disabled="${this.getAriaDisabled()}" aria-labelledby="label"
+    class="disc-wrapper" id="button" part="disc" role="radio"
+    tabindex="${this.getButtonTabIndex()}" @keydown="${this.onInputKeydown}">
   <div class="disc-border"></div>
   <div class="disc"></div>
   <div id="overlay"></div>

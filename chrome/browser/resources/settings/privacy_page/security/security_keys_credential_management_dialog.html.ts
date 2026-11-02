@@ -6,119 +6,115 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsSecurityKeysCredentialManagementDialogElement} from './security_keys_credential_management_dialog.js';
 
-export function getHtml(this: SettingsSecurityKeysCredentialManagementDialogElement) {
+export function getHtml(
+    this: SettingsSecurityKeysCredentialManagementDialogElement) {
   return html`<!--_html_template_start_-->
-    <cr-dialog id="dialog" close-text="$i18n{cancel}" ignore-popstate
-        @close="${this.onDialogClose_}">
-      <div id="title" slot="title">${this.dialogTitle_}</div>
+<cr-dialog id="dialog" close-text="$i18n{cancel}" ignore-popstate
+    @close="${this.onDialogClose_}">
+  <div id="title" slot="title">${this.dialogTitle_}</div>
 
-      <div slot="body">
-        <cr-page-selector attr-for-selected="id" .selected="${this.dialogPage_}"
-            @iron-select="${this.onIronSelect_}">
-          <div id="initial">
-            <p>$i18n{securityKeysTouchToContinue}</p>
-            <div class="spinner"></div>
-          </div>
-
-          <div id="pinPrompt">
-            <settings-security-keys-pin-field id="pin"
-                .minPinLength="${this.minPinLength_}">
-            </settings-security-keys-pin-field>
-          </div>
-
-          <div id="credentials">
-            <div id="noCredentials" ?hidden="${this.credentials_.length > 0}">
-              $i18n{securityKeysCredentialManagementNoCredentials}
-            </div>
-            <div id="header" class="list-item column-header"
-                ?hidden="${this.credentials_.length === 0}">
-              <div class="site" id="siteHeader">
-                $i18n{securityKeysCredentialWebsiteLabel}
-              </div>
-              <div class="user-display-name" id="userDisplayNameHeader">
-                $i18n{securityKeysCredentialDisplayNameLabel}
-              </div>
-              <div class="user-name" id="userNameHeader">
-                $i18n{securityKeysCredentialUsernameLabel}
-              </div>
-              <div class="icon-placeholder"></div>
-              <div class="icon-placeholder"></div>
-            </div>
-
-            <div id="container" class="cr-separators" role="list"
-                ?hidden="${this.credentials_.length === 0}">
-              ${this.credentials_.map(item => html`
-                <div class="list-item" role="listitem">
-                  <site-favicon url="${item.relyingPartyId}"></site-favicon>
-                  <div class="site">${item.relyingPartyId}</div>
-                  <div class="user-display-name">
-                    ${item.userDisplayName}
-                  </div>
-                  <div class="user-name">${item.userName}</div>
-                  <cr-icon-button iron-icon="cr:edit-filled"
-                      aria-label="$i18n{edit}"
-                      class="edit-button"
-                      @click="${this.onUpdateButtonClick_}"
-                      ?hidden="${!this.editButtonVisible_}"
-                      data-credentialid="${item.credentialId}">
-                  </cr-icon-button>
-                  <cr-icon-button iron-icon="cr:delete"
-                      aria-label="$i18n{delete}"
-                      class="delete-button"
-                      @click="${this.onDeleteButtonClick_}"
-                      data-credentialid="${item.credentialId}">
-                  </cr-icon-button>
-                </div>
-              `)}
-            </div>
-          </div>
-
-          <div id="edit">
-            <div class="edit-item">
-              <cr-input id="displayNameInput"
-                  .value="${this.newDisplayName_}"
-                  @value-changed="${this.onNewDisplayNameValueChanged_}"
-                  spellcheck="false"
-                  label="$i18n{securityKeysCredentialDisplayNameLabel}"
-                  error-message="${this.displayNameInputError_}"
-                  ?invalid="${!!this.displayNameInputError_}">
-              </cr-input>
-            </div>
-            <div class="edit-item">
-              <cr-input id="userNameInput"
-                  .value="${this.newUsername_}"
-                  @value-changed="${this.onNewUsernameValueChanged_}"
-                  spellcheck="false"
-                  label="$i18n{securityKeysCredentialUsernameLabel}"
-                  error-message="${this.userNameInputError_}"
-                  ?invalid="${!!this.userNameInputError_}">
-              </cr-input>
-            </div>
-          </div>
-          <div id="pinError">${this.errorMsg_}</div>
-          <div id="error">${this.errorMsg_}</div>
-          <div id="confirm">${this.confirmMsg_}</div>
-        </cr-page-selector>
+  <div slot="body">
+    <cr-page-selector attr-for-selected="id" .selected="${this.dialogPage_}"
+        @iron-select="${this.onIronSelect_}">
+      <div id="initial">
+        <p>$i18n{securityKeysTouchToContinue}</p>
+        <div class="spinner"></div>
       </div>
 
-      <div slot="button-container">
-        <cr-button id="cancelButton" class="cancel-button"
-            @click="${this.onCancelButtonClick_}"
-            ?hidden="${!this.cancelButtonVisible_}">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button id="confirmButton" class="action-button"
-            @click="${this.onConfirmButtonClick_}"
-            ?disabled="${this.confirmButtonDisabled_}"
-            ?hidden="${!this.confirmButtonVisible_}">
-          ${this.confirmButtonLabel_}
-        </cr-button>
-        <cr-button id="closeButton" class="action-button"
-            @click="${this.onCloseButtonClick_}"
-            ?hidden="${!this.closeButtonVisible_}">
-          $i18n{close}
-        </cr-button>
+      <div id="pinPrompt">
+        <settings-security-keys-pin-field id="pin"
+            .minPinLength="${this.minPinLength_}">
+        </settings-security-keys-pin-field>
       </div>
-    </cr-dialog>
+
+      <div id="credentials">
+        <div id="noCredentials" ?hidden="${this.credentials_.length > 0}">
+          $i18n{securityKeysCredentialManagementNoCredentials}
+        </div>
+        <div id="header" class="list-item column-header"
+            ?hidden="${this.credentials_.length === 0}">
+          <div class="site" id="siteHeader">
+            $i18n{securityKeysCredentialWebsiteLabel}
+          </div>
+          <div class="user-display-name" id="userDisplayNameHeader">
+            $i18n{securityKeysCredentialDisplayNameLabel}
+          </div>
+          <div class="user-name" id="userNameHeader">
+            $i18n{securityKeysCredentialUsernameLabel}
+          </div>
+          <div class="icon-placeholder"></div>
+          <div class="icon-placeholder"></div>
+        </div>
+
+        <div id="container" class="cr-separators" role="list"
+            ?hidden="${this.credentials_.length === 0}">
+          ${this.credentials_.map(item => html`
+            <div class="list-item" role="listitem">
+              <site-favicon url="${item.relyingPartyId}"></site-favicon>
+              <div class="site">${item.relyingPartyId}</div>
+              <div class="user-display-name">
+                ${item.userDisplayName}
+              </div>
+              <div class="user-name">${item.userName}</div>
+              <cr-icon-button iron-icon="cr:edit-filled"
+                  aria-label="$i18n{edit}" class="edit-button"
+                  @click="${this.onUpdateButtonClick_}"
+                  ?hidden="${!this.editButtonVisible_}"
+                  data-credentialid="${item.credentialId}">
+              </cr-icon-button>
+              <cr-icon-button iron-icon="cr:delete" aria-label="$i18n{delete}"
+                  class="delete-button" @click="${this.onDeleteButtonClick_}"
+                  data-credentialid="${item.credentialId}">
+              </cr-icon-button>
+            </div>
+          `)}
+        </div>
+      </div>
+
+      <div id="edit">
+        <div class="edit-item">
+          <cr-input id="displayNameInput" .value="${this.newDisplayName_}"
+              @value-changed="${this.onNewDisplayNameValueChanged_}"
+              spellcheck="false"
+              label="$i18n{securityKeysCredentialDisplayNameLabel}"
+              error-message="${this.displayNameInputError_}"
+              ?invalid="${!!this.displayNameInputError_}">
+          </cr-input>
+        </div>
+        <div class="edit-item">
+          <cr-input id="userNameInput" .value="${this.newUsername_}"
+              @value-changed="${this.onNewUsernameValueChanged_}"
+              spellcheck="false"
+              label="$i18n{securityKeysCredentialUsernameLabel}"
+              error-message="${this.userNameInputError_}"
+              ?invalid="${!!this.userNameInputError_}">
+          </cr-input>
+        </div>
+      </div>
+      <div id="pinError">${this.errorMsg_}</div>
+      <div id="error">${this.errorMsg_}</div>
+      <div id="confirm">${this.confirmMsg_}</div>
+    </cr-page-selector>
+  </div>
+
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button"
+        @click="${this.onCancelButtonClick_}"
+        ?hidden="${!this.cancelButtonVisible_}">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="confirmButton" class="action-button"
+        @click="${this.onConfirmButtonClick_}"
+        ?disabled="${this.confirmButtonDisabled_}"
+        ?hidden="${!this.confirmButtonVisible_}">
+      ${this.confirmButtonLabel_}
+    </cr-button>
+    <cr-button id="closeButton" class="action-button"
+        @click="${this.onCloseButtonClick_}"
+        ?hidden="${!this.closeButtonVisible_}">
+      $i18n{close}
+    </cr-button>
+  </div>
+</cr-dialog>
 <!--_html_template_end_-->`;
 }

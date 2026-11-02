@@ -9,12 +9,10 @@ import {ThirdPartyCookieBlockingSetting} from '../../site_settings/site_settings
 import type {PrivacyGuideCookiesFragmentElement} from './privacy_guide_cookies_fragment.js';
 
 export function getHtml(this: PrivacyGuideCookiesFragmentElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="settings-fragment-header" focus-element tabindex="-1">
   <picture>
-    <source
-        srcset="./images/privacy_guide/cookies_graphic_dark_v2.svg"
+    <source srcset="./images/privacy_guide/cookies_graphic_dark_v2.svg"
         media="(prefers-color-scheme: dark)">
     <img alt="" src="./images/privacy_guide/cookies_graphic_v2.svg">
   </picture>
@@ -38,7 +36,8 @@ export function getHtml(this: PrivacyGuideCookiesFragmentElement) {
           <ul class="icon-bulleted-list">
             <li>
               <cr-icon icon="settings20:account-circle-filled"
-                  aria-hidden="true"></cr-icon>
+                  aria-hidden="true">
+              </cr-icon>
               <div class="secondary">
                 $i18n{privacyGuideCookieSettingsAllowWhenOnBulletOne}
               </div>
@@ -56,14 +55,14 @@ export function getHtml(this: PrivacyGuideCookiesFragmentElement) {
           <ul class="icon-bulleted-list">
             <li>
               <cr-icon icon="settings20:user-attributes-filled"
-                  aria-hidden="true"></cr-icon>
+                  aria-hidden="true">
+              </cr-icon>
               <div class="secondary">
                 $i18n{privacyGuideCookieSettingsAllowThingsToConsiderBulletOne}
               </div>
             </li>
             <li>
-              <cr-icon icon="settings20:incognito" aria-hidden="true">
-              </cr-icon>
+              <cr-icon icon="settings20:incognito" aria-hidden="true"></cr-icon>
               <div class="secondary">
                 $i18n{privacyGuideCookieSettingsAllowThingsToConsiderBulletTwo}
               </div>
@@ -83,15 +82,14 @@ export function getHtml(this: PrivacyGuideCookiesFragmentElement) {
           <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
           <ul class="icon-bulleted-list">
             <li>
-              <cr-icon icon="settings20:block" aria-hidden="true">
-              </cr-icon>
+              <cr-icon icon="settings20:block" aria-hidden="true"></cr-icon>
               <div class="secondary">
                 $i18n{privacyGuideCookieSettingsBlockWhenOnBulletOne}
               </div>
             </li>
             <li>
-              <cr-icon icon="settings20:broken-image"
-                  aria-hidden="true"></cr-icon>
+              <cr-icon icon="settings20:broken-image" aria-hidden="true">
+              </cr-icon>
               <div class="secondary">
                 $i18n{privacyGuideCookieSettingsBlockWhenOnBulletTwo}
               </div>
@@ -122,5 +120,4 @@ export function getHtml(this: PrivacyGuideCookiesFragmentElement) {
   </settings-radio-group>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -8,113 +8,107 @@ import type {SettingsSecurityKeysSetPinDialogElement} from './security_keys_set_
 
 export function getHtml(this: SettingsSecurityKeysSetPinDialogElement) {
   return html`<!--_html_template_start_-->
-    <cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate
-        @close="${this.onDialogClose_}">
-      <div slot="title">${this.title_}</div>
-      <div slot="body">
-        <cr-page-selector attr-for-selected="id" .selected="${this.shown_}"
-            @iron-select="${this.onIronSelect_}">
-          <div id="initial">
-            <p>$i18n{securityKeysTouchToContinue}</p>
-            <div class="spinner"></div>
+<cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate
+    @close="${this.onDialogClose_}">
+  <div slot="title">${this.title_}</div>
+  <div slot="body">
+    <cr-page-selector attr-for-selected="id" .selected="${this.shown_}"
+        @iron-select="${this.onIronSelect_}">
+      <div id="initial">
+        <p>$i18n{securityKeysTouchToContinue}</p>
+        <div class="spinner"></div>
+      </div>
+
+      <div id="noPINSupport">
+        <p>$i18n{securityKeysNoPIN}</p>
+      </div>
+
+      <div id="pinPrompt">
+        <div id="currentPINEntry" ?hidden="${!this.showCurrentEntry_}">
+          <p>$i18nRaw{securityKeysCurrentPINIntro}</p>
+
+          <div id="currentPINRow">
+            <cr-input id="currentPIN" .value="${this.currentPIN_}"
+                @value-changed="${this.onCurrentPinValueChanged_}"
+                min-length="${this.currentMinPinLength_}" max-length="255"
+                spellcheck="false" @input="${this.onCurrentPinInput_}"
+                ?invalid="${this.isNonEmpty_(this.currentPINError_)}"
+                label="$i18n{securityKeysCurrentPIN}"
+                type="${this.inputType_()}"
+                error-message="${this.currentPINError_}">
+              <cr-icon-button slot="suffix" id="showPINsButton"
+                  class="${this.showPinsClass_()}"
+                  title="${this.showPinsTitle_()}" focus-row-control
+                  focus-type="showPassword" @click="${this.onShowPinsClick_}">
+              </cr-icon-button>
+            </cr-input>
           </div>
+        </div>
 
-          <div id="noPINSupport">
-            <p>$i18n{securityKeysNoPIN}</p>
-          </div>
+        <p>${this.newPINDialogDescription_}</p>
 
-          <div id="pinPrompt">
-            <div id="currentPINEntry" ?hidden="${!this.showCurrentEntry_}">
-              <p>$i18nRaw{securityKeysCurrentPINIntro}</p>
-
-              <div id="currentPINRow">
-                <cr-input id="currentPIN" .value="${this.currentPIN_}"
-                    @value-changed="${this.onCurrentPinValueChanged_}"
-                    min-length="${this.currentMinPinLength_}"
-                    max-length="255" spellcheck="false"
-                    @input="${this.onCurrentPinInput_}"
-                    ?invalid="${this.isNonEmpty_(this.currentPINError_)}"
-                    label="$i18n{securityKeysCurrentPIN}"
-                    type="${this.inputType_()}"
-                    error-message="${this.currentPINError_}">
-                  <cr-icon-button slot="suffix" id="showPINsButton"
-                      class="${this.showPinsClass_()}"
-                      title="${this.showPinsTitle_()}"
-                      focus-row-control focus-type="showPassword"
-                      @click="${this.onShowPinsClick_}"></cr-icon-button>
-                </cr-input>
-              </div>
-            </div>
-
-            <p>${this.newPINDialogDescription_}</p>
-
-            <div id="newPINRow">
-              <cr-input id="newPIN" .value="${this.newPIN_}"
-                  @value-changed="${this.onNewPinValueChanged_}"
-                  min-length="${this.newMinPinLength_}"
-                  max-length="255" spellcheck="false"
-                  @input="${this.onNewPinInput_}"
-                  label="$i18n{securityKeysPIN}"
-                  type="${this.inputType_()}"
-                  ?invalid="${this.isNonEmpty_(this.newPINError_)}"
-                  error-message="${this.newPINError_}">
-                <!-- If a show/hide icon is included in this row, this div is
+        <div id="newPINRow">
+          <cr-input id="newPIN" .value="${this.newPIN_}"
+              @value-changed="${this.onNewPinValueChanged_}"
+              min-length="${this.newMinPinLength_}" max-length="255"
+              spellcheck="false" @input="${this.onNewPinInput_}"
+              label="$i18n{securityKeysPIN}" type="${this.inputType_()}"
+              ?invalid="${this.isNonEmpty_(this.newPINError_)}"
+              error-message="${this.newPINError_}">
+            <!-- If a show/hide icon is included in this row, this div is
                      needed to ensure that the cr-input is the same height
                      as the one to the right. Otherwise they don't vertically
                      align -->
-                <div style="height: 36px" slot="suffix"
-                    ?hidden="${this.showCurrentEntry_}"></div>
-              </cr-input>
-              <cr-input id="confirmPIN" .value="${this.confirmPIN_}"
-                  @value-changed="${this.onConfirmPinValueChanged_}"
-                  min-length="${this.newMinPinLength_}"
-                  max-length="255" spellcheck="false"
-                  @input="${this.onConfirmPinInput_}"
-                  label="$i18n{securityKeysConfirmPIN}"
-                  ?invalid="${this.isNonEmpty_(this.confirmPINError_)}"
-                  type="${this.inputType_()}"
-                  error-message="${this.confirmPINError_}">
-                <cr-icon-button slot="suffix"
-                    class="${this.showPinsClass_()}"
-                    title="${this.showPinsTitle_()}"
-                    ?hidden="${this.showCurrentEntry_}"
-                    focus-row-control focus-type="showPassword"
-                    @click="${this.onShowPinsClick_}"></cr-icon-button>
-              </cr-input>
+            <div style="height: 36px" slot="suffix"
+                ?hidden="${this.showCurrentEntry_}">
             </div>
-          </div>
-
-          <div id="success">
-            <p>$i18n{securityKeysPINSuccess}</p>
-          </div>
-
-          <div id="error">
-            <p>${this.pinFailed_()}</p>
-          </div>
-
-          <div id="locked">
-            <p>$i18n{securityKeysPINHardLock}</p>
-          </div>
-
-          <div id="reinsert">
-            <p>$i18n{securityKeysPINSoftLock}</p>
-          </div>
-        </cr-page-selector>
+          </cr-input>
+          <cr-input id="confirmPIN" .value="${this.confirmPIN_}"
+              @value-changed="${this.onConfirmPinValueChanged_}"
+              min-length="${this.newMinPinLength_}" max-length="255"
+              spellcheck="false" @input="${this.onConfirmPinInput_}"
+              label="$i18n{securityKeysConfirmPIN}"
+              ?invalid="${this.isNonEmpty_(this.confirmPINError_)}"
+              type="${this.inputType_()}"
+              error-message="${this.confirmPINError_}">
+            <cr-icon-button slot="suffix" class="${this.showPinsClass_()}"
+                title="${this.showPinsTitle_()}"
+                ?hidden="${this.showCurrentEntry_}" focus-row-control
+                focus-type="showPassword" @click="${this.onShowPinsClick_}">
+            </cr-icon-button>
+          </cr-input>
+        </div>
       </div>
 
-      <div slot="button-container">
-        <cr-button id="closeButton"
-            class="${this.maybeActionButton_()}"
-            @click="${this.onCloseButtonClick_}">
-          ${this.closeText_()}
-        </cr-button>
-        <cr-button id="pinSubmit" class="action-button"
-            @click="${this.onPinSubmitClick_}"
-            ?disabled="${!this.setPINButtonValid_}"
-            ?hidden="${this.complete_}">
-          $i18n{securityKeysSetPINConfirm}
-        </cr-button>
+      <div id="success">
+        <p>$i18n{securityKeysPINSuccess}</p>
       </div>
-    </cr-dialog>
+
+      <div id="error">
+        <p>${this.pinFailed_()}</p>
+      </div>
+
+      <div id="locked">
+        <p>$i18n{securityKeysPINHardLock}</p>
+      </div>
+
+      <div id="reinsert">
+        <p>$i18n{securityKeysPINSoftLock}</p>
+      </div>
+    </cr-page-selector>
+  </div>
+
+  <div slot="button-container">
+    <cr-button id="closeButton" class="${this.maybeActionButton_()}"
+        @click="${this.onCloseButtonClick_}">
+      ${this.closeText_()}
+    </cr-button>
+    <cr-button id="pinSubmit" class="action-button"
+        @click="${this.onPinSubmitClick_}"
+        ?disabled="${!this.setPINButtonValid_}" ?hidden="${this.complete_}">
+      $i18n{securityKeysSetPINConfirm}
+    </cr-button>
+  </div>
+</cr-dialog>
 <!--_html_template_end_-->`;
 }
