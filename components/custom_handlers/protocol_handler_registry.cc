@@ -644,11 +644,9 @@ void ProtocolHandlerRegistry::Save() {
   if (!prefs_)
     return;
 
-  base::Value registered_protocol_handlers(EncodeRegisteredHandlers());
-  base::Value ignored_protocol_handlers(EncodeIgnoredHandlers());
-
-  prefs_->Set(prefs::kRegisteredProtocolHandlers, registered_protocol_handlers);
-  prefs_->Set(prefs::kIgnoredProtocolHandlers, ignored_protocol_handlers);
+  prefs_->SetList(prefs::kRegisteredProtocolHandlers,
+                  EncodeRegisteredHandlers());
+  prefs_->SetList(prefs::kIgnoredProtocolHandlers, EncodeIgnoredHandlers());
   prefs_->SetBoolean(prefs::kCustomHandlersEnabled, enabled_);
 }
 
