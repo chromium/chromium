@@ -748,6 +748,21 @@
             ]
         }
     ],
+    "AndroidSelectPasswordContextMenu": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidSelectPasswordContextMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSpareRendererCreation_V3": [
         {
             "platforms": [
