@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <numbers>
 #include <utility>
@@ -139,7 +140,15 @@ static constexpr base::TimeDelta kAudioPacketDuration = base::Milliseconds(20);
 
 static const int kAudioChannels = 2;
 
-static const int kTestAudioSignalFrequencyLeftHz = 3000;
+// WebRTC's NetEq computes pitch correlation lags for PLC (Expand) and
+// time-stretching (Accelerate / PreemptiveExpand) exclusively from Channel 0
+// (left) after downsampling to 4 kHz (2000 Hz Nyquist). Using 1000 Hz on the
+// left channel (48-sample period at 48 kHz; 4-sample period at 4 kHz, below
+// Nyquist) and its second harmonic 2000 Hz on the right channel (24-sample
+// period at 48 kHz) ensures every pitch lag multiple of Channel 0's period is
+// also an exact multiple of Channel 1's period, keeping both channels in phase
+// (voice_mix_factor = 1.0) rather than classifying Channel 1 as unvoiced noise.
+static const int kTestAudioSignalFrequencyLeftHz = 1000;
 static const int kTestAudioSignalFrequencyRightHz = 2000;
 
 class TestAudioSource : public AudioSource {
@@ -150,10 +159,13 @@ class TestAudioSource : public AudioSource {
   // AudioSource interface.
   bool Start(const PacketCapturedCallback& callback) override {
     callback_ = callback;
-    // Start one packet interval in the past so the first timer tick (after SDP
-    // audio negotiation finishes) populates at least 40 ms in NetEq before
-    // WebrtcAudioModule's 30 ms poll pulls from the buffer.
-    last_send_time_ = base::TimeTicks::Now() - kAudioPacketDuration;
+    // Start two packet intervals (40 ms) in the past and cap each 20 ms timer
+    // tick to 4 frames (40 ms). Even if the first tick fires before
+    // asynchronous SDP audio negotiation finishes attaching the sender sink, at
+    // least one packet interval of prefill remains for the next tick so NetEq
+    // maintains a steady-state buffer cushion against 30 ms WebrtcAudioModule
+    // polls.
+    last_send_time_ = base::TimeTicks::Now() - 2 * kAudioPacketDuration;
     timer_.Start(FROM_HERE, kAudioPacketDuration,
                  base::BindRepeating(&TestAudioSource::GenerateAudioSamples,
                                      base::Unretained(this)));
@@ -177,6 +189,11 @@ class TestAudioSource : public AudioSource {
     if (frames_to_generate <= 0) {
       return;
     }
+    // Cap each tick to 4 frames (40 ms / two 20 ms Opus packets) so timer
+    // wake-up delays catch up smoothly across ticks instead of injecting a
+    // large multi-packet burst at a single NetEq tick_timer value (which skews
+    // PacketArrivalHistory and triggers NetEq kAccelerate).
+    frames_to_generate = std::min(frames_to_generate, 4);
     last_send_time_ += frames_to_generate * kAudioFrameDuration;
     int samples_to_generate = frames_to_generate * kSamplesPerAudioFrame;
 
@@ -660,7 +677,7 @@ TEST_F(ConnectionTest, Audio) {
       host_connection_->StartAudioStream(std::make_unique<TestAudioSource>());
 
   // Wait for 1 second worth of stereo audio samples (after skipping the initial
-  // 300 ms warmup window in Verify(), 700 ms provides 2,100 left-channel and
+  // 300 ms warmup window in Verify(), 700 ms provides 700 left-channel and
   // 1,400 right-channel cycles for zero-crossing frequency estimation).
   client_audio_player_.WaitForSamples(kAudioSampleRate);
   client_audio_player_.Verify();
