@@ -9,9 +9,8 @@ import type {MovePasswordsDialogElement} from 'chrome://password-manager/passwor
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -37,7 +36,6 @@ suite('MovePasswordsDialogTest', function() {
       email: 'test@gmail.com',
     };
     metrics = fakeMetricsPrivate();
-    return flushTasks();
   });
 
   async function createDialog(
@@ -49,12 +47,10 @@ suite('MovePasswordsDialogTest', function() {
     dialog.hasOnlyOneDeviceCredential = hasOnlyOneDeviceCredential;
     dialog.isAccountStoreUser = true;
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
 
     dialog.$.dialog.showModal();
-
-    await waitAfterNextRender(dialog);
-    await flushTasks();
+    await microtasksFinished();
   }
 
   function checkPasswordsSectionForNumberOfPasswords(
@@ -63,7 +59,7 @@ suite('MovePasswordsDialogTest', function() {
     assertTrue(isChildVisible(dialog, '#passwordsTitle'));
 
     const passwordItems =
-        dialog.shadowRoot!.querySelectorAll('password-preview-item');
+        dialog.shadowRoot.querySelectorAll('password-preview-item');
     assertEquals(numberOfPasswords, passwordItems.length);
   }
 
@@ -127,12 +123,13 @@ suite('MovePasswordsDialogTest', function() {
     await createDialog(passwords);
 
     // Deselect the second one.
-    const items = dialog.shadowRoot!.querySelectorAll('password-preview-item');
+    const items = dialog.shadowRoot.querySelectorAll('password-preview-item');
     assertTrue(!!items);
     assertEquals(2, items.length);
     items[1]!.checked = false;
+    await microtasksFinished();
     items[1]!.dispatchEvent(new CustomEvent('change'));
-    await flushTasks();
+    await microtasksFinished();
 
     dialog.$.acceptButton.click();
 
@@ -149,12 +146,13 @@ suite('MovePasswordsDialogTest', function() {
     assertFalse(dialog.$.acceptButton.disabled);
 
     // Simulate unchecking all items.
-    const items = dialog.shadowRoot!.querySelectorAll('password-preview-item');
-    items.forEach(item => {
+    const items = dialog.shadowRoot.querySelectorAll('password-preview-item');
+    for (const item of items) {
       item.checked = false;
+      await microtasksFinished();
       item.dispatchEvent(new CustomEvent('change'));
-    });
-    await flushTasks();
+    }
+    await microtasksFinished();
 
     assertTrue(
         dialog.$.acceptButton.disabled,
@@ -167,7 +165,7 @@ suite('MovePasswordsDialogTest', function() {
     await createDialog([passwordEntry]);
 
     const item =
-        dialog.shadowRoot!.querySelector<HTMLElement>('password-preview-item');
+        dialog.shadowRoot.querySelector<HTMLElement>('password-preview-item');
     assertTrue(!!item);
 
     const passwordElement =
@@ -180,7 +178,7 @@ suite('MovePasswordsDialogTest', function() {
             '#showPasswordButton');
     assertTrue(!!showPasswordButton);
     showPasswordButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(passwordEntry.password, passwordElement.value);
   });
@@ -190,7 +188,7 @@ suite('MovePasswordsDialogTest', function() {
     assertTrue(dialog.$.dialog.open);
 
     dialog.passwords = [];
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(dialog.$.dialog.open);
   });

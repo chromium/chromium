@@ -45,27 +45,27 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import '/shared/settings/md_select.css.js';
-import './cr_spinner_style.css.js';
 import './site_favicon.js';
 import './dialogs/password_preview_item.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ImportEntry, ImportResults} from './password_manager.mojom-webui.js';
 import {ImportEntryStatus, ImportResultsStatus} from './password_manager.mojom-webui.js';
 import type {PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
-import {getTemplate} from './passwords_importer.html.js';
+import {getCss} from './passwords_importer.css.js';
+import {getHtml} from './passwords_importer.html.js';
 import {Page, Router} from './router.js';
-import {UserUtilMixin} from './user_utils_mixin.js';
+import {UserUtilMixinLit} from './user_utils_mixin_lit.js';
 
 export interface PasswordsImporterElement {
   $: {
@@ -106,7 +106,7 @@ export interface PasswordsImporterElement {
  *                 |    NO_DIALOG     |
  *                 +------------------+
  */
-enum DialogState {
+export enum DialogState {
   NO_DIALOG,
   IN_PROGRESS,
   STORE_PICKER,
@@ -116,95 +116,75 @@ enum DialogState {
   CONFLICTS,
 }
 
-const PasswordsImporterElementBase = UserUtilMixin(I18nMixin(PolymerElement));
+const PasswordsImporterElementBase =
+    UserUtilMixinLit(I18nMixinLit(CrLitElement));
 
 export class PasswordsImporterElement extends PasswordsImporterElementBase {
   static get is() {
     return 'passwords-importer';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      dialogState_: {
-        type: Number,
-        value: DialogState.NO_DIALOG,
-      },
-
-      dialogStateEnum_: {
-        type: Object,
-        value: DialogState,
-        readOnly: true,
-      },
-
-      storeOptionEnum_: {
-        type: Object,
-        value: chrome.passwordsPrivate.PasswordStoreSet,
-        readOnly: true,
-      },
-
-      selectedStoreOption_: String,
-
-      results_: {
-        type: Object,
-        value: null,
-      },
-
-      successDescription_: String,
-      failedImportsSummary_: String,
-      rowsWithUnknownErrorsSummary_: String,
-
-      conflictsDialogTitle_: String,
-
-      conflicts_: {
-        type: Array,
-        value: [],
-      },
-
-      conflictsSelectedForReplace_: {
-        type: Array,
-        value: [],
-      },
-
-      showRowsWithUnknownErrorsSummary_: {
-        type: Boolean,
-        value: false,
-      },
-
-      bannerDescription_: {
-        type: String,
-        computed: 'computeBannerDescription_(isSyncingPasswords,' +
-            'isAccountStoreUser, accountEmail)',
-      },
+      dialogState_: {type: Number},
+      selectedStoreOption_: {type: String},
+      results_: {type: Object},
+      successDescription_: {type: String},
+      failedImportsSummary_: {type: String},
+      rowsWithUnknownErrorsSummary_: {type: String},
+      conflictsDialogTitle_: {type: String},
+      conflicts_: {type: Array},
+      conflictsSelectedForReplace_: {type: Array},
+      showRowsWithUnknownErrorsSummary_: {type: Boolean},
+      bannerDescription_: {type: String},
     };
   }
 
-  static get observers() {
-    return [
-      'updateDefaultStore_(isAccountStoreUser)',
-      'updatePasswordsSavedToAccount_(isSyncingPasswords)',
-    ];
-  }
+  private accessor dialogState_: DialogState = DialogState.NO_DIALOG;
+  protected accessor selectedStoreOption_:
+      chrome.passwordsPrivate.PasswordStoreSet =
+      chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+  protected accessor bannerDescription_: string = '';
+  private accessor results_: ImportResults|null = null;
+  protected accessor conflicts_: ImportEntry[] = [];
+  private accessor conflictsSelectedForReplace_: number[] = [];
+  protected accessor successDescription_: string = '';
+  protected accessor conflictsDialogTitle_: string = '';
+  protected accessor failedImportsSummary_: string = '';
+  protected accessor rowsWithUnknownErrorsSummary_: string = '';
+  protected accessor showRowsWithUnknownErrorsSummary_: boolean = false;
 
-  declare private dialogState_: DialogState;
   // Refers both to syncing users with sync enabled for passwords and account
   // store users who choose to import passwords to their account.
-  private passwordsSavedToAccount_: boolean;
-  declare private selectedStoreOption_: string;
-  declare private bannerDescription_: string;
-  declare private results_: ImportResults|null;
-  declare private conflicts_: ImportEntry[];
-  declare private conflictsSelectedForReplace_: number[];
-  declare private successDescription_: string;
-  declare private conflictsDialogTitle_: string;
-  declare private failedImportsSummary_: string;
-  declare private rowsWithUnknownErrorsSummary_: string;
-  declare private showRowsWithUnknownErrorsSummary_: boolean;
+  private passwordsSavedToAccount_: boolean = false;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('isAccountStoreUser') &&
+        this.isAccountStoreUser) {
+      this.selectedStoreOption_ =
+          chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
+    }
+    if (changedProperties.has('isSyncingPasswords')) {
+      this.passwordsSavedToAccount_ = this.isSyncingPasswords;
+    }
+    if (changedProperties.has('isSyncingPasswords') ||
+        changedProperties.has('isAccountStoreUser') ||
+        changedProperties.has('accountEmail')) {
+      this.bannerDescription_ = this.computeBannerDescription_();
+    }
+  }
 
   launchImport() {
     this.executeIfTrustedVaultUnlocked(() => {
@@ -221,18 +201,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     });
   }
 
-  private updateDefaultStore_() {
-    if (this.isAccountStoreUser) {
-      this.selectedStoreOption_ =
-          chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
-    }
-  }
-
-  private updatePasswordsSavedToAccount_() {
-    this.passwordsSavedToAccount_ = this.isSyncingPasswords;
-  }
-
-  private isState_(state: DialogState): boolean {
+  protected isState_(state: DialogState): boolean {
     return this.dialogState_ === state;
   }
 
@@ -248,14 +217,14 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     return this.i18n('importPasswordsDescriptionDevice');
   }
 
-  private getAriaDescription_(bannerDescription: string): string {
+  protected getAriaDescription_(): string {
     return [
       this.i18n('importPasswords'),
-      bannerDescription,
+      this.bannerDescription_,
     ].join('. ');
   }
 
-  private onBannerClick_() {
+  protected onBannerClick_() {
     this.executeIfTrustedVaultUnlocked(() => {
       if (this.isAccountStoreUser && this.isState_(DialogState.NO_DIALOG)) {
         this.dialogState_ = DialogState.STORE_PICKER;
@@ -285,20 +254,19 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
       // Trigger the file deletion if checkbox is ticked in SUCCESS (with no
       // errors) state.
       const deleteFileOption =
-          this.shadowRoot!.querySelector<CrCheckboxElement>(
-              '#deleteFileOption');
+          this.shadowRoot.querySelector<CrCheckboxElement>('#deleteFileOption');
       assert(deleteFileOption);
       deleteFile = deleteFileOption.checked;
     }
     await this.passwordManager_.resetImporter(deleteFile);
   }
 
-  private async onCloseClick_() {
+  protected async onCloseClick_() {
     await this.resetImporter();
     this.closeDialog_();
   }
 
-  private async onViewPasswordsClick_() {
+  protected async onViewPasswordsClick_() {
     await this.resetImporter();
     this.closeDialog_();
     Router.getInstance().navigateTo(Page.PASSWORDS);
@@ -314,9 +282,10 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     let destinationStore = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
     if (this.isAccountStoreUser) {
       const storePicker =
-          this.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker');
+          this.shadowRoot.querySelector<HTMLSelectElement>('#storePicker');
       assert(storePicker);
-      this.selectedStoreOption_ = storePicker.value;
+      this.selectedStoreOption_ =
+          storePicker.value as chrome.passwordsPrivate.PasswordStoreSet;
       this.passwordsSavedToAccount_ = this.selectedStoreOption_ ===
           chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
       if (this.passwordsSavedToAccount_) {
@@ -329,7 +298,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     await this.processResults_();
   }
 
-  private onSelectFileClick_() {
+  protected onSelectFileClick_() {
     this.executeIfTrustedVaultUnlocked(() => {
       this.selectFileHelper_();
     });
@@ -347,29 +316,29 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     await this.processResults_();
   }
 
-  private async onSkipClick_() {
+  protected async onSkipClick_() {
     await this.continueImportHelper_(/*selectedIds=*/[]);
   }
 
-  private async onReplaceClick_() {
+  protected async onReplaceClick_() {
     await this.continueImportHelper_(this.conflictsSelectedForReplace_);
   }
 
-  private isPreviewItemChecked_(id: number): boolean {
+  protected isPreviewItemChecked_(id: number): boolean {
     return this.conflictsSelectedForReplace_.includes(id);
   }
 
   /**
    * Handler for ticking conflicting password checkbox.
    */
-  private onPasswordSelectedChange_(): void {
+  protected onPasswordSelectedChange_(): void {
     this.conflictsSelectedForReplace_ =
-        Array.from(this.shadowRoot!.querySelectorAll('password-preview-item'))
+        Array.from(this.shadowRoot.querySelectorAll('password-preview-item'))
             .filter(item => item.checked)
             .map(item => item.passwordId);
   }
 
-  private shouldDisableReplace_(): boolean {
+  protected shouldDisableReplace_(): boolean {
     return !this.conflictsSelectedForReplace_.length;
   }
 
@@ -405,7 +374,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     }
   }
 
-  private getFailedImportsWithKnownErrors_(): ImportEntry[] {
+  protected getFailedImportsWithKnownErrors_(): ImportEntry[] {
     assert(this.results_);
     return this.results_.displayedEntries.filter(
         (entry) => entry.status !== ImportEntryStatus.kUnknownError);
@@ -451,14 +420,14 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     this.dialogState_ = DialogState.SUCCESS;
   }
 
-  private getSuccessDialogTitle_(): string {
+  protected getSuccessDialogTitle_(): string {
     assert(this.results_);
     return this.results_.displayedEntries.length ?
         this.i18n('importPasswordsCompleteTitle') :
         this.i18n('importPasswordsSuccessTitle');
   }
 
-  private getErrorDialogDescription_(): TrustedHTML {
+  protected getErrorDialogDescription_(): TrustedHTML {
     assert(this.results_);
     switch (this.results_.status) {
       case ImportResultsStatus.kMaxFileSize:
@@ -488,41 +457,41 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
         {attrs: ['class'], substitutions: [this.results_.fileName]});
   }
 
-  private getCheckboxLabelHtml_(): TrustedHTML {
+  protected getCheckboxLabelHtml_(): TrustedHTML {
     assert(this.results_);
     return this.i18nAdvanced(
         'importPasswordsDeleteFileOption',
         {attrs: ['class'], substitutions: [this.results_.fileName]});
   }
 
-  private shouldHideLinkRowIcon_(): boolean {
+  protected shouldHideLinkRowIcon_(): boolean {
     return !this.isAccountStoreUser || this.isState_(DialogState.IN_PROGRESS);
   }
 
-  private shouldHideSelectFileButton_(): boolean {
+  protected shouldHideSelectFileButton_(): boolean {
     return this.isAccountStoreUser || this.isState_(DialogState.IN_PROGRESS);
   }
 
-  private shouldHideDeleteFileOption_(): boolean {
+  protected shouldHideDeleteFileOption_(): boolean {
     // "Delete file" checkbox is only shown in "success" state if all passwords
     // were imported.
     assert(this.results_);
     return !!this.results_.displayedEntries.length;
   }
 
-  private shouldHideFailuresSummary_(): boolean {
+  protected shouldHideFailuresSummary_(): boolean {
     assert(this.results_);
     return !this.results_.displayedEntries.length;
   }
 
-  private getStoreOptionAccountText_(): string {
+  protected getStoreOptionAccountText_(): string {
     assert(this.accountEmail);
     return this.i18n(
         'passwordsStoreOptionAccount', this.i18n('localPasswordManager'),
         this.accountEmail);
   }
 
-  private getFailedEntryErrorMessage_(status: ImportEntryStatus): string {
+  protected getFailedEntryErrorMessage_(status: ImportEntryStatus): string {
     // TODO(crbug.com/40264637): Use constants for length limits.
     switch (status) {
       case ImportEntryStatus.kMissingPassword:

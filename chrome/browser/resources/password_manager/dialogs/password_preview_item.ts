@@ -6,26 +6,23 @@
  * @fileoverview PasswordPreviewItem represents one row in a list of passwords.
  */
 
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '../site_favicon.js';
-import '../shared_style.css.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {ShowPasswordMixin} from '../show_password_mixin.js';
+import {ShowPasswordMixinLit} from '../show_password_mixin_lit.js';
 
-import {getTemplate} from './password_preview_item.html.js';
+import {getCss} from './password_preview_item.css.js';
+import {getHtml} from './password_preview_item.html.js';
 
 export interface PasswordPreviewItemElement {
   $: {
     checkbox: CrCheckboxElement,
-    website: HTMLElement,
     username: HTMLElement,
     password: HTMLInputElement,
     showPasswordButton: CrIconButtonElement,
@@ -33,49 +30,56 @@ export interface PasswordPreviewItemElement {
 }
 
 const PasswordPreviewItemElementBase =
-    I18nMixin(ShowPasswordMixin(PolymerElement));
+    I18nMixinLit(ShowPasswordMixinLit(CrLitElement));
 
 export class PasswordPreviewItemElement extends PasswordPreviewItemElementBase {
   static get is() {
     return 'password-preview-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      passwordId: Number,
-      url: String,
-      username: String,
-      password: String,
-      first: Boolean,
+      passwordId: {type: Number},
+      url: {type: String},
+      username: {type: String},
+      password: {type: String},
+      first: {type: Boolean},
 
       checked: {
         type: Boolean,
-        value: true,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  declare passwordId: number;
-  declare url: string;
-  declare username: string;
-  declare password: string;
-  declare first: boolean;
-  declare checked: boolean;
+  accessor passwordId: number = 0;
+  accessor url: string = '';
+  accessor username: string = '';
+  accessor password: string = '';
+  accessor first: boolean = false;
+  accessor checked: boolean = true;
 
-  private getElementClass_(): string {
+  protected onCheckedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.checked = e.detail.value;
+  }
+
+  protected getElementClass_(): string {
     return this.first ? '' : 'hr';
   }
 
-  private getPasswordValue_(): string {
+  protected getPasswordValue_(): string {
     return this.isPasswordVisible ? this.password : ' '.repeat(10);
   }
 
-  private getShowHidePasswordButtonA11yLabel_(): string {
+  protected getShowHidePasswordButtonA11yLabel_(): string {
     return this.i18n(
         this.isPasswordVisible ? 'hidePasswordA11yLabel' :
                                  'showPasswordA11yLabel',

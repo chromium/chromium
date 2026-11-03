@@ -395,7 +395,7 @@ suite('PasswordManagerAppTest', function() {
         settingsSection.shadowRoot!.querySelector('passwords-importer');
     assertTrue(!!importer);
 
-    const spinner = importer.shadowRoot!.querySelector('.spinner');
+    const spinner = importer.shadowRoot.querySelector('.spinner');
     assertTrue(!!spinner);
     assertTrue(isVisible(spinner));
   });

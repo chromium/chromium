@@ -7,11 +7,9 @@ import 'chrome://password-manager/password_manager.js';
 import type {CrButtonElement, CrDialogElement, PasswordsImporterElement} from 'chrome://password-manager/password_manager.js';
 import {ImportEntryStatus, ImportResultsStatus, Page, PasswordManagerActionableError, PasswordManagerImpl, PluralStringProxyImpl, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -27,8 +25,7 @@ async function createPasswordsImporter(
   syncProxy.syncInfo = {isSyncingPasswords};
   const passwordsImporter = document.createElement('passwords-importer');
   document.body.appendChild(passwordsImporter);
-  flush();
-  await flushTasks();
+  await microtasksFinished();
   return passwordsImporter;
 }
 
@@ -38,14 +35,14 @@ async function triggerImportHelper(
     expectedStore: chrome.passwordsPrivate.PasswordStoreSet =
         chrome.passwordsPrivate.PasswordStoreSet.DEVICE) {
   const chooseFile =
-      importer.shadowRoot!.querySelector<HTMLElement>(buttonSelector);
+      importer.shadowRoot.querySelector<HTMLElement>(buttonSelector);
   assertTrue(!!chooseFile);
   assertTrue(isVisible(chooseFile));
   chooseFile.click();
-  flush();
+  await importer.updateComplete;
 
   // In progress state after the click.
-  const spinner = importer.shadowRoot!.querySelector('.spinner');
+  const spinner = importer.shadowRoot.querySelector('.spinner');
   assertTrue(!!spinner);
   assertTrue(isVisible(spinner));
   assertFalse(isVisible(chooseFile));
@@ -73,14 +70,14 @@ async function closeDialogHelper(
   button.click();
   const deleteFile = await passwordManager.whenCalled('resetImporter');
   assertEquals(shouldDeleteFile, deleteFile);
-  await flushTasks();
-  assertFalse(!!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
+  await microtasksFinished();
+  assertFalse(!!importer.shadowRoot.querySelector<CrDialogElement>('#dialog'));
 }
 
 async function assertErrorStateAndClose(
     importer: PasswordsImporterElement,
     passwordManager: TestPasswordManagerProxy, expectedDescription: string) {
-  const dialog = importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+  const dialog = importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
   assertTrue(!!dialog);
   assertTrue(dialog.open);
 
@@ -163,10 +160,10 @@ suite('PasswordsImporterTest', function() {
 
     // Clicking on the importer row should open the STORE_PICKER dialog.
     importer.$.linkRow.click();
-    flush();
+    await microtasksFinished();
 
     const dialog =
-        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
 
@@ -193,9 +190,9 @@ suite('PasswordsImporterTest', function() {
     // store picker should be shown and "account" should be the
     // default.
     importer.$.linkRow.click();
-    flush();
+    await microtasksFinished();
     const storePicker =
-        importer.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker');
+        importer.shadowRoot.querySelector<HTMLSelectElement>('#storePicker');
     assertTrue(!!storePicker);
     assertTrue(isVisible(storePicker));
     assertEquals(
@@ -221,10 +218,9 @@ suite('PasswordsImporterTest', function() {
     // store picker should be shown and "account" should be the
     // default.
     importer.$.linkRow.click();
-    flush();
-    await flushTasks();
+    await microtasksFinished();
     const storePicker =
-        importer.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker');
+        importer.shadowRoot.querySelector<HTMLSelectElement>('#storePicker');
     assertTrue(!!storePicker);
     assertTrue(isVisible(storePicker));
     assertEquals(
@@ -245,9 +241,9 @@ suite('PasswordsImporterTest', function() {
     // Clicking on the importer row should open the import dialog. The
     // store picker should be hidden.
     importer.$.linkRow.click();
-    flush();
+    await microtasksFinished();
     assertFalse(isVisible(
-        importer.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker')));
+        importer.shadowRoot.querySelector<HTMLSelectElement>('#storePicker')));
 
     // Accepting the dialog should import to the device.
     const expectedStore = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
@@ -267,10 +263,10 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(
         importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
-    await flushTasks();
+    await microtasksFinished();
 
     const dialog =
-        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
 
@@ -328,10 +324,10 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(
         importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
-    await flushTasks();
+    await microtasksFinished();
 
     const dialog =
-        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
 
@@ -383,25 +379,25 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(
         importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
-    await flushTasks();
+    await microtasksFinished();
 
     const dialog =
-        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
 
     const skipButton = dialog.querySelector<CrButtonElement>('#skipButton');
     assertTrue(!!skipButton);
     skipButton.click();
-    flush();
+    await importer.updateComplete;
 
     // In progress state after the click.
-    const spinner = importer.shadowRoot!.querySelector('.spinner');
+    const spinner = importer.shadowRoot.querySelector('.spinner');
     assertTrue(!!spinner);
     assertTrue(isVisible(spinner));
 
     assertFalse(
-        !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
+        !!importer.shadowRoot.querySelector<CrDialogElement>('#dialog'));
 
     const selectedIds = await passwordManager.whenCalled('continueImport');
     assertEquals(0, selectedIds.length);
@@ -434,32 +430,32 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(
         importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
-    await flushTasks();
+    await microtasksFinished();
 
     const dialog =
-        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
 
     const passwordItems = dialog.querySelectorAll('password-preview-item');
     for (const item of passwordItems) {
       item.$.checkbox.click();
-      await item.$.checkbox.updateComplete;
+      await microtasksFinished();
     }
 
     const replaceButton =
         dialog.querySelector<CrButtonElement>('#replaceButton');
     assertTrue(!!replaceButton);
     replaceButton.click();
-    flush();
+    await importer.updateComplete;
 
     // In progress state after the click.
-    const spinner = importer.shadowRoot!.querySelector('.spinner');
+    const spinner = importer.shadowRoot.querySelector('.spinner');
     assertTrue(!!spinner);
     assertTrue(isVisible(spinner));
 
     assertFalse(
-        !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
+        !!importer.shadowRoot.querySelector<CrDialogElement>('#dialog'));
 
     const selectedIds = await passwordManager.whenCalled('continueImport');
     assertArrayEquals([0, 1], selectedIds);
@@ -494,9 +490,9 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(
         importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
-    await flushTasks();
+    await microtasksFinished();
 
-    let dialog = importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    let dialog = importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
 
@@ -504,16 +500,16 @@ suite('PasswordsImporterTest', function() {
     // Select all rows.
     for (const item of passwordItems) {
       item.$.checkbox.click();
-      await item.$.checkbox.updateComplete;
+      await microtasksFinished();
     }
 
     let replaceButton = dialog.querySelector<CrButtonElement>('#replaceButton');
     assertTrue(!!replaceButton);
     replaceButton.click();
-    flush();
+    await importer.updateComplete;
 
     assertFalse(
-        !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
+        !!importer.shadowRoot.querySelector<CrDialogElement>('#dialog'));
 
     passwordManager.setImportResults({
       status: ImportResultsStatus.kDismissed,
@@ -523,8 +519,8 @@ suite('PasswordsImporterTest', function() {
     });
     const selectedIds = await passwordManager.whenCalled('continueImport');
     assertArrayEquals([0, 1], selectedIds);
-    await flushTasks();
-    dialog = importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    await microtasksFinished();
+    dialog = importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
 
@@ -552,10 +548,10 @@ suite('PasswordsImporterTest', function() {
         await triggerImportHelper(
             importer, passwordManager, '#selectFileButtonLinkRow');
         await pluralString.whenCalled('getPluralString');
-        await flushTasks();
+        await microtasksFinished();
 
         const dialog =
-            importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+            importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.open);
 
@@ -563,7 +559,7 @@ suite('PasswordsImporterTest', function() {
             dialog.querySelector<HTMLElement>('#deleteFileOption');
         assertTrue(!!deleteFileOption);
         deleteFileOption.click();
-        flush();
+        await microtasksFinished();
 
         await closeDialogHelper(
             importer, passwordManager, dialog, '#closeButton',
@@ -584,10 +580,10 @@ suite('PasswordsImporterTest', function() {
         await triggerImportHelper(
             importer, passwordManager, '#selectFileButtonLinkRow');
         await pluralString.whenCalled('getPluralString');
-        await flushTasks();
+        await microtasksFinished();
 
         const dialog =
-            importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+            importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.open);
 
@@ -595,7 +591,7 @@ suite('PasswordsImporterTest', function() {
             dialog.querySelector<HTMLElement>('#deleteFileOption');
         assertTrue(!!deleteFileOption);
         deleteFileOption.click();
-        flush();
+        await microtasksFinished();
 
         await closeDialogHelper(
             importer, passwordManager, dialog, '#viewPasswordsButton',
@@ -611,15 +607,15 @@ suite('PasswordsImporterTest', function() {
       displayedEntries: [],
       fileName: 'test.csv',
     });
-    await flushTasks();
+    await microtasksFinished();
 
     await triggerImportHelper(
         importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
-    await flushTasks();
+    await microtasksFinished();
 
     const dialog =
-        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
 
@@ -707,10 +703,10 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(
         importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
-    await flushTasks();
+    await microtasksFinished();
 
     const dialog =
-        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
 
@@ -815,7 +811,7 @@ suite('PasswordsImporterTest', function() {
         importer, passwordManager, '#selectFileButtonLinkRow');
 
     const dialog =
-        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
 
@@ -837,21 +833,20 @@ suite('PasswordsImporterTest', function() {
             /*accountEmail=*/ 'test@test.com');
 
         importer.$.linkRow.click();
-        flush();
-        await flushTasks();
+        await microtasksFinished();
 
         const dialog =
-            importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+            importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.open);
 
         await closeDialogHelper(
             importer, passwordManager, dialog, '#cancelButton');
         await new Promise(resolve => setTimeout(resolve, 100));
-        await flushTasks();
+        await microtasksFinished();
 
         // Focus should be restored to the link row.
-        assertEquals(importer.shadowRoot!.activeElement, importer.$.linkRow);
+        assertEquals(importer.shadowRoot.activeElement, importer.$.linkRow);
       });
 
   test(
@@ -873,16 +868,16 @@ suite('PasswordsImporterTest', function() {
             importer, passwordManager, '#selectFileButtonLinkRow');
 
         const dialog =
-            importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+            importer.shadowRoot.querySelector<CrDialogElement>('#dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.open);
 
         await closeDialogHelper(
             importer, passwordManager, dialog, '#closeButton');
-        await flushTasks();
+        await microtasksFinished();
         // Focus should be restored to the select file button.
         assertEquals(
-            importer.shadowRoot!.activeElement,
+            importer.shadowRoot.activeElement,
             importer.$.selectFileButtonLinkRow);
       });
 
@@ -894,7 +889,7 @@ suite('PasswordsImporterTest', function() {
             /*isSyncingPasswords=*/ true, /*isAccountStoreUser=*/ true);
         importer.actionableError =
             PasswordManagerActionableError.kTrustedVaultKeyNeeded;
-        await flushTasks();
+        await microtasksFinished();
 
         const eventPromise =
             eventToPromise('show-trusted-vault-error-dialog', importer);
@@ -909,7 +904,7 @@ suite('PasswordsImporterTest', function() {
         const importer = await createPasswordsImporter();
         importer.actionableError =
             PasswordManagerActionableError.kTrustedVaultKeyNeeded;
-        await flushTasks();
+        await microtasksFinished();
 
         const eventPromise =
             eventToPromise('show-trusted-vault-error-dialog', importer);
@@ -924,7 +919,7 @@ suite('PasswordsImporterTest', function() {
         const importer = await createPasswordsImporter();
         importer.actionableError =
             PasswordManagerActionableError.kTrustedVaultKeyNeeded;
-        await flushTasks();
+        await microtasksFinished();
 
         const eventPromise =
             eventToPromise('show-trusted-vault-error-dialog', importer);

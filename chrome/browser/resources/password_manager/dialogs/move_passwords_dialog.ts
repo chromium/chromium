@@ -4,23 +4,23 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import '../shared_style.css.js';
-import '../user_utils_mixin.js';
 import './password_preview_item.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {MoveToAccountStoreTrigger, recordMoveToAccountStoreAccepted, recordMoveToAccountStoreOffered} from '../sharing/metrics_utils.js';
-import {UserUtilMixin} from '../user_utils_mixin.js';
+import {UserUtilMixinLit} from '../user_utils_mixin_lit.js';
 
-import {getTemplate} from './move_passwords_dialog.html.js';
+import {getCss} from './move_passwords_dialog.css.js';
+import {getHtml} from './move_passwords_dialog.html.js';
 import type {PasswordPreviewItemElement} from './password_preview_item.js';
 
 export interface MovePasswordsDialogElement {
@@ -32,58 +32,52 @@ export interface MovePasswordsDialogElement {
 }
 
 const MovePasswordsDialogElementBase =
-    WebUiListenerMixin(UserUtilMixin(I18nMixin(PolymerElement)));
+    WebUiListenerMixinLit(UserUtilMixinLit(I18nMixinLit(CrLitElement)));
 
 export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
   static get is() {
     return 'move-passwords-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Passwords group displayed in the UI.
        */
-      passwords: {
-        type: Array,
-        value: () => [],
-        observer: 'onPasswordsChanged_',
-      },
+      passwords: {type: Array},
       url: {type: String},
-      hasOnlyOneDeviceCredential: {type: Boolean, value: true},
-
-      selectedPasswordIds_: {
-        type: Array,
-        value: () => [],
-      },
+      hasOnlyOneDeviceCredential: {type: Boolean},
+      selectedPasswordIds_: {type: Array},
       descriptionString: {type: String},
-      passwordsTitle: {type: String},
-      trigger_: {
-        type: Object,
-        computed: 'computeTrigger_(passwords)',
-      },
+      passwordsTitle_: {type: String},
     };
   }
 
-  declare passwords: chrome.passwordsPrivate.PasswordUiEntry[];
-  declare private url: string;
-  declare hasOnlyOneDeviceCredential: boolean;
-  declare private selectedPasswordIds_: number[];
-  declare descriptionString: string;
-  declare passwordsTitle: string;
-  declare private trigger_: MoveToAccountStoreTrigger;
+  accessor passwords: chrome.passwordsPrivate.PasswordUiEntry[] = [];
+  accessor url: string = '';
+  accessor hasOnlyOneDeviceCredential: boolean = true;
+  protected accessor selectedPasswordIds_: number[] = [];
+  accessor descriptionString: string = '';
+  protected accessor passwordsTitle_: string = '';
+  private trigger_: MoveToAccountStoreTrigger =
+      MoveToAccountStoreTrigger.EXPLICITLY_TRIGGERED_IN_SETTINGS;
 
   override connectedCallback() {
-    super.connectedCallback();
     this.selectedPasswordIds_ = this.passwords.map(item => item.id);
+    super.connectedCallback();
     PasswordManagerImpl.getInstance()
         .requestCredentialsDetails(this.selectedPasswordIds_)
-        .then(entries => {
+        .then(async entries => {
           this.passwords = entries;
+          await this.updateComplete;
           recordMoveToAccountStoreOffered(this.trigger_);
           this.$.dialog.showModal();
         })
@@ -92,23 +86,33 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
         });
   }
 
-  private onCancelClick_() {
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('passwords')) {
+      this.trigger_ = this.computeTrigger_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('passwords')) {
+      this.onPasswordsChanged_();
+    }
+  }
+
+  protected onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  private onAcceptButtonClick_() {
+  protected onAcceptButtonClick_() {
     assert(this.isAccountStoreUser);
 
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
         this.selectedPasswordIds_);
-    this.dispatchEvent(new CustomEvent('passwords-moved', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        accountEmail: this.accountEmail,
-        numberOfPasswords: this.selectedPasswordIds_.length,
-      },
-    }));
+    this.fire('passwords-moved', {
+      accountEmail: this.accountEmail,
+      numberOfPasswords: this.selectedPasswordIds_.length,
+    });
     recordMoveToAccountStoreAccepted(this.trigger_);
 
     this.$.dialog.close();
@@ -126,7 +130,7 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
     const passwordsTitle =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'movePasswordsDialogPasswordsTitle', this.passwords.length);
-    this.passwordsTitle = passwordsTitle.replace('$1', this.url);
+    this.passwordsTitle_ = passwordsTitle.replace('$1', this.url);
   }
 
   private onPasswordsChanged_() {
@@ -139,10 +143,10 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
     this.updatePasswordsTitle_();
   }
 
-  private onPasswordPreviewItemChange_() {
+  protected onPasswordPreviewItemChange_() {
     this.selectedPasswordIds_ =
         Array
-            .from(this.shadowRoot!.querySelectorAll<PasswordPreviewItemElement>(
+            .from(this.shadowRoot.querySelectorAll<PasswordPreviewItemElement>(
                 'password-preview-item[checked]'))
             .map(item => item.passwordId);
   }
