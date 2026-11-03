@@ -5790,6 +5790,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.VoiceSearch.WordCount" units="words"
+    expires_after="2027-10-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the number of whitespace-separated words in the top transcription
+    result of a completed voice search (0 when a manually stopped Voice Plate
+    session completes with an empty transcription).
+
+    Recorded on Android once per completed voice search transcription.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.WebUI.AutocompleteResultSequenceIdMatched"
     enum="Boolean" expires_after="2027-03-21">
   <owner>orinj@chromium.org</owner>

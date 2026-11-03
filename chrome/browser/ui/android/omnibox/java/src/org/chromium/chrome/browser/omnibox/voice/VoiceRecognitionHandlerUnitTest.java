@@ -49,6 +49,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -492,13 +493,29 @@ public class VoiceRecognitionHandlerUnitTest {
                 /* resultCode= */ Activity.RESULT_OK, /* text= */ "", /* confidence= */ 1.0f);
         doReturn(true).when(mVoicePlateIntegration).isVoiceSearchStopped(any());
 
-        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, mOnCanceled);
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher("Omnibox.VoiceSearch.WordCount", 0)) {
+            mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, mOnCanceled);
+        }
 
         verify(mOmniboxStub).beginInput(mInputCaptor.capture());
         assertEquals("", mInputCaptor.getValue().getUserText());
         verify(mAutocompleteController, never()).classify(any());
         verify(mOmniboxStub, never()).loadUrlFromVoice(any());
         verify(mOnCanceled, never()).run();
+    }
+
+    @Test
+    public void testCallback_recordsWordCountHistogram() {
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_OK,
+                /* text= */ "  weather   in   mountain view  ",
+                /* confidence= */ 1.0f);
+
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher("Omnibox.VoiceSearch.WordCount", 4)) {
+            mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, mOnCanceled);
+        }
     }
 
     @Test

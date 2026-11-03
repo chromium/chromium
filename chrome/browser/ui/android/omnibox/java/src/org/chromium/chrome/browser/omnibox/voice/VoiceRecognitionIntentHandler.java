@@ -371,6 +371,7 @@ public class VoiceRecognitionIntentHandler {
                         recordVoiceSearchConfidenceValue(topResult.getConfidence());
                     }
 
+                    recordVoiceSearchWordCount(topResult.getMatch());
                     recordSuccessMetrics(source);
                     callback.onCompleted(results);
                 };
@@ -501,5 +502,17 @@ public class VoiceRecognitionIntentHandler {
         int percentage = Math.round(value * 100f);
         RecordHistogram.recordPercentageHistogram(
                 "VoiceInteraction.VoiceResultConfidenceValue", percentage);
+    }
+
+    /**
+     * Records the number of whitespace-separated words in a completed voice search transcription.
+     *
+     * @param match The top transcription string returned by the recognizer.
+     */
+    @VisibleForTesting
+    void recordVoiceSearchWordCount(String match) {
+        String trimmed = match.trim();
+        int wordCount = trimmed.isEmpty() ? 0 : trimmed.split("\\s+").length;
+        RecordHistogram.recordCount100Histogram("Omnibox.VoiceSearch.WordCount", wordCount);
     }
 }
