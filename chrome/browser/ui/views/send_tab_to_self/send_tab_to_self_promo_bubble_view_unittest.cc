@@ -11,9 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -36,26 +34,6 @@
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 
 namespace send_tab_to_self {
-
-namespace {
-
-class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
- public:
-  explicit StubSendTabToSelfBubbleController(content::WebContents* web_contents)
-      : SendTabToSelfBubbleController(web_contents) {}
-
-  ~StubSendTabToSelfBubbleController() override = default;
-
-  AccountInfo GetSharingAccountInfo() override {
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(
-        Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
-    CHECK(identity_manager);
-    return identity_manager->FindExtendedAccountInfo(
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  }
-};
-
-}  // namespace
 
 class SendTabToSelfPromoBubbleViewTest : public ChromeViewsTestBase {
  protected:
@@ -83,12 +61,6 @@ class SendTabToSelfPromoBubbleViewTest : public ChromeViewsTestBase {
 
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
-    // Owned by WebContents.
-    auto controller = std::make_unique<StubSendTabToSelfBubbleController>(
-        web_contents_.get());
-    controller_ = controller.get();
-    web_contents_->SetUserData(StubSendTabToSelfBubbleController::UserDataKey(),
-                               std::move(controller));
   }
 
   void CreateSignInPromoBubble() {
@@ -115,7 +87,6 @@ class SendTabToSelfPromoBubbleViewTest : public ChromeViewsTestBase {
     bubble_widget_ = nullptr;
     widget->CloseNow();
     anchor_widget_.reset();
-    controller_ = nullptr;
     web_contents_.reset();
     ChromeViewsTestBase::TearDown();
     identity_test_env_adaptor_.reset();
@@ -165,10 +136,8 @@ class SendTabToSelfPromoBubbleViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<SendTabToSelfBubbleView> bubble_ = nullptr;
+  raw_ptr<SendTabToSelfSignInPromoBubbleView> bubble_ = nullptr;
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
-  // Owned by WebContents.
-  raw_ptr<StubSendTabToSelfBubbleController> controller_;
 };
 
 // Verifies that the sign-in promo layout is loaded correctly when the user is
@@ -180,6 +149,7 @@ TEST_F(SendTabToSelfPromoBubbleViewTest, LoadsSignInPromoDesign) {
   EXPECT_EQ(
       bubble_->GetWindowTitle(),
       l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_TITLE));
+  EXPECT_TRUE(bubble_->ShouldShowCloseButton());
 
   // Dialog button should be null.
   EXPECT_FALSE(bubble_->GetOkButton());

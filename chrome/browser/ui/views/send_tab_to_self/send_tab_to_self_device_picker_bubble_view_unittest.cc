@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/sync_device_info/remote_device_info.h"
@@ -22,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_utils.h"
@@ -119,11 +121,16 @@ class SendTabToSelfDevicePickerBubbleViewTest : public ChromeViewsTestBase {
   raw_ptr<SendTabToSelfBubbleControllerMock> controller_;
 };
 
-// Verifies that the first target device button in the list of options receives
-// initial keyboard focus when the dialog opens, and that all device buttons
-// share a group for arrow-key navigation.
+// Verifies that the device picker bubble configures its title, hides the close
+// button, gives initial keyboard focus to the first target device button, and
+// groups all device buttons for arrow-key navigation.
 TEST_F(SendTabToSelfDevicePickerBubbleViewTest,
        InitiallyFocusedViewIsFirstDevice) {
+  EXPECT_EQ(
+      bubble_->GetWindowTitle(),
+      l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_DEVICE_PICKER_TITLE));
+  EXPECT_FALSE(bubble_->ShouldShowCloseButton());
+
   const views::View* container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, container->children().size());
 

@@ -20,6 +20,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
+class LocationBarBubbleDelegateView;
 class Profile;
 
 namespace actions {
@@ -38,15 +39,12 @@ namespace ui {
 class Event;
 }  // namespace ui
 
-class AccountInfo;
-
 namespace syncer {
 struct RemoteDeviceInfo;
 }  // namespace syncer
 
 namespace send_tab_to_self {
 
-class SendTabToSelfBubbleView;
 class TargetDeviceListWaiter;
 
 class SendTabToSelfBubbleController
@@ -68,11 +66,9 @@ class SendTabToSelfBubbleController
   bool IsBubbleShown() const;
 
   // Returns nullptr if no bubble is currently shown.
-  SendTabToSelfBubbleView* send_tab_to_self_bubble_view() const;
+  LocationBarBubbleDelegateView* send_tab_to_self_bubble_view() const;
   // Returns the list of valid target devices, sorted by recency.
   virtual std::vector<syncer::RemoteDeviceInfo> GetValidDevices();
-
-  virtual AccountInfo GetSharingAccountInfo();
 
   // Handles the action when the user clicks on one valid device. Sends tab to
   // the target device; `form_factor` is the target device's form factor used
@@ -124,7 +120,8 @@ class SendTabToSelfBubbleController
   void StartWaitingForTargetDeviceList();
 
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  raw_ptr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;
+  raw_ptr<LocationBarBubbleDelegateView> send_tab_to_self_bubble_view_ =
+      nullptr;
   // True if the cross-device sign-in QR code bubble is currently shown.
   bool is_qr_bubble_showing_ = false;
 

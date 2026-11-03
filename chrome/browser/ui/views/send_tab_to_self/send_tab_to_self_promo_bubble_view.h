@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_PROMO_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_PROMO_BUBBLE_VIEW_H_
 
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
@@ -15,8 +15,10 @@ class WebContents;
 namespace send_tab_to_self {
 
 // Shown when the user is signed out, offering a promotional sign-in flow.
-class SendTabToSelfSignInPromoBubbleView : public SendTabToSelfBubbleView {
-  METADATA_HEADER(SendTabToSelfSignInPromoBubbleView, SendTabToSelfBubbleView)
+class SendTabToSelfSignInPromoBubbleView
+    : public LocationBarBubbleDelegateView {
+  METADATA_HEADER(SendTabToSelfSignInPromoBubbleView,
+                  LocationBarBubbleDelegateView)
 
  public:
   enum class PromoMode {

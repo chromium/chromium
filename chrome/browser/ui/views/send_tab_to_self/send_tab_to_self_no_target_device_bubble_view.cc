@@ -7,13 +7,16 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -41,11 +44,20 @@ constexpr int kAccountInfoBottomMargin = kAccountInfoTopMargin + 1;
 
 constexpr int kAccountAvatarSize = 24;
 
+AccountInfo GetSharingAccountInfo(content::WebContents* web_contents) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  CHECK(identity_manager);
+  return identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+}
+
 // Creates a horizontal row displaying the circular avatar and email of the
 // signed-in account.
 std::unique_ptr<views::View> BuildAccountInfoView(
-    base::WeakPtr<SendTabToSelfBubbleController> controller) {
-  if (!controller) {
+    content::WebContents* web_contents) {
+  if (!web_contents) {
     return std::make_unique<views::View>();
   }
 
@@ -60,7 +72,7 @@ std::unique_ptr<views::View> BuildAccountInfoView(
       views::BoxLayout::Orientation::kHorizontal, margins,
       between_child_spacing));
 
-  AccountInfo account = controller->GetSharingAccountInfo();
+  AccountInfo account = GetSharingAccountInfo(web_contents);
   CHECK(!account.IsEmpty());
   gfx::ImageSkia square_avatar =
       account.GetAvatarImage().value_or(gfx::Image()).AsImageSkia();
@@ -90,8 +102,12 @@ std::unique_ptr<views::View> BuildAccountInfoView(
 SendTabToSelfNoTargetDeviceBubbleView::SendTabToSelfNoTargetDeviceBubbleView(
     views::BubbleAnchor anchor,
     content::WebContents* web_contents)
-    : SendTabToSelfBubbleView(anchor, web_contents) {
+    : LocationBarBubbleDelegateView(anchor, web_contents) {
+  SetShowCloseButton(true);
+  SetTitle(IDS_SEND_TAB_TO_SELF);
   auto* provider = ChromeLayoutProvider::Get();
+  set_fixed_width(
+      provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   set_margins(
       gfx::Insets::TLBR(provider->GetDistanceMetric(
                             views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL),
@@ -124,7 +140,7 @@ void SendTabToSelfNoTargetDeviceBubbleView::InitLayout() {
                         horizontal_padding));
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  auto* account_view = AddChildView(BuildAccountInfoView(controller_));
+  auto* account_view = AddChildView(BuildAccountInfoView(web_contents()));
   account_view->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(provider->GetDistanceMetric(

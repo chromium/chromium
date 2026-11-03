@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BUBBLE_VIEW_H_
 
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
@@ -15,9 +15,10 @@ class WebContents;
 namespace send_tab_to_self {
 
 // Shown when the user is signed in but has no other active target devices.
-class SendTabToSelfNoTargetDeviceBubbleView : public SendTabToSelfBubbleView {
+class SendTabToSelfNoTargetDeviceBubbleView
+    : public LocationBarBubbleDelegateView {
   METADATA_HEADER(SendTabToSelfNoTargetDeviceBubbleView,
-                  SendTabToSelfBubbleView)
+                  LocationBarBubbleDelegateView)
 
  public:
   SendTabToSelfNoTargetDeviceBubbleView(views::BubbleAnchor anchor,

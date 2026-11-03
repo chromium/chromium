@@ -6,6 +6,7 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -15,8 +16,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -24,11 +25,13 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_device_info/remote_device_info.h"
 #include "content/public/test/browser_test.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -63,6 +66,20 @@ class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
   void SetEntryPointDisplayReason(
       std::optional<send_tab_to_self::EntryPointDisplayReason> reason) {
     reason_ = reason;
+    if (reason_ ==
+        send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice) {
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(Profile::FromBrowserContext(
+              GetWebContents().GetBrowserContext()));
+      if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+        AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+            identity_manager, "user@host.com", signin::ConsentLevel::kSignin);
+        signin::SimulateAccountImageFetch(
+            identity_manager, account_info.GetAccountId(),
+            "https://avatar.com/avatar.png",
+            gfx::Image(gfx::test::CreateImageSkia(96, 96)));
+      }
+    }
   }
 
   std::vector<RemoteDeviceInfo> GetValidDevices() override {
@@ -79,12 +96,6 @@ class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
              now - base::Days(5), /*has_high_precision_timestamp=*/false},
             {"Device_6", "device_guid_6", FormFactor::kPhone, OsType::kAndroid,
              now - base::Days(5), /*has_high_precision_timestamp=*/false}};
-  }
-
-  AccountInfo GetSharingAccountInfo() override {
-    return AccountInfo::Builder(GaiaId("test_gaia"), "user@host.com")
-        .SetAvatarImage(gfx::Image(gfx::test::CreateImageSkia(96, 96)))
-        .Build();
   }
 
  private:
@@ -283,11 +294,13 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
   EXPECT_FALSE(accessor.IsPoppedOut());
 }
 
+// Verifies that calling `ShowBubble` while a bubble is already open returns
+// early without recreating the bubble view.
 IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
                        ShowBubbleMultipleTimes) {
   // Call ShowBubble multiple times. The early return prevents re-creation.
   ShowToolbarBubble();
-  SendTabToSelfBubbleView* first_view =
+  LocationBarBubbleDelegateView* first_view =
       controller_->send_tab_to_self_bubble_view();
   EXPECT_TRUE(first_view);
 

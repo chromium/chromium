@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -35,7 +36,13 @@ SendTabToSelfSignInPromoBubbleView::SendTabToSelfSignInPromoBubbleView(
     views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     PromoMode promo_mode)
-    : SendTabToSelfBubbleView(anchor, web_contents) {
+    : LocationBarBubbleDelegateView(anchor, web_contents) {
+  auto* controller =
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
+  CHECK(controller);
+  SetShowCloseButton(true);
+  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
@@ -52,8 +59,8 @@ SendTabToSelfSignInPromoBubbleView::SendTabToSelfSignInPromoBubbleView(
       *web_contents, signin_metrics::AccessPoint::kSendTabToSelfPromo,
       base::BindOnce(
           &send_tab_to_self::SendTabToSelfBubbleController::ShowBubble,
-          controller_,
-          controller_->entry_point().value_or(ShareEntryPoint::kShareSheet)));
+          controller->AsWeakPtr(),
+          controller->entry_point().value_or(ShareEntryPoint::kShareSheet)));
   auto* sign_in_promo = AddChildView(std::make_unique<BubbleSignInPromoView>(
       web_contents, signin_metrics::AccessPoint::kSendTabToSelfPromo,
       std::move(delegate)));

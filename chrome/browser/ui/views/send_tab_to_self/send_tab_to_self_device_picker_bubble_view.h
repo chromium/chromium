@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_DEVICE_PICKER_BUBBLE_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
@@ -15,11 +16,14 @@ class WebContents;
 
 namespace send_tab_to_self {
 
+class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleDeviceButton;
 
 // A bubble dialog that allows users to select a target device to send a tab to.
-class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
-  METADATA_HEADER(SendTabToSelfDevicePickerBubbleView, SendTabToSelfBubbleView)
+class SendTabToSelfDevicePickerBubbleView
+    : public LocationBarBubbleDelegateView {
+  METADATA_HEADER(SendTabToSelfDevicePickerBubbleView,
+                  LocationBarBubbleDelegateView)
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSendTabToSelfDevicePickerBubbleId);
@@ -32,6 +36,8 @@ class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
       const SendTabToSelfDevicePickerBubbleView&) = delete;
   SendTabToSelfDevicePickerBubbleView& operator=(
       const SendTabToSelfDevicePickerBubbleView&) = delete;
+
+  ~SendTabToSelfDevicePickerBubbleView() override;
 
   void SelectTargetDevice(SendTabToSelfBubbleDeviceButton* device_button);
 
@@ -46,6 +52,8 @@ class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
 
   // Creates the scroll view containing target devices.
   void CreateDevicesScrollView();
+
+  base::WeakPtr<SendTabToSelfBubbleController> controller_;
 
   // ScrollView containing the list of device buttons.
   // Only kept for GetButtonContainerForTesting().

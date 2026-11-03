@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_no_target_device_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h"
@@ -30,7 +30,6 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_list_waiter.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -40,6 +39,7 @@
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
@@ -55,8 +55,9 @@ SendTabToSelfBubbleController::~SendTabToSelfBubbleController() {
 
 void SendTabToSelfBubbleController::HideBubble() {
   target_device_list_waiter_.reset();
-  if (send_tab_to_self_bubble_view_) {
-    send_tab_to_self_bubble_view_->Hide();
+  if (send_tab_to_self_bubble_view_ &&
+      send_tab_to_self_bubble_view_->GetWidget()) {
+    send_tab_to_self_bubble_view_->GetWidget()->Close();
   }
 }
 
@@ -155,7 +156,7 @@ void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
   RecordTargetDeviceCount(entry_point_.value_or(ShareEntryPoint::kShareSheet),
                           reason, device_count);
 
-  std::unique_ptr<SendTabToSelfBubbleView> bubble_view;
+  std::unique_ptr<LocationBarBubbleDelegateView> bubble_view;
   switch (reason) {
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
       bubble_view = std::make_unique<SendTabToSelfDevicePickerBubbleView>(
@@ -201,7 +202,7 @@ bool SendTabToSelfBubbleController::IsBubbleShown() const {
   return send_tab_to_self_bubble_view_ || is_qr_bubble_showing_;
 }
 
-SendTabToSelfBubbleView*
+LocationBarBubbleDelegateView*
 SendTabToSelfBubbleController::send_tab_to_self_bubble_view() const {
   return send_tab_to_self_bubble_view_;
 }
@@ -214,13 +215,6 @@ SendTabToSelfBubbleController::GetValidDevices() {
       service ? service->GetSendTabToSelfModel() : nullptr;
   return model ? model->GetTargetDeviceInfoSortedList()
                : std::vector<syncer::RemoteDeviceInfo>();
-}
-
-AccountInfo SendTabToSelfBubbleController::GetSharingAccountInfo() {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  return identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 }
 
 Profile* SendTabToSelfBubbleController::GetProfile() {
