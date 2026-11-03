@@ -50,6 +50,7 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link TabGroupListBottomSheetRowMediator}. */
@@ -107,7 +108,11 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
 
         GroupWindowInfo groupInfo =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, mSavedTabGroup, GroupWindowState.IN_CURRENT);
+                        mContext,
+                        mTabModel,
+                        mSavedTabGroup,
+                        GroupWindowState.IN_CURRENT,
+                        Collections.emptyList());
 
         mMediator =
                 new TabGroupListBottomSheetRowMediator(
@@ -174,7 +179,11 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         mSavedTabGroup.savedTabs.get(0).localId = null;
         GroupWindowInfo groupInfo =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, mSavedTabGroup, GroupWindowState.HIDDEN);
+                        mContext,
+                        mTabModel,
+                        mSavedTabGroup,
+                        GroupWindowState.HIDDEN,
+                        Collections.emptyList());
         mMediator =
                 new TabGroupListBottomSheetRowMediator(
                         groupInfo,
@@ -204,7 +213,11 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         mSavedTabGroup.savedTabs.get(0).localId = null;
         GroupWindowInfo groupInfo =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, mSavedTabGroup, GroupWindowState.HIDDEN);
+                        mContext,
+                        mTabModel,
+                        mSavedTabGroup,
+                        GroupWindowState.HIDDEN,
+                        Collections.emptyList());
         mMediator =
                 new TabGroupListBottomSheetRowMediator(
                         groupInfo,

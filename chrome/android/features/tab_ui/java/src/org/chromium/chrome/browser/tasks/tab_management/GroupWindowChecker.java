@@ -21,6 +21,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -138,7 +139,11 @@ public class GroupWindowChecker {
                 if (tabGroupSelectionPredicate.shouldInclude(groupWindowState)) {
                     groupList.add(
                             GroupWindowInfo.forLocalGroup(
-                                    mContext, model, groupId, groupWindowState));
+                                    mContext,
+                                    model,
+                                    groupId,
+                                    groupWindowState,
+                                    Collections.emptyList()));
                 }
             }
         }
@@ -152,7 +157,11 @@ public class GroupWindowChecker {
     public GroupWindowInfo fromSavedTabGroup(SavedTabGroup savedTabGroup) {
         @GroupWindowState int state = getState(savedTabGroup);
         return GroupWindowInfo.forSyncedGroup(
-                mContext, getTabModelForGroup(savedTabGroup), savedTabGroup, state);
+                mContext,
+                getTabModelForGroup(savedTabGroup),
+                savedTabGroup,
+                state,
+                Collections.emptyList());
     }
 
     /**

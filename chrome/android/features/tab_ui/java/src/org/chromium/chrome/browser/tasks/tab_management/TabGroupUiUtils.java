@@ -132,18 +132,26 @@ public class TabGroupUiUtils {
                                         : null);
                 TabModel localTabModel = getTabModelForGroup(tabModel, effectiveGroupId);
                 return GroupWindowInfo.forSyncedGroup(
-                        context, localTabModel, savedGroup, checker.getState(savedGroup));
+                        context,
+                        localTabModel,
+                        savedGroup,
+                        checker.getState(savedGroup),
+                        Collections.emptyList());
             }
         }
         if (groupId != null) {
             TabModel localTabModel = getTabModelForGroup(tabModel, groupId);
             return GroupWindowInfo.forLocalGroup(
-                    context, localTabModel, groupId, checker.getState(groupId));
+                    context,
+                    localTabModel,
+                    groupId,
+                    checker.getState(groupId),
+                    Collections.emptyList());
         } else if (syncGroupId != null && syncService != null) {
             SavedTabGroup group = syncService.getGroup(syncGroupId);
             if (group != null) {
                 return GroupWindowInfo.forSyncedGroup(
-                        context, tabModel, group, checker.getState(group));
+                        context, tabModel, group, checker.getState(group), Collections.emptyList());
             }
         }
         return null;

@@ -79,7 +79,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, savedGroup, GroupWindowState.IN_CURRENT);
+                        mContext,
+                        mTabModel,
+                        savedGroup,
+                        GroupWindowState.IN_CURRENT,
+                        Collections.emptyList());
 
         assertEquals(token, info.localId);
         assertEquals("sync-123", info.syncId);
@@ -105,7 +109,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo infoNull =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, savedGroupNullTitle, GroupWindowState.HIDDEN);
+                        mContext,
+                        mTabModel,
+                        savedGroupNullTitle,
+                        GroupWindowState.HIDDEN,
+                        Collections.emptyList());
         assertEquals(TabGroupTitleUtils.getDefaultTitle(mContext, 2), infoNull.title);
         assertEquals(GroupWindowState.HIDDEN, infoNull.groupWindowState);
         assertNull(infoNull.localId);
@@ -118,7 +126,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo infoEmpty =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, savedGroupEmptyTitle, GroupWindowState.IN_ANOTHER);
+                        mContext,
+                        mTabModel,
+                        savedGroupEmptyTitle,
+                        GroupWindowState.IN_ANOTHER,
+                        Collections.emptyList());
         assertEquals(TabGroupTitleUtils.getDefaultTitle(mContext, 1), infoEmpty.title);
         assertEquals(GroupWindowState.IN_ANOTHER, infoEmpty.groupWindowState);
     }
@@ -142,7 +154,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forLocalGroup(
-                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT);
+                        mContext,
+                        mTabModel,
+                        groupId,
+                        GroupWindowState.IN_CURRENT,
+                        Collections.emptyList());
 
         assertEquals(groupId, info.localId);
         assertNull(info.syncId);
@@ -177,7 +193,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forLocalGroup(
-                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT_CLOSING);
+                        mContext,
+                        mTabModel,
+                        groupId,
+                        GroupWindowState.IN_CURRENT_CLOSING,
+                        Collections.emptyList());
 
         assertEquals(groupId, info.localId);
         assertNull(info.syncId);
@@ -208,7 +228,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forLocalGroup(
-                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT);
+                        mContext,
+                        mTabModel,
+                        groupId,
+                        GroupWindowState.IN_CURRENT,
+                        Collections.emptyList());
 
         assertEquals(groupId, info.localId);
         assertNull(info.syncId);
@@ -233,7 +257,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forLocalGroup(
-                        mContext, mTabModel, groupId, GroupWindowState.IN_ANOTHER);
+                        mContext,
+                        mTabModel,
+                        groupId,
+                        GroupWindowState.IN_ANOTHER,
+                        Collections.emptyList());
 
         assertEquals(groupId, info.localId);
         assertNull(info.syncId);
@@ -277,7 +305,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, savedGroup, GroupWindowState.IN_CURRENT_CLOSING);
+                        mContext,
+                        mTabModel,
+                        savedGroup,
+                        GroupWindowState.IN_CURRENT_CLOSING,
+                        Collections.emptyList());
 
         assertEquals(token, info.localId);
         assertEquals("sync-closing", info.syncId);
@@ -294,14 +326,22 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.getTabGroupTitle(token)).thenReturn("");
         GroupWindowInfo infoFallbackSaved =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, savedGroup, GroupWindowState.IN_CURRENT_CLOSING);
+                        mContext,
+                        mTabModel,
+                        savedGroup,
+                        GroupWindowState.IN_CURRENT_CLOSING,
+                        Collections.emptyList());
         assertEquals("Stale Remote Title", infoFallbackSaved.title);
 
         // When both local rawTitle and savedGroup.title are empty, should fall back to default.
         savedGroup.title = "";
         GroupWindowInfo infoFallbackDefault =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, savedGroup, GroupWindowState.IN_CURRENT_CLOSING);
+                        mContext,
+                        mTabModel,
+                        savedGroup,
+                        GroupWindowState.IN_CURRENT_CLOSING,
+                        Collections.emptyList());
         assertEquals(TabGroupTitleUtils.getDefaultTitle(mContext, 2), infoFallbackDefault.title);
     }
 
@@ -325,7 +365,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, savedGroup, GroupWindowState.IN_CURRENT_CLOSING);
+                        mContext,
+                        mTabModel,
+                        savedGroup,
+                        GroupWindowState.IN_CURRENT_CLOSING,
+                        Collections.emptyList());
 
         // When flag is disabled, it should fall back to remote SavedTabGroup metadata.
         assertEquals("Remote Title", info.title);
@@ -345,7 +389,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forLocalGroup(
-                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT);
+                        mContext,
+                        mTabModel,
+                        groupId,
+                        GroupWindowState.IN_CURRENT,
+                        Collections.emptyList());
 
         assertEquals(groupId, info.localId);
         assertNull(info.syncId);
@@ -371,7 +419,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, savedGroup, GroupWindowState.IN_CURRENT);
+                        mContext,
+                        mTabModel,
+                        savedGroup,
+                        GroupWindowState.IN_CURRENT,
+                        Collections.emptyList());
 
         assertEquals("Active Group", info.title);
         assertEquals(1, info.tabCount);
@@ -399,7 +451,11 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, savedGroup, GroupWindowState.IN_CURRENT);
+                        mContext,
+                        mTabModel,
+                        savedGroup,
+                        GroupWindowState.IN_CURRENT,
+                        Collections.emptyList());
 
         assertEquals(5, info.tabCount);
         assertEquals(TabGroupFaviconCluster.CORNER_COUNT, info.faviconUrls.size());
@@ -420,12 +476,100 @@ public class GroupWindowInfoUnitTest {
 
         GroupWindowInfo info =
                 GroupWindowInfo.forSyncedGroup(
-                        mContext, mTabModel, savedGroup, GroupWindowState.HIDDEN);
+                        mContext,
+                        mTabModel,
+                        savedGroup,
+                        GroupWindowState.HIDDEN,
+                        Collections.emptyList());
 
         assertEquals(token, info.localId);
         assertEquals("sync-collab", info.syncId);
         assertEquals("collab-xyz", info.collaborationId);
         assertTrue(info.isArchived);
         assertEquals(GroupWindowState.HIDDEN, info.groupWindowState);
+    }
+
+    @Test
+    public void testForLocalGroup_withPreResolvedTabs() {
+        Token groupId = new Token(3L, 4L);
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mTab1.isClosing()).thenReturn(false);
+        when(mTab1.getTimestampMillis()).thenReturn(1000L);
+
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(1);
+        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.ORANGE);
+        when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Group Title");
+
+        List<Tab> preResolvedTabs = List.of(mTab1);
+        GroupWindowInfo info =
+                GroupWindowInfo.forLocalGroup(
+                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT, preResolvedTabs);
+
+        assertEquals(groupId, info.localId);
+        assertNull(info.syncId);
+        assertEquals("Local Group Title", info.title);
+        assertEquals(TabGroupColorId.ORANGE, info.color);
+        assertEquals(1, info.tabCount);
+        assertEquals(List.of(JUnitTestGURLs.URL_1), info.faviconUrls);
+        assertEquals(1000L, info.lastModifiedTimeMs);
+        verify(mTabModel, never()).getTabsInGroup(groupId);
+    }
+
+    @Test
+    public void testForSyncedGroup_withPreResolvedTabs() {
+        Token token = new Token(1L, 2L);
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = new LocalTabGroupId(token);
+        savedGroup.syncId = "sync-123";
+        savedGroup.title = "My Group";
+        savedGroup.color = TabGroupColorId.BLUE;
+        savedGroup.updateTimeMs = 123456789L;
+
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mTab1.isClosing()).thenReturn(false);
+        when(mTab1.getTimestampMillis()).thenReturn(1000L);
+
+        SavedTabGroupTab tab1 = new SavedTabGroupTab();
+        tab1.url = JUnitTestGURLs.URL_1;
+        savedGroup.savedTabs = List.of(tab1);
+
+        List<Tab> preResolvedTabs = List.of(mTab1);
+        GroupWindowInfo info =
+                GroupWindowInfo.forSyncedGroup(
+                        mContext,
+                        mTabModel,
+                        savedGroup,
+                        GroupWindowState.IN_CURRENT,
+                        preResolvedTabs);
+
+        assertEquals(token, info.localId);
+        assertEquals("sync-123", info.syncId);
+        assertEquals("My Group", info.title);
+        assertEquals(1, info.tabCount);
+        assertEquals(List.of(JUnitTestGURLs.URL_1), info.faviconUrls);
+        assertEquals(123456789L, info.lastModifiedTimeMs);
+        verify(mTabModel, never()).getTabsInGroup(token);
+    }
+
+    @Test
+    public void testForLocalGroup_withPreResolvedTabs_emptyTitle_usesDefaultTitle() {
+        Token groupId = new Token(3L, 4L);
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mTab1.isClosing()).thenReturn(false);
+        when(mTab1.getTimestampMillis()).thenReturn(1000L);
+
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(1);
+        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.ORANGE);
+        when(mTabModel.getTabGroupTitle(groupId)).thenReturn("");
+
+        List<Tab> preResolvedTabs = List.of(mTab1);
+        GroupWindowInfo info =
+                GroupWindowInfo.forLocalGroup(
+                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT, preResolvedTabs);
+
+        assertEquals("1 tab", info.title);
+        verify(mTabModel, never()).getTabsInGroup(groupId);
     }
 }
