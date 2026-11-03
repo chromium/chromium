@@ -5,13 +5,16 @@
 
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 
+#include "base/check.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
@@ -21,7 +24,65 @@
 #include "ui/views/view_utils.h"
 
 class SplitTabViewTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {};
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ protected:
+  SplitTabView* CreateActivePinnedSplitTab() {
+    AppendPinnedTab();
+    AppendPinnedTab();
+    tab_strip_model()->ActivateTabAt(0);
+    tab_strip_model()->AddToNewSplit(
+        {1}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+    RunScheduledLayouts();
+    TabCollectionNode* split_node =
+        pinned_collection_node()->GetChildNodeOfType(
+            TabCollectionNode::Type::SPLIT);
+    return split_node ? views::AsViewClass<SplitTabView>(split_node->view())
+                      : nullptr;
+  }
+
+  SkBitmap PaintView(views::View* view) {
+    CHECK(view);
+    CHECK(!view->size().IsEmpty());
+    CHECK(view->layer() || view->GetMirroredPosition().IsOrigin());
+    SkBitmap bitmap;
+    {
+      ui::CanvasPainter painter(&bitmap, view->size(), 1.0f,
+                                SK_ColorTRANSPARENT, true);
+      view->Paint(views::PaintInfo::CreateRootPaintInfo(painter.context(),
+                                                        view->size()));
+    }
+    return bitmap;
+  }
+};
+
+class HorizontalSplitTabViewTest : public SplitTabViewTest,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  bool IsNewPinnedTabStylingEnabled() const { return GetParam(); }
+
+  void SetUpOnMainThread() override {
+    SplitTabViewTest::SetUpOnMainThread();
+    ExitVerticalTabsMode();
+  }
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = SplitTabViewTest::GetEnabledFeatures();
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    if (IsNewPinnedTabStylingEnabled()) {
+      enabled.push_back({tabs::kNewHorizontalPinnedTabStyling, {}});
+    }
+    return enabled;
+  }
+
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    auto disabled = SplitTabViewTest::GetDisabledFeatures();
+    if (!IsNewPinnedTabStylingEnabled()) {
+      disabled.push_back(tabs::kNewHorizontalPinnedTabStyling);
+    }
+    return disabled;
+  }
+};
 
 class SplitTabViewParameterizedTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,
@@ -224,6 +285,92 @@ IN_PROC_BROWSER_TEST_P(SplitTabViewParameterizedTest,
   EXPECT_LE(split_view->GetMinimumSize().width(),
             split_view->GetPreferredSize().width());
 }
+
+IN_PROC_BROWSER_TEST_F(SplitTabViewTest,
+                       PinnedSplitTabPaintsMergedBackgroundAndBorder) {
+  SplitTabView* split_view = CreateActivePinnedSplitTab();
+  ASSERT_TRUE(split_view);
+  ASSERT_EQ(split_view->children().size(), 2u);
+  auto* tab_0 = views::AsViewClass<TabView>(split_view->children()[0]);
+  ASSERT_TRUE(tab_0);
+  ASSERT_TRUE(tab_0->IsActive());
+  ASSERT_TRUE(tab_0->GetBackgroundColor().has_value());
+  const SkColor active_bg = tab_0->GetBackgroundColor().value();
+
+  const SkBitmap tab_0_bitmap = PaintView(tab_0);
+  const SkBitmap split_bitmap = PaintView(split_view);
+
+  EXPECT_NE(split_view->GetBorder(), nullptr);
+  EXPECT_EQ(tab_0_bitmap.getColor(2, tab_0->height() / 2), SK_ColorTRANSPARENT);
+  EXPECT_EQ(
+      split_bitmap.getColor(split_view->width() / 2, split_view->height() / 2),
+      active_bg);
+}
+
+IN_PROC_BROWSER_TEST_P(HorizontalSplitTabViewTest,
+                       ActivePinnedSplitTabPaintsTabSilhouette) {
+  SplitTabView* split_view = CreateActivePinnedSplitTab();
+  ASSERT_TRUE(split_view);
+  ASSERT_EQ(split_view->children().size(), 2u);
+  auto* tab_0 = views::AsViewClass<TabView>(split_view->children()[0]);
+  ASSERT_TRUE(tab_0);
+  ASSERT_TRUE(tab_0->IsActive());
+  ASSERT_TRUE(tab_0->GetBackgroundColor().has_value());
+  const SkColor active_bg = tab_0->GetBackgroundColor().value();
+
+  const SkBitmap tab_0_bitmap = PaintView(tab_0);
+  const SkBitmap split_bitmap = PaintView(split_view);
+
+  EXPECT_EQ(split_view->GetBorder(), nullptr);
+  EXPECT_EQ(tab_0_bitmap.getColor(tab_0->width() / 2, tab_0->height() - 2),
+            active_bg);
+  EXPECT_EQ(split_bitmap.getColor(split_view->width() / 2, 2),
+            SK_ColorTRANSPARENT);
+  EXPECT_EQ(split_bitmap.getColor(4, split_view->height() / 2),
+            SK_ColorTRANSPARENT);
+  EXPECT_EQ(split_bitmap.getColor(4, split_view->height() - 1), active_bg);
+  EXPECT_EQ(
+      split_bitmap.getColor(split_view->width() - 4, split_view->height() - 1),
+      active_bg);
+}
+
+IN_PROC_BROWSER_TEST_P(HorizontalSplitTabViewTest,
+                       InactivePinnedSplitTabOmitsVerticalBorder) {
+  SplitTabView* split_view = CreateActivePinnedSplitTab();
+  ASSERT_TRUE(split_view);
+  ASSERT_EQ(split_view->children().size(), 2u);
+  auto* tab_0 = views::AsViewClass<TabView>(split_view->children()[0]);
+  ASSERT_TRUE(tab_0);
+  ASSERT_TRUE(tab_0->IsActive());
+
+  tab_strip_model()->ActivateTabAt(2);
+  RunScheduledLayouts();
+  const SkBitmap tab_0_bitmap = PaintView(tab_0);
+  const SkBitmap split_bitmap = PaintView(split_view);
+
+  EXPECT_FALSE(tab_0->IsActive());
+  EXPECT_EQ(split_view->GetBorder(), nullptr);
+  EXPECT_EQ(tab_0->tab_styling()->GetStrokeThickness(),
+            IsNewPinnedTabStylingEnabled() ? 1 : 0);
+  EXPECT_EQ(tab_0->tab_styling()
+                ->GetPath(TabStyle::PathType::kActiveTab, 1.0f, {})
+                .isRRect(nullptr),
+            IsNewPinnedTabStylingEnabled());
+  EXPECT_EQ(tab_0_bitmap.getColor(14, tab_0->height() / 2),
+            !tab_0->tab_styling()->delegate()->IsGlassFrame() &&
+                    (IsNewPinnedTabStylingEnabled() ||
+                     tab_0->tab_styling()
+                         ->delegate()
+                         ->ShouldPaintTabBackgroundColor())
+                ? tab_0->tab_styling()->CalculateTargetColors().background_color
+                : SK_ColorTRANSPARENT);
+  EXPECT_EQ(split_bitmap.getColor(split_view->width() / 2, 0),
+            SK_ColorTRANSPARENT);
+  EXPECT_EQ(split_bitmap.getColor(4, split_view->height() / 2),
+            SK_ColorTRANSPARENT);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, HorizontalSplitTabViewTest, testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SplitTabViewParameterizedTest,

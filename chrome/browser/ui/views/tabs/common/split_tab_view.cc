@@ -99,7 +99,7 @@ void SplitTabView::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void SplitTabView::OnPaint(gfx::Canvas* canvas) {
-  if (pinned_) {
+  if (orientation_ == TabStripOrientation::kVertical && pinned_) {
     const auto children = collection_node_
                               ? collection_node_->GetDirectChildren()
                               : TabCollectionNode::ChildViews();
@@ -208,7 +208,7 @@ void SplitTabView::OnDataChanged() {
 }
 
 void SplitTabView::UpdateBorder() {
-  if (pinned_) {
+  if (orientation_ == TabStripOrientation::kVertical && pinned_) {
     const bool is_frame_active =
         GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
     SetBorder(views::CreateRoundedRectBorder(

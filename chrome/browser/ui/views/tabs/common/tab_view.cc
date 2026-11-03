@@ -843,7 +843,7 @@ void TabView::PaintChildren(const views::PaintInfo& info) {
 void TabView::OnPaint(gfx::Canvas* canvas) {
   // Split pinned tabs have a merged background that is rendered in
   // `SplitTabView`.
-  if (pinned_ && split_) {
+  if (orientation_ == TabStripOrientation::kVertical && pinned_ && split_) {
     return;
   }
 
