@@ -38,6 +38,9 @@ import java.util.List;
  */
 @NullMarked
 public class VoiceRecognitionIntentHandler {
+    /** The minimum confidence value reported for a manually stopped voice recognition result. */
+    private static final float MIN_CONFIDENCE = 0.0f;
+
     /** The maximum confidence value reported for a voice recognition result. */
     private static final float MAX_CONFIDENCE = 1.0f;
 
@@ -217,7 +220,10 @@ public class VoiceRecognitionIntentHandler {
 
         if (voicePlateIntent != null
                 && showSpeechRecognitionIntent(
-                        voicePlateIntent, source, callback, /* forceHighConfidence= */ true)) {
+                        voicePlateIntent,
+                        source,
+                        callback,
+                        /* ignoreRecognizerConfidence= */ true)) {
             return;
         }
 
@@ -238,7 +244,7 @@ public class VoiceRecognitionIntentHandler {
                 createSystemSpeechRecognitionIntent(activity),
                 source,
                 callback,
-                /* forceHighConfidence= */ false)) {
+                /* ignoreRecognizerConfidence= */ false)) {
             VoiceRecognitionUtil.isRecognitionIntentPresent(/* useCachedValue= */ false);
             recordVoiceSearchFailureEvent(source);
             callback.onAvailabilityImpacted();
@@ -305,18 +311,18 @@ public class VoiceRecognitionIntentHandler {
      * @param source Where the request to launch this {@link Intent} originated, such as NTP or
      *     omnibox.
      * @param callback The callback to receive the results.
-     * @param forceHighConfidence Whether to treat all returned results as high confidence,
-     *     regardless of the confidence scores reported by the recognizer.
+     * @param ignoreRecognizerConfidence Whether to ignore the confidence scores reported by the
+     *     recognizer.
      * @return True if showing the {@link Intent} was successful.
      */
     private boolean showSpeechRecognitionIntent(
             Intent intent,
             @VoiceInteractionSource int source,
             RecognitionCallback callback,
-            boolean forceHighConfidence) {
+            boolean ignoreRecognizerConfidence) {
         IntentCallback intentCallback =
                 (resultCode, data) -> {
-                    if (forceHighConfidence
+                    if (ignoreRecognizerConfidence
                             && VoicePlateIntegration.getInstance()
                                     .isServiceRefused(resultCode, data)) {
                         Activity activity = mWindowAndroid.getActivity().get();
@@ -338,8 +344,14 @@ public class VoiceRecognitionIntentHandler {
                         return;
                     }
 
+                    boolean stopped =
+                            VoicePlateIntegration.getInstance().isVoiceSearchStopped(data);
                     List<VoiceResult> results =
-                            convertBundleToVoiceResults(data.getExtras(), forceHighConfidence);
+                            convertBundleToVoiceResults(
+                                    data.getExtras(),
+                                    ignoreRecognizerConfidence
+                                            ? (stopped ? MIN_CONFIDENCE : MAX_CONFIDENCE)
+                                            : null);
                     if (results == null || results.isEmpty()) {
                         recordVoiceSearchResult(/* result= */ false);
                         callback.onCanceled();
@@ -347,7 +359,7 @@ public class VoiceRecognitionIntentHandler {
                     }
 
                     VoiceResult topResult = results.get(0);
-                    if (TextUtils.isEmpty(topResult.getMatch())) {
+                    if (!stopped && TextUtils.isEmpty(topResult.getMatch())) {
                         recordVoiceSearchResult(/* result= */ false);
                         callback.onCanceled();
                         return;
@@ -355,7 +367,7 @@ public class VoiceRecognitionIntentHandler {
 
                     recordVoiceSearchResult(/* result= */ true);
                     // Forced confidence is synthetic; only record what the recognizer reported.
-                    if (!forceHighConfidence) {
+                    if (!ignoreRecognizerConfidence) {
                         recordVoiceSearchConfidenceValue(topResult.getConfidence());
                     }
 
@@ -375,22 +387,22 @@ public class VoiceRecognitionIntentHandler {
      * Converts the speech recognition result bundle to a list of results.
      *
      * @param extras The result extras returned by the recognizer.
-     * @param forceHighConfidence Whether to assign the maximum confidence to every result. When
-     *     true, {@link RecognizerIntent#EXTRA_CONFIDENCE_SCORES} is optional and ignored.
+     * @param forcedConfidence Optional synthetic confidence score to assign to every result. When
+     *     non-null, {@link RecognizerIntent#EXTRA_CONFIDENCE_SCORES} is optional and ignored.
      * @return The results, or null if the bundle is missing or malformed.
      */
     @VisibleForTesting
     static @Nullable List<VoiceResult> convertBundleToVoiceResults(
-            @Nullable Bundle extras, boolean forceHighConfidence) {
+            @Nullable Bundle extras, @Nullable Float forcedConfidence) {
         if (extras == null) return null;
 
         ArrayList<String> strings = extras.getStringArrayList(RecognizerIntent.EXTRA_RESULTS);
         if (strings == null) return null;
 
         List<VoiceResult> results = new ArrayList<>(strings.size());
-        if (forceHighConfidence) {
+        if (forcedConfidence != null) {
             for (String match : strings) {
-                results.add(new VoiceResult(match, MAX_CONFIDENCE));
+                results.add(new VoiceResult(match, forcedConfidence));
             }
             return results;
         }

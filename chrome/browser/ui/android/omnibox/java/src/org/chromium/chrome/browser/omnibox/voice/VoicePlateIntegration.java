@@ -68,13 +68,26 @@ public class VoicePlateIntegration {
     }
 
     /**
+     * Returns whether the user manually stopped the Voice Plate session (tapping the Stop button),
+     * in which case the partial (or empty) transcription should populate the focused Omnibox
+     * instead of navigating directly. Overridden by the downstream implementation in //clank.
+     *
+     * @param data The result intent returned by the Voice Plate.
+     */
+    @Contract("null -> false")
+    protected boolean isVoiceSearchStopped(@Nullable Intent data) {
+        return false;
+    }
+
+    /**
      * Returns the intent that launches the Voice Plate, or null if the request cannot be fulfilled,
      * in which case the system speech recognizer is used instead. Overridden by the downstream
      * implementation in //clank.
      *
      * <p>The launched activity must return its transcription using the {@link
-     * RecognizerIntent#EXTRA_RESULTS} contract. Chrome treats every returned result as high
-     * confidence.
+     * RecognizerIntent#EXTRA_RESULTS} contract. Chrome treats completed results as high confidence
+     * unless {@link #isVoiceSearchStopped(Intent)} reports that the user manually stopped the
+     * session.
      *
      * @param context The context used to inspect the device and current configuration.
      * @param profile The regular (non-Incognito) profile that initiated the voice recognition.

@@ -221,7 +221,10 @@ public class VoiceRecognitionHandler {
                 // from
                 // the voice engine.
                 String culledString = matchText.replaceAll(" ", "");
-                AutocompleteMatch match = AutocompleteCoordinator.classify(profile, culledString);
+                AutocompleteMatch match =
+                        culledString.isEmpty()
+                                ? null
+                                : AutocompleteCoordinator.classify(profile, culledString);
 
                 String urlOrSearchQuery;
                 if (match == null || match.isSearchSuggestion()) {

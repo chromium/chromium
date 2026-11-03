@@ -52,6 +52,12 @@ public class VoicePlateIntegrationUnitTest {
     }
 
     @Test
+    public void isVoiceSearchStopped_defaultImplementation_returnsFalse() {
+        assertFalse(mIntegration.isVoiceSearchStopped(new Intent()));
+        assertFalse(mIntegration.isVoiceSearchStopped(/* data= */ null));
+    }
+
+    @Test
     public void createIntent_defaultImplementation_returnsNull() {
         assertNull(mIntegration.createIntent(mContext, mProfile));
     }

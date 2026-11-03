@@ -467,6 +467,41 @@ public class VoiceRecognitionHandlerUnitTest {
     }
 
     @Test
+    public void testVoicePlate_stoppedWithPartialTranscript_populatesFocusedOmnibox() {
+        mProfileSupplier.set(mProfile);
+        enableVoicePlate();
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_OK,
+                /* text= */ "partial query",
+                /* confidence= */ 1.0f);
+        doReturn(true).when(mVoicePlateIntegration).isVoiceSearchStopped(any());
+
+        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, mOnCanceled);
+
+        verify(mOmniboxStub).beginInput(mInputCaptor.capture());
+        assertEquals("partial query", mInputCaptor.getValue().getUserText());
+        verify(mOmniboxStub, never()).loadUrlFromVoice(any());
+        verify(mOnCanceled, never()).run();
+    }
+
+    @Test
+    public void testVoicePlate_stoppedWithEmptyTranscript_focusesEmptyOmnibox() {
+        mProfileSupplier.set(mProfile);
+        enableVoicePlate();
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_OK, /* text= */ "", /* confidence= */ 1.0f);
+        doReturn(true).when(mVoicePlateIntegration).isVoiceSearchStopped(any());
+
+        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, mOnCanceled);
+
+        verify(mOmniboxStub).beginInput(mInputCaptor.capture());
+        assertEquals("", mInputCaptor.getValue().getUserText());
+        verify(mAutocompleteController, never()).classify(any());
+        verify(mOmniboxStub, never()).loadUrlFromVoice(any());
+        verify(mOnCanceled, never()).run();
+    }
+
+    @Test
     public void testParseResults_ForcedConfidence_IgnoresScores() {
         var bundle = new Bundle();
         bundle.putStringArrayList(
@@ -474,7 +509,7 @@ public class VoiceRecognitionHandlerUnitTest {
 
         List<VoiceResult> results =
                 VoiceRecognitionIntentHandler.convertBundleToVoiceResults(
-                        bundle, /* forceHighConfidence= */ true);
+                        bundle, /* forcedConfidence= */ 1.0f);
 
         RecognitionTestHelper.assertVoiceResultsAreEqual(
                 results, new String[] {"a", "b"}, new float[] {1.0f, 1.0f});
@@ -685,7 +720,7 @@ public class VoiceRecognitionHandlerUnitTest {
     public void testParseResults_EmptyBundle() {
         assertNull(
                 VoiceRecognitionIntentHandler.convertBundleToVoiceResults(
-                        new Bundle(), /* forceHighConfidence= */ false));
+                        new Bundle(), /* forcedConfidence= */ null));
     }
 
     @Test
@@ -694,12 +729,12 @@ public class VoiceRecognitionHandlerUnitTest {
                 VoiceRecognitionIntentHandler.convertBundleToVoiceResults(
                         RecognitionTestHelper.createPlaceholderBundle(
                                 new String[] {"blah"}, new float[] {0f, 1f}),
-                        /* forceHighConfidence= */ false));
+                        /* forcedConfidence= */ null));
         assertNull(
                 VoiceRecognitionIntentHandler.convertBundleToVoiceResults(
                         RecognitionTestHelper.createPlaceholderBundle(
                                 new String[] {"blah", "foo"}, new float[] {7f}),
-                        /* forceHighConfidence= */ false));
+                        /* forcedConfidence= */ null));
     }
 
     @Test
@@ -710,7 +745,7 @@ public class VoiceRecognitionHandlerUnitTest {
         List<VoiceResult> results =
                 VoiceRecognitionIntentHandler.convertBundleToVoiceResults(
                         RecognitionTestHelper.createPlaceholderBundle(texts, confidences),
-                        /* forceHighConfidence= */ false);
+                        /* forcedConfidence= */ null);
         assertEquals(3, results.size());
         RecognitionTestHelper.assertVoiceResultsAreEqual(results, texts, confidences);
     }
@@ -728,7 +763,7 @@ public class VoiceRecognitionHandlerUnitTest {
         List<VoiceResult> rawResults =
                 VoiceRecognitionIntentHandler.convertBundleToVoiceResults(
                         RecognitionTestHelper.createPlaceholderBundle(texts, confidences),
-                        /* forceHighConfidence= */ false);
+                        /* forcedConfidence= */ null);
 
         mHandler.handleTranscriptionResult(rawResults);
 
