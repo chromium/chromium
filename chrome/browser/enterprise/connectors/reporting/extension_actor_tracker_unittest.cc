@@ -12,8 +12,12 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -352,6 +356,17 @@ TEST_F(ExtensionActorTrackerTest, DisabledWhenFeatureOrEnterprisePolicyOff) {
   scoped_feature_list_.InitAndDisableFeature(
       kEnterpriseExtensionActorAttribution);
   EXPECT_FALSE(ExtensionActorTracker::IsEnabled(browser_context()));
+}
+
+TEST_F(ExtensionActorTrackerTest, EnabledWithRealTimeUrlCheckOnly) {
+  test::SetOnSecurityEventReporting(profile()->GetPrefs(), /*enabled=*/false);
+  EXPECT_FALSE(ExtensionActorTracker::IsEnabled(browser_context()));
+
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckMode,
+                                    REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  profile()->GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                    policy::POLICY_SCOPE_MACHINE);
+  EXPECT_TRUE(ExtensionActorTracker::IsEnabled(browser_context()));
 }
 
 }  // namespace

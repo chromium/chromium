@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -60,7 +61,9 @@ bool ExtensionActorTracker::IsEnabled(
   }
   auto* service =
       ConnectorsServiceFactory::GetForBrowserContext(browser_context);
-  return service && service->GetReportingSettings().has_value();
+  return service &&
+         (service->GetReportingSettings().has_value() ||
+          service->GetAppliedRealTimeUrlCheck() != REAL_TIME_CHECK_DISABLED);
 }
 
 ExtensionActorTracker::ExtensionActorTracker(content::WebContents* web_contents)
