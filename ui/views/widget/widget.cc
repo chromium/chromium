@@ -83,22 +83,27 @@
 
 namespace views {
 
-namespace {
-
-class ParentThemeObserver : public ui::ColorProviderSourceObserver {
+class Widget::ParentThemeObserver : public ui::ColorProviderSourceObserver {
  public:
   ParentThemeObserver(Widget* widget, ui::ColorProviderSource* parent)
       : ColorProviderSourceObserver(parent), widget_(widget) {}
   ~ParentThemeObserver() override = default;
 
   void OnColorProviderChanged() override {
-    widget_->ResetLastColorProviderKey();
+    // Ignore `Observe(nullptr)` notifications during parent destruction and
+    // transition back to observing `NativeTheme` directly.
+    if (!GetColorProviderSource()) {
+      widget_->UpdateThemeObservation();
+      return;
+    }
     widget_->ScheduleThemeChanged();
   }
 
  private:
   raw_ptr<Widget> widget_;
 };
+
+namespace {
 
 // Create a native widget implementation.
 // First, use the supplied one if non-NULL.
@@ -640,8 +645,8 @@ void Widget::Init(InitParams params) {
       GetColorProvider()->GetColor(GetBackgroundColorId()));
 
   UpdateAccessibleNameForRootView();
-  native_theme_observation_.Observe(GetNativeTheme());
   native_widget_initialized_ = true;
+  UpdateThemeObservation();
   native_widget_->OnWidgetInitDone();
 
   if (delegate) {
@@ -1603,7 +1608,7 @@ void Widget::ScheduleThemeChanged() {
     ThemeChanged();
     return;
   }
-  if (theme_update_scheduled_) {
+  if (is_destroying_ || widget_destroying_handled_ || theme_update_scheduled_) {
     return;
   }
   theme_update_scheduled_ = true;
@@ -1624,6 +1629,9 @@ void Widget::ThemeChanged() {
   theme_update_scheduled_ = false;
 
   if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
+    if (is_destroying_ || widget_destroying_handled_) {
+      return;
+    }
     const ui::ColorProviderKey current_key = GetColorProviderKey();
     if (last_color_provider_key_ && *last_color_provider_key_ == current_key) {
       return;
@@ -1901,10 +1909,7 @@ void Widget::NotifyPaintAsActiveChanged() {
 void Widget::SetNativeTheme(ui::NativeTheme* native_theme) {
   const bool is_update = native_theme_ && (native_theme_ != native_theme);
   native_theme_ = native_theme;
-  native_theme_observation_.Reset();
-  if (native_theme) {
-    native_theme_observation_.Observe(native_theme);
-  }
+  UpdateThemeObservation();
 
   if (is_update) {
     OnNativeThemeUpdated(native_theme);
@@ -2703,6 +2708,22 @@ void Widget::ResetLastColorProviderKey() {
   last_color_provider_key_.reset();
 }
 
+void Widget::UpdateThemeObservation() {
+  native_theme_observation_.Reset();
+  if (!native_widget_initialized_ || is_destroying_ ||
+      widget_destroying_handled_) {
+    return;
+  }
+
+  // When kThemeChangeOptimization is enabled, child widgets without an
+  // explicit `native_theme_` inherit theme updates via
+  // `parent_theme_observer_` instead of observing `NativeTheme` directly.
+  if (!base::FeatureList::IsEnabled(::features::kThemeChangeOptimization) ||
+      !parent_ || native_theme_) {
+    native_theme_observation_.Observe(GetNativeTheme());
+  }
+}
+
 void Widget::SetCheckParentForFullscreen() {
   check_parent_for_fullscreen_ = true;
 }
@@ -2892,12 +2913,11 @@ void Widget::HandleNativeWidgetReparented(Widget* parent) {
         parent->RegisterPaintAsActiveChangedCallback(
             base::BindRepeating(&Widget::OnParentShouldPaintAsActiveChanged,
                                 base::Unretained(this)));
-    if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
-      parent_theme_observer_ =
-          std::make_unique<ParentThemeObserver>(this, parent);
-    } else {
-      parent_theme_observer_.reset();
-    }
+  }
+  if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
+    parent_theme_observer_ =
+        parent_ ? std::make_unique<ParentThemeObserver>(this, parent) : nullptr;
+    UpdateThemeObservation();
   } else {
     parent_theme_observer_.reset();
   }
@@ -3003,6 +3023,10 @@ void Widget::HandleWidgetDestroying() {
     parent_->OnChildRemoved(this);
   }
   parent_theme_observer_.reset();
+  if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
+    theme_update_scheduled_ = false;
+    native_theme_observation_.Reset();
+  }
   ClearFocusManagerFromWidget();
   observers_.Notify(&WidgetObserver::OnWidgetDestroying, this);
   if (non_client_view_) {

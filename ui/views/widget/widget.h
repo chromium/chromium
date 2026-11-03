@@ -1607,6 +1607,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   };
 
   class PaintAsActiveLockImpl;
+  class ParentThemeObserver;
   class ScopedCallStackLock;
 
   friend class ButtonTest;
@@ -1887,6 +1888,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   std::unique_ptr<ui::ColorProviderSourceObserver> parent_theme_observer_;
 
   void ProcessScheduledThemeChanged();
+  void UpdateThemeObservation();
 
   // True if a ThemeChanged() run has been scheduled and is pending.
   bool theme_update_scheduled_ = false;

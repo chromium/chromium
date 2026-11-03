@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
@@ -56,7 +57,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/feature_list.h"
 #include "content/public/browser/desktop_capture_pip_utils.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
@@ -261,8 +261,15 @@ bool BrowserWidget::HandleKeyboardEvent(
 }
 
 void BrowserWidget::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
-  if (base::FeatureList::IsEnabled(features::kThemeChangeOptimization)) {
+  if (base::FeatureList::IsEnabled(features::kThemeChangeOptimization) &&
+      theme_change_type != BrowserThemeChangeType::kNativeTheme) {
+    // Force ThemeChanged() to run for browser/webapp theme updates because
+    // custom ThemeProvider image/tint assets may change without changing
+    // ColorProviderKey.
     ResetLastColorProviderKey();
+    for (views::Widget* widget : GetAllOwnedWidgets(GetNativeView())) {
+      widget->ResetLastColorProviderKey();
+    }
   }
 
   // kWebAppTheme is triggered by web apps and will only change colors, not the
@@ -476,9 +483,12 @@ void BrowserWidget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 ui::ColorProviderKey BrowserWidget::GetColorProviderKey() const {
-  auto key = Widget::GetColorProviderKey();
+  // Pass nullptr for `custom_theme` since `key.custom_theme` is populated
+  // below via `GetCustomTheme()`.
+  ui::ColorProviderKey key = GetNativeTheme()->GetColorProviderKey(nullptr);
 
-  Profile* profile = browser_view_->browser()->GetProfile();
+  BrowserWindowInterface* const browser = browser_view_->browser();
+  Profile* const profile = browser->GetProfile();
   const auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
   CHECK(theme_service);
 
@@ -496,15 +506,15 @@ ui::ColorProviderKey BrowserWidget::GetColorProviderKey() const {
   }
 
   // Apply BrowserWidget overrides:
-  if (auto* app_controller =
-          web_app::AppBrowserController::From(browser_view_->browser())) {
+  auto* app_controller = web_app::AppBrowserController::From(browser);
+  if (app_controller) {
     key.app_controller = app_controller;
     key.app_background_color = app_controller->GetBackgroundColor();
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS SystemWebApps use the OS theme all the time.
-  if (web_app::GetSystemWebAppType(browser_view_->browser()).has_value()) {
+  if (app_controller && app_controller->system_app()) {
     return key;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
