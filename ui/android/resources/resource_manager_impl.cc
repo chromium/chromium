@@ -23,6 +23,7 @@
 #include "cc/resources/ui_resource_manager.h"
 #include "components/viz/common/features.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -63,16 +64,15 @@ ResourceManagerImpl* ResourceManagerImpl::FromJavaObject(
   if (jobj.is_null()) {
     return nullptr;
   }
-  return reinterpret_cast<ResourceManagerImpl*>(
-      Java_ResourceManager_getNativePtr(base::android::AttachCurrentThread(),
-                                        jobj));
+  return Java_ResourceManager_getNativePtr(base::android::AttachCurrentThread(),
+                                           jobj);
 }
 
 ResourceManagerImpl::ResourceManagerImpl(gfx::NativeWindow native_window) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(
       env, Java_ResourceManager_create(env, native_window->GetJavaObject(),
-                                       reinterpret_cast<intptr_t>(this)));
+                                       jni_zero::MakeRaw(this)));
   CHECK(!java_obj_.is_null(), base::NotFatalUntil::M163);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "android::ResourceManagerImpl",
