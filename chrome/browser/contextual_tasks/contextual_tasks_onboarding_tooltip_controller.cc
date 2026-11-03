@@ -26,7 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/interaction/element_events.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -392,8 +392,8 @@ void ContextualTasksOnboardingTooltipController::OnLearnMorePressed(
                     ? GetContextualTasksTabHelpUrl()
                     : GetContextualTasksOnboardingTooltipHelpUrl());
   if (help_url.is_valid()) {
-    browser_window_->OpenGURL(help_url,
-                              WindowOpenDisposition::kNewForegroundTab);
+    browser_window_->OpenGURL(
+        help_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   }
 }
 

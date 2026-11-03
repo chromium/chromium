@@ -33,7 +33,7 @@
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using base::android::AttachCurrentThread;
 
@@ -281,8 +281,10 @@ content::WebContents* ContextualTasksPanelHostDesktopAndroid::OpenURLFromTab(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   if (browser_window_) {
-    if (params.disposition == WindowOpenDisposition::kNewForegroundTab ||
-        params.disposition == WindowOpenDisposition::kNewBackgroundTab) {
+    if (params.disposition ==
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
+        params.disposition ==
+            ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
       TabListInterface* tab_list = TabListInterface::From(browser_window_);
       if (tab_list) {
         tabs::TabInterface* active_tab = tab_list->GetActiveTab();

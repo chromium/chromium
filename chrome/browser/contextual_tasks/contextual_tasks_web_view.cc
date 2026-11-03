@@ -42,7 +42,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/base_window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/webview/web_contents_delegate_views.h"
@@ -484,7 +484,7 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
 
   // Allow the side panel's own WebUI (`chrome://contextual-tasks`) to reload or
   // navigate itself in-place without forwarding to the active browser tab.
-  if (params.disposition == WindowOpenDisposition::kCurrentTab &&
+  if (params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab &&
       ContextualTasksUiService::IsContextualTasksUrl(params.url)) {
     content::NavigationController::LoadURLParams load_url_params(params);
     base::WeakPtr<content::NavigationHandle> navigation_handle =
@@ -543,13 +543,14 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
     }
 
     switch (modified_params.disposition) {
-      case WindowOpenDisposition::kNewForegroundTab:
-      case WindowOpenDisposition::kNewBackgroundTab:
-      case WindowOpenDisposition::kNewPopup:
-      case WindowOpenDisposition::kNewWindow:
+      case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
+      case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+      case ui::mojom::WindowOpenDisposition::kNewPopup:
+      case ui::mojom::WindowOpenDisposition::kNewWindow:
         break;
       default:
-        modified_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+        modified_params.disposition =
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab;
         break;
     }
   }

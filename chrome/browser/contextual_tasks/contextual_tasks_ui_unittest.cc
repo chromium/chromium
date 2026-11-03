@@ -82,6 +82,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/image/image.h"
 #include "ui/webui/buildflags.h"
@@ -3060,10 +3061,10 @@ TEST_F(ContextualTasksUiTest,
   embedded_web_contents_->SetDelegate(&delegate);
 
   GURL exact_matches_url("https://www.google.com/search?q=test&udm=48");
-  content::OpenURLParams renderer_params(exact_matches_url, content::Referrer(),
-                                         WindowOpenDisposition::kCurrentTab,
-                                         ui::PAGE_TRANSITION_LINK,
-                                         /*is_renderer_initiated=*/true);
+  content::OpenURLParams renderer_params(
+      exact_matches_url, content::Referrer(),
+      ui::mojom::WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
   renderer_params.initiator_origin =
       url::Origin::Create(GURL("https://www.google.com"));
 

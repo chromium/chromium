@@ -82,8 +82,8 @@
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -1151,7 +1151,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
   NavigateParams params(browser(), GURL(chrome::kChromeUISettingsURL),
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
   EXPECT_EQ(5, tab_list->GetTabCount());
 
@@ -1305,9 +1305,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(4, tab_list->GetTabCount());
 
   OmniboxEverywhereService omnibox_everywhere_service(browser()->GetProfile());
-  omnibox_everywhere_service.OpenUrl(GURL(chrome::kChromeUISettingsURL),
-                                     WindowOpenDisposition::kCurrentTab,
-                                     ui::PAGE_TRANSITION_GENERATED);
+  omnibox_everywhere_service.OpenUrl(
+      GURL(chrome::kChromeUISettingsURL),
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui::PAGE_TRANSITION_GENERATED);
   EXPECT_EQ(5, tab_list->GetTabCount());
 
   tabs::TabInterface* new_tab = tab_list->GetActiveTab();
@@ -1363,7 +1364,7 @@ IN_PROC_BROWSER_TEST_F(
   tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
   NavigateParams params(browser(), GURL(chrome::kChromeUISettingsURL),
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
   EXPECT_EQ(5, tab_list->GetTabCount());
 

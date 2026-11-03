@@ -79,6 +79,7 @@
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -616,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                        GetRecentTabs) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.google.com/test"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   base::RunLoop run_loop;
@@ -635,12 +636,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                        GetRecentTabs_MultipleTabs) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.google.com/test1"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.google.com/test2"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   base::RunLoop run_loop;
@@ -1414,7 +1415,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                        DeleteTabContext_ClosedTabRemovesUnderline) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.google.com/second_tab"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   tabs::TabInterface* second_tab =
@@ -2792,7 +2793,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title1.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   content::WebContents* test_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -2873,7 +2874,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                        AddTabContext_NullPageContentData) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* blank_tab =
       TabListInterface::From(browser())->GetActiveTab();
@@ -3051,7 +3053,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.google.com/second_tab"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* second_tab =
       TabListInterface::From(browser())->GetActiveTab();
@@ -3735,7 +3737,7 @@ class ContextualTasksExtensionHandlerContextLibraryBrowserTest
   // tab is open.
   SessionID OpenBackgroundTab(const GURL& url) {
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kNewBackgroundTab,
+        browser(), url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     for (tabs::TabInterface* tab :
          TabListInterface::From(browser())->GetAllTabs()) {
@@ -5687,7 +5689,7 @@ IN_PROC_BROWSER_TEST_F(
     GetRecentTabs_IncludesAttachedInternalTabAndAllowsDeselection) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* ntp_tab =
       TabListInterface::From(browser())->GetActiveTab();
@@ -5856,7 +5858,7 @@ IN_PROC_BROWSER_TEST_F(
     DeleteTabContext_RemovesRestoredTabAndAllowsReselection) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.google.com/restored_page"),
-      static_cast<WindowOpenDisposition>(3),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* tab = TabListInterface::From(browser())->GetActiveTab();
   ASSERT_NE(tab, nullptr);
@@ -6427,7 +6429,7 @@ IN_PROC_BROWSER_TEST_F(
   // Open two additional tabs so we can test navigating one and closing the
   // other while keeping `web_contents_` alive as the extension host.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url1, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url1, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* tab1 = TabListInterface::From(browser())->GetActiveTab();
   ASSERT_NE(tab1, nullptr);
@@ -6436,7 +6438,7 @@ IN_PROC_BROWSER_TEST_F(
       sessions::SessionTabHelper::IdForTab(tab1->GetContents());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url1, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url1, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* tab2 = TabListInterface::From(browser())->GetActiveTab();
   ASSERT_NE(tab2, nullptr);

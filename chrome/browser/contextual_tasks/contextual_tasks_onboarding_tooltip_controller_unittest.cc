@@ -28,7 +28,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
@@ -165,7 +165,7 @@ TEST_F(ContextualTasksOnboardingTooltipControllerTest,
   ASSERT_NE(bubble_view, nullptr);
   EXPECT_CALL(mock_browser_window_,
               OpenGURL(GURL(GetContextualTasksOnboardingTooltipHelpUrl()),
-                       WindowOpenDisposition::kNewForegroundTab))
+                       ui::mojom::WindowOpenDisposition::kNewForegroundTab))
       .Times(1);
   bubble_view->body_label_for_testing()->ClickFirstLinkForTesting();
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(

@@ -69,9 +69,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1848,7 +1848,7 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ToNewTab_Allowed) {
   content::Referrer referrer;
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          navigated_url, WindowOpenDisposition::kNewForegroundTab,
+          navigated_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL, referrer,
           web_contents->GetPrimaryMainFrame()
               ->GetCurrentInitiatorNavigationState());
@@ -3298,7 +3298,8 @@ TEST_F(
                     BrowserWindowInterface* browser) {
         EXPECT_EQ(external_url, params.url);
         // CURRENT_TAB should be converted to NEW_FOREGROUND_TAB.
-        EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab, params.disposition);
+        EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                  params.disposition);
         run_loop.Quit();
       });
 
@@ -3334,14 +3335,16 @@ TEST_F(
                     const blink::mojom::WindowFeatures& features,
                     BrowserWindowInterface* browser) {
         EXPECT_EQ(external_url, params.url);
-        EXPECT_EQ(WindowOpenDisposition::kNewBackgroundTab, params.disposition);
+        EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+                  params.disposition);
         run_loop.Quit();
       });
 
-  content::OpenURLParams open_params(external_url, content::Referrer(),
-                                     WindowOpenDisposition::kNewBackgroundTab,
-                                     ui::PageTransition::PAGE_TRANSITION_LINK,
-                                     /*is_renderer_initiated=*/true);
+  content::OpenURLParams open_params(
+      external_url, content::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      ui::PageTransition::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       std::move(open_params), web_contents.get(),
@@ -3631,7 +3634,8 @@ TEST_F(
                     const blink::mojom::WindowFeatures& features,
                     BrowserWindowInterface* target_browser) {
         EXPECT_EQ(citation_url, params.url);
-        EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab, params.disposition);
+        EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                  params.disposition);
         run_loop.Quit();
       });
 
@@ -3707,7 +3711,8 @@ TEST_F(
                     const blink::mojom::WindowFeatures& features,
                     BrowserWindowInterface* target_browser) {
         EXPECT_EQ(organic_url, params.url);
-        EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab, params.disposition);
+        EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                  params.disposition);
         run_loop.Quit();
       });
 
@@ -4065,7 +4070,8 @@ TEST_F(
                     const blink::mojom::WindowFeatures& features,
                     BrowserWindowInterface* browser) {
         EXPECT_EQ(shopping_url, params.url);
-        EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab, params.disposition);
+        EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                  params.disposition);
         run_loop.Quit();
       });
 
@@ -4105,7 +4111,8 @@ TEST_F(
                     const blink::mojom::WindowFeatures& features,
                     BrowserWindowInterface* browser) {
         EXPECT_EQ(organic_url, params.url);
-        EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab, params.disposition);
+        EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                  params.disposition);
         run_loop.Quit();
       });
 
@@ -5357,7 +5364,7 @@ TEST_F(ContextualTasksUiServiceTest,
   GURL target_url("https://target.example.com/");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          target_url, WindowOpenDisposition::kNewForegroundTab,
+          target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   params.frame_tree_node_id =
       source_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();

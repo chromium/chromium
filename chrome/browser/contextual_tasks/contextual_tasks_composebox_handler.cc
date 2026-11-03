@@ -68,8 +68,8 @@
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/aim_query.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -141,7 +141,7 @@ class ContextualTasksOmniboxClient : public ContextualOmniboxClient {
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       omnibox::AutocompleteMatchType match_type,
       base::TimeTicks match_selection_timestamp,
@@ -168,7 +168,7 @@ ContextualTasksOmniboxClient::GetLensOverlaySuggestInputs() const {
 void ContextualTasksOmniboxClient::OnAutocompleteAccept(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     omnibox::AutocompleteMatchType match_type,
     base::TimeTicks match_selection_timestamp,
