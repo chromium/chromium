@@ -218,14 +218,14 @@ TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleView) {
   // Verify the visuals with secondary-snapped window gets focused.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("window_cycle_with_snap_group_secondary_focused"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 1,
       window_cycle_widget));
 
   // Verify the visuals with primary-snapped window gets focused.
   event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("window_cycle_with_snap_group_primary_focused"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 1,
       window_cycle_widget));
 
   // Verify the visuals after one of the windows in the group got destroyed
@@ -242,7 +242,7 @@ TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleView) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("window_cycle_with_snap_group_window_destruction"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 1,
       updated_window_cycle_widget));
 }
 
@@ -359,7 +359,7 @@ TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleViewInPortrait) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "window_cycle_with_snap_group_secondary_focused_in_portrait"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 2,
       window_cycle_widget));
 
   // Verify the visuals with primary-snapped window gets focused.
@@ -367,7 +367,7 @@ TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleViewInPortrait) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "window_cycle_with_snap_group_primary_focused_in_portrait"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 2,
       window_cycle_widget));
 }
 

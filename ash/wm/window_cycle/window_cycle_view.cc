@@ -52,7 +52,6 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -147,22 +146,19 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
 
   // The layer for `this` is responsible for showing background blur and fade
   // and clip animations.
-  SetPaintToLayer();
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetName("WindowCycleView");
   layer()->SetMasksToBounds(true);
   if (chromeos::features::IsSystemBlurEnabled()) {
-    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
-  SetBackground(views::CreateSolidBackground(
+  SetBackground(views::CreateLayerBasedRoundedBackground(
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysScrim2
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kBackgroundCornerRadius,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow));
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque,
+      gfx::RoundedCornersF(kBackgroundCornerRadius)));
 
   // `mirror_container_` may be larger than `this`. In this case, it will be
   // shifted along the x-axis when the user tabs through. It is a container
@@ -227,6 +223,9 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
 
     no_recent_items_label_ = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_NO_RECENT_ITEMS)));
+    no_recent_items_label_->SetPaintToLayer();
+    no_recent_items_label_->layer()->SetFillsBoundsOpaquely(false);
+    no_recent_items_label_->SetSubpixelRenderingEnabled(false);
     no_recent_items_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     no_recent_items_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
 
@@ -262,9 +261,10 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   mirror_container_->SetBetweenChildSpacing(kBetweenChildPaddingDp -
                                             cycle_item_insets.width());
 
-  shadow_ = SystemDecoration::CreateForView(
-      this, SystemDecoration::ShadowType::kElevation4);
-  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kBackgroundCornerRadius));
+  decoration_ = SystemDecoration::CreateForView(
+      this, SystemDecoration::ShadowType::kElevation4,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(gfx::RoundedCornersF(kBackgroundCornerRadius));
 }
 
 WindowCycleView::~WindowCycleView() = default;
@@ -306,9 +306,10 @@ void WindowCycleView::ScaleCycleView(const gfx::Rect& screen_bounds) {
     defer_widget_bounds_update_ = true;
   }
 
-  // Hide the shadow while animating because the clip rect animation clips away
-  // visible portions of `this` while the shadow remains the size of `this`.
-  shadow_->GetLayer()->SetVisible(false);
+  // Hide the decoration while animating because the clip rect animation clips
+  // away visible portions of `this` while the decoration remains the size of
+  // `this`.
+  decoration_->GetLayer()->SetVisible(false);
 
   layer()->SetClipRect(old_bounds);
   ui::ScopedLayerAnimationSettings settings(layer_animator);
@@ -367,6 +368,14 @@ void WindowCycleView::UpdateWindows(const WindowList& windows) {
 
 void WindowCycleView::FadeInLayer() {
   DCHECK(GetWidget());
+
+  decoration_->GetLayer()->SetOpacity(0.f);
+  {
+    ui::ScopedLayerAnimationSettings decoration_settings(
+        decoration_->GetLayer()->GetAnimator());
+    decoration_settings.SetTransitionDuration(kFadeInDuration);
+    decoration_->GetLayer()->SetOpacity(1.f);
+  }
 
   layer()->SetOpacity(0.f);
   ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
@@ -588,8 +597,6 @@ void WindowCycleView::Layout(PassKey) {
   // work properly.
   if (first_layout) {
     mirror_container_->SizeToPreferredSize();
-    layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF{kBackgroundCornerRadius});
   }
 
   gfx::RectF target_bounds;
@@ -693,7 +700,7 @@ void WindowCycleView::OnImplicitAnimationsCompleted() {
     defer_widget_bounds_update_ = false;
   }
 
-  shadow_->GetLayer()->SetVisible(true);
+  decoration_->GetLayer()->SetVisible(true);
 }
 
 gfx::Rect WindowCycleView::GetContentContainerBounds() const {

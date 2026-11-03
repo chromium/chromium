@@ -178,7 +178,7 @@ TEST_P(WmPixelDiffTest, WindowCycleBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("window_cycle_basic"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 30 : 3,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 31 : 4,
       widget));
 }
 

@@ -211,7 +211,7 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // active.
   std::unique_ptr<WmFlingHandler> fling_handler_;
 
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 
   // Indicates whether the selector view on `tab_slider_` is focused or not. We
   // need to manually schedule paint for the focus ring since the tab slider
