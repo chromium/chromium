@@ -2365,22 +2365,11 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
 
     case ui::VKEY_SPACE: {
       if (aim_page_action_icon_has_fake_focus_) {
-        if (base::FeatureList::IsEnabled(
-                omnibox::kAiModeSpaceDoesNotActivate)) {
-          // Pressing space should add a space to user input, cause AIM button
-          // to lose focus, and move focus back to first suggestion.
-          ApplyFocusRingToAimButton(false);
-          controller()->edit_model()->SetCaretVisibility(true);
-          return false;  // Fallthrough to insert space
-        } else {
-          controller()->edit_model()->OpenSelection(
-              OmniboxPopupSelection(
-                  OmniboxPopupSelection::kNoMatch,
-                  OmniboxPopupSelection::LineState::kFocusedButtonAim),
-              event.time_stamp(), WindowOpenDisposition::kCurrentTab,
-              /*via_keyboard=*/true);
-          return true;
-        }
+        // Pressing space should add a space to user input, cause AIM button
+        // to lose focus, and move focus back to first suggestion.
+        ApplyFocusRingToAimButton(false);
+        controller()->edit_model()->SetCaretVisibility(true);
+        return false;  // Fallthrough to insert space
       }
 
       if (controller()->IsPopupOpen() && !control && !alt && !shift) {

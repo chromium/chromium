@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/omnibox/test_location_bar.h"
@@ -505,14 +504,7 @@ TEST_F(OmniboxViewViewsTest, UpdatePopupCall) {
   omnibox_view()->CheckUpdatePopupCallInfo(3, u"a", Range(1));
 }
 
-class OmniboxViewViewsAiModeSpaceTest : public OmniboxViewViewsTest {
- public:
-  OmniboxViewViewsAiModeSpaceTest()
-      : OmniboxViewViewsTest({{omnibox::kAiModeSpaceDoesNotActivate, {}}}, {}) {
-  }
-};
-
-TEST_F(OmniboxViewViewsAiModeSpaceTest, AiModeSpaceDoesNotActivate) {
+TEST_F(OmniboxViewViewsTest, AiModeSpaceDoesNotActivate) {
   omnibox_view()->set_aim_page_action_icon_has_fake_focus(true);
   ASSERT_TRUE(omnibox_view()->aim_page_action_icon_has_fake_focus());
 

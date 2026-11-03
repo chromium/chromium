@@ -80,7 +80,6 @@ extern const base::FeatureParam<int>
     kOmniboxEverywhereFreMaxShortcutSetupImpressionsParam;
 extern const base::FeatureParam<int>
     kOmniboxEverywhereFreMaxShortcutReminderImpressionsParam;
-BASE_DECLARE_FEATURE(kAiModeSpaceDoesNotActivate);
 BASE_DECLARE_FEATURE(kWebUIOmniboxDisableCaretColorAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopupDoubleClick);
