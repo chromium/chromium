@@ -8,7 +8,10 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -18,13 +21,16 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
- * A dialog shown via JavaScript. This can be an alert dialog, a prompt dialog, a confirm dialog,
- * or an onbeforeunload dialog.
+ * A dialog shown via JavaScript. This can be an alert dialog, a prompt dialog, a confirm dialog, or
+ * an onbeforeunload dialog.
  */
 @JNINamespace("javascript_dialogs")
 @NullMarked
 public class JavascriptAppModalDialog extends JavascriptModalDialog {
-    private long mNativeDialogPointer;
+    @JniType("javascript_dialogs::AppModalDialogViewAndroid")
+    interface NativeAppModalDialogViewAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAppModalDialogViewAndroid> mNativeDialogPointer;
 
     /** Constructor for initializing contents to be shown on the dialog. */
     private JavascriptAppModalDialog(
@@ -92,12 +98,14 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     }
 
     @CalledByNative
-    void showJavascriptAppModalDialog(WindowAndroid window, long nativeDialogPointer) {
+    void showJavascriptAppModalDialog(
+            WindowAndroid window, JniRawPtr<NativeAppModalDialogViewAndroid> nativeDialogPointer) {
         assert window != null;
         Context context = window.getContext().get();
         // If the context has gone away, then just clean up the native pointer.
         if (context == null || window.getModalDialogManager() == null) {
             JavascriptAppModalDialogJni.get().didCancelAppModalDialog(nativeDialogPointer, false);
+            nativeDialogPointer.release();
             return;
         }
 
@@ -109,22 +117,31 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     @CalledByNative
     private void dismiss() {
         dismiss(DialogDismissalCause.DISMISSED_BY_NATIVE);
-        mNativeDialogPointer = 0;
+        if (mNativeDialogPointer != null) {
+            mNativeDialogPointer.release();
+            mNativeDialogPointer = null;
+        }
     }
 
     @Override
     protected void accept(String promptResult, boolean suppressDialogs) {
-        if (mNativeDialogPointer != 0) {
+        if (mNativeDialogPointer != null) {
+            JniRawPtr<NativeAppModalDialogViewAndroid> nativeDialog = mNativeDialogPointer;
+            mNativeDialogPointer = null;
             JavascriptAppModalDialogJni.get()
-                    .didAcceptAppModalDialog(mNativeDialogPointer, promptResult, suppressDialogs);
+                    .didAcceptAppModalDialog(nativeDialog, promptResult, suppressDialogs);
+            nativeDialog.release();
         }
     }
 
     @Override
     protected void cancel(boolean buttonClicked, boolean suppressDialogs) {
-        if (mNativeDialogPointer != 0) {
+        if (mNativeDialogPointer != null) {
+            JniRawPtr<NativeAppModalDialogViewAndroid> nativeDialog = mNativeDialogPointer;
+            mNativeDialogPointer = null;
             JavascriptAppModalDialogJni.get()
-                    .didCancelAppModalDialog(mNativeDialogPointer, suppressDialogs);
+                    .didCancelAppModalDialog(nativeDialog, suppressDialogs);
+            nativeDialog.release();
         }
     }
 
@@ -136,11 +153,12 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     @NativeMethods
     interface Natives {
         void didAcceptAppModalDialog(
-                long nativeAppModalDialogViewAndroid,
+                JniPtr<NativeAppModalDialogViewAndroid> self,
                 @JniType("std::u16string") String prompt,
                 boolean suppress);
 
-        void didCancelAppModalDialog(long nativeAppModalDialogViewAndroid, boolean suppress);
+        void didCancelAppModalDialog(
+                JniPtr<NativeAppModalDialogViewAndroid> self, boolean suppress);
 
         JavascriptAppModalDialog getCurrentModalDialog();
     }

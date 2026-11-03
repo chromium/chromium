@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/javascript_dialog_type.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -85,7 +86,7 @@ void AppModalDialogViewAndroid::ShowAppModalDialog() {
   dialog_jobject_.Reset(dialog_object);
 
   Java_JavascriptAppModalDialog_showJavascriptAppModalDialog(
-      env, dialog_object, parent_jobj, reinterpret_cast<intptr_t>(this));
+      env, dialog_object, parent_jobj, jni_zero::MakeRaw(this));
 }
 
 void AppModalDialogViewAndroid::ActivateAppModalDialog() {
