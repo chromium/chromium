@@ -2681,8 +2681,6 @@ ci.builder(
 ci.builder(
     name = "linux-devtools-frontend-rel",
     description_html = "Builder for DevTools Frontend tests",
-    schedule = "triggered",
-    triggered_by = [],
     builder_spec = builder_config.copy_from("ci/Linux Builder"),
     gn_args = gn_args.config(
         configs = [
@@ -2727,8 +2725,6 @@ ci.builder(
 ci.builder(
     name = "mac-devtools-frontend-rel",
     description_html = "Builder for DevTools Frontend tests",
-    schedule = "triggered",
-    triggered_by = [],
     builder_spec = builder_config.copy_from("ci/mac-arm64-rel"),
     gn_args = gn_args.config(
         configs = [
@@ -2775,8 +2771,6 @@ ci.builder(
 ci.builder(
     name = "win-devtools-frontend-rel",
     description_html = "Builder for DevTools Frontend tests",
-    schedule = "triggered",
-    triggered_by = [],
     builder_spec = builder_config.copy_from("ci/Win x64 Builder"),
     gn_args = gn_args.config(
         configs = [
