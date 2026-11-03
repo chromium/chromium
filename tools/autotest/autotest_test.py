@@ -424,6 +424,8 @@ class FindTestTargetsTest(TestCase):
 
     self.mock_exit = mock.patch('utils.command_util.ExitWithMessage').start()
     self.mock_exit.side_effect = Exception("ExitWithMessage called")
+    self.mock_isatty = mock.patch('sys.stdin.isatty', return_value=True).start()
+    self.mock_is_llm = mock.patch('utils.IsLlm', return_value=False).start()
     self.addCleanup(mock.patch.stopall)
 
     self.out_dir = 'out/Default'
@@ -504,19 +506,77 @@ class FindTestTargetsTest(TestCase):
       mock_pick.assert_called_once()
       self.assertEqual(mock_pick.call_args[0][0], None)
 
-  def test_target_ambiguity_prompt_gemini_cli(self):
+  def test_target_ambiguity_llm_runs_all(self):
+    self.mock_is_llm.return_value = True
     self.mock_run_command.runnable_targets = [
       "//chrome/test:unit_tests",
       "//chrome/test:browser_tests",
     ]
-    with mock.patch('utils.IsGeminiCli', return_value=True) as mock_pick:
-      orig_paths = ['foo.cc']
-      with self.assertRaises(SystemExit):
+    with (
+      mock.patch('utils.command_util.HaveUserPickTarget') as mock_pick,
+      self.assertLogs(level='INFO') as log_cm,
+    ):
+      targets, _ = target_finder.FindTestTargets(
+        self.mock_cache, self.out_dir, ['foo.cc'], orig_paths=['foo.cc']
+      )
+      self.assertEqual(
+        ['chrome/test:browser_tests', 'chrome/test:unit_tests'], targets
+      )
+      mock_pick.assert_not_called()
+    self.assertTrue(
+      any(
+        'running all 2 matching targets; pass --target or --run-all to choose.'
+        in msg
+        for msg in log_cm.output
+      )
+    )
+
+  def test_target_ambiguity_non_tty_runs_all(self):
+    self.mock_isatty.return_value = False
+    self.mock_run_command.runnable_targets = [
+      "//chrome/test:unit_tests",
+      "//chrome/test:browser_tests",
+    ]
+    with mock.patch('utils.command_util.HaveUserPickTarget') as mock_pick:
+      targets, _ = target_finder.FindTestTargets(
+        self.mock_cache, self.out_dir, ['foo.cc']
+      )
+      self.assertEqual(
+        ['chrome/test:browser_tests', 'chrome/test:unit_tests'], targets
+      )
+      mock_pick.assert_not_called()
+
+  def test_target_ambiguity_llm_respects_max_targets(self):
+    self.mock_is_llm.return_value = True
+    self.mock_run_command.runnable_targets = [
+      f'//chrome/test:target_{i}_unittests' for i in range(11)
+    ]
+    with self.assertLogs(level='INFO') as log_cm:
+      with self.assertRaises(Exception):
+        target_finder.FindTestTargets(self.mock_cache, self.out_dir, ['foo.cc'])
+    self.mock_exit.assert_called_once()
+    self.assertIn('Use --target to choose', self.mock_exit.call_args[0][0])
+    self.assertFalse(
+      any('running all 11 matching targets' in msg for msg in log_cm.output)
+    )
+
+  def test_target_index_out_of_range_llm_exits(self):
+    self.mock_is_llm.return_value = True
+    self.mock_run_command.runnable_targets = [
+      "//chrome/test:unit_tests",
+      "//chrome/test:browser_tests",
+    ]
+    with mock.patch('utils.command_util.HaveUserPickTarget') as mock_pick:
+      with self.assertRaises(Exception):
         target_finder.FindTestTargets(
-          self.mock_cache, self.out_dir, ['foo.cc'], orig_paths=orig_paths
+          self.mock_cache, self.out_dir, ['foo.cc'], target_index=5
         )
+      mock_pick.assert_not_called()
+    self.mock_exit.assert_called_once()
+    self.assertIn('out of range', self.mock_exit.call_args[0][0])
 
   def test_target_index(self):
+    self.mock_is_llm.return_value = True
     self.mock_run_command.runnable_targets = [
       "//chrome/test:unit_tests",
       "//chrome/test:browser_tests",
@@ -1154,6 +1214,27 @@ class MainExitCodeTest(TestCase):
     )
     self.assertEqual(result.exit_code, 0)
     self.mock_run.assert_called_once()
+
+
+class IsLlmTest(unittest.TestCase):
+  def test_ai_agent_env_vars(self):
+    env_vars = (
+      'GEMINI_CLI',
+      'CLAUDECODE',
+      'ANTIGRAVITY_AGENT',
+      'CODEX_SANDBOX',
+      'CURSOR_AGENT',
+      'COPILOT_CLI',
+      'AI_AGENT',
+    )
+    with mock.patch.dict(os.environ, {}, clear=True):
+      self.assertFalse(target_finder.utils.IsLlm())
+    for var in env_vars:
+      with mock.patch.dict(os.environ, {var: '1'}, clear=True):
+        self.assertTrue(target_finder.utils.IsLlm(), msg=var)
+      for falsy in ('', '0', 'false', 'False'):
+        with mock.patch.dict(os.environ, {var: falsy}, clear=True):
+          self.assertFalse(target_finder.utils.IsLlm(), msg=f'{var}={falsy}')
 
 
 if __name__ == '__main__':

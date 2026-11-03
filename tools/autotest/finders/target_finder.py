@@ -11,6 +11,7 @@ import contextlib
 import logging
 
 import finders.file_finder as file_finder
+import utils
 import utils.command_util as command
 import utils.constants as const
 
@@ -174,6 +175,13 @@ def FindTestTargets(
   target_cache.Save()
 
   if len(test_targets) > 1:
+    auto_run_all = (
+      not run_all
+      and target_index is None
+      and (utils.IsLlm() or not sys.stdin.isatty())
+    )
+    if auto_run_all:
+      run_all = True
     if run_all:
       logging.warning(f'Found {len(test_targets)} test targets.')
       if len(test_targets) > 10 and not run_changed:
@@ -185,9 +193,21 @@ def FindTestTargets(
           'Your query may involve non-test sources. Use --target to choose'
           ' one explicitly.'
         )
-      logging.info('Trying to run all of them!')
+      if auto_run_all:
+        logging.info(
+          'Non-interactive or AI-agent environment detected; running all %d'
+          ' matching targets; pass --target or --run-all to choose.',
+          len(test_targets),
+        )
+      else:
+        logging.info('Trying to run all of them!')
     elif target_index is not None and 0 <= target_index < len(test_targets):
       test_targets = [test_targets[target_index]]
+    elif target_index is not None and (utils.IsLlm() or not sys.stdin.isatty()):
+      command.ExitWithMessage(
+        f'--target-index {target_index} is out of range for'
+        f' {len(test_targets)} matching targets.'
+      )
     else:
       test_targets = [command.HaveUserPickTarget(orig_paths, test_targets)]
 
