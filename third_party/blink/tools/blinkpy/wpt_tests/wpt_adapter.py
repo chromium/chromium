@@ -43,6 +43,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('run_wpt_tests')
 
 
+class _PortSetupError(Exception):
+    def __init__(self, exit_code):
+        super().__init__(f'Port setup failed with exit status {exit_code}')
+        self.exit_code = exit_code
+
+
 class WPTAdapter:
     PORT_NAME_BY_PRODUCT = {
         'android_webview': 'webview',
@@ -531,8 +537,10 @@ class WPTAdapter:
                 )
 
             stack.enter_context(self.process_and_upload_results(runner_options))
-            self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
+            exit_code = self.port.setup_test_run()
+            if exit_code:
+                raise _PortSetupError(exit_code)
             yield runner_options
 
     def run_tests(self) -> int:
@@ -542,6 +550,9 @@ class WPTAdapter:
             with self.test_env() as runner_options:
                 run = _load_entry_point(runner_options.deps_path)
                 exit_code = 1 if run(**vars(runner_options)) else 0
+        except _PortSetupError as error:
+            logger.error('%s', error)
+            return error.exit_code
         except KeyboardInterrupt:
             logger.critical('Harness exited after signal interrupt')
             exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
