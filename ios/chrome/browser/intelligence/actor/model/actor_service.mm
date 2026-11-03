@@ -212,16 +212,6 @@ void ActorService::PerformActions(
                  std::move(task_update), std::move(callback));
 }
 
-void ActorService::RequestTabObservation(ActorTaskId task_id,
-                                         web::WebState* web_state,
-                                         TabObservationCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnqueueCommand(
-      &ActorService::DoRequestTabObservation, task_id,
-      web_state ? web_state->GetWeakPtr() : base::WeakPtr<web::WebState>(),
-      std::move(callback));
-}
-
 void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/496163986): Implement and test. Must be enqueued as a
@@ -434,28 +424,6 @@ void ActorService::DoPerformActions(
                            std::move(callback)));
 }
 
-void ActorService::DoRequestTabObservation(
-    ActorTaskId task_id,
-    base::WeakPtr<web::WebState> weak_web_state,
-    TabObservationCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web::WebState* web_state = weak_web_state.get();
-  if (!FindActiveTask(task_id) || !web_state) {
-    // TODO(crbug.com/578549018): Reply a dedicated error when the WebState
-    // went away, matching Desktop's `kWebContentsWentAway`.
-    PostReply(base::BindOnce(
-        std::move(callback),
-        base::unexpected(PageContextWrapperError::kGenericError)));
-    return;
-  }
-
-  // The extraction may complete synchronously; its reply is still posted, like
-  // the early reply above, so that every reply runs as its own task.
-  StartTabObservation(task_id, web_state,
-                      base::BindOnce(&ActorService::PostTabObservationReply,
-                                     weak_this_, std::move(callback)));
-}
-
 void ActorService::StartTabObservation(ActorTaskId task_id,
                                        web::WebState* web_state,
                                        TabObservationCallback callback) {
@@ -618,14 +586,10 @@ void ActorService::OnPageContextExtractionComplete(
     }
   }
 
+  // TODO(crbug.com/578549018): Reply a dedicated error, matching Desktop's
+  // `kWebContentsWentAway`, when the WebState is destroyed during the
+  // extraction.
   std::move(callback).Run(std::move(response));
-}
-
-void ActorService::PostTabObservationReply(
-    TabObservationCallback callback,
-    PageContextWrapperCallbackResponse response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PostReply(base::BindOnce(std::move(callback), std::move(response)));
 }
 
 void ActorService::OnTaskStopped(ActorTaskId task_id) {

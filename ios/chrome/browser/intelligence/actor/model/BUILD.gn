@@ -146,7 +146,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/snapshots/model:test_utils",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/url_loading/model",
-    "//ios/chrome/test:test_support",
     "//ios/web/find_in_page",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",

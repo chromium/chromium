@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 
-#import <UIKit/UIKit.h>
-
 #import <set>
 #import <string>
 #import <string_view>
@@ -13,8 +11,6 @@
 #import <vector>
 
 #import "base/functional/bind.h"
-#import "base/functional/callback_helpers.h"
-#import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/to_string.h"
 #import "base/test/gtest_util.h"
@@ -49,14 +45,12 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
-#import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -412,100 +406,45 @@ TEST_F(ActorServiceTest, CreateTaskGeneratesUniqueIds) {
   }
 }
 
-// Tests that requesting tab observation with a null WebState posts an error
-// response.
-TEST_F(ActorServiceTest, RequestTabObservationWithNullWebStateReturnsFailure) {
+// Tests that an act replies with the observation of its controlled WebState.
+TEST_F(ActorServiceTest, PerformActionsObservesControlledWebState) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
   ActorTaskId task_id = CreateTask(service);
-
-  base::test::TestFuture<PageContextWrapperCallbackResponse> future;
-  service->RequestTabObservation(task_id, nullptr, future.GetCallback());
-  // Run the command, which posts the reply.
-  RunAlreadyPostedTasks();
-  EXPECT_FALSE(future.IsReady());
-  // Run the posted reply.
-  RunAlreadyPostedTasks();
-  ASSERT_TRUE(future.IsReady());
-  const PageContextWrapperCallbackResponse& response = future.Get();
-  ASSERT_FALSE(response.has_value());
-  EXPECT_EQ(PageContextWrapperError::kGenericError, response.error());
-}
-
-// Tests that requesting tab observation of a non-extractable WebState, whose
-// extraction completes synchronously, still replies asynchronously.
-TEST_F(ActorServiceTest, RequestTabObservationOfNonExtractablePageIsAsync) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  ActorTaskId task_id = CreateTask(service);
-  // A `FakeWebState` has no HTTP(S) URL, so it cannot be extracted.
+  // A `FakeWebState` has no HTTP(S) URL, so its extraction replies
+  // `kPageNotExtractableError`.
   web::FakeWebState web_state;
+  service->AddControlledWebState(task_id, &web_state);
 
-  base::test::TestFuture<PageContextWrapperCallbackResponse> future;
-  service->RequestTabObservation(task_id, &web_state, future.GetCallback());
-  // Run the command, whose extraction completes synchronously and posts the
-  // reply.
-  RunAlreadyPostedTasks();
-  EXPECT_FALSE(future.IsReady());
-  // Run the posted reply.
-  RunAlreadyPostedTasks();
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_FALSE(future.Get().has_value());
+  const PerformActionsResult result = PerformActions(service, task_id);
+  ASSERT_EQ(1u, result.page_contexts.size());
+  ASSERT_NE(nullptr, result.page_contexts[0]);
+  EXPECT_EQ(web_state.GetUniqueIdentifier(), result.page_contexts[0]->tab_id);
+  EXPECT_EQ(base::unexpected(PageContextWrapperError::kPageNotExtractableError),
+            result.page_contexts[0]->page_context_response);
 }
 
-// Tests that requesting tab observation with a valid WebState extracts APC.
-TEST_F(ActorServiceTest, RequestTabObservationWithValidWebState) {
+// Tests that an act whose controlled WebState was destroyed replies without an
+// observation.
+TEST_F(ActorServiceTest,
+       PerformActionsWithDestroyedWebStateRepliesNoObservation) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
   ActorTaskId task_id = CreateTask(service);
+  auto web_state = std::make_unique<web::FakeWebState>();
+  service->AddControlledWebState(task_id, web_state.get());
+  web_state.reset();
 
-  web::WebState::CreateParams params(profile_.get());
-  auto web_state = web::WebState::Create(params);
-
-  web_state->GetView().frame = CGRectMake(0, 0, 100, 100);
-  UIViewController* root_view_controller = [[UIViewController alloc] init];
-  root_view_controller.view = web_state->GetView();
-
-  ScopedKeyWindow scoped_window;
-  scoped_window.Get().rootViewController = root_view_controller;
-
-  web_state->WasShown();
-
-  web::test::LoadHtml(@"<html><body>Most basic APC content</body></html>",
-                      GURL("http://dummy.url"), web_state.get());
-
-  base::RunLoop run_loop;
-  bool callback_called = false;
-  bool apc_extracted = false;
-
-  service->RequestTabObservation(
-      task_id, web_state.get(),
-      base::BindOnce(
-          [](bool* called, bool* apc_ok, base::OnceClosure quit_closure,
-             PageContextWrapperCallbackResponse response) {
-            base::ScopedClosureRunner quit_runner(std::move(quit_closure));
-            *called = true;
-            ASSERT_TRUE(response.has_value());
-            const auto& page_context = response.value();
-            ASSERT_TRUE(page_context->has_annotated_page_content());
-            const auto& apc = page_context->annotated_page_content();
-            ASSERT_TRUE(apc.has_root_node());
-            *apc_ok = true;
-          },
-          &callback_called, &apc_extracted, run_loop.QuitClosure()));
-
-  run_loop.Run();
-
-  EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(apc_extracted);
+  const PerformActionsResult result = PerformActions(service, task_id);
+  EXPECT_TRUE(result.action_results.empty());
+  EXPECT_TRUE(result.page_contexts.empty());
 }
 
-// Tests that requesting tab observation times out after the configured
+// Tests that an act's tab observation times out after the configured
 // `ActorTabObservationPageContextTimeout` duration.
-TEST_F(ActorServiceMockTimeTest, RequestTabObservation_Timeout) {
+TEST_F(ActorServiceMockTimeTest, PerformActionsObservationTimeout) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kGeminiActor, {{"ActorTabObservationPageContextTimeout", "500ms"}});
@@ -516,41 +455,22 @@ TEST_F(ActorServiceMockTimeTest, RequestTabObservation_Timeout) {
   ActorTaskId task_id = CreateTask(service);
   std::unique_ptr<web::FakeWebState> fake_web_state =
       CreateWebStateWithHangingExtraction();
+  service->AddControlledWebState(task_id, fake_web_state.get());
 
-  base::test::TestFuture<PageContextWrapperCallbackResponse> future;
-  service->RequestTabObservation(task_id, fake_web_state.get(),
-                                 future.GetCallback());
+  base::test::TestFuture<PerformActionsResult> future;
+  service->PerformActions(task_id, {}, "Update", future.GetCallback());
 
   task_environment_.FastForwardBy(base::Milliseconds(400));
+  ASSERT_TRUE(HasPendingObservation(service));
   EXPECT_FALSE(future.IsReady());
 
   task_environment_.FastForwardBy(base::Milliseconds(100));
   ASSERT_TRUE(future.IsReady());
-  EXPECT_EQ(base::unexpected(PageContextWrapperError::kTimeout), future.Get());
-}
-
-// Tests that an extraction still in progress when the service shuts down never
-// replies, because `Shutdown()` releases its wrapper along with its completion.
-TEST_F(ActorServiceMockTimeTest, ShutdownDropsInProgressTabObservation) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  ActorTaskId task_id = CreateTask(service);
-  std::unique_ptr<web::FakeWebState> fake_web_state =
-      CreateWebStateWithHangingExtraction();
-
-  base::test::TestFuture<PageContextWrapperCallbackResponse> future;
-  service->RequestTabObservation(task_id, fake_web_state.get(),
-                                 future.GetCallback());
-  // Run the command, which starts the extraction.
-  RunAlreadyPostedTasks();
-  ASSERT_FALSE(future.IsReady());
-
-  service->Shutdown();
-  // Go past the extraction timeout, which would otherwise have replied (see
-  // `RequestTabObservation_Timeout`).
-  task_environment_.FastForwardBy(GetActorTabObservationPageContextTimeout());
-  EXPECT_FALSE(future.IsReady());
+  const PerformActionsResult& result = future.Get();
+  ASSERT_EQ(1u, result.page_contexts.size());
+  ASSERT_NE(nullptr, result.page_contexts[0]);
+  EXPECT_EQ(base::unexpected(PageContextWrapperError::kTimeout),
+            result.page_contexts[0]->page_context_response);
 }
 
 // Tests that an act whose tab observation is still in progress when the service
@@ -1525,46 +1445,6 @@ TEST_F(ActorServiceTest, PerformActionsAfterStopTaskRepliesTaskWentAway) {
             result.action_results[0].tool_result.code());
 }
 
-// Tests that a tab observation requested after a stop replies with a generic
-// error instead of extracting.
-TEST_F(ActorServiceTest, RequestTabObservationAfterStopTaskRepliesError) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  ActorTaskId task_id = CreateTask(service);
-  // A `FakeWebState` cannot be extracted, so an extraction would reply with
-  // `kPageNotExtractableError` rather than `kGenericError`.
-  web::FakeWebState web_state;
-  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
-
-  base::test::TestFuture<PageContextWrapperCallbackResponse> future;
-  service->RequestTabObservation(task_id, &web_state, future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  ASSERT_FALSE(future.Get().has_value());
-  EXPECT_EQ(PageContextWrapperError::kGenericError, future.Get().error());
-}
-
-// Tests that a tab observation whose WebState is destroyed before the command
-// runs replies with a generic error instead of extracting.
-TEST_F(ActorServiceTest, RequestTabObservationOfWebStateDestroyedBeforeRun) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  ActorTaskId task_id = CreateTask(service);
-  // A `FakeWebState` cannot be extracted, so an extraction would reply with
-  // `kPageNotExtractableError` rather than `kGenericError`.
-  auto web_state = std::make_unique<web::FakeWebState>();
-
-  base::test::TestFuture<PageContextWrapperCallbackResponse> future;
-  service->RequestTabObservation(task_id, web_state.get(),
-                                 future.GetCallback());
-  web_state.reset();
-
-  ASSERT_TRUE(future.Wait());
-  ASSERT_FALSE(future.Get().has_value());
-  EXPECT_EQ(PageContextWrapperError::kGenericError, future.Get().error());
-}
-
 // Tests that commands run in call order: the act runs before the stop.
 TEST_F(ActorServiceTest, CommandsRunInCallOrder) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
@@ -1738,45 +1618,6 @@ TEST_F(ActorServiceTest, ShutdownDropsPostedReplies) {
   base::test::TestFuture<PerformActionsResult> future;
   service->PerformActions(kUnknownTaskId, {}, "Update", future.GetCallback());
   // Run the command, which posts its reply.
-  RunAlreadyPostedTasks();
-  service->Shutdown();
-  // Drain the sequence: dropped work has no observable effect to wait on.
-  FlushCurrentSequence();
-
-  EXPECT_FALSE(future.IsReady());
-}
-
-// Tests that a tab observation reply already posted when the service shuts
-// down is not run.
-TEST_F(ActorServiceTest, ShutdownDropsPostedTabObservationReply) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  ActorTaskId task_id = CreateTask(service);
-  base::test::TestFuture<PageContextWrapperCallbackResponse> future;
-  service->RequestTabObservation(task_id, nullptr, future.GetCallback());
-  // Run the command, which posts its reply.
-  RunAlreadyPostedTasks();
-  service->Shutdown();
-  // Drain the sequence: dropped work has no observable effect to wait on.
-  FlushCurrentSequence();
-
-  EXPECT_FALSE(future.IsReady());
-}
-
-// Tests that an extraction reply already posted when the service shuts down is
-// not run.
-TEST_F(ActorServiceTest, ShutdownDropsPostedExtractionReply) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  ActorTaskId task_id = CreateTask(service);
-  // A `FakeWebState` cannot be extracted, so its extraction completes
-  // synchronously.
-  web::FakeWebState web_state;
-  base::test::TestFuture<PageContextWrapperCallbackResponse> future;
-  service->RequestTabObservation(task_id, &web_state, future.GetCallback());
-  // Run the command, whose extraction completes and posts its reply.
   RunAlreadyPostedTasks();
   service->Shutdown();
   // Drain the sequence: dropped work has no observable effect to wait on.
