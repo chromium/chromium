@@ -4089,6 +4089,19 @@ const HeapHashSet<WeakMember<AnimationTrigger>>& Animation::GetTriggers() {
 }
 
 void Animation::DisassociateTriggers() {
+  if (auto* css_animation = DynamicTo<CSSAnimation>(this)) {
+    // Style changes, including changes to animation-trigger, don't attach the
+    // animation to triggers again, just as they don't revive a cancelled
+    // animation otherwise.
+    css_animation->SetIgnoreCSSTrigger(true);
+    css_animation->SetTriggerAttachments(nullptr);
+    css_animation->NamedTriggerAttachments().clear();
+    if (GetDocument()) {
+      GetDocument()
+          ->GetDocumentAnimations()
+          .RemoveCSSAnimationNeedingTriggerAttachment(css_animation);
+    }
+  }
   HeapHashSet<WeakMember<AnimationTrigger>> triggers;
   triggers.swap(triggers_);
   for (AnimationTrigger* trigger : triggers) {

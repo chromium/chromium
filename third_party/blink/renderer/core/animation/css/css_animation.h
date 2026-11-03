@@ -84,6 +84,8 @@ class CORE_EXPORT CSSAnimation : public Animation {
   bool GetIgnoreCSSRangeEnd() { return ignore_css_range_end_; }
   void SetIgnoreCSSRangeEnd(bool ignore) { ignore_css_range_end_ = ignore; }
   void ResetIgnoreCSSRangeEnd() { ignore_css_range_end_ = false; }
+  bool GetIgnoreCSSTrigger() const { return ignore_css_trigger_; }
+  void SetIgnoreCSSTrigger(bool ignore) { ignore_css_trigger_ = ignore; }
 
   void Trace(blink::Visitor* visitor) const override;
 
@@ -141,6 +143,8 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // When set changes to 'animation-range-*' will be ignored.
   bool ignore_css_range_start_ = false;
   bool ignore_css_range_end_ = false;
+  // When set, changes to 'animation-trigger' will be ignored.
+  bool ignore_css_trigger_ = false;
 
   // The owning element of an animation refers to the element or pseudo-element
   // whose animation-name property was applied that generated the animation

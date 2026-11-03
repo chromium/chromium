@@ -2073,7 +2073,8 @@ void CSSAnimations::CalculateAnimationUpdate(
         const Member<const StyleTriggerAttachmentVector>
             existing_trigger_attachments = animation->GetTriggerAttachments();
         Member<const StyleTriggerAttachmentVector> trigger_attachments;
-        if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
+        if (RuntimeEnabledFeatures::AnimationTriggerEnabled() &&
+            !animation->GetIgnoreCSSTrigger()) {
           trigger_attachments = animation_data->GetTriggerAttachments(i);
         }
         DCHECK(!trigger_attachments || !trigger_attachments->empty());

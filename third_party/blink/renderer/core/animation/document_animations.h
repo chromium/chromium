@@ -139,6 +139,9 @@ class CORE_EXPORT DocumentAnimations final
   // declared in the animation-trigger property.
   void UpdateAnimationTriggerAttachments();
   void AddCSSAnimationNeedingTriggerAttachment(CSSAnimation* animation);
+  void RemoveCSSAnimationNeedingTriggerAttachment(CSSAnimation* animation) {
+    css_animations_needing_trigger_attachment_.erase(animation);
+  }
 
   const HeapHashSet<WeakMember<CSSAnimation>>&
   CSSAnimationsNeedingTriggerAttachmentForTesting() const {

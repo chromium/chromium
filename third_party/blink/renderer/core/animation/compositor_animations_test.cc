@@ -6084,6 +6084,45 @@ TEST_F(CompositorAnimationTriggerTest,
             CompositorAnimations::kUnsupportedInheritance);
 }
 
+// Cancelling a CSS animation detaches it from its trigger, and the next trigger
+// attachment update doesn't attach it again.
+TEST_F(CompositorTimelineTriggerBehaviorTest, CancelDetachesFromTrigger) {
+  Initialize("play", "none");
+  blink_animation_->cancel();
+  DoBeginFrame();
+  EXPECT_TRUE(blink_trigger_->BehaviorMapForTest().empty());
+  EXPECT_EQ(blink_animation_->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kIdle);
+}
+
+// Style updates, including ones that change animation-trigger, don't attach a
+// cancelled CSS animation to its trigger again.
+TEST_F(CompositorTimelineTriggerBehaviorTest,
+       StyleUpdateDoesNotReattachCancelledAnimation) {
+  Initialize("play", "none");
+  blink_animation_->cancel();
+  DoBeginFrame();
+  ASSERT_TRUE(blink_trigger_->BehaviorMapForTest().empty());
+
+  // This style update re-applies animation-trigger.
+  target_->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "blue");
+  DoBeginFrame();
+  EXPECT_TRUE(blink_trigger_->BehaviorMapForTest().empty());
+
+  // This style update also updates the animation.
+  target_->SetInlineStyleProperty(CSSPropertyID::kAnimationDuration, "1s");
+  DoBeginFrame();
+  EXPECT_TRUE(blink_trigger_->BehaviorMapForTest().empty());
+
+  // This style update changes animation-trigger.
+  target_->SetInlineStyleProperty(CSSPropertyID::kAnimationTrigger,
+                                  "--trigger replay");
+  DoBeginFrame();
+  EXPECT_TRUE(blink_trigger_->BehaviorMapForTest().empty());
+  EXPECT_EQ(blink_animation_->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kIdle);
+}
+
 TEST_F(CompositorAnimationTriggerTest, InactiveTimeline) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
