@@ -1135,7 +1135,9 @@ if (!is_android) {
       "//components/tabs:public",
     ]
   }
+}
 
+if (!is_android || enable_webui_ntp) {
   source_set("browser_instant_controller") {
     public = [ "browser_instant_controller.h" ]
     sources = [ "browser_instant_controller.cc" ]
@@ -1143,16 +1145,20 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
-      "//chrome/browser/ui/search",
-      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui/browser_window",
       "//chrome/common",
       "//components/infobars/content",
+      "//components/tabs:public",
       "//content/public/browser",
       "//content/public/common",
       "//ui/base",
+      "//ui/base/unowned_user_data",
     ]
   }
+}
 
+if (!is_android) {
   source_set("browser_location_bar_model_delegate") {
     public = [ "browser_location_bar_model_delegate.h" ]
     sources = [ "browser_location_bar_model_delegate.cc" ]
@@ -2146,6 +2152,35 @@ source_set("unit_tests") {
       "//ui/events:event_constants",
       "//ui/events:events_base",
     ]
+  }
+
+  if (!is_android || enable_webui_ntp) {
+    sources += [ "browser_instant_controller_unittest.cc" ]
+    deps += [
+      ":browser_instant_controller",
+      "//chrome/browser/search",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/tab_list:test_support",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/common",
+      "//chrome/test/base:browser_test_waiters",
+      "//components/search_engines",
+      "//components/tabs:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//ui/base",
+      "//ui/base/unowned_user_data",
+      "//url",
+    ]
+    if (is_android) {
+      deps += [
+        "//chrome/browser/flags:flags_android",
+        "//components/search",
+      ]
+    }
   }
 }
 

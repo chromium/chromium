@@ -86,6 +86,7 @@
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
+#include "chrome/browser/ui/search/instant_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_iph_controller.h"
 #include "chrome/browser/ui/sessions/session_service_browser_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_window_controller.h"
@@ -590,7 +591,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     initial_web_ui_manager_ = std::make_unique<InitialWebUIManager>(browser);
 
     if (search::IsInstantExtendedAPIEnabled()) {
-      instant_controller_ = std::make_unique<BrowserInstantController>(
+      browser_instant_controller_ =
+          GetUserDataFactory().CreateInstance<BrowserInstantController>(
+              *browser, *browser);
+      instant_controller_ = std::make_unique<InstantController>(
           profile, browser->GetTabStripModel());
     }
 

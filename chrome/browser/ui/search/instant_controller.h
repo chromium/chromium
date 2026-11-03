@@ -28,7 +28,7 @@ class WebContents;
 // * the user switches to an existing NTP tab, or
 // * an open tab navigates to an NTP.
 //
-// InstantController is owned by Browser via BrowserInstantController.
+// InstantController is owned by BrowserWindowFeatures.
 class InstantController : public TabStripModelObserver {
  public:
   explicit InstantController(Profile* profile, TabStripModel* tab_strip_model);

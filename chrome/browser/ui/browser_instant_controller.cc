@@ -11,9 +11,11 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -26,12 +28,14 @@
 
 // BrowserInstantController ---------------------------------------------------
 
+DEFINE_USER_DATA(BrowserInstantController);
+
 BrowserInstantController::BrowserInstantController(
-    Profile* profile,
-    TabStripModel* tab_strip_model)
-    : profile_(profile),
-      tab_strip_model_(tab_strip_model),
-      instant_(profile, tab_strip_model) {
+    BrowserWindowInterface& browser_window)
+    : profile_(browser_window.GetProfile()),
+      browser_window_(browser_window),
+      scoped_unowned_user_data_(browser_window.GetUnownedUserDataHost(),
+                                *this) {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_.get());
   // TemplateURLService can be null in tests.
@@ -47,11 +51,22 @@ BrowserInstantController::BrowserInstantController(
 
 BrowserInstantController::~BrowserInstantController() = default;
 
+// static
+BrowserInstantController* BrowserInstantController::From(
+    BrowserWindowInterface* browser_window) {
+  return Get(browser_window->GetUnownedUserDataHost());
+}
+
 void BrowserInstantController::OnSearchEngineBaseURLChanged(
     SearchEngineBaseURLTracker::ChangeReason change_reason) {
-  int count = tab_strip_model_->count();
+  TabListInterface* tab_list = TabListInterface::From(&*browser_window_);
+  if (!tab_list) {
+    return;
+  }
+  const int count = tab_list->GetTabCount();
   for (int index = 0; index < count; ++index) {
-    content::WebContents* contents = tab_strip_model_->GetWebContentsAt(index);
+    tabs::TabInterface* tab = tab_list->GetTab(index);
+    content::WebContents* contents = tab ? tab->GetContents() : nullptr;
     if (!contents) {
       continue;
     }
