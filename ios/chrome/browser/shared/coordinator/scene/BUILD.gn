@@ -136,6 +136,7 @@ source_set("scene") {
     "//ios/chrome/browser/app_store_rating/model",
     "//ios/chrome/browser/app_store_rating/model:features",
     "//ios/chrome/browser/appearance/ui_bundled",
+    "//ios/chrome/browser/authentication/account_switching_promo/model",
     "//ios/chrome/browser/authentication/age_mismatch_signout/coordinator:scene_agent",
     "//ios/chrome/browser/authentication/signin/fullscreen_promo/model",
     "//ios/chrome/browser/authentication/ui_bundled",

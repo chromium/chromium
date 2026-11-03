@@ -3,6 +3,7 @@ include_rules = [
   "+components/data_sharing/public",
   "+ios/chrome/browser/app_store_rating/model",
   "+ios/chrome/browser/appearance/ui_bundled/appearance_customization.h",
+  "+ios/chrome/browser/authentication/account_switching_promo/model",
   "+ios/chrome/browser/authentication/age_mismatch_signout/coordinator/signin_account_capabilities_scene_agent.h",
   "+ios/chrome/browser/authentication/signin/fullscreen_promo/model",
   "+ios/chrome/browser/authentication/ui_bundled",

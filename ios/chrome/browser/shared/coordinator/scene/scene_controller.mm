@@ -44,6 +44,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/app_store_rating/model/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
+#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/signin_account_capabilities_scene_agent.h"
 #import "ios/chrome/browser/authentication/signin/fullscreen_promo/model/fullscreen_signin_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
@@ -2031,6 +2032,11 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   PolicyWatcherBrowserAgent* policyWatcherAgent =
       PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
   policyWatcherAgent->Initialize(policyChangeCommandsHandler);
+
+  if (AccountSwitchingPromoSceneAgent* accountSwitchingPromoAgent =
+          [AccountSwitchingPromoSceneAgent agentWithProfile:profile]) {
+    [sceneState addAgent:accountSwitchingPromoAgent];
+  }
 
   if (ShouldPromoManagerDisplayPromos()) {
     [sceneState addAgent:[[PromosManagerSceneAgent alloc]
