@@ -244,6 +244,8 @@ void BaseRenderingContext2D::ResetBacking() {
   shared_image_provider_.reset();
   surface_.reset();
   canvas_image_provider_.reset();
+  cached_snapshot_.reset();
+  cached_content_id_ = cc::PaintImage::kInvalidContentId;
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
     context_provider_wrapper_.reset();
@@ -660,8 +662,7 @@ void BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId(
       GetAnimatedImageFrameIndexMap(id));
 }
 
-bool BaseRenderingContext2D::ShouldReplaceTargetBuffer(
-    PaintImage::ContentId content_id) {
+bool BaseRenderingContext2D::ShouldReplaceTargetBuffer() {
   CHECK(shared_image_provider_->IsAccelerated());
 
   // If the canvas is single buffered, concurrent read/writes to the resource
@@ -686,7 +687,7 @@ bool BaseRenderingContext2D::ShouldReplaceTargetBuffer(
 
   // Another context may have a read reference to this resource. Flush the
   // deferred queue in that context so that we don't need to copy.
-  FlushForImageListener::Get()->NotifyFlushForImage(content_id);
+  FlushForImageListener::Get()->NotifyFlushForImage(cached_content_id_);
 
   return !shared_image_provider_->resource_->HasOneRef();
 }
@@ -701,10 +702,10 @@ void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
   // Note that this is valid for single buffered mode also, since while the
   // resource/mailbox remains the same, the snapshot needs an updated sync
   // token for these writes.
-  shared_image_provider_->cached_snapshot_.reset();
+  cached_snapshot_.reset();
 
-  if (ShouldReplaceTargetBuffer(shared_image_provider_->cached_content_id_)) {
-    shared_image_provider_->cached_content_id_ = PaintImage::kInvalidContentId;
+  if (ShouldReplaceTargetBuffer()) {
+    cached_content_id_ = PaintImage::kInvalidContentId;
     DCHECK(!shared_image_provider_->current_resource_has_write_access_)
         << "Write access must be released before sharing the resource";
 
@@ -819,7 +820,7 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
       return nullptr;
     }
 
-    if (!shared_image_provider_->cached_snapshot_) {
+    if (!cached_snapshot_) {
       shared_image_provider_->EndWriteAccess(/*surface=*/nullptr);
 
       // The |release_callback| keeps a ref on this resource to ensure the
@@ -844,7 +845,7 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
 
       const auto& client_shared_image = resource->GetSharedImage();
 
-      shared_image_provider_->cached_snapshot_ =
+      cached_snapshot_ =
           AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
               client_shared_image, resource->sync_token(),
               client_shared_image->alpha_type(), resource->hdr_metadata_,
@@ -859,17 +860,16 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
       // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
       // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
       // other contexts know to flush to avoid unnecessary copy-on-writes.
-      if (shared_image_provider_->cached_snapshot_) {
-        shared_image_provider_->cached_content_id_ =
-            shared_image_provider_->cached_snapshot_
-                ->PaintImageForCurrentFrame()
-                .GetContentIdForFrame(0u);
+      if (cached_snapshot_) {
+        cached_content_id_ =
+            cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(
+                0u);
       }
     }
 
-    DCHECK(shared_image_provider_->cached_snapshot_);
+    DCHECK(cached_snapshot_);
     DCHECK(!shared_image_provider_->current_resource_has_write_access_);
-    return shared_image_provider_->cached_snapshot_;
+    return cached_snapshot_;
   }
   if (!IsBackingValid()) {
     return nullptr;
@@ -1607,12 +1607,12 @@ void BaseRenderingContext2D::OnFlushForImage(
     if (Recorder()->getRecordingCanvas().IsCachingImage(content_id)) {
       FlushCanvas(FlushReason::kOther);
     }
-    if (shared_image_provider_->cached_snapshot_ &&
-        shared_image_provider_->cached_snapshot_->PaintImageForCurrentFrame()
-                .GetContentIdForFrame(0) == content_id) {
+    if (cached_snapshot_ &&
+        cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
+            content_id) {
       // This handles the case where the cached snapshot is referenced by an
       // ImageBitmap that is being transferred to a worker.
-      shared_image_provider_->cached_snapshot_.reset();
+      cached_snapshot_.reset();
     }
   }
 }

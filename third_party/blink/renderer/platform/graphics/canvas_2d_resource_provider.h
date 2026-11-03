@@ -51,7 +51,6 @@ class BaseRenderingContext2D;
 class CanvasResourceSharedImage;
 class Canvas2DResourceProvider;
 class CanvasImageProvider;
-class StaticBitmapImage;
 class WebGraphicsSharedImageInterfaceProvider;
 
 // Specifies whether the provider should rasterize paint commands on the CPU
@@ -187,10 +186,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool must_preserve_content_on_copy_on_write_ = true;
 
   bool current_resource_has_write_access_ = false;
-
-  cc::PaintImage::ContentId cached_content_id_ =
-      cc::PaintImage::kInvalidContentId;
-  scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   const bool is_accelerated_;
   bool is_cleared_ = false;
