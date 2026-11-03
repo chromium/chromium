@@ -9,8 +9,14 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_ui_state.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/public/service/glic_activity_types.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -24,7 +30,9 @@ class GlicKeyedService;
 class GlicNudgeController;
 class GlicSplitButtonDelegate;
 
-class GlicSplitButtonController {
+// Window-scoped controller that arbitrates primary and secondary split button
+// actions and coordinates UI updates across platforms.
+class GlicSplitButtonController : public TabListInterfaceObserver {
  public:
   DECLARE_USER_DATA(GlicSplitButtonController);
 
@@ -37,7 +45,7 @@ class GlicSplitButtonController {
   GlicSplitButtonController& operator=(const GlicSplitButtonController&) =
       delete;
 
-  virtual ~GlicSplitButtonController();
+  ~GlicSplitButtonController() override;
 
   // TODO(crbug.com/511309088): Rename these to toolbar and tab strip delegate
   // since they no longer necessarily correspond to vertical tab mode.
@@ -47,8 +55,23 @@ class GlicSplitButtonController {
 
   void OnGlicButtonClicked();
 
+  void OnSecondaryButtonClicked();
+  void UpdateSplitButtonState();
+
+  const GlicSplitButtonUiState& current_ui_state() const {
+    return current_ui_state_;
+  }
+
+  // TabListInterfaceObserver:
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override;
+  void OnTabListDestroyed(TabListInterface& tab_list) override;
+
   virtual GlicSplitButtonDelegate* GetActiveDelegate();
   void CallOnBoth(base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn);
+
+  virtual void ShowBubble();
+  virtual void CloseBubble();
 
   GlicNudgeController* nudge_controller() {
     return glic_nudge_controller_.get();
@@ -63,9 +86,15 @@ class GlicSplitButtonController {
       std::unique_ptr<GlicActorNudgeController> controller);
 
  private:
+  void InitActivityHub();
+  GlicSplitButtonUiState ComputeSplitButtonUiState() const;
   bool IsToolbarButton() const;
   mojom::InvocationSource GetInvocationSource(
       GlicSplitButtonDelegate& delegate) const;
+
+  void OnActivityNudgeStateChanged(bool show_bubble,
+                                   GlicActivityNudgeState state);
+  void OnBubbleVisibilityChange(bool is_bubble_open);
 
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<GlicSplitButtonDelegate> horizontal_tabs_delegate_ = nullptr;
@@ -77,6 +106,14 @@ class GlicSplitButtonController {
   std::unique_ptr<GlicActivityListBubbleController>
       activity_list_bubble_controller_;
   std::unique_ptr<GlicActorNudgeController> glic_actor_nudge_controller_;
+
+  GlicSplitButtonUiState current_ui_state_;
+
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_observation_{this};
+  base::CallbackListSubscription activity_subscription_;
+  std::vector<base::CallbackListSubscription>
+      bubble_visibility_change_subscription_;
 
   ui::ScopedUnownedUserData<GlicSplitButtonController>
       scoped_unowned_user_data_;

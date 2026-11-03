@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -11,6 +12,8 @@
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
+#include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
@@ -21,16 +24,35 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace glic {
+
+namespace {
+
+bool ShouldCreateActivityListBubbleController(Profile* profile) {
+  if (!profile || !profile->IsRegularProfile()) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    return true;
+  }
+  return base::FeatureList::IsEnabled(features::kGlicActor) &&
+         base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+         features::kGlicActorUiTaskIcon.Get();
+}
+
+}  // namespace
 
 DEFINE_USER_DATA(GlicSplitButtonController);
 
@@ -55,32 +77,65 @@ GlicSplitButtonController::GlicSplitButtonController(
   glic_button_controller_ = std::make_unique<GlicButtonController>(
       browser->GetProfile(), *browser, this, glic_service);
 
-  if (((base::FeatureList::IsEnabled(features::kGlicActor) &&
-        base::FeatureList::IsEnabled(features::kGlicActorUi) &&
-        features::kGlicActorUiTaskIcon.Get()) ||
-       base::FeatureList::IsEnabled(features::kGlicActivityHub)) &&
-      browser->GetProfile()->IsRegularProfile()) {
+  if (ShouldCreateActivityListBubbleController(browser->GetProfile())) {
     activity_list_bubble_controller_ =
         std::make_unique<GlicActivityListBubbleController>(browser, *this);
+    bubble_visibility_change_subscription_.push_back(
+        activity_list_bubble_controller_->RegisterBubbleShownCallback(
+            base::BindRepeating(
+                &GlicSplitButtonController::OnBubbleVisibilityChange,
+                weak_factory_.GetWeakPtr(), /*is_bubble_open=*/true)));
+    bubble_visibility_change_subscription_.push_back(
+        activity_list_bubble_controller_->RegisterBubbleDestroyedCallback(
+            base::BindRepeating(
+                &GlicSplitButtonController::OnBubbleVisibilityChange,
+                weak_factory_.GetWeakPtr(), /*is_bubble_open=*/false)));
     if (!base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
       glic_actor_nudge_controller_ =
           std::make_unique<GlicActorNudgeController>(browser, this);
     }
   }
+  if (base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    InitActivityHub();
+  }
 }
 
 GlicSplitButtonController::~GlicSplitButtonController() = default;
+
+void GlicSplitButtonController::InitActivityHub() {
+  if (auto* tab_list = TabListInterface::From(browser_)) {
+    tab_list_observation_.Observe(tab_list);
+  }
+  activity_subscription_ =
+      glic_service_->activity_manager().RegisterActivityNudgeStateChange(
+          base::BindRepeating(
+              &GlicSplitButtonController::OnActivityNudgeStateChanged,
+              base::Unretained(this)));
+  UpdateSplitButtonState();
+}
 
 void GlicSplitButtonController::SetHorizontalTabsDelegate(
     GlicSplitButtonDelegate* delegate) {
   horizontal_tabs_delegate_ = delegate;
   glic_button_controller_->UpdateButton();
+  if (base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    if (delegate) {
+      delegate->UpdateSplitButtonUi(current_ui_state_);
+    }
+    UpdateSplitButtonState();
+  }
 }
 
 void GlicSplitButtonController::SetVerticalTabsDelegate(
     GlicSplitButtonDelegate* delegate) {
   vertical_tabs_delegate_ = delegate;
   glic_button_controller_->UpdateButton();
+  if (base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    if (delegate) {
+      delegate->UpdateSplitButtonUi(current_ui_state_);
+    }
+    UpdateSplitButtonState();
+  }
 }
 
 void GlicSplitButtonController::OnGlicButtonClicked() {
@@ -95,21 +150,27 @@ void GlicSplitButtonController::OnGlicButtonClicked() {
   // Indicate that the glic button was pressed so that we can either close the
   // IPH promo (if present) or note that it has already been used to prevent
   // unnecessarily displaying the promo.
-  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
-      feature_engagement::kIPHGlicPromoFeature,
-      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  if (auto* user_education = BrowserUserEducationInterface::From(browser_)) {
+    user_education->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHGlicPromoFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
 #endif
 
+  const bool is_showing_nudge = delegate->GetIsShowingGlicNudge();
   std::optional<std::string> prompt_suggestion =
       glic_nudge_controller_->GetPromptSuggestion();
   glic_nudge_controller_->ClearPromptSuggestion();
 
   const bool is_panel_showing =
       glic_service_->IsPanelShowingForBrowser(*browser_);
-  tabs::TabInterface* active_tab =
-      TabListInterface::From(browser_)->GetActiveTab();
-  if (!is_panel_showing && prompt_suggestion && !prompt_suggestion->empty() &&
-      active_tab && GlicEnabling::IsEnabledForProfile(browser_->GetProfile())) {
+  tabs::TabInterface* active_tab = nullptr;
+  if (auto* tab_list = TabListInterface::From(browser_)) {
+    active_tab = tab_list->GetActiveTab();
+  }
+  if (!is_panel_showing && is_showing_nudge && prompt_suggestion &&
+      !prompt_suggestion->empty() && active_tab &&
+      GlicEnabling::IsEnabledForProfile(browser_->GetProfile())) {
     glic::GlicInvokeOptions options(glic::Target(*active_tab),
                                     GetInvocationSource(*delegate));
     options.prompts.push_back(std::move(*prompt_suggestion));
@@ -120,10 +181,132 @@ void GlicSplitButtonController::OnGlicButtonClicked() {
                             GetInvocationSource(*delegate));
   }
 
-  if (delegate->GetIsShowingGlicNudge()) {
+  if (is_showing_nudge) {
     glic_nudge_controller_->OnNudgeActivity(
         glic::GlicNudgeActivity::kNudgeClicked);
   }
+}
+
+void GlicSplitButtonController::ShowBubble() {
+  if (activity_list_bubble_controller_) {
+    activity_list_bubble_controller_->ShowBubble();
+  }
+}
+
+void GlicSplitButtonController::CloseBubble() {
+  if (activity_list_bubble_controller_) {
+    activity_list_bubble_controller_->CloseBubble();
+  }
+}
+
+void GlicSplitButtonController::OnSecondaryButtonClicked() {
+  if (activity_list_bubble_controller_ &&
+      activity_list_bubble_controller_->IsBubbleShowing()) {
+    CloseBubble();
+  } else {
+    ShowBubble();
+  }
+}
+
+void GlicSplitButtonController::UpdateSplitButtonState() {
+  if (!base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+    return;
+  }
+
+  GlicSplitButtonUiState new_state = ComputeSplitButtonUiState();
+  if (current_ui_state_ == new_state) {
+    return;
+  }
+  current_ui_state_ = std::move(new_state);
+
+  CallOnBoth(base::BindRepeating(
+      [](const GlicSplitButtonUiState& state,
+         GlicSplitButtonDelegate& delegate) {
+        delegate.UpdateSplitButtonUi(state);
+      },
+      current_ui_state_));
+
+  if (current_ui_state_.secondary_action ==
+          GlicSplitButtonUiState::SecondaryAction::kText &&
+      !current_ui_state_.secondary_label.empty()) {
+    if (auto* delegate = GetActiveDelegate();
+        delegate && delegate->GetIsShowingGlicActorTaskIconNudge()) {
+      const auto nudge_text =
+          glic_service_->activity_manager().GetCurrentActivityNudgeState().text;
+      if (nudge_text == GlicActivityNudgeState::Text::kNeedsAttention ||
+          nudge_text == GlicActivityNudgeState::Text::kCompleteTasks) {
+        actor::ui::ActorTaskNudgeState nudge_state;
+        nudge_state.text =
+            nudge_text == GlicActivityNudgeState::Text::kNeedsAttention
+                ? actor::ui::ActorTaskNudgeState::Text::kNeedsAttention
+                : actor::ui::ActorTaskNudgeState::Text::kCompleteTasks;
+        actor::ui::RecordGlobalTaskIndicatorNudgeShown(nudge_state);
+      }
+    }
+  }
+}
+
+GlicSplitButtonUiState GlicSplitButtonController::ComputeSplitButtonUiState()
+    const {
+  GlicSplitButtonUiState state;
+
+  auto& activity_manager = glic_service_->activity_manager();
+  GlicActivityNudgeState activity_nudge_state =
+      activity_manager.GetCurrentActivityNudgeState();
+  const size_t count = activity_nudge_state.count;
+
+  // Secondary action priority ladder: active alert nudges take precedence
+  // over the split chevron, reverting to the chevron once viewed.
+  switch (activity_nudge_state.text) {
+    case GlicActivityNudgeState::Text::kNeedsAttention:
+      state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kText;
+      state.secondary_label = l10n_util::GetPluralStringFUTF16(
+          IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL, std::max<size_t>(1, count));
+      break;
+    case GlicActivityNudgeState::Text::kCompleteTasks:
+      state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kText;
+      state.secondary_label = l10n_util::GetPluralStringFUTF16(
+          IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL, std::max<size_t>(1, count));
+      break;
+    case GlicActivityNudgeState::Text::kResponseReady:
+    case GlicActivityNudgeState::Text::kDefault:
+      if (!activity_manager.activities().empty()) {
+        state.secondary_action =
+            GlicSplitButtonUiState::SecondaryAction::kChevron;
+      }
+      break;
+  }
+
+  return state;
+}
+
+void GlicSplitButtonController::OnActiveTabChanged(TabListInterface& tab_list,
+                                                   tabs::TabInterface* tab) {
+  UpdateSplitButtonState();
+}
+
+void GlicSplitButtonController::OnTabListDestroyed(TabListInterface& tab_list) {
+  tab_list_observation_.Reset();
+}
+
+void GlicSplitButtonController::OnActivityNudgeStateChanged(
+    bool show_bubble,
+    GlicActivityNudgeState state) {
+  UpdateSplitButtonState();
+  if (show_bubble) {
+    ShowBubble();
+  } else if (current_ui_state_.secondary_action ==
+             GlicSplitButtonUiState::SecondaryAction::kNone) {
+    CloseBubble();
+  }
+}
+
+void GlicSplitButtonController::OnBubbleVisibilityChange(bool is_bubble_open) {
+  CallOnBoth(base::BindRepeating(
+      [](bool is_bubble_open, GlicSplitButtonDelegate& delegate) {
+        delegate.SetGlicActorNudgePressedState(is_bubble_open);
+      },
+      is_bubble_open));
 }
 
 void GlicSplitButtonController::CallOnBoth(

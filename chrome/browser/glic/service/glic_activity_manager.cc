@@ -202,39 +202,39 @@ std::vector<const GlicActivityItem*> GlicActivityManager::GetSortedActivities(
 GlicActivityNudgeState GlicActivityManager::GetCurrentActivityNudgeState()
     const {
   GlicActivityNudgeState state;
-  bool needs_attention = false;
-  bool response_ready = false;
-  bool tasks_complete = false;
-  size_t unseen_count = 0;
+  size_t needs_attention_count = 0;
+  size_t complete_tasks_count = 0;
+  size_t response_ready_count = 0;
 
   for (const auto& [key, item] : activities_) {
     if (!item.has_been_seen) {
       if (item.state == GlicActivityState::kNeedsAttention) {
-        unseen_count++;
-        needs_attention = true;
+        needs_attention_count++;
       } else if (item.state == GlicActivityState::kCompleted ||
                  item.state == GlicActivityState::kFailed) {
-        unseen_count++;
         if (item.type() == GlicActivityType::kActorTask) {
-          tasks_complete = true;
+          complete_tasks_count++;
         } else {
-          response_ready = true;
+          response_ready_count++;
         }
       }
     }
   }
 
-  state.count = unseen_count;
-  state.has_attention_badge = needs_attention;
+  state.has_attention_badge = needs_attention_count > 0;
 
-  if (needs_attention) {
+  if (needs_attention_count > 0) {
     state.text = GlicActivityNudgeState::Text::kNeedsAttention;
-  } else if (tasks_complete) {
+    state.count = needs_attention_count;
+  } else if (complete_tasks_count > 0) {
     state.text = GlicActivityNudgeState::Text::kCompleteTasks;
-  } else if (response_ready) {
+    state.count = complete_tasks_count;
+  } else if (response_ready_count > 0) {
     state.text = GlicActivityNudgeState::Text::kResponseReady;
+    state.count = response_ready_count;
   } else {
     state.text = GlicActivityNudgeState::Text::kDefault;
+    state.count = 0;
   }
 
   return state;
@@ -293,34 +293,14 @@ void GlicActivityManager::OnTabAddedToTask(actor::TaskId task_id) {
   OnActorTaskStateUpdate(task_id);
 }
 
-void GlicActivityManager::UpdateTaskNudge() {
+void GlicActivityManager::UpdateTaskNudge(bool show_bubble) {
   GlicActivityNudgeState old_state = current_activity_nudge_state_;
   current_activity_nudge_state_ = GetCurrentActivityNudgeState();
 
-  bool show_bubble = false;
-  if (auto* ui_state_manager = actor::ui::ActorUiStateManager::Get(profile_)) {
-    for (const auto& [key, item] : activities_) {
-      if (item.type() == GlicActivityType::kActorTask && !item.has_been_seen &&
-          item.task_id.has_value()) {
-        actor::TaskId task_id = *item.task_id;
-        const auto task_state = ui_state_manager->GetActorTaskState(task_id);
-        if (task_state.has_value() &&
-            ShouldShowBubble(*task_state,
-                             ui_state_manager->GetDuration(task_id),
-                             ui_state_manager->GetFeatureMode(task_id))) {
-          show_bubble = true;
-          break;
-        }
-      }
-    }
-  }
-
   bool state_changed = (old_state != current_activity_nudge_state_);
-  bool show_bubble_changed = (last_notified_show_bubble_ != show_bubble);
   bool size_changed = (last_notified_activity_count_ != activities_.size());
 
-  if (state_changed || show_bubble_changed || size_changed) {
-    last_notified_show_bubble_ = show_bubble;
+  if (state_changed || show_bubble || size_changed) {
     last_notified_activity_count_ = activities_.size();
     activity_nudge_state_change_callback_list_.Notify(
         show_bubble, current_activity_nudge_state_);
@@ -392,13 +372,13 @@ void GlicActivityManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
     activity_state = GlicActivityState::kInProgress;
   }
 
+  bool actor_state_changed = false;
   if (activity_state.has_value()) {
     auto [it, inserted] = activities_.try_emplace(key, key, *activity_state);
     auto& item = it->second;
     auto prev_state_it = last_actor_task_states_.find(task_id);
-    const bool actor_state_changed =
-        prev_state_it == last_actor_task_states_.end() ||
-        prev_state_it->second != state.value();
+    actor_state_changed = prev_state_it == last_actor_task_states_.end() ||
+                          prev_state_it->second != state.value();
     last_actor_task_states_[task_id] = state.value();
     item.task_id = task_id;
     item.state = *activity_state;
@@ -435,7 +415,10 @@ void GlicActivityManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
     }
   }
 
-  UpdateTaskNudge();
+  const bool show_bubble =
+      actor_state_changed && requires_processing &&
+      ShouldShowBubble(state.value(), duration, feature_mode);
+  UpdateTaskNudge(show_bubble);
 }
 
 void GlicActivityManager::PopulateActivityItemDetails(GlicActivityItem& item) {

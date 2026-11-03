@@ -1095,14 +1095,15 @@ TEST_F(GlicUnifiedActivityManagerTest,
   EXPECT_EQ(manager()->GetNumUnseenActivities(), 1u);
 
   // Add a completed ConversationResponse -> ActorTask (kCompleteTasks) remains
-  // prioritized over non-actuation conversations with combined unseen count 2.
+  // prioritized over non-actuation conversations, with state.count reflecting
+  // the 1 completed ActorTask while GetNumUnseenActivities() tracks all 2.
   manager()->OnConversationActivityStateChanged(
       "conv_1", {.state = GlicActivityState::kCompleted,
                  .title = "Conversation 1",
                  .preview_snippet = "Response ready"});
   EXPECT_EQ(manager()->GetCurrentActivityNudgeState().text,
             GlicActivityNudgeState::Text::kCompleteTasks);
-  EXPECT_EQ(manager()->GetCurrentActivityNudgeState().count, 2u);
+  EXPECT_EQ(manager()->GetCurrentActivityNudgeState().count, 1u);
   EXPECT_EQ(manager()->GetNumUnseenActivities(), 2u);
 
   // Marking the ActorTask seen leaves the unseen ConversationResponse
@@ -1111,6 +1112,32 @@ TEST_F(GlicUnifiedActivityManagerTest,
   EXPECT_EQ(manager()->GetCurrentActivityNudgeState().text,
             GlicActivityNudgeState::Text::kResponseReady);
   EXPECT_EQ(manager()->GetCurrentActivityNudgeState().count, 1u);
+}
+
+TEST_F(GlicUnifiedActivityManagerTest,
+       UnrelatedConversationDoesNotRetriggerShowBubble) {
+  TaskId task_id = actor_service()->CreateTaskForTesting();
+  EXPECT_CALL(
+      mock_nudge_subscriber_,
+      OnStateChanged(/*show_bubble=*/true,
+                     Field(&GlicActivityNudgeState::text,
+                           GlicActivityNudgeState::Text::kNeedsAttention)))
+      .Times(1);
+  actor_service()->PauseTaskForTesting(task_id, /*from_actor=*/true);
+  OnActorTaskStateUpdate(task_id);
+
+  // Starting an unrelated background conversation changes activities_.size()
+  // while the paused ActorTask is still unseen, which must not re-emit
+  // show_bubble=true.
+  EXPECT_CALL(
+      mock_nudge_subscriber_,
+      OnStateChanged(/*show_bubble=*/false,
+                     Field(&GlicActivityNudgeState::text,
+                           GlicActivityNudgeState::Text::kNeedsAttention)))
+      .Times(1);
+  manager()->OnConversationActivityStateChanged(
+      "conv_1",
+      {.state = GlicActivityState::kInProgress, .title = "Conversation 1"});
 }
 
 TEST_F(GlicUnifiedActivityManagerTest, ConversationTitleUpdated_UpdatesTitle) {

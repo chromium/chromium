@@ -60,7 +60,6 @@ class GlicActorNudgeController {
   virtual void ShowBubble();
   virtual void CloseBubble();
   virtual bool IsShowingNudge();
-  virtual void OnBubbleVisibilityChange(bool is_bubble_open);
 
  private:
   // Subscribe to updates from the LegacyGlicActivityManager.
@@ -79,8 +78,6 @@ class GlicActorNudgeController {
 
   std::vector<base::CallbackListSubscription>
       actor_nudge_state_change_callback_subscription_;
-  std::vector<base::CallbackListSubscription>
-      bubble_visibility_change_subscription_;
 
   ::ui::ScopedUnownedUserData<GlicActorNudgeController> scoped_data_holder_;
 

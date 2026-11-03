@@ -9,7 +9,6 @@
 #include "base/notreached.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
-#include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -40,18 +39,6 @@ GlicActorNudgeController::GlicActorNudgeController(
   CHECK(split_button_controller_);
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     RegisterActorNudgeStateCallback();
-  }
-
-  if (auto* bubble_controller =
-          GlicActivityListBubbleController::From(browser_)) {
-    bubble_visibility_change_subscription_.push_back(
-        bubble_controller->RegisterBubbleShownCallback(base::BindRepeating(
-            &GlicActorNudgeController::OnBubbleVisibilityChange,
-            weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/true)));
-    bubble_visibility_change_subscription_.push_back(
-        bubble_controller->RegisterBubbleDestroyedCallback(base::BindRepeating(
-            &GlicActorNudgeController::OnBubbleVisibilityChange,
-            weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/false)));
   }
 }
 
@@ -186,17 +173,11 @@ void GlicActorNudgeController::TriggerGlicActorNudge(
 }
 
 void GlicActorNudgeController::ShowBubble() {
-  if (auto* bubble_controller =
-          GlicActivityListBubbleController::From(browser_)) {
-    bubble_controller->ShowBubble();
-  }
+  split_button_controller_->ShowBubble();
 }
 
 void GlicActorNudgeController::CloseBubble() {
-  if (auto* bubble_controller =
-          GlicActivityListBubbleController::From(browser_)) {
-    bubble_controller->CloseBubble();
-  }
+  split_button_controller_->CloseBubble();
 }
 
 bool GlicActorNudgeController::IsShowingNudge() {
@@ -204,14 +185,6 @@ bool GlicActorNudgeController::IsShowingNudge() {
     return delegate->GetIsShowingGlicActorTaskIconNudge();
   }
   return false;
-}
-
-void GlicActorNudgeController::OnBubbleVisibilityChange(bool is_bubble_open) {
-  CallOnBoth(base::BindRepeating(
-      [](bool is_bubble_open, GlicSplitButtonDelegate& delegate) {
-        delegate.SetGlicActorNudgePressedState(is_bubble_open);
-      },
-      is_bubble_open));
 }
 
 void GlicActorNudgeController::CallOnBoth(

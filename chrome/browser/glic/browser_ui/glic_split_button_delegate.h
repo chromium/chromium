@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_ui_state.h"
 
 namespace glic {
 
@@ -82,6 +83,9 @@ class GlicSplitButtonDelegate
 
   // Update the button when glic panel shows or hides.
   virtual void SetGlicPanelIsOpen(bool open);
+
+  // Split button state update:
+  virtual void UpdateSplitButtonUi(const GlicSplitButtonUiState& state) {}
 };
 
 }  // namespace glic
