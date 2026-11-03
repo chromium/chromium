@@ -346,13 +346,50 @@ export class CdpTargetManager {
         }
         return;
       }
-      case 'service_worker':
       case 'worker': {
+        // In CDP, `Target.attachedToTarget` for a dedicated worker spawned
+        // during navigation can arrive before the parent frame's
+        // `Runtime.executionContextCreated` event (or after
+        // `Runtime.executionContextsCleared` deletes the previous document's
+        // realm). Check `BrowsingContextStorage` so the worker target is not
+        // prematurely detached while its parent browsing context's default
+        // realm is still pending.
+        let browsingContext: BrowsingContextImpl | undefined;
+        if (parentSessionCdpClient.sessionId) {
+          browsingContext = this.#browsingContextStorage.findContextBySession(
+            parentSessionCdpClient.sessionId,
+          );
+        }
         const realm = this.#realmStorage.findRealm({
           cdpSessionId: parentSessionCdpClient.sessionId,
           sandbox: null, // Non-sandboxed realms.
         });
         // If there is no browsing context, this worker is already terminated.
+        if (!realm && !browsingContext) {
+          void detach();
+          return;
+        }
+
+        const cdpTarget = this.#createCdpTarget(
+          targetCdpClient,
+          parentSessionCdpClient,
+          targetInfo,
+          userContext,
+        );
+        this.#handleWorkerTarget(
+          cdpToBidiTargetTypes[targetInfo.type],
+          cdpTarget,
+          realm,
+          browsingContext,
+        );
+        return;
+      }
+      case 'service_worker': {
+        const realm = this.#realmStorage.findRealm({
+          cdpSessionId: parentSessionCdpClient.sessionId,
+          sandbox: null, // Non-sandboxed realms.
+        });
+        // If there is no realm, this worker is already terminated.
         if (!realm) {
           void detach();
           return;
@@ -463,22 +500,62 @@ export class CdpTargetManager {
     realmType: WorkerRealmType,
     cdpTarget: CdpTarget,
     ownerRealm?: Realm,
+    browsingContext?: BrowsingContextImpl,
   ) {
-    cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
-      const {uniqueId, id, origin} = params.context;
-      const workerRealm = new WorkerRealm(
-        cdpTarget.cdpClient,
-        this.#eventManager,
-        id,
-        this.#logger,
-        serializeOrigin(origin),
-        ownerRealm ? [ownerRealm] : [],
-        uniqueId,
-        this.#realmStorage,
-        realmType,
-      );
-      this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
-    });
+    cdpTarget.cdpClient.on(
+      'Runtime.executionContextCreated',
+      async (params) => {
+        const {uniqueId, id, origin} = params.context;
+        // Prefer the parent session's current default realm, or await it on the
+        // parent browsing context if navigation has not created it yet.
+        let resolvedOwnerRealm = browsingContext
+          ? this.#realmStorage.findRealm({
+              cdpSessionId: cdpTarget.parentCdpClient.sessionId,
+              sandbox: null,
+            })
+          : ownerRealm;
+        if (!resolvedOwnerRealm && browsingContext) {
+          let detached = false;
+          const onDetached = (
+            params: Protocol.Target.DetachedFromTargetEvent,
+          ) => {
+            if (params.sessionId === cdpTarget.cdpSessionId) {
+              detached = true;
+            }
+          };
+          cdpTarget.parentCdpClient.on('Target.detachedFromTarget', onDetached);
+          try {
+            resolvedOwnerRealm =
+              await browsingContext.getOrCreateUserSandbox(undefined);
+          } catch (error) {
+            // The context was destroyed before its default realm was created.
+            this.#logger?.(LogType.debugError)?.(error);
+            return;
+          } finally {
+            cdpTarget.parentCdpClient.off(
+              'Target.detachedFromTarget',
+              onDetached,
+            );
+          }
+          // Do not register a realm if the worker detached while awaiting its owner.
+          if (detached) {
+            return;
+          }
+        }
+        const workerRealm = new WorkerRealm(
+          cdpTarget.cdpClient,
+          this.#eventManager,
+          id,
+          this.#logger,
+          serializeOrigin(origin),
+          resolvedOwnerRealm ? [resolvedOwnerRealm] : [],
+          uniqueId,
+          this.#realmStorage,
+          realmType,
+        );
+        this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
+      },
+    );
   }
 
   #handleDetachedFromTargetEvent({

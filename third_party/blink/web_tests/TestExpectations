@@ -2157,7 +2157,6 @@ crbug.com/576640672 [ Android ] external/wpt/webdriver/tests/bidi/network/provid
 crbug.com/576640672 [ Android ] external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.py [ Skip Timeout ]
 crbug.com/576640672 [ Android ] external/wpt/webdriver/tests/bidi/network/response_started/response_started.py [ Skip Timeout ]
 crbug.com/543076367 [ Android ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/contexts.py [ Skip Timeout ]
-crbug.com/576640075 [ Android ] external/wpt/webdriver/tests/bidi/script/get_realms/get_realms.py [ Failure Pass ]
 crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/script/get_realms/user_context_tentative.py [ Failure ]
 crbug.com/576640672 [ Android ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/filter.py [ Skip Timeout ]
 crbug.com/576640672 [ Android ] external/wpt/webdriver/tests/bidi/storage/get_cookies/filter.py [ Skip Timeout ]
