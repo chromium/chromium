@@ -69,6 +69,7 @@ constexpr net::NetworkTrafficAnnotationTag kPassboxTrafficAnnotation =
           type: CREDENTIALS
         }
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "passbox-pa.googleapis.com"
         internal {
           contacts {
             email: "anki-team@google.com"

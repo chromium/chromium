@@ -57,6 +57,7 @@ constexpr net::NetworkTrafficAnnotationTag kRemotePermissionTrafficAnnotation =
           type: SENSITIVE_URL
         }
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "agenticpermission.pa.googleapis.com"
         internal {
           contacts {
             email: "anki-team@google.com"
