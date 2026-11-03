@@ -17,6 +17,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.Layout;
 import android.view.View;
 
 import org.junit.After;
@@ -300,6 +301,16 @@ public class TileRendererTest {
                 .isSearchResultsPageFromDefaultSearchProvider(any());
         SuggestionsTileView tileView = buildTileView(TileStyle.MODERN, 1);
         Assert.assertEquals(1, tileView.getTitleView().getMaxLines());
+    }
+
+    @Test
+    public void testTileTitle_singleLineAiMode_wrapsToTwoLines() {
+        mTileSource = TileSource.AI_MODE;
+        SuggestionsTileView tileView = buildTileView(TileStyle.MODERN, 1);
+        Assert.assertEquals(2, tileView.getTitleView().getMaxLines());
+        Assert.assertEquals(1, tileView.getTitleView().getMinLines());
+        Assert.assertEquals(
+                Layout.BREAK_STRATEGY_SIMPLE, tileView.getTitleView().getBreakStrategy());
     }
 
     @Test

@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.Layout;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -265,6 +266,11 @@ public class TileRenderer {
                                 .inflate(mTileLayoutResId, parent, false);
 
         tileView.initialize(tile, mTitleLinesCount);
+        if (tile.isAiMode()) {
+            // Allows the AI Mode title translation to wrap to a second line, like the "Add new"
+            // button.
+            allowTitleToWrapToTwoLines(tileView);
+        }
 
         if (!mNativeInitializationComplete || setupDelegate == null) {
             return tileView;
@@ -365,15 +371,27 @@ public class TileRenderer {
                     RecordUserAction.record("Suggestions.Button.AddItem");
                     setupDelegate.getCustomTileModificationDelegate().add();
                 });
-        // Allow "Add new" title translation to wrap to second line. We change max lines instead of
-        // lines to avoid (clickable) blank line appearing at bottom if the title fits in one line.
-        tileView.setTitleMaxLines(2);
+        // Allows the "Add new" title translation to wrap to a second line.
+        allowTitleToWrapToTwoLines(tileView);
         // Prevent Custom Tile swap key from  propagating (i.e., suppress scrolls) to make the
         // button's behavior more similar to Custom Tiles.
         tileView.setOnKeyListener(
                 (View view, int keyCode, KeyEvent event) ->
                         TileUtils.isCustomTileSwapKeyCombo(keyCode, event));
         return tileView;
+    }
+
+    /**
+     * Lets a tile title that is forced onto one line wrap to a second line instead of getting cut
+     * off. Raises max lines instead of lines to avoid a (clickable) blank line appearing at the
+     * bottom when the title fits in one line. The default high-quality breaker minimizes the line
+     * count, so a word wider than the tile, e.g. under a large font size, gets split mid-word. The
+     * simple breaker breaks at the space instead, and the end ellipsis trims any word that still
+     * overflows.
+     */
+    private static void allowTitleToWrapToTwoLines(TileView tileView) {
+        tileView.setTitleMaxLines(/* maxLines= */ 2);
+        tileView.setTitleBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE);
     }
 
     /** Returns whether the tile represents a Search query. */

@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.text.Layout;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -141,6 +142,16 @@ public class TileView extends FrameLayout {
     /** Sets the max number of lines taken by the title. */
     public void setTitleMaxLines(int maxLines) {
         mTitleView.setMaxLines(maxLines);
+    }
+
+    /**
+     * Sets the line break strategy used to wrap the title.
+     *
+     * @param breakStrategy One of {@link Layout#BREAK_STRATEGY_SIMPLE}, {@link
+     *     Layout#BREAK_STRATEGY_HIGH_QUALITY} or {@link Layout#BREAK_STRATEGY_BALANCED}.
+     */
+    public void setTitleBreakStrategy(int breakStrategy) {
+        mTitleView.setBreakStrategy(breakStrategy);
     }
 
     /** Specify the handler that will be invoked when this tile is highlighted by the user. */
