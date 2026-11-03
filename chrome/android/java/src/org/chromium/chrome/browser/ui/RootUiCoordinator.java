@@ -1991,6 +1991,8 @@ public class RootUiCoordinator
             TrackerFactory.getTrackerForProfile(tab.getProfile())
                     .notifyEvent(EventConstants.PAGE_ZOOM_OPENED);
             mPageZoomBarCoordinator.show(tab.getWebContents());
+        } else if (id == R.id.fullscreen_button) {
+            mPageZoomManager.enterImmersiveMode();
         } else if (id == R.id.open_with_id) {
             Tab tab = mActivityTabProvider.get();
             assert tab != null && tab.isNativePage() && tab.getNativePage() instanceof PdfPage;

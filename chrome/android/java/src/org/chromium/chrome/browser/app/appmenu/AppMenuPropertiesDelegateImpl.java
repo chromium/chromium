@@ -1345,6 +1345,23 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             mPageZoomMenuItemCoordinator.setModel(model);
             return new ListItem(CustomMenuItemType.ZOOM_ITEM, model);
         }
+        if (ChromeFeatureList.sAndroidZoomImmersive.isEnabled()) {
+            return new ListItem(
+                    AppMenuItemType.TITLE_BUTTON,
+                    AppMenuItemUtils.buildModelForMenuItemWithSecondaryButton(
+                            mContext,
+                            mAppMenuItemTheme,
+                            R.id.page_zoom_id,
+                            R.string.page_zoom_menu_title,
+                            shouldShowIconBeforeItem() ? R.drawable.ic_zoom : Resources.ID_NULL,
+                            R.id.fullscreen_button,
+                            mContext.getString(
+                                    R.string.page_zoom_fullscreen_button_content_description),
+                            assumeNonNull(
+                                    AppCompatResources.getDrawable(
+                                            mContext, R.drawable.ic_fullscreen_enter)),
+                            isMenuIconAtStart()));
+        }
         return new ListItem(
                 AppMenuItemType.STANDARD,
                 AppMenuItemUtils.buildModelForStandardMenuItem(
