@@ -384,7 +384,7 @@ ${this.webContentsDebugStates_.map(wc => html`
             <div class="kv-item">
               <span class="kv-label">session_id</span>
               <span class="mono-value">
-                ${wc.sessionHandleState.sessionId}
+                ${wc.sessionHandleState.sessionId ?? 'None'}
               </span>
             </div>
             <div class="kv-item">
@@ -553,8 +553,9 @@ ${this.webContentsDebugStates_.map(wc => html`
                 ${wc.sessionHandleState.urlResources.length > 0 ?
                     wc.sessionHandleState.urlResources
                         .map(
-                            r => `[${r.resourceType}] tab=${r.tabId} ctx=${
-                                r.contextId} ${r.title || r.url}`)
+                            r => `[${r.resourceType}] tab=${
+                                r.tabId ?? 'N/A'} ctx=${
+                                r.contextId ?? 'N/A'} ${r.title || r.url}`)
                         .join('; ') :
                     '[]'}
               </span>
@@ -641,10 +642,10 @@ ${this.webContentsDebugStates_.map(wc => html`
               ${wc.sessionHandleState.uploadedFiles.map(f => html`
                 <tr>
                   <td>Uploaded</td>
-                  <td>${f.fileToken}</td>
-                  <td title="${f.tabUrl}">
-                    ${f.fileName || f.tabTitle || f.tabUrl}
-                    (tab: ${f.tabSessionId})
+                  <td>${f.fileToken ?? 'None'}</td>
+                  <td title="${f.tabUrl ?? ''}">
+                    ${f.fileName || f.tabTitle || f.tabUrl || ''}
+                    (tab: ${f.tabSessionId ?? 'N/A'})
                   </td>
                   <td>${f.mimeType} (${f.fileSizeBytes}B)</td>
                   <td>${f.uploadStatus} / ${f.uploadErrorType}</td>
@@ -658,10 +659,10 @@ ${this.webContentsDebugStates_.map(wc => html`
               ${wc.sessionHandleState.submittedFiles.map(f => html`
                 <tr>
                   <td>Submitted</td>
-                  <td>${f.fileToken}</td>
-                  <td title="${f.tabUrl}">
-                    ${f.fileName || f.tabTitle || f.tabUrl}
-                    (tab: ${f.tabSessionId})
+                  <td>${f.fileToken ?? 'None'}</td>
+                  <td title="${f.tabUrl ?? ''}">
+                    ${f.fileName || f.tabTitle || f.tabUrl || ''}
+                    (tab: ${f.tabSessionId ?? 'N/A'})
                   </td>
                   <td>${f.mimeType} (${f.fileSizeBytes}B)</td>
                   <td>${f.uploadStatus} / ${f.uploadErrorType}</td>

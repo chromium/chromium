@@ -189,6 +189,117 @@ struct UserDataDebugState {
   InputStateDebugState? input_state;
 };
 
+// Represents a tab explicitly deselected in a session handle's TabContextState.
+struct DeselectedTabDebug {
+  // Browser tab SessionID (`SessionID::id()`).
+  int32 tab_id;
+  // Tab title at the time of deselection.
+  string title;
+  // Tab URL at the time of deselection.
+  url.mojom.Url url;
+};
+
+// Represents a FileInfo entry in a session handle's uploaded or submitted set.
+struct FileInfoDebug {
+  // Client-side file token, or null if unset.
+  mojo_base.mojom.UnguessableToken? file_token;
+  // Uploaded file name, if present.
+  string file_name;
+  // Size of the file payload in bytes.
+  uint64 file_size_bytes;
+  // Formatted MIME type enum and raw MIME string.
+  string mime_type;
+  // String representation of `ContextUploadStatus`.
+  string upload_status;
+  // String representation of `ContextUploadErrorType`.
+  string upload_error_type;
+  // Pre-formatted Lens request ID (`ctx=<id> seq=<seq>`), or empty if unset.
+  string request_id;
+  // Associated browser tab SessionID, or null if not a tab upload.
+  int32? tab_session_id;
+  // Tab URL, or null if not a tab upload.
+  url.mojom.Url? tab_url;
+  // Tab title at upload time, or empty if not a tab upload.
+  string tab_title;
+  // True if this upload was superceded by a newer upload of the same tab.
+  bool is_superceded;
+  // True if this file was uploaded implicitly as part of an initial query.
+  bool is_implicit_upload;
+};
+
+// Represents a UrlResource attached to a ContextualTask.
+struct UrlResourceDebug {
+  // Sync UUID string of the URL resource, or empty if invalid.
+  string url_id;
+  // Resource URL.
+  url.mojom.Url url;
+  // Associated browser tab SessionID, or null if unset.
+  int32? tab_id;
+  // Title of the resource, or empty if unset.
+  string title;
+  // Server-assigned context ID, or null if unset.
+  int64? context_id;
+  // String representation of `contextual_tasks::ResourceType`.
+  string resource_type;
+};
+
+// Snapshot of ContextualSearchSessionHandle and ContextualTask state for a
+// WebContents.
+struct SessionHandleDebugState {
+  // Client-side session handle token, or null if unset.
+  mojo_base.mojom.UnguessableToken? session_id;
+  // Server search session ID (`gsessionid`), or empty if unavailable.
+  string search_session_id;
+  // Current URL associated with the session handle's `InputStateModel`.
+  url.mojom.Url current_url;
+  // String representation of `LensOverlayInvocationSource`, or `"None"`.
+  string invocation_source;
+  // True if this session was initiated by a contextual Lens query.
+  bool is_contextual_lens_session;
+  // Multi-login account index (`authuser`) for this session.
+  uint32 auth_user_index;
+  // True if any context tokens were submitted in a query in this session.
+  bool has_submitted_context;
+  // True if Smart Tab Sharing is active on the session handle.
+  bool smart_tab_sharing_active;
+  // True if Smart Tab Sharing was toggled since the last query turn.
+  bool smart_tab_sharing_toggled_since_last_turn;
+  // Pre-formatted request IDs queued for removal after an STS toggle.
+  array<string> sts_toggled_removed_context_ids;
+  // Tabs attached in this session in `TabContextState::attached`.
+  array<TabContextEntryDebug> attached_tabs;
+  // Tabs restored from AIM thread history in `TabContextState::restored`.
+  array<TabContextEntryDebug> restored_tabs;
+  // Tabs explicitly deselected in `TabContextState::deselected`.
+  array<DeselectedTabDebug> deselected_tabs;
+  // Tokens in `GetUploadedContextTokens()`.
+  array<mojo_base.mojom.UnguessableToken> uploaded_context_tokens;
+  // Tokens in `GetSubmittedContextTokens()`.
+  array<mojo_base.mojom.UnguessableToken> submitted_context_tokens;
+  // Tokens in `GetActiveSubmittedContextTokens()`.
+  array<mojo_base.mojom.UnguessableToken> active_submitted_context_tokens;
+  // SessionIDs of tabs in `GetPersistedTabs()`.
+  array<int32> persisted_tab_ids;
+  // SessionIDs of tabs in `GetPendingDelayedTabIds()`.
+  array<int32> pending_delayed_tab_ids;
+  // `FileInfo` entries in `GetUploadedContextFileInfos()`.
+  array<FileInfoDebug> uploaded_files;
+  // `FileInfo` entries in `GetSubmittedContextFileInfos()`.
+  array<FileInfoDebug> submitted_files;
+  // Query strings from `previous_turns()` in chronological order.
+  array<string> previous_turns;
+  // String representation of `ThreadType` from the resolved `ContextualTask`.
+  string thread_type;
+  // Server-side thread ID from the resolved `ContextualTask`.
+  string thread_server_id;
+  // Thread title from the resolved `ContextualTask`.
+  string thread_title;
+  // Conversation turn ID (`mstk`) from the resolved `ContextualTask`.
+  string thread_conversation_turn_id;
+  // URL resources attached to the resolved `ContextualTask`.
+  array<UrlResourceDebug> url_resources;
+};
+
 // Snapshot of debug state for a tracked tab or side panel WebContents.
 struct WebContentsDebugState {
   // True if this WebContents belongs to a cached side panel rather than a tab.
@@ -205,6 +316,9 @@ struct WebContentsDebugState {
   bool is_active_tab_in_window;
   // Null only when no user data debug state was populated for this WebContents.
   UserDataDebugState? user_data_state;
+  // Null when the WebContents does not have an active
+  // `ContextualSearchSessionHandle`.
+  SessionHandleDebugState? session_handle_state;
 };
 
 // PageHandler for ContextualTasksInternals page.
