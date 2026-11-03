@@ -24,7 +24,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_observer.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
@@ -45,7 +44,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/ntp_tiles/custom_links_manager.h"
 #include "components/ntp_tiles/most_visited_sites.h"
-#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/file_select_listener.h"
@@ -89,6 +87,8 @@
 
 #include <wrl/client.h>
 
+#include "base/task/thread_pool.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
 #include "ui/gfx/win/hwnd_util.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
@@ -98,12 +98,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/wm/core/window_animations.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "base/task/thread_pool.h"
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
-#include "ui/base/win/shell.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -550,7 +544,7 @@ bool OmniboxEverywhereUIManager::AcquireKeepAlives() {
         KeepAliveRestartOption::DISABLED);
   }
 
-  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
+  auto* service = GetOmniboxEverywhereService();
   CHECK(service);
 
   if (!service->AcquireProfileKeepAlive()) {
@@ -570,11 +564,8 @@ bool OmniboxEverywhereUIManager::TryAcquireKeepAlives() {
 }
 
 void OmniboxEverywhereUIManager::ReleaseKeepAlives() {
-  if (profile_) {
-    if (auto* service =
-            OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
-      service->ReleaseProfileKeepAlive();
-    }
+  if (auto* service = GetOmniboxEverywhereService()) {
+    service->ReleaseProfileKeepAlive();
   }
   keep_alive_.reset();
 }
@@ -617,7 +608,7 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   if (bounds) {
     params.bounds = *bounds;
   } else {
-    auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
+    auto* service = GetOmniboxEverywhereService();
     const bool is_fre_intro_modal =
         service && service->fre_controller() &&
         service->fre_controller()->GetCurrentStage() == FreStage::kIntroModal;
@@ -691,11 +682,7 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
   is_demoted_ = false;
   if (widget_->IsMinimized()) {
     widget_->Restore();
-    if (pending_auto_resize_size_.has_value()) {
-      const gfx::Size size = *pending_auto_resize_size_;
-      pending_auto_resize_size_.reset();
-      ResizeDueToAutoResize(web_contents(), size);
-    }
+    ApplyPendingAutoResize();
   }
 #if BUILDFLAG(IS_MAC)
   widget_->SetCanAppearInExistingFullscreenSpaces(true);
@@ -742,16 +729,18 @@ void OmniboxEverywhereUIManager::OnMostVisitedPrefChanged() {
   ReleaseKeepAlives();
 }
 
+OmniboxEverywhereService*
+OmniboxEverywhereUIManager::GetOmniboxEverywhereService() {
+  return profile_ ? OmniboxEverywhereServiceFactory::GetForProfile(profile_)
+                  : nullptr;
+}
+
 // TODO(crbug.com/558851707): Move impression recording to the FRE WebUI
 // component lifecycle (e.g. on render/mount) so that impressions are recorded
 // based on true visual visibility and both ephemeral and persistent window
 // models are handled consistently.
 void OmniboxEverywhereUIManager::MaybeRecordFreImpression() {
-  if (!profile_) {
-    return;
-  }
-  if (auto* service =
-          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+  if (auto* service = GetOmniboxEverywhereService()) {
     if (service->fre_controller()) {
       service->fre_controller()->IncrementImpression();
     }
@@ -759,21 +748,13 @@ void OmniboxEverywhereUIManager::MaybeRecordFreImpression() {
 }
 
 void OmniboxEverywhereUIManager::MaybeShowLensPromo() {
-  if (!profile_) {
-    return;
-  }
-  if (auto* service =
-          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+  if (auto* service = GetOmniboxEverywhereService()) {
     service->MaybeShowLensPromo();
   }
 }
 
 void OmniboxEverywhereUIManager::EndLensPromo() {
-  if (!profile_) {
-    return;
-  }
-  if (auto* service =
-          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+  if (auto* service = GetOmniboxEverywhereService()) {
     service->EndLensPromo();
   }
 }
@@ -1004,11 +985,7 @@ void OmniboxEverywhereUIManager::OnWidgetShowStateChanged(
     return;
   }
   if (!widget_->IsMinimized()) {
-    if (pending_auto_resize_size_.has_value()) {
-      const gfx::Size size = *pending_auto_resize_size_;
-      pending_auto_resize_size_.reset();
-      ResizeDueToAutoResize(web_contents(), size);
-    }
+    ApplyPendingAutoResize();
     if (std::exchange(is_demoted_, false)) {
       MaybeShowLensPromo();
     }
@@ -1102,6 +1079,15 @@ void OmniboxEverywhereUIManager::OnWidgetClosed(
   DestroyWidgetAndWebContents();
 }
 
+void OmniboxEverywhereUIManager::ApplyPendingAutoResize() {
+  if (!pending_auto_resize_size_.has_value()) {
+    return;
+  }
+  const gfx::Size size = *pending_auto_resize_size_;
+  pending_auto_resize_size_.reset();
+  ResizeDueToAutoResize(web_contents(), size);
+}
+
 void OmniboxEverywhereUIManager::AdjustWidgetBoundsToWorkArea() {
   if (is_closing_ || is_adjusting_bounds_ || !widget_ || is_dragging_ ||
       widget_->IsMinimized()) {
@@ -1129,11 +1115,7 @@ void OmniboxEverywhereUIManager::OnWidgetUserDragStarted(
 
 void OmniboxEverywhereUIManager::OnWidgetUserDragEnded(views::Widget* widget) {
   is_dragging_ = false;
-  if (pending_auto_resize_size_.has_value()) {
-    const gfx::Size size = *pending_auto_resize_size_;
-    pending_auto_resize_size_.reset();
-    ResizeDueToAutoResize(web_contents(), size);
-  }
+  ApplyPendingAutoResize();
   AdjustWidgetBoundsToWorkArea();
 }
 
@@ -1259,11 +1241,7 @@ void OmniboxEverywhereUIManager::OnScreensharePickerOpened() {
 
 void OmniboxEverywhereUIManager::OnScreensharePickerClosed() {
   SetModalOpen(Modal::kScreensharePicker, false);
-  if (pending_auto_resize_size_.has_value()) {
-    gfx::Size size = *pending_auto_resize_size_;
-    pending_auto_resize_size_.reset();
-    ResizeDueToAutoResize(web_contents(), size);
-  }
+  ApplyPendingAutoResize();
   if (widget_ && !suppress_restore_on_screenshare_picker_closed_) {
     ActivateAndFocus();
   }
@@ -1490,8 +1468,7 @@ content::WebContents* OmniboxEverywhereUIManager::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
-  if (service) {
+  if (auto* service = GetOmniboxEverywhereService()) {
     service->OpenUrl(params.url, params.disposition, params.transition,
                      std::move(navigation_handle_callback));
   }
@@ -1523,9 +1500,6 @@ void OmniboxEverywhereUIManager::DraggableRegionsChanged(
 bool OmniboxEverywhereUIManager::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  if (!widget_ || !widget_->GetContentsView()) {
-    return true;
-  }
   context_menu_controller_->HandleContextMenu(params);
   return true;
 }
