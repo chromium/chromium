@@ -41,7 +41,7 @@ PersonalDataManagerFactory::PersonalDataManagerFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-PersonalDataManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+PersonalDataManagerFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   scoped_refptr<AutofillWebDataService> local_storage =
       ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
@@ -56,7 +56,7 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
       AutofillImageFetcherFactory::GetForProfile(profile);
 
   return std::make_unique<PersonalDataManager>(
-      local_storage, account_storage, profile->GetPrefs(),
+      local_storage, account_storage, profile.GetPrefs(),
       IdentityManagerFactory::GetForProfile(profile), history_service,
       sync_service, StrikeDatabaseFactory::GetForProfile(profile),
       autofill_image_fetcher,

@@ -29,7 +29,7 @@ IOSWalletPassAccessManagerFactory::IOSWalletPassAccessManagerFactory(
 
 std::unique_ptr<KeyedService>
 IOSWalletPassAccessManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPrivatePasses) &&
       !base::FeatureList::IsEnabled(
@@ -52,7 +52,7 @@ IOSWalletPassAccessManagerFactory::BuildServiceInstanceFor(
 
   return std::make_unique<autofill::WalletPassAccessManagerImpl>(
       std::make_unique<wallet::WalletHttpClientImpl>(
-          identity_manager, profile->GetSharedURLLoaderFactory(),
+          identity_manager, profile.GetSharedURLLoaderFactory(),
           GetApplicationContext()->GetApplicationLocaleStorage()->Get()),
       data_manager);
 }

@@ -32,7 +32,7 @@ IOSAutofillAiPersonalContextAccessManagerFactory::
 
 std::unique_ptr<KeyedService>
 IOSAutofillAiPersonalContextAccessManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAmbientAutofill)) {
     return nullptr;
@@ -50,7 +50,7 @@ IOSAutofillAiPersonalContextAccessManagerFactory::BuildServiceInstanceFor(
 
   return std::make_unique<autofill::AutofillAiPersonalContextAccessManagerImpl>(
       personal_context_service, personal_context_eligibility_service,
-      profile->GetPrefs(), DeviceInfoSyncServiceFactory::GetForProfile(profile),
+      profile.GetPrefs(), DeviceInfoSyncServiceFactory::GetForProfile(profile),
       IOSAutofillPersonalContextEntityMetadataManagerFactory::GetForProfile(
           profile));
 }

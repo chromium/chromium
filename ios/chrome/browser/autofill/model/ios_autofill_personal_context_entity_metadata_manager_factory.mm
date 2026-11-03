@@ -32,7 +32,7 @@ IOSAutofillPersonalContextEntityMetadataManagerFactory::
 
 std::unique_ptr<KeyedService>
 IOSAutofillPersonalContextEntityMetadataManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAmbientAutofillSuppression)) {
     return nullptr;

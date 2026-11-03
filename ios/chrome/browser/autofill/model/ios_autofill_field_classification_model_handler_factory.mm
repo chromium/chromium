@@ -23,7 +23,7 @@ IOSAutofillFieldClassificationModelHandlerFactory::
 
 std::unique_ptr<KeyedService>
 IOSAutofillFieldClassificationModelHandlerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   OptimizationGuideService* optimization_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);
   if (!optimization_guide) {

@@ -16,12 +16,12 @@ StrikeDatabaseFactory::StrikeDatabaseFactory(PassKey key)
                                          "AutofillStrikeDatabase") {}
 
 std::unique_ptr<KeyedService> StrikeDatabaseFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   leveldb_proto::ProtoDatabaseProvider* db_provider =
-      profile->GetProtoDatabaseProvider();
+      profile.GetProtoDatabaseProvider();
 
   return std::make_unique<strike_database::StrikeDatabase>(
-      db_provider, profile->GetStatePath());
+      db_provider, profile.GetStatePath());
 }
 
 }  // namespace autofill

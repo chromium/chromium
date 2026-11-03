@@ -16,7 +16,7 @@ BookmarkUndoServiceFactory::BookmarkUndoServiceFactory(PassKey key)
                                          "BookmarkUndoService") {}
 
 std::unique_ptr<KeyedService>
-BookmarkUndoServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+BookmarkUndoServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return std::make_unique<BookmarkUndoService>();
 }
 

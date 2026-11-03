@@ -21,7 +21,7 @@ BackendPromoServiceFactory::BackendPromoServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-BackendPromoServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+BackendPromoServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return ios::provider::CreateBackendPromoService(
       IdentityManagerFactory::GetForProfile(profile),
       BrowserListFactory::GetForProfile(profile),

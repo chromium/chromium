@@ -22,7 +22,7 @@ AccountBookmarkSyncServiceFactory::AccountBookmarkSyncServiceFactory(
 
 std::unique_ptr<KeyedService>
 AccountBookmarkSyncServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<sync_bookmarks::BookmarkSyncService>(
       syncer::WipeModelUponSyncDisabledBehavior::kAlways);
 }
