@@ -16,6 +16,7 @@
 #include "device/vr/android/compositor_delegate_provider.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/android/scoped_java_surface.h"
@@ -39,7 +40,8 @@ XrSessionCoordinator::XrSessionCoordinator() {
     return;
   }
   ScopedJavaLocalRef<jobject> j_xr_session_coordinator =
-      Java_XrSessionCoordinator_create(env, (int64_t)this);
+      Java_XrSessionCoordinator_create(
+          env, jni_zero::MakeRaw(this));
   if (j_xr_session_coordinator.is_null()) {
     return;
   }
