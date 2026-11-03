@@ -309,7 +309,7 @@ public class OmniboxFeatures {
      * app Voice Plate.
      */
     public static final CachedFlag sOmniboxVoicePlateIntent =
-            newFlag(OmniboxFeatureList.OMNIBOX_VOICE_PLATE_INTENT, FeatureState.DISABLED_IN_PROD);
+            newFlag(OmniboxFeatureList.OMNIBOX_VOICE_PLATE_INTENT, FeatureState.ENABLED_IN_TEST);
 
     public static final IntCachedFeatureParam sTouchDownTriggerMaxPrefetchesPerSession =
             newIntParam(
