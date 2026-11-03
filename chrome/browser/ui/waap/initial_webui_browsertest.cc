@@ -86,8 +86,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -705,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIWindowCreationSourceBrowserTest,
                        MoveTabsToNewWindow) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
@@ -755,7 +755,8 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIWindowCreationSourceBrowserTest,
 IN_PROC_BROWSER_TEST_F(InitialWebUIWindowCreationSourceBrowserTest,
                        Navigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewWindow,
+      browser(), GURL(url::kAboutBlankURL),
+      ui::mojom::WindowOpenDisposition::kNewWindow,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER |
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 

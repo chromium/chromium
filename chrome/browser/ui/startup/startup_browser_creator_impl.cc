@@ -67,8 +67,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -422,7 +422,7 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
         (is_active_tab_overwrite == TabOverWrite::kYes)) {
       NavigateParams params(browser, tab.url,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-      params.disposition = WindowOpenDisposition::kCurrentTab;
+      params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
       params.tabstrip_add_types = ADD_NONE;
       first_tab = false;
       Navigate(&params);
@@ -446,9 +446,10 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // NormalizeDisposition() promotes a background tab back to the foreground
     // when the tab strip is empty, so the first tab of a new window is still
     // activated under kOpenInBackground.
-    params.disposition = (first_tab && !open_in_background)
-                             ? WindowOpenDisposition::kNewForegroundTab
-                             : WindowOpenDisposition::kNewBackgroundTab;
+    params.disposition =
+        (first_tab && !open_in_background)
+            ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+            : ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
     params.tabstrip_add_types = add_types;
 
 #if BUILDFLAG(ENABLE_RLZ)

@@ -30,8 +30,8 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -205,7 +205,8 @@ struct NavigateParams {
   //                        & no matching tab
   // CURRENT_TAB          no params.browser                 DCHECK FAILURE
   //                        & no params.source_contents
-  WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab;
+  ui::mojom::WindowOpenDisposition disposition =
+      ui::mojom::WindowOpenDisposition::kCurrentTab;
 
   // Allows setting the opener for the case when new WebContents are created
   // (i.e. when |disposition| asks for a new tab or window).

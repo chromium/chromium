@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class Profile;
 
@@ -40,7 +41,7 @@ class BrowserNavigatorTest : public InteractiveBrowserTest {
   std::unique_ptr<content::WebContents> CreateWebContents(
       bool initialize_renderer);
 
-  void RunSuppressTest(WindowOpenDisposition disposition);
+  void RunSuppressTest(ui::mojom::WindowOpenDisposition disposition);
   void RunUseNonIncognitoWindowTest(const GURL& url,
                                     const ui::PageTransition& page_transition);
   void RunDoNothingIfIncognitoIsForcedTest(const GURL& url);
@@ -62,7 +63,7 @@ class BrowserNavigatorTest : public InteractiveBrowserTest {
   BrowserWindowInterface* NavigateHelper(
       const GURL& url,
       BrowserWindowInterface* browser,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       bool wait_for_navigation,
       content::WebContents* expected_web_contents = nullptr);
 

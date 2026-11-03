@@ -199,8 +199,8 @@
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -1895,7 +1895,7 @@ void ChromeAutofillClient::OpenGmailForOtps() {
   static constexpr std::string_view kGmailUrl = "https://mail.google.com";
   web_contents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(kGmailUrl), WindowOpenDisposition::kNewForegroundTab,
+          GURL(kGmailUrl), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }

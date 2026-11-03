@@ -21,7 +21,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -127,8 +127,8 @@ bool CompareURLsWithReplacements(const GURL& url,
 
 int GetIndexOfExistingTabMatchingURL(BrowserWindowInterface* browser,
                                      const NavigateParams& params) {
-  if (params.disposition != WindowOpenDisposition::kSingletonTab &&
-      params.disposition != WindowOpenDisposition::kSwitchToTab) {
+  if (params.disposition != ui::mojom::WindowOpenDisposition::kSingletonTab &&
+      params.disposition != ui::mojom::WindowOpenDisposition::kSwitchToTab) {
     return -1;
   }
 

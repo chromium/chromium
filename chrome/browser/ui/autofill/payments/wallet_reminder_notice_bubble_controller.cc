@@ -18,8 +18,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -103,10 +103,11 @@ void WalletReminderNoticeBubbleController::OnLinkClicked(const GURL& url) {
       autofill_metrics::WalletReminderNoticeInteraction::kClickedLink);
   logged_link_clicked_ = true;
 
-  web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                              url, WindowOpenDisposition::kNewForegroundTab,
-                              ui::PAGE_TRANSITION_LINK),
-                          /*navigation_handle_callback=*/{});
+  web_contents()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK),
+      /*navigation_handle_callback=*/{});
 }
 
 void WalletReminderNoticeBubbleController::OnBubbleClosed() {

@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/views/test/widget_test.h"
 
 namespace autofill {
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, NewTabHidesDialog) {
   // Open a new tab page in the foreground.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), chrome::ChromeUINewTabURLAsGURL(),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 

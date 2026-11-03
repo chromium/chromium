@@ -16,7 +16,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
 
 using Creator = StartupBrowserCreatorImpl;
 

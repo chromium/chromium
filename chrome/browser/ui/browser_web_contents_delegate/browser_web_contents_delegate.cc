@@ -107,8 +107,8 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
 #if defined(USE_AURA)
@@ -196,14 +196,14 @@ bool ShouldCreateBackgroundContents(Profile* profile,
 // opening the new contents in a new split alongside `source`.
 bool CanOpenWindowOpenSplitTab(BrowserWindowInterface& browser,
                                content::WebContents* source,
-                               WindowOpenDisposition disposition) {
+                               ui::mojom::WindowOpenDisposition disposition) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kWindowOpenSplitTab));
   // The renderer's fallback disposition for a split request is NEW_POPUP if
   // "popup" was also specified, or NEW_FOREGROUND_TAB otherwise. The renderer
   // drops the request if the user's click modifiers chose the disposition, so
   // any other disposition is unexpected, and is left alone.
-  if (disposition != WindowOpenDisposition::kNewForegroundTab &&
-      disposition != WindowOpenDisposition::kNewPopup) {
+  if (disposition != ui::mojom::WindowOpenDisposition::kNewForegroundTab &&
+      disposition != ui::mojom::WindowOpenDisposition::kNewPopup) {
     return false;
   }
   if (!source || browser.GetType() != BrowserWindowInterface::TYPE_NORMAL) {
@@ -314,9 +314,11 @@ std::unique_ptr<ChromePopupNavigationDelegate> MaybeBlockPopupOrGetDelegate(
   if (params.user_gesture) {
     nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
   }
-  if (nav_params.disposition == WindowOpenDisposition::kNewSplitView &&
+  if (nav_params.disposition ==
+          ui::mojom::WindowOpenDisposition::kNewSplitView &&
       !params.user_gesture) {
-    nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    nav_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
 
   auto popup_delegate =
@@ -617,7 +619,7 @@ content::WebContents* BrowserWebContentsDelegate::OpenURLFromTab(
   tabs::TabInterface* const source_tab =
       source ? tabs::TabInterface::MaybeGetFromContents(source) : nullptr;
   const bool is_already_split =
-      params.disposition == WindowOpenDisposition::kNewSplitView &&
+      params.disposition == ui::mojom::WindowOpenDisposition::kNewSplitView &&
       source_tab && source_tab->IsSplit();
 
   auto popup_delegate =
@@ -647,7 +649,7 @@ content::WebContents* BrowserWebContentsDelegate::OpenURLFromTab(
       "navigated_or_inserted_contents", navigated_or_inserted_contents);
 
   if (is_already_split && popup_delegate->nav_params()->disposition ==
-                              WindowOpenDisposition::kNewSplitView) {
+                              ui::mojom::WindowOpenDisposition::kNewSplitView) {
     // If the source was already split and the disposition was not normalized,
     // the partner pane was navigated instead of creating a new tab. Return
     // |source| so that WebContentsImpl::OpenURL() sees new_contents == this and
@@ -718,7 +720,7 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
@@ -734,7 +736,7 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
     // default features.
     CHECK(base::FeatureList::IsEnabled(blink::features::kWindowOpenSplitTab));
     if (CanOpenWindowOpenSplitTab(*browser_, source, disposition)) {
-      disposition = WindowOpenDisposition::kNewSplitView;
+      disposition = ui::mojom::WindowOpenDisposition::kNewSplitView;
     }
   }
 
@@ -753,15 +755,16 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
       screen->GetDisplayNearestView(source->GetContentNativeView()) !=
           screen->GetDisplayMatching(window_features.bounds);
   if (!app_browser_controller_ &&
-      disposition == WindowOpenDisposition::kNewPopup &&
+      disposition == ui::mojom::WindowOpenDisposition::kNewPopup &&
       fullscreen_controller->IsFullscreenForBrowser() &&
       !targeting_different_display) {
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
 #endif
 
-  if (disposition == WindowOpenDisposition::kNewSplitView && !user_gesture) {
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewSplitView &&
+      !user_gesture) {
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
 
   // At this point the |new_contents| is beyond the popup blocker, but we use
@@ -778,7 +781,7 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
   // Allow fullscreen-within-tab openers to open popups normally.
   NavigateParams::WindowAction window_action =
       NavigateParams::WindowAction::kShowWindow;
-  if (disposition == WindowOpenDisposition::kNewPopup &&
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewPopup &&
       fullscreen_controller->GetFullscreenState(source).target_mode ==
           content::FullscreenMode::kContent) {
     window_action = NavigateParams::WindowAction::kShowWindowInactive;
@@ -799,10 +802,11 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
   // If a backgrounded actor task triggered a new tab/popup, don't interrupt the
   // user.
   if (source && actor::IsRunningBackgroundActorTask(*source)) {
-    if (disposition == WindowOpenDisposition::kNewPopup) {
+    if (disposition == ui::mojom::WindowOpenDisposition::kNewPopup) {
       window_action = NavigateParams::WindowAction::kShowWindowInactive;
-    } else if (disposition == WindowOpenDisposition::kNewForegroundTab) {
-      disposition = WindowOpenDisposition::kNewBackgroundTab;
+    } else if (disposition ==
+               ui::mojom::WindowOpenDisposition::kNewForegroundTab) {
+      disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
     }
   }
 
@@ -1099,7 +1103,7 @@ content::WebContents* BrowserWebContentsDelegate::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespaceHandle* session_storage_namespace) {

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/blocked_content/popup_navigation_delegate.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class ChromePopupNavigationDelegate
     : public blocked_content::PopupNavigationDelegate {
@@ -19,7 +20,8 @@ class ChromePopupNavigationDelegate
   GURL GetURL() override;
   NavigateResult NavigateWithGesture(
       const blink::mojom::WindowFeatures& window_features,
-      std::optional<WindowOpenDisposition> updated_disposition) override;
+      std::optional<ui::mojom::WindowOpenDisposition> updated_disposition)
+      override;
   void OnPopupBlocked(content::WebContents* web_contents,
                       int total_popups_blocked_on_page) override;
 

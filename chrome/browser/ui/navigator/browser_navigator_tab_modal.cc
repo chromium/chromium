@@ -7,8 +7,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
 struct NavigateParams;
@@ -28,7 +28,7 @@ base::WeakPtr<content::NavigationHandle> BrowserNavigatorTabModal::ShowImpl(
       ui::PAGE_TRANSITION_LINK);
   params.source_contents = &source_contents;
   params.window_features.bounds = gfx::Rect(size);
-  params.disposition = WindowOpenDisposition::kNewPopup;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   return internal::ShowTabModalPopup(params);
 }

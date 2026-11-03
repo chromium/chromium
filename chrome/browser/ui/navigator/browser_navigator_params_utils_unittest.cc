@@ -17,10 +17,10 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -137,8 +137,8 @@ class BrowserNavigatorParamsUtilsTest : public ChromeRenderViewHostTestHarness {
 
   NavigateParams NavigateParamsForTest(
       GURL url,
-      WindowOpenDisposition disposition =
-          WindowOpenDisposition::kSingletonTab) {
+      ui::mojom::WindowOpenDisposition disposition =
+          ui::mojom::WindowOpenDisposition::kSingletonTab) {
     NavigateParams params(profile(), url,
                           ui::PageTransition::PAGE_TRANSITION_TYPED);
     params.disposition = disposition;
@@ -186,8 +186,8 @@ TEST_F(BrowserNavigatorParamsUtilsTest, FindsWithDifferentRef) {
 }
 
 TEST_F(BrowserNavigatorParamsUtilsTest, DoesNotFindNonSingletonDisposition) {
-  auto params = NavigateParamsForTest(GURL(kUrl1),
-                                      WindowOpenDisposition::kNewForegroundTab);
+  auto params = NavigateParamsForTest(
+      GURL(kUrl1), ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(GetIndexOfExistingTabMatchingURL(browser(), params), -1);
 }
 

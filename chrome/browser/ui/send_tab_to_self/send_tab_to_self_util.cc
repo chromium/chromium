@@ -28,9 +28,9 @@
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/origin.h"
 
@@ -44,7 +44,7 @@ namespace {
 base::WeakPtr<content::WebContents> OpenEntryInNewTabWithDisposition(
     Profile* profile,
     const SendTabToSelfEntry& entry,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   RecordHasScrollPositionOnOpened(
       !entry.GetPageContext().scroll_position.IsEmpty());
 
@@ -154,7 +154,7 @@ base::WeakPtr<content::WebContents> OpenEntryInNewForegroundTab(
     ShareActivatedEntryPoint entry_point) {
   base::WeakPtr<content::WebContents> web_contents =
       OpenEntryInNewTabWithDisposition(
-          profile, entry, WindowOpenDisposition::kNewForegroundTab);
+          profile, entry, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   if (web_contents) {
     MarkEntryMatchingGuidActivated(profile, entry.GetGUID(), entry_point);
   }
@@ -166,7 +166,7 @@ base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
     const SendTabToSelfEntry& entry) {
   base::WeakPtr<content::WebContents> web_contents =
       OpenEntryInNewTabWithDisposition(
-          profile, entry, WindowOpenDisposition::kNewBackgroundTab);
+          profile, entry, ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
   if (web_contents) {
     SendTabToSelfActivationTracker::CreateForWebContents(web_contents.get(),
                                                          entry.GetGUID());
@@ -207,7 +207,7 @@ void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
 }
 
 void OpenManageDevicesPage(Profile* profile,
-                           WindowOpenDisposition disposition) {
+                           ui::mojom::WindowOpenDisposition disposition) {
   CHECK(profile);
   NavigateParams params(profile, GURL(chrome::kGoogleAccountDeviceActivityURL),
                         ui::PAGE_TRANSITION_LINK);

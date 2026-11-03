@@ -14,8 +14,8 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h"
@@ -201,10 +201,11 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
   VirtualCardEnrollMetricsLogger::OnLinkClicked(
       link_type, ui_model_->enrollment_fields().virtual_card_enrollment_source);
 
-  web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                              url, WindowOpenDisposition::kNewForegroundTab,
-                              ui::PAGE_TRANSITION_LINK),
-                          /*navigation_handle_callback=*/{});
+  web_contents()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK),
+      /*navigation_handle_callback=*/{});
 }
 
 void VirtualCardEnrollBubbleControllerImpl::OnBubbleDiscarded() {

@@ -11,6 +11,7 @@
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 
 namespace gfx {
@@ -66,7 +67,7 @@ class CredentialProviderWebDialogViewWithModal
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespaceHandle* session_storage_namespace)

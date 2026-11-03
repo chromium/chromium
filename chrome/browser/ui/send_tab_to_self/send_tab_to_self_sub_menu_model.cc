@@ -37,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
@@ -303,7 +304,7 @@ void SendTabToSelfSubMenuModel::ExecuteCommand(int command_id,
     OpenManageDevicesPage(
         Profile::FromBrowserContext(primary_web_contents_->GetBrowserContext()),
         ui::DispositionFromEventFlags(
-            event_flags, WindowOpenDisposition::kNewForegroundTab));
+            event_flags, ui::mojom::WindowOpenDisposition::kNewForegroundTab));
     return;
   }
 

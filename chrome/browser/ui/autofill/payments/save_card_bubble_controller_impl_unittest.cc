@@ -53,8 +53,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/base/window_open_disposition.h"
 
 using base::Bucket;
 using testing::ElementsAre;
@@ -231,8 +231,10 @@ class SaveCardBubbleControllerImplTest
         .WillByDefault(testing::Return(tab_strip_model_.get()));
     ON_CALL(mock_browser_window_, OpenGURL(testing::_, testing::_))
         .WillByDefault(
-            [this](const GURL& url, WindowOpenDisposition disposition) {
-              if (disposition == WindowOpenDisposition::kNewForegroundTab) {
+            [this](const GURL& url,
+                   ui::mojom::WindowOpenDisposition disposition) {
+              if (disposition ==
+                  ui::mojom::WindowOpenDisposition::kNewForegroundTab) {
                 content::WebContents* new_contents = AddTab(url);
                 int new_index =
                     tab_strip_model_->GetIndexOfWebContents(new_contents);

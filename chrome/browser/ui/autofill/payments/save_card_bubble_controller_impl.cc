@@ -55,9 +55,9 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace autofill {
 
@@ -1027,10 +1027,11 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
 void SaveCardBubbleControllerImpl::OpenUrl(const GURL& url) {
   was_url_opened_ = true;
 
-  web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                              url, WindowOpenDisposition::kNewForegroundTab,
-                              ui::PAGE_TRANSITION_LINK),
-                          /*navigation_handle_callback=*/{});
+  web_contents()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK),
+      /*navigation_handle_callback=*/{});
 }
 
 bool SaveCardBubbleControllerImpl::IsWebContentsActive() {

@@ -61,10 +61,10 @@ enum class NewWindowCreationSource {
   // Created during navigation in `Navigate()` (`browser_navigator.cc`) or web
   // app navigation capturing (`navigation_capturing_process.cc`), e.g. opening
   // a link in a new window or incognito window
-  // (`WindowOpenDisposition::NEW_WINDOW` / `OFF_THE_RECORD`), Shift+Enter in
-  // the omnibox, navigating when no tabbed browser window exists for the
-  // profile, or capturing/reparenting a web app navigation into a new tabbed
-  // browser window.
+  // (`ui::mojom::WindowOpenDisposition::kNewWindow` / `kOffTheRecord`),
+  // Shift+Enter in the omnibox, navigating when no tabbed browser window exists
+  // for the profile, or capturing/reparenting a web app navigation into a new
+  // tabbed browser window.
   kNavigation = 8,
   // Created by an extension API or extension host helper opening a new normal
   // browser window, e.g. `chrome.windows.create()`, `chrome.tabs.create()`,

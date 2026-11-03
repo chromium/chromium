@@ -9,6 +9,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserUiController;
@@ -120,7 +121,7 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
@@ -173,7 +174,7 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespaceHandle* session_storage_namespace)

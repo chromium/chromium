@@ -42,7 +42,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace {
 
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorLockedTestChromeOS,
   // Navigate to a page.
   auto url = GURL(chrome::kChromeUIVersionURL);
   NavigateParams params(MakeNavigateParams(browser()));
-  params.disposition = WindowOpenDisposition::kNewWindow;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   params.url = url;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   Navigate(&params);
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorLockedTestChromeOS,
   // Navigate to a page.
   const GURL kUrl(chrome::kChromeUIVersionURL);
   NavigateParams params(MakeNavigateParams(browser()));
-  params.disposition = WindowOpenDisposition::kNewWindow;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   params.url = kUrl;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   Navigate(&params);
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGuestSessionNavigatorTest,
 
   // Navigate to the settings page.
   NavigateParams params(MakeNavigateParams(incognito_browser));
-  params.disposition = WindowOpenDisposition::kSingletonTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kSingletonTab;
   params.url = GURL("chrome://settings");
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
 
     // Navigate to the settings page from the primary user's browser.
     NavigateParams params(MakeNavigateParams(browser));
-    params.disposition = WindowOpenDisposition::kNewPopup;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
     params.url = GURL("chrome://settings");
     params.window_action = NavigateParams::WindowAction::kShowWindow;
     params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
 
     // Navigate to the settings page.
     NavigateParams params(MakeNavigateParams(browser));
-    params.disposition = WindowOpenDisposition::kNewPopup;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewPopup;
     params.url = GURL("chrome://settings");
     params.window_action = NavigateParams::WindowAction::kShowWindow;
     params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;

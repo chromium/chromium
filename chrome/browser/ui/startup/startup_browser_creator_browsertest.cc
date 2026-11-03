@@ -133,8 +133,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ozone_buildflags.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -576,7 +576,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
   // Open a browser window with some preloaded tabs.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://localhost"), WindowOpenDisposition::kCurrentTab,
+      browser(), GURL("http://localhost"),
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   TabStripModel* tab_strip = browser()->GetTabStripModel();
   EXPECT_EQ(1, tab_strip->count());  // Verify one tab is open.
@@ -620,7 +621,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   DisableWhatsNewPage();
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("http://localhost"), WindowOpenDisposition::kCurrentTab,
+      browser(), GURL("http://localhost"),
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_EQ(1, tab_strip->count());
@@ -1523,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
                                 /*from_user_gesture=*/true));
   TabStripModel* tab_strip_model = new_browser->GetTabStripModel();
   ui_test_utils::NavigateToURLWithDisposition(
-      new_browser, t3_url, WindowOpenDisposition::kNewForegroundTab,
+      new_browser, t3_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(t3_url,

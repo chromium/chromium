@@ -24,6 +24,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -318,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabBrowserTest, OpenerNotActive) {
   content::WebContents* opener = opener_contents();
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title3.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, tab_strip_model()->count());
   ASSERT_NE(opener, tab_strip_model()->GetActiveWebContents());

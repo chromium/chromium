@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync_device_info/device_info.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace content {
 class WebContents;
@@ -62,9 +62,10 @@ void OnSendTabToDeviceComplete(
     SendTabToSelfResult result);
 
 // Opens the "Manage account devices" page for `profile` with `disposition`.
-void OpenManageDevicesPage(Profile* profile,
-                           WindowOpenDisposition disposition =
-                               WindowOpenDisposition::kNewForegroundTab);
+void OpenManageDevicesPage(
+    Profile* profile,
+    ui::mojom::WindowOpenDisposition disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
 }  // namespace send_tab_to_self
 

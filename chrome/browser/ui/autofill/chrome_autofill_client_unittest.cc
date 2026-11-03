@@ -87,7 +87,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1404,7 +1404,7 @@ TEST_F(ChromeAutofillClientTest, OpenGmailForOtps) {
   ASSERT_TRUE(delegate.last_params().has_value());
   EXPECT_EQ(delegate.last_params()->url, GURL("https://mail.google.com"));
   EXPECT_EQ(delegate.last_params()->disposition,
-            WindowOpenDisposition::kNewForegroundTab);
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 TEST_F(ChromeAutofillClientTest,
