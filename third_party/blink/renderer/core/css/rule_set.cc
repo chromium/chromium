@@ -1787,16 +1787,22 @@ void RuleSet::CompactRules() {
   slotted_pseudo_element_rules_.shrink_to_fit();
   active_view_transition_rules_.shrink_to_fit();
   unbounded_pseudo_class_rules_.shrink_to_fit();
+  root_element_rules_.shrink_to_fit();
 
   page_rules_.shrink_to_fit();
   font_face_rules_.shrink_to_fit();
   font_palette_values_rules_.shrink_to_fit();
+  font_feature_values_rules_.shrink_to_fit();
   keyframes_rules_.shrink_to_fit();
   property_rules_.shrink_to_fit();
   counter_style_rules_.shrink_to_fit();
   position_try_rules_.shrink_to_fit();
+  function_rules_.shrink_to_fit();
   layer_intervals_.shrink_to_fit();
+  container_query_intervals_.shrink_to_fit();
+  scope_intervals_.shrink_to_fit();
   view_transition_rules_.shrink_to_fit();
+  media_query_set_results_.shrink_to_fit();
   bloom_hash_backing_.shrink_to_fit();
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
