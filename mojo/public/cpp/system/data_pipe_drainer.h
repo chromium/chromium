@@ -5,7 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_SYSTEM_DATA_PIPE_DRAINER_H_
 #define MOJO_PUBLIC_CPP_SYSTEM_DATA_PIPE_DRAINER_H_
 
-#include <stddef.h>
+#include <stdint.h>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +20,9 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeDrainer {
  public:
   class Client {
    public:
+    // The memory backing `data` is transitively owned by the `DataPipeDrainer`
+    // and is guaranteed to be valid until `OnDataAvailable()` returns, or until
+    // the `DataPipeDrainer` is destroyed.
     virtual void OnDataAvailable(base::span<const uint8_t> data) = 0;
     virtual void OnDataComplete() = 0;
 
@@ -27,7 +30,8 @@ class MOJO_CPP_SYSTEM_EXPORT DataPipeDrainer {
     virtual ~Client() {}
   };
 
-  DataPipeDrainer(Client*, mojo::ScopedDataPipeConsumerHandle source);
+  // `client` must outlive this `DataPipeDrainer`.
+  DataPipeDrainer(Client* client, mojo::ScopedDataPipeConsumerHandle source);
 
   DataPipeDrainer(const DataPipeDrainer&) = delete;
   DataPipeDrainer& operator=(const DataPipeDrainer&) = delete;

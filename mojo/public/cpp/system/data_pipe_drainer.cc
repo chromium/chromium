@@ -32,7 +32,11 @@ void DataPipeDrainer::ReadData() {
   base::span<const uint8_t> buffer;
   MojoResult rv = source_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
   if (rv == MOJO_RESULT_OK) {
+    base::WeakPtr<DataPipeDrainer> weak_self = weak_factory_.GetWeakPtr();
     client_->OnDataAvailable(buffer);
+    if (!weak_self) {
+      return;
+    }
     source_->EndReadData(buffer.size());
   } else if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
     client_->OnDataComplete();
