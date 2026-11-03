@@ -647,9 +647,12 @@ public class ModelTrackingOrchestrator {
             if (mIsAuthoritative && mState == SynchronizerState.MODEL_PENDING) {
                 mState = SynchronizerState.RESTORING;
                 assumeNonNull(mInitRestoreOrchestratorCallback).run();
+                mInitRestoreOrchestratorCallback = null;
                 initVisualDataTracking(mIncognito);
                 initActiveTabTracking(mIncognito);
-                mInitRestoreOrchestratorCallback = null;
+                if (getTabModel(mIncognito).getCurrentTabSupplier().get() != null) {
+                    onActiveTabChange(mIncognito);
+                }
             } else if (mState == SynchronizerState.START && !mLoadIncognitoTabsOnStart) {
                 if (fullSaveAndInitTracking(mIncognito)) {
                     mState = SynchronizerState.TRACKING;
@@ -667,6 +670,9 @@ public class ModelTrackingOrchestrator {
                 } else if (!mIsAuthoritative) {
                     markModelCaughtUp(mIncognito);
                 }
+            } else if (mIsAuthoritative && mState == SynchronizerState.MODEL_PENDING) {
+                mInitRestoreOrchestratorCallback = null;
+                mState = SynchronizerState.START;
             } else if (mIsAuthoritative && mState == SynchronizerState.RESTORING) {
                 mState = SynchronizerState.TRACKING;
                 initCollectionTracking(mIncognito);
