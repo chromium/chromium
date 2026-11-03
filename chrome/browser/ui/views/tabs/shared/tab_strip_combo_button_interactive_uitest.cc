@@ -10,6 +10,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/actions_util.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
@@ -113,6 +114,16 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
       CheckUserAction("TabStripComboButton.TabSearch.Unpinned", 1),
       // Pin Tab Search.
       ExecuteCommand(IDC_TAB_SEARCH_TOGGLE_PIN),
+      CheckUserAction("TabStripComboButton.TabSearch.Pinned", 1),
+      // Toggling via browser command directly should not record combo button
+      // actions.
+      Do([this]() {
+        chrome::ExecuteCommand(browser(), IDC_TAB_SEARCH_TOGGLE_PIN);
+      }),
+      CheckUserAction("TabStripComboButton.TabSearch.Unpinned", 1),
+      Do([this]() {
+        chrome::ExecuteCommand(browser(), IDC_TAB_SEARCH_TOGGLE_PIN);
+      }),
       CheckUserAction("TabStripComboButton.TabSearch.Pinned", 1),
       // Unpin Everything Menu.
       ExecuteCommand(IDC_EVERYTHING_MENU_TOGGLE_PIN),

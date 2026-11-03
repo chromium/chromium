@@ -662,8 +662,8 @@ export class SettingsAppearancePageElement extends
 
   protected onShowTabSearchButtonChange_(event: CustomEvent<boolean>) {
     this.metricsBrowserProxy_.recordAction(
-        event.detail ? 'TabStripComboButton.TabSearch.Pinned' :
-                       'TabStripComboButton.TabSearch.Unpinned');
+        event.detail ? 'Settings.Appearance.TabSearch.Pinned' :
+                       'Settings.Appearance.TabSearch.Unpinned');
   }
 
   protected onShowOrganizerPanelButtonChange_(event: CustomEvent<boolean>) {

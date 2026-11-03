@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -217,4 +218,29 @@ TEST_F(VerticalTabStripSegmentedControlTest, BackgroundColor) {
   ASSERT_NE(control()->GetBackground(), nullptr);
   EXPECT_EQ(control()->GetBackground()->color(),
             ui::ColorVariant(kColorNewTabButtonCRBackgroundFrameActive));
+}
+
+TEST_F(VerticalTabStripSegmentedControlTest, RecordUserActionsOnPinUnpin) {
+  base::UserActionTester user_action_tester;
+
+  profile()->GetPrefs()->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  control()->ExecuteCommand(IDC_TAB_SEARCH_TOGGLE_PIN, ui::EF_NONE);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "VerticalTabStripSegmentedControl.TabSearch.Unpinned"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "TabStripComboButton.TabSearch.Unpinned"),
+            0);
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kTabSearchPinnedToTabstrip));
+
+  control()->ExecuteCommand(IDC_TAB_SEARCH_TOGGLE_PIN, ui::EF_NONE);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "VerticalTabStripSegmentedControl.TabSearch.Pinned"),
+            1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("TabStripComboButton.TabSearch.Pinned"),
+      0);
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kTabSearchPinnedToTabstrip));
 }

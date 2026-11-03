@@ -6,6 +6,8 @@
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -271,7 +273,12 @@ void VerticalTabStripSegmentedControl::ShowContextMenuForViewImpl(
 void VerticalTabStripSegmentedControl::ExecuteCommand(int command_id,
                                                       int event_flags) {
   if (command_id == IDC_TAB_SEARCH_TOGGLE_PIN) {
-    chrome::ExecuteCommand(browser_, command_id);
+    PrefService* prefs = browser_->GetProfile()->GetPrefs();
+    const bool is_pinned = prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip);
+    base::RecordAction(base::UserMetricsAction(
+        is_pinned ? "VerticalTabStripSegmentedControl.TabSearch.Unpinned"
+                  : "VerticalTabStripSegmentedControl.TabSearch.Pinned"));
+    chrome::ToggleTabSearchPin(browser_);
   }
 }
 

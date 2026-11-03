@@ -2565,9 +2565,6 @@ void CloseTabSearch(BrowserWindowInterface* browser) {
 void ToggleTabSearchPin(BrowserWindowInterface* browser) {
   PrefService* prefs = browser->GetProfile()->GetPrefs();
   const bool is_pinned = prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip);
-  base::RecordAction(base::UserMetricsAction(
-      is_pinned ? "TabStripComboButton.TabSearch.Unpinned"
-                : "TabStripComboButton.TabSearch.Pinned"));
   prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, !is_pinned);
 }
 

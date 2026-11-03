@@ -340,6 +340,11 @@ void TabStripComboButton::ShowContextMenuForViewImpl(
 
 void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDC_TAB_SEARCH_TOGGLE_PIN) {
+    PrefService* prefs = browser_->GetProfile()->GetPrefs();
+    const bool is_pinned = prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip);
+    base::RecordAction(base::UserMetricsAction(
+        is_pinned ? "TabStripComboButton.TabSearch.Unpinned"
+                  : "TabStripComboButton.TabSearch.Pinned"));
     show_tab_search_ephemerally_ = IsOrganizerPanelEmbeddedInVerticalTabStrip();
     hide_tab_search_timer_.Stop();
     chrome::ExecuteCommand(browser_, command_id);

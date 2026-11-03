@@ -33189,6 +33189,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.Appearance.TabSearch.Pinned">
+  <owner>agale@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user pins the Tab Search button to the tabstrip from the
+    Settings appearance page.
+  </description>
+</action>
+
+<action name="Settings.Appearance.TabSearch.Unpinned">
+  <owner>agale@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user unpins the Tab Search button from the tabstrip from
+    the Settings appearance page.
+  </description>
+</action>
+
 <action name="Settings.ArticlesForYouToggled">
   <owner>gambard@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -40943,14 +40961,18 @@ should be able to be added at any place in this file.
 <action name="TabStripComboButton.TabSearch.Pinned">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>User pinned the Tab Search button to the tabstrip.</description>
+  <description>
+    User pinned the Tab Search button to the tabstrip from the tab strip combo
+    button context menu.
+  </description>
 </action>
 
 <action name="TabStripComboButton.TabSearch.Unpinned">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
-    User unpinned the Tab Search button from the tabstrip.
+    User unpinned the Tab Search button from the tabstrip from the tab strip
+    combo button context menu.
   </description>
 </action>
 
@@ -42334,6 +42356,24 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user uncollapses the vertical tab strip using the view
     menu on mac.
+  </description>
+</action>
+
+<action name="VerticalTabStripSegmentedControl.TabSearch.Pinned">
+  <owner>agale@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user pins the Tab Search button to the tabstrip from the
+    vertical tab strip segmented control context menu.
+  </description>
+</action>
+
+<action name="VerticalTabStripSegmentedControl.TabSearch.Unpinned">
+  <owner>agale@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user unpins the Tab Search button from the tabstrip from
+    the vertical tab strip segmented control context menu.
   </description>
 </action>
 

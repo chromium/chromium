@@ -989,12 +989,12 @@ suite('TabStripComboButtonSettings', () => {
     assertTrue(!!tabSearchToggle);
     tabSearchToggle.click();
     action = await metricsBrowserProxy.whenCalled('recordAction');
-    assertEquals('TabStripComboButton.TabSearch.Unpinned', action);
+    assertEquals('Settings.Appearance.TabSearch.Unpinned', action);
 
     metricsBrowserProxy.resetResolver('recordAction');
     tabSearchToggle.click();
     action = await metricsBrowserProxy.whenCalled('recordAction');
-    assertEquals('TabStripComboButton.TabSearch.Pinned', action);
+    assertEquals('Settings.Appearance.TabSearch.Pinned', action);
   });
 
   test('Everything menu toggle updates correct pref', async function() {
