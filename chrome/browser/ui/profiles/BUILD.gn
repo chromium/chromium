@@ -26,6 +26,7 @@ source_set("profiles") {
       "//build:branding_buildflags",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/ui/color:color_headers",
+      "//components/subscription_eligibility:tier_names",
       "//skia",
     ]
   }
@@ -59,6 +60,7 @@ source_set("impl") {
     "//chrome/browser/feedback",
     "//chrome/browser/ui:incognito_allowed_url",
     "//chrome/browser/ui:simple_message_box_headers",
+    "//components/subscription_eligibility:tier_names",
     "//ui/base",
   ]
 
@@ -180,6 +182,10 @@ source_set("unit_tests") {
       "//chrome/test/base:testing_browser_process",
       "//components/account_id",
       "//components/policy/core/common:common_constants",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//components/subscription_eligibility",
+      "//components/subscription_eligibility:tier_names",
       "//content/test:test_support",
       "//testing/gtest",
     ]

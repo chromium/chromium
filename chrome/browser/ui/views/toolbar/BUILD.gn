@@ -357,6 +357,7 @@ source_set("impl") {
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
+    "//components/subscription_eligibility:tier_names",
     "//components/user_education/views",
     "//components/user_prefs",
     "//components/vector_icons",

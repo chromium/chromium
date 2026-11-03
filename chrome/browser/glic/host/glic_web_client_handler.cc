@@ -94,6 +94,7 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/subscription_eligibility/ai_subscription_tier_names.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/remote_device_info.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -1375,7 +1376,7 @@ class GlicWebClientHandler
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     result->has_avatar_ring =
         base::FeatureList::IsEnabled(kEnableGlicAiAvatarRing) &&
-        ShouldShowAvatarGradientRing(profile_);
+        GetAvatarAiDecoration(profile_).show_decoration;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
     // TODO(crbug.com/382794680): Determine the correct size.

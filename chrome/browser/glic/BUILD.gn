@@ -654,6 +654,7 @@ source_set("impl") {
     "//components/skills/public",
     "//components/skills/public:mojo_bindings",
     "//components/startup_metric_utils",
+    "//components/subscription_eligibility:tier_names",
     "//components/sync_device_info",
     "//components/url_formatter",
     "//components/user_education/common",

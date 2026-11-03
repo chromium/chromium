@@ -68,6 +68,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/subscription_eligibility/ai_subscription_tier_names.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "components/zoom/zoom_event_manager.h"
@@ -494,7 +495,7 @@ void AddSignedInChipToProfileMenuItem(
   std::u16string accessible_name =
       views::MenuItemView::GetAccessibleNameForMenuItem(
           item->title(), GetSigninStatusChipString(profile), std::nullopt);
-  if (ShouldShowAvatarGradientRing(profile)) {
+  if (GetAvatarAiDecoration(profile).show_decoration) {
     accessible_name = l10n_util::GetStringFUTF16(
         IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, accessible_name);
   }

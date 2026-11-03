@@ -65,6 +65,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/subscription_eligibility/ai_subscription_tier_names.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
@@ -168,8 +169,9 @@ std::pair<std::string, bool> GetAvatarIconUrlAndAvatarRingStatus(
   int avatar_icon_size = avatar_icon_size_dip * scale;
   std::string icon_url;
   bool has_gradient_ring = false;
-  if (base::FeatureList::IsEnabled(switches::kEnableAiSubscriptionAvatarRing) &&
-      entry->GetAiSubscriptionTier() > 0 && color_provider) {
+  if (GetAvatarAiDecorationForTier(entry->GetAiSubscriptionTier())
+          .show_decoration &&
+      color_provider) {
     // Note: For linear gradient ring to appear, the corresponding profile
     // needs to have been loaded at least once (with
     // kEnableAiSubscriptionAvatarRing), so that the corresponding profile

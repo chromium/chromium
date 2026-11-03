@@ -116,6 +116,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
@@ -471,31 +472,77 @@ class ProfileMenuViewAiSubscriptionTierOverrideTest
   ProfileMenuViewAiSubscriptionTierOverrideTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{switches::kEnableAiSubscriptionAvatarRing, {}},
-         {subscription_eligibility::kEnabledAiSubscriptionTierNameOverride,
-          {{"ai_tier_override_mapping", R"({"1": "Super Tier 1"})"}}}},
+         {subscription_eligibility::kAiSubscriptionTierOverrides,
+          {{"ai_tier_overrides", R"({
+              "tier_names": {
+                "1": {"short_name": "Super 1", "full_name": ""},
+                "2": {"short_name": "Super 2", "full_name": "AI Super Two"}
+              },
+              "excluded_tiers": [3]
+            })"}}}},
         /*disabled_features=*/{});
+  }
+
+ protected:
+  // ProfileMenuViewBrowserTest:
+  void SetUpOnMainThread() override {
+    ProfileMenuViewBrowserTest::SetUpOnMainThread();
+    // Sign in, so that the menu identifies the profile by the account name.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+        identity_manager, kTestEmail, signin::ConsentLevel::kSignin);
+    signin::UpdateAccountInfoForAccount(identity_manager,
+                                        AccountInfo::Builder(account_info)
+                                            .SetFullName("Joe Testing")
+                                            .SetGivenName("Joe")
+                                            .Build());
+  }
+
+  // Opens the profile menu for a profile subscribed to the AI `tier`.
+  void OpenProfileMenuForTier(int tier) {
+    browser()->GetProfile()->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, tier);
+    ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
+  }
+
+  // Returns the accessible title of the open profile menu, without the common
+  // "<menu name>, " prefix.
+  std::u16string GetProfileAnnouncement() {
+    const std::u16string prefix = l10n_util::GetStringFUTF16(
+        IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
+        l10n_util::GetStringUTF16(IDS_PROFILES_PROFILE_BUBBLE_ACCESSIBLE_TITLE),
+        u"");
+    std::u16string title = profile_menu_view()->GetAccessibleWindowTitle();
+    EXPECT_TRUE(title.starts_with(prefix));
+    return title.substr(prefix.size());
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// A renamed badge must not announce the outdated built-in tier name.
+// An empty full name falls back to the generic membership announcement.
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewAiSubscriptionTierOverrideTest,
-                       BadgeOverrideUsesGenericAnnouncement) {
-  browser()->GetProfile()->GetPrefs()->SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+                       EmptyFullNameUsesGenericAnnouncement) {
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenuForTier(1));
+  EXPECT_EQ(GetProfileAnnouncement(),
+            u"Joe Testing. Google membership, foo@example.com");
+}
 
-  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
-  EXPECT_EQ(
-      profile_menu_view()->GetAccessibleWindowTitle(),
-      l10n_util::GetStringFUTF16(
-          IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
-          l10n_util::GetStringUTF16(
-              IDS_PROFILES_PROFILE_BUBBLE_ACCESSIBLE_TITLE),
-          l10n_util::GetStringFUTF16(
-              IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP,
-              l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE))));
+// An overridden full name is announced.
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewAiSubscriptionTierOverrideTest,
+                       FullNameOverrideIsAnnounced) {
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenuForTier(2));
+  EXPECT_EQ(GetProfileAnnouncement(),
+            u"Joe Testing • AI Super Two, foo@example.com");
+}
+
+// An excluded tier announces no membership at all.
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewAiSubscriptionTierOverrideTest,
+                       ExcludedTierHasNoAnnouncement) {
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenuForTier(3));
+  EXPECT_EQ(GetProfileAnnouncement(), u"Joe Testing, foo@example.com");
 }
 
 class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,

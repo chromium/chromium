@@ -9,13 +9,12 @@
 
 namespace subscription_eligibility {
 
-// Short and full name of one AI subscription tier, as listed in
-// `kAiTierNames`. Implementation detail of
+// Short and full name of one AI subscription tier, as listed in `kAiTierNames`
+// or in `kAiTierOverrides`. Implementation detail of
 // //components/subscription_eligibility:tier_names.
 //
-// To get a tier's name, use GetAiSubscriptionTierShortName() or
-// GetAiSubscriptionTierFullName() from ai_subscription_tier_names.h, which
-// also apply the name override.
+// To get a tier's names, use GetAiSubscriptionTierDisplayInfo() from
+// ai_subscription_tier_names.h, which also applies the overrides.
 struct AiTierName {
   std::u16string_view short_name;
   std::u16string_view full_name;

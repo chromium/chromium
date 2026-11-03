@@ -45,6 +45,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/subscription_eligibility/ai_subscription_tier_names.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -163,7 +164,7 @@ std::optional<ui::ImageModel> ProfileDynamicMenu::GetProfileAvatarIcon() const {
             ui::ImageModel::FromImageSkia(profiles::GetAvatarWithDottedRing(
                 avatar_model, avatar_icon_size, /*has_padding=*/false,
                 /*has_background=*/false, *color_provider));
-      } else if (ShouldShowAvatarGradientRing(profile)) {
+      } else if (GetAvatarAiDecoration(profile).show_decoration) {
         avatar_image_model =
             ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(
                 avatar_model, *color_provider, avatar_icon_size));
@@ -403,9 +404,9 @@ void ProfileDynamicMenu::BuildOtherProfilesSection(
 
         // Optional AI gradient ring around avatar if eligible.
         bool has_ai_ring = false;
-        if (base::FeatureList::IsEnabled(
-                switches::kEnableAiSubscriptionAvatarRing) &&
-            profile_entry->GetAiSubscriptionTier() > 0 && color_provider) {
+        if (GetAvatarAiDecorationForTier(profile_entry->GetAiSubscriptionTier())
+                .show_decoration &&
+            color_provider) {
           has_ai_ring = true;
           avatar_model =
               ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(

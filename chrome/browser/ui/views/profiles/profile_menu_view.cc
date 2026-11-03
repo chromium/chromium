@@ -43,7 +43,6 @@
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -85,7 +84,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/subscription_eligibility/ai_subscription_tier_names.h"
-#include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/vector_icons/vector_icons.h"
@@ -596,22 +594,16 @@ void ProfileMenuView::SetMenuTitleForAccessibility() {
       break;
   }
 
-  if (ShouldShowAvatarGradientRing(&profile())) {
-    subscription_eligibility::SubscriptionEligibilityService*
-        subscription_service = subscription_eligibility::
-            SubscriptionEligibilityServiceFactory::GetForProfile(&profile());
-    if (subscription_service) {
-      const std::u16string tier_name =
-          subscription_eligibility::GetAiSubscriptionTierFullName(
-              subscription_service->GetAiSubscriptionTier());
-      menu_title_ =
-          tier_name.empty()
-              ? l10n_util::GetStringFUTF16(
-                    IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, menu_title_)
-              : l10n_util::GetStringFUTF16(
-                    IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_TIER, menu_title_,
-                    tier_name);
-    }
+  const subscription_eligibility::AiSubscriptionTierDisplayInfo tier_info =
+      GetAvatarAiDecoration(&profile());
+  if (tier_info.show_decoration) {
+    menu_title_ =
+        tier_info.full_membership_label.empty()
+            ? l10n_util::GetStringFUTF16(
+                  IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, menu_title_)
+            : l10n_util::GetStringFUTF16(
+                  IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_TIER, menu_title_,
+                  tier_info.full_membership_label);
   }
 
   if (GetWidget()) {
@@ -653,8 +645,11 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       primary_extended_account_info.GetAvatarImage().value_or(
           entry.GetAvatarIcon(kIdentityInfoImageSize,
                               /*use_high_res_file=*/true, icon_params)));
-  if (ShouldShowAvatarGradientRing(&profile())) {
+  const subscription_eligibility::AiSubscriptionTierDisplayInfo tier_info =
+      GetAvatarAiDecoration(&profile());
+  if (tier_info.show_decoration) {
     params.avatar_ring = AvatarRingType::kGradient;
+    params.badge_label = tier_info.badge_label;
   }
 
   ui::ImageModel* custom_management_image = nullptr;
@@ -917,17 +912,6 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
     params.button_action = base::BindRepeating(
         &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
         account_info_for_signin_action, button_type, access_point);
-  }
-
-  // TODO(crbug.com/522296672): Specify the right way to obtain this information
-  // as `GetAiSubscriptionTier` only works for certain groups of users.
-  subscription_eligibility::SubscriptionEligibilityService*
-      subscription_service = subscription_eligibility::
-          SubscriptionEligibilityServiceFactory::GetForProfile(&profile());
-  if (subscription_service) {
-    params.badge_label =
-        subscription_eligibility::GetAiSubscriptionTierShortName(
-            subscription_service->GetAiSubscriptionTier());
   }
 
   return params;
@@ -1307,9 +1291,8 @@ void ProfileMenuView::BuildOtherProfilesSection(
                     ->GetColor(ui::kColorMenuBackground))));
     std::u16string name = profile_entry->GetName();
     std::u16string extra_accessible_text;
-    if (base::FeatureList::IsEnabled(
-            switches::kEnableAiSubscriptionAvatarRing) &&
-        profile_entry->GetAiSubscriptionTier() > 0) {
+    if (GetAvatarAiDecorationForTier(profile_entry->GetAiSubscriptionTier())
+            .show_decoration) {
       avatar_image =
           ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(
               avatar_image,

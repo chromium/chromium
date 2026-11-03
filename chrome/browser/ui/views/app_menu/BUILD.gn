@@ -160,6 +160,7 @@ source_set("impl") {
     "//components/skills:features",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
+    "//components/subscription_eligibility:tier_names",
     "//components/sync/service",
     "//components/sync_sessions",
     "//components/tab_groups",

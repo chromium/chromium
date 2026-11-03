@@ -73,6 +73,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/subscription_eligibility/ai_subscription_tier_names.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -2097,7 +2098,7 @@ bool StateProvider::ShouldShowGradientAvatarRing() const {
   if (!should_consider_avatar_ring_) {
     return false;
   }
-  return ShouldShowAvatarGradientRing(&profile());
+  return GetAvatarAiDecoration(&profile()).show_decoration;
 }
 
 std::u16string StateProvider::GetAvatarTooltipText() const {

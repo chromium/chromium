@@ -400,6 +400,7 @@ if (!is_chromeos) {
       "//components/signin/public/identity_manager",
       "//components/startup_metric_utils",
       "//components/strings:components_strings",
+      "//components/subscription_eligibility:tier_names",
       "//components/supervised_user/core/common:features",
       "//content/public/browser",
       "//google_apis",

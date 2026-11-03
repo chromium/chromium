@@ -105,7 +105,10 @@ source_set("toolbar") {
 
 source_set("impl") {
   sources = []
-  deps = [ ":toolbar" ]
+  deps = [
+    ":toolbar",
+    "//components/subscription_eligibility:tier_names",
+  ]
 
   if (!is_android) {
     sources += [

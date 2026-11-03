@@ -756,6 +756,7 @@ if (!is_android) {
       "//components/send_tab_to_self",
       "//components/signin/public/base",
       "//components/skills:features",
+      "//components/subscription_eligibility:tier_names",
       "//components/translate/core/browser",
       "//components/user_education/common",
       "//components/user_manager",

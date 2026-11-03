@@ -19,6 +19,10 @@ namespace gfx {
 class ImageSkia;
 }
 
+namespace subscription_eligibility {
+struct AiSubscriptionTierDisplayInfo;
+}  // namespace subscription_eligibility
+
 namespace ui {
 class ColorProvider;
 class ImageModel;
@@ -82,9 +86,16 @@ bool IsOtherProfileCommand(int command_id);
 // (e.g. a menu option to open the link in a new incognito window).
 bool IsOpenLinkOTREnabled(Profile* source_profie, const GURL& url);
 
-// Returns true if the AI subscription ring feature is enabled and the profile
-// is eligible (has an active subscription tier > 0).
-bool ShouldShowAvatarGradientRing(Profile* profile);
+// Returns how an avatar is decorated for the AI subscription `tier`. Nothing is
+// shown while `kEnableAiSubscriptionAvatarRing` is disabled.
+subscription_eligibility::AiSubscriptionTierDisplayInfo
+GetAvatarAiDecorationForTier(int tier);
+
+// Returns how an avatar is decorated for the AI subscription of `profile`.
+// Nothing is shown if `kEnableAiSubscriptionAvatarRing` is disabled, or if
+// `profile` is null or has no subscription eligibility service.
+subscription_eligibility::AiSubscriptionTierDisplayInfo GetAvatarAiDecoration(
+    Profile* profile);
 
 // Returns the avatar image with the linear gradient ring.
 // If `ring_thickness` is not provided, the default values for the

@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/subscription_eligibility/ai_subscription_tier_names.h"
+#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
@@ -109,4 +114,42 @@ TEST_F(ProfileViewUtilsTest, LinearGradientDefaultRingSpecs) {
     // Total size = 20 + 2 * (gap (2px) + thickness (5px)) = 34px.
     EXPECT_EQ(ring_avatar.size(), gfx::Size(34, 34));
   }
+}
+
+class ProfileViewUtilsAvatarRingTest : public ProfileViewUtilsTest {
+ protected:
+  void SetTier(int tier) {
+    profile()->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, tier);
+  }
+};
+
+TEST_F(ProfileViewUtilsAvatarRingTest, HiddenWhenRingFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kEnableAiSubscriptionAvatarRing);
+
+  SetTier(1);
+  EXPECT_FALSE(GetAvatarAiDecorationForTier(1).show_decoration);
+  EXPECT_FALSE(GetAvatarAiDecoration(profile()).show_decoration);
+}
+
+// The presentation itself, including the overrides, is tested in the component:
+// the avatar decoration is the component's presentation of the tier.
+TEST_F(ProfileViewUtilsAvatarRingTest, UsesAiSubscriptionTierDisplayInfo) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAiSubscriptionAvatarRing);
+
+  for (int tier : {0, 1, 2, 4}) {
+    EXPECT_EQ(GetAvatarAiDecorationForTier(tier),
+              subscription_eligibility::GetAiSubscriptionTierDisplayInfo(tier))
+        << "tier " << tier;
+  }
+
+  EXPECT_FALSE(GetAvatarAiDecoration(nullptr).show_decoration);
+  SetTier(2);
+  EXPECT_EQ(GetAvatarAiDecoration(profile()),
+            subscription_eligibility::GetAiSubscriptionTierDisplayInfo(2));
+  EXPECT_TRUE(GetAvatarAiDecoration(profile()).show_decoration);
+  SetTier(0);
+  EXPECT_FALSE(GetAvatarAiDecoration(profile()).show_decoration);
 }

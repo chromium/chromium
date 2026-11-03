@@ -132,6 +132,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/features.h"
+#include "components/subscription_eligibility/ai_subscription_tier_names.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -2941,7 +2942,8 @@ void BrowserCommandController::UpdateCommandsForProfile() {
 
   std::u16string accessible_name =
       GetProfileMenuDisplayName(profile_attributes);
-  if (ShouldShowAvatarGradientRing(profile()) && !accessible_name.empty()) {
+  if (GetAvatarAiDecoration(profile()).show_decoration &&
+      !accessible_name.empty()) {
     accessible_name = l10n_util::GetStringFUTF16(
         IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, accessible_name);
   }

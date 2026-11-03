@@ -98,6 +98,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/subscription_eligibility/ai_subscription_tier_names.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -3942,7 +3943,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonGradientRingBrowserTest,
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
 
   // Assert that gradient ring is not enabled initially.
-  ASSERT_FALSE(ShouldShowAvatarGradientRing(browser()->GetProfile()));
+  ASSERT_FALSE(GetAvatarAiDecoration(browser()->GetProfile()).show_decoration);
   ASSERT_TRUE(avatar_accessor.WaitForLinearGradientRing(false));
 
   auto normal_layout = avatar_accessor.GetLayoutAttributes();
@@ -3957,7 +3958,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonGradientRingBrowserTest,
   waiter1->Wait();
 
   // The gradient ring should be enabled now.
-  EXPECT_TRUE(ShouldShowAvatarGradientRing(browser()->GetProfile()));
+  EXPECT_TRUE(GetAvatarAiDecoration(browser()->GetProfile()).show_decoration);
   ASSERT_TRUE(avatar_accessor.WaitForLinearGradientRing(true));
 
   auto ring_layout = avatar_accessor.GetLayoutAttributes();
@@ -3977,7 +3978,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonGradientRingBrowserTest,
   SetAiSubscriptionTierForProfile(0);
   waiter2->Wait();
 
-  EXPECT_FALSE(ShouldShowAvatarGradientRing(browser()->GetProfile()));
+  EXPECT_FALSE(GetAvatarAiDecoration(browser()->GetProfile()).show_decoration);
   ASSERT_TRUE(avatar_accessor.WaitForLinearGradientRing(false));
 
   auto restored_layout = avatar_accessor.GetLayoutAttributes();

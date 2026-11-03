@@ -16,12 +16,12 @@ namespace subscription_eligibility {
 
 static std::u16string JNI_AiSubscriptionTierNames_GetShortName(JNIEnv* env,
                                                                int32_t tier) {
-  return GetAiSubscriptionTierShortName(tier);
+  return GetAiSubscriptionTierDisplayInfo(tier).badge_label;
 }
 
 static std::u16string JNI_AiSubscriptionTierNames_GetFullName(JNIEnv* env,
                                                               int32_t tier) {
-  return GetAiSubscriptionTierFullName(tier);
+  return GetAiSubscriptionTierDisplayInfo(tier).full_membership_label;
 }
 
 DEFINE_JNI(AiSubscriptionTierNames)
