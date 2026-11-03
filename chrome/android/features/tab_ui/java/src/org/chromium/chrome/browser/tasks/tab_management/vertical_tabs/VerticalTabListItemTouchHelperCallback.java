@@ -573,7 +573,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             if (isGroupHeader) {
                 List<Tab> tabsInGroup = tabModel.getTabsInGroup(mDragStartGroupId);
                 startTab = !tabsInGroup.isEmpty() ? tabsInGroup.get(0) : null;
-                mDragStartTabId = startTab != null ? startTab.getId() : Tab.INVALID_TAB_ID;
+                mDragStartTabId = Tab.INVALID_TAB_ID;
 
                 // Select the group header, which ensures a tab within the group is active.
                 selectTabForGroup(tabModel, tabsInGroup);
@@ -826,7 +826,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         TabModel tabModel = mCurrentTabModelSupplier.get();
         if (mIsDragAbortedByEsc) {
             if (tabModel != null
-                    && mDragStartTabId != Tab.INVALID_TAB_ID
+                    && (mDragStartTabId != Tab.INVALID_TAB_ID || mDragStartGroupId != null)
                     && mDragStartTabModelIndex != TabModel.INVALID_TAB_INDEX) {
                 // Revert tab or group position in the underlying TabModel.
                 // TODO(crbug.com/553670813): Handle reverting group membership if the tab was
@@ -878,7 +878,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 }
             }
         }
-        if (mDragStartTabId != Tab.INVALID_TAB_ID) {
+        if (mDragStartTabId != Tab.INVALID_TAB_ID || mDragStartGroupId != null) {
             @DragDropResult int dragResult = computeDragDropResult(viewHolder);
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.VerticalTabs.DragDropResult", dragResult, DragDropResult.COUNT);
@@ -1766,6 +1766,14 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
 
         TabModel tabModel = mCurrentTabModelSupplier.get();
         if (tabModel == null) return DragDropResult.ABORTED_NO_CHANGE;
+
+        if (mDragStartTabId == Tab.INVALID_TAB_ID && mDragStartGroupId != null) {
+            List<Tab> groupTabs = tabModel.getTabsInGroup(mDragStartGroupId);
+            if (groupTabs.isEmpty()) return DragDropResult.DRAGGED_OUT;
+            return tabModel.indexOf(groupTabs.get(0)) != mDragStartTabModelIndex
+                    ? DragDropResult.REORDERED
+                    : DragDropResult.ABORTED_NO_CHANGE;
+        }
 
         Tab currentTab = tabModel.getTabById(mDragStartTabId);
         if (currentTab == null) {

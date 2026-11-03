@@ -1852,6 +1852,47 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void testDragDropResult_GroupHeader_Reordered() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DragDropResult",
+                        VerticalTabListItemTouchHelperCallback.DragDropResult.REORDERED);
+
+        setupDragGroupHeaderState();
+        when(mTabModel.indexOf(mTab1)).thenReturn(5);
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDragDropResult_GroupHeader_Aborted() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DragDropResult",
+                        VerticalTabListItemTouchHelperCallback.DragDropResult.ABORTED_NO_CHANGE);
+
+        setupDragGroupHeaderState();
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDragDropResult_GroupHeader_DraggedOut() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DragDropResult",
+                        VerticalTabListItemTouchHelperCallback.DragDropResult.DRAGGED_OUT);
+
+        setupDragGroupHeaderState();
+        when(mTabModel.getTabsInGroup(any())).thenReturn(Collections.emptyList());
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testDragDropResult_Grouped() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
