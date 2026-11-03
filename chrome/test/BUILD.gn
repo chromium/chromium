@@ -1454,6 +1454,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/bookmarks:browser_tests",
       "//chrome/browser/ui/webui/commerce:browser_tests",
       "//chrome/browser/ui/webui/content_settings:browser_tests",
+      "//chrome/browser/ui/webui/craft:browser_tests",
       "//chrome/browser/ui/webui/customize_buttons:browser_tests",
       "//chrome/browser/ui/webui/extensions_zero_state_promo:browser_tests",
       "//chrome/browser/ui/webui/image:browser_tests",

@@ -460,6 +460,10 @@
     "META": {"sizes": {"includes": [100]}},
     "includes": [3771],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/craft/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [3772],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/critical_actions/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [3775],

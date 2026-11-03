@@ -180,6 +180,11 @@ BASE_FEATURE(kPreinstalledWebAppAlwaysMigrateForTesting,
 // Controls the enablement of structured metrics on Windows, Linux, and Mac.
 BASE_FEATURE(kChromeStructuredMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Enables the chrome://craft page.
+BASE_FEATURE(kCraft, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_MAC)
 // Defers Cocoa spellchecker initialization to a post-startup idle task on
 // macOS.

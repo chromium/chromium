@@ -70,6 +70,7 @@ group("resources") {
       "certificate_manager:resources",
       "content_settings:resources",
       "contextual_cueing/internals:resources",
+      "craft:resources",
       "data_sharing:resources",
       "downloads:resources",
       "drive_picker_host:resources",

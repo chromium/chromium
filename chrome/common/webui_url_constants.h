@@ -98,6 +98,9 @@ inline constexpr char kChromeUIContentSettingsURL[] =
     "chrome://settings/content";
 inline constexpr char16_t kChromeUICookieSettingsURL[] =
     u"chrome://settings/cookies";
+#if !BUILDFLAG(IS_ANDROID)
+inline constexpr char kChromeUICraftHost[] = "craft";
+#endif
 inline constexpr char kChromeUICrashesHost[] = "crashes";
 inline constexpr char kChromeUICrashesUrl[] = "chrome://crashes";
 inline constexpr char kChromeUICreditsHost[] = "credits";

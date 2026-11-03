@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("craft") {
+  public = [ "craft_ui.h" ]
+  sources = [ "craft_ui.cc" ]
+  public_deps = [
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/craft:resources",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//content/public/common",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "craft_ui_browsertest.cc" ]
+  deps = [
+    ":craft",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/test/base:chrome_test_utils",
+    "//chrome/test/base:in_process_browser_test",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
+}

@@ -76,6 +76,7 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
   enable_feature(contextual_cueing::kContextualCueingV2);
 
 #if !BUILDFLAG(IS_ANDROID)
+  enable_feature(features::kCraft);
   enable_feature(features::kIsolatedWebApps);
   enable_feature(organizer_panel::kOrganizerPanel);
 #endif

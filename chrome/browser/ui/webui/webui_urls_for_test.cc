@@ -55,6 +55,9 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://contextual-cueing-internals",
 #endif
       "chrome://context-hub",
+#if !BUILDFLAG(IS_ANDROID)
+      "chrome://craft",
+#endif
       "chrome://crashes",
 // TODO(crbug.com/40913109): Re-enable this test
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)

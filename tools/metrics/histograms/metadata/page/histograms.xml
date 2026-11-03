@@ -899,6 +899,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".context-hub"/>
   <variant name=".contextual-cueing-internals"/>
   <variant name=".contextual-tasks"/>
+  <variant name=".craft"/>
   <variant name=".crashes"/>
   <variant name=".credits"/>
   <variant name=".crosh"/>
