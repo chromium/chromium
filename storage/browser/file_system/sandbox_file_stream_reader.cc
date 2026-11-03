@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -75,6 +76,7 @@ void SandboxFileStreamReader::DidCreateSnapshotForRead(
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
     scoped_refptr<ShareableFileReference> file_ref) {
+  CHECK(!file_ref);
   DCHECK(has_pending_create_snapshot_);
   DCHECK(!file_reader_.get());
   has_pending_create_snapshot_ = false;
@@ -83,9 +85,6 @@ void SandboxFileStreamReader::DidCreateSnapshotForRead(
     std::move(callback).Run(net::FileErrorToNetError(file_error));
     return;
   }
-
-  // Keep the reference (if it's non-null) so that the file won't go away.
-  snapshot_ref_ = std::move(file_ref);
 
   CreateFileReader(platform_path);
 
@@ -107,6 +106,7 @@ void SandboxFileStreamReader::DidCreateSnapshotForGetLength(
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
     scoped_refptr<ShareableFileReference> file_ref) {
+  CHECK(!file_ref);
   DCHECK(has_pending_create_snapshot_);
   DCHECK(!file_reader_.get());
   has_pending_create_snapshot_ = false;
@@ -116,9 +116,6 @@ void SandboxFileStreamReader::DidCreateSnapshotForGetLength(
         base::unexpected(net::FileErrorToNetError(file_error)));
     return;
   }
-
-  // Keep the reference (if it's non-null) so that the file won't go away.
-  snapshot_ref_ = std::move(file_ref);
 
   CreateFileReader(platform_path);
 

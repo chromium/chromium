@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -127,7 +128,7 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
     scoped_refptr<ShareableFileReference> file_ref) {
-  DCHECK(!file_ref.get());
+  CHECK(!file_ref);
 
   if (CancelIfRequested())
     return;

@@ -87,7 +87,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
   const int64_t initial_offset_;
   const base::Time expected_modification_time_;
   std::unique_ptr<FileStreamReader> file_reader_;
-  scoped_refptr<ShareableFileReference> snapshot_ref_;
   bool has_pending_create_snapshot_;
   base::WeakPtrFactory<SandboxFileStreamReader> weak_factory_{this};
 };
