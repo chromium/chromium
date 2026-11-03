@@ -98,13 +98,6 @@ bool ShouldOpenSearchURLInNewTab(const GURL& url, bool is_aim_feature_enabled);
 // a finch configured flag.
 GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url);
 
-// Removes parameters that frequently change on the SRP URL due to redirects or
-// client changes without changing the actual results. This allows us to compare
-// search url's accurately in AddQueryToHistory when the side panel is resized
-// or when the SRP redirects to append parameters unrelated to the search
-// results.
-GURL RemoveIgnoredSearchURLParameters(const GURL& url);
-
 // If the given URL is a shopping URL (udm=28), strips certain parameters
 // (like "stick") that should not be carried over to the new tab.
 GURL MaybeStripParamsForShopping(const GURL& url);
