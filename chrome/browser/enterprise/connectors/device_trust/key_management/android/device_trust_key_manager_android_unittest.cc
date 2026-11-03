@@ -12,12 +12,16 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/android/android_attestation_token_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "components/enterprise/device_trust/prefs.h"
+#include "components/prefs/testing_pref_service.h"
 #include "crypto/hash.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,19 +56,41 @@ class MockAndroidAttestationTokenClient : public AndroidAttestationTokenClient {
 
 class DeviceTrustKeyManagerAndroidTest : public testing::Test {
  protected:
+  DeviceTrustKeyManagerAndroidTest() {
+    RegisterDeviceTrustConnectorLocalStatePrefs(local_state_.registry());
+  }
+
   // Creates the key manager. Must be called after the feature state is set.
   void CreateKeyManager() {
     auto mock_client = std::make_unique<MockAndroidAttestationTokenClient>();
     mock_client_ = mock_client.get();
-    key_manager_ =
-        std::make_unique<DeviceTrustKeyManagerAndroid>(std::move(mock_client));
+    key_manager_ = std::make_unique<DeviceTrustKeyManagerAndroid>(
+        std::move(mock_client), &local_state_);
+  }
+
+  base::Time GetLastRequestTime() const {
+    return local_state_.GetTime(
+        kDeviceTrustAttestationTokenLastRequestTimePref);
+  }
+
+  void SetLastRequestTime(base::Time time) {
+    local_state_.SetTime(kDeviceTrustAttestationTokenLastRequestTimePref, time);
+  }
+
+  bool HasLastRequestTime() const {
+    return local_state_.HasPrefPath(
+        kDeviceTrustAttestationTokenLastRequestTimePref);
   }
 
   // Declared before `task_environment_` so that it outlives it: the global
   // FeatureList must not be torn down while other threads may still read it.
   base::test::ScopedFeatureList scoped_feature_list_;
-  // No thread pool is needed, since the token client is mocked.
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  // No thread pool is needed, since the token client is mocked. Mock time lets
+  // tests move the clock relative to the pre-warm interval.
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  // Declared before `key_manager_`, which keeps a pointer to it.
+  TestingPrefServiceSimple local_state_;
   std::unique_ptr<DeviceTrustKeyManagerAndroid> key_manager_;
   raw_ptr<MockAndroidAttestationTokenClient> mock_client_ = nullptr;
 };
@@ -90,9 +116,9 @@ class DeviceTrustKeyManagerAndroidFeatureEnabledTest
 };
 
 // Tests that, when the feature is disabled, `SignStringAsync()` never calls
-// the token client and completes asynchronously with `nullopt`, signaling to
-// the attestation pipeline that an unsigned challenge response
-// (`kSuccessNoSignature`) should be generated.
+// the token client nor records a token request, and completes asynchronously
+// with `nullopt`, signaling to the attestation pipeline that an unsigned
+// challenge response (`kSuccessNoSignature`) should be generated.
 TEST_F(DeviceTrustKeyManagerAndroidFeatureDisabledTest,
        SignStringAsync_FeatureDisabled) {
   EXPECT_CALL(*mock_client_, GenerateToken(_, _)).Times(0);
@@ -101,18 +127,93 @@ TEST_F(DeviceTrustKeyManagerAndroidFeatureDisabledTest,
   key_manager_->SignStringAsync(kTestPayload, future.GetCallback());
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(future.Get(), std::nullopt);
+  EXPECT_FALSE(HasLastRequestTime());
 }
 
-// Tests that `StartInitialization()` is a safe no-op on Android: it does not
-// request a token and leaves the key manager with no loaded key metadata nor
-// permanent failures.
-TEST_F(DeviceTrustKeyManagerAndroidFeatureEnabledTest, StartInitialization) {
+// Tests that, when the feature is disabled, `StartInitialization()` neither
+// pre-warms the attestation token provider nor records a token request.
+TEST_F(DeviceTrustKeyManagerAndroidFeatureDisabledTest,
+       StartInitialization_FeatureDisabled) {
+  EXPECT_CALL(*mock_client_, PreWarmCache()).Times(0);
   EXPECT_CALL(*mock_client_, GenerateToken(_, _)).Times(0);
 
   key_manager_->StartInitialization();
 
-  EXPECT_FALSE(key_manager_->HasPermanentFailure());
+  EXPECT_FALSE(HasLastRequestTime());
+}
+
+// Tests that `StartInitialization()` pre-warms the attestation token provider
+// without requesting a token, records the request time, and leaves the key
+// manager with no loaded key metadata.
+TEST_F(DeviceTrustKeyManagerAndroidFeatureEnabledTest,
+       StartInitialization_PreWarms) {
+  EXPECT_CALL(*mock_client_, PreWarmCache());
+  EXPECT_CALL(*mock_client_, GenerateToken(_, _)).Times(0);
+
+  key_manager_->StartInitialization();
+
+  EXPECT_EQ(GetLastRequestTime(), base::Time::Now());
   EXPECT_EQ(key_manager_->GetLoadedKeyMetadata(), std::nullopt);
+}
+
+// Tests that `StartInitialization()` doesn't pre-warm again before
+// `kPreWarmInterval` has passed since the previous pre-warm.
+TEST_F(DeviceTrustKeyManagerAndroidFeatureEnabledTest,
+       StartInitialization_RateLimited) {
+  EXPECT_CALL(*mock_client_, PreWarmCache());
+  EXPECT_CALL(*mock_client_, GenerateToken(_, _)).Times(0);
+  key_manager_->StartInitialization();
+  const base::Time pre_warm_time = base::Time::Now();
+
+  task_environment_.FastForwardBy(
+      DeviceTrustKeyManagerAndroid::kPreWarmInterval - base::Seconds(1));
+  key_manager_->StartInitialization();
+
+  EXPECT_EQ(GetLastRequestTime(), pre_warm_time);
+}
+
+// Tests that `StartInitialization()` pre-warms again once `kPreWarmInterval`
+// has passed since the previous pre-warm.
+TEST_F(DeviceTrustKeyManagerAndroidFeatureEnabledTest,
+       StartInitialization_PreWarmsAgainAfterInterval) {
+  EXPECT_CALL(*mock_client_, PreWarmCache()).Times(2);
+  EXPECT_CALL(*mock_client_, GenerateToken(_, _)).Times(0);
+  key_manager_->StartInitialization();
+
+  task_environment_.FastForwardBy(
+      DeviceTrustKeyManagerAndroid::kPreWarmInterval);
+  key_manager_->StartInitialization();
+
+  EXPECT_EQ(GetLastRequestTime(), base::Time::Now());
+}
+
+// Tests that the rate limit uses the request time stored in Local State, so
+// that it also covers requests made in a previous browser session.
+TEST_F(DeviceTrustKeyManagerAndroidFeatureEnabledTest,
+       StartInitialization_RateLimitedByStoredRequestTime) {
+  const base::Time last_request_time = base::Time::Now() - base::Hours(1);
+  SetLastRequestTime(last_request_time);
+  CreateKeyManager();
+  EXPECT_CALL(*mock_client_, PreWarmCache()).Times(0);
+  EXPECT_CALL(*mock_client_, GenerateToken(_, _)).Times(0);
+
+  key_manager_->StartInitialization();
+
+  EXPECT_EQ(GetLastRequestTime(), last_request_time);
+}
+
+// Tests that a stored request time in the future (e.g. after a clock change)
+// also rate limits pre-warming, however far ahead it is, and is kept as is.
+TEST_F(DeviceTrustKeyManagerAndroidFeatureEnabledTest,
+       StartInitialization_RateLimitedIfStoredRequestTimeIsInTheFuture) {
+  const base::Time last_request_time = base::Time::Now() + base::Days(365);
+  SetLastRequestTime(last_request_time);
+  EXPECT_CALL(*mock_client_, PreWarmCache()).Times(0);
+  EXPECT_CALL(*mock_client_, GenerateToken(_, _)).Times(0);
+
+  key_manager_->StartInitialization();
+
+  EXPECT_EQ(GetLastRequestTime(), last_request_time);
 }
 
 // Tests that `RotateKey()` invokes its callback asynchronously with `FAILURE`
@@ -171,6 +272,19 @@ TEST_F(DeviceTrustKeyManagerAndroidFeatureEnabledTest,
   base::test::TestFuture<std::optional<std::vector<uint8_t>>> future;
   key_manager_->SignStringAsync(kTestPayload, future.GetCallback());
   EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+// Tests that requesting a token records the request time, which postpones the
+// next pre-warm.
+TEST_F(DeviceTrustKeyManagerAndroidFeatureEnabledTest,
+       SignStringAsync_PostponesPreWarm) {
+  EXPECT_CALL(*mock_client_, GenerateToken(_, _));
+  EXPECT_CALL(*mock_client_, PreWarmCache()).Times(0);
+
+  key_manager_->SignStringAsync(kTestPayload, base::DoNothing());
+  EXPECT_EQ(GetLastRequestTime(), base::Time::Now());
+
+  key_manager_->StartInitialization();
 }
 
 }  // namespace enterprise_connectors

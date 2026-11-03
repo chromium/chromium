@@ -4,6 +4,13 @@
 
 #include "components/enterprise/device_trust/prefs.h"
 
+#include "build/build_config.h"
+#include "components/prefs/pref_registry_simple.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/time/time.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace enterprise_connectors {
 
 const char kUserContextAwareAccessSignalsAllowlistPref[] =
@@ -15,6 +22,13 @@ const char kBrowserContextAwareAccessSignalsAllowlistPref[] =
 void RegisterDeviceTrustConnectorProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kUserContextAwareAccessSignalsAllowlistPref);
   registry->RegisterListPref(kBrowserContextAwareAccessSignalsAllowlistPref);
+}
+
+void RegisterDeviceTrustConnectorLocalStatePrefs(PrefRegistrySimple* registry) {
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterTimePref(kDeviceTrustAttestationTokenLastRequestTimePref,
+                             base::Time());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace enterprise_connectors

@@ -36,8 +36,8 @@ BASE_DECLARE_FEATURE(kDeviceTrustConnectorDesktopFormFactors);
 bool IsDeviceTrustConnectorAndroidEnabled();
 
 // Controls whether the Device Trust Connector on Android binds challenge
-// responses to attestation tokens. When disabled, Android challenge responses
-// are left unsigned.
+// responses to attestation tokens and pre-warms the attestation token provider.
+// When disabled, Android challenge responses are left unsigned.
 BASE_DECLARE_FEATURE(kDeviceTrustAndroidAttestationTokens);
 
 // Returns true if attestation tokens are enabled for the Device Trust Connector

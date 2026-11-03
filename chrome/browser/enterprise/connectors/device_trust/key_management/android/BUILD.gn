@@ -19,6 +19,9 @@ source_set("android") {
   deps = [
     "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/android",
+    "//components/enterprise/device_trust",
+    "//components/policy/core/common",
+    "//components/prefs",
     "//crypto",
   ]
 }
@@ -35,6 +38,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/android",
+    "//components/enterprise/device_trust",
+    "//components/prefs:test_support",
     "//crypto",
     "//testing/gmock",
     "//testing/gtest",

@@ -288,7 +288,8 @@ ChromeBrowserCloudManagementControllerAndroid::
 std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
 ChromeBrowserCloudManagementControllerAndroid::CreateDeviceTrustKeyManager() {
   return std::make_unique<enterprise_connectors::DeviceTrustKeyManagerAndroid>(
-      std::make_unique<enterprise_connectors::AndroidAttestationTokenClient>());
+      std::make_unique<enterprise_connectors::AndroidAttestationTokenClient>(),
+      g_browser_process->local_state());
 }
 
 }  // namespace policy

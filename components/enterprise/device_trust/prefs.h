@@ -16,8 +16,20 @@ extern const char kUserContextAwareAccessSignalsAllowlistPref[];
 // Pref that maps to the "BrowserContextAwareAccessSignalsAllowlist" policy.
 extern const char kBrowserContextAwareAccessSignalsAllowlistPref[];
 
+#if BUILDFLAG(IS_ANDROID)
+// Local State pref that stores the last time an attestation token was
+// requested, either to pre-warm the attestation token provider or to sign a
+// challenge response.
+inline constexpr char kDeviceTrustAttestationTokenLastRequestTimePref[] =
+    "enterprise_connectors.device_trust.attestation_token_last_request_time";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Registers the device trust connectors profile preferences.
 void RegisterDeviceTrustConnectorProfilePrefs(PrefRegistrySimple* registry);
+
+// Registers the device trust connectors Local State preferences. Only Android
+// has any.
+void RegisterDeviceTrustConnectorLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace enterprise_connectors
 

@@ -117,6 +117,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
 
   client_certificates::RegisterLocalStatePrefs(registry);
+
+  RegisterDeviceTrustConnectorLocalStatePrefs(registry);
 }
 
 }  // namespace enterprise_connectors

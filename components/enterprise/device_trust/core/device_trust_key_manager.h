@@ -60,9 +60,10 @@ class DeviceTrustKeyManager {
     std::optional<PermanentFailure> permanent_failure = std::nullopt;
   };
 
-  // Starts the initialization of the manager which includes trying to load the
-  // signing key, or kicking off its creation. This function is idempotent, so
-  // only the initial call matters (subsequent calls will be ignored).
+  // Starts the initialization of the manager, e.g. loading the signing key or
+  // kicking off its creation. It can be called repeatedly (e.g. on policy
+  // updates), so later calls must be cheap; whether they do any work is up to
+  // the implementation.
   virtual void StartInitialization() = 0;
 
   // Starts a key rotation sequence which will update the serialized key,
