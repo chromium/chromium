@@ -50,11 +50,7 @@ class CORE_EXPORT SoftNavigationContext
 
   // LargestContentfulPaintCalculator::Delegate:
   void EmitLcpPerformanceEntry(const DOMPaintTimingInfo& paint_timing_info,
-                               uint64_t paint_size,
-                               base::TimeTicks load_time,
-                               const AtomicString& id,
-                               const String& url,
-                               Element* element) override;
+                               LargestContentfulPaint* lcp_entry) override;
   void OnLcpMetricsForReportingChanged() override;
   bool IsHardNavigation() const override { return false; }
   void Trace(Visitor* visitor) const override;
@@ -221,7 +217,6 @@ class CORE_EXPORT SoftNavigationContext
   Member<PerformanceEventTiming> initial_event_timing_;
   Member<PaintTimingRecord> first_image_or_text_;
   Member<InteractionContentfulPaint> largest_icp_entry_;
-  Member<LargestContentfulPaint> current_lcp_entry_;
 
   size_t num_modified_dom_nodes_ = 0;
   uint64_t painted_area_ = 0;

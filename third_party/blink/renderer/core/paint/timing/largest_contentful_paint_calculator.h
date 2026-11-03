@@ -47,11 +47,7 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
     // appropriate type.
     virtual void EmitLcpPerformanceEntry(
         const DOMPaintTimingInfo& paint_timing_info,
-        uint64_t paint_size,
-        base::TimeTicks load_time,
-        const AtomicString& id,
-        const String& url,
-        Element* element) = 0;
+        LargestContentfulPaint* lcp_entry) = 0;
 
     // Called when the `LatestLcpDetails()` have changed. The `Delegate` is
     // responsible for pushing the updated metrics to UKM.
@@ -188,11 +184,14 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   void UpdateWebExposedLargestContentfulImage(const ImageRecord& largest_image);
   void UpdateWebExposedLargestContentfulText(const TextRecord& largest_text);
 
-  std::unique_ptr<TracedValue> CreateWebExposedCandidateTraceData(
-      const TextRecord&);
-  std::unique_ptr<TracedValue> CreateWebExposedCandidateTraceData(
-      const ImageRecord&);
-  std::unique_ptr<TracedValue> CreateWebExposedCandidateTraceDataCommon(
+  // Returns a `LargestContentfulPaint` based on the given `ImageRecord` or
+  // `TextRecord`, with the presentation time and `DOMPaintTimingInfo` unset.
+  LargestContentfulPaint* CreateLargestContentfulPaintEntry(const ImageRecord&);
+  LargestContentfulPaint* CreateLargestContentfulPaintEntry(const TextRecord&);
+
+  // Creates a `TracedValue` populated with the web-exposed LCP candidate trace
+  // fields. Returns nullptr if tracing is not enabled.
+  std::unique_ptr<TracedValue> CreateWebExposedLcpCandidateTraceData(
       const PaintTimingRecord&);
 
   bool HasLargestImagePaintChangedForMetrics(

@@ -225,7 +225,6 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(first_image_or_text_);
   visitor->Trace(window_);
   visitor->Trace(largest_icp_entry_);
-  visitor->Trace(current_lcp_entry_);
   visitor->Trace(initial_event_timing_);
 }
 
@@ -236,7 +235,6 @@ void SoftNavigationContext::Shutdown() {
   first_image_or_text_ = nullptr;
   window_ = nullptr;
   largest_icp_entry_ = nullptr;
-  current_lcp_entry_ = nullptr;
   initial_event_timing_ = nullptr;
 }
 
@@ -286,32 +284,18 @@ void SoftNavigationContext::Dispose() {
 
 void SoftNavigationContext::EmitLcpPerformanceEntry(
     const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t paint_size,
-    base::TimeTicks load_time,
-    const AtomicString& id,
-    const String& url,
-    Element* element) {
+    LargestContentfulPaint* lcp_entry) {
   // This should not be called after we've been shut down.
   CHECK(!HasBeenShutdown());
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
 
-  auto* lcp_entry = MakeGarbageCollected<LargestContentfulPaint>(
-      /*start_time=*/paint_timing_info.presentation_time,
-      /*render_time=*/paint_timing_info.presentation_time, paint_size,
-      performance->MonotonicTimeToDOMHighResTimeStamp(load_time), id, url,
-      element, window_, performance->NavigationId().web_exposed_id);
-  lcp_entry->SetPaintTimingInfo(paint_timing_info);
-
-  current_lcp_entry_ = lcp_entry;
-
   auto* entry = MakeGarbageCollected<InteractionContentfulPaint>(
       /*start_time=*/performance->MonotonicTimeToDOMHighResTimeStamp(
           TimeOrigin()),
-      /*render_time=*/paint_timing_info.presentation_time, current_lcp_entry_,
-      window_, performance->NavigationId().web_exposed_id,
-      initial_event_timing_->interactionId());
-  entry->SetPaintTimingInfo(paint_timing_info);
+      lcp_entry, window_, initial_event_timing_->interactionId());
+  entry->FinalizeEntry(paint_timing_info,
+                       performance->NavigationId().web_exposed_id);
   performance->OnInteractionContentfulPaintUpdated(entry);
 
   largest_icp_entry_ = entry;

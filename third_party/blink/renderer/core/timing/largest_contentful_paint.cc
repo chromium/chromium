@@ -8,26 +8,25 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
-LargestContentfulPaint::LargestContentfulPaint(double start_time,
-                                               DOMHighResTimeStamp render_time,
-                                               uint64_t size,
+LargestContentfulPaint::LargestContentfulPaint(uint64_t size,
                                                DOMHighResTimeStamp load_time,
                                                const AtomicString& id,
                                                const String& url,
                                                Element* element,
-                                               DOMWindow* source,
-                                               uint64_t navigation_id)
-    : PerformanceEntry(/*duration=*/0.0,
-                       g_empty_atom,
-                       start_time,
-                       source,
-                       navigation_id),
+                                               DOMWindow* source)
+    : PerformanceEntry(
+          /*duration=*/0.0,
+          g_empty_atom,
+          /*start_time=*/0.0,
+          source,
+          /*navigation_id=*/
+          PerformanceTimelineEntryIdInfo::kNone.web_exposed_id),
       size_(size),
-      render_time_(render_time),
       load_time_(load_time),
       id_(id),
       url_(url),
@@ -43,6 +42,20 @@ PerformanceEntryType LargestContentfulPaint::EntryTypeEnum() const {
   return PerformanceEntry::EntryType::kLargestContentfulPaint;
 }
 
+bool LargestContentfulPaint::IsReadyForReporting() const {
+  return navigationId() !=
+             PerformanceTimelineEntryIdInfo::kNone.web_exposed_id &&
+         HasPaintTimingInfo();
+}
+
+void LargestContentfulPaint::FinalizeEntry(
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t navigation_id) {
+  CHECK(!IsReadyForReporting());
+  PerformanceEntry::FinalizeEntry(paint_timing_info, navigation_id);
+  CHECK(IsReadyForReporting());
+}
+
 Element* LargestContentfulPaint::element() const {
   return Performance::CanExposeNode(element_, source()) ? element_.Get()
                                                         : nullptr;
@@ -51,7 +64,7 @@ Element* LargestContentfulPaint::element() const {
 void LargestContentfulPaint::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddInteger("size", size_);
-  builder.AddNumber("renderTime", render_time_);
+  builder.AddNumber("renderTime", renderTime());
   builder.AddNumber("loadTime", load_time_);
   builder.AddString("id", id_);
   builder.AddString("url", url_);

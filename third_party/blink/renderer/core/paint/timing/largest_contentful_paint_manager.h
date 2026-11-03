@@ -13,14 +13,11 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
-class AtomicString;
 struct DOMPaintTimingInfo;
-class Element;
 class LocalDOMWindow;
 class ImageRecord;
 class LayoutObject;
 class MediaTiming;
-class String;
 class TextRecord;
 
 // `LargestContentfulPaintManager` is responsible for computing Largest
@@ -35,11 +32,7 @@ class CORE_EXPORT LargestContentfulPaintManager
 
   // LargestContentfulPaintCalculator::Delegate:
   void EmitLcpPerformanceEntry(const DOMPaintTimingInfo& paint_timing_info,
-                               uint64_t paint_size,
-                               base::TimeTicks load_time,
-                               const AtomicString& id,
-                               const String& url,
-                               Element* element) override;
+                               LargestContentfulPaint* lcp_entry) override;
   void OnLcpMetricsForReportingChanged() override;
   bool IsHardNavigation() const override { return true; }
   void Trace(Visitor* visitor) const override;

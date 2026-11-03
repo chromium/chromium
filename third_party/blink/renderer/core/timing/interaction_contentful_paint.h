@@ -5,9 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_INTERACTION_CONTENTFUL_PAINT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_INTERACTION_CONTENTFUL_PAINT_H_
 
-#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -22,15 +20,17 @@ class CORE_EXPORT InteractionContentfulPaint final : public PerformanceEntry {
 
  public:
   InteractionContentfulPaint(double start_time,
-                             DOMHighResTimeStamp render_time,
                              LargestContentfulPaint* largest_contentful_paint,
                              DOMWindow* source,
-                             uint64_t navigation_id,
                              uint64_t interaction_id);
   ~InteractionContentfulPaint() override;
 
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
+  DOMHighResTimeStamp duration() const override;
+  bool IsReadyForReporting() const override;
+  void FinalizeEntry(const DOMPaintTimingInfo&,
+                     uint64_t navigation_id) override;
 
   LargestContentfulPaint* largestContentfulPaint() const {
     return largest_contentful_paint_.Get();

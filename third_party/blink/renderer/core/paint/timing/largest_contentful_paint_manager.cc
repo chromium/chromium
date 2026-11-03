@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/web_vitals_hud_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
@@ -32,20 +33,18 @@ LargestContentfulPaintManager::LargestContentfulPaintManager(
 
 void LargestContentfulPaintManager::EmitLcpPerformanceEntry(
     const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t paint_size,
-    base::TimeTicks load_time,
-    const AtomicString& id,
-    const String& url,
-    Element* element) {
+    LargestContentfulPaint* lcp_entry) {
   // `largest_contentful_paint_calculator_` can be null if input arrived between
   // paint and presentation time.
   // TODO(crbug.com/454082773): These values should count towards LCP.
   if (!largest_contentful_paint_calculator_) {
     return;
   }
-  DOMWindowPerformance::performance(*window_.Get())
-      ->OnLargestContentfulPaintUpdated(paint_timing_info, paint_size,
-                                        load_time, id, url, element);
+  WindowPerformance* performance =
+      DOMWindowPerformance::performance(*window_.Get());
+  lcp_entry->FinalizeEntry(paint_timing_info,
+                           performance->NavigationId().web_exposed_id);
+  performance->OnLargestContentfulPaintUpdated(lcp_entry);
 }
 
 void LargestContentfulPaintManager::OnLcpMetricsForReportingChanged() {

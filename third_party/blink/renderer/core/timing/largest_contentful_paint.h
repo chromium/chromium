@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_LARGEST_CONTENTFUL_PAINT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_LARGEST_CONTENTFUL_PAINT_H_
 
-#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
@@ -19,22 +18,27 @@ class CORE_EXPORT LargestContentfulPaint final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  LargestContentfulPaint(double start_time,
-                         DOMHighResTimeStamp render_time,
-                         uint64_t size,
+  LargestContentfulPaint(uint64_t size,
                          DOMHighResTimeStamp load_time,
                          const AtomicString& id,
                          const String& url,
                          Element* element,
-                         DOMWindow* source,
-                         uint64_t navigation_id);
+                         DOMWindow* source);
   ~LargestContentfulPaint() override;
 
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
+  DOMHighResTimeStamp startTime() const override { return renderTime(); }
+  bool IsReadyForReporting() const override;
+  void FinalizeEntry(const DOMPaintTimingInfo&,
+                     uint64_t navigation_id) override;
 
   uint64_t size() const { return size_; }
-  DOMHighResTimeStamp renderTime() const { return render_time_; }
+  // "The renderTime attribute must return the default paint timestamp given
+  // this’s paint timing info."
+  DOMHighResTimeStamp renderTime() const {
+    return GetPaintTimingInfo().presentation_time;
+  }
   DOMHighResTimeStamp loadTime() const { return load_time_; }
   const AtomicString& id() const { return id_; }
   const String& url() const { return url_; }
@@ -46,7 +50,6 @@ class CORE_EXPORT LargestContentfulPaint final : public PerformanceEntry {
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
   uint64_t size_;
-  DOMHighResTimeStamp render_time_;
   DOMHighResTimeStamp load_time_;
   AtomicString id_;
   String url_;

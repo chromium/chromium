@@ -215,13 +215,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void PageVisibilityChangedWithTimestamp(
       base::TimeTicks visibility_change_timestamp);
 
-  void OnLargestContentfulPaintUpdated(
-      const DOMPaintTimingInfo& paint_timing_info,
-      uint64_t paint_size,
-      base::TimeTicks load_time,
-      const AtomicString& id,
-      const String& url,
-      Element*);
+  void OnLargestContentfulPaintUpdated(LargestContentfulPaint*);
 
   void OnInteractionContentfulPaintUpdated(InteractionContentfulPaint*);
 

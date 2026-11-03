@@ -1798,19 +1798,7 @@ uint64_t WindowPerformance::interactionCount() const {
 }
 
 void WindowPerformance::OnLargestContentfulPaintUpdated(
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t paint_size,
-    base::TimeTicks load_time,
-    const AtomicString& id,
-    const String& url,
-    Element* element) {
-  auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
-      /*start_time=*/paint_timing_info.presentation_time,
-      /*render_time=*/paint_timing_info.presentation_time, paint_size,
-      MonotonicTimeToDOMHighResTimeStamp(load_time), id, url, element,
-      DomWindow(), NavigationId().web_exposed_id);
-  entry->SetPaintTimingInfo(paint_timing_info);
-
+    LargestContentfulPaint* entry) {
   if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint)) {
     NotifyObserversOfEntry(*entry);
   }
@@ -1819,6 +1807,7 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     window->document()->OnLargestContentfulPaintUpdated();
   }
 
+  Element* element = entry->element();
   if (HTMLImageElement* image_element = DynamicTo<HTMLImageElement>(element)) {
     image_element->SetIsLCPElement();
     if (image_element->HasLazyLoadingAttribute()) {
@@ -1830,8 +1819,8 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     if (LocalFrame* local_frame = element->GetDocument().GetFrame()) {
       if (LCPCriticalPathPredictor* lcpp = local_frame->GetLCPP()) {
         std::optional<KURL> maybe_url = std::nullopt;
-        if (!url.empty()) {
-          maybe_url = KURL(url);
+        if (!entry->url().empty()) {
+          maybe_url = KURL(entry->url());
         }
         lcpp->OnLargestContentfulPaintUpdated(*element, maybe_url);
       }

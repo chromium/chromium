@@ -102,17 +102,16 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   // construction time.
   virtual DOMHighResTimeStamp startTime() const;
 
+  // By default, returns the `duration_` set during construction. Subclasses
+  // may override this to return other values, which may not be known at
+  // construction time.
+  virtual DOMHighResTimeStamp duration() const;
+
   // Returns true if the value is ready to be reported to performance timeline,
   // and false otherwise. Some entries are ready to be reported as soon as they
   // are constructed, but others should not be reported until other conditions
   // are met, e.g. until presentation of the relevant frame.
   virtual bool IsReadyForReporting() const { return true; }
-
-  // PerformanceNavigationTiming will override this due to
-  // the nature of reporting it early, which means not having a
-  // finish time available at construction time.
-  // Other classes must NOT override this.
-  virtual DOMHighResTimeStamp duration() const;
 
   ScriptObject toJSONForBinding(ScriptState*) const;
 
@@ -184,6 +183,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
   void SetPaintTimingInfo(const DOMPaintTimingInfo& paint_timing_info) {
+    CHECK(!paint_timing_info_.has_value());
     paint_timing_info_ = paint_timing_info;
   }
 
