@@ -209,18 +209,6 @@
   <message name="IDS_HISTORY_EMBEDDINGS_FEEDBACK_PLACEHOLDER" desc="Placeholder text in feedback from for history search">
     Send feedback for history search powered by AI
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING" desc="Heading for answer section in history search results." translateable="false">
-    Summary
-  </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_LOADING_HEADING" desc="Heading for answer section in history search results when the answer is loading." translateable="false">
-    Searching for a summary...
-  </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_SOURCE_VISIT_DATE_LABEL" desc="Label for visited date for answer section in history search results." translateable="false">
-    Visited <ph name="DATE"><ex>Oct 4, 2024</ex>$1</ph>
-  </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_TRY_AGAIN" desc="Error message for when history embeddings answerer fails and the user can try again later." translateable="false">
-    Something went wrong. Please try again later.
-  </message>
 
   <!-- For Compare -->
   <message name="IDS_COMPARE_HISTORY_EMPTY" desc="Text shown for comparison tables tab when no sets are present.">

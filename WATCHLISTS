@@ -833,7 +833,6 @@
     'chrome_intelligence': {
       'filepath': 'contextual_cueing'\
                   '|history_clusters'\
-                  '|history_embeddings'\
                   '|image_service'\
                   '|ios/chrome/browser/text_selection'\
                   '|model_execution'\

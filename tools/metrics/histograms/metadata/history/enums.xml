@@ -144,17 +144,6 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Not enough non-hidden visits"/>
 </enum>
 
-<enum name="ComputeAnswerStatus">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="Loading"/>
-  <int value="2" label="Success"/>
-  <int value="3" label="Unanswerable"/>
-  <int value="4" label="ModelUnavailable"/>
-  <int value="5" label="ExecutionFailure"/>
-  <int value="6" label="ExecutionCancelled"/>
-  <int value="7" label="Filtered"/>
-</enum>
-
 <enum name="ComputeEmbeddingsStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Model Unavailable"/>
@@ -176,25 +165,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Model info does not contain model metadata"/>
   <int value="4" label="Model info has invalid model metadata"/>
   <int value="5" label="Model info has invalid data for additional files"/>
-</enum>
-
-<enum name="EmbeddingsQueryFiltered">
-  <int value="0" label="Not filtered"/>
-  <int value="1" label="Filtered non-ASCII"/>
-  <int value="2" label="Filtered phrase match"/>
-  <int value="3" label="Filtered term match"/>
-  <int value="4" label="Filtered one-word hash match"/>
-  <int value="5" label="Filtered two-word hash match"/>
-</enum>
-
-<enum name="EmbeddingsUserActions">
-  <int value="0" label="Non-empty query History search"/>
-  <int value="1" label="Embeddings search"/>
-  <int value="2" label="Embeddings non-empty results shown"/>
-  <int value="3" label="Embeddings result clicked"/>
-  <int value="4" label="Answer shown"/>
-  <int value="5" label="Answer citation clicked"/>
-  <int value="6" label="Other history result clicked"/>
 </enum>
 
 <!-- LINT.IfChange(HistoryClustersInitialState) -->
