@@ -43,7 +43,15 @@ AimCobrowseJavaScriptFeature::~AimCobrowseJavaScriptFeature() = default;
 void AimCobrowseJavaScriptFeature::SendNativeToWeb(
     web::WebState* web_state,
     const lens::ClientToAimMessage& message) {
-  if (!web_state) {
+  if (!web_state || web_state->IsBeingDestroyed()) {
+    return;
+  }
+  // The feature is registered regardless of eligibility, which can change
+  // during the session. Don't send messages to the page if the user isn't
+  // eligible.
+  AssistantAimTabHelper* tab_helper =
+      AssistantAimTabHelper::FromWebState(web_state);
+  if (!tab_helper || !tab_helper->IsEligible()) {
     return;
   }
   web::WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
@@ -69,9 +77,15 @@ AimCobrowseJavaScriptFeature::GetScriptMessageHandlerName() const {
 void AimCobrowseJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
+  if (!web_state || web_state->IsBeingDestroyed()) {
+    return;
+  }
+  // The feature is registered regardless of eligibility, which can change
+  // during the session. Ignore messages from the page if the user isn't
+  // eligible.
   AssistantAimTabHelper* tab_helper =
       AssistantAimTabHelper::FromWebState(web_state);
-  if (!tab_helper) {
+  if (!tab_helper || !tab_helper->IsEligible()) {
     return;
   }
   if (!message.is_main_frame()) {
