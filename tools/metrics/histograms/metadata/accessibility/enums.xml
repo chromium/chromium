@@ -2588,6 +2588,18 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//components/soda/constants.h:LanguageCode) -->
 
+<!-- LINT.IfChange(SodaTfLiteDelegateStatus) -->
+
+<enum name="SodaTfLiteDelegateStatus">
+  <int value="0" label="Not delegated (delegate not requested)"/>
+  <int value="1" label="Delegate success (all TFLite sessions delegated)"/>
+  <int value="2"
+      label="Delegate fallback (at least one TFLite session on built-in
+             kernels)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/services/speech/speech_recognition_recognizer_impl.cc:SodaTfLiteDelegateStatus) -->
+
 <!-- LINT.IfChange(TextToSpeechEvent) -->
 
 <enum name="TextToSpeechEvent">

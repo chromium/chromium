@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/speech/soda/mock_soda_client.h"
@@ -28,6 +29,8 @@ constexpr char kPrimaryLanguageName[] = "en-US";
 constexpr char kPrimaryLanguageNameLowerCase[] = "en-us";
 constexpr char kPrimaryLanguageNameGeneric[] = "en";
 constexpr char kPrimaryLanguageNameGenericUpperCase[] = "EN";
+constexpr char kSodaTfLiteDelegateStatusHistogram[] =
+    "Accessibility.LiveCaption.SodaTfLiteDelegateStatus";
 
 }  // namespace
 
@@ -92,6 +95,36 @@ class SpeechRecognitionRecognizerImplTest
   }
 
  protected:
+  // Sends a TFLITE_DELEGATE_INFO response through the SODA callback, with the
+  // XNNPACK delegate feature in the given state.
+  void SendTfLiteDelegateInfo(bool delegate_requested,
+                              int tflite_session_count,
+                              int delegated_session_count) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(media::kSodaXnnpackDelegate,
+                                      delegate_requested);
+    CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+
+    SerializedSodaConfig saved_config;
+    EXPECT_CALL(*soda_client_, Reset)
+        .WillOnce(testing::SaveArg<0>(&saved_config));
+    recognizer_->OnLanguagePackInstalled(config_paths());
+    ASSERT_EQ(delegate_requested,
+              recognizer_->GetExtendedSodaConfigMsgForTesting()
+                  ->enable_xnnpack_delegate());
+
+    soda::chrome::SodaResponse response;
+    response.set_soda_type(soda::chrome::SodaResponse::TFLITE_DELEGATE_INFO);
+    auto* info = response.mutable_tflite_delegate_info();
+    info->set_tflite_session_count(tflite_session_count);
+    info->set_delegated_session_count(delegated_session_count);
+    std::string serialized;
+    response.SerializeToString(&serialized);
+
+    saved_config.callback(serialized.c_str(), serialized.size(),
+                          saved_config.callback_handle);
+  }
+
   void WaitForRecognitionEvent() {
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
@@ -545,6 +578,44 @@ TEST_F(SpeechRecognitionRecognizerImplTest, EmptyHypothesisDoesNotCrash) {
 
   EXPECT_EQ(0, recognition_event_count_);
   EXPECT_TRUE(last_received_result_.transcription.empty());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       RecordsNotDelegatedWhenNotRequested) {
+  base::HistogramTester histogram_tester;
+  SendTfLiteDelegateInfo(/*delegate_requested=*/false,
+                         /*tflite_session_count=*/4,
+                         /*delegated_session_count=*/0);
+  histogram_tester.ExpectUniqueSample(kSodaTfLiteDelegateStatusHistogram,
+                                      /*kNotDelegated*/ 0, 1);
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       RecordsSuccessWhenAllSessionsDelegated) {
+  base::HistogramTester histogram_tester;
+  SendTfLiteDelegateInfo(/*delegate_requested=*/true,
+                         /*tflite_session_count=*/4,
+                         /*delegated_session_count=*/4);
+  histogram_tester.ExpectUniqueSample(kSodaTfLiteDelegateStatusHistogram,
+                                      /*kDelegateSuccess*/ 1, 1);
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       RecordsFallbackWhenSomeSessionsNotDelegated) {
+  base::HistogramTester histogram_tester;
+  SendTfLiteDelegateInfo(/*delegate_requested=*/true,
+                         /*tflite_session_count=*/4,
+                         /*delegated_session_count=*/3);
+  histogram_tester.ExpectUniqueSample(kSodaTfLiteDelegateStatusHistogram,
+                                      /*kDelegateFallback*/ 2, 1);
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest, SkipsRecordingWithoutSessions) {
+  base::HistogramTester histogram_tester;
+  SendTfLiteDelegateInfo(/*delegate_requested=*/true,
+                         /*tflite_session_count=*/0,
+                         /*delegated_session_count=*/0);
+  histogram_tester.ExpectTotalCount(kSodaTfLiteDelegateStatusHistogram, 0);
 }
 
 TEST_F(SpeechRecognitionRecognizerImplTest, DestroySodaWhenClientDisconnects) {

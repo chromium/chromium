@@ -62,7 +62,47 @@ const char
 constexpr char kLiveCaptionLanguageCountHistogramName[] =
     "Accessibility.LiveCaption.LanguageCount";
 
+constexpr char kSodaTfLiteDelegateStatusHistogramName[] =
+    "Accessibility.LiveCaption.SodaTfLiteDelegateStatus";
+
 namespace {
+
+// Whether the ASR pipeline's TFLite sessions run on a TFLite delegate.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SodaTfLiteDelegateStatus)
+enum class SodaTfLiteDelegateStatus {
+  // No delegate was requested in the SODA config.
+  kNotDelegated = 0,
+  // The delegate was requested and every TFLite session runs on it.
+  kDelegateSuccess = 1,
+  // The delegate was requested but at least one TFLite session runs TFLite's
+  // built-in kernels.
+  kDelegateFallback = 2,
+  kMaxValue = kDelegateFallback,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:SodaTfLiteDelegateStatus)
+
+// Records whether the ASR pipeline's TFLite sessions run on a TFLite delegate.
+void RecordTfLiteDelegateInfo(
+    const soda::chrome::SodaTfLiteDelegateInfo& info) {
+  const int total = info.tflite_session_count();
+  if (total <= 0) {
+    return;
+  }
+  SodaTfLiteDelegateStatus status;
+  // XNNPACK is the only delegate Chrome requests today. ResetSoda() sets
+  // enable_xnnpack_delegate in the SODA config if and only if this feature is
+  // enabled.
+  if (!base::FeatureList::IsEnabled(media::kSodaXnnpackDelegate)) {
+    status = SodaTfLiteDelegateStatus::kNotDelegated;
+  } else if (info.delegated_session_count() >= total) {
+    status = SodaTfLiteDelegateStatus::kDelegateSuccess;
+  } else {
+    status = SodaTfLiteDelegateStatus::kDelegateFallback;
+  }
+  base::UmaHistogramEnumeration(kSodaTfLiteDelegateStatusHistogramName, status);
+}
 
 struct SodaCallbacks {
   SpeechRecognitionRecognizerImpl::OnRecognitionEventCallback recognition;
@@ -187,6 +227,11 @@ void OnSodaResponse(const char* serialized_proto,
 
   if (response.soda_type() == soda::chrome::SodaResponse::STOP) {
     callbacks.stop.Run();
+  }
+
+  if (response.soda_type() ==
+      soda::chrome::SodaResponse::TFLITE_DELEGATE_INFO) {
+    RecordTfLiteDelegateInfo(response.tflite_delegate_info());
   }
 }
 

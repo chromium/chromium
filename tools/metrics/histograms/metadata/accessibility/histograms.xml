@@ -2242,6 +2242,25 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveCaption.SodaTfLiteDelegateStatus"
+    enum="SodaTfLiteDelegateStatus" expires_after="2027-05-03">
+  <owner>handellm@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Whether the TFLite sessions in the Speech On-Device API (SODA) speech
+    recognition pipeline run on a TFLite delegate. &quot;Not delegated&quot;
+    means Chrome did not request a delegate in the SODA config. &quot;Delegate
+    success&quot; means the delegate was requested and every TFLite session runs
+    on it. &quot;Delegate fallback&quot; means the delegate was requested but at
+    least one TFLite session runs TFLite's built-in kernels instead. The
+    delegation failure rate is Fallback / (Success + Fallback). Logged once per
+    SODA pipeline load, at the first recognition session, by any speech
+    recognition client using SODA. Not logged when the pipeline reports no
+    TFLite sessions.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.LiveCaption.SodaVerificationFailureMissingIndicatorFile"
     enum="Boolean" expires_after="2027-04-20">
