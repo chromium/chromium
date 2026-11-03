@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/tree_traversal_utils.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -2127,6 +2128,49 @@ TEST_F(GridLayoutAlgorithmTest, SingleAxisScrollerAutoMinSizeUseCount) {
   )HTML");
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kSingleAxisScrollerAutoMinSize));
+}
+
+// Check that placing items (`PlaceItems()` in
+// `GridLayoutAlgorithm::PlaceGridItemsForFragmentation()`) twice doesn't
+// duplicate OOF fragments.
+TEST_F(GridLayoutAlgorithmTest, FragmentedOofInGridPlaceItemsTwice) {
+  ScopedFragmentedOofInCbForTest enable_flag(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="multicol" style="columns:4; column-fill:auto; height:100px;">
+      <div style="display:grid; position:relative;">
+        <div id="elm" style="position:absolute; width:100%; height:500px;"></div>
+        <div style="height:100px;"></div>
+        <div style="height:50px;"></div>
+        <div style="break-before:column;"></div>
+      </div>
+    </div>
+  )HTML");
+  const auto* elm = GetLayoutBoxByElementId("elm");
+  EXPECT_EQ(elm->PhysicalFragmentCount(), 5u);
+
+  const auto* multicol = GetLayoutBoxByElementId("multicol");
+  ASSERT_EQ(multicol->PhysicalFragmentCount(), 1u);
+
+  // Count the number of fragment representation for #elm in the tree.
+  class FragmentCounter : public PhysicalFragmentTraversalListener {
+   public:
+    unsigned count = 0;
+
+    NextStep HandleEntry(const PhysicalBoxFragment& fragment,
+                         PhysicalOffset,
+                         bool) override {
+      if (const Element* element = DynamicTo<Element>(fragment.GetNode())) {
+        if (element->GetIdAttribute() == "elm") {
+          count++;
+        }
+      }
+      return kContinue;
+    }
+  };
+  FragmentCounter counter;
+  ForAllBoxFragmentDescendants(*multicol->GetPhysicalFragment(0),
+                               kFragmentTraversalOptionNone, counter);
+  EXPECT_EQ(counter.count, 5u);
 }
 
 }  // namespace blink

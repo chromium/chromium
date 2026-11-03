@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TREE_TRAVERSAL_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TREE_TRAVERSAL_UTILS_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 
 namespace blink {
@@ -57,9 +58,10 @@ class PhysicalFragmentTraversalListener {
 // how to proceed with the traversal afterwards. As an added bonus, mostly
 // thanks to crbug.com/406288653 , culled inlines may also be visited, via
 // HandleCulledInline().
-void ForAllBoxFragmentDescendants(const PhysicalBoxFragment&,
-                                  PhysicalFragmentTraversalOptions,
-                                  PhysicalFragmentTraversalListener&);
+CORE_EXPORT void ForAllBoxFragmentDescendants(
+    const PhysicalBoxFragment&,
+    PhysicalFragmentTraversalOptions,
+    PhysicalFragmentTraversalListener&);
 
 }  // namespace blink
 

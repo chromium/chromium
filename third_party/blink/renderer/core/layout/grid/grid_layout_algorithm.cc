@@ -1783,6 +1783,17 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   base::span<const Member<const BreakToken>> child_break_tokens;
   if (GetBreakToken()) {
     child_break_tokens = GetBreakToken()->ChildBreakTokens();
+
+    // Resumed OOFs are found directly under the grid container, but they are
+    // not grid items. Make sure that they get handled in the out-of-flow pass,
+    // which takes place after in-flow layout.
+    for (const BreakToken* token : child_break_tokens) {
+      const auto* child_token = To<BlockBreakToken>(token);
+      if (child_token->InputNode().IsOutOfFlowPositioned()) {
+        container_builder_.AddOutOfFlowChildCandidate(
+            child_token->InputNode(), LogicalStaticPosition(), child_token);
+      }
+    }
   }
 
   auto PlaceItems = [&]() {
@@ -1803,12 +1814,20 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       // Grab the offsets and break-token (if present) for this child.
       auto& item_placement_data = *(placement_data_it++);
       const BlockBreakToken* break_token = nullptr;
-      if (child_break_token_it != child_break_tokens.end()) {
+      for (; child_break_token_it != child_break_tokens.end();
+           ++child_break_token_it) {
         const auto* child_break_token =
             To<BlockBreakToken>(child_break_token_it->Get());
-        if (child_break_token->InputNode() == grid_item.node) {
-          break_token = child_break_token;
-          ++child_break_token_it;
+        // Ignore resumed OOFs here. They are handled elsewhere, since item
+        // placement may be performed several times.
+        if (!child_break_token->InputNode().IsOutOfFlowPositioned()) {
+          // This is either a break token for the current item, or for a
+          // subsequent one.
+          if (child_break_token->InputNode() == grid_item.node) {
+            break_token = child_break_token;
+            ++child_break_token_it;
+          }
+          break;
         }
       }
 
