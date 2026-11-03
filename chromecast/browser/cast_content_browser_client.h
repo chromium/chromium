@@ -33,6 +33,7 @@
 #include "services/service_manager/public/mojom/interface_provider.mojom-forward.h"
 #include "services/service_manager/public/mojom/service.mojom-forward.h"
 #include "storage/browser/quota/quota_settings.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class PrefService;
 
@@ -192,7 +193,7 @@ class CastContentBrowserClient
                        const GURL& target_url,
                        const content::Referrer& referrer,
                        const std::string& frame_name,
-                       WindowOpenDisposition disposition,
+                       ui::mojom::WindowOpenDisposition disposition,
                        const blink::mojom::WindowFeatures& features,
                        bool user_gesture,
                        bool opener_suppressed,
