@@ -7,8 +7,8 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import './icons.html.js';
 
-import {ToolMode} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
+import {ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {getFaviconUrl} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

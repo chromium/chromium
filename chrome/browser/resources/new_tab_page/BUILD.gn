@@ -32,7 +32,7 @@ if (optimize_webui) {
     "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
   ]
   optimize_external_paths =
-      [ "chrome://new-tab-page/shared|" +
+      [ "/shared/|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_shared/tsc",
                     root_build_dir) ]
 }
@@ -137,11 +137,11 @@ build_webui("build") {
   ]
 
   ts_path_mappings =
-      [ "chrome://new-tab-page/shared/*|" +
-        rebase_path(
+      [ "/shared/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/new_tab_shared/tsc/*",
             target_gen_dir) ]
 
+  html_to_wrapper_scheme = "chrome"
   webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {

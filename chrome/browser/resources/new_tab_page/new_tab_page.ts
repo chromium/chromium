@@ -9,8 +9,8 @@
  * things tests need.
  */
 
-export {GlifAnimationState} from '//resources/cr_components/composebox/common.js';
 export {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+export {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
 export {PlaceholderTextCycler} from 'chrome://resources/cr_components/searchbox/placeholder_text_cycler.js';
 export {SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {SearchboxIconElement} from 'chrome://resources/cr_components/searchbox/searchbox_icon.js';

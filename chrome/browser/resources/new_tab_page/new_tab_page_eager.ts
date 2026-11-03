@@ -4,7 +4,7 @@
 
 // Eagerly load modules experimentally deferred in `new_tab_page.ts`.
 // LINT.IfChange(LazyLoadedModules)
-import 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
+import '/shared/customize_buttons/customize_buttons.js';
 import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import 'chrome://resources/cr_components/search/animated_glow.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';

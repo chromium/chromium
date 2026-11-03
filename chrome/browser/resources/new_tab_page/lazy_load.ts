@@ -20,7 +20,7 @@ import './modules/modules.js';
 import './ntp_composebox.js';
 import './ntp_promo/individual_promos.js';
 import './voice_search_overlay.js';
-import 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
+import '/shared/customize_buttons/customize_buttons.js';
 import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import 'chrome://resources/cr_components/most_visited/most_visited.js';
 import 'chrome://resources/cr_components/search/animated_glow.js';
@@ -33,7 +33,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 //     //chrome/test/data/webui/new_tab_page/lazy_load_test.ts:LazyLoadedModules
 // )
 
-export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
+export {CustomizeButtonsElement} from '/shared/customize_buttons/customize_buttons.js';
 export type {ComposeboxFile, ComposeboxFuseboxActionRequest} from 'chrome://resources/cr_components/composebox/common.js';
 export {SubmitButtonIconType, VoiceSearchAction} from 'chrome://resources/cr_components/composebox/common.js';
 export {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';

@@ -2,37 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_components/composebox/composebox_aim_button.js';
-import '//resources/cr_components/composebox/composebox_dropdown.js';
-import '//resources/cr_components/composebox/composebox_file_inputs.js';
-import '//resources/cr_components/composebox/composebox_submit.js';
-import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
-import '//resources/cr_components/composebox/composebox_input.js';
-import '//resources/cr_components/composebox/error_scrim.js';
-import '//resources/cr_components/composebox/file_carousel.js';
-import '//resources/cr_components/composebox/composebox_tool_chip.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_components/composebox/composebox_voice_search.js';
-import '//resources/cr_components/search/animated_glow.js';
-import '//resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
+import 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
+import 'chrome://resources/cr_components/composebox/composebox_file_inputs.js';
+import 'chrome://resources/cr_components/composebox/composebox_submit.js';
+import 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import 'chrome://resources/cr_components/composebox/composebox_input.js';
+import 'chrome://resources/cr_components/composebox/error_scrim.js';
+import 'chrome://resources/cr_components/composebox/file_carousel.js';
+import 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
+import 'chrome://resources/cr_components/search/animated_glow.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
-import {getLoadTimeBoolean, GlifAnimationState} from '//resources/cr_components/composebox/common.js';
-import type {ComposeboxFile, ComposeboxFuseboxActionRequest} from '//resources/cr_components/composebox/common.js';
-import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
-import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
-import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
-import type {ComposeboxInputElement} from '//resources/cr_components/composebox/composebox_input.js';
-import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/composebox_mixin.js';
-import type {ComposeboxEmbedderMixinInterface} from '//resources/cr_components/composebox/composebox_mixin.js';
-import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
-import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
-import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
-import {EventTracker} from '//resources/js/event_tracker.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {SearchboxTutorial} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
-import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import {getLoadTimeBoolean, GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ComposeboxFile, ComposeboxFuseboxActionRequest} from 'chrome://resources/cr_components/composebox/common.js';
+import type {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import type {ComposeboxDropdownElement} from 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
+import type {ComposeboxFileInputsElement} from 'chrome://resources/cr_components/composebox/composebox_file_inputs.js';
+import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
+import {ComposeboxEmbedderMixin} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
+import type {ComposeboxEmbedderMixinInterface} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
+import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {SearchboxTutorial} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
+import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import {getCss} from './ntp_composebox.css.js';
 import {getHtml} from './ntp_composebox.html.js';

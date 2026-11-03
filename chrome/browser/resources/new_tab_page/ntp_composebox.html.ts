@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ToolMode} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
-import {GlowMode} from '//resources/cr_components/search/constants.js';
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {GlowMode} from 'chrome://resources/cr_components/search/constants.js';
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {NtpComposeboxElement} from './ntp_composebox.js';
 import {getHtml as getContextMenuHtml} from './ntp_composebox_context_menu.html.js';
