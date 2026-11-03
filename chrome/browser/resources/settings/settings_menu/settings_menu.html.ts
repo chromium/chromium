@@ -129,9 +129,8 @@ export function getHtml(this: SettingsMenuElement) {
               class="cr-nav-menu-item"
               ?hidden="${this.shouldHideMenuItem_(
                   this.pageVisibility_?.general)}">
-            <cr-icon icon="settings:build"></cr-icon>
-            <!-- TODO(b/574664004): Update "General" string -->
-            <span class="menu-label">General</span>
+            <cr-icon icon="cr:settings-filled"></cr-icon>
+            <span class="menu-label">$i18n{generalPageTitle}</span>
             <cr-ripple></cr-ripple>
           </a>
         ` : html`

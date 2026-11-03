@@ -853,6 +853,13 @@ void AddGeicStrings(content::WebUIDataSource* html_source) {
           .spec());
 }
 
+void AddGeneralStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"generalPageTitle", IDS_SETTINGS_GENERAL},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"glicPageTitle", IDS_SETTINGS_GLIC_PAGE_TITLE},
@@ -1260,7 +1267,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
   // UI no longer exists.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"performancePageTitle", IDS_SETTINGS_PERFORMANCE_PAGE_TITLE},
-      {"generalPageTitle", IDS_SETTINGS_PERFORMANCE_GENERAL_PAGE_TITLE},
+      {"performanceGeneralPageTitle",
+       IDS_SETTINGS_PERFORMANCE_GENERAL_PAGE_TITLE},
       {"memoryPageTitle", IDS_SETTINGS_PERFORMANCE_MEMORY_PAGE_TITLE},
       {"speedPageTitle", IDS_SETTINGS_PERFORMANCE_SPEED_PAGE_TITLE},
       {"memorySaverModeLabel",
@@ -4525,6 +4533,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddDownloadsStrings(html_source);
   AddExtensionsStrings(html_source);
   AddGeicStrings(html_source);
+  AddGeneralStrings(html_source);
   AddGlicStrings(html_source, profile);
   AddPerformanceStrings(html_source);
   AddLanguagesStrings(html_source, profile);

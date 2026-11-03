@@ -1087,6 +1087,11 @@
       Show downloads when they're done
     </message>
 
+    <!-- General Page -->
+    <message name="IDS_SETTINGS_GENERAL" desc="Name of the settings page which displays general preferences.">
+      General
+    </message>
+
     <!-- On Startup Page -->
     <message name="IDS_SETTINGS_ON_STARTUP" desc="Name of the on startup page.">
       On startup
