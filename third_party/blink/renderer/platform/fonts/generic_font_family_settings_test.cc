@@ -10,13 +10,55 @@
 
 namespace blink {
 
+namespace {
+
+struct FamilyNames {
+  GenericFontFamily family;
+  const char* common;
+  const char* arabic;
+};
+
+constexpr FamilyNames kFamilyNames[] = {
+    {GenericFontFamily::kStandard, "CustomStandard", "CustomArabicStandard"},
+    {GenericFontFamily::kFixed, "CustomFixed", "CustomArabicFixed"},
+    {GenericFontFamily::kSerif, "CustomSerif", "CustomArabicSerif"},
+    {GenericFontFamily::kSansSerif, "CustomSansSerif", "CustomArabicSansSerif"},
+    {GenericFontFamily::kCursive, "CustomCursive", "CustomArabicCursive"},
+    {GenericFontFamily::kFantasy, "CustomFantasy", "CustomArabicFantasy"},
+    {GenericFontFamily::kMath, "CustomMath", "CustomArabicMath"},
+};
+
+void ExpectAllEmpty(const GenericFontFamilySettings& settings) {
+  for (const FamilyNames& names : kFamilyNames) {
+    EXPECT_TRUE(settings.Get(names.family).empty());
+    EXPECT_TRUE(settings.Get(names.family, USCRIPT_ARABIC).empty());
+  }
+}
+
+void UpdateAll(GenericFontFamilySettings& settings) {
+  for (const FamilyNames& names : kFamilyNames) {
+    settings.Update(names.family, AtomicString(names.common));
+    settings.Update(names.family, AtomicString(names.arabic), USCRIPT_ARABIC);
+  }
+}
+
+void ExpectAllUpdated(const GenericFontFamilySettings& settings) {
+  for (const FamilyNames& names : kFamilyNames) {
+    EXPECT_EQ(names.common, settings.Get(names.family));
+    EXPECT_EQ(names.arabic, settings.Get(names.family, USCRIPT_ARABIC));
+  }
+}
+
+}  // namespace
+
 TEST(GenericFontFamilySettingsTest, FirstAvailableFontFamily) {
   GenericFontFamilySettings settings;
-  EXPECT_TRUE(settings.Standard().empty());
+  EXPECT_TRUE(settings.Get(GenericFontFamily::kStandard).empty());
 
   // Returns the first available font if starts with ",".
-  settings.UpdateStandard(AtomicString(",not exist, Arial"));
-  EXPECT_EQ("Arial", settings.Standard());
+  settings.Update(GenericFontFamily::kStandard,
+                  AtomicString(",not exist, Arial"));
+  EXPECT_EQ("Arial", settings.Get(GenericFontFamily::kStandard));
 
   // Otherwise returns any strings as they were set.
   AtomicString non_lists[] = {
@@ -25,225 +67,138 @@ TEST(GenericFontFamilySettingsTest, FirstAvailableFontFamily) {
       AtomicString("not exist, Arial"),
   };
   for (const AtomicString& name : non_lists) {
-    settings.UpdateStandard(name);
-    EXPECT_EQ(name, settings.Standard());
+    settings.Update(GenericFontFamily::kStandard, name);
+    EXPECT_EQ(name, settings.Get(GenericFontFamily::kStandard));
   }
 }
 
 TEST(GenericFontFamilySettingsTest, TestAllNames) {
   GenericFontFamilySettings settings;
+  ExpectAllEmpty(settings);
 
-  EXPECT_TRUE(settings.Standard().empty());
-  EXPECT_TRUE(settings.Fixed().empty());
-  EXPECT_TRUE(settings.Serif().empty());
-  EXPECT_TRUE(settings.SansSerif().empty());
-  EXPECT_TRUE(settings.Cursive().empty());
-  EXPECT_TRUE(settings.Fantasy().empty());
-  EXPECT_TRUE(settings.Math().empty());
-
-  EXPECT_TRUE(settings.Standard(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.Fixed(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.Serif(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.SansSerif(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.Cursive(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.Math(USCRIPT_ARABIC).empty());
-
-  settings.UpdateStandard(AtomicString("CustomStandard"));
-  settings.UpdateFixed(AtomicString("CustomFixed"));
-  settings.UpdateSerif(AtomicString("CustomSerif"));
-  settings.UpdateSansSerif(AtomicString("CustomSansSerif"));
-  settings.UpdateCursive(AtomicString("CustomCursive"));
-  settings.UpdateFantasy(AtomicString("CustomFantasy"));
-  settings.UpdateMath(AtomicString("CustomMath"));
-
-  settings.UpdateStandard(AtomicString("CustomArabicStandard"), USCRIPT_ARABIC);
-  settings.UpdateFixed(AtomicString("CustomArabicFixed"), USCRIPT_ARABIC);
-  settings.UpdateSerif(AtomicString("CustomArabicSerif"), USCRIPT_ARABIC);
-  settings.UpdateSansSerif(AtomicString("CustomArabicSansSerif"),
-                           USCRIPT_ARABIC);
-  settings.UpdateCursive(AtomicString("CustomArabicCursive"), USCRIPT_ARABIC);
-  settings.UpdateFantasy(AtomicString("CustomArabicFantasy"), USCRIPT_ARABIC);
-  settings.UpdateMath(AtomicString("CustomArabicMath"), USCRIPT_ARABIC);
-
-  EXPECT_EQ("CustomStandard", settings.Standard());
-  EXPECT_EQ("CustomFixed", settings.Fixed());
-  EXPECT_EQ("CustomSerif", settings.Serif());
-  EXPECT_EQ("CustomSansSerif", settings.SansSerif());
-  EXPECT_EQ("CustomCursive", settings.Cursive());
-  EXPECT_EQ("CustomFantasy", settings.Fantasy());
-  EXPECT_EQ("CustomMath", settings.Math());
-
-  EXPECT_EQ("CustomArabicStandard", settings.Standard(USCRIPT_ARABIC));
-  EXPECT_EQ("CustomArabicFixed", settings.Fixed(USCRIPT_ARABIC));
-  EXPECT_EQ("CustomArabicSerif", settings.Serif(USCRIPT_ARABIC));
-  EXPECT_EQ("CustomArabicSansSerif", settings.SansSerif(USCRIPT_ARABIC));
-  EXPECT_EQ("CustomArabicCursive", settings.Cursive(USCRIPT_ARABIC));
-  EXPECT_EQ("CustomArabicFantasy", settings.Fantasy(USCRIPT_ARABIC));
-  EXPECT_EQ("CustomArabicMath", settings.Math(USCRIPT_ARABIC));
+  UpdateAll(settings);
+  ExpectAllUpdated(settings);
 
   settings.Reset();
-
-  EXPECT_TRUE(settings.Standard().empty());
-  EXPECT_TRUE(settings.Fixed().empty());
-  EXPECT_TRUE(settings.Serif().empty());
-  EXPECT_TRUE(settings.SansSerif().empty());
-  EXPECT_TRUE(settings.Cursive().empty());
-  EXPECT_TRUE(settings.Fantasy().empty());
-  EXPECT_TRUE(settings.Math().empty());
-
-  EXPECT_TRUE(settings.Standard(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.Fixed(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.Serif(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.SansSerif(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.Cursive(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).empty());
-  EXPECT_TRUE(settings.Math(USCRIPT_ARABIC).empty());
+  ExpectAllEmpty(settings);
 }
 
 TEST(GenericFontFamilySettingsTest, TestSettingNotChanged) {
   GenericFontFamilySettings settings;
-
-  ASSERT_TRUE(settings.Standard(USCRIPT_ARABIC).empty());
-  ASSERT_TRUE(settings.Fixed(USCRIPT_ARABIC).empty());
-  ASSERT_TRUE(settings.Serif(USCRIPT_ARABIC).empty());
-  ASSERT_TRUE(settings.SansSerif(USCRIPT_ARABIC).empty());
-  ASSERT_TRUE(settings.Cursive(USCRIPT_ARABIC).empty());
-  ASSERT_TRUE(settings.Fantasy(USCRIPT_ARABIC).empty());
-  ASSERT_TRUE(settings.Math(USCRIPT_ARABIC).empty());
+  ExpectAllEmpty(settings);
 
   // Set the initial value.
-  settings.UpdateStandard(AtomicString("CustomStandard"));
-  settings.UpdateFixed(AtomicString("CustomFixed"));
-  settings.UpdateSerif(AtomicString("CustomSerif"));
-  settings.UpdateSansSerif(AtomicString("CustomSansSerif"));
-  settings.UpdateCursive(AtomicString("CustomCursive"));
-  settings.UpdateFantasy(AtomicString("CustomFantasy"));
-  settings.UpdateMath(AtomicString("CustomMath"));
-  settings.UpdateStandard(AtomicString("CustomArabicStandard"), USCRIPT_ARABIC);
-  settings.UpdateFixed(AtomicString("CustomArabicFixed"), USCRIPT_ARABIC);
-  settings.UpdateSerif(AtomicString("CustomArabicSerif"), USCRIPT_ARABIC);
-  settings.UpdateSansSerif(AtomicString("CustomArabicSansSerif"),
-                           USCRIPT_ARABIC);
-  settings.UpdateCursive(AtomicString("CustomArabicCursive"), USCRIPT_ARABIC);
-  settings.UpdateFantasy(AtomicString("CustomArabicFantasy"), USCRIPT_ARABIC);
-  settings.UpdateMath(AtomicString("CustomArabicMath"), USCRIPT_ARABIC);
-
-  ASSERT_EQ("CustomStandard", settings.Standard());
-  ASSERT_EQ("CustomFixed", settings.Fixed());
-  ASSERT_EQ("CustomSerif", settings.Serif());
-  ASSERT_EQ("CustomSansSerif", settings.SansSerif());
-  ASSERT_EQ("CustomCursive", settings.Cursive());
-  ASSERT_EQ("CustomFantasy", settings.Fantasy());
-  ASSERT_EQ("CustomMath", settings.Math());
-  ASSERT_EQ("CustomArabicStandard", settings.Standard(USCRIPT_ARABIC));
-  ASSERT_EQ("CustomArabicFixed", settings.Fixed(USCRIPT_ARABIC));
-  ASSERT_EQ("CustomArabicSerif", settings.Serif(USCRIPT_ARABIC));
-  ASSERT_EQ("CustomArabicSansSerif", settings.SansSerif(USCRIPT_ARABIC));
-  ASSERT_EQ("CustomArabicCursive", settings.Cursive(USCRIPT_ARABIC));
-  ASSERT_EQ("CustomArabicFantasy", settings.Fantasy(USCRIPT_ARABIC));
-  ASSERT_EQ("CustomArabicMath", settings.Math(USCRIPT_ARABIC));
+  UpdateAll(settings);
+  ExpectAllUpdated(settings);
 
   // Set the same value again.
-  EXPECT_FALSE(settings.UpdateStandard(AtomicString("CustomStandard")));
-  EXPECT_FALSE(settings.UpdateFixed(AtomicString("CustomFixed")));
-  EXPECT_FALSE(settings.UpdateSerif(AtomicString("CustomSerif")));
-  EXPECT_FALSE(settings.UpdateSansSerif(AtomicString("CustomSansSerif")));
-  EXPECT_FALSE(settings.UpdateCursive(AtomicString("CustomCursive")));
-  EXPECT_FALSE(settings.UpdateFantasy(AtomicString("CustomFantasy")));
-  EXPECT_FALSE(settings.UpdateMath(AtomicString("CustomMath")));
-  EXPECT_FALSE(settings.UpdateStandard(AtomicString("CustomArabicStandard"),
-                                       USCRIPT_ARABIC));
-  EXPECT_FALSE(
-      settings.UpdateFixed(AtomicString("CustomArabicFixed"), USCRIPT_ARABIC));
-  EXPECT_FALSE(
-      settings.UpdateSerif(AtomicString("CustomArabicSerif"), USCRIPT_ARABIC));
-  EXPECT_FALSE(settings.UpdateCursive(AtomicString("CustomArabicCursive"),
-                                      USCRIPT_ARABIC));
-  EXPECT_FALSE(settings.UpdateFantasy(AtomicString("CustomArabicFantasy"),
-                                      USCRIPT_ARABIC));
-  EXPECT_FALSE(
-      settings.UpdateMath(AtomicString("CustomArabicMath"), USCRIPT_ARABIC));
+  for (const FamilyNames& names : kFamilyNames) {
+    EXPECT_FALSE(settings.Update(names.family, AtomicString(names.common)));
+    EXPECT_FALSE(settings.Update(names.family, AtomicString(names.arabic),
+                                 USCRIPT_ARABIC));
+  }
 }
 
 TEST(GenericFontFamilySettingsTest, TestFontListNotChanged) {
   GenericFontFamilySettings settings;
 
-  EXPECT_TRUE(settings.Standard().empty());
+  EXPECT_TRUE(settings.Get(GenericFontFamily::kStandard).empty());
 
   // Returns the first available font if starts with ",".
-  settings.UpdateStandard(AtomicString(",not exist, Arial"));
-  EXPECT_EQ("Arial", settings.Standard());
+  settings.Update(GenericFontFamily::kStandard,
+                  AtomicString(",not exist, Arial"));
+  EXPECT_EQ("Arial", settings.Get(GenericFontFamily::kStandard));
   // Setting to the same value will result in no change.
-  EXPECT_FALSE(settings.UpdateStandard(AtomicString(",not exist, Arial")));
-  EXPECT_EQ("Arial", settings.Standard());
-  EXPECT_TRUE(settings.UpdateFixed(AtomicString(",not exist, Arial")));
+  EXPECT_FALSE(settings.Update(GenericFontFamily::kStandard,
+                               AtomicString(",not exist, Arial")));
+  EXPECT_EQ("Arial", settings.Get(GenericFontFamily::kStandard));
+  EXPECT_TRUE(settings.Update(GenericFontFamily::kFixed,
+                              AtomicString(",not exist, Arial")));
 }
 
 TEST(GenericFontFamilySettingsTest, TestScriptFontListNotChangedBeforeQuery) {
   GenericFontFamilySettings settings;
 
-  EXPECT_TRUE(settings.UpdateStandard(AtomicString(",not exist, Arial"),
-                                      USCRIPT_KATAKANA_OR_HIRAGANA));
+  EXPECT_TRUE(settings.Update(GenericFontFamily::kStandard,
+                              AtomicString(",not exist, Arial"),
+                              USCRIPT_KATAKANA_OR_HIRAGANA));
   // Repeatedly setting the same unresolved comma-separated font list before
   // the script is ever queried should report no change without resolving it.
-  EXPECT_FALSE(settings.UpdateStandard(AtomicString(",not exist, Arial"),
-                                       USCRIPT_KATAKANA_OR_HIRAGANA));
-  EXPECT_EQ("Arial", settings.Standard(USCRIPT_KATAKANA_OR_HIRAGANA));
-  EXPECT_FALSE(settings.UpdateStandard(AtomicString(",not exist, Arial"),
-                                       USCRIPT_KATAKANA_OR_HIRAGANA));
+  EXPECT_FALSE(settings.Update(GenericFontFamily::kStandard,
+                               AtomicString(",not exist, Arial"),
+                               USCRIPT_KATAKANA_OR_HIRAGANA));
+  EXPECT_EQ("Arial", settings.Get(GenericFontFamily::kStandard,
+                                  USCRIPT_KATAKANA_OR_HIRAGANA));
+  EXPECT_FALSE(settings.Update(GenericFontFamily::kStandard,
+                               AtomicString(",not exist, Arial"),
+                               USCRIPT_KATAKANA_OR_HIRAGANA));
 
   // Updating an unresolved list whose first-available font is already cached to
   // another cached list that resolves to the same font should also report no
   // change.
-  EXPECT_TRUE(settings.UpdateStandard(AtomicString(",also not exist, Arial"),
-                                      USCRIPT_COMMON));
-  EXPECT_EQ("Arial", settings.Standard(USCRIPT_COMMON));
-  EXPECT_TRUE(settings.UpdateStandard(AtomicString(",not exist, Arial"),
-                                      USCRIPT_SIMPLIFIED_HAN));
-  EXPECT_FALSE(settings.UpdateStandard(AtomicString(",also not exist, Arial"),
-                                       USCRIPT_SIMPLIFIED_HAN));
+  EXPECT_TRUE(settings.Update(GenericFontFamily::kStandard,
+                              AtomicString(",also not exist, Arial"),
+                              USCRIPT_COMMON));
+  EXPECT_EQ("Arial",
+            settings.Get(GenericFontFamily::kStandard, USCRIPT_COMMON));
+  EXPECT_TRUE(settings.Update(GenericFontFamily::kStandard,
+                              AtomicString(",not exist, Arial"),
+                              USCRIPT_SIMPLIFIED_HAN));
+  EXPECT_FALSE(settings.Update(GenericFontFamily::kStandard,
+                               AtomicString(",also not exist, Arial"),
+                               USCRIPT_SIMPLIFIED_HAN));
 
-  // Also verify Fixed() with "Osaka" (which returns "Osaka-Mono" on macOS).
+  // Also verify kFixed with "Osaka" (which returns "Osaka-Mono" on macOS).
   AtomicString fixed_list(",Osaka, not exist");
-  EXPECT_TRUE(settings.UpdateFixed(fixed_list, USCRIPT_KATAKANA_OR_HIRAGANA));
-  EXPECT_FALSE(settings.UpdateFixed(fixed_list, USCRIPT_KATAKANA_OR_HIRAGANA));
+  EXPECT_TRUE(settings.Update(GenericFontFamily::kFixed, fixed_list,
+                              USCRIPT_KATAKANA_OR_HIRAGANA));
+  EXPECT_FALSE(settings.Update(GenericFontFamily::kFixed, fixed_list,
+                               USCRIPT_KATAKANA_OR_HIRAGANA));
 #if BUILDFLAG(IS_MAC)
-  EXPECT_EQ("Osaka-Mono", settings.Fixed(USCRIPT_KATAKANA_OR_HIRAGANA));
+  EXPECT_EQ("Osaka-Mono", settings.Get(GenericFontFamily::kFixed,
+                                       USCRIPT_KATAKANA_OR_HIRAGANA));
 #else
-  EXPECT_EQ("Osaka", settings.Fixed(USCRIPT_KATAKANA_OR_HIRAGANA));
+  EXPECT_EQ("Osaka", settings.Get(GenericFontFamily::kFixed,
+                                  USCRIPT_KATAKANA_OR_HIRAGANA));
 #endif
-  EXPECT_FALSE(settings.UpdateFixed(fixed_list, USCRIPT_KATAKANA_OR_HIRAGANA));
+  EXPECT_FALSE(settings.Update(GenericFontFamily::kFixed, fixed_list,
+                               USCRIPT_KATAKANA_OR_HIRAGANA));
 }
 
 TEST(GenericFontFamilySettingsTest, ArabicNastaliqFallbackToArabic) {
   GenericFontFamilySettings settings;
-  settings.UpdateStandard(AtomicString("CustomStandard"));
-  settings.UpdateStandard(AtomicString("CustomArabicStandard"), USCRIPT_ARABIC);
+  settings.Update(GenericFontFamily::kStandard, AtomicString("CustomStandard"));
+  settings.Update(GenericFontFamily::kStandard,
+                  AtomicString("CustomArabicStandard"), USCRIPT_ARABIC);
 
   {
     ScopedNastaliqScriptForTest scoped_feature(true);
     // When USCRIPT_ARABIC_NASTALIQ is not set, it falls back to USCRIPT_ARABIC.
-    EXPECT_EQ("CustomArabicStandard",
-              settings.Standard(USCRIPT_ARABIC_NASTALIQ));
+    EXPECT_EQ("CustomArabicStandard", settings.Get(GenericFontFamily::kStandard,
+                                                   USCRIPT_ARABIC_NASTALIQ));
 
     // When USCRIPT_ARABIC_NASTALIQ is explicitly set, it takes precedence.
-    settings.UpdateStandard(AtomicString("CustomNastaliqStandard"),
-                            USCRIPT_ARABIC_NASTALIQ);
-    EXPECT_EQ("CustomNastaliqStandard",
-              settings.Standard(USCRIPT_ARABIC_NASTALIQ));
-    EXPECT_EQ("CustomArabicStandard", settings.Standard(USCRIPT_ARABIC));
+    settings.Update(GenericFontFamily::kStandard,
+                    AtomicString("CustomNastaliqStandard"),
+                    USCRIPT_ARABIC_NASTALIQ);
+    EXPECT_EQ(
+        "CustomNastaliqStandard",
+        settings.Get(GenericFontFamily::kStandard, USCRIPT_ARABIC_NASTALIQ));
+    EXPECT_EQ("CustomArabicStandard",
+              settings.Get(GenericFontFamily::kStandard, USCRIPT_ARABIC));
 
     // Clearing USCRIPT_ARABIC_NASTALIQ falls back to USCRIPT_ARABIC again.
-    settings.UpdateStandard(g_empty_atom, USCRIPT_ARABIC_NASTALIQ);
-    EXPECT_EQ("CustomArabicStandard",
-              settings.Standard(USCRIPT_ARABIC_NASTALIQ));
+    settings.Update(GenericFontFamily::kStandard, g_empty_atom,
+                    USCRIPT_ARABIC_NASTALIQ);
+    EXPECT_EQ("CustomArabicStandard", settings.Get(GenericFontFamily::kStandard,
+                                                   USCRIPT_ARABIC_NASTALIQ));
   }
 
   // When NastaliqScript is disabled, USCRIPT_ARABIC_NASTALIQ falls back
   // directly to USCRIPT_COMMON.
   ScopedNastaliqScriptForTest scoped_feature(false);
-  EXPECT_EQ("CustomStandard", settings.Standard(USCRIPT_ARABIC_NASTALIQ));
+  EXPECT_EQ("CustomStandard", settings.Get(GenericFontFamily::kStandard,
+                                           USCRIPT_ARABIC_NASTALIQ));
 }
 
 }  // namespace blink

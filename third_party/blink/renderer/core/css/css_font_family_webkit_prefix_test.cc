@@ -48,7 +48,8 @@ class CSSFontFamilyWebKitPrefixTest : public SimTest {
 
   void SetUp() override {
     SimTest::SetUp();
-    m_standard_font = GetGenericGenericFontFamilySettings().Standard();
+    m_standard_font =
+        GetGenericGenericFontFamilySettings().Get(GenericFontFamily::kStandard);
 #if BUILDFLAG(IS_WIN)
     // An extra step is required to ensure that the system font is configured.
     // TODO(crbug.com/969622): Remove this.
@@ -58,7 +59,8 @@ class CSSFontFamilyWebKitPrefixTest : public SimTest {
   }
 
   void TearDown() override {
-    GetGenericGenericFontFamilySettings().UpdateStandard(m_standard_font);
+    GetGenericGenericFontFamilySettings().Update(GenericFontFamily::kStandard,
+                                                 m_standard_font);
     SimTest::TearDown();
   }
 
@@ -72,7 +74,8 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
       WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
 
   // If empty standard font is specified, counter is never triggered.
-  GetGenericGenericFontFamilySettings().UpdateStandard(g_empty_atom);
+  GetGenericGenericFontFamilySettings().Update(GenericFontFamily::kStandard,
+                                               g_empty_atom);
   LoadPageWithFontFamilyValue("initial");
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
@@ -88,8 +91,8 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
 
   // This counter is triggered in FontBuilder when -webkit-body is replaced with
   // a non-empty GenericFontFamilySettings's standard font.
-  GetGenericGenericFontFamilySettings().UpdateStandard(
-      AtomicString("MyStandardFont"));
+  GetGenericGenericFontFamilySettings().Update(GenericFontFamily::kStandard,
+                                               AtomicString("MyStandardFont"));
   LoadPageWithFontFamilyValue("initial");
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
@@ -104,7 +107,8 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
       WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
 
   // If empty standard font is specified, counter is never triggered.
-  GetGenericGenericFontFamilySettings().UpdateStandard(g_empty_atom);
+  GetGenericGenericFontFamilySettings().Update(GenericFontFamily::kStandard,
+                                               g_empty_atom);
 
   for (String font_family_value :
        {"initial", "-webkit-body", "-webkit-body, serif",
@@ -120,8 +124,8 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
   // Implementation via FontDescription::GenericFamilyType is weird, here the
   // last specified generic family is set by FontBuilder. So FontSelector will
   // only trigger the counter if -webkit-body is at the last position.
-  GetGenericGenericFontFamilySettings().UpdateStandard(
-      AtomicString("MyStandardFont"));
+  GetGenericGenericFontFamilySettings().Update(GenericFontFamily::kStandard,
+                                               AtomicString("MyStandardFont"));
   LoadPageWithFontFamilyValue("initial");
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));

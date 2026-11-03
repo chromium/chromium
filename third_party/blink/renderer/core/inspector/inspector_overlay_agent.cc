@@ -1557,20 +1557,8 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
   Settings& settings = GetFrame()->GetPage()->GetSettings();
   Settings& overlay_settings = overlay_page_->GetSettings();
 
-  overlay_settings.GetGenericFontFamilySettings().UpdateStandard(
-      settings.GetGenericFontFamilySettings().Standard());
-  overlay_settings.GetGenericFontFamilySettings().UpdateFixed(
-      settings.GetGenericFontFamilySettings().Fixed());
-  overlay_settings.GetGenericFontFamilySettings().UpdateSerif(
-      settings.GetGenericFontFamilySettings().Serif());
-  overlay_settings.GetGenericFontFamilySettings().UpdateSansSerif(
-      settings.GetGenericFontFamilySettings().SansSerif());
-  overlay_settings.GetGenericFontFamilySettings().UpdateCursive(
-      settings.GetGenericFontFamilySettings().Cursive());
-  overlay_settings.GetGenericFontFamilySettings().UpdateFantasy(
-      settings.GetGenericFontFamilySettings().Fantasy());
-  overlay_settings.GetGenericFontFamilySettings().UpdateMath(
-      settings.GetGenericFontFamilySettings().Math());
+  overlay_settings.GetGenericFontFamilySettings() =
+      settings.GetGenericFontFamilySettings();
   overlay_settings.SetMinimumFontSize(settings.GetMinimumFontSize());
   overlay_settings.SetMinimumLogicalFontSize(
       settings.GetMinimumLogicalFontSize());

@@ -265,52 +265,6 @@ class EmptyEventListener final : public NativeEventListener {
   void Invoke(ExecutionContext* execution_context, Event*) override {}
 };
 
-typedef void (*SetFontFamilyWrapper)(blink::WebSettings*,
-                                     const std::u16string&,
-                                     UScriptCode);
-
-void SetStandardFontFamilyWrapper(WebSettings* settings,
-                                  const std::u16string& font,
-                                  UScriptCode script) {
-  settings->SetStandardFontFamily(WebString::FromUtf16(font), script);
-}
-
-void SetFixedFontFamilyWrapper(WebSettings* settings,
-                               const std::u16string& font,
-                               UScriptCode script) {
-  settings->SetFixedFontFamily(WebString::FromUtf16(font), script);
-}
-
-void SetSerifFontFamilyWrapper(WebSettings* settings,
-                               const std::u16string& font,
-                               UScriptCode script) {
-  settings->SetSerifFontFamily(WebString::FromUtf16(font), script);
-}
-
-void SetSansSerifFontFamilyWrapper(WebSettings* settings,
-                                   const std::u16string& font,
-                                   UScriptCode script) {
-  settings->SetSansSerifFontFamily(WebString::FromUtf16(font), script);
-}
-
-void SetCursiveFontFamilyWrapper(WebSettings* settings,
-                                 const std::u16string& font,
-                                 UScriptCode script) {
-  settings->SetCursiveFontFamily(WebString::FromUtf16(font), script);
-}
-
-void SetFantasyFontFamilyWrapper(WebSettings* settings,
-                                 const std::u16string& font,
-                                 UScriptCode script) {
-  settings->SetFantasyFontFamily(WebString::FromUtf16(font), script);
-}
-
-void SetMathFontFamilyWrapper(WebSettings* settings,
-                              const std::u16string& font,
-                              UScriptCode script) {
-  settings->SetMathFontFamily(WebString::FromUtf16(font), script);
-}
-
 // If |scriptCode| is a member of a family of "similar" script codes, returns
 // the script code in that family that is used by WebKit for font selection
 // purposes.  For example, USCRIPT_KATAKANA_OR_HIRAGANA and USCRIPT_JAPANESE are
@@ -334,13 +288,14 @@ UScriptCode GetScriptForWebSettings(UScriptCode scriptCode) {
 }
 
 void ApplyFontsFromMap(const web_pref::ScriptFontFamilyMap& map,
-                       SetFontFamilyWrapper setter,
+                       GenericFontFamily family,
                        WebSettings* settings) {
   for (auto& it : map) {
     int32_t script = u_getPropertyValueEnum(UCHAR_SCRIPT, (it.first).c_str());
     if (script >= 0 && script < USCRIPT_CODE_LIMIT) {
       UScriptCode code = static_cast<UScriptCode>(script);
-      (*setter)(settings, it.second, GetScriptForWebSettings(code));
+      settings->SetGenericFontFamily(family, WebString::FromUtf16(it.second),
+                                     GetScriptForWebSettings(code));
     }
   }
 }
@@ -1622,18 +1577,18 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   WebViewImpl* web_view_impl = To<WebViewImpl>(web_view);
   WebSettings* settings = web_view->GetSettings();
   ApplyFontsFromMap(prefs.standard_font_family_map,
-                    SetStandardFontFamilyWrapper, settings);
-  ApplyFontsFromMap(prefs.fixed_font_family_map, SetFixedFontFamilyWrapper,
+                    GenericFontFamily::kStandard, settings);
+  ApplyFontsFromMap(prefs.fixed_font_family_map, GenericFontFamily::kFixed,
                     settings);
-  ApplyFontsFromMap(prefs.serif_font_family_map, SetSerifFontFamilyWrapper,
+  ApplyFontsFromMap(prefs.serif_font_family_map, GenericFontFamily::kSerif,
                     settings);
   ApplyFontsFromMap(prefs.sans_serif_font_family_map,
-                    SetSansSerifFontFamilyWrapper, settings);
-  ApplyFontsFromMap(prefs.cursive_font_family_map, SetCursiveFontFamilyWrapper,
+                    GenericFontFamily::kSansSerif, settings);
+  ApplyFontsFromMap(prefs.cursive_font_family_map, GenericFontFamily::kCursive,
                     settings);
-  ApplyFontsFromMap(prefs.fantasy_font_family_map, SetFantasyFontFamilyWrapper,
+  ApplyFontsFromMap(prefs.fantasy_font_family_map, GenericFontFamily::kFantasy,
                     settings);
-  ApplyFontsFromMap(prefs.math_font_family_map, SetMathFontFamilyWrapper,
+  ApplyFontsFromMap(prefs.math_font_family_map, GenericFontFamily::kMath,
                     settings);
   settings->SetDefaultFontSize(prefs.default_font_size);
   settings->SetDefaultFixedFontSize(prefs.default_fixed_font_size);
@@ -1964,11 +1919,14 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       // trigger the expensive SkFontMgr initialization (parsing fonts.xml).
       // Pre-warming additional families is redundant.
 #if !BUILDFLAG(IS_ANDROID)
-      if (const AtomicString& serif = font_settings.Serif(); !serif.empty()) {
+      if (const AtomicString& serif =
+              font_settings.Get(GenericFontFamily::kSerif);
+          !serif.empty()) {
         prewarmer->PrewarmFamily(serif);
       }
 #endif
-      if (const AtomicString& sans_serif = font_settings.SansSerif();
+      if (const AtomicString& sans_serif =
+              font_settings.Get(GenericFontFamily::kSansSerif);
           !sans_serif.empty()) {
         prewarmer->PrewarmFamily(sans_serif);
       }

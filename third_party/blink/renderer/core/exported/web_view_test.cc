@@ -6910,8 +6910,8 @@ TEST_F(WebViewTest, ApplyWebPreferencesSkipsPrewarmingEmptyFontFamilies) {
     test::ScopedTestFontPrewarmer prewarmer;
 #endif
     WebView::ApplyWebPreferences(empty_font_prefs, web_view_impl);
-    EXPECT_TRUE(font_settings.Serif().empty());
-    EXPECT_TRUE(font_settings.SansSerif().empty());
+    EXPECT_TRUE(font_settings.Get(GenericFontFamily::kSerif).empty());
+    EXPECT_TRUE(font_settings.Get(GenericFontFamily::kSansSerif).empty());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(prewarmer.PrewarmedFamilyNames().empty());
 #endif
@@ -6923,8 +6923,8 @@ TEST_F(WebViewTest, ApplyWebPreferencesSkipsPrewarmingEmptyFontFamilies) {
 #endif
     web_pref::WebPreferences default_prefs;
     WebView::ApplyWebPreferences(default_prefs, web_view_impl);
-    EXPECT_EQ("Times New Roman", font_settings.Serif());
-    EXPECT_EQ("Arial", font_settings.SansSerif());
+    EXPECT_EQ("Times New Roman", font_settings.Get(GenericFontFamily::kSerif));
+    EXPECT_EQ("Arial", font_settings.Get(GenericFontFamily::kSansSerif));
 #if BUILDFLAG(IS_WIN)
     ASSERT_EQ(2u, prewarmer.PrewarmedFamilyNames().size());
     EXPECT_EQ("Times New Roman", prewarmer.PrewarmedFamilyNames()[0]);

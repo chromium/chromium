@@ -128,6 +128,7 @@ source_set("blink_headers") {
     "platform/child_url_loader_factory_bundle.h",
     "platform/cross_variant_mojo_util.h",
     "platform/file_path_conversion.h",
+    "platform/generic_font_family.h",
     "platform/interface_registry.h",
     "platform/media/key_system_config_selector.h",
     "platform/media/video_capture.h",

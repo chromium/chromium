@@ -1780,6 +1780,7 @@ protocol::Response InspectorPageAgent::setFontFamilies(
     DevToolsEmulator& emulator,
     const protocol::Array<protocol::Page::ScriptFontFamilies>&
         script_font_families) {
+  Vector<DevToolsEmulator::GenericFontFamilyOverride> overrides;
   for (const auto& entry : script_font_families) {
     UScriptCode script = ScriptNameToCode(entry->getScript());
     if (script == USCRIPT_INVALID_CODE) {
@@ -1788,37 +1789,42 @@ protocol::Response InspectorPageAgent::setFontFamilies(
     }
     auto* font_families = entry->getFontFamilies();
     if (font_families->hasStandard()) {
-      emulator.SetStandardFontFamilyOverride(
-          AtomicString(font_families->getStandard(String())), script);
+      overrides.emplace_back(GenericFontFamily::kStandard,
+                             AtomicString(font_families->getStandard(String())),
+                             script);
     }
     if (font_families->hasFixed()) {
-      emulator.SetFixedFontFamilyOverride(
-          AtomicString(font_families->getFixed(String())), script);
+      overrides.emplace_back(GenericFontFamily::kFixed,
+                             AtomicString(font_families->getFixed(String())),
+                             script);
     }
     if (font_families->hasSerif()) {
-      emulator.SetSerifFontFamilyOverride(
-          AtomicString(font_families->getSerif(String())), script);
+      overrides.emplace_back(GenericFontFamily::kSerif,
+                             AtomicString(font_families->getSerif(String())),
+                             script);
     }
     if (font_families->hasSansSerif()) {
-      emulator.SetSansSerifFontFamilyOverride(
+      overrides.emplace_back(
+          GenericFontFamily::kSansSerif,
           AtomicString(font_families->getSansSerif(String())), script);
     }
     if (font_families->hasCursive()) {
-      emulator.SetCursiveFontFamilyOverride(
-          AtomicString(font_families->getCursive(String())), script);
+      overrides.emplace_back(GenericFontFamily::kCursive,
+                             AtomicString(font_families->getCursive(String())),
+                             script);
     }
     if (font_families->hasFantasy()) {
-      emulator.SetFantasyFontFamilyOverride(
-          AtomicString(font_families->getFantasy(String())), script);
+      overrides.emplace_back(GenericFontFamily::kFantasy,
+                             AtomicString(font_families->getFantasy(String())),
+                             script);
     }
     if (font_families->hasMath()) {
-      emulator.SetMathFontFamilyOverride(
-          AtomicString(font_families->getMath(String())), script);
+      overrides.emplace_back(GenericFontFamily::kMath,
+                             AtomicString(font_families->getMath(String())),
+                             script);
     }
   }
-  if (Settings* settings = inspected_frames_->Root()->GetSettings()) {
-    settings->NotifyGenericFontFamilyChange();
-  }
+  emulator.SetGenericFontFamilyOverrides(overrides);
   return protocol::Response::Success();
 }
 

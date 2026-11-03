@@ -7,6 +7,7 @@
 
 #include <unicode/uscript.h>
 
+#include <array>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -61,13 +62,9 @@ class CORE_EXPORT DevToolsEmulator final
   void SetViewportMetaEnabled(bool);
   void SetTextSizeAdjustEnabled(bool);
   void SetForceDarkModeEnabled(bool);
-  void SetStandardFontFamily(const AtomicString&, UScriptCode);
-  void SetFixedFontFamily(const AtomicString&, UScriptCode);
-  void SetSerifFontFamily(const AtomicString&, UScriptCode);
-  void SetSansSerifFontFamily(const AtomicString&, UScriptCode);
-  void SetCursiveFontFamily(const AtomicString&, UScriptCode);
-  void SetFantasyFontFamily(const AtomicString&, UScriptCode);
-  void SetMathFontFamily(const AtomicString&, UScriptCode);
+  void SetGenericFontFamily(GenericFontFamily,
+                            const AtomicString&,
+                            UScriptCode);
   void SetDefaultFontSize(int);
   void SetDefaultFixedFontSize(int);
 
@@ -87,15 +84,12 @@ class CORE_EXPORT DevToolsEmulator final
   void SetAutoDarkModeOverride(bool);
   void ResetAutoDarkModeOverride();
 
-  // Note: caller must also call Settings::NotifyGenericFontFamilyChange()
-  // after applying all overrides.
-  void SetStandardFontFamilyOverride(const AtomicString&, UScriptCode);
-  void SetFixedFontFamilyOverride(const AtomicString&, UScriptCode);
-  void SetSerifFontFamilyOverride(const AtomicString&, UScriptCode);
-  void SetSansSerifFontFamilyOverride(const AtomicString&, UScriptCode);
-  void SetCursiveFontFamilyOverride(const AtomicString&, UScriptCode);
-  void SetFantasyFontFamilyOverride(const AtomicString&, UScriptCode);
-  void SetMathFontFamilyOverride(const AtomicString&, UScriptCode);
+  struct GenericFontFamilyOverride {
+    GenericFontFamily family;
+    AtomicString name;
+    UScriptCode script;
+  };
+  void SetGenericFontFamilyOverrides(const Vector<GenericFontFamilyOverride>&);
   void SetDefaultFontSizeOverride(int);
   void SetDefaultFixedFontSizeOverride(int);
   void ResetFontOverrides();
@@ -217,13 +211,9 @@ class CORE_EXPORT DevToolsEmulator final
   bool accessibility_font_scale_emulation_enabled_;
 
   std::optional<GenericFontFamilySettings> embedder_font_families_;
-  Vector<UScriptCode> standard_font_family_override_scripts_;
-  Vector<UScriptCode> fixed_font_family_override_scripts_;
-  Vector<UScriptCode> serif_font_family_override_scripts_;
-  Vector<UScriptCode> sans_serif_font_family_override_scripts_;
-  Vector<UScriptCode> cursive_font_family_override_scripts_;
-  Vector<UScriptCode> fantasy_font_family_override_scripts_;
-  Vector<UScriptCode> math_font_family_override_scripts_;
+  std::array<Vector<UScriptCode>,
+             static_cast<size_t>(GenericFontFamily::kMaxValue) + 1>
+      font_family_override_scripts_;
   int embedder_default_font_size_ = 0;
   int embedder_default_fixed_font_size_ = 0;
   std::optional<int> default_font_size_override_;

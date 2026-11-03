@@ -39,7 +39,6 @@
 namespace blink {
 
 class ExceptionState;
-class GenericFontFamilySettings;
 
 class InternalSettings final : public InternalSettingsGenerated {
   DEFINE_WRAPPERTYPEINFO();
@@ -74,11 +73,9 @@ class InternalSettings final : public InternalSettingsGenerated {
   void setAccentColor(const String& color_value);
 
  private:
-  void SetFontFamily(
-      const AtomicString& family,
-      const String& script,
-      bool (GenericFontFamilySettings::*update_method)(const AtomicString&,
-                                                       UScriptCode));
+  void SetFontFamily(GenericFontFamily generic_family,
+                     const AtomicString& family,
+                     const String& script);
 
   GenericFontFamilySettings generic_font_family_settings_backup_;
   // Needed because the original accent color can be std::nullopt.

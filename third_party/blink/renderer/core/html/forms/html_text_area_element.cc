@@ -155,7 +155,8 @@ HTMLTextAreaElement::HTMLTextAreaElement(Document& document)
       // Prewarm 'monospace', the default font family for `<textarea>`. The
       // default language should be fine for this purpose because most users set
       // the same family for all languages.
-      FontCache::PrewarmFamily(settings->GetGenericFontFamilySettings().Fixed(
+      FontCache::PrewarmFamily(settings->GetGenericFontFamilySettings().Get(
+          GenericFontFamily::kFixed,
           LayoutLocale::GetDefault().GetScriptForFont()));
       g_is_default_font_prewarmed = true;
     }

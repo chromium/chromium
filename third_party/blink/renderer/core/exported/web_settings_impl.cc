@@ -58,14 +58,10 @@ void WebSettingsImpl::SetFromStrings(const WebString& name,
   settings_->SetFromStrings(name, value);
 }
 
-void WebSettingsImpl::SetStandardFontFamily(const WebString& font,
-                                            UScriptCode script) {
-  dev_tools_emulator_->SetStandardFontFamily(font, script);
-}
-
-void WebSettingsImpl::SetFixedFontFamily(const WebString& font,
-                                         UScriptCode script) {
-  dev_tools_emulator_->SetFixedFontFamily(font, script);
+void WebSettingsImpl::SetGenericFontFamily(GenericFontFamily family,
+                                           const WebString& font,
+                                           UScriptCode script) {
+  dev_tools_emulator_->SetGenericFontFamily(family, font, script);
 }
 
 void WebSettingsImpl::SetNetworkQuietTimeout(double timeout) {
@@ -82,31 +78,6 @@ void WebSettingsImpl::SetForceZeroLayoutHeight(bool enabled) {
 
 void WebSettingsImpl::SetFullscreenSupported(bool enabled) {
   settings_->SetFullscreenSupported(enabled);
-}
-
-void WebSettingsImpl::SetSerifFontFamily(const WebString& font,
-                                         UScriptCode script) {
-  dev_tools_emulator_->SetSerifFontFamily(font, script);
-}
-
-void WebSettingsImpl::SetSansSerifFontFamily(const WebString& font,
-                                             UScriptCode script) {
-  dev_tools_emulator_->SetSansSerifFontFamily(font, script);
-}
-
-void WebSettingsImpl::SetCursiveFontFamily(const WebString& font,
-                                           UScriptCode script) {
-  dev_tools_emulator_->SetCursiveFontFamily(font, script);
-}
-
-void WebSettingsImpl::SetFantasyFontFamily(const WebString& font,
-                                           UScriptCode script) {
-  dev_tools_emulator_->SetFantasyFontFamily(font, script);
-}
-
-void WebSettingsImpl::SetMathFontFamily(const WebString& font,
-                                        UScriptCode script) {
-  dev_tools_emulator_->SetMathFontFamily(font, script);
 }
 
 void WebSettingsImpl::SetDefaultFontSize(int size) {

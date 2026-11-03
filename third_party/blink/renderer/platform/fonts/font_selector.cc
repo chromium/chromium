@@ -72,21 +72,21 @@ AtomicString FontSelector::FamilyNameFromSettings(
   UScriptCode script = font_description.GetScriptForFont();
   if (font_description.GenericFamily() == FontDescription::kStandardFamily ||
       font_description.GenericFamily() == FontDescription::kWebkitBodyFamily)
-    return settings.Standard(script);
+    return settings.Get(GenericFontFamily::kStandard, script);
   if (generic_family_name == font_family_names::kSerif)
-    return settings.Serif(script);
+    return settings.Get(GenericFontFamily::kSerif, script);
   if (generic_family_name == font_family_names::kSansSerif)
-    return settings.SansSerif(script);
+    return settings.Get(GenericFontFamily::kSansSerif, script);
   if (generic_family_name == font_family_names::kCursive)
-    return settings.Cursive(script);
+    return settings.Get(GenericFontFamily::kCursive, script);
   if (generic_family_name == font_family_names::kFantasy)
-    return settings.Fantasy(script);
+    return settings.Get(GenericFontFamily::kFantasy, script);
   if (generic_family_name == font_family_names::kMonospace)
-    return settings.Fixed(script);
+    return settings.Get(GenericFontFamily::kFixed, script);
   if (generic_family_name == font_family_names::kWebkitStandard)
-    return settings.Standard(script);
+    return settings.Get(GenericFontFamily::kStandard, script);
   if (generic_family_name == font_family_names::kMath) {
-    return settings.Math(script);
+    return settings.Get(GenericFontFamily::kMath, script);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   return g_empty_atom;

@@ -68,7 +68,8 @@ AtomicString FontBuilder::StandardFontFamilyName() const {
   if (document_) {
     Settings* settings = document_->GetSettings();
     if (settings) {
-      return settings->GetGenericFontFamilySettings().Standard();
+      return settings->GetGenericFontFamilySettings().Get(
+          GenericFontFamily::kStandard);
     }
   }
   return AtomicString();

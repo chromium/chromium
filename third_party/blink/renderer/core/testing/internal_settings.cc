@@ -90,54 +90,52 @@ void InternalSettings::setViewportStyle(const String& style,
   }
 }
 
-void InternalSettings::SetFontFamily(
-    const AtomicString& family,
-    const String& script,
-    bool (GenericFontFamilySettings::*update_method)(const AtomicString&,
-                                                     UScriptCode)) {
+void InternalSettings::SetFontFamily(GenericFontFamily generic_family,
+                                     const AtomicString& family,
+                                     const String& script) {
   UScriptCode code = ScriptNameToCode(script);
   if (code == USCRIPT_INVALID_CODE) {
     return;
   }
-  if ((GetSettings().GetGenericFontFamilySettings().*update_method)(family,
-                                                                    code)) {
+  if (GetSettings().GetGenericFontFamilySettings().Update(generic_family,
+                                                          family, code)) {
     GetSettings().NotifyGenericFontFamilyChange();
   }
 }
 
 void InternalSettings::setStandardFontFamily(const AtomicString& family,
                                              const String& script) {
-  SetFontFamily(family, script, &GenericFontFamilySettings::UpdateStandard);
+  SetFontFamily(GenericFontFamily::kStandard, family, script);
 }
 
 void InternalSettings::setSerifFontFamily(const AtomicString& family,
                                           const String& script) {
-  SetFontFamily(family, script, &GenericFontFamilySettings::UpdateSerif);
+  SetFontFamily(GenericFontFamily::kSerif, family, script);
 }
 
 void InternalSettings::setSansSerifFontFamily(const AtomicString& family,
                                               const String& script) {
-  SetFontFamily(family, script, &GenericFontFamilySettings::UpdateSansSerif);
+  SetFontFamily(GenericFontFamily::kSansSerif, family, script);
 }
 
 void InternalSettings::setFixedFontFamily(const AtomicString& family,
                                           const String& script) {
-  SetFontFamily(family, script, &GenericFontFamilySettings::UpdateFixed);
+  SetFontFamily(GenericFontFamily::kFixed, family, script);
 }
 
 void InternalSettings::setCursiveFontFamily(const AtomicString& family,
                                             const String& script) {
-  SetFontFamily(family, script, &GenericFontFamilySettings::UpdateCursive);
+  SetFontFamily(GenericFontFamily::kCursive, family, script);
 }
 
 void InternalSettings::setFantasyFontFamily(const AtomicString& family,
                                             const String& script) {
-  SetFontFamily(family, script, &GenericFontFamilySettings::UpdateFantasy);
+  SetFontFamily(GenericFontFamily::kFantasy, family, script);
 }
 
 void InternalSettings::setMathFontFamily(const AtomicString& family,
                                          const String& script) {
-  SetFontFamily(family, script, &GenericFontFamilySettings::UpdateMath);
+  SetFontFamily(GenericFontFamily::kMath, family, script);
 }
 
 void InternalSettings::setTextTrackKindUserPreference(

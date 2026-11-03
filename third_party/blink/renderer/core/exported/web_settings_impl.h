@@ -74,8 +74,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetClobberUserAgentInitialScaleQuirk(bool) override;
   void SetCookieEnabled(bool) override;
   void SetCaretBrowsingEnabled(bool) override;
-  void SetCursiveFontFamily(const WebString&,
-                            UScriptCode = USCRIPT_COMMON) override;
   void SetDNSPrefetchingEnabled(bool) override;
   void SetDOMPasteAllowed(bool) override;
   void SetDefaultFixedFontSize(int) override;
@@ -95,12 +93,9 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetInvertedColors(bool) override;
   void SetWebGL1Enabled(bool) override;
   void SetWebGL2Enabled(bool) override;
-  void SetFantasyFontFamily(const WebString&,
+  void SetGenericFontFamily(GenericFontFamily,
+                            const WebString&,
                             UScriptCode = USCRIPT_COMMON) override;
-  void SetMathFontFamily(const WebString&,
-                         UScriptCode = USCRIPT_COMMON) override;
-  void SetFixedFontFamily(const WebString&,
-                          UScriptCode = USCRIPT_COMMON) override;
   void SetNetworkQuietTimeout(double timeout) override;
   void SetForceMainWorldInitialization(bool) override;
   void SetForceZeroLayoutHeight(bool) override;
@@ -149,13 +144,9 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetRenderVSyncNotificationEnabled(bool) override;
   void SetReportScreenSizeInPhysicalPixelsQuirk(bool) override;
   void SetRubberBandingOnCompositorThread(bool) override;
-  void SetSansSerifFontFamily(const WebString&,
-                              UScriptCode = USCRIPT_COMMON) override;
   void SetSelectTrailingWhitespaceEnabled(bool override) override;
   void SetSelectionIncludesAltImageText(bool) override;
   void SetSelectionStrategy(SelectionStrategyType) override;
-  void SetSerifFontFamily(const WebString&,
-                          UScriptCode = USCRIPT_COMMON) override;
   void SetShouldPrintBackgrounds(bool) override;
   void SetShouldClearDocumentBackground(bool) override;
   void SetShowContextMenuOnMouseUp(bool) override;
@@ -164,8 +155,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetSmoothScrollForFindEnabled(bool) override;
   void SetSpatialNavigationEnabled(bool) override;
   void SetSpellCheckEnabledByDefault(bool) override;
-  void SetStandardFontFamily(const WebString&,
-                             UScriptCode = USCRIPT_COMMON) override;
   void SetStrictMixedContentChecking(bool) override;
   void SetStrictMixedContentCheckingForPlugin(bool) override;
   void SetStrictlyBlockBlockableMixedContent(bool) override;

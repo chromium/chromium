@@ -31,14 +31,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_GENERIC_FONT_FAMILY_SETTINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_GENERIC_FONT_FAMILY_SETTINGS_H_
 
+#include <unicode/uscript.h>
+
+#include <array>
+
+#include "third_party/blink/public/platform/generic_font_family.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
-#include <unicode/uscript.h>
 
 namespace blink {
 
@@ -50,28 +53,17 @@ class PLATFORM_EXPORT GenericFontFamilySettings {
 
   explicit GenericFontFamilySettings(const GenericFontFamilySettings&);
 
-  bool UpdateStandard(const AtomicString&, UScriptCode = USCRIPT_COMMON);
-  const AtomicString& Standard(UScriptCode = USCRIPT_COMMON) const;
-
-  // crbug.com/40535332. In the argument of UpdateFixed(), Osaka font should
-  // be represented as "Osaka", and Fixed() returns "Osaka-Mono" for it.
-  bool UpdateFixed(const AtomicString&, UScriptCode = USCRIPT_COMMON);
-  const AtomicString& Fixed(UScriptCode = USCRIPT_COMMON) const;
-
-  bool UpdateSerif(const AtomicString&, UScriptCode = USCRIPT_COMMON);
-  const AtomicString& Serif(UScriptCode = USCRIPT_COMMON) const;
-
-  bool UpdateSansSerif(const AtomicString&, UScriptCode = USCRIPT_COMMON);
-  const AtomicString& SansSerif(UScriptCode = USCRIPT_COMMON) const;
-
-  bool UpdateCursive(const AtomicString&, UScriptCode = USCRIPT_COMMON);
-  const AtomicString& Cursive(UScriptCode = USCRIPT_COMMON) const;
-
-  bool UpdateFantasy(const AtomicString&, UScriptCode = USCRIPT_COMMON);
-  const AtomicString& Fantasy(UScriptCode = USCRIPT_COMMON) const;
-
-  bool UpdateMath(const AtomicString&, UScriptCode = USCRIPT_COMMON);
-  const AtomicString& Math(UScriptCode = USCRIPT_COMMON) const;
+  // Returns whether the font family has changed. An empty family removes the
+  // entry for the script.
+  //
+  // crbug.com/40535332. For GenericFontFamily::kFixed, Osaka font should be
+  // represented as "Osaka" in the argument of Update(), and Get() returns
+  // "Osaka-Mono" for it.
+  bool Update(GenericFontFamily,
+              const AtomicString&,
+              UScriptCode = USCRIPT_COMMON);
+  const AtomicString& Get(GenericFontFamily,
+                          UScriptCode = USCRIPT_COMMON) const;
 
   // Only called by InternalSettings to clear font family maps.
   void Reset();
@@ -101,13 +93,12 @@ class PLATFORM_EXPORT GenericFontFamilySettings {
   bool ShouldUpdateFontFamily(const AtomicString& old_family,
                               const AtomicString& new_family) const;
 
-  ScriptFontFamilyMap standard_font_family_map_;
-  ScriptFontFamilyMap serif_font_family_map_;
-  ScriptFontFamilyMap fixed_font_family_map_;
-  ScriptFontFamilyMap sans_serif_font_family_map_;
-  ScriptFontFamilyMap cursive_font_family_map_;
-  ScriptFontFamilyMap fantasy_font_family_map_;
-  ScriptFontFamilyMap math_font_family_map_;
+  ScriptFontFamilyMap& MapFor(GenericFontFamily);
+  const ScriptFontFamilyMap& MapFor(GenericFontFamily) const;
+
+  std::array<ScriptFontFamilyMap,
+             static_cast<size_t>(GenericFontFamily::kMaxValue) + 1>
+      font_family_maps_;
 
   // For the given font families, caches the first available font. If none of
   // them is available, the value will be the first font of the given
