@@ -47,6 +47,24 @@
             ]
         }
     ],
+    "AIFuseboxIOSPlusButtonDesignIteration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_FakeboxContextualMenu",
+                    "enable_features": [
+                        "PlusButtonMenuInFakebox"
+                    ],
+                    "disable_features": [
+                        "ComposeboxPlusButtonBottomSheet"
+                    ]
+                }
+            ]
+        }
+    ],
     "ANGLEPurgeableBufferPool": [
         {
             "platforms": [
