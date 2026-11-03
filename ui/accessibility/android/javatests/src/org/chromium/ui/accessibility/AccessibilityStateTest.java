@@ -681,8 +681,7 @@ public class AccessibilityStateTest {
                 .onAnimatorDurationScaleChanged();
     }
 
-    @Test
-    public void testIsSamsungTalkBackEnabled_true() {
+    private void startTestWithSamsungTalkbackService() {
         AccessibilityServiceInfo samsungService =
                 new BuilderForTests()
                         .setId(
@@ -690,11 +689,30 @@ public class AccessibilityStateTest {
                                         + "com.samsung.android.marvin.talkback.TalkBackService")
                         .build();
         startTestWithService(samsungService);
+    }
+
+    @Test
+    public void testIsSamsungTalkBackEnabled_true() {
+        initializeAccessibilityState();
+        startTestWithSamsungTalkbackService();
 
         mDelegate.updateAccessibilityServices();
 
         Assert.assertTrue(AccessibilityState.isAnyAccessibilityServiceEnabled());
         Assert.assertTrue(AccessibilityState.isSamsungTalkBackEnabled());
+        Assert.assertTrue(AccessibilityState.isKnownScreenReaderEnabled());
+    }
+
+    @Test
+    public void testIsSamsungTalkBackEnabled_true_delegateNotInitialized() {
+        startTestWithSamsungTalkbackService();
+
+        AccessibilityState.setDelegateForTesting(null);
+        mDelegate = (AccessibilityStateDelegateImpl) AccessibilityState.getDelegate();
+        Assert.assertTrue(AccessibilityState.isSamsungTalkBackEnabled());
+
+        AccessibilityState.setDelegateForTesting(null);
+        mDelegate = (AccessibilityStateDelegateImpl) AccessibilityState.getDelegate();
         Assert.assertTrue(AccessibilityState.isKnownScreenReaderEnabled());
     }
 
@@ -736,7 +754,7 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    public void testIsSamsungTalkBackEnabled_transitionsNotifyNative() {
+    public void testIsSamsungTalkBackEnabled_transitions() {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
         AccessibilityServiceInfo samsungService =
                 new BuilderForTests()
@@ -748,29 +766,24 @@ public class AccessibilityStateTest {
         initializeAccessibilityState();
 
         Assert.assertFalse(AccessibilityState.isSamsungTalkBackEnabled());
-        Mockito.verify(mAccessibilityStateNatives).onSamsungTalkBackStateChanged(false);
 
-        // Enabling Samsung TalkBack should transition state and push `true` to native via observer.
+        // Enabling Samsung TalkBack should transition state via observer.
         AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(samsungService));
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Assert.assertTrue(AccessibilityState.isSamsungTalkBackEnabled());
-        Mockito.verify(mAccessibilityStateNatives).onSamsungTalkBackStateChanged(true);
 
-        // Disabling Samsung TalkBack should transition state and push `false` to native via
-        // observer.
+        // Disabling Samsung TalkBack should transition state via observer.
         AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, new ArrayList<>());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Assert.assertFalse(AccessibilityState.isSamsungTalkBackEnabled());
-        Mockito.verify(mAccessibilityStateNatives, Mockito.times(2))
-                .onSamsungTalkBackStateChanged(false);
     }
 
     @Test
-    public void testIsSamsungTalkBackEnabled_resumedUpdatesNative() {
+    public void testIsSamsungTalkBackEnabled_resumedUpdatesState() {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
         AccessibilityServiceInfo samsungService =
                 new BuilderForTests()
@@ -786,7 +799,6 @@ public class AccessibilityStateTest {
         initializeAccessibilityState();
 
         Assert.assertTrue(AccessibilityState.isSamsungTalkBackEnabled());
-        Mockito.verify(mAccessibilityStateNatives).onSamsungTalkBackStateChanged(true);
 
         // Move app to background.
         simulateActivityStateChange(
@@ -795,19 +807,16 @@ public class AccessibilityStateTest {
         // While in background, disable Samsung TalkBack.
         AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, new ArrayList<>());
-        Mockito.clearInvocations(mAccessibilityStateNatives);
 
-        // Resume app. Native should be notified of current (disabled) state on resume.
+        // Resume app. State should be updated to the current (disabled) state on resume.
         simulateActivityStateChange(
                 mockActivity, ActivityState.RESUMED, ApplicationState.HAS_RUNNING_ACTIVITIES);
 
         Assert.assertFalse(AccessibilityState.isSamsungTalkBackEnabled());
-        Mockito.verify(mAccessibilityStateNatives, Mockito.atLeastOnce())
-                .onSamsungTalkBackStateChanged(false);
     }
 
     @Test
-    public void testIsSamsungTalkBackEnabled_resumedWithPollingUpdatesNative() {
+    public void testIsSamsungTalkBackEnabled_resumedWithPollingUpdatesState() {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
         AccessibilityServiceInfo samsungService =
                 new BuilderForTests()
@@ -823,7 +832,6 @@ public class AccessibilityStateTest {
         initializeAccessibilityState();
 
         Assert.assertTrue(AccessibilityState.isSamsungTalkBackEnabled());
-        Mockito.verify(mAccessibilityStateNatives).onSamsungTalkBackStateChanged(true);
 
         // Move app to background.
         simulateActivityStateChange(
@@ -837,7 +845,6 @@ public class AccessibilityStateTest {
                 mContext.getContentResolver(),
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
                 "com.samsung.android.accessibility.talkback/.TalkBackService");
-        Mockito.clearInvocations(mAccessibilityStateNatives);
 
         // Resume app. Polling will be scheduled because running services disagree with enabled
         // services.
@@ -850,8 +857,6 @@ public class AccessibilityStateTest {
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Assert.assertFalse(AccessibilityState.isSamsungTalkBackEnabled());
-        Mockito.verify(mAccessibilityStateNatives, Mockito.atLeastOnce())
-                .onSamsungTalkBackStateChanged(false);
     }
 
     private void startTestWithService(AccessibilityServiceInfo newService) {

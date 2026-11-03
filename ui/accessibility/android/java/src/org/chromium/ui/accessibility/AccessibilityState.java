@@ -259,6 +259,7 @@ public class AccessibilityState {
         return getDelegate().isKnownScreenReaderEnabled();
     }
 
+    @CalledByNative
     public static boolean isSamsungTalkBackEnabled() {
         return getDelegate().isSamsungTalkBackEnabled();
     }
@@ -378,8 +379,6 @@ public class AccessibilityState {
         void onContrastLevelChanged(boolean highContrastEnabled);
 
         void onTextCursorBlinkIntervalChanged(int textCursorBlinkInterval);
-
-        void onSamsungTalkBackStateChanged(boolean enabled);
 
         void recordAccessibilityServiceInfoHistograms();
     }

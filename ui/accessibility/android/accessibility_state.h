@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_ANDROID_ACCESSIBILITY_STATE_H_
 #define UI_ACCESSIBILITY_ANDROID_ACCESSIBILITY_STATE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -129,7 +130,7 @@ class COMPONENT_EXPORT(AX_BASE_ANDROID) ScopedSamsungTalkBackForTesting {
       const ScopedSamsungTalkBackForTesting&) = delete;
 
  private:
-  const bool previous_value_;
+  const std::optional<bool> previous_value_;
 };
 
 }  // namespace ui

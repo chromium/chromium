@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/android/accessibility_state.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,14 +22,9 @@ namespace ui {
 
 namespace {
 
-// Cached value of whether Samsung TalkBack is enabled, pushed from Java via
-// `JNI_AccessibilityState_OnSamsungTalkBackStateChanged`. We cache this value
-// here in C++ to avoid making synchronous JNI calls into Java on hot
-// accessibility node inspection paths.
-//
-// Thread safety: Written from Java via JNI on the UI thread and read by
-// accessibility tree node builders on the UI thread.
-bool g_is_samsung_talkback_enabled = false;
+// Test override for whether Samsung TalkBack is enabled. Set via
+// `ScopedSamsungTalkBackForTesting`.
+std::optional<bool> g_is_samsung_talkback_enabled_for_testing;
 
 }  // namespace
 
@@ -58,12 +54,6 @@ static void JNI_AccessibilityState_OnTextCursorBlinkIntervalChanged(
 static void JNI_AccessibilityState_RecordAccessibilityServiceInfoHistograms(
     JNIEnv* env) {
   AccessibilityState::Get()->NotifyRecordAccessibilityServiceInfoHistogram();
-}
-
-static void JNI_AccessibilityState_OnSamsungTalkBackStateChanged(
-    JNIEnv* env,
-    bool enabled) {
-  g_is_samsung_talkback_enabled = enabled;
 }
 
 // static
@@ -165,14 +155,22 @@ bool AccessibilityState::PrefersReducedMotion() {
 
 // static
 bool AccessibilityState::IsSamsungTalkBackEnabled() {
-  return g_is_samsung_talkback_enabled;
+  if (g_is_samsung_talkback_enabled_for_testing.has_value()) {
+    return *g_is_samsung_talkback_enabled_for_testing;
+  }
+  // Pull the state from Java instead of Java pushing the state to C++ because
+  // there is a bug where AccessibilityStateDelegate#initializeOnStartup() is
+  // never called. See https://crbug.com/575695837
+  return Java_AccessibilityState_isSamsungTalkBackEnabled(
+      base::android::AttachCurrentThread());
 }
 
 ScopedSamsungTalkBackForTesting::ScopedSamsungTalkBackForTesting(bool enabled)
-    : previous_value_(std::exchange(g_is_samsung_talkback_enabled, enabled)) {}
+    : previous_value_(
+          std::exchange(g_is_samsung_talkback_enabled_for_testing, enabled)) {}
 
 ScopedSamsungTalkBackForTesting::~ScopedSamsungTalkBackForTesting() {
-  g_is_samsung_talkback_enabled = previous_value_;
+  g_is_samsung_talkback_enabled_for_testing = previous_value_;
 }
 
 // static

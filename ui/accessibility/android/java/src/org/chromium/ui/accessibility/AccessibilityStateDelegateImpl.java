@@ -712,7 +712,6 @@ class AccessibilityStateDelegateImpl
                         isSamsungTalkBackEnabled));
         if (recordHistograms) {
             AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
-            AccessibilityStateJni.get().onSamsungTalkBackStateChanged(isSamsungTalkBackEnabled);
         }
     }
 
