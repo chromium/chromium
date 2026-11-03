@@ -31,11 +31,9 @@ class UI_ANDROID_EXPORT ModalDialogManagerBridge {
   int SuspendModalDialog(ModalDialogType dialog_type);
   void ResumeModalDialog(ModalDialogType dialog_type, int token);
 
-  void ShowDialog(
-      base::android::ScopedJavaGlobalRef<jobject> j_modal_dialog_wrapper,
-      ModalDialogType dialog_type);
-  void DismissDialog(
-      base::android::ScopedJavaGlobalRef<jobject> j_modal_dialog_wrapper);
+  void ShowDialog(const jni_zero::JavaRef<jobject>& j_modal_dialog_wrapper,
+                  ModalDialogType dialog_type);
+  void DismissDialog(const jni_zero::JavaRef<jobject>& j_modal_dialog_wrapper);
 
  private:
   // The java's `ModalDialogManagerBridge`.

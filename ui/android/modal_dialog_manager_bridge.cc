@@ -32,7 +32,7 @@ void ModalDialogManagerBridge::ResumeModalDialog(ModalDialogType dialog_type,
 }
 
 void ModalDialogManagerBridge::ShowDialog(
-    base::android::ScopedJavaGlobalRef<jobject> j_modal_dialog_wrapper,
+    const jni_zero::JavaRef<jobject>& j_modal_dialog_wrapper,
     ModalDialogType dialog_type) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ModalDialogManagerBridge_showDialog(env, j_modal_dialog_manager_bridge_,
@@ -41,7 +41,7 @@ void ModalDialogManagerBridge::ShowDialog(
 }
 
 void ModalDialogManagerBridge::DismissDialog(
-    base::android::ScopedJavaGlobalRef<jobject> j_modal_dialog_wrapper) {
+    const jni_zero::JavaRef<jobject>& j_modal_dialog_wrapper) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ModalDialogManagerBridge_dismissDialog(
       env, j_modal_dialog_manager_bridge_, j_modal_dialog_wrapper);

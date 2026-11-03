@@ -82,8 +82,8 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     @CalledByNative
     private void withTitleAndButtons(
             @JniType("std::u16string") String title,
-            String positiveButton,
-            String negativeButton,
+            @Nullable @JniType("std::optional<std::u16string>") String positiveButton,
+            @Nullable @JniType("std::optional<std::u16string>") String negativeButton,
             int buttonStyles) {
         mPropertyModelBuilder
                 .with(ModalDialogProperties.TITLE, title)

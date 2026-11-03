@@ -96,11 +96,10 @@ bool AcceleratorManagerAndroid::ProcessKeyEvent(
   return ProcessAccelerator(*accelerator);
 }
 
-jni_zero::JniUniquePtr<AcceleratorManagerAndroid> JNI_AcceleratorManager_Init(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj) {
+static jni_zero::JniUniquePtr<AcceleratorManagerAndroid>
+JNI_AcceleratorManager_Init(const base::android::JavaRef<jobject>& obj) {
   return jni_zero::MakeUnique<AcceleratorManagerAndroid>(
-      base::android::ScopedJavaGlobalRef<jobject>(env, obj));
+      base::android::ScopedJavaGlobalRef<jobject>(obj));
 }
 
 }  // namespace ui

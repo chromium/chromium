@@ -5,6 +5,7 @@
 package org.chromium.ui.base;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -24,6 +25,7 @@ public class BytesFormatting {
 
     @NativeMethods
     interface Natives {
+        @JniType("std::u16string")
         String formatSpeed(long bytes);
     }
 }

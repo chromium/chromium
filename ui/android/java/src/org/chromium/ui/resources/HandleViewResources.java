@@ -15,6 +15,7 @@ import android.view.ContextThemeWrapper;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
@@ -73,7 +74,7 @@ public class HandleViewResources {
         return drawable;
     }
 
-    private static Bitmap getHandleBitmap(Context activityContext, final int[] attrs) {
+    private static Bitmap getHandleBitmap(@Nullable Context activityContext, final int[] attrs) {
         // TODO(jdduke): Properly derive and apply theme color.
         final ContextThemeWrapper context =
                 new ContextThemeWrapper(
@@ -118,17 +119,17 @@ public class HandleViewResources {
     }
 
     @CalledByNative
-    private static Bitmap getLeftHandleBitmap(Context context) {
+    private static @JniType("SkBitmap") Bitmap getLeftHandleBitmap(@Nullable Context context) {
         return getHandleBitmap(context, LEFT_HANDLE_ATTRS);
     }
 
     @CalledByNative
-    private static Bitmap getCenterHandleBitmap(Context context) {
+    private static @JniType("SkBitmap") Bitmap getCenterHandleBitmap(@Nullable Context context) {
         return getHandleBitmap(context, CENTER_HANDLE_ATTRS);
     }
 
     @CalledByNative
-    private static Bitmap getRightHandleBitmap(Context context) {
+    private static @JniType("SkBitmap") Bitmap getRightHandleBitmap(@Nullable Context context) {
         return getHandleBitmap(context, RIGHT_HANDLE_ATTRS);
     }
 }

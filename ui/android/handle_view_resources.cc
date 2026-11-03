@@ -10,17 +10,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/HandleViewResources_jni.h"
 
-namespace {
-
-static SkBitmap CreateSkBitmapFromJavaBitmap(
-    base::android::ScopedJavaLocalRef<jobject> jbitmap) {
-  return jbitmap.is_null()
-             ? SkBitmap()
-             : CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(jbitmap));
-}
-
-}  // namespace
-
 namespace ui {
 
 HandleViewResources::HandleViewResources() = default;
@@ -34,12 +23,9 @@ void HandleViewResources::LoadIfNecessary(const JavaRef<jobject>& context) {
   TRACE_EVENT0("ui", "HandleViewResources::Create");
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  left_bitmap_ = CreateSkBitmapFromJavaBitmap(
-      Java_HandleViewResources_getLeftHandleBitmap(env, context));
-  right_bitmap_ = CreateSkBitmapFromJavaBitmap(
-      Java_HandleViewResources_getRightHandleBitmap(env, context));
-  center_bitmap_ = CreateSkBitmapFromJavaBitmap(
-      Java_HandleViewResources_getCenterHandleBitmap(env, context));
+  left_bitmap_ = Java_HandleViewResources_getLeftHandleBitmap(env, context);
+  right_bitmap_ = Java_HandleViewResources_getRightHandleBitmap(env, context);
+  center_bitmap_ = Java_HandleViewResources_getCenterHandleBitmap(env, context);
 
   left_bitmap_.setImmutable();
   right_bitmap_.setImmutable();

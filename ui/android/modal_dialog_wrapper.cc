@@ -33,7 +33,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/ModalDialogWrapper_jni.h"
 
-using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -85,16 +84,14 @@ ModalDialogWrapper::~ModalDialogWrapper() {
 
 namespace {  // private helper for ModalDialogWrapper::BuildPropertyModel
 
-ScopedJavaLocalRef<jstring> GetButtonLabel(JNIEnv* env,
-                                           DialogModel::Button* button,
-                                           int default_label_id) {
+std::optional<std::u16string> GetButtonLabel(DialogModel::Button* button,
+                                             int default_label_id) {
   if (!button) {
-    return ScopedJavaLocalRef<jstring>();
+    return std::nullopt;
   }
   const std::u16string& label_text = button->label();
-  return ConvertUTF16ToJavaString(
-      env, label_text.empty() ? l10n_util::GetStringUTF16(default_label_id)
-                              : label_text);
+  return label_text.empty() ? l10n_util::GetStringUTF16(default_label_id)
+                            : label_text;
 }
 
 // A helper struct to hold the deconstructed data for a single paragraph.
@@ -241,10 +238,10 @@ float GetScaleFactor(WindowAndroid* window) {
 void ModalDialogWrapper::BuildPropertyModel() {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  ScopedJavaLocalRef<jstring> ok_button_label = GetButtonLabel(
-      env, dialog_model_->ok_button(DialogModelHost::GetPassKey()), IDS_APP_OK);
-  ScopedJavaLocalRef<jstring> cancel_button_label = GetButtonLabel(
-      env, dialog_model_->cancel_button(DialogModelHost::GetPassKey()),
+  std::optional<std::u16string> ok_button_label = GetButtonLabel(
+      dialog_model_->ok_button(DialogModelHost::GetPassKey()), IDS_APP_OK);
+  std::optional<std::u16string> cancel_button_label = GetButtonLabel(
+      dialog_model_->cancel_button(DialogModelHost::GetPassKey()),
       IDS_APP_CANCEL);
 
   ModalDialogButtonStyles buttonStyles = GetButtonStyles();
@@ -317,10 +314,12 @@ void ModalDialogWrapper::BuildPropertyModel() {
     // vector<vector<u16string>> -> String[][]
     ScopedJavaLocalRef<jobjectArray> first_spans_array = jni_zero::ToJniArray(
         env, all_paragraph_spans[0], jni_zero::g_string_class);
-    jclass string_array_class = env->GetObjectClass(first_spans_array.obj());
+    ScopedJavaLocalRef<jclass> string_array_class =
+        ScopedJavaLocalRef<jclass>::Adopt(
+            env, env->GetObjectClass(first_spans_array.obj()));
     ScopedJavaLocalRef<jobjectArray> java_spans_array =
         jni_zero::NewArray<jobjectArray>(env, all_paragraph_spans.size(),
-                                         string_array_class);
+                                         string_array_class.obj());
     java_spans_array.Set(env, 0, first_spans_array);
 
     for (size_t i = 1; i < all_paragraph_spans.size(); ++i) {
@@ -334,11 +333,12 @@ void ModalDialogWrapper::BuildPropertyModel() {
     ScopedJavaLocalRef<jobjectArray> first_callbacks_array =
         jni_zero::ToJniArray(env, all_paragraph_closures[0],
                              jni_callback_class);
-    jclass callback_array_class =
-        env->GetObjectClass(first_callbacks_array.obj());
+    ScopedJavaLocalRef<jclass> callback_array_class =
+        ScopedJavaLocalRef<jclass>::Adopt(
+            env, env->GetObjectClass(first_callbacks_array.obj()));
     ScopedJavaLocalRef<jobjectArray> java_callbacks_array =
         jni_zero::NewArray<jobjectArray>(env, all_paragraph_closures.size(),
-                                         callback_array_class);
+                                         callback_array_class.obj());
     java_callbacks_array.Set(env, 0, first_callbacks_array);
 
     for (size_t i = 1; i < all_paragraph_closures.size(); ++i) {
@@ -362,15 +362,15 @@ void ModalDialogWrapper::BuildPropertyModel() {
   }
 }
 
-void ModalDialogWrapper::PositiveButtonClicked(JNIEnv* env) {
+void ModalDialogWrapper::PositiveButtonClicked() {
   dialog_model_->OnDialogAcceptAction(DialogModelHost::GetPassKey());
 }
 
-void ModalDialogWrapper::NegativeButtonClicked(JNIEnv* env) {
+void ModalDialogWrapper::NegativeButtonClicked() {
   dialog_model_->OnDialogCancelAction(DialogModelHost::GetPassKey());
 }
 
-void ModalDialogWrapper::CheckboxToggled(JNIEnv* env, bool is_checked) {
+void ModalDialogWrapper::CheckboxToggled(bool is_checked) {
   if (!checkbox_id_) {
     return;
   }
@@ -378,18 +378,18 @@ void ModalDialogWrapper::CheckboxToggled(JNIEnv* env, bool is_checked) {
       ->OnChecked(DialogModelFieldHost::GetPassKey(), is_checked);
 }
 
-void ModalDialogWrapper::MenuItemClicked(JNIEnv* env, int32_t index) {
+void ModalDialogWrapper::MenuItemClicked(int32_t index) {
   CHECK_GE(index, 0);
   CHECK_LT(static_cast<size_t>(index), menu_items_.size());
   menu_items_[index]->OnActivated(DialogModelFieldHost::GetPassKey(), 0);
 }
 
-void ModalDialogWrapper::Dismissed(JNIEnv* env, int32_t dismissalCause) {
-  dismissal_cause_ = dismissalCause;
+void ModalDialogWrapper::Dismissed(int32_t dismissal_cause) {
+  dismissal_cause_ = dismissal_cause;
   dialog_model_->OnDialogCloseAction(DialogModelHost::GetPassKey());
 }
 
-void ModalDialogWrapper::Destroy(JNIEnv* env) {
+void ModalDialogWrapper::Destroy() {
   delete this;
 }
 
