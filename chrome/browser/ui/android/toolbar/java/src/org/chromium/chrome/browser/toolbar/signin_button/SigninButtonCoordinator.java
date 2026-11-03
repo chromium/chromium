@@ -148,7 +148,6 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
      */
     @Override
     public int updateVisibility(int availableWidth) {
-
         // Cannot measure accurately if inflation has not happened yet.
         maybeInflateView();
 

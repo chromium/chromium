@@ -42,7 +42,6 @@ public class ExtensionAccessControlButtonCoordinator implements Destroyable {
             Callback<Boolean> visibilityObserver,
             Supplier<Boolean> isWindowCompactSupplier,
             Runnable clearOmniboxFocus) {
-
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         model, requestAccessButton, ExtensionAccessControlButtonViewBinder::bind);

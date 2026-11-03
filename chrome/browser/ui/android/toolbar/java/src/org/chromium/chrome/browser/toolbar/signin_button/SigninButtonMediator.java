@@ -230,7 +230,6 @@ final class SigninButtonMediator
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
-
         // If activityFocusTint is different from tint, the toolbar thinks we are inactive.
         boolean isWindowActive = Objects.equals(tint, activityFocusTint);
         mModel.set(SigninButtonProperties.IS_ENABLED, isWindowActive);

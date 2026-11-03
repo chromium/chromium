@@ -82,9 +82,8 @@ public class HomeButtonTest {
 
     @Before
     public void setUp() {
-
-        // Set the default test status for homepage button tests.
-        // By default, the homepage is <b>enabled</b> and with customized URL.
+        // Set the default test status for homepage button tests. By default, the homepage is
+        // <b>enabled</b> and with customized URL.
         mHomepageTestRule.useCustomizedHomepageForTest("https://www.chromium.org/");
 
         ThreadUtils.runOnUiThreadBlocking(

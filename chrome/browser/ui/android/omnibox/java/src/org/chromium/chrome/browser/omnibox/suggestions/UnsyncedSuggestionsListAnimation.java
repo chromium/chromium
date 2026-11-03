@@ -59,7 +59,6 @@ public class UnsyncedSuggestionsListAnimation
             Supplier<Float> omniboxVerticalTranslationSupplier,
             BooleanSupplier usePopoverAnimationSupplier,
             Context context) {
-
         mListPropertyModel = listPropertyModel;
         mShowSuggestionsListCallback = showSuggestionsListCallback;
         mIsToolbarBottomAnchoredSupplier = isToolbarBottomAnchoredSupplier;

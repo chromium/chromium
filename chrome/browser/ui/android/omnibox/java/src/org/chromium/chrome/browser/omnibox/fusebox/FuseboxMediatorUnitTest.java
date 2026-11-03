@@ -834,7 +834,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testClickRequestTypeChip_transitionsToCompactWhenHasAttachments() {
-
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE));
 
@@ -2540,7 +2539,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_ActiveOverridesDisabled() {
-
         setInputState(
                 createDefaultInputStateBuilder()
                         .withActiveTool(ToolMode.TOOL_MODE_CANVAS)
@@ -2558,7 +2556,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_ActiveOverridesAllowed() {
-
         setInputState(
                 createDefaultInputStateBuilder()
                         .withActiveTool(ToolMode.TOOL_MODE_CANVAS)
@@ -2576,7 +2573,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void modelSelectionProperties_conditionalOnRequestType() {
-
         setInputState(
                 createDefaultInputStateBuilder()
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
@@ -2599,7 +2595,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChange_updatesEnabledStates() {
-
         setInputState(
                 createDefaultInputStateBuilder()
                         .withDisabledInputTypes(
@@ -2705,7 +2700,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChange_updatesHeaders() {
-
         setInputState(
                 createDefaultInputStateBuilder()
                         .withToolsSectionConfig(
@@ -2720,7 +2714,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChanged_setsCreateImageVisibilityAndEnablement() {
-
         setInputState(createDefaultInputStateBuilder().withAllowedTools());
         mMediator.onPlusButtonClicked();
         assertFalse(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN));
@@ -2754,7 +2747,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onAutocompleteRequestTypeChanged_resetsActiveModel() {
-
         setInputState(
                 createDefaultInputStateBuilder()
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
@@ -2919,7 +2911,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChanged_setsRequestTypeButtonText() {
-
         setInputState(createDefaultInputStateBuilder().withActiveTool(ToolMode.TOOL_MODE_CANVAS));
         assertEquals("Canvas", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
 
@@ -3018,7 +3009,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_lazyUntilPopupShown() {
-
         setInputState(
                 createDefaultInputStateBuilder().withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH));
 
@@ -3047,7 +3037,6 @@ public class FuseboxMediatorUnitTest {
     @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void testOnInputStateChange_unknownIconResourceIds() {
-
         int unknownIconId = 9999;
         ModelConfig configAuto =
                 AUTO_MODEL_CONFIG.toBuilder()
@@ -3074,7 +3063,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testActivateSearchMode_deduplicatesSetActiveModel() {
-
         setInputState(
                 createDefaultInputStateBuilder()
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
@@ -3102,7 +3090,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testSetModelMode_recordsHistogram() {
-
         setInputState(
                 createDefaultInputStateBuilder()
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
@@ -3123,7 +3110,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnInputStateChange_deduplicatesRequestTypeButtonText() {
-
         setInputState(createDefaultInputStateBuilder().withActiveTool(ToolMode.TOOL_MODE_CANVAS));
         assertEquals("Canvas", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
 

@@ -506,7 +506,6 @@ public class OmniboxMetrics {
      */
     public static void recordTouchDownPrefetchResult(
             AutocompleteMatch navSuggestion, @Nullable AutocompleteMatch prefetchSuggestion) {
-
         @PrefetchResult
         int result =
                 prefetchSuggestion == null

@@ -106,7 +106,6 @@ public final class ToolbarSecurityIconTest {
 
     @Before
     public void setUp() throws ExecutionException {
-
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
