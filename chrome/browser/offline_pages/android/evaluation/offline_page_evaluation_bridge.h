@@ -42,7 +42,6 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
       delete;
 
   ~OfflinePageEvaluationBridge() override;
-  void Destroy();
 
   // OfflinePageModel::Observer implementation.
   void OfflinePageModelLoaded(OfflinePageModel* model) override;

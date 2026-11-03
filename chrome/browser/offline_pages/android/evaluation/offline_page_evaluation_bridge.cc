@@ -34,6 +34,7 @@
 #include "components/offline_pages/core/offline_page_model.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/OfflinePageEvaluationBridge_jni.h"
@@ -182,7 +183,8 @@ RequestCoordinator* GetRequestCoordinator(Profile* profile,
 
 }  // namespace
 
-static int64_t JNI_OfflinePageEvaluationBridge_CreateBridgeForProfile(
+static jni_zero::JniUniquePtr<OfflinePageEvaluationBridge>
+JNI_OfflinePageEvaluationBridge_CreateBridgeForProfile(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     Profile* profile,
@@ -194,12 +196,10 @@ static int64_t JNI_OfflinePageEvaluationBridge_CreateBridgeForProfile(
       GetRequestCoordinator(profile, j_use_evaluation_scheduler);
 
   if (offline_page_model == nullptr || request_coordinator == nullptr)
-    return 0;
+    return nullptr;
 
-  OfflinePageEvaluationBridge* bridge = new OfflinePageEvaluationBridge(
+  return jni_zero::MakeUnique<OfflinePageEvaluationBridge>(
       env, obj, profile, offline_page_model, request_coordinator);
-
-  return reinterpret_cast<int64_t>(bridge);
 }
 
 OfflinePageEvaluationBridge::OfflinePageEvaluationBridge(
@@ -221,12 +221,9 @@ OfflinePageEvaluationBridge::OfflinePageEvaluationBridge(
   request_coordinator_->GetLogger()->SetClient(this);
 }
 
-OfflinePageEvaluationBridge::~OfflinePageEvaluationBridge() = default;
-
-void OfflinePageEvaluationBridge::Destroy() {
+OfflinePageEvaluationBridge::~OfflinePageEvaluationBridge() {
   offline_page_model_->RemoveObserver(this);
   request_coordinator_->RemoveObserver(this);
-  delete this;
 }
 
 // Implement OfflinePageModel::Observer

@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.offlinepages.evaluation;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -34,6 +37,9 @@ import java.util.Locale;
 /** Class used for offline page evaluation testing tools. */
 @JNINamespace("offline_pages::android")
 public class OfflinePageEvaluationBridge {
+    @JniType("::offline_pages::android::OfflinePageEvaluationBridge")
+    interface NativeOfflinePageEvaluationBridge extends JniTypeToken {}
+
     /**
      * Observer class for notifications on changes to save page requests or offline page model which
      * are used for testing.
@@ -81,7 +87,7 @@ public class OfflinePageEvaluationBridge {
     private static TaskRunner sSequencedTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
 
-    private long mNativeOfflinePageEvaluationBridge;
+    private JniUniquePtr<NativeOfflinePageEvaluationBridge> mNativeOfflinePageEvaluationBridge;
     private boolean mIsOfflinePageModelLoaded;
     private ObserverList<OfflinePageEvaluationObserver> mObservers = new ObserverList<>();
 
@@ -89,9 +95,9 @@ public class OfflinePageEvaluationBridge {
 
     /** Destroys the native portion of the bridge. */
     public void destroy() {
-        if (mNativeOfflinePageEvaluationBridge != 0) {
-            OfflinePageEvaluationBridgeJni.get().destroy(mNativeOfflinePageEvaluationBridge);
-            mNativeOfflinePageEvaluationBridge = 0;
+        if (mNativeOfflinePageEvaluationBridge != null) {
+            mNativeOfflinePageEvaluationBridge.destroy();
+            mNativeOfflinePageEvaluationBridge = null;
             mIsOfflinePageModelLoaded = false;
         }
         mObservers.clear();
@@ -325,33 +331,32 @@ public class OfflinePageEvaluationBridge {
 
     @NativeMethods
     interface Natives {
-        long createBridgeForProfile(
+        JniUniquePtr<NativeOfflinePageEvaluationBridge> createBridgeForProfile(
                 OfflinePageEvaluationBridge caller,
                 @JniType("Profile*") Profile profile,
                 boolean useEvaluationScheduler);
 
-        void destroy(long nativeOfflinePageEvaluationBridge);
-
         void getAllPages(
-                long nativeOfflinePageEvaluationBridge,
+                JniPtr<NativeOfflinePageEvaluationBridge> self,
                 List<OfflinePageItem> offlinePages,
                 Callback<List<OfflinePageItem>> callback);
 
         void savePageLater(
-                long nativeOfflinePageEvaluationBridge,
+                JniPtr<NativeOfflinePageEvaluationBridge> self,
                 @JniType("std::string") String url,
                 @JniType("std::string") String clientNamespace,
                 @JniType("std::string") String clientId,
                 boolean userRequested);
 
         boolean pushRequestProcessing(
-                long nativeOfflinePageEvaluationBridge, Callback<Boolean> callback);
+                JniPtr<NativeOfflinePageEvaluationBridge> self, Callback<Boolean> callback);
 
         void getRequestsInQueue(
-                long nativeOfflinePageEvaluationBridge, Callback<SavePageRequest[]> callback);
+                JniPtr<NativeOfflinePageEvaluationBridge> self,
+                Callback<SavePageRequest[]> callback);
 
         void removeRequestsFromQueue(
-                long nativeOfflinePageEvaluationBridge,
+                JniPtr<NativeOfflinePageEvaluationBridge> self,
                 @JniType("std::vector<int64_t>") long[] requestIds,
                 Callback<Integer> callback);
     }
