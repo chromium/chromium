@@ -4,6 +4,7 @@
 
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -45,8 +46,8 @@ void StandaloneTrustedVaultClient::StoreKeys(
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version,
     std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
-  frontend_->StoreKeys(gaia_id, security_domain_, keys, last_key_version);
-  NotifyTrustedVaultKeysChanged(trigger);
+  frontend_->StoreKeys(gaia_id, security_domain_, keys, last_key_version,
+                       trigger);
 }
 
 void StandaloneTrustedVaultClient::MarkLocalKeysAsStale(

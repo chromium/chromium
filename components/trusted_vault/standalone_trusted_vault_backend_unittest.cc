@@ -34,6 +34,7 @@
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/test/fake_local_domains_storage_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -101,6 +102,11 @@ class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
  public:
   MockDelegate() = default;
   ~MockDelegate() override = default;
+  MOCK_METHOD(void,
+              NotifyVaultKeysChanged,
+              (SecurityDomainId,
+               std::optional<TrustedVaultUserActionTriggerForUMA>),
+              (override));
   MOCK_METHOD(void,
               NotifyRecoverabilityDegradedChanged,
               (SecurityDomainId),
@@ -436,6 +442,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     local_recovery_factors_factory_ = local_recovery_factors_factory.get();
 
     connection_ = connection.get();
+    delegate_ = delegate.get();
 
     backend_ = StandaloneTrustedVaultBackend::CreateForTesting(
         std::move(storage), std::move(delegate), std::move(connection),
@@ -452,6 +459,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   LocalDomainsStorage* storage() { return storage_; }
 
   FakeLocalDomainsStorageFileAccess* file_access() { return file_access_; }
+
+  MockDelegate* delegate() { return delegate_; }
 
   MockTrustedVaultThrottlingConnection* connection() { return connection_; }
 
@@ -519,6 +528,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   std::unique_ptr<StandaloneTrustedVaultBackend> backend_;
   raw_ptr<LocalDomainsStorage> storage_ = nullptr;
   raw_ptr<FakeLocalDomainsStorageFileAccess> file_access_ = nullptr;
+  raw_ptr<testing::NiceMock<MockDelegate>> delegate_ = nullptr;
   raw_ptr<testing::NiceMock<MockTrustedVaultThrottlingConnection>> connection_ =
       nullptr;
   raw_ptr<TestLocalRecoveryFactorsFactory> local_recovery_factors_factory_;
@@ -720,13 +730,34 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
   const std::vector<uint8_t> kKey3 = {2, 3, 4};
   const std::vector<uint8_t> kKey4 = {3, 4};
 
+  EXPECT_CALL(*delegate(),
+              NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
   backend()->StoreKeys(kGaiaId1, security_domain_id(), {kKey1},
                        /*last_key_version=*/7);
+  EXPECT_CALL(*delegate(),
+              NotifyVaultKeysChanged(
+                  security_domain_id(),
+                  Eq(TrustedVaultUserActionTriggerForUMA::kProfileMenu)));
   backend()->StoreKeys(kGaiaId2, security_domain_id(), {kKey2},
-                       /*last_key_version=*/8);
+                       /*last_key_version=*/8,
+                       TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+  Mock::VerifyAndClearExpectations(delegate());
+
+  // Storing the same keys again should not notify the delegate.
+  EXPECT_CALL(*delegate(), NotifyVaultKeysChanged).Times(0);
+  backend()->StoreKeys(kGaiaId2, security_domain_id(), {kKey2},
+                       /*last_key_version=*/8,
+                       TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+  Mock::VerifyAndClearExpectations(delegate());
+
   // Keys for |kGaiaId2| overridden, so |kKey2| should be lost.
+  EXPECT_CALL(*delegate(),
+              NotifyVaultKeysChanged(
+                  security_domain_id(),
+                  Eq(TrustedVaultUserActionTriggerForUMA::kSettings)));
   backend()->StoreKeys(kGaiaId2, security_domain_id(), {kKey3, kKey4},
-                       /*last_key_version=*/9);
+                       /*last_key_version=*/9,
+                       TrustedVaultUserActionTriggerForUMA::kSettings);
 
   // Read the content from storage.
   trusted_vault_pb::LocalDomainsData proto =
@@ -1333,12 +1364,40 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
 
   // Note that |fetch_keys_callback| should not receive kInitialVaultKey.
+  EXPECT_CALL(*delegate(),
+              NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
   EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kNewVaultKey)));
 
   GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectAttemptRecoveryAndRunCallback(
           LocalRecoveryFactor::RecoveryStatus::kSuccess, {kNewVaultKey},
           kInitialLastKeyVersion + 1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldNotNotifyWhenNoNewKeysDownloaded) {
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
+  constexpr int kInitialLastKeyVersion = 1;
+
+  StoreKeysAndMimicRecoveryFactorRegistration(
+      {kInitialVaultKey}, kInitialLastKeyVersion, kAccountInfo);
+  ASSERT_TRUE(
+      backend()->MarkLocalKeysAsStale(kAccountInfo, security_domain_id()));
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  backend()->FetchKeys(kAccountInfo, security_domain_id(),
+                       fetch_keys_callback.Get());
+
+  EXPECT_CALL(*delegate(), NotifyVaultKeysChanged).Times(0);
+  EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kInitialVaultKey)));
+
+  GetOrCreateRecoveryFactor(kAccountInfo)
+      ->ExpectAttemptRecoveryAndRunCallback(
+          LocalRecoveryFactor::RecoveryStatus::kNoNewKeys, {kInitialVaultKey},
+          kInitialLastKeyVersion);
 }
 
 // Regression test for crbug.com/1500258: second FetchKeys() is triggered, while
@@ -1370,6 +1429,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Both fetches should be completed once keys are downloaded.
   std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
+  EXPECT_CALL(*delegate(),
+              NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
   EXPECT_CALL(fetch_keys_callback1,
               Run(ElementsAre(kInitialVaultKey, kNewVaultKey)));
   EXPECT_CALL(fetch_keys_callback2,
@@ -1411,6 +1472,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Fetch should be completed once keys are downloaded.
   const std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
+  EXPECT_CALL(*delegate(),
+              NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
   EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kVaultKey, kNewVaultKey)));
 
   std::vector<FakeLocalRecoveryFactor*> recovery_factors =
@@ -1447,6 +1510,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Fetch should be completed once keys are downloaded.
   const std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
+  EXPECT_CALL(*delegate(),
+              NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
   EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kVaultKey, kNewVaultKey)));
 
   std::vector<FakeLocalRecoveryFactor*> recovery_factors =
@@ -1484,6 +1549,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                        fetch_keys_callback.Get());
 
   // Fetch should be completed once last key downloading failed.
+  EXPECT_CALL(*delegate(), NotifyVaultKeysChanged).Times(0);
   EXPECT_CALL(fetch_keys_callback, Run(IsEmpty()));
 
   base::HistogramTester histogram_tester;
@@ -1537,6 +1603,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Mimic successful key downloading, it should make fetch keys attempt
   // completed.
   const std::vector<std::vector<uint8_t>> kNewVaultKeys = {{1, 2, 3}};
+  EXPECT_CALL(*delegate(),
+              NotifyVaultKeysChanged(security_domain_id(), Eq(std::nullopt)));
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/kNewVaultKeys));
   GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectAttemptRecoveryAndRunCallback(

@@ -20,6 +20,7 @@
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -50,6 +51,9 @@ class StandaloneTrustedVaultBackend
 
     Delegate& operator=(const Delegate&) = delete;
 
+    virtual void NotifyVaultKeysChanged(
+        SecurityDomainId security_domain,
+        std::optional<TrustedVaultUserActionTriggerForUMA> trigger) = 0;
     virtual void NotifyRecoverabilityDegradedChanged(
         SecurityDomainId security_domain) = 0;
   };
@@ -114,11 +118,14 @@ class StandaloneTrustedVaultBackend
                  SecurityDomainId security_domain,
                  FetchKeysCallback callback);
 
-  // Replaces keys for given |gaia_id| both in memory and on disk.
+  // Replaces keys for given `gaia_id` both in memory and on disk and notifies
+  // the delegate if the vault keys have changed.
   void StoreKeys(const GaiaId& gaia_id,
                  SecurityDomainId security_domain,
                  const std::vector<std::vector<uint8_t>>& keys,
-                 int last_key_version);
+                 int last_key_version,
+                 std::optional<TrustedVaultUserActionTriggerForUMA> trigger =
+                     std::nullopt);
 
   // Marks vault keys as stale.  Afterwards, the next FetchKeys() call for this
   // |account_info| will trigger a key download attempt.

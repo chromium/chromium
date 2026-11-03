@@ -4,6 +4,7 @@
 
 #include "components/trusted_vault/standalone_trusted_vault_frontend.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -27,6 +28,7 @@
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -225,22 +227,36 @@ IdentityManagerObserver::GetPrimaryAccountRefreshTokenErrorState() const {
 // used to post notifications from the backend sequence to the UI thread.
 class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
  public:
-  explicit BackendDelegate(base::RepeatingCallback<void(SecurityDomainId)>
-                               notify_recoverability_degraded_cb)
-      : notify_recoverability_degraded_cb_(
+  using NotifyVaultKeysChangedCallback = base::RepeatingCallback<void(
+      SecurityDomainId,
+      std::optional<TrustedVaultUserActionTriggerForUMA>)>;
+  using NotifyRecoverabilityDegradedCallback =
+      base::RepeatingCallback<void(SecurityDomainId)>;
+
+  BackendDelegate(
+      NotifyVaultKeysChangedCallback notify_vault_keys_changed_cb,
+      NotifyRecoverabilityDegradedCallback notify_recoverability_degraded_cb)
+      : notify_vault_keys_changed_cb_(std::move(notify_vault_keys_changed_cb)),
+        notify_recoverability_degraded_cb_(
             std::move(notify_recoverability_degraded_cb)) {}
 
   ~BackendDelegate() override = default;
 
   // StandaloneTrustedVaultBackend::Delegate implementation.
+  void NotifyVaultKeysChanged(
+      SecurityDomainId security_domain,
+      std::optional<TrustedVaultUserActionTriggerForUMA> trigger) override {
+    notify_vault_keys_changed_cb_.Run(security_domain, trigger);
+  }
+
   void NotifyRecoverabilityDegradedChanged(
       SecurityDomainId security_domain) override {
     notify_recoverability_degraded_cb_.Run(security_domain);
   }
 
  private:
-  const base::RepeatingCallback<void(SecurityDomainId)>
-      notify_recoverability_degraded_cb_;
+  const NotifyVaultKeysChangedCallback notify_vault_keys_changed_cb_;
+  const NotifyRecoverabilityDegradedCallback notify_recoverability_degraded_cb_;
 };
 
 }  // namespace
@@ -335,15 +351,22 @@ void StandaloneTrustedVaultFrontend::InitializeBackend(
             access_token_fetcher_frontend_.GetWeakPtr()));
   }
 
+  auto notify_keys_changed_cb =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &StandaloneTrustedVaultFrontend::NotifyVaultKeysChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+  auto notify_degraded_cb =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &StandaloneTrustedVaultFrontend::NotifyRecoverabilityDegradedChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
   backend_.reset(new StandaloneTrustedVaultBackend(
 #if BUILDFLAG(IS_MAC)
       icloud_keychain_access_group_prefix_,
 #endif
       std::move(storage),
-      std::make_unique<BackendDelegate>(base::BindPostTaskToCurrentDefault(
-          base::BindRepeating(&StandaloneTrustedVaultFrontend::
-                                  NotifyRecoverabilityDegradedChanged,
-                              weak_ptr_factory_.GetWeakPtr()))),
+      std::make_unique<BackendDelegate>(std::move(notify_keys_changed_cb),
+                                        std::move(notify_degraded_cb)),
       std::move(connection)));
 
   backend_task_runner_->PostTask(
@@ -356,8 +379,8 @@ void StandaloneTrustedVaultFrontend::InitializeBackend(
   identity_manager_observer_ = std::make_unique<IdentityManagerObserver>(
       backend_task_runner_, backend_.get(),
       base::BindRepeating(
-          &StandaloneTrustedVaultFrontend::NotifyTrustedVaultKeysChanged,
-          base::Unretained(this), std::nullopt),
+          &StandaloneTrustedVaultFrontend::NotifyAllVaultKeysChanged,
+          base::Unretained(this)),
       identity_manager_);
 
   for (base::OnceClosure& task : std::exchange(pending_tasks_, {})) {
@@ -395,8 +418,6 @@ void StandaloneTrustedVaultFrontend::FetchKeys(
         account_info, security_domain, std::move(cb)));
     return;
   }
-  // TODO(crbug.com/40255601): consider notifying observers when FetchKeys()
-  // downloads new keys from the server.
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::FetchKeys,
@@ -409,18 +430,20 @@ void StandaloneTrustedVaultFrontend::StoreKeys(
     const GaiaId& gaia_id,
     SecurityDomainId security_domain,
     const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {
+    int last_key_version,
+    std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!backend_) {
     pending_tasks_.push_back(base::BindOnce(
         &StandaloneTrustedVaultFrontend::StoreKeys, base::Unretained(this),
-        gaia_id, security_domain, keys, last_key_version));
+        gaia_id, security_domain, keys, last_key_version, trigger));
     return;
   }
   backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&StandaloneTrustedVaultBackend::StoreKeys,
-                                base::Unretained(backend_.get()), gaia_id,
-                                security_domain, keys, last_key_version));
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::StoreKeys,
+                     base::Unretained(backend_.get()), gaia_id, security_domain,
+                     keys, last_key_version, trigger));
 }
 
 void StandaloneTrustedVaultFrontend::MarkLocalKeysAsStale(
@@ -557,11 +580,20 @@ void StandaloneTrustedVaultFrontend::GetLastKeyVersionForTesting(
       std::move(callback));
 }
 
-void StandaloneTrustedVaultFrontend::NotifyTrustedVaultKeysChanged(
-    std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
+void StandaloneTrustedVaultFrontend::NotifyAllVaultKeysChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& [domain, client] : clients_) {
-    client->NotifyTrustedVaultKeysChanged(trigger);
+    client->NotifyTrustedVaultKeysChanged(/*trigger=*/std::nullopt);
+  }
+}
+
+void StandaloneTrustedVaultFrontend::NotifyVaultKeysChanged(
+    SecurityDomainId security_domain,
+    std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = clients_.find(security_domain);
+  if (it != clients_.end()) {
+    it->second->NotifyTrustedVaultKeysChanged(trigger);
   }
 }
 

@@ -6,11 +6,13 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -20,7 +22,9 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/local_domains_storage.h"
+#include "components/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/trusted_vault/test/fake_local_domains_storage_file_access.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #if BUILDFLAG(IS_MAC)
 #include "crypto/apple/scoped_fake_keychain_v2.h"
@@ -34,6 +38,7 @@ namespace trusted_vault {
 namespace {
 
 using testing::ElementsAre;
+using testing::Eq;
 
 constexpr char kTestEmail[] = "test@gmail.com";
 
@@ -42,6 +47,18 @@ constexpr char kKeychainAccessGroupPrefix[] = "test-access-group-prefix";
 constexpr char kKeychainAccessGroup[] =
     "test-access-group-prefix.com.google.common.folsom";
 #endif
+
+class MockTrustedVaultClientObserver : public TrustedVaultClient::Observer {
+ public:
+  MockTrustedVaultClientObserver() = default;
+  ~MockTrustedVaultClientObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnTrustedVaultKeysChanged,
+              (std::optional<TrustedVaultUserActionTriggerForUMA>),
+              (override));
+  MOCK_METHOD(void, OnTrustedVaultRecoverabilityChanged, (), (override));
+};
 
 class StandaloneTrustedVaultFrontendTest : public testing::Test {
  public:
@@ -79,9 +96,17 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
           identity_test_env_.identity_manager(),
           test_url_loader_factory_.GetSafeWeakWrapper());
 
+  StandaloneTrustedVaultClient client(SecurityDomainId::kChromeSync, frontend);
+  testing::StrictMock<MockTrustedVaultClientObserver> observer;
+  base::ScopedObservation<TrustedVaultClient, TrustedVaultClient::Observer>
+      observation(&observer);
+  observation.Observe(&client);
+
   // Issue StoreKeys and FetchKeys before the backend is initialized.
+  EXPECT_CALL(observer, OnTrustedVaultKeysChanged).Times(0);
   frontend->StoreKeys(account_info.gaia, SecurityDomainId::kChromeSync, {kKey},
-                      /*last_key_version=*/1);
+                      /*last_key_version=*/1,
+                      TrustedVaultUserActionTriggerForUMA::kProfileMenu);
   base::test::TestFuture<const std::vector<std::vector<uint8_t>>&>
       fetch_keys_future;
   frontend->FetchKeys(account_info, SecurityDomainId::kChromeSync,
@@ -90,9 +115,14 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
   task_environment_.RunUntilIdle();
   // FetchKeys must not complete before InitializeBackendForTesting() is called.
   EXPECT_FALSE(fetch_keys_future.IsReady());
+  testing::Mock::VerifyAndClearExpectations(&observer);
 
-  // Initialize the backend; ReadDataFromDisk and the queued StoreKeys and
-  // FetchKeys tasks should now run in FIFO order.
+  // Initialize the backend; `ReadDataFromDisk()` and the queued `StoreKeys()`
+  // and `FetchKeys()` tasks should now run in FIFO order, and the queued
+  // trigger should be propagated to observers.
+  EXPECT_CALL(observer,
+              OnTrustedVaultKeysChanged(
+                  Eq(TrustedVaultUserActionTriggerForUMA::kProfileMenu)));
   frontend->InitializeBackendForTesting(LocalDomainsStorage::CreateForTesting(
       std::make_unique<FakeLocalDomainsStorageFileAccess>()));
   EXPECT_THAT(fetch_keys_future.Get(), ElementsAre(kKey));
@@ -124,7 +154,7 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
           test_url_loader_factory_.GetSafeWeakWrapper());
 
   frontend->StoreKeys(account_info.gaia, SecurityDomainId::kChromeSync, {kKey},
-                      /*last_key_version=*/2);
+                      /*last_key_version=*/2, /*trigger=*/std::nullopt);
   base::test::TestFuture<const std::vector<std::vector<uint8_t>>&>
       fetch_keys_future;
   frontend->FetchKeys(account_info, SecurityDomainId::kChromeSync,
@@ -158,7 +188,7 @@ TEST_F(StandaloneTrustedVaultFrontendTest,
           test_url_loader_factory_.GetSafeWeakWrapper());
 
   frontend->StoreKeys(account_info.gaia, SecurityDomainId::kChromeSync, {kKey},
-                      /*last_key_version=*/2);
+                      /*last_key_version=*/2, /*trigger=*/std::nullopt);
   base::test::TestFuture<const std::vector<std::vector<uint8_t>>&>
       fetch_keys_future;
   frontend->FetchKeys(account_info, SecurityDomainId::kChromeSync,

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -29,6 +30,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -339,7 +341,8 @@ void StandaloneTrustedVaultBackend::StoreKeys(
     const GaiaId& gaia_id,
     SecurityDomainId security_domain,
     const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {
+    int last_key_version,
+    std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
   CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
   // Setters will create a user vault if it doesn't exist yet.
 
@@ -349,8 +352,14 @@ void StandaloneTrustedVaultBackend::StoreKeys(
   storage_->SetLastRegistrationReturnedLocalDataObsolete(
       gaia_id, security_domain, false);
 
+  const bool keys_changed =
+      keys != storage_->GetVaultKeys(gaia_id, security_domain);
+
   // Replace all keys (this also clears the "marked as stale" flag).
   storage_->SetVaultKeys(gaia_id, security_domain, keys, last_key_version);
+  if (keys_changed) {
+    delegate_->NotifyVaultKeysChanged(security_domain, trigger);
+  }
 
   MaybeRegisterLocalRecoveryFactors(security_domain);
 }

@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
@@ -285,7 +286,13 @@ TEST_F(StandaloneTrustedVaultClientTest,
   // failed request and throttles subsequent requests for kThrottlingDuration.
   // We advance time past the throttling interval so post-rotation requests
   // are not blocked.
+  MockTrustedVaultClientObserver observer;
+  base::ScopedObservation<TrustedVaultClient, TrustedVaultClient::Observer>
+      observation(&observer);
+  observation.Observe(client.get());
+  EXPECT_CALL(observer, OnTrustedVaultKeysChanged).Times(0);
   ASSERT_THAT(FetchKeys(client.get(), account_info), IsEmpty());
+  testing::Mock::VerifyAndClearExpectations(&observer);
   task_environment_.FastForwardBy(
       TrustedVaultThrottlingConnectionImpl::kThrottlingDuration +
       base::Seconds(1));
@@ -297,11 +304,9 @@ TEST_F(StandaloneTrustedVaultClientTest,
           GetConstantTrustedVaultKey());
   EXPECT_TRUE(MarkLocalKeysAsStale(client.get(), account_info));
 
-  // TODO(crbug.com/541108964): consider notifying observers when FetchKeys()
-  // downloads new keys from the server so that observer expectations can be
-  // tested here.
-  // FetchKeys() should follow the server side key rotation and register local
-  // factors if applicable.
+  // `FetchKeys()` should follow the server side key rotation, notify observers,
+  // and register local factors if applicable.
+  EXPECT_CALL(observer, OnTrustedVaultKeysChanged(testing::Eq(std::nullopt)));
   EXPECT_THAT(FetchKeys(client.get(), account_info),
               ElementsAre(new_epoch_key));
   WaitForIdle(client.get());
@@ -378,6 +383,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
 TEST_F(StandaloneTrustedVaultClientTest,
        ShouldShareFrontendAndRouteDomainNotifications) {
   const std::vector<uint8_t> kSyncKey = {1, 2, 3, 4};
+  constexpr int kServerEpoch = 10;
+  fake_security_domains_server_->ResetDataToState({kSyncKey}, kServerEpoch);
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
 
   scoped_refptr<StandaloneTrustedVaultFrontend> frontend = CreateFrontend();
@@ -392,17 +399,33 @@ TEST_F(StandaloneTrustedVaultClientTest,
   sync_client->AddObserver(&sync_observer);
   passkeys_client->AddObserver(&passkeys_observer);
 
-  // Storing keys in kChromeSync should notify only sync_observer.
-  EXPECT_CALL(sync_observer, OnTrustedVaultKeysChanged);
+  // Storing keys in `kChromeSync` should notify only `sync_observer` and
+  // propagate the user action trigger.
+  EXPECT_CALL(sync_observer,
+              OnTrustedVaultKeysChanged(
+                  Eq(TrustedVaultUserActionTriggerForUMA::kSettings)));
   EXPECT_CALL(passkeys_observer, OnTrustedVaultKeysChanged).Times(0);
-  StoreKeys(sync_client.get(), account_info.gaia, {kSyncKey},
-            /*last_key_version=*/1);
+  sync_client->StoreKeys(account_info.gaia, {kSyncKey}, kServerEpoch,
+                         TrustedVaultUserActionTriggerForUMA::kSettings);
   WaitForIdle(sync_client.get());
   testing::Mock::VerifyAndClearExpectations(&sync_observer);
   testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
 
   EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
               ElementsAre(kSyncKey));
+
+  // Downloading rotated keys via `FetchKeys()` in `kChromeSync` should notify
+  // only `sync_observer`.
+  const std::vector<uint8_t> rotated_sync_key =
+      fake_security_domains_server_->RotateTrustedVaultKey(kSyncKey);
+  EXPECT_TRUE(MarkLocalKeysAsStale(sync_client.get(), account_info));
+  EXPECT_CALL(sync_observer,
+              OnTrustedVaultKeysChanged(testing::Eq(std::nullopt)));
+  EXPECT_CALL(passkeys_observer, OnTrustedVaultKeysChanged).Times(0);
+  EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
+              ElementsAre(kSyncKey, rotated_sync_key));
+  testing::Mock::VerifyAndClearExpectations(&sync_observer);
+  testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
 
   // Recoverability degraded notifications from the backend should be routed to
   // the respective domain client only.
