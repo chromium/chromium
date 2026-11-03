@@ -17,11 +17,13 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
@@ -267,6 +269,27 @@ class CONTENT_EXPORT Database {
                          blink::mojom::IDBCursorDirection direction,
                          std::unique_ptr<GetAllResultSinkWrapper> result_sink,
                          Transaction* transaction);
+
+  using GetRecordsResult =
+      base::expected<std::vector<blink::mojom::IDBRecordPtr>,
+                     blink::mojom::IDBErrorPtr>;
+
+  // Iterating with cursors, returns multiple records (or just keys or just
+  // values, depending on `result_type`), passing them back through
+  // `final_callback`, unless they would potentially overflow a single Mojo
+  // message, in which case some are first streamed back via
+  // `intermediate_callback`.
+  Status GetRecords(
+      int64_t object_store_id,
+      int64_t index_id,
+      blink::IndexedDBKeyRange key_range,
+      blink::mojom::IDBGetAllResultType result_type,
+      uint32_t max_count,
+      blink::mojom::IDBCursorDirection direction,
+      base::FunctionRef<void(std::vector<blink::mojom::IDBRecordPtr>)>
+          intermediate_callback,
+      base::FunctionRef<void(GetRecordsResult)> final_callback,
+      Transaction* transaction);
 
   // If there is no active request, grab a new one from the pending queue and
   // start it. Afterwards, possibly release the database by calling

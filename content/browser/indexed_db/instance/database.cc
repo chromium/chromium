@@ -430,58 +430,41 @@ Status Database::GetOperation(int64_t object_store_id,
   TRACE_EVENT1("IndexedDB", "Database::GetOperation", "txn.id",
                transaction->id());
 
+  if (!key_range.IsOnlyKey()) {
+    return GetRecords(
+        object_store_id, index_id, std::move(key_range),
+        key_only ? blink::mojom::IDBGetAllResultType::Keys
+                 : blink::mojom::IDBGetAllResultType::Values,
+        /*max_count=*/1, blink::mojom::IDBCursorDirection::Next,
+        /*intermediate_callback=*/
+        [](std::vector<blink::mojom::IDBRecordPtr>) { NOTREACHED(); },
+        /*final_callback=*/
+        [&callback, key_only](GetRecordsResult result) {
+          blink::mojom::IDBDatabaseGetResultPtr response;
+          if (!result.has_value()) {
+            response = blink::mojom::IDBDatabaseGetResult::NewErrorResult(
+                std::move(result.error()));
+          } else if (result->empty()) {
+            response = blink::mojom::IDBDatabaseGetResult::NewEmpty(true);
+          } else {
+            CHECK_EQ(result->size(), 1U);
+            blink::mojom::IDBRecordPtr& record = result->front();
+            if (key_only) {
+              response = blink::mojom::IDBDatabaseGetResult::NewKey(
+                  std::move(*record->primary_key));
+            } else {
+              response = blink::mojom::IDBDatabaseGetResult::NewValue(
+                  std::move(record->return_value));
+            }
+          }
+          std::move(callback).Run(std::move(response));
+        },
+        transaction);
+  }
+
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       GetObjectStoreMetadata(object_store_id);
-
-  IndexedDBKey key;
-  if (key_range.IsOnlyKey()) {
-    key = std::move(key_range).TakeOnlyKey();
-  } else {
-    StatusOr<std::unique_ptr<BackingStore::Cursor>> backing_store_cursor;
-    if (index_id == IndexedDBIndexMetadata::kInvalidId) {
-      // ObjectStore Retrieval Operation
-      if (key_only) {
-        backing_store_cursor =
-            transaction->BackingStoreTransaction()->OpenObjectStoreKeyCursor(
-                object_store_id, key_range,
-                blink::mojom::IDBCursorDirection::Next);
-      } else {
-        backing_store_cursor =
-            transaction->BackingStoreTransaction()->OpenObjectStoreCursor(
-                object_store_id, key_range,
-                blink::mojom::IDBCursorDirection::Next);
-      }
-    } else if (key_only) {
-      // Index Value Retrieval Operation
-      backing_store_cursor =
-          transaction->BackingStoreTransaction()->OpenIndexKeyCursor(
-              object_store_id, index_id, key_range,
-              blink::mojom::IDBCursorDirection::Next);
-    } else {
-      // Index Referenced Value Retrieval Operation
-      backing_store_cursor =
-          transaction->BackingStoreTransaction()->OpenIndexCursor(
-              object_store_id, index_id, key_range,
-              blink::mojom::IDBCursorDirection::Next);
-    }
-
-    if (!backing_store_cursor.has_value()) {
-      std::move(callback).Run(
-          blink::mojom::IDBDatabaseGetResult::NewErrorResult(CreateIDBErrorPtr(
-              blink::mojom::IDBException::kUnknownError,
-              "Corruption detected, unable to continue", transaction)));
-      return backing_store_cursor.error();
-    }
-
-    if (!*backing_store_cursor) {
-      // This means we've run out of data.
-      std::move(callback).Run(
-          blink::mojom::IDBDatabaseGetResult::NewEmpty(true));
-      return Status::OK();
-    }
-
-    key = std::move(**backing_store_cursor).TakeKey();
-  }
+  IndexedDBKey key = std::move(key_range).TakeOnlyKey();
 
   if (index_id == IndexedDBIndexMetadata::kInvalidId) {
     // Object Store Retrieval Operation
@@ -683,6 +666,33 @@ Status Database::GetAllOperation(
   TRACE_EVENT1("IndexedDB", "Database::GetAllOperation", "txn.id",
                transaction->id());
 
+  return GetRecords(
+      object_store_id, index_id, std::move(key_range), result_type, max_count,
+      direction,
+      [&result_sink](std::vector<blink::mojom::IDBRecordPtr> records) {
+        result_sink->SendResults(std::move(records), /*done=*/false);
+      },
+      [&result_sink](GetRecordsResult result) {
+        if (!result.has_value()) {
+          result_sink->SendError(std::move(result.error()));
+        } else {
+          result_sink->SendResults(std::move(*result), /*done=*/true);
+        }
+      },
+      transaction);
+}
+
+Status Database::GetRecords(
+    int64_t object_store_id,
+    int64_t index_id,
+    IndexedDBKeyRange key_range,
+    blink::mojom::IDBGetAllResultType result_type,
+    uint32_t max_count,
+    blink::mojom::IDBCursorDirection direction,
+    base::FunctionRef<void(std::vector<blink::mojom::IDBRecordPtr>)>
+        intermediate_callback,
+    base::FunctionRef<void(GetRecordsResult)> final_callback,
+    Transaction* transaction) {
   CHECK_GT(max_count, 0U);
 
   const IndexedDBObjectStoreMetadata& object_store_metadata =
@@ -715,9 +725,9 @@ Status Database::GetAllOperation(
   }
 
   if (!cursor.has_value()) {
-    result_sink->SendError(CreateIDBErrorPtr(
+    final_callback(base::unexpected(CreateIDBErrorPtr(
         blink::mojom::IDBException::kUnknownError,
-        "Corruption detected, unable to continue", transaction));
+        "Corruption detected, unable to continue", transaction)));
     return cursor.error();
   }
 
@@ -725,7 +735,7 @@ Status Database::GetAllOperation(
 
   // No records found.
   if (!*cursor) {
-    result_sink->SendResults(std::move(found_records), /*done=*/true);
+    final_callback(std::move(found_records));
     return Status::OK();
   }
 
@@ -776,7 +786,7 @@ Status Database::GetAllOperation(
         (max_shared_memory_values_in_chunk.has_value() &&
          shared_memory_values_in_chunk >=
              max_shared_memory_values_in_chunk.value())) {
-      result_sink->SendResults(std::move(found_records), /*done=*/false);
+      intermediate_callback(std::move(found_records));
       found_records.clear();
       shared_memory_values_in_chunk = 0;
     }
@@ -786,9 +796,9 @@ Status Database::GetAllOperation(
     if (i != 0) {
       StatusOr<bool> cursor_valid = (*cursor)->Continue();
       if (!cursor_valid.has_value()) {
-        result_sink->SendError(
-            CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
-                              "Seek failure, unable to continue", transaction));
+        final_callback(base::unexpected(CreateIDBErrorPtr(
+            blink::mojom::IDBException::kUnknownError,
+            "Seek failure, unable to continue", transaction)));
         return cursor_valid.error();
       }
 
@@ -838,7 +848,7 @@ Status Database::GetAllOperation(
     found_records.emplace_back(std::move(return_record));
   }
 
-  result_sink->SendResults(std::move(found_records), /*done=*/true);
+  final_callback(std::move(found_records));
   return Status::OK();
 }
 
