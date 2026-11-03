@@ -71,215 +71,130 @@ struct ResolvedPatchedFile {
     id: DataIdentifierCow<'static>,
 }
 
-fn parse_hunk_counts(line: &str) -> Option<(usize, usize)> {
-    let rest = line.strip_prefix("@@ -")?;
-    let (header, _) = rest.split_once(" @@")?;
-    let (old_spec, new_spec) = header.split_once(" +")?;
-    let parse_count = |spec: &str| -> Option<usize> {
-        match spec.split_once(',') {
-            Some((start, cnt)) => {
-                let _: usize = start.parse().ok()?;
-                cnt.parse().ok()
-            }
-            None => {
-                let _: usize = spec.parse().ok()?;
-                Some(1)
-            }
+/// Invoke `git apply -p1` in `work_dir`, piping `patch_bytes` over `stdin`.
+///
+/// Piping via `stdin` with `current_dir(work_dir)` matches
+/// `//tools/crates/gnrt/vendor.rs`. Clearing `GIT_*` repo-discovery variables
+/// and setting `GIT_CEILING_DIRECTORIES` to `work_dir`'s parent (with
+/// `work_dir` already canonicalized) prevents `git apply` from prepending
+/// worktree-relative prefixes if `work_dir` lies inside a Git checkout.
+fn run_git_apply(
+    work_dir: &Path,
+    extra_args: &[&str],
+    patch_path: &Path,
+    patch_bytes: &[u8],
+) -> Result<Vec<u8>> {
+    let mut cmd = std::process::Command::new("git");
+    cmd.current_dir(work_dir)
+        .args(["-c", "core.quotePath=false", "-c", "apply.whitespace=nowarn", "apply", "-p1"])
+        .args(extra_args)
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
+    for var in ["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_PREFIX", "GIT_COMMON_DIR"] {
+        cmd.env_remove(var);
+    }
+    if let Some(parent) = work_dir.parent() {
+        cmd.env("GIT_CEILING_DIRECTORIES", parent);
+    }
+
+    let mut child = cmd.spawn().context("Failed to spawn `git apply`")?;
+    let mut stdin = child.stdin.take().expect("piped stdin");
+    let (write_res, wait_res) = std::thread::scope(|s| {
+        let writer = s.spawn(move || {
+            use std::io::Write;
+            stdin.write_all(patch_bytes)
+        });
+        let out = child.wait_with_output();
+        (writer.join().expect("stdin writer panicked"), out)
+    });
+    let out = wait_res.context("Failed to wait for `git apply`")?;
+    if let Err(err) = write_res {
+        if out.status.success() || err.kind() != std::io::ErrorKind::BrokenPipe {
+            return Err(err).with_context(|| {
+                format!("Failed to write patch {} to `git apply` stdin", patch_path.display())
+            });
         }
-    };
-    Some((parse_count(old_spec)?, parse_count(new_spec)?))
+    }
+    anyhow::ensure!(
+        out.status.success(),
+        "`git apply` failed for patch {}: {}",
+        patch_path.display(),
+        String::from_utf8_lossy(&out.stderr).trim()
+    );
+    Ok(out.stdout)
 }
 
-/// Scan unified `.patch` files for `.json` file headers and classify each
-/// target file as either modifying an existing upstream payload or creating a
-/// new payload from scratch (`--- /dev/null` or `@@ -0,0 +...`).
-fn collect_patched_json_files(patches: &[PathBuf]) -> Result<Vec<PatchedFile>> {
+/// Inspect unified `.patch` files via `git apply -p1 --summary` and
+/// `git apply -p1 --numstat -z`, rejecting unsupported operations (`delete`,
+/// `rename`, `copy`, mode changes, symlinks) and classifying each `.json`
+/// target as modifying an existing payload or creating a new payload (`@@
+/// -0,0`).
+fn collect_patched_json_files(
+    work_dir: &Path,
+    patches: &[(PathBuf, Vec<u8>)],
+) -> Result<Vec<PatchedFile>> {
     let mut entries = Vec::new();
     let mut already_in_overlay = HashSet::new();
 
-    for patch_path in patches {
-        let patch_text = std::fs::read_to_string(patch_path)
-            .with_context(|| format!("Failed to read patch {}", patch_path.display()))?;
-        // `Some(None)` for `--- /dev/null`; `Some(Some(rel))` for `---
-        // a/<rel>`.
-        let mut old_header: Option<Option<String>> = None;
-        // `(rel_path, from_dev_null, hunk_count)` for the active file pair.
-        let mut active_file: Option<(String, bool, usize)> = None;
-        let mut rem_old: usize = 0;
-        let mut rem_new: usize = 0;
-        let mut patch_hunk_total: usize = 0;
-
-        for line in patch_text.lines() {
-            if rem_old > 0 || rem_new > 0 {
-                if line.starts_with(' ') || (line.is_empty() && rem_old > 0 && rem_new > 0) {
-                    anyhow::ensure!(
-                        rem_old > 0 && rem_new > 0,
-                        "Unexpected context line in hunk in patch {}: `{line}`",
-                        patch_path.display()
-                    );
-                    rem_old -= 1;
-                    rem_new -= 1;
-                } else if line.starts_with('-') {
-                    anyhow::ensure!(
-                        rem_old > 0,
-                        "Unexpected `-` line in hunk in patch {}: `{line}`",
-                        patch_path.display()
-                    );
-                    rem_old -= 1;
-                } else if line.starts_with('+') {
-                    anyhow::ensure!(
-                        rem_new > 0,
-                        "Unexpected `+` line in hunk in patch {}: `{line}`",
-                        patch_path.display()
-                    );
-                    rem_new -= 1;
-                } else if line.starts_with('\\') {
-                    // `\ No newline at end of file`
-                } else {
-                    bail!("Malformed hunk body line in patch {}: `{line}`", patch_path.display());
-                }
-                continue;
-            }
-
-            if line.starts_with("--- ") || line == "---" {
-                anyhow::ensure!(
-                    old_header.is_none(),
-                    "Dangling `---` header before `{line}` in patch {}",
-                    patch_path.display()
+    for (patch_path, patch_bytes) in patches {
+        let summary =
+            String::from_utf8(run_git_apply(work_dir, &["--summary"], patch_path, patch_bytes)?)?;
+        let mut created_in_patch = HashSet::new();
+        for line in summary.lines().filter(|l| !l.trim().is_empty()) {
+            let created = if let Some(rest) = line.strip_prefix(" create mode ") {
+                rest.strip_prefix("100644 ")
+            } else {
+                line.strip_prefix(" create ")
+            };
+            let Some(rel_path) = created else {
+                bail!(
+                    "Patch {} contains unsupported operation `{}` (only file modifications and \
+                     regular-file creations are supported)",
+                    patch_path.display(),
+                    line.trim()
                 );
-                if let Some((rel, _, 0)) = &active_file {
-                    bail!(
-                        "Diff header for `{rel}` in patch {} has no `@@` hunks",
-                        patch_path.display()
-                    );
-                }
-                active_file = None;
-
-                if line == "--- /dev/null" || line.starts_with("--- /dev/null\t") {
-                    old_header = Some(None);
-                } else if let Some(rest) = line.strip_prefix("--- a/") {
-                    let rel = rest.split('\t').next().unwrap_or(rest).trim();
-                    anyhow::ensure!(
-                        rel.ends_with(".json"),
-                        "Patch {} targets non-JSON file `{rel}` in `{line}`",
-                        patch_path.display()
-                    );
-                    old_header = Some(Some(rel.to_string()));
-                } else {
-                    bail!(
-                        "Unsupported `---` header in patch {}: `{line}` \
-                         (expected `--- a/<path>.json` or `--- /dev/null`)",
-                        patch_path.display()
-                    );
-                }
-            } else if line.starts_with("+++ ") || line == "+++" {
-                let Some(old) = old_header.take() else {
-                    bail!(
-                        "Unexpected `+++` header without preceding `---` header in patch {}: \
-                         `{line}`",
-                        patch_path.display()
-                    );
-                };
-                if line == "+++ /dev/null" || line.starts_with("+++ /dev/null\t") {
-                    let old_rel = old.unwrap_or_else(|| "/dev/null".to_string());
-                    bail!(
-                        "Patch {} deletes `{old_rel}`, which is unsupported in ICU4X-json \
-                         overlays (missing overlay files fall back to upstream data)",
-                        patch_path.display()
-                    );
-                } else if let Some(rest) = line.strip_prefix("+++ b/") {
-                    let new_rel = rest.split('\t').next().unwrap_or(rest).trim();
-                    anyhow::ensure!(
-                        new_rel.ends_with(".json"),
-                        "Patch {} targets non-JSON file `{new_rel}` in `{line}`",
-                        patch_path.display()
-                    );
-                    match old {
-                        None => {
-                            active_file = Some((new_rel.to_string(), true, 0));
-                        }
-                        Some(old_rel) => {
-                            anyhow::ensure!(
-                                old_rel == new_rel,
-                                "Patch {} renames `{old_rel}` to `{new_rel}`, which is unsupported",
-                                patch_path.display()
-                            );
-                            active_file = Some((new_rel.to_string(), false, 0));
-                        }
-                    }
-                } else {
-                    bail!(
-                        "Unsupported `+++` header in patch {}: `{line}` \
-                         (expected `+++ b/<path>.json`)",
-                        patch_path.display()
-                    );
-                }
-            } else if line.starts_with("@@") {
-                anyhow::ensure!(
-                    old_header.is_none(),
-                    "`---` header without `+++` header before hunk `{line}` in patch {}",
-                    patch_path.display()
-                );
-                let Some((rel, from_dev_null, hunk_count)) = active_file.as_mut() else {
-                    bail!(
-                        "Unexpected hunk header `{line}` without preceding `--- a/...` and \
-                         `+++ b/...` in patch {}",
-                        patch_path.display()
-                    );
-                };
-                let (o_cnt, n_cnt) = parse_hunk_counts(line).with_context(|| {
-                    format!("Invalid hunk header `{line}` in patch {}", patch_path.display())
-                })?;
-                let is_new_file = *from_dev_null || o_cnt == 0;
-                if *hunk_count == 0 {
-                    if is_new_file {
-                        anyhow::ensure!(
-                            already_in_overlay.insert(rel.clone()),
-                            "Patch {} creates `{rel}` (`@@ -0,0`), which was already created or \
-                             modified by an earlier patch",
-                            patch_path.display()
-                        );
-                        entries.push(PatchedFile {
-                            rel_path: rel.clone(),
-                            patch_path: patch_path.clone(),
-                            is_new_file: true,
-                        });
-                    } else if already_in_overlay.insert(rel.clone()) {
-                        entries.push(PatchedFile {
-                            rel_path: rel.clone(),
-                            patch_path: patch_path.clone(),
-                            is_new_file: false,
-                        });
-                    }
-                } else {
-                    anyhow::ensure!(
-                        !is_new_file,
-                        "New-file diff for `{rel}` in patch {} cannot have multiple `@@` hunks",
-                        patch_path.display()
-                    );
-                }
-                *hunk_count += 1;
-                patch_hunk_total += 1;
-                rem_old = o_cnt;
-                rem_new = n_cnt;
-            }
+            };
+            created_in_patch.insert(rel_path.to_string());
         }
 
-        anyhow::ensure!(
-            rem_old == 0 && rem_new == 0,
-            "Truncated hunk at end of patch {}",
-            patch_path.display()
-        );
-        anyhow::ensure!(
-            old_header.is_none(),
-            "Dangling `---` header at end of patch {}",
-            patch_path.display()
-        );
-        if let Some((rel, _, 0)) = &active_file {
-            bail!("Diff header for `{rel}` in patch {} has no `@@` hunks", patch_path.display());
+        let numstat = String::from_utf8(run_git_apply(
+            work_dir,
+            &["--numstat", "-z"],
+            patch_path,
+            patch_bytes,
+        )?)?;
+        let mut record_count = 0usize;
+        for record in numstat.split('\0').filter(|r| !r.is_empty()) {
+            record_count += 1;
+            let rel_path = record.splitn(3, '\t').nth(2).unwrap_or("");
+            anyhow::ensure!(
+                !rel_path.is_empty() && rel_path.ends_with(".json"),
+                "Patch {} targets non-JSON file `{rel_path}`",
+                patch_path.display()
+            );
+            if created_in_patch.remove(rel_path) {
+                anyhow::ensure!(
+                    already_in_overlay.insert(rel_path.to_string()),
+                    "Patch {} creates `{rel_path}` (`@@ -0,0`), which was already created or \
+                     modified by an earlier patch",
+                    patch_path.display()
+                );
+                entries.push(PatchedFile {
+                    rel_path: rel_path.to_string(),
+                    patch_path: patch_path.clone(),
+                    is_new_file: true,
+                });
+            } else if already_in_overlay.insert(rel_path.to_string()) {
+                entries.push(PatchedFile {
+                    rel_path: rel_path.to_string(),
+                    patch_path: patch_path.clone(),
+                    is_new_file: false,
+                });
+            }
         }
         anyhow::ensure!(
-            patch_hunk_total > 0,
+            record_count > 0,
             "Patch {} contains no unified diff hunks",
             patch_path.display()
         );
@@ -418,23 +333,11 @@ fn export_baseline_json_files(
 }
 
 /// Apply each unified `.patch` file in `patches` to `work_dir` using
-/// `patch --batch --no-backup-if-mismatch -p1`.
-fn apply_patch_files(work_dir: &Path, patches: &[PathBuf]) -> Result<()> {
-    for patch_path in patches {
+/// `git apply -p1`.
+fn apply_patch_files(work_dir: &Path, patches: &[(PathBuf, Vec<u8>)]) -> Result<()> {
+    for (patch_path, patch_bytes) in patches {
         log::info!("Applying patch {}...", patch_path.display());
-        let status = std::process::Command::new("patch")
-            .arg("--batch")
-            .arg("--no-backup-if-mismatch")
-            .arg("-p1")
-            .arg("-d")
-            .arg(work_dir)
-            .arg("-i")
-            .arg(std::fs::canonicalize(patch_path)?)
-            .status()
-            .context("Failed to execute `patch` command")?;
-        if !status.success() {
-            bail!("Failed to apply patch {}", patch_path.display());
-        }
+        run_git_apply(work_dir, &[], patch_path, patch_bytes)?;
     }
     Ok(())
 }
@@ -446,13 +349,14 @@ fn apply_patch_files(work_dir: &Path, patches: &[PathBuf]) -> Result<()> {
 /// Because `SourceDataProvider` reads upstream CLDR/ICU ZIP archives on the fly
 /// rather than storing an uncompressed tree of `ICU4X-json` files on disk,
 /// `prepare_patched_overlay`:
-/// 1. Scans `patches` to classify modified vs. newly created `.json` files
+/// 1. Scans `patches` via `git apply -p1 --summary` and `--numstat -z` to
+///    classify modified vs. newly created `.json` files
 ///    (`collect_patched_json_files`).
 /// 2. Exports baseline `.json` files from `provider` into a temporary staging
 ///    directory, checks for missing baselines or `@@ -0,0` upstream collisions,
 ///    and copies the exact modified baseline files into `work_dir`
 ///    (`export_baseline_json_files`).
-/// 3. Runs `patch -p1` in `work_dir` for each file in `patches`
+/// 3. Runs `git apply -p1` in `work_dir` for each file in `patches`
 ///    (`apply_patch_files`).
 pub(crate) fn prepare_patched_overlay(
     provider: &SourceDataProvider,
@@ -460,13 +364,21 @@ pub(crate) fn prepare_patched_overlay(
     patches: &[PathBuf],
 ) -> Result<TempDir> {
     let work_dir = TempDir::new("icu4x_datagen_patched_overlay")?;
+    let canon_work_dir = std::fs::canonicalize(work_dir.path())?;
 
-    let entries = collect_patched_json_files(patches)?;
-    if !entries.is_empty() {
-        export_baseline_json_files(provider, fallbacker, &entries, work_dir.path())?;
+    let mut loaded_patches = Vec::with_capacity(patches.len());
+    for patch_path in patches {
+        let text = std::fs::read_to_string(patch_path)
+            .with_context(|| format!("Failed to read patch {}", patch_path.display()))?;
+        loaded_patches.push((patch_path.clone(), text.replace("\r\n", "\n").into_bytes()));
     }
 
-    apply_patch_files(work_dir.path(), patches)?;
+    let entries = collect_patched_json_files(&canon_work_dir, &loaded_patches)?;
+    if !entries.is_empty() {
+        export_baseline_json_files(provider, fallbacker, &entries, &canon_work_dir)?;
+    }
+
+    apply_patch_files(&canon_work_dir, &loaded_patches)?;
 
     Ok(work_dir)
 }
@@ -582,8 +494,8 @@ mod tests {
         assert!(err.contains("nonexistent/marker/v1/en.json"), "Error was: {err}");
 
         // 2. Modifying an upstream file that is not produced by baseline export
-        //    (e.g. missing attribute `ay/ay.json`) fails before invoking
-        //    `patch`.
+        //    (e.g. missing attribute `ay/ay.json`) fails before invoking `git
+        //    apply`.
         let missing_baseline_patch = patch_dir.path().join("missing_baseline.patch");
         std::fs::write(
             &missing_baseline_patch,
@@ -633,28 +545,93 @@ mod tests {
             "Error was: {err}"
         );
 
-        // 4. Non-`a/`/`b/` headers (`--- old/...` / `+++ new/...`), non-`.json`
-        //    targets, and empty patch files fail loudly in
-        //    `collect_patched_json_files` before reaching `patch -p1`.
-        let non_ab_patch = patch_dir.path().join("non_ab.patch");
+        // 4. Unprefixed headers, unsupported operations (`delete`, `rename`,
+        //    symlink `120000`), non-`.json` targets, empty patches, and
+        //    conflicting duplicate patches fail loudly with the patch filename
+        //    and diagnostic reason; CRLF-normalized patches succeed.
+        let no_prefix_patch = patch_dir.path().join("no_prefix.patch");
         std::fs::write(
-            &non_ab_patch,
-            "--- /dev/null\n\
-             +++ new/locale/names/language/medium/tiny/v1/ay/ay.json\n\
-             @@ -0,0 +1 @@\n\
-             +\"Aymar\"\n",
+            &no_prefix_patch,
+            "--- v1.json\n\
+             +++ v1.json\n\
+             @@ -1 +1 @@\n\
+             -old\n\
+             +new\n",
         )
         .unwrap();
         let err = prepare_patched_overlay(
             &provider,
             fallbacker.clone(),
-            std::slice::from_ref(&non_ab_patch),
+            std::slice::from_ref(&no_prefix_patch),
         )
         .err()
-        .expect("Expected non-b/ header to fail")
+        .expect("Expected unprefixed header to fail")
         .to_string();
-        assert!(err.contains("non_ab.patch"), "Error was: {err}");
-        assert!(err.contains("Unsupported `+++` header"), "Error was: {err}");
+        assert!(err.contains("no_prefix.patch"), "Error was: {err}");
+        assert!(err.contains("unable to find filename in patch"), "Error was: {err}");
+
+        let delete_patch = patch_dir.path().join("delete.patch");
+        std::fs::write(
+            &delete_patch,
+            "--- a/locale/names/language/medium/tiny/v1/en/en.json\n\
+             +++ /dev/null\n\
+             @@ -1 +0,0 @@\n\
+             -\"English\"\n",
+        )
+        .unwrap();
+        let err = prepare_patched_overlay(
+            &provider,
+            fallbacker.clone(),
+            std::slice::from_ref(&delete_patch),
+        )
+        .err()
+        .expect("Expected delete patch to fail")
+        .to_string();
+        assert!(err.contains("delete.patch"), "Error was: {err}");
+        assert!(err.contains("unsupported operation"), "Error was: {err}");
+
+        let rename_patch = patch_dir.path().join("rename.patch");
+        std::fs::write(
+            &rename_patch,
+            "diff --git a/locale/names/language/v0/en.json b/locale/names/language/v0/ay.json\n\
+             similarity index 100%\n\
+             rename from locale/names/language/v0/en.json\n\
+             rename to locale/names/language/v0/ay.json\n",
+        )
+        .unwrap();
+        let err = prepare_patched_overlay(
+            &provider,
+            fallbacker.clone(),
+            std::slice::from_ref(&rename_patch),
+        )
+        .err()
+        .expect("Expected rename patch to fail")
+        .to_string();
+        assert!(err.contains("rename.patch"), "Error was: {err}");
+        assert!(err.contains("unsupported operation"), "Error was: {err}");
+
+        let symlink_patch = patch_dir.path().join("symlink.patch");
+        std::fs::write(
+            &symlink_patch,
+            "diff --git a/locale/names/language/medium/tiny/v1/ay/ay.json b/locale/names/language/medium/tiny/v1/ay/ay.json\n\
+             new file mode 120000\n\
+             --- /dev/null\n\
+             +++ b/locale/names/language/medium/tiny/v1/ay/ay.json\n\
+             @@ -0,0 +1 @@\n\
+             +../en/en.json\n\
+             \\ No newline at end of file\n",
+        )
+        .unwrap();
+        let err = prepare_patched_overlay(
+            &provider,
+            fallbacker.clone(),
+            std::slice::from_ref(&symlink_patch),
+        )
+        .err()
+        .expect("Expected symlink patch to fail")
+        .to_string();
+        assert!(err.contains("symlink.patch"), "Error was: {err}");
+        assert!(err.contains("unsupported operation"), "Error was: {err}");
 
         let non_json_patch = patch_dir.path().join("non_json.patch");
         std::fs::write(
@@ -679,11 +656,79 @@ mod tests {
 
         let empty_patch = patch_dir.path().join("empty.patch");
         std::fs::write(&empty_patch, "# comment only\n").unwrap();
-        let err = prepare_patched_overlay(&provider, fallbacker, &[empty_patch])
+        let err = prepare_patched_overlay(&provider, fallbacker.clone(), &[empty_patch])
             .err()
             .expect("Expected empty patch to fail")
             .to_string();
         assert!(err.contains("empty.patch"), "Error was: {err}");
-        assert!(err.contains("no unified diff hunks"), "Error was: {err}");
+        assert!(err.contains("No valid patches in input"), "Error was: {err}");
+
+        let root = crate::chromium_src_root();
+        let g3_patch = root.join("third_party/rust/icu4x_data/patches/google3-overlay.patch");
+        let err = prepare_patched_overlay(
+            &provider,
+            fallbacker.clone(),
+            &[g3_patch.clone(), g3_patch.clone()],
+        )
+        .err()
+        .expect("Expected double-applying google3-overlay.patch to fail")
+        .to_string();
+        assert!(err.contains("google3-overlay.patch"), "Error was: {err}");
+        assert!(err.contains("patch does not apply"), "Error was: {err}");
+
+        let crlf_patch = patch_dir.path().join("crlf.patch");
+        let lf_text = std::fs::read_to_string(&g3_patch).unwrap();
+        std::fs::write(&crlf_patch, lf_text.replace('\n', "\r\n")).unwrap();
+        let crlf_overlay = prepare_patched_overlay(&provider, fallbacker, &[crlf_patch])
+            .expect("Expected CRLF-normalized patch to apply cleanly");
+        assert!(crlf_overlay.path().join("currency/fractions/v1.json").is_file());
+    }
+
+    #[test]
+    fn test_git_apply_isolated_from_enclosing_git_repo_and_multi_block_create_modify() {
+        let repo_dir = TempDir::new("icu4x_datagen_enclosing_repo").unwrap();
+        let status = std::process::Command::new("git")
+            .arg("init")
+            .current_dir(repo_dir.path())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .expect("Failed to run `git init`");
+        assert!(status.success(), "`git init` failed");
+
+        let work_dir = repo_dir.path().join("sub/work_dir");
+        std::fs::create_dir_all(&work_dir).unwrap();
+        let canon_work_dir = std::fs::canonicalize(&work_dir).unwrap();
+
+        // Multi-block patch that creates a file in the 1st diff block and
+        // modifies the same file in the 2nd diff block (e.g. `git format-patch
+        // --stdout` of 2 commits), tested inside a subdirectory of a Git repo.
+        let patch_path = repo_dir.path().join("create_then_modify.patch");
+        let patch_bytes = b"diff --git a/locale/names/language/medium/tiny/v1/ay/ay.json b/locale/names/language/medium/tiny/v1/ay/ay.json\n\
+            new file mode 100644\n\
+            --- /dev/null\n\
+            +++ b/locale/names/language/medium/tiny/v1/ay/ay.json\n\
+            @@ -0,0 +1 @@\n\
+            +\"Draft\"\n\
+            diff --git a/locale/names/language/medium/tiny/v1/ay/ay.json b/locale/names/language/medium/tiny/v1/ay/ay.json\n\
+            --- a/locale/names/language/medium/tiny/v1/ay/ay.json\n\
+            +++ b/locale/names/language/medium/tiny/v1/ay/ay.json\n\
+            @@ -1 +1 @@\n\
+            -\"Draft\"\n\
+            +\"Aymar\"\n"
+            .to_vec();
+        let loaded = vec![(patch_path, patch_bytes)];
+
+        let entries = collect_patched_json_files(&canon_work_dir, &loaded).unwrap();
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].rel_path, "locale/names/language/medium/tiny/v1/ay/ay.json");
+        assert!(entries[0].is_new_file);
+
+        apply_patch_files(&canon_work_dir, &loaded).unwrap();
+        let content = std::fs::read_to_string(
+            canon_work_dir.join("locale/names/language/medium/tiny/v1/ay/ay.json"),
+        )
+        .unwrap();
+        assert_eq!(content.trim(), "\"Aymar\"");
     }
 }
