@@ -181,7 +181,7 @@ class CdpActorSessionTrackerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidToken("fake-dm-token"));
-    tracker_ = std::make_unique<CdpActorSessionTracker>();
+    tracker_ = CdpActorSessionTracker::CreateForTest();
     tracker_->SetExtractorsForTesting(
         base::BindLambdaForTesting([this]() {
           ++pipe_extractor_calls_;
@@ -208,6 +208,14 @@ class CdpActorSessionTrackerTest : public ChromeRenderViewHostTestHarness {
   int pipe_extractor_calls_ = 0;
   int websocket_extractor_calls_ = 0;
 };
+
+TEST_F(CdpActorSessionTrackerTest, CreateIfEnabledRespectsFeatureFlag) {
+  EXPECT_NE(CdpActorSessionTracker::CreateIfEnabled(), nullptr);
+
+  base::test::ScopedFeatureList disabled_feature;
+  disabled_feature.InitAndDisableFeature(kEventReportingCdpAttribution);
+  EXPECT_EQ(CdpActorSessionTracker::CreateIfEnabled(), nullptr);
+}
 
 TEST_F(CdpActorSessionTrackerTest,
        ClassifyChannelHandlesPipeWebSocketDevToolsUiExtensionAndOther) {
@@ -678,7 +686,7 @@ TEST_F(CdpActorSessionTrackerTest,
   // `ExtractProcessTreeForWebSocket()`) on the background `MayBlock()`
   // sequence.
   tracker_.reset();
-  tracker_ = std::make_unique<CdpActorSessionTracker>();
+  tracker_ = CdpActorSessionTracker::CreateForTest();
 
   auto tab_host =
       base::MakeRefCounted<FakeDevToolsAgentHost>(web_contents(), profile());

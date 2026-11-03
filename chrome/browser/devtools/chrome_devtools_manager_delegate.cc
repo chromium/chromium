@@ -48,6 +48,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -75,6 +76,10 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chromeos/constants/chromeos_features.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+#include "chrome/browser/enterprise/connectors/reporting/cdp_actor_session_tracker.h"
 #endif
 
 static_assert(!BUILDFLAG(IS_ANDROID),
@@ -191,6 +196,11 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
   CHECK(!g_instance, base::NotFatalUntil::M161);
   g_instance = this;
 
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+  cdp_actor_session_tracker_ =
+      enterprise_connectors::CdpActorSessionTracker::CreateIfEnabled();
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+
 #if !BUILDFLAG(IS_CHROMEOS)
   // Only create and hold keep alive for automation test for non ChromeOS.
   // ChromeOS automation test (aka tast) manages chrome instance via session
@@ -295,6 +305,11 @@ void ChromeDevToolsManagerDelegate::HandleCommand(
     content::DevToolsAgentHostClientChannel* channel,
     base::span<const uint8_t> message,
     NotHandledCallback callback) {
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+  if (cdp_actor_session_tracker_) {
+    cdp_actor_session_tracker_->OnCommandHandled(channel);
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
   auto it = sessions_.find(channel);
   if (it == sessions_.end()) {
     std::move(callback).Run(message);
@@ -432,10 +447,20 @@ void ChromeDevToolsManagerDelegate::ClientAttached(
     content::DevToolsAgentHostClientChannel* channel) {
   CHECK(sessions_.find(channel) == sessions_.end(), base::NotFatalUntil::M161);
   sessions_.emplace(channel, std::make_unique<ChromeDevToolsSession>(channel));
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+  if (cdp_actor_session_tracker_) {
+    cdp_actor_session_tracker_->OnClientAttached(channel);
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
 }
 
 void ChromeDevToolsManagerDelegate::ClientDetached(
     content::DevToolsAgentHostClientChannel* channel) {
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+  if (cdp_actor_session_tracker_) {
+    cdp_actor_session_tracker_->OnClientDetached(channel);
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
   sessions_.erase(channel);
 }
 

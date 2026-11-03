@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//content/browser/devtools/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -329,6 +330,7 @@ static_library("devtools") {
       "//chrome/browser/user_education",
       "//chrome/browser/web_applications",
       "//chrome/common",
+      "//components/enterprise/buildflags",
       "//components/guest_view/browser",
       "//components/input",
       "//components/keep_alive_registry",
@@ -354,6 +356,9 @@ static_library("devtools") {
       "//ui/views",
       "//ui/views/controls/webview",
     ]
+    if (enterprise_cdp_attribution) {
+      deps += [ "//chrome/browser/enterprise/connectors/reporting" ]
+    }
     if (is_mac || is_win || is_linux || is_chromeos) {
       deps += [ "//components/webapps/isolated_web_apps:scheme" ]
     }
@@ -640,10 +645,20 @@ source_set("unit_tests") {
         "//chrome/browser/ui/tabs:tab_strip",
         "//chrome/browser/ui/tabs:test_support",
         "//chrome/browser/ui/views:layout_provider",
+        "//components/enterprise/buildflags",
         "//components/infobars/content",
         "//components/infobars/core",
         "//testing/gmock",
+        "//third_party/inspector_protocol:crdtp",
       ]
+      if (enterprise_cdp_attribution) {
+        deps += [
+          "//chrome/browser/enterprise/connectors/reporting",
+          "//components/enterprise/common/proto:browser_events_proto",
+          "//components/enterprise/connectors/core",
+          "//components/policy/core/common:common_constants",
+        ]
+      }
     }
   }
 

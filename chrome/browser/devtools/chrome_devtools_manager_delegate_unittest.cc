@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,6 +26,29 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "chrome/browser/enterprise/connectors/reporting/cdp_actor_session_tracker.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/connectors/core/features.h"
+#include "components/policy/core/common/cloud/dm_token.h"
+#include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_agent_host_client.h"
+#include "content/public/browser/devtools_agent_host_client_channel.h"
+#include "third_party/inspector_protocol/crdtp/json.h"
+#include "third_party/inspector_protocol/crdtp/span.h"
+#endif
 
 namespace {
 
@@ -90,6 +114,8 @@ class ChromeDevToolsManagerDelegateTest : public testing::Test {
     EXPECT_TRUE(manager->infobars().empty());
   }
 
+  TabStripModel* tab_strip() { return tab_strip_.get(); }
+
   std::unique_ptr<ChromeDevToolsManagerDelegate> delegate_;
 
  private:
@@ -147,5 +173,95 @@ TEST_F(ChromeDevToolsManagerDelegateTest,
   EXPECT_EQ(infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE,
             manager->infobars()[0]->delegate()->GetIdentifier());
 }
+
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+class FakeExternalDevToolsClient : public content::DevToolsAgentHostClient {
+ public:
+  explicit FakeExternalDevToolsClient(
+      content::DevToolsAgentHostClient::PeerMetadata metadata)
+      : metadata_(std::move(metadata)) {}
+  ~FakeExternalDevToolsClient() override = default;
+
+  void DispatchProtocolMessage(content::DevToolsAgentHost*,
+                               base::span<const uint8_t>) override {}
+  void AgentHostClosed(content::DevToolsAgentHost*) override {}
+  bool IsTrusted() override { return false; }
+  std::string GetTypeForMetrics() override { return "RemoteDebugger"; }
+  PeerMetadata GetPeerMetadata() override { return metadata_; }
+
+ private:
+  PeerMetadata metadata_;
+};
+
+class FakeDevToolsClientChannel
+    : public content::DevToolsAgentHostClientChannel {
+ public:
+  FakeDevToolsClientChannel(content::DevToolsAgentHost* agent_host,
+                            content::DevToolsAgentHostClient* client)
+      : agent_host_(agent_host), client_(client) {}
+  ~FakeDevToolsClientChannel() override = default;
+
+  void DispatchProtocolMessageToClient(std::vector<uint8_t>) override {}
+  content::DevToolsAgentHost* GetAgentHost() override { return agent_host_; }
+  content::DevToolsAgentHostClient* GetClient() override { return client_; }
+
+ private:
+  raw_ptr<content::DevToolsAgentHost> agent_host_;
+  raw_ptr<content::DevToolsAgentHostClient> client_;
+};
+
+TEST_F(ChromeDevToolsManagerDelegateTest,
+       CdpActorSessionTrackerCreatedAndWiredWhenFeatureEnabled) {
+  // Destroy the default `delegate_` created in `SetUp()` first so its singleton
+  // `g_instance` is cleared before constructing the replacement instance.
+  delegate_.reset();
+  policy::SetDMTokenForTesting(
+      policy::DMToken::CreateValidToken("fake-dm-token"));
+  base::ScopedClosureRunner reset_dm_token(base::BindOnce([] {
+    policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
+  }));
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEventReportingCdpAttribution);
+
+  delegate_ = std::make_unique<ChromeDevToolsManagerDelegate>();
+  auto* manager_delegate =
+      static_cast<content::DevToolsManagerDelegate*>(delegate_.get());
+
+  AddTab();
+  content::WebContents* web_contents = tab_strip()->GetWebContentsAt(0);
+  scoped_refptr<content::DevToolsAgentHost> agent_host =
+      content::DevToolsAgentHost::GetOrCreateForTab(web_contents);
+  content::DevToolsAgentHostClient::PeerMetadata pipe_meta;
+  pipe_meta.transport_type =
+      content::DevToolsAgentHostClient::PeerMetadata::TransportType::kPipe;
+  FakeExternalDevToolsClient client(pipe_meta);
+  FakeDevToolsClientChannel channel(agent_host.get(), &client);
+
+  manager_delegate->ClientAttached(&channel);
+  EXPECT_FALSE(
+      enterprise_connectors::CdpActorSessionTracker::GetEventInitiatorInfo(
+          web_contents)
+          .has_value());
+
+  std::vector<uint8_t> cbor_command;
+  ASSERT_TRUE(
+      crdtp::json::ConvertJSONToCBOR(
+          crdtp::SpanFrom(R"({"id":1,"method":"Page.reload"})"), &cbor_command)
+          .ok());
+  manager_delegate->HandleCommand(&channel, cbor_command, base::DoNothing());
+  std::optional<chrome::cros::reporting::proto::EventInitiatorInfo> initiator =
+      enterprise_connectors::CdpActorSessionTracker::GetEventInitiatorInfo(
+          web_contents);
+  ASSERT_TRUE(initiator.has_value());
+  ASSERT_TRUE(initiator->has_external_process_info());
+  ASSERT_EQ(initiator->external_process_info().external_processes_size(), 1);
+  EXPECT_EQ(
+      initiator->external_process_info().external_processes(0).transport_type(),
+      chrome::cros::reporting::proto::ExternalProcessInfo::TRANSPORT_TYPE_PIPE);
+
+  manager_delegate->ClientDetached(&channel);
+}
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
 
 }  // namespace

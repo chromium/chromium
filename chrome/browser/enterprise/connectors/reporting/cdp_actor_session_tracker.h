@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_CDP_ACTOR_SESSION_TRACKER_H_
 
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -61,7 +62,13 @@ class CdpActorSessionTracker {
     std::optional<net::IPEndPoint> remote_endpoint;
   };
 
-  CdpActorSessionTracker();
+  // Creates a `CdpActorSessionTracker` if `kEventReportingCdpAttribution` is
+  // enabled, or returns `nullptr` if the feature is disabled.
+  static std::unique_ptr<CdpActorSessionTracker> CreateIfEnabled();
+
+  // Creates a `CdpActorSessionTracker` for testing regardless of feature state.
+  static std::unique_ptr<CdpActorSessionTracker> CreateForTest();
+
   CdpActorSessionTracker(const CdpActorSessionTracker&) = delete;
   CdpActorSessionTracker& operator=(const CdpActorSessionTracker&) = delete;
   ~CdpActorSessionTracker();
@@ -117,6 +124,8 @@ class CdpActorSessionTracker {
       const net::IPEndPoint& endpoint) const;
 
  private:
+  CdpActorSessionTracker();
+
   struct TrackedChannel {
     TrackedChannel() = delete;
     TrackedChannel(SessionCategory category,

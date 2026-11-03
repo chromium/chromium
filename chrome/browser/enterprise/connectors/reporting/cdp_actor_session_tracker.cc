@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
@@ -96,6 +98,21 @@ CdpActorSessionTracker::ProcessTreeCacheEntry::operator=(
 
 CdpActorSessionTracker::ProcessTreeCacheEntry::~ProcessTreeCacheEntry() =
     default;
+
+// static
+std::unique_ptr<CdpActorSessionTracker>
+CdpActorSessionTracker::CreateIfEnabled() {
+  if (!base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) {
+    return nullptr;
+  }
+  return base::WrapUnique(new CdpActorSessionTracker());
+}
+
+// static
+std::unique_ptr<CdpActorSessionTracker>
+CdpActorSessionTracker::CreateForTest() {
+  return base::WrapUnique(new CdpActorSessionTracker());
+}
 
 CdpActorSessionTracker::CdpActorSessionTracker()
     : extraction_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
