@@ -102,15 +102,14 @@ void MojoInvitationManager::SendInvitation(mojo::PlatformChannel& channel,
 // static
 void MojoInvitationManager::CollectMojoProxyProcess(
     base::Process proxy_process) {
-  // Wait for some time until the proxy process terminates.
-  // In the common case, Mojo Proxy will exit cleanly once
-  // all portals are closed.
-  constexpr base::TimeDelta timeout = base::Milliseconds(2500);
-  if (proxy_process.WaitForExitWithTimeout(timeout, nullptr)) {
+  // Reap immediately if the proxy has already exited. Do not block waiting for
+  // a clean exit: on browser shutdown ARCVM and external daemons (iioservice,
+  // midis) outlive Chrome, keeping secondary portals open in mojo_proxy so a
+  // timed wait always expires and eats the 3 s session_manager shutdown budget.
+  if (proxy_process.WaitForExitWithTimeout(base::TimeDelta(), nullptr)) {
     return;
   }
 
-  // Otherwise, terminate the process forcefully.
   bool success = proxy_process.Terminate(/*exit_code=*/0, /*wait=*/true);
   LOG_IF(ERROR, !success) << "Failed to terminate Mojo Proxy process";
 }
