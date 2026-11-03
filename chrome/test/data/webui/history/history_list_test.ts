@@ -1325,6 +1325,41 @@ suite('HistoryListTest', function() {
     }
   });
 
+  // <if expr="is_android">
+  test('EmptyStateIllustrationAndroid', async () => {
+    await finishSetup([]);
+    assertFalse(element.$.noResults.hidden);
+    const svg = element.$.noResults.querySelector('svg');
+    assertTrue(!!svg);
+    assertEquals('true', svg.getAttribute('aria-hidden'));
+    assertEquals(
+        loadTimeData.getString('noResults'),
+        element.$.noResults.textContent.trim());
+
+    testProxy.handler.resetResolver('queryHistory');
+    testProxy.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {info: createHistoryInfo('foo'), value: []},
+    }));
+    app.fire('change-query', {search: 'foo'});
+    await testProxy.handler.whenCalled('queryHistory');
+    await microtasksFinished();
+    assertEquals('foo', element.searchedTerm);
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noSearchResults'),
+        element.$.noResults.textContent.trim());
+    assertTrue(!!element.$.noResults.querySelector('svg'));
+  });
+  // </if>
+
+  // <if expr="not is_android">
+  test('EmptyStateNonAndroid', async () => {
+    await finishSetup([]);
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(null, element.$.noResults.querySelector('svg'));
+  });
+  // </if>
+
   teardown(function() {
     app.fire('change-query', {search: ''});
   });

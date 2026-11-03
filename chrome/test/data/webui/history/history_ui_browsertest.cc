@@ -264,6 +264,16 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, RowsKnowWhenSearching) {
   RunTestCase("RowsKnowWhenSearching");
 }
 
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(HistoryListTest, EmptyStateIllustrationAndroid) {
+  RunTestCase("EmptyStateIllustrationAndroid");
+}
+#else
+IN_PROC_BROWSER_TEST_F(HistoryListTest, EmptyStateNonAndroid) {
+  RunTestCase("EmptyStateNonAndroid");
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(HistoryListTest, GoToGeminiChatViaMenuButton) {
   RunTestCase("GoToGeminiChatViaMenuButton");
 }

@@ -50,6 +50,9 @@ build_webui("build") {
     "synced_device_manager.html.ts",
     "synced_device_manager.ts",
   ]
+  if (is_android) {
+    ts_files += [ "empty_state_illustration.html.ts" ]
+  }
   if (!is_chromeos) {
     ts_files += [
       "history_cross_device_signin_promo.html.ts",

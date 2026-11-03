@@ -6,6 +6,9 @@ import type {CrInfiniteListElement} from '//resources/cr_elements/cr_infinite_li
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {HistoryEntry} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 
+// <if expr="is_android">
+import {getHtml as getIllustrationHtml} from './empty_state_illustration.html.js';
+// </if>
 import type {HistoryListElement} from './history_list.js';
 
 export interface TemplatizedDomNodes {
@@ -16,6 +19,9 @@ export function getHtml(this: HistoryListElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="noResults" class="centered-message" ?hidden="${this.hasResults_()}">
+<if expr="is_android">
+  ${getIllustrationHtml()}
+</if>
   ${this.noResultsMessage_()}
 </div>
 
