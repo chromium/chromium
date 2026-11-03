@@ -42,17 +42,18 @@ class ExternalFileRemoverImplTest : public PlatformTest {
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    BrowserListFactory::GetForProfile(profile_.get())
-        ->AddBrowser(browser_.get());
+    BrowserList* browser_list =
+        BrowserListFactory::GetForProfile(profile_.get());
+    browser_list->AddBrowser(browser_.get());
 
 #if TARGET_OS_SIMULATOR
     external_file_remover_ = std::make_unique<ExternalFileRemoverImpl>(
-        profile_.get(), tab_restore_service());
+        browser_list, /*bookmark_model=*/nullptr, tab_restore_service());
 #else
     // System file permission access is not accessible on device tests, set up
     // a custom external file directory.
     external_file_remover_ = std::make_unique<ExternalFileRemoverImpl>(
-        profile_.get(), tab_restore_service(),
+        browser_list, /*bookmark_model=*/nullptr, tab_restore_service(),
         base::apple::FilePathToNSString(GetInboxDirectoryPath()));
 #endif
   }

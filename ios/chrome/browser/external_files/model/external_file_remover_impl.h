@@ -16,7 +16,11 @@
 #import "components/sessions/core/tab_restore_service_observer.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
 
-class ProfileIOS;
+class BrowserList;
+
+namespace bookmarks {
+class BookmarkModel;
+}
 
 namespace sessions {
 class TabRestoreService;
@@ -29,7 +33,8 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   // Creates an ExternalFileRemoverImpl to remove external documents not
   // referenced by the specified BrowserViewController. Use Remove to initiate
   // the removal.
-  ExternalFileRemoverImpl(ProfileIOS* profile,
+  ExternalFileRemoverImpl(BrowserList* browser_list,
+                          bookmarks::BookmarkModel* bookmark_model,
                           sessions::TabRestoreService* tab_restore_service,
                           NSString* inbox_directory_path = nil);
 
@@ -60,9 +65,9 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   NSSet* GetReferencedExternalFiles();
   // Pointer to the tab restore service.
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
-  // ProfileIOS used to get the referenced files. Must outlive this
-  // object.
-  raw_ptr<ProfileIOS> profile_ = nullptr;
+  // BrowserList and BookmarkModel used to get the referenced files.
+  raw_ptr<BrowserList> browser_list_ = nullptr;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_ = nullptr;
   __strong NSString* inbox_directory_path_;
   // Used to ensure that this class' methods are called on the correct sequence.
   SEQUENCE_CHECKER(sequence_checker_);

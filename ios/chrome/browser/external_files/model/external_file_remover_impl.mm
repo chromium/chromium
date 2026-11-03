@@ -17,12 +17,9 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/url_and_title.h"
 #import "components/sessions/core/tab_restore_service.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -151,14 +148,17 @@ void RemoveFilesWithOptions(NSSet* files_to_keep,
 }  // namespace
 
 ExternalFileRemoverImpl::ExternalFileRemoverImpl(
-    ProfileIOS* profile,
+    BrowserList* browser_list,
+    bookmarks::BookmarkModel* bookmark_model,
     sessions::TabRestoreService* tab_restore_service,
     NSString* inbox_directory_path)
     : tab_restore_service_(tab_restore_service),
-      profile_(profile),
+      browser_list_(browser_list),
+      bookmark_model_(bookmark_model),
       inbox_directory_path_(inbox_directory_path
                                 ?: GetDefaultInboxDirectoryPath()),
       weak_ptr_factory_(this) {
+  DCHECK(browser_list_);
   DCHECK(tab_restore_service_);
   tab_restore_service_->AddObserver(this);
 }
@@ -183,6 +183,8 @@ void ExternalFileRemoverImpl::RemoveAfterDelay(base::TimeDelta delay,
 
 void ExternalFileRemoverImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  browser_list_ = nullptr;
+  bookmark_model_ = nullptr;
   if (tab_restore_service_) {
     tab_restore_service_->RemoveObserver(this);
     tab_restore_service_ = nullptr;
@@ -226,12 +228,8 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Add files from all Browsers.
   NSMutableSet* referenced_external_files = [NSMutableSet set];
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
-  const BrowserList::BrowserType browser_types =
-      profile_->IsOffTheRecord()
-          ? BrowserList::BrowserType::kIncognito
-          : BrowserList::BrowserType::kRegularAndInactive;
-  std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
+  std::set<Browser*> browsers = browser_list_->BrowsersOfType(
+      BrowserList::BrowserType::kRegularAndInactive);
   for (Browser* browser : browsers) {
     NSSet* files = ComputeReferencedExternalFiles(browser);
     if (files) {
@@ -239,15 +237,13 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
     }
   }
 
-  bookmarks::BookmarkModel* bookmark_model =
-      ios::BookmarkModelFactory::GetForProfile(profile_);
   // Check if the bookmark model is loaded.
-  if (!bookmark_model || !bookmark_model->loaded()) {
+  if (!bookmark_model_ || !bookmark_model_->loaded()) {
     return referenced_external_files;
   }
 
   // Add files from Bookmarks.
-  for (const auto& bookmark : bookmark_model->GetUniqueUrls()) {
+  for (const auto& bookmark : bookmark_model_->GetUniqueUrls()) {
     GURL bookmark_url = bookmark.url;
     if (UrlIsExternalFileReference(bookmark_url)) {
       [referenced_external_files
