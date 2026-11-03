@@ -391,6 +391,12 @@ void SequenceManagerImpl::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
 }
 
 void SequenceManagerImpl::OnBeginNestedRunLoop() {
+  // See `Settings::can_run_tasks_synchronously`: a nested `RunLoop` must run
+  // inside a task. `OnIdle()` doesn't allow sync work while a task is on
+  // `task_execution_stack`, but a `MessagePump` work item suspended in a nested
+  // loop isn't tracked by `work_tracker_`.
+  CHECK(!settings().can_run_tasks_synchronously ||
+        !main_thread_only().task_execution_stack.empty());
   main_thread_only().nesting_depth++;
   if (main_thread_only().observer) {
     main_thread_only().observer->OnBeginNestedRunLoop();
@@ -457,7 +463,9 @@ void SequenceManagerImpl::MaybeEmitTaskDetails(
 
 void SequenceManagerImpl::SetRunTaskSynchronouslyAllowed(
     bool can_run_tasks_synchronously) {
-  work_tracker_.SetRunTaskSynchronouslyAllowed(can_run_tasks_synchronously);
+  if (settings().can_run_tasks_synchronously) {
+    work_tracker_.SetRunTaskSynchronouslyAllowed(can_run_tasks_synchronously);
+  }
 }
 
 std::optional<SequenceManagerImpl::SelectedTask>

@@ -138,6 +138,12 @@ SequenceManager::Settings::Builder::SetShouldBlockOnScopedFences(bool enable) {
   return *this;
 }
 
+SequenceManager::Settings::Builder&
+SequenceManager::Settings::Builder::SetCanRunTasksSynchronously(bool enable) {
+  settings_.can_run_tasks_synchronously = enable;
+  return *this;
+}
+
 #if DCHECK_IS_ON()
 
 SequenceManager::Settings::Builder&

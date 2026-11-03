@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
@@ -53,6 +54,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -5216,7 +5218,9 @@ TEST_P(SequenceManagerTest, OnTaskPostedCallbacks) {
 class SequenceManagerRunOrPostTaskTest : public testing::Test {
  public:
   SequenceManagerRunOrPostTaskTest() {
-    auto settings = SequenceManager::Settings::Builder().Build();
+    auto settings = SequenceManager::Settings::Builder()
+                        .SetCanRunTasksSynchronously(true)
+                        .Build();
     sequence_manager_ = SequenceManagerForTest::CreateOnCurrentThread(
         std::make_unique<MessagePumpDefault>(), std::move(settings));
     queue_ =
@@ -5501,6 +5505,36 @@ TEST_F(SequenceManagerRunOrPostTaskTest,
 }
 
 // Verify that `RunOrPostTask` from another thread does not run the task
+// synchronously when `Settings::can_run_tasks_synchronously` is false.
+TEST(SequenceManagerRunOrPostTaskNotAllowedTest, FromOtherThread) {
+  auto sequence_manager = SequenceManagerForTest::CreateOnCurrentThread(
+      std::make_unique<MessagePumpDefault>(),
+      SequenceManager::Settings::Builder().Build());
+  auto queue =
+      sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
+  sequence_manager->SetDefaultTaskQueue(queue.get());
+  Thread other_thread{"OtherThread"};
+  other_thread.Start();
+
+  // Imitates being inside a `RunLoop`.
+  sequence_manager->SetRunTaskSynchronouslyAllowed(true);
+
+  bool did_run = false;
+  EXPECT_TRUE(other_thread.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        EXPECT_TRUE(queue->task_runner()->RunOrPostTask(
+            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&] { did_run = true; })));
+        EXPECT_FALSE(did_run);
+      })));
+
+  other_thread.FlushForTesting();
+  EXPECT_FALSE(did_run);
+  RunLoop().RunUntilIdle();
+  EXPECT_TRUE(did_run);
+}
+
+// Verify that `RunOrPostTask` from another thread does not run the task
 // synchronously if there is a running task in a different queue from the same
 // `SequenceManager`.
 TEST_F(SequenceManagerRunOrPostTaskTest,
@@ -5735,6 +5769,76 @@ TEST_F(SequenceManagerRunOrPostTaskTest, CurrentDefaultTaskRunner) {
       })));
 
   FlushOtherThread();
+}
+
+// A `MessagePump` which runs `*native_work` inside a `ScopedDoWorkItem` the
+// first time the loop would otherwise become idle. This mirrors how platform
+// pumps wrap native work (e.g. `MessagePumpEpoll::HandleEvent()`).
+class MessagePumpWithNativeWork : public MessagePump {
+ public:
+  explicit MessagePumpWithNativeWork(OnceClosure* native_work)
+      : native_work_(native_work) {}
+
+  void Run(Delegate* delegate) override {
+    AutoReset<bool> auto_reset_keep_running(&keep_running_, true);
+    for (;;) {
+      Delegate::NextWorkInfo next_work_info = delegate->DoWork();
+      if (!keep_running_) {
+        break;
+      }
+      if (next_work_info.is_immediate()) {
+        continue;
+      }
+      if (*native_work_) {
+        Delegate::ScopedDoWorkItem scoped_do_work_item =
+            delegate->BeginWorkItem();
+        std::move(*native_work_).Run();
+        if (!keep_running_) {
+          break;
+        }
+        continue;
+      }
+      delegate->DoIdleWork();
+      if (!keep_running_) {
+        break;
+      }
+      if (next_work_info.delayed_run_time.is_max()) {
+        event_.Wait();
+      } else {
+        event_.TimedWait(next_work_info.remaining_delay());
+      }
+    }
+  }
+  void Quit() override { keep_running_ = false; }
+  void ScheduleWork() override { event_.Signal(); }
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override {}
+
+ private:
+  const raw_ptr<OnceClosure> native_work_;
+  bool keep_running_ = true;
+  WaitableEvent event_{WaitableEvent::ResetPolicy::AUTOMATIC};
+};
+
+// Verify that a nested `RunLoop` inside native work (not inside a task) is
+// disallowed when tasks may run synchronously in `RunOrPostTask()`.
+TEST(SequenceManagerRunOrPostTaskNativeWorkTest, NestedRunLoopDisallowed) {
+  OnceClosure native_work;
+  auto sequence_manager = SequenceManagerForTest::CreateOnCurrentThread(
+      std::make_unique<MessagePumpWithNativeWork>(&native_work),
+      SequenceManager::Settings::Builder()
+          .SetCanRunTasksSynchronously(true)
+          .Build());
+  auto queue =
+      sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
+  sequence_manager->SetDefaultTaskQueue(queue.get());
+
+  RunLoop outer_run_loop;
+  native_work = BindLambdaForTesting([&] {
+    RunLoop(RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
+    outer_run_loop.Quit();
+  });
+  EXPECT_CHECK_DEATH(outer_run_loop.Run());
 }
 
 // Regression test for a race between `TaskQueueImpl::PostImmediateTaskImpl()`

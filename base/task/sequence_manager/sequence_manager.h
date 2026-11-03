@@ -157,6 +157,11 @@ class BASE_EXPORT SequenceManager {
     // (Note: ScopedThreadPoolExecutionFence only ever affects the ThreadPool.)
     bool should_block_on_scoped_fences = false;
 
+    // Enables `SequencedTaskRunner::RunOrPostTask()` running tasks
+    // synchronously on the calling thread. Not supported if a nested `RunLoop`
+    // ever runs on the bound thread outside of a task (enforced with a CHECK).
+    bool can_run_tasks_synchronously = false;
+
 #if DCHECK_IS_ON()
     // If not zero this seeds a PRNG used by the task selection logic to choose
     // a random TaskQueue for a given priority rather than the TaskQueue with
@@ -306,6 +311,10 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
   // Whether tasks posted to this sequence manager should be delayed when a
   // Scoped(*)ExecutionFence covering the task type exists.
   Builder& SetShouldBlockOnScopedFences(bool enable);
+
+  // Whether `SequencedTaskRunner::RunOrPostTask()` may run tasks synchronously.
+  // See `Settings::can_run_tasks_synchronously`.
+  Builder& SetCanRunTasksSynchronously(bool enable);
 
 #if DCHECK_IS_ON()
   // If not zero this seeds a PRNG used by the task selection logic to choose a
