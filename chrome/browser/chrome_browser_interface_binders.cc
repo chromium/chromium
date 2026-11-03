@@ -14,7 +14,6 @@
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/actor/actor_script_tool_receiver.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/pwc/pwc_api_binder.h"
+#include "chrome/browser/reader_mode/reader_mode_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/speech/on_device_speech_recognition_impl.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
@@ -99,7 +99,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/dom_distiller/distiller_ui_handle_android.h"
+#include "chrome/browser/android/reader_mode/reader_mode_ui_handle_android.h"
 #include "chrome/browser/facilitated_payments/payment_link_handler_binder.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
@@ -245,10 +245,10 @@ void BindDistillerJavaScriptService(
   }
 
   dom_distiller::DomDistillerService* dom_distiller_service =
-      dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(
+      reader_mode::ReaderModeServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
 #if BUILDFLAG(IS_ANDROID)
-  static_cast<dom_distiller::android::DistillerUIHandleAndroid*>(
+  static_cast<reader_mode::android::ReaderModeUIHandleAndroid*>(
       dom_distiller_service->GetDistillerUIHandle())
       ->set_render_frame_host(frame_host);
 #endif

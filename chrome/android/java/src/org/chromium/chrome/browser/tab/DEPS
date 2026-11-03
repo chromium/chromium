@@ -17,7 +17,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerOpenerImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolderSupplier.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/reader_mode/ReaderModeManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/download/DownloadUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDragAndDropBrowserDelegate.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherImpl.java",
@@ -192,6 +192,7 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelper.java",
     "+chrome/browser/ui/android/edge_to_edge/java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/TabStateStore.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/reader_mode/TabDistillabilityProvider.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabPersistentStoreImpl.java"
   ]
 }

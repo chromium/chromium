@@ -38,7 +38,7 @@ public class ContextualPageActionControllerTest {
                     + "ContextualPageActionPriceTracking";
     private static final String CONTEXTUAL_PAGE_ACTION_SHOWN_BUTTON_HISTOGRAM =
             "Android.AdaptiveToolbarButton.Variant.OnPageLoad";
-    private static final String TEST_PAGE = "/chrome/test/data/dom_distiller/simple_article.html";
+    private static final String TEST_PAGE = "/chrome/test/data/reader_mode/simple_article.html";
 
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

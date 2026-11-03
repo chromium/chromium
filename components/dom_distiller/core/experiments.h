@@ -6,7 +6,7 @@
 #define COMPONENTS_DOM_DISTILLER_CORE_EXPERIMENTS_H_
 
 namespace dom_distiller {
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.dom_distiller
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.reader_mode
 enum class DistillerHeuristicsType {
   NONE,
   OG_ARTICLE,

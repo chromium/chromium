@@ -600,7 +600,7 @@ public class CustomTabActivityTest {
     @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS})
     public void testOptionalButton_ReaderModeContextualPageActionShown() {
         String readerModeUrl =
-                mTestServer.getURL("/chrome/test/data/dom_distiller/simple_article.html");
+                mTestServer.getURL("/chrome/test/data/reader_mode/simple_article.html");
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ApplicationProvider.getApplicationContext(), readerModeUrl);

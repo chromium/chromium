@@ -40,7 +40,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -49,6 +48,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.reader_mode.ReaderModeTabUtils;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -530,7 +530,7 @@ public class LocationBarModelTest {
             super(
                     context,
                     NewTabPageDelegate.EMPTY,
-                    DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
+                    ReaderModeTabUtils::getFormattedUrlFromOriginalDistillerUrl,
                     new LocationBarModel.OfflineStatus() {},
                     ObservableSuppliers.createNonNull(ControlsPosition.TOP));
             initializeWithNative();

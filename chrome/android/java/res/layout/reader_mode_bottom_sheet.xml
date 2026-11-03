@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.dom_distiller.ReaderModeBottomSheetView
+<org.chromium.chrome.browser.reader_mode.ReaderModeBottomSheetView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -38,4 +38,4 @@ found in the LICENSE file.
             android:layout_marginBottom="16dp" />
     </ScrollView>
 
-</org.chromium.chrome.browser.dom_distiller.ReaderModeBottomSheetView>
+</org.chromium.chrome.browser.reader_mode.ReaderModeBottomSheetView>

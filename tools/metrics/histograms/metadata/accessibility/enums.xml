@@ -1686,9 +1686,9 @@ Unknown properties are collapsed to zero. -->
              desktop version of the site."/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java:DistillationResult) -->
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/reader_mode/ReaderModeManager.java:DistillationResult) -->
 
-<!-- LINT.IfChange(DomDistillerEntryPoint)-->
+<!-- LINT.IfChange(ReaderModeEntryPoint)-->
 
 <enum name="DomDistillerEntryPoint">
   <summary>Describes the end-state of the distillation result.</summary>
@@ -1699,7 +1699,7 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Through the context menu"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java:DomDistillerEntryPoint) -->
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/reader_mode/ReaderModeManager.java:ReaderModeEntryPoint) -->
 
 <!-- LINT.IfChange(JAWSMajorVersion)-->
 
@@ -2522,7 +2522,7 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="The action was clicked"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeMetrics.java:ReaderModeContextualPageActionEvent) -->
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/reader_mode/ReaderModeMetrics.java:ReaderModeContextualPageActionEvent) -->
 
 <!-- LINT.IfChange(ReaderModePrefsFontFamily) -->
 

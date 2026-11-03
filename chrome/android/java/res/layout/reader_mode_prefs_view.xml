@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.dom_distiller.ReaderModePrefsView
+<org.chromium.chrome.browser.reader_mode.ReaderModePrefsView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -143,4 +143,4 @@ found in the LICENSE file.
         android:orientation="horizontal">
     </LinearLayout>
 
-</org.chromium.chrome.browser.dom_distiller.ReaderModePrefsView>
+</org.chromium.chrome.browser.reader_mode.ReaderModePrefsView>

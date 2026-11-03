@@ -1,7 +1,7 @@
 # crbug.com/1196416 Test filter for browser_tests on mac-rel and Mac10.15-Tests
 
 # In order of flakiness
--DomDistillerTabUtilsBrowserTest.FaviconFromOriginalPage*
+-ReaderModeTabUtilsBrowserTest.FaviconFromOriginalPage*
 -ServiceWorkerMessagingTest.TabToWorker_StopWorkerDisconnects*
 -AutomationApiTest.TabsAutomationBooleanActions*
 -AutomationApiTest.CloseTab*

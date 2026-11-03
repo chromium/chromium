@@ -32,15 +32,15 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.dom_distiller.DistillerHeuristicsType;
-import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
-import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtilsJni;
-import org.chromium.chrome.browser.dom_distiller.ReaderModeActionRateLimiter;
-import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
-import org.chromium.chrome.browser.dom_distiller.ReaderModeMetrics;
-import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.reader_mode.DistillerHeuristicsType;
+import org.chromium.chrome.browser.reader_mode.ReaderModeActionRateLimiter;
+import org.chromium.chrome.browser.reader_mode.ReaderModeManager;
+import org.chromium.chrome.browser.reader_mode.ReaderModeMetrics;
+import org.chromium.chrome.browser.reader_mode.ReaderModeTabUtils;
+import org.chromium.chrome.browser.reader_mode.ReaderModeTabUtilsJni;
+import org.chromium.chrome.browser.reader_mode.TabDistillabilityProvider;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -77,7 +77,7 @@ public class ReaderModeActionProviderTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefService;
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
-    @Mock private DomDistillerTabUtilsJni mDomDistillerTabUtilsJni;
+    @Mock private ReaderModeTabUtilsJni mReaderModeTabUtilsJni;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private OneshotSupplier<Boolean> mButtonVisibilitySupplier;
     @Mock private ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
@@ -87,7 +87,7 @@ public class ReaderModeActionProviderTest {
     @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
         UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
-        DomDistillerTabUtilsJni.setInstanceForTesting(mDomDistillerTabUtilsJni);
+        ReaderModeTabUtilsJni.setInstanceForTesting(mReaderModeTabUtilsJni);
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
         DistillablePageUtilsJni.setInstanceForTesting(mDistillablePageUtilsJniMock);
 
@@ -110,7 +110,7 @@ public class ReaderModeActionProviderTest {
         when(mPrefService.getBoolean(Pref.READER_FOR_ACCESSIBILITY)).thenReturn(false);
 
         TabDistillabilityProvider.from(mMockTab);
-        DomDistillerTabUtils.setExcludeMobileFriendlyForTesting(true);
+        ReaderModeTabUtils.setExcludeMobileFriendlyForTesting(true);
     }
 
     private void setReaderModeBackendSignal(boolean isDistillable) {
@@ -220,7 +220,7 @@ public class ReaderModeActionProviderTest {
 
     @Test
     public void testReaderModeDisabledOnDesktopPages() {
-        DomDistillerTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.OG_ARTICLE);
+        ReaderModeTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.OG_ARTICLE);
         when(mMockNavigationController.getUseDesktopUserAgent()).thenReturn(true);
 
         var provider = new ReaderModeActionProvider(mButtonVisibilitySupplier);
@@ -235,7 +235,7 @@ public class ReaderModeActionProviderTest {
     @Test
     public void testReaderModeDisabledOnDesktopPages_exceptIfHeuristicIsAlwaysTrue() {
         // Set heuristic to flag all sites as distillable.
-        DomDistillerTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.ALWAYS_TRUE);
+        ReaderModeTabUtils.setDistillerHeuristicsForTesting(DistillerHeuristicsType.ALWAYS_TRUE);
 
         WebContents mockWebContents = mock(WebContents.class);
         NavigationController mockNavigationController = mock(NavigationController.class);

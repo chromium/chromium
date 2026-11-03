@@ -19,7 +19,6 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/readaloud/fake_audio_stream_factory.h"
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
 #include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
+#include "chrome/browser/reader_mode/reader_mode_service_factory.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -125,14 +125,10 @@ class MockDelegate : public ReadAloudService::Delegate {
 };
 
 class MockDomDistillerService
-    : public dom_distiller::DomDistillerContextKeyedService {
+    : public reader_mode::ReaderModeContextKeyedService {
  public:
   MockDomDistillerService()
-      : DomDistillerContextKeyedService(nullptr,
-                                        nullptr,
-                                        nullptr,
-                                        nullptr,
-                                        {}) {}
+      : ReaderModeContextKeyedService(nullptr, nullptr, nullptr, nullptr, {}) {}
   MOCK_METHOD(std::unique_ptr<dom_distiller::ViewerHandle>,
               ViewUrlIgnoreCache,
               (dom_distiller::ViewRequestDelegate*,
@@ -474,7 +470,7 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     scoped_feature_list_.InitAndEnableFeature(features::kReadAloudNative);
 
-    dom_distiller::DomDistillerServiceFactory::GetInstance()->SetTestingFactory(
+    reader_mode::ReaderModeServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildMockDomDistillerService));
 
     media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
@@ -508,8 +504,7 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
 
   MockDomDistillerService* mock_distiller_service() {
     return static_cast<MockDomDistillerService*>(
-        dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(
-            profile()));
+        reader_mode::ReaderModeServiceFactory::GetForBrowserContext(profile()));
   }
 
   ReadAloudService* service() {

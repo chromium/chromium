@@ -841,20 +841,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.display_cutout") {
   deps = [ ":chrome_test_java_helper" ]
 }
 
-android_library("chrome_test_java_org.chromium.chrome.browser.dom_distiller") {
-  resources_package = "org.chromium.chrome"
-
-  sources = [
-    "src/org/chromium/chrome/browser/dom_distiller/DistillabilityServiceTest.java",
-    "src/org/chromium/chrome/browser/dom_distiller/DistilledPagePrefsTest.java",
-    "src/org/chromium/chrome/browser/dom_distiller/ReaderModeBottomSheetRenderTest.java",
-    "src/org/chromium/chrome/browser/dom_distiller/ReaderModePrefsRenderTest.java",
-    "src/org/chromium/chrome/browser/dom_distiller/ReaderModeTest.java",
-  ]
-
-  deps = [ ":chrome_test_java_helper" ]
-}
-
 android_library(
     "chrome_test_java_org.chromium.chrome.browser.chrome_item_picker") {
   resources_package = "org.chromium.chrome"
@@ -1304,6 +1290,20 @@ android_library("chrome_test_java_org.chromium.chrome.browser.provider") {
     "src/org/chromium/chrome/browser/provider/ProviderBookmarksUriTest.java",
     "src/org/chromium/chrome/browser/provider/ProviderSearchesUriTest.java",
     "src/org/chromium/chrome/browser/provider/ProviderTestRule.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.reader_mode") {
+  resources_package = "org.chromium.chrome"
+
+  sources = [
+    "src/org/chromium/chrome/browser/reader_mode/DistillabilityServiceTest.java",
+    "src/org/chromium/chrome/browser/reader_mode/DistilledPagePrefsTest.java",
+    "src/org/chromium/chrome/browser/reader_mode/ReaderModeBottomSheetRenderTest.java",
+    "src/org/chromium/chrome/browser/reader_mode/ReaderModePrefsRenderTest.java",
+    "src/org/chromium/chrome/browser/reader_mode/ReaderModeTest.java",
   ]
 
   deps = [ ":chrome_test_java_helper" ]

@@ -1,0 +1,106 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("reader_mode") {
+  sources = [
+    "lazy_reader_mode_service.h",
+    "profile_utils.h",
+    "reader_mode_service_factory.h",
+    "tab_utils.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/zoom",
+    "//components/dom_distiller/core",
+    "//components/keyed_service/core",
+  ]
+
+  if (is_android) {
+    sources += [
+      "../android/reader_mode/reader_mode_ui_handle_android.h",
+      "reader_mode_service_factory_android.h",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "lazy_reader_mode_service.cc",
+    "profile_utils.cc",
+    "reader_mode_service_factory.cc",
+    "tab_utils.cc",
+  ]
+  deps = [
+    ":reader_mode",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/common",
+    "//chrome/common:non_code_constants",
+    "//components/back_forward_cache",
+    "//components/dom_distiller/content/browser",
+  ]
+
+  if (is_android) {
+    sources += [
+      "../android/reader_mode/reader_mode_ui_handle_android.cc",
+      "reader_mode_service_factory_android.cc",
+      "tab_utils_android.cc",
+    ]
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/android:tabs_public",
+      "//components/navigation_interception",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "distillable_page_utils_browsertest.cc",
+      "reader_mode_viewer_source_browsertest.cc",
+      "tab_utils_browsertest.cc",
+      "test_distillation_observers.cc",
+      "test_distillation_observers.h",
+    ]
+    public_deps = [ "//content/public/browser" ]
+    deps = [
+      ":reader_mode",
+      "//base/test:test_support",
+      "//build:chromeos_buildflags",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/common",
+      "//chrome/common:non_code_constants",
+      "//chrome/test:test_support_ui",
+      "//components/back_forward_cache",
+      "//components/dom_distiller/content/browser",
+      "//components/dom_distiller/content/browser:test_support",
+      "//components/dom_distiller/core",
+      "//components/dom_distiller/core:test_support",
+      "//components/favicon/content",
+      "//components/favicon/core",
+      "//components/security_state/content",
+      "//components/security_state/core",
+      "//components/strings:components_strings",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net",
+      "//net:test_support",
+      "//services/network/public/cpp:flags_and_switches",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/blink/public/common:headers",
+      "//ui/base",
+      "//ui/gfx:test_support",
+      "//url",
+    ]
+  }
+}

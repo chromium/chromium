@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.dom_distiller.DistilledPagePrefsView
+<org.chromium.chrome.browser.reader_mode.DistilledPagePrefsView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -89,4 +89,4 @@ found in the LICENSE file.
 
     </LinearLayout>
 
-</org.chromium.chrome.browser.dom_distiller.DistilledPagePrefsView>
+</org.chromium.chrome.browser.reader_mode.DistilledPagePrefsView>

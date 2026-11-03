@@ -80,12 +80,11 @@ def _CheckCompatibleAlertDialogBuilder(input_api, output_api):
   files_to_skip = (
     BROWSER_ROOT + 'autofill/keyboard_accessory/'
     'AutofillKeyboardAccessoryBridge.java',
-    BROWSER_ROOT + 'dom_distiller/DistilledPagePrefsView.java',
-    BROWSER_ROOT + 'dom_distiller/DomDistillerUIUtils.java',
     BROWSER_ROOT + 'download/DownloadController.java',
     BROWSER_ROOT + 'externalnav/ExternalNavigationDelegateImpl.java',
     BROWSER_ROOT + 'payments/AndroidPaymentApp.java',
     BROWSER_ROOT + 'permissions/AndroidPermissionRequester.java',
+    BROWSER_ROOT + 'reader_mode/DistilledPagePrefsView.java',
     BROWSER_ROOT + 'share/ShareDelegateImpl.java',
     BROWSER_ROOT + 'util/AccessibilityUtil.java',
     BROWSER_ROOT + 'webapps/AddToHomescreenDialog.java',
