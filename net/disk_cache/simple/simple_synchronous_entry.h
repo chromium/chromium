@@ -231,7 +231,11 @@ class SimpleSynchronousEntry {
   // it again, but allowing operations to continue to be executed through that
   // instance. The renamed file will be removed once the entry is closed.
   // Returns a net error code.
-  int Doom();
+  //
+  // `sparse_file_may_be_unchecked` should be set to true if there was problem
+  // during initialization, which may result in sparse file not being open
+  // despite existing.
+  int Doom(bool sparse_file_may_be_unchecked);
 
   // Deletes an entry from the file system.  This variant should only be used
   // if there is no actual open instance around, as it doesn't account for
@@ -482,7 +486,8 @@ class SimpleSynchronousEntry {
                                         uint64_t entry_hash,
                                         BackendFileOperations* file_operations);
 
-  int DoomInternal(BackendFileOperations* file_operations);
+  int DoomInternal(BackendFileOperations* file_operations,
+                   bool sparse_file_may_be_unchecked = false);
 
   base::FilePath GetFilenameFromFileIndex(int file_index) const;
 

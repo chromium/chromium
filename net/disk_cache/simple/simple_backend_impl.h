@@ -85,6 +85,10 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  size_t GetNumActiveEntriesForTesting() const {
+    return active_entries_.size();
+  }
+
   // Finishes initialization. Always asynchronous.
   void Init(CompletionOnceCallback completion_callback);
 
