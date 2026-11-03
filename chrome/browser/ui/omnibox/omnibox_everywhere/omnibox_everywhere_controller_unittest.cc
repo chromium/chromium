@@ -48,6 +48,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
+#include "base/strings/strcat.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
 #endif
 
 namespace {
@@ -986,10 +988,22 @@ TEST_F(OmniboxEverywhereControllerTest,
 
 
 TEST_F(OmniboxEverywhereControllerTest, PinToTaskbar) {
+  base::HistogramTester histogram_tester;
   omnibox_everywhere::OmniboxEverywhereController controller;
   base::test::TestFuture<bool> future;
   controller.OfferPinToTaskbar(future.GetCallback());
+#if BUILDFLAG(IS_WIN)
+  // The pin result depends on the OS, so only the Start Menu shortcut that
+  // pinning requires and the attempt on the Omnibox Everywhere channel are
+  // verified.
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(base::PathExists(temp_start_menu_dir_.GetPath().Append(
+      base::StrCat({omnibox_everywhere::GetDisplayName(), L".lnk"}))));
+  histogram_tester.ExpectTotalCount(
+      "Windows.TaskbarPinResult.OmniboxEverywhere", 1);
+#else
   EXPECT_FALSE(future.Get());
+#endif
 }
 
 TEST_F(OmniboxEverywhereControllerTest,

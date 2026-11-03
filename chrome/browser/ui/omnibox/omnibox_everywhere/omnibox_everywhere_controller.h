@@ -114,8 +114,10 @@ class OmniboxEverywhereController
 
   // Offers to pin Omnibox Everywhere to the Windows taskbar via Windows
   // ITaskbarManager, which checks eligibility and prompts the user with the
-  // native OS confirmation dialog.
-  void OfferPinToTaskbar(base::OnceCallback<void(bool)> callback = {});
+  // native OS confirmation dialog. `callback` reports whether the app was
+  // pinned, and always receives false on other platforms.
+  void OfferPinToTaskbar(
+      base::OnceCallback<void(bool)> callback = base::DoNothing());
 
   // Returns the current target profile.
   Profile* target_profile() const { return target_profile_; }

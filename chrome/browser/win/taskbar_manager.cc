@@ -65,6 +65,7 @@ constexpr std::array kChannels = {
     "DefaultBrowserModalDialogWithSettingsImage",
     "DefaultBrowserModalDialogWithoutSettingsImage",
     "DefaultBrowserVisualGuidedSetter",
+    "OmniboxEverywhere",
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/windows/histograms.xml:PinAppToTaskbarChannel)
 

@@ -37,7 +37,31 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
+#include "chrome/browser/win/taskbar_manager.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace omnibox_everywhere {
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+
+void PinToTaskbarIfShortcutExists(base::OnceCallback<void(bool)> callback,
+                                  bool shortcut_exists) {
+  // The shell only allows pinning an AUMI that has a Start Menu shortcut.
+  if (!shortcut_exists) {
+    std::move(callback).Run(false);
+    return;
+  }
+  browser_util::PinAppToTaskbar(
+      GetAppUserModelId(),
+      browser_util::PinAppToTaskbarChannel::kOmniboxEverywhere,
+      std::move(callback));
+}
+
+}  // namespace
+#endif  // BUILDFLAG(IS_WIN)
 
 OmniboxEverywhereController::OmniboxEverywhereController(
     OmniboxEverywhereUIManager::ContentsWrapperFactory contents_wrapper_factory,
@@ -516,9 +540,12 @@ void OmniboxEverywhereController::ExecuteCommand(
 
 void OmniboxEverywhereController::OfferPinToTaskbar(
     base::OnceCallback<void(bool)> callback) {
-  if (callback) {
-    std::move(callback).Run(false);
-  }
+#if BUILDFLAG(IS_WIN)
+  ui_manager_->CreateStartMenuShortcut(
+      base::BindOnce(&PinToTaskbarIfShortcutExists, std::move(callback)));
+#else
+  std::move(callback).Run(false);
+#endif
 }
 
 }  // namespace omnibox_everywhere

@@ -40,6 +40,7 @@ chromium-metrics-reviews@google.com.
       summary=", from the visual guided setter"/>
   <variant name=".FirstRunExperience"
       summary=", from the first run experience"/>
+  <variant name=".OmniboxEverywhere" summary=", from Omnibox Everywhere"/>
   <variant name=".PinToTaskbarInfoBar"
       summary=", from the pin to taskbar infobar"/>
   <variant name=".PinWebApp" summary=", from an installed web app"/>
