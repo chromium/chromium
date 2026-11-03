@@ -641,7 +641,6 @@ if (is_android) {
       "tabbed_startup_window_policy_delegate_bridge.cc",
       "tabbed_startup_window_policy_delegate_bridge.h",
       "trusted_cdn.cc",
-      "trusted_cdn.h",
       "usage_stats/usage_stats_bridge.cc",
       "usage_stats/usage_stats_bridge.h",
       "usage_stats/usage_stats_database.cc",
