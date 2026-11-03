@@ -70,6 +70,10 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   // Turns the speech recognizer off.
   void RecognizerOff();
 
+  // Runs `on_start_callback_` with `kSpeechRecognitionNeverStartedError` if a
+  // start callback is still pending.
+  void MaybeRunStartCallbackWithNeverStartedError();
+
   // Updates properties used for speech recognition.
   void MaybeUpdateProperties(std::optional<std::string> locale,
                              std::optional<bool> interim_results,

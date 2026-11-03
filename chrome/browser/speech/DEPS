@@ -5,3 +5,12 @@ include_rules = [
   "+components/live_caption",
   "+components/soda",
 ]
+
+specific_include_rules = {
+  "chrome_speech_recognition_manager_delegate\\.cc": [
+    "+ash/accessibility/accessibility_controller.h",
+  ],
+  "speech_recognition_browsertest\\.cc": [
+    "+ash/accessibility/accessibility_controller.h",
+  ],
+}
