@@ -38,6 +38,7 @@
 -DevToolsManagerDelegateTest.ShowMinimizedWindow
 -ExtensionApiTest.WindowOpenFocus
 -MediaDialogViewBrowserTest.PictureInPicture
+-MediaDialogViewBrowserTest.PictureInPictureExitFromPage
 -NotificationsTestWithFakeMediaStream.ShouldQueueDuringScreenPresent
 -OmniboxViewViewsTest.SelectionClipboard
 -PasswordBubbleInteractiveUiTest.AutoSigninNoFocus

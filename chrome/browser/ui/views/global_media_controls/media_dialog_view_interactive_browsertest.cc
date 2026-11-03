@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -65,6 +66,7 @@
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 using media_session::mojom::MediaSessionAction;
 
@@ -660,8 +662,10 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
 #if BUILDFLAG(IS_MAC)
 // https://crbug.com/40187901
 #define MAYBE_PictureInPicture DISABLED_PictureInPicture
+#define MAYBE_PictureInPictureExitFromPage DISABLED_PictureInPictureExitFromPage
 #else
 #define MAYBE_PictureInPicture PictureInPicture
+#define MAYBE_PictureInPictureExitFromPage PictureInPictureExitFromPage
 #endif
 // Test is flaky crbug.com/40768654.
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_PictureInPicture) {
@@ -681,6 +685,42 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_PictureInPicture) {
 
   ClickExitPictureInPictureButtonOnDialog();
   WaitForExitPictureInPicture();
+}
+
+// Exiting Picture-in-Picture from outside the dialog must not leave the dialog
+// open but inactive, where nothing would close it. Platforms that show the
+// Picture-in-Picture window inactive keep the dialog active; platforms that
+// focus it (e.g. Wayland) close the dialog when Picture-in-Picture ends.
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
+                       MAYBE_PictureInPictureExitFromPage) {
+  // Open a tab and play media.
+  OpenTestURL();
+  StartPlayback();
+  WaitForStart();
+
+  // Open the media dialog.
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
+
+  ClickEnterPictureInPictureButtonOnDialog();
+  WaitForEnterPictureInPicture();
+  ASSERT_TRUE(MediaDialogView::IsShowing());
+
+  GetActiveWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"document.exitPictureInPicture()", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
+  WaitForExitPictureInPicture();
+
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    if (!MediaDialogView::IsShowing()) {
+      return true;
+    }
+    views::Widget* widget =
+        MediaDialogView::GetDialogViewForTesting()->GetWidget();
+    return widget->IsClosed() || widget->IsActive();
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
