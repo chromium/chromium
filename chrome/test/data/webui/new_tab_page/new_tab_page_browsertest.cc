@@ -65,6 +65,17 @@ class NewTabPageBrowserTest : public NewTabPageMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class NewTabPageLazyLoadBrowserTest : public NewTabPageMochaBrowserTest {
+ protected:
+  NewTabPageLazyLoadBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ntp_features::kNtpLazyLoadComposebox);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 class NewTabPageNextBrowserTest : public NewTabPageMochaBrowserTest {
  protected:
   NewTabPageNextBrowserTest() {
@@ -79,6 +90,10 @@ class NewTabPageNextBrowserTest : public NewTabPageMochaBrowserTest {
 };
 
 using NewTabPageTest = NewTabPageBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(NewTabPageLazyLoadBrowserTest, LazyLoad) {
+  RunTest("new_tab_page/lazy_load_test.js", "mocha.run()");
+}
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, MetricsUtils) {
   RunTest("new_tab_page/metrics_utils_test.js", "mocha.run()");

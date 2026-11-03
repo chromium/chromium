@@ -5,6 +5,22 @@
 import type {ActionChipsHandlerInterface} from '../action_chips.mojom-webui.js';
 import {ActionChipsHandlerFactory, ActionChipsHandlerRemote, PageCallbackRouter} from '../action_chips.mojom-webui.js';
 
+/**
+ * The enum value sent as part of action-chips-retrieval-state-changed.
+ * The handler of the event should expect to receive UPDATED multiple times.
+ */
+export enum ActionChipsRetrievalState {
+  // The initial state. This is not sent as part of the event and can be used as
+  // the default value of a variable containing this enum.
+  INITIAL,
+  // The state used in an event firing when the first and only retrieval
+  // request is sent from this component.
+  REQUESTED,
+  // The state used in events firing when the action chips are updated by a call
+  // from the browser side.
+  UPDATED,
+}
+
 export interface ActionChipsApiProxy {
   getHandler(): ActionChipsHandlerInterface;
   getCallbackRouter(): PageCallbackRouter;

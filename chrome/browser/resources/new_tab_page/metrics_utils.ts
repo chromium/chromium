@@ -166,3 +166,43 @@ export function recordLinearValue(
       },
       value);
 }
+
+/**
+ * Action the user can perform while using voice search. This enum must match
+ * the numbering for NewTabPageVoiceAction in enums.xml. These values are
+ * persisted to logs. Entries should not be renumbered, removed or reused.
+ */
+export enum VoiceAction {
+  ACTIVATE = 0,
+  ACTIVATE_KEYBOARD = 1,
+  CLOSE_OVERLAY = 2,
+  QUERY_SUBMITTED = 3,
+  SUPPORT_LINK_CLICKED = 4,
+  TRY_AGAIN_LINK = 5,
+  TRY_AGAIN_MIC_BUTTON = 6,  // Deprecated.
+  MAX_VALUE = TRY_AGAIN_MIC_BUTTON,
+}
+
+/**
+ * Errors than can occur while using voice search. This enum must match the
+ * numbering for NewTabPageVoiceError in enums.xml. These values are persisted
+ * to logs. Entries should not be renumbered, removed or reused.
+ */
+export enum VoiceError {
+  ABORTED = 0,
+  AUDIO_CAPTURE = 1,
+  BAD_GRAMMAR = 2,
+  LANGUAGE_NOT_SUPPORTED = 3,
+  NETWORK = 4,
+  NO_MATCH = 5,
+  NO_SPEECH = 6,
+  NOT_ALLOWED = 7,
+  OTHER = 8,
+  SERVICE_NOT_ALLOWED = 9,
+  MAX_VALUE = SERVICE_NOT_ALLOWED,
+}
+
+export function recordVoiceAction(action: VoiceAction) {
+  recordEnumeration(
+      'NewTabPage.VoiceActions', action, VoiceAction.MAX_VALUE + 1);
+}

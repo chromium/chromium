@@ -24,7 +24,7 @@ import {WindowProxy} from '../window_proxy.js';
 
 import {getCss} from './action_chips.css.js';
 import {getHtml} from './action_chips.html.js';
-import {ActionChipsApiProxyImpl} from './action_chips_proxy.js';
+import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from './action_chips_proxy.js';
 
 export interface ActionChipClickDetail {
   suggestion: string;
@@ -41,22 +41,6 @@ function recordClick(iconType: IconType) {
 // Records a latency metric.
 function recordLatency(metricName: string, latency: number) {
   chrome.metricsPrivate.recordTime(metricName, Math.round(latency));
-}
-
-/**
- * The enum value sent as part of action-chips-retrieval-state-changed.
- * The handler of the event should expect to receive UPDATED multiple times.
- */
-export enum ActionChipsRetrievalState {
-  // The initial state. This is not sent as part of the event and can be used as
-  // the default value of a variable containing this enum.
-  INITIAL,
-  // The state used in an event firing when the first and only retrieval
-  // request is sent from this component.
-  REQUESTED,
-  // The state used in events firing when the action chips are updated by a call
-  // from the browser side.
-  UPDATED,
 }
 
 const kActionChipsRetrievalStateChangedEvent =

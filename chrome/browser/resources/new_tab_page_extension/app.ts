@@ -6,6 +6,7 @@
 // element below reads from it.
 import '/strings.m.js';
 import '/ntp/action_chips/action_chips.js';
+import '/ntp/doodle_share_dialog.js';
 import '/ntp/lens_upload_dialog.js';
 import '/ntp/logo.js';
 import '/ntp/ntp_composebox.js';
@@ -16,7 +17,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {ActionChipClickDetail} from '/ntp/action_chips/action_chips.js';
-import {ActionChipsRetrievalState} from '/ntp/action_chips/action_chips.js';
+import {ActionChipsRetrievalState} from '/ntp/action_chips/action_chips_proxy.js';
 import {recordBoolean} from '/ntp/metrics_utils.js';
 import type {PageCallbackRouter, PageHandlerInterface, Theme} from '/ntp/new_tab_page.mojom-webui.js';
 import {browserProxyFactory} from '/ntp/new_tab_page.mojom-webui.js';
@@ -56,6 +57,14 @@ const VOICE_AUTO_SUBMIT_IDLE_TIMEOUT_MS = 3000;
 const VOICE_MANUAL_SUBMIT_IDLE_TIMEOUT_MS = 10000;
 const PERMISSION_PROMPT_CSS_CLASS = 'permission-prompt-showing';
 
+// The extension bundles/imports every NTP element it uses upfront in app.js
+// and has no lazy_load.js, so ensureLazyLoaded() is a no-op.
+class NtpExtensionWindowProxy extends WindowProxy {
+  override ensureLazyLoaded(): Promise<void> {
+    return Promise.resolve();
+  }
+}
+WindowProxy.setInstance(new NtpExtensionWindowProxy());
 
 const NtpExtensionAppElementBase = I18nMixinLit(CrLitElement);
 
