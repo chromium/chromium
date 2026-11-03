@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -39,6 +40,7 @@ MenuModelAdapter::MenuModelAdapter(
 }
 
 MenuModelAdapter::~MenuModelAdapter() {
+  CHECK(!is_building_);
   DetachFromMenuModel();
 }
 
@@ -64,6 +66,7 @@ void MenuModelAdapter::BuildMenu(MenuItemView* menu) {
   if (MenuController* const controller = menu->GetMenuController()) {
     controller_guard.emplace(controller->AsWeakPtr());
   }
+  base::AutoReset<bool> building(&is_building_, true);
 
   // Clear the menu.
   if (menu->HasSubmenu()) {

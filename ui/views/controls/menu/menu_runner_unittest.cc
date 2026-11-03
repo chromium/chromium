@@ -34,6 +34,7 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner_impl.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -1724,6 +1725,28 @@ TEST_F(MenuRunnerTest, CancelDuringRebuildOfShowingMenuDefersDestruction) {
   EXPECT_EQ(nullptr, item_tracker.view());
   EXPECT_EQ(nullptr, MenuController::GetActiveInstance());
   EXPECT_EQ(nullptr, model.menu_model_delegate());
+}
+
+// Regression test for crbug.com/580863747.
+TEST_F(MenuRunnerTest, DestroyAdapterDuringRebuildOfShowingMenuCrashes) {
+  OnItemAddedMenuModel model;
+  auto adapter = std::make_unique<MenuModelAdapter>(&model);
+  std::unique_ptr<MenuItemView> menu_view = adapter->CreateMenu();
+  MenuItemView* const raw_menu_view = menu_view.get();
+  auto runner =
+      std::make_unique<MenuRunner>(std::move(menu_view), /*run_types=*/0);
+  runner->RunMenuAt(owner(), /*button_controller=*/nullptr, gfx::Rect(),
+                    MenuAnchorPosition::kTopLeft,
+                    ui::mojom::MenuSourceType::kNone);
+  ASSERT_TRUE(runner->IsRunning());
+
+  model.set_on_item_added(base::BindLambdaForTesting([&] {
+    runner.reset();
+    adapter.reset();
+  }));
+
+  EXPECT_CHECK_DEATH_WITH(adapter->BuildMenu(raw_menu_view),
+                          "Check failed: !is_building_");
 }
 
 }  // namespace views::test

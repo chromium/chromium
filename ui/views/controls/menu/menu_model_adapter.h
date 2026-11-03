@@ -125,6 +125,9 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
 
   // Optional callback triggered during OnMenuClosed().
   base::RepeatingClosure on_menu_closed_callback_;
+
+  // True while BuildMenu() is on the stack.
+  bool is_building_ = false;
 };
 
 }  // namespace views
