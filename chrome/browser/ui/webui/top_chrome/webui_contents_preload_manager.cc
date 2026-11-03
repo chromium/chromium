@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -307,9 +308,11 @@ WebUIContentsPreloadManager::WebUIContentsPreloadManager()
         std::make_unique<webui::ProfilePreloadCandidateSelector>(
             webui_tracker_.get()));
   } else {
-    // Old behavior always preloads Tab Search.
-    SetPreloadCandidateSelector(std::make_unique<FixedCandidateSelector>(
-        GURL(chrome::kChromeUITabSearchURL)));
+    const GURL default_url = organizer_panel::IsOrganizerPanelFeatureEnabled()
+                                 ? GURL(chrome::kChromeUIOrganizerPanelURL)
+                                 : GURL(chrome::kChromeUITabSearchURL);
+    SetPreloadCandidateSelector(
+        std::make_unique<FixedCandidateSelector>(default_url));
   }
 }
 

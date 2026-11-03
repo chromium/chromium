@@ -41,6 +41,7 @@ source_set("organizer_panel") {
   ]
 
   deps = [
+    "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/organizer_panel:resources",

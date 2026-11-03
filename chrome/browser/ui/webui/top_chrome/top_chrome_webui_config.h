@@ -78,6 +78,11 @@ class TopChromeWebUIConfig : public content::WebUIConfig {
   // Returns the command id that can be used in tests to trigger the UI.
   // Optional if this WebUI is not preloadable.
   virtual std::optional<int> GetCommandIdForTesting() = 0;
+
+  // Returns an optional URL whose site engagement should be considered as an
+  // alias for this WebUI when calculating preload candidate suitability.
+  // Useful during UI migrations when a new WebUI replaces an older one.
+  virtual std::optional<GURL> GetPreloadEngagementAliasURL() const;
 };
 
 template <typename T>

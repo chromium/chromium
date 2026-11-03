@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/top_chrome/profile_preload_candidate_selector.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -41,19 +42,17 @@ std::optional<GURL> ProfilePreloadCandidateSelector::GetURLToPreload(
   // Sanity check that the context is a Profile.
   CHECK(context.IsProfile());
   Profile* profile = context.GetProfile();
-  SiteEngagementService* engagement_service =
-      SiteEngagementService::Get(profile);
 
   // Sort the URLs by engagement score in descending order. This is O(nlogn)
   // complexity which is good enough under the assumption that the number of
   // preloadable Top Chrome WebUIs is small. We might revisit the algorithm when
   // necessary.
   std::vector<GURL> sorted_urls = preloadable_urls_;
-  std::sort(sorted_urls.begin(), sorted_urls.end(),
-            [&](const GURL& a, const GURL& b) {
-              return engagement_service->GetScore(a) >
-                     engagement_service->GetScore(b);
-            });
+  std::stable_sort(sorted_urls.begin(), sorted_urls.end(),
+                   [&](const GURL& a, const GURL& b) {
+                     return GetEngagementScore(profile, a) >
+                            GetEngagementScore(profile, b);
+                   });
 
   // Iterate over all preloable URLs to find the URL with the highest
   // engagement score and is not present under the profile.
@@ -69,7 +68,7 @@ std::optional<GURL> ProfilePreloadCandidateSelector::GetURLToPreload(
     // engagement score, we can stop iterating once we find a URL with low
     // engagement score.
     blink::mojom::EngagementLevel engagement_level =
-        engagement_service->GetEngagementLevel(url);
+        GetEngagementLevel(profile, url);
     if (engagement_level == blink::mojom::EngagementLevel::NONE ||
         engagement_level == blink::mojom::EngagementLevel::MINIMAL) {
       return std::nullopt;
@@ -95,6 +94,37 @@ std::optional<GURL> ProfilePreloadCandidateSelector::GetURLToPreload(
   }
 
   return std::nullopt;
+}
+
+double ProfilePreloadCandidateSelector::GetEngagementScore(
+    Profile* profile,
+    const GURL& url) const {
+  SiteEngagementService* engagement_service =
+      SiteEngagementService::Get(profile);
+  double score = engagement_service->GetScore(url);
+  auto* config = TopChromeWebUIConfig::From(profile, url);
+  if (config) {
+    if (std::optional<GURL> alias = config->GetPreloadEngagementAliasURL()) {
+      score = std::max(score, engagement_service->GetScore(*alias));
+    }
+  }
+  return score;
+}
+
+blink::mojom::EngagementLevel
+ProfilePreloadCandidateSelector::GetEngagementLevel(Profile* profile,
+                                                    const GURL& url) const {
+  SiteEngagementService* engagement_service =
+      SiteEngagementService::Get(profile);
+  blink::mojom::EngagementLevel level =
+      engagement_service->GetEngagementLevel(url);
+  auto* config = TopChromeWebUIConfig::From(profile, url);
+  if (config) {
+    if (std::optional<GURL> alias = config->GetPreloadEngagementAliasURL()) {
+      level = std::max(level, engagement_service->GetEngagementLevel(*alias));
+    }
+  }
+  return level;
 }
 
 }  // namespace webui

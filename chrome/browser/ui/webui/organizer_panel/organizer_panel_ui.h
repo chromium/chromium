@@ -29,6 +29,12 @@ class OrganizerPanelUIConfig
     : public DefaultTopChromeWebUIConfig<OrganizerPanelUI> {
  public:
   OrganizerPanelUIConfig();
+
+  // DefaultTopChromeWebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  bool IsPreloadable() override;
+  std::optional<int> GetCommandIdForTesting() override;
+  std::optional<GURL> GetPreloadEngagementAliasURL() const override;
 };
 
 class OrganizerPanelUI
