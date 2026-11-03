@@ -40,7 +40,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               settings_app_id, apps::LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::kNewWindow,
+              ui::mojom::WindowOpenDisposition::kNewWindow,
               apps::LaunchSource::kFromCommandLine));
   EXPECT_EQ(contents,
             settings_browser->GetTabStripModel()->GetActiveWebContents());

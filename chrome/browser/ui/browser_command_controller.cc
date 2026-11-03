@@ -153,8 +153,8 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -657,7 +657,7 @@ bool BrowserCommandController::IsCommandEnabled(int id) const {
 
 bool BrowserCommandController::ExecuteCommandWithDispositionAndContext(
     int id,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     std::optional<actions::ActionInvocationContext> context,
     base::TimeTicks time_stamp) {
   if (!SupportsCommand(id) || !IsCommandEnabled(id)) {
@@ -683,7 +683,7 @@ bool BrowserCommandController::ExecuteCommandWithDispositionAndContext(
 
 void BrowserCommandController::HandleCommandWithDisposition(
     int id,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     base::TimeTicks time_stamp) {
   DCHECK(IsCommandEnabled(id)) << "Invalid/disabled command " << id;
 

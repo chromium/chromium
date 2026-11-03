@@ -19,8 +19,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 MockTabModalConfirmDialogDelegate::MockTabModalConfirmDialogDelegate(
     content::WebContents* web_contents,
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(TabModalConfirmDialogTest, CloseSelf) {
 IN_PROC_BROWSER_TEST_F(TabModalConfirmDialogTest, Navigate) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL("about:blank"), WindowOpenDisposition::kCurrentTab,
+          GURL("about:blank"), ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
   browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
       params, /*navigation_handle_callback=*/{});

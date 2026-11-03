@@ -8,8 +8,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using content::WebContents;
 
@@ -58,7 +58,7 @@ void TabModalConfirmDialogDelegate::Close() {
 }
 
 void TabModalConfirmDialogDelegate::LinkClicked(
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   if (closing_) {
     return;
   }
@@ -99,7 +99,7 @@ void TabModalConfirmDialogDelegate::OnAccepted() {}
 void TabModalConfirmDialogDelegate::OnCanceled() {}
 
 void TabModalConfirmDialogDelegate::OnLinkClicked(
-    WindowOpenDisposition disposition) {}
+    ui::mojom::WindowOpenDisposition disposition) {}
 
 void TabModalConfirmDialogDelegate::OnClosed() {}
 

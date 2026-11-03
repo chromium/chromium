@@ -24,8 +24,8 @@
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -52,11 +52,11 @@ void OnDialogAccepted(content::PageNavigator* navigator,
     base::RecordAction(
         base::UserMetricsAction("OutdatedUpgradeBubble.Reinstall"));
 
-    navigator->OpenURL(
-        content::OpenURLParams::CreateBrowserInitiated(
-            GURL(update_browser_redirect_url),
-            WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
-        /*navigation_handle_callback=*/{});
+    navigator->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                           GURL(update_browser_redirect_url),
+                           ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                           ui::PAGE_TRANSITION_LINK),
+                       /*navigation_handle_callback=*/{});
 #if BUILDFLAG(IS_WIN)
   } else {
     CHECK(UpgradeDetector::GetInstance()->is_outdated_install_no_au(),

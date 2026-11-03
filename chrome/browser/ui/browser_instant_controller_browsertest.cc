@@ -32,7 +32,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace chrome {
 
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInstantControllerTest,
         kTabReloadTestCasesFinalProviderNotGoogle[i];
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(test.start_url),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();

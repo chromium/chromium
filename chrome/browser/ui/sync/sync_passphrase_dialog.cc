@@ -25,7 +25,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -37,7 +37,7 @@ void OpenSyncDashboardAndCloseDialog(BrowserWindowInterface& browser,
       GURL(chrome::kSyncGoogleDashboardURL),
       g_browser_process->GetApplicationLocale());
   browser.OpenGURL(sync_dashboard_url,
-                   WindowOpenDisposition::kNewForegroundTab);
+                   ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   model->host()->Close();
 }
 

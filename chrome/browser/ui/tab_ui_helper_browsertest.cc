@@ -40,8 +40,8 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image.h"
 
 namespace {
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, DiscardUiChangeIsNotified) {
 
 IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, NotifyWhenTabVisibilityChanges) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetURL(), WindowOpenDisposition::kNewBackgroundTab,
+      browser(), GetURL(), ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, NetworkStateChangeIsNotified) {
   EXPECT_CALL(*tab_ui_change_waiter, OnTabUIChange())
       .Times(testing::AnyNumber());
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetURL(), WindowOpenDisposition::kCurrentTab,
+      browser(), GetURL(), ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(tab_ui_helper->GetTabNetworkState(), tabs::TabNetworkState::kNone);
 }
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, TabCrashStateChangeIsNotified) {
 IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, ShouldHideThrobberIsNotified) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(1);

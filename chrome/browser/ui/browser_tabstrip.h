@@ -12,8 +12,8 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 class GURL;
 
@@ -71,7 +71,7 @@ content::WebContents* AddWebContents(
     content::WebContents* source_contents,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     NavigateParams::WindowAction window_action =
         NavigateParams::WindowAction::kShowWindow,

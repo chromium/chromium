@@ -165,9 +165,9 @@
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
@@ -405,7 +405,8 @@ bool Browser::IsDeleteScheduled() const {
   return UnloadController::From(this)->is_delete_scheduled();
 }
 
-void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
+void Browser::OpenGURL(const GURL& gurl,
+                       ui::mojom::WindowOpenDisposition disposition) {
   OpenURL(content::OpenURLParams::CreateBrowserInitiated(
               gurl, disposition, ui::PAGE_TRANSITION_LINK),
           /*navigation_handle_callback=*/{});

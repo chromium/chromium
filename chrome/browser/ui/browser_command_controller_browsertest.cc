@@ -94,8 +94,8 @@
 #include "net/base/network_change_notifier.h"
 #include "ui/actions/actions.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -741,17 +741,17 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
     // management command states. This mostly involves opening a new tab and
     // ensuring that we are able to navigate back and forward for the test.
     OpenUrlWithDisposition(GURL("chrome://new-tab-page/"),
-                           WindowOpenDisposition::kNewForegroundTab);
+                           ui::mojom::WindowOpenDisposition::kNewForegroundTab);
     OpenUrlWithDisposition(GURL("chrome://version/"),
-                           WindowOpenDisposition::kCurrentTab);
+                           ui::mojom::WindowOpenDisposition::kCurrentTab);
     OpenUrlWithDisposition(GURL("about:blank"),
-                           WindowOpenDisposition::kCurrentTab);
+                           ui::mojom::WindowOpenDisposition::kCurrentTab);
 
     // Go back by one page to ensure the forward command is also available for
     // testing purposes.
     content::TestNavigationObserver navigation_observer(
         browser()->tab_strip_model()->GetActiveWebContents());
-    chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     navigation_observer.Wait();
     ASSERT_TRUE(chrome::CanGoBack(browser()));
     ASSERT_TRUE(chrome::CanGoForward(browser()));
@@ -837,7 +837,8 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
   }
 
  private:
-  void OpenUrlWithDisposition(GURL url, WindowOpenDisposition disposition) {
+  void OpenUrlWithDisposition(GURL url,
+                              ui::mojom::WindowOpenDisposition disposition) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, disposition,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
@@ -1109,7 +1110,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        PRE_TestTabRestoreCommandEnabled) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());

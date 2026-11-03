@@ -28,8 +28,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -161,7 +161,7 @@ void FullscreenKeyboardBrowserTestBase::StartFullscreenLockPage() {
   ui_test_utils::NavigateToURLWithDisposition(
       GetActiveBrowser(),
       GetEmbeddedTestServer()->GetURL(kFullscreenKeyboardLockHTML),
-      WindowOpenDisposition::kCurrentTab,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_NO_FATAL_FAILURE(FocusOnLastActiveBrowser());
   GetActiveWebContents()->Focus();
@@ -316,7 +316,7 @@ void FullscreenKeyboardBrowserTestBase::SendShortcutsAndExpectNotPrevented(
             "</script></html>";
         ui_test_utils::NavigateToURLWithDisposition(
             this->GetActiveBrowser(), GURL("data:text/html," + page),
-            WindowOpenDisposition::kCurrentTab,
+            ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
         ASSERT_NO_FATAL_FAILURE(this->SendJsFullscreenShortcutAndWait());
       }

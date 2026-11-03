@@ -27,8 +27,8 @@
 #include "components/prefs/pref_member.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "ui/actions/actions.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/base/window_open_disposition.h"
 
 class BrowserWindow;
 class BrowserWindowInterface;
@@ -140,14 +140,15 @@ class BrowserCommandController : public CommandUpdater,
   // CommandUpdater:
   bool ExecuteCommandWithDispositionAndContext(
       int id,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       std::optional<actions::ActionInvocationContext> context,
       base::TimeTicks time_stamp) override;
 
   // CommandUpdaterDelegate:
-  void HandleCommandWithDisposition(int id,
-                                    WindowOpenDisposition disposition,
-                                    base::TimeTicks time_stamp) override;
+  void HandleCommandWithDisposition(
+      int id,
+      ui::mojom::WindowOpenDisposition disposition,
+      base::TimeTicks time_stamp) override;
 
   // Overridden from TabStripModelObserver:
   void OnTabStripModelChanged(

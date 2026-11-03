@@ -68,7 +68,7 @@
 #include "content/public/common/page_zoom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/ui/browser_commands_mac.h"
@@ -5246,7 +5246,7 @@ void BrowserActions::InitializeNavigationActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                WindowOpenDisposition disposition =
+                ui::mojom::WindowOpenDisposition disposition =
                     context.GetProperty(chrome::kDispositionKey);
                 chrome::GoBack(bwi, disposition);
               },
@@ -5259,7 +5259,7 @@ void BrowserActions::InitializeNavigationActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                WindowOpenDisposition disposition =
+                ui::mojom::WindowOpenDisposition disposition =
                     context.GetProperty(chrome::kDispositionKey);
                 chrome::Reload(bwi, disposition);
               },
@@ -5283,7 +5283,7 @@ void BrowserActions::InitializeNavigationActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                WindowOpenDisposition disposition =
+                ui::mojom::WindowOpenDisposition disposition =
                     context.GetProperty(chrome::kDispositionKey);
                 chrome::ClearCache(bwi);
                 chrome::ReloadBypassingCache(bwi, disposition);
@@ -5297,7 +5297,7 @@ void BrowserActions::InitializeNavigationActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                WindowOpenDisposition disposition =
+                ui::mojom::WindowOpenDisposition disposition =
                     context.GetProperty(chrome::kDispositionKey);
                 chrome::ReloadBypassingCache(bwi, disposition);
               },
@@ -5321,7 +5321,7 @@ void BrowserActions::InitializeNavigationActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                WindowOpenDisposition disposition =
+                ui::mojom::WindowOpenDisposition disposition =
                     context.GetProperty(chrome::kDispositionKey);
                 chrome::Home(bwi, disposition);
               },
@@ -5334,7 +5334,7 @@ void BrowserActions::InitializeNavigationActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                WindowOpenDisposition disposition =
+                ui::mojom::WindowOpenDisposition disposition =
                     context.GetProperty(chrome::kDispositionKey);
                 chrome::GoForward(bwi, disposition);
               },

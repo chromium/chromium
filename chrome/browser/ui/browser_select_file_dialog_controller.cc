@@ -18,8 +18,8 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
@@ -108,7 +108,8 @@ void BrowserSelectFileDialogController::FileSelected(
   if (!url.is_empty()) {
     page_navigator_->OpenURL(
         content::OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
+            url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
         /*navigation_handle_callback=*/{});
   }
 }

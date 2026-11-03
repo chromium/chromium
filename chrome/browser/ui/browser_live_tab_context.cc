@@ -62,7 +62,6 @@
 #include "content/public/browser/session_storage_namespace_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/window_open_disposition.h"
 
 using content::NavigationController;
 using content::SessionStorageNamespaceHandle;

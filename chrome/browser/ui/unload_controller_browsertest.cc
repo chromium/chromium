@@ -53,7 +53,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -410,7 +410,7 @@ class UnloadControllerDownloadBrowserTest : public InProcessBrowserTest {
         browser(),
         embedded_test_server()->GetURL(
             content::SlowDownloadHttpResponse::kKnownSizeUrl),
-        WindowOpenDisposition::kCurrentTab,
+        ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     observer.WaitForFinished();
     ASSERT_EQ(1u, observer.NumDownloadsSeenInState(

@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace content {
 class WebContents;
@@ -75,7 +75,7 @@ class TabModalConfirmDialogDelegate : public content::WebContentsObserver {
   // not in the process of closing. The |disposition| specifies how the
   // resulting document should be loaded (based on the event flags present when
   // the link was clicked).
-  void LinkClicked(WindowOpenDisposition disposition);
+  void LinkClicked(ui::mojom::WindowOpenDisposition disposition);
 
   // The title of the dialog. Note that the title is not shown on all platforms.
   virtual std::u16string GetTitle() = 0;
@@ -131,7 +131,7 @@ class TabModalConfirmDialogDelegate : public content::WebContentsObserver {
   // LinkClicked(), which checks that the dialog is not in the process of
   // closing. It's correct to close the dialog by calling Accept(), Cancel()
   // or Close() from this callback.
-  virtual void OnLinkClicked(WindowOpenDisposition disposition);
+  virtual void OnLinkClicked(ui::mojom::WindowOpenDisposition disposition);
 
   // Close the dialog.
   void CloseDialog();

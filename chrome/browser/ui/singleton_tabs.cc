@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 void ShowSingletonTab(Profile* profile, const GURL& url) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
@@ -51,7 +51,7 @@ void ShowSingletonTabOverwritingNTP(
 }
 
 void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
-  CHECK_EQ(params->disposition, WindowOpenDisposition::kSingletonTab,
+  CHECK_EQ(params->disposition, ui::mojom::WindowOpenDisposition::kSingletonTab,
            base::NotFatalUntil::M162);
   content::WebContents* contents =
       params->browser->GetTabStripModel()->GetActiveWebContents();
@@ -62,7 +62,7 @@ void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
       int tab_index =
           GetIndexOfExistingTabMatchingURL(params->browser, *params);
       if (tab_index < 0) {
-        params->disposition = WindowOpenDisposition::kCurrentTab;
+        params->disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
       } else {
         params->switch_to_singleton_tab =
             params->browser->GetTabStripModel()->GetWebContentsAt(tab_index);
@@ -75,7 +75,7 @@ void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
 NavigateParams GetSingletonTabNavigateParams(BrowserWindowInterface* browser,
                                              const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::kSingletonTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kSingletonTab;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = true;
   params.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;

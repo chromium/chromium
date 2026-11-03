@@ -217,8 +217,8 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/views_features.h"
@@ -675,28 +675,28 @@ const extensions::Extension* GetExtensionForBrowser(
 // revert any omnibox edits in the |current_tab|.
 tabs::TabInterface* GetTabAndRevertIfNecessaryHelper(
     BrowserWindowInterface* browser,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     tabs::TabInterface* current_tab) {
   CHECK(current_tab);
   WebContents* current_contents = current_tab->GetContents();
 
   switch (disposition) {
-    case WindowOpenDisposition::kNewForegroundTab:
-    case WindowOpenDisposition::kNewBackgroundTab: {
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab: {
       std::unique_ptr<WebContents> new_tab = current_contents->Clone();
       WebContents* raw_new_tab = new_tab.get();
-      if (disposition == WindowOpenDisposition::kNewBackgroundTab) {
+      if (disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
         new_tab->WasHidden();
       }
       browser->GetTabStripModel()->AddWebContents(
           std::move(new_tab), -1, ui::PAGE_TRANSITION_LINK,
-          (disposition == WindowOpenDisposition::kNewForegroundTab)
+          (disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab)
               ? AddTabTypes::ADD_ACTIVE
               : AddTabTypes::ADD_NONE,
           current_tab->GetGroup());
       return browser->GetTabStripModel()->GetTabForWebContents(raw_new_tab);
     }
-    case WindowOpenDisposition::kNewWindow: {
+    case ui::mojom::WindowOpenDisposition::kNewWindow: {
       std::unique_ptr<WebContents> new_tab = current_contents->Clone();
       WebContents* raw_new_tab = new_tab.get();
       BrowserWindowInterface* new_browser = CreateNewBrowser(browser, true);
@@ -715,13 +715,13 @@ tabs::TabInterface* GetTabAndRevertIfNecessaryHelper(
 // Like the above, but auto-computes the current tab
 tabs::TabInterface* GetTabAndRevertIfNecessary(
     BrowserWindowInterface* browser,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   tabs::TabInterface* active_tab = browser->GetTabStripModel()->GetActiveTab();
   return GetTabAndRevertIfNecessaryHelper(browser, disposition, active_tab);
 }
 
 void ReloadInternal(BrowserWindowInterface* browser,
-                    WindowOpenDisposition disposition,
+                    ui::mojom::WindowOpenDisposition disposition,
                     bool bypass_cache) {
   TabStripModel* const tab_strip_model = browser->GetTabStripModel();
   tabs::TabInterface* const active_tab = tab_strip_model->GetActiveTab();
@@ -864,7 +864,7 @@ bool ExecuteCommandWithContext(BrowserWindowInterface* browser,
 
 bool ExecuteCommandWithDisposition(BrowserWindowInterface* browser,
                                    int command,
-                                   WindowOpenDisposition disposition,
+                                   ui::mojom::WindowOpenDisposition disposition,
                                    base::TimeTicks time_stamp) {
   return BrowserCommandController::From(browser)->ExecuteCommandWithDisposition(
       command, disposition, std::nullopt, time_stamp);
@@ -873,7 +873,7 @@ bool ExecuteCommandWithDisposition(BrowserWindowInterface* browser,
 bool ExecuteCommandWithDispositionAndContext(
     BrowserWindowInterface* browser,
     int command,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     actions::ActionInvocationContext context,
     base::TimeTicks time_stamp) {
   return BrowserCommandController::From(browser)->ExecuteCommandWithDisposition(
@@ -1085,7 +1085,7 @@ void MaybeShowFeatureBackNavigationMenuPromo(BrowserWindowInterface* browser,
 }
 
 void GoBack(BrowserWindowInterface* browser,
-            WindowOpenDisposition disposition) {
+            ui::mojom::WindowOpenDisposition disposition) {
   tabs::TabInterface* tab = GetTabAndRevertIfNecessary(browser, disposition);
   CHECK(tab);
   GoBack(tab->GetContents());
@@ -1133,7 +1133,7 @@ bool ShouldEnableForwardButton(const BrowserWindowInterface* browser) {
 }
 
 void GoForward(BrowserWindowInterface* browser,
-               WindowOpenDisposition disposition) {
+               ui::mojom::WindowOpenDisposition disposition) {
   base::RecordAction(UserMetricsAction("Forward"));
   if (CanGoForward(browser)) {
     tabs::TabInterface* tab = GetTabAndRevertIfNecessary(browser, disposition);
@@ -1149,9 +1149,10 @@ void GoForward(content::WebContents* web_contents) {
   }
 }
 
-void NavigateToIndexWithDisposition(BrowserWindowInterface* browser,
-                                    int index,
-                                    WindowOpenDisposition disposition) {
+void NavigateToIndexWithDisposition(
+    BrowserWindowInterface* browser,
+    int index,
+    ui::mojom::WindowOpenDisposition disposition) {
   tabs::TabInterface* tab = GetTabAndRevertIfNecessary(browser, disposition);
   CHECK(tab);
   WebContents* web_contents = tab->GetContents();
@@ -1163,13 +1164,13 @@ void NavigateToIndexWithDisposition(BrowserWindowInterface* browser,
 }
 
 void Reload(BrowserWindowInterface* browser,
-            WindowOpenDisposition disposition) {
+            ui::mojom::WindowOpenDisposition disposition) {
   base::RecordAction(UserMetricsAction("Reload"));
   ReloadInternal(browser, disposition, false);
 }
 
 void ReloadBypassingCache(BrowserWindowInterface* browser,
-                          WindowOpenDisposition disposition) {
+                          ui::mojom::WindowOpenDisposition disposition) {
   base::RecordAction(UserMetricsAction("ReloadBypassingCache"));
   ReloadInternal(browser, disposition, true);
 }
@@ -1180,7 +1181,8 @@ bool CanReload(const BrowserWindowInterface* browser) {
          !DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(browser);
 }
 
-void Home(BrowserWindowInterface* browser, WindowOpenDisposition disposition) {
+void Home(BrowserWindowInterface* browser,
+          ui::mojom::WindowOpenDisposition disposition) {
   base::RecordAction(UserMetricsAction("Home"));
 
   std::string extra_headers;
@@ -1210,8 +1212,8 @@ void Home(BrowserWindowInterface* browser, WindowOpenDisposition disposition) {
     url = extensions::AppLaunchInfo::GetLaunchWebURL(extension);
   }
 
-  if (disposition == WindowOpenDisposition::kCurrentTab ||
-      disposition == WindowOpenDisposition::kNewForegroundTab) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab ||
+      disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab) {
     extensions::MaybeShowExtensionControlledHomeNotification(
         browser, browser->GetTabStripModel()->GetActiveWebContents());
   }
@@ -1316,7 +1318,7 @@ void NewWindow(BrowserWindowInterface* browser) {
       launch_container = apps::LaunchContainer::kLaunchContainerTab;
     }
     apps::AppLaunchParams params = apps::AppLaunchParams(
-        app_id, launch_container, WindowOpenDisposition::kNewWindow,
+        app_id, launch_container, ui::mojom::WindowOpenDisposition::kNewWindow,
         apps::LaunchSource::kFromKeyboard);
     web_app::LaunchExtensionOrWebApp(profile, std::move(params),
                                      base::DoNothing());
@@ -1328,7 +1330,7 @@ void NewWindow(BrowserWindowInterface* browser) {
   const extensions::Extension* extension = GetExtensionForBrowser(browser);
   if (extension && extension->is_hosted_app()) {
     const auto app_launch_params = CreateAppLaunchParamsUserContainer(
-        profile, extension, WindowOpenDisposition::kNewWindow,
+        profile, extension, ui::mojom::WindowOpenDisposition::kNewWindow,
         apps::LaunchSource::kFromKeyboard);
     OpenApplicationWindow(
         profile, app_launch_params,

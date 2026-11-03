@@ -20,8 +20,8 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -66,7 +66,7 @@ void ChromeBluetoothChooserController::OpenAdapterOffHelpUrl() const {
   // For other operating systems, show a help center page in a tab.
   GetBrowser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                             GURL(chrome::kBluetoothAdapterOffHelpURL),
-                            WindowOpenDisposition::kNewForegroundTab,
+                            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
                         /*navigation_handle_callback=*/{});
 #endif
@@ -84,7 +84,7 @@ void ChromeBluetoothChooserController::OpenPermissionPreferences() const {
 void ChromeBluetoothChooserController::OpenHelpCenterUrl() const {
   GetBrowser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                             GURL(permissions::kChooserBluetoothOverviewURL),
-                            WindowOpenDisposition::kNewForegroundTab,
+                            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
                         /*navigation_handle_callback=*/{});
 }

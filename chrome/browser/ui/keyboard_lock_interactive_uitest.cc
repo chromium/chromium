@@ -27,8 +27,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURLWithDisposition(
       GetActiveBrowser(),
       GetEmbeddedTestServer()->GetURL(GetFullscreenFramePath()),
-      WindowOpenDisposition::kCurrentTab,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   ASSERT_FALSE(IsKeyboardLockActive());
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURLWithDisposition(
       GetActiveBrowser(), GetEmbeddedTestServer()->GetURL(kSimplePageHTML),
-      WindowOpenDisposition::kCurrentTab,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   ASSERT_FALSE(IsKeyboardLockActive());

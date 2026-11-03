@@ -63,8 +63,8 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/public_buildflags.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
 #include "url/origin.h"
@@ -416,7 +416,8 @@ void ChromePageInfoDelegate::OpenConnectionHelpCenterPage(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(chrome::kPageInfoHelpCenterURL),
           ui::DispositionFromEventFlags(
-              event.flags(), WindowOpenDisposition::kNewForegroundTab),
+              event.flags(),
+              ui::mojom::WindowOpenDisposition::kNewForegroundTab),
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
@@ -465,7 +466,7 @@ void ChromePageInfoDelegate::OpenSafeBrowsingHelpCenterPage(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(url),
           ui::DispositionFromEventFlags(
-              event_flags, WindowOpenDisposition::kNewForegroundTab),
+              event_flags, ui::mojom::WindowOpenDisposition::kNewForegroundTab),
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }

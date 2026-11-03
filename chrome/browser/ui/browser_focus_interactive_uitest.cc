@@ -72,10 +72,10 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/view_focus_observer.h"
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
   {
     content::LoadStopObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     observer.Wait();
   }
   // Focus should stay on the location bar.
@@ -930,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
   {
     content::LoadStopObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     observer.Wait();
   }
 
@@ -957,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_FocusOnReloadCrashedTab) {
   {
     content::LoadStopObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     observer.Wait();
   }
 
@@ -1047,7 +1047,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NavigateFromOmniboxIntoNewTab) {
 
   // Simulate an alt-enter.
   omnibox_client->OnAutocompleteAccept(
-      url2, nullptr, WindowOpenDisposition::kNewForegroundTab,
+      url2, nullptr, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_TYPED,
       omnibox::AutocompleteMatchType::kUrlWhatYouTyped, base::TimeTicks(),
       false, false, std::u16string(), AutocompleteMatch(), AutocompleteMatch());
