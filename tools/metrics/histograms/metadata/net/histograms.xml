@@ -3935,12 +3935,12 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Priority">
     <variant name="" summary=""/>
-    <variant name="Priority0" summary="THROTTLED or MINIMUM_PRIORITY"/>
-    <variant name="Priority1" summary="IDLE"/>
-    <variant name="Priority2" summary="LOWEST or DEFAULT_PRIORITY"/>
-    <variant name="Priority3" summary="LOW"/>
-    <variant name="Priority4" summary="MEDIUM"/>
-    <variant name="Priority5" summary="HIGHEST or MAXIMUM_PRIORITY"/>
+    <variant name=".Priority0" summary="THROTTLED or MINIMUM_PRIORITY"/>
+    <variant name=".Priority1" summary="IDLE"/>
+    <variant name=".Priority2" summary="LOWEST or DEFAULT_PRIORITY"/>
+    <variant name=".Priority3" summary="LOW"/>
+    <variant name=".Priority4" summary="MEDIUM"/>
+    <variant name=".Priority5" summary="HIGHEST or MAXIMUM_PRIORITY"/>
   </token>
 </histogram>
 
