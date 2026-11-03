@@ -17,7 +17,7 @@ class MockOriginTrialsSettingsStorage : public OriginTrialsSettingsStorage {
   MOCK_METHOD(blink::mojom::OriginTrialsSettingsPtr,
               GetSettings,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(void,
               PopulateSettings,
               (const base::ListValue& disabled_tokens_list),
