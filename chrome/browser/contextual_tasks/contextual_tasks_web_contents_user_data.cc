@@ -62,6 +62,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -256,6 +257,19 @@ bool IsCommittedResourceActive(
          !session_handle.IsTabDeselected(*resource.tab_id, resource.url, title);
 }
 
+// Returns the serialized `OnContextStateChanged` message for the initial
+// `CONTEXT_STATE_NONE` state (with empty `input_types`). Pre-initializing
+// `last_sent_context_state_serialized` to these bytes preserves the behavior of
+// not sending a redundant `CONTEXT_STATE_NONE` message on initial handshake
+// when no context was added (`set_context_state(CONTEXT_STATE_NONE)` serializes
+// to non-empty bytes under Protobuf Edition 2024 explicit presence).
+std::string SerializeDefaultContextState() {
+  lens::ClientToSearchMessage::OnContextStateChanged state_changed;
+  state_changed.set_context_state(
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
+  return state_changed.SerializeAsString();
+}
+
 }  // namespace
 
 ContextualTasksWebContentsUserData::ExtensionFrameInfo::ExtensionFrameInfo() =
@@ -314,6 +328,8 @@ struct ContextualTasksWebContentsUserData::PageSearchState
   bool is_zero_state = false;
   std::vector<contextual_tasks::UrlResource> committed_url_resources;
   ContextState last_sent_context_state = ContextState::kNone;
+  std::string last_sent_context_state_serialized =
+      SerializeDefaultContextState();
   std::string last_sent_suggest_inputs_serialized;
 
   PAGE_USER_DATA_KEY_DECL();
@@ -585,6 +601,8 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
   page_state.is_zero_state = false;
   page_state.committed_url_resources.clear();
   page_state.last_sent_context_state = ContextState::kNone;
+  page_state.last_sent_context_state_serialized =
+      SerializeDefaultContextState();
   page_state.last_sent_suggest_inputs_serialized.clear();
   page_state.connected_document_id = doc_id;
   page_state.service_worker_post_message_cb = std::move(post_message_cb);
@@ -1598,10 +1616,6 @@ ContextualTasksWebContentsUserData::ComputeContextState() {
 void ContextualTasksWebContentsUserData::UpdateContextState() {
   ContextState current_state = ComputeContextState();
   auto& page_state = GetPrimaryPageSearchState();
-  if (current_state == page_state.last_sent_context_state) {
-    return;
-  }
-  page_state.last_sent_context_state = current_state;
 
   lens::ClientToSearchMessage message;
   auto* state_changed = message.mutable_on_context_state_changed();
@@ -1622,6 +1636,22 @@ void ContextualTasksWebContentsUserData::UpdateContextState() {
               CONTEXT_STATE_READY);
       break;
   }
+  if (page_state.is_lens_crop_mounted) {
+    state_changed->add_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
+  }
+  for (const auto& tab : GetSelectedTabs()) {
+    if (!failed_context_uploads_.contains(tab.context_token)) {
+      state_changed->add_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
+    }
+  }
+
+  std::string serialized;
+  state_changed->SerializeToString(&serialized);
+  if (serialized == page_state.last_sent_context_state_serialized) {
+    return;
+  }
+  page_state.last_sent_context_state = current_state;
+  page_state.last_sent_context_state_serialized = std::move(serialized);
   PostSearchMessage(message);
 }
 

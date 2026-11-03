@@ -11,6 +11,7 @@ package lens;
 import "lens_overlay_contextual_inputs.proto";
 import "lens_overlay_request_id.proto";
 import "lens_overlay_visual_search_interaction_data.proto";
+import "input_type.proto";
 
 // Top-level envelope for messages from Extension Iframes to Search Web.
 message ClientToSearchMessage {
@@ -86,11 +87,15 @@ message ClientToSearchMessage {
       CONTEXT_STATE_READY = 2;
     }
     ContextState context_state = 1;
+
+    // Input types currently attached for the next turn (e.g.
+    // INPUT_TYPE_LENS_IMAGE for a Lens region crop and INPUT_TYPE_BROWSER_TAB
+    // per attached tab).
+    repeated omnibox.InputType input_types = 2;
   }
 
   // Instructs Search Web to open the threads view (Thread History).
   message OpenThreadsView {}
-
   oneof event_message {
     // Initial handshake ping sent by an extension iframe upon mounting.
     HandshakePing handshake_ping = 1;
@@ -106,7 +111,6 @@ message ClientToSearchMessage {
     // Fired when attached context changes to provide vsrid tokens for search
     // suggestions.
     OnSuggestInputsChanged on_suggest_inputs_changed = 4;
-
     // Reports the state of the context added for the next turn.
     OnContextStateChanged on_context_state_changed = 5;
 
@@ -120,8 +124,19 @@ message SearchToClientMessage {
   // Handshake response returned by Search Web. Guarantees Search Web is ready
   // for messages from Chrome and vice versa.
   message HandshakeResponse {
+    enum Capability {
+      CAPABILITY_UNSPECIFIED = 0;
+      // The server supports tabs integration (e.g. tabs picker).
+      TABS = 1;
+      // The server supports Lens features (e.g. Lens button, Lens chip).
+      LENS = 2;
+    }
+
     // The active multi-login account index on the Search page.
     int32 auth_user_index = 1;
+
+    // List of capabilities supported by the server.
+    repeated Capability capabilities = 2;
   }
 
   // Query submission request sent when the user submits a query, asking Chrome
@@ -132,7 +147,6 @@ message SearchToClientMessage {
     // and query contextualization.
     string query_text = 1;
   }
-
   // Message sent by Search Web to Chrome to synchronize the thread's context
   // library upon restoration or update.
   message UpdateThreadContextLibrary {
@@ -169,7 +183,6 @@ message SearchToClientMessage {
 
     repeated Context contexts = 1;
   }
-
   // Message sent by Search Web to Chrome to notify to open a link in side
   // panel mode.
   message OpenLinkInSidePanelMode {
