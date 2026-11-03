@@ -17,6 +17,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -43,7 +44,7 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
   bool is_one_time = PermissionUtil::DoesSupportTemporaryGrants(
       permission_prompt_->GetContentSettingType(0));
   j_delegate_.Reset(Java_PermissionDialogDelegate_create(
-      env, reinterpret_cast<uintptr_t>(owner),
+      env, jni_zero::MakeRaw(owner),
       web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
       permission_prompt_->GetContentSettingTypes(env),
       PermissionsClient::Get()->MapToJavaDrawableId(
@@ -116,6 +117,14 @@ void PermissionDialogJavaDelegate::DismissDialog() {
 void PermissionDialogJavaDelegate::NotifyPermissionAllowed() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PermissionDialogDelegate_notifyPermissionAllowed(env, j_delegate_);
+}
+
+void PermissionDialogJavaDelegate::ClearNativePtr() {
+  if (!j_delegate_) {
+    return;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PermissionDialogDelegate_clearNativePtr(env, j_delegate_);
 }
 
 void PermissionDialogJavaDelegate::UpdateDialog() {
@@ -216,6 +225,7 @@ void PermissionDialogDelegate::Dismissed(JNIEnv* env, int dismissalType) {
     // signal as a way to tell if the `PermissionPrompt` creation failed.
 
     // Delete asynchronously to avoid re-entrancy issues.
+    java_delegate_->ClearNativePtr();
     base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(java_delegate_));
   }

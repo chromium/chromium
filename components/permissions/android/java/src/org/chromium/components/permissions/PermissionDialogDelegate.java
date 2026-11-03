@@ -4,13 +4,18 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 
 import androidx.core.util.Pair;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -32,8 +37,11 @@ import java.util.List;
 @JNINamespace("permissions")
 @NullMarked
 public class PermissionDialogDelegate {
+    @JniType("::permissions::PermissionDialogDelegate")
+    interface NativePermissionDialogDelegate extends JniTypeToken {}
+
     /** The native-side counterpart of this class */
-    private long mNativeDelegatePtr;
+    private @Nullable JniRawPtr<NativePermissionDialogDelegate> mNativeDelegatePtr;
 
     /** The controller for this class */
     private @Nullable PermissionDialogController mDialogController;
@@ -127,7 +135,8 @@ public class PermissionDialogDelegate {
     }
 
     public @GeolocationPromptType int getGeolocationPromptType() {
-        return PermissionDialogDelegateJni.get().getGeolocationPromptType(mNativeDelegatePtr);
+        return PermissionDialogDelegateJni.get()
+                .getGeolocationPromptType(assumeNonNull(mNativeDelegatePtr));
     }
 
     public boolean isTablet() {
@@ -135,32 +144,32 @@ public class PermissionDialogDelegate {
     }
 
     public void onAccept() {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         PermissionDialogDelegateJni.get().accept(mNativeDelegatePtr);
     }
 
     public void onAcceptThisTime() {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         PermissionDialogDelegateJni.get().acceptThisTime(mNativeDelegatePtr);
     }
 
     public void onDeny() {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         PermissionDialogDelegateJni.get().deny(mNativeDelegatePtr);
     }
 
     public void onDismiss(@DismissalType int dismissalType) {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         PermissionDialogDelegateJni.get().dismissed(mNativeDelegatePtr, dismissalType);
     }
 
     public void onAcknowledge() {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         PermissionDialogDelegateJni.get().acknowledge(mNativeDelegatePtr);
     }
 
     public void onSystemPermissionResolved(boolean accepted) {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         PermissionDialogDelegateJni.get().systemPermissionResolved(mNativeDelegatePtr, accepted);
     }
 
@@ -170,18 +179,26 @@ public class PermissionDialogDelegate {
     }
 
     public void destroy() {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         PermissionDialogDelegateJni.get().destroy(mNativeDelegatePtr);
-        mNativeDelegatePtr = 0;
+        clearNativePtr();
+    }
+
+    @CalledByNative
+    void clearNativePtr() {
+        if (mNativeDelegatePtr != null) {
+            mNativeDelegatePtr.release();
+            mNativeDelegatePtr = null;
+        }
     }
 
     public void onSystemSettingsShown() {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         PermissionDialogDelegateJni.get().systemSettingsShown(mNativeDelegatePtr);
     }
 
     public void onResume() {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         PermissionDialogDelegateJni.get().resumed(mNativeDelegatePtr);
     }
 
@@ -190,13 +207,13 @@ public class PermissionDialogDelegate {
     }
 
     public @LocationAccuracy int getInitialGeolocationAccuracySelection() {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         return PermissionDialogDelegateJni.get()
                 .getInitialGeolocationAccuracySelection(mNativeDelegatePtr);
     }
 
     public void onGeolocationAccuracySelected(@LocationAccuracy int locationAccuracy) {
-        assert mNativeDelegatePtr != 0;
+        assert mNativeDelegatePtr != null;
         PermissionDialogDelegateJni.get()
                 .onGeolocationAccuracySelected(mNativeDelegatePtr, locationAccuracy);
     }
@@ -246,8 +263,8 @@ public class PermissionDialogDelegate {
      *     empty in which case only persistent grant and deny buttons are shown.
      */
     @CalledByNative
-    private static PermissionDialogDelegate create(
-            long nativeDelegatePtr,
+    static PermissionDialogDelegate create(
+            JniRawPtr<NativePermissionDialogDelegate> nativeDelegatePtr,
             WindowAndroid window,
             int[] contentSettingsTypes,
             int iconId,
@@ -275,7 +292,7 @@ public class PermissionDialogDelegate {
     }
 
     private PermissionDialogDelegate(
-            long nativeDelegatePtr,
+            JniRawPtr<NativePermissionDialogDelegate> nativeDelegatePtr,
             WindowAndroid window,
             int[] contentSettingsTypes,
             int iconId,
@@ -332,32 +349,34 @@ public class PermissionDialogDelegate {
 
     @NativeMethods
     interface Natives {
-        void accept(long nativePermissionDialogDelegate);
+        void accept(JniPtr<NativePermissionDialogDelegate> self);
 
-        void acceptThisTime(long nativePermissionDialogDelegate);
+        void acceptThisTime(JniPtr<NativePermissionDialogDelegate> self);
 
-        void acknowledge(long nativePermissionDialogDelegate);
+        void acknowledge(JniPtr<NativePermissionDialogDelegate> self);
 
-        void deny(long nativePermissionDialogDelegate);
+        void deny(JniPtr<NativePermissionDialogDelegate> self);
 
-        void dismissed(long nativePermissionDialogDelegate, @DismissalType int dismissalType);
+        void dismissed(
+                JniPtr<NativePermissionDialogDelegate> self, @DismissalType int dismissalType);
 
-        void resumed(long nativePermissionDialogDelegate);
+        void resumed(JniPtr<NativePermissionDialogDelegate> self);
 
-        void destroy(long nativePermissionDialogDelegate);
+        void destroy(JniPtr<NativePermissionDialogDelegate> self);
 
-        void systemPermissionResolved(long nativePermissionDialogDelegate, boolean accept);
+        void systemPermissionResolved(JniPtr<NativePermissionDialogDelegate> self, boolean accept);
 
-        void systemSettingsShown(long nativePermissionDialogDelegate);
+        void systemSettingsShown(JniPtr<NativePermissionDialogDelegate> self);
 
         int getRequestTypeEnumSize();
 
         void onGeolocationAccuracySelected(
-                long nativePermissionDialogDelegate, @LocationAccuracy int locationAccuracy);
+                JniPtr<NativePermissionDialogDelegate> self,
+                @LocationAccuracy int locationAccuracy);
 
         @LocationAccuracy
-        int getInitialGeolocationAccuracySelection(long nativePermissionDialogDelegate);
+        int getInitialGeolocationAccuracySelection(JniPtr<NativePermissionDialogDelegate> self);
 
-        int getGeolocationPromptType(long nativePermissionDialogDelegate);
+        int getGeolocationPromptType(JniPtr<NativePermissionDialogDelegate> self);
     }
 }

@@ -51,6 +51,8 @@ class PermissionDialogJavaDelegate {
 
   virtual void NotifyPermissionAllowed();
 
+  void ClearNativePtr();
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_delegate_;
   raw_ptr<PermissionPromptAndroid, DanglingUntriaged> permission_prompt_;
