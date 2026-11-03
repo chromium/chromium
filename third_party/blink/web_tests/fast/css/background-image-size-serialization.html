@@ -30,6 +30,8 @@ var cssRules = document.styleSheets[1].cssRules;
 shouldBe('cssRules.length', '4');
 shouldBeEqualToString('cssRules[0].cssText', '.noposition { background: url("foo.png") 0% 0% / contain; }');
 shouldBeEqualToString('cssRules[1].cssText', '.position1 { background: url("foo.png") 1px center / contain; }');
-shouldBeEqualToString('cssRules[2].cssText', '.position2 { background: url("foo.png") 1px / contain; }');
+// background-position-y keeps the shorthand's initial 0%, so both offsets are
+// serialized: "1px" alone would be reparsed as "1px center".
+shouldBeEqualToString('cssRules[2].cssText', '.position2 { background: url("foo.png") 1px 0% / contain; }');
 shouldBeEqualToString('cssRules[3].cssText', '.position3 { background: url("foo.png") 1px 1px / contain; }');
 </script>

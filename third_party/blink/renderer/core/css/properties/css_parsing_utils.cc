@@ -5500,11 +5500,11 @@ bool ParseBackgroundOrMask(bool important,
           }
         }
 
-        if (shorthand_id == CSSPropertyID::kMask) {
-          longhands[i].push_back(To<Longhand>(property).InitialValue());
-        } else {
-          longhands[i].push_back(CSSInitialValue::Create());
-        }
+        // Store the property's actual initial value rather than the 'initial'
+        // keyword, so that reading a longhand back reports its canonical
+        // initial value (e.g. 'scroll' for background-attachment) as required
+        // by https://drafts.csswg.org/cssom/#serialize-a-css-value.
+        longhands[i].push_back(To<Longhand>(property).InitialValue());
       }
     }
   } while (ConsumeCommaIncludingWhitespace(stream));
@@ -5516,7 +5516,8 @@ bool ParseBackgroundOrMask(bool important,
     if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
       // There can only be one background-color (we've verified this earlier,
       // by means of previous_layer_had_background_color), so pick out only
-      // the last one (any others will just be “initial” over and over again).
+      // the last one (any others will just be its initial value over and
+      // over again).
       longhand = longhands[i].back().Get();
     } else {
       // To conserve memory we don't wrap a single value in a list.

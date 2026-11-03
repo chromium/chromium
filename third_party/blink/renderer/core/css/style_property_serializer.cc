@@ -504,7 +504,6 @@ String StylePropertySerializer::AsText() const {
 // special-casing
 static bool AllowInitialInShorthand(CSSPropertyID property_id) {
   switch (property_id) {
-    case CSSPropertyID::kBackground:
     case CSSPropertyID::kBorder:
     case CSSPropertyID::kBorderTop:
     case CSSPropertyID::kBorderRight:
@@ -1924,6 +1923,106 @@ void SerializeMaskOriginAndClip(StringBuilder& result,
   }
 }
 
+// Serializes the background-origin and background-clip components of the
+// 'background' shorthand, which are expressed as <box> || <bg-clip>:
+// * If a single <box> value is present, it sets both background-origin and
+//   background-clip.
+// * If two values are present, the first sets background-origin and the second
+//   background-clip.
+// Additionally, omits components when possible (see:
+// https://drafts.csswg.org/cssom/#serialize-a-css-value).
+void SerializeBackgroundOriginAndClip(StringBuilder& result,
+                                      CSSValueID origin_id,
+                                      const CSSValue* clip_value) {
+  const auto* clip_ident = DynamicTo<CSSIdentifierValue>(clip_value);
+  const CSSValueID clip_id =
+      clip_ident ? clip_ident->GetValueID() : CSSValueID::kInvalid;
+
+  // If both are their initial values, omit everything.
+  if (origin_id == CSSValueID::kPaddingBox &&
+      clip_id == CSSValueID::kBorderBox) {
+    return;
+  }
+
+  if (!result.empty()) {
+    result.Append(' ');
+  }
+
+  // ParseBackgroundOrMask sets background-origin to border-box for a
+  // 'border-area' clip, alone or combined with 'text' as a CSSValuePair, and
+  // for nothing else: a bare 'text' clip leaves the origin at its initial
+  // padding-box. That is narrower than
+  // https://drafts.csswg.org/css-backgrounds-4/#propdef-background, where every
+  // value only valid in background-clip implies a border-box origin. Mirror the
+  // parser rather than the spec, so the origin is only omitted where it really
+  // was implied.
+  if (origin_id == CSSValueID::kBorderBox &&
+      (clip_id == CSSValueID::kBorderArea || IsA<CSSValuePair>(clip_value))) {
+    result.Append(clip_value->CssText());
+    return;
+  }
+
+  result.Append(GetCSSValueNameAs<StringView>(origin_id));
+  if (clip_id != origin_id) {
+    result.Append(' ');
+    if (clip_ident) {
+      result.Append(GetCSSValueNameAs<StringView>(clip_id));
+    } else {
+      result.Append(clip_value->CssText());
+    }
+  }
+}
+
+void SerializePositionComponent(StringBuilder& result,
+                                const CSSValue& value,
+                                CSSValueID edge_id,
+                                bool anchor_offset_to_edge) {
+  if (anchor_offset_to_edge && !IsA<CSSIdentifierValue>(value) &&
+      !IsA<CSSValuePair>(value)) {
+    result.Append(GetCSSValueNameAs<StringView>(edge_id));
+    result.Append(' ');
+  }
+  result.Append(value.CssText());
+}
+
+void SerializePositionPair(StringBuilder& result,
+                           const CSSValue& position_x,
+                           const CSSValue& position_y);
+
+// Serializes the two axis longhands as a <bg-position>, unless both hold their
+// initial 0% and the position can be left out altogether. Returns whether
+// anything was written.
+bool MaybeSerializePositionPair(StringBuilder& result,
+                                const CSSValue* position_x,
+                                const CSSValue& position_y) {
+  if (!position_x ||
+      (IsZeroPercent(position_x) && IsZeroPercent(&position_y))) {
+    return false;
+  }
+  if (!result.empty()) {
+    result.Append(' ');
+  }
+  SerializePositionPair(result, *position_x, position_y);
+  return true;
+}
+
+void SerializePositionPair(StringBuilder& result,
+                           const CSSValue& position_x,
+                           const CSSValue& position_y) {
+  // An offset from an edge, stored as a CSSValuePair, only combines with an
+  // edge-relative offset or a bare keyword on the other axis
+  // (https://drafts.csswg.org/css-backgrounds/#typedef-bg-position). A bare
+  // <length-percentage> on the other axis has to be anchored to its own
+  // default edge, or the pair would not reparse.
+  const bool anchor_offset_to_edge =
+      IsA<CSSValuePair>(position_x) != IsA<CSSValuePair>(position_y);
+  SerializePositionComponent(result, position_x, CSSValueID::kLeft,
+                             anchor_offset_to_edge);
+  result.Append(' ');
+  SerializePositionComponent(result, position_y, CSSValueID::kTop,
+                             anchor_offset_to_edge);
+}
+
 }  // namespace
 
 String StylePropertySerializer::GetLayeredShorthandValue(
@@ -1961,10 +2060,10 @@ String StylePropertySerializer::GetLayeredShorthandValue(
   // Now stitch the properties together.
   for (wtf_size_t layer = 0; layer < num_layers; layer++) {
     StringBuilder layer_result;
-    bool is_position_x_serialized = false;
-    bool is_position_y_serialized = false;
-    const CSSValue* mask_position_x = nullptr;
+    bool is_position_serialized = false;
+    const CSSValue* position_x = nullptr;
     CSSValueID mask_origin_value = CSSValueID::kBorderBox;
+    CSSValueID background_origin_value = CSSValueID::kPaddingBox;
 
     for (unsigned property_index = 0; property_index < size; property_index++) {
       const CSSValue* value = nullptr;
@@ -2067,6 +2166,42 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         }
       }
 
+      if (shorthand.id() == CSSPropertyID::kBackground) {
+        if (property->IDEquals(CSSPropertyID::kBackgroundPositionX)) {
+          // Omit this value as it is serialized alongside
+          // background-position-y: a single offset would be reparsed as the
+          // horizontal one with 'center' for the vertical one.
+          omit_value = true;
+          position_x = value;
+        } else if (property->IDEquals(CSSPropertyID::kBackgroundPositionY)) {
+          omit_value = true;
+          is_position_serialized =
+              MaybeSerializePositionPair(layer_result, position_x, *value);
+        } else if (property->IDEquals(CSSPropertyID::kBackgroundOrigin)) {
+          if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+            background_origin_value = ident->GetValueID();
+          }
+          // Omit this value as it is serialized alongside background-clip.
+          omit_value = true;
+        } else if (property->IDEquals(CSSPropertyID::kBackgroundClip)) {
+          SerializeBackgroundOriginAndClip(layer_result,
+                                           background_origin_value, value);
+          omit_value = true;
+        } else {
+          // The longhands hold their actual initial values (see
+          // ParseBackgroundOrMask), so a component that can be omitted without
+          // changing the meaning of the value must be omitted
+          // (https://drafts.csswg.org/cssom/#serialize-a-css-value). The
+          // properties handled above decide that for themselves, since it
+          // depends on the other value of the pair.
+          const Longhand& longhand = To<Longhand>(*property);
+          DCHECK(!longhand.InitialValue()->IsInitialValue())
+              << "Without InitialValue() implemented, the component is never "
+                 "omitted.";
+          omit_value |= (*value == *longhand.InitialValue());
+        }
+      }
+
       if (shorthand.id() == CSSPropertyID::kMask) {
         if (property->IDEquals(CSSPropertyID::kMaskImage)) {
           if (auto* image_value = DynamicTo<CSSIdentifierValue>(value)) {
@@ -2114,22 +2249,11 @@ String StylePropertySerializer::GetLayeredShorthandValue(
           }
         } else if (property->IDEquals(CSSPropertyID::kWebkitMaskPositionX)) {
           omit_value = true;
-          mask_position_x = value;
+          position_x = value;
         } else if (property->IDEquals(CSSPropertyID::kWebkitMaskPositionY)) {
           omit_value = true;
-
-          if (mask_position_x &&
-              (!IsZeroPercent(mask_position_x) || !IsZeroPercent(value))) {
-            is_position_x_serialized = true;
-            is_position_y_serialized = true;
-
-            if (!layer_result.empty()) {
-              layer_result.Append(' ');
-            }
-            layer_result.Append(mask_position_x->CssText());
-            layer_result.Append(' ');
-            layer_result.Append(value->CssText());
-          }
+          is_position_serialized =
+              MaybeSerializePositionPair(layer_result, position_x, *value);
         }
       }
 
@@ -2210,10 +2334,17 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       if (!omit_value) {
         if (property->IDEquals(CSSPropertyID::kBackgroundSize) ||
             property->IDEquals(CSSPropertyID::kMaskSize)) {
-          if (is_position_y_serialized || is_position_x_serialized) {
+          if (is_position_serialized) {
             layer_result.Append(" / ");
           } else {
-            layer_result.Append(" 0% 0% / ");
+            // A <bg-size> can only follow a <bg-position>, so one is
+            // synthesized when the position was omitted for holding its
+            // initial value. Every component before it can be omitted too,
+            // leaving nothing to separate from.
+            if (!layer_result.empty()) {
+              layer_result.Append(' ');
+            }
+            layer_result.Append("0% 0% / ");
           }
         } else if (property->IDEquals(
                        CSSPropertyID::kTimelineTriggerActiveRangeStart)) {
@@ -2225,18 +2356,14 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         }
 
         layer_result.Append(value->CssText());
-
-        if (property->IDEquals(CSSPropertyID::kBackgroundPositionX)) {
-          is_position_x_serialized = true;
-        }
-        if (property->IDEquals(CSSPropertyID::kBackgroundPositionY)) {
-          is_position_y_serialized = true;
-          // background-position is a special case. If only the first offset is
-          // specified, the second one defaults to "center", not the same value.
-        }
       }
     }
-    if (shorthand.id() == CSSPropertyID::kMask && layer_result.empty()) {
+    if ((shorthand.id() == CSSPropertyID::kMask ||
+         shorthand.id() == CSSPropertyID::kBackground) &&
+        layer_result.empty()) {
+      // Every component was omitted for holding its initial value. Emit the
+      // initial background-image/mask-image instead of an empty layer, which
+      // would drop the layer entirely.
       layer_result.Append(GetCSSValueNameAs<StringView>(CSSValueID::kNone));
     }
     if (shorthand.id() == CSSPropertyID::kTransition && layer_result.empty()) {

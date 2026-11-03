@@ -9,18 +9,21 @@ test(function() {
   var style = document.createElement('style');
   document.head.appendChild(style);
   assert_equals(getStyle('.test { background: none; }'), '.test { background: none; }');
-  assert_equals(getStyle('.test { background: none; background-color: black;}'), '.test { background: none black; }');
-  assert_equals(getStyle('.test { background: none; background-color: initial !important;}'), '.test { background-image: none; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: initial !important; }');
+  assert_equals(getStyle('.test { background: none; background-color: black;}'), '.test { background: black; }');
+  assert_equals(getStyle('.test { background: none; background-color: initial !important;}'), '.test { background-image: none; background-position: 0% 0%; background-size: auto; background-repeat: repeat; background-attachment: scroll; background-origin: padding-box; background-clip: border-box; background-color: initial !important; }');
   assert_equals(getStyle('.test { background: initial; }'), '.test { background: initial; }');
-  assert_equals(getStyle('.test { background: initial; background-color: black; }'), '.test { background: black; }');
+  assert_equals(getStyle('.test { background: initial; background-color: black; }'), '.test { background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: black; }');
   assert_equals(getStyle('.test { background: inherit; }'), '.test { background: inherit; }');
   assert_equals(getStyle('.test { background: inherit; background-color: black; }'), '.test { background-image: inherit; background-position: inherit; background-size: inherit; background-repeat: inherit; background-attachment: inherit; background-origin: inherit; background-clip: inherit; background-color: black; }');
   assert_equals(getStyle('.test { background: unset; background-color: black; }'), '.test { background-image: unset; background-position: unset; background-size: unset; background-repeat: unset; background-attachment: unset; background-origin: unset; background-clip: unset; background-color: black; }');
   assert_equals(getStyle('.test { background: unset; }'), '.test { background: unset; }');
-  assert_equals(getStyle('.test { background: none; background-repeat: repeat-x !important;}'), '.test { background-image: none; background-position: initial; background-size: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: initial; background-repeat: repeat-x !important; }');
-  assert_equals(getStyle('.test { background: none; background-repeat: repeat-x;}'), '.test { background: none repeat-x; }');
-  assert_equals(getStyle('.test { background: none; background-position-x: 0%;}'), '.test { background: none 0%; }');
-  assert_equals(getStyle('.test { background: none; background-position: 20% 80%;}'), '.test { background: none 20% 80%; }');
+  assert_equals(getStyle('.test { background: none; background-repeat: repeat-x !important;}'), '.test { background-image: none; background-position: 0% 0%; background-size: auto; background-attachment: scroll; background-origin: padding-box; background-clip: border-box; background-color: transparent; background-repeat: repeat-x !important; }');
+  assert_equals(getStyle('.test { background: none; background-repeat: repeat-x;}'), '.test { background: repeat-x; }');
+  // background-position-x: 0% with the shorthand's initial background-position-y
+  // (also 0%) serializes as no position at all: emitting just "0%" would be
+  // reparsed as "0% center", losing the vertical offset.
+  assert_equals(getStyle('.test { background: none; background-position-x: 0%;}'), '.test { background: none; }');
+  assert_equals(getStyle('.test { background: none; background-position: 20% 80%;}'), '.test { background: 20% 80%; }');
   assert_equals(getStyle('.test { background-position-x: 5%; }'), '.test { background-position-x: 5%; }');
   assert_equals(getStyle('.test { background-position-y: 5%; }'), '.test { background-position-y: 5%; }');
   assert_equals(getStyle('.test { background-position-x: 5%; background-position-y: 10%; }'), '.test { background-position: 5% 10%; }');

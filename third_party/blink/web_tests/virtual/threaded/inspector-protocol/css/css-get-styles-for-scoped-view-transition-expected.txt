@@ -177,14 +177,14 @@ PseudoElement: view-transition-old root
 }
 *::view-transition-old(*)* {    regular
     background: red; @[0:27-0:43]
-    background-image: initial; @[undefined-undefined]
-    background-position-x: initial; @[undefined-undefined]
-    background-position-y: initial; @[undefined-undefined]
-    background-size: initial; @[undefined-undefined]
-    background-repeat: initial; @[undefined-undefined]
-    background-attachment: initial; @[undefined-undefined]
-    background-origin: initial; @[undefined-undefined]
-    background-clip: initial; @[undefined-undefined]
+    background-image: none; @[undefined-undefined]
+    background-position-x: 0%; @[undefined-undefined]
+    background-position-y: 0%; @[undefined-undefined]
+    background-size: auto; @[undefined-undefined]
+    background-repeat: repeat; @[undefined-undefined]
+    background-attachment: scroll; @[undefined-undefined]
+    background-origin: padding-box; @[undefined-undefined]
+    background-clip: border-box; @[undefined-undefined]
     background-color: red; @[undefined-undefined]
 }
 PseudoElement: view-transition-old shared
@@ -209,14 +209,14 @@ PseudoElement: view-transition-old shared
 }
 *::view-transition-old(*)* {    regular
     background: red; @[0:27-0:43]
-    background-image: initial; @[undefined-undefined]
-    background-position-x: initial; @[undefined-undefined]
-    background-position-y: initial; @[undefined-undefined]
-    background-size: initial; @[undefined-undefined]
-    background-repeat: initial; @[undefined-undefined]
-    background-attachment: initial; @[undefined-undefined]
-    background-origin: initial; @[undefined-undefined]
-    background-clip: initial; @[undefined-undefined]
+    background-image: none; @[undefined-undefined]
+    background-position-x: 0%; @[undefined-undefined]
+    background-position-y: 0%; @[undefined-undefined]
+    background-size: auto; @[undefined-undefined]
+    background-repeat: repeat; @[undefined-undefined]
+    background-attachment: scroll; @[undefined-undefined]
+    background-origin: padding-box; @[undefined-undefined]
+    background-clip: border-box; @[undefined-undefined]
     background-color: red; @[undefined-undefined]
 }
 PseudoElement: view-transition-new root
@@ -338,14 +338,14 @@ Dumping styles for : ::view-transition-old with id root
 }
 *::view-transition-old(*)* {    regular
     background: red; @[0:27-0:43]
-    background-image: initial; @[undefined-undefined]
-    background-position-x: initial; @[undefined-undefined]
-    background-position-y: initial; @[undefined-undefined]
-    background-size: initial; @[undefined-undefined]
-    background-repeat: initial; @[undefined-undefined]
-    background-attachment: initial; @[undefined-undefined]
-    background-origin: initial; @[undefined-undefined]
-    background-clip: initial; @[undefined-undefined]
+    background-image: none; @[undefined-undefined]
+    background-position-x: 0%; @[undefined-undefined]
+    background-position-y: 0%; @[undefined-undefined]
+    background-size: auto; @[undefined-undefined]
+    background-repeat: repeat; @[undefined-undefined]
+    background-attachment: scroll; @[undefined-undefined]
+    background-origin: padding-box; @[undefined-undefined]
+    background-clip: border-box; @[undefined-undefined]
     background-color: red; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-new with id root
@@ -493,14 +493,14 @@ Dumping styles for : ::view-transition-old with id shared
 }
 *::view-transition-old(*)* {    regular
     background: red; @[0:27-0:43]
-    background-image: initial; @[undefined-undefined]
-    background-position-x: initial; @[undefined-undefined]
-    background-position-y: initial; @[undefined-undefined]
-    background-size: initial; @[undefined-undefined]
-    background-repeat: initial; @[undefined-undefined]
-    background-attachment: initial; @[undefined-undefined]
-    background-origin: initial; @[undefined-undefined]
-    background-clip: initial; @[undefined-undefined]
+    background-image: none; @[undefined-undefined]
+    background-position-x: 0%; @[undefined-undefined]
+    background-position-y: 0%; @[undefined-undefined]
+    background-size: auto; @[undefined-undefined]
+    background-repeat: repeat; @[undefined-undefined]
+    background-attachment: scroll; @[undefined-undefined]
+    background-origin: padding-box; @[undefined-undefined]
+    background-clip: border-box; @[undefined-undefined]
     background-color: red; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-new with id shared

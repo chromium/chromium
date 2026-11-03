@@ -3,4 +3,4 @@ This page tests whether or not the background shorthand properly omits initial v
 PASS: document.body.style.background == 'green' should be true and is.
 PASS: document.getElementById('div1').style.background == '' should be true and is.
 PASS: document.getElementById('div2').style.background == '50% 50% blue' should be true and is.
-PASS: document.getElementById('div3').style.background == 'none repeat scroll rgb(255, 255, 255)' should be true and is.
+PASS: document.getElementById('div3').style.background == 'rgb(255, 255, 255)' should be true and is.

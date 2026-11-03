@@ -13,6 +13,6 @@ After cut and paste:
 | "hello "
 | <span>
 |   class="test"
-|   style="background: transparent;"
+|   style="background: none;"
 |   "world"
 | " WebKit<#selection-caret>"

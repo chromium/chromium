@@ -31,9 +31,9 @@ test(function() {
 }, 'Multiple values should serialize properly');
 
 test(function() {
-  assert_equals(serialize('background: url(#1), url(#2), url(#3);'), 'initial, initial, initial');
-  assert_equals(serialize('background: repeat-x, repeat-y, url(#);'), 'repeat-x, repeat-y, initial');
-  assert_equals(serialize('background: url(#), no-repeat;'), 'initial, no-repeat');
-  assert_equals(serialize('background: url(#), no-repeat;'), 'initial, no-repeat');
-}, 'Initial values introduced by the background shorthand should be handled as repeat but serialize as initial.');
+  assert_equals(serialize('background: url(#1), url(#2), url(#3);'), 'repeat, repeat, repeat');
+  assert_equals(serialize('background: repeat-x, repeat-y, url(#);'), 'repeat-x, repeat-y, repeat');
+  assert_equals(serialize('background: url(#), no-repeat;'), 'repeat, no-repeat');
+  assert_equals(serialize('background: url(#), no-repeat;'), 'repeat, no-repeat');
+}, 'Initial values introduced by the background shorthand should serialize as repeat.');
 </script>

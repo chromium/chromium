@@ -1,0 +1,41 @@
+<!doctype html>
+<head>
+<title>Test the mask shorthand serialization reached through the non-standard -webkit-mask-position-x/-y longhands.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<script>
+// -webkit-mask-position-x and -webkit-mask-position-y are the only way to give
+// the two axes different forms, and they are not standard, so this cannot live
+// in external/wpt. Everything else about the mask shorthand's serialization is
+// covered by css-masking/parsing/mask-shorthand-serialization.html.
+test(function() {
+  var style = document.createElement('style');
+  document.head.appendChild(style);
+  // An offset from an edge does not combine with a bare <length-percentage> on
+  // the other axis, so the bare one is anchored to its own default edge.
+  assert_equals(getStyle('.test { mask: none; -webkit-mask-position-x: right 10px;}'), '.test { mask: right 10px top 0%; }');
+  assert_equals(getStyle('.test { mask: none; -webkit-mask-position-y: bottom 20px;}'), '.test { mask: left 0% bottom 20px; }');
+
+  function getStyle(text) {
+    style.textContent = text;
+    return style.sheet.cssRules[0].cssText;
+  }
+});
+
+test(function() {
+  var element = document.createElement('div');
+  [
+    'mask: none; -webkit-mask-position-x: right 10px',
+    'mask: none; -webkit-mask-position-y: bottom 20px',
+  ].forEach(function(declarations) {
+    element.style.cssText = declarations;
+    var value = element.style.mask;
+    assert_not_equals(value, '', declarations);
+
+    element.style.cssText = '';
+    element.style.mask = value;
+    assert_equals(element.style.mask, value, declarations);
+  });
+}, 'the serialized mask shorthand parses back to itself');
+</script>

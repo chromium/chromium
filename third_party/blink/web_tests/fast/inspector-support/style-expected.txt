@@ -1,13 +1,12 @@
-Note that background is buggy right now!
 Test
-background-image: initial
-background-position-x: initial
-background-position-y: initial
-background-size: initial
-background-repeat: initial
-background-attachment: initial
-background-origin: initial
-background-clip: initial
+background-image: none
+background-position-x: 0%
+background-position-y: 0%
+background-size: auto
+background-repeat: repeat
+background-attachment: scroll
+background-origin: padding-box
+background-clip: border-box
 background-color: purple
 margin-top: 1em
 margin-right: 1em

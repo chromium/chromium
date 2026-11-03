@@ -76,10 +76,10 @@ Resolved longands:
 background-image: url("../../media/examples/firefox-logo.svg"), url("../../media/examples/lizard.png")
 background-position-x: center, 35%
 background-position-y: center, center
-background-size: contain, initial
-background-repeat: no-repeat, initial
-background-attachment: initial, initial
-background-origin: initial, initial
-background-clip: initial, initial
+background-size: contain, auto
+background-repeat: no-repeat, repeat
+background-attachment: scroll, scroll
+background-origin: padding-box, padding-box
+background-clip: border-box, border-box
 background-color: rgb(238, 238, 238)
 

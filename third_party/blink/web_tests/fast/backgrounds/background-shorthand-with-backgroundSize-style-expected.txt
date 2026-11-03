@@ -2,7 +2,7 @@ Tests background shortand property with background-size
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS e.style.background is "url(\"dummy://test.png\") center center / cover no-repeat border-box border-box red"
+PASS e.style.background is "url(\"dummy://test.png\") center center / cover no-repeat border-box red"
 PASS e.style.backgroundSize is "cover"
 PASS checkStyle() is true
 PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) url(\"dummy://test.png\") no-repeat scroll 50% 50% / cover border-box border-box"
@@ -10,7 +10,7 @@ PASS computedStyle.getPropertyValue("background-size") is "cover"
 PASS checkComputedStyleValue() is true
 
 
-PASS e.style.background is "url(\"dummy://test.png\") 20px center / contain no-repeat padding-box padding-box red"
+PASS e.style.background is "url(\"dummy://test.png\") 20px center / contain no-repeat padding-box red"
 PASS e.style.backgroundSize is "contain"
 PASS checkStyle() is true
 PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) url(\"dummy://test.png\") no-repeat scroll 20px 50% / contain padding-box padding-box"
@@ -26,7 +26,7 @@ PASS computedStyle.getPropertyValue("background-size") is "50% 75%"
 PASS checkComputedStyleValue() is true
 
 
-PASS e.style.background is "url(\"dummy://test.png\") left top / 100px 200px repeat border-box content-box red"
+PASS e.style.background is "url(\"dummy://test.png\") left top / 100px 200px border-box content-box red"
 PASS e.style.backgroundSize is "100px 200px"
 PASS checkStyle() is true
 PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) url(\"dummy://test.png\") repeat scroll 0% 0% / 100px 200px border-box content-box"
@@ -34,7 +34,7 @@ PASS computedStyle.getPropertyValue("background-size") is "100px 200px"
 PASS checkComputedStyleValue() is true
 
 
-PASS e.style.background is "url(\"dummy://test.png\") 50% center / auto repeat content-box padding-box red"
+PASS e.style.background is "url(\"dummy://test.png\") 50% center content-box padding-box red"
 PASS e.style.backgroundSize is "auto"
 PASS checkStyle() is true
 PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) url(\"dummy://test.png\") repeat scroll 50% 50% / auto content-box padding-box"
@@ -50,7 +50,7 @@ PASS computedStyle.getPropertyValue("background-size") is "50% auto"
 PASS checkComputedStyleValue() is true
 
 
-PASS e.style.background is "url(\"dummy://test.png\") left top / 100px auto repeat scroll padding-box border-box red"
+PASS e.style.background is "url(\"dummy://test.png\") left top / 100px auto red"
 PASS e.style.backgroundSize is "100px auto"
 PASS checkStyle() is true
 PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) url(\"dummy://test.png\") repeat scroll 0% 0% / 100px auto padding-box border-box"
@@ -58,7 +58,7 @@ PASS computedStyle.getPropertyValue("background-size") is "100px auto"
 PASS checkComputedStyleValue() is true
 
 
-PASS e.style.background is "url(\"dummy://test.png\") 50% center / auto repeat fixed content-box content-box red"
+PASS e.style.background is "url(\"dummy://test.png\") 50% center fixed content-box red"
 PASS e.style.backgroundSize is "auto"
 PASS checkStyle() is true
 PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) url(\"dummy://test.png\") repeat fixed 50% 50% / auto content-box content-box"
@@ -75,7 +75,7 @@ PASS checkComputedStyleValue() is true
 
 
 PASS e.style.background is "fixed red"
-PASS e.style.backgroundSize is "initial"
+PASS e.style.backgroundSize is "auto"
 PASS checkStyle() is true
 PASS computedStyle.getPropertyValue("background") is "rgb(255, 0, 0) none repeat fixed 0% 0% / auto padding-box border-box"
 PASS computedStyle.getPropertyValue("background-size") is "auto"
