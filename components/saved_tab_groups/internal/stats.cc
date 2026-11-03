@@ -182,8 +182,8 @@ void RecordEmptyGroupsMetricsOnLoad(
               ? TabGroupLoadedEmptiness::kBecameEmptyAfterRemovingDuplicates
               : TabGroupLoadedEmptiness::kAlreadyEmpty;
     }
-    base::UmaHistogramEnumeration(
-        "TabGroups.SavedTabGroups.TabGroupLoadedEmptiness", metric_value);
+    base::UmaHistogramEnumeration("TabGroups.Sync.TabGroupLoadedEmptiness",
+                                  metric_value);
   }
 }
 

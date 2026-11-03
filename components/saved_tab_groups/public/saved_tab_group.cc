@@ -495,9 +495,8 @@ void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,
   CHECK_LT(index.value(), saved_tabs_.size());
   saved_tabs_.erase(saved_tabs_.begin() + index.value());
 
-  base::UmaHistogramBoolean(
-      "TabGroups.SavedTabGroups.TabRemovedFromGroupWasLastTab",
-      saved_tabs_.empty());
+  base::UmaHistogramBoolean("TabGroups.Sync.TabRemovedFromGroupWasLastTab",
+                            saved_tabs_.empty());
   CHECK(allow_empty_groups || !saved_tabs_.empty());
 }
 

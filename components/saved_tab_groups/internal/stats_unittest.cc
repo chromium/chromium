@@ -135,12 +135,12 @@ TEST_F(SavedTabGroupStatsTest, RecordEmptyGroupsMetricsOnLoad) {
 
   RecordEmptyGroupsMetricsOnLoad(all_groups, all_tabs,
                                  groups_with_filtered_tabs);
-  histogram_tester_.ExpectBucketCount(
-      "TabGroups.SavedTabGroups.TabGroupLoadedEmptiness", 0, 1);
-  histogram_tester_.ExpectBucketCount(
-      "TabGroups.SavedTabGroups.TabGroupLoadedEmptiness", 1, 1);
-  histogram_tester_.ExpectBucketCount(
-      "TabGroups.SavedTabGroups.TabGroupLoadedEmptiness", 2, 1);
+  histogram_tester_.ExpectBucketCount("TabGroups.Sync.TabGroupLoadedEmptiness",
+                                      0, 1);
+  histogram_tester_.ExpectBucketCount("TabGroups.Sync.TabGroupLoadedEmptiness",
+                                      1, 1);
+  histogram_tester_.ExpectBucketCount("TabGroups.Sync.TabGroupLoadedEmptiness",
+                                      2, 1);
 }
 
 TEST_F(SavedTabGroupStatsTest, RecordEmptyGroupsMetricsOnGroupAddedLocally) {
