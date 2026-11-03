@@ -211,12 +211,8 @@ TEST_F(
       mock_secure_payment_confirmation_availability_callback_.Get());
 }
 
-TEST_F(
-    SecurePaymentConfirmationServiceTest,
-    GetSecurePaymentConfirmationCapabilities_BrowserBoundKeyHardwareSupported) {
-  base::RunLoop run_loop;
-  base::HistogramTester histogram_tester;
-
+TEST_F(SecurePaymentConfirmationServiceTest,
+       GetSecurePaymentConfirmationCapabilities) {
   // Set up the SPC service in the test as otherwise, the RenderFrameHost
   // prematurely closes during run_loop.Run() when there are multiple threads.
   context_.set_is_off_the_record(false);
@@ -235,31 +231,38 @@ TEST_F(
 
   auto browser_bound_key_store =
       base::MakeRefCounted<FakeBrowserBoundKeyStore>();
-  browser_bound_key_store->SetDeviceSupportsHardwareKeys(true);
   spc_service_->SetBrowserBoundKeyStoreForTesting(browser_bound_key_store);
 
-  std::vector<mojom::SecurePaymentConfirmationCapabilityPtr> capabilities;
-  spc_service_->GetSecurePaymentConfirmationCapabilities(
-      base::BindLambdaForTesting(
-          [&capabilities, &run_loop](
-              std::vector<mojom::SecurePaymentConfirmationCapabilityPtr> c) {
-            capabilities = std::move(c);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+  for (bool supports_hardware_bbk : {true, false}) {
+    base::RunLoop run_loop;
+    base::HistogramTester histogram_tester;
+    browser_bound_key_store->SetDeviceSupportsHardwareKeys(
+        supports_hardware_bbk);
 
-  EXPECT_THAT(
-      capabilities,
-      testing::Contains(Pointee(testing::AllOf(
-          testing::Field(&mojom::SecurePaymentConfirmationCapability::name,
-                         spc_capabilities::kBrowserBoundKeyHardware),
-          testing::Field(&mojom::SecurePaymentConfirmationCapability::supported,
-                         true)))));
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.GetSecurePaymentConfirmationCapabilities."
-      "BrowserBoundKeyHardware",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
+    std::vector<mojom::SecurePaymentConfirmationCapabilityPtr> capabilities;
+    spc_service_->GetSecurePaymentConfirmationCapabilities(
+        base::BindLambdaForTesting(
+            [&capabilities, &run_loop](
+                std::vector<mojom::SecurePaymentConfirmationCapabilityPtr> c) {
+              capabilities = std::move(c);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+
+    EXPECT_THAT(
+        capabilities,
+        testing::Contains(Pointee(testing::AllOf(
+            testing::Field(&mojom::SecurePaymentConfirmationCapability::name,
+                           spc_capabilities::kBrowserBoundKeyHardware),
+            testing::Field(
+                &mojom::SecurePaymentConfirmationCapability::supported,
+                supports_hardware_bbk)))));
+    histogram_tester.ExpectUniqueSample(
+        "PaymentRequest.GetSecurePaymentConfirmationCapabilities."
+        "BrowserBoundKeyHardware",
+        /*sample=*/supports_hardware_bbk,
+        /*expected_bucket_count=*/1);
+  }
 }
 
 TEST_F(SecurePaymentConfirmationServiceTest,
