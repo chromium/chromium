@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -20,6 +21,7 @@
 #include "components/webauthn/core/browser/cmtg_device_key_provider.h"
 
 namespace base {
+class SequencedTaskRunner;
 class TickClock;
 }
 
@@ -31,9 +33,12 @@ class CmtgKeyFetcher {
   using Callback = base::OnceClosure;
   using Operation = webauthn::CmtgDeviceKeyProvider::Operation;
 
-  CmtgKeyFetcher(webauthn::CmtgDeviceKeyProvider* provider,
-                 Operation operation,
-                 const base::TickClock* tick_clock);
+  // If `task_runner` is non-null, the fetch timeout is posted to it.
+  CmtgKeyFetcher(
+      webauthn::CmtgDeviceKeyProvider* provider,
+      Operation operation,
+      const base::TickClock* tick_clock,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
   ~CmtgKeyFetcher();
 
   // Starts the fetch process.

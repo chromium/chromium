@@ -27,6 +27,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -408,6 +409,10 @@ GPMEnclaveController::GPMEnclaveController(
       model_(model),
       loading_timeout_(
           GpmTickAndTaskRunnerProvider::GetTickClock(render_frame_host)) {
+  if (scoped_refptr<base::SequencedTaskRunner> task_runner =
+          GpmTickAndTaskRunnerProvider::GetTaskRunner(render_frame_host)) {
+    loading_timeout_.SetTaskRunner(std::move(task_runner));
+  }
   enclave_manager_observer_.Observe(enclave_manager_);
   model_observer_.Observe(model_);
 
@@ -452,7 +457,8 @@ GPMEnclaveController::GPMEnclaveController(
             : webauthn::CmtgDeviceKeyProvider::Operation::kGetAssertion;
     cmtg_key_fetcher_ = std::make_unique<CmtgKeyFetcher>(
         CmtgDeviceKeyProviderFactory::GetForProfile(profile), operation,
-        GpmTickAndTaskRunnerProvider::GetTickClock(render_frame_host));
+        GpmTickAndTaskRunnerProvider::GetTickClock(render_frame_host),
+        GpmTickAndTaskRunnerProvider::GetTaskRunner(render_frame_host));
     cmtg_key_fetcher_->Start();
   }
 
@@ -597,6 +603,10 @@ void GPMEnclaveController::ShowSecurityDomainRecoveryUI() {
 GPMEnclaveController::AccountState
 GPMEnclaveController::account_state_for_testing() const {
   return account_state_;
+}
+
+bool GPMEnclaveController::is_waiting_for_cmtg_keys_for_testing() const {
+  return cmtg_key_fetcher_ && cmtg_key_fetcher_->is_waiting_for_keys();
 }
 
 GPMEnclaveController::AccountReadyState
@@ -1017,9 +1027,12 @@ void GPMEnclaveController::OnGpmSelectedWhileLoading() {
     model_->DisableUiOrShowLoadingDialog();
     return;
   }
+  // The timeout may be posted to an injected task runner, so bounce the
+  // handler back to the current sequence.
   loading_timeout_.Start(FROM_HERE, kLoadingTimeout,
-                         base::BindOnce(&GPMEnclaveController::OnLoadingTimeout,
-                                        weak_ptr_factory_.GetWeakPtr()));
+                         base::BindPostTaskToCurrentDefault(base::BindOnce(
+                             &GPMEnclaveController::OnLoadingTimeout,
+                             weak_ptr_factory_.GetWeakPtr())));
   return;
 }
 

@@ -82,7 +82,8 @@ PasskeyUpgradeRequestController::PasskeyUpgradeRequestController(
     cmtg_key_fetcher_ = std::make_unique<CmtgKeyFetcher>(
         CmtgDeviceKeyProviderFactory::GetForProfile(profile()),
         webauthn::CmtgDeviceKeyProvider::Operation::kMakeCredential,
-        GpmTickAndTaskRunnerProvider::GetTickClock(rfh));
+        GpmTickAndTaskRunnerProvider::GetTickClock(rfh),
+        GpmTickAndTaskRunnerProvider::GetTaskRunner(rfh));
   }
   if (enclave_manager_->IsLoaded()) {
     OnEnclaveLoaded();

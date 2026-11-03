@@ -5,13 +5,21 @@
 #include "chrome/browser/webauthn/cmtg_key_fetcher.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "components/device_event_log/device_event_log.h"
 
-CmtgKeyFetcher::CmtgKeyFetcher(webauthn::CmtgDeviceKeyProvider* provider,
-                               Operation operation,
-                               const base::TickClock* tick_clock)
-    : provider_(provider), operation_(operation), timeout_(tick_clock) {}
+CmtgKeyFetcher::CmtgKeyFetcher(
+    webauthn::CmtgDeviceKeyProvider* provider,
+    Operation operation,
+    const base::TickClock* tick_clock,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : provider_(provider), operation_(operation), timeout_(tick_clock) {
+  if (task_runner) {
+    timeout_.SetTaskRunner(std::move(task_runner));
+  }
+}
 
 CmtgKeyFetcher::~CmtgKeyFetcher() = default;
 
@@ -22,9 +30,12 @@ void CmtgKeyFetcher::Start() {
   }
 
   FIDO_LOG(EVENT) << "Fetching CMTG device keys";
-  timeout_.Start(FROM_HERE, GPMEnclaveController::kFetchDeviceKeysTimeout,
-                 base::BindOnce(&CmtgKeyFetcher::OnTimeout,
-                                weak_ptr_factory_.GetWeakPtr()));
+  // The timeout may be posted to an injected task runner, so bounce the
+  // handler back to the current sequence.
+  timeout_.Start(
+      FROM_HERE, GPMEnclaveController::kFetchDeviceKeysTimeout,
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &CmtgKeyFetcher::OnTimeout, weak_ptr_factory_.GetWeakPtr())));
   fetch_request_ = provider_->GetDeviceKeys(
       operation_, base::BindOnce(&CmtgKeyFetcher::OnKeysFetched,
                                  weak_ptr_factory_.GetWeakPtr()));

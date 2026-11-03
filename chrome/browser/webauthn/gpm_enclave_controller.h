@@ -198,6 +198,9 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   AccountState account_state_for_testing() const;
 
+  // Returns true if a transaction is blocked waiting for CMTG device keys.
+  bool is_waiting_for_cmtg_keys_for_testing() const;
+
   // Returns the ready state of the account.
   AccountReadyState account_ready_state() const;
   // Runs `callback` once the account state is no longer `kLoading` or

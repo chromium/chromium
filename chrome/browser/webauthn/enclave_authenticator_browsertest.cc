@@ -33,6 +33,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/simple_test_clock.h"
@@ -121,7 +122,6 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
@@ -5231,9 +5231,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
 // Tests that when the CMTG key fetch times out, the flow proceeds and returns
 // no CMTG key.
-// TODO(crbug.com/580329266): Flaky due to real-time timer race.
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
-                       DISABLED_CmtgKeyTimeout) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CmtgKeyTimeout) {
   cmtg_device_key_provider_fake().SetHoldCallback(true);
   SetTrustedVaultEmpty();
 
@@ -5254,6 +5252,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   dialog_model()->OnGPMPinEntered(u"123456");
 
   // Fast forward only after the transaction is actively waiting for keys.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return request_delegate()
+        ->enclave_controller_for_testing()
+        ->is_waiting_for_cmtg_keys_for_testing();
+  }));
   timer_task_runner_->FastForwardBy(
       GPMEnclaveController::kFetchDeviceKeysTimeout);
 
