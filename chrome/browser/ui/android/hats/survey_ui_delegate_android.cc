@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "components/messages/android/message_wrapper.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -18,8 +19,7 @@ namespace hats {
 
 SurveyUiDelegateAndroid::SurveyUiDelegateAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  jobj_ =
-      Java_SurveyUiDelegateBridge_create(env, reinterpret_cast<int64_t>(this));
+  jobj_ = Java_SurveyUiDelegateBridge_create(env, jni_zero::MakeRaw(this));
 }
 
 SurveyUiDelegateAndroid::SurveyUiDelegateAndroid(
@@ -27,11 +27,15 @@ SurveyUiDelegateAndroid::SurveyUiDelegateAndroid(
     ui::WindowAndroid* window) {
   JNIEnv* env = base::android::AttachCurrentThread();
   jobj_ = Java_SurveyUiDelegateBridge_createFromMessage(
-      env, reinterpret_cast<int64_t>(this), messages->GetJavaMessageWrapper(),
-      window->GetJavaObject());
+      env, messages->GetJavaMessageWrapper(), window->GetJavaObject());
 }
 
-SurveyUiDelegateAndroid::~SurveyUiDelegateAndroid() = default;
+SurveyUiDelegateAndroid::~SurveyUiDelegateAndroid() {
+  if (jobj_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_SurveyUiDelegateBridge_clearNativePtr(env, jobj_);
+  }
+}
 
 void SurveyUiDelegateAndroid::ShowSurveyInvitation(
     JNIEnv* env,

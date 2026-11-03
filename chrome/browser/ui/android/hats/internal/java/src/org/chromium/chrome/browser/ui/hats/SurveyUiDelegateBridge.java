@@ -12,6 +12,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -27,10 +31,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 @JNINamespace("hats")
 @NullMarked
 class SurveyUiDelegateBridge implements SurveyUiDelegate {
+    @JniType("::hats::SurveyUiDelegateAndroid")
+    interface NativeSurveyUiDelegateAndroid extends JniTypeToken {}
+
     private static @Nullable SurveyUiDelegate sDelegateForTesting;
 
     private final @Nullable SurveyUiDelegate mDelegate;
-    private final long mNativePointer;
+    private @Nullable JniRawPtr<NativeSurveyUiDelegateAndroid> mNativePointer;
 
     static void setDelegateForTesting(SurveyUiDelegate delegate) {
         sDelegateForTesting = delegate;
@@ -41,7 +48,7 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
     @CalledByNative
     @VisibleForTesting
     static @Nullable SurveyUiDelegateBridge createFromMessage(
-            long nativePointer, MessageWrapper messageWrapper, WindowAndroid windowAndroid) {
+            MessageWrapper messageWrapper, WindowAndroid windowAndroid) {
         if (windowAndroid == null || SurveyClientFactory.getInstance() == null) return null;
 
         var messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
@@ -63,14 +70,22 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
                             SurveyClientFactory.getInstance().getCrashUploadPermissionSupplier());
         }
 
-        return new SurveyUiDelegateBridge(nativePointer, delegate);
+        return new SurveyUiDelegateBridge(null, delegate);
     }
 
     /** Called from C++ to create a new SurveyUiDelegate with customized implementations. */
     @CalledByNative
     @VisibleForTesting
-    static SurveyUiDelegateBridge create(long nativePointer) {
+    static SurveyUiDelegateBridge create(JniRawPtr<NativeSurveyUiDelegateAndroid> nativePointer) {
         return new SurveyUiDelegateBridge(nativePointer, null);
+    }
+
+    @CalledByNative
+    void clearNativePtr() {
+        if (mNativePointer != null) {
+            mNativePointer.release();
+            mNativePointer = null;
+        }
     }
 
     @VisibleForTesting
@@ -81,7 +96,9 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
         MessageSurveyUiDelegate.populateDefaultValuesForSurveyMessage(res, model);
     }
 
-    private SurveyUiDelegateBridge(long nativePointer, @Nullable SurveyUiDelegate delegate) {
+    private SurveyUiDelegateBridge(
+            @Nullable JniRawPtr<NativeSurveyUiDelegateAndroid> nativePointer,
+            @Nullable SurveyUiDelegate delegate) {
         mNativePointer = nativePointer;
         mDelegate = delegate;
     }
@@ -96,12 +113,14 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
                     onSurveyAccepted, onSurveyDeclined, onSurveyPresentationFailed);
             return;
         }
-        SurveyUiDelegateBridgeJni.get()
-                .showSurveyInvitation(
-                        mNativePointer,
-                        onSurveyAccepted,
-                        onSurveyDeclined,
-                        onSurveyPresentationFailed);
+        if (mNativePointer != null) {
+            SurveyUiDelegateBridgeJni.get()
+                    .showSurveyInvitation(
+                            mNativePointer,
+                            onSurveyAccepted,
+                            onSurveyDeclined,
+                            onSurveyPresentationFailed);
+        }
     }
 
     @Override
@@ -110,7 +129,9 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
             mDelegate.dismiss();
             return;
         }
-        SurveyUiDelegateBridgeJni.get().dismiss(mNativePointer);
+        if (mNativePointer != null) {
+            SurveyUiDelegateBridgeJni.get().dismiss(mNativePointer);
+        }
     }
 
     @Nullable SurveyUiDelegate getDelegateForTesting() {
@@ -120,11 +141,11 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
     @NativeMethods
     interface Natives {
         void showSurveyInvitation(
-                long nativeSurveyUiDelegateAndroid,
+                JniPtr<NativeSurveyUiDelegateAndroid> self,
                 Runnable onSurveyAccepted,
                 Runnable onSurveyDeclined,
                 Runnable onSurveyPresentationFailed);
 
-        void dismiss(long nativeSurveyUiDelegateAndroid);
+        void dismiss(JniPtr<NativeSurveyUiDelegateAndroid> self);
     }
 }

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -80,7 +81,9 @@ public class SurveyUiDelegateBridgeUnitTest {
 
     @Test
     public void createNativeDelegateBridge() {
-        SurveyUiDelegate delegate = SurveyUiDelegateBridge.create(TEST_NATIVE_POINTER);
+        JniRawPtr<SurveyUiDelegateBridge.NativeSurveyUiDelegateAndroid> nativePointer =
+                JniRawPtr.createForTesting(TEST_NATIVE_POINTER);
+        SurveyUiDelegateBridge delegate = SurveyUiDelegateBridge.create(nativePointer);
         assertNotNull(delegate);
 
         delegate.showSurveyInvitation(
@@ -88,10 +91,12 @@ public class SurveyUiDelegateBridgeUnitTest {
                 CallbackUtils.emptyRunnable(),
                 CallbackUtils.emptyRunnable());
         verify(mMockSurveyUiDelegateBridge)
-                .showSurveyInvitation(eq(TEST_NATIVE_POINTER), notNull(), notNull(), notNull());
+                .showSurveyInvitation(eq(nativePointer), notNull(), notNull(), notNull());
 
         delegate.dismiss();
-        verify(mMockSurveyUiDelegateBridge).dismiss(eq(TEST_NATIVE_POINTER));
+        verify(mMockSurveyUiDelegateBridge).dismiss(eq(nativePointer));
+
+        delegate.clearNativePtr();
     }
 
     @Test
@@ -100,7 +105,7 @@ public class SurveyUiDelegateBridgeUnitTest {
         SurveyUiDelegateBridge.setDelegateForTesting(mockDelegate);
         MessageWrapper wrapper = MessageWrapper.create(1L, /*MessageIdentifier.INVALID_MESSAGE*/ 0);
         SurveyUiDelegateBridge delegate =
-                SurveyUiDelegateBridge.createFromMessage(TEST_NATIVE_POINTER, wrapper, mWindow);
+                SurveyUiDelegateBridge.createFromMessage(wrapper, mWindow);
         assertNotNull(delegate);
 
         delegate.showSurveyInvitation(() -> {}, () -> {}, () -> {});
@@ -115,8 +120,7 @@ public class SurveyUiDelegateBridgeUnitTest {
     @Test
     public void createFromMessage_FailedWithoutWindow() {
         MessageWrapper wrapper = MessageWrapper.create(1L, /*MessageIdentifier.INVALID_MESSAGE*/ 0);
-        SurveyUiDelegateBridge delegate =
-                SurveyUiDelegateBridge.createFromMessage(TEST_NATIVE_POINTER, wrapper, null);
+        SurveyUiDelegateBridge delegate = SurveyUiDelegateBridge.createFromMessage(wrapper, null);
         assertNull(delegate);
     }
 
@@ -125,7 +129,7 @@ public class SurveyUiDelegateBridgeUnitTest {
         TabModelSelectorSupplier.setInstanceForTesting(null);
         MessageWrapper wrapper = MessageWrapper.create(1L, /*MessageIdentifier.INVALID_MESSAGE*/ 0);
         SurveyUiDelegateBridge delegate =
-                SurveyUiDelegateBridge.createFromMessage(TEST_NATIVE_POINTER, wrapper, mWindow);
+                SurveyUiDelegateBridge.createFromMessage(wrapper, mWindow);
         assertNull(delegate);
     }
 
@@ -134,7 +138,7 @@ public class SurveyUiDelegateBridgeUnitTest {
         MessagesFactory.detachMessageDispatcher(mMockMessageDispatcher);
         MessageWrapper wrapper = MessageWrapper.create(1L, /*MessageIdentifier.INVALID_MESSAGE*/ 0);
         SurveyUiDelegateBridge delegate =
-                SurveyUiDelegateBridge.createFromMessage(TEST_NATIVE_POINTER, wrapper, mWindow);
+                SurveyUiDelegateBridge.createFromMessage(wrapper, mWindow);
         assertNull(delegate);
     }
 }
