@@ -1,29 +1,374 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 include_rules = [
- "+chrome/browser/android/lifecycle",
- "+chrome/browser/endpoint_fetcher",
- "+chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide",
- "+chrome/browser/profiles/android/java",
- "+chrome/browser/tab/java",
- "+chrome/browser/tabmodel/android/java",
- "+chrome/browser/tabpersistence/android/java",
- "+chrome/browser/ui/android/favicon/java",
- "+chrome/browser/ui/android/theme/java",
- "+chrome/browser/ui/android/toolbar/java",
- "+chrome/browser/ui/messages/android/java",
- "+components/browser_ui/notifications/android",
- "+components/browser_ui/settings",
- "+components/browser_ui/styles/android",
- "+components/browser_ui/widget/android",
- "+components/collaboration/public",
- "+components/data_sharing/public",
- "+components/data_sharing/test_support",
- "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",
- "+components/payments/content/android/ui/java/src/org/chromium/components/payments/ui/CurrencyFormatter.java",
- "+components/saved_tab_groups/public",
- "+components/search_engines/android/java/src/org/chromium/components/search_engines",
- "+components/sync/android/java/src/org/chromium/components/sync",
- "+components/thin_webview/java",
- "+components/module_installer",
- "+content/public/android/java/src/org/chromium/content_public/browser",
- "+content/public/android/java/src/org/chromium/content_public/common",
+  "-chrome/android",
+  "-chrome/browser",
+  "+chrome/android/features/tab_ui",
+  "+chrome/browser/actor/android",
+  "+chrome/browser/android/browserservices/intents",
+  "+chrome/browser/android/crypto",
+  "+chrome/browser/android/lifecycle",
+  "+chrome/browser/auxiliary_search",
+  "+chrome/browser/back_press/android",
+  "+chrome/browser/bookmarks/android",
+  "+chrome/browser/browser_controls/android",
+  "+chrome/browser/collaboration",
+  "+chrome/browser/commerce/price_tracking/android",
+  "+chrome/browser/contextual_tasks/android",
+  "+chrome/browser/data_sharing",
+  "+chrome/browser/feature_engagement",
+  "+chrome/browser/feedback/android",
+  "+chrome/browser/flags",
+  "+chrome/browser/glic/public/android",
+  "+chrome/browser/hub",
+  "+chrome/browser/incognito/android",
+  "+chrome/browser/magic_stack/android",
+  "+chrome/browser/preferences",
+  "+chrome/browser/profiles/android",
+  "+chrome/browser/quick_delete/android",
+  "+chrome/browser/recent_tabs/android",
+  "+chrome/browser/segmentation_platform/android",
+  "+chrome/browser/settings",
+  "+chrome/browser/share",
+  "+chrome/browser/sync/android",
+  "+chrome/browser/tab",
+  "+chrome/browser/tab_group_suggestion",
+  "+chrome/browser/tab_group_sync",
+  "+chrome/browser/tab_ui",
+  "+chrome/browser/tabmodel",
+  "+chrome/browser/tabwindow",
+  "+chrome/browser/ui/android/actions",
+  "+chrome/browser/ui/android/bars_common",
+  "+chrome/browser/ui/android/bottombar",
+  "+chrome/browser/ui/android/desktop_windowing",
+  "+chrome/browser/ui/android/edge_to_edge",
+  "+chrome/browser/ui/android/favicon",
+  "+chrome/browser/ui/android/layouts",
+  "+chrome/browser/ui/android/multiwindow",
+  "+chrome/browser/ui/android/omnibox",
+  "+chrome/browser/ui/android/theme",
+  "+chrome/browser/ui/android/toolbar",
+  "+chrome/browser/ui/messages/android",
+  "+chrome/browser/ui/side_ui/public/android",
+  "+chrome/browser/ui/vertical_tabs",
+  "+chrome/browser/url_constants/android",
+  "+chrome/browser/user_education",
+  "+components/browser_ui/settings",
+  "+components/browser_ui/styles/android",
+  "+components/browser_ui/widget/android",
+  "+components/collaboration/public",
+  "+components/data_sharing/public",
+  "+components/data_sharing/test_support",
+  "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",
+  "+components/payments/content/android/ui/java/src/org/chromium/components/payments/ui/CurrencyFormatter.java",
+  "+components/saved_tab_groups/public",
+  "+components/search_engines/android/java/src/org/chromium/components/search_engines",
+  "+components/sync/android/java/src/org/chromium/components/sync",
+  "+content/public/android/java/src/org/chromium/content_public/browser",
+  "+content/public/android/java/src/org/chromium/content_public/common",
 ]
+
+specific_include_rules = {
+  # TODO(b/565320394): Remove once decoupled from chrome_java
+  "ArchivedTabsAutoDeletePromoCoordinator.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
+  ],
+  "ArchivedTabsAutoDeletePromoManager.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
+  ],
+  "ArchivedTabsDialogCoordinator.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/SavedTabGroupUndoBarController.java",
+  ],
+  "ArchivedTabsMessageService.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
+  ],
+  "CloseAllTabsHelper.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiver.java",
+  ],
+  "GroupWindowChecker.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+  ],
+  "GroupedLayoutDelegate.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java",
+  ],
+  "IncognitoTabSwitcherPane.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java",
+  ],
+  "TabArchive.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
+  ],
+  "TabDragHandlerBase.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDragDropUtils.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDropDataAndroid.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeMultiTabDropDataAndroid.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabDropDataAndroid.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabGroupDropDataAndroid.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",
+  ],
+  "TabGridContextMenuCoordinator\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/share/ShareUtils.java",
+  ],
+  "TabGridDialogCoordinator\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarThrottle.java",
+  ],
+  "TabGridDialogMediator\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoClosureRestorer.java",
+  ],
+  "TabGridDialogViewBinder\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java",
+  ],
+  "TabGridView(Binder)?\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java",
+  ],
+  "TabGroupList(BottomSheet)?Coordinator\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
+  ],
+  "TabGroupSuggestionMessageService\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+  ],
+  "TabGroupUi(Coordinator.*|Factory)\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarThrottle.java",
+  ],
+  "TabGroupUiOneshotSupplier.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ActivityTabProvider.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarThrottle.java",
+  ],
+  "TabGroupUiUtils.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",
+  ],
+  "TabHoverCardView\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java",
+  ],
+  "TabListConfig\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabUnderlineManager.java",
+  ],
+  "TabListContainerViewBinder\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java",
+  ],
+  "TabListCoordinator\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarExplicitTrigger.java",
+  ],
+  "TabListEditorBookmarkAction\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerOpenerImpl.java",
+  ],
+  "TabListEditorCoordinator\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarExplicitTrigger.java",
+  ],
+  "TabListLayoutDelegate\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java",
+  ],
+  "TabListMediator.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabUnderlineManager.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarExplicitTrigger.java",
+  ],
+  "TabOverflowMenuCoordinator\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabGroupContextMenuCoordinator.java",
+  ],
+  "TabSearchOverlayCoordinator.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivitySession.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivityUtils.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchBoxDataProvider.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchUiCoordinator.java",
+  ],
+  "TabSwitcherDragHandler.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDropDataAndroid.java",
+  ],
+  "TabSwitcherGroupSuggestionServiceFactory\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+  ],
+  "TabSwitcherMessageManager.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
+  ],
+  "TabSwitcherPane(Base|UnitTest)?\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java",
+  ],
+  "TabSwitcherPaneCoordinator.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarThrottle.java",
+  ],
+  "TabSwitcherPaneFactory\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarThrottle.java",
+  ],
+  "TabVerticalViewBinder\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java",
+  ],
+  "TabsSettings.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
+  ],
+  "UndoGroupSnackbarController\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarThrottle.java",
+  ],
+  "VerticalExternalViewDragDropReorderStrategy.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabDropDataAndroid.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabGroupDropDataAndroid.java",
+  ],
+  "VerticalTabCollapseButtonContextMenuCoordinator\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripContextMenuCoordinator.java",
+  ],
+  "VerticalTabListCoordinator.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabContextMenuCoordinator.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabGroupContextMenuCoordinator.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripContextMenuCoordinator.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabUnderlineManager.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/reorder/StripDragShadowView.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDragAndDropBrowserDelegate.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDragDropUtils.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeMultiTabDropDataAndroid.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabDropDataAndroid.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabGroupDropDataAndroid.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/tabmodel/NextTabSelectionUtil.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarThrottle.java",
+  ],
+  "VerticalTabListItemTouchHelperCallback.*\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarThrottle.java",
+  ],
+
+  # TODO(b/565320394): Test-only dependencies
+  "ArchivedTabsDialogCoordinatorUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorBase.java",
+  ],
+  "ArchivedTabsMessageServiceUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiver.java",
+  ],
+  "CloseAllTabsDialogTest\\.java": [
+    "+chrome/browser/ui/android/appmenu/test",
+  ],
+  "IncognitoReauthPromoMessageServiceUnitTest\\.java": [
+    "+chrome/browser/device_reauth/android",
+  ],
+  "SelectableTabListEditorTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkEditActivity.java",
+  ],
+  "TabGridDialogMediatorUnitTest\\.java": [
+    "+chrome/browser/signin/services/android",
+  ],
+  "TabGridDialogTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkEditActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/homepage/HomepagePolicyManager.java",
+    "+chrome/browser/ui/android/night_mode",
+  ],
+  "TabGridDialogViewBinderTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/HeadlessBrowserControlsStateProvider.java",
+  ],
+  "TabGridIphTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",
+  ],
+  "TabGroupListBottomSheetRowMediatorUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+  ],
+  "TabGroupListMediatorUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+  ],
+  "TabGroupMenuActionHandlerUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+    "+chrome/browser/signin/services/android",
+  ],
+  "TabGroupRowMediatorUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
+    "+chrome/android/junit/src/org/chromium/chrome/browser/multiwindow/MultiWindowTestUtils.java",
+  ],
+  "TabGroupUiMediatorUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorImpl.java",
+  ],
+  "TabGroupUiUtilsUnitTest\\.java": [
+    "+chrome/android/junit/src/org/chromium/chrome/browser/multiwindow/MultiWindowTestUtils.java",
+  ],
+  "TabGroupsPaneUnitTest\\.java": [
+    "+chrome/browser/signin/services/android",
+  ],
+  "TabListMediatorUnitTest\\.java": [
+    "+chrome/browser/optimization_guide/android",
+    "+chrome/browser/search_engines/android",
+    "+chrome/browser/signin/services/android",
+  ],
+  "TabListViewHolderTest\\.java": [
+    "+chrome/browser/optimization_guide/android",
+  ],
+  "TabSearchOverlayCoordinatorUnitTest\\.java": [
+    "+chrome/browser/ui/android/searchactivityutils",
+  ],
+  "TabSearchOverlayTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/history/HistoryItem.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/history/HistoryProvider.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java",
+  ],
+  "TabSwitcherDragHandlerUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabDropDataAndroid.java",
+  ],
+  "TabSwitcherLayoutPTTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java",
+    "+chrome/browser/composeplate/android",
+    "+chrome/browser/ui/android/signin",
+  ],
+  "TabSwitcherLayoutTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarController.java",
+    "+chrome/browser/ui/android/night_mode",
+  ],
+  "TabSwitcherMessageManagerUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
+    "+chrome/browser/device_reauth/android",
+  ],
+  "TabSwitcherMultiWindowTest\\.java": [
+    "+chrome/android/javatests/src/org/chromium/chrome/browser/multiwindow/MultiWindowTestHelper.java",
+  ],
+  "TabSwitcherPaneCoordinatorFactoryUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
+  ],
+  "TabSwitcherPaneUnitTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
+  ],
+  "TabSwitcherSearchRenderTest\\.java": [
+    "+chrome/browser/ui/android/night_mode",
+  ],
+  "TabSwitcherSearchTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/history/HistoryItem.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/history/HistoryProvider.java",
+  ],
+  "TabSwitcherTabletTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/Layout.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelperManager.java",
+  ],
+  "TabThumbnailViewRenderTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java",
+  ],
+  "TabUiTestHelper\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/Layout.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/hub/HubLayout.java",
+  ],
+  "VerticalTabListCoordinatorUnitTest\\.java": [
+    "+chrome/browser/commerce/android",
+  ],
+  "VerticalTabListRenderTest\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabContextMenuCoordinator.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripContextMenuCoordinator.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",
+  ],
+}

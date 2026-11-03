@@ -1,0 +1,22 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+include_rules = [
+  "-chrome/browser",
+  "+chrome/browser/actor/android",
+  "+chrome/browser/browser_controls/android",
+  "+chrome/browser/flags",
+  "+chrome/browser/preferences",
+  "+chrome/browser/profiles/android",
+  "+chrome/browser/signin/services/android",
+  "+chrome/browser/sync/android",
+  "+chrome/browser/tab",
+  "+chrome/browser/tab_group_suggestion",
+  "+chrome/browser/tabmodel",
+  "+chrome/browser/tabwindow",
+  "+chrome/browser/ui/android/favicon",
+  "+chrome/browser/ui/android/layouts",
+  "+chrome/browser/ui/android/native_page",
+  "+chrome/browser/ui/vertical_tabs",
+]
