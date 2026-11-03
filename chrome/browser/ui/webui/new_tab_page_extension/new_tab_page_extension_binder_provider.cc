@@ -8,8 +8,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/plural_string_provider.h"
+#include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page_extension/new_tab_page_extension_page_handler_factory.h"
@@ -21,7 +23,9 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/search/plural_string_provider.mojom.h"
+#include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 
 namespace {
 
@@ -112,4 +116,15 @@ void NewTabPageExtensionBinderProvider::PopulateFrameBinders(
       base::BindRepeating(&BindPluralStringProvider));
   binder_map.Add<color_change_listener::mojom::PageHandler>(
       base::BindRepeating(&BindColorChangeHandler));
+
+  // `<ntp-app>` binds these interfaces unconditionally during initialization
+  // Drop the receivers until the corresponding features are enabled in the
+  // extension.
+  // TODO(crbug.com/572840536): Bind real handlers.
+  binder_map.Add<customize_buttons::mojom::CustomizeButtonsHandlerFactory>(
+      base::DoNothing());
+  binder_map.Add<help_bubble::mojom::HelpBubbleHandlerFactory>(
+      base::DoNothing());
+  binder_map.Add<tracked_element::mojom::TrackedElementHandler>(
+      base::DoNothing());
 }

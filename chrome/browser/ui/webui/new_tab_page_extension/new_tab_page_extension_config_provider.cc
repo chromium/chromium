@@ -41,10 +41,22 @@ base::DictValue NewTabPageExtensionConfigProvider::GetLoadTimeData(
       ContextualSearchServiceFactory::GetForProfile(profile) &&
       contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile->GetPrefs());
-  // The extension reuses chrome://new-tab-page elements, so it gets the same
-  // loadTimeData.
   base::DictValue dict =
       NewTabPageUI::GetLoadTimeData(profile, session_allows_drag_and_drop);
+
+  // Gate NTP subsystems not yet supported in the component extension.
+  // TODO(crbug.com/572840536): Add support in the component extension.
+  dict.Set("oneGoogleBarEnabled", false);
+  dict.Set("shortcutsEnabled", false);
+  dict.Set("modulesEnabled", false);
+  dict.Set("microsoftModuleEnabled", false);
+  dict.Set("enableThreadsRail", false);
+  dict.Set("browserPromoType", "disabled");
+  dict.Set("showCustomizeButton", false);
+  dict.Set("wallpaperSearchButtonEnabled", false);
+  dict.Set("backgroundColor", "var(--color-new-tab-page-background)");
+  dict.Set("backgroundImageUrl", "");
+
   // Adds `fontfamily`, `fontsize`, `language`, `textdirection` etc., which
   // `content::WebUIDataSource` adds on chrome://new-tab-page.
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),

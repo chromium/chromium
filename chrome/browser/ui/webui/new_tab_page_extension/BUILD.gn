@@ -51,6 +51,7 @@ source_set("new_tab_page_extension") {
     "//chrome/browser/ui/webui/cr_components/composebox",
     "//chrome/browser/ui/webui/cr_components/searchbox",
     "//chrome/browser/ui/webui/cr_components/searchbox:plural_string_provider",
+    "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
     "//chrome/browser/ui/webui/new_tab_page",
     "//chrome/browser/ui/webui/new_tab_page:impl",
     "//chrome/browser/ui/webui/new_tab_page/action_chips",
@@ -65,5 +66,7 @@ source_set("new_tab_page_extension") {
     "//ui/base",
     "//ui/webui",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+    "//ui/webui/resources/js/tracked_element:mojo_bindings",
   ]
 }
