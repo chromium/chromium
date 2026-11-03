@@ -850,6 +850,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="AGSA not installed"/>
   <int value="5" label="AGSA version below minimum"/>
   <int value="6" label="Service previously refused"/>
+  <int value="7" label="AGSA invalid package"/>
 </enum>
 
 <enum name="VoicePlateResult">
