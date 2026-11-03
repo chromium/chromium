@@ -277,10 +277,13 @@ bool TabScrollButtonContainer::IsPositionInWindowCaption(const gfx::Point& p) {
 }
 
 void TabScrollButtonContainer::SetScrollView(views::ScrollView* scroll_view) {
+  scroll_synchronizer_.reset();
   scroll_view_ = scroll_view;
 
   if (scroll_view == nullptr) {
     animation_.Stop();
+  } else {
+    scroll_synchronizer_ = scroll_view_->EnableScrollSynchronization();
   }
 }
 
