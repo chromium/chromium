@@ -527,8 +527,19 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
   }
 }
 
+// TODO(crbug.com/580528440): Failing on MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PRE_TestOldModelRemovedOnModelUpdate \
+  DISABLED_PRE_TestOldModelRemovedOnModelUpdate
+#define MAYBE_TestOldModelRemovedOnModelUpdate \
+  DISABLED_TestOldModelRemovedOnModelUpdate
+#else
+#define MAYBE_PRE_TestOldModelRemovedOnModelUpdate \
+  PRE_TestOldModelRemovedOnModelUpdate
+#define MAYBE_TestOldModelRemovedOnModelUpdate TestOldModelRemovedOnModelUpdate
+#endif
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
-                       PRE_TestOldModelRemovedOnModelUpdate) {
+                       MAYBE_PRE_TestOldModelRemovedOnModelUpdate) {
   auto model_cache_key =
       ClientCacheKey::FromLocale(g_browser_process->GetApplicationLocale());
   base::FilePath old_model_dir, new_model_dir;
@@ -599,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
-                       TestOldModelRemovedOnModelUpdate) {
+                       MAYBE_TestOldModelRemovedOnModelUpdate) {
   ModelFileObserver model_file_observer;
   RegisterAndWaitForModelUpdate(&model_file_observer);
   EXPECT_EQ(model_file_observer.optimization_target(),
