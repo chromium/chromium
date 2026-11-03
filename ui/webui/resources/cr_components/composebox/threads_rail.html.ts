@@ -21,7 +21,9 @@ export function getHtml(this: ThreadsRailElement) {
     <div id="iconsContainer">
       ${this.getItems_().map((item, index) => html`
         <cr-icon-button id="railItem-${index}"
+            data-index="${index}"
             style="${this.getIconStyle_(item) || nothing}"
+            @click="${this.onItemClick_}"
             aria-label="${item.name || nothing}">
         </cr-icon-button>
         ${item.name ? html`

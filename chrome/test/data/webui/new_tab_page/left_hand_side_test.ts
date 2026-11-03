@@ -7,6 +7,7 @@
 import 'chrome://new-tab-page/lazy_load.js';
 
 import type {IframeElement, ThreadsRailElement} from 'chrome://new-tab-page/lazy_load.js';
+import {LhsClientAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {LeftHandSideElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater, NtpLhsMessageType, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -276,6 +277,82 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertFalse(expanded.hidden);
     assertTrue(folded.hidden);
   });
+
+  test('expands LHS on expand-rail event in hybrid mode', async () => {
+    loadTimeData.overrideValues({enableThreadsRailHybrid: true});
+    await createLeftHandSide();
+
+    const expanded =
+        leftHandSide.shadowRoot.querySelector<HTMLElement>('#expanded')!;
+    const folded =
+        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+    await microtasksFinished();
+    assertTrue(expanded.hidden);
+    assertFalse(folded.hidden);
+
+    folded.dispatchEvent(
+        new CustomEvent('expand-rail', {bubbles: true, composed: true}));
+    await microtasksFinished();
+    assertFalse(expanded.hidden);
+    assertTrue(folded.hidden);
+  });
+
+  test(
+      'handles folded rail item clicks without spurious expansion',
+      async () => {
+        loadTimeData.overrideValues({
+          enableThreadsRailHybrid: true,
+          lhsRailConfig: {
+            items: [
+              {
+                iconSvg: '<svg></svg>',
+                name: 'AI Mode history',
+                clientAction: LhsClientAction.EXPAND_RAIL,
+              },
+              {
+                iconSvg: '<svg></svg>',
+                name: 'Start new AI Mode search',
+                clientAction: LhsClientAction.FOCUS_REALBOX_AIM,
+              },
+            ],
+          },
+        });
+        await createLeftHandSide();
+
+        const expanded =
+            leftHandSide.shadowRoot.querySelector<HTMLElement>('#expanded')!;
+        const folded =
+            leftHandSide.shadowRoot.querySelector<ThreadsRailElement>(
+                '#folded')!;
+
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+        await microtasksFinished();
+        assertTrue(expanded.hidden);
+        assertFalse(folded.hidden);
+
+        // Clicking FOCUS_REALBOX_AIM bubbles open-composebox without expanding.
+        const newSearchButton =
+            folded.shadowRoot.querySelector<HTMLElement>('#railItem-1')!;
+        const whenOpenComposebox =
+            eventToPromise('open-composebox', leftHandSide);
+        newSearchButton.click();
+        await whenOpenComposebox;
+        await microtasksFinished();
+        assertTrue(expanded.hidden);
+        assertFalse(folded.hidden);
+
+        // Clicking EXPAND_RAIL expands the LHS iframe.
+        const expandButton =
+            folded.shadowRoot.querySelector<HTMLElement>('#railItem-0')!;
+        expandButton.click();
+        await microtasksFinished();
+        assertFalse(expanded.hidden);
+        assertTrue(folded.hidden);
+      });
 
   test('handles NTP_LHS_NEW_THREAD message', async () => {
     await createLeftHandSide();

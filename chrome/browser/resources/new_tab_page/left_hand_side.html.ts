@@ -12,6 +12,7 @@ export function getHtml(this: LeftHandSideElement) {
   ${this.enableThreadsRailHybrid_
       ? html`<cr-threads-rail id="folded"
                  ?hidden="${this.isExpandedReady_ && this.isExpanded_}"
+                 @expand-rail="${this.onExpandRail_}"
                  @click="${this.onFoldedClick_}">
              </cr-threads-rail>`
       : ''}
