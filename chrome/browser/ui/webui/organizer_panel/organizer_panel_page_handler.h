@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ORGANIZER_PANEL_ORGANIZER_PANEL_PAGE_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -17,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class OrganizerPanelController;
 class Profile;
 
 namespace content {
@@ -53,12 +55,16 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
       tabs::VerticalTabStripStateController* controller);
   void OnSectionsStateChanged();
 
+  void UpdateInTrayView(OrganizerPanelController* controller);
+
   mojo::Receiver<organizer_panel::mojom::PageHandler> receiver_;
   mojo::Remote<organizer_panel::mojom::Page> page_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
+  std::optional<bool> in_tray_view_;
   base::CallbackListSubscription vertical_tab_strip_mode_subscription_;
+  base::CallbackListSubscription organizer_panel_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ORGANIZER_PANEL_ORGANIZER_PANEL_PAGE_HANDLER_H_

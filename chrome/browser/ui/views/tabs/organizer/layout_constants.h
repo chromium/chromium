@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/geometry/insets.h"
 
 namespace organizer_panel {
 
@@ -26,10 +25,6 @@ inline constexpr int kOrganizerPanelMinOverlap = 20;
 // Background color of the organizer panel.
 inline constexpr ui::ColorId kOrganizerPanelBackgroundColor =
     kColorOrganizerPanelBackground;
-
-// Margins for the panel controls view.
-inline constexpr gfx::Insets kOrganizerPanelControlsMargins =
-    gfx::Insets::VH(8, 8);
 
 }  // namespace organizer_panel
 

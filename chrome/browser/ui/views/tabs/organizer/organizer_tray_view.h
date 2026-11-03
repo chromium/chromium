@@ -13,14 +13,12 @@
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 class BrowserView;
 class BrowserWindowInterface;
-class OrganizerPanelControlsView;
 class ShadowFrameView;
 
 // Provides the visuals for the UI that slides out from the side of the browser
@@ -39,10 +37,6 @@ class OrganizerTrayView : public views::FlexLayoutView,
                              BrowserView* browser_view);
   ~OrganizerTrayView() override;
 
-  // Sets the area (if any) occupied by the caption buttons at the top leading
-  // corner of the tray.
-  void SetTopLeadingExclusion(const gfx::Size& top_leading_exclusion);
-
   // Sets the target width for the panel.
   void SetTargetWidth(int target_width);
   int target_width() const { return target_width_; }
@@ -52,9 +46,6 @@ class OrganizerTrayView : public views::FlexLayoutView,
 
   // Used to enable dragging.
   bool IsPositionInWindowCaption(const gfx::Point& point);
-
-  // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
 
  protected:
   // OrganizerPanelHost:
@@ -82,10 +73,8 @@ class OrganizerTrayView : public views::FlexLayoutView,
 
   const raw_ref<BrowserWindowInterface> browser_;
   views::FocusSearch focus_search_;
-  raw_ptr<OrganizerPanelControlsView> controls_view_ = nullptr;
   raw_ptr<ShadowFrameView> shadow_frame_ = nullptr;
   std::unique_ptr<EventObserver> event_observer_;
-  gfx::Size top_leading_exclusion_;
   int target_width_ = organizer_panel::kOrganizerPanelMinWidth;
   raw_ptr<views::View> panel_view_ = nullptr;
 };

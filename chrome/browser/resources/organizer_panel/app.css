@@ -20,6 +20,23 @@
           var(--color-sys-on-header-divider, var(--cr-fallback-color-divider)));
 }
 
+#header {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-end;
+  padding-block: 4px;
+  padding-inline-end: 4px;
+}
+
+#closeButton {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 32px;
+  margin: 0;
+}
+
 #searchField {
   --color-toolbar-search-field-background-hover:
       var(--color-sys-state-hover-on-subtle);

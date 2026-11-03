@@ -274,6 +274,30 @@ TEST_F(OrganizerPanelControllerMovePanelTest,
                   SetAnimationValue(1.0), ExpectPanel(false));
 }
 
+TEST_F(OrganizerPanelControllerMovePanelTest,
+       NotifiesStateChangedWhenLocationChangesWhileHidden) {
+  ASSERT_FALSE(state_controller_->IsOrganizerPanelVisible());
+  ASSERT_EQ(OrganizerPanelLocation::kVerticalTabStrip,
+            state_controller_->GetCurrentOrganizerPanelLocation());
+
+  UNCALLED_MOCK_CALLBACK(OrganizerPanelController::StateChangedCallback,
+                         callback);
+  const auto subscription =
+      state_controller_->RegisterOnStateChanged(callback.Get());
+
+  EXPECT_CALL_IN_SCOPE(callback, Run, {
+    vertical_tab_strip_controller_->NotifyModeWillChange();
+    EXPECT_CALL(*vertical_tab_strip_controller_, ShouldDisplayVerticalTabs)
+        .WillRepeatedly(testing::Return(false));
+    vertical_tab_strip_controller_->NotifyModeChanged();
+  });
+  EXPECT_EQ(OrganizerPanelLocation::kOrganizerTray,
+            state_controller_->GetCurrentOrganizerPanelLocation());
+
+  // Re-notifying with the same location should not trigger another callback.
+  vertical_tab_strip_controller_->NotifyModeChanged();
+}
+
 class OrganizerPanelControllerConfigurationTest
     : public OrganizerPanelControllerMovePanelTest,
       public testing::WithParamInterface<bool> {

@@ -15,6 +15,9 @@ interface Page {
   // Called when whether vertical tabs are enabled changes.
   OnVerticalTabsEnabledChanged(bool vertical_tabs_enabled);
 
+  // Called when whether the panel is in the tray view changes.
+  OnIsInTrayViewChanged(bool in_tray_view);
+
   // Called when the persisted state of sections changes.
   OnSectionsStateChanged(map<string, SectionState> sections_state);
 };

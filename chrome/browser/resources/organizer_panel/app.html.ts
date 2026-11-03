@@ -9,6 +9,14 @@ import type {OrganizerPanelAppElement} from './app.js';
 export function getHtml(this: OrganizerPanelAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+${this.inTrayView ? html`
+  <div id="header">
+    <cr-icon-button id="closeButton" class="no-overlap" iron-icon="cr:close"
+        aria-label="$i18n{close}" title="$i18n{close}"
+        @click="${this.onCloseButtonClick_}">
+    </cr-icon-button>
+  </div>
+` : ''}
 <cr-toolbar-search-field autofocus id="searchField" label="$i18n{searchTabs}"
     clear-label="$i18n{clearSearch}" search-delay="100"
     @search-changed="${this.onSearchChanged_}"

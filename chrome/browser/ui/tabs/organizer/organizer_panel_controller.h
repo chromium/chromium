@@ -78,8 +78,8 @@ class OrganizerPanelController {
       std::unique_ptr<views::View> panel_view);
 
  private:
-  // Notifies subscribers when the is_visible_ state of the Organizer Panel
-  // changes.
+  // Notifies subscribers when the is_visible_ or location state of the
+  // Organizer Panel changes.
   void NotifyStateChanged();
 
   // Update the Organizer Button's Action Item (kActionToggleOrganizerPanel)
@@ -103,7 +103,7 @@ class OrganizerPanelController {
   const std::unique_ptr<PanelViewManager> panel_view_manager_;
   base::CallbackListSubscription vertical_tab_strip_animation_subscription_;
 
-  // Callback list for state changes to the visibility.
+  // Callback list for state changes to visibility or location.
   base::RepeatingCallbackList<void(OrganizerPanelController*)>
       on_state_changed_callback_list_;
   ui::ScopedUnownedUserData<OrganizerPanelController> scoped_unowned_user_data_;

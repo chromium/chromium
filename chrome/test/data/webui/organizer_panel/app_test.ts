@@ -29,6 +29,7 @@ suite('OrganizerPanelAppTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
       clearSearch: 'Clear search',
+      close: 'Close',
       closeTab: 'Close tab',
       collapse: 'Collapse',
       createTabGroup: 'Create tab group',
@@ -350,12 +351,29 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals(0, app.$.list.scrollTop);
   });
 
-  test('tab navigation with close button', async () => {
-    const closeBtn = document.createElement('button');
-    closeBtn.id = 'closeButton';
-    closeBtn.tabIndex = 0;
-    app.shadowRoot.appendChild(closeBtn);
+  test('clicking close button closes panel', async () => {
+    const closeBtn = app.shadowRoot.querySelector<HTMLElement>('#closeButton')!;
+    assertTrue(!!closeBtn);
+    assertEquals(0, mockOrganizerPanelHandler.getCallCount('closePanel'));
+
+    closeBtn.click();
     await microtasksFinished();
+    assertEquals(1, mockOrganizerPanelHandler.getCallCount('closePanel'));
+
+    remotePage.onIsInTrayViewChanged(false);
+    await microtasksFinished();
+    assertFalse(app.inTrayView);
+    assertEquals(null, app.shadowRoot.querySelector('#closeButton'));
+
+    remotePage.onIsInTrayViewChanged(true);
+    await microtasksFinished();
+    assertTrue(app.inTrayView);
+    assertTrue(!!app.shadowRoot.querySelector('#closeButton'));
+  });
+
+  test('tab navigation with close button', async () => {
+    const closeBtn = app.shadowRoot.querySelector<HTMLElement>('#closeButton')!;
+    assertTrue(!!closeBtn);
 
     // Tab on close button focuses search field input
     closeBtn.dispatchEvent(new KeyboardEvent('keydown', {
@@ -381,6 +399,20 @@ suite('OrganizerPanelAppTest', () => {
     const lastSection = sections[sections.length - 1]!;
     assertEquals(
         lastSection.$.header.$.expandButton.$.icon, getDeepActiveElement());
+
+    // Shift+Tab on close button focuses last section menu button when expanded
+    lastSection.expanded = true;
+    await microtasksFinished();
+    closeBtn.focus();
+    closeBtn.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await microtasksFinished();
+    assertEquals(lastSection.$.header.$.menuButton, getDeepActiveElement());
   });
 
   test('focus-after-list and focus-before-list events from list', async () => {
@@ -389,8 +421,11 @@ suite('OrganizerPanelAppTest', () => {
     await microtasksFinished();
     assertEquals(app.$.searchField.getSearchInput(), getDeepActiveElement());
 
-    // Without close button, focus-after-list does not focus search field
-    // and does not prevent default.
+    // When not in tray view (without close button), focus-after-list does
+    // not focus search field and does not prevent default.
+    app.inTrayView = false;
+    await microtasksFinished();
+
     const dummyButton = document.createElement('button');
     document.body.appendChild(dummyButton);
     dummyButton.focus();
@@ -404,13 +439,13 @@ suite('OrganizerPanelAppTest', () => {
     assertFalse(withoutCloseEvent.defaultPrevented);
     dummyButton.remove();
 
-    // With close button, focus-after-list focuses close button and prevents
-    // default.
-    const closeBtn = document.createElement('button');
-    closeBtn.id = 'closeButton';
-    closeBtn.tabIndex = 0;
-    app.shadowRoot.appendChild(closeBtn);
+    // When in tray view (with close button), focus-after-list focuses
+    // close button and prevents default.
+    app.inTrayView = true;
     await microtasksFinished();
+
+    const closeBtn = app.shadowRoot.querySelector<HTMLElement>('#closeButton')!;
+    assertTrue(!!closeBtn);
 
     const withCloseEvent =
         new KeyboardEvent('keydown', {key: 'Tab', cancelable: true});

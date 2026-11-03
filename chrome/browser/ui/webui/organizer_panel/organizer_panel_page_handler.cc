@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -61,13 +62,22 @@ OrganizerPanelPageHandler::OrganizerPanelPageHandler(
   pref_change_registrar_.Add(prefs::kOrganizerPanelSectionsShowAll,
                              pref_changed_callback);
 
-  if (auto* controller = tabs::VerticalTabStripStateController::From(
-          webui::GetBrowserWindowInterface(web_contents_))) {
-    OnVerticalTabStripModeChanged(controller);
-    vertical_tab_strip_mode_subscription_ =
-        controller->RegisterOnModeChanged(base::BindRepeating(
-            &OrganizerPanelPageHandler::OnVerticalTabStripModeChanged,
-            base::Unretained(this)));
+  if (auto* browser = webui::GetBrowserWindowInterface(web_contents_)) {
+    if (auto* controller =
+            tabs::VerticalTabStripStateController::From(browser)) {
+      OnVerticalTabStripModeChanged(controller);
+      vertical_tab_strip_mode_subscription_ =
+          controller->RegisterOnModeChanged(base::BindRepeating(
+              &OrganizerPanelPageHandler::OnVerticalTabStripModeChanged,
+              base::Unretained(this)));
+    }
+
+    if (auto* panel_controller = OrganizerPanelController::From(browser)) {
+      UpdateInTrayView(panel_controller);
+      organizer_panel_subscription_ = panel_controller->RegisterOnStateChanged(
+          base::BindRepeating(&OrganizerPanelPageHandler::UpdateInTrayView,
+                              base::Unretained(this)));
+    }
   }
 }
 
@@ -128,6 +138,20 @@ OrganizerPanelPageHandler::GetSectionStateForId(
 void OrganizerPanelPageHandler::OnVerticalTabStripModeChanged(
     tabs::VerticalTabStripStateController* controller) {
   page_->OnVerticalTabsEnabledChanged(controller->ShouldDisplayVerticalTabs());
+}
+
+void OrganizerPanelPageHandler::UpdateInTrayView(
+    OrganizerPanelController* controller) {
+  CHECK(controller);
+  const auto location = controller->GetCurrentOrganizerPanelLocation();
+  if (location == OrganizerPanelLocation::kNone) {
+    return;
+  }
+  const bool in_tray = location == OrganizerPanelLocation::kOrganizerTray;
+  if (!in_tray_view_.has_value() || *in_tray_view_ != in_tray) {
+    in_tray_view_ = in_tray;
+    page_->OnIsInTrayViewChanged(in_tray);
+  }
 }
 
 void OrganizerPanelPageHandler::OnSectionsStateChanged() {

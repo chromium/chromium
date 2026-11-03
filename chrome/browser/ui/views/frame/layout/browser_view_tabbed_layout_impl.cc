@@ -855,10 +855,6 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     if (show_organizer_tray) {
       const int top_offset = layout_data_->organizer_tray_top();
       views().organizer_tray->SetTargetWidth(target_organizer_width);
-      if (!top_offset) {
-        views().organizer_tray->SetTopLeadingExclusion(
-            gfx::ToCeiledSize(params.leading_exclusion.ContentWithPadding()));
-      }
 
       const double reveal_amount =
           layout_data_->organizer_panel_animation.reveal_amount;

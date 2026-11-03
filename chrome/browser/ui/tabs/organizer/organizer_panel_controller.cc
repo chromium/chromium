@@ -86,15 +86,23 @@ class OrganizerPanelController::PanelViewManager {
 
   void OnVerticalTabStripModeChanged() {
     if (UpdatePanelViewHost()) {
-      controller_->SetOrganizerVisible(false, /*immediate=*/true);
+      if (controller_->IsOrganizerPanelVisible()) {
+        controller_->SetOrganizerVisible(false, /*immediate=*/true);
+      } else {
+        controller_->NotifyStateChanged();
+      }
     }
   }
 
   std::unique_ptr<views::View> SetPanelView(
       std::unique_ptr<views::View> panel_view) {
+    const auto old_location = current_location_;
     std::unique_ptr<views::View> old_panel = RemovePanelView();
     if (panel_view) {
       AddPanelView(std::move(panel_view));
+    }
+    if (current_location_ != old_location) {
+      controller_->NotifyStateChanged();
     }
     return old_panel;
   }

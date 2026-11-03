@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import './organizer_list.js';
 import '/strings.m.js';
@@ -54,10 +55,15 @@ export class OrganizerPanelAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      inTrayView: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor verticalTabsEnabled: boolean = false;
+  accessor inTrayView: boolean = true;
   protected accessor shortcut_: string = loadTimeData.getString('shortcutText');
   protected accessor searchQuery_: string = '';
   protected accessor sectionDelegates_:
@@ -66,6 +72,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
 
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private verticalTabsEnabledChangedListenerId_: number|null = null;
+  private inTrayViewChangedListenerId_: number|null = null;
   private onKeydown_: (e: KeyboardEvent) => void = (e: KeyboardEvent) => {
     if (e.key === 'Tab') {
       const path = e.composedPath();
@@ -74,7 +81,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
         if (!e.shiftKey) {
           this.$.searchField.getSearchInput().focus();
         } else {
-          if (!this.$.list.focusLastSection()) {
+          if (!this.$.list.focusLastSection(true)) {
             this.$.searchField.getSearchInput().focus();
           }
         }
@@ -117,6 +124,11 @@ export class OrganizerPanelAppElement extends CrLitElement {
             .addListener((verticalTabsEnabled: boolean) => {
               this.verticalTabsEnabled = verticalTabsEnabled;
             });
+    this.inTrayViewChangedListenerId_ =
+        this.browserProxy_.callbackRouter.onIsInTrayViewChanged.addListener(
+            (inTrayView: boolean) => {
+              this.inTrayView = inTrayView;
+            });
   }
 
   override disconnectedCallback() {
@@ -129,6 +141,10 @@ export class OrganizerPanelAppElement extends CrLitElement {
     this.browserProxy_.callbackRouter.removeListener(
         this.verticalTabsEnabledChangedListenerId_);
     this.verticalTabsEnabledChangedListenerId_ = null;
+    assert(this.inTrayViewChangedListenerId_ !== null);
+    this.browserProxy_.callbackRouter.removeListener(
+        this.inTrayViewChangedListenerId_);
+    this.inTrayViewChangedListenerId_ = null;
   }
 
   private getCloseButton_(): HTMLElement|null {
@@ -137,6 +153,10 @@ export class OrganizerPanelAppElement extends CrLitElement {
       return null;
     }
     return button;
+  }
+
+  protected onCloseButtonClick_() {
+    this.browserProxy_.handler.closePanel();
   }
 
   protected onFocusAfterList_(e: CustomEvent<{sourceEvent?: KeyboardEvent}>) {

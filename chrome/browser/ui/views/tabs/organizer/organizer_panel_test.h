@@ -89,8 +89,6 @@ class OrganizerPanelTestBase
 
   MultiStep HidePanel();
 
-  StepBuilder SetExclusion(int width, int height);
-
   OrganizerTrayView* tray_view() { return browser_view_->tray_view(); }
   FakeVerticalTabStrip* tab_strip() {
     return browser_view_->fake_vertical_tab_strip();

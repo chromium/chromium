@@ -241,14 +241,4 @@ OrganizerPanelTestBase::HidePanel() {
   return steps;
 }
 
-views::test::InteractiveViewsTestApi::StepBuilder
-OrganizerPanelTestBase::SetExclusion(int width, int height) {
-  return WithView(OrganizerTrayView::kTrayElementId,
-                  [width, height](OrganizerTrayView* tray) {
-                    tray->SetTopLeadingExclusion(gfx::Size(width, height));
-                    tray->GetWidget()->LayoutRootViewIfNecessary();
-                  })
-      .SetDescription("SetExclusion()");
-}
-
 }  // namespace organizer_panel::test
