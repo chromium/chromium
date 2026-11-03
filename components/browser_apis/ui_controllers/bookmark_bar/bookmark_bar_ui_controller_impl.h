@@ -36,15 +36,12 @@ class BookmarkBarUIControllerImpl : public BookmarkBarUIController {
 
   // mojom::BookmarkBarUIControllerDirectReturnStub:
   GetDisplayOptionsResult GetDisplayOptions() override;
-  OpenAppsPageResult OpenAppsPage(
-      ui::mojom::WindowOpenDisposition disposition) override;
-  OpenBookmarkResult OpenBookmark(
-      int64_t node_id,
-      ui::mojom::WindowOpenDisposition disposition) override;
-  OpenAllInFolderResult OpenAllInFolder(
-      mojom::NodeIdPtr folder,
-      ui::mojom::WindowOpenDisposition disposition) override;
-  RecordFolderOpenedResult RecordFolderOpened() override;
+  OnAppsShortcutPressedResult OnAppsShortcutPressed(
+      int32_t event_flags) override;
+  OnBookmarkPressedResult OnBookmarkPressed(int64_t node_id,
+                                            int32_t event_flags) override;
+  OnFolderPressedResult OnFolderPressed(mojom::NodeIdPtr folder,
+                                        int32_t event_flags) override;
   ShowContextMenuResult ShowContextMenu(
       mojom::NodeIdPtr target,
       const gfx::Point& point,
@@ -52,6 +49,7 @@ class BookmarkBarUIControllerImpl : public BookmarkBarUIController {
 
  private:
   void NotifyDisplayOptionsChanged();
+  void NotifyShowFolderMenu(const mojom::NodeId& folder);
   void OnPasteCheckComplete(mojom::NodeIdPtr target,
                             const gfx::Point& point,
                             ui::mojom::MenuSourceType source_type,

@@ -39,14 +39,24 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/page_navigator.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -515,6 +525,44 @@ TEST_F(BookmarkBarViewInWidgetTest, ButtonVisiblityUpdatesOverflowMenu) {
 
   SizeDownUntilButtonsVisible(1);
   EXPECT_EQ(3u, overflow_menu->GetSubmenu()->GetMenuItems().size());
+}
+
+TEST_F(BookmarkBarViewInWidgetTest, FolderButtonShowsMenu) {
+  widget()->Show();
+  AddNodesToBookmarkBarFromModelString("F1:[ a b ] ");
+  ASSERT_EQ(1u, test_helper_->GetBookmarkButtonCount());
+  auto* folder_button =
+      views::AsViewClass<views::MenuButton>(test_helper_->GetBookmarkButton(0));
+  ASSERT_TRUE(folder_button);
+
+  folder_button->Activate(nullptr);
+  views::MenuItemView* menu = bookmark_bar_view()->GetMenu();
+  ASSERT_TRUE(menu && menu->HasSubmenu());
+  EXPECT_EQ(2u, menu->GetSubmenu()->GetMenuItems().size());
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kCollapse;
+  EXPECT_TRUE(folder_button->HandleAccessibleAction(action_data));
+  EXPECT_FALSE(bookmark_bar_view()->GetMenu());
+
+  action_data.action = ax::mojom::Action::kExpand;
+  EXPECT_TRUE(folder_button->HandleAccessibleAction(action_data));
+  EXPECT_TRUE(bookmark_bar_view()->GetMenu());
+}
+
+TEST_F(BookmarkBarViewInWidgetTest, AppsShortcutForwardsEventFlags) {
+  widget()->Show();
+  EXPECT_CALL(browser_window_interface_,
+              OpenURL(testing::Field(
+                          &content::OpenURLParams::disposition,
+                          ui::mojom::WindowOpenDisposition::kNewBackgroundTab),
+                      testing::_));
+
+  views::test::ButtonTestApi(test_helper_->apps_page_shortcut())
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_MIDDLE_MOUSE_BUTTON,
+                                  ui::EF_MIDDLE_MOUSE_BUTTON));
 }
 
 // Tests that changing a `BookmarkNode` title updates button text and visibility

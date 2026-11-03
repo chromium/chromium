@@ -13,6 +13,11 @@
 bookmark_bar_api::mojom::NodeIdPtr ToMojoNodeId(
     const bookmarks::BookmarkNodeId& id);
 
+// Converts a bookmark bar UI controller node ID to chrome's. `id` must not be
+// a permanent folder of type kUnknown.
+bookmarks::BookmarkNodeId FromMojoNodeId(
+    const bookmark_bar_api::mojom::NodeId& id);
+
 // Converts a Browser API permanent folder type to chrome's. `type` must not be
 // kUnknown.
 bookmarks::PermanentFolderType FromMojoPermanentFolderType(

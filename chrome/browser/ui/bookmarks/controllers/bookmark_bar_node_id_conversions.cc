@@ -54,3 +54,11 @@ bookmark_bar_api::mojom::NodeIdPtr ToMojoNodeId(
   return bookmark_bar_api::mojom::NodeId::NewPermanentFolder(
       ToMojo(std::get<bookmarks::PermanentFolderType>(id)));
 }
+
+bookmarks::BookmarkNodeId FromMojoNodeId(
+    const bookmark_bar_api::mojom::NodeId& id) {
+  if (id.is_node_id()) {
+    return id.get_node_id();
+  }
+  return FromMojoPermanentFolderType(id.get_permanent_folder());
+}

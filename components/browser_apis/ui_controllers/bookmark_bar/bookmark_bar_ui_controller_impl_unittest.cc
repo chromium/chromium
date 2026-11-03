@@ -14,6 +14,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/browser_apis/ui_controllers/bookmark_bar/adapters/action_adapter.h"
@@ -27,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 
@@ -139,6 +141,7 @@ class MockControllerObserver : public BookmarkBarUIControllerObserver {
               (const mojom::DisplayOptions&),
               (override));
   MOCK_METHOD(void, OnContextMenuClosed, (), (override));
+  MOCK_METHOD(void, ShowFolderMenu, (const mojom::NodeId&), (override));
 };
 
 class TestRemoteObserver : public mojom::BookmarkBarObserver {
@@ -157,6 +160,7 @@ class TestRemoteObserver : public mojom::BookmarkBarObserver {
     display_options_.SetValue(std::move(options));
   }
   void OnContextMenuClosed() override {}
+  void ShowFolderMenu(mojom::NodeIdPtr folder) override {}
 
  private:
   mojo::AssociatedReceiver<mojom::BookmarkBarObserver> receiver_;
@@ -231,51 +235,93 @@ TEST_F(BookmarkBarUIControllerImplTest, GetDisplayOptionsOverMojo) {
   EXPECT_TRUE(observer.WaitForDisplayOptions()->Equals(updated));
 }
 
-TEST_F(BookmarkBarUIControllerImplTest, OpenBookmarkDelegates) {
+TEST_F(BookmarkBarUIControllerImplTest, OnBookmarkPressed) {
   auto bookmark_model = bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* node =
       bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Title",
                              GURL("https://google.com"));
+  ON_CALL(model_adapter_, GetNodeById(42)).WillByDefault(Return(node));
 
-  EXPECT_CALL(model_adapter_, GetNodeById(42)).WillOnce(Return(node));
-  EXPECT_CALL(action_adapter_,
-              OpenBookmark(node, ui::mojom::WindowOpenDisposition::kNewWindow));
-  EXPECT_TRUE(
-      controller_
-          ->OpenBookmark(42, ui::mojom::WindowOpenDisposition::kNewWindow)
-          .has_value());
+#if BUILDFLAG(IS_MAC)
+  constexpr int kNewTabModifier = ui::EF_COMMAND_DOWN;
+#else
+  constexpr int kNewTabModifier = ui::EF_CONTROL_DOWN;
+#endif
+  const struct {
+    int event_flags;
+    ui::mojom::WindowOpenDisposition disposition;
+  } kCases[] = {
+      {ui::EF_NONE, ui::mojom::WindowOpenDisposition::kCurrentTab},
+      {ui::EF_MIDDLE_MOUSE_BUTTON,
+       ui::mojom::WindowOpenDisposition::kNewBackgroundTab},
+      {ui::EF_MIDDLE_MOUSE_BUTTON | ui::EF_SHIFT_DOWN,
+       ui::mojom::WindowOpenDisposition::kNewForegroundTab},
+      {kNewTabModifier, ui::mojom::WindowOpenDisposition::kNewBackgroundTab},
+      {kNewTabModifier | ui::EF_SHIFT_DOWN,
+       ui::mojom::WindowOpenDisposition::kNewForegroundTab},
+      {kNewTabModifier | ui::EF_ALT_DOWN,
+       ui::mojom::WindowOpenDisposition::kNewSplitView},
+      {ui::EF_SHIFT_DOWN, ui::mojom::WindowOpenDisposition::kNewWindow},
+      {ui::EF_ALT_DOWN, ui::mojom::WindowOpenDisposition::kSaveToDisk},
+  };
+  for (const auto& test_case : kCases) {
+    EXPECT_CALL(action_adapter_, OpenBookmark(node, test_case.disposition));
+    EXPECT_TRUE(
+        controller_->OnBookmarkPressed(42, test_case.event_flags).has_value());
+  }
 }
 
-TEST_F(BookmarkBarUIControllerImplTest, OpenBookmarkNodeNotFound) {
+TEST_F(BookmarkBarUIControllerImplTest, OnBookmarkPressedNodeNotFound) {
   EXPECT_CALL(model_adapter_, GetNodeById(42)).WillOnce(Return(nullptr));
   EXPECT_CALL(action_adapter_, OpenBookmark(_, _)).Times(0);
 
-  auto result = controller_->OpenBookmark(
-      42, ui::mojom::WindowOpenDisposition::kNewWindow);
+  auto result = controller_->OnBookmarkPressed(42, ui::EF_NONE);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
 }
 
-TEST_F(BookmarkBarUIControllerImplTest, OpenAllInFolderOpensPermanentFolder) {
+TEST_F(BookmarkBarUIControllerImplTest, OnFolderPressedShowsMenu) {
+  auto bookmark_model = bookmarks::TestBookmarkClient::CreateModel();
+  const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
+      bookmark_model->bookmark_bar_node(), 0, u"Folder");
+
+  EXPECT_CALL(model_adapter_, GetNodeById(folder->id()))
+      .WillOnce(Return(folder));
+  EXPECT_CALL(action_adapter_, RecordFolderOpened());
+  EXPECT_CALL(action_adapter_, OpenFolderNodes(_, _)).Times(0);
+
+  testing::StrictMock<MockControllerObserver> observer;
+  controller_->AddObserver(&observer);
+  const mojom::NodeId expected_id = *NodeId(folder->id());
+  EXPECT_CALL(observer, ShowFolderMenu(testing::Truly(
+                            [&expected_id](const mojom::NodeId& actual) {
+                              return actual.Equals(expected_id);
+                            })));
+  EXPECT_TRUE(controller_->OnFolderPressed(NodeId(folder->id()), ui::EF_NONE)
+                  .has_value());
+  controller_->RemoveObserver(&observer);
+}
+
+TEST_F(BookmarkBarUIControllerImplTest, OnFolderPressedOpensPermanentFolder) {
   auto bookmark_model = bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* bar_node = bookmark_model->bookmark_bar_node();
 
   EXPECT_CALL(model_adapter_,
               GetUnderlyingNodes(PermanentFolderType::kBookmarkBar))
       .WillOnce(Return(std::vector<const bookmarks::BookmarkNode*>{bar_node}));
-  EXPECT_CALL(action_adapter_,
-              OpenFolderNodes(ElementsAre(bar_node),
-                              ui::mojom::WindowOpenDisposition::kNewWindow));
+  EXPECT_CALL(
+      action_adapter_,
+      OpenFolderNodes(ElementsAre(bar_node),
+                      ui::mojom::WindowOpenDisposition::kNewBackgroundTab));
 
-  EXPECT_TRUE(
-      controller_
-          ->OpenAllInFolder(mojom::NodeId::NewPermanentFolder(
-                                PermanentFolderType::kBookmarkBar),
-                            ui::mojom::WindowOpenDisposition::kNewWindow)
-          .has_value());
+  EXPECT_TRUE(controller_
+                  ->OnFolderPressed(mojom::NodeId::NewPermanentFolder(
+                                        PermanentFolderType::kBookmarkBar),
+                                    ui::EF_MIDDLE_MOUSE_BUTTON)
+                  .has_value());
 }
 
-TEST_F(BookmarkBarUIControllerImplTest, OpenAllInFolderOpensFolderNode) {
+TEST_F(BookmarkBarUIControllerImplTest, OnFolderPressedOpensFolderNode) {
   auto bookmark_model = bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
       bookmark_model->bookmark_bar_node(), 0, u"Folder");
@@ -283,15 +329,23 @@ TEST_F(BookmarkBarUIControllerImplTest, OpenAllInFolderOpensFolderNode) {
   EXPECT_CALL(model_adapter_, GetNodeById(folder->id()))
       .WillOnce(Return(folder));
   EXPECT_CALL(model_adapter_, GetUnderlyingNodes(_)).Times(0);
-  EXPECT_CALL(action_adapter_,
-              OpenFolderNodes(ElementsAre(folder),
-                              ui::mojom::WindowOpenDisposition::kNewWindow));
+  EXPECT_CALL(
+      action_adapter_,
+      OpenFolderNodes(ElementsAre(folder),
+                      ui::mojom::WindowOpenDisposition::kNewBackgroundTab));
 
   EXPECT_TRUE(
       controller_
-          ->OpenAllInFolder(NodeId(folder->id()),
-                            ui::mojom::WindowOpenDisposition::kNewWindow)
+          ->OnFolderPressed(NodeId(folder->id()), ui::EF_MIDDLE_MOUSE_BUTTON)
           .has_value());
+}
+
+TEST_F(BookmarkBarUIControllerImplTest, OnAppsShortcutPressed) {
+  EXPECT_CALL(
+      action_adapter_,
+      OpenAppsPage(ui::mojom::WindowOpenDisposition::kNewBackgroundTab));
+  EXPECT_TRUE(controller_->OnAppsShortcutPressed(ui::EF_MIDDLE_MOUSE_BUTTON)
+                  .has_value());
 }
 
 // Shows the menu once the paste check finishes, and notifies observers when it

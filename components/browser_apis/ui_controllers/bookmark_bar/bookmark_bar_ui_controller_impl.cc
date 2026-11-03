@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace bookmark_bar_api {
@@ -108,44 +109,44 @@ BookmarkBarUIControllerImpl::GetDisplayOptions() {
   return snapshot;
 }
 
-BookmarkBarUIControllerImpl::OpenAppsPageResult
-BookmarkBarUIControllerImpl::OpenAppsPage(
-    ui::mojom::WindowOpenDisposition disposition) {
-  adapters_->action_adapter().OpenAppsPage(disposition);
+BookmarkBarUIControllerImpl::OnAppsShortcutPressedResult
+BookmarkBarUIControllerImpl::OnAppsShortcutPressed(int32_t event_flags) {
+  adapters_->action_adapter().OpenAppsPage(
+      ui::DispositionFromEventFlags(event_flags));
   return std::monostate();
 }
 
-BookmarkBarUIControllerImpl::OpenBookmarkResult
-BookmarkBarUIControllerImpl::OpenBookmark(
-    int64_t node_id,
-    ui::mojom::WindowOpenDisposition disposition) {
+BookmarkBarUIControllerImpl::OnBookmarkPressedResult
+BookmarkBarUIControllerImpl::OnBookmarkPressed(int64_t node_id,
+                                               int32_t event_flags) {
   const bookmarks::BookmarkNode* const node =
       adapters_->model_adapter().GetNodeById(node_id);
   if (!node) {
     return base::unexpected(
         MakeError(mojo_base::mojom::Code::kNotFound, "Bookmark not found"));
   }
-  adapters_->action_adapter().OpenBookmark(node, disposition);
+  adapters_->action_adapter().OpenBookmark(
+      node, ui::DispositionFromEventFlags(event_flags));
   return std::monostate();
 }
 
-BookmarkBarUIControllerImpl::OpenAllInFolderResult
-BookmarkBarUIControllerImpl::OpenAllInFolder(
-    mojom::NodeIdPtr folder,
-    ui::mojom::WindowOpenDisposition disposition) {
+BookmarkBarUIControllerImpl::OnFolderPressedResult
+BookmarkBarUIControllerImpl::OnFolderPressed(mojom::NodeIdPtr folder,
+                                             int32_t event_flags) {
   std::vector<const bookmarks::BookmarkNode*> nodes =
       GetUnderlyingNodes(adapters_->model_adapter(), *folder);
   if (nodes.empty()) {
     return base::unexpected(
         MakeError(mojo_base::mojom::Code::kNotFound, "Folder not found"));
   }
+  const WindowOpenDisposition disposition =
+      ui::DispositionFromEventFlags(event_flags);
+  if (disposition == WindowOpenDisposition::kCurrentTab) {
+    adapters_->action_adapter().RecordFolderOpened();
+    NotifyShowFolderMenu(*folder);
+    return std::monostate();
+  }
   adapters_->action_adapter().OpenFolderNodes(nodes, disposition);
-  return std::monostate();
-}
-
-BookmarkBarUIControllerImpl::RecordFolderOpenedResult
-BookmarkBarUIControllerImpl::RecordFolderOpened() {
-  adapters_->action_adapter().RecordFolderOpened();
   return std::monostate();
 }
 
@@ -178,6 +179,16 @@ void BookmarkBarUIControllerImpl::NotifyDisplayOptionsChanged() {
   }
   for (auto& remote : remote_observers_) {
     remote->OnDisplayOptionsChanged(options.Clone());
+  }
+}
+
+void BookmarkBarUIControllerImpl::NotifyShowFolderMenu(
+    const mojom::NodeId& folder) {
+  for (BookmarkBarUIControllerObserver& observer : observers_) {
+    observer.ShowFolderMenu(folder);
+  }
+  for (auto& remote : remote_observers_) {
+    remote->ShowFolderMenu(folder.Clone());
   }
 }
 

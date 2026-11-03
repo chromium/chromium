@@ -27,7 +27,6 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/accessible_pane_view.h"
@@ -207,6 +206,7 @@ class BookmarkBarView
   void OnDisplayOptionsChanged(
       const bookmark_bar_api::mojom::DisplayOptions& options) override;
   void OnContextMenuClosed() override;
+  void ShowFolderMenu(const bookmark_bar_api::mojom::NodeId& folder) override;
 
   // BookmarkMenuControllerObserver:
   void BookmarkMenuControllerDeleted(
@@ -365,17 +365,8 @@ class BookmarkBarView
   // model is mutated and a drop is in progress.
   void InvalidateDrop();
 
-  // Shows a menu for the provided folder.
-  void ShowFolderMenuForFolder(const BookmarkParentFolder& folder);
-
   // Hides the folder menu for the provided folder (idempotent).
   void HideFolderMenuForFolder(const BookmarkParentFolder& folder);
-
-  // Handles a press on a folder: shows its menu for the current tab, or opens
-  // everything in it for any other disposition. This decision is expected to
-  // move into a shared bookmark bar UI controller.
-  void OnFolderPressed(const BookmarkParentFolder& folder,
-                       ui::mojom::WindowOpenDisposition disposition);
 
   // Apply the browser's display options, pushed by `controller_`.
   void SetAppsPageShortcutVisibility(bool visible);

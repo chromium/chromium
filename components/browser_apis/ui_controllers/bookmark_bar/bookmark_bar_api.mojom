@@ -8,7 +8,6 @@ import "components/browser_apis/bookmarks/bookmarks_api.mojom";
 import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/error.mojom";
 import "ui/base/mojom/menu_source_type.mojom";
-import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Identifies a bookmark node, or a permanent folder.
@@ -62,30 +61,34 @@ interface BookmarkBarObserver {
   // Called when a context menu shown by ShowContextMenu() closes, or when it
   // couldn't be shown after ShowContextMenu() returned.
   OnContextMenuClosed();
+
+  // Called when a press on `folder` should open its dropdown menu in the UI.
+  ShowFolderMenu(NodeId folder);
 };
 
 // Browser actions for a single bookmark bar in a browser window. The bookmark
-// bar UI owns its instance. The caller decides what an input means; the
-// controller only carries it out.
+// bar UI owns its instance. The UI reports user presses and the controller
+// decides what they mean (e.g. which WindowOpenDisposition to use, or whether a
+// folder press opens the folder dropdown menu vs. opening all bookmarks).
 [GenerateDirectReturnStub]
 interface BookmarkBarUIController {
   // Gets the current display options and subscribes to updates.
   GetDisplayOptions() => result<DisplayOptionsSnapshot, mojo_base.mojom.Error>;
 
-  // Opens the apps page.
-  OpenAppsPage(ui.mojom.WindowOpenDisposition disposition)
+  // Handles a press on the apps page shortcut. `event_flags` is a bitmask of
+  // `ui::EventFlags` (`ui/events/mojom/event_constants.mojom`).
+  OnAppsShortcutPressed(int32 event_flags)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
-  // Opens the bookmark with `node_id`. Fails if the node doesn't exist.
-  OpenBookmark(int64 node_id, ui.mojom.WindowOpenDisposition disposition)
+  // Handles a press on the bookmark with `node_id`. `event_flags` is a bitmask
+  // of `ui::EventFlags`. Fails if the node doesn't exist.
+  OnBookmarkPressed(int64 node_id, int32 event_flags)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
-  // Opens every bookmark in `folder`. Fails if the folder doesn't exist.
-  OpenAllInFolder(NodeId folder, ui.mojom.WindowOpenDisposition disposition)
+  // Handles a press on `folder`. `event_flags` is a bitmask of
+  // `ui::EventFlags`. Fails if the folder doesn't exist.
+  OnFolderPressed(NodeId folder, int32 event_flags)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
-
-  // Records that the caller opened a folder menu.
-  RecordFolderOpened() => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Shows the context menu for `target` at `point`, in screen coordinates.
   // Returns once the menu has been requested. Fails if `target` doesn't

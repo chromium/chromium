@@ -3,5 +3,6 @@ include_rules = [
   "+components/browser_apis/bookmarks/bookmarks_api.mojom",
   "+mojo/public",
   "+ui/base",
+  "+ui/events/event_constants.h",
   "+ui/gfx/geometry",
 ]

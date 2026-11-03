@@ -96,13 +96,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
@@ -1398,8 +1396,7 @@ bool BookmarkBarView::CanStartDragForView(views::View* sender,
 }
 
 void BookmarkBarView::AppsPageShortcutPressed(const ui::Event& event) {
-  std::ignore =
-      controller_->OpenAppsPage(ui::DispositionFromEventFlags(event.flags()));
+  std::ignore = controller_->OnAppsShortcutPressed(event.flags());
 }
 
 void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
@@ -1407,20 +1404,21 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   // Only URL nodes have regular buttons on the bookmarks bar; folder clicks
   // are directed to ::OnMenuButtonPressed().
   CHECK(node->is_url(), base::NotFatalUntil::M162);
-  std::ignore = controller_->OpenBookmark(
-      node->id(), ui::DispositionFromEventFlags(event.flags()));
+  std::ignore = controller_->OnBookmarkPressed(node->id(), event.flags());
 }
 
 void BookmarkBarView::OnMenuButtonPressed(const BookmarkParentFolder& folder,
                                           const ui::Event& event) {
-  OnFolderPressed(folder, ui::DispositionFromEventFlags(event.flags()));
+  std::ignore = controller_->OnFolderPressed(
+      ToMojoNodeId(chrome::ToNodeId(folder)), event.flags());
 }
 
 bool BookmarkBarView::OnMenuButtonAccessibleAction(
     const BookmarkParentFolder& folder,
     const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kExpand) {
-    OnFolderPressed(folder, ui::mojom::WindowOpenDisposition::kCurrentTab);
+    std::ignore = controller_->OnFolderPressed(
+        ToMojoNodeId(chrome::ToNodeId(folder)), ui::EF_NONE);
     return true;
   }
   if (action_data.action == ax::mojom::Action::kCollapse) {
@@ -1428,20 +1426,6 @@ bool BookmarkBarView::OnMenuButtonAccessibleAction(
     return true;
   }
   return false;
-}
-
-void BookmarkBarView::OnFolderPressed(
-    const BookmarkParentFolder& folder,
-    ui::mojom::WindowOpenDisposition disposition) {
-  // Clicking the middle mouse button or clicking with Control/Command key down
-  // opens all bookmarks in the folder in new tabs.
-  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
-    std::ignore = controller_->RecordFolderOpened();
-    ShowFolderMenuForFolder(folder);
-    return;
-  }
-  std::ignore = controller_->OpenAllInFolder(
-      ToMojoNodeId(chrome::ToNodeId(folder)), disposition);
 }
 
 void BookmarkBarView::ShowContextMenuForViewImpl(
@@ -2033,18 +2017,6 @@ void BookmarkBarView::InvalidateDrop() {
   StopShowFolderDropMenuTimer();
 }
 
-void BookmarkBarView::ShowFolderMenuForFolder(
-    const BookmarkParentFolder& folder) {
-  const size_t start_index =
-      (folder.as_permanent_folder() == PermanentFolderType::kBookmarkBarNode)
-          ? first_hidden_node_idx_
-          : 0;
-  bookmark_menu_ = new BookmarkMenuController(browser_, GetWidget(), folder,
-                                              start_index, false);
-  bookmark_menu_->set_observer(this);
-  bookmark_menu_->RunMenuAt(this);
-}
-
 void BookmarkBarView::HideFolderMenuForFolder(
     const BookmarkParentFolder& folder) {
   if (bookmark_menu_ && bookmark_menu_->folder() == folder) {
@@ -2346,6 +2318,20 @@ void BookmarkBarView::OnDisplayOptionsChanged(
   SetAppsPageShortcutVisibility(options.apps_shortcut_enabled);
   SetSavedTabGroupsVisibility(options.tab_groups_enabled);
   SetManagedBookmarksFolderVisibility(options.managed_bookmarks_enabled);
+}
+
+void BookmarkBarView::ShowFolderMenu(
+    const bookmark_bar_api::mojom::NodeId& folder_id) {
+  const BookmarkParentFolder folder = chrome::ToFolder(
+      FromMojoNodeId(folder_id), bookmark_service_->bookmark_model());
+  const size_t start_index =
+      (folder.as_permanent_folder() == PermanentFolderType::kBookmarkBarNode)
+          ? first_hidden_node_idx_
+          : 0;
+  bookmark_menu_ = new BookmarkMenuController(browser_, GetWidget(), folder,
+                                              start_index, false);
+  bookmark_menu_->set_observer(this);
+  bookmark_menu_->RunMenuAt(this);
 }
 
 BEGIN_METADATA(BookmarkBarView)

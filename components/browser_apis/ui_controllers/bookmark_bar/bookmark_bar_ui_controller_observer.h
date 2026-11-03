@@ -18,6 +18,7 @@ class BookmarkBarUIControllerObserver : public base::CheckedObserver {
 
   virtual void OnDisplayOptionsChanged(const mojom::DisplayOptions& options) {}
   virtual void OnContextMenuClosed() {}
+  virtual void ShowFolderMenu(const mojom::NodeId& folder) {}
 };
 
 }  // namespace bookmark_bar_api

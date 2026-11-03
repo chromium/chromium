@@ -48,6 +48,7 @@ source_set("impl") {
   deps = [
     "//base",
     "//components/bookmarks/browser",
+    "//ui/base",
     "//ui/gfx/geometry",
   ]
 }
@@ -66,6 +67,7 @@ source_set("unit_tests") {
     "//components/bookmarks/test",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/events:event_constants",
     "//ui/gfx/geometry",
     "//url",
   ]
