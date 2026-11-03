@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/page_navigator.h"

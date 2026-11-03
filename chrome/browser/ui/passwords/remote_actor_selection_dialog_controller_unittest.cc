@@ -14,7 +14,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_string.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

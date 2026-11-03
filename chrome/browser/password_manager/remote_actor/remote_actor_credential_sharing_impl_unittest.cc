@@ -34,7 +34,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/render_frame_host.h"

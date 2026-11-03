@@ -38,7 +38,7 @@
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"

@@ -8,7 +8,7 @@
 #import <utility>
 
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service_impl.h"
-#import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

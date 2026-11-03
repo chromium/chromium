@@ -24,7 +24,7 @@ source_set("remote_actor") {
   deps = [
     "//components/keyed_service/core",
     "//components/password_manager/core/browser:password_form",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common/remote_actor:features",
     "//crypto",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",

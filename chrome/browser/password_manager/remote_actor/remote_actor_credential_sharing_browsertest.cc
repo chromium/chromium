@@ -16,7 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_test_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

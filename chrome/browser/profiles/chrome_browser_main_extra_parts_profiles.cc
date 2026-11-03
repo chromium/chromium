@@ -311,7 +311,7 @@
 #include "components/password_manager/content/browser/password_requirements_service_factory.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_blocklist_policy.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/payments/content/has_enrolled_instrument_query_factory.h"
 #include "components/permissions/features.h"
 #include "components/policy/content/safe_search_service.h"

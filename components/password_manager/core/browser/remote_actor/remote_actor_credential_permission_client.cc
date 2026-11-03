@@ -20,7 +20,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_request_helper.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_switches.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

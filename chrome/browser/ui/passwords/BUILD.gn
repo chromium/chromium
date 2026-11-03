@@ -169,6 +169,7 @@ source_set("impl") {
       "//components/constrained_window",
       "//components/desktop_to_mobile_promos",
       "//components/password_manager/core/browser/features:password_features",
+      "//components/password_manager/core/common/remote_actor:features",
       "//components/tabs:public",
     ]
   }
@@ -319,6 +320,7 @@ source_set("unit_tests") {
       "//components/password_manager/core/browser/password_store:password_store_interface",
       "//components/password_manager/core/browser/password_store:test_support",
       "//components/password_manager/core/common:features",
+      "//components/password_manager/core/common/remote_actor:features",
       "//components/prefs",
       "//components/signin/public/identity_manager",
       "//components/strings:components_strings",

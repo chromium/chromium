@@ -57,10 +57,7 @@ source_set("features") {
     "password_manager_features.h",
   ]
 
-  deps = [
-    "//base",
-    "//build:blink_buildflags",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

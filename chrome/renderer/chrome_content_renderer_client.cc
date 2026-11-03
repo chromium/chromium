@@ -110,7 +110,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
 #include "components/paint_preview/buildflags/buildflags.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/pdf/common/constants.h"
 #include "components/pdf/common/pdf_util.h"
 #include "components/permissions/features.h"
