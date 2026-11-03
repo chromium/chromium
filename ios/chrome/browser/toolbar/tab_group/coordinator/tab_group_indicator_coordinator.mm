@@ -120,6 +120,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   [self clearLeaveOrDeleteCompletion];
   [self stopCreateTabGroupCoordinator];
   [self stopTabGroupConfirmationCoordinator];
+  [self.browser->GetSceneState() removeObserver:_mediator];
   [_mediator disconnect];
   _mediator = nil;
 }
