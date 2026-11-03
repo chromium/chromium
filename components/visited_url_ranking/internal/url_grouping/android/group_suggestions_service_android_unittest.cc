@@ -13,6 +13,11 @@
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+namespace visited_url_ranking {
+class TestJavaDelegate;
+}  // namespace visited_url_ranking
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/visited_url_ranking/internal/test_jni_headers/TestServiceDelegate_jni.h"
@@ -28,10 +33,10 @@ class TestJavaDelegate {
  public:
   TestJavaDelegate(GroupSuggestionsService* service, base::OnceClosure callback)
       : service_(GroupSuggestionsService::GetJavaObject(service)),
-        java_obj_(Java_TestServiceDelegate_createAndAdd(
-            AttachCurrentThread(),
-            service_,
-            reinterpret_cast<long>(this))),
+        java_obj_(
+            Java_TestServiceDelegate_createAndAdd(AttachCurrentThread(),
+                                                  service_,
+                                                  jni_zero::MakeRaw(this))),
         callback_(std::move(callback)) {}
 
   ~TestJavaDelegate() {
@@ -58,9 +63,12 @@ class TestJavaDelegate {
 };
 
 // Implements TestServiceObserver.onDelegateNotify static method.
-static void JNI_TestServiceDelegate_OnDelegateNotify(JNIEnv* env,
-                                                     int64_t delegate_ptr) {
-  reinterpret_cast<TestJavaDelegate*>(delegate_ptr)->OnDelegateNotify();
+static void JNI_TestServiceDelegate_OnDelegateNotify(
+    JNIEnv* env,
+    TestJavaDelegate* delegate_ptr) {
+  if (delegate_ptr) {
+    delegate_ptr->OnDelegateNotify();
+  }
 }
 
 class GroupSuggestionsServiceAndroidTest : public testing::Test {

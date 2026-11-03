@@ -225,6 +225,7 @@ if (is_android) {
     sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/TestServiceDelegate.java" ]
     deps = [
       "//base:base_java",
+      "//build/android:build_java",
       "//components/visited_url_ranking/public:public_java",
       "//third_party/jni_zero:jni_zero_java",
     ]

@@ -6,9 +6,14 @@ package org.chromium.components.visited_url_ranking.url_grouping;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Test delegate that registers itself to the Java service, and sends notification to the native
@@ -18,11 +23,14 @@ import org.chromium.base.Callback;
  */
 @JNINamespace("visited_url_ranking")
 public class TestServiceDelegate implements GroupSuggestionsService.Delegate {
-    private final long mNativePtr;
+    @JniType("::visited_url_ranking::TestJavaDelegate")
+    interface NativeTestJavaDelegate extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeTestJavaDelegate> mNativePtr;
     private int mShowSuggestionCount;
     private int mOnDumpStateForFeedbackCount;
 
-    public TestServiceDelegate(long nativePtr) {
+    public TestServiceDelegate(JniRawPtr<NativeTestJavaDelegate> nativePtr) {
         this.mNativePtr = nativePtr;
         this.mShowSuggestionCount = 0;
         this.mOnDumpStateForFeedbackCount = 0;
@@ -30,7 +38,7 @@ public class TestServiceDelegate implements GroupSuggestionsService.Delegate {
 
     @CalledByNative
     public static TestServiceDelegate createAndAdd(
-            GroupSuggestionsService service, long nativePtr) {
+            GroupSuggestionsService service, JniRawPtr<NativeTestJavaDelegate> nativePtr) {
         TestServiceDelegate delegate = new TestServiceDelegate(nativePtr);
         service.registerDelegate(delegate, 1);
         return delegate;
@@ -39,6 +47,10 @@ public class TestServiceDelegate implements GroupSuggestionsService.Delegate {
     @CalledByNative
     public void destroy(GroupSuggestionsService service) {
         service.unregisterDelegate(this);
+        if (mNativePtr != null) {
+            mNativePtr.release();
+            mNativePtr = null;
+        }
     }
 
     @CalledByNative
@@ -66,6 +78,6 @@ public class TestServiceDelegate implements GroupSuggestionsService.Delegate {
 
     @NativeMethods
     interface Natives {
-        void onDelegateNotify(long delegatePtr);
+        void onDelegateNotify(JniPtr<NativeTestJavaDelegate> delegatePtr);
     }
 }
