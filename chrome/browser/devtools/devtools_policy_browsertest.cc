@@ -37,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/test_extension_dir.h"
@@ -550,6 +551,10 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     DevToolsPolicyDialogTest,
     ForceInstalledExtensionWithoutDevToolsPolicyRecordsBothHistograms) {
+  // The test extension is packed locally rather than coming from the Web
+  // Store, so in Chrome-branded Windows/Mac builds the install verifier would
+  // keep it disabled and `LoadExtension()` would fail.
+  extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
   ASSERT_TRUE(embedded_test_server()->Start());
   Profile* profile = chrome_test_utils::GetProfile(this);
 
