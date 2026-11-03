@@ -599,7 +599,9 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeCameraCaptureNv12Frame) {
         VideoEncodeAccelerator::Config::ContentType::kCamera);
     config.require_low_delay = kRequireLowDelay;
 
-    ASSERT_TRUE(encoder->Initialize(config, &client, nullptr).is_ok())
+    ASSERT_TRUE(
+        encoder->Initialize(config, &client, std::make_unique<NullMediaLog>())
+            .is_ok())
         << GetProfileName(profile);
 
     ASSERT_TRUE(client.encoder_info().has_value());
@@ -721,7 +723,9 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeOpaqueSharedImageRgbFrames) {
           VideoEncodeAccelerator::Config::ContentType::kCamera);
       config.require_low_delay = kRequireLowDelay;
 
-      ASSERT_TRUE(encoder->Initialize(config, &client, nullptr).is_ok())
+      ASSERT_TRUE(
+          encoder->Initialize(config, &client, std::make_unique<NullMediaLog>())
+              .is_ok())
           << GetProfileName(profile);
 
       ASSERT_TRUE(client.encoder_info().has_value());
@@ -869,7 +873,9 @@ TEST(VTVideoEncodeAcceleratorTest,
           VideoEncodeAccelerator::Config::ContentType::kCamera);
       config.require_low_delay = kRequireLowDelay;
 
-      ASSERT_TRUE(encoder->Initialize(config, &client, nullptr).is_ok())
+      ASSERT_TRUE(
+          encoder->Initialize(config, &client, std::make_unique<NullMediaLog>())
+              .is_ok())
           << GetProfileName(profile);
 
       ASSERT_TRUE(client.encoder_info().has_value());
@@ -960,7 +966,9 @@ TEST(VTVideoEncodeAcceleratorTest, RejectsOpaqueSharedImagesInI420Session) {
           VideoEncodeAccelerator::Config::ContentType::kCamera);
       config.require_low_delay = kRequireLowDelay;
 
-      ASSERT_TRUE(encoder->Initialize(config, &client, nullptr).is_ok());
+      ASSERT_TRUE(
+          encoder->Initialize(config, &client, std::make_unique<NullMediaLog>())
+              .is_ok());
 
       gpu::SharedImageMetadata metadata;
       metadata.format = frame_format == PIXEL_FORMAT_NV12
@@ -1023,7 +1031,9 @@ TEST(VTVideoEncodeAcceleratorTest, RejectsUnsupportedOpaqueSharedImageFormats) {
         VideoEncodeAccelerator::Config::ContentType::kCamera);
     config.require_low_delay = kRequireLowDelay;
 
-    ASSERT_TRUE(encoder->Initialize(config, &client, nullptr).is_ok());
+    ASSERT_TRUE(
+        encoder->Initialize(config, &client, std::make_unique<NullMediaLog>())
+            .is_ok());
 
     gpu::SharedImageMetadata metadata;
     metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
