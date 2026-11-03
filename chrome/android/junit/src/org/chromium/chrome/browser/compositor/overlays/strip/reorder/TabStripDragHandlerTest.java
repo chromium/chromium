@@ -57,6 +57,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowBuild;
 import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
@@ -70,6 +72,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.TestTabModel;
@@ -91,6 +94,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -121,6 +125,21 @@ import java.util.function.Supplier;
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
 })
 public class TabStripDragHandlerTest {
+
+    private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
+        private int mTaskId;
+        private @SupportedProfileType int mSupportedProfileType = SupportedProfileType.UNSET;
+
+        @Override
+        public int getTaskId() {
+            return mTaskId;
+        }
+
+        @Override
+        public @SupportedProfileType int getSupportedProfileType() {
+            return mSupportedProfileType;
+        }
+    }
 
     private static final int CURR_INSTANCE_ID = 100;
     private static final int ANOTHER_INSTANCE_ID = 200;
@@ -223,6 +242,8 @@ public class TabStripDragHandlerTest {
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         MultiWindowTestUtils.enableMultiInstance();
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        MultiWindowUtils.setVisibleTabbedTaskCountForTesting(2);
 
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
@@ -427,6 +448,142 @@ public class TabStripDragHandlerTest {
                         DRAG_START_POINT,
                         TAB_POSITION_X,
                         VIEW_WIDTH));
+    }
+
+    @Test
+    public void test_startTabDragAction_withOneTabAndOneWindow_ReturnsFalse() {
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
+        MultiWindowUtils.setVisibleTabbedTaskCountForTesting(1);
+        assertFalse(
+                "Should block startTabDragAction for last tab when only one window is open.",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+    }
+
+    @Test
+    public void test_startMultiTabDragAction_withAllTabsSelectedAndOneWindow_ReturnsFalse() {
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+        when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
+        MultiWindowUtils.setVisibleTabbedTaskCountForTesting(1);
+        assertFalse(
+                "Should block startMultiTabDragAction for all tabs when only one window is open.",
+                mSourceInstance.startMultiTabDragAction(
+                        mTabsToolbarView,
+                        mTabsBeingDragged,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+    }
+
+    @Test
+    public void test_startGroupDragAction_withOneGroupAndOneWindow_ReturnsFalse() {
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
+        MultiWindowUtils.setVisibleTabbedTaskCountForTesting(1);
+        assertFalse(
+                "Should block startGroupDragAction for sole group when only one window is open.",
+                mSourceInstance.startGroupDragAction(
+                        mTabsToolbarView,
+                        TAB_GROUP_ID,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+    }
+
+    @Test
+    public void test_startTabDragAction_withOneTabAndMinimizedSecondWindow_ReturnsFalse() {
+        MultiWindowUtils.setVisibleTabbedTaskCountForTesting(null);
+        addVisibleChromeTabbedActivity(/* taskId= */ 1, SupportedProfileType.MIXED);
+        TestChromeTabbedActivity minimizedWindow =
+                addVisibleChromeTabbedActivity(/* taskId= */ 2, SupportedProfileType.MIXED);
+        ApplicationStatus.onStateChangeForTesting(minimizedWindow, ActivityState.STOPPED);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
+
+        assertFalse(
+                "Should block startTabDragAction for last tab when second window is minimized.",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+    }
+
+    @Test
+    public void test_startTabDragAction_withIncognitoAsWindow_filtersByProfileType() {
+        MultiWindowUtils.setVisibleTabbedTaskCountForTesting(null);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        addVisibleChromeTabbedActivity(/* taskId= */ 1, SupportedProfileType.REGULAR);
+        addVisibleChromeTabbedActivity(/* taskId= */ 2, SupportedProfileType.OFF_THE_RECORD);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
+
+        // Only 1 visible REGULAR window -> last regular tab drag should be blocked.
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+        assertFalse(
+                "Should block startTabDragAction when only visible second window is incognito.",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+
+        // Only 1 visible OFF_THE_RECORD window -> last incognito tab drag should be blocked.
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        assertFalse(
+                "Should block startTabDragAction when only visible second window is regular.",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+
+        // Add a second visible REGULAR window -> regular tab drag should now succeed, while
+        // incognito tab drag remains blocked.
+        addVisibleChromeTabbedActivity(/* taskId= */ 3, SupportedProfileType.REGULAR);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+        assertTrue(
+                "Should allow startTabDragAction when two visible regular windows are open.",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEndEvent(/* res= */ false, DragType.SINGLE_TAB));
+
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        assertFalse(
+                "Should still block incognito last-tab drag with only one incognito window.",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+    }
+
+    private TestChromeTabbedActivity addVisibleChromeTabbedActivity(
+            int taskId, @SupportedProfileType int profileType) {
+        TestChromeTabbedActivity activity =
+                Robolectric.buildActivity(TestChromeTabbedActivity.class).get();
+        activity.mTaskId = taskId;
+        activity.mSupportedProfileType = profileType;
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
+        return activity;
     }
 
     @Test

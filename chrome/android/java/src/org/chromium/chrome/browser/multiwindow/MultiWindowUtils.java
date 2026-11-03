@@ -128,6 +128,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     private static @Nullable Integer sLastAccessedWindowIdForTesting;
 
     private static @Nullable Integer sInstanceCountForTesting;
+    private static @Nullable Integer sVisibleTabbedTaskCountForTesting;
     private static @Nullable Boolean sMultiInstanceApi31EnabledForTesting;
     private static @Nullable Boolean sIsMultiInstanceApi31Enabled;
     private static @Nullable Set<Integer> sAppTaskIdsForTesting;
@@ -1042,7 +1043,20 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return The number of visible tasks running ChromeTabbedActivity.
      */
     public static int getVisibleTabbedTaskCount() {
-        SparseBooleanArray ctaTasks = getAllChromeTabbedTasks();
+        return getVisibleTabbedTaskCount(SupportedProfileType.UNSET);
+    }
+
+    /**
+     * @param profileType The {@link SupportedProfileType} to filter ChromeTabbedActivity tasks by,
+     *     or {@link SupportedProfileType#UNSET} to count all ChromeTabbedActivity tasks.
+     * @return The number of visible tasks running ChromeTabbedActivity matching {@code
+     *     profileType}.
+     */
+    public static int getVisibleTabbedTaskCount(@SupportedProfileType int profileType) {
+        if (sVisibleTabbedTaskCountForTesting != null) {
+            return sVisibleTabbedTaskCountForTesting;
+        }
+        SparseBooleanArray ctaTasks = getAllChromeTabbedTasks(profileType);
         SparseBooleanArray visibleTasks = getVisibleTasks();
         int visibleCtaCount = 0;
         for (int i = 0; i < visibleTasks.size(); ++i) {
@@ -1052,11 +1066,16 @@ public class MultiWindowUtils implements ActivityStateListener {
         return visibleCtaCount;
     }
 
-    private static SparseBooleanArray getAllChromeTabbedTasks() {
+    private static SparseBooleanArray getAllChromeTabbedTasks(
+            @SupportedProfileType int profileType) {
         SparseBooleanArray ctaTasks = new SparseBooleanArray();
         List<Activity> activities = ApplicationStatus.getRunningActivities();
         for (Activity activity : activities) {
-            if (activity instanceof ChromeTabbedActivity) ctaTasks.put(activity.getTaskId(), true);
+            if (activity instanceof ChromeTabbedActivity tabbedActivity
+                    && (profileType == SupportedProfileType.UNSET
+                            || tabbedActivity.getSupportedProfileType() == profileType)) {
+                ctaTasks.put(activity.getTaskId(), true);
+            }
         }
         return ctaTasks;
     }
@@ -1775,6 +1794,12 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static void setInstanceCountForTesting(int instanceCount) {
         sInstanceCountForTesting = instanceCount;
         ResettersForTesting.register(() -> sInstanceCountForTesting = null);
+    }
+
+    public static void setVisibleTabbedTaskCountForTesting(
+            @Nullable Integer visibleTabbedTaskCount) {
+        sVisibleTabbedTaskCountForTesting = visibleTabbedTaskCount;
+        ResettersForTesting.register(() -> sVisibleTabbedTaskCountForTesting = null);
     }
 
     public static void setMaxInstancesForTesting(int maxInstances) {

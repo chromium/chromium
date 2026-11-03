@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeMultiTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDragStateData;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -209,9 +211,9 @@ public abstract class TabDragHandlerBase
             return false;
         }
 
-        // Block drag for last tab in single-window mode if feature is not supported.
-        if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
-                && !shouldAllowTabDragToCreateInstance()) {
+        // Block drag for last tab when only one window is visible and new window creation is
+        // disallowed.
+        if (!hasMultipleVisibleWindows() && !shouldAllowTabDragToCreateInstance()) {
             return false;
         }
 
@@ -223,9 +225,9 @@ public abstract class TabDragHandlerBase
             return false;
         }
 
-        // Block drag for last tab in single-window mode if feature is not supported.
-        if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
-                && !shouldAllowMultiTabDragToCreateInstance()) {
+        // Block drag for all selected tabs when only one window is visible and new window
+        // creation is disallowed.
+        if (!hasMultipleVisibleWindows() && !shouldAllowMultiTabDragToCreateInstance()) {
             return false;
         }
 
@@ -237,13 +239,30 @@ public abstract class TabDragHandlerBase
             return false;
         }
 
-        // Block drag for last group in single-window mode if feature is not supported.
-        boolean allowDragToCreateInstance = shouldAllowGroupDragToCreateInstance(tabGroupId);
-        if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
-                && !allowDragToCreateInstance) {
+        // Block drag for last group when only one window is visible and new window creation is
+        // disallowed.
+        if (!hasMultipleVisibleWindows() && !shouldAllowGroupDragToCreateInstance(tabGroupId)) {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean hasMultipleVisibleWindows() {
+        if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())) {
+            return false;
+        }
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                @SupportedProfileType
+                int profileType =
+                        getCurrentModel().isIncognitoBranded()
+                                ? SupportedProfileType.OFF_THE_RECORD
+                                : SupportedProfileType.REGULAR;
+                return MultiWindowUtils.getVisibleTabbedTaskCount(profileType) > 1;
+            }
+            return MultiWindowUtils.getVisibleTabbedTaskCount() > 1;
+        }
         return true;
     }
 

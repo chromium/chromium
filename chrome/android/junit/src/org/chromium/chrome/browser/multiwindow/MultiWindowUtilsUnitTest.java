@@ -101,6 +101,7 @@ public class MultiWindowUtilsUnitTest {
     private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
         int mWindowId;
         boolean mIsIncognitoWindow;
+        @SupportedProfileType int mSupportedProfileType = SupportedProfileType.UNSET;
         Intent mLastNewIntent;
 
         @Override
@@ -115,7 +116,13 @@ public class MultiWindowUtilsUnitTest {
 
         @Override
         public boolean isIncognitoWindow() {
-            return mIsIncognitoWindow;
+            return mIsIncognitoWindow
+                    || mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD;
+        }
+
+        @Override
+        public @SupportedProfileType int getSupportedProfileType() {
+            return mSupportedProfileType;
         }
 
         @Override
@@ -845,6 +852,40 @@ public class MultiWindowUtilsUnitTest {
                 "There should be only 1 running ChromeTabbedActivity.",
                 1,
                 runningTabbedActivityCount);
+    }
+
+    @Test
+    public void testGetVisibleTabbedTaskCount() {
+        addActivity(/* windowId= */ INSTANCE_ID_0, /* tabbedActivity= */ false);
+        TestChromeTabbedActivity activity1 =
+                addRunningTabbedActivity(/* windowId= */ INSTANCE_ID_1);
+        TestChromeTabbedActivity activity2 =
+                addRunningTabbedActivity(/* windowId= */ INSTANCE_ID_2);
+        activity1.mSupportedProfileType = SupportedProfileType.REGULAR;
+        activity2.mSupportedProfileType = SupportedProfileType.OFF_THE_RECORD;
+        ApplicationStatus.onStateChangeForTesting(activity2, ActivityState.PAUSED);
+
+        TestChromeTabbedActivity stoppedActivity =
+                addRunningTabbedActivity(/* windowId= */ TASK_ID_5);
+        stoppedActivity.mSupportedProfileType = SupportedProfileType.REGULAR;
+        ApplicationStatus.onStateChangeForTesting(stoppedActivity, ActivityState.STOPPED);
+
+        assertEquals(
+                "Expected 2 visible ChromeTabbedActivity tasks.",
+                2,
+                MultiWindowUtils.getVisibleTabbedTaskCount());
+        assertEquals(
+                "Expected 1 visible regular ChromeTabbedActivity task.",
+                1,
+                MultiWindowUtils.getVisibleTabbedTaskCount(SupportedProfileType.REGULAR));
+        assertEquals(
+                "Expected 1 visible incognito ChromeTabbedActivity task.",
+                1,
+                MultiWindowUtils.getVisibleTabbedTaskCount(SupportedProfileType.OFF_THE_RECORD));
+        assertEquals(
+                "Expected 0 visible mixed ChromeTabbedActivity tasks.",
+                0,
+                MultiWindowUtils.getVisibleTabbedTaskCount(SupportedProfileType.MIXED));
     }
 
     @Test
