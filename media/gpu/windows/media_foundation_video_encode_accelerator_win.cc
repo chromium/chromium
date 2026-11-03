@@ -1190,6 +1190,10 @@ bool MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
   DCHECK(encoder_);
   DCHECK_NE(input_visible_size_, frame_size);
 
+  if (state_ == kError) {
+    return false;
+  }
+
   // This is not normally possible, but a compromised renderer could cause it
   // to be reached.
   if (!pending_input_queue_.empty()) {
@@ -1955,6 +1959,10 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
                "timestamp", input.timestamp, "discard_output",
                input.discard_output);
 
+  if (state_ == kError) {
+    return E_FAIL;
+  }
+
   HRESULT hr = S_OK;
   is_drop_frame = false;
   if (has_not_accepted_sample_) {
@@ -2080,6 +2088,11 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     PendingInput& input,
     scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (state_ == kError) {
+    return E_FAIL;
+  }
+
   auto input_sample = input.input_sample;
   if (input.si_lock) {
     HRESULT hr = input_sample->SetUnknown(
@@ -3310,7 +3323,7 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageResourceAvailable(
     return;
   }
 
-  if (encoder_needs_input_counter_ > 0) {
+  if (encoder_needs_input_counter_ > 0 && state_ == kEncoding) {
     FeedInputs();
   }
 }
