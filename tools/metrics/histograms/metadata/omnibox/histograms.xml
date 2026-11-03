@@ -3201,7 +3201,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.MobileFusebox.DragAndDrop{ComposeboxDragAndDropType}"
-    enum="ComposeboxDragAndDropType" expires_after="2026-11-11">
+    enum="ComposeboxDragAndDropType" expires_after="2027-11-11">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>ericekey@google.com</owner>
   <summary>

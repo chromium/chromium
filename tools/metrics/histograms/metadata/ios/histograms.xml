@@ -3880,14 +3880,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.GuidedTour.DidFinishStep" enum="GuidedTourStep"
-    expires_after="2026-12-16">
+    expires_after="2027-12-16">
   <owner>thegreenfrog@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>Recorded when the user finishes a step in the Guided Tour.</summary>
 </histogram>
 
 <histogram name="IOS.GuidedTour.Promo.DidAccept" enum="Boolean"
-    expires_after="2026-12-16">
+    expires_after="2027-12-16">
   <owner>thegreenfrog@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -7084,7 +7084,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.PushNotification.ProminenceAlert.Result"
     enum="IOSNotificationsProminenceAlertActionResult"
-    expires_after="2026-11-10">
+    expires_after="2027-11-10">
   <owner>thegreenfrog@google.com</owner>
   <owner>bling-gsu-pod@google.com</owner>
   <summary>
