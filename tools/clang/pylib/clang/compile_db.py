@@ -12,12 +12,6 @@ import sys
 
 _CLANG_WRAPPER_CMD_LINE_RE = re.compile(
   r'''
-    (
-      (?P<rewrapper>.*rewrapper(\.exe)?"?\s+)
-      # rewrapper may have args between it and clang.
-      # Assume the args do not contain spaces.
-      (?P<rewrapper_arg>\-\S+\s+)*
-    )?
     # Optional wrapper(s) that should be skipped.
     (?P<wrapper>.*?\s+)?
     # Assume the path to clang does not contain spaces.
@@ -126,7 +120,7 @@ def _ProcessCommand(command, filtered_args, target_os):
   if _IsTargettingWindows(target_os) and '--driver-mode' not in command:
     driver_mode = '--driver-mode=cl'
 
-  # Removes rewrapper(.exe). On Windows inserts --driver-mode=cl as the
+  # Removes optional wrapper(s). On Windows inserts --driver-mode=cl as the
   # first arg.
   #
   # Deliberately avoid shlex.split() here, because it doesn't work predictably

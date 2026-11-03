@@ -14,14 +14,6 @@ import compile_db
 
 # Input compile DB.
 _TEST_COMPILE_DB = [
-  # Verifies that rewrapper.exe is removed.
-  {
-    'command': r'C:\rewrapper.exe C:\clang-cl.exe /blah',
-  },
-  # Verifies a rewrapper path containing a space.
-  {
-    'command': r'"C:\Program Files\rewrapper.exe" C:\clang-cl.exe /blah',
-  },
   # Includes a string define.
   {
     'command': r'clang-cl.exe /blah "-DCR_CLANG_REVISION=\"346388-1\""',
@@ -34,12 +26,6 @@ _TEST_COMPILE_DB = [
 
 # Expected compile DB after processing for windows.
 _EXPECTED_COMPILE_DB = [
-  {
-    'command': r'C:\clang-cl.exe --driver-mode=cl /blah',
-  },
-  {
-    'command': r'C:\clang-cl.exe --driver-mode=cl /blah',
-  },
   {
     'command': r'clang-cl.exe --driver-mode=cl /blah '
     r'"-DCR_CLANG_REVISION=\"346388-1\""',
@@ -119,33 +105,6 @@ class CompileDbTest(unittest.TestCase):
         ['-ffile-compilation-dir=.', '-frandom-flag-that-does-not-exist'],
       ),
       [{'command': r'clang -g -O3 test.cc'}],
-    )
-
-  def testRewrapperRemoved(self):
-    sys.platform = 'linux2'
-    input_db = [
-      {
-        'command': r'./buildtools/reclient/rewrapper ./bin/clang++ -O3 test.cc',
-      }
-    ]
-    self.assertEqual(
-      compile_db.ProcessCompileDatabase(input_db, []),
-      [{'command': r'./bin/clang++ -O3 test.cc'}],
-    )
-
-  def testRewrapperArgsRemoved(self):
-    sys.platform = 'linux2'
-    input_db = [
-      {
-        'command': r'./buildtools/reclient/rewrapper'
-        r' -cfg=./buildtools/reclient_cfgs/.../rewrapper_linux.cfg'
-        r' -exec_root=/chromium/src/'
-        r' ./bin/clang++ -O3 test.cc',
-      }
-    ]
-    self.assertEqual(
-      compile_db.ProcessCompileDatabase(input_db, []),
-      [{'command': r'./bin/clang++ -O3 test.cc'}],
     )
 
   def testClangWrapperRemoved(self):
