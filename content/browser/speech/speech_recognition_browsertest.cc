@@ -8,12 +8,17 @@
 
 #include <list>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
@@ -21,6 +26,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
@@ -35,7 +41,13 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/google_streaming_api.pb.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/speech_recognition_event_listener.h"
+#include "content/public/browser/speech_recognition_manager.h"
+#include "content/public/browser/speech_recognition_session_config.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -43,17 +55,21 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "ipc/constants.mojom.h"
 #include "media/audio/audio_system.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_sample_types.h"
+#include "media/mojo/mojom/speech_recognition_error.mojom.h"
+#include "media/mojo/mojom/speech_recognition_result.mojom.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "base/test/scoped_feature_list.h"
@@ -344,6 +360,49 @@ class MockSpeechRecognitionSessionClient
   bool event_occurred_ = false;
 };
 
+class TestSpeechRecognitionEventListener
+    : public SpeechRecognitionEventListener {
+ public:
+  explicit TestSpeechRecognitionEventListener(
+      base::OnceClosure on_recognition_end)
+      : on_recognition_end_(std::move(on_recognition_end)) {}
+  TestSpeechRecognitionEventListener(
+      const TestSpeechRecognitionEventListener&) = delete;
+  TestSpeechRecognitionEventListener& operator=(
+      const TestSpeechRecognitionEventListener&) = delete;
+  ~TestSpeechRecognitionEventListener() override = default;
+
+  base::WeakPtr<SpeechRecognitionEventListener> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  // SpeechRecognitionEventListener:
+  void OnRecognitionStart(int session_id) override {}
+  void OnAudioStart(int session_id) override {}
+  void OnSoundStart(int session_id) override {}
+  void OnSoundEnd(int session_id) override {}
+  void OnAudioEnd(int session_id) override {}
+  void OnRecognitionResults(
+      int session_id,
+      const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results)
+      override {}
+  void OnRecognitionError(
+      int session_id,
+      const media::mojom::SpeechRecognitionError& error) override {}
+  void OnAudioLevelsChange(int session_id,
+                           float volume,
+                           float noise_volume) override {}
+  void OnRecognitionEnd(int session_id) override {
+    if (on_recognition_end_) {
+      std::move(on_recognition_end_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_recognition_end_;
+  base::WeakPtrFactory<TestSpeechRecognitionEventListener> weak_factory_{this};
+};
+
 }  // namespace
 
 class SpeechRecognitionBrowserTest : public ContentBrowserTest {
@@ -592,6 +651,91 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
 
   EXPECT_EQ(0, SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
                    global_id));
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
+                       DestroyedRenderFrameAbortsSession) {
+  SpeechRecognizerImpl::SetAudioEnvironmentForTesting(nullptr, nullptr);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  ChildProcessId process_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  GlobalRenderFrameHostId destroyed_frame_id(process_id,
+                                             IPC::mojom::kRoutingIdNone);
+
+  base::test::TestFuture<void> ended_future;
+  std::unique_ptr<TestSpeechRecognitionEventListener,
+                  BrowserThread::DeleteOnIOThread>
+      listener(new TestSpeechRecognitionEventListener(base::BindPostTask(
+          GetUIThreadTaskRunner({}), ended_future.GetCallback())));
+
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](TestSpeechRecognitionEventListener* listener,
+             GlobalRenderFrameHostId global_id) {
+            SpeechRecognitionSessionConfig config;
+            config.initial_context.global_id = global_id;
+            config.event_listener = listener->GetWeakPtr();
+            SpeechRecognitionManager::GetInstance()->CreateSession(config);
+          },
+          base::Unretained(listener.get()), destroyed_frame_id));
+
+  EXPECT_TRUE(ended_future.Wait());
+  EXPECT_EQ(0, SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                   destroyed_frame_id));
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
+                       BrowserInitiatedSessionWithoutRenderFrameHost) {
+  SpeechRecognizerImpl::SetAudioEnvironmentForTesting(nullptr, nullptr);
+  base::test::TestFuture<void> ended_future;
+  std::unique_ptr<TestSpeechRecognitionEventListener,
+                  BrowserThread::DeleteOnIOThread>
+      listener(new TestSpeechRecognitionEventListener(base::BindPostTask(
+          GetUIThreadTaskRunner({}), ended_future.GetCallback())));
+
+  base::test::TestFuture<int> session_id_future;
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](TestSpeechRecognitionEventListener* listener,
+             base::OnceCallback<void(int)> session_id_callback) {
+            SpeechRecognitionSessionConfig config;
+            config.initial_context.global_id = GlobalRenderFrameHostId();
+            config.event_listener = listener->GetWeakPtr();
+            int session_id =
+                SpeechRecognitionManager::GetInstance()->CreateSession(config);
+            std::move(session_id_callback).Run(session_id);
+          },
+          base::Unretained(listener.get()),
+          base::BindPostTask(GetUIThreadTaskRunner({}),
+                             session_id_future.GetCallback())));
+
+  int session_id = session_id_future.Get();
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, browser-initiated sessions without a `RenderFrameHost` (such
+  // as Dictation) must not be aborted by `FrameSessionTracker`.
+  base::test::TestFuture<void> io_flushed;
+  GetIOThreadTaskRunner({})->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                              io_flushed.GetCallback());
+  EXPECT_TRUE(io_flushed.Wait());
+  EXPECT_FALSE(ended_future.IsReady());
+
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpeechRecognitionManager::AbortSession,
+                     base::Unretained(SpeechRecognitionManager::GetInstance()),
+                     session_id));
+  EXPECT_TRUE(ended_future.Wait());
+#else
+  // On non-ChromeOS platforms, sessions without a `RenderFrameHost` are aborted
+  // by `FrameSessionTracker`.
+  (void)session_id;
+  EXPECT_TRUE(ended_future.Wait());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
