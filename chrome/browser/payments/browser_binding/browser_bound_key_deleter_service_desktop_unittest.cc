@@ -11,7 +11,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/webauthn/mock_local_credential_management.h"
-#include "components/payments/content/browser_binding/mock_browser_bound_key_store.h"
+#include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/mock_passkey_browser_binder.h"
 #include "components/payments/content/mock_web_payments_web_data_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -77,7 +77,7 @@ class BrowserBoundKeyDeleterServiceDesktopTest : public ::testing::Test {
 
     auto web_data_service =
         base::MakeRefCounted<MockWebPaymentsWebDataService>();
-    auto key_store = base::MakeRefCounted<MockBrowserBoundKeyStore>();
+    auto key_store = base::MakeRefCounted<FakeBrowserBoundKeyStore>();
     auto local_credential_management =
         std::make_unique<MockLocalCredentialManagement>();
     local_credential_management_ = local_credential_management.get();
@@ -292,7 +292,7 @@ TEST_F(BrowserBoundKeyDeleterServiceDesktopTest,
 TEST_F(BrowserBoundKeyDeleterServiceDesktopTest,
        RemoveInvalidBBKs_LocalCredentialManagementIsNull) {
   auto web_data_service = base::MakeRefCounted<MockWebPaymentsWebDataService>();
-  auto key_store = base::MakeRefCounted<MockBrowserBoundKeyStore>();
+  auto key_store = base::MakeRefCounted<FakeBrowserBoundKeyStore>();
 
   auto deleter = std::make_unique<BrowserBoundKeyDeleterServiceDesktop>(
       web_data_service, key_store,
@@ -311,7 +311,7 @@ TEST_F(BrowserBoundKeyDeleterServiceDesktopTest,
 TEST_F(BrowserBoundKeyDeleterServiceDesktopTest,
        RemoveInvalidBBKs_KeyStoreIsNull) {
   auto web_data_service = base::MakeRefCounted<MockWebPaymentsWebDataService>();
-  auto key_store = base::MakeRefCounted<MockBrowserBoundKeyStore>();
+  auto key_store = base::MakeRefCounted<FakeBrowserBoundKeyStore>();
 
   auto deleter = std::make_unique<BrowserBoundKeyDeleterServiceDesktop>(
       web_data_service, /*browser_bound_key_store=*/nullptr,
@@ -330,7 +330,7 @@ TEST_F(BrowserBoundKeyDeleterServiceDesktopTest,
 TEST_F(BrowserBoundKeyDeleterServiceDesktopTest,
        RemoveInvalidBBKs_WebDataServiceIsNull) {
   auto web_data_service = base::MakeRefCounted<MockWebPaymentsWebDataService>();
-  auto key_store = base::MakeRefCounted<MockBrowserBoundKeyStore>();
+  auto key_store = base::MakeRefCounted<FakeBrowserBoundKeyStore>();
 
   auto deleter = std::make_unique<BrowserBoundKeyDeleterServiceDesktop>(
       /*web_data_service=*/nullptr, key_store,

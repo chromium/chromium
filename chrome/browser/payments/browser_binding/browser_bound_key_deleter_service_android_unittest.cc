@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/payments/content/browser_binding/mock_browser_bound_key_store.h"
+#include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/mock_passkey_browser_binder.h"
 #include "components/payments/content/mock_web_payments_web_data_service.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
@@ -73,7 +73,7 @@ class BrowserBoundKeyDeleterServiceAndroidTest : public ::testing::Test {
 
     auto web_data_service =
         base::MakeRefCounted<MockWebPaymentsWebDataService>();
-    auto key_store = base::MakeRefCounted<MockBrowserBoundKeyStore>();
+    auto key_store = base::MakeRefCounted<FakeBrowserBoundKeyStore>();
 
     deleter_ = std::make_unique<BrowserBoundKeyDeleterServiceAndroid>(
         web_data_service, key_store);
@@ -249,7 +249,7 @@ TEST_F(BrowserBoundKeyDeleterServiceAndroidTest,
 
 TEST_F(BrowserBoundKeyDeleterServiceAndroidTest,
        RemoveInvalidBBKs_WebDataServiceIsNull) {
-  auto key_store = base::MakeRefCounted<MockBrowserBoundKeyStore>();
+  auto key_store = base::MakeRefCounted<FakeBrowserBoundKeyStore>();
   auto deleter = std::make_unique<BrowserBoundKeyDeleterServiceAndroid>(
       nullptr, key_store);
 

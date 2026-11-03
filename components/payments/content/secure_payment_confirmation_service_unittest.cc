@@ -17,7 +17,6 @@
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
-#include "components/payments/content/browser_binding/mock_browser_bound_key_store.h"
 #include "components/payments/content/mock_web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/web_payments_web_data_service.h"
@@ -235,9 +234,8 @@ TEST_F(
           /*browser_bound_key_store_keychain_access_group=*/""));
 
   auto browser_bound_key_store =
-      base::MakeRefCounted<MockBrowserBoundKeyStore>();
-  EXPECT_CALL(*browser_bound_key_store, GetDeviceSupportsHardwareKeys())
-      .WillOnce(testing::Return(true));
+      base::MakeRefCounted<FakeBrowserBoundKeyStore>();
+  browser_bound_key_store->SetDeviceSupportsHardwareKeys(true);
   spc_service_->SetBrowserBoundKeyStoreForTesting(browser_bound_key_store);
 
   std::vector<mojom::SecurePaymentConfirmationCapabilityPtr> capabilities;

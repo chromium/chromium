@@ -159,8 +159,6 @@ source_set("fake_browser_bound_key_store") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "mock_browser_bound_key_store.cc",
-    "mock_browser_bound_key_store.h",
     "mock_passkey_browser_binder.cc",
     "mock_passkey_browser_binder.h",
   ]
