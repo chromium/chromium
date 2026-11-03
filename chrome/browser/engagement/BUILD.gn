@@ -82,7 +82,6 @@ if (!is_android) {
       "//base",
       "//chrome/browser",
       "//chrome/browser/ui/omnibox",
-      "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/browser/ui/views/omnibox",
       "//chrome/test:test_support_ui",
       "//components/site_engagement/content",

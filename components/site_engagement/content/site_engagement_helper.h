@@ -6,6 +6,7 @@
 #define COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -14,9 +15,14 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
 class NavigationHandle;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace site_engagement {
@@ -27,12 +33,24 @@ enum class EngagementType;
 // origins.
 class SiteEngagementService::Helper : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(Helper);
+
   static void SetSecondsBetweenUserInputCheck(int seconds);
   static void SetSecondsTrackingDelayAfterNavigation(int seconds);
   static void SetSecondsTrackingDelayAfterShow(int seconds);
 
-  // Optionally include |NoStatePrefetchManager| if no state prefetches are
-  // possible in the embedder.
+  static Helper* From(tabs::TabInterface* tab);
+
+  // The `TabInterface` overload registers the helper on `tab`'s
+  // `UnownedUserDataHost` (`web_contents` is passed explicitly to support
+  // recreation during tab discarding before `tab` swaps its contents). The
+  // `WebContents`-only overload is used for non-tab `WebContents` (e.g.,
+  // `WebUIContentsWrapper` and unit tests). Optionally include
+  // `NoStatePrefetchManager` if no-state prefetches are possible in the
+  // embedder.
+  Helper(tabs::TabInterface& tab,
+         content::WebContents* web_contents,
+         prerender::NoStatePrefetchManager* prefetch_manager = nullptr);
   explicit Helper(
       content::WebContents* web_contents,
       prerender::NoStatePrefetchManager* prefetch_manager = nullptr);
@@ -183,6 +201,7 @@ class SiteEngagementService::Helper : public content::WebContentsObserver {
   MediaTracker media_tracker_;
   raw_ptr<SiteEngagementService> service_;
   raw_ptr<prerender::NoStatePrefetchManager> prefetch_manager_;
+  std::optional<ui::ScopedUnownedUserData<Helper>> scoped_unowned_user_data_;
 };
 
 }  // namespace site_engagement

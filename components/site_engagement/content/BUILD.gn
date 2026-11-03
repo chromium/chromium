@@ -17,6 +17,8 @@ source_set("content") {
     "site_engagement_service.h",
   ]
 
+  public_deps = [ "//ui/base/unowned_user_data" ]
+
   deps = [
     "//base",
     "//components/browsing_data/core",
@@ -30,6 +32,7 @@ source_set("content") {
     "//components/security_state/core",
     "//components/site_engagement/core",
     "//components/site_engagement/core/mojom:mojo_bindings",
+    "//components/tabs:public",
     "//components/user_prefs",
     "//components/variations",
     "//components/webapps/browser:webapps_client",
@@ -62,6 +65,7 @@ source_set("unit_tests") {
     "//components/permissions:test_support",
     "//components/prefs:test_support",
     "//components/site_engagement/core/mojom:mojo_bindings",
+    "//components/tabs:test_support",
     "//components/user_prefs",
     "//content/test:test_support",
     "//testing/gtest",

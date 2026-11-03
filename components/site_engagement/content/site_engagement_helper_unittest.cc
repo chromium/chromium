@@ -16,6 +16,7 @@
 #include "components/site_engagement/content/site_engagement_metrics.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
@@ -686,6 +687,28 @@ TEST_F(SiteEngagementHelperTest, SingleTabNavigation) {
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), url1);
   EXPECT_TRUE(input_tracker_timer->IsRunning());
   EXPECT_FALSE(IsTrackingInput(helper));
+}
+
+TEST_F(SiteEngagementHelperTest, FromTabInterface) {
+  EXPECT_EQ(nullptr, SiteEngagementService::Helper::From(nullptr));
+
+  tabs::MockTabInterface tab;
+  EXPECT_EQ(nullptr, SiteEngagementService::Helper::From(&tab));
+
+  auto helper =
+      std::make_unique<SiteEngagementService::Helper>(tab, web_contents());
+  EXPECT_EQ(helper.get(), SiteEngagementService::Helper::From(&tab));
+
+  // Resetting before recreating on the same tab (matching
+  // TabFeatures::WillDiscardContents) must unregister the old instance and
+  // allow a replacement Helper to bind to the same TabInterface.
+  helper.reset();
+  EXPECT_EQ(nullptr, SiteEngagementService::Helper::From(&tab));
+
+  auto replacement_helper =
+      std::make_unique<SiteEngagementService::Helper>(tab, web_contents());
+  EXPECT_EQ(replacement_helper.get(),
+            SiteEngagementService::Helper::From(&tab));
 }
 
 }  // namespace site_engagement

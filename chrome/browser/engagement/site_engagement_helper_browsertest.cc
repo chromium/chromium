@@ -12,7 +12,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -126,10 +125,8 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
 // prerendering.
 IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
                        SiteEngagementHelperInPrerendering) {
-  SiteEngagementService::Helper* helper =
-      tabs::TabInterface::GetFromContents(web_contents())
-          ->GetTabFeatures()
-          ->site_engagement_helper();
+  SiteEngagementService::Helper* helper = SiteEngagementService::Helper::From(
+      tabs::TabInterface::GetFromContents(web_contents()));
   SetInputTrackerPauseTimer(helper);
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
@@ -219,10 +216,8 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
       site_engagement::SiteEngagementService::Get(browser()->GetProfile());
   ObserverTester tester(service);
 
-  SiteEngagementService::Helper* helper =
-      tabs::TabInterface::GetFromContents(web_contents())
-          ->GetTabFeatures()
-          ->site_engagement_helper();
+  SiteEngagementService::Helper* helper = SiteEngagementService::Helper::From(
+      tabs::TabInterface::GetFromContents(web_contents()));
   SetMediaTrackerPauseTimer(helper);
 
   GURL url = embedded_test_server()->GetURL("/empty.html");

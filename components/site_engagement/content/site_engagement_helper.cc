@@ -14,6 +14,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/site_engagement/content/engagement_type.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -27,6 +28,8 @@ int g_seconds_delay_after_media_starts = 10;
 int g_seconds_delay_after_show = 5;
 
 }  // anonymous namespace
+
+DEFINE_USER_DATA(SiteEngagementService::Helper);
 
 // static
 void SiteEngagementService::Helper::SetSecondsBetweenUserInputCheck(
@@ -44,6 +47,12 @@ void SiteEngagementService::Helper::SetSecondsTrackingDelayAfterNavigation(
 void SiteEngagementService::Helper::SetSecondsTrackingDelayAfterShow(
     int seconds) {
   g_seconds_delay_after_show = seconds;
+}
+
+// static
+SiteEngagementService::Helper* SiteEngagementService::Helper::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
 
 SiteEngagementService::Helper::~Helper() {
@@ -181,6 +190,14 @@ void SiteEngagementService::Helper::MediaTracker::MediaStoppedPlaying(
     const content::MediaPlayerId& id,
     WebContentsObserver::MediaStoppedReason reason) {
   std::erase(active_media_players_, id);
+}
+
+SiteEngagementService::Helper::Helper(
+    tabs::TabInterface& tab,
+    content::WebContents* web_contents,
+    prerender::NoStatePrefetchManager* prefetch_manager)
+    : Helper(web_contents, prefetch_manager) {
+  scoped_unowned_user_data_.emplace(tab.GetUnownedUserDataHost(), *this);
 }
 
 SiteEngagementService::Helper::Helper(

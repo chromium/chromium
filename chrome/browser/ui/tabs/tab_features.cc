@@ -1459,10 +1459,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   if (site_engagement::SiteEngagementService::IsEnabled()) {
     site_engagement_helper_ =
-        std::make_unique<site_engagement::SiteEngagementService::Helper>(
-            tab.GetContents(),
-            prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-                profile));
+        GetUserDataFactory()
+            .CreateInstance<site_engagement::SiteEngagementService::Helper>(
+                tab, tab, tab.GetContents(),
+                prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+                    profile));
   }
 
   SafetyTipWebContentsObserver::CreateForWebContents(tab.GetContents());
@@ -2173,10 +2174,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   site_engagement_helper_.reset();
   if (site_engagement::SiteEngagementService::IsEnabled()) {
     site_engagement_helper_ =
-        std::make_unique<site_engagement::SiteEngagementService::Helper>(
-            new_contents,
-            prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-                profile));
+        GetUserDataFactory()
+            .CreateInstance<site_engagement::SiteEngagementService::Helper>(
+                *tab, *tab, new_contents,
+                prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+                    profile));
   }
 
   SafetyTipWebContentsObserver::CreateForWebContents(new_contents);
