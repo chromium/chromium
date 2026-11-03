@@ -49,6 +49,10 @@ constexpr char kPickerScreenshotBaselineCL[] = "8641569";
 // "More search engines" dialog.
 constexpr char kMoreEnginesScreenshotBaselineCL[] = "8641629";
 
+// Baseline Gerrit CL number of the most recent CL that modified the UI of the
+// "More search engines" dialog with the guest checkbox.
+constexpr char kMoreEnginesGuestCheckboxBaselineCL[] = "8680002";
+
 // Artificial prepopulated search engines, which replace the production ones
 // through `ScopedPrepopulatedEnginesOverride`. They have no favicon URL, so
 // they are all shown with the generic favicon.
@@ -286,6 +290,24 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePickerPixelBrowserTest,
                             kMoreEnginesDialog + ".no-search-results"),
       ScreenshotDialog(kMoreEnginesDialog, "MoreSearchEnginesNoResults",
                        kMoreEnginesScreenshotBaselineCL));
+}
+
+IN_PROC_BROWSER_TEST_P(SearchEnginePickerPixelBrowserTest,
+                       MoreEnginesGuestCheckbox) {
+  RunTestSequence(
+      OpenMoreEnginesDialog(),
+      // Shows the checkbox offered to guest profiles, to use the chosen engine
+      // in future guest sessions, by setting its state directly: with the
+      // prepopulated engines overridden, the default regional program is used,
+      // which doesn't offer it, even to guest profiles. The state that the
+      // search page fetched when opening the picker was received before the
+      // engines of this dialog, so it doesn't override this one.
+      ExecuteJsAt(kSettingsTabId, kMoreEnginesDialog,
+                  "(el) => { el.saveGuestChoice = false; }"),
+      WaitForElementVisible(kSettingsTabId,
+                            kMoreEnginesDialog + "#saveGuestChoiceCheckbox"),
+      ScreenshotDialog(kMoreEnginesDialog, "MoreSearchEnginesGuestCheckbox",
+                       kMoreEnginesGuestCheckboxBaselineCL));
 }
 
 INSTANTIATE_TEST_SUITE_P(
