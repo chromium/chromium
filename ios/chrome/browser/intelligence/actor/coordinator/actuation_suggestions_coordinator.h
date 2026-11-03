@@ -10,10 +10,17 @@
 
 @class ActorFormSuggestion;
 @class ActuationWorklogItem;
+@protocol ActuationSuggestionsDelegate;
 
 // Coordinator managing suggestion picker presentation and selection.
 @interface ActuationSuggestionsCoordinator
     : ChromeCoordinator <ActuationSuggestionsPresenter>
+
+// Delegate for handling suggestion selection events.
+@property(nonatomic, weak) id<ActuationSuggestionsDelegate> delegate;
+
+// The worklog item triggering the actuation suggestions.
+@property(nonatomic, strong) ActuationWorklogItem* worklogItem;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser

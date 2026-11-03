@@ -43,8 +43,7 @@
 }
 
 - (void)stop {
-  [_suggestionsCoordinator stop];
-  _suggestionsCoordinator = nil;
+  [self clearSuggestions];
   [_mediator disconnect];
   _mediator = nil;
   _viewController.mutator = nil;
@@ -62,6 +61,7 @@
                          browser:self.browser
                      suggestions:suggestions
                      worklogItem:worklogItem];
+  _suggestionsCoordinator.delegate = _mediator;
   [_suggestionsCoordinator start];
   _viewController.suggestionsPresenter = _suggestionsCoordinator;
 }
@@ -79,6 +79,7 @@
 }
 
 - (void)stopObservingTask {
+  [self clearSuggestions];
   [_mediator stopObservingTask];
 }
 

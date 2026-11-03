@@ -613,6 +613,35 @@ TEST_F(ActuationWorklogMediatorTest, TestSelectFromCredentialsAllow) {
   EXPECT_EQ(fake_suggestions_consumer_.worklogItem, nil);
 }
 
+// Tests that selecting a suggestion via the suggestions coordinator delegate
+// updates the selected suggestion used by the completion handler.
+TEST_F(ActuationWorklogMediatorTest, TestSelectFromSuggestionsDelegateUpdate) {
+  StartObservingTask(task_id_);
+  [fake_consumer_.items removeAllObjects];
+
+  ActorFormSuggestion* suggestion1 =
+      CreateCredentialSuggestion(u"user1@example.com", u"example.com");
+  ActorFormSuggestion* suggestion2 =
+      CreateCredentialSuggestion(u"user2@example.com", u"example.com");
+
+  __block ActorFormSuggestion* selected = nil;
+  [mediator_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion1, suggestion2 ]
+          completionHandler:^(ActorFormSuggestion* s, BOOL storePermission) {
+            selected = s;
+          }];
+
+  ASSERT_EQ(fake_consumer_.items.count, 1u);
+  EXPECT_NSEQ(fake_consumer_.items[0].accessoryItem.title,
+              @"user1@example.com");
+
+  [mediator_ suggestionsCoordinator:nil didSelectSuggestion:suggestion2];
+
+  [mediator_
+      didTriggerInterventionAction:fake_consumer_.intervention.actions[1]];
+  EXPECT_EQ(selected, suggestion2);
+}
+
 // Tests selecting from credentials with the manual sign-in action.
 TEST_F(ActuationWorklogMediatorTest, TestSelectFromCredentialsManualSignIn) {
   StartObservingTask(task_id_);
@@ -648,9 +677,9 @@ TEST_F(ActuationWorklogMediatorTest, TestSelectFromCredentialsManualSignIn) {
 }
 
 // Tests that the suggestions consumer is not cleared when interventions are
-// discarded (e.g. task ending) and detached on disconnect.
+// discarded (e.g. task ending), but is detached on disconnect.
 TEST_F(ActuationWorklogMediatorTest,
-       TestSuggestionsConsumerNotClearedOnDiscardAndDetachedOnDisconnect) {
+       TestSuggestionsConsumerNotClearedOnDiscardButDetachedOnDisconnect) {
   StartObservingTask(task_id_);
   ActorFormSuggestion* suggestion =
       CreateCredentialSuggestion(u"user@example.com", u"example.com");
@@ -672,6 +701,65 @@ TEST_F(ActuationWorklogMediatorTest,
   EXPECT_NE(mediator_.suggestionsConsumer, nil);
   [mediator_ disconnect];
   EXPECT_EQ(mediator_.suggestionsConsumer, nil);
+}
+
+// Tests that completing a suggestions intervention clears the suggestions, and
+// a subsequent suggestions intervention cleanly sets new suggestions.
+TEST_F(ActuationWorklogMediatorTest,
+       TestStopAndRestartSuggestionsIntervention) {
+  StartObservingTask(task_id_);
+  [fake_consumer_.items removeAllObjects];
+
+  ActorFormSuggestion* suggestion1 =
+      CreateCredentialSuggestion(u"user1@example.com", u"example.com");
+  __block ActorFormSuggestion* selected1 = nil;
+  [mediator_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion1 ]
+          completionHandler:^(ActorFormSuggestion* s, BOOL storePermission) {
+            selected1 = s;
+          }];
+
+  ASSERT_EQ(fake_consumer_.items.count, 1u);
+  EXPECT_EQ(fake_suggestions_consumer_.suggestions.count, 1u);
+  EXPECT_EQ(fake_suggestions_consumer_.suggestions.firstObject, suggestion1);
+  EXPECT_EQ(fake_suggestions_consumer_.worklogItem, fake_consumer_.items[0]);
+  EXPECT_FALSE(fake_suggestions_consumer_.clearSuggestionsCalled);
+  ASSERT_NE(fake_consumer_.intervention, nil);
+
+  [mediator_
+      didTriggerInterventionAction:fake_consumer_.intervention.actions[1]];
+  EXPECT_EQ(selected1, suggestion1);
+  EXPECT_EQ(fake_consumer_.intervention, nil);
+  EXPECT_TRUE(fake_suggestions_consumer_.clearSuggestionsCalled);
+  EXPECT_EQ(fake_suggestions_consumer_.suggestions, nil);
+  EXPECT_EQ(fake_suggestions_consumer_.worklogItem, nil);
+
+  fake_suggestions_consumer_.clearSuggestionsCalled = NO;
+
+  ActorFormSuggestion* suggestion2 =
+      CreateCredentialSuggestion(u"user2@example.com", u"example.com");
+  __block ActorFormSuggestion* selected2 = nil;
+  [mediator_ actorTask:task_id_
+      selectFromSuggestions:@[ suggestion2 ]
+          completionHandler:^(ActorFormSuggestion* s, BOOL storePermission) {
+            selected2 = s;
+          }];
+
+  ASSERT_EQ(fake_consumer_.items.count, 2u);
+  EXPECT_NE(fake_consumer_.items[0], fake_consumer_.items[1]);
+  EXPECT_EQ(fake_suggestions_consumer_.suggestions.count, 1u);
+  EXPECT_EQ(fake_suggestions_consumer_.suggestions.firstObject, suggestion2);
+  EXPECT_EQ(fake_suggestions_consumer_.worklogItem, fake_consumer_.items[1]);
+  EXPECT_FALSE(fake_suggestions_consumer_.clearSuggestionsCalled);
+  ASSERT_NE(fake_consumer_.intervention, nil);
+
+  [mediator_
+      didTriggerInterventionAction:fake_consumer_.intervention.actions[1]];
+  EXPECT_EQ(selected2, suggestion2);
+  EXPECT_EQ(fake_consumer_.intervention, nil);
+  EXPECT_TRUE(fake_suggestions_consumer_.clearSuggestionsCalled);
+  EXPECT_EQ(fake_suggestions_consumer_.suggestions, nil);
+  EXPECT_EQ(fake_suggestions_consumer_.worklogItem, nil);
 }
 
 // Tests selecting from addresses while ignoring updates from other tasks.
