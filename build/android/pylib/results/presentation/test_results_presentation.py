@@ -595,23 +595,24 @@ def main():
     if not os.path.exists(json_file):
         raise IOError('--json-file %s not found.' % json_file)
 
-    # Link to result details presentation page is a part of the page.
-    result_html_string, dest, result_details_link = result_details(
-        json_file,
-        args.test_name,
-        args.cs_base_url,
-        args.bucket,
-        builder_name,
-        build_number,
-    )
+    if not args.output_json:
+        # Link to result details presentation page is a part of the page.
+        result_html_string, dest, result_details_link = result_details(
+            json_file,
+            args.test_name,
+            args.cs_base_url,
+            args.bucket,
+            builder_name,
+            build_number,
+        )
 
-    result_details_link_2 = upload_to_google_bucket(
-        result_html_string.encode('UTF-8'), args.bucket, dest
-    )
-    assert result_details_link == result_details_link_2, (
-        'Result details link do not match. The link returned by get_url_link'
-        ' should be the same as that returned by upload.'
-    )
+        result_details_link_2 = upload_to_google_bucket(
+            result_html_string.encode('UTF-8'), args.bucket, dest
+        )
+        assert result_details_link == result_details_link_2, (
+            'Result details link do not match. The link returned by'
+            ' get_url_link should be the same as that returned by upload.'
+        )
 
     ui_screenshot_set_link = upload_screenshot_set(
         json_file, args.test_name, args.bucket, builder_name, build_number
@@ -627,9 +628,7 @@ def main():
     if args.output_json:
         with open(json_file) as original_json_file:
             json_object = json.load(original_json_file)
-            json_object['links'] = {
-                'result_details (logcats, flakiness links)': result_details_link
-            }
+            json_object['links'] = {}
 
             if ui_screenshot_set_link:
                 json_object['links']['ui screenshots'] = ui_screenshot_link
