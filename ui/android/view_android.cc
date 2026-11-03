@@ -38,7 +38,6 @@
 namespace ui {
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -46,6 +45,12 @@ ViewAndroid::ScopedAnchorView::ScopedAnchorView(
     JNIEnv* env,
     const JavaRef<jobject>& jview,
     const JavaRef<jobject>& jdelegate) {
+  // If there's a view, then we need a delegate to remove it.
+  CHECK(!jdelegate.is_null() || jview.is_null(), base::NotFatalUntil::M163);
+  if (jview.is_null()) {
+    return;
+  }
+  has_view_ = true;
   // TODO(jinsukkim): Following weak refs can be cast to strong refs which
   //     cannot be garbage-collected and leak memory. Rewrite not to use them.
   //     see comments in crrev.com/2103243002.
@@ -53,9 +58,6 @@ ViewAndroid::ScopedAnchorView::ScopedAnchorView(
       env, reinterpret_cast<intptr_t>(this), jdelegate);
   Java_ViewAndroidDelegate_onNativeSetView(
       env, reinterpret_cast<intptr_t>(this), jview);
-
-  // If there's a view, then we need a delegate to remove it.
-  CHECK(!jdelegate.is_null() || jview.is_null(), base::NotFatalUntil::M163);
 }
 
 ViewAndroid::ScopedAnchorView::ScopedAnchorView() {}
@@ -77,6 +79,10 @@ ViewAndroid::ScopedAnchorView::~ScopedAnchorView() {
 }
 
 void ViewAndroid::ScopedAnchorView::Reset() {
+  if (!has_view_) {
+    return;
+  }
+  has_view_ = false;
   JNIEnv* env = AttachCurrentThread();
   const ScopedJavaLocalRef<jobject> view =
       Java_ViewAndroidDelegate_getView(env, reinterpret_cast<intptr_t>(this));
@@ -91,6 +97,9 @@ void ViewAndroid::ScopedAnchorView::Reset() {
 
 const base::android::ScopedJavaLocalRef<jobject>
 ViewAndroid::ScopedAnchorView::view() const {
+  if (!has_view_) {
+    return nullptr;
+  }
   JNIEnv* env = AttachCurrentThread();
   return Java_ViewAndroidDelegate_getView(env,
                                           reinterpret_cast<intptr_t>(this));
@@ -98,6 +107,13 @@ ViewAndroid::ScopedAnchorView::view() const {
 
 void ViewAndroid::ScopedAnchorView::TransferViewAndDelegateFrom(
     ScopedAnchorView& other) {
+  Reset();
+  if (!other.has_view_) {
+    return;
+  }
+  has_view_ = true;
+  other.has_view_ = false;
+
   JNIEnv* env = AttachCurrentThread();
 
   ScopedJavaLocalRef<jobject> other_delegate =
@@ -128,16 +144,26 @@ ViewAndroid::~ViewAndroid() {
   observer_list_.Notify(&ViewAndroidObserver::OnViewAndroidDestroyed);
   observer_list_.Clear();
   RemoveFromParent();
-  Java_ViewAndroidDelegate_onNativeReset(AttachCurrentThread(),
-                                         reinterpret_cast<intptr_t>(this));
+  if (has_delegate_) {
+    Java_ViewAndroidDelegate_onNativeReset(AttachCurrentThread(),
+                                           reinterpret_cast<intptr_t>(this));
+  }
 }
 
 void ViewAndroid::SetDelegate(const JavaRef<jobject>& delegate) {
   // A ViewAndroid may have its own delegate or otherwise will use the next
   // available parent's delegate.
-  JNIEnv* env = AttachCurrentThread();
-  Java_ViewAndroidDelegate_onNativeSetDelegate(
-      env, reinterpret_cast<intptr_t>(this), delegate);
+  if (delegate.is_null()) {
+    if (has_delegate_) {
+      has_delegate_ = false;
+      Java_ViewAndroidDelegate_onNativeReset(AttachCurrentThread(),
+                                             reinterpret_cast<intptr_t>(this));
+    }
+  } else {
+    has_delegate_ = true;
+    Java_ViewAndroidDelegate_onNativeSetDelegate(
+        AttachCurrentThread(), reinterpret_cast<intptr_t>(this), delegate);
+  }
   observer_list_.Notify(&ViewAndroidObserver::OnDelegateSet);
 }
 
@@ -398,9 +424,7 @@ void ViewAndroid::SetTooltipFromKeyboard(const std::u16string& text,
   if (delegate.is_null()) {
     return;
   }
-  Java_ViewAndroidDelegate_setTooltipFromKeyboard(
-      env, delegate, text, bounds.x(), bounds.y(), bounds.width(),
-      bounds.height());
+  Java_ViewAndroidDelegate_setTooltipFromKeyboard(env, delegate, text);
 }
 
 void ViewAndroid::ClearTooltipFromKeyboard() {
@@ -450,14 +474,16 @@ WindowAndroid* ViewAndroid::GetWindowAndroid() const {
 
 const ScopedJavaLocalRef<jobject> ViewAndroid::GetViewAndroidDelegate(
     JNIEnv* env) const {
-  const ScopedJavaLocalRef<jobject> delegate =
-      Java_ViewAndroidDelegate_getDelegate(env,
-                                           reinterpret_cast<intptr_t>(this));
-  if (!delegate.is_null()) {
-    return delegate;
+  if (has_delegate_) {
+    const ScopedJavaLocalRef<jobject> delegate =
+        Java_ViewAndroidDelegate_getDelegate(env,
+                                             reinterpret_cast<intptr_t>(this));
+    if (!delegate.is_null()) {
+      return delegate;
+    }
   }
 
-  return parent_ ? parent_->GetViewAndroidDelegate(env) : delegate;
+  return parent_ ? parent_->GetViewAndroidDelegate(env) : nullptr;
 }
 
 cc::slim::Layer* ViewAndroid::GetLayer() const {

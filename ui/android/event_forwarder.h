@@ -97,7 +97,7 @@ class UI_ANDROID_EXPORT EventForwarder {
       float screen_y,
       const base::android::JavaRef<jobject>& clip_data);
 
-  bool OnGestureEvent(JNIEnv* env, int32_t type, int64_t time_ms, float scale);
+  bool OnGestureEvent(int32_t type, int64_t time_ms, float scale);
 
   bool OnGenericMotionEvent(JNIEnv* env,
                             const base::android::JavaRef<jobject>& motion_event,
@@ -115,18 +115,17 @@ class UI_ANDROID_EXPORT EventForwarder {
                          float delta_x,
                          float delta_y);
 
-  bool OnKeyUp(JNIEnv* env, const ui::KeyEventAndroid& key_event);
+  bool OnKeyUp(const ui::KeyEventAndroid& key_event);
 
-  bool DispatchKeyEvent(JNIEnv* env, const ui::KeyEventAndroid& key_event);
+  bool DispatchKeyEvent(const ui::KeyEventAndroid& key_event);
 
-  void ScrollBy(JNIEnv* env, float delta_x, float delta_y);
+  void ScrollBy(float delta_x, float delta_y);
 
-  void ScrollTo(JNIEnv* env, float x, float y);
+  void ScrollTo(float x, float y);
 
-  void DoubleTap(JNIEnv* env, int64_t time_ms, int32_t x, int32_t y);
+  void DoubleTap(int64_t time_ms, int32_t x, int32_t y);
 
-  void StartFling(JNIEnv* env,
-                  int64_t time_ms,
+  void StartFling(int64_t time_ms,
                   float x,
                   float y,
                   float raw_x,
@@ -138,8 +137,7 @@ class UI_ANDROID_EXPORT EventForwarder {
                   bool is_touchpad_event,
                   bool target_viewport);
 
-  void CancelFling(JNIEnv* env,
-                   int64_t time_ms,
+  void CancelFling(int64_t time_ms,
                    bool prevent_boosting,
                    bool is_touchpad_event);
 

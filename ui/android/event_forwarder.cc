@@ -260,8 +260,7 @@ void EventForwarder::DispatchDragEventForTesting(
       clip_data);
 }
 
-bool EventForwarder::OnGestureEvent(JNIEnv* env,
-                                    int32_t type,
+bool EventForwarder::OnGestureEvent(int32_t type,
                                     int64_t time_ms,
                                     float scale) {
   float dip_scale = view_->GetDipScale();
@@ -356,28 +355,23 @@ void EventForwarder::OnMouseWheelEvent(JNIEnv* env,
   view_->OnMouseWheelEvent(*event);
 }
 
-bool EventForwarder::OnKeyUp(JNIEnv* env,
-                             const ui::KeyEventAndroid& key_event) {
+bool EventForwarder::OnKeyUp(const ui::KeyEventAndroid& key_event) {
   return view_->OnKeyUp(key_event);
 }
 
-bool EventForwarder::DispatchKeyEvent(JNIEnv* env,
-                                      const ui::KeyEventAndroid& key_event) {
+bool EventForwarder::DispatchKeyEvent(const ui::KeyEventAndroid& key_event) {
   return view_->DispatchKeyEvent(key_event);
 }
 
-void EventForwarder::ScrollBy(JNIEnv* env, float delta_x, float delta_y) {
+void EventForwarder::ScrollBy(float delta_x, float delta_y) {
   view_->ScrollBy(delta_x, delta_y);
 }
 
-void EventForwarder::ScrollTo(JNIEnv* env, float x, float y) {
+void EventForwarder::ScrollTo(float x, float y) {
   view_->ScrollTo(x, y);
 }
 
-void EventForwarder::DoubleTap(JNIEnv* env,
-                               int64_t time_ms,
-                               int32_t x,
-                               int32_t y) {
+void EventForwarder::DoubleTap(int64_t time_ms, int32_t x, int32_t y) {
   float dip_scale = view_->GetDipScale();
   view_->OnGestureEvent(GestureEventAndroid(
       GESTURE_EVENT_TYPE_DOUBLE_TAP, gfx::PointF(x / dip_scale, y / dip_scale),
@@ -386,8 +380,7 @@ void EventForwarder::DoubleTap(JNIEnv* env,
       /*synthetic_scroll*/ false, /*prevent_boosting*/ false));
 }
 
-void EventForwarder::StartFling(JNIEnv* env,
-                                int64_t time_ms,
+void EventForwarder::StartFling(int64_t time_ms,
                                 float x,
                                 float y,
                                 float raw_x,
@@ -398,7 +391,7 @@ void EventForwarder::StartFling(JNIEnv* env,
                                 bool prevent_boosting,
                                 bool is_touchpad_event,
                                 bool target_viewport) {
-  CancelFling(env, time_ms, prevent_boosting, is_touchpad_event);
+  CancelFling(time_ms, prevent_boosting, is_touchpad_event);
 
   if (velocity_x == 0 && velocity_y == 0)
     return;
@@ -428,8 +421,7 @@ void EventForwarder::StartFling(JNIEnv* env,
       /*prevent_boosting*/ false));
 }
 
-void EventForwarder::CancelFling(JNIEnv* env,
-                                 int64_t time_ms,
+void EventForwarder::CancelFling(int64_t time_ms,
                                  bool prevent_boosting,
                                  bool is_touchpad_event) {
   ui::GestureDeviceType source =

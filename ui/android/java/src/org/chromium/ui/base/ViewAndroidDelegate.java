@@ -609,12 +609,7 @@ public class ViewAndroidDelegate {
     }
 
     @CalledByNative
-    private void setTooltipFromKeyboard(
-            @JniType("std::u16string") String text,
-            int unusedX,
-            int unusedY,
-            int unusedWidth,
-            int unusedHeight) {
+    private void setTooltipFromKeyboard(@JniType("std::u16string") String text) {
         // Exit early in case of empty or null tooltip Strings.
         if (TextUtils.isEmpty(text) || text.trim().isEmpty()) {
             clearTooltipFromKeyboard();
