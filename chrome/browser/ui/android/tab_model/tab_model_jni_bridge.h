@@ -198,6 +198,11 @@ class TabModelJniBridge : public TabModel {
   // the constructor.
   std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
       scoped_unowned_user_data_;
+
+  // Whether restored background tabs have already been scheduled with
+  // BackgroundTabLoadingPolicy. Duplicate calls to
+  // BroadcastSessionRestoreComplete() can only happen in tests.
+  bool has_scheduled_restored_tabs_ = false;
 };
 
 namespace jni_zero {

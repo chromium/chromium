@@ -16,6 +16,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/token_android.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/feature.h"
 #include "base/feature_list.h"
@@ -476,6 +477,15 @@ void TabModelJniBridge::BroadcastSessionRestoreComplete() {
     return;
   }
 
+  if (has_scheduled_restored_tabs_) {
+    // Browser tests that manually call BroadcastSessionRestoreComplete() can
+    // race with DeferredStartupHandler running
+    // ChromeTabbedActivity.onDeferredStartup(), which invokes
+    // BroadcastSessionRestoreComplete() a second time.
+    CHECK_IS_TEST();
+    return;
+  }
+
   TabModel::BroadcastSessionRestoreComplete();
 
   // On Desktop platforms, SessionRestoreDelegate explicitly schedules
@@ -512,6 +522,7 @@ void TabModelJniBridge::BroadcastSessionRestoreComplete() {
     }
 
     if (!background_tabs.empty()) {
+      has_scheduled_restored_tabs_ = true;
       performance_manager::policies::ScheduleLoadForRestoredTabs(
           std::move(background_tabs));
     }

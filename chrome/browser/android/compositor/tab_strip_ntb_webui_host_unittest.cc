@@ -54,6 +54,31 @@ TEST_F(TabStripNtbWebUiHostTest, ResetOnTabModelRemovedUnblocksOtrDestruction) {
   host.Resize(32, 32);
 }
 
+TEST_F(TabStripNtbWebUiHostTest,
+       ResetOnProfileWillBeDestroyedUnblocksOtrDestruction) {
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  auto otr_tab_model = std::make_unique<OwningTestTabModel>(otr_profile);
+
+  TabStripNtbWebUiHost host(otr_tab_model.get(), base::TimeTicks(),
+                            /*java_coordinator=*/nullptr);
+  ASSERT_NE(nullptr, host.GetWebContents());
+  content::WebContentsDestroyedWatcher watcher(host.GetWebContents());
+
+  // IncognitoTabModelImpl notifies IncognitoProfileDestroyer::didBecomeEmpty()
+  // before destroying the delegate TabModel. Verify that
+  // DestroyOTRProfileWhenAppropriate tears down the host's WebContents via
+  // OnProfileWillBeDestroyed and synchronously destroys the OTR Profile even
+  // while the TabModel is still registered.
+  ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile);
+  EXPECT_TRUE(watcher.IsDestroyed());
+  EXPECT_EQ(nullptr, host.GetWebContents());
+  EXPECT_EQ(nullptr, host.GetLayer());
+  EXPECT_FALSE(profile()->HasPrimaryOTRProfile());
+
+  otr_tab_model.reset();
+}
+
 TEST_F(TabStripNtbWebUiHostTest, RecordsActivityCreationToFirstPaintOnce) {
   base::HistogramTester histogram_tester;
   OwningTestTabModel tab_model(profile());

@@ -13,6 +13,8 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "cc/slim/layer.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -38,6 +40,7 @@ class TabStripNtbWebUiHost
     : public content::WebContentsObserver,
       public content::WebContentsDelegate,
       public content::RenderWidgetHost::InputEventObserver,
+      public ProfileObserver,
       public TabModelListObserver {
  public:
   TabStripNtbWebUiHost(TabModel* tab_model,
@@ -71,6 +74,9 @@ class TabStripNtbWebUiHost
                     const blink::WebInputEvent& event,
                     input::InputEventSource source) override;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // TabModelListObserver:
   void OnTabModelAdded(TabModel* tab_model) override {}
   void OnTabModelRemoved(TabModel* tab_model) override;
@@ -93,6 +99,7 @@ class TabStripNtbWebUiHost
   base::ScopedObservation<content::RenderWidgetHost,
                           content::RenderWidgetHost::InputEventObserver>
       input_event_observation_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace android
