@@ -37,9 +37,12 @@ public class PageHitTestDataCondition extends UiThreadCondition {
         if (tab.isHidden()) return fulfilled("hidden");
 
         // There are many cases where we don't expect hit test data to be present for the
-        // WebContents.
-        if (tab.getUrl().isEmpty()
-                || tab.getUrl().getSpec().equals(ContentUrlConstants.ABOUT_BLANK_URL)) {
+        // WebContents. Note that GURL("about:blank").getSpec() canonicalizes to
+        // ABOUT_BLANK_DISPLAY_URL ("about:blank"), whereas ABOUT_BLANK_URL is "about://blank".
+        String urlSpec = tab.getUrl().getSpec();
+        if (urlSpec.isEmpty()
+                || urlSpec.equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)
+                || urlSpec.equals(ContentUrlConstants.ABOUT_BLANK_URL)) {
             return fulfilled("empty or about:blank url");
         }
         if (tab.isNativePage()) return fulfilled("native page");
