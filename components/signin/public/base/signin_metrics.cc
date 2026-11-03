@@ -179,6 +179,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kAppSwitcherAISummarization:
     case AccessPoint::kGeminiExternalAppStoreEvent:
     case AccessPoint::kPasswordManagerCard:
+    case AccessPoint::kEnterpriseProxy:
       return access_point;
   }
 
@@ -614,6 +615,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kAccountMenuSignedOutState:
     case AccessPoint::kAppSwitcherAISummarization:
     case AccessPoint::kGeminiExternalAppStoreEvent:
+    case AccessPoint::kEnterpriseProxy:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
     case AccessPoint::kCollaborationShareTabGroup:
@@ -1005,6 +1007,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kAccountMenuSignedOutState:
     case AccessPoint::kAppSwitcherAISummarization:
     case AccessPoint::kGeminiExternalAppStoreEvent:
+    case AccessPoint::kEnterpriseProxy:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

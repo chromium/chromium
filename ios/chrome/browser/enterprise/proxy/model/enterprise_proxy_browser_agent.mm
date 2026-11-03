@@ -5,6 +5,18 @@
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_browser_agent.h"
 
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/memory/weak_ptr.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/primary_account_reauth_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/reload_type.h"
+#import "ios/web/public/web_state.h"
 
 namespace {
 
@@ -37,8 +49,39 @@ EnterpriseProxyBrowserAgent::~EnterpriseProxyBrowserAgent() {
 #pragma mark - EnterpriseProxyTabHelper::Delegate
 
 void EnterpriseProxyBrowserAgent::SignIn(web::WebState* web_state) {
-  // TODO(crbug.com/568445140): Show the primary account re-authentication flow
-  // and reload `web_state` once the user signed in again.
+  CHECK(web_state);
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());
+
+  // TODO(crbug.com/579867931): Handle the edge case where there is no primary
+  // account signed in.
+  if (!auth_service || !auth_service->HasPrimaryIdentity()) {
+    // Only users with an active primary account can reauthenticate (e.g. not
+    // signed in or in incognito mode where `auth_service` is null).
+    return;
+  }
+
+  id<PrimaryAccountReauthCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), PrimaryAccountReauthCommands);
+  [handler
+      showPrimaryAccountReauthWithAccessPoint:signin_metrics::AccessPoint::
+                                                  kEnterpriseProxy
+                            reauthAccessPoint:signin_metrics::
+                                                  ReauthAccessPoint::
+                                                      kEnterpriseProxy
+                          dismissalCompletion:
+                              base::CallbackToBlock(base::BindOnce(
+                                  [](base::WeakPtr<web::WebState>
+                                         target_web_state) {
+                                    // Tries to reload the `WebState` after the
+                                    // reauth UI is dismissed.
+                                    if (target_web_state) {
+                                      target_web_state->GetNavigationManager()
+                                          ->Reload(web::ReloadType::NORMAL,
+                                                   /*check_for_repost=*/true);
+                                    }
+                                  },
+                                  web_state->GetWeakPtr()))];
 }
 
 #pragma mark - TabsDependencyInstaller

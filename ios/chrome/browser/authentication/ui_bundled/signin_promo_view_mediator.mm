@@ -154,6 +154,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kAppSwitcherAISummarization:
     case signin_metrics::AccessPoint::kGeminiExternalAppStoreEvent:
     case signin_metrics::AccessPoint::kPasswordManagerCard:
+    case signin_metrics::AccessPoint::kEnterpriseProxy:
       return false;
   }
 }
@@ -275,6 +276,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kAppSwitcherAISummarization:
     case signin_metrics::AccessPoint::kGeminiExternalAppStoreEvent:
     case signin_metrics::AccessPoint::kPasswordManagerCard:
+    case signin_metrics::AccessPoint::kEnterpriseProxy:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -397,6 +399,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kAppSwitcherAISummarization:
     case signin_metrics::AccessPoint::kGeminiExternalAppStoreEvent:
     case signin_metrics::AccessPoint::kPasswordManagerCard:
+    case signin_metrics::AccessPoint::kEnterpriseProxy:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -504,6 +507,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kAppSwitcherAISummarization:
     case signin_metrics::AccessPoint::kGeminiExternalAppStoreEvent:
     case signin_metrics::AccessPoint::kPasswordManagerCard:
+    case signin_metrics::AccessPoint::kEnterpriseProxy:
       return nullptr;
   }
 }
@@ -610,6 +614,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kAppSwitcherAISummarization:
     case signin_metrics::AccessPoint::kGeminiExternalAppStoreEvent:
     case signin_metrics::AccessPoint::kPasswordManagerCard:
+    case signin_metrics::AccessPoint::kEnterpriseProxy:
       return nullptr;
   }
 }

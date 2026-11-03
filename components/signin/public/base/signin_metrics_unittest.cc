@@ -277,6 +277,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "GeminiExternalAppStoreEvent";
       case AccessPoint::kPasswordManagerCard:
         return "PasswordManagerCard";
+      case AccessPoint::kEnterpriseProxy:
+        return "EnterpriseProxy";
     }
   }
 };

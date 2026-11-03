@@ -1183,6 +1183,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Account settings"/>
   <int value="2" label="Recent tabs"/>
   <int value="3" label="Reauth info bar"/>
+  <int value="4" label="Enterprise proxy"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:ReauthAccessPoint) -->
@@ -1351,6 +1352,7 @@ chromium-metrics-reviews@google.com.
   <int value="112" label="App Switcher AI Summarization (iOS only)"/>
   <int value="113" label="Gemini External App Store Event (iOS only)"/>
   <int value="114" label="Password Manager card (Desktop only)"/>
+  <int value="115" label="Enterprise proxy (iOS only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

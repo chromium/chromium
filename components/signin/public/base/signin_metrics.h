@@ -384,10 +384,12 @@ enum class AccessPoint : int {
   kGeminiExternalAppStoreEvent = 113,
   // Sign-in promo card shown on the Password Manager page. Desktop only.
   kPasswordManagerCard = 114,
+  // Triggered by an enterprise proxy authentication challenge. iOS only.
+  kEnterpriseProxy = 115,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kPasswordManagerCard,  // This must be last.
+  kMaxValue = kEnterpriseProxy,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
@@ -743,7 +745,9 @@ enum class ReauthAccessPoint : int {
   kAccountSettings = 1,
   kRecentTabs = 2,
   kReauthInfoBar = 3,
-  kMaxValue = kReauthInfoBar,
+  // Reauth triggered by an enterprise proxy challenge.
+  kEnterpriseProxy = 4,
+  kMaxValue = kEnterpriseProxy,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ReauthAccessPoint)
 #endif  // BUILDFLAG(IS_IOS)
