@@ -202,6 +202,10 @@ constexpr float kListIndentThreshold = 5.0f;
 // column in a multi-column layout) starts a new list instead.
 constexpr float kMaxListNestingIndentEm = 4.0f;
 
+// Exclusive max of Accessibility.PdfHeuristics.ListMaxNestingDepth. Deeper
+// lists record the overflow bucket.
+constexpr size_t kListMaxNestingDepthHistogramMax = 10;
+
 // Maximum lines of item text to scan past when looking for the next ordered
 // marker that confirms a new ordered list.
 constexpr size_t kMaxOrderedListLookaheadLines = 15;
@@ -2249,6 +2253,25 @@ void RecordListStartReason(const ListMarkerKind& kind) {
                                 reason);
 }
 
+// Records end metrics for `level`.
+void RecordListEndMetrics(const ListLevel& level, bool is_top_level) {
+  if (is_top_level) {
+    base::UmaHistogramExactLinear(
+        "Accessibility.PdfHeuristics.ListMaxNestingDepth",
+        level.max_nesting_depth, kListMaxNestingDepthHistogramMax);
+  }
+}
+
+// Ends all but the outermost `levels_to_keep` levels. All level removals must
+// go through here so that end metrics are recorded.
+void PopListLevels(std::vector<ListLevel>& levels, size_t levels_to_keep) {
+  CHECK_LE(levels_to_keep, levels.size());
+  if (levels_to_keep == 0 && !levels.empty()) {
+    RecordListEndMetrics(levels[0], /*is_top_level=*/true);
+  }
+  levels.resize(levels_to_keep);
+}
+
 }  // namespace
 
 // This class is used as part of our heuristic to determine which text runs live
@@ -2666,6 +2689,8 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     }
   }
 
+  PopListLevels(list_levels_, /*levels_to_keep=*/0);
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Add the wrapper node if still in OCR block and text runs finish.
   if (ocr_block) {
@@ -2732,12 +2757,16 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     const chrome_pdf::AccessibilityFormGraphicInfo* graphic) {
   BlockLevelNodeResult result;
 
-  // Reset `list_levels_` so every early return (e.g. figure, side margin,
-  // tagged PDF) ends the list unless the list branch below restores it.
+  // Take `list_levels_` so every return (e.g. figure, side margin, tagged PDF)
+  // ends the list unless the list branch below hands it to
+  // `CreateListItemNode()`. `levels` stays empty when the flag is off.
   std::vector<ListLevel> levels;
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     std::swap(levels, list_levels_);
   }
+  absl::Cleanup end_lists = [&levels] {
+    PopListLevels(levels, /*levels_to_keep=*/0);
+  };
 
   const TextRunContext run_context = GetTextRunContext(layout, text_run_index);
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() && graphic) {
@@ -2772,7 +2801,7 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     }
     if (result.list_marker_kind.form != ListMarkerForm::kNone) {
       result.node = CreateListItemNode(run_context, result.list_marker_kind,
-                                       std::move(levels));
+                                       std::exchange(levels, {}));
       return result;
     }
 
@@ -2846,6 +2875,7 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateListItemNode(
 
   switch (placement.kind) {
     case ListPlacementKind::kNewList: {
+      PopListLevels(levels, /*levels_to_keep=*/0);
       RecordListStartReason(marker_kind);
       // Start a new top-level list if no list is currently open, or if the
       // marker is indented far to the right (e.g. crossing into a new column).
@@ -2862,7 +2892,7 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateListItemNode(
       RecordListStartReason(marker_kind);
       // Deeper indent: start a nested list inside the previous list item,
       // matching Blink's <ul><li>...<ul>...</ul></li></ul> structure.
-      levels.resize(placement.level_index + 1);
+      PopListLevels(levels, placement.level_index + 1);
       CHECK(levels.back().last_item);
       ui::AXNodeData* nested_list =
           CreateLineBreakingNode(ax::mojom::Role::kList, /*language=*/"");
@@ -2872,6 +2902,8 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateListItemNode(
       levels.push_back({.list = nested_list,
                         .marker_x = marker_x,
                         .last_ordered_value = ordered_value});
+      levels.front().max_nesting_depth =
+          std::max(levels.front().max_nesting_depth, levels.size());
       break;
     }
     case ListPlacementKind::kExistingLevel:
@@ -2880,7 +2912,7 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateListItemNode(
       // outermost level, keep the outermost list to tolerate slight indentation
       // variations, and update its marker position so wrapped lines and
       // sublists are measured against it.
-      levels.resize(placement.level_index + 1);
+      PopListLevels(levels, placement.level_index + 1);
       levels.back().marker_x = std::min(levels.back().marker_x, marker_x);
       levels.back().last_ordered_value = ordered_value;
       break;

@@ -5454,6 +5454,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedList) {
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.ListStartReason",
       ListStartReason::kUnorderedMarker, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListMaxNestingDepth", 1, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByLargeGap) {
@@ -5774,6 +5776,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedList) {
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.ListStartReason",
       ListStartReason::kUnorderedMarker, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListMaxNestingDepth", 2, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedListThreeLevels) {
@@ -6712,6 +6716,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListTypeChangeStartsNewList) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListNestedInOrdered) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -6756,6 +6761,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListNestedInOrdered) {
   CheckUnorderedList(nested_list, {"1", "2", "3"}, "○ ");
   CheckListItem(top_list->GetChildAtIndex(1u), "Fruits", "2. ");
   CheckParagraph(page->GetChildAtIndex(1u), "Body");
+  // Recorded when "Body" ends the list, not at the end of the page.
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListMaxNestingDepth", 2, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicListTypeChangeStartsNewSublist) {
