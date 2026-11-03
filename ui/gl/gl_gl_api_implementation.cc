@@ -290,6 +290,13 @@ const GLubyte* RealGLApi::glGetStringiFn(GLenum name, GLuint index) {
   return GLApiBase::glGetStringiFn(name, index);
 }
 
+void RealGLApi::glGenTexturesFn(GLsizei n, GLuint* textures) {
+  GLApiBase::glGenTexturesFn(n, textures);
+  if (GetGLImplementation() != kGLImplementationMockGL && n > 0) {
+    CHECK_NE(UNSAFE_TODO(textures[0]), 0u);
+  }
+}
+
 void RealGLApi::glTexImage2DFn(GLenum target,
                                GLint level,
                                GLint internalformat,
