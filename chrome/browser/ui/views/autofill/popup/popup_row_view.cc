@@ -666,6 +666,8 @@ void PopupRowView::SetFocusedLink(std::optional<size_t> link_index) {
   if (current_link) {
     row_a11y_view.GetViewAccessibility().SetIsSelected(false);
     GetA11ySelectionDelegate().NotifyAXSelection(*current_link);
+    current_link->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kFocus,
+                                                     true);
     NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kSelectedChildrenChanged, true);
   } else if (selected_cell_ == CellType::kContent) {

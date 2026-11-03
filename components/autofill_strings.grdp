@@ -1002,6 +1002,9 @@
      other {+ # other sources}}
   </message>
   <if expr="not is_android and not is_ios">
+    <message name="IDS_AUTOFILL_AI_SOURCE_ATTRIBUTION_LINK_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility label for a numbered source citation link in the Autofill AI source attribution row in the desktop popup. $1 is the source application name and $2 is the 1-based index of the source within that application.">
+      <ph name="APP_NAME">$1<ex>Gmail</ex></ph> source <ph name="SOURCE_INDEX">$2<ex>1</ex></ph>
+    </message>
     <message name="IDS_AUTOFILL_AI_SOURCE_ATTRIBUTION_A11Y_INSTRUCTIONS" is_accessibility_with_no_ui="true" desc="Accessibility instructions for navigating the citation links in the Autofill AI source attribution row in the desktop popup using left or right arrow keys.">
       Use left or right arrow keys to navigate the source links.
     </message>

@@ -602,6 +602,17 @@ gfx::Range AppendSourceAttributionSuggestionBadge(size_t source_index,
 
 struct AttributionData {
   std::u16string full_text;
+  // Same structure as `full_text` (app separator and "+ N other sources"
+  // suffix included), but each "\u00A0[N]" badge is replaced by ", " followed
+  // by the citation's accessible name so that screen readers pause between
+  // sources. Example:
+  //   `full_text`:
+  //     "From Gemini and connected apps · Gmail\u00A0[1]\u00A0[2] · "
+  //     "Photos\u00A0[1] + 2 other sources"
+  //   `a11y_text`:
+  //     "From Gemini and connected apps · Gmail, Gmail source 1, "
+  //     "Gmail source 2 · Photos, Photos source 1 + 2 other sources"
+  std::u16string a11y_text;
   std::vector<Suggestion::PersonalContextSourceCitation> citations;
 };
 
@@ -627,39 +638,52 @@ std::optional<AttributionData> BuildAttributionData(
   const size_t base_offset = offsets[0];
 
   std::u16string sources_text;
+  std::u16string a11y_sources_text;
   std::vector<Suggestion::PersonalContextSourceCitation> citations;
   bool needs_separator = false;
   for (const auto& [app_type, urls] : grouped_sources) {
     if (needs_separator) {
       sources_text.append(kLabelSeparator);
+      a11y_sources_text.append(kLabelSeparator);
     }
-    sources_text.append(PayloadSourceToAppName(app_type));
+    const std::u16string app_name = PayloadSourceToAppName(app_type);
+    sources_text.append(app_name);
+    a11y_sources_text.append(app_name);
 
     for (size_t i = 0; i < urls.size(); ++i) {
       const gfx::Range badge_range =
           AppendSourceAttributionSuggestionBadge(i, sources_text);
+      std::u16string accessible_name = l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_AI_SOURCE_ATTRIBUTION_LINK_A11Y_LABEL, app_name,
+          base::NumberToString16(i + 1));
+      base::StrAppend(&a11y_sources_text, {u", ", accessible_name});
       citations.emplace_back(urls[i],
                              gfx::Range(base_offset + badge_range.start(),
-                                        base_offset + badge_range.end()));
+                                        base_offset + badge_range.end()),
+                             std::move(accessible_name));
     }
     needs_separator = true;
   }
 
   if (payload_sources.size() > citations.size()) {
-    // `PopupRowFactoryUtils` relies on the leading space here to isolate the
-    // suffix into its own `views::StyledLabel` range for RTL layout.
-    base::StrAppend(
-        &sources_text,
+    const std::u16string suffix = base::StrCat(
         {u" ", l10n_util::GetPluralStringFUTF16(
                    IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_MORE_SOURCES_SUFFIX,
                    base::saturated_cast<int>(payload_sources.size() -
                                              citations.size()))});
+    // `PopupRowFactoryUtils` relies on the leading space here to isolate the
+    // suffix into its own `views::StyledLabel` range for RTL layout.
+    sources_text.append(suffix);
+    a11y_sources_text.append(suffix);
   }
 
   std::u16string full_text = l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_WITH_SOURCES, {sources_text});
+  std::u16string a11y_text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_WITH_SOURCES, {a11y_sources_text});
 
-  return AttributionData{std::move(full_text), std::move(citations)};
+  return AttributionData{std::move(full_text), std::move(a11y_text),
+                         std::move(citations)};
 }
 
 std::optional<Suggestion> CreatePersonalContextSourceAttributionSuggestion(
@@ -684,7 +708,7 @@ std::optional<Suggestion> CreatePersonalContextSourceAttributionSuggestion(
   // On desktop, the citation badges are links that keyboard users step through
   // with the arrow keys. Tell screen reader users how to reach them.
   source_info.voice_over =
-      base::StrCat({source_info.main_text.value, u". ",
+      base::StrCat({attribution_data->a11y_text, u". ",
                     l10n_util::GetStringUTF16(
                         IDS_AUTOFILL_AI_SOURCE_ATTRIBUTION_A11Y_INSTRUCTIONS)});
   source_info.payload = Suggestion::AutofillAiPayload(

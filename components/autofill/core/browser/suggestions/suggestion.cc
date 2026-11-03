@@ -282,8 +282,11 @@ Suggestion::PersonalContextSourceCitation::PersonalContextSourceCitation() =
 
 Suggestion::PersonalContextSourceCitation::PersonalContextSourceCitation(
     GURL url,
-    gfx::Range range)
-    : url(std::move(url)), range(range) {}
+    gfx::Range range,
+    std::u16string accessible_name)
+    : url(std::move(url)),
+      range(range),
+      accessible_name(std::move(accessible_name)) {}
 
 Suggestion::PersonalContextSourceCitation::PersonalContextSourceCitation(
     const PersonalContextSourceCitation&) = default;

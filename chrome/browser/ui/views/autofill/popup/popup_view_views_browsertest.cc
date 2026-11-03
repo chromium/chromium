@@ -599,7 +599,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
   source_attribution.payload = Suggestion::AutofillAiPayload(
       autofill::EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-          GURL("https://photos.google.com/test"), gfx::Range(40, 43))});
+          GURL("https://photos.google.com/test"), gfx::Range(40, 43),
+          u"Photos source 1")});
 
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
@@ -626,7 +627,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   source_attribution.payload = Suggestion::AutofillAiPayload(
       autofill::EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-          GURL("https://photos.google.com/test"), gfx::Range(40, 43))});
+          GURL("https://photos.google.com/test"), gfx::Range(40, 43),
+          u"Photos source 1")});
 
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),

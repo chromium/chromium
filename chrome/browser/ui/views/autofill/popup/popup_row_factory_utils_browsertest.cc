@@ -568,7 +568,8 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, AutofillAiSourceAttribution) {
   suggestion.payload = Suggestion::AutofillAiPayload(
       autofill::EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-          GURL("https://photos.google.com/test"), gfx::Range(40, 43))});
+          GURL("https://photos.google.com/test"), gfx::Range(40, 43),
+          u"Photos source 1")});
   CreateRowView(std::move(suggestion), /*selected_cell=*/std::nullopt,
                 /*filter_match=*/std::nullopt);
   ShowAndVerifyUi();

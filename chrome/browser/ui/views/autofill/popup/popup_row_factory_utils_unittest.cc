@@ -485,7 +485,8 @@ TEST_F(PopupRowFactoryUtilsTest, AutofillAiSourceAttributionRowView) {
   suggestion.payload = Suggestion::AutofillAiPayload(
       EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-          GURL("https://photos.google.com/test"), gfx::Range(40, 43))});
+          GURL("https://photos.google.com/test"), gfx::Range(40, 43),
+          u"Photos source 1")});
   ShowSuggestion(suggestion);
 
   // Verify leading icon is present.
@@ -512,13 +513,17 @@ TEST_F(PopupRowFactoryUtilsTest,
   suggestion.payload = Suggestion::AutofillAiPayload(
       EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-           GURL("https://photos.google.com/test"), gfx::Range(100, 150)),
+           GURL("https://photos.google.com/test"), gfx::Range(100, 150),
+           u"Photos source 1"),
        Suggestion::PersonalContextSourceCitation(
-           GURL("https://photos.google.com/test2"), gfx::Range::InvalidRange()),
+           GURL("https://photos.google.com/test2"), gfx::Range::InvalidRange(),
+           u"Photos source 2"),
        Suggestion::PersonalContextSourceCitation(
-           GURL("https://photos.google.com/test3"), gfx::Range(5, 5)),
+           GURL("https://photos.google.com/test3"), gfx::Range(5, 5),
+           u"Photos source 3"),
        Suggestion::PersonalContextSourceCitation(
-           GURL("https://photos.google.com/test4"), gfx::Range(43, 40))});
+           GURL("https://photos.google.com/test4"), gfx::Range(43, 40),
+           u"Photos source 4")});
   ShowSuggestion(suggestion);
 
   views::StyledLabel* styled_label =
@@ -539,7 +544,8 @@ TEST_F(PopupRowFactoryUtilsTest, AutofillAiSourceAttributionRowView_RtlLayout) {
   suggestion.payload = Suggestion::AutofillAiPayload(
       EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-          GURL("https://photos.google.com/test"), gfx::Range(40, 43))});
+          GURL("https://photos.google.com/test"), gfx::Range(40, 43),
+          u"Photos source 1")});
   ShowSuggestion(suggestion);
 
   views::StyledLabel* styled_label =
@@ -575,7 +581,8 @@ TEST_F(PopupRowFactoryUtilsTest,
   suggestion.payload = Suggestion::AutofillAiPayload(
       EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-          GURL("https://photos.google.com/test"), gfx::Range(29, 32))});
+          GURL("https://photos.google.com/test"), gfx::Range(29, 32),
+          u"Photos source 1")});
   ShowSuggestion(suggestion);
 
   views::StyledLabel* styled_label =
@@ -613,7 +620,8 @@ TEST_F(
   suggestion.payload = Suggestion::AutofillAiPayload(
       EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-          GURL("https://photos.google.com/test"), gfx::Range(40, 43))});
+          GURL("https://photos.google.com/test"), gfx::Range(40, 43),
+          u"Photos source 1")});
   ShowSuggestion(suggestion);
 
   views::StyledLabel* styled_label =
@@ -670,11 +678,14 @@ TEST_F(PopupRowFactoryUtilsTest,
   suggestion.payload = Suggestion::AutofillAiPayload(
       EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-           GURL("https://mail.google.com/1"), gfx::Range(39, 42)),
+           GURL("https://mail.google.com/1"), gfx::Range(39, 42),
+           u"Gmail source 1"),
        Suggestion::PersonalContextSourceCitation(
-           GURL("https://mail.google.com/2"), gfx::Range(43, 46)),
+           GURL("https://mail.google.com/2"), gfx::Range(43, 46),
+           u"Gmail source 2"),
        Suggestion::PersonalContextSourceCitation(
-           GURL("https://photos.google.com/1"), gfx::Range(56, 59))});
+           GURL("https://photos.google.com/1"), gfx::Range(56, 59),
+           u"Photos source 1")});
   ShowSuggestion(suggestion);
 
   views::StyledLabel* styled_label =
@@ -694,8 +705,14 @@ TEST_F(PopupRowFactoryUtilsTest,
   }
   ASSERT_EQ(link_views.size(), 3u);
   EXPECT_EQ(link_views[0]->GetText(), u"[1]");
+  EXPECT_EQ(link_views[0]->GetViewAccessibility().GetCachedName(),
+            u"Gmail source 1");
   EXPECT_EQ(link_views[1]->GetText(), u"[2]");
+  EXPECT_EQ(link_views[1]->GetViewAccessibility().GetCachedName(),
+            u"Gmail source 2");
   EXPECT_EQ(link_views[2]->GetText(), u"[1]");
+  EXPECT_EQ(link_views[2]->GetViewAccessibility().GetCachedName(),
+            u"Photos source 1");
 }
 
 TEST_F(PopupRowFactoryUtilsTest,
@@ -706,7 +723,8 @@ TEST_F(PopupRowFactoryUtilsTest,
   suggestion.payload = Suggestion::AutofillAiPayload(
       EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-          GURL("https://photos.google.com/test"), gfx::Range(40, 43))});
+          GURL("https://photos.google.com/test"), gfx::Range(40, 43),
+          u"Photos source 1")});
   ShowSuggestion(suggestion);
 
   views::StyledLabel* styled_label =

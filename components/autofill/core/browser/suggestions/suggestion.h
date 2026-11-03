@@ -101,7 +101,9 @@ struct Suggestion {
   // URL.
   struct PersonalContextSourceCitation final {
     PersonalContextSourceCitation();
-    PersonalContextSourceCitation(GURL url, gfx::Range range);
+    PersonalContextSourceCitation(GURL url,
+                                  gfx::Range range,
+                                  std::u16string accessible_name);
     PersonalContextSourceCitation(const PersonalContextSourceCitation&);
     PersonalContextSourceCitation(PersonalContextSourceCitation&&);
     PersonalContextSourceCitation& operator=(
@@ -117,6 +119,10 @@ struct Suggestion {
     // Character range in `Suggestion::main_text.value` corresponding to the
     // citation badge link.
     gfx::Range range;
+    // Accessible label for screen readers when focusing the citation link,
+    // e.g. "Gmail source 1". Must not be empty: otherwise the link falls back
+    // to announcing its visible text ("[1]").
+    std::u16string accessible_name;
   };
 
   struct AutofillAiPayload final {

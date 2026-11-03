@@ -3870,9 +3870,11 @@ TEST_F(PopupViewViewsTest, SourceAttributionSubPopupKeyboardNavigation) {
   attribution_suggestion.payload = Suggestion::AutofillAiPayload(
       EntityInstance::EntityId("test-guid"),
       {Suggestion::PersonalContextSourceCitation(
-           GURL("https://mail.google.com/1"), gfx::Range(39, 42)),
+           GURL("https://mail.google.com/1"), gfx::Range(39, 42),
+           u"Gmail source 1"),
        Suggestion::PersonalContextSourceCitation(
-           GURL("https://mail.google.com/2"), gfx::Range(43, 46))});
+           GURL("https://mail.google.com/2"), gfx::Range(43, 46),
+           u"Gmail source 2")});
 
   Suggestion remove_suggestion(u"Remove info",
                                SuggestionType::kRemoveAutofillAi);

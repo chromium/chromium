@@ -548,10 +548,11 @@ std::vector<StyledRange> CreateStyleCitationBadges(
                        suggestion.main_text.value,
                        gfx::Range(last_end, citation.range.start())),
                    &CreateStyledRange);
-      citation_ranges.emplace_back(
-          citation.range,
+      views::StyledLabel::RangeStyleInfo style_info =
           views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-              &OnCitationClicked, controller, citation.url)));
+              &OnCitationClicked, controller, citation.url));
+      style_info.accessible_name = citation.accessible_name;
+      citation_ranges.emplace_back(citation.range, std::move(style_info));
       last_end = citation.range.end();
     }
   }
