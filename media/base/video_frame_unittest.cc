@@ -74,7 +74,6 @@ media::VideoFrameMetadata GetFullVideoFrameMetadata() {
   metadata.transformation = media::VIDEO_ROTATION_90;
 
   // bools
-  metadata.copy_required = true;
   metadata.end_of_stream = true;
   metadata.in_surface_view = true;
   metadata.wants_promotion_hint = true;
@@ -118,7 +117,6 @@ void VerifyVideoFrameMetadataEquality(const media::VideoFrameMetadata& a,
   EXPECT_EQ(a.capture_begin_time, b.capture_begin_time);
   EXPECT_EQ(a.capture_end_time, b.capture_end_time);
   EXPECT_EQ(a.capture, b.capture);
-  EXPECT_EQ(a.copy_required, b.copy_required);
   EXPECT_EQ(a.end_of_stream, b.end_of_stream);
   EXPECT_EQ(a.frame_duration, b.frame_duration);
   EXPECT_EQ(a.frame_rate, b.frame_rate);

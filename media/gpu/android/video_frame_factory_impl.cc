@@ -18,8 +18,6 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/texture_owner.h"
-#include "gpu/config/gpu_finch_features.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/codec_image.h"
 #include "media/gpu/android/codec_image_group.h"
@@ -68,7 +66,6 @@ static void AllocateTextureOwnerOnGpuThread(
 
 VideoFrameFactoryImpl::VideoFrameFactoryImpl(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-    const gpu::GpuPreferences& gpu_preferences,
     std::unique_ptr<SharedImageVideoProvider> image_provider,
     std::unique_ptr<MaybeRenderEarlyManager> mre_manager,
     std::unique_ptr<FrameInfoHelper> frame_info_helper,
@@ -76,9 +73,6 @@ VideoFrameFactoryImpl::VideoFrameFactoryImpl(
     : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)),
       image_provider_(std::move(image_provider)),
       gpu_task_runner_(std::move(gpu_task_runner)),
-      video_frame_copy_required_(
-          gpu_preferences.enable_threaded_texture_mailboxes &&
-          !features::NeedThreadSafeAndroidMedia()),
       mre_manager_(std::move(mre_manager)),
       frame_info_helper_(std::move(frame_info_helper)) {}
 
@@ -172,7 +166,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame(
       weak_factory_.GetWeakPtr(), std::move(output_cb), timestamp, natural_size,
       hdr_metadata, !!codec_buffer_wait_coordinator_,
       std::move(promotion_hint_cb), pixel_format, overlay_mode_,
-      video_frame_copy_required_, gpu_task_runner_);
+      gpu_task_runner_);
 
   RequestImage(std::move(output_buffer_renderer), color_space,
                std::move(image_ready_cb));
@@ -233,7 +227,6 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
     PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
     VideoPixelFormat pixel_format,
     OverlayMode overlay_mode,
-    bool video_frame_copy_required,
     scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
     std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
     FrameInfoHelper::FrameInfo frame_info,
@@ -280,8 +273,6 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   frame->metadata().ycbcr_info = frame_info.ycbcr_info;
 
   frame->set_hdr_metadata(hdr_metadata);
-
-  frame->metadata().copy_required = video_frame_copy_required;
 
   const bool wants_promotion_hints =
       overlay_mode == OverlayMode::kRequestPromotionHints;

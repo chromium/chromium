@@ -73,7 +73,6 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_OPTIONAL_FIELD(capture_begin_time, metadata_source);
   MERGE_OPTIONAL_FIELD(capture_end_time, metadata_source);
   capture.MergeMetadataFrom(metadata_source.capture);
-  MERGE_OPTIONAL_FIELD(copy_required, metadata_source);
   MERGE_VALUE_FIELD(end_of_stream, metadata_source);
   MERGE_OPTIONAL_FIELD(frame_duration, metadata_source);
   MERGE_OPTIONAL_FIELD(frame_rate, metadata_source);

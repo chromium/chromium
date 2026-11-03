@@ -121,14 +121,6 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // field is populated and consumed.
   CaptureMetadata capture;
 
-  // Indicates that mailbox created in one context, is also being used in a
-  // different context belonging to another share group and video frames are
-  // using SurfaceTexture to render frames.
-  // Textures generated from SurfaceTexture can't be shared between contexts
-  // of different share group and hence this frame must be copied to a new
-  // texture before use, rather than being used directly.
-  bool copy_required = false;
-
   // Indicates if the current frame is the End of its current Stream.
   bool end_of_stream = false;
 

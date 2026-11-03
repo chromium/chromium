@@ -79,7 +79,7 @@ class GpuMojoMediaClientAndroid final : public GpuMojoMediaClient {
         std::make_unique<AndroidVideoSurfaceChooserImpl>(),
         android_overlay_factory_cb_, std::move(traits.request_overlay_info_cb),
         std::make_unique<VideoFrameFactoryImpl>(
-            gpu_task_runner_, gpu_preferences_, std::move(image_provider),
+            gpu_task_runner_, std::move(image_provider),
             MaybeRenderEarlyManager::Create(gpu_task_runner_, ref_counted_lock),
             std::move(frame_info_helper), ref_counted_lock),
         ref_counted_lock);

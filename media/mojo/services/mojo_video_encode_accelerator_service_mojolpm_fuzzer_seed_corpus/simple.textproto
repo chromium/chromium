@@ -156,7 +156,6 @@ actions {
                   }
                 }
               }
-              m_copy_required: false
               m_end_of_stream: true
               m_interactive_content: false
               m_read_lock_fences_enabled: false

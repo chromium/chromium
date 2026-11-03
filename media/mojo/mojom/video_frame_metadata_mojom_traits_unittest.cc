@@ -64,7 +64,6 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
 
   EXPECT_EQ(metadata_out.capture, media::CaptureMetadata());
   EXPECT_FALSE(metadata_out.transformation.has_value());
-  EXPECT_FALSE(metadata_out.copy_required);
   EXPECT_FALSE(metadata_out.end_of_stream);
   EXPECT_FALSE(metadata_out.in_surface_view);
   EXPECT_FALSE(metadata_out.wants_promotion_hint);
@@ -124,7 +123,6 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   metadata_in.transformation = VideoTransformation(VIDEO_ROTATION_90, true);
 
   // bools
-  metadata_in.copy_required = true;
   metadata_in.end_of_stream = true;
   metadata_in.in_surface_view = true;
   metadata_in.wants_promotion_hint = true;
@@ -178,7 +176,6 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   EXPECT_EQ(metadata_in.capture, metadata_out.capture);
   EXPECT_EQ(metadata_in.transformation, metadata_out.transformation);
-  EXPECT_EQ(metadata_in.copy_required, metadata_out.copy_required);
   EXPECT_EQ(metadata_in.end_of_stream, metadata_out.end_of_stream);
   EXPECT_EQ(metadata_in.in_surface_view, metadata_out.in_surface_view);
   EXPECT_EQ(metadata_in.wants_promotion_hint,

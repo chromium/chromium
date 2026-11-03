@@ -89,10 +89,6 @@ struct EnumTraits<media::mojom::EffectState, intermediate::EffectState> {
 template <>
 struct StructTraits<media::mojom::VideoFrameMetadataDataView,
                     media::VideoFrameMetadata> {
-  static bool copy_required(const media::VideoFrameMetadata& input) {
-    return input.copy_required;
-  }
-
   static bool end_of_stream(const media::VideoFrameMetadata& input) {
     return input.end_of_stream;
   }

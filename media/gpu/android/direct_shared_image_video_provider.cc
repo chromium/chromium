@@ -20,7 +20,6 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
-#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/scoped_make_current.h"
@@ -143,25 +142,19 @@ void GpuSharedImageVideoFactory::CreateImage(
 
   gpu::SharedImageUsageSet usage = {gpu::SHARED_IMAGE_USAGE_GLES2_READ,
                                     gpu::SHARED_IMAGE_USAGE_RASTER_READ};
-  if (base::FeatureList::IsEnabled(
-          media::kUseSharedImageUsageForVideoFrameCopy)) {
-    const bool enable_threaded_texture_mailboxes =
-        stub_->channel()
-            ->gpu_channel_manager()
-            ->gpu_preferences()
-            .enable_threaded_texture_mailboxes;
-    const bool is_thread_safe = !!drdc_lock;
-    // When threaded texture mailboxes are enabled and the SharedImage is not
-    // thread-safe, it cannot be shared directly between contexts of different
-    // share groups. Hence, DISPLAY_READ and SCANOUT usages are omitted so that
-    // the frame is copied before use.
-    const bool copy_required =
-        enable_threaded_texture_mailboxes && !is_thread_safe;
-    if (!copy_required) {
-      usage.PutAll({gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-                    gpu::SHARED_IMAGE_USAGE_SCANOUT});
-    }
-  } else {
+  const bool enable_threaded_texture_mailboxes =
+      stub_->channel()
+          ->gpu_channel_manager()
+          ->gpu_preferences()
+          .enable_threaded_texture_mailboxes;
+  const bool is_thread_safe = !!drdc_lock;
+  // When threaded texture mailboxes are enabled and the SharedImage is not
+  // thread-safe, it cannot be shared directly between contexts of different
+  // share groups. Hence, DISPLAY_READ and SCANOUT usages are omitted so that
+  // the frame is copied before use.
+  const bool copy_required =
+      enable_threaded_texture_mailboxes && !is_thread_safe;
+  if (!copy_required) {
     usage.PutAll({gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
                   gpu::SHARED_IMAGE_USAGE_SCANOUT});
   }

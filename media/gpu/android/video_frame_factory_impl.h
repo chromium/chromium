@@ -12,7 +12,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "gpu/config/gpu_preferences.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/codec_buffer_wait_coordinator.h"
 #include "media/gpu/android/codec_image.h"
@@ -52,7 +51,6 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
   // |get_stub_cb| will be run on |gpu_task_runner|.
   VideoFrameFactoryImpl(
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-      const gpu::GpuPreferences& gpu_preferences,
       std::unique_ptr<SharedImageVideoProvider> image_provider,
       std::unique_ptr<MaybeRenderEarlyManager> mre_manager,
       std::unique_ptr<FrameInfoHelper> frame_info_helper,
@@ -108,7 +106,6 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
       PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
       VideoPixelFormat pixel_format,
       OverlayMode overlay_mode,
-      bool video_frame_copy_required,
       scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
       std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
       FrameInfoHelper::FrameInfo frame_info,
@@ -129,9 +126,6 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
   scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator_;
 
   OverlayMode overlay_mode_ = OverlayMode::kDontRequestPromotionHints;
-
-  // Is the video frame copy required?
-  bool video_frame_copy_required_ = false;
 
   // Current group that new CodecImages should belong to.  Do not use this on
   // our thread; everything must be posted to the gpu main thread, including

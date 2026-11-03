@@ -15,7 +15,6 @@
 #include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/config/gpu_preferences.h"
 #include "media/base/android/test_destruction_observable.h"
 #include "media/base/limits.h"
 #include "media/gpu/android/codec_buffer_wait_coordinator.h"
@@ -73,8 +72,8 @@ class VideoFrameFactoryImplTest : public testing::Test {
     info_helper_raw_ = info_helper.get();
 
     impl_ = std::make_unique<VideoFrameFactoryImpl>(
-        task_runner_, gpu_preferences_, std::move(image_provider),
-        std::move(mre_manager), std::move(info_helper),
+        task_runner_, std::move(image_provider), std::move(mre_manager),
+        std::move(info_helper),
         features::NeedThreadSafeAndroidMedia()
             ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
             : nullptr);
@@ -175,8 +174,6 @@ class VideoFrameFactoryImplTest : public testing::Test {
   base::MockCallback<VideoFrameFactory::OnceOutputCB> output_cb_;
 
   std::unique_ptr<DestructionObserver> ycbcr_destruction_observer_;
-
-  gpu::GpuPreferences gpu_preferences_;
 };
 
 TEST_F(VideoFrameFactoryImplTest, ImageProviderInitFailure) {

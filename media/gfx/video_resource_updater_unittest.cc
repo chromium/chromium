@@ -253,11 +253,9 @@ class VideoResourceUpdaterTest : public testing::Test {
 
   scoped_refptr<VideoFrame> CreateTestStreamTextureHardwareVideoFrame(
       bool needs_copy) {
-    scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
+    return CreateTestHardwareVideoFrame(
         viz::SinglePlaneFormat::kRGBA_8888, PIXEL_FORMAT_ABGR, kSRGBColorSpace,
         GL_TEXTURE_EXTERNAL_OES, /*needs_raster_access=*/needs_copy);
-    video_frame->metadata().copy_required = needs_copy;
-    return video_frame;
   }
 
 #if BUILDFLAG(IS_WIN)

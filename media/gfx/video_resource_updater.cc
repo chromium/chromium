@@ -43,7 +43,6 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/gfx/paint_canvas_video_renderer.h"
@@ -817,12 +816,8 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
     return VideoFrameExternalResource();
   }
 
-  const bool copy_required =
-      base::FeatureList::IsEnabled(media::kUseSharedImageUsageForVideoFrameCopy)
-          ? !video_frame->shared_image()->usage().Has(
-                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ)
-          : video_frame->metadata().copy_required;
-  if (copy_required) {
+  if (!video_frame->shared_image()->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ)) {
     return CopyHardwareResource(video_frame.get());
   }
 

@@ -449,8 +449,6 @@ struct VideoFrameMetadata {
 
   CaptureMetadata capture;
 
-  bool copy_required;
-
   bool end_of_stream;
 
   mojo_base.mojom.TimeDelta? frame_duration;

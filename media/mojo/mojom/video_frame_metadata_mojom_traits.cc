@@ -103,7 +103,6 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   output->background_blur = FromMojom(input.background_blur());
 
   // bool.
-  output->copy_required = input.copy_required();
   output->end_of_stream = input.end_of_stream();
   output->in_surface_view = input.in_surface_view();
   output->wants_promotion_hint = input.wants_promotion_hint();
