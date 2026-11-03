@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ui/simple_message_box.h",
   "+chrome/browser/ui/webui/ash",
   "+chrome/browser/webshare",
-  "+chrome/common/chrome_paths_internal.h",
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:

@@ -37,7 +37,6 @@
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
-#include "chrome/common/chrome_paths_internal.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -81,18 +80,6 @@ void DeletePathAndFiles(const base::FilePath& file_path) {
   if (!file_path.empty() && base::PathExists(file_path)) {
     base::DeletePathRecursively(file_path);
   }
-}
-
-void DoDeleteShareCacheFilePaths(const base::FilePath& profile_path,
-                                 const base::FilePath& user_cache_file_path) {
-  // Up until M99, shared files were stored in <user_cache_dir>/.NearbyShare.
-  // We should remove this obsolete directory path if it is still present.
-  base::FilePath cache_base_path;
-  chrome::GetUserCacheDirectory(profile_path, &cache_base_path);
-  DeletePathAndFiles(cache_base_path.Append(kArcNearbyShareDirname));
-
-  // Delete the current user cache file path.
-  DeletePathAndFiles(user_cache_file_path);
 }
 
 // Calculate the amount of disk space, in bytes, needed in |share_dir| to
@@ -183,8 +170,7 @@ void NearbyShareSessionImpl::DeleteShareCacheFilePaths(Profile* const profile) {
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&DoDeleteShareCacheFilePaths, profile->GetPath(),
-                     GetUserCacheFilePath(profile)));
+      base::BindOnce(&DeletePathAndFiles, GetUserCacheFilePath(profile)));
 }
 
 void NearbyShareSessionImpl::OnNearbyShareClosed(
