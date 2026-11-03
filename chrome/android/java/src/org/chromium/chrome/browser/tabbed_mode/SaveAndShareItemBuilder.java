@@ -99,7 +99,7 @@ public class SaveAndShareItemBuilder {
     public ListItem buildDownloadPageItem(boolean showIcon) {
         int titleId =
                 (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
-                                || DeviceInfo.isDesktop())
+                                && DeviceInfo.isDesktop())
                         ? R.string.menu_save_page_as
                         : R.string.menu_download_page;
         return AppMenuItemUtils.createStandardListItem(

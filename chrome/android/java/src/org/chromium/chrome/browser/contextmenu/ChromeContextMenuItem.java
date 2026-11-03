@@ -304,7 +304,7 @@ class ChromeContextMenuItem {
 
     private static boolean isSaveAsEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
-                || DeviceInfo.isDesktop();
+                && DeviceInfo.isDesktop();
     }
 
     /**

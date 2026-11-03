@@ -242,7 +242,7 @@ constexpr char kDownloadContentUri[] =
 
 bool IsDownloadSaveAsContextMenuEnabled() {
   return base::FeatureList::IsEnabled(
-             download::features::kEnableDownloadSaveAsContextMenu) ||
+             download::features::kEnableDownloadSaveAsContextMenu) &&
          base::android::device_info::is_desktop();
 }
 
