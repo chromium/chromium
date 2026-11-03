@@ -4,6 +4,8 @@
 
 #include "services/on_device_model/on_device_model_service.h"
 
+#include <string>
+
 #include "base/files/scoped_temp_file.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
@@ -1771,6 +1773,205 @@ TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraintInvalid) {
   // For now invalid schema will cause a disconnect.
   EXPECT_THAT(response.responses(), ElementsAre());
   EXPECT_TRUE(response.disconnected());
+}
+
+TEST_F(OnDeviceModelServiceTest,
+       JSONSchemaConstraintAllowsFormattedWhitespace) {
+  auto model = LoadModel();
+
+  constexpr char kOrderedSchema[] = R"({
+    "type": "object",
+    "required": ["Verdict", "Confidence"],
+    "additionalProperties": false,
+    "properties": {
+      "Verdict": { "const": "ok" },
+      "Confidence": { "const": 1 }
+    }
+  })";
+
+  // Verify non-alphabetical `properties` key order ("Verdict" before
+  // "Confidence") is preserved, and multi-line indented prefixes succeed.
+  {
+    TestResponseHolder response;
+    mojo::Remote<mojom::Session> session;
+    model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+    auto options = mojom::GenerateOptions::New();
+    options->constraint =
+        mojom::ResponseConstraint::NewJsonSchema(kOrderedSchema);
+    session->Generate(std::move(options), response.BindRemote());
+    response.WaitForCompletion();
+
+    EXPECT_THAT(response.responses(),
+                ElementsAre(R"({"Verdict":"ok","Confidence":1})"));
+  }
+
+  {
+    TestResponseHolder response;
+    mojo::Remote<mojom::Session> session;
+    model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+    session->Append(
+        MakeInput({"a", ml::Token::kModel, "{\n  \"Verdict\": \"ok\",\n  "}),
+        {});
+
+    auto options = mojom::GenerateOptions::New();
+    options->constraint =
+        mojom::ResponseConstraint::NewJsonSchema(kOrderedSchema);
+    session->Generate(std::move(options), response.BindRemote());
+    response.WaitForCompletion();
+
+    EXPECT_FALSE(response.disconnected());
+    EXPECT_THAT(response.responses(),
+                ElementsAre("aModel: {\n  \"Verdict\": \"ok\",\n  ",
+                            "\"Confidence\":1}"));
+  }
+}
+
+TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraintRejectsRunawayWhitespace) {
+  auto model = LoadModel();
+
+  constexpr char kSchema[] = R"({
+    "type": "object",
+    "required": ["Rating"],
+    "additionalProperties": false,
+    "properties": {
+      "Rating": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 5
+      }
+    }
+  })";
+
+  // Multiple newlines in a single inter-token gap should be rejected.
+  {
+    TestResponseHolder response;
+    mojo::Remote<mojom::Session> session;
+    model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+    session->Append(MakeInput({"a", ml::Token::kModel, "{\"Rating\"\n  \n  "}),
+                    {});
+
+    auto options = mojom::GenerateOptions::New();
+    options->constraint = mojom::ResponseConstraint::NewJsonSchema(kSchema);
+    session->Generate(std::move(options), response.BindRemote());
+    response.WaitForCompletion();
+
+    EXPECT_THAT(response.responses(), ElementsAre());
+    EXPECT_TRUE(response.disconnected());
+  }
+
+  // Excessive horizontal spaces (>16) in a single gap should be rejected.
+  {
+    TestResponseHolder response;
+    mojo::Remote<mojom::Session> session;
+    model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+    session->Append(
+        MakeInput({"a", ml::Token::kModel,
+                   base::StrCat({"{", std::string(17, ' '), "\"Rating\":"})}),
+        {});
+
+    auto options = mojom::GenerateOptions::New();
+    options->constraint = mojom::ResponseConstraint::NewJsonSchema(kSchema);
+    session->Generate(std::move(options), response.BindRemote());
+    response.WaitForCompletion();
+
+    EXPECT_THAT(response.responses(), ElementsAre());
+    EXPECT_TRUE(response.disconnected());
+  }
+
+  // Excessive post-newline indentation (>32 spaces) should be rejected.
+  {
+    TestResponseHolder response;
+    mojo::Remote<mojom::Session> session;
+    model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+    session->Append(
+        MakeInput({"a", ml::Token::kModel,
+                   base::StrCat({"{\n", std::string(33, ' '), "\"Rating\":"})}),
+        {});
+
+    auto options = mojom::GenerateOptions::New();
+    options->constraint = mojom::ResponseConstraint::NewJsonSchema(kSchema);
+    session->Generate(std::move(options), response.BindRemote());
+    response.WaitForCompletion();
+
+    EXPECT_THAT(response.responses(), ElementsAre());
+    EXPECT_TRUE(response.disconnected());
+  }
+
+  // Empty object `{}` schemas should also bound whitespace.
+  {
+    TestResponseHolder response;
+    mojo::Remote<mojom::Session> session;
+    model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+    session->Append(MakeInput({"a", ml::Token::kModel, "{\n  \n  "}), {});
+
+    auto options = mojom::GenerateOptions::New();
+    options->constraint = mojom::ResponseConstraint::NewJsonSchema("{}\n");
+    session->Generate(std::move(options), response.BindRemote());
+    response.WaitForCompletion();
+
+    EXPECT_THAT(response.responses(), ElementsAre());
+    EXPECT_TRUE(response.disconnected());
+  }
+}
+
+TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraintRejectsDisallowedSchemas) {
+  auto model = LoadModel();
+
+  // Caller-supplied root `x-guidance`, non-object schemas, and embedded NUL
+  // bytes must be rejected.
+  for (std::string schema : {
+           std::string(R"({
+             "type": "object",
+             "required": ["Rating"],
+             "additionalProperties": false,
+             "properties": { "Rating": { "const": 1 } },
+             "x-guidance": { "whitespace_flexible": true }
+           })"),
+           std::string("true"),
+           std::string("false"),
+           std::string("[]"),
+           std::string("{\"type\":\"object\"}\0", 18),
+       }) {
+    TestResponseHolder response;
+    mojo::Remote<mojom::Session> session;
+    model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+    auto options = mojom::GenerateOptions::New();
+    options->constraint =
+        mojom::ResponseConstraint::NewJsonSchema(std::move(schema));
+    session->Generate(std::move(options), response.BindRemote());
+    response.WaitForCompletion();
+
+    EXPECT_THAT(response.responses(), ElementsAre());
+    EXPECT_TRUE(response.disconnected());
+  }
+
+  // A user property named `"x-guidance"` inside `"properties"` is still
+  // allowed.
+  {
+    constexpr char kPropNamedXGuidanceSchema[] = R"({
+      "type": "object",
+      "required": ["x-guidance"],
+      "additionalProperties": false,
+      "properties": {
+        "x-guidance": { "const": 1 }
+      }
+    })";
+
+    TestResponseHolder response;
+    mojo::Remote<mojom::Session> session;
+    model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+    auto options = mojom::GenerateOptions::New();
+    options->constraint =
+        mojom::ResponseConstraint::NewJsonSchema(kPropNamedXGuidanceSchema);
+    session->Generate(std::move(options), response.BindRemote());
+    response.WaitForCompletion();
+
+    EXPECT_FALSE(response.disconnected());
+    EXPECT_THAT(response.responses(), ElementsAre(R"({"x-guidance":1})"));
+  }
 }
 
 TEST_F(OnDeviceModelServiceTest, RegexConstraint) {

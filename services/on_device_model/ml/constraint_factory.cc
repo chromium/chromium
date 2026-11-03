@@ -5,15 +5,24 @@
 #include "services/on_device_model/ml/constraint_factory.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "third_party/rust/chromium_crates_io/vendor/llguidance-v1/llguidance.h"
@@ -112,6 +121,52 @@ class TokenizerParamsCopy {
 };
 
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
+// Bounds inter-token JSON whitespace to at most 16 horizontal spaces/tabs
+// inline, or up to 16 trailing spaces/tabs plus one newline and up to 32
+// indentation spaces/tabs. This allows compact, spaced, and multi-line
+// indented JSON while preventing runaway whitespace loops
+// (crbug.com/578135049). Explicit ASCII whitespace characters are matched
+// because llguidance compiles JSON regexes in Unicode mode where `\s` would
+// match non-JSON whitespace.
+constexpr std::string_view kDefaultJsonWhitespacePattern =
+    R"([ \t]{1,16}|[ \t]{0,16}\r?\n[ \t]{0,32})";
+
+std::optional<std::string> ApplyDefaultJsonSchemaOptions(
+    std::string_view json_schema) {
+  std::optional<base::Value> parsed =
+      base::JSONReader::Read(json_schema, base::JSON_PARSE_RFC);
+  if (!parsed || !parsed->is_dict()) {
+    LOG(ERROR) << "JSON schema constraint must be a JSON object.";
+    return std::nullopt;
+  }
+
+  const base::DictValue& schema_dict = parsed->GetDict();
+  if (schema_dict.contains("x-guidance")) {
+    LOG(ERROR) << "x-guidance is not supported in JSON schema constraints.";
+    return std::nullopt;
+  }
+
+  base::DictValue x_guidance_dict;
+  x_guidance_dict.Set("whitespace_pattern", kDefaultJsonWhitespacePattern);
+  std::optional<std::string> x_guidance_json = base::WriteJson(x_guidance_dict);
+  if (!x_guidance_json) {
+    return std::nullopt;
+  }
+
+  // Splice `"x-guidance"` onto the raw root JSON object string instead of
+  // serializing `schema_dict`, because `base::DictValue` sorts keys
+  // alphabetically whereas llguidance preserves and enforces the caller's
+  // `properties` key order.
+  std::string_view trimmed =
+      base::TrimString(json_schema, " \t\n\r", base::TRIM_TRAILING);
+  if (trimmed.empty() || trimmed.back() != '}') {
+    return std::nullopt;
+  }
+  trimmed.remove_suffix(1);
+  return base::StrCat({trimmed, schema_dict.empty() ? "" : ",",
+                       "\"x-guidance\":", *x_guidance_json, "}"});
+}
+
 ChromeMLConstraint MakeConstraint(
     LlgTokenizer* tokenizer,
     const on_device_model::mojom::ResponseConstraint& response_constraint,
@@ -120,14 +175,29 @@ ChromeMLConstraint MakeConstraint(
   llg_constraint_init_set_defaults(&init, tokenizer);
   LlgConstraint* constraint = nullptr;
   switch (response_constraint.which()) {
-    case on_device_model::mojom::ResponseConstraint::Tag::kJsonSchema:
-      constraint = llg_new_constraint_json(
-          &init, response_constraint.get_json_schema().c_str());
+    case on_device_model::mojom::ResponseConstraint::Tag::kJsonSchema: {
+      const std::string& raw_schema = response_constraint.get_json_schema();
+      if (raw_schema.contains('\0')) {
+        LOG(ERROR) << "JSON schema constraint contains embedded NUL.";
+        return 0;
+      }
+      std::optional<std::string> json_schema =
+          ApplyDefaultJsonSchemaOptions(raw_schema);
+      if (!json_schema) {
+        return 0;
+      }
+      constraint = llg_new_constraint_json(&init, json_schema->c_str());
       break;
-    case on_device_model::mojom::ResponseConstraint::Tag::kRegex:
-      constraint = llg_new_constraint_regex(
-          &init, response_constraint.get_regex().c_str());
+    }
+    case on_device_model::mojom::ResponseConstraint::Tag::kRegex: {
+      const std::string& raw_regex = response_constraint.get_regex();
+      if (raw_regex.contains('\0')) {
+        LOG(ERROR) << "Regex constraint contains embedded NUL.";
+        return 0;
+      }
+      constraint = llg_new_constraint_regex(&init, raw_regex.c_str());
       break;
+    }
     case on_device_model::mojom::ResponseConstraint::Tag::kUnknownType:
       LOG(ERROR) << "Unknown constraint type.";
       return 0;
