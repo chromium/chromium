@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("browser_window_theme_observer") {
+  public = [ "browser_window_theme_observer.h" ]
+  sources = [ "browser_window_theme_observer.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/themes",
+    "//ui/base/unowned_user_data",
+  ]
+  deps = [
+    "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui/browser_window",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "browser_window_theme_observer_unittest.cc" ]
+  deps = [
+    ":browser_window_theme_observer",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui/browser_window/test:test_support",
+    "//chrome/test:test_support",
+    "//components/keyed_service/core",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

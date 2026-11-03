@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_THEME_OBSERVER_H_
-#define CHROME_BROWSER_UI_BROWSER_WINDOW_THEME_OBSERVER_H_
+#ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_THEME_OBSERVER_BROWSER_WINDOW_THEME_OBSERVER_H_
+#define CHROME_BROWSER_UI_BROWSER_WINDOW_THEME_OBSERVER_BROWSER_WINDOW_THEME_OBSERVER_H_
 
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
@@ -72,4 +72,4 @@ class BrowserWindowThemeObserver : public ThemeServiceObserver {
       scoped_unowned_user_data_;
 };
 
-#endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_THEME_OBSERVER_H_
+#endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_THEME_OBSERVER_BROWSER_WINDOW_THEME_OBSERVER_H_

@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window_theme_observer.h"
+#include "chrome/browser/ui/browser_window_theme_observer/browser_window_theme_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_event_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
