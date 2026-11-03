@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/containers/extend.h"
@@ -225,7 +226,8 @@ void SSLConfigServiceManager::InitializeTrustAnchorIDs(
     base::Extend(trust_anchor_ids, classic_trust_anchor_ids);
     base::Extend(
         trust_anchor_ids,
-        mtc_landmark_info->mtc_landmark_and_standalone_trust_anchor_ids);
+        std::move(
+            mtc_landmark_info->mtc_landmark_and_standalone_trust_anchor_ids));
     time_bound_trust_anchor_ids_ = net::TimeBoundTrustAnchorIDs{
         .max_usable_time = mtc_landmark_info->max_usable_time,
         .trust_anchor_ids = net::x509_util::EncodeTlsRequestedTrustAnchorIDList(
@@ -245,7 +247,7 @@ void SSLConfigServiceManager::UpdateTrustAnchorIDs(
 
   InitializeTrustAnchorIDs(classic_trust_anchor_ids,
                            mtc_standalone_only_trust_anchor_ids,
-                           mtc_landmark_info);
+                           std::move(mtc_landmark_info));
   network::mojom::SSLConfigPtr new_config = GetNewSSLConfig();
   network::mojom::SSLConfig* raw_config = new_config.get();
 
