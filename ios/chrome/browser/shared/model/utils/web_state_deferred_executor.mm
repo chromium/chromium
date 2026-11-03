@@ -180,13 +180,6 @@ constexpr base::TimeDelta kWebStateDeferredExecutionTimeout = base::Seconds(10);
   [self webStateLoaded:webState success:success];
 }
 
-- (void)webStateDidStopLoading:(web::WebState*)webState {
-  if (_loadedCallbacks.contains(webState->GetUniqueIdentifier())) {
-    [self removeObserverForWebState:webState];
-    [self webStateLoaded:webState success:NO];
-  }
-}
-
 - (void)webStateRealized:(web::WebState*)webState {
   if (!_loadedCallbacks.contains(webState->GetUniqueIdentifier())) {
     [self removeObserverForWebState:webState];
