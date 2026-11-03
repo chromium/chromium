@@ -92,7 +92,6 @@
 #include "third_party/blink/public/mojom/safe_url_pattern.mojom.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

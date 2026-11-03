@@ -74,7 +74,7 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -154,7 +154,8 @@ class SyncActiveWithoutPasswordsChecker
 #if !BUILDFLAG(IS_CHROMEOS)
 content::WebContents* GetNewTab(BrowserWindowInterface* browser) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, GURL("data:text/html"), WindowOpenDisposition::kNewForegroundTab,
+      browser, GURL("data:text/html"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   return browser->GetTabStripModel()->GetActiveWebContents();
 }

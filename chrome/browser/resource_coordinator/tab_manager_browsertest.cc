@@ -56,8 +56,8 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 using content::OpenURLParams;
@@ -183,8 +183,8 @@ void EnsureTabsInBrowser(BrowserWindowInterface* browser, int num_tabs) {
   for (int i = 0; i < num_tabs; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser, GURL(chrome::kChromeUICreditsURL),
-        i == 0 ? WindowOpenDisposition::kCurrentTab
-               : WindowOpenDisposition::kNewBackgroundTab,
+        i == 0 ? ui::mojom::WindowOpenDisposition::kCurrentTab
+               : ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -226,13 +226,13 @@ class TabManagerTest : public InProcessBrowserTest,
     // Open two tabs. Wait for both of them to load.
     content::TestNavigationObserver load1(tsm()->GetActiveWebContents(), 1);
     OpenURLParams open1 = OpenURLParams::CreateBrowserInitiated(
-        first_url, WindowOpenDisposition::kCurrentTab,
+        first_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui::PAGE_TRANSITION_TYPED);
     browser()->OpenURL(open1, /*navigation_handle_callback=*/{});
     load1.Wait();
 
     OpenURLParams open2 = OpenURLParams::CreateBrowserInitiated(
-        second_url, WindowOpenDisposition::kNewBackgroundTab,
+        second_url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui::PAGE_TRANSITION_TYPED);
     auto* tab2 = browser()->OpenURL(open2, /*navigation_handle_callback=*/{});
     content::WaitForLoadStop(tab2);
@@ -326,29 +326,29 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, TabManagerBasics) {
 
   test_tick_clock_.Advance(kShortDelay);
   NavigateToURLWithDisposition(browser(), url1,
-                               WindowOpenDisposition::kCurrentTab,
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   test_tick_clock_.Advance(kShortDelay);
-  NavigateToURLWithDisposition(browser(), url1,
-                               WindowOpenDisposition::kNewForegroundTab,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLWithDisposition(
+      browser(), url1, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   test_tick_clock_.Advance(kShortDelay);
-  NavigateToURLWithDisposition(browser(), url1,
-                               WindowOpenDisposition::kNewForegroundTab,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLWithDisposition(
+      browser(), url1, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(3, tsm()->count());
 
   // Navigate the current (third) tab to a different URL, so we can test
   // back/forward later.
   NavigateToURLWithDisposition(browser(), url2,
-                               WindowOpenDisposition::kCurrentTab,
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Navigate the third tab again, such that we have three navigation entries.
   NavigateToURLWithDisposition(browser(), url3,
-                               WindowOpenDisposition::kCurrentTab,
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(3, tsm()->count());
 
@@ -413,12 +413,12 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, TabManagerBasics) {
   // crbug.com/40183760.
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
-  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   content::WaitForLoadStop(
       browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_TRUE(chrome::CanGoForward(browser()));
-  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   content::WaitForLoadStop(
       browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_FALSE(chrome::CanGoBack(browser()));
@@ -431,11 +431,11 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, DiscardedTabIsUnloaded) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kURL = embedded_test_server()->GetURL("a.com", "/title1.html");
   NavigateToURLWithDisposition(browser(), kURL,
-                               WindowOpenDisposition::kCurrentTab,
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  NavigateToURLWithDisposition(browser(), kURL,
-                               WindowOpenDisposition::kNewForegroundTab,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLWithDisposition(
+      browser(), kURL, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Discard the background tab.
   auto* lifecycle_unit_to_discard = GetLifecycleUnitAt(0);
@@ -459,12 +459,13 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, InvalidOrEmptyURL) {
   // Open two tabs. Wait for the foreground one to load but do not wait for the
   // background one.
   NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
-                               WindowOpenDisposition::kCurrentTab,
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
-                               WindowOpenDisposition::kNewBackgroundTab,
-                               ui_test_utils::BROWSER_TEST_NO_WAIT);
+  NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUICreditsURL),
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   ASSERT_EQ(2, tsm()->count());
 
@@ -490,7 +491,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, ProtectPDFPages) {
 
   GURL url2(chrome::kChromeUIAboutURL);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url2, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // No discarding should be possible as the only background tab is displaying a
@@ -505,7 +506,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, ProtectVideoTabs) {
       ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL)));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUIAboutURL),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   auto* tab = GetWebContentsAt(1);
@@ -550,7 +551,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest,
                        MAYBE_ProtectDevToolsTabsFromDiscarding) {
   // Open the first tab.
   NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
-                               WindowOpenDisposition::kCurrentTab,
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Open a DevTools window for the first.
@@ -559,9 +560,10 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest,
   EXPECT_TRUE(devtool);
 
   // Open the second tab.
-  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
-                               WindowOpenDisposition::kNewForegroundTab,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUICreditsURL),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // No discarding should be possible as the only background tab is currently
   // using DevTools.
@@ -583,12 +585,13 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest,
 IN_PROC_BROWSER_TEST_P(TabManagerTest, AutoDiscardable) {
   // Get two tabs open.
   NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
-                               WindowOpenDisposition::kCurrentTab,
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
-                               WindowOpenDisposition::kNewForegroundTab,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUICreditsURL),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, tsm()->count());
 
   // Set the auto-discardable state of the first tab to false.
@@ -1118,7 +1121,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
       ui_test_utils::NavigateToURL(browser1, GURL("https://www.example.com")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser1, GURL("https://www.example.com"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   BrowserWindowInterface* browser2 = CreateBrowser(browser1->GetProfile());
@@ -1126,7 +1129,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
       ui_test_utils::NavigateToURL(browser2, GURL("https://www.example.com")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser2, GURL("https://www.example.com"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   TabStripModel* tab_strip1 = browser1->GetTabStripModel();

@@ -24,7 +24,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 PreventCloseTestBase::PreventCloseTestBase() = default;
@@ -86,7 +86,8 @@ BrowserWindowInterface* PreventCloseTestBase::LaunchPWA(
     bool launch_in_window) {
   return launch_in_window
              ? web_app::LaunchWebAppBrowserAndWait(
-                   profile(), app_id, WindowOpenDisposition::kNewWindow)
+                   profile(), app_id,
+                   ui::mojom::WindowOpenDisposition::kNewWindow)
              : web_app::LaunchBrowserForWebAppInTab(profile(), app_id);
 }
 

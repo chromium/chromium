@@ -25,7 +25,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
   apps::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
       profile, std::move(file_paths), std::move(content_types));
   const int32_t event_flags =
-      apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                           /*prefer_container=*/true);
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
       app_id, event_flags, std::move(intent),
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, IntentWithoutFiles) {
       /*share_title=*/"Subject");
 
   const int32_t event_flags =
-      apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                           /*prefer_container=*/true);
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
       app_id, event_flags, std::move(intent),
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchAppIconKeyUnchanged) {
       });
 
   const int32_t event_flags =
-      apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                           /*prefer_container=*/true);
   proxy->Launch(app_id, event_flags, apps::LaunchSource::kUnknown,
                 std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));

@@ -22,7 +22,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace web_app {
 
@@ -88,9 +88,10 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock,
     // launch app appropriately.
     // For ROOL on ChromeOS, we only have managed web apps which need to be run
     // as standalone windows, never as tabs
-    apps::AppLaunchParams params(
-        app_id, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromOsLogin);
+    apps::AppLaunchParams params(app_id,
+                                 apps::LaunchContainer::kLaunchContainerWindow,
+                                 ui::mojom::WindowOpenDisposition::kNewWindow,
+                                 apps::LaunchSource::kFromOsLogin);
 
     // Schedule launch here, show notification when the app window pops up.
     provider_->scheduler().LaunchAppWithCustomParams(std::move(params),

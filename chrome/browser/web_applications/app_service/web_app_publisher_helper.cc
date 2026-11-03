@@ -108,7 +108,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
@@ -1392,8 +1392,8 @@ void WebAppPublisherHelper::ExecuteContextMenuCommand(
 
   apps::AppLaunchParams params(
       app_id, ConvertDisplayModeToAppLaunchContainer(display_mode),
-      WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromMenu,
-      display_id);
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
+      apps::LaunchSource::kFromMenu, display_id);
 
   auto menu_item = shortcut_id_map_.find(shortcut_id);
   if (menu_item != shortcut_id_map_.end()) {

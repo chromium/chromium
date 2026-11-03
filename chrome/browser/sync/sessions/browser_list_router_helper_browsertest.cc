@@ -33,7 +33,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_P(BrowserListRouterHelperBrowserTest, NotifyOnDiscardTab) {
   GURL gurl_2 = embedded_test_server()->GetURL("/title2.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl_1));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), gurl_2, WindowOpenDisposition::kNewForegroundTab,
+      browser(), gurl_2, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Find old_id of gurl_1.

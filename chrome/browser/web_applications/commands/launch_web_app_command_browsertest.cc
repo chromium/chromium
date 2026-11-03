@@ -47,7 +47,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -165,7 +165,7 @@ class LaunchWebAppCommandTest : public WebAppBrowserTestBase {
   apps::AppLaunchParams CreateLaunchParams(
       webapps::AppId app_id,
       apps::LaunchContainer container,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       apps::LaunchSource source,
       const std::vector<base::FilePath>& launch_files,
       const std::optional<GURL>& protocol_handler_launch_url) {
@@ -184,7 +184,7 @@ class LaunchWebAppCommandTest : public WebAppBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerTab,
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       apps::LaunchSource::kFromCommandLine, {}, std::nullopt);
 
   base::WeakPtr<BrowserWindowInterface> launch_browser;
@@ -202,8 +202,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromCommandLine,
-      {}, std::nullopt);
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
+      apps::LaunchSource::kFromCommandLine, {}, std::nullopt);
 
   base::WeakPtr<BrowserWindowInterface> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,
                        WebAppLaunchProcessStripsMaliciousShortcutUrl) {
   apps::AppLaunchParams launch_params =
       CreateLaunchParams(app_id_, apps::LaunchContainer::kLaunchContainerWindow,
-                         WindowOpenDisposition::kNewWindow,
+                         ui::mojom::WindowOpenDisposition::kNewWindow,
                          apps::LaunchSource::kFromTest, {}, std::nullopt);
   launch_params.override_url = GURL("chrome://settings");
 

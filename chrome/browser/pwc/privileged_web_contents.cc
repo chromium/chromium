@@ -30,7 +30,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -265,7 +265,7 @@ void PrivilegedWebContents::EmbedderDelegate::DraggableRegionsChanged(
 bool PrivilegedWebContents::EmbedderDelegate::HandleWindowCreation(
     content::RenderFrameHost* opener,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& features) {
   return false;
 }
@@ -301,7 +301,7 @@ content::WebContents* PrivilegedWebContents::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
@@ -435,7 +435,7 @@ void PrivilegedWebContents::DraggableRegionsChanged(
 bool PrivilegedWebContents::HandleWindowCreation(
     content::RenderFrameHost* opener,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& features) {
   if (embedder_delegate_) {
     return embedder_delegate_->HandleWindowCreation(opener, target_url,

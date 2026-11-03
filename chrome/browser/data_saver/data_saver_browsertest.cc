@@ -29,7 +29,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(DataSaverWithServerBrowserTest, ReloadPage) {
   // Reload the webpage and expect the main and the subresources will get the
   // correct save-data header.
   expected_save_data_header_ = "on";
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(DataSaverWithServerBrowserTest, ReloadPage) {
   // will get no save-data header.
   SetDataSaverEnabledForTesting(false);
   expected_save_data_header_ = "";
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
 }

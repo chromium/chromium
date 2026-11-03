@@ -50,8 +50,8 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   NavigateParams params1 = MakeNavigateParams(browser());
   params1.url = url_info1_->origin().GetURL().Resolve("/first-page.html");
   params1.transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
-  params1.disposition = WindowOpenDisposition::kCurrentTab;
+  params1.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   ui_test_utils::NavigateToURL(&params1);
 
   BrowserWindowInterface* iwa_browser = params1.browser;
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   NavigateParams params2 = MakeNavigateParams(iwa_browser);
   params2.url = url_info1_->origin().GetURL().Resolve("/other-page.html");
   params2.transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
-  params2.disposition = WindowOpenDisposition::kCurrentTab;
+  params2.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   ui_test_utils::NavigateToURL(&params2);
 
   // Navigating a tab in the app's scope should not create a new browser.
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   params3.url =
       url_info2_->origin().GetURL().Resolve("/page-in-another-iwa.html");
   params3.transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
-  params3.disposition = WindowOpenDisposition::kCurrentTab;
+  params3.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   ui_test_utils::NavigateToURL(&params3);
 
   // Navigating a tab outside of the app's scope should create a new browser.
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   NavigateParams params4 = MakeNavigateParams(iwa_browser);
   params4.url = GetGoogleURL();
   params4.transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
-  params4.disposition = WindowOpenDisposition::kCurrentTab;
+  params4.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   ui_test_utils::NavigateToURL(&params4);
 
   // It might seem counterintuitive that `params4.browser` is expected to equal
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest,
   NavigateParams params = MakeNavigateParams(browser());
   params.url = url_info1_->origin().GetURL().Resolve("/deep-link.html");
   params.transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  params.disposition = WindowOpenDisposition::kNewWindow;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
   EXPECT_EQ(nullptr, handle);
 
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocolSelf) {
 
 class BrowserNavigatorIwaNewTabTest
     : public BrowserNavigatorIwaTest,
-      public ::testing::WithParamInterface<WindowOpenDisposition> {};
+      public ::testing::WithParamInterface<ui::mojom::WindowOpenDisposition> {};
 
 IN_PROC_BROWSER_TEST_P(BrowserNavigatorIwaNewTabTest, NavigateNewTab) {
   EXPECT_NO_FATAL_FAILURE(InstallBundles());
@@ -390,14 +390,14 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorIwaNewTabTest, NavigateNewTab) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     BrowserNavigatorIwaNewTabTest,
-    ::testing::Values(WindowOpenDisposition::kNewForegroundTab,
-                      WindowOpenDisposition::kNewBackgroundTab),
+    ::testing::Values(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                      ui::mojom::WindowOpenDisposition::kNewBackgroundTab),
     [](const testing::TestParamInfo<BrowserNavigatorIwaNewTabTest::ParamType>&
            info) {
       switch (info.param) {
-        case WindowOpenDisposition::kNewForegroundTab:
+        case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
           return "NEW_FOREGROUND_TAB";
-        case WindowOpenDisposition::kNewBackgroundTab:
+        case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
           return "NEW_BACKGROUND_TAB";
         default:
           NOTREACHED();

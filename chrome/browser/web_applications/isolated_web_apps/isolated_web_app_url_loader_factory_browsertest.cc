@@ -20,7 +20,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace web_app {
 
@@ -257,9 +257,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
 
   // Do not wait for the request to complete, and immediately close the browser.
   // No crash should occur due to this.
-  NavigateToURLWithDisposition(
-      GetBrowserFromFrame(iwa_frame), url_info.origin().GetURL(),
-      WindowOpenDisposition::kCurrentTab, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  NavigateToURLWithDisposition(GetBrowserFromFrame(iwa_frame),
+                               url_info.origin().GetURL(),
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
+                               ui_test_utils::BROWSER_TEST_NO_WAIT);
   ASSERT_NO_FATAL_FAILURE(chrome::CloseAllBrowsers());
 }
 

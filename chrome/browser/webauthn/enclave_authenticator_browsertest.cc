@@ -113,7 +113,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
@@ -2884,7 +2884,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, BiometricsInPWA) {
 
   ASSERT_TRUE(NavigateToURLWithDisposition(
       app_browser, https_server_.GetURL("www.example.com", "/title1.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -4501,7 +4501,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   // A second WebContents attempts a transaction while the first is pending.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), https_server_.GetURL("www.example.com", "/title1.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* second_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

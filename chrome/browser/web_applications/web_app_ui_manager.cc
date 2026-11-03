@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/common/chrome_switches.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace web_app {
 
@@ -35,9 +35,9 @@ apps::AppLaunchParams WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
     launch_source = apps::LaunchSource::kFromProtocolHandler;
   }
 
-  apps::AppLaunchParams params(app_id,
-                               apps::LaunchContainer::kLaunchContainerNone,
-                               WindowOpenDisposition::kUnknown, launch_source);
+  apps::AppLaunchParams params(
+      app_id, apps::LaunchContainer::kLaunchContainerNone,
+      ui::mojom::WindowOpenDisposition::kUnknown, launch_source);
   params.command_line = command_line;
   params.current_directory = current_directory;
   params.launch_files = launch_files;

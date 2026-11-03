@@ -28,8 +28,8 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -420,7 +420,7 @@ void ShowBookmarksLimitExceededHelp(
   sync_service->AcknowledgeBookmarksLimitExceededError(source);
   NavigateParams params(browser, GURL(kBookmarksLimitExceededHelpCenter),
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

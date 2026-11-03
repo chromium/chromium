@@ -22,8 +22,8 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
-#include "ui/base/window_open_disposition.h"
 
 class GURL;
 
@@ -152,7 +152,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
     virtual bool HandleWindowCreation(
         content::RenderFrameHost* opener,
         const GURL& target_url,
-        WindowOpenDisposition disposition,
+        ui::mojom::WindowOpenDisposition disposition,
         const blink::mojom::WindowFeatures& features);
   };
 
@@ -166,7 +166,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   // related window creation is denied. Returns true if handled.
   bool HandleWindowCreation(content::RenderFrameHost* opener,
                             const GURL& target_url,
-                            WindowOpenDisposition disposition,
+                            ui::mojom::WindowOpenDisposition disposition,
                             const blink::mojom::WindowFeatures& features);
 
   // Optional permission delegate for handling and overriding component-specific
@@ -211,7 +211,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;

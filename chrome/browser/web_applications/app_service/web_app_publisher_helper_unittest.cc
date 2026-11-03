@@ -62,7 +62,7 @@
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 using testing::_;
@@ -414,9 +414,10 @@ TEST_F(WebAppPublisherHelperTest, LaunchWithFiles_AllowWithNoPrompt) {
   // Open a file using app as a handler.
   std::vector<base::FilePath> test_files = {
       base::FilePath::FromUTF8Unsafe("file.txt")};
-  apps::AppLaunchParams params(
-      app->app_id(), apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromFileManager);
+  apps::AppLaunchParams params(app->app_id(),
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               ui::mojom::WindowOpenDisposition::kNewWindow,
+                               apps::LaunchSource::kFromFileManager);
   params.launch_files = test_files;
 
   base::test::TestFuture<std::vector<content::WebContents*>> launch_future;

@@ -33,7 +33,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -65,9 +65,10 @@ class IsolatedWebAppFileHandlingBrowserTest
   content::WebContents* LaunchWithFiles(
       const webapps::AppId& app_id,
       const std::vector<base::FilePath>& files) {
-    apps::AppLaunchParams params(
-        app_id, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
+    apps::AppLaunchParams params(app_id,
+                                 apps::LaunchContainer::kLaunchContainerWindow,
+                                 ui::mojom::WindowOpenDisposition::kNewWindow,
+                                 apps::LaunchSource::kFromTest);
 
     auto launch_infos =
         file_handler_manager().GetMatchingFileHandlerUrls(app_id, files);

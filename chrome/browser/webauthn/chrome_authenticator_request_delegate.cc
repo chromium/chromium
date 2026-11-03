@@ -99,7 +99,6 @@
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

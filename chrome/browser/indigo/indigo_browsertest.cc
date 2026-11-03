@@ -66,7 +66,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
 #include "ui/actions/actions.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/display_switches.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -900,8 +900,9 @@ IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, HideToolbarOnReload) {
                   // Reload the current tab. Using chrome::Reload avoids race
                   // conditions with ReloadButton's internal mode-switch timer.
                   Do(base::BindLambdaForTesting([&]() {
-                    chrome::Reload(browser(),
-                                   WindowOpenDisposition::kCurrentTab);
+                    chrome::Reload(
+                        browser(),
+                        ui::mojom::WindowOpenDisposition::kCurrentTab);
                   })),
                   // Verify the toolbar is hidden.
                   WaitForHide(IndigoToolbar::kToolbarElementId));

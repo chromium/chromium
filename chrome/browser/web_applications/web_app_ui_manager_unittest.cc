@@ -19,7 +19,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -59,9 +59,10 @@ class WebAppUiManagerTest : public testing::Test {
       const base::CommandLine& command_line,
       const std::vector<base::FilePath>& launch_files,
       const std::optional<GURL>& protocol_handler_launch_url) {
-    apps::AppLaunchParams params(
-        kTestAppId, apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::kUnknown, apps::LaunchSource::kFromCommandLine);
+    apps::AppLaunchParams params(kTestAppId,
+                                 apps::LaunchContainer::kLaunchContainerNone,
+                                 ui::mojom::WindowOpenDisposition::kUnknown,
+                                 apps::LaunchSource::kFromCommandLine);
 
     params.current_directory = base::FilePath(kCurrentDirectory);
     params.command_line = command_line;

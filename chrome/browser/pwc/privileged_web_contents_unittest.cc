@@ -40,7 +40,7 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -235,7 +235,7 @@ class TestEmbedderDelegate : public PrivilegedWebContents::EmbedderDelegate {
   bool HandleWindowCreation(
       content::RenderFrameHost* opener,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& features) override {
     last_window_creation_opener_ = opener;
     last_window_creation_url_ = target_url;
@@ -290,8 +290,8 @@ class TestEmbedderDelegate : public PrivilegedWebContents::EmbedderDelegate {
 
   raw_ptr<content::RenderFrameHost> last_window_creation_opener_ = nullptr;
   GURL last_window_creation_url_;
-  WindowOpenDisposition last_window_creation_disposition_ =
-      WindowOpenDisposition::kUnknown;
+  ui::mojom::WindowOpenDisposition last_window_creation_disposition_ =
+      ui::mojom::WindowOpenDisposition::kUnknown;
   int window_creation_count_ = 0;
   bool handle_window_creation_return_value_ = true;
 };
@@ -870,7 +870,7 @@ TEST_F(PrivilegedWebContentsTest, DefaultEmbedderDelegateMethods) {
   blink::mojom::WindowFeatures window_features;
   EXPECT_FALSE(default_delegate.HandleWindowCreation(
       main_rfh(), GURL("https://example.com"),
-      WindowOpenDisposition::kNewForegroundTab, window_features));
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab, window_features));
 }
 
 TEST_F(PrivilegedWebContentsTest, ForwardsCanDragEnterToEmbedderDelegate) {
@@ -988,30 +988,34 @@ TEST_F(PrivilegedWebContentsTest,
 
   // 1. When no embedder delegate is set, returns false.
   EXPECT_FALSE(pwc->HandleWindowCreation(
-      rfh, target_url, WindowOpenDisposition::kNewForegroundTab, features));
+      rfh, target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      features));
 
   pwc->SetEmbedderDelegate(&delegate);
 
   // 2. Delegate handles and returns true.
   delegate.handle_window_creation_return_value_ = true;
   EXPECT_TRUE(pwc->HandleWindowCreation(
-      rfh, target_url, WindowOpenDisposition::kNewForegroundTab, features));
+      rfh, target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      features));
   EXPECT_EQ(delegate.last_window_creation_opener_, rfh);
   EXPECT_EQ(delegate.last_window_creation_url_, target_url);
   EXPECT_EQ(delegate.last_window_creation_disposition_,
-            WindowOpenDisposition::kNewForegroundTab);
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(delegate.window_creation_count_, 1);
 
   // 3. Delegate returns false.
   delegate.handle_window_creation_return_value_ = false;
   EXPECT_FALSE(pwc->HandleWindowCreation(
-      rfh, target_url, WindowOpenDisposition::kNewForegroundTab, features));
+      rfh, target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      features));
   EXPECT_EQ(delegate.window_creation_count_, 2);
 
   // 4. Clearing the delegate stops forwarding and returns false.
   pwc->SetEmbedderDelegate(nullptr);
   EXPECT_FALSE(pwc->HandleWindowCreation(
-      rfh, target_url, WindowOpenDisposition::kNewForegroundTab, features));
+      rfh, target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      features));
   EXPECT_EQ(delegate.window_creation_count_, 2);
 }
 
@@ -1025,10 +1029,11 @@ TEST_F(PrivilegedWebContentsTest, OpenURLFromTab_ForwardsToEmbedderDelegate) {
 
   // 1. Off-PWC disposition (e.g. NEW_BACKGROUND_TAB) forwards to embedder
   // delegate.
-  content::OpenURLParams params(target_url, content::Referrer(),
-                                WindowOpenDisposition::kNewBackgroundTab,
-                                ui::PAGE_TRANSITION_LINK,
-                                /*is_renderer_initiated=*/true);
+  content::OpenURLParams params(
+      target_url, content::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
   params.source_render_process_id = rfh->GetProcess()->GetDeprecatedID();
   params.source_render_frame_id = rfh->GetRoutingID();
 
@@ -1039,13 +1044,14 @@ TEST_F(PrivilegedWebContentsTest, OpenURLFromTab_ForwardsToEmbedderDelegate) {
   EXPECT_EQ(delegate.last_window_creation_opener_, rfh);
   EXPECT_EQ(delegate.last_window_creation_url_, target_url);
   EXPECT_EQ(delegate.last_window_creation_disposition_,
-            WindowOpenDisposition::kNewBackgroundTab);
+            ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
 
   // 2. Dispositions (including NEW_WINDOW, CURRENT_TAB, etc.) are forwarded
   // directly to the embedder delegate so the embedder can decide how to handle.
   content::OpenURLParams new_window_params(
-      target_url, content::Referrer(), WindowOpenDisposition::kNewWindow,
-      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/true);
+      target_url, content::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewWindow, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
   new_window_params.source_render_process_id =
       rfh->GetProcess()->GetDeprecatedID();
   new_window_params.source_render_frame_id = rfh->GetRoutingID();
@@ -1055,12 +1061,13 @@ TEST_F(PrivilegedWebContentsTest, OpenURLFromTab_ForwardsToEmbedderDelegate) {
             nullptr);
   EXPECT_EQ(delegate.window_creation_count_, 2);
   EXPECT_EQ(delegate.last_window_creation_disposition_,
-            WindowOpenDisposition::kNewWindow);
+            ui::mojom::WindowOpenDisposition::kNewWindow);
 
   // 3. When source frame ID is not found, falls back to the primary main frame.
   content::OpenURLParams fallback_rfh_params(
-      target_url, content::Referrer(), WindowOpenDisposition::kNewPopup,
-      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/true);
+      target_url, content::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
   EXPECT_EQ(pwc->web_contents()->GetDelegate()->OpenURLFromTab(
                 pwc->web_contents(), fallback_rfh_params,
                 /*navigation_handle_callback=*/{}),
@@ -1068,7 +1075,7 @@ TEST_F(PrivilegedWebContentsTest, OpenURLFromTab_ForwardsToEmbedderDelegate) {
   EXPECT_EQ(delegate.window_creation_count_, 3);
   EXPECT_EQ(delegate.last_window_creation_opener_, rfh);
   EXPECT_EQ(delegate.last_window_creation_disposition_,
-            WindowOpenDisposition::kNewPopup);
+            ui::mojom::WindowOpenDisposition::kNewPopup);
 
   // 4. Different WebContents source is rejected.
   EXPECT_EQ(pwc->web_contents()->GetDelegate()->OpenURLFromTab(

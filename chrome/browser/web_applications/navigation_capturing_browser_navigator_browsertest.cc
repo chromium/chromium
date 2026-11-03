@@ -43,8 +43,8 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "url/origin.h"
@@ -157,7 +157,7 @@ class NavigationCapturingBrowserNavigatorBrowserTest
     {
       NavigateParams params(app_browser_to_use, url_to_navigate_to,
                             ui::PAGE_TRANSITION_LINK);
-      params.disposition = WindowOpenDisposition::kNewWindow;
+      params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
       Navigate(&params);
       second_app_browser = params.browser;
     }
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   NavigateParams params(browser(), GetLandingPage(), ui::PAGE_TRANSITION_LINK);
   params.source_contents =
       new_browser->tab_strip_model()->GetActiveWebContents();
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   content::WebContents* new_tab = new_tab_observer.Wait();
 
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                          ui::PAGE_TRANSITION_LINK);
   params2.source_contents =
       new_browser->tab_strip_model()->GetActiveWebContents();
-  params2.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  params2.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params2);
   content::WebContents* new_tab2 = new_tab_observer2.Wait();
   ASSERT_TRUE(new_tab2);
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   {
     NavigateParams params(app_browser_1, GetNavigateExistingSecondUrl(),
                           ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     params.source_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     Navigate(&params);
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                           ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
   }
 
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                           ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
   }
 
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                           ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
   }
   BrowserWindowInterface* new_app_browser = browser_created_observer.Wait();
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                           ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
   }
   BrowserWindowInterface* new_app_browser = browser_created_observer.Wait();
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                           ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
   }
   BrowserWindowInterface* new_app_browser = browser_created_observer.Wait();
@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(
     NavigateParams params(browser(), GetFinalPage(), ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         new_browser->tab_strip_model()->GetActiveWebContents();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
     content::NavigationController::LoadURLParams load_url_params =
         LoadURLParamsFromNavigateParams(&params);
@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
     NavigateParams params(browser(), GetFinalPage(), ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         new_browser->tab_strip_model()->GetActiveWebContents();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
   }
 
@@ -792,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(
     NavigateParams params(app_browser_to_use, GetNavigateExistingSecondUrl(),
                           ui::PAGE_TRANSITION_LINK);
     params.source_contents = blank_new_tab;
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
     content::NavigationController::LoadURLParams load_url_params =
         LoadURLParamsFromNavigateParams(&params);
@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(
                           ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
   }
 
@@ -921,7 +921,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // this repro flaky - it could pass even without the fix.
   NavigateParams params(browser(), app_url, ui::PAGE_TRANSITION_LINK);
   params.initiating_profile = profile();
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   params.source_contents = contents;
   std::unique_ptr<NavigationCapturingProcess> process =
       NavigationCapturingProcess::MaybeHandleAppNavigation(params);
@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(LaunchQueueLatencyMetricBrowserTest,
                           ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         new_browser->tab_strip_model()->GetActiveWebContents();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
   }
 
@@ -1004,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(LaunchQueueLatencyMetricBrowserTest,
 
   // Reloading the tab should not measure the latency of launch params being
   // enqueued again, and the launch params are not sent again.
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   content::WaitForLoadStop(new_tab);
   apps::test::FlushLaunchQueuesForAllBrowserTabs();
   AwaitMetricsAvailableFromRenderer();
@@ -1042,7 +1042,7 @@ IN_PROC_BROWSER_TEST_F(LaunchContainerMetricMeasurementTest,
                           ui::PAGE_TRANSITION_LINK);
     params.source_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
     content::NavigationController::LoadURLParams load_url_params =
         LoadURLParamsFromNavigateParams(&params);
@@ -1125,7 +1125,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
                         ui::PAGE_TRANSITION_LINK);
   params.source_contents =
       new_browser->tab_strip_model()->GetActiveWebContents();
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   content::WebContents* new_tab = new_tab_observer.Wait();
   content::WaitForLoadStop(new_tab);
@@ -1166,7 +1166,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
                         ui::PAGE_TRANSITION_LINK);
   params.source_contents =
       new_browser->tab_strip_model()->GetActiveWebContents();
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   content::WebContents* new_tab = new_tab_observer.Wait();
   content::WaitForLoadStop(new_tab);
@@ -1211,7 +1211,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
 
   NavigateParams params(browser(), GetRedirectFromPage(),
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   run_loop.Run();
 
@@ -1261,7 +1261,7 @@ IN_PROC_BROWSER_TEST_F(
                         ui::PAGE_TRANSITION_LINK);
   params.source_contents =
       source_browser->GetTabStripModel()->GetActiveWebContents();
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   content::WebContents* new_tab = new_tab_observer.Wait();
   ASSERT_TRUE(new_tab);
@@ -1306,7 +1306,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
                         ui::PAGE_TRANSITION_LINK);
   params.source_contents =
       pip_browser->GetTabStripModel()->GetActiveWebContents();
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   content::WebContents* new_tab = new_tab_observer.Wait();
   ASSERT_TRUE(new_tab);
@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
                         ui::PAGE_TRANSITION_LINK);
   params.source_contents =
       popup_browser->GetTabStripModel()->GetActiveWebContents();
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   content::WebContents* new_tab = new_tab_observer.Wait();
   ASSERT_TRUE(new_tab);
@@ -1384,7 +1384,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
                         ui::PAGE_TRANSITION_LINK);
   params.source_contents =
       pip_browser->GetTabStripModel()->GetActiveWebContents();
-  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
   content::WebContents* new_tab = new_tab_observer.Wait();
   ASSERT_TRUE(new_tab);

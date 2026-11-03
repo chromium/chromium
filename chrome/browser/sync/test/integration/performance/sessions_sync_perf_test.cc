@@ -13,8 +13,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 using content::OpenURLParams;
@@ -100,7 +100,8 @@ void SessionsSyncPerfTest::UpdateTabs(int profile) {
     url = NextURL();
     browser->OpenURL(
         OpenURLParams::CreateBrowserInitiated(
-            url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
+            url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_LINK,
             content::Referrer(GURL("http://localhost"),
                               network::mojom::ReferrerPolicy::kDefault)),
         /*navigation_handle_callback=*/{});

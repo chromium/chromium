@@ -41,8 +41,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 using sync_datatype_helper::test;
@@ -221,7 +221,7 @@ void NavigateTab(int profile_index, const GURL& url) {
 void NavigateTabInWindow(int profile_index, int window_index, const GURL& url) {
   NavigateParams params(GetBrowserOrDie(profile_index, window_index), url,
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kCurrentTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   ui_test_utils::NavigateToURL(&params);
 }
 

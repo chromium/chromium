@@ -46,7 +46,7 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1158,8 +1158,9 @@ IN_PROC_BROWSER_TEST_F(
       .Times(1);
 
   // Launch the PWA so that the app relaunch is triggered on sync.
-  ASSERT_TRUE(web_app::LaunchWebAppBrowser(profile(), placeholder_app_id,
-                                           WindowOpenDisposition::kNewWindow));
+  ASSERT_TRUE(web_app::LaunchWebAppBrowser(
+      profile(), placeholder_app_id,
+      ui::mojom::WindowOpenDisposition::kNewWindow));
   WaitForNumberOfAppInstances(placeholder_app_id,
                               /*number_of_app_instances=*/1u);
 
