@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <new>
+#include <optional>
 #include <queue>
 #include <string>
 
@@ -29,6 +30,7 @@
 #include "ui/base/ime/ash/mock_ime_candidate_window_handler.h"
 #include "ui/base/ime/ash/mock_ime_engine_handler.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/composition_text.h"
@@ -272,9 +274,7 @@ class InputMethodAshTest : public ui::ImeKeyEventDispatcher,
     input_method_ash_ = std::make_unique<TestableInputMethodAsh>(this);
     input_method_ash_->SetFocusedTextInputClient(this);
 
-    // InputMethodManager owns and delete it in InputMethodManager::Shutdown().
-    input_method_manager_ = new TestInputMethodManager();
-    input_method::InputMethodManager::Initialize(input_method_manager_);
+    input_method_manager_.emplace();
   }
 
   void TearDown() override {
@@ -286,7 +286,7 @@ class InputMethodAshTest : public ui::ImeKeyEventDispatcher,
     IMEBridge::Get()->SetCandidateWindowHandler(nullptr);
     mock_ime_engine_handler_.reset();
     mock_ime_candidate_window_handler_.reset();
-    input_method::InputMethodManager::Shutdown();
+    input_method_manager_.reset();
 
     ResetFlags();
   }
@@ -425,7 +425,9 @@ class InputMethodAshTest : public ui::ImeKeyEventDispatcher,
   // and that may change or destroy the focused text input client.
   base::OnceClosure on_dispatch_key_event_post_ime_;
 
-  raw_ptr<TestInputMethodManager, DanglingUntriaged> input_method_manager_;
+  std::optional<
+      input_method::ScopedInputMethodManagerForTesting<TestInputMethodManager>>
+      input_method_manager_;
 
   base::test::TaskEnvironment task_environment_;
 };
@@ -1530,26 +1532,26 @@ TEST_F(InputMethodAshKeyEventTest, JP106KeyTest) {
   ui::KeyEvent eventConvert(ui::EventType::kKeyPressed, ui::VKEY_CONVERT,
                             ui::EF_NONE);
   input_method_ash_->DispatchKeyEvent(&eventConvert);
-  EXPECT_FALSE(input_method_manager_->state()->is_jp_kbd());
-  EXPECT_TRUE(input_method_manager_->state()->is_jp_ime());
+  EXPECT_FALSE(input_method_manager_->get()->state()->is_jp_kbd());
+  EXPECT_TRUE(input_method_manager_->get()->state()->is_jp_ime());
 
   ui::KeyEvent eventNonConvert(ui::EventType::kKeyPressed, ui::VKEY_NONCONVERT,
                                ui::EF_NONE);
   input_method_ash_->DispatchKeyEvent(&eventNonConvert);
-  EXPECT_TRUE(input_method_manager_->state()->is_jp_kbd());
-  EXPECT_FALSE(input_method_manager_->state()->is_jp_ime());
+  EXPECT_TRUE(input_method_manager_->get()->state()->is_jp_kbd());
+  EXPECT_FALSE(input_method_manager_->get()->state()->is_jp_ime());
 
   ui::KeyEvent eventDbeSbc(ui::EventType::kKeyPressed, ui::VKEY_DBE_SBCSCHAR,
                            ui::EF_NONE);
   input_method_ash_->DispatchKeyEvent(&eventDbeSbc);
-  EXPECT_FALSE(input_method_manager_->state()->is_jp_kbd());
-  EXPECT_TRUE(input_method_manager_->state()->is_jp_ime());
+  EXPECT_FALSE(input_method_manager_->get()->state()->is_jp_kbd());
+  EXPECT_TRUE(input_method_manager_->get()->state()->is_jp_ime());
 
   ui::KeyEvent eventDbeDbc(ui::EventType::kKeyPressed, ui::VKEY_DBE_DBCSCHAR,
                            ui::EF_NONE);
   input_method_ash_->DispatchKeyEvent(&eventDbeDbc);
-  EXPECT_TRUE(input_method_manager_->state()->is_jp_kbd());
-  EXPECT_FALSE(input_method_manager_->state()->is_jp_ime());
+  EXPECT_TRUE(input_method_manager_->get()->state()->is_jp_kbd());
+  EXPECT_FALSE(input_method_manager_->get()->state()->is_jp_ime());
 }
 
 TEST_F(InputMethodAshKeyEventTest, SetAutocorrectRangeRunsAfterKeyEvent) {

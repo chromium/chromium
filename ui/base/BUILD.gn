@@ -922,6 +922,7 @@ static_library("test_support") {
       "ime/ash/mock_input_method_manager.h",
       "ime/ash/mock_input_method_manager_impl.cc",
       "ime/ash/mock_input_method_manager_impl.h",
+      "ime/ash/scoped_input_method_manager_for_testing.h",
     ]
     deps += [
       "//ui/base/ime/ash",
@@ -1222,6 +1223,7 @@ test("ui_base_unittests") {
         "ime/ash/input_method_ash_unittest.cc",
         "ime/ash/input_method_descriptor_unittest.cc",
         "ime/ash/input_method_util_unittest.cc",
+        "ime/ash/scoped_input_method_manager_for_testing_unittest.cc",
         "ime/ash/typing_session_manager_unittest.cc",
       ]
       deps += [

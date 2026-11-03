@@ -75,6 +75,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
@@ -305,10 +306,7 @@ void AshTestHelper::TearDown() {
   // Note on non-reverse order: Kept alive through AuraTestHelper::TearDown()
   // because window/Aura teardown may trigger IME-related cleanups.
   // TODO(crbug.com/332481586): Revisit teardown ordering.
-  if (input_method_manager_) {
-    input_method_manager_ = nullptr;
-    input_method::InputMethodManager::Shutdown();
-  }
+  scoped_input_method_manager_.reset();
 
   // Tests can mark a display internal; clear that again so later tests in this
   // process do not see a stale internal display. SetUp() clears it too, but
@@ -452,10 +450,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // This block of objects are conditionally initialized here rather than in the
   // constructor to make it easier for test classes to override them.
   if (!input_method::InputMethodManager::Get()) {
-    // |input_method_manager_| is not owned and is cleaned up in TearDown()
-    // by calling InputMethodManager::Shutdown().
-    input_method_manager_ = new input_method::MockInputMethodManagerImpl();
-    input_method::InputMethodManager::Initialize(input_method_manager_);
+    scoped_input_method_manager_.emplace();
   }
   if (floss::features::IsFlossEnabled()) {
     if (!floss::FlossDBusManager::IsInitialized()) {
@@ -640,6 +635,12 @@ void AshTestHelper::SetUp(InitParams init_params) {
       SimulateUserLogin(user);
     }
   }
+}
+
+input_method::MockInputMethodManagerImpl*
+AshTestHelper::input_method_manager() {
+  return scoped_input_method_manager_ ? scoped_input_method_manager_->get()
+                                      : nullptr;
 }
 
 display::Display AshTestHelper::GetSecondaryDisplay() const {

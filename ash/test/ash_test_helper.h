@@ -29,6 +29,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "ui/aura/test/aura_test_helper.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 
 class BrowserWithTestWindowTest;
 class PrefService;
@@ -213,9 +214,9 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return sync_service_provider_.get();
   }
 
-  input_method::MockInputMethodManagerImpl* input_method_manager() {
-    return input_method_manager_;
-  }
+  // Returns null if the test installed its own InputMethodManager before
+  // SetUp().
+  input_method::MockInputMethodManagerImpl* input_method_manager();
 
   hotspot_config::CrosHotspotConfigTestHelper*
   cros_hotspot_config_test_helper() {
@@ -289,10 +290,11 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::optional<bluetooth_config::ScopedBluetoothConfigTestHelper>
       scoped_bluetooth_config_test_helper_;
 
-  // InputMethodManager is not owned by this class. It is stored in a
-  // global that is registered via InputMethodManager::Initialize().
-  raw_ptr<input_method::MockInputMethodManagerImpl> input_method_manager_ =
-      nullptr;
+  // Owns the global InputMethodManager, but only if SetUp() installed it.
+  // Empty if the test installed its own instance before SetUp().
+  std::optional<input_method::ScopedInputMethodManagerForTesting<
+      input_method::MockInputMethodManagerImpl>>
+      scoped_input_method_manager_;
 
   // True if a fake global `CrasAudioHandler` should be created.
   bool create_global_cras_audio_handler_ = true;
