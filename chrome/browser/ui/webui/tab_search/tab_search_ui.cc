@@ -12,7 +12,6 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
@@ -49,7 +48,7 @@ bool TabSearchUIConfig::ShouldAutoResizeHost() {
 }
 
 bool TabSearchUIConfig::IsPreloadable() {
-  return !organizer_panel::IsOrganizerPanelFeatureEnabled();
+  return true;
 }
 
 std::optional<int> TabSearchUIConfig::GetCommandIdForTesting() {

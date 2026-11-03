@@ -36,10 +36,6 @@ bool TopChromeWebUIConfig::SupportsInProcessResourceLoadingV2() const {
   return true;
 }
 
-std::optional<GURL> TopChromeWebUIConfig::GetPreloadEngagementAliasURL() const {
-  return std::nullopt;
-}
-
 // static
 TopChromeWebUIConfig* TopChromeWebUIConfig::From(
     content::BrowserContext* browser_context,
