@@ -1116,7 +1116,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
               *browser, browser);
     }
 
-    if (base::FeatureList::IsEnabled(
+    if (profile->IsRegularProfile() &&
+        base::FeatureList::IsEnabled(
             feature_engagement::kIPHSendTabToSelfTutorialFeature)) {
       send_tab_to_self_iph_controller_ =
           GetUserDataFactory()

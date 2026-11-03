@@ -87,8 +87,8 @@ constexpr char16_t kTargetDeviceName16[] = u"Pixel 9";
 
 // StubSendTabToSelfSyncService::GetEntryPointDisplayReason() ignores the URL
 // and always returns its configured reason. The production service returns
-// std::nullopt for non-HTTP(S) URLs. Mirror that here so the startup promo
-// doesn't trigger on the initial about:blank tab before the test navigates.
+// std::nullopt for non-HTTP(S) URLs. Mirror that here so the promo doesn't
+// trigger on the initial about:blank tab before the test navigates.
 class TestSendTabToSelfSyncService : public StubSendTabToSelfSyncService {
  public:
   std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
@@ -121,7 +121,7 @@ class SendTabToSelfTutorialInteractiveUiTest : public InteractiveBrowserTest {
   // Step 1 only anchors to an eligible promo tab. The real sync service never
   // offers Send Tab to Self on about:blank or the NTP, so use the stub, which
   // offers it on every tab. Unlike in SendTabToSelfIphInteractiveUiTest, the
-  // startup promo can't trigger on about:blank here because browser tests
+  // promo can't trigger on about:blank here because browser tests
   // block all IPH by default.
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
@@ -416,6 +416,35 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfVerticalTabsInteractiveUiTest,
 }
 
 // -----------------------------------------------------------------------------
+// SendTabToSelfIphControllerCreationTest
+//
+// Verifies which browser windows own a SendTabToSelfIphController.
+// -----------------------------------------------------------------------------
+class SendTabToSelfIphControllerCreationTest : public InteractiveBrowserTest {
+ public:
+  SendTabToSelfIphControllerCreationTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        feature_engagement::kIPHSendTabToSelfTutorialFeature);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfIphControllerCreationTest,
+                       CreatedOnlyForRegularNormalBrowser) {
+  EXPECT_NE(SendTabToSelfIphController::From(browser()), nullptr);
+  EXPECT_EQ(SendTabToSelfIphController::From(CreateIncognitoBrowser()),
+            nullptr);
+  EXPECT_EQ(SendTabToSelfIphController::From(
+                CreateBrowserForPopup(browser()->GetProfile())),
+            nullptr);
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(SendTabToSelfIphController::From(CreateGuestBrowser()), nullptr);
+#endif
+}
+
+// -----------------------------------------------------------------------------
 // SendTabToSelfIphInteractiveUiTest
 //
 // End-to-end integration tests for the Send Tab to Self IPH feature promo.
@@ -425,9 +454,14 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfVerticalTabsInteractiveUiTest,
 // -----------------------------------------------------------------------------
 class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
  public:
-  SendTabToSelfIphInteractiveUiTest()
-      : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHSendTabToSelfTutorialFeature})) {
+  explicit SendTabToSelfIphInteractiveUiTest(
+      InitialSessionState initial_session_state =
+          InitialSessionState::kOutsideGracePeriod)
+      : InteractiveFeaturePromoTest(
+            UseDefaultTrackerAllowingPromos(
+                {feature_engagement::kIPHSendTabToSelfTutorialFeature}),
+            ClockMode::kUseTestClock,
+            initial_session_state) {
     scoped_feature_list_.InitAndEnableFeature(
         user_education::features::kRaiseMacHelpBubbleAboveMenus);
   }
@@ -874,6 +908,67 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
       // Verify the promo shows anchored to active tab 1, not tab 0.
       WaitForPromo(feature_engagement::kIPHSendTabToSelfTutorialFeature),
       CheckHelpBubbleAnchoredToTab(browser(), 1));
+}
+
+// -----------------------------------------------------------------------------
+// SendTabToSelfIphGracePeriodInteractiveUiTest
+//
+// Verifies that IPH_SendTabToSelfTutorial is blocked during the session start
+// grace period and shown on the next navigation or user tab switch once the
+// grace period expires.
+// -----------------------------------------------------------------------------
+class SendTabToSelfIphGracePeriodInteractiveUiTest
+    : public SendTabToSelfIphInteractiveUiTest {
+ public:
+  SendTabToSelfIphGracePeriodInteractiveUiTest()
+      : SendTabToSelfIphInteractiveUiTest(
+            InitialSessionState::kInsideGracePeriod) {}
+
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SendTabToSelfIphGracePeriodInteractiveUiTest,
+    PromoDeferredDuringGracePeriodAndShownOnSubsequentNavigation) {
+  const GURL eligible_url_a =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  const GURL eligible_url_b =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, eligible_url_a),
+      Do([this]() {
+        histogram_tester_.ExpectBucketCount(
+            "UserEducation.MessageNotShown.IPH_SendTabToSelfTutorial",
+            user_education::FeaturePromoResult::kBlockedByGracePeriod, 1);
+      }),
+      AdvanceTime(user_education::features::GetSessionStartGracePeriod() +
+                  base::Minutes(1)),
+      NavigateWebContents(kTabId, eligible_url_b),
+      WaitForPromo(feature_engagement::kIPHSendTabToSelfTutorialFeature),
+      CheckHelpBubbleAnchoredToTab(browser(), 0));
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfIphGracePeriodInteractiveUiTest,
+                       PromoDeferredDuringGracePeriodAndShownOnUserTabSwitch) {
+  const GURL eligible_url_a =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  const GURL eligible_url_b =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, eligible_url_a),
+      AddInstrumentedTab(kSecondTabId, eligible_url_b), Do([this]() {
+        histogram_tester_.ExpectBucketCount(
+            "UserEducation.MessageNotShown.IPH_SendTabToSelfTutorial",
+            user_education::FeaturePromoResult::kBlockedByGracePeriod, 2);
+      }),
+      AdvanceTime(user_education::features::GetSessionStartGracePeriod() +
+                  base::Minutes(1)),
+      SelectTab(kTabStripElementId, 0),
+      WaitForPromo(feature_engagement::kIPHSendTabToSelfTutorialFeature),
+      CheckHelpBubbleAnchoredToTab(browser(), 0));
 }
 
 // -----------------------------------------------------------------------------

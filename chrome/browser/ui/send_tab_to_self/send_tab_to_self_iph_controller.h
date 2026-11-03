@@ -6,22 +6,22 @@
 #define CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_IPH_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 
 namespace send_tab_to_self {
 
-class SendTabToSelfModel;
-
 // Controller responsible for showing the Send Tab To Self Tutorial IPH promo
-// on the first eligible tab opened in a browser window.
+// when a user action (navigation or tab switch) lands the active tab on an
+// eligible page, once User Education session policy permits.
 class SendTabToSelfIphController : public TabStripModelObserver,
-                                   public SendTabToSelfModelObserver {
+                                   public content::WebContentsObserver {
  public:
   DECLARE_USER_DATA(SendTabToSelfIphController);
   explicit SendTabToSelfIphController(BrowserWindowInterface* interface);
@@ -49,21 +49,21 @@ class SendTabToSelfIphController : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override;
 
-  // SendTabToSelfModelObserver:
-  void OnModelReady() override;
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
  private:
   void MaybeShowPromo();
+  void OnShowPromoResult(user_education::FeaturePromoResult result);
+  void StopObserving();
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   ui::ScopedUnownedUserData<SendTabToSelfIphController> scoped_data_;
-  base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
-      model_observation_{this};
-  bool promo_attempted_ = false;
+  bool promo_request_pending_ = false;
   tabs::TabHandle promo_tab_;
+  base::WeakPtrFactory<SendTabToSelfIphController> weak_ptr_factory_{this};
 };
 
 }  // namespace send_tab_to_self

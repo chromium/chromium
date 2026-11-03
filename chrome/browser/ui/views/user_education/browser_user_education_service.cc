@@ -1525,9 +1525,10 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(&(features::IsRoundedIconsEnabled() ? kDevicesIcon
                                                              : kDevicesOldIcon))
           .SetBubbleTitleText(IDS_SEND_TAB_TO_SELF_IPH_TUTORIAL_TITLE)
-          .SetMetadata(
-              154, "ankushkush@google.com",
-              "Triggered on the first eligible tab after browser startup.")));
+          .SetMetadata(154, "ankushkush@google.com",
+                       "Triggered when a navigation or user tab switch lands "
+                       "the active tab on an eligible page, once User "
+                       "Education session policy permits.")));
 
   // kIPHSidePanelGenericPinnableFeature:
   registry.RegisterFeature(std::move(

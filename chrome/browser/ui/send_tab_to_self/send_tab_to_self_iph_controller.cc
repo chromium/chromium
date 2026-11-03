@@ -4,17 +4,19 @@
 
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_iph_controller.h"
 
-#include "chrome/browser/profiles/profile.h"
+#include <optional>
+#include <utility>
+
+#include "base/functional/bind.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
-#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/send_tab_to_self/send_tab_to_self_model.h"
-#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "content/public/browser/web_contents.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/restore_type.h"
+#include "ui/base/page_transition_types.h"
 
 namespace send_tab_to_self {
 
@@ -24,18 +26,10 @@ SendTabToSelfIphController::SendTabToSelfIphController(
     BrowserWindowInterface* interface)
     : browser_window_interface_(interface),
       scoped_data_(interface->GetUnownedUserDataHost(), *this) {
-  if (TabStripModel* tab_strip_model =
-          browser_window_interface_->GetTabStripModel()) {
-    tab_strip_model->AddObserver(this);
-  }
-  if (SendTabToSelfSyncService* sync_service =
-          SendTabToSelfSyncServiceFactory::GetForProfile(
-              browser_window_interface_->GetProfile())) {
-    if (SendTabToSelfModel* model = sync_service->GetSendTabToSelfModel()) {
-      model_observation_.Observe(model);
-    }
-  }
-  MaybeShowPromo();
+  TabStripModel* const tab_strip_model =
+      browser_window_interface_->GetTabStripModel();
+  tab_strip_model->AddObserver(this);
+  Observe(tab_strip_model->GetActiveWebContents());
 }
 
 SendTabToSelfIphController::~SendTabToSelfIphController() = default;
@@ -69,61 +63,78 @@ void SendTabToSelfIphController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (selection.active_tab_changed()) {
+  if (!selection.active_tab_changed()) {
+    return;
+  }
+  Observe(selection.new_contents);
+  // Only user switches count, not e.g. session restore activating a tab.
+  if (selection.reason & TabStripModelObserver::CHANGE_REASON_USER_GESTURE) {
     MaybeShowPromo();
   }
 }
 
-void SendTabToSelfIphController::OnTabChangedAt(tabs::TabInterface* tab,
-                                                TabChangeType change_type) {
-  if (change_type != TabChangeType::kAll) {
+void SendTabToSelfIphController::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument()) {
     return;
   }
-
-  TabStripModel* tab_strip_model =
-      browser_window_interface_->GetTabStripModel();
-  if (!tab_strip_model || tab != tab_strip_model->GetActiveTab()) {
+  // Session restore and startup pages aren't user navigations.
+  if (navigation_handle->GetRestoreType() == content::RestoreType::kRestored ||
+      ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                                   ui::PAGE_TRANSITION_AUTO_TOPLEVEL)) {
     return;
   }
-  MaybeShowPromo();
-}
-
-void SendTabToSelfIphController::OnModelReady() {
+  // Page-initiated loads (e.g. redirects) count only after a user click.
+  if (navigation_handle->IsRendererInitiated() &&
+      !navigation_handle->StartedWithTransientActivation()) {
+    return;
+  }
   MaybeShowPromo();
 }
 
 void SendTabToSelfIphController::MaybeShowPromo() {
-  if (promo_attempted_) {
-    return;
-  }
-  TabStripModel* tab_strip_model =
-      browser_window_interface_->GetTabStripModel();
-  if (!tab_strip_model) {
+  if (promo_request_pending_) {
     return;
   }
 
   std::optional<EntryPointDisplayReason> reason =
-      GetEntryPointDisplayReason(tab_strip_model->GetActiveWebContents());
-  // Wait if sync or the model is still initializing.
+      GetEntryPointDisplayReason(web_contents());
+  // Wait if the URL is ineligible (e.g. NTP) or sync/model is still loading.
   if (!reason.has_value()) {
     return;
   }
 
-  // Once a definitive reason is known, mark attempted and tear down observers
-  // so this startup promo is not triggered mid-session (e.g. upon re-auth).
-  promo_attempted_ = true;
-  TabStripModelObserver::StopObservingAll(this);
-  model_observation_.Reset();
-
   if (*reason != EntryPointDisplayReason::kOfferFeature) {
+    // Once a non-eligible profile state is resolved, tear down observers so
+    // this promo does not trigger mid-session (e.g. upon re-auth).
+    StopObserving();
     return;
   }
 
-  if (BrowserUserEducationInterface* user_education =
-          BrowserUserEducationInterface::From(browser_window_interface_)) {
-    user_education->MaybeShowStartupFeaturePromo(
-        feature_engagement::kIPHSendTabToSelfTutorialFeature);
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHSendTabToSelfTutorialFeature);
+  params.show_promo_result_callback =
+      base::BindOnce(&SendTabToSelfIphController::OnShowPromoResult,
+                     weak_ptr_factory_.GetWeakPtr());
+  promo_request_pending_ = true;
+  BrowserUserEducationInterface::From(browser_window_interface_)
+      ->MaybeShowFeaturePromo(std::move(params));
+}
+
+void SendTabToSelfIphController::OnShowPromoResult(
+    user_education::FeaturePromoResult result) {
+  promo_request_pending_ = false;
+  // Keep retrying through the grace period.
+  if (result != user_education::FeaturePromoResult::kBlockedByGracePeriod) {
+    StopObserving();
   }
+}
+
+void SendTabToSelfIphController::StopObserving() {
+  Observe(nullptr);
+  TabStripModelObserver::StopObservingAll(this);
 }
 
 }  // namespace send_tab_to_self
