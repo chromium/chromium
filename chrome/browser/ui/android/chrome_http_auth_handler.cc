@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 
 // Must come after headers that provide symbols used by @JniType.
@@ -55,7 +56,7 @@ void ChromeHttpAuthHandler::Init(LoginHandler* observer) {
   CHECK(java_chrome_http_auth_handler_.is_null(), base::NotFatalUntil::M162);
   JNIEnv* env = AttachCurrentThread();
   java_chrome_http_auth_handler_.Reset(
-      Java_ChromeHttpAuthHandler_create(env, reinterpret_cast<intptr_t>(this)));
+      Java_ChromeHttpAuthHandler_create(env, jni_zero::MakeRaw(this)));
 }
 
 void ChromeHttpAuthHandler::ShowDialog(const JavaRef<jobject>& tab_android,
