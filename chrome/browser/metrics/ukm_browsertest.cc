@@ -1841,6 +1841,49 @@ IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest, DeviceMetricsReportingPolicy) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// Verifies that disabling Sync via the SyncDisabled policy revokes Sync-backed
+// UKM consent types (EXTENSIONS and APPS) while keeping MSBB UKM recording
+// enabled, and that turning off MSBB while Sync is disabled turns off UKM
+// recording altogether (including AppKM on ChromeOS).
+IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest, SyncDisabledPolicy) {
+  ukm::UkmService* ukm_service = GetUkmService();
+  ukm::UkmTestHelper ukm_test_helper(ukm_service);
+  test::MetricsConsentOverride metrics_consent(true);
+
+  Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
+  std::unique_ptr<SyncServiceImplHarness> harness =
+      EnableSyncForProfile(profile);
+  PlatformBrowser browser = CreatePlatformBrowser(profile);
+  ASSERT_TRUE(ukm_test_helper.IsRecordingEnabled());
+  ASSERT_TRUE(ukm_service->recording_enabled(ukm::MSBB));
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  ASSERT_TRUE(ukm_service->recording_enabled(ukm::EXTENSIONS));
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+  ASSERT_TRUE(ukm_service->recording_enabled(ukm::APPS));
+#endif
+
+  // Disabling Sync via policy stops Sync-backed UKM consent types (EXTENSIONS
+  // and APPS) while MSBB UKM remains enabled.
+  SetBooleanPolicy(policy::key::kSyncDisabled, true);
+  EXPECT_TRUE(harness->service()->HasDisableReason(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+  EXPECT_TRUE(ukm_service->recording_enabled(ukm::MSBB));
+  EXPECT_FALSE(ukm_service->recording_enabled(ukm::EXTENSIONS));
+  EXPECT_FALSE(ukm_service->recording_enabled(ukm::APPS));
+
+  // With App-sync disabled by policy, turning off MSBB disables UKM recording
+  // on all platforms (including ChromeOS, where AppKM would otherwise keep UKM
+  // recording active).
+  unified_consent::UnifiedConsentService* consent_service =
+      UnifiedConsentServiceFactory::GetForProfile(profile);
+  consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(false);
+  EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
+
+  ClosePlatformBrowser(browser);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 class UkmBrowserTestForAppConsent : public UkmBrowserTestBase {
  public:
