@@ -13,6 +13,8 @@ import android.content.Context;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,18 +44,26 @@ public class AudioFocusDelegateTest {
     @Mock private Context mContext;
     @Mock private AudioManager mAudioManager;
 
+    private JniRawPtr<AudioFocusDelegate.NativeAudioFocusDelegateAndroid>
+            mNativeAudioFocusDelegateAndroid;
+
     private AudioFocusDelegate mDelegate;
-    private final long mNativeAudioFocusDelegateAndroid = 1234L;
 
     @Before
     public void setUp() {
         ContextUtils.initApplicationContextForTests(mContext);
         doReturn(mAudioManager).when(mContext).getSystemService(Context.AUDIO_SERVICE);
+        mNativeAudioFocusDelegateAndroid = JniRawPtr.createForTesting(1L);
+    }
+
+    @After
+    public void tearDown() {
+        mNativeAudioFocusDelegateAndroid.release();
     }
 
     private AudioFocusDelegate createDelegate() {
         try {
-            Method method = AudioFocusDelegate.class.getDeclaredMethod("create", long.class);
+            Method method = AudioFocusDelegate.class.getDeclaredMethod("create", JniRawPtr.class);
             method.setAccessible(true);
             return (AudioFocusDelegate) method.invoke(null, mNativeAudioFocusDelegateAndroid);
         } catch (Exception e) {

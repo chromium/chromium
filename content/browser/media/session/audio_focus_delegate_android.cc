@@ -9,6 +9,7 @@
 #include "content/browser/media/session/media_session_impl.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/AudioFocusDelegate_jni.h"
@@ -35,7 +36,7 @@ void AudioFocusDelegateAndroid::Initialize() {
   JNIEnv* env = base::android::AttachCurrentThread();
   CHECK(env, base::NotFatalUntil::M160);
   j_media_session_delegate_.Reset(
-      Java_AudioFocusDelegate_create(env, reinterpret_cast<intptr_t>(this)));
+      Java_AudioFocusDelegate_create(env, jni_zero::MakeRaw(this)));
 }
 
 AudioFocusDelegate::AudioFocusResult
