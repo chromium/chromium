@@ -716,6 +716,7 @@ void FetchManager::Loader::DidReceiveResponse(
     uint64_t,
     const ResourceResponse& response) {
   received_response_headers_ = true;
+  response_http_status_code_ = response.HttpStatusCode();
 
   // Verify that we're dealing with the URL we expect (which could be an
   // HTTPS-upgraded variant of `url_list_.back()`.
@@ -736,11 +737,25 @@ void FetchManager::Loader::DidReceiveResponse(
            HasNonEmptyLocationValue(response) &&
            GetFetchRequestData()->Redirect() != RedirectMode::kManual));
 
+  // In "error" mode any redirect status is a network error. In "follow" mode
+  // an empty value makes the location URL the current URL, and following it
+  // could only loop until the redirect limit; fail now instead, as WebKit
+  // does.
+  // https://github.com/whatwg/fetch/issues/669
+  if (RuntimeEnabledFeatures::
+          FetchEmptyLocationRedirectIsNetworkErrorEnabled() &&
+      network_utils::IsRedirectResponseCode(response.HttpStatusCode()) &&
+      GetFetchRequestData()->Redirect() != RedirectMode::kManual &&
+      response.HttpHeaderFields().Contains(http_names::kLocation)) {
+    RecordFetchCompletion(net::ERR_INVALID_REDIRECT);
+    PerformNetworkError("Redirect response has an empty Location header.");
+    Dispose();
+    return;
+  }
+
   LogIfKeepalive("Succeeded");
 
   ScriptState::Scope scope(GetScriptState());
-
-  response_http_status_code_ = response.HttpStatusCode();
 
   if (response.MimeType() == "application/wasm" &&
       (response.CurrentRequestUrl().ProtocolIsInHttpFamily() ||

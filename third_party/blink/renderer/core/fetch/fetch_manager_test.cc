@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
@@ -660,11 +661,15 @@ class FetchManagerTest : public testing::Test {
   class EmptyLocationRedirectLoaderTestDelegate
       : public EmptyBodyLoaderTestDelegate {
    public:
-    // The response gets `location_headers` empty Location headers.
-    explicit EmptyLocationRedirectLoaderTestDelegate(
+    // `fetch_fails` is true when fetch() is expected to reject in
+    // DidReceiveResponse(), which cancels the load. The response gets
+    // `location_headers` empty Location headers.
+    EmptyLocationRedirectLoaderTestDelegate(
         test::TaskEnvironment& task_environment,
+        bool fetch_fails,
         int location_headers = 1)
         : EmptyBodyLoaderTestDelegate(task_environment),
+          fetch_fails_(fetch_fails),
           location_headers_(location_headers) {}
 
     void DidReceiveResponse(URLLoaderClient* original_client,
@@ -678,7 +683,23 @@ class FetchManagerTest : public testing::Test {
                                                       redirect_response);
     }
 
+    void DidFinishLoading(URLLoaderClient* original_client,
+                          base::TimeTicks finish_time,
+                          int64_t total_encoded_data_length,
+                          int64_t total_encoded_body_length,
+                          int64_t total_decoded_body_length) override {
+      // A cancelled load gets no DidFinishLoading() from the network, but the
+      // mock would still deliver it to the already cancelled ResourceLoader.
+      if (fetch_fails_) {
+        return;
+      }
+      EmptyBodyLoaderTestDelegate::DidFinishLoading(
+          original_client, finish_time, total_encoded_data_length,
+          total_encoded_body_length, total_decoded_body_length);
+    }
+
    private:
+    const bool fetch_fails_;
     const int location_headers_;
   };
 
@@ -818,6 +839,95 @@ TEST_F(FetchManagerTest, RecordsOkForManualRedirect) {
   Histogram().ExpectTotalCount(FetchManager::kAbortedReasonHistogramName, 0);
 }
 
+TEST_F(FetchManagerTest, EmptyLocationRedirectFailsInFollowMode) {
+  EmptyLocationRedirectLoaderTestDelegate delegate(task_environment(),
+                                                   /*fetch_fails=*/true);
+  URLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(&delegate);
+
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/empty-location");
+  WebURLResponse response(target);
+  response.SetHttpStatusCode(200);
+  URLLoaderMockFactory::GetSingletonInstance()->RegisterURL(
+      target, response, /*file_path=*/WebString());
+
+  StartFetch(scope, target, /*signal=*/nullptr,
+             V8RequestRedirect::Enum::kFollow);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  // The loader cancellation inside Dispose() must not also record
+  // net::ERR_ABORTED.
+  Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
+                                 -net::ERR_INVALID_REDIRECT, 1);
+  Histogram().ExpectUniqueSample(
+      FetchManager::kErrorCodesAfterResponseHeadersHistogramName,
+      -net::ERR_INVALID_REDIRECT, 1);
+  Histogram().ExpectTotalCount(FetchManager::kAbortedReasonHistogramName, 0);
+}
+
+TEST_F(FetchManagerTest, EmptyLocationRedirectFailsInErrorMode) {
+  EmptyLocationRedirectLoaderTestDelegate delegate(task_environment(),
+                                                   /*fetch_fails=*/true);
+  URLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(&delegate);
+
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/empty-location");
+  WebURLResponse response(target);
+  response.SetHttpStatusCode(200);
+  URLLoaderMockFactory::GetSingletonInstance()->RegisterURL(
+      target, response, /*file_path=*/WebString());
+
+  StartFetch(scope, target, /*signal=*/nullptr,
+             V8RequestRedirect::Enum::kError);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
+                                 -net::ERR_INVALID_REDIRECT, 1);
+  Histogram().ExpectTotalCount(FetchManager::kAbortedReasonHistogramName, 0);
+}
+
+TEST_F(FetchManagerTest, EmptyLocationRedirectSucceedsInManualMode) {
+  EmptyLocationRedirectLoaderTestDelegate delegate(task_environment(),
+                                                   /*fetch_fails=*/false);
+  URLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(&delegate);
+
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/empty-location");
+  WebURLResponse response(target);
+  response.SetHttpStatusCode(200);
+  URLLoaderMockFactory::GetSingletonInstance()->RegisterURL(
+      target, response, /*file_path=*/WebString());
+
+  StartFetch(scope, target, /*signal=*/nullptr,
+             V8RequestRedirect::Enum::kManual);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
+                                 -net::OK, 1);
+}
+
+// Two empty Location headers reach DidReceiveResponse() joined as ", ". The
+// check looks for the Location header, so fetch() still rejects.
+TEST_F(FetchManagerTest, TwoEmptyLocationHeadersRedirectFailsInFollowMode) {
+  EmptyLocationRedirectLoaderTestDelegate delegate(
+      task_environment(), /*fetch_fails=*/true, /*location_headers=*/2);
+  URLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(&delegate);
+
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/empty-location");
+  WebURLResponse response(target);
+  response.SetHttpStatusCode(200);
+  URLLoaderMockFactory::GetSingletonInstance()->RegisterURL(
+      target, response, /*file_path=*/WebString());
+
+  StartFetch(scope, target, /*signal=*/nullptr,
+             V8RequestRedirect::Enum::kFollow);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
+                                 -net::ERR_INVALID_REDIRECT, 1);
+}
+
 // Covers redirect responses that reach fetch() as the final response, in
 // "follow" and "error" modes. //net delivers a redirect response that way when
 // its Location values are all empty. It reports one with a non-empty Location
@@ -854,11 +964,13 @@ INSTANTIATE_TEST_SUITE_P(
                                                             : "Error";
     });
 
-// fetch() resolves with the redirect response. The response also exercises the
-// DCHECK on non-empty Location values in DidReceiveResponse(), which must not
-// fire.
+// With the empty-Location check disabled, fetch() resolves with the redirect
+// response. The response also exercises the DCHECK on non-empty Location
+// values in DidReceiveResponse(), which must not fire.
 TEST_P(FetchManagerFinalRedirectResponseTest, EmptyLocationResolves) {
-  EmptyLocationRedirectLoaderTestDelegate delegate(task_environment());
+  ScopedFetchEmptyLocationRedirectIsNetworkErrorForTest feature(false);
+  EmptyLocationRedirectLoaderTestDelegate delegate(task_environment(),
+                                                   /*fetch_fails=*/false);
   FetchRedirectAsFinalResponse(delegate);
 
   Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
@@ -868,8 +980,9 @@ TEST_P(FetchManagerFinalRedirectResponseTest, EmptyLocationResolves) {
 // The two empty Location headers reach DidReceiveResponse() joined as ", ",
 // which the DCHECK on non-empty Location values must still treat as empty.
 TEST_P(FetchManagerFinalRedirectResponseTest, TwoEmptyLocationHeadersResolve) {
-  EmptyLocationRedirectLoaderTestDelegate delegate(task_environment(),
-                                                   /*location_headers=*/2);
+  ScopedFetchEmptyLocationRedirectIsNetworkErrorForTest feature(false);
+  EmptyLocationRedirectLoaderTestDelegate delegate(
+      task_environment(), /*fetch_fails=*/false, /*location_headers=*/2);
   FetchRedirectAsFinalResponse(delegate);
 
   Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
@@ -931,6 +1044,46 @@ TEST_F(FetchManagerTest, RecordsCategoryUkmOnSuccess) {
   ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kNetErrorName, -net::OK);
   ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kHttpStatusCodeName,
                                  200);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kResponseReceivedName,
+                                 1);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsAbortSignalledName,
+                                 0);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsContextDetachedName,
+                                 0);
+}
+
+// The empty-Location check fails the fetch after the response headers arrive,
+// so the entry has the redirect response's status code.
+TEST_F(FetchManagerTest, RecordsCategoryUkmOnEmptyLocationRedirect) {
+  using UkmEntry = ukm::builders::FetchRequest_WithCategory;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFetchErrorCategoryLogging,
+      {{"category_param_name", "category"}, {"category_prefix", "test-"}});
+
+  EmptyLocationRedirectLoaderTestDelegate delegate(task_environment(),
+                                                   /*fetch_fails=*/true);
+  URLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(&delegate);
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  V8TestingScope scope(KURL("https://example.com/"));
+  const KURL target("https://example.com/empty-location?category=test-3");
+  WebURLResponse response(target);
+  response.SetHttpStatusCode(200);
+  URLLoaderMockFactory::GetSingletonInstance()->RegisterURL(
+      target, response, /*file_path=*/WebString());
+
+  StartFetch(scope, target, /*signal=*/nullptr,
+             V8RequestRedirect::Enum::kFollow);
+  url_test_helpers::ServeAsynchronousRequests();
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kCategoryName, 3);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kNetErrorName,
+                                 -net::ERR_INVALID_REDIRECT);
+  ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kHttpStatusCodeName,
+                                 302);
   ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kResponseReceivedName,
                                  1);
   ukm_recorder.ExpectEntryMetric(entries[0], UkmEntry::kIsAbortSignalledName,

@@ -3137,6 +3137,13 @@
       status: "stable",
     },
     {
+      // Makes fetch() fail with a network error when a redirect response has
+      // an empty Location header, in "follow" and "error" redirect modes.
+      // https://crbug.com/810288
+      name: "FetchEmptyLocationRedirectIsNetworkError",
+      status: "experimental",
+    },
+    {
       // The Blink runtime-enabled feature name for the API's IDL.
       // https://chromestatus.com/feature/4654499737632768
       name: "FetchLaterAPI",
