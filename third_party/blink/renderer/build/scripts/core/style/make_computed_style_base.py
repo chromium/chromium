@@ -82,6 +82,7 @@ ALIGNMENT_ORDER = [
     'std::optional<Length>',
     # Aligns like int (32 bits)
     'GridLanesDirection',
+    'LayoutUnit',
     'StyleAutoColor',
     'StyleCaretColor',
     'StyleColor',

@@ -2103,8 +2103,7 @@ class ComputedStyle final : public ComputedStyleBase {
     if (BorderCollapse() == EBorderCollapse::kCollapse) {
       return LogicalSize();
     }
-    return LogicalSize(LayoutUnit(HorizontalBorderSpacing()),
-                       LayoutUnit(VerticalBorderSpacing()));
+    return LogicalSize(HorizontalBorderSpacing(), VerticalBorderSpacing());
   }
 
   // Returns true if the computed style contains a 3D transform operation. This
