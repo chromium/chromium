@@ -14,6 +14,7 @@ class Profile;
 
 namespace apps {
 
+class AppRegistryCache;
 class AppUpdate;
 class PackageId;
 
@@ -32,6 +33,12 @@ std::optional<apps::PackageId> GetPackageIdForApp(
 
 std::optional<std::string> GetAppWithPackageId(
     Profile* profile,
+    const apps::PackageId& package_id);
+
+// Returns the ID of an installed app in `app_registry_cache` whose installer
+// package ID is `package_id`, or std::nullopt if there is none.
+std::optional<std::string> GetAppWithPackageId(
+    const apps::AppRegistryCache& app_registry_cache,
     const apps::PackageId& package_id);
 
 }  // namespace apps_util

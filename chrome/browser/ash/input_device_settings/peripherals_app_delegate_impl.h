@@ -23,6 +23,7 @@ class AlmanacAppIconLoader;
 struct QueryError;
 }  // namespace apps
 
+class AccountId;
 class GURL;
 class Profile;
 
@@ -39,7 +40,8 @@ class PeripheralsAppDelegateImpl : public PeripheralsAppDelegate {
   ~PeripheralsAppDelegateImpl() override;
 
   // PeripheralsAppDelegate:
-  void GetCompanionAppInfo(const std::string& device_key,
+  void GetCompanionAppInfo(const AccountId& account_id,
+                           const std::string& device_key,
                            GetCompanionAppInfoCallback callback) override;
 
   // Returns the GURL for the endpoint. Exposed for tests.
@@ -65,8 +67,8 @@ class PeripheralsAppDelegateImpl : public PeripheralsAppDelegate {
   // Returns:
   //   - A pointer to the active user profile.
   //   - If 'is_testing_' is true, returns 'profile_for_testing_'.
-  //   - Otherwise, delegates to ProfileManager to get the active profile.
-  Profile* GetActiveUserProfile();
+  //   - Otherwise, returns the profile for `account_id`.
+  Profile* GetActiveUserProfile(const AccountId& account_id);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<apps::AlmanacAppIconLoader> icon_loader_;

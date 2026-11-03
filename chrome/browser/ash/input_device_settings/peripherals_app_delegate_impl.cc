@@ -12,7 +12,8 @@
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/peripherals/proto/peripherals.pb.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/google_api_keys.h"
@@ -73,6 +74,7 @@ PeripheralsAppDelegateImpl::PeripheralsAppDelegateImpl() = default;
 PeripheralsAppDelegateImpl::~PeripheralsAppDelegateImpl() = default;
 
 void PeripheralsAppDelegateImpl::GetCompanionAppInfo(
+    const AccountId& account_id,
     const std::string& device_key,
     GetCompanionAppInfoCallback callback) {
   // Ensure that the build uses the Google-internal file containing the
@@ -84,7 +86,7 @@ void PeripheralsAppDelegateImpl::GetCompanionAppInfo(
     return;
   }
 
-  Profile* active_user_profile = GetActiveUserProfile();
+  Profile* active_user_profile = GetActiveUserProfile(account_id);
 
   apps::proto::PeripheralsGetRequest request;
   request.set_device(device_key);
@@ -161,12 +163,16 @@ void PeripheralsAppDelegateImpl::OnAppIconLoaded(
   std::move(callback).Run(info);
 }
 
-Profile* PeripheralsAppDelegateImpl::GetActiveUserProfile() {
+Profile* PeripheralsAppDelegateImpl::GetActiveUserProfile(
+    const AccountId& account_id) {
   if (is_testing_) {
     return profile_for_testing_;
   }
 
-  return ProfileManager::GetActiveUserProfile();
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
+  CHECK(profile);
+  return profile;
 }
 
 GURL PeripheralsAppDelegateImpl::GetServerUrl() {

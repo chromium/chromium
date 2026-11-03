@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/browser/web_ui.h"
@@ -46,7 +47,10 @@ class InputDeviceSettingsProvider
       public chromeos::PowerManagerClient::Observer,
       public ash::ShellObserver {
  public:
-  InputDeviceSettingsProvider();
+  // `app_service_proxy` launches companion apps and must outlive `this`.
+  // It may be null only in tests.
+  explicit InputDeviceSettingsProvider(
+      apps::AppServiceProxy* app_service_proxy);
   InputDeviceSettingsProvider(const InputDeviceSettingsProvider& other) =
       delete;
   InputDeviceSettingsProvider& operator=(
@@ -240,6 +244,8 @@ class InputDeviceSettingsProvider
   mojo::Remote<mojom::KeyboardAmbientLightSensorObserver>
       keyboard_ambient_light_sensor_observer_;
   mojo::RemoteSet<mojom::LidStateObserver> lid_state_observers_;
+
+  const raw_ptr<apps::AppServiceProxy> app_service_proxy_;
 
   raw_ptr<views::Widget> widget_ = nullptr;
 

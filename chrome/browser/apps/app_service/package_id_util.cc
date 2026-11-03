@@ -60,9 +60,14 @@ std::optional<std::string> GetAppWithPackageId(
   if (!proxy) {
     return std::nullopt;
   }
+  return GetAppWithPackageId(proxy->AppRegistryCache(), package_id);
+}
 
+std::optional<std::string> GetAppWithPackageId(
+    const apps::AppRegistryCache& app_registry_cache,
+    const apps::PackageId& package_id) {
   std::optional<std::string> app_id;
-  proxy->AppRegistryCache().ForEachApp(
+  app_registry_cache.ForEachApp(
       [&app_id, package_id](const apps::AppUpdate& update) {
         if (!app_id.has_value() && IsInstalled(update.Readiness()) &&
             update.InstallerPackageId() == package_id) {

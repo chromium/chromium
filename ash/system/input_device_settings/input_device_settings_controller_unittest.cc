@@ -161,6 +161,7 @@ class TestPeripheralsAppDelegate : public PeripheralsAppDelegate {
   void set_should_fail(bool should_fail) { should_fail_ = should_fail; }
 
   void GetCompanionAppInfo(
+      const AccountId& account_id,
       const std::string& device_key,
       base::OnceCallback<void(const std::optional<mojom::CompanionAppInfo>&)>
           callback) override {

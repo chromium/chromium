@@ -2823,7 +2823,7 @@ void InputDeviceSettingsControllerImpl::DispatchTouchpadCompanionAppInfoChanged(
 
 void InputDeviceSettingsControllerImpl::
     RefreshCompanionAppInfoForConnectedDevices() {
-  if (!delegate_ || !active_pref_service_) {
+  if (!delegate_ || !active_pref_service_ || !active_account_id_.has_value()) {
     return;
   }
   for (const auto& [id, mouse] : mice_) {
@@ -2831,7 +2831,7 @@ void InputDeviceSettingsControllerImpl::
       continue;
     }
     delegate_->GetCompanionAppInfo(
-        mouse->device_key,
+        active_account_id_.value(), mouse->device_key,
         base::BindOnce(
             &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
             weak_ptr_factory_.GetWeakPtr(), id, mouse->device_key));

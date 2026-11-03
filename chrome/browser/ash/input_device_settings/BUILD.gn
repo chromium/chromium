@@ -23,7 +23,8 @@ static_library("input_device_settings") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_install",
     "//chrome/browser/apps/peripherals/proto",
-    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/services/app_service/public/cpp:app_types",
     "//components/version_info",
     "//services/network/public/cpp",
@@ -42,6 +43,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/apps/almanac_api_client",
     "//chrome/test:test_support",
+    "//components/account_id",
     "//content/test:test_support",
     "//testing/gtest",
   ]

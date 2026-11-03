@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -66,7 +67,8 @@ IN_PROC_BROWSER_TEST_F(PeripheralsAppDelegateImplTest,
                                   response.SerializeAsString(), net::HTTP_OK);
   base::test::TestFuture<const std::optional<mojom::CompanionAppInfo>&>
       app_info;
-  delegate()->GetCompanionAppInfo(kTestDeviceKey, app_info.GetCallback());
+  delegate()->GetCompanionAppInfo(EmptyAccountId(), kTestDeviceKey,
+                                  app_info.GetCallback());
   const auto info = app_info.Get();
   EXPECT_EQ(kAppName, info->app_name);
   EXPECT_EQ(kTestPackageId, info->package_id);
@@ -79,7 +81,8 @@ IN_PROC_BROWSER_TEST_F(PeripheralsAppDelegateImplTest,
                                   response.SerializeAsString());
   base::test::TestFuture<const std::optional<mojom::CompanionAppInfo>&>
       app_info;
-  delegate()->GetCompanionAppInfo(kTestDeviceKey, app_info.GetCallback());
+  delegate()->GetCompanionAppInfo(EmptyAccountId(), kTestDeviceKey,
+                                  app_info.GetCallback());
   EXPECT_FALSE(app_info.Take().has_value());
 }
 

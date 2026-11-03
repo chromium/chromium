@@ -11,6 +11,8 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/functional/callback_forward.h"
 
+class AccountId;
+
 namespace ash {
 
 class PeripheralsAppDelegate {
@@ -20,6 +22,7 @@ class PeripheralsAppDelegate {
   PeripheralsAppDelegate& operator=(const PeripheralsAppDelegate&) = delete;
   virtual ~PeripheralsAppDelegate() = default;
   virtual void GetCompanionAppInfo(
+      const AccountId& account_id,
       const std::string& device_key,
       base::OnceCallback<void(const std::optional<mojom::CompanionAppInfo>&)>
           callback) = 0;

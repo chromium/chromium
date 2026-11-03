@@ -485,7 +485,8 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
     scoped_resetter_ = std::make_unique<
         InputDeviceSettingsController::ScopedResetterForTest>();
     controller_ = std::make_unique<FakeInputDeviceSettingsController>();
-    provider_ = std::make_unique<InputDeviceSettingsProvider>();
+    provider_ = std::make_unique<InputDeviceSettingsProvider>(
+        /*app_service_proxy=*/nullptr);
     provider_->SetWidgetForTesting(widget_.get());
     keyboard_brightness_control_delegate_ =
         std::make_unique<FakeKeyboardBrightnessControlDelegate>();

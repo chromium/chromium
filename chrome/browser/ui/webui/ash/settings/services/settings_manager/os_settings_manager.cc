@@ -78,7 +78,7 @@ OsSettingsManager::OsSettingsManager(
                                                        profile)),
       graduation_handler_(std::make_unique<GraduationHandler>(profile)),
       input_device_settings_provider_(
-          std::make_unique<InputDeviceSettingsProvider>()),
+          std::make_unique<InputDeviceSettingsProvider>(app_service_proxy)),
       display_settings_provider_(std::make_unique<DisplaySettingsProvider>()),
       shortcut_input_provider_(std::make_unique<ShortcutInputProvider>()),
       accelerator_fetcher_(std::make_unique<AcceleratorFetcher>()) {}

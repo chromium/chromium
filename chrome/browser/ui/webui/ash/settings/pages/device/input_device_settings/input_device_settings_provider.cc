@@ -15,12 +15,11 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
+#include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
@@ -184,7 +183,12 @@ void RecordKeyboardAmbientLightSensorDisabledCause(
 
 }  // namespace
 
-InputDeviceSettingsProvider::InputDeviceSettingsProvider() {
+InputDeviceSettingsProvider::InputDeviceSettingsProvider(
+    apps::AppServiceProxy* app_service_proxy)
+    : app_service_proxy_(app_service_proxy) {
+  if (!app_service_proxy_) {
+    CHECK_IS_TEST();
+  }
   if (Shell::HasInstance()) {
     shell_observation_.Observe(ash::Shell::Get());
   }
@@ -774,17 +778,16 @@ void InputDeviceSettingsProvider::GetDeviceIconImage(
 
 void InputDeviceSettingsProvider::LaunchCompanionApp(
     const std::string& package_id_str) {
-  auto* profile = ProfileManager::GetActiveUserProfile();
   auto package_id = apps::PackageId::FromString(package_id_str);
   CHECK(package_id.has_value());
-  auto app_id = apps_util::GetAppWithPackageId(&*profile, package_id.value());
+  CHECK(app_service_proxy_);
+  auto app_id = apps_util::GetAppWithPackageId(
+      app_service_proxy_->AppRegistryCache(), package_id.value());
   CHECK(app_id.has_value());
-  apps::AppServiceProxyFactory::GetForProfile(
-      ProfileManager::GetActiveUserProfile())
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          app_id.value(), apps::LaunchContainer::kLaunchContainerWindow,
-          ui::mojom::WindowOpenDisposition::kNewWindow,
-          apps::LaunchSource::kFromManagementApi));
+  app_service_proxy_->LaunchAppWithParams(apps::AppLaunchParams(
+      app_id.value(), apps::LaunchContainer::kLaunchContainerWindow,
+      ui::mojom::WindowOpenDisposition::kNewWindow,
+      apps::LaunchSource::kFromManagementApi));
 }
 
 void InputDeviceSettingsProvider::
