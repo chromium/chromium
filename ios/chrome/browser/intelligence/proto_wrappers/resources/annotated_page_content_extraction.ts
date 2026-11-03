@@ -1375,11 +1375,38 @@ function getComputedStyleForElement(
  * @return The viewport rectangle.
  */
 function getViewportRect(doc: Document): Rect {
-  // Using documentElement.clientWidth/Height instead of
-  // window.innerWidth/Height to exclude scrollbars, which is more consistent
-  // with how Blink calculates the viewport area.
+  // Using clientWidth/Height instead of window.innerWidth/Height to exclude
+  // scrollbars, which is more consistent with how Blink calculates the
+  // viewport area. In quirks mode ('BackCompat'), the layout viewport is the
+  // client size of `body` rather than `documentElement`, which is the whole
+  // `<html>` box.
+  const viewportElement = doc.compatMode === 'BackCompat' ?
+      (doc.body ?? doc.documentElement) :
+      doc.documentElement;
   return createRect(
-      0, 0, doc.documentElement.clientWidth, doc.documentElement.clientHeight);
+      0, 0, safeClientWidth(viewportElement),
+      safeClientHeight(viewportElement));
+}
+
+/**
+ * Returns the geometry of a node that stands for the viewport, like Blink's
+ * `LayoutView` root node.
+ *
+ * @param viewportBox The enclosing rect of the viewport.
+ * @return The geometry covering the viewport.
+ */
+function createViewportGeometry(viewportBox: Rect): PageContentGeometry {
+  // Blink's viewport style is always `position: absolute`, whatever the
+  // position of `body`.
+  const geometry: PageContentGeometry = {
+    outerBoundingBox: {...viewportBox},
+    cssPosition: PageContentCssPosition.ABSOLUTE,
+  };
+  // Like `addNodeGeometry()`, empty visible boxes are omitted.
+  if (viewportBox.width > 0 && viewportBox.height > 0) {
+    geometry.visibleBoundingBox = {...viewportBox};
+  }
+  return geometry;
 }
 
 /**
@@ -4120,6 +4147,10 @@ function computeZOrder(rootNode: PageContentNode, rootDoc: Document) {
       });
       nodeCounter++;
     }
+    if (node.contentAttributes.attributeType ===
+        PageContentAttributeType.IFRAME) {
+      return;
+    }
     for (const child of node.childrenNodes) {
       traverse(child);
     }
@@ -4186,6 +4217,12 @@ function computeZOrder(rootNode: PageContentNode, rootDoc: Document) {
 
   const sweepPoints: SweepPoint[] = [];
   for (const node of actionableNodes) {
+    // `ROOT` spans the full viewport and represents the background canvas
+    // (always Z-order 1 in Blink), so overlap checks against it are redundant.
+    if (node.apcNode.contentAttributes.attributeType ===
+        PageContentAttributeType.ROOT) {
+      continue;
+    }
     const box = node.visibleBox;
     sweepPoints.push({top: box.y, pointType: SWEEP_POINT_START, node});
     sweepPoints.push(
@@ -4272,7 +4309,13 @@ function computeZOrder(rootNode: PageContentNode, rootDoc: Document) {
   const graph = new Map<ActionableNode, Set<ActionableNode>>();
 
   for (const node of actionableNodes) {
-    domNodeIdToNode.set(node.domNodeId, node);
+    // Negative `z-index` elements paint behind `<body>`; without hit-testing
+    // `ROOT` against all nodes, ranking `ROOT` above a negative `z-index`
+    // element would raise `ROOT`'s score above unrelated non-overlapping nodes.
+    if (node.apcNode.contentAttributes.attributeType !==
+        PageContentAttributeType.ROOT) {
+      domNodeIdToNode.set(node.domNodeId, node);
+    }
     graph.set(node, new Set<ActionableNode>());
   }
 
@@ -4483,6 +4526,13 @@ export function extractAnnotatedPageContent(
 
   const viewportRect = getViewportRect(document);
 
+  // Start the viewport at (0, 0) as it represents the entire page surface which
+  // is the root surface. This deliberately extracts the layout viewport bounds,
+  // rather than accounting for visual viewport offsets (e.g., pinch-to-zoom),
+  // to maintain parity with Blink's ConvertViewportGeometry in
+  // components/optimization_guide/content/browser/page_content_proto_provider.cc.
+  const viewportGeometry = toEnclosingRect(viewportRect);
+
   // Stack to track the current ancestry chain. At this point it is known that
   // that there is at least a root node that is walkable.
   // We use this to find the correct parent for the current node without
@@ -4503,6 +4553,16 @@ export function extractAnnotatedPageContent(
         styleCache),
   }];
 
+  // Matching Blink's `LayoutView`, the root node of each frame should stand for
+  // that frame's viewport because consumers use the main frame root's visible
+  // box as the reference frame of the tab screenshot (e.g. server-side
+  // Set-of-Marks). `body` geometry still clips its descendants through the
+  // clipping context above.
+  if (actionableMode) {
+    rootNode.contentAttributes.geometry =
+        createViewportGeometry(viewportGeometry);
+  }
+
   // Collect interactive nodes (focused element, selection start/end).
   const interactiveNodeIds = getInteractiveNodeIds(document);
 
@@ -4513,13 +4573,6 @@ export function extractAnnotatedPageContent(
       extractPasswordScreenshotRedactions, styleCache);
 
   const pageInteractionInfo = extractPageInteractionInfo(document);
-
-  // Start the viewport at (0, 0) as it represents the entire page surface which
-  // is the root surface. This deliberately extracts the layout viewport bounds,
-  // rather than accounting for visual viewport offsets (e.g., pinch-to-zoom),
-  // to maintain parity with Blink's ConvertViewportGeometry in
-  // components/optimization_guide/content/browser/page_content_proto_provider.cc.
-  const viewportGeometry = toEnclosingRect(viewportRect);
 
   if (actionableMode) {
     computeZOrder(rootNode, document);

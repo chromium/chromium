@@ -2313,6 +2313,129 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
                interaction_info3->FindDouble("documentScopedZOrder"));
 }
 
+// Tests that `documentScopedZOrder` inside a same-origin iframe is computed
+// within the iframe's own document and is not overwritten by the parent
+// frame's z-order pass.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_ZOrder_SameOriginIframe) {
+  const std::string html = R"(
+    <html>
+      <body style="margin: 0; padding: 0;">
+        <button id="main_btn" style="width: 80px; height: 40px;">Main</button>
+        <iframe style="width: 200px; height: 200px; border: none;" srcdoc="
+          <html>
+            <body style='margin: 0; padding: 0;'>
+              <button id='iframe_top' style='position: absolute; top: 10px; left: 10px; width: 80px; height: 40px; z-index: 2;'>Top</button>
+              <button id='iframe_bottom' style='position: absolute; top: 10px; left: 10px; width: 80px; height: 40px; z-index: 1;'>Bottom</button>
+            </body>
+          </html>
+        "></iframe>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 2u);
+
+  const base::DictValue& main_btn = (*children)[0].GetDict();
+  EXPECT_EQ(main_btn.FindDoubleByDottedPath(
+                "contentAttributes.nodeInteractionInfo.documentScopedZOrder"),
+            1.0);
+
+  const base::DictValue& iframe_node = (*children)[1].GetDict();
+  const base::ListValue* iframe_children =
+      iframe_node.FindList("childrenNodes");
+  ASSERT_TRUE(iframe_children);
+  ASSERT_EQ(iframe_children->size(), 1u);
+
+  const base::DictValue& iframe_root = (*iframe_children)[0].GetDict();
+  const base::ListValue* iframe_body_children =
+      iframe_root.FindList("childrenNodes");
+  ASSERT_TRUE(iframe_body_children);
+  ASSERT_EQ(iframe_body_children->size(), 2u);
+
+  // `iframe_top` appears first in DOM order with `z-index: 2` over
+  // `iframe_bottom` (`z-index: 1`), so within the iframe document
+  // `iframe_bottom` gets Z-order 1 and `iframe_top` gets Z-order 2.
+  const base::DictValue& iframe_top = (*iframe_body_children)[0].GetDict();
+  const base::DictValue& iframe_bottom = (*iframe_body_children)[1].GetDict();
+  EXPECT_EQ(iframe_bottom.FindDoubleByDottedPath(
+                "contentAttributes.nodeInteractionInfo.documentScopedZOrder"),
+            1.0);
+  EXPECT_EQ(iframe_top.FindDoubleByDottedPath(
+                "contentAttributes.nodeInteractionInfo.documentScopedZOrder"),
+            2.0);
+}
+
+// Tests that an actionable `rootNode` (`ROOT`) stays at `documentScopedZOrder`
+// 1 even when a negative `z-index` descendant paints behind `<body>` and is
+// hit-tested against an overlapping element.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_ZOrder_ActionableRootNode) {
+  const std::string html = R"(
+    <html>
+      <body onclick="void(0);" style="margin: 0; padding: 0;">
+        <button id="standalone_btn" style="position: absolute; top: 10px; left: 10px; width: 80px; height: 40px;">Standalone</button>
+        <button id="overlay_btn" style="position: absolute; top: 100px; left: 10px; width: 80px; height: 40px; z-index: 2;">Overlay</button>
+        <button id="neg_btn" style="position: absolute; top: 100px; left: 10px; width: 80px; height: 40px; z-index: -1;">Negative</button>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  EXPECT_EQ(root_node->FindDoubleByDottedPath(
+                "contentAttributes.nodeInteractionInfo.documentScopedZOrder"),
+            1.0);
+
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 3u);
+
+  const base::DictValue& standalone_btn = (*children)[0].GetDict();
+  const base::DictValue& overlay_btn = (*children)[1].GetDict();
+  const base::DictValue& neg_btn = (*children)[2].GetDict();
+
+  EXPECT_EQ(standalone_btn.FindDoubleByDottedPath(
+                "contentAttributes.nodeInteractionInfo.documentScopedZOrder"),
+            2.0);
+  EXPECT_EQ(neg_btn.FindDoubleByDottedPath(
+                "contentAttributes.nodeInteractionInfo.documentScopedZOrder"),
+            3.0);
+  EXPECT_EQ(overlay_btn.FindDoubleByDottedPath(
+                "contentAttributes.nodeInteractionInfo.documentScopedZOrder"),
+            4.0);
+}
+
 TEST_F(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContext_FormDisabledWithPollution) {
   // A form element containing an input with name="disabled".
