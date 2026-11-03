@@ -28,13 +28,6 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/anim/iph_hovered_card_animation.xml",
-    "java/res/anim/iph_selected_card_animation.xml",
-    "java/res/anim/iph_selected_card_color_change_animation.xml",
-    "java/res/anim/iph_touch_point_alpha_animation.xml",
-    "java/res/anim/iph_touch_point_animation.xml",
-    "java/res/anim/iph_touch_point_background_alpha_animation.xml",
-    "java/res/anim/iph_touch_point_background_animation.xml",
     "java/res/color-night/tab_group_dialog_bg_color.xml",
     "java/res/color-night/tab_group_favicon_quater_empty_fill_color.xml",
     "java/res/color-night/tab_hover_card_bg_color.xml",
@@ -59,7 +52,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_rating_star_outline.xml",
     "java/res/drawable/ic_select_all_24dp.xml",
     "java/res/drawable/ic_ungroup_tabs_24dp.xml",
-    "java/res/drawable/iph_drag_and_drop_drawable.xml",
     "java/res/drawable/phone_tab_switcher_empty_state_illustration_static.xml",
     "java/res/drawable/pinned_tab_strip_item_background.xml",
     "java/res/drawable/price_card_background.xml",
@@ -168,6 +160,7 @@ android_resources("java_resources") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/features/tab_ui/public:ui_java_resources",
     "//chrome/browser/data_sharing:java_resources",
+    "//chrome/browser/tab_ui/android:java_resources",
   ]
 }
 

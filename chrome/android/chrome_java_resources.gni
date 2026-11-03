@@ -335,7 +335,6 @@ chrome_java_resources = [
   "java/res/drawable/ic_shoppingmode_24dp.xml",
   "java/res/drawable/ic_signout_40dp.xml",
   "java/res/drawable/ic_site_timer.xml",
-  "java/res/drawable/ic_spark_blue_16dp.xml",
   "java/res/drawable/ic_spark_blue_24dp.xml",
   "java/res/drawable/ic_spark_outlined_24dp.xml",
   "java/res/drawable/ic_stacked_email_24dp.xml",

@@ -89,8 +89,6 @@ found in the LICENSE file.
     <dimen name="password_manager_dialog_details_padding_bottom">8dp</dimen>
     <dimen name="password_manager_dialog_details_padding_top">12dp</dimen>
 
-    <!-- The size of the text for tab titles. -->
-    <dimen name="compositor_tab_title_text_size">13sp</dimen>
     <!-- The size of the bounding box for favicons. -->
     <dimen name="compositor_tab_title_favicon_size">16dp</dimen>
     <!-- The maximum width for tab titles. This must match the maximum tab strip

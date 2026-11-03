@@ -10,9 +10,6 @@ found in the LICENSE file.
     <dimen name="tab_title_favicon_start_padding">0dp</dimen>
     <dimen name="tab_title_favicon_end_padding">5dp</dimen>
 
-    <!-- The size of the text for tab titles. -->
-    <dimen name="compositor_tab_title_text_size">14sp</dimen>
-
     <!-- Full Screen Dimensions -->
     <dimen name="control_container_height">96dp</dimen>
 

@@ -25,4 +25,6 @@ found in the LICENSE file.
   <dimen name="tab_grid_empty_thumbnail_top_inset">40dp</dimen>
   <dimen name="tab_grid_empty_thumbnail_bottom_inset">8dp</dimen>
   <dimen name="tab_grid_card_thumbnail_margin">4dp</dimen>
+  <!-- The size of the text for tab titles. -->
+  <dimen name="compositor_tab_title_text_size">13sp</dimen>
 </resources>
