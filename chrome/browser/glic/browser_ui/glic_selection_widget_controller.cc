@@ -22,9 +22,9 @@
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
+#include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
-#include "chrome/browser/glic/selection/text_selection_context.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -110,7 +110,8 @@ void InvokeGlicFromSelectionAffordance(
   // conversation alone rather than pulling it into the side panel.
   options.target.live_mode_behavior = LiveModeBehavior::kFail;
   options.additional_context = AdditionalTabContext(
-      CreateTextSelectionContext(&web_contents, selected_text),
+      CreateTextSelectionContext(&web_contents, selected_text,
+                                 SelectionTextLength::kElided),
       content::GlobalRenderFrameHostId(), PolicyCheck::kNone);
   if (features::kGlicSelectionAutoSendPrompt.Get()) {
     std::string cta = features::kGlicSelectionPromptCta.Get();

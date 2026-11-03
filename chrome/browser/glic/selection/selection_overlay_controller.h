@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
 #include "chrome/browser/selection/feedback_zip_builder.h"
 #include "chrome/browser/selection/metrics_logger.h"
@@ -226,8 +227,6 @@ class SelectionOverlayController
   // The selected regions that fit in the redacted screenshot, in canvas
   // pixels, in the form the Glic web client takes. Needs the redacted
   // screenshot.
-  using CapturedRegions = std::vector<
-      std::pair<base::UnguessableToken, glic::mojom::CapturedRegionPtr>>;
   CapturedRegions GetCapturedRegions() const;
   // Sends the selected regions to the overlay WebUI and to the tab's Glic
   // instance. Nothing goes out until the redacted screenshot is here, and
@@ -289,8 +288,6 @@ class SelectionOverlayController
       bool complete,
       std::vector<std::unique_ptr<::selection::Suggestion>> suggestions,
       ::selection::FeedbackZipBuilder feedback_zip_builder);
-  glic::mojom::AdditionalContextPtr CreateAdditionalContext(
-      CapturedRegions regions);
 
   // Everything that belongs to one overlay session. Staged by the entry points
   // before the session starts, and replaced with a fresh one by `Reset()` when

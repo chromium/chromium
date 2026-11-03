@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 
-#include "base/containers/span.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/glic_enums.mojom.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,7 +18,6 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -75,21 +73,11 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
             : mojom::InvocationSource::kWebContentsContextMenuTextSelection);
 
     if (is_page_eligible) {
-      auto context = glic::mojom::AdditionalContext::New();
-      context->source = glic::mojom::AdditionalContextSource::kTextSelection;
-      context->tab_id = tab->GetHandle().raw_value();
-
-      auto data = glic::mojom::ContextData::New();
-      data->mime_type = kMimeTypeGlicSelection;
-
-      std::string utf8_text = base::UTF16ToUTF8(trimmed_selection);
-      data->data = mojo_base::BigBuffer(base::as_byte_span(utf8_text));
-
-      auto part = glic::mojom::AdditionalContextPart::NewData(std::move(data));
-      context->parts.push_back(std::move(part));
-
       options.additional_context = glic::AdditionalTabContext(
-          std::move(context), rfh_id, glic::PolicyCheck::kClipboard);
+          CreateTextSelectionContext(tab->GetContents(),
+                                     std::u16string(trimmed_selection),
+                                     SelectionTextLength::kFull),
+          rfh_id, glic::PolicyCheck::kClipboard);
       options.fre_override =
           features::kGlicTextSelectionContextMenuMessageFirstFre.Get()
               ? glic::mojom::FreOverride::kTrustFirstInline

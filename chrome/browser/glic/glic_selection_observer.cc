@@ -24,8 +24,8 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
+#include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/glic/selection/shake_trigger.h"
-#include "chrome/browser/glic/selection/text_selection_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -455,8 +455,8 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
     return;
   }
 
-  mojom::AdditionalContextPtr context =
-      CreateTextSelectionContext(web_contents(), selected_text);
+  mojom::AdditionalContextPtr context = CreateTextSelectionContext(
+      web_contents(), selected_text, SelectionTextLength::kElided);
 
   // Common case: the tab's instance already exists and is showing. This is a
   // background update of the panel's selection context, not a user asking to

@@ -17,8 +17,6 @@ class TabInterface;
 }
 namespace glic {
 
-inline constexpr char kMimeTypeGlicSelection[] = "application/x-glic-selection";
-
 // GlicContextMenuInvocationHelper is a utility class to handle Glic-related
 // actions triggered from the contextual menu.
 class GlicContextMenuInvocationHelper {

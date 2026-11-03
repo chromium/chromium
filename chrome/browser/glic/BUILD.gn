@@ -326,6 +326,25 @@ source_set("public_types") {
   ]
 }
 
+# Builds the selection contexts sent to glic. Not in ":selection", which is
+# desktop only.
+source_set("selection_context") {
+  sources = [
+    "selection/selection_context.cc",
+    "selection/selection_context.h",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+  ]
+  deps = [
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//mojo/public/cpp/base",
+    "//ui/gfx",
+  ]
+}
+
 # Definitions used broadly internal to glic, but shouldn't be used externally.
 source_set("private_types") {
   sources = [ "service/glic_ui_types.h" ]
@@ -556,6 +575,7 @@ source_set("impl") {
   deps = [
     ":glic",
     ":glic_metrics",
+    ":selection_context",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
@@ -912,6 +932,7 @@ source_set("unit_tests") {
     "public/glic_provider_change_unittest.cc",
     "public/glic_provider_latch_unittest.cc",
     "public/glic_provider_metrics_unittest.cc",
+    "selection/selection_context_unittest.cc",
     "service/glic_invoke_handler_unittest.cc",
     "service/glic_invoke_task_unittest.cc",
     "suggestions/caching_zero_state_suggestions_manager_unittest.cc",
@@ -920,6 +941,7 @@ source_set("unit_tests") {
     ":glic",
     ":glic_metrics",
     ":impl",
+    ":selection_context",
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/browser/actor:test_support",
@@ -1082,6 +1104,7 @@ source_set("browser_tests") {
     ":glic",
     ":glic_metrics",
     ":impl",
+    ":selection_context",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_features",
     "//chrome/browser/actor",

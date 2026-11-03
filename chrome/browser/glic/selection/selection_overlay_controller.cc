@@ -1436,8 +1436,7 @@ void SelectionOverlayController::Reset() {
   session_ = std::make_unique<Session>(this);
 }
 
-SelectionOverlayController::CapturedRegions
-SelectionOverlayController::GetCapturedRegions() const {
+CapturedRegions SelectionOverlayController::GetCapturedRegions() const {
   CHECK(!session_->redacted_screenshot.empty());
   CapturedRegions captured_regions;
   // TODO(http://b/452032491): Reconsider what happens if the regions overlap.
@@ -1558,8 +1557,8 @@ void SelectionOverlayController::SendRegionsToPanel(
   if (!instance) {
     return;
   }
-  instance->SendAdditionalContext(
-      CreateAdditionalContext(std::move(captured_regions)));
+  instance->SendAdditionalContext(CreateRegionSelectionContext(
+      *tab_, session_->tab_context.Clone(), std::move(captured_regions)));
   // If the event that triggered this was initiated via keyboard, do not
   // focus the panel to avoid stealing focus away from the selection pane.
   // Also, if line selection or the selection prompt box is enabled, keep
@@ -1571,26 +1570,6 @@ void SelectionOverlayController::SendRegionsToPanel(
   if (should_focus_panel && !line_selection_enabled && !prompt_box_enabled) {
     instance->FocusIfActive();
   }
-}
-
-glic::mojom::AdditionalContextPtr
-SelectionOverlayController::CreateAdditionalContext(CapturedRegions regions) {
-  auto context = glic::mojom::AdditionalContext::New();
-  std::vector<glic::mojom::AdditionalContextPartPtr> parts;
-  mojom::TabContextResultPtr tab_context = session_->tab_context.Clone();
-  parts.push_back(glic::mojom::AdditionalContextPart::NewTabContext(
-      std::move(tab_context)));
-  for (auto& region : regions) {
-    parts.push_back(glic::mojom::AdditionalContextPart::NewPendingRegion(
-        glic::mojom::PendingCapturedRegion::New(region.first,
-                                                region.second.Clone())));
-    parts.push_back(glic::mojom::AdditionalContextPart::NewRegion(
-        std::move(region.second)));
-  }
-  context->source = glic::mojom::AdditionalContextSource::kRegionSelection;
-  context->tab_id = tab_->GetHandle().raw_value();
-  context->parts = std::move(parts);
-  return context;
 }
 
 }  // namespace glic
