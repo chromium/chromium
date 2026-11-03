@@ -120,6 +120,11 @@ void ZoomViewController::UpdateBubbleVisibility(bool prefer_to_show_bubble,
       zoom::ZoomController::FromWebContents(GetWebContents());
   CHECK(zoom_controller);
 
+  if (from_user_gesture && GetBubbleCoordinator()->IsShowing()) {
+    GetBubbleCoordinator()->Hide();
+    return;
+  }
+
   auto* action_item = actions::ActionManager::Get().FindAction(
       kActionShowZoomBubble,
       BrowserActions::From(tab_interface_->GetBrowserWindowInterface())
