@@ -91,6 +91,12 @@ suite('HistoryFilterChipsTest', function() {
                                                    eventDetail = e.detail;
                                                  }) as EventListener);
 
+      actorFilterChip.dispatchEvent(new MouseEvent('mousedown'));
+      assertEquals(
+          'HistoryPage_OpenActorFilterSheet',
+          await browserService.whenCalled('recordAction'));
+      browserService.resetResolver('recordAction');
+
       // Select 'User' visits only.
       actorFilterChip.value = 'user';
       actorFilterChip.dispatchEvent(new Event('change'));
@@ -416,10 +422,19 @@ suite('HistoryFilterChipsTest', function() {
                                                    eventDetail = e.detail;
                                                  }) as EventListener);
 
+      deviceChip.dispatchEvent(new MouseEvent('mousedown'));
+      assertEquals(
+          'HistoryPage_OpenDeviceFilterSheet',
+          await browserService.whenCalled('recordAction'));
+      browserService.resetResolver('recordAction');
+
       // Select 'Device 1'.
       deviceChip.value = '0';
       deviceChip.dispatchEvent(new Event('change'));
+      const action1 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_DeviceFilterSelected', action1);
       await microtasksFinished();
+      browserService.resetResolver('recordAction');
 
       assertTrue(!!eventDetail);
       assertDeepEquals(['id1', 'id2'], eventDetail.clientIds);
@@ -433,6 +448,7 @@ suite('HistoryFilterChipsTest', function() {
       deviceChip.value = '-1';
       deviceChip.dispatchEvent(new Event('change'));
       await microtasksFinished();
+      assertEquals(0, browserService.getCallCount('recordAction'));
 
       assertTrue(!!eventDetail);
       assertDeepEquals([], eventDetail.clientIds);
@@ -445,6 +461,8 @@ suite('HistoryFilterChipsTest', function() {
       // Select 'Device 2'.
       deviceChip.value = '1';
       deviceChip.dispatchEvent(new Event('change'));
+      const action2 = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_DeviceFilterSelected', action2);
       await microtasksFinished();
 
       assertTrue(!!eventDetail);
@@ -513,6 +531,7 @@ suite('HistoryFilterChipsTest', function() {
     const clearAllButton =
         element.shadowRoot.querySelector<HTMLElement>('#clearAllButton');
     assertTrue(!!clearAllButton);
+    browserService.resetResolver('recordAction');
 
     let eventDetail: {
       userVisits: boolean,
@@ -524,7 +543,11 @@ suite('HistoryFilterChipsTest', function() {
                                                }) as EventListener);
 
     clearAllButton.click();
+    const action = await browserService.whenCalled('recordAction');
+    assertEquals('HistoryPage_ClearAllFilters', action);
     await microtasksFinished();
+    // Resetting filters should not record individual filter actions.
+    assertEquals(1, browserService.getCallCount('recordAction'));
 
     assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
     assertEquals('all', actorFilterChip.value);
