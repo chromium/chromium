@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -30,6 +31,7 @@ SchedulerConfigurationManager::SchedulerConfigurationManager(
     DebugDaemonClient* debug_daemon_client,
     PrefService* local_state)
     : debug_daemon_client_(debug_daemon_client) {
+#if defined(ARCH_CPU_X86_64)
   observer_.Init(local_state);
   observer_.Add(
       prefs::kSchedulerConfiguration,
@@ -38,6 +40,15 @@ SchedulerConfigurationManager::SchedulerConfigurationManager(
   debug_daemon_client_->WaitForServiceToBeAvailable(
       base::BindOnce(&SchedulerConfigurationManager::OnDebugDaemonReady,
                      weak_ptr_factory_.GetWeakPtr()));
+#else
+  // Hyper-Threading / SMT scheduler configuration via debugd is only supported
+  // on x86_64 (debugd always rejects non-x86_64 architectures with
+  // "Invalid architecture" and 0 disabled cores). Pre-populate the default
+  // reply and skip pref/D-Bus observation so callers never block on debugd
+  // availability and no spurious D-Bus IPCs or error logs are emitted.
+  (void)local_state;
+  last_reply_ = std::make_pair(false, 0u);
+#endif
 }
 
 SchedulerConfigurationManager::~SchedulerConfigurationManager() = default;

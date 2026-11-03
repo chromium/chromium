@@ -12,6 +12,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,6 +42,7 @@ class SchedulerConfigurationManagerTest
   size_t configuration_set_count_ = 0;
 };
 
+#if defined(ARCH_CPU_X86_64)
 TEST_F(SchedulerConfigurationManagerTest, Startup) {
   local_state_.SetString(prefs::kSchedulerConfiguration, "initial");
   debug_daemon_client_.SetServiceIsAvailable(false);
@@ -164,5 +166,26 @@ TEST_F(SchedulerConfigurationManagerTest, FinchDefault) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ("config", debug_daemon_client_.scheduler_configuration_name());
 }
+
+#else
+TEST_F(SchedulerConfigurationManagerTest, UnsupportedArchitectureSkipsDebugd) {
+  local_state_.SetString(prefs::kSchedulerConfiguration, "initial");
+  debug_daemon_client_.SetServiceIsAvailable(false);
+
+  SchedulerConfigurationManager manager(&debug_daemon_client_, &local_state_);
+  manager.AddObserver(this);
+
+  ASSERT_TRUE(manager.GetLastReply().has_value());
+  EXPECT_FALSE(manager.GetLastReply()->first);
+  EXPECT_EQ(0u, manager.GetLastReply()->second);
+
+  debug_daemon_client_.SetServiceIsAvailable(true);
+  local_state_.SetString(prefs::kSchedulerConfiguration, "config");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ("", debug_daemon_client_.scheduler_configuration_name());
+  EXPECT_EQ(0u, configuration_set_count_);
+}
+#endif  // defined(ARCH_CPU_X86_64)
 
 }  // namespace ash
