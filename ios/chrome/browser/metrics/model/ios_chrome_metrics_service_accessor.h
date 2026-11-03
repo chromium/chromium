@@ -48,6 +48,10 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   // reset to null here.
   static void SetMetricsAndCrashReportingForTesting(const bool* value);
 
+  // Sets whether `IsMetricsReportingEnabled()` checks the
+  // `kMetricsReportingEnabled` local state pref on non-branded builds.
+  static void SetForceIsMetricsReportingEnabledPrefLookupForTesting(bool value);
+
  private:
   friend class IOSChromeMetricsServicesManagerClient;
   friend class ApplicationBreadcrumbsLogger;

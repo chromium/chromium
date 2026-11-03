@@ -39,6 +39,14 @@ constexpr base::TimeDelta kSyncDWAOperationsTimeout = base::Seconds(60);
 // `enabled`. Returns whether metrics were previously enabled.
 + (BOOL)setMetricsAndCrashReportingForTesting:(BOOL)enabled;
 
+// Sets whether `IsMetricsReportingEnabled()` checks the
+// `kMetricsReportingEnabled` local state pref on non-branded builds according
+// to `enabled`.
++ (void)setForceIsMetricsReportingEnabledPrefLookup:(BOOL)enabled;
+
+// Updates upload permissions on `MetricsServicesManager`.
++ (void)updateUploadPermissions;
+
 // Returns YES if the ReportUserNoisedUserBirthYearAndGender feature is enabled.
 + (BOOL)isReportUserNoisedUserBirthYearAndGenderEnabled [[nodiscard]];
 

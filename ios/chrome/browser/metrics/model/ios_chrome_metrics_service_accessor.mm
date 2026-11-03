@@ -26,6 +26,12 @@ void IOSChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
 }
 
 // static
+void IOSChromeMetricsServiceAccessor::
+    SetForceIsMetricsReportingEnabledPrefLookupForTesting(bool value) {
+  SetForceIsMetricsReportingEnabledPrefLookup(value);
+}
+
+// static
 bool IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() {
   if (g_metrics_consent_for_testing) {
     return *g_metrics_consent_for_testing;

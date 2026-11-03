@@ -81,6 +81,17 @@ metrics::MetricsService* GetMetricsService() {
   return previousValue;
 }
 
++ (void)setForceIsMetricsReportingEnabledPrefLookup:(BOOL)enabled {
+  IOSChromeMetricsServiceAccessor::
+      SetForceIsMetricsReportingEnabledPrefLookupForTesting(enabled);
+}
+
++ (void)updateUploadPermissions {
+  GetApplicationContext()
+      ->GetMetricsServicesManager()
+      ->UpdateUploadPermissions();
+}
+
 + (BOOL)checkUKMRecordingEnabled:(BOOL)enabled {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
 

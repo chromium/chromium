@@ -5,9 +5,12 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/metrics/metrics_features.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -485,6 +488,80 @@ using chrome_test_util::SettingsDoneButton;
   // the advanced reporting pref and remain ENABLED (since MSBB is enabled).
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"UKM should still be enabled under old logic.");
+}
+
+// Tests that UKM recording is controlled by the
+// UrlKeyedAnonymizedDataCollectionEnabled policy.
+- (void)testUrlKeyedAnonymizedDataCollectionPolicy {
+  policy_test_utils::SetPolicy(
+      false, policy::key::kUrlKeyedAnonymizedDataCollectionEnabled);
+  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"Failed to assert that UKM was disabled by policy.");
+
+  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:NO];
+  policy_test_utils::SetPolicy(
+      true, policy::key::kUrlKeyedAnonymizedDataCollectionEnabled);
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"Failed to assert that UKM was enabled by policy.");
+
+  policy_test_utils::ClearPolicies();
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"Failed to assert that UKM returned to the user pref.");
+
+  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"Failed to assert that UKM was re-enabled.");
+}
+
+// Tests that UKM recording is disabled when the UrlKeyedMetricsAllowed policy
+// is set to false.
+- (void)testUrlKeyedMetricsAllowedPolicy {
+  policy_test_utils::SetPolicy(false, policy::key::kUrlKeyedMetricsAllowed);
+  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"Failed to assert that UKM was disabled by policy.");
+
+  policy_test_utils::SetPolicy(true, policy::key::kUrlKeyedMetricsAllowed);
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"Failed to assert that UKM was re-enabled.");
+
+  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:NO];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"Failed to assert that UKM could be disabled by user pref.");
+
+  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
+  policy_test_utils::ClearPolicies();
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"Failed to assert that UKM remained enabled.");
+}
+
+// Tests that UKM recording is disabled when the MetricsReportingEnabled policy
+// is set to false.
+- (void)testMetricsReportingPolicy {
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  [MetricsAppInterface setForceIsMetricsReportingEnabledPrefLookup:YES];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:metrics::prefs::kMetricsReportingEnabled];
+  [MetricsAppInterface updateUploadPermissions];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"Failed to assert that UKM was enabled.");
+
+  policy_test_utils::SetPolicy(false, policy::key::kMetricsReportingEnabled);
+  [MetricsAppInterface updateUploadPermissions];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"Failed to assert that UKM was disabled by policy.");
+
+  policy_test_utils::ClearPolicies();
+  [MetricsAppInterface updateUploadPermissions];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"Failed to assert that UKM was re-enabled.");
+
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:metrics::prefs::kMetricsReportingEnabled];
+  [MetricsAppInterface setForceIsMetricsReportingEnabledPrefLookup:NO];
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+  [MetricsAppInterface updateUploadPermissions];
 }
 
 @end
