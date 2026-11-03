@@ -95,6 +95,11 @@
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace metrics {
 namespace {
 
@@ -1593,6 +1598,7 @@ IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest,
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
   EXPECT_FALSE(profile_prefs->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  EXPECT_FALSE(GetUkmService()->recording_enabled(ukm::MSBB));
 #if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
 #else
@@ -1605,18 +1611,18 @@ IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest,
   consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
   EXPECT_FALSE(profile_prefs->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
-#if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(GetUkmService()->recording_enabled(ukm::MSBB));
 
   // Force-enable it via policy.
   SetBooleanPolicy(policy::key::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   EXPECT_TRUE(profile_prefs->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  EXPECT_TRUE(GetUkmService()->recording_enabled(ukm::MSBB));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
   // The user cannot disable it while the policy is set.
   consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(false);
+  EXPECT_TRUE(GetUkmService()->recording_enabled(ukm::MSBB));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
   ClosePlatformBrowser(browser);
@@ -1656,6 +1662,42 @@ IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest, MetricsReportingPolicy) {
   // Clearing the policy restores the user's choice.
   SetBooleanPolicy(policy::key::kMetricsReportingEnabled, std::nullopt);
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
+  EXPECT_TRUE(IsMetricsAndCrashReportingEnabled());
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+
+  ClosePlatformBrowser(browser);
+}
+#else
+// Verifies that disabling metrics reporting via the ChromeOS device policy
+// (ash::kStatsReportingPref, mapped from DeviceMetricsReportingEnabled)
+// disables UKM.
+IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest, DeviceMetricsReportingPolicy) {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  ash::ScopedCrosSettingsTestHelper cros_settings_helper(
+      /*create_settings_service=*/false);
+  cros_settings_helper.ReplaceDeviceSettingsProviderWithStub();
+  // Toggle the stub setting so CrosSettings fires observers and synchronizes
+  // StatsReportingController (which starts disabled on unbranded builds).
+  cros_settings_helper.SetBoolean(ash::kStatsReportingPref, false);
+  cros_settings_helper.SetBoolean(ash::kStatsReportingPref, true);
+  content::RunAllTasksUntilIdle();
+
+  Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
+  std::unique_ptr<SyncServiceImplHarness> harness =
+      EnableSyncForProfile(profile);
+  PlatformBrowser browser = CreatePlatformBrowser(profile);
+  ASSERT_TRUE(IsMetricsAndCrashReportingEnabled());
+  ASSERT_TRUE(ukm_test_helper.IsRecordingEnabled());
+
+  // Disabling the device metrics reporting policy disables UKM.
+  cros_settings_helper.SetBoolean(ash::kStatsReportingPref, false);
+  content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(IsMetricsAndCrashReportingEnabled());
+  EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
+
+  // Re-enabling the device policy restores UKM recording.
+  cros_settings_helper.SetBoolean(ash::kStatsReportingPref, true);
+  content::RunAllTasksUntilIdle();
   EXPECT_TRUE(IsMetricsAndCrashReportingEnabled());
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 

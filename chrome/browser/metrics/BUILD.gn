@@ -866,7 +866,9 @@ if (!is_android) {
         "//chrome/browser/ash/ownership",
         "//chrome/browser/ash/policy/core:test_support",
         "//chrome/browser/ash/policy/test_support",
+        "//chrome/browser/ash/settings:test_support",
         "//chromeos/ash/components/policy/device_policy:test_support",
+        "//chromeos/ash/components/settings",
       ]
     }
 
