@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/nix/xdg_util.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -438,4 +439,34 @@ TEST_F(SessionEndListenerLinuxTest, InhibitPortalFeatureDisabled) {
       mock_system_bus_, mock_session_bus_, base::DoNothing());
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(listener->has_inhibit_session_monitor_for_testing());
+}
+
+TEST_F(SessionEndListenerLinuxTest, LogindNotUsedInSnap) {
+  base::nix::ScopedAppSandboxOverrideForTesting snap(
+      base::nix::AppSandbox::kSnap);
+  SetUpGnomeSignal(true);
+  SetUpInhibitPortal();
+
+  // Snap's AppArmor policy denies all access to logind, so neither the
+  // PrepareForShutdown signal nor the Inhibit method should be used.
+  EXPECT_CALL(*mock_system_bus_,
+              GetObjectProxy(StrEq(kLogindServiceName),
+                             dbus::ObjectPath(kLogindObjectPath)))
+      .Times(0);
+  EXPECT_CALL(*mock_logind_proxy_, ConnectToSignal(_, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_logind_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .Times(0);
+
+  base::test::TestFuture<void> session_ended;
+  auto listener = std::make_unique<SessionEndListenerLinux>(
+      mock_system_bus_, mock_session_bus_, session_ended.GetCallback());
+
+  // The Inhibit portal still reports the end of the session.
+  EXPECT_TRUE(listener->has_inhibit_session_monitor_for_testing());
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return monitor_session_path_.IsValid(); }));
+  EmitInhibitSessionState(
+      dbus_xdg::InhibitSessionMonitor::SessionState::kEnding);
+  EXPECT_TRUE(session_ended.Wait());
+  EXPECT_FALSE(listener->has_inhibitor_for_testing());
 }

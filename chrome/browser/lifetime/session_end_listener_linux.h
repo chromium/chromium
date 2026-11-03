@@ -34,7 +34,7 @@ BASE_DECLARE_FEATURE(kLinuxInhibitPortalSessionMonitor);
 // 1. On systemd-logind (system bus), requests a "delay" shutdown inhibitor and
 //    listens for the PrepareForShutdown signal to trigger
 //    chrome::SessionEnding() and flush state before the system powers off or
-//    reboots.
+//    reboots. Not used in a snap, where AppArmor denies access to logind.
 // 2. On GNOME SessionManager (session bus), listens for the SessionOver signal
 //    as a passive notification for desktop session end.
 // 3. On the org.freedesktop.portal.Inhibit portal (session bus), creates a
@@ -72,6 +72,10 @@ class SessionEndListenerLinux {
   static const char kGnomeSessionManagerObjectPath[];
   static const char kGnomeSessionManagerInterface[];
   static const char kSessionOverSignal[];
+
+  // Returns the systemd-logind proxy on `system_bus`, or null if logind should
+  // not be used.
+  static dbus::ObjectProxy* GetLogindProxy(dbus::Bus* system_bus);
 
   void ConnectToLogind();
   void OnPrepareForShutdownConnected(const std::string& interface_name,
