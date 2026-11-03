@@ -18,7 +18,7 @@
 namespace optimization_guide {
 
 // A ScopedFeatureList initialized with reasonable defaults for testing
-// ModelBroker related features.
+// ModelBroker related features. Must be declared before TaskEnvironment.
 class ScopedModelBrokerFeatureList {
  public:
   ScopedModelBrokerFeatureList();
@@ -71,7 +71,6 @@ class FakeManifestBroker {
   on_device_model::FakeServiceLauncher& launcher() { return launcher_; }
 
  private:
-  ScopedModelBrokerFeatureList scoped_feature_list_;
   ModelBrokerPrefService local_state_;
   TestManifestAssetManagerComponentState component_state_;
   on_device_model::FakeOnDeviceServiceSettings settings_;

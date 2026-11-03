@@ -72,15 +72,17 @@ void OverrideManifestAssetManagerDelegate::RegisterOnDemandComponent(
     base::WeakPtr<AssetManager> manager) {
   std::string key = public_key_hex + ":" + target_version;
   auto it = component_overrides_.find(key);
-  if (it != component_overrides_.end()) {
+  bool is_already_installed = it != component_overrides_.end();
+  if (is_already_installed) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&AssetManager::OnAssetReady, manager, public_key_hex,
                        base::Version(target_version), it->second));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AssetManager::InstallerRegistered, manager,
-                                  public_key_hex, target_version, true));
   }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AssetManager::InstallerRegistered, manager,
+                     public_key_hex, target_version, is_already_installed));
 }
 
 void OverrideManifestAssetManagerDelegate::Uninstall(

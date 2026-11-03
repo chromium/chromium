@@ -120,6 +120,7 @@ TEST(ModelBrokerClientTest,
 // Verify that when requesting a session while assets are still pending, the
 // client will wait for the assets before resolving the callback.
 TEST(ModelBrokerClientTest, PendingClient) {
+  ScopedModelBrokerFeatureList scoped_feature_list;
   base::test::TaskEnvironment task_environment_;
   OptimizationGuideLogger logger;
   FakeManifestBroker broker;
@@ -150,6 +151,7 @@ TEST(ModelBrokerClientTest, PendingClient) {
 
 // Verify that CreateSession works when all the assets are provided.
 TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
+  ScopedModelBrokerFeatureList scoped_feature_list;
   base::test::TaskEnvironment task_environment_;
   OptimizationGuideLogger logger;
   FakeManifestBroker broker;
@@ -170,6 +172,7 @@ TEST(ModelBrokerClientTest, ReadyWithSetupClient) {
 // Verify that CreateSession works when all the assets are provided using a
 // custom use case string.
 TEST(ModelBrokerClientTest, ReadyWithUseCaseClient) {
+  ScopedModelBrokerFeatureList scoped_feature_list;
   base::test::TaskEnvironment task_environment_;
   OptimizationGuideLogger logger;
   FakeManifestBroker broker;
@@ -187,6 +190,7 @@ TEST(ModelBrokerClientTest, ReadyWithUseCaseClient) {
 }
 
 TEST(ModelBrokerClientTest, GetConfigNulloptWhenNotSet) {
+  ScopedModelBrokerFeatureList scoped_feature_list;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeManifestBroker broker;
@@ -205,6 +209,7 @@ TEST(ModelBrokerClientTest, GetConfigNulloptWhenNotSet) {
 // Attempts to create a Session for such features should fully resolve as
 // unavailable.
 TEST(ModelBrokerClientTest, UnavailableAdaptationRejectsSession) {
+  ScopedModelBrokerFeatureList scoped_feature_list;
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeManifestBroker broker;

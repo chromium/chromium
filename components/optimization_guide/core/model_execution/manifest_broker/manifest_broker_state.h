@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/optimization_guide/core/model_execution/broker_init.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
@@ -87,13 +88,12 @@ class ManifestBrokerState final : public OnDeviceCapability,
 
  private:
   // Ensure any delayed initialization tasks are complete, then call `callback`.
-  void EnsureInitialization(ModelBrokerImpl::InitCallback callback);
-  // Called the first time EnsureInitialization is called.
-  void StartInitialization();
+  void EnsureInitialization(BrokerInit::TaskCallback callback);
   // Called by ManifestMonitor whenever the Manifest is updated.
   void OnManifestUpdated();
-  // Fires all stored callbacks.
-  void OnInitComplete();
+  // Called whenever a ManifestSolutionFactory finishes loading its initial
+  // asset states and solution configs.
+  void OnSolutionFactoryInit();
 
   on_device_model::Capabilities GetPossibleOnDeviceCapabilities() const;
 
@@ -123,7 +123,7 @@ class ManifestBrokerState final : public OnDeviceCapability,
   OnDeviceModelAccessController access_controller_{*local_state_};
   ModelBrokerImpl model_broker_impl_;
   PerformanceClassifier performance_classifier_;
-  std::vector<ModelBrokerImpl::InitCallback> init_callbacks_;
+  BrokerInit broker_init_;
   ManifestMonitor manifest_monitor_;
   ManifestValidator manifest_validator_;
   std::unique_ptr<ManifestAssetManager> asset_manager_;

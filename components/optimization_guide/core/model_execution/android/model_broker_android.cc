@@ -621,14 +621,7 @@ ModelBrokerAndroid::GetOrCreateModelRemote(AICoreFeature feature) {
 }
 
 void ModelBrokerAndroid::EnsureSolutionFactory(
-    ModelBrokerImpl::InitCallback init_callback) {
-  if (status_check_complete_) {
-    std::move(init_callback).Run(AICoreModelCapabilities());
-    return;
-  }
-
-  pending_init_callbacks_.push_back(std::move(init_callback));
-
+    BrokerInit::TaskCallback done_callback) {
   // Preserve a component snapshot received before first use. Initialize the
   // fallback before the factory constructor can request solutions.
   if (!manifest_) {
@@ -641,16 +634,11 @@ void ModelBrokerAndroid::EnsureSolutionFactory(
         base::BindOnce(&ModelBrokerAndroid::OnStatusCheckComplete,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+  broker_init_.QueueTask(std::move(done_callback));
 }
 
 void ModelBrokerAndroid::OnStatusCheckComplete() {
-  status_check_complete_ = true;
-  std::vector<ModelBrokerImpl::InitCallback> callbacks =
-      std::move(pending_init_callbacks_);
-  pending_init_callbacks_.clear();
-  for (auto& callback : callbacks) {
-    std::move(callback).Run(AICoreModelCapabilities());
-  }
+  broker_init_.Complete(AICoreModelCapabilities());
 }
 
 void ModelBrokerAndroid::OnModelDisconnected(

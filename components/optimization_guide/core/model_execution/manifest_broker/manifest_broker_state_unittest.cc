@@ -46,6 +46,7 @@ class ManifestBrokerStateTest : public testing::Test {
   ManifestBrokerStateTest() {}
 
  protected:
+  ScopedModelBrokerFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeManifestBroker fake_;
@@ -510,6 +511,111 @@ TEST_F(ManifestBrokerStateTest, EnsureInitializationBypassesBestEffortFence) {
                                SessionConfigParams{},
                                session_future.GetCallback());
   EXPECT_TRUE(session_future.Take());
+}
+
+TEST_F(ManifestBrokerStateTest,
+       CanCreateSessionAfterManifestLoadedWaitsForInitComplete) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  ASSERT_TRUE(fake_.WarmupPrefsAndAssets());
+  fake_.component_state().SetDeferRegistrationCallbacks(true);
+  fake_.Startup();
+
+  // Wait until the manifest has loaded and `ManifestAssetManager` has started
+  // registering `model_A_key`, while `ManifestSolutionFactory` initialization
+  // is still waiting on that registration.
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"model_A_key", base::Version("1.0.0.0")}));
+
+  base::test::TestFuture<std::optional<mojom::ModelUnavailableReason>,
+                         std::optional<mojom::ModelNotSupportedDetailedReason>>
+      can_create_future;
+  fake_.client()
+      .GetSubscriber(mojom::OnDeviceFeature::kTest)
+      .CanCreateSession({}, can_create_future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(can_create_future.IsReady());
+
+  fake_.component_state().RunPendingRegistrations();
+  EXPECT_EQ(can_create_future.Get<0>(), std::nullopt);
+}
+
+TEST_F(ManifestBrokerStateTest, ManifestUpdatedBeforeInitCompletes) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  ASSERT_TRUE(fake_.WarmupPrefsAndAssets());
+  fake_.component_state().SetDeferRegistrationCallbacks(true);
+  fake_.Startup();
+
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"model_A_key", base::Version("1.0.0.0")}));
+
+  base::test::TestFuture<std::optional<mojom::ModelUnavailableReason>,
+                         std::optional<mojom::ModelNotSupportedDetailedReason>>
+      can_create_future;
+  fake_.client()
+      .GetSubscriber(mojom::OnDeviceFeature::kTest)
+      .CanCreateSession({}, can_create_future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(can_create_future.IsReady());
+
+  // Replace the manifest with an uninstall manifest before the first
+  // `ManifestSolutionFactory` finishes initializing.
+  fake_.local_state().SetBoolean(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
+      false);
+  EXPECT_EQ(can_create_future.Get<0>(),
+            mojom::ModelUnavailableReason::kNotSupported);
+
+  // Letting pending registrations complete and re-enabling the user setting
+  // triggers another manifest update after init is already complete; subsequent
+  // `BrokerInit::Complete()` calls update capabilities cleanly and the
+  // subscriber reflects the reloaded manifest (`kPendingAssets` since the
+  // opt-out uninstalled the model).
+  fake_.component_state().SetDeferRegistrationCallbacks(false);
+  fake_.component_state().RunPendingRegistrations();
+  fake_.local_state().SetBoolean(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled, true);
+  task_environment_.RunUntilIdle();
+
+  base::test::TestFuture<std::optional<mojom::ModelUnavailableReason>,
+                         std::optional<mojom::ModelNotSupportedDetailedReason>>
+      reenabled_future;
+  fake_.client()
+      .GetSubscriber(mojom::OnDeviceFeature::kTest)
+      .CanCreateSession({}, reenabled_future.GetCallback());
+  EXPECT_EQ(reenabled_future.Get<0>(),
+            mojom::ModelUnavailableReason::kPendingAssets);
+}
+
+TEST_F(ManifestBrokerStateTest,
+       CapabilitiesUpdatedWhenEnabledAfterDisallowedStartup) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  fake_.local_state().SetBoolean(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
+      false);
+  fake_.Startup();
+
+  // Startup with `kOnDeviceAiUserSettingsEnabled` disabled runs
+  // `UseUninstallManifest()` before `PerformanceClassifier` finishes, calling
+  // `BrokerInit::Complete({})`.
+  task_environment_.RunUntilIdle();
+
+  // Enable on-device AI and allow `PerformanceClassifier` and manifest loading
+  // to complete in the same session.
+  fake_.state().performance_classifier().EnsurePerformanceClassAvailable(
+      base::DoNothing());
+  fake_.local_state().SetBoolean(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled, true);
+  task_environment_.RunUntilIdle();
+
+  ModelBrokerClient& client = fake_.client();
+  base::test::TestFuture<std::optional<mojom::ModelUnavailableReason>,
+                         std::optional<mojom::ModelNotSupportedDetailedReason>>
+      can_create_future;
+  client.GetSubscriber(mojom::OnDeviceFeature::kTest)
+      .CanCreateSession({on_device_model::CapabilityFlags::kImageInput},
+                        can_create_future.GetCallback());
+  EXPECT_EQ(can_create_future.Get<0>(),
+            mojom::ModelUnavailableReason::kPendingUsage);
 }
 
 }  // namespace optimization_guide

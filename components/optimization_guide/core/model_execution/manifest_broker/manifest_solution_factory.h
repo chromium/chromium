@@ -138,6 +138,10 @@ class ManifestSolutionFactory {
  private:
   class Solution;
 
+  // Finishes handling an asset state update and notifies `on_asset_init_` if
+  // this was the asset's initial state transition.
+  void OnAssetStateUpdated(bool is_initial_state);
+
   // Unloads models and resets state associated with the given asset.
   void UnloadAsset(const std::string& asset_id);
 

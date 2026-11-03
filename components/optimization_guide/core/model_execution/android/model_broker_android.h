@@ -12,6 +12,7 @@
 #include "base/token.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/android/android_manifest.h"
+#include "components/optimization_guide/core/model_execution/broker_init.h"
 #include "components/optimization_guide/core/model_execution/model_broker_impl.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
@@ -95,7 +96,7 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
   };
 
   // Initialize SolutionFactory, if not already initialized.
-  void EnsureSolutionFactory(ModelBrokerImpl::InitCallback done_callback);
+  void EnsureSolutionFactory(BrokerInit::TaskCallback done_callback);
 
   // Called when CheckModelStatus completes. Fires all pending init callbacks.
   void OnStatusCheckComplete();
@@ -134,11 +135,7 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
 
   mojo::ReceiverSet<ModelBrokerDebug> receivers_;
 
-  // Callbacks queued while initialization is in flight.
-  std::vector<ModelBrokerImpl::InitCallback> pending_init_callbacks_;
-
-  // Whether the status checks have completed.
-  bool status_check_complete_ = false;
+  BrokerInit broker_init_;
 
   // Observers for download progress updates.
   mojo::RemoteSet<on_device_model::mojom::DownloadObserver> download_observers_;

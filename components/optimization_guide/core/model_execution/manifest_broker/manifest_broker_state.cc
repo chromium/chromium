@@ -6,6 +6,8 @@
 
 #include <cstddef>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/containers/extend.h"
@@ -195,16 +197,11 @@ void ManifestBrokerState::GetOnDeviceModelEligibilityAsync(
 }
 
 void ManifestBrokerState::EnsureInitialization(
-    ModelBrokerImpl::InitCallback callback) {
+    BrokerInit::TaskCallback callback) {
   // Hurry the performance classifier and manifest loading.
   performance_classifier_.EnsurePerformanceClassAvailable(base::DoNothing());
   manifest_monitor_.RaiseLoadPriority();
-  if (manifest_monitor_.manifest().has_value()) {
-    // Initialization is already complete.
-    std::move(callback).Run(GetPossibleOnDeviceCapabilities());
-    return;
-  }
-  init_callbacks_.push_back(std::move(callback));
+  broker_init_.QueueTask(std::move(callback));
 }
 
 void ManifestBrokerState::OnManifestUpdated() {
@@ -219,7 +216,7 @@ void ManifestBrokerState::OnManifestUpdated() {
   auto factory = std::make_unique<ManifestSolutionFactory>(
       *manifest_monitor_.manifest(), model_broker_impl_, usage_tracker_,
       service_client_, access_controller_, performance_classifier_,
-      base::BindOnce(&ManifestBrokerState::OnInitComplete,
+      base::BindOnce(&ManifestBrokerState::OnSolutionFactoryInit,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           &ManifestBrokerState::NotifyObserversOfBrokerStateChange,
@@ -234,13 +231,10 @@ void ManifestBrokerState::OnManifestUpdated() {
   NotifyObserversOfBrokerStateChange();
 }
 
-void ManifestBrokerState::OnInitComplete() {
-  TRACE_EVENT("optimization_guide", "ManifestBrokerState::OnInitComplete");
-  auto callbacks_to_run = std::move(init_callbacks_);
-  init_callbacks_.clear();
-  for (auto& callback : callbacks_to_run) {
-    std::move(callback).Run(GetPossibleOnDeviceCapabilities());
-  }
+void ManifestBrokerState::OnSolutionFactoryInit() {
+  TRACE_EVENT("optimization_guide",
+              "ManifestBrokerState::OnSolutionFactoryInit");
+  broker_init_.Complete(GetPossibleOnDeviceCapabilities());
 
   if (manifest_monitor_.manifest().has_value()) {
     const auto& manifest = *manifest_monitor_.manifest();

@@ -139,6 +139,7 @@ class AITestUtils {
     base::test::ScopedFeatureList scoped_feature_list_;
     std::unique_ptr<optimization_guide::FakeModelBrokerAndroid> fake_broker_;
 #else
+    optimization_guide::ScopedModelBrokerFeatureList model_broker_feature_list_;
     std::unique_ptr<optimization_guide::FakeManifestBroker> fake_broker_;
 #endif
 

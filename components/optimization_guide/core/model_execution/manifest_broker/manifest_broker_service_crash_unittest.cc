@@ -40,6 +40,7 @@ class ManifestBrokerServiceCrashTest : public testing::Test {
   ManifestBrokerServiceCrashTest() {}
 
  protected:
+  ScopedModelBrokerFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeManifestBroker fake_;

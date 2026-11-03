@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/broker_init.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -28,11 +29,10 @@ class UsageTracker;
 // A ModelBroker implementation that serves solutions fed to it.
 class ModelBrokerImpl final : public mojom::ModelBroker {
  public:
-  // A callback that is invoked once the initialization is complete.
-  using InitCallback =
-      base::OnceCallback<void(const on_device_model::Capabilities&)>;
-  // A function that calls |InitCallback| once some init has been completed.
-  using EnsureInitCallback = base::RepeatingCallback<void(InitCallback)>;
+  // A function that calls `BrokerInit::TaskCallback` once some init has been
+  // completed.
+  using EnsureInitCallback =
+      base::RepeatingCallback<void(BrokerInit::TaskCallback)>;
 
   // A set of (references to) compatible, versioned dependencies that implement
   // an OnDeviceFeature.

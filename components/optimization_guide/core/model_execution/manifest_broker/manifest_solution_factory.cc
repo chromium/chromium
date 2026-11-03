@@ -358,15 +358,13 @@ void ManifestSolutionFactory::UpdateAssetState(const std::string& asset_id,
     return;
   }
 
-  // Call UpdateSolutions after any config loads complete
+  // Call UpdateSolutions (and track initialization progress on the initial
+  // state transition) after any config loads complete.
+  const bool is_initial_state =
+      it->second == base::unexpected(AssetUnavailableReason::kUninitialized);
   base::OnceClosure on_complete =
-      base::BindOnce(&ManifestSolutionFactory::UpdateSolutions,
-                     weak_ptr_factory_.GetWeakPtr());
-
-  // If this is initializing the asset, track progress of initialization.
-  if (it->second == base::unexpected(AssetUnavailableReason::kUninitialized)) {
-    on_complete = std::move(on_complete).Then(on_asset_init_);
-  }
+      base::BindOnce(&ManifestSolutionFactory::OnAssetStateUpdated,
+                     weak_ptr_factory_.GetWeakPtr(), is_initial_state);
   it->second = new_state;
 
   if (it->second.has_value()) {
@@ -381,6 +379,13 @@ void ManifestSolutionFactory::UpdateAssetState(const std::string& asset_id,
     }
     // No asset to load things from, so we're done.
     std::move(on_complete).Run();
+  }
+}
+
+void ManifestSolutionFactory::OnAssetStateUpdated(bool is_initial_state) {
+  UpdateSolutions();
+  if (is_initial_state) {
+    on_asset_init_.Run();
   }
 }
 

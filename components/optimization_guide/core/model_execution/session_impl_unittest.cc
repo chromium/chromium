@@ -20,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -128,14 +127,6 @@ std::string ConcatResponses(const std::vector<std::string>& responses) {
 class SessionImplTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOptimizationGuideModelExecution, {}},
-         {features::kOnDeviceModelPerformanceParams,
-          {{"compatible_on_device_performance_classes", "3,4,5,6"},
-           {"compatible_low_tier_on_device_performance_classes", "3"}}},
-         {features::kOnDeviceModelValidation,
-          {{"on_device_model_validation_delay", "0"}}}},
-        {});
     // Mark a feature used so the model is eligible to install.
     UsageTracker(&broker_.local_state())
         .RaisePriority(ToUseCaseName(mojom::OnDeviceFeature::kTest),
@@ -219,11 +210,11 @@ class SessionImplTest : public testing::Test {
   }
 
  protected:
+  ScopedModelBrokerFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeManifestBroker broker_;
   ResponseHolder response_;
-  base::test::ScopedFeatureList feature_list_;
   OptimizationGuideLogger logger_;
 };
 
