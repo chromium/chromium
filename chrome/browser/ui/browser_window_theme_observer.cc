@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/browser_window_theme_observer.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -14,11 +17,15 @@ DEFINE_USER_DATA(BrowserWindowThemeObserver);
 BrowserWindowThemeObserver::BrowserWindowThemeObserver(
     BrowserWindowInterface* browser)
     : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
-  theme_service_observation_.Observe(
-      ThemeServiceFactory::GetForProfile(browser->GetProfile()));
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(browser->GetProfile());
+  CHECK(theme_service);
+  theme_service_observation_.Observe(theme_service);
 }
 
-BrowserWindowThemeObserver::~BrowserWindowThemeObserver() = default;
+BrowserWindowThemeObserver::~BrowserWindowThemeObserver() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 // static
 BrowserWindowThemeObserver* BrowserWindowThemeObserver::From(
@@ -26,17 +33,25 @@ BrowserWindowThemeObserver* BrowserWindowThemeObserver::From(
   return Get(browser->GetUnownedUserDataHost());
 }
 
+// static
+const BrowserWindowThemeObserver* BrowserWindowThemeObserver::From(
+    const BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 base::CallbackListSubscription
 BrowserWindowThemeObserver::RegisterThemeChangedCallback(
     ThemeChangedCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return theme_changed_callbacks_.Add(std::move(callback));
 }
 
 void BrowserWindowThemeObserver::NotifyThemeChanged(
     BrowserThemeChangeType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   theme_changed_callbacks_.Notify(type);
 }
 
 void BrowserWindowThemeObserver::OnThemeChanged() {
-  theme_changed_callbacks_.Notify(BrowserThemeChangeType::kBrowserTheme);
+  NotifyThemeChanged(BrowserThemeChangeType::kBrowserTheme);
 }

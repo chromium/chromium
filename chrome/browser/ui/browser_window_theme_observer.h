@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -14,8 +15,17 @@
 class BrowserWindowInterface;
 enum class BrowserThemeChangeType;
 
-// Observes ThemeService for theme changes and notifies registered listeners.
-// This was previously handled directly by Browser.
+// Window-scoped feature, owned by BrowserWindowFeatures, that bridges theme
+// change notifications into listener-style callbacks.
+//
+// Rather than having every window-level UI component inherit
+// ThemeServiceObserver directly, this class observes the profile's
+// ThemeService once per browser window and fans notifications out to
+// subscribers registered via RegisterThemeChangedCallback(). Subscriptions are
+// RAII-managed: destroying the returned base::CallbackListSubscription
+// unregisters the callback, so subscribers need no manual teardown.
+//
+// All methods must be called on the UI thread.
 class BrowserWindowThemeObserver : public ThemeServiceObserver {
  public:
   DECLARE_USER_DATA(BrowserWindowThemeObserver);
@@ -29,14 +39,22 @@ class BrowserWindowThemeObserver : public ThemeServiceObserver {
       delete;
   ~BrowserWindowThemeObserver() override;
 
+  // Returns the instance attached to `browser`, or nullptr if none.
   static BrowserWindowThemeObserver* From(BrowserWindowInterface* browser);
+  static const BrowserWindowThemeObserver* From(
+      const BrowserWindowInterface* browser);
 
-  // Register a callback to be invoked when the theme changes.
+  // Registers `callback` to be invoked whenever the theme of this window
+  // changes. The callback is invoked until the returned subscription is
+  // destroyed.
   base::CallbackListSubscription RegisterThemeChangedCallback(
       ThemeChangedCallback callback);
 
-  // Notify all listeners of a theme change with the given type.
-  // Used by AppBrowserController to notify web app theme changes.
+  // Notifies all registered callbacks of a theme change of the given `type`.
+  // Called internally in response to ThemeService notifications, and directly
+  // by embedders that own additional theme sources (e.g. AppBrowserController
+  // for web app theme colors). Also useful in tests to drive subscribers
+  // without a real ThemeService.
   void NotifyThemeChanged(BrowserThemeChangeType type);
 
   // ThemeServiceObserver:
@@ -47,6 +65,9 @@ class BrowserWindowThemeObserver : public ThemeServiceObserver {
       theme_changed_callbacks_;
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
       theme_service_observation_{this};
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   ui::ScopedUnownedUserData<BrowserWindowThemeObserver>
       scoped_unowned_user_data_;
 };
