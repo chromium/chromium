@@ -1,4 +1,3 @@
-
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -9,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
@@ -23,8 +23,17 @@
 #include "ui/compositor/canvas_painter.h"
 #include "ui/views/view_utils.h"
 
-class SplitTabViewTest
+class SplitTabViewTestBase
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
+  }
+
  protected:
   SplitTabView* CreateActivePinnedSplitTab() {
     AppendPinnedTab();
@@ -55,37 +64,8 @@ class SplitTabViewTest
   }
 };
 
-class HorizontalSplitTabViewTest : public SplitTabViewTest,
-                                   public testing::WithParamInterface<bool> {
- public:
-  bool IsNewPinnedTabStylingEnabled() const { return GetParam(); }
-
-  void SetUpOnMainThread() override {
-    SplitTabViewTest::SetUpOnMainThread();
-    ExitVerticalTabsMode();
-  }
-
-  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      override {
-    auto enabled = SplitTabViewTest::GetEnabledFeatures();
-    enabled.push_back({tabs::kTabStripUnification, {}});
-    if (IsNewPinnedTabStylingEnabled()) {
-      enabled.push_back({tabs::kNewHorizontalPinnedTabStyling, {}});
-    }
-    return enabled;
-  }
-
-  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    auto disabled = SplitTabViewTest::GetDisabledFeatures();
-    if (!IsNewPinnedTabStylingEnabled()) {
-      disabled.push_back(tabs::kNewHorizontalPinnedTabStyling);
-    }
-    return disabled;
-  }
-};
-
-class SplitTabViewParameterizedTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,
+class SplitTabViewTest
+    : public SplitTabViewTestBase,
       public testing::WithParamInterface<TabStripOrientation> {
  public:
   TabStripOrientation orientation() const { return GetParam(); }
@@ -94,122 +74,14 @@ class SplitTabViewParameterizedTest
   }
 
   void SetUpOnMainThread() override {
-    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    SplitTabViewTestBase::SetUpOnMainThread();
     if (is_horizontal()) {
       ExitVerticalTabsMode();
     }
   }
-
-  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      override {
-    auto enabled = VerticalTabsBrowserTestMixin<
-        InProcessBrowserTest>::GetEnabledFeatures();
-    enabled.push_back({tabs::kTabStripUnification, {}});
-    return enabled;
-  }
 };
 
-IN_PROC_BROWSER_TEST_F(SplitTabViewTest, ProposedLayout_Unbounded) {
-  AppendSplitTab();
-  auto* split = unpinned_collection_node()
-                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
-                    ->view();
-  EXPECT_TRUE(views::IsViewClass<SplitTabView>(split));
-  SplitTabView* split_tab_view = views::AsViewClass<SplitTabView>(split);
-
-  auto children = split_tab_view->children();
-  EXPECT_EQ(children.size(), 2u);
-  auto child1 = children[0];
-  auto child2 = children[1];
-
-  auto proposed_layout =
-      split_tab_view->CalculateProposedLayout(views::SizeBounds());
-  auto* child1_layout = proposed_layout.GetLayoutFor(child1);
-  auto* child2_layout = proposed_layout.GetLayoutFor(child2);
-  // Expect children to be on the same row.
-  EXPECT_EQ(child1_layout->bounds.y(), child2_layout->bounds.y());
-  // Expect children to be next to each other with set gap.
-  EXPECT_EQ(child1_layout->bounds.right() + SplitTabView::kSplitViewGap,
-            child2_layout->bounds.x());
-  // Expect total width to just hold the two children
-  EXPECT_EQ(proposed_layout.host_size.width(), child2_layout->bounds.right());
-  EXPECT_EQ(proposed_layout.host_size.width(),
-            child1_layout->bounds.width() + SplitTabView::kSplitViewGap +
-                child2_layout->bounds.width());
-}
-
-IN_PROC_BROWSER_TEST_F(SplitTabViewTest, ProposedLayout_LargeBounds) {
-  AppendSplitTab();
-  auto* split = unpinned_collection_node()
-                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
-                    ->view();
-  EXPECT_TRUE(views::IsViewClass<SplitTabView>(split));
-  SplitTabView* split_tab_view = views::AsViewClass<SplitTabView>(split);
-
-  auto children = split_tab_view->children();
-  EXPECT_EQ(children.size(), 2u);
-  auto child1 = children[0];
-  auto child2 = children[1];
-
-  // Needs to be larger than 2 * kVerticalTabExpandedMinWidth.
-  int available_width = 200;
-  auto proposed_layout = split_tab_view->CalculateProposedLayout(
-      views::SizeBounds(available_width, {}));
-  auto* child1_layout = proposed_layout.GetLayoutFor(child1);
-  auto* child2_layout = proposed_layout.GetLayoutFor(child2);
-  // Expect children to be on the same row.
-  EXPECT_EQ(child1_layout->bounds.y(), child2_layout->bounds.y());
-  // Expect children to be next to each other with set gap.
-  EXPECT_EQ(child1_layout->bounds.right() + SplitTabView::kSplitViewGap,
-            child2_layout->bounds.x());
-  // Expect total width to just hold the two children.
-  EXPECT_EQ(proposed_layout.host_size.width(), child2_layout->bounds.right());
-  EXPECT_EQ(proposed_layout.host_size.width(),
-            child1_layout->bounds.width() + SplitTabView::kSplitViewGap +
-                child2_layout->bounds.width());
-  // Expect children to share total width.
-  EXPECT_EQ((available_width - SplitTabView::kSplitViewGap) / 2,
-            child1_layout->bounds.width());
-  EXPECT_EQ((available_width - SplitTabView::kSplitViewGap) / 2,
-            child2_layout->bounds.width());
-}
-
-IN_PROC_BROWSER_TEST_F(SplitTabViewTest, ProposedLayout_LimitedBounds) {
-  AppendSplitTab();
-  auto* split = unpinned_collection_node()
-                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
-                    ->view();
-  EXPECT_TRUE(views::IsViewClass<SplitTabView>(split));
-  SplitTabView* split_tab_view = views::AsViewClass<SplitTabView>(split);
-
-  auto children = split_tab_view->children();
-  EXPECT_EQ(children.size(), 2u);
-  auto child1 = children[0];
-  auto child2 = children[1];
-
-  // Needs to be smaller than the minimum size of a split view.
-  int available_width = 60;
-  auto proposed_layout = split_tab_view->CalculateProposedLayout(
-      views::SizeBounds(available_width, {}));
-  auto* child1_layout = proposed_layout.GetLayoutFor(child1);
-  auto* child2_layout = proposed_layout.GetLayoutFor(child2);
-  // Expect children to be on different rows.
-  EXPECT_NE(child1_layout->bounds.y(), child2_layout->bounds.y());
-  // Expect children to be next to each other vertically with set gap.
-  EXPECT_EQ(child1_layout->bounds.bottom() + SplitTabView::kSplitViewGap,
-            child2_layout->bounds.y());
-  // Expect total height to just hold the two children.
-  EXPECT_EQ(proposed_layout.host_size.height(), child2_layout->bounds.bottom());
-  EXPECT_EQ(proposed_layout.host_size.height(),
-            child1_layout->bounds.height() + SplitTabView::kSplitViewGap +
-                child2_layout->bounds.height());
-  // Expect children to fill width.
-  EXPECT_EQ(available_width, child1_layout->bounds.width());
-  EXPECT_EQ(available_width, child2_layout->bounds.width());
-}
-
-IN_PROC_BROWSER_TEST_P(SplitTabViewParameterizedTest,
-                       SplitTabsInGroup_LineViewPaint) {
+IN_PROC_BROWSER_TEST_P(SplitTabViewTest, SplitTabsInGroup_LineViewPaint) {
   // Create a split tab (2 tabs) and an additional tab grouped together.
   AppendSplitTab();
   AppendTab();
@@ -255,8 +127,7 @@ IN_PROC_BROWSER_TEST_P(SplitTabViewParameterizedTest,
       canvas_painter.context(), group_view->group_line()->size()));
 }
 
-IN_PROC_BROWSER_TEST_P(SplitTabViewParameterizedTest,
-                       CreateSplitWithCollapsedTabGroup) {
+IN_PROC_BROWSER_TEST_P(SplitTabViewTest, CreateSplitWithCollapsedTabGroup) {
   // Append two tabs that will form the split, then group and collapse the
   // initial tab.
   AppendTab();
@@ -286,7 +157,125 @@ IN_PROC_BROWSER_TEST_P(SplitTabViewParameterizedTest,
             split_view->GetPreferredSize().width());
 }
 
-IN_PROC_BROWSER_TEST_F(SplitTabViewTest,
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SplitTabViewTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
+
+class VerticalSplitTabViewBrowserTest : public SplitTabViewTestBase {};
+
+IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewBrowserTest,
+                       ProposedLayout_Unbounded) {
+  AppendSplitTab();
+  auto* split = unpinned_collection_node()
+                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
+                    ->view();
+  EXPECT_TRUE(views::IsViewClass<SplitTabView>(split));
+  SplitTabView* split_tab_view = views::AsViewClass<SplitTabView>(split);
+
+  auto children = split_tab_view->children();
+  EXPECT_EQ(children.size(), 2u);
+  auto child1 = children[0];
+  auto child2 = children[1];
+
+  auto proposed_layout =
+      split_tab_view->CalculateProposedLayout(views::SizeBounds());
+  auto* child1_layout = proposed_layout.GetLayoutFor(child1);
+  auto* child2_layout = proposed_layout.GetLayoutFor(child2);
+  // Expect children to be on the same row.
+  EXPECT_EQ(child1_layout->bounds.y(), child2_layout->bounds.y());
+  // Expect children to be next to each other with set gap.
+  EXPECT_EQ(child1_layout->bounds.right() + SplitTabView::kSplitViewGap,
+            child2_layout->bounds.x());
+  // Expect total width to just hold the two children
+  EXPECT_EQ(proposed_layout.host_size.width(), child2_layout->bounds.right());
+  EXPECT_EQ(proposed_layout.host_size.width(),
+            child1_layout->bounds.width() + SplitTabView::kSplitViewGap +
+                child2_layout->bounds.width());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewBrowserTest,
+                       ProposedLayout_LargeBounds) {
+  AppendSplitTab();
+  auto* split = unpinned_collection_node()
+                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
+                    ->view();
+  EXPECT_TRUE(views::IsViewClass<SplitTabView>(split));
+  SplitTabView* split_tab_view = views::AsViewClass<SplitTabView>(split);
+
+  auto children = split_tab_view->children();
+  EXPECT_EQ(children.size(), 2u);
+  auto child1 = children[0];
+  auto child2 = children[1];
+
+  // Needs to be larger than 2 * kVerticalTabExpandedMinWidth.
+  int available_width = 200;
+  auto proposed_layout = split_tab_view->CalculateProposedLayout(
+      views::SizeBounds(available_width, {}));
+  auto* child1_layout = proposed_layout.GetLayoutFor(child1);
+  auto* child2_layout = proposed_layout.GetLayoutFor(child2);
+  // Expect children to be on the same row.
+  EXPECT_EQ(child1_layout->bounds.y(), child2_layout->bounds.y());
+  // Expect children to be next to each other with set gap.
+  EXPECT_EQ(child1_layout->bounds.right() + SplitTabView::kSplitViewGap,
+            child2_layout->bounds.x());
+  // Expect total width to just hold the two children.
+  EXPECT_EQ(proposed_layout.host_size.width(), child2_layout->bounds.right());
+  EXPECT_EQ(proposed_layout.host_size.width(),
+            child1_layout->bounds.width() + SplitTabView::kSplitViewGap +
+                child2_layout->bounds.width());
+  // Expect children to share total width.
+  EXPECT_EQ((available_width - SplitTabView::kSplitViewGap) / 2,
+            child1_layout->bounds.width());
+  EXPECT_EQ((available_width - SplitTabView::kSplitViewGap) / 2,
+            child2_layout->bounds.width());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewBrowserTest,
+                       ProposedLayout_LimitedBounds) {
+  AppendSplitTab();
+  auto* split = unpinned_collection_node()
+                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
+                    ->view();
+  EXPECT_TRUE(views::IsViewClass<SplitTabView>(split));
+  SplitTabView* split_tab_view = views::AsViewClass<SplitTabView>(split);
+
+  auto children = split_tab_view->children();
+  EXPECT_EQ(children.size(), 2u);
+  auto child1 = children[0];
+  auto child2 = children[1];
+
+  // Needs to be smaller than the minimum size of a split view.
+  int available_width = 60;
+  auto proposed_layout = split_tab_view->CalculateProposedLayout(
+      views::SizeBounds(available_width, {}));
+  auto* child1_layout = proposed_layout.GetLayoutFor(child1);
+  auto* child2_layout = proposed_layout.GetLayoutFor(child2);
+  // Expect children to be on different rows.
+  EXPECT_NE(child1_layout->bounds.y(), child2_layout->bounds.y());
+  // Expect children to be next to each other vertically with set gap.
+  EXPECT_EQ(child1_layout->bounds.bottom() + SplitTabView::kSplitViewGap,
+            child2_layout->bounds.y());
+  // Expect total height to just hold the two children.
+  EXPECT_EQ(proposed_layout.host_size.height(), child2_layout->bounds.bottom());
+  EXPECT_EQ(proposed_layout.host_size.height(),
+            child1_layout->bounds.height() + SplitTabView::kSplitViewGap +
+                child2_layout->bounds.height());
+  // Expect children to fill width.
+  EXPECT_EQ(available_width, child1_layout->bounds.width());
+  EXPECT_EQ(available_width, child2_layout->bounds.width());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewBrowserTest,
                        PinnedSplitTabPaintsMergedBackgroundAndBorder) {
   SplitTabView* split_view = CreateActivePinnedSplitTab();
   ASSERT_TRUE(split_view);
@@ -307,7 +296,143 @@ IN_PROC_BROWSER_TEST_F(SplitTabViewTest,
       active_bg);
 }
 
-IN_PROC_BROWSER_TEST_P(HorizontalSplitTabViewTest,
+class HorizontalSplitTabViewBrowserTest : public SplitTabViewTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    SplitTabViewTestBase::SetUpOnMainThread();
+    ExitVerticalTabsMode();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalSplitTabViewBrowserTest,
+                       ProposedLayout_Unbounded) {
+  AppendSplitTab();
+  auto* split = unpinned_collection_node()
+                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
+                    ->view();
+  ASSERT_TRUE(views::IsViewClass<SplitTabView>(split));
+  SplitTabView* split_tab_view = views::AsViewClass<SplitTabView>(split);
+
+  auto children = split_tab_view->children();
+  ASSERT_EQ(children.size(), 2u);
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+
+  auto proposed_layout =
+      split_tab_view->CalculateProposedLayout(views::SizeBounds());
+  auto* child1_layout = proposed_layout.GetLayoutFor(children[0]);
+  auto* child2_layout = proposed_layout.GetLayoutFor(children[1]);
+
+  EXPECT_EQ(child1_layout->bounds.y(), child2_layout->bounds.y());
+  EXPECT_EQ(child1_layout->bounds.right() - tab_overlap,
+            child2_layout->bounds.x());
+  EXPECT_EQ(proposed_layout.host_size.width(), child2_layout->bounds.right());
+  EXPECT_EQ(proposed_layout.host_size.width(),
+            child1_layout->bounds.width() + child2_layout->bounds.width() -
+                tab_overlap);
+  EXPECT_EQ(proposed_layout.host_size.height(),
+            TabStyle::Get()->GetStandardHeight());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalSplitTabViewBrowserTest,
+                       ProposedLayout_Bounded) {
+  AppendSplitTab();
+  auto* split = unpinned_collection_node()
+                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
+                    ->view();
+  ASSERT_TRUE(views::IsViewClass<SplitTabView>(split));
+  SplitTabView* split_tab_view = views::AsViewClass<SplitTabView>(split);
+
+  auto children = split_tab_view->children();
+  ASSERT_EQ(children.size(), 2u);
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  const int available_width = 200;
+
+  auto proposed_layout = split_tab_view->CalculateProposedLayout(
+      views::SizeBounds(available_width, {}));
+  auto* child1_layout = proposed_layout.GetLayoutFor(children[0]);
+  auto* child2_layout = proposed_layout.GetLayoutFor(children[1]);
+
+  EXPECT_EQ(child1_layout->bounds.y(), child2_layout->bounds.y());
+  EXPECT_EQ(child1_layout->bounds.right() - tab_overlap,
+            child2_layout->bounds.x());
+  EXPECT_EQ(proposed_layout.host_size.width(), available_width);
+  EXPECT_EQ(child1_layout->bounds.width() + child2_layout->bounds.width() -
+                tab_overlap,
+            available_width);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalSplitTabViewBrowserTest, PinnedSplitTabWidth) {
+  AppendTab();
+  AppendTab();
+  tab_strip_model()->SetTabPinned(1, true);
+  tab_strip_model()->SetTabPinned(2, true);
+  tab_strip_model()->AddToNewSplit(
+      {1, 2}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  RunScheduledLayouts();
+
+  auto* split = pinned_collection_node()
+                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
+                    ->view();
+  ASSERT_TRUE(views::IsViewClass<SplitTabView>(split));
+  SplitTabView* split_tab_view = views::AsViewClass<SplitTabView>(split);
+
+  const int expected_child_width =
+      TabStyle::Get()->GetPinnedWidth(/*is_split=*/true);
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  EXPECT_EQ(split_tab_view->GetPreferredSize().width(),
+            2 * expected_child_width - tab_overlap);
+  ASSERT_EQ(split_tab_view->children().size(), 2u);
+  EXPECT_EQ(split_tab_view->children()[0]->width(), expected_child_width);
+  EXPECT_EQ(split_tab_view->children()[1]->width(), expected_child_width);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalSplitTabViewBrowserTest,
+                       MinimumAndCrossoverWidth) {
+  AppendSplitTab();
+  RunScheduledLayouts();
+
+  auto* split = unpinned_collection_node()
+                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
+                    ->view();
+  ASSERT_TRUE(views::IsViewClass<SplitTabView>(split));
+  SplitTabView* split_tab_view = views::AsViewClass<SplitTabView>(split);
+  ASSERT_EQ(split_tab_view->children().size(), 2u);
+
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  const int child_min_width =
+      split_tab_view->children()[0]->GetMinimumSize().width();
+  EXPECT_EQ(split_tab_view->GetMinimumSize().width(),
+            2 * child_min_width - tab_overlap);
+  EXPECT_EQ(split_tab_view->GetCrossoverWidth(),
+            2 * TabStyle::Get()->GetMinimumActiveWidth(/*is_split=*/true) -
+                tab_overlap);
+}
+
+class HorizontalSplitTabViewPinnedStylingTest
+    : public HorizontalSplitTabViewBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsNewPinnedTabStylingEnabled() const { return GetParam(); }
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = HorizontalSplitTabViewBrowserTest::GetEnabledFeatures();
+    if (IsNewPinnedTabStylingEnabled()) {
+      enabled.push_back({tabs::kNewHorizontalPinnedTabStyling, {}});
+    }
+    return enabled;
+  }
+
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    auto disabled = HorizontalSplitTabViewBrowserTest::GetDisabledFeatures();
+    if (!IsNewPinnedTabStylingEnabled()) {
+      disabled.push_back(tabs::kNewHorizontalPinnedTabStyling);
+    }
+    return disabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(HorizontalSplitTabViewPinnedStylingTest,
                        ActivePinnedSplitTabPaintsTabSilhouette) {
   SplitTabView* split_view = CreateActivePinnedSplitTab();
   ASSERT_TRUE(split_view);
@@ -334,7 +459,7 @@ IN_PROC_BROWSER_TEST_P(HorizontalSplitTabViewTest,
       active_bg);
 }
 
-IN_PROC_BROWSER_TEST_P(HorizontalSplitTabViewTest,
+IN_PROC_BROWSER_TEST_P(HorizontalSplitTabViewPinnedStylingTest,
                        InactivePinnedSplitTabOmitsVerticalBorder) {
   SplitTabView* split_view = CreateActivePinnedSplitTab();
   ASSERT_TRUE(split_view);
@@ -370,9 +495,6 @@ IN_PROC_BROWSER_TEST_P(HorizontalSplitTabViewTest,
             SK_ColorTRANSPARENT);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, HorizontalSplitTabViewTest, testing::Bool());
-
 INSTANTIATE_TEST_SUITE_P(All,
-                         SplitTabViewParameterizedTest,
-                         testing::Values(TabStripOrientation::kVertical,
-                                         TabStripOrientation::kHorizontal));
+                         HorizontalSplitTabViewPinnedStylingTest,
+                         testing::Bool());
