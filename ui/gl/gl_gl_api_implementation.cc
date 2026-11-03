@@ -292,8 +292,12 @@ const GLubyte* RealGLApi::glGetStringiFn(GLenum name, GLuint index) {
 
 void RealGLApi::glGenTexturesFn(GLsizei n, GLuint* textures) {
   GLApiBase::glGenTexturesFn(n, textures);
-  if (GetGLImplementation() != kGLImplementationMockGL && n > 0) {
-    CHECK_NE(UNSAFE_TODO(textures[0]), 0u);
+  if (GetGLImplementation() != kGLImplementationMockGL && n > 0 &&
+      UNSAFE_TODO(textures[0]) == 0u) {
+    // On texture generation failure (id = 0), check the reset status. This
+    // should not be GL_NO_ERROR.
+    CHECK(driver_->fn.glGetGraphicsResetStatusARBFn);
+    CHECK_NE(glGetGraphicsResetStatusARBFn(), /*GL_NO_ERROR*/ 0u);
   }
 }
 
