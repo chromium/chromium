@@ -37,8 +37,11 @@ XRGPUSwapChain::XRGPUSwapChain(GPUDevice* device) : device_(device) {
   CHECK(device);
 }
 
-// Clears the contents of the current texture to transparent black or 0 (for
-// depth/stencil textures).
+// Resets the contents of the current texture by running a render pass with
+// LoadOp::Clear and StoreOp::Discard on each layer. In Dawn, StoreOp::Discard
+// marks the subresource as uninitialized so it will be lazily cleared if the
+// next frame reads from it without clearing, while avoiding writing cleared
+// zeros back to memory at the end of every frame on tile-based GPUs.
 void XRGPUSwapChain::ClearCurrentTexture(wgpu::CommandEncoder command_encoder) {
   GPUTexture* texture = current_texture();
   if (!texture) {
@@ -68,13 +71,13 @@ void XRGPUSwapChain::ClearCurrentTexture(wgpu::CommandEncoder command_encoder) {
 
       if (hasDepth) {
         depth_stencil_attachment.depthLoadOp = wgpu::LoadOp::Clear;
-        depth_stencil_attachment.depthStoreOp = wgpu::StoreOp::Store;
+        depth_stencil_attachment.depthStoreOp = wgpu::StoreOp::Discard;
         depth_stencil_attachment.depthClearValue = 0;
       }
 
       if (hasStencil) {
         depth_stencil_attachment.stencilLoadOp = wgpu::LoadOp::Clear;
-        depth_stencil_attachment.stencilStoreOp = wgpu::StoreOp::Store;
+        depth_stencil_attachment.stencilStoreOp = wgpu::StoreOp::Discard;
         depth_stencil_attachment.stencilClearValue = 0;
       }
 
@@ -87,7 +90,7 @@ void XRGPUSwapChain::ClearCurrentTexture(wgpu::CommandEncoder command_encoder) {
       wgpu::RenderPassColorAttachment color_attachment = {
           .view = view,
           .loadOp = wgpu::LoadOp::Clear,
-          .storeOp = wgpu::StoreOp::Store,
+          .storeOp = wgpu::StoreOp::Discard,
           .clearValue = {0, 0, 0, 0},
       };
 
@@ -120,6 +123,10 @@ GPUTexture* XRGPUStaticSwapChain::ProduceTexture() {
 }
 
 void XRGPUStaticSwapChain::OnFrameEnd() {
+  if (!texture_was_queried()) {
+    return;
+  }
+
   // TODO(crbug.com/5818595): Prior to shipping the spec needs to determine
   // if texture re-use is appropriate or not. If re-use is not specified then
   // it should at the very least be detached from the JavaScript wrapper and
