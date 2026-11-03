@@ -55,7 +55,7 @@ using media_feature_names::kMaxDeviceAspectRatioMediaFeature;
 using media_feature_names::kMaxDevicePixelRatioMediaFeature;
 using media_feature_names::kMinDeviceAspectRatioMediaFeature;
 
-static inline bool FeatureWithValidIdent(const String& media_feature,
+static inline bool FeatureWithValidIdent(const AtomicString& media_feature,
                                          CSSValueID ident,
                                          const CSSParserContext& context) {
   if (media_feature == media_feature_names::kDisplayModeMediaFeature) {
@@ -260,7 +260,7 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
   return false;
 }
 
-static inline bool FeatureWithValidLength(const String& media_feature,
+static inline bool FeatureWithValidLength(const AtomicString& media_feature,
                                           const CSSPrimitiveValue* value) {
   if (!(value->IsLength() ||
         (value->IsNumber() && value->GetValueIfKnown() == 0.0))) {
@@ -287,7 +287,7 @@ static inline bool FeatureWithValidLength(const String& media_feature,
          media_feature == media_feature_names::kMaxDeviceWidthMediaFeature;
 }
 
-static inline bool FeatureWithValidDensity(const String& media_feature,
+static inline bool FeatureWithValidDensity(const AtomicString& media_feature,
                                            const CSSPrimitiveValue* value) {
   // NOTE: The allowed range of <resolution> values always excludes negative
   // values, in addition to any explicit ranges that might be specified.
@@ -302,7 +302,7 @@ static inline bool FeatureWithValidDensity(const String& media_feature,
          media_feature == media_feature_names::kMaxResolutionMediaFeature;
 }
 
-static inline bool FeatureExpectingInteger(const String& media_feature,
+static inline bool FeatureExpectingInteger(const AtomicString& media_feature,
                                            const CSSParserContext& context) {
   if (media_feature == media_feature_names::kColorMediaFeature ||
       media_feature == media_feature_names::kMaxColorMediaFeature ||
@@ -329,7 +329,7 @@ static inline bool FeatureExpectingInteger(const String& media_feature,
   return false;
 }
 
-static inline bool FeatureWithInteger(const String& media_feature,
+static inline bool FeatureWithInteger(const AtomicString& media_feature,
                                       const CSSPrimitiveValue* value,
                                       const CSSParserContext& context) {
   if (!value->IsInteger()) {
@@ -338,7 +338,7 @@ static inline bool FeatureWithInteger(const String& media_feature,
   return FeatureExpectingInteger(media_feature, context);
 }
 
-static inline bool FeatureWithNumber(const String& media_feature,
+static inline bool FeatureWithNumber(const AtomicString& media_feature,
                                      const CSSPrimitiveValue* value) {
   if (!value->IsNumber()) {
     return false;
@@ -350,7 +350,7 @@ static inline bool FeatureWithNumber(const String& media_feature,
          media_feature == media_feature_names::kMinDevicePixelRatioMediaFeature;
 }
 
-static inline bool FeatureWithZeroOrOne(const String& media_feature,
+static inline bool FeatureWithZeroOrOne(const AtomicString& media_feature,
                                         const CSSPrimitiveValue* value) {
   if (!value->IsInteger() ||
       (value->GetValueIfKnown().has_value() &&
@@ -361,7 +361,7 @@ static inline bool FeatureWithZeroOrOne(const String& media_feature,
   return media_feature == media_feature_names::kGridMediaFeature;
 }
 
-static inline bool FeatureWithAspectRatio(const String& media_feature) {
+static inline bool FeatureWithAspectRatio(const AtomicString& media_feature) {
   return media_feature == media_feature_names::kAspectRatioMediaFeature ||
          media_feature == media_feature_names::kDeviceAspectRatioMediaFeature ||
          media_feature == media_feature_names::kMinAspectRatioMediaFeature ||
@@ -459,13 +459,13 @@ MediaQueryExp::MediaQueryExp(const MediaQueryExp& other)
       reference_value_(other.reference_value_),
       bounds_(other.bounds_) {}
 
-MediaQueryExp::MediaQueryExp(const String& media_feature,
+MediaQueryExp::MediaQueryExp(const AtomicString& media_feature,
                              const MediaQueryExpValue& value)
     : MediaQueryExp(media_feature,
                     MediaQueryExpBounds(MediaQueryExpComparison(value)),
                     Type::kMediaFeature) {}
 
-MediaQueryExp::MediaQueryExp(const String& media_feature,
+MediaQueryExp::MediaQueryExp(const AtomicString& media_feature,
                              const MediaQueryExpBounds& bounds,
                              Type type)
     : type_(type), media_feature_(media_feature), bounds_(bounds) {}
@@ -489,7 +489,7 @@ MediaQueryExp MediaQueryExp::Create(const AtomicString& media_feature,
 }
 
 std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
-    const String& media_feature,
+    const AtomicString& media_feature,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     bool supports_element_dependent) {
