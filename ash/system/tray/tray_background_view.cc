@@ -24,6 +24,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/style/style_util.h"
+#include "ash/style/system_decoration.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
@@ -38,6 +39,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -51,6 +53,7 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer_solid_color.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -220,14 +223,16 @@ class TrayBackgroundView::TrayWidgetObserver : public views::WidgetObserver {
       observations_{this};
 };
 
-// Handles `TrayBackgroundView`'s animation on session changed.
+// Handles `TrayBackgroundView`'s updates on session and shelf config changes.
 class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
-    : public SessionObserver {
+    : public SessionObserver,
+      public ShelfConfig::Observer {
  public:
   explicit TrayBackgroundViewSessionChangeHandler(
       TrayBackgroundView* tray_background_view)
       : tray_(tray_background_view) {
     DCHECK(tray_);
+    shelf_config_observation_.Observe(ShelfConfig::Get());
   }
   TrayBackgroundViewSessionChangeHandler(
       const TrayBackgroundViewSessionChangeHandler&) = delete;
@@ -235,13 +240,18 @@ class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
       const TrayBackgroundViewSessionChangeHandler&) = delete;
   ~TrayBackgroundViewSessionChangeHandler() override = default;
 
- private:  // SessionObserver:
+ private:
+  // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override {
     DisableShowAnimationInSequence();
+    tray_->UpdateBackground();
   }
   void OnActiveUserSessionChanged(const AccountId& account_id) override {
     DisableShowAnimationInSequence();
   }
+
+  // ShelfConfig::Observer:
+  void OnShelfConfigUpdated() override { tray_->UpdateBackground(); }
 
   // Disables the `TrayBackgroundView`'s show animation until all queued tasks
   // in the current task sequence are run.
@@ -253,6 +263,8 @@ class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
 
   const raw_ptr<TrayBackgroundView> tray_;
   ScopedSessionObserver session_observer_{this};
+  base::ScopedObservation<ShelfConfig, ShelfConfig::Observer>
+      shelf_config_observation_{this};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -264,7 +276,7 @@ TrayBackgroundView::TrayBackgroundView(
     RoundedCornerBehavior corner_behavior)
     : shelf_(shelf),
       catalog_name_(catalog_name),
-      tray_container_(new TrayContainer(shelf, this)),
+      tray_container_(new TrayContainer(shelf)),
       is_active_(false),
       separator_visible_(true),
       visible_preferred_(false),
@@ -661,7 +673,9 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
 }
 
 void TrayBackgroundView::UpdateBackground() {
-  layer()->SetRoundedCornerRadius(GetRoundedCorners());
+  const gfx::RoundedCornersF rounded_corners = GetRoundedCorners();
+  const gfx::Rect background_bounds = GetBackgroundBounds();
+  layer()->SetRoundedCornerRadius(rounded_corners);
   layer()->SetIsFastRoundedCorner(true);
   if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetBackgroundBlur(
@@ -669,7 +683,7 @@ void TrayBackgroundView::UpdateBackground() {
     layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
 
-  layer()->SetClipRect(GetBackgroundBounds());
+  layer()->SetClipRect(background_bounds);
 
   const views::Widget* widget = GetWidget();
   if (widget) {
@@ -677,6 +691,7 @@ void TrayBackgroundView::UpdateBackground() {
         ShelfConfig::Get()->GetShelfControlButtonColor(widget)));
   }
   UpdateBackgroundColor(is_active_);
+  UpdateHighlightBorder(background_bounds, rounded_corners);
 }
 
 void TrayBackgroundView::OnHideAnimationStarted() {
@@ -1070,6 +1085,35 @@ void TrayBackgroundView::UpdateBackgroundColor(bool active) {
       SkColor4f::FromColor(widget->GetColorProvider()->GetColor(
           active ? cros_tokens::kCrosSysSystemPrimaryContainer
                  : non_active_color_id)));
+}
+
+void TrayBackgroundView::UpdateHighlightBorder(
+    const gfx::Rect& background_bounds,
+    const gfx::RoundedCornersF& rounded_corners) {
+  // Only add a highlight border to the system tray when the shelf background is
+  // transparent: 1) the shelf is in tablet mode and not in app mode, OR 2) the
+  // shelf is in the non-logged-in/lock page.
+  const bool should_show_highlight_border =
+      !background_bounds.IsEmpty() &&
+      ((display::Screen::Get()->InTabletMode() &&
+        !ShelfConfig::Get()->is_in_app()) ||
+       Shell::Get()->session_controller()->IsUserSessionBlocked());
+  if (!should_show_highlight_border) {
+    highlight_border_.reset();
+    return;
+  }
+
+  if (!highlight_border_) {
+    highlight_border_ = SystemDecoration::Create(
+        SystemDecoration::ShadowType::kNone,
+        SystemDecoration::HighlightBorderMode::kHighlightBorder);
+    layer()->Add(highlight_border_->GetLayer());
+  }
+  if (auto* widget = GetWidget()) {
+    highlight_border_->ObserveColorProviderSource(widget);
+  }
+  highlight_border_->SetRoundedCorners(rounded_corners);
+  highlight_border_->SetContentBounds(background_bounds);
 }
 
 void TrayBackgroundView::AddRippleLayer() {

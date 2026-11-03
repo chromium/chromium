@@ -37,6 +37,7 @@ class View;
 
 namespace ash {
 class Shelf;
+class SystemDecoration;
 class TrayContainer;
 
 // Base class for some children of StatusAreaWidget. This class handles setting
@@ -245,6 +246,9 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   TrayContainer* tray_container() const { return tray_container_; }
   Shelf* shelf() { return shelf_; }
   TrayBackgroundViewCatalogName catalog_name() const { return catalog_name_; }
+  SystemDecoration* highlight_border_for_testing() {
+    return highlight_border_.get();
+  }
 
   // Updates the visibility of this tray's separator.
   void set_separator_visibility(bool visible) { separator_visible_ = visible; }
@@ -348,6 +352,10 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // For Material Next: Updates the background color based on active state.
   void UpdateBackgroundColor(bool active);
 
+  // Updates `highlight_border_` visibility, bounds, and rounded corners.
+  void UpdateHighlightBorder(const gfx::Rect& background_bounds,
+                             const gfx::RoundedCornersF& rounded_corners);
+
   // Add and remove ripple_layer_ from parent.
   void AddRippleLayer();
   void RemoveRippleLayer();
@@ -365,6 +373,8 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
 
   // Convenience pointer to the contents view.
   raw_ptr<TrayContainer> tray_container_;
+
+  std::unique_ptr<SystemDecoration> highlight_border_;
 
   // A separate layer for ripple aimation.
   std::unique_ptr<ui::LayerSolidColor> ripple_layer_;

@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "ash/style/system_decoration.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_view.h"
@@ -781,6 +782,50 @@ TEST_F(TrayBackgroundViewTest, TrayBackgroundViewAccessibleProperties) {
   EXPECT_EQ(
       test_tray_background_view()->GetViewAccessibility().GetNextWindowFocus(),
       GetPrimaryShelf()->shelf_widget()->navigation_widget());
+}
+
+TEST_F(TrayBackgroundViewTest, HighlightBorder) {
+  DictationButtonTray* tray = GetPrimaryDictationTray();
+  ASSERT_TRUE(tray->GetVisible());
+
+  // No highlight border in logged-in clamshell mode (opaque shelf).
+  EXPECT_FALSE(tray->highlight_border_for_testing());
+
+  // Highlight border is shown on the tablet mode home screen.
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  tablet_mode_controller->SetEnabledForTest(true);
+  ASSERT_TRUE(tray->highlight_border_for_testing());
+  EXPECT_TRUE(tray->highlight_border_for_testing()->HasHighlightBorder());
+  EXPECT_TRUE(tray->highlight_border_for_testing()
+                  ->GetHighlightBorderValueForTesting()
+                  .has_value());
+  EXPECT_EQ(tray->GetBackgroundBounds(),
+            tray->highlight_border_for_testing()->GetContentBounds());
+
+  // Opening a widget enters tablet in-app shelf mode (opaque shelf), removing
+  // the highlight border.
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  EXPECT_FALSE(tray->highlight_border_for_testing());
+
+  // Closing the widget returns to the tablet home screen and restores the
+  // highlight border.
+  widget.reset();
+  ASSERT_TRUE(tray->highlight_border_for_testing());
+  EXPECT_EQ(tray->GetBackgroundBounds(),
+            tray->highlight_border_for_testing()->GetContentBounds());
+
+  // Returning to clamshell mode removes the highlight border.
+  tablet_mode_controller->SetEnabledForTest(false);
+  EXPECT_FALSE(tray->highlight_border_for_testing());
+
+  // Locking the screen (transparent login/lock shelf) shows the highlight
+  // border.
+  GetSessionControllerClient()->LockScreen();
+  ASSERT_TRUE(tray->highlight_border_for_testing());
+  EXPECT_TRUE(tray->highlight_border_for_testing()->HasHighlightBorder());
+  EXPECT_EQ(tray->GetBackgroundBounds(),
+            tray->highlight_border_for_testing()->GetContentBounds());
 }
 
 }  // namespace ash
