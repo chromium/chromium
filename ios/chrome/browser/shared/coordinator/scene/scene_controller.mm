@@ -2672,7 +2672,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 }
 
-// TODO(crbug.com/526644569): Handle user waiting for page to load.
 // Starts the Gemini flow when an App Switcher intent occurs.
 - (void)startGeminiFlowForAppSwitcherIntent {
   CHECK(IsAppSwitcherAISummarizationEnabled());
