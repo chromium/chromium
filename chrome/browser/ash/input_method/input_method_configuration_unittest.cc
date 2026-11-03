@@ -12,7 +12,6 @@
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
-#include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
 namespace ash {
 namespace input_method {
@@ -30,17 +29,6 @@ TEST(InputMethodConfigurationTest, TestInitialize) {
              TestingBrowserProcess::GetGlobal()
                  ->GetFeatures()
                  ->application_locale_storage());
-  manager = InputMethodManager::Get();
-  EXPECT_TRUE(manager);
-  Shutdown();
-}
-
-TEST(InputMethodConfigurationTest, TestInitializeForTesting) {
-  ash::SessionTerminationManager session_termination_manager;
-  InputMethodManager* manager = InputMethodManager::Get();
-  EXPECT_FALSE(manager);
-
-  InitializeForTesting(new MockInputMethodManagerImpl);
   manager = InputMethodManager::Get();
   EXPECT_TRUE(manager);
   Shutdown();

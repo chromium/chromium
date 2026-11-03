@@ -50,10 +50,6 @@ void Initialize(PrefService* local_state,
   g_accessibility = new Accessibility(impl);
 }
 
-void InitializeForTesting(InputMethodManager* mock_manager) {
-  InputMethodManager::Initialize(mock_manager);
-}
-
 void DisableExtensionLoading() {
   g_disable_extension_loading = true;
 }
