@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_mac)
+
+source_set("colocation") {
+  sources = [
+    "colocation_proof_keychain_store_mac.h",
+    "colocation_proof_keychain_store_mac.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common:version_header",
+    "//crypto",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "Security.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "colocation_proof_keychain_store_mac_unittest.mm" ]
+
+  deps = [
+    ":colocation",
+    "//base",
+    "//crypto:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "Security.framework",
+  ]
+}

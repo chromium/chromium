@@ -2802,6 +2802,7 @@ test("unit_tests") {
     deps += [
       "//chrome/app_shim:unit_tests",
       "//chrome/browser/apps/app_shim:unit_tests",
+      "//chrome/browser/browser_actuator/colocation:unit_tests",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac:unit_tests",
       "//chrome/browser/mac:unit_tests",
       "//chrome/browser/renderer_host:unit_tests",
