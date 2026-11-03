@@ -27,6 +27,7 @@ import android.widget.FrameLayout;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.MainThread;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.DeviceInfo;
@@ -104,17 +105,7 @@ public class SigninFirstRunFragment extends Fragment
                         mModalDialogManager,
                         this,
                         PrivacyPreferencesManagerImpl.getInstance(),
-                        new FullscreenSigninConfig(
-                                /* title= */ context.getString(R.string.signin_fre_title),
-                                /* subtitle= */ context.getString(R.string.signin_fre_subtitle),
-                                /* dismissText= */ context.getString(
-                                        R.string.signin_fre_stay_signed_out_button),
-                                /* logoId= */ 0,
-                                /* shouldDisableSignin= */ DeviceInfo.isAutomotive(),
-                                /* surveyType= */ SigninSurveyController.SigninSurveyType.FRE,
-                                /* selectedAccountEmail= */ null,
-                                /* signinFlow= */ SigninAndHistorySyncCoordinator.SigninFlow
-                                        .DEFAULT_SIGNIN),
+                        createConfig(context),
                         SigninAccessPoint.START_PAGE);
 
         var pageDelegate = assumeNonNull(getPageDelegate());
@@ -129,6 +120,50 @@ public class SigninFirstRunFragment extends Fragment
                         if (skipTos) exitFirstRun();
                     });
         }
+    }
+
+    private static FullscreenSigninConfig createConfig(Context context) {
+        return new FullscreenSigninConfig(
+                /* title= */ context.getString(getTitleStringId()),
+                /* subtitle= */ context.getString(getSubtitleStringId()),
+                /* dismissText= */ context.getString(R.string.signin_fre_stay_signed_out_button),
+                /* logoId= */ 0,
+                /* shouldDisableSignin= */ DeviceInfo.isAutomotive(),
+                /* surveyType= */ SigninSurveyController.SigninSurveyType.FRE,
+                /* selectedAccountEmail= */ null,
+                /* signinFlow= */ SigninAndHistorySyncCoordinator.SigninFlow.DEFAULT_SIGNIN);
+    }
+
+    @VisibleForTesting
+    static @StringRes int getTitleStringId() {
+        if (ChromeFeatureList.sFREStringChanges.isEnabled()) {
+            if (ChromeFeatureList.sFREStringChangesPersonalized.getValue()) {
+                return R.string.signin_fre_personalized_title;
+            }
+            if (ChromeFeatureList.sFREStringChangesSafety.getValue()) {
+                return R.string.signin_fre_safety_title;
+            }
+            if (ChromeFeatureList.sFREStringChangesSeamlessness.getValue()) {
+                return R.string.signin_fre_seamlessness_title;
+            }
+        }
+        return R.string.signin_fre_title;
+    }
+
+    @VisibleForTesting
+    static @StringRes int getSubtitleStringId() {
+        if (ChromeFeatureList.sFREStringChanges.isEnabled()) {
+            if (ChromeFeatureList.sFREStringChangesPersonalized.getValue()) {
+                return R.string.signin_fre_personalized_subtitle;
+            }
+            if (ChromeFeatureList.sFREStringChangesSafety.getValue()) {
+                return R.string.signin_fre_safety_subtitle;
+            }
+            if (ChromeFeatureList.sFREStringChangesSeamlessness.getValue()) {
+                return R.string.signin_fre_seamlessness_subtitle;
+            }
+        }
+        return R.string.signin_fre_subtitle;
     }
 
     @Override
@@ -546,6 +581,11 @@ public class SigninFirstRunFragment extends Fragment
     @Override
     public void onInitialLoadCompleted() {
         if (!isAdded()) return;
+        // Null when called synchronously from FullscreenSigninCoordinator's constructor in
+        // onAttach() before mFullscreenSigninCoordinator is assigned.
+        if (mFullscreenSigninCoordinator != null) {
+            mFullscreenSigninCoordinator.setConfig(createConfig(requireContext()));
+        }
         if (mCenteredLayoutInflated) return;
         if (mFragmentView == null) return;
 

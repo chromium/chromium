@@ -1580,6 +1580,72 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @EnableFeatures(
+            ChromeFeatureList.FRE_STRING_CHANGES
+                    + ":"
+                    + ChromeFeatureList.FRE_STRING_CHANGES_PERSONALIZED
+                    + "/true")
+    public void testShowsPersonalizedTitleAndSubtitleWhenEnabled() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mNativeInitializationPromise = new Promise<>();
+                });
+        launchActivityWithFragment();
+        ThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
+
+        onView(allOf(withId(R.id.title), withText(R.string.signin_fre_personalized_title)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_personalized_subtitle)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @EnableFeatures(
+            ChromeFeatureList.FRE_STRING_CHANGES
+                    + ":"
+                    + ChromeFeatureList.FRE_STRING_CHANGES_SAFETY
+                    + "/true")
+    public void testShowsSafetyTitleAndSubtitleWhenEnabled() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mNativeInitializationPromise = new Promise<>();
+                });
+        launchActivityWithFragment();
+        ThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
+
+        onView(allOf(withId(R.id.title), withText(R.string.signin_fre_safety_title)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_safety_subtitle)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @EnableFeatures(
+            ChromeFeatureList.FRE_STRING_CHANGES
+                    + ":"
+                    + ChromeFeatureList.FRE_STRING_CHANGES_SEAMLESSNESS
+                    + "/true")
+    public void testShowsSeamlessnessTitleAndSubtitleWhenEnabled() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mNativeInitializationPromise = new Promise<>();
+                });
+        launchActivityWithFragment();
+        ThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
+
+        onView(allOf(withId(R.id.title), withText(R.string.signin_fre_seamlessness_title)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_seamlessness_subtitle)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
     public void testDismissWithTosDialogBehaviorPolicy() throws Exception {
         reset(mPolicyLoadListenerMock);
         when(mPolicyLoadListenerMock.onAvailable(any())).thenReturn(null);

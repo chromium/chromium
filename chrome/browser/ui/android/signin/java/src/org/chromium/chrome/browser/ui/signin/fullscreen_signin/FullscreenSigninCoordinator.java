@@ -247,6 +247,10 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
         mMediator.onAccountAdded(accountName);
     }
 
+    public void setConfig(FullscreenSigninConfig config) {
+        mMediator.setConfig(config);
+    }
+
     public void onAddAccountCanceled() {
         mMediator.onAddAccountCanceled();
     }

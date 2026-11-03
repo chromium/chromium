@@ -95,7 +95,7 @@ public class FullscreenSigninMediator
     private final Delegate mDelegate;
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
     private final @SigninAccessPoint int mAccessPoint;
-    private final FullscreenSigninConfig mConfig;
+    private FullscreenSigninConfig mConfig;
     private final PropertyModel mModel;
 
     // Two separate caches are necessary because scaling the large (110dp) animation image down
@@ -184,6 +184,19 @@ public class FullscreenSigninMediator
 
     PropertyModel getModel() {
         return mModel;
+    }
+
+    // TODO(crbug.com/486190792): Remove once FREStringChanges feature is launched.
+    void setConfig(FullscreenSigninConfig config) {
+        String oldSubtitle = mConfig.subtitle;
+        mConfig = config;
+        if (mInitialLoadCompleted) {
+            mModel.set(FullscreenSigninProperties.TITLE_STRING, getTitleText());
+            if (TextUtils.equals(
+                    mModel.get(FullscreenSigninProperties.SUBTITLE_STRING), oldSubtitle)) {
+                mModel.set(FullscreenSigninProperties.SUBTITLE_STRING, mConfig.subtitle);
+            }
+        }
     }
 
     Drawable getProfilePictureForTesting() {

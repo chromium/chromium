@@ -699,6 +699,63 @@ public class FullscreenSigninMediatorTest {
         assertEquals(forcedTitle, mModel.get(FullscreenSigninProperties.TITLE_STRING));
     }
 
+    @Test
+    public void testSetConfig_updatesTitleAndSubtitleAfterInitialLoad() {
+        setUpSigninSupported(true);
+        createMediator();
+        initializeNative();
+        assertEquals("title", mModel.get(FullscreenSigninProperties.TITLE_STRING));
+        assertEquals("subtitle", mModel.get(FullscreenSigninProperties.SUBTITLE_STRING));
+
+        mMediator.setConfig(createConfig("new_title", "new_subtitle"));
+
+        assertEquals("new_title", mModel.get(FullscreenSigninProperties.TITLE_STRING));
+        assertEquals("new_subtitle", mModel.get(FullscreenSigninProperties.SUBTITLE_STRING));
+    }
+
+    @Test
+    public void testSetConfig_preservesForcedByPolicyTitleAndSubtitle() {
+        enableForcedSigninPolicy();
+        setUpSigninSupported(true);
+        createMediator();
+        initializeNative();
+        Context context = RuntimeEnvironment.getApplication();
+        assertEquals(
+                context.getString(R.string.signin_fre_title_signin_forced_by_policy),
+                mModel.get(FullscreenSigninProperties.TITLE_STRING));
+        assertEquals(
+                context.getString(R.string.signin_fre_subtitle_signin_forced_by_policy),
+                mModel.get(FullscreenSigninProperties.SUBTITLE_STRING));
+
+        mMediator.setConfig(createConfig("new_title", "new_subtitle"));
+
+        assertEquals(
+                context.getString(R.string.signin_fre_title_signin_forced_by_policy),
+                mModel.get(FullscreenSigninProperties.TITLE_STRING));
+        assertEquals(
+                context.getString(R.string.signin_fre_subtitle_signin_forced_by_policy),
+                mModel.get(FullscreenSigninProperties.SUBTITLE_STRING));
+    }
+
+    @Test
+    public void testSetConfig_preservesUnsupportedSigninTitleAndSubtitle() {
+        setUpSigninSupported(false);
+        createMediator();
+        initializeNative();
+        Context context = RuntimeEnvironment.getApplication();
+        assertEquals(
+                context.getString(R.string.fre_welcome),
+                mModel.get(FullscreenSigninProperties.TITLE_STRING));
+        assertNull(mModel.get(FullscreenSigninProperties.SUBTITLE_STRING));
+
+        mMediator.setConfig(createConfig("new_title", "new_subtitle"));
+
+        assertEquals(
+                context.getString(R.string.fre_welcome),
+                mModel.get(FullscreenSigninProperties.TITLE_STRING));
+        assertNull(mModel.get(FullscreenSigninProperties.SUBTITLE_STRING));
+    }
+
     private void setUpSigninSupported(boolean isSigninSupported) {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(isSigninSupported);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
@@ -731,18 +788,22 @@ public class FullscreenSigninMediatorTest {
                         mModalDialogManagerMock,
                         mDelegateMock,
                         mPrivacyPreferencesManagerMock,
-                        new FullscreenSigninConfig(
-                                /* title= */ "title",
-                                /* subtitle= */ "subtitle",
-                                /* dismissText= */ "dismiss",
-                                mLogoId,
-                                /* shouldDisableSignin= */ false,
-                                /* surveyType= */ null,
-                                mSelectedAccountEmail,
-                                SigninFlow.DEFAULT_SIGNIN),
+                        createConfig("title", "subtitle"),
                         SigninAccessPoint.START_PAGE);
         mModel = mMediator.getModel();
         RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    private FullscreenSigninConfig createConfig(String title, String subtitle) {
+        return new FullscreenSigninConfig(
+                title,
+                subtitle,
+                /* dismissText= */ "dismiss",
+                mLogoId,
+                /* shouldDisableSignin= */ false,
+                /* surveyType= */ null,
+                mSelectedAccountEmail,
+                SigninFlow.DEFAULT_SIGNIN);
     }
 
     private void destroyMediator() {
