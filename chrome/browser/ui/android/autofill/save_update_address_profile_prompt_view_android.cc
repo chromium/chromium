@@ -11,7 +11,6 @@
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -59,8 +58,7 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   jni_zero::ScopedJavaLocalRef<jobject> java_autofill_profile =
-      autofill_profile.CreateJavaObject(
-          g_browser_process->GetApplicationLocale());
+      autofill_profile.CreateJavaObject();
   java_object_.Reset(Java_SaveUpdateAddressProfilePrompt_create(
       env, web_contents_->GetTopLevelNativeWindow(), java_controller,
       browser_profile, java_autofill_profile, prompt_mode));

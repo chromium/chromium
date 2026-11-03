@@ -228,8 +228,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
                   AllOf(Property(&profile_ref::has_value, true),
                         Property(&profile_ref::value, edited_profile))));
   base::android::ScopedJavaLocalRef<jobject> edited_profile_java =
-      edited_profile.CreateJavaObject(
-          g_browser_process->GetApplicationLocale());
+      edited_profile.CreateJavaObject();
 
   controller_->OnUserEdited(env_, edited_profile_java);
 }

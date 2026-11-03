@@ -164,8 +164,7 @@ class AutofillProfile : public FormGroup {
   // Android/Java API.
 #if BUILDFLAG(IS_ANDROID)
   // Create a new Java AutofillProfile instance.
-  base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
-      std::string_view app_locale) const;
+  base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
 
   // Given a Java AutofillProfile object, create an equivalent C++ instance.
   // Java profile can represent either a new or an existing address profile

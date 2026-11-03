@@ -100,16 +100,15 @@ std::unique_ptr<AddressValidator> CreateAddressValidator(
 
 #if BUILDFLAG(IS_ANDROID)
 void OnAddressNormalized(jni_zero::ScopedJavaGlobalRef<jobject> jdelegate,
-                         const std::string& app_locale,
                          bool success,
                          const AutofillProfile& profile) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   if (success) {
     Java_NormalizedAddressRequestDelegate_onAddressNormalized(
-        env, jdelegate, profile.CreateJavaObject(app_locale));
+        env, jdelegate, profile.CreateJavaObject());
   } else {
     Java_NormalizedAddressRequestDelegate_onCouldNotNormalize(
-        env, jdelegate, profile.CreateJavaObject(app_locale));
+        env, jdelegate, profile.CreateJavaObject());
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -299,8 +298,7 @@ void AddressNormalizerImpl::StartAddressNormalization(
   NormalizeAddressAsync(
       profile, jtimeout_seconds,
       base::BindOnce(&OnAddressNormalized,
-                     jni_zero::ScopedJavaGlobalRef<jobject>(jdelegate),
-                     app_locale_));
+                     jni_zero::ScopedJavaGlobalRef<jobject>(jdelegate)));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

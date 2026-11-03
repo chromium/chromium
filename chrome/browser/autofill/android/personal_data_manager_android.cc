@@ -214,7 +214,7 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
   if (!profile) {
     return nullptr;
   }
-  return profile->CreateJavaObject(g_browser_process->GetApplicationLocale());
+  return profile->CreateJavaObject();
 }
 
 bool PersonalDataManagerAndroid::IsEligibleForAddressAccountStorage() {
@@ -453,12 +453,10 @@ PersonalDataManagerAndroid::GetProfiles(
   std::vector<std::u16string> labels = GetProfileLabels(address_only, profiles);
   CHECK_EQ(profiles.size(), labels.size());
 
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
   std::vector<ScopedJavaLocalRef<jobject>> jprofiles;
   jprofiles.reserve(profiles.size());
   for (size_t i = 0; i < profiles.size(); ++i) {
-    ScopedJavaLocalRef<jobject> jprofile =
-        profiles[i]->CreateJavaObject(app_locale);
+    ScopedJavaLocalRef<jobject> jprofile = profiles[i]->CreateJavaObject();
     Java_AutofillProfile_setLabel(env, jprofile, labels[i]);
     jprofiles.push_back(std::move(jprofile));
   }

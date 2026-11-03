@@ -299,8 +299,8 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
-    std::string_view app_locale) const {
+base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject()
+    const {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jprofile =
       Java_AutofillProfile_Constructor(
@@ -308,15 +308,8 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
 
   for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
     auto status = std::to_underlying(GetVerificationStatus(type));
-    // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
-    // below.
-    if (type == NAME_FULL) {
-      Java_AutofillProfile_setInfo(env, jprofile, static_cast<int32_t>(type),
-                                   GetInfo(type, app_locale), status);
-    } else {
-      Java_AutofillProfile_setInfo(env, jprofile, static_cast<int32_t>(type),
-                                   GetRawInfo(type), status);
-    }
+    Java_AutofillProfile_setInfo(env, jprofile, static_cast<int32_t>(type),
+                                 GetRawInfo(type), status);
   }
   return jprofile;
 }
@@ -344,14 +337,7 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
     std::u16string value =
         Java_AutofillProfile_getInfo(env, jprofile, field_type);
 
-    // In `CreateJavaObject()`, `GetInfo()` is used only for `NAME_FULL`, while
-    // `GetRawInfo()` is used for all other stored types.
-    // TODO(crbug.com/40278253): Reconcile usage of `GetInfo()` and
-    // `GetRawInfo()` below.
-    const std::u16string current_value =
-        field_type == NAME_FULL ? profile.GetInfo(field_type, app_locale)
-                                : profile.GetRawInfo(field_type);
-    if (value != current_value ||
+    if (value != profile.GetRawInfo(field_type) ||
         status != profile.GetVerificationStatus(field_type)) {
       modified_fields.emplace_back(field_type, value, status);
     }
