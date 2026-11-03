@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.LoadedWithInkTextAnnotations"
-    enum="PDFLoadedWithInkTextAnnotations" expires_after="2027-02-28">
+    enum="PDFLoadedWithInkTextAnnotations" expires_after="2027-05-02">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

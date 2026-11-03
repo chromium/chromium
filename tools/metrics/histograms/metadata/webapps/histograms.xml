@@ -1703,7 +1703,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Isolated.KeyDistributionComponent.ManagedInstallCheckInfoSource"
-    enum="KeyDistributionComponentSource" expires_after="2027-03-01">
+    enum="KeyDistributionComponentSource" expires_after="2027-05-02">
   <owner>rferens@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
@@ -1999,7 +1999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.LaunchContainer" enum="AppLaunchContainer"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>phillis@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2385,7 +2385,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Webapp.NavigationCapturing.LaunchParamsConsumedTime.{DidNavigate}"
-    units="ms" expires_after="2027-02-28">
+    units="ms" expires_after="2027-05-02">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

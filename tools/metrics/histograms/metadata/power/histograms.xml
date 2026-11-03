@@ -348,7 +348,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </variants>
 
 <histogram name="PerformanceMonitor.AverageCPU10.Total{UsageScenario}"
-    units="1/100 %" expires_after="2027-02-28">
+    units="1/100 %" expires_after="2027-05-02">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -384,7 +384,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PerformanceMonitor.AverageCPU10.{ProcessName}" units="1/100 %"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -419,7 +419,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PerformanceMonitor.IdleWakeups2.Total{UsageScenario}"
-    units="WakeupsPerSecond" expires_after="2027-02-28">
+    units="WakeupsPerSecond" expires_after="2027-05-02">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -930,7 +930,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram
     name="Power.BatteryDischargeRateRelative5{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="hundredth of percent" expires_after="2027-01-10">
+    units="hundredth of percent" expires_after="2027-05-02">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -1589,7 +1589,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.KernelSuspendTimeOnBattery" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>puthik@chromium.org</owner>
   <owner>mhiramat@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1772,7 +1772,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.ShutdownReason" enum="ShutdownReason"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>mqg@chromium.org</owner>
   <owner>sammc@chromium.org</owner>
   <owner>chromeos-power-team@google.com</owner>

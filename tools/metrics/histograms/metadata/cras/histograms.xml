@@ -528,7 +528,7 @@ This collects each top-level device metric type. For example,
 
 <histogram
     name="Cras.DeviceRuntime.Input{Device}{HostCapability}{PeripheralCapability}"
-    units="seconds" expires_after="2026-12-30">
+    units="seconds" expires_after="2027-05-02">
   <owner>jrwu@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

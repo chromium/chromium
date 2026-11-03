@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.FileWriteStatus"
-    enum="TrustedVaultFileWriteStatus" expires_after="2027-02-07">
+    enum="TrustedVaultFileWriteStatus" expires_after="2027-05-02">
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
   <summary>

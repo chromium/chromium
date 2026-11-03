@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.DeviceMediaType" enum="CrosDisksDeviceMediaType"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

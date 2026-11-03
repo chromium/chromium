@@ -1631,7 +1631,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ProvisionalAnswer"
-    enum="PeerConnectionProvisionalAnswer" expires_after="2027-02-28">
+    enum="PeerConnectionProvisionalAnswer" expires_after="2027-05-02">
   <owner>danilchap@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1644,7 +1644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.RtcpMux" enum="PeerConnectionRtcpMux"
-    expires_after="2027-03-01">
+    expires_after="2027-05-02">
   <owner>danilchap@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1658,7 +1658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.RtcpMuxPolicy"
-    enum="PeerConnectionRtcpMux" expires_after="2027-03-01">
+    enum="PeerConnectionRtcpMux" expires_after="2027-05-02">
   <owner>danilchap@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1965,7 +1965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.FullScreenDetectorResult"
-    enum="FullScreenDetectorResult" expires_after="2027-02-28">
+    enum="FullScreenDetectorResult" expires_after="2027-05-02">
   <owner>agpalak@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
@@ -4153,7 +4153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.TotalReceiveDelay" units="ms"
-    expires_after="2027-03-01">
+    expires_after="2027-05-02">
   <owner>kron@chromium.org</owner>
   <owner>video-performance-team@google.com</owner>
   <summary>
@@ -4237,7 +4237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcEventLogging.Api" enum="WebRtcEventLoggingApiEnum"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>eladalon@chromium.org</owner>
   <owner>philipel@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -4249,7 +4249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcEventLogging.NetError" units="units"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>eladalon@chromium.org</owner>
   <owner>manj@google.com</owner>
   <owner>dmitriyg@google.com</owner>
@@ -4262,7 +4262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcEventLogging.Upload" enum="WebRtcEventLoggingUploadEnum"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>eladalon@chromium.org</owner>
   <owner>manj@google.com</owner>
   <owner>dmitriyg@google.com</owner>
@@ -4297,7 +4297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.StartCalled" enum="Boolean"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>
@@ -4309,7 +4309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.Started" enum="WebRtcLoggingWebAppIdHash"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>
@@ -4320,7 +4320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.StartError"
-    enum="WebRtcTextLoggingStartError" expires_after="2027-02-28">
+    enum="WebRtcTextLoggingStartError" expires_after="2027-05-02">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>

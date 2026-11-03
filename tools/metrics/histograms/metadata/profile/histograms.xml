@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.DeleteProfileContext" enum="ProfileDeleteContext"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
@@ -349,7 +349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.LiveProfileCount" units="profiles"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>nicolaso@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -625,7 +625,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.PercentageOfManagedProfiles{ProfileActivityThreshold}"
-    units="units" expires_after="2027-02-28">
+    units="units" expires_after="2027-05-02">
   <owner>longbowei@google.com</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -960,7 +960,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint.AutoLaunchByOs"
-    units="ms" expires_after="2027-02-28">
+    units="ms" expires_after="2027-05-02">
   <owner>atharvmaan@google.com</owner>
   <owner>chrome-desktop-ui-waterloo@google.com</owner>
   <summary>

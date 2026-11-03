@@ -763,7 +763,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.CorruptExtensionDisabledReason"
-    enum="ContentVerifyJobResult" expires_after="2027-02-28">
+    enum="ContentVerifyJobResult" expires_after="2027-05-02">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1140,7 +1140,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ManifestEnabledRulesCount2"
-    units="rules" expires_after="2027-02-28">
+    units="rules" expires_after="2027-05-02">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

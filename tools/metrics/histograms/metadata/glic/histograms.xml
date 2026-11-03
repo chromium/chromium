@@ -1602,7 +1602,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.PanelWebUiState.Error" enum="PanelWebUiStateErrorReason"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -2622,7 +2622,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.Session.Duration" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
@@ -2638,7 +2638,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.Session.EndReason"
-    enum="GlicMultiInstanceSessionEndReason" expires_after="2027-02-28">
+    enum="GlicMultiInstanceSessionEndReason" expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
@@ -2662,7 +2662,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.Session.InputModesUsed"
-    enum="GlicInputModesUsed" expires_after="2027-02-28">
+    enum="GlicInputModesUsed" expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>perrier@chromium.org</owner>
   <summary>
@@ -2698,7 +2698,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.Session.ToggleCount" units="count"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -2709,7 +2709,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.Session.TotalActiveDuration"
-    units="ms" expires_after="2027-02-28">
+    units="ms" expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -2721,7 +2721,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.Session.TotalHiddenDuration"
-    units="ms" expires_after="2027-02-28">
+    units="ms" expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -2745,7 +2745,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.Session.TotalVisibleDuration"
-    units="ms" expires_after="2027-02-28">
+    units="ms" expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -2786,7 +2786,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.SessionCount" units="count"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
@@ -3199,7 +3199,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram
     name="Glic{GlicProvider}.InvocationSource.{InvocationSource}.SidePanelFirstOpenDuration.{PromptStatus}"
-    units="ms" expires_after="2027-02-28">
+    units="ms" expires_after="2027-05-02">
   <owner>sanaakbani@google.com</owner>
   <owner>basiaz@google.com</owner>
   <summary>
@@ -3220,7 +3220,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram
     name="Glic{GlicProvider}.InvocationSource.{InvocationSource}.SidePanelFirstOpenPromptCount"
-    units="prompts" expires_after="2027-02-28">
+    units="prompts" expires_after="2027-05-02">
   <owner>sanaakbani@google.com</owner>
   <owner>basiaz@google.com</owner>
   <summary>
@@ -3328,7 +3328,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.PanelWebUiState.FinishState3"
-    enum="WebUiState" expires_after="2027-02-28">
+    enum="WebUiState" expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3791,7 +3791,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Turn.PromptType" enum="GlicPromptType"
-    expires_after="2027-03-01">
+    expires_after="2027-05-02">
   <owner>basiaz@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
@@ -3894,7 +3894,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.WarmingPool.ContainerCreationReason"
-    enum="GlicContainerCreationReason" expires_after="2027-03-01">
+    enum="GlicContainerCreationReason" expires_after="2027-05-02">
   <owner>acondor@chromium.org</owner>
   <owner>bryantchandler@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
@@ -3907,7 +3907,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.WarmingPool.HitStatus"
-    enum="GlicWarmingPoolStatus" expires_after="2027-03-01">
+    enum="GlicWarmingPoolStatus" expires_after="2027-05-02">
   <owner>harringtond@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
@@ -3937,7 +3937,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.WarmingPool.ReloadAfterExpiry"
-    enum="GlicReloadAfterExpiryStatus" expires_after="2027-03-01">
+    enum="GlicReloadAfterExpiryStatus" expires_after="2027-05-02">
   <owner>harringtond@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
@@ -3948,7 +3948,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.WarmingPool.TimeSinceCreatedAtHit"
-    units="ms" expires_after="2027-03-01">
+    units="ms" expires_after="2027-05-02">
   <owner>harringtond@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
@@ -3960,7 +3960,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.WarmingPool.TimeSinceCreatedAtMiss"
-    units="ms" expires_after="2027-03-01">
+    units="ms" expires_after="2027-05-02">
   <owner>harringtond@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
@@ -3973,7 +3973,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.WarmingPool.WarmedContainerFate"
-    enum="GlicWarmedContainerFate" expires_after="2027-03-01">
+    enum="GlicWarmedContainerFate" expires_after="2027-05-02">
   <owner>harringtond@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>

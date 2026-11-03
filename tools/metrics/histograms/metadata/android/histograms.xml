@@ -2618,7 +2618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Hub.PaneFocused" enum="HubPaneId"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-hub-dev@google.com</owner>
   <summary>
@@ -2632,7 +2632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Hub.PaneFocused.PaneSwitcher" enum="HubPaneId"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-hub-dev@google.com</owner>
   <summary>
@@ -2814,7 +2814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Input.TouchEvent.Action" enum="MotionEventAction"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>lizeb@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -2837,7 +2837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputHintChecker.InputHintResult"
-    enum="InputHintResult" expires_after="2027-02-28">
+    enum="InputHintResult" expires_after="2027-05-02">
   <owner>pasko@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <summary>
@@ -3030,7 +3030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Viz.StateProcessingResult3"
-    enum="InputOnVizStateProcessingResult" expires_after="2027-02-28">
+    enum="InputOnVizStateProcessingResult" expires_after="2027-05-02">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -3715,7 +3715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultipleUserProfilesState"
-    enum="MultipleUserProfilesState" expires_after="2027-02-28">
+    enum="MultipleUserProfilesState" expires_after="2027-05-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
@@ -4165,7 +4165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.InputToNavigationControllerStart2" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>spelchat@chromium.org</owner>
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
@@ -4267,7 +4267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.OMTPrefetch.TouchDownDelay" units="ms"
-    expires_after="2027-01-01">
+    expires_after="2027-05-02">
   <owner>thesalsa@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -5108,7 +5108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PasswordEcho.SettingReadTime.{SettingType}"
-    units="microseconds" expires_after="2027-03-01">
+    units="microseconds" expires_after="2027-05-02">
   <owner>shahinmd@google.com</owner>
   <owner>ashleynewson@chromium.org</owner>
   <summary>
@@ -5130,7 +5130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PasswordEcho.SettingStateInitializationTime"
-    units="microseconds" expires_after="2027-03-01">
+    units="microseconds" expires_after="2027-05-02">
   <owner>shahinmd@google.com</owner>
   <owner>ashleynewson@chromium.org</owner>
   <summary>
@@ -5356,7 +5356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PlayServices.Version" units="versioncode"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -5594,7 +5594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.ResultActionFirstShow2"
-    enum="RestoreTabsOnFREResultAction" expires_after="2027-02-07">
+    enum="RestoreTabsOnFREResultAction" expires_after="2027-05-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -5605,7 +5605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.ResultActionSecondShow2"
-    enum="RestoreTabsOnFREResultAction" expires_after="2027-02-07">
+    enum="RestoreTabsOnFREResultAction" expires_after="2027-05-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -6388,7 +6388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabNavigationIntercept.Scheme"
-    enum="NavigationInterceptScheme" expires_after="2027-02-28">
+    enum="NavigationInterceptScheme" expires_after="2027-05-02">
   <owner>rbyers@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
@@ -6414,7 +6414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabNavigationInterceptResult.For{Scheme}"
-    enum="NavigationInterceptResult" expires_after="2027-02-14">
+    enum="NavigationInterceptResult" expires_after="2027-05-02">
   <owner>mamir@chromium.org</owner>
   <owner>rbyers@chromium.org</owner>
   <summary>
@@ -6827,7 +6827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TopToolbar.InMotionStage" enum="ToolbarInMotionStage"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>skym@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>

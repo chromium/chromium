@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
-    enum="MessagePumpPhases" expires_after="2027-02-28">
+    enum="MessagePumpPhases" expires_after="2027-05-02">
   <owner>gab@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>spvm@chromium.org</owner>
@@ -562,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ThreadPool.UnnecessaryWakeup.{ThreadPoolName}.{WorkerGroup}"
-    enum="BooleanHit" expires_after="2027-02-28">
+    enum="BooleanHit" expires_after="2027-05-02">
   <owner>spvm@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

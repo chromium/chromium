@@ -1776,7 +1776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.AccountsRequestSent" enum="BooleanHit"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1921,7 +1921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.AutoReauthn.Succeeded" enum="Boolean"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1936,7 +1936,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Button.AccountChooserResult"
-    enum="FedCmAccountChooserResult" expires_after="2027-02-28">
+    enum="FedCmAccountChooserResult" expires_after="2027-05-02">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2348,7 +2348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.RpMode" enum="FedCmRpMode"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2371,7 +2371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.SegmentationPlatform.UserAction"
-    enum="FedCmUserAction" expires_after="2027-02-28">
+    enum="FedCmUserAction" expires_after="2027-05-02">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2536,7 +2536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.ContinueOnDialog" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2605,7 +2605,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch"
-    units="ms" expires_after="2027-02-28">
+    units="ms" expires_after="2027-05-02">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2763,7 +2763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FencedFrame.CreationOrNavigationOutcome"
-    enum="FencedFrameCreationOutcome" expires_after="2027-02-28">
+    enum="FencedFrameCreationOutcome" expires_after="2027-05-02">
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
   <owner>averge@chromium.org</owner>
@@ -6065,7 +6065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.PermissionsPolicy.Header2"
-    enum="FeaturePolicyFeature" expires_after="2027-02-28">
+    enum="FeaturePolicyFeature" expires_after="2027-05-02">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>

@@ -1169,7 +1169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.TimeToInitDiskCache" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>haihan@google.com</owner>
   <owner>valadkevich@google.com</owner>
   <summary>
@@ -1803,7 +1803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ContentEncodingType2" enum="ContentEncodingType"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2120,7 +2120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.ProactiveRefreshDuration" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2273,7 +2273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.RequestDeferralCount"
-    units="deferrals" expires_after="2027-02-28">
+    units="deferrals" expires_after="2027-05-02">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2316,7 +2316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.RequestDeferredDuration" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2341,7 +2341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.SessionStoreLoadDuration" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2352,7 +2352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.SessionStoreLoadSuccess"
-    enum="BooleanLoaded" expires_after="2027-02-28">
+    enum="BooleanLoaded" expires_after="2027-05-02">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3030,7 +3030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.Parsable"
-    enum="BooleanValid" expires_after="2027-03-02">
+    enum="BooleanValid" expires_after="2027-05-02">
   <owner>bashi@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -3872,7 +3872,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.TotalTime.TLS13.Google" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>bashi@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -5809,7 +5809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.AsyncDnsJob.AttemptsPerJob.{JobOutcome}"
-    units="attempts" expires_after="2027-02-28">
+    units="attempts" expires_after="2027-05-02">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5827,7 +5827,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.AsyncDnsJob.AttemptTime.{Result}.{AttemptOrder}.{AddressFamily}"
-    units="ms" expires_after="2027-02-28">
+    units="ms" expires_after="2027-05-02">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5861,7 +5861,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.AsyncDnsJob.SuccessfulAttemptElapsedTime.{MeasurementPoint}"
-    units="ms" expires_after="2027-02-28">
+    units="ms" expires_after="2027-05-02">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5881,7 +5881,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.AsyncDnsJob.SuccessSource"
-    enum="QuicSessionPoolAsyncDnsJobSuccessSource" expires_after="2027-02-28">
+    enum="QuicSessionPoolAsyncDnsJobSuccessSource" expires_after="2027-05-02">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5895,7 +5895,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.AsyncDnsJob.TimeToFailure" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -9073,7 +9073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SqlDiskCache.Backend.LoadInMemoryIndexTime"
-    units="microseconds" expires_after="2027-02-28">
+    units="microseconds" expires_after="2027-05-02">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -9556,7 +9556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLHandshakeEarlyDataReason"
-    enum="SSLHandshakeEarlyDataReason" expires_after="2027-02-28">
+    enum="SSLHandshakeEarlyDataReason" expires_after="2027-05-02">
   <owner>bashi@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -9952,7 +9952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.TrustTokens.ProtocolVersion"
-    enum="TrustTokenProtocolVersion" expires_after="2027-02-28">
+    enum="TrustTokenProtocolVersion" expires_after="2027-05-02">
   <owner>aykutb@chromium.org</owner>
   <owner>trust-token@google.com</owner>
   <summary>
@@ -10124,7 +10124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLLoader.ProportionOfWritesBlockedByMojo" units="%"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>

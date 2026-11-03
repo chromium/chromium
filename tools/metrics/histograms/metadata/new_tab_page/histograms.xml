@@ -421,7 +421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Composebox.FromNTPLoadToSessionStart" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>niharm@google.com</owner>
   <owner>rtatum@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -676,7 +676,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Customization.Theme.ThemeCollection.DailyRefresh.TurnOff"
-    enum="NTPCollectionId" expires_after="2027-02-28">
+    enum="NTPCollectionId" expires_after="2027-05-02">
   <owner>hanxi@chromium.org</owner>
   <owner>yyanting@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -689,7 +689,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Customization.Theme.ThemeCollection.DailyRefresh.TurnOn"
-    enum="NTPCollectionId" expires_after="2027-02-28">
+    enum="NTPCollectionId" expires_after="2027-05-02">
   <owner>hanxi@chromium.org</owner>
   <owner>yyanting@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -977,7 +977,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.Click" enum="FooterElement"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>Logged when the Footer was clicked.</summary>
@@ -1026,7 +1026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.ToggledVisibility{FooterToggleSource}"
-    enum="BooleanVisible" expires_after="2027-02-28">
+    enum="BooleanVisible" expires_after="2027-05-02">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1065,7 +1065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.WebUI.LoadDocumentTime" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

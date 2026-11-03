@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Quota.AvailableDiskSpace" units="MB"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace2" units="MB"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

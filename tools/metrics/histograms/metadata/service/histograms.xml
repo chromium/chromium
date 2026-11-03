@@ -661,7 +661,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.Redirect"
-    enum="Boolean" expires_after="2027-02-28">
+    enum="Boolean" expires_after="2027-05-02">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1568,7 +1568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.PaymentHandler.DisconnectTimeout"
-    enum="BooleanTimedOut" expires_after="2027-02-28">
+    enum="BooleanTimedOut" expires_after="2027-05-02">
   <owner>smcgruer@chromium.org</owner>
   <owner>perryuwang@gmail.com</owner>
   <owner>chrome-payments-eng@google.com</owner>

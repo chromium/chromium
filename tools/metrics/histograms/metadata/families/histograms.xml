@@ -1069,7 +1069,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="SupervisedUsers.{Component}.TopLevelFilteringResult{Context}"
-    enum="SupervisedUserFilterTopLevelResult" expires_after="2027-02-28">
+    enum="SupervisedUserFilterTopLevelResult" expires_after="2027-05-02">
   <owner>tju@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

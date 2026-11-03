@@ -609,7 +609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ResetTimeout.Outcome"
-    enum="CustomTabsResetTimeoutOutcome" expires_after="2027-02-28">
+    enum="CustomTabsResetTimeoutOutcome" expires_after="2027-05-02">
   <owner>tivi@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

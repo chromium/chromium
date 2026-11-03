@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BatchUpload.DataTypeAvailable" enum="SyncDataTypes"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -314,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BatchUpload.DialogCloseReason"
-    enum="BatchUploadDialogCloseReason" expires_after="2027-02-28">
+    enum="BatchUploadDialogCloseReason" expires_after="2027-05-02">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BatchUpload.Opened" enum="BatchUploadEntryPoint"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -654,7 +654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CommitRequestEntityCount" units="entities"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -785,7 +785,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(CrossDeviceSettingImportOutcome) -->
 
 <histogram name="Sync.CrossDeviceSettingImportOutcome"
-    enum="CrossDeviceSettingImportOutcome" expires_after="2027-02-28">
+    enum="CrossDeviceSettingImportOutcome" expires_after="2027-05-02">
   <owner>jhimawan@google.com</owner>
   <owner>bwwilliams@google.com</owner>
   <owner>treib@chromium.org</owner>
@@ -1541,7 +1541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DownloadUpdatesResult" enum="SyncerErrorValues"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1883,7 +1883,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.LocalChangeDuringRemoteUpdate" enum="SyncDataTypes"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -2061,7 +2061,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PasswordsBatchUpload.Count" units="passwords"
-    expires_after="2027-03-03">
+    expires_after="2027-05-02">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -2551,7 +2551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncErrorInfobarDisplayed2{SyncErrorInfobarTrigger}"
-    enum="SyncErrorInfobarTypes" expires_after="2027-02-28">
+    enum="SyncErrorInfobarTypes" expires_after="2027-05-02">
   <owner>rgod@google.com</owner>
   <owner>ylahodiuk@google.com</owner>
   <owner>jlebel@chromium.org</owner>
@@ -3095,7 +3095,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito"
-    enum="BooleanIncognito" expires_after="2027-02-28">
+    enum="BooleanIncognito" expires_after="2027-05-02">
   <owner>mastiz@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>

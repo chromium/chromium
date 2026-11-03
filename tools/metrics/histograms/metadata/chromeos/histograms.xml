@@ -905,7 +905,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Camera.OpenDeviceLatency" units="microseconds"
-    expires_after="2027-02-10">
+    expires_after="2027-05-02">
   <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -1164,7 +1164,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CountryCode.MissingVariationData"
-    enum="ChromeOSFallbackCountry" expires_after="2027-02-28">
+    enum="ChromeOSFallbackCountry" expires_after="2027-05-02">
   <owner>cschlosser@chromium.org</owner>
   <owner>chromeos-privacyhub@google.com</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -1215,7 +1215,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CWP.ParseCPUFrequencies"
-    enum="ChromeOSParseCPUFrequencyStatus" expires_after="2027-02-28">
+    enum="ChromeOSParseCPUFrequencyStatus" expires_after="2027-05-02">
   <owner>gmx@chromium.org</owner>
   <owner>cwp-team@google.com</owner>
   <summary>

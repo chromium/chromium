@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Dismiss.{MobileInfobarType}"
-    enum="MobileMessagesBannerDismissType" expires_after="2027-02-28">
+    enum="MobileMessagesBannerDismissType" expires_after="2027-05-02">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -815,7 +815,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.Change.{NotificationChannelId}"
-    enum="BooleanEnabled" expires_after="2027-02-28">
+    enum="BooleanEnabled" expires_after="2027-05-02">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>

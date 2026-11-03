@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.OnDeviceTranslation.{OnDeviceTranslationAction}.IsSourceLanguageSupported"
-    enum="Boolean" expires_after="2027-03-01">
+    enum="Boolean" expires_after="2027-05-02">
   <owner>danft@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -395,7 +395,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.OnDeviceTranslation.{OnDeviceTranslationAction}.IsTargetLanguageSupported"
-    enum="Boolean" expires_after="2027-03-01">
+    enum="Boolean" expires_after="2027-05-02">
   <owner>danft@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -421,7 +421,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.OnDeviceTranslation.{OnDeviceTranslationAction}.{LanguageRole}"
-    enum="SupportedLanguage" expires_after="2027-03-01">
+    enum="SupportedLanguage" expires_after="2027-05-02">
   <owner>evliu@google.com</owner>
   <owner>danft@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
@@ -747,7 +747,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Translation.LanguageDetection.ContentLength"
-    units="characters" expires_after="2027-02-28">
+    units="characters" expires_after="2027-05-02">
   <owner>megjablon@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

@@ -373,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Login.AccountTypesShown" enum="ActorLoginAccountTypes"
-    expires_after="2027-02-25">
+    expires_after="2027-05-02">
   <owner>ioanap@google.com</owner>
   <owner>otara@google.com</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Login.GetCredentialsCompletedToAccountChosen" units="ms"
-    expires_after="2027-02-25">
+    expires_after="2027-05-02">
   <owner>ioanap@google.com</owner>
   <owner>otara@google.com</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -444,7 +444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Login.GetCredentialsLatency" units="ms"
-    expires_after="2027-02-25">
+    expires_after="2027-05-02">
   <owner>ioanap@google.com</owner>
   <owner>otara@google.com</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Login.NumAccountsShown" units="count"
-    expires_after="2027-02-25">
+    expires_after="2027-05-02">
   <owner>ioanap@google.com</owner>
   <owner>otara@google.com</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -468,7 +468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Login.SelectedAccountType"
-    enum="ActorLoginSelectedAccountType" expires_after="2027-02-25">
+    enum="ActorLoginSelectedAccountType" expires_after="2027-05-02">
   <owner>ioanap@google.com</owner>
   <owner>otara@google.com</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.NavigationGating.DarkLaunchConfirmationRequestLatency"
-    units="ms" expires_after="2027-02-14">
+    units="ms" expires_after="2027-05-02">
   <owner>masnoble@google.com</owner>
   <owner>dylancutler@google.com</owner>
   <summary>
@@ -541,7 +541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.NavigationGating.GatingDecision2" enum="GatingDecision"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>tquintanilla@google.com</owner>
   <owner>dylancutler@google.com</owner>
   <summary>
@@ -584,7 +584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.NavigationGating.TimeElapsedForGating2" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
   <summary>

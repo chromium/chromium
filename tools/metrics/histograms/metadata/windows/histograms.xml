@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.IsolatedBrowser.LaunchResult" enum="Hresult"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>wfh@chromium.org</owner>
   <owner>chrome-platform-security-core@google.com</owner>
   <summary>
@@ -469,7 +469,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ParentalControls.FetchResult" enum="BooleanSuccess"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>ljjlee@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -481,7 +481,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ParentalControls.{Setting}" enum="Boolean"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>ljjlee@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -586,7 +586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.PlatformExperienceHelper.InstallerLaunchStatus.User"
-    enum="UserInstallerLaunchStatus" expires_after="2027-02-28">
+    enum="UserInstallerLaunchStatus" expires_after="2027-05-02">
   <owner>alsan@chromium.org</owner>
   <owner>chrome-desktop-ui-waterloo@google.com</owner>
   <summary>
@@ -620,7 +620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ReplaceFileResult" enum="ReplaceFileResult"
-    expires_after="2027-03-02">
+    expires_after="2027-05-02">
   <owner>grt@chromium.org</owner>
   <owner>tingshao@microsoft.com</owner>
   <summary>

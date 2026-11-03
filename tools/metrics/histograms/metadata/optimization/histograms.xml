@@ -741,7 +741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.AIPageContent.ExtractionConcurrency"
-    enum="AIPageContentExtractionConcurrency" expires_after="2027-02-28">
+    enum="AIPageContentExtractionConcurrency" expires_after="2027-05-02">
   <owner>alexmt@chromium.org</owner>
   <owner>khushalsagar@chromium.org</owner>
   <summary>
@@ -753,7 +753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.AIPageContent.ExtractionsBetweenNavigations"
-    units="extractions" expires_after="2027-02-28">
+    units="extractions" expires_after="2027-05-02">
   <owner>alexmt@chromium.org</owner>
   <owner>khushalsagar@chromium.org</owner>
   <summary>
@@ -764,7 +764,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.AIPageContent.ExtractionsPerPage"
-    units="extractions" expires_after="2027-02-28">
+    units="extractions" expires_after="2027-05-02">
   <owner>alexmt@chromium.org</owner>
   <owner>khushalsagar@chromium.org</owner>
   <summary>
@@ -882,7 +882,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.AIPageContent.TimeSinceLastExtraction"
-    units="ms" expires_after="2027-02-28">
+    units="ms" expires_after="2027-05-02">
   <owner>alexmt@chromium.org</owner>
   <owner>khushalsagar@chromium.org</owner>
   <summary>

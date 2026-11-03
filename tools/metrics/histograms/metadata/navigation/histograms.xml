@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.CCNS.CookieChangeCause"
-    enum="CookieChangeCause" expires_after="2027-02-28">
+    enum="CookieChangeCause" expires_after="2027-05-02">
   <owner>leimy@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.CCNS.JSNetworkRequestIncludesCredentials"
-    enum="Boolean" expires_after="2027-02-28">
+    enum="Boolean" expires_after="2027-05-02">
   <owner>leimy@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -533,7 +533,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.HistoryNavigationOutcome.DisallowActivationReason"
-    enum="InactiveFrameDisallowActivationReason" expires_after="2027-01-24">
+    enum="InactiveFrameDisallowActivationReason" expires_after="2027-05-02">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Restore.NavigationToFirstPaint" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -708,7 +708,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.RestoredNavigationDirection"
-    enum="HistoryNavigationDirection" expires_after="2027-02-28">
+    enum="HistoryNavigationDirection" expires_after="2027-05-02">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -1964,7 +1964,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.OriginAgentCluster.AdExclusionResult"
-    enum="OriginAgentClusterAdExclusionResult" expires_after="2027-02-07">
+    enum="OriginAgentClusterAdExclusionResult" expires_after="2027-05-02">
   <owner>lbrady@google.com</owner>
   <owner>chrome-security-architecture@google.com</owner>
   <summary>
@@ -3741,7 +3741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation{Initiator}.DuplicateNavCookieStatus"
-    enum="DuplicateNavsCookieStatus" expires_after="2027-02-28">
+    enum="DuplicateNavsCookieStatus" expires_after="2027-05-02">
   <owner>annasato@google.com</owner>
   <owner>rakina@google.com</owner>
   <owner>chrome-navigation@google.com</owner>
@@ -4002,7 +4002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Prerender.Experimental.PredictionStatus.DefaultSearchEngine"
-    enum="PrerenderPredictionStatus" expires_after="2027-02-28">
+    enum="PrerenderPredictionStatus" expires_after="2027-05-02">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

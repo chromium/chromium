@@ -2367,7 +2367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinkTableCount" units="VisitedLinks"
-    expires_after="2027-03-01">
+    expires_after="2027-05-02">
   <owner>kyraseevers@chromium.org</owner>
   <owner>tiffanysong@google.com</owner>
   <component>1456589</component>

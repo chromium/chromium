@@ -583,7 +583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.RunningAccessibilityTools"
-    enum="AccessibilityAndroidAccessibilityTools" expires_after="2027-02-28">
+    enum="AccessibilityAndroidAccessibilityTools" expires_after="2027-05-02">
   <owner>aaronmoss@google.com</owner>
   <owner>davidsegovia@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1299,7 +1299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDisableTouchpad" enum="BooleanEnabled"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>lkupo@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2350,7 +2350,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.GetTranslation.TargetLanguage"
-    enum="LocaleCodeBCP47" expires_after="2027-02-28">
+    enum="LocaleCodeBCP47" expires_after="2027-05-02">
   <owner>danft@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
@@ -3382,7 +3382,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.EntryPointAfterOmnibox"
-    enum="ReadAnythingOpenTrigger" expires_after="2027-02-28">
+    enum="ReadAnythingOpenTrigger" expires_after="2027-05-02">
   <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
@@ -3526,7 +3526,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.MathML.DistillationStatus"
-    enum="ReadAnythingMathMlDistillationStatus" expires_after="2027-03-01">
+    enum="ReadAnythingMathMlDistillationStatus" expires_after="2027-05-02">
   <owner>lwinston@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
@@ -3537,7 +3537,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.MathML.PresentOnPage"
-    enum="Boolean" expires_after="2027-03-01">
+    enum="Boolean" expires_after="2027-05-02">
   <owner>lwinston@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3666,7 +3666,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.Readability.EarlySelection"
-    enum="ReadAnythingEarlySelection" expires_after="2027-03-01">
+    enum="ReadAnythingEarlySelection" expires_after="2027-05-02">
   <owner>gusmartin@google.com</owner>
   <owner>chrome-irm-devs@google.com</owner>
   <summary>
@@ -3909,7 +3909,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.SpeechError"
-    enum="ReadAnythingSpeechError" expires_after="2027-02-28">
+    enum="ReadAnythingSpeechError" expires_after="2027-05-02">
   <owner>lwinston@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -4009,7 +4009,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.ReadAnything.TimeFromStartDistillationToOnArticleReady"
-    units="ms" expires_after="2027-03-01">
+    units="ms" expires_after="2027-05-02">
   <owner>martinglopez@google.com</owner>
   <owner>chrome-irm-devs@google.com</owner>
   <summary>
@@ -4021,7 +4021,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.ReadAnything.TimeFromTreeChangedToDistillationComplete"
-    units="ms" expires_after="2027-03-01">
+    units="ms" expires_after="2027-05-02">
   <owner>gusmartin@google.com</owner>
   <owner>chrome-irm-devs@google.com</owner>
   <summary>

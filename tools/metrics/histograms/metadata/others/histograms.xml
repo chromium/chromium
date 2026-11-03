@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ActivityReporter.InitialDateLastActiveState"
-    enum="InitialDateLastActiveState" expires_after="2027-01-19">
+    enum="InitialDateLastActiveState" expires_after="2027-05-02">
   <owner>noahrose@google.com</owner>
   <owner>src/components/activity_reporter/OWNERS</owner>
   <summary>
@@ -639,7 +639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.CriticalCHRestart" enum="CriticalCHRestart"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
@@ -1761,7 +1761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.NotAllowed.RequestSource" enum="FeedbackSource"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -4376,7 +4376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SB2.DownloadChecks" enum="SB2DownloadChecks"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -5412,7 +5412,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Style.InvalidationTime" units="microseconds"
-    expires_after="2027-03-01">
+    expires_after="2027-05-02">
   <owner>futhark@chromium.org</owner>
   <summary>
     Microseconds spent in StyleEngine::InvalidateStyle. Only samples from high
@@ -5421,7 +5421,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Style.RebuildLayoutTreeTime" units="microseconds"
-    expires_after="2027-03-01">
+    expires_after="2027-05-02">
   <owner>futhark@chromium.org</owner>
   <summary>
     Microseconds spent in RebuildLayoutTree called from Document::UpdateStyle.
@@ -5429,7 +5429,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Style.RecalcTime" units="microseconds"
-    expires_after="2027-03-01">
+    expires_after="2027-05-02">
   <owner>futhark@chromium.org</owner>
   <summary>
     Microseconds spent in RecalcStyle called from Document::UpdateStyle.

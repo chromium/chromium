@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Clipboard.Write" enum="ClipboardFormatWrite"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
@@ -894,7 +894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBEnv.SyncResult" enum="PlatformFileError"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

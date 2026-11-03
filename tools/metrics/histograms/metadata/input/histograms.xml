@@ -882,7 +882,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2027-02-28">
+    units="characters" expires_after="2027-05-02">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -2301,7 +2301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.GetCachedFirstRectResult"
-    enum="GetCachedFirstRectResult" expires_after="2027-02-28">
+    enum="GetCachedFirstRectResult" expires_after="2027-05-02">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -2314,7 +2314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.LockWait2" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
