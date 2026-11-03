@@ -47,10 +47,10 @@
 namespace glic {
 namespace {
 
-// Use `kChromeUIContextualTasksURL` because it is allow-listed for web view
+// Use `kChromeUIChromeSigninURL` because it is allow-listed for web view
 // use in `chrome/common/extensions/api/_api_features.json`.
-const char* kTestWebViewURL = chrome::kChromeUIContextualTasksURL;
-const char* kTestWebViewHost = chrome::kChromeUIContextualTasksHost;
+const char* kTestWebViewURL = chrome::kChromeUIChromeSigninURL;
+const char* kTestWebViewHost = chrome::kChromeUIChromeSigninHost;
 
 // A simple WebUI controller that serves a blank page with a <webview> tag.
 class TestWebUIController : public content::WebUIController {
