@@ -8,11 +8,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
+#include "third_party/blink/renderer/core/dom/dom_implementation.h"
+#include "third_party/blink/renderer/core/dom/xml_document.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/page/validation_message_client_impl.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -24,8 +29,11 @@ namespace blink {
 
 class ValidationMessageOverlayDelegateTest : public PaintTestConfigurations,
                                              public RenderingTest {
-#if BUILDFLAG(IS_WIN)
  public:
+  ValidationMessageOverlayDelegateTest()
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+
+#if BUILDFLAG(IS_WIN)
   void SetUp() override {
     RenderingTest::SetUp();
 
@@ -173,6 +181,36 @@ TEST_P(ValidationMessageOverlayDelegateTest, Repaint) {
 
   GetPage().SetValidationMessageClientForTesting(original_client);
   static_cast<ValidationMessageClient*>(client)->WillBeDestroyed();
+}
+
+TEST_P(ValidationMessageOverlayDelegateTest,
+       AdoptedAnchorOverlayDoesNotOutliveFrame) {
+  ScopedBlockingFocusWithoutUserActivationForTest blocking_focus(true);
+  SetBodyInnerHTML(
+      "<iframe sandbox='allow-scripts allow-same-origin'></iframe>");
+  SetChildFrameHTML("<input id='anchor' type='email' value='foo'>");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* anchor = To<HTMLInputElement>(
+      ChildDocument().getElementById(AtomicString("anchor")));
+  // The test platform does not provide localized validation messages.
+  anchor->setCustomValidity("Invalid email address.");
+  ASSERT_FALSE(anchor->reportValidity());
+  ASSERT_FALSE(ChildDocument().FocusedElement());
+
+  ValidationMessageClient& client = GetPage().GetValidationMessageClient();
+  ASSERT_TRUE(client.IsValidationMessageVisible(*anchor));
+
+  Document* detached_document = GetDocument().implementation().createDocument(
+      AtomicString("svg"), g_empty_atom, nullptr, ASSERT_NO_EXCEPTION);
+  detached_document->adoptNode(ChildDocument().documentElement(),
+                               ASSERT_NO_EXCEPTION);
+  ASSERT_EQ(&anchor->GetDocument(), detached_document);
+  // Without a focus change, removal only starts the hide animation.
+  ASSERT_TRUE(client.IsValidationMessageVisible(*anchor));
+
+  GetFrame().Detach(FrameDetachType::kRemove);
+  EXPECT_FALSE(client.IsValidationMessageVisible(*anchor));
 }
 
 }  // namespace blink
