@@ -21,7 +21,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
@@ -124,11 +123,7 @@ QuickInsertFeatureTourDialogView::QuickInsertFeatureTourDialogView(
     base::RepeatingClosure learn_more_callback,
     base::OnceClosure completion_callback) {
   views::Builder<QuickInsertFeatureTourDialogView>(this)
-      .SetBorder(views::CreatePaddedBorder(
-          std::make_unique<views::HighlightBorder>(
-              kFeatureTourDialogCornerRadius,
-              views::HighlightBorder::Type::kHighlightBorderOnShadow),
-          kFeatureTourDialogBorderInsets))
+      .SetBorder(views::CreateEmptyBorder(kFeatureTourDialogBorderInsets))
       .SetTitleText(GetHeadingText(editor_status))
       .SetMiddleContentView(
           CreateMiddleContentView(

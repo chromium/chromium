@@ -25,7 +25,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -212,19 +211,15 @@ END_METADATA
 //------------------------------------------------------------------------------
 // SystemDialogDelegateView:
 SystemDialogDelegateView::SystemDialogDelegateView() {
-  // Set border and background.
-  SetBorder(views::CreatePaddedBorder(
-      std::make_unique<views::HighlightBorder>(
-          kRoundedCornerRadius,
-          views::HighlightBorder::Type::kHighlightBorderOnShadow),
-      kBorderInsets));
+  // Set border, background, and decoration.
+  SetBorder(views::CreateEmptyBorder(kBorderInsets));
   SetBackground(views::CreateRoundedRectBackground(kBackgroundColorId,
                                                    kRoundedCornerRadius));
 
-  // Set shadow.
-  shadow_ = SystemDecoration::CreateForView(
-      this, SystemDecoration::ShadowType::kElevation12);
-  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kRoundedCornerRadius));
+  decoration_ = SystemDecoration::CreateForView(
+      this, SystemDecoration::ShadowType::kElevation12,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(gfx::RoundedCornersF(kRoundedCornerRadius));
 
   // Use flex layout.
   SetLayoutManager(std::make_unique<views::FlexLayout>())

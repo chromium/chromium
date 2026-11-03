@@ -197,8 +197,8 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   raw_ptr<ButtonContainer> button_container_ = nullptr;
   base::flat_map<ContentType, raw_ptr<views::View>> contents_;
 
-  // The dialog shadow.
-  std::unique_ptr<SystemDecoration> shadow_;
+  // The dialog shadow and highlight border decoration.
+  std::unique_ptr<SystemDecoration> decoration_;
 
   // Indicates if the dialog is being closed.
   bool closing_dialog_ = false;

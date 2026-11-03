@@ -46,7 +46,7 @@ TEST_P(WelcomeTourDialogPixelTest, Appearance) {
   // Take a screenshot of the Welcome Tour dialog.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("welcome_tour_dialog"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 1,
       WelcomeTourDialog::Get()));
 }
 
