@@ -555,6 +555,15 @@ export class GlicSelectionOverlayElement extends
         break;
       case GestureState.STARTING:
         if (this.draggingRespondent === DragFeature.NONE) {
+          // With the prompt box, a click doesn't select an area around it. It
+          // closes the overlay once there is a region, and does nothing before.
+          if (this.enableSelectionOverlayPromptBox) {
+            if (this.activeRegionId) {
+              (this.baseHandler as SelectionOverlayBaseHandlerImpl)
+                  .dismissOverlay(DismissOverlayReason.kBackgroundClick);
+            }
+            break;
+          }
           this.baseHandler.activeRegionId = '';
           this.selectionElements.regionSelectionLayer.handleGestureEnd(
               this.currentGesture);
