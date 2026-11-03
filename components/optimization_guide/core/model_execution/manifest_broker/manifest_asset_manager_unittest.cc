@@ -831,9 +831,6 @@ TEST_F(ManifestAssetManagerTest, RemainsInstalledWhenReferencedInManifest) {
 }
 
 TEST_F(ManifestAssetManagerTest, AssetRemainsInstalledWhileNotRequested) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kOnDeviceModelEviction);
-
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.RaisePriority(asset.use_case,
                                UsageTracker::Priority::kUserBlocking);
@@ -846,9 +843,8 @@ TEST_F(ManifestAssetManagerTest, AssetRemainsInstalledWhileNotRequested) {
 
   // Trigger an update manifest to re-evaluate the registration.
   UpdateManifest(DummyManifest().Add(asset));
-  task_environment_.FastForwardBy(base::Seconds(2));
 
-  // Should not uninstall when eviction is disabled.
+  // Should not uninstall.
   EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
 }
 
@@ -918,11 +914,7 @@ TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenEligibleUseCaseUseTooOld) {
             OnDeviceModelEligibilityReason::kNoOnDeviceFeatureUsed);
 }
 
-TEST_F(ManifestAssetManagerTest,
-       AssetRemainsInstalledAfterRetentionPeriodWhenEvictionDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kOnDeviceModelEviction);
-
+TEST_F(ManifestAssetManagerTest, AssetRemainsInstalledAfterRetentionPeriod) {
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.RaisePriority(asset.use_case,
                                UsageTracker::Priority::kUserBlocking);
@@ -942,13 +934,14 @@ TEST_F(ManifestAssetManagerTest,
         1);
   }
 
-  // When kOnDeviceModelEviction is disabled, the asset remains installed even
-  // after the retention period expires, and is counted as evictable.
+  // When kOnDeviceModelEviction is disabled (default), the asset remains
+  // installed even after the retention period expires, and is counted as
+  // evictable.
   {
     base::HistogramTester histogram_tester;
     task_environment_.FastForwardBy(base::Days(2));
     UpdateManifest(DummyManifest().Add(asset));
-    task_environment_.FastForwardBy(base::Seconds(2));
+    task_environment_.RunUntilIdle();
     EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEvictableAssetsCount", 1,
