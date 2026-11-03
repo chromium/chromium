@@ -6,7 +6,12 @@
 
 #include "base/auto_reset.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace {
 
@@ -22,6 +27,33 @@ bool IsChildOfWidgetOrWidget(const views::Widget* widget,
     current = current->parent();
   }
   return false;
+}
+
+#if BUILDFLAG(IS_OZONE)
+const views::Widget* GetRootWidget(const views::Widget* widget) {
+  while (widget->parent()) {
+    widget = widget->parent();
+  }
+  return widget;
+}
+#endif
+
+// Returns true if the window bounds of `widget` and `other` are in the same
+// coordinate space, so that comparing them is meaningful.
+bool HaveComparableBounds(const views::Widget* widget,
+                          const views::Widget* other) {
+#if BUILDFLAG(IS_OZONE)
+  // Some platforms (e.g. Wayland) don't expose the position of top-level
+  // windows, so the screen bounds of widgets from different top-level windows
+  // can't be compared. The bounds of widgets with the same root widget are
+  // relative to the same origin, so they can still be compared.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    return GetRootWidget(widget) == GetRootWidget(other);
+  }
+#endif
+  return true;
 }
 
 }  // namespace
@@ -345,6 +377,13 @@ void PictureInPictureOcclusionTracker::UpdateObserverStateForWidget(
     // If the observer widget is a child of this picture-in-picture widget (or
     // the same widget), then it can't be occluded by it.
     if (IsChildOfWidgetOrWidget(widget, picture_in_picture_widget)) {
+      continue;
+    }
+
+    // If the relative position of the widgets is unknown, then occlusion can't
+    // be determined. Treat the widget as unoccluded since otherwise it would be
+    // unusable while any picture-in-picture window is open.
+    if (!HaveComparableBounds(widget, picture_in_picture_widget)) {
       continue;
     }
 
