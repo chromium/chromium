@@ -5,8 +5,8 @@
 #ifndef CHROME_SERVICES_SPEECH_SODA_SODA_CLIENT_IMPL_H_
 #define CHROME_SERVICES_SPEECH_SODA_SODA_CLIENT_IMPL_H_
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_native_library.h"
 #include "chrome/services/speech/soda/soda_async_impl.h"
 #include "chrome/services/speech/soda/soda_client.h"
 
@@ -36,30 +36,27 @@ class SodaClientImpl : public SodaClient {
   bool BinaryLoadedSuccessfully() override;
 
  private:
-  base::ScopedNativeLibrary lib_;
-
   typedef void* (*CreateSodaFunction)(SerializedSodaConfig);
-  CreateSodaFunction create_soda_func_;
+  CreateSodaFunction create_soda_func_ = nullptr;
 
   typedef void (*DeleteSodaFunction)(void*);
-  DeleteSodaFunction delete_soda_func_;
+  DeleteSodaFunction delete_soda_func_ = nullptr;
 
   typedef void (*AddAudioFunction)(void*, const char*, int);
-  AddAudioFunction add_audio_func_;
+  AddAudioFunction add_audio_func_ = nullptr;
 
   typedef void (*MarkDoneFunction)(void*);
-  MarkDoneFunction mark_done_func_;
+  MarkDoneFunction mark_done_func_ = nullptr;
 
   typedef void (*SodaStartFunction)(void*);
-  SodaStartFunction soda_start_func_;
+  SodaStartFunction soda_start_func_ = nullptr;
 
   typedef void (*UpdateRecognitionContextFunction)(void*, RecognitionContext);
-  UpdateRecognitionContextFunction update_recognition_context_func_;
+  UpdateRecognitionContextFunction update_recognition_context_func_ = nullptr;
 
-  // An opaque handle to the SODA async instance. While this class owns this
-  // handle, the handle is instantiated and deleted by the SODA library, so the
-  // pointer may dangle after DeleteExtendedSodaAsync is called.
-  raw_ptr<void, DisableDanglingPtrDetection> soda_async_handle_;
+  // An opaque handle to the SODA async instance, instantiated and deleted by
+  // the SODA library.
+  raw_ptr<void> soda_async_handle_ = nullptr;
 
   LoadSodaResultValue load_soda_result_ = LoadSodaResultValue::kUnknown;
   bool is_initialized_ = false;

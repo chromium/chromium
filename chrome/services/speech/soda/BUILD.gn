@@ -38,32 +38,43 @@ source_set("soda") {
   }
 }
 
+shared_library("fake_soda_library_for_testing") {
+  testonly = true
+  sources = [
+    "fake_soda_library.cc",
+    "soda_async_impl.h",
+  ]
+}
+
 # TODO(robsc): add unit test for cros_soda_client.
 source_set("unit_tests") {
   testonly = true
 
+  sources = [ "soda_client_impl_unittest.cc" ]
+
+  data_deps = [ ":fake_soda_library_for_testing" ]
+
   if (enable_soda_integration_tests) {
-    sources = [ "soda_client_impl_unittest.cc" ]
-
     if (is_mac) {
-      data_deps = [ "//third_party/soda-mac64:soda_resources" ]
+      data_deps += [ "//third_party/soda-mac64:soda_resources" ]
     } else if (is_win && target_cpu == "x86") {
-      data_deps = [ "//third_party/soda-win32:soda_resources" ]
+      data_deps += [ "//third_party/soda-win32:soda_resources" ]
     } else if (is_win && target_cpu == "x64") {
-      data_deps = [ "//third_party/soda-win64:soda_resources" ]
+      data_deps += [ "//third_party/soda-win64:soda_resources" ]
     } else {
-      data_deps = [ "//third_party/soda:soda_resources" ]
+      data_deps += [ "//third_party/soda:soda_resources" ]
     }
-
-    deps = [
-      ":soda",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/services/speech/soda:soda_api_proto",
-      "//media",
-      "//testing/gtest",
-    ]
   }
+
+  deps = [
+    ":soda",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/services/speech/soda:soda_api_proto",
+    "//components/soda:buildflags",
+    "//media",
+    "//testing/gtest",
+  ]
 }
 
 source_set("test_support") {

@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/services/speech/soda:test_support",
+    "//chrome/services/speech/soda:unit_tests",
     "//media/mojo/common",
     "//media/mojo/mojom:web_speech_recognition",
     "//mojo/public/cpp/bindings",

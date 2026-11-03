@@ -4,37 +4,63 @@
 
 #include "chrome/services/speech/soda/soda_client_impl.h"
 
+#include <map>
 #include <tuple>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
+#include "base/scoped_native_library.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "partition_alloc/memory_reclaimer.h"
 
 namespace soda {
 
-SodaClientImpl::SodaClientImpl(base::FilePath library_path)
-    : lib_(library_path),
-      create_soda_func_(reinterpret_cast<CreateSodaFunction>(
-          lib_.GetFunctionPointer("CreateExtendedSodaAsync"))),
-      delete_soda_func_(reinterpret_cast<DeleteSodaFunction>(
-          lib_.GetFunctionPointer("DeleteExtendedSodaAsync"))),
-      add_audio_func_(reinterpret_cast<AddAudioFunction>(
-          lib_.GetFunctionPointer("ExtendedAddAudio"))),
-      mark_done_func_(reinterpret_cast<MarkDoneFunction>(
-          lib_.GetFunctionPointer("ExtendedSodaMarkDone"))),
-      soda_start_func_(reinterpret_cast<SodaStartFunction>(
-          lib_.GetFunctionPointer("ExtendedSodaStart"))),
-      update_recognition_context_func_(
-          reinterpret_cast<UpdateRecognitionContextFunction>(
-              lib_.GetFunctionPointer("UpdateRecognitionContext"))) {
-  if (!lib_.is_valid()) {
+namespace {
+
+// Keeps loaded SODA native libraries alive for the lifetime of the utility
+// process. Repeatedly unloading and reloading the SODA shared library across
+// SodaClientImpl instances re-runs C++ static initializers on every load
+// (leaking Windows TLS slots until TlsAlloc() aborts the process with
+// TLS_OUT_OF_INDEXES, and re-registering protobuf descriptors on the main
+// thread).
+base::ScopedNativeLibrary& GetOrLoadSodaLibrary(
+    const base::FilePath& library_path) {
+  static base::NoDestructor<std::map<base::FilePath, base::ScopedNativeLibrary>>
+      loaded_libraries;
+  auto [it, inserted] =
+      loaded_libraries->try_emplace(library_path, library_path);
+  if (!inserted && !it->second.is_valid()) {
+    it->second = base::ScopedNativeLibrary(library_path);
+  }
+  return it->second;
+}
+
+}  // namespace
+
+SodaClientImpl::SodaClientImpl(base::FilePath library_path) {
+  base::ScopedNativeLibrary& lib = GetOrLoadSodaLibrary(library_path);
+  create_soda_func_ = reinterpret_cast<CreateSodaFunction>(
+      lib.GetFunctionPointer("CreateExtendedSodaAsync"));
+  delete_soda_func_ = reinterpret_cast<DeleteSodaFunction>(
+      lib.GetFunctionPointer("DeleteExtendedSodaAsync"));
+  add_audio_func_ = reinterpret_cast<AddAudioFunction>(
+      lib.GetFunctionPointer("ExtendedAddAudio"));
+  mark_done_func_ = reinterpret_cast<MarkDoneFunction>(
+      lib.GetFunctionPointer("ExtendedSodaMarkDone"));
+  soda_start_func_ = reinterpret_cast<SodaStartFunction>(
+      lib.GetFunctionPointer("ExtendedSodaStart"));
+  update_recognition_context_func_ =
+      reinterpret_cast<UpdateRecognitionContextFunction>(
+          lib.GetFunctionPointer("UpdateRecognitionContext"));
+
+  if (!lib.is_valid()) {
     LOG(ERROR) << "SODA binary at " << library_path.value()
                << " could not be loaded.";
-    LOG(ERROR) << "Error: " << lib_.GetError()->ToString();
+    LOG(ERROR) << "Error: " << lib.GetError()->ToString();
     DCHECK(false);
   }
 
@@ -46,7 +72,7 @@ SodaClientImpl::SodaClientImpl(base::FilePath library_path)
   DCHECK(mark_done_func_);
   DCHECK(soda_start_func_);
 
-  if (!lib_.is_valid()) {
+  if (!lib.is_valid()) {
     load_soda_result_ = LoadSodaResultValue::kBinaryInvalid;
 
     if (base::FeatureList::IsEnabled(media::kLogSodaLoadFailures)) {
@@ -65,7 +91,7 @@ SodaClientImpl::SodaClientImpl(base::FilePath library_path)
 #if BUILDFLAG(IS_WIN)
   if (load_soda_result_ == LoadSodaResultValue::kBinaryInvalid) {
     base::UmaHistogramSparse("Accessibility.LiveCaption.LoadSodaErrorCode",
-                             lib_.GetError()->code);
+                             lib.GetError()->code);
   }
 #endif  // BUILDFLAG(IS_WIN)
 }
