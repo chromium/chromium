@@ -1332,10 +1332,18 @@ suite('ComposeboxMixinTest', () => {
       maxInputsByType: {},
       maxTotalInputs: 5,
       isCanvasQuerySubmitted: false,
+      willFulfillInAim: true,
     } as unknown as InputState;
     element.onInputStateChanged(inputState);
     await microtasksFinished();
     assertDeepEquals(element.inputState, inputState);
+    assertTrue(element.willFulfillInAim);
+    assertTrue(element.hasAttribute('will-fulfill-in-aim'));
+
+    element.onInputStateChanged({...inputState, willFulfillInAim: false});
+    await microtasksFinished();
+    assertFalse(element.willFulfillInAim);
+    assertFalse(element.hasAttribute('will-fulfill-in-aim'));
   });
 
   test('NotifySessionStarted called on connectedCallback', () => {

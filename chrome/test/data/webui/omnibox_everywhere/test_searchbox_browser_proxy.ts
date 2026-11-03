@@ -28,6 +28,7 @@ export function createDefaultInputState(): InputState {
     maxInputsByType: {},
     maxTotalInputs: 0,
     isCanvasQuerySubmitted: false,
+    willFulfillInAim: true,
   };
 }
 

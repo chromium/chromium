@@ -272,6 +272,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
                   maxInputsByType: {},
                   maxTotalInputs: 10,
                   isCanvasQuerySubmitted: false,
+                  willFulfillInAim: true,
                 };
 
                 const composebox = el.shadowRoot

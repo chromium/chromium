@@ -2022,4 +2022,8 @@ TEST_F(InputStateModelTest, UpdatesSessionHandleCurrentUrl) {
   EXPECT_EQ(new_session_handle.current_url(), updated_url);
 }
 
+TEST_F(InputStateModelTest, WillFulfillInAimDefaultsToTrue) {
+  EXPECT_TRUE(input_state_model_->GetInputState().will_fulfill_in_aim);
+}
+
 }  // namespace contextual_search

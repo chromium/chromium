@@ -61,6 +61,9 @@ struct InputState {
   // active. Needed for suggest requests with `TOOL_MODE_IMAGE_GEN_UPLOAD`.
   bool image_gen_upload_active = false;
   bool is_canvas_query_submitted = false;
+  // Whether a query submitted in the current state will fulfill in AI Mode
+  // (true) or standard Search Results Page (false).
+  bool will_fulfill_in_aim = true;
 };
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:InputState)
 

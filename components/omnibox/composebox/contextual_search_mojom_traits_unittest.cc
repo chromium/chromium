@@ -140,4 +140,16 @@ TEST(ContextualSearchMojomTraitsTest, ContextUploadErrorTypeUnknownValue) {
   EXPECT_EQ(output, contextual_search::ContextUploadErrorType::kUnknown);
 }
 
+TEST(ContextualSearchMojomTraitsTest, InputStateWillFulfillInAim) {
+  omnibox::InputState input;
+  EXPECT_TRUE(input.will_fulfill_in_aim);
+  input.will_fulfill_in_aim = false;
+
+  omnibox::InputState output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::InputState>(input, output));
+
+  EXPECT_FALSE(output.will_fulfill_in_aim);
+}
+
 }  // namespace composebox_query
