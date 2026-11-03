@@ -104,6 +104,19 @@ class WebUILocationBarTest : public testing::Test {
     return location_bar_->permission_dashboard_.get();
   }
 
+  // Returns the token pushed to the WebUI for the given permission chip, i.e.
+  // the token a click on that chip echoes back.
+  uint32_t GetPushedChipStateToken(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+    toolbar_ui_api::mojom::ToolbarStatePtr state = GetState();
+    const toolbar_ui_api::mojom::PermissionDashboardStatePtr& dashboard =
+        state->location_bar_state->lhs_chips_state->permission_dashboard;
+    return identifier ==
+                   toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest
+               ? dashboard->request_chip->state_token
+               : dashboard->indicator_chip->state_token;
+  }
+
   content::BrowserTaskEnvironment browser_threads_;
   TestingProfile profile_;
   // For WebUIToolbarWebView, which creates its WebContents in it with
@@ -405,38 +418,83 @@ TEST_F(WebUILocationBarTest, StaleClickDroppedAfterChipRecreated) {
 }
 
 TEST_F(WebUILocationBarTest,
-       StaleClickDroppedAfterTabResetWithPersistentIndicator) {
+       StaleClickDroppedAfterTabSwitchWithPersistentIndicator) {
   ASSERT_TRUE(permission_dashboard());
+  constexpr auto kIndicator =
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator;
 
   bool indicator_chip_clicked = false;
   permission_dashboard()->indicator_chip()->SetPressedCallback(
-      base::BindLambdaForTesting([&](bool) { indicator_chip_clicked = true; }));
+      base::BindLambdaForTesting(
+          [&indicator_chip_clicked](bool) { indicator_chip_clicked = true; }));
 
   // Tab A displays an active indicator chip.
   permission_dashboard()->indicator_chip()->SetVisible(true);
-  uint32_t tab_a_token =
-      permission_dashboard()->indicator_chip()->state_token();
+  const uint32_t tab_a_token = GetPushedChipStateToken(kIndicator);
 
-  // Tab switch or navigation occurs where the indicator remains active on Tab
-  // B. LocationBar::ResetTabState() invalidates chip tokens.
-  location_bar_->ResetTabState(nullptr);
+  // Tab switch occurs where the indicator remains active on Tab B.
+  // `WebUILocationBar::Update()` invalidates the chip tokens via
+  // `WebUIPermissionDashboard::InvalidateStateTokens()`, then pushes them with
+  // `OnChanged()`.
+  permission_dashboard()->InvalidateStateTokens();
+  location_bar_->OnChanged();
 
-  // The indicator chip remains visible on Tab B, but with an updated token.
+  // The indicator chip remains visible on Tab B, and the WebUI was sent an
+  // updated token.
   EXPECT_TRUE(permission_dashboard()->indicator_chip()->GetVisible());
-  EXPECT_NE(tab_a_token,
-            permission_dashboard()->indicator_chip()->state_token());
+  EXPECT_NE(tab_a_token, GetPushedChipStateToken(kIndicator));
 
   // Stale click IPC from Tab A with old token should be dropped.
-  location_bar_->OnLhsChipClicked(
-      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
-      /*is_mouse_interaction=*/false, tab_a_token);
+  location_bar_->OnLhsChipClicked(kIndicator, /*is_mouse_interaction=*/false,
+                                  tab_a_token);
   EXPECT_FALSE(indicator_chip_clicked);
 
-  // Positive control: clicking with the current active token succeeds.
-  location_bar_->OnLhsChipClicked(
-      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
-      /*is_mouse_interaction=*/false,
-      permission_dashboard()->indicator_chip()->state_token());
+  // Positive control: clicking with the token the WebUI now has succeeds.
+  location_bar_->OnLhsChipClicked(kIndicator, /*is_mouse_interaction=*/false,
+                                  GetPushedChipStateToken(kIndicator));
+  EXPECT_TRUE(indicator_chip_clicked);
+}
+
+// `LocationBar::ResetTabState()` is called when a background tab's URL changes.
+// It must not invalidate the active tab's chip tokens, or clicks already in
+// flight for the active tab would be dropped.
+TEST_F(WebUILocationBarTest, BackgroundTabResetKeepsChipClicksWorking) {
+  ASSERT_TRUE(permission_dashboard());
+  constexpr auto kRequest =
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest;
+  constexpr auto kIndicator =
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator;
+
+  bool request_chip_clicked = false;
+  bool indicator_chip_clicked = false;
+  permission_dashboard()->request_chip()->SetPressedCallback(
+      base::BindLambdaForTesting(
+          [&request_chip_clicked](bool) { request_chip_clicked = true; }));
+  permission_dashboard()->indicator_chip()->SetPressedCallback(
+      base::BindLambdaForTesting(
+          [&indicator_chip_clicked](bool) { indicator_chip_clicked = true; }));
+
+  // The active tab shows both chips. These are the tokens the WebUI rendered.
+  permission_dashboard()->request_chip()->SetVisible(true);
+  permission_dashboard()->indicator_chip()->SetVisible(true);
+  const uint32_t request_token = GetPushedChipStateToken(kRequest);
+  const uint32_t indicator_token = GetPushedChipStateToken(kIndicator);
+
+  // A background tab's URL changes.
+  location_bar_->ResetTabState(nullptr);
+
+  EXPECT_EQ(request_token,
+            permission_dashboard()->request_chip()->state_token());
+  EXPECT_EQ(indicator_token,
+            permission_dashboard()->indicator_chip()->state_token());
+
+  // Clicks on the active tab's chips, echoing the rendered tokens, still run.
+  location_bar_->OnLhsChipClicked(kRequest, /*is_mouse_interaction=*/true,
+                                  request_token);
+  EXPECT_TRUE(request_chip_clicked);
+
+  location_bar_->OnLhsChipClicked(kIndicator, /*is_mouse_interaction=*/true,
+                                  indicator_token);
   EXPECT_TRUE(indicator_chip_clicked);
 }
 

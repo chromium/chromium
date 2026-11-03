@@ -184,7 +184,7 @@ void ContextualTasksLocationBar::Update(content::WebContents* contents) {
     // even if a chip stays visible across the switch. `OnChanged()` below
     // pushes the new tokens to the WebUI.
     if (permission_dashboard_) {
-      permission_dashboard_->ResetTabState();
+      permission_dashboard_->InvalidateStateTokens();
     }
     web_contents_ = contents ? contents->GetWeakPtr() : nullptr;
   }

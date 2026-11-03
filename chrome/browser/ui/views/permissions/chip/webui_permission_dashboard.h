@@ -28,7 +28,12 @@ class WebUIPermissionDashboard : public PermissionDashboardInterface {
   WebUIPermissionChip* request_chip() { return &request_chip_; }
   WebUIPermissionChip* indicator_chip() { return &indicator_chip_; }
 
-  void ResetTabState();
+  // Invalidates both chips' state tokens so that in-flight clicks for the
+  // previous tab or task are dropped. This doesn't push the new tokens to the
+  // WebUI, so callers must call `LocationBar::OnChanged()` afterwards.
+  // Otherwise the WebUI keeps echoing the old tokens, and every later click is
+  // dropped as stale.
+  void InvalidateStateTokens();
 
  private:
   void UpdateState();

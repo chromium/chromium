@@ -99,6 +99,10 @@ class WebUIPermissionChipTest : public testing::Test {
     location_bar_->browser_ = browser;
   }
 
+  static void InvalidateStateToken(WebUIPermissionChip& chip) {
+    chip.InvalidateStateToken();
+  }
+
   content::BrowserTaskEnvironment browser_threads_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
@@ -216,7 +220,7 @@ TEST_F(WebUIPermissionChipTest, OnClickedIfCurrentDropsStaleTokens) {
       }));
 
   const uint32_t stale_token = chip.state_token();
-  chip.InvalidateStateToken();
+  InvalidateStateToken(chip);
   ASSERT_NE(chip.state_token(), stale_token);
 
   EXPECT_FALSE(

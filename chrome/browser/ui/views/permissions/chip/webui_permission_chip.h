@@ -90,15 +90,21 @@ class WebUIPermissionChip : public PermissionChipInterface {
   toolbar_ui_api::mojom::PermissionChipStatePtr GetState() const;
 
   uint32_t state_token() const { return state_token_; }
-  void InvalidateStateToken() { ++state_token_; }
 
  private:
   friend class WebUIPermissionChipTest;
+  // For `InvalidateStateToken()`.
+  friend class WebUIPermissionDashboard;
 
   // How long `WaitForAnchor()` waits for the chip element to be shown before
   // timing out and running the callback anyway. `GetAnchor()` then returns a
   // fallback anchor.
   static constexpr base::TimeDelta kAnchorFallbackTimeout = base::Seconds(3);
+
+  // Bumps `state_token_` without pushing it to the WebUI. Private so that
+  // tokens are only invalidated through
+  // `WebUIPermissionDashboard::InvalidateStateTokens()`.
+  void InvalidateStateToken() { ++state_token_; }
 
   void NotifyVisibilityChanged();
   void UpdateState();
@@ -111,8 +117,8 @@ class WebUIPermissionChip : public PermissionChipInterface {
   // animation state changes (e.g. on navigations and prompt resets via
   // `ChipController`), and on tab or side panel task switches
   // (`InvalidateStateToken()`, via
-  // `WebUIPermissionDashboard::ResetTabState()`). The WebUI echoes the token it
-  // rendered the chip with in its click IPC
+  // `WebUIPermissionDashboard::InvalidateStateTokens()`). The WebUI echoes the
+  // token it rendered the chip with in its click IPC
   // (`OnLhsChipClicked()` in the main toolbar, `OnChipClicked()` in Contextual
   // Tasks), and `OnClickedIfCurrent()` drops clicks whose token doesn't match,
   // so actions don't run against an obsolete tab, task or request model.
