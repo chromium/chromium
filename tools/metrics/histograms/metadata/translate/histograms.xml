@@ -406,7 +406,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.OnDeviceTranslation.{OnDeviceTranslationAction}.LanguagePair"
-    units="int" expires_after="2027-03-01">
+    units="int" expires_after="2027-05-02">
   <owner>evliu@google.com</owner>
   <owner>danft@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>

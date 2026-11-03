@@ -3407,7 +3407,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.{InitiatorType}.WastedSpeculativeRFH.ExcludedAdsFromOriginIsolation"
-    enum="Boolean" expires_after="2027-02-07">
+    enum="Boolean" expires_after="2027-05-02">
   <owner>lbrady@google.com</owner>
   <owner>chrome-security-architecture@google.com</owner>
   <summary>

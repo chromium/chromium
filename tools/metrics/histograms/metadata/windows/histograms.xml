@@ -630,7 +630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.RunningIsolated" enum="BooleanEnabled"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>wfh@chromium.org</owner>
   <owner>chrome-platform-security-core@google.com</owner>
   <summary>

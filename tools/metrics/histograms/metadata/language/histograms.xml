@@ -600,7 +600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.Status{AccountType}"
-    enum="ULPInitiationStatus" expires_after="2027-02-28">
+    enum="ULPInitiationStatus" expires_after="2027-05-02">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

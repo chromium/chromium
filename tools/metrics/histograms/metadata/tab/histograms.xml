@@ -3973,7 +3973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.VerticalTabs.State" enum="VerticalTabsState"
-    expires_after="2027-03-01">
+    expires_after="2027-05-02">
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -3983,7 +3983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.VerticalTabs.TabStripSize" units="DIPs"
-    expires_after="2027-03-01">
+    expires_after="2027-05-02">
   <owner>charlesmeng@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -4117,7 +4117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabStrip.SplitView.{Source}.OrientationOnCreation"
-    enum="SplitTabLayout" expires_after="2027-02-28">
+    enum="SplitTabLayout" expires_after="2027-05-02">
   <owner>agale@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

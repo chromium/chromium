@@ -2757,7 +2757,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.Session.TurnCount" units="count"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>birnie@google.com</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>

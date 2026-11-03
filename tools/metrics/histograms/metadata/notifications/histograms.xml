@@ -848,7 +848,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.macOS.AttributionOutcome"
-    enum="MacNotificationAttributionOutcome" expires_after="2027-03-01">
+    enum="MacNotificationAttributionOutcome" expires_after="2027-05-02">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

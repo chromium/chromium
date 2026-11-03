@@ -995,7 +995,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.Search.ExitReason" enum="SettingsSearchExitReason"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>adelm@google.com</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
@@ -1133,7 +1133,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SessionDuration" units="ms"
-    expires_after="2027-02-28">
+    expires_after="2027-05-02">
   <owner>adelm@google.com</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>

@@ -2068,7 +2068,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.UserMediaRequest.{RequestType}.Result4"
-    enum="MediaStreamRequestResult" expires_after="2027-02-26">
+    enum="MediaStreamRequestResult" expires_after="2027-05-02">
   <owner>tovep@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>
