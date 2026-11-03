@@ -260,6 +260,7 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
       collectionViewLayout:[self createCollectionViewLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.delegate = self;
+  _collectionView.allowsSelection = NO;
   _collectionView.backgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
   _collectionView.contentInsetAdjustmentBehavior =
@@ -335,6 +336,18 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   content.imageProperties.cornerRadius = 4.0;
 
   cell.contentConfiguration = content;
+
+  __weak __typeof(self) weakSelf = self;
+  UIAccessibilityCustomAction* removeAction =
+      [[UIAccessibilityCustomAction alloc]
+           initWithName:l10n_util::GetNSString(
+                            IDS_IOS_COMPOSEBOX_MENU_REMOVE_TAB)
+                  image:SymbolWithPointSize(SymbolTrash, kTrashSymbolPointSize)
+          actionHandler:^BOOL(UIAccessibilityCustomAction* action) {
+            [weakSelf removeTab:tab];
+            return YES;
+          }];
+  cell.accessibilityCustomActions = @[ removeAction ];
 }
 
 - (void)applySnapshot {
