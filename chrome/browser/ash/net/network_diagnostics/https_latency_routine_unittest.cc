@@ -72,6 +72,7 @@ class FakeTickClock : public base::TickClock {
 // Fake implementation of HttpRequestManager used to facilitate testing.
 class FakeHttpRequestManager final : public HttpRequestManager {
  public:
+  // MakeRequest() is overridden below, so no URLLoaderFactory is needed.
   FakeHttpRequestManager() : HttpRequestManager(nullptr) {}
   FakeHttpRequestManager(const FakeHttpRequestManager&) = delete;
   FakeHttpRequestManager& operator=(const FakeHttpRequestManager&) = delete;

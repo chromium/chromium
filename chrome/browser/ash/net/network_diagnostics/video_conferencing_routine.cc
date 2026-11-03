@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 #include "chrome/browser/ash/net/network_diagnostics/udp_prober.h"
-#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -120,10 +120,9 @@ void VideoConferencingRoutine::ProbeMediaHostnames() {
 }
 
 network::mojom::NetworkContext* VideoConferencingRoutine::GetNetworkContext() {
-  Profile* profile = util::GetUserProfile();
-  CHECK(profile, base::NotFatalUntil::M160);
-
-  return profile->GetDefaultStoragePartition()->GetNetworkContext();
+  return util::GetUserBrowserContext()
+      .GetDefaultStoragePartition()
+      ->GetNetworkContext();
 }
 
 std::unique_ptr<UdpProber> VideoConferencingRoutine::CreateAndExecuteUdpProber(

@@ -11,7 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
-#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -155,10 +155,9 @@ void HttpsFirewallRoutine::OnProbeComplete(
 }
 
 network::mojom::NetworkContext* HttpsFirewallRoutine::GetNetworkContext() {
-  Profile* profile = util::GetUserProfile();
-  CHECK(profile, base::NotFatalUntil::M161);
-
-  return profile->GetDefaultStoragePartition()->GetNetworkContext();
+  return util::GetUserBrowserContext()
+      .GetDefaultStoragePartition()
+      ->GetNetworkContext();
 }
 
 std::unique_ptr<TlsProber> HttpsFirewallRoutine::CreateAndExecuteTlsProber(

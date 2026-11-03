@@ -13,7 +13,9 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace ash {
 namespace network_diagnostics {
@@ -87,8 +89,9 @@ std::vector<GURL> GetRandomHostsWithSchemeAndPortAndGenerate204Path(
     std::string scheme,
     int port_number);
 
-// Returns the profile associated with this account.
-Profile* GetUserProfile();
+// Returns the browser context of the primary user, or the sign-in browser
+// context for as long as that one does not exist yet.
+content::BrowserContext& GetUserBrowserContext();
 
 // Returns a STUN packet with a header defined in RFC 5389.
 const std::array<uint8_t, kStunHeaderSize>& GetStunHeader();

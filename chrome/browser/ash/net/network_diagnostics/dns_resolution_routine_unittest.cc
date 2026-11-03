@@ -5,14 +5,10 @@
 #include "chrome/browser/ash/net/network_diagnostics/dns_resolution_routine.h"
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/fake_network_context.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,7 +22,6 @@ namespace {
 namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 const int kFakePortNumber = 1234;
-const char kFakeTestProfile[] = "test";
 
 net::IPEndPoint FakeIPAddress() {
   return net::IPEndPoint(net::IPAddress::IPv4Localhost(), kFakePortNumber);
@@ -36,8 +31,7 @@ net::IPEndPoint FakeIPAddress() {
 
 class DnsResolutionRoutineTest : public ::testing::Test {
  public:
-  DnsResolutionRoutineTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+  DnsResolutionRoutineTest() {
     session_manager::SessionManager::Get()->SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
   }
@@ -58,11 +52,8 @@ class DnsResolutionRoutineTest : public ::testing::Test {
   void SetUpFakeProperties(
       base::circular_deque<std::unique_ptr<FakeNetworkContext::DnsResult>>
           fake_dns_results) {
-    ASSERT_TRUE(profile_manager_.SetUp());
-
     fake_network_context_ = std::make_unique<FakeNetworkContext>();
     fake_network_context_->set_fake_dns_results(std::move(fake_dns_results));
-    test_profile_ = profile_manager_.CreateTestingProfile(kFakeTestProfile);
   }
 
   void SetUpDnsResolutionRoutine() {
@@ -70,7 +61,6 @@ class DnsResolutionRoutineTest : public ::testing::Test {
         mojom::RoutineCallSource::kDiagnosticsUI);
     dns_resolution_routine_->set_network_context_for_testing(
         fake_network_context_.get());
-    dns_resolution_routine_->set_profile_for_testing(test_profile_);
   }
 
   // Sets up required properties (via fakes) and runs the test.
@@ -95,9 +85,6 @@ class DnsResolutionRoutineTest : public ::testing::Test {
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
-  // Unowned
-  raw_ptr<Profile, DanglingUntriaged> test_profile_;
-  TestingProfileManager profile_manager_;
   std::unique_ptr<DnsResolutionRoutine> dns_resolution_routine_;
   base::WeakPtrFactory<DnsResolutionRoutineTest> weak_factory_{this};
 };

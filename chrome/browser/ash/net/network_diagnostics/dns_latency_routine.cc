@@ -11,13 +11,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
@@ -66,13 +67,14 @@ std::vector<std::string> GetRandomHostnamesToQuery() {
   return hostnames_to_query;
 }
 
-Profile* GetUserProfile() {
-  // Use sign-in profile if user has not logged in
+content::BrowserContext& GetBrowserContextForCurrentSession() {
+  // Use the sign-in browser context whenever the session is blocked. It is
+  // already loaded then, since the login and lock screen UI runs in it.
   if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
-    return ProfileHelper::GetSigninProfile();
+    return CHECK_DEREF(BrowserContextHelper::Get()->GetSigninBrowserContext());
   }
-  // Use primary profile if user is logged in
-  return ProfileManager::GetPrimaryUserProfile();
+  // Use the primary user's browser context if the user is logged in.
+  return util::GetUserBrowserContext();
 }
 
 double AverageLatency(const std::vector<base::TimeDelta>& latencies) {
@@ -88,10 +90,6 @@ double AverageLatency(const std::vector<base::TimeDelta>& latencies) {
 DnsLatencyRoutine::DnsLatencyRoutine(mojom::RoutineCallSource source)
     : NetworkDiagnosticsRoutine(source),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
-  profile_ = GetUserProfile();
-  network_context_ =
-      profile_->GetDefaultStoragePartition()->GetNetworkContext();
-  CHECK(network_context_, base::NotFatalUntil::M160);
   set_verdict(mojom::RoutineVerdict::kNotRun);
 }
 
@@ -130,6 +128,12 @@ void DnsLatencyRoutine::AnalyzeResultsAndExecuteCallback() {
 
 void DnsLatencyRoutine::CreateHostResolver() {
   CHECK(!host_resolver_);
+  if (!network_context_) {
+    network_context_ = GetBrowserContextForCurrentSession()
+                           .GetDefaultStoragePartition()
+                           ->GetNetworkContext();
+    CHECK(network_context_, base::NotFatalUntil::M160);
+  }
   host_resolver_ = network::SimpleHostResolver::Create(network_context());
 }
 

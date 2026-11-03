@@ -4,14 +4,10 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/dns_latency_routine.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/fake_network_context.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,7 +21,6 @@ namespace {
 namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 const int kFakePortNumber = 1234;
-const char kFakeTestProfile[] = "test";
 const base::TimeDelta kSuccessfulDnsResolutionDelayMs = base::Milliseconds(100);
 const base::TimeDelta kSlightlyAboveThresholdDelayMs = base::Milliseconds(450);
 const base::TimeDelta kSignificantlyAboveThresholdDelayMs =
@@ -62,8 +57,7 @@ net::IPEndPoint FakeIPAddress() {
 
 class DnsLatencyRoutineTest : public ::testing::Test {
  public:
-  DnsLatencyRoutineTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+  DnsLatencyRoutineTest() {
     session_manager::SessionManager::Get()->SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
   }
@@ -74,11 +68,8 @@ class DnsLatencyRoutineTest : public ::testing::Test {
   void SetUpFakeProperties(
       std::unique_ptr<FakeNetworkContext::DnsResult> fake_dns_result,
       const base::TimeDelta response_latency) {
-    ASSERT_TRUE(profile_manager()->SetUp());
-
     fake_network_context_ = std::make_unique<FakeNetworkContext>();
     fake_network_context_->set_fake_dns_result(std::move(fake_dns_result));
-    test_profile_ = profile_manager()->CreateTestingProfile(kFakeTestProfile);
     fake_tick_clock_ = std::make_unique<FakeTickClock>(response_latency);
   }
 
@@ -87,7 +78,6 @@ class DnsLatencyRoutineTest : public ::testing::Test {
         mojom::RoutineCallSource::kDiagnosticsUI);
     dns_latency_routine_->set_network_context_for_testing(
         fake_network_context_.get());
-    dns_latency_routine_->set_profile_for_testing(test_profile_);
     dns_latency_routine_->set_tick_clock_for_testing(fake_tick_clock_.get());
   }
 
@@ -119,7 +109,6 @@ class DnsLatencyRoutineTest : public ::testing::Test {
     RunRoutine(expected_routine_verdict, expected_problems);
   }
 
-  TestingProfileManager* profile_manager() { return &profile_manager_; }
 
  protected:
   base::WeakPtr<DnsLatencyRoutineTest> weak_ptr() {
@@ -129,11 +118,9 @@ class DnsLatencyRoutineTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
-  raw_ptr<Profile, DanglingUntriaged> test_profile_;
   std::unique_ptr<FakeTickClock> fake_tick_clock_;
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
-  TestingProfileManager profile_manager_;
   std::unique_ptr<DnsLatencyRoutine> dns_latency_routine_;
   base::WeakPtrFactory<DnsLatencyRoutineTest> weak_factory_{this};
 };

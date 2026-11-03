@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -50,14 +48,9 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
 
 }  // namespace
 
-HttpRequestManager::HttpRequestManager(Profile* profile) {
-  // |profile| may be null in testing.
-  if (!profile) {
-    return;
-  }
-  shared_url_loader_factory_ = profile->GetDefaultStoragePartition()
-                                   ->GetURLLoaderFactoryForBrowserProcess();
-}
+HttpRequestManager::HttpRequestManager(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : shared_url_loader_factory_(std::move(shared_url_loader_factory)) {}
 
 HttpRequestManager::~HttpRequestManager() = default;
 
@@ -83,11 +76,6 @@ void HttpRequestManager::MakeRequest(const GURL& url,
       shared_url_loader_factory_.get(),
       base::BindOnce(&HttpRequestManager::OnURLLoadComplete,
                      base::Unretained(this), std::move(callback)));
-}
-
-void HttpRequestManager::SetURLLoaderFactoryForTesting(
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
-  shared_url_loader_factory_ = shared_url_loader_factory;
 }
 
 void HttpRequestManager::OnURLLoadComplete(

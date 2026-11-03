@@ -33,10 +33,8 @@ class HttpRequestManagerTest : public ::testing::Test {
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    http_request_manager_ = std::make_unique<HttpRequestManager>(
-        /*profile=*/nullptr);
-    http_request_manager_->SetURLLoaderFactoryForTesting(
-        shared_url_loader_factory_);
+    http_request_manager_ =
+        std::make_unique<HttpRequestManager>(shared_url_loader_factory_);
   }
   HttpRequestManagerTest(const HttpRequestManagerTest&) = delete;
   HttpRequestManagerTest& operator=(const HttpRequestManagerTest&) = delete;

@@ -16,7 +16,9 @@
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace base {
 class TickClock;
@@ -46,13 +48,10 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine {
       network::mojom::NetworkContext* network_context) {
     network_context_ = network_context;
   }
-  void set_profile_for_testing(Profile* profile) { profile_ = profile; }
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;
   }
   network::mojom::NetworkContext* network_context() { return network_context_; }
-
-  Profile* profile() { return profile_; }
 
   const base::TickClock* tick_clock() { return tick_clock_; }
 
@@ -67,8 +66,6 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine {
   void AttemptNextResolution();
   bool ProblemDetected();
 
-  // Unowned
-  raw_ptr<Profile> profile_ = nullptr;
   // Unowned
   raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
   // Unowned

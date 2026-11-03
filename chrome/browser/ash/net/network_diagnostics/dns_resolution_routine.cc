@@ -9,11 +9,13 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
@@ -33,24 +35,20 @@ constexpr int kHttpPort = 80;
 constexpr int kRetryResponseCodes[] = {net::ERR_TIMED_OUT,
                                        net::ERR_DNS_TIMED_OUT};
 
-Profile* GetUserProfile() {
-  // Use sign-in profile if user has not logged in
+content::BrowserContext& GetBrowserContextForCurrentSession() {
+  // Use the sign-in browser context whenever the session is blocked. It is
+  // already loaded then, since the login and lock screen UI runs in it.
   if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
-    return ProfileHelper::GetSigninProfile();
+    return CHECK_DEREF(BrowserContextHelper::Get()->GetSigninBrowserContext());
   }
-  // Use primary profile if user is logged in
-  return ProfileManager::GetPrimaryUserProfile();
+  // Use the primary user's browser context if the user is logged in.
+  return util::GetUserBrowserContext();
 }
 
 }  // namespace
 
 DnsResolutionRoutine::DnsResolutionRoutine(mojom::RoutineCallSource source)
     : NetworkDiagnosticsRoutine(source) {
-  profile_ = GetUserProfile();
-  CHECK(profile_, base::NotFatalUntil::M161);
-  network_context_ =
-      profile_->GetDefaultStoragePartition()->GetNetworkContext();
-  CHECK(network_context_, base::NotFatalUntil::M161);
   set_verdict(mojom::RoutineVerdict::kNotRun);
 }
 
@@ -79,6 +77,12 @@ void DnsResolutionRoutine::AnalyzeResultsAndExecuteCallback() {
 
 void DnsResolutionRoutine::CreateHostResolver() {
   CHECK(!host_resolver_);
+  if (!network_context_) {
+    network_context_ = GetBrowserContextForCurrentSession()
+                           .GetDefaultStoragePartition()
+                           ->GetNetworkContext();
+    CHECK(network_context_, base::NotFatalUntil::M161);
+  }
   host_resolver_ = network::SimpleHostResolver::Create(network_context());
 }
 

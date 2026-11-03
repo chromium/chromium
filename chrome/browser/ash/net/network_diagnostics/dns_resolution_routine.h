@@ -14,7 +14,9 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace network {
 class SimpleHostResolver;
@@ -43,10 +45,8 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine {
       network::mojom::NetworkContext* network_context) {
     network_context_ = network_context;
   }
-  void set_profile_for_testing(Profile* profile) { profile_ = profile; }
 
   network::mojom::NetworkContext* network_context() { return network_context_; }
-  Profile* profile() { return profile_; }
 
  private:
   void OnComplete(
@@ -57,8 +57,6 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine {
   void CreateHostResolver();
   void AttemptResolution();
 
-  // Unowned
-  raw_ptr<Profile> profile_ = nullptr;
   // Unowned
   raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
   static constexpr int kTotalNumRetries = 1;

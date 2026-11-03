@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
-#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -52,13 +52,16 @@ base::TimeDelta MedianLatency(std::vector<base::TimeDelta>& latencies) {
 }
 
 network::mojom::NetworkContext* GetNetworkContext() {
-  Profile* profile = util::GetUserProfile();
-
-  return profile->GetDefaultStoragePartition()->GetNetworkContext();
+  return util::GetUserBrowserContext()
+      .GetDefaultStoragePartition()
+      ->GetNetworkContext();
 }
 
 std::unique_ptr<HttpRequestManager> GetHttpRequestManager() {
-  return std::make_unique<HttpRequestManager>(util::GetUserProfile());
+  return std::make_unique<HttpRequestManager>(
+      util::GetUserBrowserContext()
+          .GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 }  // namespace

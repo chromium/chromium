@@ -15,8 +15,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-class Profile;
-
 namespace ash {
 namespace network_diagnostics {
 
@@ -26,7 +24,8 @@ class HttpRequestManager {
  public:
   using HttpRequestCallback = base::OnceCallback<void(bool)>;
 
-  explicit HttpRequestManager(Profile* profile);
+  explicit HttpRequestManager(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   HttpRequestManager(const HttpRequestManager&) = delete;
   HttpRequestManager& operator=(const HttpRequestManager&) = delete;
   virtual ~HttpRequestManager();
@@ -40,18 +39,15 @@ class HttpRequestManager {
                            const base::TimeDelta& timeout,
                            HttpRequestCallback callback);
 
-  // Setter for testing.
-  void SetURLLoaderFactoryForTesting(
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
-
  private:
   // Processes the response code in |headers|.
   void OnURLLoadComplete(HttpRequestCallback callback,
                          scoped_refptr<net::HttpResponseHeaders> headers);
 
-  // Holds a reference to the URLLoaderFactory associated with the storage
-  // partition for |profile_|.
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  // The factory the requests are issued through. It is null in tests that
+  // override MakeRequest() and never issue one.
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
   // SimpleURLLoader to manage http requests.
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 };
