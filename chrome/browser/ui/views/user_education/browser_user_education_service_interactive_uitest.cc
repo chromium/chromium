@@ -14,11 +14,14 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/interaction/polling_view_observer.h"
 #include "url/gurl.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kMainContentsElementId);
-constexpr char kToolbarName[] = "Toolbar";
+DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(ToolbarView,
+                                                    GetAppMenuFocused,
+                                                    kAppMenuFocusedState);
 constexpr char kContentsPaneName[] = "Contents Pane";
 constexpr char kGetActiveElementJs[] = R"(
   function() {
@@ -48,8 +51,6 @@ class BrowserUserEducationServiceUiTest : public InteractiveFeaturePromoTest {
         InstrumentTab(kMainContentsElementId),
         NavigateWebContents(kMainContentsElementId,
                             GURL(chrome::kChromeUIUserEducationInternalsURL)),
-        NameDescendantViewByType<ToolbarView>(kTopContainerElementId,
-                                              kToolbarName),
         NameViewRelative(kBrowserViewElementId, kContentsPaneName,
                          [](BrowserView* browser_view) {
                            return browser_view->GetContentsView();
@@ -62,11 +63,14 @@ class BrowserUserEducationServiceUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto FocusAppMenuButton() {
-    return Steps(WithView(kToolbarName,
-                          [](ToolbarView* toolbar) {
-                            toolbar->SetPaneFocusAndFocusAppMenu();
-                          }),
-                 EnsureFocus(kToolbarAppMenuButtonElementId, true));
+    return Steps(
+        PollViewProperty(kAppMenuFocusedState, ToolbarView::kToolbarElementId),
+        WithView(ToolbarView::kToolbarElementId,
+                 [](ToolbarView* toolbar) {
+                   toolbar->SetPaneFocusAndFocusAppMenu();
+                 }),
+        WaitForState(kAppMenuFocusedState, true),
+        StopObservingState(kAppMenuFocusedState));
   }
 };
 
