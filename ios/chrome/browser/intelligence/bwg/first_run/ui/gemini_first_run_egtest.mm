@@ -28,9 +28,6 @@
 
 namespace {
 
-// Constant displacement in points for scrolling the carousel by one slide.
-constexpr CGFloat kCarouselScrollDisplacement = 250;
-
 // Matcher for the primary button in the promo view.
 id<GREYMatcher> PromoPrimaryButton() {
   return grey_allOf(
@@ -88,25 +85,12 @@ id<GREYMatcher> VisualRichSlideTitle(int string_id) {
                     grey_sufficientlyVisible(), nil);
 }
 
-// Matcher for the UIPageControl in visual-rich carousel view.
-id<GREYMatcher> VisualRichPageControl() {
-  return grey_allOf(grey_kindOfClass([UIPageControl class]),
-                    grey_sufficientlyVisible(), nil);
-}
-
 // Matcher for any sufficiently visible slide title in the carousel.
 id<GREYMatcher> AnyVisualRichSlideTitle() {
   return grey_anyOf(
       VisualRichSlideTitle(IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_TITLE),
       VisualRichSlideTitle(IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_TITLE),
       VisualRichSlideTitle(IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_TITLE), nil);
-}
-
-// Matcher for the scroll view in the visual-rich carousel.
-id<GREYMatcher> VisualRichCarouselScrollView() {
-  return grey_allOf(
-      grey_accessibilityID(kGeminiFRECarouselScrollViewAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
 }
 
 // Matcher for the title in the lightweight FRE.
@@ -186,9 +170,7 @@ id<GREYMatcher> FirstConsentBulletPointTitle() {
   } else if ([self isRunningTest:@selector(
                                      testLightweightDiverseFRETitleVisible)]) {
     experimentParam = kGeminiFREExperimentParamLightweightDiverse;
-  } else if ([self isRunningTest:@selector(
-                                     testVisualRichFRECarouselNavigation)] ||
-             [self isRunningTest:@selector(testVisualRichFREAcceptConsent)] ||
+  } else if ([self isRunningTest:@selector(testVisualRichFREAcceptConsent)] ||
              [self isRunningTest:@selector(testVisualRichFREDeclineConsent)] ||
              [self
                  isRunningTest:@selector(testVisualRichFREOrientationChange)] ||
@@ -263,66 +245,6 @@ id<GREYMatcher> FirstConsentBulletPointTitle() {
           grey_accessibilityID(kGeminiFootNoteTextViewAccessibilityIdentifier)];
 
   [self acceptConsentAndVerifyDismissal];
-}
-
-// Tests manual user navigation on the Visual-Rich FRE carousel.
-- (void)testVisualRichFRECarouselNavigation {
-  [self invokeGeminiEntryPoint];
-
-  // Verify initial slide 0 title and page control are visible.
-  [[EarlGrey
-      selectElementWithMatcher:VisualRichSlideTitle(
-                                   IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_TITLE)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:VisualRichPageControl()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Swipe right on the first slide to verify it stays on slide 0.
-  [[EarlGrey
-      selectElementWithMatcher:VisualRichSlideTitle(
-                                   IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_TITLE)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
-
-  // Verify slide 0 title is still visible.
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          VisualRichSlideTitle(IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_TITLE)];
-
-  // Tap the page control to advance to slide 1.
-  [[EarlGrey selectElementWithMatcher:VisualRichPageControl()]
-      performAction:grey_tap()];
-
-  // Verify slide 1 title is visible.
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          VisualRichSlideTitle(IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_TITLE)];
-
-  // Advance to slide 2.
-  [self scrollCarouselNext];
-
-  // Verify slide 2 title is visible.
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          VisualRichSlideTitle(IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_TITLE)];
-
-  // Swipe left on the last slide to verify it stays on slide 2.
-  [[EarlGrey
-      selectElementWithMatcher:VisualRichSlideTitle(
-                                   IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_TITLE)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
-
-  // Verify slide 2 title is still visible.
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          VisualRichSlideTitle(IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_TITLE)];
-
-  // Return to slide 1.
-  [self scrollCarouselPrevious];
-
-  // Verify slide 1 title is visible again.
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          VisualRichSlideTitle(IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_TITLE)];
 }
 
 // Tests accepting consent from the Visual-Rich FRE screen.
@@ -506,20 +428,6 @@ id<GREYMatcher> FirstConsentBulletPointTitle() {
 
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       FirstConsentBulletPointTitle()];
-}
-
-// Scrolls the visual-rich carousel to the next slide (right).
-- (void)scrollCarouselNext {
-  [[EarlGrey selectElementWithMatcher:VisualRichCarouselScrollView()]
-      performAction:grey_scrollInDirection(kGREYDirectionRight,
-                                           kCarouselScrollDisplacement)];
-}
-
-// Scrolls the visual-rich carousel to the previous slide (left).
-- (void)scrollCarouselPrevious {
-  [[EarlGrey selectElementWithMatcher:VisualRichCarouselScrollView()]
-      performAction:grey_scrollInDirection(kGREYDirectionLeft,
-                                           kCarouselScrollDisplacement)];
 }
 
 // Returns the top presented view controller.

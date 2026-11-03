@@ -160,7 +160,6 @@ crbug.com/497637049 [ iPad Device ] PictureInPictureTestCase/testDefaultBrowserS
 crbug.com/565776423 [ Device ] DownloadManagerTestCase/testDownloadWarnProceedWhenDownloadProtectionEnabled [ Pass Failure ]
 crbug.com/565777195 [ iPad ] TabGroupsTestCase/testCreateGroupFromTabInAnotherWindow [ Pass Failure ]
 crbug.com/565792499 PasswordControllerEGTest/testLoginEventReported [ Pass Failure Skip Crash ]
-crbug.com/565748739 [ iOS27 iPad ] GeminiFirstRunTestCase/testVisualRichFRECarouselNavigation [ Pass Failure ]
 crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyNotInvoked [ Pass Failure ]
 crbug.com/565749273 [ iOS26 iPad Device ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]
 crbug.com/565749273 GeminiCopresenceTestCase/testOpenAppsActivityFromToolbar [ Pass Failure ]
@@ -229,11 +228,6 @@ crbug.com/572663823 [ Simulator ] BubblePresenterTestCase/testSendTabToSelfOmnib
 crbug.com/565749273 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFloatyInvoked [ Pass Failure ]
 crbug.com/573145552 [ Simulator ] AutofillEditCreditCardCvcMetricTestCase/testMetricCvcLeftBlank [ Pass Failure ]
 crbug.com/573145112 [ Simulator ] AutofillCreditCardSettingsTestCase/testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled [ Pass Failure ]
-
-# Gardening suppression 2026-10-14
-crbug.com/573630697 GeminiFirstRunTestCase/testAcceptPromoAndConsent [ Skip ]
-crbug.com/573630697 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptConsent [ Skip ]
-crbug.com/573630697 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Skip ]
 
 # Gardening suppression 2026-10-15
 crbug.com/573994066 [ Device ] TracingTestCase/testStartupTracing [ Skip ]
