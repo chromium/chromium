@@ -168,23 +168,23 @@ constexpr char kCalculatorIconResourceName[] =
 constexpr char kDinoIconResourceName[] =
     "//resources/cr_components/searchbox/icons/dino_cr23.svg";
 constexpr char kDriveDocsIconResourceName[] =
-    "//resources/cr_components/searchbox/icons/drive_docs.svg";
+    "//resources/cr_components/searchbox/icons/drive_docs_custom.svg";
 constexpr char kDriveFolderIconResourceName[] =
-    "//resources/cr_components/searchbox/icons/drive_folder.svg";
+    "//resources/cr_components/searchbox/icons/drive_folder_custom.svg";
 constexpr char kDriveFormIconResourceName[] =
-    "//resources/cr_components/searchbox/icons/drive_form.svg";
+    "//resources/cr_components/searchbox/icons/drive_form_custom.svg";
 constexpr char kDriveImageIconResourceName[] =
-    "//resources/cr_components/searchbox/icons/drive_image.svg";
+    "//resources/cr_components/searchbox/icons/drive_image_custom.svg";
 constexpr char kDriveLogoIconResourceName[] =
     "//resources/cr_components/searchbox/icons/drive_logo.svg";
 constexpr char kDrivePdfIconResourceName[] =
-    "//resources/cr_components/searchbox/icons/drive_pdf.svg";
+    "//resources/cr_components/searchbox/icons/drive_pdf_custom.svg";
 constexpr char kDriveSheetsIconResourceName[] =
-    "//resources/cr_components/searchbox/icons/drive_sheets.svg";
+    "//resources/cr_components/searchbox/icons/drive_sheets_custom.svg";
 constexpr char kDriveSlidesIconResourceName[] =
-    "//resources/cr_components/searchbox/icons/drive_slides.svg";
+    "//resources/cr_components/searchbox/icons/drive_slides_custom.svg";
 constexpr char kDriveVideoIconResourceName[] =
-    "//resources/cr_components/searchbox/icons/drive_video.svg";
+    "//resources/cr_components/searchbox/icons/drive_video_custom.svg";
 constexpr char kEnterpriseIconResourceName[] =
     "//resources/cr_components/searchbox/icons/enterprise.svg";
 constexpr char kExtensionAppIconResourceName[] =
@@ -199,7 +199,7 @@ constexpr char kGoogleAgentspace25IconResourceName[] =
 constexpr char kGoogleGIconResourceName[] =
     "//resources/cr_components/searchbox/icons/google_g_cr23.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] =
-    "//resources/cr_components/searchbox/icons/note.svg";
+    "//resources/cr_components/searchbox/icons/note_custom.svg";
 constexpr char kGoogleSitesIconResourceName[] =
     "//resources/cr_components/searchbox/icons/sites.svg";
 constexpr char kGoogleLensMonochromeLogoIcon[] =

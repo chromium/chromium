@@ -368,7 +368,7 @@ suite('CrComponentsSearchboxIconTest', () => {
       match.isSearchType = false;
       match.type = 'document';
       match.iconPath =
-          '//resources/cr_components/searchbox/icons/drive_docs.svg';
+          '//resources/cr_components/searchbox/icons/drive_docs_custom.svg';
       icon.match = match;
 
       await microtasksFinished();
