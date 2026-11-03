@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <shlobj.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -29,7 +31,7 @@
 #include "base/win/resource_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "chrome/updater/app/app_install_progress.h"
-#include "chrome/updater/get_updater_scope.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/path_util.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
@@ -83,11 +85,35 @@ HRESULT WebView2ProgressWnd::Initialize() {
     return CO_E_NOTINITIALIZED;
   }
 
+  // WebView2 can't be hosted in an elevated process: the runtime always runs
+  // `msedgewebview2.exe` at medium integrity, so it can't use a profile in a
+  // location that is safe for an elevated process to access, and a
+  // user-writable profile would expose the elevated process to tampering.
+  // This check must come before any WebView2 API call, since the loader
+  // honors user-controlled overrides such as WEBVIEW2_BROWSER_EXECUTABLE_FOLDER
+  // when locating the runtime. The caller falls back to the native UI.
+  if (::IsUserAnAdmin()) {
+    LOG(WARNING) << "WebView2 UI is not supported in an elevated process.";
+    return E_ACCESSDENIED;
+  }
+
   base::expected<std::wstring, HRESULT> page = LoadProgressPage();
   if (!page.has_value()) {
     return page.error();
   }
   html_content_ = std::move(page.value());
+
+  // WebView2 requires a writable profile. This process is not elevated, so
+  // the per-user install directory is both writable by `msedgewebview2.exe`
+  // and at the same privilege level as this process, regardless of the
+  // updater scope on the command line.
+  const std::optional<base::FilePath> profile_root =
+      GetInstallDirectory(UpdaterScope::kUser);
+  if (!profile_root) {
+    LOG(ERROR) << "Failed to resolve the WebView2 profile directory.";
+    return E_FAIL;
+  }
+  user_data_dir_ = profile_root->Append(FILE_PATH_LITERAL("UserData"));
 
   // Fail early if the WebView2 runtime is not installed, instead of finding
   // out asynchronously after the window has been shown.
@@ -103,15 +129,11 @@ HRESULT WebView2ProgressWnd::Initialize() {
     return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
   }
   VLOG(1) << "WebView2 runtime version: " << base::WideToUTF8(version.get());
-
-  std::optional<base::FilePath> install_dir =
-      GetInstallDirectory(GetUpdaterScope());
-  if (!install_dir) {
-    LOG(ERROR) << "Failed to resolve installation directory.";
-    return E_FAIL;
-  }
-  user_data_dir_ = install_dir->Append(FILE_PATH_LITERAL("UserData"));
   return S_OK;
+}
+
+const base::FilePath& WebView2ProgressWnd::user_data_dir_for_testing() const {
+  return user_data_dir_;
 }
 
 void WebView2ProgressWnd::Show() {

@@ -6,10 +6,13 @@
 
 #include <windows.h>
 
+#include <shlobj.h>
+
 #include <optional>
 #include <string>
 #include <utility>
 
+#include "base/base_paths_win.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -22,12 +25,14 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui_util.h"
@@ -247,6 +252,56 @@ TEST_F(WebView2ProgressWndTest, InitializeFailsWithoutRuntime) {
     EXPECT_TRUE(FAILED(hr)) << std::hex << hr;
     EXPECT_NE(hr, CO_E_NOTINITIALIZED);
   }));
+}
+
+// An elevated process refuses the WebView2 UI before touching the runtime; a
+// non-elevated process uses the per-user profile regardless of the updater
+// scope on the command line. This test runs both non-elevated (updater_tests)
+// and elevated (updater_tests_system).
+TEST_F(WebView2ProgressWndTest, InitializeDependsOnProcessPrivilege) {
+  // Path and command-line overrides must be set up on the main thread.
+  base::ScopedTempDir root;
+  ASSERT_TRUE(root.CreateUniqueTempDir());
+  const base::FilePath local_app_data = root.GetPath().Append(L"Local");
+  const base::FilePath program_files = root.GetPath().Append(L"ProgramFiles");
+  base::ScopedPathOverride local_override(base::DIR_LOCAL_APP_DATA,
+                                          local_app_data);
+  base::ScopedPathOverride system_override(base::DIR_PROGRAM_FILESX86,
+                                           program_files);
+  // The runtime is deliberately absent. A non-elevated process therefore
+  // fails after the profile directory is resolved, with an HRESULT other
+  // than E_ACCESSDENIED, and no WebView2 process is created.
+  base::ScopedEnvironmentVariableOverride runtime_override(
+      "WEBVIEW2_BROWSER_EXECUTABLE_FOLDER", root.GetPath().AsUTF8Unsafe());
+
+  const bool is_admin = ::IsUserAnAdmin();
+  // Make GetUpdaterScope() the opposite of the process privilege level, so
+  // that the profile selection is shown not to depend on it.
+  base::test::ScopedCommandLine command_line;
+  if (!is_admin) {
+    command_line.GetProcessCommandLine()->AppendSwitch(kSystemSwitch);
+  }
+  const base::FilePath expected_user_data_dir =
+      local_app_data.AppendUTF8(COMPANY_SHORTNAME_STRING)
+          .AppendUTF8(PRODUCT_FULLNAME_STRING)
+          .Append(L"UserData");
+  RunOnSTAThread(base::BindOnce(
+      [](const base::FilePath& expected_user_data_dir,
+         const base::FilePath& program_files, bool is_admin) {
+        WebView2ProgressWnd wnd;
+        const HRESULT hr = wnd.Initialize();
+        EXPECT_TRUE(FAILED(hr)) << std::hex << hr;
+        if (is_admin) {
+          // Rejected before the runtime check, which would fail differently.
+          EXPECT_EQ(hr, E_ACCESSDENIED);
+          EXPECT_TRUE(wnd.user_data_dir_for_testing().empty());
+        } else {
+          EXPECT_NE(hr, E_ACCESSDENIED);
+          EXPECT_EQ(wnd.user_data_dir_for_testing(), expected_user_data_dir);
+          EXPECT_FALSE(program_files.IsParent(wnd.user_data_dir_for_testing()));
+        }
+      },
+      expected_user_data_dir, program_files, is_admin));
 }
 
 }  // namespace

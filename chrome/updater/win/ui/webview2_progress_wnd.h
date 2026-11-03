@@ -48,6 +48,8 @@ class WebView2ProgressWnd : public gfx::WindowImpl, public AppInstallProgress {
   // caller should use a different UI instead.
   HRESULT Initialize();
 
+  const base::FilePath& user_data_dir_for_testing() const;
+
   // Loads the embedded page. Returns a failure `HRESULT` if the resource is
   // missing or is not valid UTF-8. Localized text is sent in progress updates.
   static base::expected<std::wstring, HRESULT> LoadProgressPage();
@@ -151,7 +153,8 @@ class WebView2ProgressWnd : public gfx::WindowImpl, public AppInstallProgress {
   ProgressState state_;
   base::win::ScopedCOMInitializer com_initializer_;
 
-  // The WebView2 user data directory. Set by `Initialize()`.
+  // The WebView2 user data directory, under the per-user install directory.
+  // Set by `Initialize()`, which fails in an elevated process.
   base::FilePath user_data_dir_;
 
   base::OnceClosure creation_failed_callback_;
