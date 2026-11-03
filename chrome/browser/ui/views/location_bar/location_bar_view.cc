@@ -805,8 +805,10 @@ void LocationBarView::Layout(PassKey) {
   } else if (ShouldShowKeywordBubble()) {
     // Otherwise, if in keyword mode, adjust indentation to align the icon and
     // the text with the suggestion icons & texts.
-    icon_left += 9;  /*icon_indent_keyword_mode*/
-    text_left += -9; /*text_indent_keyword_mode*/
+    icon_left +=
+        GetLayoutConstant(LayoutConstant::kLocationBarKeywordInputIconIndent);
+    text_left +=
+        GetLayoutConstant(LayoutConstant::kLocationBarKeywordInputTextIndent);
   }
 
   LocationBarLayout leading_decorations(LocationBarLayout::Position::kLeftEdge,

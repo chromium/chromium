@@ -81,6 +81,10 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--location-bar-input-icon-indent";
     case kLocationBarInputTextIndent:
       return "--location-bar-input-text-indent";
+    case kLocationBarKeywordInputIconIndent:
+      return "--location-bar-keyword-input-icon-indent";
+    case kLocationBarKeywordInputTextIndent:
+      return "--location-bar-keyword-input-text-indent";
     case kLocationBarTrailingDecorationEdgePadding:
       return "--location-bar-trailing-decoration-edge-padding";
     case kLocationBarTrailingDecorationAimEdgePadding:

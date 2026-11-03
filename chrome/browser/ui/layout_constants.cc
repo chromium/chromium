@@ -77,6 +77,10 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 7;
     case LayoutConstant::kLocationBarInputTextIndent:
       return 6;
+    case LayoutConstant::kLocationBarKeywordInputIconIndent:
+      return 9;
+    case LayoutConstant::kLocationBarKeywordInputTextIndent:
+      return -9;
     case LayoutConstant::kLocationBarTrailingDecorationEdgePadding:
       return touch_ui ? 3 : 12;
     case LayoutConstant::kLocationBarTrailingDecorationAimEdgePadding:

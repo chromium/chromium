@@ -101,6 +101,14 @@ enum class LayoutConstant {
   // indented to line up with the popup's suggestions.
   kLocationBarInputTextIndent,
 
+  // The indentation adjustment before the LHS keyword chip in keyword mode to
+  // line up its icon with the popup's suggestions.
+  kLocationBarKeywordInputIconIndent,
+
+  // The indentation adjustment between the LHS keyword chip and the text in
+  // keyword mode to line up with the popup's suggestions.
+  kLocationBarKeywordInputTextIndent,
+
   // The trailing edge space in the omnibox from the RHS icons.
   kLocationBarTrailingDecorationEdgePadding,
 
