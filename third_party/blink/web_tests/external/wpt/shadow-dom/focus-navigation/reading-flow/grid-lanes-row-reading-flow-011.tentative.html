@@ -30,7 +30,7 @@
   gap: 0;
   place-content: start;
   align-items: start;
-  reading-flow: grid-columns;
+  reading-flow: grid-lanes-flow;
   height: 160px;
   width: 260px;
 }
@@ -49,7 +49,7 @@ Third reading column: o, r, t, n, s, q, p
 -->
 <div class="test-case"
      data-expect="a,b,f,c,d,e,g,k,m,i,l,j,h,o,r,t,n,s,q,p"
-     data-description="Grid-columns reads across fragmented row tracks">
+     data-description="Grid-lanes-flow reads across fragmented row tracks">
   <div class="fragmentainers">
     <div id="lanes" class="lanes">
       <div id="a" tabindex="0" style="width: 90px; background-color: lightcoral">A</div>

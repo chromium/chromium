@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="timeout" content="long">
-<title>CSS Grid Lanes: reading-flow across columns tracks with auto-placement and fill-reverse</title>
+<title>CSS Grid Lanes: reading-flow across columns tracks with auto-placement</title>
 <link rel="help" href="https://drafts.csswg.org/css-display-4/#reading-flow">
 <link rel="help" href="https://drafts.csswg.org/css-grid-3/#grid-lanes-layout">
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/5675#issuecomment-4848519759">
@@ -26,8 +26,8 @@
 }
 .columns {
   grid-template-columns: repeat(4, 40px);
-  grid-lanes-direction: column fill-reverse;
-  reading-flow: grid-rows;
+  grid-lanes-direction: column;
+  reading-flow: grid-lanes-flow;
   width: 160px;
   height: 260px;
 }
@@ -37,15 +37,15 @@
 </style>
 
 <!--
-At the moment we are counting an item as
-part of a reading row if 2/3 of the item's stacking-axis length is within
-the borders of the initial reading row bounds.
-First reading row: t, r, o, s, n, q, p
-Second reading row: m, k, l, i, j, h
-Third reading row: a, f, b, c, g, e, d
+At the moment we are counting an item as part of a reading row if 2/3 of the
+item's stacking-axis length is within the borders of the initial reading row
+bounds.
+First reading row: a, b, f, c, d, e, g
+Second reading row: k, m, i, l, j, h
+Third reading row: o, r, t, n, s, q, p
 -->
 <div class="test-case"
-     data-expect="t,r,o,s,n,q,p,m,k,l,i,j,h,a,f,b,c,g,e,d">
+     data-expect="a,b,f,c,d,e,g,k,m,i,l,j,h,o,r,t,n,s,q,p">
   <div class="lanes columns">
     <div id="a" tabindex="0" style="height: 90px; background-color: lightcoral">A</div>
     <div id="b" tabindex="0" style="height: 30px; background-color: lightskyblue">B</div>

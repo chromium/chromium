@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="timeout" content="long">
-<title>CSS Grid Lanes: reading-flow across row tracks with track-reverse</title>
+<title>CSS Grid Lanes: reading-flow across row tracks with auto-placement</title>
 <link rel="help" href="https://drafts.csswg.org/css-display-4/#reading-flow">
 <link rel="help" href="https://drafts.csswg.org/css-grid-3/#grid-lanes-layout">
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/5675#issuecomment-4848519759">
@@ -26,8 +26,8 @@
 }
 .rows {
   grid-template-rows: repeat(4, 40px);
-  grid-lanes-direction: row track-reverse;
-  reading-flow: grid-columns;
+  grid-lanes-direction: row;
+  reading-flow: grid-lanes-flow;
   height: 160px;
   width: 260px;
 }
@@ -40,12 +40,12 @@
 At the moment we are counting an item as
 part of a reading column if 2/3 of the item's stacking-axis length is within
 the borders of the initial reading column bounds.
-First reading column: d, e, g, c, b, f, a
-Second reading column: h, j, i, l, k, m
-Third reading column: p, q, n, s, o, r, t
+First reading column: a, b, f, c, d, e, g
+Second reading column: k, m, i, l, j, h
+Third reading column: o, r, t, n, s, q, p
 -->
 <div class="test-case"
-     data-expect="d,e,g,c,b,f,a,h,j,i,l,k,m,p,q,n,s,o,r,t">
+     data-expect="a,b,f,c,d,e,g,k,m,i,l,j,h,o,r,t,n,s,q,p">
   <div class="lanes rows">
     <div id="a" tabindex="0" style="width: 90px; background-color: lightcoral">A</div>
     <div id="b" tabindex="0" style="width: 30px; background-color: lightskyblue">B</div>

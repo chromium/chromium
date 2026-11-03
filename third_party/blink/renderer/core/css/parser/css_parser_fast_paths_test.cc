@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -151,6 +152,40 @@ TEST(CSSParserFastPathsTest, ParseRevertRule) {
     CSSValue* value = CSSParserFastPaths::MaybeParseValue(
         CSSPropertyID::kDirection, "revert-rule", context);
     EXPECT_FALSE(value);
+  }
+}
+
+TEST(CSSParserFastPathsTest, ParseReadingFlow) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  for (const char* keyword : {"normal", "flex-visual", "flex-flow", "grid-rows",
+                              "grid-columns", "grid-order", "source-order"}) {
+    SCOPED_TRACE(keyword);
+    EXPECT_TRUE(CSSParserFastPaths::MaybeParseValue(CSSPropertyID::kReadingFlow,
+                                                    keyword, context));
+    EXPECT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kReadingFlow,
+                                            keyword, context));
+  }
+
+  for (const char* keyword :
+       {"grid-lanes-flow", "grid-lanes-track", "grid-lanes-order"}) {
+    SCOPED_TRACE(keyword);
+    // 'grid-lanes' feature disabled
+    {
+      ScopedCSSGridLanesLayoutForTest disabled(false);
+      EXPECT_FALSE(CSSParserFastPaths::MaybeParseValue(
+          CSSPropertyID::kReadingFlow, keyword, context));
+      EXPECT_FALSE(CSSParser::ParseSingleValue(CSSPropertyID::kReadingFlow,
+                                               keyword, context));
+    }
+    // 'grid-lanes' feature enabled
+    {
+      ScopedCSSGridLanesLayoutForTest enabled(true);
+      EXPECT_TRUE(CSSParserFastPaths::MaybeParseValue(
+          CSSPropertyID::kReadingFlow, keyword, context));
+      EXPECT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kReadingFlow,
+                                              keyword, context));
+    }
   }
 }
 
