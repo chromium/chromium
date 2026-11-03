@@ -795,6 +795,9 @@ public class MediaNotificationController {
                 // This is not allowed from the background, and there is no workaround on S+. If it
                 // fails, `mService` will remain null for us to try again later.
                 try {
+                    // Do not set an action on this intent: processIntent() and
+                    // ListenerServiceImpl.onStartCommand() rely on a null action to distinguish a
+                    // startForegroundService() launch from a notification action PendingIntent.
                     Intent intent = assertNonNull(mDelegate.createServiceIntent());
                     intent.putExtra(EXTRA_NOTIFICATION_ID, mediaNotificationInfo.id);
                     ForegroundServiceUtils.getInstance().startForegroundService(intent);

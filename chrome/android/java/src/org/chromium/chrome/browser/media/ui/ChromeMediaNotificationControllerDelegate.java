@@ -14,6 +14,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.base.ContextUtils;
@@ -111,16 +112,36 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
         @Override
         public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
             if (!processIntent(intent)) {
-                // The service has been started with startForegroundService() but the
-                // notification hasn't been shown. On O it will lead to the app crash.
-                // So show an empty notification before stopping the service.
-                // TODO(crbug.com/522397811): We currently assume each media type shows only one
-                // notification. Calling stopListenerService() immediately will kill the service
-                // for all active notifications of this type.
-                MediaNotificationController.finishStartingForegroundServiceOnO(
-                        getService(),
-                        createNotificationWrapperBuilder(mMediaTypeId).buildNotificationWrapper());
-                stopListenerService();
+                int notificationId =
+                        intent != null
+                                ? intent.getIntExtra(
+                                        MediaNotificationController.EXTRA_NOTIFICATION_ID,
+                                        mMediaTypeId)
+                                : mMediaTypeId;
+                if (intent != null && intent.getAction() != null) {
+                    // The service was started via a notification action PendingIntent.getService()
+                    // (not startForegroundService()) for a stale notification whose controller no
+                    // longer exists. Cancel the stale notification directly, and only stop the
+                    // service if no other active controller of this media type still needs it.
+                    NotificationManagerCompat.from(ContextUtils.getApplicationContext())
+                            .cancel(notificationId);
+                    if (!MediaNotificationManager.isServiceNeeded(mMediaTypeId, notificationId)) {
+                        stopListenerService();
+                    }
+                } else {
+                    // The service has been started with startForegroundService() but the
+                    // notification hasn't been shown. On O it will lead to an app crash, so show an
+                    // empty notification before stopping the service.
+                    // TODO(crbug.com/522397811): If two tabs call startForegroundService() before
+                    // the service starts and one tab's controller is cleared before its
+                    // onStartCommand() runs, stopListenerService() will stop the service the other
+                    // tab is playing on.
+                    MediaNotificationController.finishStartingForegroundServiceOnO(
+                            getService(),
+                            createNotificationWrapperBuilder(notificationId)
+                                    .buildNotificationWrapper());
+                    stopListenerService();
+                }
             }
             return Service.START_NOT_STICKY;
         }

@@ -45,6 +45,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
@@ -571,6 +572,98 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         Notification finalNotification =
                 getShadowNotificationManager().getAllNotifications().get(0);
         assertTrue(shadowOf(finalNotification).isOngoing());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testStaleActionIntentCancelsNotificationAndStopsServiceWhenNotNeeded() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        MediaNotificationManager.setMultipleMediaNotificationsEnabled(true);
+        ensureService();
+        MockListenerService service = mService;
+        MockListenerServiceImpl impl = service.getImpl();
+
+        NotificationManager nm =
+                (NotificationManager) mMockContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        int tappedStaleId = 7771;
+        nm.notify(
+                tappedStaleId,
+                new Notification.Builder(
+                                mMockContext, ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK)
+                        .build());
+        assertNotNull(getShadowNotificationManager().getNotification(tappedStaleId));
+
+        Intent staleActionIntent = new Intent(MediaNotificationController.ACTION_PLAY);
+        staleActionIntent.putExtra(
+                MediaNotificationController.EXTRA_NOTIFICATION_ID, tappedStaleId);
+        service.onStartCommand(staleActionIntent, 0, 0);
+
+        verify(mMockForegroundServiceUtils, never())
+                .startForeground(any(), anyInt(), any(), anyInt());
+        verify(impl).stopListenerService();
+        assertNull(getShadowNotificationManager().getNotification(tappedStaleId));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testStaleActionIntentPreservesServiceWhenAnotherControllerPlaying() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        MediaNotificationManager.setMultipleMediaNotificationsEnabled(true);
+        ensureService();
+        MediaNotificationManager.setService(getNotificationId(), mService);
+
+        MediaNotificationInfo playingInfo =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(playingInfo);
+        int playingId = MediaNotificationManager.getUniqueId(1, getNotificationId());
+        MediaNotificationController playingController =
+                MediaNotificationManager.getControllerByNotificationId(playingId);
+        assertNotNull(playingController);
+        playingController.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+        clearInvocations(mService.getImpl());
+
+        NotificationManager nm =
+                (NotificationManager) mMockContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        int tappedStaleId = 7771;
+        nm.notify(
+                tappedStaleId,
+                new Notification.Builder(
+                                mMockContext, ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK)
+                        .build());
+        assertNotNull(getShadowNotificationManager().getNotification(tappedStaleId));
+
+        Intent staleActionIntent = new Intent(MediaNotificationController.ACTION_PLAY);
+        staleActionIntent.putExtra(
+                MediaNotificationController.EXTRA_NOTIFICATION_ID, tappedStaleId);
+        mService.onStartCommand(staleActionIntent, 0, 0);
+
+        assertNull(getShadowNotificationManager().getNotification(tappedStaleId));
+        verify(mService.getImpl(), never()).stopListenerService();
+        assertEquals(mService, playingController.mService);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testIncompleteStartForegroundServiceUsesExtraNotificationId() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        MediaNotificationManager.setMultipleMediaNotificationsEnabled(true);
+        ensureService();
+        MockListenerService service = mService;
+        MockListenerServiceImpl impl = service.getImpl();
+
+        int pendingStartId = 7772;
+        Intent startIntent = new Intent();
+        startIntent.putExtra(MediaNotificationController.EXTRA_NOTIFICATION_ID, pendingStartId);
+        service.onStartCommand(startIntent, 0, 0);
+
+        verify(mMockForegroundServiceUtils)
+                .startForeground(
+                        eq(service),
+                        eq(pendingStartId),
+                        any(Notification.class),
+                        eq(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
+        verify(impl).stopListenerService();
     }
 
     private ShadowNotificationManager getShadowNotificationManager() {
