@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -33,7 +34,8 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
                                   public views::WidgetObserver,
                                   public views::FocusChangeListener,
                                   public ui::EventObserver,
-                                  public AppMenuButtonObserver {
+                                  public AppMenuButtonObserver,
+                                  public views::ViewObserver {
  public:
   OmniboxPopupFullPresenter(LocationBar* location_bar,
                             OmniboxPopupPresenterDelegate& presenter_delegate,
@@ -127,6 +129,13 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // AppMenuButtonObserver:
   void AppMenuClosed() override;
 
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view,
+                               bool visible) override;
+  void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
+
   // ui::EventObserver:
   // Handles click and touch events and determines if the popup should be
   // deactivated.
@@ -150,6 +159,14 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // open. Runs after the browser window or popup is activated while
   // `refocus_on_activation_` is set.
   void RefocusAfterActivation();
+
+  // Returns whether the popup shows only its input row, with nothing painted
+  // below the location bar.
+  bool IsPopupCollapsed() const;
+
+  // Clips the part of the popup that the expanded vertical tab strip covers,
+  // which also sends events there to the strip. Aura only.
+  void UpdateVerticalTabStripOcclusion();
 
   // Returns the browser window's widget. In macOS immersive fullscreen this is
   // not the location bar's widget, which is then a non-activatable overlay.
@@ -183,6 +200,10 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
       browser_focus_manager_observation_{this};
   base::ScopedObservation<AppMenuControl, AppMenuButtonObserver>
       app_menu_control_observation_{this};
+  // Observes the vertical tab strip while the popup is shown. See
+  // `UpdateVerticalTabStripOcclusion()`.
+  base::ScopedObservation<views::View, views::ViewObserver>
+      vertical_tab_strip_observation_{this};
 
   // Used to determine where a click event happened to decide if the popup
   // should be deactivated.

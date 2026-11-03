@@ -13,6 +13,10 @@ DEFINE_TYPED_IDENTIFIER_VALUE(ui::ElementIdentifier,
                               views::WebView,
                               kActiveContentsWebViewRetrievalId);
 
+DEFINE_TYPED_IDENTIFIER_VALUE(ui::ElementIdentifier,
+                              views::View,
+                              kVerticalTabStripRegionRetrievalId);
+
 DEFINE_SAFE_CAST_TARGET(BrowserElementsViews)
 
 BrowserElementsViews::BrowserElementsViews(BrowserWindowInterface& browser)

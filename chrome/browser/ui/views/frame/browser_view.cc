@@ -5061,6 +5061,13 @@ void BrowserView::AddedToWidget() {
       kActiveContentsWebViewRetrievalId,
       base::BindRepeating(&BrowserView::GetActiveContentsWebView,
                           base::Unretained(this)));
+  browser_elements->AddRetrievalCallback(
+      kVerticalTabStripRegionRetrievalId,
+      base::BindRepeating(
+          [](BrowserView* browser_view) -> views::View* {
+            return browser_view->vertical_tab_strip_region_view_;
+          },
+          base::Unretained(this)));
 
   // Stow a pointer to this object onto the window handle so that we can get at
   // it later when all we have is a native view.

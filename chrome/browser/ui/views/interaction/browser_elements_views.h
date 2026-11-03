@@ -23,6 +23,12 @@ DECLARE_TYPED_IDENTIFIER_VALUE(ui::ElementIdentifier,
                                views::WebView,
                                kActiveContentsWebViewRetrievalId);
 
+// Retrieves the vertical tab strip region view. May be null if the browser
+// has none.
+DECLARE_TYPED_IDENTIFIER_VALUE(ui::ElementIdentifier,
+                               views::View,
+                               kVerticalTabStripRegionRetrievalId);
+
 // Provides Views-specific extensions to `BrowserElements` so it can
 // provide a context, elements, and Views.
 class BrowserElementsViews : public BrowserElements {

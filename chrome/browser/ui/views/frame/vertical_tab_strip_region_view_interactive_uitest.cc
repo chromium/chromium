@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/base_i18n_switches.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -24,12 +25,12 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
-#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
@@ -46,6 +47,13 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxPopupWebView);
+
+// Names each test param after the omnibox it runs with.
+std::string OmniboxTypeName(const testing::TestParamInfo<bool>& info) {
+  return info.param ? "FullWebUI" : "Classic";
+}
 
 // Returns true if `upper` is stacked above `lower` within their shared
 // `ui::Layer` hierarchy.
@@ -117,6 +125,17 @@ void CollectSubtreeLayers(views::View* root_view,
   for (views::View* child : root_view->children()) {
     CollectSubtreeLayers(child, out_layers);
   }
+}
+
+// Returns `widget`'s window bounds in screen coordinates, minus any part its
+// layer clips off.
+gfx::Rect GetClippedWindowBoundsInScreen(const views::Widget* widget) {
+  gfx::Rect bounds = widget->GetWindowBoundsInScreen();
+  const ui::Layer* layer = widget->GetLayer();
+  if (layer && !layer->clip_rect().IsEmpty()) {
+    bounds.Intersect(layer->clip_rect() + bounds.OffsetFromOrigin());
+  }
+  return bounds;
 }
 
 }  // namespace
@@ -266,17 +285,33 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewInteractiveUiTest,
                         false));
 }
 
+// Runs each test with the Full WebUI omnibox enabled and disabled.
 class VerticalTabStripExpandOnHoverInteractiveUiTest
-    : public VerticalTabStripRegionViewInteractiveUiTest {
+    : public VerticalTabStripRegionViewInteractiveUiTest,
+      public testing::WithParamInterface<bool> {
  public:
   VerticalTabStripExpandOnHoverInteractiveUiTest() = default;
 
-  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    // TODO(crbug.com/580059964, crbug.com/579015393): Remove this manual
-    // feature override once expand-on-hover z-order, popup locking, and
-    // activation handoff bugs are fixed with WebUI omnibox enabled.
-    return {omnibox::internal::kWebUIOmniboxPopup};
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto features =
+        VerticalTabStripRegionViewInteractiveUiTest::GetEnabledFeatures();
+    if (IsFullWebUIOmnibox()) {
+      features.push_back({omnibox::internal::kWebUIOmniboxFullPopup, {}});
+    }
+    return features;
   }
+
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    auto features =
+        VerticalTabStripRegionViewInteractiveUiTest::GetDisabledFeatures();
+    if (!IsFullWebUIOmnibox()) {
+      features.push_back(omnibox::internal::kWebUIOmniboxFullPopup);
+    }
+    return features;
+  }
+
+  bool IsFullWebUIOmnibox() const { return GetParam(); }
 
   BrowserView* browser_view() {
     return BrowserView::GetBrowserViewForBrowser(browser());
@@ -310,19 +345,76 @@ class VerticalTabStripExpandOnHoverInteractiveUiTest
         "WaitForExpandOnHover");
   }
 
-  auto SetOmniboxText(const std::u16string& text) {
-    return Do([this, text]() {
-      browser_view()->GetLocationBar()->GetOmniboxView()->SetUserText(text);
-    });
+  // Returns whether the omnibox has focus. The Full WebUI omnibox's input row
+  // is in its popup, which opens whenever the omnibox has focus.
+  bool IsOmniboxFocused() {
+    if (!IsFullWebUIOmnibox()) {
+      return ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX);
+    }
+    const auto* controller =
+        browser_view()->GetLocationBar()->GetOmniboxController();
+    return controller->edit_model()->has_focus() &&
+           controller->popup_state_manager()->popup_state() ==
+               OmniboxPopupState::kFull;
   }
 
   auto WaitForOmniboxFocus(bool expected_focused) {
     return PollUntil(
         [this, expected_focused]() {
-          return ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX) ==
-                 expected_focused;
+          return IsOmniboxFocused() == expected_focused;
         },
         "WaitForOmniboxFocus");
+  }
+
+  // Waits until the omnibox has focus and its input takes key presses. The
+  // Full WebUI omnibox's input is in the popup's WebUI, so this instruments it
+  // as `kOmniboxPopupWebView` and waits for it to load and focus the input.
+  auto WaitForOmniboxInputReady() {
+    if (!IsFullWebUIOmnibox()) {
+      return Steps(WaitForOmniboxFocus(true));
+    }
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWebUIInputFocused);
+    StateChange input_focused;
+    input_focused.event = kWebUIInputFocused;
+    input_focused.where = {"omnibox-full-app", "omnibox-popup-searchbox",
+                           "cr-searchbox-input", "#input"};
+    input_focused.test_function = R"((el) => {
+      if (!el || !el.ownerDocument.hasFocus()) {
+        return false;
+      }
+      let active = el.ownerDocument.activeElement;
+      while (active?.shadowRoot?.activeElement) {
+        active = active.shadowRoot.activeElement;
+      }
+      return active === el;
+    })";
+    input_focused.continue_across_navigation = true;
+    return Steps(
+        WaitForOmniboxFocus(true),
+        InAnyContext(
+            WaitForShow(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+        InAnyContext(InstrumentNonTabWebView(
+            kOmniboxPopupWebView,
+            base::BindLambdaForTesting([this]() -> views::View* {
+              return browser_view()
+                  ->GetLocationBar()
+                  ->GetOmniboxPopupView()
+                  ->presenter()
+                  ->GetWebUIContent();
+            }))),
+        InSameContext(WaitForWebContentsReady(
+            kOmniboxPopupWebView, GURL(chrome::kChromeUIOmniboxPopupURL))),
+        InAnyContext(WaitForStateChange(kOmniboxPopupWebView, input_focused)));
+  }
+
+  // Sends a real key press to the omnibox's input. Needs
+  // `WaitForOmniboxInputReady()` first.
+  auto SendOmniboxKeyPress(ui::KeyboardCode key) {
+    if (IsFullWebUIOmnibox()) {
+      return Steps(
+          InAnyContext(SendKeyPress(kOmniboxPopupWebView, key, ui::EF_NONE)));
+    }
+    return Steps(SendKeyPress(kOmniboxElementId, key, ui::EF_NONE));
   }
 
   auto WaitForOmniboxPopupOpen(bool expected_open) {
@@ -336,6 +428,95 @@ class VerticalTabStripExpandOnHoverInteractiveUiTest
           return is_dropdown_open == expected_open;
         },
         "WaitForOmniboxPopupOpen");
+  }
+
+  // Returns the omnibox popup's widget, or null if it has none.
+  views::Widget* GetOmniboxPopupWidget() {
+    OmniboxPopupView* popup_view =
+        browser_view()->GetLocationBar()->GetOmniboxPopupView();
+    OmniboxPopupPresenterBase* presenter =
+        popup_view ? popup_view->presenter() : nullptr;
+    return presenter ? presenter->GetWidget() : nullptr;
+  }
+
+  // Waits until the omnibox popup, if any, isn't clipped.
+  auto WaitForOmniboxPopupUnclipped() {
+    return PollUntil(
+        [this]() {
+          views::Widget* popup = GetOmniboxPopupWidget();
+          return !popup || !popup->GetLayer() ||
+                 popup->GetLayer()->clip_rect().IsEmpty();
+        },
+        "WaitForOmniboxPopupUnclipped");
+  }
+
+  // Waits until the omnibox popup, if shown, paints everything except the part
+  // the strip covers.
+  auto WaitForOmniboxPopupClippedToStrip() {
+    return PollUntil(
+        [this]() {
+          views::Widget* popup = GetOmniboxPopupWidget();
+          if (!popup || !popup->IsVisible()) {
+            return true;
+          }
+          const gfx::Rect popup_bounds = popup->GetWindowBoundsInScreen();
+          const gfx::Rect strip = region_view()->GetBoundsInScreen();
+          gfx::Rect covered = strip;
+          covered.Intersect(popup_bounds);
+          const gfx::Rect visible = GetClippedWindowBoundsInScreen(popup);
+          return !visible.Intersects(strip) &&
+                 visible.width() + covered.width() == popup_bounds.width() &&
+                 visible.height() == popup_bounds.height();
+        },
+        "WaitForOmniboxPopupClippedToStrip");
+  }
+
+  // Moves the mouse onto the part of the expanded strip that covers the
+  // location bar, and checks that the strip keeps the mouse and the omnibox
+  // keeps focus. On Mac the strip starts below the toolbar row, so it never
+  // covers the location bar.
+  auto HoverStripOverLocationBar() {
+#if BUILDFLAG(IS_MAC)
+    return Steps();
+#else
+    return Steps(
+        MoveMouseTo(kTabStripRegionElementId,
+                    base::BindOnce(
+                        [](VerticalTabStripExpandOnHoverInteractiveUiTest* test,
+                           ui::TrackedElement* el) {
+                          gfx::Rect covered =
+                              el->AsA<views::TrackedElementViews>()
+                                  ->view()
+                                  ->GetBoundsInScreen();
+                          covered.Intersect(test->browser_view()
+                                                ->GetLocationBarView()
+                                                ->GetBoundsInScreen());
+                          CHECK(!covered.IsEmpty());
+                          return covered.CenterPoint();
+                        },
+                        base::Unretained(this))),
+        CheckViewProperty(kTabStripRegionElementId,
+                          &VerticalTabStripRegionView::is_expanded_on_hover,
+                          true),
+        WaitForOmniboxFocus(true));
+#endif
+  }
+
+  // Expands the strip on hover over the focused omnibox and checks that it has
+  // the highest z-order and keeps the mouse where it covers the omnibox, then
+  // collapses it and checks that the omnibox popup is unclipped and focused.
+  auto ExpandOnHoverHasHighestZOrderSteps() {
+    return Steps(CollapseVerticalTabStripWithExpandOnHover(),
+                 Do([this]() { chrome::FocusLocationBar(browser()); }),
+                 WaitForOmniboxFocus(true), WaitForOmniboxPopupUnclipped(),
+                 MoveMouseTo(kVerticalTabStripCollapseButtonElementId),
+                 WaitForExpandOnHover(true), WaitForOmniboxFocus(true),
+                 Do([this]() { VerifyRegionViewHasHighestZOrder(); }),
+                 WaitForOmniboxPopupClippedToStrip(),
+                 HoverStripOverLocationBar(),
+                 MoveMouseTo(kToolbarAppMenuButtonElementId),
+                 WaitForExpandOnHover(false), WaitForOmniboxPopupUnclipped(),
+                 WaitForOmniboxFocus(true));
   }
 
   void VerifyRegionViewHasHighestZOrder() {
@@ -395,25 +576,56 @@ class VerticalTabStripExpandOnHoverInteractiveUiTest
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         VerticalTabStripExpandOnHoverInteractiveUiTest,
+                         testing::Bool(),
+                         &OmniboxTypeName);
+
 // Verifies that when expand-on-hover is active while the omnibox has focus,
-// VerticalTabStripRegionView has the highest z-order in the browser window.
-IN_PROC_BROWSER_TEST_F(VerticalTabStripExpandOnHoverInteractiveUiTest,
+// VerticalTabStripRegionView has the highest z-order in the browser window and
+// keeps the mouse where it covers the omnibox, and that collapsing it unclips
+// the omnibox popup without moving focus.
+IN_PROC_BROWSER_TEST_P(VerticalTabStripExpandOnHoverInteractiveUiTest,
                        ExpandOnHoverHasHighestZOrder) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  RunTestSequence(CollapseVerticalTabStripWithExpandOnHover(),
-                  Do([this]() { chrome::FocusLocationBar(browser()); }),
-                  WaitForOmniboxFocus(true),
-                  MoveMouseTo(kVerticalTabStripCollapseButtonElementId),
-                  WaitForExpandOnHover(true), WaitForOmniboxFocus(true),
-                  Do([this]() { VerifyRegionViewHasHighestZOrder(); }));
+  RunTestSequence(ExpandOnHoverHasHighestZOrderSteps());
+}
+
+// Verifies that with expand-on-hover enabled but the strip uncollapsed,
+// hovering the strip beside the focused omnibox neither expands it on hover
+// nor clips the omnibox popup.
+IN_PROC_BROWSER_TEST_P(VerticalTabStripExpandOnHoverInteractiveUiTest,
+                       UncollapsedStripDoesNotClipOmniboxPopup) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  RunTestSequence(
+      Do([this]() {
+        vertical_tab_strip_state_controller()->SetExpandOnHoverEnabled(true);
+        vertical_tab_strip_state_controller()->RequestCollapse(false);
+      }),
+      PollUntil(
+          [this]() {
+            return !vertical_tab_strip_state_controller()->IsCollapsed() &&
+                   !BrowserAnimationController::From(browser())->IsAnimating(
+                       TabStripAnimations::kVerticalTabStrip);
+          },
+          "WaitForUncollapsedVerticalTabStrip"),
+      Do([this]() { RunScheduledLayouts(); }),
+      Do([this]() { chrome::FocusLocationBar(browser()); }),
+      WaitForOmniboxFocus(true), MoveMouseTo(kTabStripRegionElementId),
+      CheckViewProperty(kTabStripRegionElementId,
+                        &VerticalTabStripRegionView::is_expanded_on_hover,
+                        false),
+      WaitForOmniboxPopupUnclipped(), WaitForOmniboxFocus(true));
 }
 
 // Verifies that opening the omnibox suggestions popup locks expand-on-hover
 // into the collapsed state (even while the mouse remains hovered over VTS), and
 // dismissing the popup releases the lock so VTS can expand on hover again.
-IN_PROC_BROWSER_TEST_F(VerticalTabStripExpandOnHoverInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(VerticalTabStripExpandOnHoverInteractiveUiTest,
                        OmniboxPopupLocksAndUnlocksExpandOnHover) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -428,12 +640,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripExpandOnHoverInteractiveUiTest,
       WaitForExpandOnHover(true), MoveMouseTo(kTabStripRegionElementId),
 
       // Focus the omnibox and enter user text to open the suggestions popup.
+      // The strip still covers part of the omnibox when the key goes in.
       SendAccelerator(kBrowserViewElementId, focus_location_accelerator),
-      WaitForOmniboxFocus(true), SetOmniboxText(u"a"),
+      WaitForOmniboxInputReady(), SendOmniboxKeyPress(ui::VKEY_A),
       WaitForOmniboxPopupOpen(true),
 
-      // Expand-on-hover must collapse despite the mouse remaining over VTS.
-      WaitForExpandOnHover(false),
+      // Expand-on-hover must collapse despite the mouse remaining over VTS,
+      // and the popup must paint in full.
+      WaitForExpandOnHover(false), WaitForOmniboxPopupUnclipped(),
 
       // Moving the mouse inside VTS while the popup is open must not re-expand.
       MoveMouseTo(kVerticalTabStripCollapseButtonElementId),
@@ -442,22 +656,18 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripExpandOnHoverInteractiveUiTest,
       // Clear the omnibox input to close the suggestions popup; the lock should
       // be released, allowing VTS to expand on hover again while the mouse
       // remains over VTS and the omnibox retains focus.
-      SetOmniboxText(u""), WaitForOmniboxPopupOpen(false),
+      SendOmniboxKeyPress(ui::VKEY_BACK), WaitForOmniboxPopupOpen(false),
       WaitForExpandOnHover(true), WaitForOmniboxFocus(true));
 }
 
 // Verifies that adding new tabs (NTP), switching between web tabs and NTP tabs,
 // and removing tabs while the mouse is hovered over the expanded vertical tab
 // strip does not collapse expand-on-hover.
-IN_PROC_BROWSER_TEST_F(VerticalTabStripExpandOnHoverInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(VerticalTabStripExpandOnHoverInteractiveUiTest,
                        AddingSwitchingAndRemovingTabsPreservesExpandOnHover) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
-
-  ui::Accelerator close_tab_accelerator;
-  ASSERT_TRUE(
-      browser_view()->GetAccelerator(IDC_CLOSE_TAB, &close_tab_accelerator));
 
   base::UserActionTester user_action_tester;
 
@@ -473,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripExpandOnHoverInteractiveUiTest,
 
       // 1. Add a new tab (opens NTP, which focuses the omnibox by default).
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUINewTabURL)),
-      WaitForExpandOnHover(true),
+      WaitForOmniboxFocus(true), WaitForExpandOnHover(true),
       CheckResult(
           [&user_action_tester]() {
             return user_action_tester.GetActionCount(
@@ -490,7 +700,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripExpandOnHoverInteractiveUiTest,
                 "VerticalTabs_ExpandOnHover_Hide");
           },
           0),
-      SelectTab(kTabStripElementId, 1), WaitForExpandOnHover(true),
+      SelectTab(kTabStripElementId, 1), WaitForOmniboxFocus(true),
+      WaitForExpandOnHover(true),
       CheckResult(
           [&user_action_tester]() {
             return user_action_tester.GetActionCount(
@@ -511,7 +722,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripExpandOnHoverInteractiveUiTest,
           0),
 
       // Close the active NTP tab (selection moves to the remaining NTP tab).
-      SendAccelerator(kBrowserViewElementId, close_tab_accelerator),
+      // Run the command directly, since `SendAccelerator` on `BrowserView`
+      // goes through `View::CanHandleAccelerators()`, which rejects an
+      // inactive browser widget while the Full WebUI popup holds activation.
+      Do([this]() { chrome::ExecuteCommand(browser(), IDC_CLOSE_TAB); }),
       WaitForHide(kThirdTab), WaitForExpandOnHover(true),
       CheckResult(
           [&user_action_tester]() {
@@ -534,134 +748,37 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripExpandOnHoverInteractiveUiTest,
           0));
 }
 
-// Runs expand-on-hover scenarios with the Full WebUI omnibox, whose popup opens
-// whenever the omnibox has focus, with or without suggestions.
-class VerticalTabStripExpandOnHoverFullWebUIOmniboxInteractiveUiTest
+// Runs expand-on-hover with the UI forced right-to-left, which puts the strip
+// on the right.
+class VerticalTabStripExpandOnHoverRtlInteractiveUiTest
     : public VerticalTabStripExpandOnHoverInteractiveUiTest {
  public:
-  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      override {
-    auto features =
-        VerticalTabStripExpandOnHoverInteractiveUiTest::GetEnabledFeatures();
-    features.push_back({omnibox::internal::kWebUIOmniboxFullPopup, {}});
-    return features;
-  }
-
-  // Waits for the omnibox to have focus with the Full popup open.
-  auto WaitForFullPopupFocus() {
-    return PollUntil(
-        [this]() {
-          const auto* controller =
-              browser_view()->GetLocationBar()->GetOmniboxController();
-          return controller->edit_model()->has_focus() &&
-                 controller->popup_state_manager()->popup_state() ==
-                     OmniboxPopupState::kFull;
-        },
-        "WaitForFullPopupFocus");
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    VerticalTabStripExpandOnHoverInteractiveUiTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitchASCII(switches::kForceUIDirection,
+                                    switches::kForceDirectionRTL);
   }
 };
 
-// Verifies that with the Full WebUI omnibox, focusing the omnibox without
-// suggestions leaves expand-on-hover expanded, showing suggestions locks it
-// collapsed while the mouse stays over VTS, and hiding them releases the lock.
-IN_PROC_BROWSER_TEST_F(
-    VerticalTabStripExpandOnHoverFullWebUIOmniboxInteractiveUiTest,
-    SuggestionsLockAndUnlockExpandOnHover) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPopupWebView);
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWebUIInputFocused);
+INSTANTIATE_TEST_SUITE_P(All,
+                         VerticalTabStripExpandOnHoverRtlInteractiveUiTest,
+                         testing::Bool(),
+                         &OmniboxTypeName);
 
+// Same as `ExpandOnHoverHasHighestZOrder` above, with the strip on the right.
+IN_PROC_BROWSER_TEST_P(VerticalTabStripExpandOnHoverRtlInteractiveUiTest,
+                       ExpandOnHoverHasHighestZOrder) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/579015393): In partial RTL on Mac, the strip starts at y = 0
+  // and overlaps the Full popup's child NSWindow, which is only clipped on
+  // Aura.
+  if (IsFullWebUIOmnibox()) {
+    GTEST_SKIP();
+  }
+#endif
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  StateChange input_focused;
-  input_focused.event = kWebUIInputFocused;
-  input_focused.where = {"omnibox-full-app", "omnibox-popup-searchbox",
-                         "cr-searchbox-input", "#input"};
-  input_focused.test_function = R"((el) => {
-    if (!el || !el.ownerDocument.hasFocus()) {
-      return false;
-    }
-    let active = el.ownerDocument.activeElement;
-    while (active?.shadowRoot?.activeElement) {
-      active = active.shadowRoot.activeElement;
-    }
-    return active === el;
-  })";
-  input_focused.continue_across_navigation = true;
-
-  RunTestSequence(
-      CollapseVerticalTabStripWithExpandOnHover(),
-      MoveMouseTo(kVerticalTabStripCollapseButtonElementId),
-      WaitForExpandOnHover(true), MoveMouseTo(kTabStripRegionElementId),
-
-      // Focusing the omnibox opens the Full popup without suggestions, which
-      // must not collapse expand-on-hover.
-      Do([this]() { chrome::FocusLocationBar(browser()); }),
-      WaitForFullPopupFocus(), WaitForOmniboxPopupOpen(false),
-      WaitForExpandOnHover(true),
-      InAnyContext(
-          WaitForShow(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
-      InAnyContext(InstrumentNonTabWebView(
-          kPopupWebView, base::BindLambdaForTesting([this]() -> views::View* {
-            return browser_view()
-                ->GetLocationBar()
-                ->GetOmniboxPopupView()
-                ->presenter()
-                ->GetWebUIContent();
-          }))),
-      InSameContext(WaitForWebContentsReady(
-          kPopupWebView, GURL(chrome::kChromeUIOmniboxPopupURL))),
-      InAnyContext(WaitForStateChange(kPopupWebView, input_focused)),
-
-      // Typing to show suggestions collapses expand-on-hover despite the mouse
-      // remaining over VTS.
-      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_A, ui::EF_NONE)),
-      WaitForOmniboxPopupOpen(true), WaitForExpandOnHover(false),
-
-      // Moving the mouse inside VTS while suggestions show must not re-expand.
-      MoveMouseTo(kVerticalTabStripCollapseButtonElementId),
-      WaitForOmniboxPopupOpen(true), WaitForExpandOnHover(false),
-
-      // Deleting the text hides the suggestions and releases the lock, while
-      // the omnibox keeps focus.
-      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_BACK, ui::EF_NONE)),
-      WaitForOmniboxPopupOpen(false), WaitForExpandOnHover(true),
-      WaitForFullPopupFocus());
-}
-
-// Verifies that with the Full WebUI omnibox, opening a new tab page, which
-// focuses the omnibox without suggestions, and switching tabs while the mouse
-// is over the expanded vertical tab strip don't collapse expand-on-hover.
-IN_PROC_BROWSER_TEST_F(
-    VerticalTabStripExpandOnHoverFullWebUIOmniboxInteractiveUiTest,
-    NewTabAndTabSwitchPreserveExpandOnHover) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
-
-  base::UserActionTester user_action_tester;
-  auto get_hide_count = [&user_action_tester]() {
-    return user_action_tester.GetActionCount("VerticalTabs_ExpandOnHover_Hide");
-  };
-
-  RunTestSequence(
-      InstrumentTab(kFirstTab), CollapseVerticalTabStripWithExpandOnHover(),
-      MoveMouseTo(kVerticalTabStripCollapseButtonElementId),
-      WaitForExpandOnHover(true),
-
-      // Position cursor inside the expanded region (past the collapsed width)
-      // so any transient collapse shrinks out from under the cursor.
-      MoveMouseTo(kTabStripRegionElementId),
-      Do([&user_action_tester]() { user_action_tester.ResetCounts(); }),
-
-      // The new tab page focuses the omnibox, which opens the Full popup
-      // without suggestions.
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUINewTabURL)),
-      WaitForFullPopupFocus(), WaitForExpandOnHover(true),
-      CheckResult(get_hide_count, 0),
-
-      // Switch to the first tab and back while hovered in VTS.
-      SelectTab(kTabStripElementId, 0), WaitForExpandOnHover(true),
-      CheckResult(get_hide_count, 0), SelectTab(kTabStripElementId, 1),
-      WaitForFullPopupFocus(), WaitForExpandOnHover(true),
-      CheckResult(get_hide_count, 0));
+  RunTestSequence(ExpandOnHoverHasHighestZOrderSteps());
 }

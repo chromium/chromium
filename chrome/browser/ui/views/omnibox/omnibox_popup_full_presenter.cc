@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
@@ -44,6 +45,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -143,6 +145,17 @@ void OmniboxPopupFullPresenter::Show() {
         app_menu_control_observation_.Observe(
             browser_view->toolbar_button_provider()->GetAppMenuControl());
       }
+#if defined(USE_AURA)
+      auto* elements = BrowserElementsViews::From(browser_view->browser());
+      if (views::View* strip =
+              elements
+                  ? elements->RetrieveView(kVerticalTabStripRegionRetrievalId)
+                  : nullptr;
+          strip && !vertical_tab_strip_observation_.IsObserving()) {
+        vertical_tab_strip_observation_.Observe(strip);
+      }
+      UpdateVerticalTabStripOcclusion();
+#endif  // USE_AURA
     }
   }
 }
@@ -159,6 +172,9 @@ void OmniboxPopupFullPresenter::Hide() {
     content->CancelPendingContextMenuRequest();
   }
   app_menu_control_observation_.Reset();
+  vertical_tab_strip_observation_.Reset();
+  UpdateVerticalTabStripOcclusion();
+
   event_monitor_.reset();
   forward_events_timer_.Stop();
   StopForwardingEvents();
@@ -322,16 +338,19 @@ gfx::Insets OmniboxPopupFullPresenter::GetShadowMargin() const {
   // While collapsed nothing is painted below the location bar, so drop the
   // bottom margin to keep the widget from covering the UI directly beneath it
   // (e.g. the bookmarks bar or the top of the web contents).
-  const int location_bar_height =
-      location_bar() ? location_bar()->BoundsInScreen().height()
-                     : GetLayoutConstant(LayoutConstant::kLocationBarHeight);
-  const int collapsed_height =
-      location_bar_height +
-      FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets().height();
-  if (content_height_ <= collapsed_height) {
+  if (IsPopupCollapsed()) {
     margin.set_bottom(0);
   }
   return margin;
+}
+
+bool OmniboxPopupFullPresenter::IsPopupCollapsed() const {
+  const int location_bar_height =
+      location_bar() ? location_bar()->BoundsInScreen().height()
+                     : GetLayoutConstant(LayoutConstant::kLocationBarHeight);
+  return content_height_ <=
+         location_bar_height +
+             FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets().height();
 }
 
 void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
@@ -389,6 +408,8 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
   widget_bounds.Inset(
       -(shadow_in_webui ? shadow_margin : results_frame->GetInsets()));
   GetWidget()->SetBounds(widget_bounds);
+
+  UpdateVerticalTabStripOcclusion();
 }
 
 void OmniboxPopupFullPresenter::NotifyEscapeKeyPressed() {
@@ -852,10 +873,17 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
 
   bool contains_popup = false;
   if (IsShown()) {
-    // Exclude the transparent shadow margin: on Aura the window targeter lets
-    // clicks there pass through to the browser window, so they are outside.
-    gfx::Rect popup_bounds = GetWidget()->GetWindowBoundsInScreen();
+    // Exclude the transparent shadow margin and the part clipped off under the
+    // vertical tab strip: on Aura the window targeter lets clicks there pass
+    // through to the browser window, so they are outside.
+    const gfx::Rect window_bounds = GetWidget()->GetWindowBoundsInScreen();
+    gfx::Rect popup_bounds = window_bounds;
     popup_bounds.Inset(GetShadowMargin());
+    if (const ui::Layer* layer = GetWidget()->GetLayer();
+        layer && !layer->clip_rect().IsEmpty()) {
+      popup_bounds.Intersect(layer->clip_rect() +
+                             window_bounds.OffsetFromOrigin());
+    }
     contains_popup = popup_bounds.Contains(event_screen_point);
   }
 
@@ -918,4 +946,54 @@ views::Widget* OmniboxPopupFullPresenter::GetBrowserWidget() {
 views::FocusManager* OmniboxPopupFullPresenter::GetBrowserFocusManager() {
   views::Widget* browser_widget = GetBrowserWidget();
   return browser_widget ? browser_widget->GetFocusManager() : nullptr;
+}
+
+void OmniboxPopupFullPresenter::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view,
+    bool visible) {
+  UpdateVerticalTabStripOcclusion();
+}
+
+void OmniboxPopupFullPresenter::OnViewBoundsChanged(
+    views::View* observed_view) {
+  UpdateVerticalTabStripOcclusion();
+}
+
+void OmniboxPopupFullPresenter::OnViewIsDeleting(views::View* observed_view) {
+  vertical_tab_strip_observation_.Reset();
+}
+
+void OmniboxPopupFullPresenter::UpdateVerticalTabStripOcclusion() {
+#if defined(USE_AURA)
+  // `GetLayer()` is null if the native window is already closing.
+  ui::Layer* layer = GetWidget() ? GetWidget()->GetLayer() : nullptr;
+  if (!layer) {
+    return;
+  }
+  gfx::Rect clip;
+  views::View* strip = vertical_tab_strip_observation_.GetSource();
+  // Only clip while the popup is collapsed. Once suggestions open, the strip
+  // collapses and the popup should paint in full.
+  if (strip && strip->IsDrawn() && IsPopupCollapsed()) {
+    const gfx::Rect popup_bounds = GetWidget()->GetWindowBoundsInScreen();
+    gfx::Rect covered = strip->GetBoundsInScreen();
+    covered.Intersect(popup_bounds);
+    if (!covered.IsEmpty()) {
+      // `clip` is the uncovered portion of the popup.
+      clip = gfx::Rect(popup_bounds.size());
+      clip.Inset(covered.x() == popup_bounds.x()
+                     ? gfx::Insets::TLBR(0, covered.width(), 0, 0)
+                     : gfx::Insets::TLBR(0, 0, 0, covered.width()));
+      if (clip.IsEmpty()) {
+        // Nothing is left uncovered (`covered.width() ==
+        // popup_bounds.width()`). `SetClipRect()` treats an empty rect as "no
+        // clip", so clip to a 1px rect outside the window instead.
+        clip = gfx::Rect(-1, -1, 1, 1);
+      }
+    }
+  }
+  // Ensure events in the covered part reach the strip.
+  layer->SetClipRect(clip);
+#endif  // USE_AURA
 }
