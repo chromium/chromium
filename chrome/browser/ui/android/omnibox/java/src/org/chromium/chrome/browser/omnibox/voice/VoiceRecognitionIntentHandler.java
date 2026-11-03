@@ -221,6 +221,19 @@ public class VoiceRecognitionIntentHandler {
             return;
         }
 
+        launchSystemSpeechRecognitionIntent(activity, source, callback);
+    }
+
+    /**
+     * Launches the system speech recognizer intent, notifying the callback if no recognizer is
+     * available.
+     *
+     * @param activity The activity used to identify the calling package.
+     * @param source The source of the voice search initiation, such as NTP or omnibox.
+     * @param callback The callback to receive completion or cancellation events.
+     */
+    private void launchSystemSpeechRecognitionIntent(
+            Activity activity, @VoiceInteractionSource int source, RecognitionCallback callback) {
         if (!showSpeechRecognitionIntent(
                 createSystemSpeechRecognitionIntent(activity),
                 source,
@@ -303,6 +316,17 @@ public class VoiceRecognitionIntentHandler {
             boolean forceHighConfidence) {
         IntentCallback intentCallback =
                 (resultCode, data) -> {
+                    if (forceHighConfidence
+                            && VoicePlateIntegration.getInstance()
+                                    .isServiceRefused(resultCode, data)) {
+                        Activity activity = mWindowAndroid.getActivity().get();
+                        if (activity == null) {
+                            callback.onCanceled();
+                            return;
+                        }
+                        launchSystemSpeechRecognitionIntent(activity, source, callback);
+                        return;
+                    }
                     if (resultCode == Activity.RESULT_CANCELED) {
                         recordVoiceSearchDismissedEvent(source);
                         callback.onCanceled();

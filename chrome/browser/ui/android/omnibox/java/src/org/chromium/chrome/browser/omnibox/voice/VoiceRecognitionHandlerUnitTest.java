@@ -496,6 +496,35 @@ public class VoiceRecognitionHandlerUnitTest {
     }
 
     @Test
+    public void testVoicePlate_serviceRefused_fallsBackToSystemRecognizer() {
+        enableVoicePlate();
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_OK, /* text= */ "testing", /* confidence= */ 0.f);
+        var refusedData = new Intent();
+        doReturn(true)
+                .when(mVoicePlateIntegration)
+                .isServiceRefused(Activity.RESULT_CANCELED, refusedData);
+        doAnswer(
+                        inv -> {
+                            WindowAndroid.IntentCallback cb = inv.getArgument(1);
+                            cb.onIntentCompleted(Activity.RESULT_CANCELED, refusedData);
+                            return 0;
+                        })
+                .when(mWindowAndroid)
+                .showCancelableIntent(eq(mVoicePlateIntent), any(), any());
+
+        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, mOnCanceled);
+
+        verify(mWindowAndroid, times(2))
+                .showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        assertEquals(mVoicePlateIntent, mIntentCaptor.getAllValues().get(0));
+        assertNull(mIntentCaptor.getAllValues().get(1).getComponent());
+        verify(mIntentHandler, never()).recordVoiceSearchDismissedEvent(anyInt());
+        verify(mOmniboxStub).beginInput(any());
+        verify(mOnCanceled, never()).run();
+    }
+
+    @Test
     public void testVoicePlate_launchFailure_fallsBackToSystemRecognizer() {
         enableVoicePlate();
         setVoiceResult(

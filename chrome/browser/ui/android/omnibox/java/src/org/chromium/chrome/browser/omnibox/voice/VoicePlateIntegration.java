@@ -54,6 +54,20 @@ public class VoicePlateIntegration {
     }
 
     /**
+     * Returns whether the Voice Plate refused to fulfill the request (for example due to an account
+     * mismatch or missing result data), in which case voice recognition should fall back to the
+     * system speech recognizer instead of treating the session as completed or dismissed.
+     * Overridden by the downstream implementation in //clank.
+     *
+     * @param resultCode The activity result code returned by the Voice Plate.
+     * @param data The result intent returned by the Voice Plate.
+     */
+    @Contract("_, null -> true")
+    protected boolean isServiceRefused(int resultCode, @Nullable Intent data) {
+        return true;
+    }
+
+    /**
      * Returns the intent that launches the Voice Plate, or null if the request cannot be fulfilled,
      * in which case the system speech recognizer is used instead. Overridden by the downstream
      * implementation in //clank.

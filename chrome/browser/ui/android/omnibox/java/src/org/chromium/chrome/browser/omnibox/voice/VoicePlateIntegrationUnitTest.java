@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.omnibox.voice;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -39,6 +42,13 @@ public class VoicePlateIntegrationUnitTest {
     public void isEligible_defaultImplementation_returnsFalse() {
         assertFalse(mIntegration.isEligible(mProfile));
         assertFalse(mIntegration.isEligible(/* profile= */ null));
+    }
+
+    @Test
+    public void isServiceRefused_defaultImplementation_returnsTrue() {
+        assertTrue(mIntegration.isServiceRefused(Activity.RESULT_OK, new Intent()));
+        assertTrue(mIntegration.isServiceRefused(Activity.RESULT_CANCELED, new Intent()));
+        assertTrue(mIntegration.isServiceRefused(Activity.RESULT_CANCELED, /* data= */ null));
     }
 
     @Test
