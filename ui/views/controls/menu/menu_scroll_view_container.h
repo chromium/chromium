@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_SCROLL_VIEW_CONTAINER_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_SCROLL_VIEW_CONTAINER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -22,6 +23,7 @@ namespace views {
 
 class MenuItemView;
 class SubmenuView;
+class ViewDecoration;
 
 // MenuScrollViewContainer contains the SubmenuView (through a MenuScrollView)
 // and two scroll buttons. The scroll buttons are only visible and enabled if
@@ -35,6 +37,7 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View,
 
   MenuScrollViewContainer(const MenuScrollViewContainer&) = delete;
   MenuScrollViewContainer& operator=(const MenuScrollViewContainer&) = delete;
+  ~MenuScrollViewContainer() override;
 
   // Returns the buttons for scrolling up/down.
   View* scroll_down_button() const { return scroll_down_button_; }
@@ -122,6 +125,7 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View,
 
   // The background view.
   raw_ptr<View> background_view_ = nullptr;
+  std::unique_ptr<ViewDecoration> background_decoration_;
 
   // The scroll buttons.
   raw_ptr<View> scroll_up_button_;

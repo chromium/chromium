@@ -40,12 +40,12 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/round_rect_painter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_decoration.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -399,6 +399,9 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
       background_layer->SetBackgroundBlur(kBackgroundBlurSigma);
       background_layer->SetBackdropFilterQuality(kBackgroundBlurQuality);
     }
+#if BUILDFLAG(IS_CHROMEOS)
+    background_decoration_ = std::make_unique<ViewDecoration>(background_view_);
+#endif
   }
 
   auto* layout =
@@ -466,6 +469,8 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
   GetViewAccessibility().SetIsIgnored(true);
 #endif
 }
+
+MenuScrollViewContainer::~MenuScrollViewContainer() = default;
 
 void MenuScrollViewContainer::UpdatePinnedItems() {
   if (!header_container_ || !footer_container_) {
@@ -843,10 +848,16 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
         CreateRoundedRectBackground(id, background_rounded_corners_));
     background_view_->layer()->SetRoundedCornerRadius(GetRoundedCorners());
 
+    if (background_decoration_) {
+      background_decoration_->SetRoundedCorners(GetRoundedCorners());
 #if BUILDFLAG(IS_CHROMEOS)
-    background_view_->SetBorder(std::make_unique<HighlightBorder>(
-        GetRoundedCorners(), HighlightBorder::Type::kHighlightBorderOnShadow));
+      if (const auto* color_provider = GetColorProvider()) {
+        background_decoration_->SetHighlightBorder(
+            color_provider->GetColor(ui::kColorCrosSystemHighlight),
+            color_provider->GetColor(ui::kColorCrosSystemHighlightBorder1));
+      }
 #endif
+    }
   } else {
     SetBackground(std::make_unique<BubbleBackground>(bubble_border.get()));
   }
