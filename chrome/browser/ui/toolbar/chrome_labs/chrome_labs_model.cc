@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 
-#include <optional>
+#include <array>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -14,26 +15,22 @@
 
 namespace {
 
-std::optional<std::vector<LabInfo>>& GetTestData() {
-  static base::NoDestructor<std::optional<std::vector<LabInfo>>> test_lab_data;
-  return *test_lab_data;
+base::span<const LabInfo>& GetTestData() {
+  static base::span<const LabInfo> test_lab_data;
+  return test_lab_data;
 }
 
-void SetLabInfoForTesting(const std::vector<LabInfo>& test_feature_info) {
-  if (test_feature_info.empty()) {
-    GetTestData().reset();
-  } else {
-    GetTestData() = test_feature_info;
-  }
+void SetLabInfoForTesting(base::span<const LabInfo> test_feature_info) {
+  GetTestData() = test_feature_info;
 }
 
 // TODO(elainechien): Explore better ways to allow developers to add their
 // experiments.
 // Experiments featured in labs must have feature entries of type FEATURE_VALUE
 // (Default, Enabled, Disabled states) or FEATURE_WITH_PARAMS_VALUE
-const std::vector<LabInfo>& GetData() {
-  if (GetTestData()) {
-    return GetTestData().value();
+base::span<const LabInfo> GetData() {
+  if (!GetTestData().empty()) {
+    return GetTestData();
   }
 
   static const base::NoDestructor<std::vector<LabInfo>> lab_info_(
@@ -62,7 +59,7 @@ LabInfo::LabInfo(const LabInfo& other) = default;
 
 LabInfo::~LabInfo() = default;
 
-ChromeLabsModel::ChromeLabsModel() : lab_info_(GetData()) {}
+ChromeLabsModel::ChromeLabsModel() = default;
 
 ChromeLabsModel::~ChromeLabsModel() = default;
 
@@ -72,8 +69,8 @@ ChromeLabsModel* ChromeLabsModel::GetInstance() {
   return instance.get();
 }
 
-const std::vector<LabInfo>& ChromeLabsModel::GetLabInfo() const {
-  return *lab_info_;
+base::span<const LabInfo> ChromeLabsModel::GetLabInfo() const {
+  return GetData();
 }
 
 ScopedChromeLabsModelDataForTesting::ScopedChromeLabsModelDataForTesting() =
@@ -81,10 +78,11 @@ ScopedChromeLabsModelDataForTesting::ScopedChromeLabsModelDataForTesting() =
 
 ScopedChromeLabsModelDataForTesting::~ScopedChromeLabsModelDataForTesting() {
   // Remove test data.
-  SetLabInfoForTesting(std::vector<LabInfo>());  // IN-TEST
+  SetLabInfoForTesting(base::span<const LabInfo>());  // IN-TEST
 }
 
 void ScopedChromeLabsModelDataForTesting::SetModelDataForTesting(
     const std::vector<LabInfo>& test_feature_info) {
-  SetLabInfoForTesting(test_feature_info);  // IN-TEST
+  test_feature_info_ = test_feature_info;
+  SetLabInfoForTesting(test_feature_info_);  // IN-TEST
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 
+#include "base/containers/span.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
@@ -27,7 +28,7 @@ class ChromeLabsModelTest : public ChromeViewsTestBase {};
 
 TEST_F(ChromeLabsModelTest, CheckFeaturesHaveSupportedTypes) {
   std::unique_ptr<ChromeLabsModel> model = std::make_unique<ChromeLabsModel>();
-  const std::vector<LabInfo>& all_labs = model->GetLabInfo();
+  base::span<const LabInfo> all_labs = model->GetLabInfo();
 
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =
@@ -46,7 +47,7 @@ TEST_F(ChromeLabsModelTest, CheckFeatureWithParamsVariations) {
   base::test::ScopedRestoreICUDefaultLocale locale(std::string("en_US"));
 
   auto model = std::make_unique<ChromeLabsModel>();
-  const std::vector<LabInfo>& all_labs = model->GetLabInfo();
+  base::span<const LabInfo> all_labs = model->GetLabInfo();
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =
         about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -128,7 +129,7 @@ int ChromeLabsViewController::GetIndexOfEnabledLabState(
 
 void ChromeLabsViewController::ParseModelDataAndAddLabs() {
   // Create each lab item.
-  const std::vector<LabInfo>& all_labs =
+  base::span<const LabInfo> all_labs =
       ChromeLabsModel::GetInstance()->GetLabInfo();
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =

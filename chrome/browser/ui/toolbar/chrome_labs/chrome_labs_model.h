@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ref.h"
+#include "base/containers/span.h"
 #include "components/version_info/channel.h"
 
 struct LabInfo {
@@ -40,10 +40,7 @@ class ChromeLabsModel {
 
   static ChromeLabsModel* GetInstance();
 
-  const std::vector<LabInfo>& GetLabInfo() const;
-
- private:
-  const raw_ref<const std::vector<LabInfo>> lab_info_;
+  base::span<const LabInfo> GetLabInfo() const;
 };
 
 // ScopedChromeLabsModelDataForTesting is intended to be used in test settings
@@ -61,6 +58,9 @@ class ScopedChromeLabsModelDataForTesting {
   ~ScopedChromeLabsModelDataForTesting();
 
   void SetModelDataForTesting(const std::vector<LabInfo>& test_feature_info);
+
+ private:
+  std::vector<LabInfo> test_feature_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_CHROME_LABS_MODEL_H_
