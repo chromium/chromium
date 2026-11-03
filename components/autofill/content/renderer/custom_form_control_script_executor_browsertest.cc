@@ -8,9 +8,14 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
 
+#include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -18,18 +23,46 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-value.h"
 
 namespace autofill {
+
+// Gives tests access to `CustomFormControlScriptExecutor::CallFunction()`.
+class CustomFormControlScriptExecutorTestApi {
+ public:
+  using Argument = CustomFormControlScriptExecutor::Argument;
+  using ResultCallback = CustomFormControlScriptExecutor::ResultCallback;
+
+  explicit CustomFormControlScriptExecutorTestApi(
+      CustomFormControlScriptExecutor* executor)
+      : executor_(CHECK_DEREF(executor)) {}
+
+  void CallFunction(std::string_view function_name,
+                    std::vector<Argument> arguments,
+                    ResultCallback callback) {
+    executor_->CallFunction(function_name, std::move(arguments),
+                            std::move(callback));
+  }
+
+ private:
+  const raw_ref<CustomFormControlScriptExecutor> executor_;
+};
+
 namespace {
 
 // Any isolated world id that the test doesn't otherwise use.
 constexpr int32_t kWorldId = content::ISOLATED_WORLD_ID_CONTENT_END + 1;
+
+using Argument = CustomFormControlScriptExecutorTestApi::Argument;
 
 // A minimal script that returns an empty manager.
 constexpr char kValidScript[] = R"(
@@ -84,6 +117,37 @@ class CustomFormControlScriptExecutorTest : public content::RenderViewTest {
       return std::nullopt;
     }
     return ToUtf8(isolate, result.As<v8::String>());
+  }
+
+  // Calls `function_name` and returns the result converted to a string, or
+  // `std::nullopt` if the call or the conversion failed.
+  std::optional<std::string> Call(std::string_view function_name,
+                                  std::vector<Argument> arguments = {}) {
+    std::optional<std::string> result;
+    bool called = false;
+    CustomFormControlScriptExecutorTestApi(executor_.get())
+        .CallFunction(
+            function_name, std::move(arguments),
+            base::BindLambdaForTesting([&](v8::Isolate* isolate,
+                                           v8::Local<v8::Context> context,
+                                           v8::MaybeLocal<v8::Value> value) {
+              called = true;
+              // Converting the value may run script (e.g. `toString()`), which
+              // may throw.
+              v8::TryCatch try_catch(isolate);
+              v8::Local<v8::Value> local;
+              v8::Local<v8::String> string;
+              if (value.ToLocal(&local) &&
+                  local->ToString(context).ToLocal(&string)) {
+                result = ToUtf8(isolate, string);
+              }
+            }));
+    EXPECT_TRUE(called);
+    return result;
+  }
+
+  blink::WebNode GetTarget() {
+    return GetMainFrame()->GetDocument().GetElementById("target");
   }
 
   std::unique_ptr<CustomFormControlScriptExecutor> executor_;
@@ -214,9 +278,10 @@ TEST_F(CustomFormControlScriptExecutorTest,
   EXPECT_FALSE(executor_->LoadScript("var y = 1;"));
 }
 
-// Stands in for the executor's owner (e.g. `AutofillAgent`), which destroys the
-// executor in its own `OnDestruct()`. This lets a test destroy the executor
-// while `LoadScript()` is still running the script that detaches the frame.
+// Stands in for an owner that destroys the executor synchronously in its own
+// `OnDestruct()` (unlike `AutofillAgent`, which is deleted asynchronously).
+// This lets a test destroy the executor while `LoadScript()` is still running
+// the script that detaches the frame.
 class DestroyExecutorOnFrameDestruction : public content::RenderFrameObserver {
  public:
   DestroyExecutorOnFrameDestruction(
@@ -310,6 +375,163 @@ TEST_F(CustomFormControlScriptExecutorTest, IsolatedWorldCanAccessDom) {
   EXPECT_EQ(
       EvaluateInIsolatedWorld("document.getElementById('target').textContent"),
       "Hello");
+}
+
+// Tests that calls pass DOM nodes and strings to the manager's methods, with
+// the manager as `this`, and return their result.
+TEST_F(CustomFormControlScriptExecutorTest, CallsFunctionWithArguments) {
+  LoadHTML("<div id=target></div>");
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return {
+        tag: 'manager',
+        describe(node, s, u) {
+          return [node.id, s, u === undefined, this.tag].join(',');
+        },
+      };
+    }
+  )"));
+  EXPECT_EQ(Call("describe", {GetTarget(), u"text", std::nullopt}),
+            "target,text,true,manager");
+}
+
+// Tests that calls run in the isolated world, so that properties they set on
+// DOM nodes aren't visible to the page.
+TEST_F(CustomFormControlScriptExecutorTest, CallsUseIsolatedWorld) {
+  LoadHTML("<div id=target></div>");
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return { mark(node) { node.marked = 1; return node.marked; } };
+    }
+  )"));
+  EXPECT_EQ(Call("mark", {GetTarget()}), "1");
+  EXPECT_TRUE(
+      IsUndefinedInMainWorld("document.getElementById('target').marked"));
+}
+
+// Tests that loading another script replaces the manager, so that calls go to
+// the new one.
+TEST_F(CustomFormControlScriptExecutorTest, ReplacesManager) {
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return { name: () => 'first' };
+    }
+  )"));
+  EXPECT_EQ(Call("name"), "first");
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return { name: () => 'second' };
+    }
+  )"));
+  EXPECT_EQ(Call("name"), "second");
+}
+
+// Tests that calls fail if there is no manager or no such method, if an
+// argument is a null node, or if the method throws or returns a promise, and
+// that later calls still work.
+TEST_F(CustomFormControlScriptExecutorTest, CallFails) {
+  EXPECT_EQ(Call("anything"), std::nullopt);  // No manager.
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return {
+        notAFunction: 1,
+        throws() { throw new Error('error'); },
+        async isAsync() { return 1; },
+        works() { return 'ok'; },
+      };
+    }
+  )"));
+  EXPECT_EQ(Call("missing"), std::nullopt);
+  EXPECT_EQ(Call("notAFunction"), std::nullopt);
+  EXPECT_EQ(Call("throws"), std::nullopt);
+  EXPECT_EQ(Call("isAsync"), std::nullopt);
+  EXPECT_EQ(Call("works", {blink::WebNode()}), std::nullopt);  // Null node.
+  EXPECT_EQ(Call("works"), "ok");
+}
+
+// Tests that a result whose conversion throws (here in `Call()`, which runs
+// `toString()`) doesn't affect later calls.
+TEST_F(CustomFormControlScriptExecutorTest, ResultThatThrowsOnConversion) {
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return {
+        throwsOnConversion() {
+          return { toString() { throw new Error('error'); } };
+        },
+        works() { return 'ok'; },
+      };
+    }
+  )"));
+  EXPECT_EQ(Call("throwsOnConversion"), std::nullopt);
+  EXPECT_EQ(Call("works"), "ok");
+}
+
+// Tests that the microtasks a call queues only run at the next microtask
+// checkpoint, after the call.
+TEST_F(CustomFormControlScriptExecutorTest, MicrotasksRunAfterCall) {
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return {
+        queuesMicrotask() {
+          queueMicrotask(() => { this.ran = true; });
+          return 'ok';
+        },
+        ran: false,
+        microtaskRan() { return String(this.ran); },
+      };
+    }
+  )"));
+  EXPECT_EQ(Call("queuesMicrotask"), "ok");
+  EXPECT_EQ(Call("microtaskRan"), "false");
+  // Running a script in the page performs a microtask checkpoint afterwards,
+  // which also runs the isolated world's microtasks.
+  ExecuteJavaScriptForTests("0;");
+  EXPECT_EQ(Call("microtaskRan"), "true");
+}
+
+// Tests that a call fails, without crashing, if the method detaches the frame,
+// which releases the isolated world's script context during the call.
+TEST_F(CustomFormControlScriptExecutorTest, CallFailsIfFrameIsDetached) {
+  LoadHTML("<iframe src='about:blank'></iframe>");
+  blink::WebLocalFrame* child = GetMainFrame()->FirstChild()->ToWebLocalFrame();
+  CustomFormControlScriptExecutor child_executor(
+      *content::RenderFrame::FromWebFrame(child), kWorldId);
+  ASSERT_TRUE(child_executor.LoadScript(R"(
+    function createCustomFormControlManager() {
+      return { detach() { frameElement.remove(); return 'detached'; } };
+    }
+  )"));
+  bool called = false;
+  CustomFormControlScriptExecutorTestApi(&child_executor)
+      .CallFunction(
+          "detach", {},
+          base::BindLambdaForTesting([&](v8::Isolate* isolate,
+                                         v8::Local<v8::Context> context,
+                                         v8::MaybeLocal<v8::Value> value) {
+            called = true;
+            EXPECT_TRUE(context.IsEmpty());
+            EXPECT_TRUE(value.IsEmpty());
+          }));
+  EXPECT_TRUE(called);
+  EXPECT_FALSE(child_executor.has_manager());
+}
+
+// Tests that a call that fails while the frame is alive still passes the
+// isolate.
+TEST_F(CustomFormControlScriptExecutorTest, FailedCallPassesIsolate) {
+  bool called = false;
+  CustomFormControlScriptExecutorTestApi(executor_.get())
+      .CallFunction(
+          "anything", {},
+          base::BindLambdaForTesting([&](v8::Isolate* isolate,
+                                         v8::Local<v8::Context> context,
+                                         v8::MaybeLocal<v8::Value> value) {
+            called = true;
+            EXPECT_TRUE(isolate);
+            EXPECT_TRUE(context.IsEmpty());
+            EXPECT_TRUE(value.IsEmpty());
+          }));
+  EXPECT_TRUE(called);
 }
 
 }  // namespace
