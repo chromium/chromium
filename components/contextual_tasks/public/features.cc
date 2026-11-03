@@ -124,10 +124,36 @@ const base::FeatureParam<bool>
         "ContextualTasksEphemeralButtonContextMenuCloseSidePanel",
         false);
 
-bool ShouldUseCloseSidePanelForEphemeralButtonContextMenu() {
-  return base::FeatureList::IsEnabled(
-             kContextualTasksEphemeralButtonContextMenu) &&
-         kContextualTasksEphemeralButtonContextMenuCloseSidePanel.Get();
+constexpr base::FeatureParam<EphemeralButtonContextMenuOption>::Option
+    kContextualTasksEphemeralButtonContextMenuOptions[] = {
+        {EphemeralButtonContextMenuOption::kHideSidePanel, "hide-side-panel"},
+        {EphemeralButtonContextMenuOption::kCloseSidePanel, "close-side-panel"},
+        {EphemeralButtonContextMenuOption::kDismissActiveSearch,
+         "dismiss-active-search"},
+        {EphemeralButtonContextMenuOption::kDismissActiveSearchInTab,
+         "dismiss-active-search-in-tab"},
+};
+
+const base::FeatureParam<EphemeralButtonContextMenuOption>
+    kContextualTasksEphemeralButtonContextMenuOption(
+        &kContextualTasksEphemeralButtonContextMenu,
+        "ContextualTasksEphemeralButtonContextMenuOption",
+        EphemeralButtonContextMenuOption::kHideSidePanel,
+        &kContextualTasksEphemeralButtonContextMenuOptions);
+
+EphemeralButtonContextMenuOption GetEphemeralButtonContextMenuOption() {
+  if (!base::FeatureList::IsEnabled(
+          kContextualTasksEphemeralButtonContextMenu)) {
+    return EphemeralButtonContextMenuOption::kHideSidePanel;
+  }
+  const EphemeralButtonContextMenuOption option =
+      kContextualTasksEphemeralButtonContextMenuOption.Get();
+  if (option != EphemeralButtonContextMenuOption::kHideSidePanel) {
+    return option;
+  }
+  return kContextualTasksEphemeralButtonContextMenuCloseSidePanel.Get()
+             ? EphemeralButtonContextMenuOption::kCloseSidePanel
+             : EphemeralButtonContextMenuOption::kHideSidePanel;
 }
 
 // Automatically dismisses the ephemeral contextual tasks toolbar button and

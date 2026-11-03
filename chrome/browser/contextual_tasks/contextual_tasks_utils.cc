@@ -824,6 +824,19 @@ int GetContextualTasksPinningStringId(int default_resource_id) {
       return it->second.panel;
   }
 }
+
+int GetContextualTasksEphemeralButtonContextMenuCloseTextId() {
+  switch (GetEphemeralButtonContextMenuOption()) {
+    case EphemeralButtonContextMenuOption::kHideSidePanel:
+      return IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE;
+    case EphemeralButtonContextMenuOption::kCloseSidePanel:
+      return IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE;
+    case EphemeralButtonContextMenuOption::kDismissActiveSearch:
+      return IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_DISMISS_ACTIVE_SEARCH;
+    case EphemeralButtonContextMenuOption::kDismissActiveSearchInTab:
+      return IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_DISMISS_ACTIVE_SEARCH_IN_TAB;
+  }
+}
 #endif
 
 lens::ClientToAimMessage GetHandshakeMessageProto() {

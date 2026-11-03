@@ -4659,17 +4659,32 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam
     kContextualTasksEphemeralButtonContextMenuHideSidePanel[] = {
-        {"ContextualTasksEphemeralButtonContextMenuCloseSidePanel", "false"}};
+        {"ContextualTasksEphemeralButtonContextMenuOption", "hide-side-panel"}};
 const FeatureEntry::FeatureParam
     kContextualTasksEphemeralButtonContextMenuCloseSidePanel[] = {
-        {"ContextualTasksEphemeralButtonContextMenuCloseSidePanel", "true"}};
+        {"ContextualTasksEphemeralButtonContextMenuOption",
+         "close-side-panel"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksEphemeralButtonContextMenuDismissActiveSearch[] = {
+        {"ContextualTasksEphemeralButtonContextMenuOption",
+         "dismiss-active-search"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksEphemeralButtonContextMenuDismissActiveSearchInTab[] = {
+        {"ContextualTasksEphemeralButtonContextMenuOption",
+         "dismiss-active-search-in-tab"}};
 
 const FeatureEntry::FeatureVariation
     kContextualTasksEphemeralButtonContextMenuVariations[] = {
         {"with 'Hide side panel'",
          kContextualTasksEphemeralButtonContextMenuHideSidePanel, nullptr},
         {"with 'Close side panel'",
-         kContextualTasksEphemeralButtonContextMenuCloseSidePanel, nullptr}};
+         kContextualTasksEphemeralButtonContextMenuCloseSidePanel, nullptr},
+        {"with 'Dismiss active Google Search'",
+         kContextualTasksEphemeralButtonContextMenuDismissActiveSearch,
+         nullptr},
+        {"with 'Dismiss active search in this tab'",
+         kContextualTasksEphemeralButtonContextMenuDismissActiveSearchInTab,
+         nullptr}};
 
 const FeatureEntry::FeatureParam
     kContextualTasksPinnedButtonActiveIndicatorWithoutContextMenu[] = {
