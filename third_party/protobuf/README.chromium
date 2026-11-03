@@ -273,16 +273,6 @@ to the vpython copy of protobuf, you may need to update the version in
 
 Description of the patches:
 
-- 0004-fix-shared-library-exports.patch
-
-  This patch allows exporting protobuf symbols in Linux .so libraries, so
-  that protobuf can be built as a component (see http://crrev.com/179806).
-  Obsoleted upstream by `PROTOBUF_EXPORT` and `PROTOC_EXPORT` in `port_def.inc`,
-  which already emit `__attribute__((visibility("default")))` when
-  `PROTOBUF_USE_DLLS` and `LIBPROTOBUF_EXPORTS` / `LIBPROTOC_EXPORTS` are
-  defined:
-  https://github.com/protocolbuffers/protobuf/blob/3f17acbf7ffbda81db8be17505554c726e558bb2/src/google/protobuf/port_def.inc#L332-L366.
-
 - 0008-uninline_get_empty_string.patch
 
   Uninlines `GetEmptyStringAlreadyInited()` (`PROTOBUF_NOINLINE`) to reduce

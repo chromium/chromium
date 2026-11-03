@@ -33,31 +33,18 @@
 
 // Legacy: some users reference these (internal-only) macros even though we
 // don't need them any more.
-#if defined(COMPONENT_BUILD) && defined(PROTOBUF_USE_DLLS)
-  #if defined(_MSC_VER)
-    #ifdef LIBPROTOBUF_EXPORTS
-      #define LIBPROTOBUF_EXPORT __declspec(dllexport)
-    #else
-      #define LIBPROTOBUF_EXPORT __declspec(dllimport)
-    #endif
-    #ifdef LIBPROTOC_EXPORTS
-      #define LIBPROTOC_EXPORT   __declspec(dllexport)
-    #else
-      #define LIBPROTOC_EXPORT   __declspec(dllimport)
-    #endif
-  #else  // defined(_MSC_VER)
-    #ifdef LIBPROTOBUF_EXPORTS
-      #define LIBPROTOBUF_EXPORT __attribute__((visibility("default")))
-    #else
-      #define LIBPROTOBUF_EXPORT
-    #endif
-    #ifdef LIBPROTOC_EXPORTS
-      #define LIBPROTOC_EXPORT   __attribute__((visibility("default")))
-    #else
-      #define LIBPROTOC_EXPORT
-    #endif
+#if defined(_MSC_VER) && defined(PROTOBUF_USE_DLLS)
+  #ifdef LIBPROTOBUF_EXPORTS
+    #define LIBPROTOBUF_EXPORT __declspec(dllexport)
+  #else
+    #define LIBPROTOBUF_EXPORT __declspec(dllimport)
   #endif
-#else  // defined(COMPONENT_BUILD) && defined(PROTOBUF_USE_DLLS)
+  #ifdef LIBPROTOC_EXPORTS
+    #define LIBPROTOC_EXPORT   __declspec(dllexport)
+  #else
+    #define LIBPROTOC_EXPORT   __declspec(dllimport)
+  #endif
+#else
   #define LIBPROTOBUF_EXPORT
   #define LIBPROTOC_EXPORT
 #endif
