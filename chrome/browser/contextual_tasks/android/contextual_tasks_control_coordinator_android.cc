@@ -15,12 +15,13 @@
 
 namespace contextual_tasks {
 
-static int64_t JNI_ContextualTasksControlCoordinator_Init(
+static jni_zero::JniUniquePtr<ContextualTasksControlCoordinatorAndroid>
+JNI_ContextualTasksControlCoordinator_Init(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
     Profile* profile) {
-  return reinterpret_cast<intptr_t>(
-      new ContextualTasksControlCoordinatorAndroid(env, obj, profile));
+  return jni_zero::MakeUnique<ContextualTasksControlCoordinatorAndroid>(
+      env, obj, profile);
 }
 
 ContextualTasksControlCoordinatorAndroid::
@@ -37,10 +38,6 @@ ContextualTasksControlCoordinatorAndroid::
 
 ContextualTasksControlCoordinatorAndroid::
     ~ContextualTasksControlCoordinatorAndroid() = default;
-
-void ContextualTasksControlCoordinatorAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void ContextualTasksControlCoordinatorAndroid::OnTaskAdded(
     const ContextualTask& task,

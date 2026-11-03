@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +21,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.contextual_tasks.ui.ContextualTasksControlCoordinator.NativeContextualTasksControlCoordinatorAndroid;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetPeekProperties;
@@ -33,15 +35,14 @@ public class ContextualTasksControlCoordinatorUnitTest {
     @Mock private TabBottomSheetManager mTabBottomSheetManager;
     @Mock private Profile mProfile;
     @Mock private ContextualTasksControlCoordinator.Natives mJniMock;
+    @Mock private JniUniquePtr<NativeContextualTasksControlCoordinatorAndroid> mNativePtr;
     private ContextualTasksControlCoordinator mCoordinator;
     private PropertyModel mModel;
-
-    private static final long NATIVE_PTR = 12345L;
 
     @Before
     public void setUp() {
         ContextualTasksControlCoordinatorJni.setInstanceForTesting(mJniMock);
-        when(mJniMock.init(any(), eq(mProfile))).thenReturn(NATIVE_PTR);
+        when(mJniMock.init(any(), eq(mProfile))).thenReturn(mNativePtr);
 
         mCoordinator = new ContextualTasksControlCoordinator(mTabBottomSheetManager, mProfile);
         mModel = mCoordinator.getModel();
@@ -85,6 +86,6 @@ public class ContextualTasksControlCoordinatorUnitTest {
     @Test
     public void testDestroy_destroysNativeObject() {
         mCoordinator.destroy();
-        verify(mJniMock).destroy(NATIVE_PTR);
+        verify(mNativePtr).destroy();
     }
 }

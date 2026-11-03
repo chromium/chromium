@@ -10,9 +10,12 @@ import android.view.View;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_bottom_sheet.PeekViewManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
@@ -24,11 +27,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 @JNINamespace("contextual_tasks")
 @NullMarked
 public class ContextualTasksControlCoordinator implements PeekViewManager {
+    @JniType("::contextual_tasks::ContextualTasksControlCoordinatorAndroid")
+    interface NativeContextualTasksControlCoordinatorAndroid extends JniTypeToken {}
+
     private final TabBottomSheetManager mTabBottomSheetManager;
     private final PropertyModel mModel;
     private final ContextualTasksControlMediator mMediator;
 
-    private long mNativeContextualTasksControlCoordinator;
+    private @Nullable JniUniquePtr<NativeContextualTasksControlCoordinatorAndroid>
+            mNativeContextualTasksControlCoordinator;
 
     private static final String EMPTY_TASK_ID = "";
     private static final String EMPTY_TITLE = "";
@@ -148,18 +155,16 @@ public class ContextualTasksControlCoordinator implements PeekViewManager {
 
     @Override
     public void destroy() {
-        if (mNativeContextualTasksControlCoordinator != 0) {
-            ContextualTasksControlCoordinatorJni.get()
-                    .destroy(mNativeContextualTasksControlCoordinator);
-            mNativeContextualTasksControlCoordinator = 0;
+        if (mNativeContextualTasksControlCoordinator != null) {
+            mNativeContextualTasksControlCoordinator.destroy();
+            mNativeContextualTasksControlCoordinator = null;
         }
         clearActiveTask();
     }
 
     @NativeMethods
     interface Natives {
-        long init(ContextualTasksControlCoordinator caller, @JniType("Profile*") Profile profile);
-
-        void destroy(long nativeContextualTasksControlCoordinatorAndroid);
+        JniUniquePtr<NativeContextualTasksControlCoordinatorAndroid> init(
+                ContextualTasksControlCoordinator caller, @JniType("Profile*") Profile profile);
     }
 }

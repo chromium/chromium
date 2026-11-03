@@ -27,8 +27,6 @@ class ContextualTasksControlCoordinatorAndroid
   ContextualTasksControlCoordinatorAndroid& operator=(
       const ContextualTasksControlCoordinatorAndroid&) = delete;
 
-  void Destroy(JNIEnv* env);
-
   // ContextualTasksService::Observer implementation.
   void OnTaskAdded(const ContextualTask& task,
                    ContextualTasksService::TriggerSource source) override;
