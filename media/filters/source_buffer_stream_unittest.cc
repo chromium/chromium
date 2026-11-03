@@ -5801,4 +5801,32 @@ TEST_F(SourceBufferStreamTest, GarbageCollectionUpdatesRangeForNextAppend) {
   AppendBuffers("0K 10K");
 }
 
+TEST_F(SourceBufferStreamTest, GarbageCollectionDoesNotLeaveKeyframeLessRange) {
+  // 1. Append a range at [400ms, 410ms) whose last buffer in decode order is a
+  // non-keyframe with PTS=10ms.
+  NewCodedFrameGroupAppend("400|400D10K 10|410D10");
+
+  // 2. Append a new coded frame group at [0ms, 20ms) ending with PTS=10ms.
+  // Now last_appended_buffer_timestamp_ == 10ms,
+  // highest_timestamp_in_append_sequence_ == 10ms, and
+  // highest_buffered_end_time_in_append_sequence_ == 20ms.
+  NewCodedFrameGroupAppend("0|0D10K 10|10D10");
+  CheckExpectedRangesByTimestamp("{ [0,20) [400,410) }");
+
+  // 3. Trigger GC from the back. FreeBuffers deletes the [400ms, 410ms) GOP,
+  // whose back buffer has PTS=10ms. It must not mistake that GOP for the last
+  // appended GOP of [0ms, 20ms).
+  SetMemoryLimit(2);
+  EXPECT_TRUE(GarbageCollect(base::Milliseconds(0), 0));
+  CheckExpectedRangesByTimestamp("{ [0,20) }");
+
+  // 4. Append a non-keyframe with PTS < highest_timestamp_in_append_sequence_
+  // (5ms < 10ms) continuing the [0ms, 20ms) coded frame group, followed by
+  // another GC from the back.
+  AppendBuffers("5|20D5");
+  CheckExpectedRangesByTimestamp("{ [0,20) }");
+  SetMemoryLimit(1);
+  EXPECT_FALSE(GarbageCollect(base::Milliseconds(0), 0));
+}
+
 }  // namespace media
