@@ -704,10 +704,12 @@ reviewer.
     Records the combination of renderer heuristic signals that started a payment
     QR code decoding pass that {DetectionOutcome}. Each signal is a bit of the
     sample. Only combinations that pass the detection rule (no facilitated
-    payment link, a square image, and a URL or text keyword) start a pass.
-    [Trigger] The browser finishes decoding the images of a page that the
-    renderer reported as a likely payment QR code page. [Frequency] Logged once
-    per decoding pass whose detector was available, at most 3 times per page.
+    payment link, a square image, and a URL or text keyword) start a pass,
+    unless the require_keyword_match Finch parameter is false, in which case any
+    square image without a facilitated payment link does. [Trigger] The browser
+    finishes decoding the images of a page that the renderer reported as a
+    likely payment QR code page. [Frequency] Logged once per decoding pass whose
+    detector was available, at most 3 times per page.
   </summary>
   <token key="DetectionOutcome" variants="QrCodeDetectionOutcome"/>
 </histogram>

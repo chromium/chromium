@@ -694,6 +694,40 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   histogram_tester.ExpectUniqueSample(kSuccessfulAttemptIndexHistogram, 1, 1);
 }
 
+// Tests that the exploration arm extracts images for a square candidate even
+// without a keyword match.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnHeuristicSignalsReported_KeywordNotRequired_EvaluatesSquareOnly) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kEnableDesktopQrCodeDetection, {{"require_keyword_match", "false"}});
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  mojom::HeuristicSignalsPtr signals = mojom::HeuristicSignals::New();
+  signals->has_square_candidate = true;
+
+  factory_->OnHeuristicSignalsReported(main_rfh(), *signals);
+
+  EXPECT_EQ(barcode_detector_->detect_count(), 1);
+}
+
+// Tests that the exploration arm still requires a square candidate and still
+// skips pages handled by the payment link flow.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnHeuristicSignalsReported_KeywordNotRequired_StillNeedsSquareNoLink) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kEnableDesktopQrCodeDetection, {{"require_keyword_match", "false"}});
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  mojom::HeuristicSignalsPtr link_signals = mojom::HeuristicSignals::New();
+  link_signals->has_facilitated_payment_link = true;
+  link_signals->has_square_candidate = true;
+
+  factory_->OnHeuristicSignalsReported(main_rfh(), mojom::HeuristicSignals());
+  factory_->OnHeuristicSignalsReported(main_rfh(), *link_signals);
+
+  EXPECT_EQ(barcode_detector_->detect_count(), 0);
+}
+
 // Parameters: `has_facilitated_payment_link`, `has_square_candidate`,
 // `url_keyword_match`, `text_keyword_match`.
 class ContentFacilitatedPaymentsDriverFactorySignalsTest

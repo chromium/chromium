@@ -21,6 +21,9 @@ extern const base::FeatureParam<std::string> kQrCodeDetectionKeywords;
 extern const base::FeatureParam<int> kQrCodeDetectionMinImageSize;
 // Maximum ratio of the longer edge to the shorter edge of a QR candidate.
 extern const base::FeatureParam<double> kQrCodeDetectionMaxAspectRatio;
+// Whether a URL or text keyword match is required, in addition to a square
+// candidate, to extract images for QR code decoding.
+extern const base::FeatureParam<bool> kQrCodeDetectionRequireKeywordMatch;
 BASE_DECLARE_FEATURE(kEnableEwalletNewAccountLinking);
 BASE_DECLARE_FEATURE(kEnableIframeForPix);
 BASE_DECLARE_FEATURE(kEnablePixAccountLinkingNative);

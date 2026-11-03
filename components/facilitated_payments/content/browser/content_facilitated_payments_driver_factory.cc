@@ -36,10 +36,14 @@ bool ShouldExtractImagesForQrCode(const mojom::HeuristicSignals& signals) {
   if (signals.has_facilitated_payment_link) {
     return false;
   }
+  if (!signals.has_square_candidate) {
+    return false;
+  }
   // A square image alone is not enough (logos, avatars or icons), so a keyword
-  // is also required to suggest that the page is about paying.
-  return signals.has_square_candidate &&
-         (signals.url_keyword_match || signals.text_keyword_match);
+  // is also required to suggest that the page is about paying, unless an
+  // exploration arm drops the requirement to measure what it misses.
+  return signals.url_keyword_match || signals.text_keyword_match ||
+         !kQrCodeDetectionRequireKeywordMatch.Get();
 }
 
 // The maximum number of image extractions per page.
