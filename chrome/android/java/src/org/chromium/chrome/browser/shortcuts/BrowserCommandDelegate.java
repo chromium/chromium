@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 public class BrowserCommandDelegate {
     private final BooleanSupplier mIsUiInitializedSupplier;
     private final BooleanSupplier mIsCurrentTabVisibleSupplier;
+    private final BooleanSupplier mIsFullscreenSupplier;
     private final boolean mTabbedBrowserCommandsSupported;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
@@ -42,6 +43,7 @@ public class BrowserCommandDelegate {
      * @param isUiInitializedSupplier Supplies whether the window's UI is initialized.
      * @param isCurrentTabVisibleSupplier Supplies whether the active tab is currently visible (not
      *     in the tab switcher / Hub).
+     * @param isFullscreenSupplier Supplies whether the browser window is currently in fullscreen.
      * @param tabbedBrowserCommandsSupported Whether multi-tab window commands are supported (e.g.
      *     true for ChromeTabbedActivity). Commands operating on the active tab itself (e.g. FIND)
      *     are supported regardless.
@@ -51,14 +53,28 @@ public class BrowserCommandDelegate {
     public BrowserCommandDelegate(
             BooleanSupplier isUiInitializedSupplier,
             BooleanSupplier isCurrentTabVisibleSupplier,
+            BooleanSupplier isFullscreenSupplier,
             boolean tabbedBrowserCommandsSupported,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
         mIsUiInitializedSupplier = isUiInitializedSupplier;
         mIsCurrentTabVisibleSupplier = isCurrentTabVisibleSupplier;
+        mIsFullscreenSupplier = isFullscreenSupplier;
         mTabbedBrowserCommandsSupported = tabbedBrowserCommandsSupported;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
+    }
+
+    /** Returns whether multi-tab browser window commands are supported. */
+    @CalledByNative
+    public boolean isTabbedBrowserCommandSupported() {
+        return mTabbedBrowserCommandsSupported;
+    }
+
+    /** Returns whether this window is currently in fullscreen mode. */
+    @CalledByNative
+    public boolean isFullscreen() {
+        return mIsFullscreenSupplier.getAsBoolean();
     }
 
     /**

@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_ANDROID_BROWSER_SHORTCUT_MANAGER_ANDROID_H_
 
 #include <jni.h>
+#include <stdint.h>
 
 #include <map>
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
 
@@ -42,6 +44,9 @@ class BrowserShortcutManagerAndroid : public ui::AcceleratorTarget {
   bool CanHandleAccelerators() const override;
 
   // Called by JNI only.
+  int32_t PreHandleKeyEvent(JNIEnv* env,
+                            const base::android::JavaRef<jobject>& j_key_event);
+
   void Destroy(JNIEnv* env);
 
  private:

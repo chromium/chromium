@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.shortcuts;
 
+import android.view.KeyEvent;
+
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -11,6 +13,7 @@ import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.AcceleratorManager;
+import org.chromium.ui.base.KeyEventPreHandleResult;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -40,6 +43,24 @@ public class BrowserShortcutManager {
     }
 
     /**
+     * Evaluates {@code event} prior to renderer dispatch, executing reserved browser shortcuts and
+     * non-browser window accelerators immediately while flagging non-reserved key-down browser
+     * shortcuts with {@link KeyEventPreHandleResult#NOT_HANDLED_IS_SHORTCUT}.
+     *
+     * @param event The incoming key event.
+     * @return The {@link KeyEventPreHandleResult} describing whether {@code event} was handled or
+     *     recognized as a browser shortcut.
+     */
+    public @KeyEventPreHandleResult int preHandleKeyEvent(KeyEvent event) {
+        assert mNativeBrowserShortcutManagerAndroid != 0;
+        if (event.getRepeatCount() != 0) {
+            return KeyEventPreHandleResult.NOT_HANDLED;
+        }
+        return BrowserShortcutManagerJni.get()
+                .preHandleKeyEvent(mNativeBrowserShortcutManagerAndroid, event);
+    }
+
+    /**
      * Unregisters accelerators and destroys the native {@code BrowserShortcutManagerAndroid}. Must
      * be called before the window's {@link AcceleratorManager} is destroyed.
      */
@@ -58,5 +79,8 @@ public class BrowserShortcutManager {
                 BrowserCommandDelegate commandDelegate);
 
         void destroy(long nativeBrowserShortcutManagerAndroid);
+
+        @KeyEventPreHandleResult
+        int preHandleKeyEvent(long nativeBrowserShortcutManagerAndroid, KeyEvent event);
     }
 }

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/android/browser_shortcut_manager_android.h"
 
+#include <optional>
+
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/android/browser_command_delegate_android.h"
@@ -55,6 +58,45 @@ bool BrowserShortcutManagerAndroid::AcceleratorPressed(
 
 bool BrowserShortcutManagerAndroid::CanHandleAccelerators() const {
   return true;
+}
+
+int32_t BrowserShortcutManagerAndroid::PreHandleKeyEvent(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_key_event) {
+  std::optional<ui::Accelerator> accelerator =
+      ui::AcceleratorManagerAndroid::AcceleratorFromKeyEvent(j_key_event);
+  if (!accelerator.has_value()) {
+    return static_cast<int32_t>(ui::KeyEventPreHandleResult::kNotHandled);
+  }
+
+  if (accelerator_manager_->HasPriorityHandler(*accelerator)) {
+    return static_cast<int32_t>(
+        accelerator_manager_->ProcessAccelerator(*accelerator)
+            ? ui::KeyEventPreHandleResult::kHandled
+            : ui::KeyEventPreHandleResult::kNotHandled);
+  }
+
+  // In non-tabbed windows (Custom Tabs and Webapps), do not intercept shortcuts
+  // pre-renderer so web content gets first priority (matching Desktop
+  // BrowserView::PreHandleKeyboardEvent). If the page does not consume the
+  // event, supported single-tab shortcuts still execute post-renderer via
+  // AcceleratorPressed.
+  if (!command_delegate_->IsTabbedBrowserCommandSupported()) {
+    return static_cast<int32_t>(ui::KeyEventPreHandleResult::kNotHandled);
+  }
+
+  auto it = accelerator_table_.find(*accelerator);
+  if (it == accelerator_table_.end() ||
+      command_delegate_->IsReservedCommand(it->second)) {
+    return static_cast<int32_t>(
+        accelerator_manager_->ProcessAccelerator(*accelerator)
+            ? ui::KeyEventPreHandleResult::kHandled
+            : ui::KeyEventPreHandleResult::kNotHandled);
+  }
+
+  CHECK_EQ(accelerator->key_state(), ui::Accelerator::KeyState::PRESSED);
+  return static_cast<int32_t>(
+      ui::KeyEventPreHandleResult::kNotHandledIsShortcut);
 }
 
 void BrowserShortcutManagerAndroid::Destroy(JNIEnv* env) {

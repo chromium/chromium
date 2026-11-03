@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/android/browser_command_delegate_android.h"
 
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -14,6 +16,20 @@ BrowserCommandDelegateAndroid::BrowserCommandDelegateAndroid(
     : java_delegate_(java_delegate) {}
 
 BrowserCommandDelegateAndroid::~BrowserCommandDelegateAndroid() = default;
+
+bool BrowserCommandDelegateAndroid::IsTabbedBrowserCommandSupported() const {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return Java_BrowserCommandDelegate_isTabbedBrowserCommandSupported(
+      env, java_delegate_);
+}
+
+bool BrowserCommandDelegateAndroid::IsReservedCommand(int command_id) const {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  if (Java_BrowserCommandDelegate_isFullscreen(env, java_delegate_)) {
+    return command_id == IDC_EXIT || command_id == IDC_FULLSCREEN;
+  }
+  return ::IsReservedCommand(command_id);
+}
 
 bool BrowserCommandDelegateAndroid::ExecuteCommand(int command_id) {
   JNIEnv* env = jni_zero::AttachCurrentThread();

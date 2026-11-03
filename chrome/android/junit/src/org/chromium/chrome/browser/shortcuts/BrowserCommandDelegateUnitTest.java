@@ -70,6 +70,7 @@ public class BrowserCommandDelegateUnitTest {
                 new BrowserCommandDelegate(
                         () -> mIsUiInitialized,
                         () -> mIsCurrentTabVisible,
+                        /* isFullscreenSupplier= */ () -> false,
                         /* tabbedBrowserCommandsSupported= */ true,
                         () -> mTabModelSelector,
                         mController);
@@ -77,6 +78,7 @@ public class BrowserCommandDelegateUnitTest {
                 new BrowserCommandDelegate(
                         () -> mIsUiInitialized,
                         () -> mIsCurrentTabVisible,
+                        /* isFullscreenSupplier= */ () -> false,
                         /* tabbedBrowserCommandsSupported= */ false,
                         () -> mTabModelSelector,
                         mController);

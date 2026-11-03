@@ -18,6 +18,11 @@ class BrowserCommandDelegateAndroid {
       const BrowserCommandDelegateAndroid&) = delete;
   ~BrowserCommandDelegateAndroid();
 
+  bool IsTabbedBrowserCommandSupported() const;
+
+  // Returns whether |command_id| is reserved by the browser before the web
+  // page. Assumes the window supports tabbed browser commands.
+  bool IsReservedCommand(int command_id) const;
   bool ExecuteCommand(int command_id);
 
  private:
