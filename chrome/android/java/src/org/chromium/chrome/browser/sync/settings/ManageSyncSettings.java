@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityServiceFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
@@ -118,7 +119,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting public static final String FRAGMENT_CUSTOM_PASSPHRASE = "custom_password";
     private static final String FRAGMENT_PASSPHRASE_TYPE = "password_type";
 
-    private static final String PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE = "central_account_card";
+    @VisibleForTesting
+    public static final String PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE = "central_account_card";
 
     @VisibleForTesting
     public static final String PREF_IDENTITY_ERROR_CARD_PREFERENCE = "identity_error_card";
@@ -402,10 +404,29 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         CentralAccountCardPreference centralAccountCardPreference =
                 findPreference(PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE);
         IdentityManager identityManager = getIdentityManager(profile);
+        ProfileDataCache profileDataCache;
+        if (SigninFeatureMap.getInstance().isAiTierRingInSettingsEnabled()) {
+            int imageSize =
+                    getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.account_management_picture_size_with_ai_tier_ring);
+            int ringThickness =
+                    getResources().getDimensionPixelSize(R.dimen.ai_tier_ring_thickness_large);
+            profileDataCache =
+                    ProfileDataCache.createWithAiTierRing(
+                            getContext(),
+                            identityManager,
+                            SubscriptionEligibilityServiceFactory.getForProfile(profile),
+                            mSyncService,
+                            imageSize,
+                            ringThickness);
+        } else {
+            profileDataCache =
+                    ProfileDataCache.createWithoutBadge(
+                            getContext(), identityManager, R.dimen.account_management_picture_size);
+        }
         centralAccountCardPreference.initialize(
-                assumeNonNull(identityManager.getPrimaryAccountInfo()),
-                ProfileDataCache.createWithoutBadge(
-                        getContext(), identityManager, R.dimen.account_management_picture_size));
+                assumeNonNull(identityManager.getPrimaryAccountInfo()), profileDataCache);
     }
 
     private void setupIdentityErrorCardPreference(Profile profile) {

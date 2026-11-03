@@ -9,7 +9,12 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/PreferenceLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingTop="11dp">
+    <!-- Overrides the 16dp top padding of PreferenceLayout:
+         11dp = 16dp - 5dp (ai_tier_ring_thickness_large +
+         ai_tier_ring_spacing), so that the avatar inside the ring stays in
+         place. -->
 
     <LinearLayout
         android:id="@+id/central_account_card"
@@ -18,15 +23,18 @@ found in the LICENSE file.
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
+        <!-- The 3dp (8dp - 5dp) bottom margin keeps the text in place. -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="3dp">
 
             <ImageView
                 android:id="@+id/central_account_image"
-                android:layout_width="@dimen/account_management_picture_size"
-                android:layout_height="@dimen/account_management_picture_size"
+                android:layout_width=
+                    "@dimen/account_management_picture_size_with_ai_tier_ring"
+                android:layout_height=
+                    "@dimen/account_management_picture_size_with_ai_tier_ring"
                 android:layout_gravity="center"
                 android:importantForAccessibility="no"
                 android:scaleType="fitCenter"/>

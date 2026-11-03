@@ -21,6 +21,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 /** A dedicated preference for the account settings top avatar. */
@@ -33,7 +34,11 @@ public class CentralAccountCardPreference extends Preference
     public CentralAccountCardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        setLayoutResource(R.layout.central_account_card_view);
+        // TODO(crbug.com/576944682): Keep only the ring layout after flag cleanup.
+        setLayoutResource(
+                SigninFeatureMap.getInstance().isAiTierRingInSettingsEnabled()
+                        ? R.layout.central_account_card_view
+                        : R.layout.central_account_card_view_legacy);
     }
 
     @Override
@@ -110,5 +115,10 @@ public class CentralAccountCardPreference extends Preference
         }
         // When email and full name cannot be shown, use the default account string instead.
         return new Pair<>(getContext().getString(R.string.default_google_account_username), "");
+    }
+
+    /** Returns the profile data shown by the card. */
+    DisplayableProfileData getProfileDataForTesting() {
+        return mPrimaryAccount;
     }
 }

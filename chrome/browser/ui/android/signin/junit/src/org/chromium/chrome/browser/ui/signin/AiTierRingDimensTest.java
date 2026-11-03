@@ -52,9 +52,9 @@ public class AiTierRingDimensTest {
     @Test
     public void testAccountPageAvatarSize() {
         assertEquals(
-                mResources.getDimensionPixelSize(R.dimen.sync_promo_account_image_size)
+                mResources.getDimensionPixelSize(R.dimen.account_management_picture_size)
                         + 2 * mRingPadding,
                 mResources.getDimensionPixelSize(
-                        R.dimen.sync_promo_account_image_size_with_ai_tier_ring));
+                        R.dimen.account_management_picture_size_with_ai_tier_ring));
     }
 }
