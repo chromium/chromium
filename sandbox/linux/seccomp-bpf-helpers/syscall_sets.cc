@@ -643,10 +643,10 @@ bool SyscallSets::IsAllowedGeneralIo(int sysno) {
 #endif
     case __NR_write:
     case __NR_writev:
+    case __NR_pwrite64:  // Equivalent to lseek + write, both allowed above.
       return true;
     case __NR_ioctl:  // Can be very powerful.
     case __NR_preadv:
-    case __NR_pwrite64:
     case __NR_pwritev:
     case __NR_splice:
     case __NR_tee:

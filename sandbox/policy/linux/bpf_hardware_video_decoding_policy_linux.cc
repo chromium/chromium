@@ -4,11 +4,11 @@
 
 #include "sandbox/policy/linux/bpf_hardware_video_decoding_policy_linux.h"
 
+#include <errno.h>
 #include <linux/kcmp.h>
 
 #include "base/notreached.h"
 #include "media/gpu/buildflags.h"
-#include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
@@ -23,6 +23,22 @@ using sandbox::bpf_dsl::If;
 using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox::policy {
+
+namespace {
+
+// Disallows ftruncate/truncate to restrict video decoder process from
+// shrinking files mapped by another process.
+//
+// This cannot be bypassed via a dma-buf. A dma-buf is an anonymous inode
+// having no bit S_ISREG(inode->i_mode), returning EINVAL on ftruncate(2).
+//
+// The call fails with EPERM instead of killing the process so that //base can
+// fallback to pwrite(2) right after creating the region, increasing the size.
+ResultExpr RestrictTruncate() {
+  return Error(EPERM);
+}
+
+}  // namespace
 
 // static
 HardwareVideoDecodingProcessPolicy::PolicyType
@@ -79,7 +95,7 @@ ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscall(
     case PolicyType::kVaapiOnAMDAndV4L2:
       // EvaluateSyscallForVaapiOnAMD() is a strict superset of
       // EvaluateSyscallForV4L2() (it already allows ioctl and a restricted
-      // sched_setaffinity, and crashes on truncate), so the union of the two
+      // sched_setaffinity, and refuses truncate), so the union of the two
       // is simply the AMD policy.
       return EvaluateSyscallForVaapiOnAMD(system_call_number);
   }
@@ -89,10 +105,7 @@ ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscall(
 ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForVaapiOnIntel(
     int system_call_number) const {
   if (SyscallSets::IsTruncate(system_call_number)) {
-    // Explicitly disallow ftruncate()/truncate() to eliminate the possibility
-    // that a video decoder process can change the size of a file (including,
-    // e.g., a dma-buf).
-    return CrashSIGSYS();
+    return RestrictTruncate();
   }
 
   if (system_call_number == __NR_ioctl)
@@ -108,10 +121,7 @@ ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForVaapiOnIntel(
 ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForVaapiOnAMD(
     int system_call_number) const {
   if (SyscallSets::IsTruncate(system_call_number)) {
-    // Explicitly disallow ftruncate()/truncate() to eliminate the possibility
-    // that a video decoder process can change the size of a file (including,
-    // e.g., a dma-buf).
-    return CrashSIGSYS();
+    return RestrictTruncate();
   }
 
   switch (system_call_number) {
@@ -145,10 +155,7 @@ ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForVaapiOnAMD(
 ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForV4L2(
     int system_call_number) const {
   if (SyscallSets::IsTruncate(system_call_number)) {
-    // Explicitly disallow ftruncate()/truncate() to eliminate the possibility
-    // that a video decoder process can change the size of a file (including,
-    // e.g., a dma-buf).
-    return CrashSIGSYS();
+    return RestrictTruncate();
   }
 
   if (system_call_number == __NR_ioctl)
@@ -171,10 +178,7 @@ ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForVaapiAndV4L2(
   // is not visible at sandbox-build time, so we permit the superset of what
   // either backend needs.
   if (SyscallSets::IsTruncate(system_call_number)) {
-    // Explicitly disallow ftruncate()/truncate() to eliminate the possibility
-    // that a video decoder process can change the size of a file (including,
-    // e.g., a dma-buf).
-    return CrashSIGSYS();
+    return RestrictTruncate();
   }
 
   if (system_call_number == __NR_ioctl) {
