@@ -350,12 +350,14 @@ TEST_F(CloudContentScanningHelperTest, CloseTabWithPendingDecision) {
 TEST_F(CloudContentScanningHelperTest, PrepareCloudContentScanning) {
   base::test::TestFuture<bool> future;
   base::FilePath file_path(FILE_PATH_LITERAL("/path/to/fake/file.txt"));
-  FileDownloadScanningResources resources = PrepareCloudContentScanning(
-      web_state_, GURL("https://example.com/download"), file_path,
-      TriggerType::kSavePrompt, future.GetCallback());
+  std::unique_ptr<FileDownloadScanningResources> resources =
+      PrepareCloudContentScanning(
+          web_state_, GURL("https://example.com/download"), file_path,
+          TriggerType::kSavePrompt, future.GetCallback());
 
-  EXPECT_NE(resources.content_analysis_info, nullptr);
-  EXPECT_NE(resources.files_request_handler, nullptr);
+  ASSERT_NE(resources, nullptr);
+  EXPECT_NE(resources->content_analysis_info, nullptr);
+  EXPECT_NE(resources->files_request_handler, nullptr);
 }
 
 // Tests that PrepareCloudContentScanning correctly parses and sets up resources
@@ -367,11 +369,12 @@ TEST_F(CloudContentScanningHelperTest, PrepareCloudContentScanningBlocking) {
   base::test::TestFuture<bool> future;
   base::FilePath file_path(FILE_PATH_LITERAL("/path/to/fake/file.txt"));
 
-  std::optional<FileDownloadScanningResources> resources;
-  resources.emplace(PrepareCloudContentScanning(
-      web_state_, GURL("https://example.com/download"), file_path,
-      TriggerType::kSavePrompt, future.GetCallback()));
+  std::unique_ptr<FileDownloadScanningResources> resources =
+      PrepareCloudContentScanning(
+          web_state_, GURL("https://example.com/download"), file_path,
+          TriggerType::kSavePrompt, future.GetCallback());
 
+  ASSERT_NE(resources, nullptr);
   EXPECT_NE(resources->content_analysis_info, nullptr);
   EXPECT_NE(resources->files_request_handler, nullptr);
   EXPECT_EQ(resources->content_analysis_info->settings().block_until_verdict,
@@ -393,12 +396,12 @@ TEST_F(CloudContentScanningHelperTest, PrepareCloudContentScanningNonBlocking) {
 
   base::test::TestFuture<bool> future;
   base::FilePath file_path(FILE_PATH_LITERAL("/path/to/fake/file.txt"));
-  FileDownloadScanningResources resources = PrepareCloudContentScanning(
-      web_state_, GURL("https://example.com/download"), file_path,
-      TriggerType::kSavePrompt, future.GetCallback());
+  std::unique_ptr<FileDownloadScanningResources> resources =
+      PrepareCloudContentScanning(
+          web_state_, GURL("https://example.com/download"), file_path,
+          TriggerType::kSavePrompt, future.GetCallback());
 
-  EXPECT_NE(resources.content_analysis_info, nullptr);
-  EXPECT_NE(resources.files_request_handler, nullptr);
+  EXPECT_EQ(resources, nullptr);
 
   // Non-blocking mode should invoke the callback with `true` asynchronously.
   EXPECT_TRUE(future.Get());
@@ -426,20 +429,18 @@ TEST_F(CloudContentScanningHelperTest,
   base::test::TestFuture<bool> future;
   base::FilePath file_path(FILE_PATH_LITERAL("/path/to/fake/file.txt"));
 
-  std::optional<FileDownloadScanningResources> resources;
-  resources.emplace(PrepareCloudContentScanning(
-      web_state_, GURL("https://example.com/download"), file_path,
-      TriggerType::kSavePrompt, future.GetCallback()));
+  std::unique_ptr<FileDownloadScanningResources> resources =
+      PrepareCloudContentScanning(
+          web_state_, GURL("https://example.com/download"), file_path,
+          TriggerType::kSavePrompt, future.GetCallback());
+
+  EXPECT_EQ(resources, nullptr);
 
   // Confirm that a BackgroundCloudScannerManager has been created for our
   // profile.
   BackgroundCloudScannerManager* manager =
       BackgroundCloudScannerManagerFactory::GetForProfile(profile_.get());
   EXPECT_NE(manager, nullptr);
-
-  // Destroy resources first to release raw_ptr<ProfileIOS> and prevent
-  // dangling pointers.
-  resources.reset();
 
   // Destroying the browser and the profile should run completely cleanly
   // without any dangling pointer/crashes or leaks of the pending scan.
@@ -497,10 +498,11 @@ TEST_F(CloudContentScanningHelperTest,
   ASSERT_TRUE(base::WriteFile(file_path, "test file content"));
 
   base::test::TestFuture<bool> future;
-  std::optional<FileDownloadScanningResources> resources;
-  resources.emplace(PrepareCloudContentScanning(
-      web_state_, GURL("https://example.com/download"), file_path,
-      TriggerType::kSavePrompt, future.GetCallback()));
+  std::unique_ptr<FileDownloadScanningResources> resources =
+      PrepareCloudContentScanning(
+          web_state_, GURL("https://example.com/download"), file_path,
+          TriggerType::kSavePrompt, future.GetCallback());
+  EXPECT_EQ(resources, nullptr);
 
   // 1. Verify that download_proceed callback ran with `true`.
   EXPECT_TRUE(future.Get());
@@ -508,9 +510,6 @@ TEST_F(CloudContentScanningHelperTest,
   BackgroundCloudScannerManager* manager =
       BackgroundCloudScannerManagerFactory::GetForProfile(profile_.get());
   ASSERT_NE(manager, nullptr);
-
-  // 2. Locate and release the scanning resources.
-  resources.reset();
 
   // Destroys the browser and profile, which destroys
   // BackgroundCloudScannerManager and cancels/destroys all
@@ -549,10 +548,11 @@ TEST_F(CloudContentScanningHelperTest,
   ASSERT_TRUE(base::WriteFile(file_path, "test file content"));
 
   base::test::TestFuture<bool> future;
-  std::optional<FileDownloadScanningResources> resources;
-  resources.emplace(PrepareCloudContentScanning(
-      web_state_, GURL("https://example.com/download"), file_path,
-      TriggerType::kSavePrompt, future.GetCallback()));
+  std::unique_ptr<FileDownloadScanningResources> resources =
+      PrepareCloudContentScanning(
+          web_state_, GURL("https://example.com/download"), file_path,
+          TriggerType::kSavePrompt, future.GetCallback());
+  EXPECT_EQ(resources, nullptr);
 
   // Flush the ThreadPool so the file clone is created in the current session's
   // directory before `DeleteTempEnterpriseScanDirectory()` runs, then flush
@@ -579,7 +579,6 @@ TEST_F(CloudContentScanningHelperTest,
   EXPECT_EQ(manager->GetScannerCountForTesting(), 1u);
   EXPECT_EQ(manager->GetPendingDeletionCountForTesting(), 0u);
 
-  resources.reset();
   web_state_ = nullptr;
   browser_.reset();
   profile_.reset();

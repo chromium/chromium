@@ -52,9 +52,11 @@ void HandleScanDecision(base::WeakPtr<web::WebState> web_state,
                         RequestHandlerResult result);
 
 // Prepares the file download scanning process for a file.
-// Returns a `FileDownloadScanningResources` object that must be kept alive by
-// the caller while the scanning is in progress.
-FileDownloadScanningResources PrepareCloudContentScanning(
+// Returns a `FileDownloadScanningResources` object for the scanning,
+// which must be kept alive by the caller while the scanning is in progress.
+// Returns `nullptr` only if scanning is asynchronous/non-blocking and handled
+// by the background scanner manager.
+std::unique_ptr<FileDownloadScanningResources> PrepareCloudContentScanning(
     web::WebState* web_state,
     const GURL& url,
     const base::FilePath& file_path,

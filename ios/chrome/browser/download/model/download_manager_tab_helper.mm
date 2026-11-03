@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/cloud_content_scanning_helper.h"
-#import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -137,8 +136,7 @@ void DownloadManagerTabHelper::CleanupCurrentDownload() {
     task_.reset();
     task_final_file_path_.clear();
   }
-  files_request_handler_.reset();
-  content_analysis_info_.reset();
+  scanning_resources_.reset();
   has_processed_complete_task_ = false;
 }
 
@@ -153,7 +151,7 @@ bool DownloadManagerTabHelper::IsScannerProcessing() const {
   if (is_processing_for_testing_) {
     return true;
   }
-  return files_request_handler_ != nullptr;
+  return scanning_resources_ != nullptr;
 }
 
 void DownloadManagerTabHelper::SetIsScannerProcessingForTesting(  // IN-TEST
@@ -361,13 +359,14 @@ void DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory(
   }
 
   // This will only report when scan result is WARNING and bypassed.
-  files_request_handler_->ReportWarningBypass(
-      /* user_justification */ std::nullopt);
+  if (scanning_resources_) {
+    scanning_resources_->files_request_handler->ReportWarningBypass(
+        /* user_justification= */ std::nullopt);
 
-  // Ensure the handler and content_analysis_info_ are destroyed as soon as they
-  // are no longer necessary.
-  files_request_handler_.reset();
-  content_analysis_info_.reset();
+    // Ensure the handler and content_analysis_info are destroyed as soon as
+    // they are no longer necessary.
+    scanning_resources_.reset();
+  }
 
   [delegate_ downloadManagerTabHelperDidChangeState:this];
   base::FilePath user_download_path;
@@ -390,16 +389,14 @@ void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {
   }
   has_processed_complete_task_ = true;
 
-  enterprise_connectors::FileDownloadScanningResources resources =
-      enterprise_connectors::PrepareCloudContentScanning(
-          web_state_, task_->GetRedirectedUrl(), task_->GetResponsePath(),
-          enterprise_connectors::TriggerType::kSavePrompt,
-          base::BindOnce(
-              &DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory,
-              weak_ptr_factory_.GetWeakPtr(), task_->GetWeakPtr()));
-  files_request_handler_ = std::move(resources.files_request_handler);
-  content_analysis_info_ = std::move(resources.content_analysis_info);
-
-  // Upload the file for content scanning.
-  files_request_handler_->UploadData();
+  scanning_resources_ = enterprise_connectors::PrepareCloudContentScanning(
+      web_state_, task_->GetRedirectedUrl(), task_->GetResponsePath(),
+      enterprise_connectors::TriggerType::kSavePrompt,
+      base::BindOnce(
+          &DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory,
+          weak_ptr_factory_.GetWeakPtr(), task_->GetWeakPtr()));
+  if (scanning_resources_) {
+    // Upload the file for content scanning.
+    scanning_resources_->files_request_handler->UploadData();
+  }
 }

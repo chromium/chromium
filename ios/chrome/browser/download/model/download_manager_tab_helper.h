@@ -20,8 +20,7 @@
 class DownloadFileService;
 
 namespace enterprise_connectors {
-class FilesRequestHandlerBase;
-class ContentAnalysisInfo;
+struct FileDownloadScanningResources;
 }
 
 namespace web {
@@ -71,7 +70,7 @@ class DownloadManagerTabHelper
   // Sets whether the Download toolbar should adapt to the fullscreen state.
   virtual void AdaptToFullscreen(bool adapt_to_fullscreen);
 
-  // Returns whether `files_request_handler_` is currently processing the
+  // Returns whether `scanning_resources_` is currently processing the
   // download.
   bool IsScannerProcessing() const;
 
@@ -145,10 +144,8 @@ class DownloadManagerTabHelper
   __weak id<DownloadManagerTabHelperDelegate> delegate_ = nil;
   __weak id<SnackbarCommands> snackbar_handler_ = nil;
   std::unique_ptr<web::DownloadTask> task_;
-  std::unique_ptr<enterprise_connectors::ContentAnalysisInfo>
-      content_analysis_info_;
-  std::unique_ptr<enterprise_connectors::FilesRequestHandlerBase>
-      files_request_handler_;
+  std::unique_ptr<enterprise_connectors::FileDownloadScanningResources>
+      scanning_resources_;
   base::FilePath task_final_file_path_;
   bool delegate_started_ = false;
   bool is_processing_for_testing_ = false;

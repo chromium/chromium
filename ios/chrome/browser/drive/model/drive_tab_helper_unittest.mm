@@ -15,7 +15,6 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/cloud_content_scanning_helper.h"
-#import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -284,7 +283,7 @@ TEST_F(DriveTabHelperTest, UploadFailsIfIdentityRemovedBeforeStart) {
   fake_system_identity_manager->WaitForServiceCallbacksToComplete();
 
   // Simulate completion of the download task (initializes
-  // files_request_handler_).
+  // scanning_resources_).
   download_task_->SetDone(true);
 
   ASSERT_TRUE(base::test::RunUntil([&]() {

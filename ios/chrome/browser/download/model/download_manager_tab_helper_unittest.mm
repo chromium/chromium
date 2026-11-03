@@ -124,13 +124,7 @@ class DownloadManagerTabHelperTest : public PlatformTest {
     return DownloadManagerTabHelper::FromWebState(web_state_);
   }
 
-  bool has_files_request_handler() {
-    return !!tab_helper()->files_request_handler_;
-  }
-
-  bool has_content_analysis_info() {
-    return !!tab_helper()->content_analysis_info_;
-  }
+  bool has_scanning_resources() { return !!tab_helper()->scanning_resources_; }
 
   void MaybeMoveDownloadToDownloadsDirectory(
       base::WeakPtr<web::DownloadTask> task,
@@ -373,9 +367,8 @@ TEST_F(DownloadManagerTabHelperTest,
       [&]() { return !tab_helper()->GetDownloadTaskFinalFilePath().empty(); }));
 }
 
-// Tests that enterprise metadata (files_request_handler_ and
-// content_analysis_info_) is correctly cleared after a download completes or is
-// replaced.
+// Tests that enterprise scanning resources (scanning_resources_) are correctly
+// cleared after a download completes or is replaced.
 TEST_F(DownloadManagerTabHelperTest, EnterpriseMetadataCleanup) {
   web_state_->WasShown();
   std::unique_ptr<web::FakeDownloadTask> task =
@@ -386,8 +379,7 @@ TEST_F(DownloadManagerTabHelperTest, EnterpriseMetadataCleanup) {
   tab_helper()->SetCurrentDownload(std::move(task));
 
   // Scanning should NOT be triggered yet.
-  EXPECT_FALSE(has_files_request_handler());
-  EXPECT_FALSE(has_content_analysis_info());
+  EXPECT_FALSE(has_scanning_resources());
 
   task_ptr->SetDone(true);
 
@@ -397,16 +389,14 @@ TEST_F(DownloadManagerTabHelperTest, EnterpriseMetadataCleanup) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !tab_helper()->GetDownloadTaskFinalFilePath().empty(); }));
 
-  // After completion, metadata should be cleared.
-  EXPECT_FALSE(has_files_request_handler());
-  EXPECT_FALSE(has_content_analysis_info());
+  // After completion, resources should be cleared.
+  EXPECT_FALSE(has_scanning_resources());
 
-  // Now test that replacing a download also clears metadata (if it was somehow
+  // Now test that replacing a download also clears resources (if it was somehow
   // set).
   auto task2 = CreateFakeDownloadTask(GURL(kUrl), kMimeType);
   tab_helper()->SetCurrentDownload(std::move(task2));
-  EXPECT_FALSE(has_files_request_handler());
-  EXPECT_FALSE(has_content_analysis_info());
+  EXPECT_FALSE(has_scanning_resources());
 }
 
 // Tests that when a download task is complete, the tab helper notifies the

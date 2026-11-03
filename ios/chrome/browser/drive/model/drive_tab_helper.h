@@ -19,8 +19,7 @@ class DriveTabHelperTest;
 class UploadTask;
 
 namespace enterprise_connectors {
-class FilesRequestHandlerBase;
-class ContentAnalysisInfo;
+struct FileDownloadScanningResources;
 }  // namespace enterprise_connectors
 
 // Manages Save to Drive tab-scoped state i.e. if a `DownloadTask` is received
@@ -98,12 +97,9 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   // started as soon as the download task is completed.
   std::unique_ptr<DriveUploadTask> upload_task_;
 
-  // Enterprise content scanning metadata.
-  std::unique_ptr<enterprise_connectors::ContentAnalysisInfo>
-      content_analysis_info_;
-  // Request handler for enterprise content scanning.
-  std::unique_ptr<enterprise_connectors::FilesRequestHandlerBase>
-      files_request_handler_;
+  // Enterprise content scanning resources.
+  std::unique_ptr<enterprise_connectors::FileDownloadScanningResources>
+      scanning_resources_;
   // Tracks whether completion processing has been initiated for the current
   // download task. This prevents duplicate triggers of
   // `ProcessCompleteDownloadTask` when subsequent properties are updated

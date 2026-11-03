@@ -15,7 +15,6 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/cloud_content_scanning_helper.h"
-#import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -155,12 +154,9 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   UIView* _sourceView;
   // The source rect in the _sourceView for the presentation.
   CGRect _sourceRect;
-  // The necessary info for the scan of the downloaded file.
-  std::unique_ptr<enterprise_connectors::ContentAnalysisInfo>
-      _contentAnalysisInfo;
-  // The handler that will request scan for the downloaded file.
-  std::unique_ptr<enterprise_connectors::FilesRequestHandlerBase>
-      _filesRequestHandler;
+  // Enterprise content scanning resources.
+  std::unique_ptr<enterprise_connectors::FileDownloadScanningResources>
+      _scanningResources;
   // The webstate that initiates the sharing action.
   base::WeakPtr<web::WebState> _originatingWebState;
   // The GURL of the download.
@@ -440,8 +436,10 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   [self stopDisplayDownloadOverlay];
   if (shouldProceed) {
     // This will only report when scan result is WARNING and bypassed.
-    _filesRequestHandler->ReportWarningBypass(
-        /*user_justification=*/std::nullopt);
+    if (_scanningResources) {
+      _scanningResources->files_request_handler->ReportWarningBypass(
+          /*user_justification=*/std::nullopt);
+    }
 
     [self startActivityService];
     UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
@@ -479,22 +477,19 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   }
 
   __weak SharingCoordinator* weakSelf = self;
-  enterprise_connectors::FileDownloadScanningResources resources =
-      enterprise_connectors::PrepareCloudContentScanning(
-          _originatingWebState.get(), _downloadGURL,
-          base::apple::NSStringToFilePath(self.filePath),
-          enterprise_connectors::TriggerType::kShareSheet,
-          base::BindOnce(&DownloadShouldProceed, weakSelf));
+  _scanningResources = enterprise_connectors::PrepareCloudContentScanning(
+      _originatingWebState.get(), _downloadGURL,
+      base::apple::NSStringToFilePath(self.filePath),
+      enterprise_connectors::TriggerType::kShareSheet,
+      base::BindOnce(&DownloadShouldProceed, weakSelf));
 
-  _filesRequestHandler = std::move(resources.files_request_handler);
-  _contentAnalysisInfo = std::move(resources.content_analysis_info);
-
-  _filesRequestHandler->UploadData();
+  if (_scanningResources) {
+    _scanningResources->files_request_handler->UploadData();
+  }
 }
 
 - (void)cleanUpAnalysisResources {
-  _filesRequestHandler.reset();
-  _contentAnalysisInfo.reset();
+  _scanningResources.reset();
   _downloadGURL = GURL();
 }
 

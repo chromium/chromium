@@ -131,8 +131,7 @@ void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
   upload_task_.reset();
   download_task_observation_.Reset();
   upload_task_observation_.Reset();
-  files_request_handler_.reset();
-  content_analysis_info_.reset();
+  scanning_resources_.reset();
   has_processed_complete_task_ = false;
   if (!task || !identity) {
     return;
@@ -171,17 +170,15 @@ void DriveTabHelper::ProcessCompleteDownloadTask(web::DownloadTask* task) {
   }
   has_processed_complete_task_ = true;
 
-  enterprise_connectors::FileDownloadScanningResources resources =
-      enterprise_connectors::PrepareCloudContentScanning(
-          web_state_, task->GetRedirectedUrl(), task->GetResponsePath(),
-          enterprise_connectors::TriggerType::kSavePrompt,
-          base::BindOnce(&DriveTabHelper::MaybeUploadDownloadToDrive,
-                         weak_ptr_factory_.GetWeakPtr(), task));
-  files_request_handler_ = std::move(resources.files_request_handler);
-  content_analysis_info_ = std::move(resources.content_analysis_info);
-
-  // Upload the file for content scanning.
-  files_request_handler_->UploadData();
+  scanning_resources_ = enterprise_connectors::PrepareCloudContentScanning(
+      web_state_, task->GetRedirectedUrl(), task->GetResponsePath(),
+      enterprise_connectors::TriggerType::kSavePrompt,
+      base::BindOnce(&DriveTabHelper::MaybeUploadDownloadToDrive,
+                     weak_ptr_factory_.GetWeakPtr(), task));
+  if (scanning_resources_) {
+    // Upload the file for content scanning.
+    scanning_resources_->files_request_handler->UploadData();
+  }
 }
 
 void DriveTabHelper::MaybeUploadDownloadToDrive(web::DownloadTask* task,
@@ -193,8 +190,14 @@ void DriveTabHelper::MaybeUploadDownloadToDrive(web::DownloadTask* task,
   }
 
   // This will only report when scan result is WARNING and bypassed.
-  files_request_handler_->ReportWarningBypass(
-      /*user_justification=*/std::nullopt);
+  if (scanning_resources_) {
+    scanning_resources_->files_request_handler->ReportWarningBypass(
+        /*user_justification=*/std::nullopt);
+
+    // Ensure the scanning resources are destroyed as soon as
+    // they are no longer necessary.
+    scanning_resources_.reset();
+  }
 
   upload_task_->SetFileToUpload(task->GetResponsePath(),
                                 task->GenerateFileName(), task->GetMimeType(),
@@ -206,15 +209,8 @@ void DriveTabHelper::MaybeUploadDownloadToDrive(web::DownloadTask* task,
           ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
   if (!IsIdentityOnDeviceWithValidAuth(identity, account_manager_service)) {
     upload_task_->Fail(CreateAccountNotFoundError(), /*resumable=*/false);
-    files_request_handler_.reset();
-    content_analysis_info_.reset();
     return;
   }
 
   upload_task_->Start();
-
-  // Ensure the handler and content_analysis_info_ are destroyed as soon as they
-  // are no longer necessary.
-  files_request_handler_.reset();
-  content_analysis_info_.reset();
 }
