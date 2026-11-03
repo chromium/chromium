@@ -296,45 +296,55 @@ void ParkableImageImpl::WriteToDiskInBackground(
     scoped_refptr<ParkableImageImpl> parkable_image,
     scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner) {
   DCHECK(!IsMainThread());
-  base::AutoLock lock(parkable_image->lock_);
-
   DCHECK(parkable_image);
-  DCHECK(parkable_image->reserved_chunk_);
-  DCHECK(!parkable_image->on_disk_metadata_);
-
-  AsanUnpoisonBuffer(parkable_image->rw_buffer_.get());
-
-  scoped_refptr<ROBuffer> ro_buffer =
-      parkable_image->rw_buffer_->MakeROBufferSnapshot();
-  ROBuffer::Iter it(ro_buffer.get());
 
   Vector<char> vector;
-  vector.ReserveInitialCapacity(
-      base::checked_cast<wtf_size_t>(parkable_image->size()));
+  std::unique_ptr<ReservedChunk> reserved_chunk;
+  {
+    base::AutoLock lock(parkable_image->lock_);
+    DCHECK(parkable_image->reserved_chunk_);
+    DCHECK(!parkable_image->on_disk_metadata_);
 
-  do {
-    vector.append_range(*it);
-  } while (it.Next());
+    AsanUnpoisonBuffer(parkable_image->rw_buffer_.get());
 
-  auto reserved_chunk = std::move(parkable_image->reserved_chunk_);
+    scoped_refptr<ROBuffer> ro_buffer =
+        parkable_image->rw_buffer_->MakeROBufferSnapshot();
+    ROBuffer::Iter it(ro_buffer.get());
+
+    vector.ReserveInitialCapacity(
+        base::checked_cast<wtf_size_t>(parkable_image->size()));
+
+    do {
+      vector.append_range(*it);
+    } while (it.Next());
+
+    reserved_chunk = std::move(parkable_image->reserved_chunk_);
+  }
 
   // Release the lock while writing, so we don't block for too long.
-  parkable_image->lock_.Release();
-
   base::ElapsedTimer timer;
   auto metadata = ParkableImageManager::Instance().data_allocator().Write(
       std::move(reserved_chunk), base::as_byte_span(vector));
   base::TimeDelta elapsed = timer.Elapsed();
 
-  // Acquire the lock again after writing.
-  parkable_image->lock_.Acquire();
-
-  parkable_image->on_disk_metadata_ = std::move(metadata);
+  // Acquire the lock again after writing. Release it before posting the
+  // completion task, since the task may drop the last reference and destroy
+  // |parkable_image| on the main thread before this function returns.
+  bool write_failed = !metadata;
+  {
+    base::AutoLock lock(parkable_image->lock_);
+    parkable_image->on_disk_metadata_ = std::move(metadata);
+    if (write_failed) {
+      parkable_image->background_task_in_progress_ = false;
+    } else {
+      RecordWriteStatistics(parkable_image->on_disk_metadata_->size(), elapsed);
+      ParkableImageManager::Instance().RecordDiskWriteTime(elapsed);
+    }
+  }
 
   // Nothing to do if the write failed except return. Notably, we need to
   // keep around the data for the ParkableImageImpl in this case.
-  if (!parkable_image->on_disk_metadata_) {
-    parkable_image->background_task_in_progress_ = false;
+  if (write_failed) {
     // This ensures that we don't destroy |this| on the background thread at
     // the end of this function, if we happen to have the last reference to
     // |this|.
@@ -346,8 +356,6 @@ void ParkableImageImpl::WriteToDiskInBackground(
                         CrossThreadBindOnce(&NotifyWriteToDiskFinished,
                                             std::move(parkable_image)));
   } else {
-    RecordWriteStatistics(parkable_image->on_disk_metadata_->size(), elapsed);
-    ParkableImageManager::Instance().RecordDiskWriteTime(elapsed);
     PostCrossThreadTask(
         *callback_task_runner, FROM_HERE,
         CrossThreadBindOnce(&ParkableImageImpl::MaybeDiscardData,

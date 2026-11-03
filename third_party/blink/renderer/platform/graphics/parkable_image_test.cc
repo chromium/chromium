@@ -7,6 +7,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -796,9 +797,10 @@ TEST_F(ParkableImageTest, DestroyOnSeparateThread) {
 
 TEST_F(ParkableImageTest, FailedWrite) {
   auto& manager = ParkableImageManager::Instance();
-  set_may_write(false);
 
-  const size_t kDataSize = 3.5 * 4096;
+  // Exceed InMemoryDataAllocator::kMaxSize so TryReserveChunk() succeeds on the
+  // main thread while DoWrite() fails in WriteToDiskInBackground().
+  const size_t kDataSize = InMemoryDataAllocator::kMaxSize + 1;
   auto data = base::HeapArray<uint8_t>::Uninit(kDataSize);
   PrepareReferenceData(data);
 
@@ -813,6 +815,22 @@ TEST_F(ParkableImageTest, FailedWrite) {
     manager.MaybeParkImagesForTesting();
     EXPECT_EQ(1u, manager.Size());
   }
+
+  // Pump main-thread tasks without going idle (which in MOCK_TIME would flush
+  // the ThreadPool before running main-thread tasks), so
+  // NotifyWriteToDiskFinished can run as soon as it is posted by the worker.
+  base::RunLoop run_loop;
+  base::RepeatingClosure poll_until_destroyed =
+      base::BindLambdaForTesting([&]() {
+        if (manager.Size() == 0u) {
+          run_loop.Quit();
+          return;
+        }
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, poll_until_destroyed);
+      });
+  poll_until_destroyed.Run();
+  run_loop.Run();
 
   WaitForParking();
 
