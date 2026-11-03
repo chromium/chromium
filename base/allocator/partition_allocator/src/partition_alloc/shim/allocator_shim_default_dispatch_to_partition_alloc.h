@@ -279,10 +279,9 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-// AllocToken with TypeHashPointerSplit mode assigns the bottom
-// half ID-space for pointer-less types and the top half for
-// pointer-containing types. In practice this is just the first bit is zero if
-// pointer-less. See: https://clang.llvm.org/docs/AllocToken.html
+// AllocToken with TypeFuncHashPointerSplit mode sets the most significant bit
+// of the token for pointer-containing types, and clears it for pointer-less
+// types. See: https://clang.llvm.org/docs/AllocToken.html
 inline constexpr size_t kAllocTokenHasPointerBit =
     static_cast<size_t>(1) << (std::numeric_limits<size_t>::digits - 1);
 

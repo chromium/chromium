@@ -15,6 +15,12 @@ if (!defined(partition_alloc_remove_configs)) {
   partition_alloc_remove_configs = []
 }
 
+# Configs removed only from allocator_shim, in addition to
+# partition_alloc_remove_configs.
+if (!defined(allocator_shim_remove_configs)) {
+  allocator_shim_remove_configs = []
+}
+
 _can_unwind_with_frame_pointers =
     defined(can_unwind_with_frame_pointers) && can_unwind_with_frame_pointers
 _dcheck_is_configurable =
@@ -904,6 +910,7 @@ if (is_clang_or_gcc) {
     frameworks = []
 
     configs -= partition_alloc_remove_configs
+    configs -= allocator_shim_remove_configs
     configs += partition_alloc_add_configs
     configs += [ ":dependants_extra_warnings" ]
 

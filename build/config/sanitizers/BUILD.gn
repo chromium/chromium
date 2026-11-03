@@ -766,7 +766,11 @@ config("not_fuzzed") {
 # See: https://clang.llvm.org/docs/AllocToken.html
 config("alloc_token") {
   if (use_alloc_token) {
-    cflags = [ "-fsanitize=alloc-token" ]
+    cflags = [
+      "-fsanitize=alloc-token",
+      "-Xclang",
+      "-falloc-token-mode=typefunchashpointersplit",
+    ]
     if (is_linux || is_chromeos) {
       ldflags = [
         # go/keep-sorted start

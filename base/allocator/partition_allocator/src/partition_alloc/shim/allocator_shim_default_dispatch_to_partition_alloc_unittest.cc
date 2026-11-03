@@ -43,35 +43,43 @@ struct HasPointer {
   float y = 3.1f;
 };
 
-constexpr AllocToken kOnlySimpleDataAllocToken =
-    AllocToken(__builtin_infer_alloc_token(sizeof(OnlySimpleData)));
-constexpr AllocToken kHasPointerAllocToken =
-    AllocToken(__builtin_infer_alloc_token(sizeof(HasPointer)));
-constexpr AllocToken kHasPointerArrayAllocToken =
-    AllocToken(__builtin_infer_alloc_token(sizeof(std::array<HasPointer, 3>)));
-constexpr AllocToken kUintptrAllocToken =
-    AllocToken(__builtin_infer_alloc_token(sizeof(uintptr_t)));
+// TypeFuncHash modes are not supported in constant expressions.
+AllocToken OnlySimpleDataAllocToken() {
+  return AllocToken(__builtin_infer_alloc_token(sizeof(OnlySimpleData)));
+}
+AllocToken HasPointerAllocToken() {
+  return AllocToken(__builtin_infer_alloc_token(sizeof(HasPointer)));
+}
+AllocToken HasPointerArrayAllocToken() {
+  return AllocToken(
+      __builtin_infer_alloc_token(sizeof(std::array<HasPointer, 3>)));
+}
+AllocToken UintptrAllocToken() {
+  return AllocToken(__builtin_infer_alloc_token(sizeof(uintptr_t)));
+}
 #endif
 
-inline static constexpr AllocToken kAllocTokensForTesting[] = {
-    AllocToken(0),
-    AllocToken(1),
-    AllocToken(std::numeric_limits<size_t>::max() / 2),
-    AllocToken(std::numeric_limits<size_t>::max()),
+auto AllocTokensForTesting() {
+  return std::array{
+      AllocToken(0),
+      AllocToken(1),
+      AllocToken(std::numeric_limits<size_t>::max() / 2),
+      AllocToken(std::numeric_limits<size_t>::max()),
 #if PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
-    kOnlySimpleDataAllocToken,
-    kHasPointerAllocToken,
-    kHasPointerArrayAllocToken,
-    kUintptrAllocToken,
+      OnlySimpleDataAllocToken(),
+      HasPointerAllocToken(),
+      HasPointerArrayAllocToken(),
+      UintptrAllocToken(),
 #endif
-};
+  };
+}
 }  // namespace
 
 class PartitionAllocAsMallocTest : public testing::TestWithParam<AllocToken> {};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PartitionAllocAsMallocTest,
-                         testing::ValuesIn(kAllocTokensForTesting));
+                         testing::ValuesIn(AllocTokensForTesting()));
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -300,10 +308,10 @@ TEST(PartitionAllocAsMalloc, AllocTokenHasPointerValue) {
       AllocToken(std::numeric_limits<size_t>::max())));
 
 #if PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
-  EXPECT_FALSE(AllocTokenHasPointerValue(kOnlySimpleDataAllocToken));
-  EXPECT_TRUE(AllocTokenHasPointerValue(kHasPointerAllocToken));
-  EXPECT_TRUE(AllocTokenHasPointerValue(kHasPointerArrayAllocToken));
-  EXPECT_TRUE(AllocTokenHasPointerValue(kUintptrAllocToken));
+  EXPECT_FALSE(AllocTokenHasPointerValue(OnlySimpleDataAllocToken()));
+  EXPECT_TRUE(AllocTokenHasPointerValue(HasPointerAllocToken()));
+  EXPECT_TRUE(AllocTokenHasPointerValue(HasPointerArrayAllocToken()));
+  EXPECT_TRUE(AllocTokenHasPointerValue(UintptrAllocToken()));
 #endif
 }
 

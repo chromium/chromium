@@ -64,9 +64,10 @@ if (!is_debug || partition_alloc_optimized_debug) {
   partition_alloc_add_configs = [ "//build/config/compiler:no_optimize" ]
 }
 
-# allocator_shim defines the __alloc_token_* functions, so PartitionAlloc's own
-# allocation calls must not be redirected to them.
-partition_alloc_remove_configs += [ "//build/config/sanitizers:alloc_token" ]
+# allocator_shim defines the __alloc_token_* functions, some of which forward to
+# the standard allocation functions (e.g. posix_memalign() on Apple). Don't
+# instrument it, so that they don't end up calling themselves.
+allocator_shim_remove_configs = [ "//build/config/sanitizers:alloc_token" ]
 
 # - Component build support is disabled on all platforms except Linux. It is
 #   known to cause issues on some (e.g. Windows with shims, Android with
