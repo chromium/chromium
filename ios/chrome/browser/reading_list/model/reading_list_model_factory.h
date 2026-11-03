@@ -23,6 +23,8 @@ class ReadingListModelFactory final
   explicit ReadingListModelFactory(PassKey key);
   static reading_list::DualReadingListModel*
   GetAsDualReadingListModelForProfile(ProfileIOS* profile);
+  static reading_list::DualReadingListModel*
+  GetAsDualReadingListModelForProfile(ProfileIOS& profile);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.

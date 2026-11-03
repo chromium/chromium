@@ -28,9 +28,16 @@ ReadingListModelFactory::GetAsDualReadingListModelForProfile(
     return nullptr;
   }
 
+  return GetAsDualReadingListModelForProfile(*profile);
+}
+
+// static
+reading_list::DualReadingListModel*
+ReadingListModelFactory::GetAsDualReadingListModelForProfile(
+    ProfileIOS& profile) {
   return GetInstance()
       ->GetServiceForProfileAs<reading_list::DualReadingListModel>(
-          *profile, /*create=*/true);
+          profile, /*create=*/true);
 }
 
 ReadingListModelFactory::ReadingListModelFactory(PassKey key)
