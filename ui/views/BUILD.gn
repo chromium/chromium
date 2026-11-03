@@ -1565,6 +1565,7 @@ test("views_unittests") {
 
     public_deps = [
       "//components/remote_cocoa/app_shim",
+      "//components/remote_cocoa/app_shim:features",
       "//ui/accelerated_widget_mac",
     ]
   }

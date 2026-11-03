@@ -7,33 +7,45 @@
 
 #import <AppKit/AppKit.h>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
-// The WindowOcclusionCheckerMac performs window occlusion checks
-// for browser windows of similar size, a case macOS's occlusion
-// detection system cannot handle (see crbug.com/40593221). It initiates
-// these checks on window state change events (ordering, closing, etc.).
+namespace remote_cocoa {
+
+// Key present in the `userInfo` dictionary of synthetic
+// `NSWindowDidChangeOcclusionStateNotification`s posted by
+// `WindowOcclusionCheckerMac`.
+REMOTE_COCOA_APP_SHIM_EXPORT extern NSString* const
+    kWindowOcclusionCheckerNotificationUserInfoKey;
+
+}  // namespace remote_cocoa
+
+// The WindowOcclusionCheckerMac performs window occlusion checks for windows
+// of similar size, a case macOS's occlusion detection system cannot handle
+// (see crbug.com/40593221). It initiates these checks on window state change
+// events (ordering, closing, etc.).
 //
-// The checker makes it easy to learn of window occlusion events from
-// both macOS and from its own occlusion checks. Interested parties should
-// watch for NSWindowDidChangeOcclusionStateNotification notifications
-// where the object is the affected window and the userInfo contains the
-// key "WindowOcclusionCheckerMac".
+// The checker makes it easy to learn of window occlusion events from both
+// macOS and from its own occlusion checks. Interested parties should register
+// tracked windows via `-addTrackedWindow:` / `-removeTrackedWindow:` and watch
+// for `NSWindowDidChangeOcclusionStateNotification` notifications where the
+// object is the affected window and `userInfo` contains
+// `remote_cocoa::kWindowOcclusionCheckerNotificationUserInfoKey` (or observe
+// via `NativeWidgetNSWindowBridge::OnWindowOcclusionChanged()`).
 REMOTE_COCOA_APP_SHIM_EXPORT
 @interface WindowOcclusionCheckerMac : NSObject
 
 + (instancetype)sharedInstance;
 
-// Configures the embedder predicates used to determine whether `window`
-// contains tracked content and whether occlusion updates may run (e.g. not
-// during browser shutdown).
-// TODO(crbug.com/505314004): Remove this temporary predicate registration in
-// favor of explicit window tracking (-addTrackedWindow: /
-// -removeTrackedWindow:).
-+ (void)setWindowPredicate:(BOOL (*)(NSWindow*))windowPredicate
-    canPerformUpdatesPredicate:(BOOL (*)())canPerformUpdatesPredicate;
+// Returns the live shared instance if one exists, without lazily creating it.
++ (instancetype)sharedInstanceIfCreated;
+
+// Registers or unregisters `window` for occlusion tracking. Calls are
+// reference-counted (using weak `NSWindow` keys), so multiple consumers (e.g.
+// `NativeWidgetNSWindowBridge` and one or more `WebContentsViewCocoa`s) can
+// independently register the same `NSWindow`.
+- (void)addTrackedWindow:(NSWindow*)window;
+- (void)removeTrackedWindow:(NSWindow*)window;
+- (BOOL)isTrackingWindow:(NSWindow*)window;
 
 // API exposed for testing.
 
@@ -47,10 +59,10 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // Resets the state of `sharedInstance` during tests.
 + (void)resetSharedInstanceForTesting;
 
-// Schedules an occlusion state update for all windows with web contentses.
+// Schedules an occlusion state update for all tracked windows.
 - (void)scheduleOcclusionStateUpdates;
 
-// Updates the occlusion states of all windows with web contentses.
+// Updates the occlusion states of all tracked windows.
 - (void)performOcclusionStateUpdates;
 
 // Returns YES if occlusion updates are scheduled.

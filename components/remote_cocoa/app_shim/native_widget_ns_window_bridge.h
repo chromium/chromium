@@ -452,6 +452,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // the window is resized.
   void UpdateCaptureExclusion();
 
+  // Registers or unregisters `window_` with `WindowOcclusionCheckerMac` based
+  // on whether this bridge currently represents an initialized, top-level,
+  // non-tooltip window.
+  void UpdateWindowOcclusionTracking();
+
   // CocoaMouseCaptureDelegate:
   bool PostCapturedEvent(NSEvent* event) override;
   void OnMouseCaptureLost() override;
@@ -475,6 +480,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   std::unique_ptr<CocoaWindowMoveLoop> window_move_loop_;
   ui::mojom::ModalType modal_type_ = ui::mojom::ModalType::kNone;
   bool is_translucent_window_ = false;
+  bool is_tooltip_ = false;
+  bool window_initialized_ = false;
+  bool is_tracked_by_occlusion_checker_ = false;
   id __strong local_event_monitor_;
 
   raw_ptr<NativeWidgetNSWindowBridge> parent_ =

@@ -73,8 +73,6 @@ CONTENT_EXPORT
 @interface NSWindow (WebContentsViewCocoa)
 // Returns all the WebContentsViewCocoas in the window.
 - (NSArray<WebContentsViewCocoa*>*)webContentsViewCocoa;
-// Returns YES if the window contains at least one WebContentsViewCocoa.
-- (BOOL)containsWebContentsViewCocoa;
 @end
 
 #endif  // CONTENT_APP_SHIM_REMOTE_COCOA_WEB_CONTENTS_VIEW_COCOA_H_

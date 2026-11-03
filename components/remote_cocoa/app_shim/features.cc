@@ -33,4 +33,10 @@ BASE_FEATURE(kMacFullScreenAuxiliaryFileDialog,
 // the NSToolbarFullScreenWindow. See https://crbug.com/573809833.
 BASE_FEATURE(kClearFirstResponderInToolbarFullScreenWindow,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, `NativeWidgetNSWindowBridge` registers all top-level
+// (non-child, non-tooltip) Views windows with `WindowOcclusionCheckerMac`,
+// rather than only tracking windows that contain a `WebContentsViewCocoa`.
+BASE_FEATURE(kTrackAllTopLevelWindowsForOcclusion,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace remote_cocoa::features

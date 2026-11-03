@@ -33,6 +33,7 @@
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #import "components/remote_cocoa/app_shim/context_menu_runner.h"
+#include "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/mouse_capture.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_frameless_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
@@ -41,6 +42,7 @@
 #include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #import "components/remote_cocoa/app_shim/window_move_loop.h"
+#import "components/remote_cocoa/app_shim/window_occlusion_checker_mac.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/cert/x509_util_apple.h"
@@ -450,6 +452,7 @@ NativeWidgetNSWindowBridge::~NativeWidgetNSWindowBridge() {
   // that -[NSWindow close] is invoked on the hosted window before the
   // destructor is called.
   DCHECK(![window_ delegate]);
+  DCHECK(!is_tracked_by_occlusion_checker_);
   DCHECK(child_windows_.empty());
   DestroyContentView();
 }
@@ -516,6 +519,7 @@ void NativeWidgetNSWindowBridge::SetParent(uint64_t new_parent_id) {
     if (!was_allowing_screenshots || !ShouldAllowScreenshots()) {
       UpdateCaptureExclusion();
     }
+    UpdateWindowOcclusionTracking();
     return;
   }
 
@@ -536,6 +540,7 @@ void NativeWidgetNSWindowBridge::SetParent(uint64_t new_parent_id) {
   if (wants_to_be_visible_) {
     parent_->OrderChildren();
   }
+  UpdateWindowOcclusionTracking();
 }
 
 void NativeWidgetNSWindowBridge::CreateSelectFileDialog(
@@ -660,7 +665,10 @@ void NativeWidgetNSWindowBridge::InitWindow(
   if (params->modal_type == ui::mojom::ModalType::kWindow) {
     [window_ setMovable:NO];
   }
+  is_tooltip_ = params->is_tooltip;
   [window_ setIsTooltip:params->is_tooltip];
+  window_initialized_ = true;
+  UpdateWindowOcclusionTracking();
   CheckAndNotifyAllWorkspacesStateChanged();
 }
 
@@ -951,7 +959,8 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   DCHECK(wants_to_be_visible_);
 
   if (!ca_transaction_sync_suppressed_) {
-    if (base::FeatureList::IsEnabled(features::kAlphaInsteadOfCATransaction)) {
+    if (base::FeatureList::IsEnabled(
+            ::features::kAlphaInsteadOfCATransaction)) {
       // If the window isn't visible and a compositor frame for the window size
       // hasn't come in yet, keep the window effectively invisible via
       // `alphaValue`. It will be made visible when a correctly sized compositor
@@ -1315,6 +1324,26 @@ void NativeWidgetNSWindowBridge::UpdateCaptureExclusion() {
   }
 }
 
+void NativeWidgetNSWindowBridge::UpdateWindowOcclusionTracking() {
+  // Note: when this is false (e.g. `kTrackAllTopLevelWindowsForOcclusion` is
+  // disabled), windows containing a `WebContents` are still registered by
+  // `WebContentsViewCocoa`.
+  const bool should_track = window_initialized_ && window_ && !parent_ &&
+                            !is_tooltip_ &&
+                            base::FeatureList::IsEnabled(
+                                features::kTrackAllTopLevelWindowsForOcclusion);
+  if (should_track == is_tracked_by_occlusion_checker_) {
+    return;
+  }
+  is_tracked_by_occlusion_checker_ = should_track;
+  if (should_track) {
+    [[WindowOcclusionCheckerMac sharedInstance] addTrackedWindow:window_];
+  } else {
+    [[WindowOcclusionCheckerMac sharedInstanceIfCreated]
+        removeTrackedWindow:window_];
+  }
+}
+
 void NativeWidgetNSWindowBridge::SetColorMode(
     ui::ColorProviderKey::ColorMode color_mode) {
   NSAppearance* appearance =
@@ -1419,6 +1448,9 @@ void NativeWidgetNSWindowBridge::OnWindowWillClose() {
   [show_animation_ stopAnimation];  // If set, calls OnShowAnimationComplete().
   CHECK(!show_animation_);
 
+  window_initialized_ = false;
+  UpdateWindowOcclusionTracking();
+
   [window_ setDelegate:nil];
   [window_ setBridge:nullptr];
 
@@ -1507,7 +1539,8 @@ void NativeWidgetNSWindowBridge::OnSpaceActivationMayHaveChanged() {
     OrderChildren();
   }
   bool is_visible_on_screen = window_.onActiveSpace;
-  if (base::FeatureList::IsEnabled(features::kDetectSpaceChangeViaOcclusion)) {
+  if (base::FeatureList::IsEnabled(
+          ::features::kDetectSpaceChangeViaOcclusion)) {
     is_visible_on_screen =
         is_visible_on_screen ||
         (([window_ occlusionState] & NSWindowOcclusionStateVisible) != 0);
@@ -2230,7 +2263,7 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
   CheckAndNotifyAllWorkspacesStateChanged();
 
   if (content_resized && window_.visible && !ca_transaction_sync_suppressed_) {
-    if (!base::FeatureList::IsEnabled(features::kAsyncLiveResize)) {
+    if (!base::FeatureList::IsEnabled(::features::kAsyncLiveResize)) {
       ui::CATransactionCoordinator::Get().Synchronize();
     }
   }
