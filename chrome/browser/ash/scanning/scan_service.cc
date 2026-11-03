@@ -14,7 +14,9 @@
 #include "ash/webui/scanning/scanning_uma.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -80,7 +82,14 @@ std::string CreateFilename(const base::Time& start_time,
 // Returns whether the image was successfully written.
 bool WriteImage(const base::FilePath& file_path,
                 const std::string& scanned_image) {
-  if (!base::WriteFile(file_path, scanned_image)) {
+  // SECURITY: open with FLAG_CREATE (O_CREAT | O_EXCL) instead of
+  // base::WriteFile (creat(), which follows symlinks and truncates the
+  // target). O_EXCL fails if any directory entry - including a symlink
+  // planted in a guest-shared folder - already exists at |file_path|, and
+  // never follows a symlink in the final path component.
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  if (!file.IsValid() ||
+      !file.WriteAndCheck(0, base::as_byte_span(scanned_image))) {
     LOG(ERROR) << "Failed to save scanned image: " << file_path.value().c_str();
     return false;
   }
@@ -105,6 +114,20 @@ bool SaveAsPdf(const std::vector<std::string>& jpg_images,
           ? "Scanning.MultiPageScan.CombinedImageSizeInKbBeforePdf"
           : "Scanning.CombinedImageSizeInKbBeforePdf",
       total_image_size / 1024);
+
+  // SECURITY: create the destination exclusively (O_CREAT | O_EXCL) before
+  // handing the path to ConvertJpgImagesToPdf, whose SkFILEWStream opens
+  // with fopen("wb") (follows symlinks and truncates). This fails the scan
+  // if any directory entry - including a symlink planted in a guest-shared
+  // folder - already exists at |file_path|, instead of following it.
+  {
+    base::File pdf_file(file_path,
+                        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    if (!pdf_file.IsValid()) {
+      LOG(ERROR) << "Failed to create PDF file: " << file_path.value().c_str();
+      return false;
+    }
+  }
 
   const base::TimeTicks pdf_start_time = base::TimeTicks::Now();
   const bool pdf_saved = chromeos::ConvertJpgImagesToPdf(
