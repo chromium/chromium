@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.SkipCommandLineParameterization;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -65,6 +66,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
+import org.chromium.chrome.test.transit.page.PageLoadStartedCondition;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
@@ -109,17 +111,15 @@ public class OmniboxTest {
     @EnormousTest
     @Feature({"Omnibox"})
     public void testSimpleUse() throws InterruptedException {
-        mActivityTestRule.startOnBlankPage();
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
         omnibox.requestFocus();
         omnibox.typeText("aaaaaaa", false);
         omnibox.checkSuggestionsShown();
 
-        ChromeTabUtils.waitForTabPageLoadStart(
-                mActivityTestRule.getActivityTab(),
-                null,
-                () -> omnibox.sendKey(KeyEvent.KEYCODE_ENTER),
-                20L);
+        Triggers.runTo(() -> omnibox.sendKey(KeyEvent.KEYCODE_ENTER))
+                .withTimeout(20000L)
+                .waitFor(new PageLoadStartedCondition(page.loadedTabElement));
     }
 
     /**

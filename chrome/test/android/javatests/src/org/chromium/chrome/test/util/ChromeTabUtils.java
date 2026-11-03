@@ -107,43 +107,6 @@ public class ChromeTabUtils {
         }
     }
 
-    /**
-     * Fulfilled when the Tab calls onPageLoadStarted() for the expected URL (or any URL if null).
-     */
-    private static class TabLoadStartedCondition extends CallbackCondition implements TabObserver {
-        private final Tab mTab;
-        private final @Nullable String mExpectedUrl;
-
-        TabLoadStartedCondition(Tab tab, @Nullable String expectedUrl) {
-            super(
-                    expectedUrl == null
-                            ? "onPageLoadStarted"
-                            : "onPageLoadStarted for " + expectedUrl,
-                    /* numCallsExpected= */ 1);
-            mTab = tab;
-            mExpectedUrl = expectedUrl;
-        }
-
-        @Override
-        public void onPageLoadStarted(Tab tab, GURL url) {
-            if (mExpectedUrl == null || TextUtils.equals(url.getSpec(), mExpectedUrl)) {
-                notifyCalled();
-            }
-        }
-
-        @Override
-        public void onStartMonitoring() {
-            super.onStartMonitoring();
-            ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(this));
-        }
-
-        @Override
-        public void onStopMonitoring() {
-            super.onStopMonitoring();
-            ThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(this));
-        }
-    }
-
     public static Tab getActivityTab(ChromeActivity activity) {
         return ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
     }
@@ -248,40 +211,6 @@ public class ChromeTabUtils {
         TripBuilder trip = loadTrigger == null ? Triggers.noopTo() : Triggers.runTo(loadTrigger);
         trip.withTimeout(TimeUnit.SECONDS.toMillis(secondsToWait))
                 .waitFor(conditions.toArray(new Condition[0]));
-    }
-
-    /**
-     * Waits for the given tab to start loading its current page.
-     *
-     * @param tab The tab to wait for the page loading to be started.
-     * @param expectedUrl The expected url of the started page load. Pass in null if starting any
-     *     load is sufficient.
-     * @param loadTrigger The trigger action that will result in a page load started event to be
-     *     fired (not run on the UI thread by default).
-     */
-    public static void waitForTabPageLoadStart(
-            final Tab tab, @Nullable final String expectedUrl, Runnable loadTrigger) {
-        waitForTabPageLoadStart(tab, expectedUrl, loadTrigger, CallbackHelper.WAIT_TIMEOUT_SECONDS);
-    }
-
-    /**
-     * Waits for the given tab to start loading its current page.
-     *
-     * @param tab The tab to wait for the page loading to be started.
-     * @param expectedUrl The expected url of the started page load. Pass in null if starting any
-     *     load is sufficient.
-     * @param loadTrigger The trigger action that will result in a page load started event to be
-     *     fired (not run on the UI thread by default).
-     * @param secondsToWait The number of seconds to wait for the page to be load to be started.
-     */
-    public static void waitForTabPageLoadStart(
-            final Tab tab,
-            @Nullable final String expectedUrl,
-            Runnable loadTrigger,
-            long secondsToWait) {
-        Triggers.runTo(loadTrigger)
-                .withTimeout(TimeUnit.SECONDS.toMillis(secondsToWait))
-                .waitFor(new TabLoadStartedCondition(tab, expectedUrl));
     }
 
     /**
