@@ -73,7 +73,7 @@ ChromeTabRestoreServiceClient::FindLiveTabContextForTab(
 sessions::LiveTabContext*
 ChromeTabRestoreServiceClient::FindLiveTabContextWithID(SessionID desired_id) {
 #if BUILDFLAG(IS_ANDROID)
-  return AndroidLiveTabContext::FindContextWithID(desired_id);
+  return AndroidLiveTabContext::FindContextWithID(desired_id, profile_);
 #else
   return BrowserLiveTabContext::FindContextWithID(desired_id);
 #endif

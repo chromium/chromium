@@ -9,10 +9,13 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
+#include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
@@ -127,4 +130,71 @@ TEST_F(TabModelListTest, HandlePopupNavigationFallsBackToValidWindowSessionId) {
   EXPECT_EQ(0, unassociated_model.popup_count());
   EXPECT_EQ(1, associated_model.popup_count());
   EXPECT_EQ(99, associated_model.last_parent_id());
+}
+
+TEST_F(TabModelListTest, FindLiveTabContextWithIDIsScopedToProfile) {
+  std::unique_ptr<TestingProfile> other_profile =
+      TestingProfile::Builder().Build();
+
+  PopupCapturingTabModel other_model(other_profile.get());
+  const SessionID other_window_id = SessionID::NewUnique();
+  other_model.SetSessionId(other_window_id);
+
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  PopupCapturingTabModel otr_model(otr_profile);
+  const SessionID otr_window_id = SessionID::NewUnique();
+  otr_model.SetSessionId(otr_window_id);
+
+  ChromeTabRestoreServiceClient chrome_client(profile());
+  sessions::TabRestoreServiceClient& client = chrome_client;
+  const SessionID unknown_window_id = SessionID::NewUnique();
+
+  // When `profile()` has no open non-OTR TabModel, lookup and fallback must not
+  // return `other_profile`'s TabModel or `profile()`'s OTR TabModel.
+  EXPECT_EQ(nullptr, AndroidLiveTabContext::FindContextWithID(unknown_window_id,
+                                                              profile()));
+  EXPECT_EQ(nullptr, AndroidLiveTabContext::FindContextWithID(other_window_id,
+                                                              profile()));
+  EXPECT_EQ(nullptr,
+            AndroidLiveTabContext::FindContextWithID(otr_window_id, profile()));
+  EXPECT_EQ(nullptr, client.FindLiveTabContextWithID(unknown_window_id));
+  EXPECT_EQ(nullptr, client.FindLiveTabContextWithID(other_window_id));
+  EXPECT_EQ(nullptr, client.FindLiveTabContextWithID(otr_window_id));
+
+  // Register two non-OTR TabModels for `profile()` after `other_model` and
+  // `otr_model`.
+  PopupCapturingTabModel profile_model(profile());
+  const SessionID profile_window_id = SessionID::NewUnique();
+  profile_model.SetSessionId(profile_window_id);
+
+  PopupCapturingTabModel second_profile_model(profile());
+  const SessionID second_profile_window_id = SessionID::NewUnique();
+  second_profile_model.SetSessionId(second_profile_window_id);
+
+  EXPECT_EQ(
+      profile_model.GetLiveTabContext(),
+      AndroidLiveTabContext::FindContextWithID(profile_window_id, profile()));
+  EXPECT_EQ(second_profile_model.GetLiveTabContext(),
+            AndroidLiveTabContext::FindContextWithID(second_profile_window_id,
+                                                     profile()));
+  EXPECT_EQ(
+      profile_model.GetLiveTabContext(),
+      AndroidLiveTabContext::FindContextWithID(unknown_window_id, profile()));
+  EXPECT_EQ(
+      profile_model.GetLiveTabContext(),
+      AndroidLiveTabContext::FindContextWithID(other_window_id, profile()));
+  EXPECT_EQ(profile_model.GetLiveTabContext(),
+            AndroidLiveTabContext::FindContextWithID(otr_window_id, profile()));
+
+  EXPECT_EQ(profile_model.GetLiveTabContext(),
+            client.FindLiveTabContextWithID(profile_window_id));
+  EXPECT_EQ(second_profile_model.GetLiveTabContext(),
+            client.FindLiveTabContextWithID(second_profile_window_id));
+  EXPECT_EQ(profile_model.GetLiveTabContext(),
+            client.FindLiveTabContextWithID(unknown_window_id));
+  EXPECT_EQ(profile_model.GetLiveTabContext(),
+            client.FindLiveTabContextWithID(other_window_id));
+  EXPECT_EQ(profile_model.GetLiveTabContext(),
+            client.FindLiveTabContextWithID(otr_window_id));
 }

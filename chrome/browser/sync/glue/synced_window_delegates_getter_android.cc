@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/glue/synced_window_delegates_getter_android.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/sessions/core/session_id.h"
@@ -11,8 +12,10 @@
 
 using sync_sessions::SyncedWindowDelegate;
 
-SyncedWindowDelegatesGetterAndroid::SyncedWindowDelegatesGetterAndroid() =
-    default;
+SyncedWindowDelegatesGetterAndroid::SyncedWindowDelegatesGetterAndroid(
+    Profile* profile)
+    : profile_(CHECK_DEREF(profile)) {}
+
 SyncedWindowDelegatesGetterAndroid::~SyncedWindowDelegatesGetterAndroid() =
     default;
 
@@ -20,6 +23,9 @@ SyncedWindowDelegatesGetterAndroid::SyncedWindowDelegateMap
 SyncedWindowDelegatesGetterAndroid::GetSyncedWindowDelegates() {
   SyncedWindowDelegateMap synced_window_delegates;
   for (const TabModel* model : TabModelList::models()) {
+    if (model->GetProfile() != &profile_.get()) {
+      continue;
+    }
     synced_window_delegates[model->GetSyncedWindowDelegate()->GetSessionId()] =
         model->GetSyncedWindowDelegate();
   }
@@ -28,8 +34,11 @@ SyncedWindowDelegatesGetterAndroid::GetSyncedWindowDelegates() {
 
 const SyncedWindowDelegate* SyncedWindowDelegatesGetterAndroid::FindById(
     SessionID session_id) {
-  TabModel* tab_model = TabModelList::FindTabModelWithWindowSessionId(session_id);
+  TabModel* tab_model =
+      TabModelList::FindTabModelWithWindowSessionId(session_id);
 
   // In case we don't find the browser (e.g. for Developer Tools).
-  return tab_model ? tab_model->GetSyncedWindowDelegate() : nullptr;
+  return (tab_model && tab_model->GetProfile() == &profile_.get())
+             ? tab_model->GetSyncedWindowDelegate()
+             : nullptr;
 }

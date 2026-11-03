@@ -100,7 +100,11 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
 
   static LiveTabContext* FindContextForWebContents(
       const content::WebContents* contents);
-  static sessions::LiveTabContext* FindContextWithID(SessionID desired_id);
+  // Finds the LiveTabContext with `desired_id` for `profile`, falling back to
+  // the first non-incognito LiveTabContext belonging to `profile` if not found.
+  // `profile` must be non-null.
+  static sessions::LiveTabContext* FindContextWithID(SessionID desired_id,
+                                                     Profile* profile);
 
  protected:
   // Returns the tab model this context restores into.

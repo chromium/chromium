@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
@@ -311,19 +312,24 @@ sessions::LiveTabContext* AndroidLiveTabContext::FindContextForWebContents(
 
 // static.
 sessions::LiveTabContext* AndroidLiveTabContext::FindContextWithID(
-    SessionID desired_id) {
+    SessionID desired_id,
+    Profile* profile) {
+  CHECK(profile);
   // Find the model with desired id.
   TabModel* tab_model =
       TabModelList::FindTabModelWithWindowSessionId(desired_id);
+  if (tab_model && tab_model->GetProfile() == profile &&
+      !tab_model->IsOffTheRecord()) {
+    return tab_model->GetLiveTabContext();
+  }
 
-  // If we can't find the correct model, fall back to first non-incognito model.
-  if (!tab_model || tab_model->IsOffTheRecord()) {
-    for (const TabModel* model : TabModelList::models()) {
-      if (!model->IsOffTheRecord()) {
-        return model->GetLiveTabContext();
-      }
+  // If we can't find the correct model, fall back to first non-incognito model
+  // for `profile`.
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->GetProfile() == profile && !model->IsOffTheRecord()) {
+      return model->GetLiveTabContext();
     }
   }
 
-  return tab_model ? tab_model->GetLiveTabContext() : nullptr;
+  return nullptr;
 }
