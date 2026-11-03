@@ -480,6 +480,7 @@ cast_source_set("test_support") {
   deps = [
     "//base",
     "//chromecast/base",
+    "//chromecast/base:chromecast_switches",
     "//chromecast/cast_core:cast_core_switches",
     "//components/prefs:test_support",
     "//content/public/browser",
@@ -546,6 +547,7 @@ cast_source_set("unittests") {
   sources = [
     "application_media_info_manager_unittest.cc",
     "audio_socket_broker_unittest.cc",
+    "cast_content_browser_client_unittest.cc",
     "cast_media_blocker_unittest.cc",
     "cast_permission_manager_unittest.cc",
     "cast_resource_bundle_unittest.cc",
@@ -559,11 +561,13 @@ cast_source_set("unittests") {
   deps = [
     ":browser",
     ":display_configurator",
+    ":feature_list",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//chromecast/app:resources",
     "//chromecast/base",
+    "//chromecast/base:chromecast_switches",
     "//chromecast/bindings/public/mojom",
     "//chromecast/net:socket_util",
     "//components/cast_receiver/browser:permissions_manager",
@@ -580,6 +584,7 @@ cast_source_set("unittests") {
     "//ui/base:test_support",
     "//ui/events/devices",
     "//ui/gl:test_support",
+    "//url",
   ]
 
   if (!is_android) {

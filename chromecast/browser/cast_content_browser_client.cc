@@ -351,10 +351,17 @@ bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
     return false;
   }
 
+  // Schemes that are always served by the browser process itself.  file: must
+  // be listed regardless of switches::kEnableLocalFileAccesses: a scheme that
+  // is *not* reported as handled is treated by ChildProcessSecurityPolicy as
+  // an external protocol that any renderer may request, which would let a
+  // compromised renderer navigate to arbitrary file:// URLs.  Whether local
+  // files may actually be served is decided by IsFileAccessAllowed() below.
   static const char* const kProtocolList[] = {
       content::kChromeUIScheme, content::kChromeDevToolsScheme,
       kChromeResourceScheme,    url::kBlobScheme,
       url::kDataScheme,         url::kFileSystemScheme,
+      url::kFileScheme,
   };
 
   const std::string& scheme = url.GetScheme();
@@ -364,12 +371,16 @@ bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
     }
   }
 
-  if (scheme == url::kFileScheme) {
-    return base::CommandLine::ForCurrentProcess()->HasSwitch(
-        switches::kEnableLocalFileAccesses);
-  }
-
   return false;
+}
+
+bool CastContentBrowserClient::IsFileAccessAllowed(
+    const base::FilePath& path,
+    const base::FilePath& absolute_path,
+    const base::FilePath& profile_path) {
+  // Local file access is a development-only feature on Cast devices.
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableLocalFileAccesses);
 }
 
 void CastContentBrowserClient::AppendExtraCommandLineSwitches(

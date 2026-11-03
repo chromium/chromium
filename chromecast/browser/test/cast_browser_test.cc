@@ -37,6 +37,7 @@ void CastBrowserTest::SetUp() {
 }
 
 void CastBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
+  command_line->AppendSwitch(switches::kEnableLocalFileAccesses);
   command_line->AppendSwitchASCII(switches::kTestType, "browser");
   command_line->AppendSwitchASCII(
       cast::core::switches::kCastCoreRuntimeId,
