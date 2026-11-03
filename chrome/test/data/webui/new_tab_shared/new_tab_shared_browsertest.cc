@@ -9,11 +9,11 @@
 class NewTabSharedBrowserTest : public WebUIMochaBrowserTest {
  protected:
   NewTabSharedBrowserTest() {
-    set_test_loader_host(chrome::kChromeUINewTabHost);
+    set_test_loader_host(chrome::kChromeUINewTabPageHost);
   }
 };
 
 IN_PROC_BROWSER_TEST_F(NewTabSharedBrowserTest, CustomizeButtons) {
   RunTest("new_tab_shared/customize_buttons/customize_buttons_test.js",
-          "mocha.run()", /*skip_test_loader=*/true);
+          "mocha.run()");
 }
