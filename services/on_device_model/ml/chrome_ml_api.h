@@ -467,6 +467,10 @@ struct ChromeMLASRStreamOptions {
   const char* language;
   // Optional model backing the post-processing polisher model.
   ChromeMLModel polisher_model = 0;
+  bool enable_token_stability = false;
+  int32_t interim_token_holdback = -1;
+  int32_t interim_release_silence_ms = -1;
+  int32_t interim_stability_steps = -1;
 };
 
 struct ChromeMLASRAPI {

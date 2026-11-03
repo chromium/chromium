@@ -28,4 +28,16 @@ BASE_FEATURE(kOnDeviceModelAsrDecoderPrefill,
 const base::FeatureParam<int> kOnDeviceModelAsrDecoderPrefillBackoff{
     &kOnDeviceModelAsrDecoderPrefill, "decoder_prefill_backoff", -1};
 
+BASE_FEATURE(kOnDeviceModelAsrTokenStability,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kOnDeviceModelAsrInterimTokenHoldback{
+    &kOnDeviceModelAsrTokenStability, "interim_token_holdback", 0};
+
+const base::FeatureParam<int> kOnDeviceModelAsrInterimReleaseSilenceMs{
+    &kOnDeviceModelAsrTokenStability, "interim_release_silence_ms", 0};
+
+const base::FeatureParam<int> kOnDeviceModelAsrInterimStabilitySteps{
+    &kOnDeviceModelAsrTokenStability, "interim_stability_steps", 0};
+
 }  // namespace on_device_model::features

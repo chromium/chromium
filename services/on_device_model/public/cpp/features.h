@@ -46,6 +46,19 @@ BASE_DECLARE_FEATURE(kOnDeviceModelAsrDecoderPrefill);
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
 extern const base::FeatureParam<int> kOnDeviceModelAsrDecoderPrefillBackoff;
 
+// Controls the token stability settings for on-device ASR stream.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+BASE_DECLARE_FEATURE(kOnDeviceModelAsrTokenStability);
+
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<int> kOnDeviceModelAsrInterimTokenHoldback;
+
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<int> kOnDeviceModelAsrInterimReleaseSilenceMs;
+
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<int> kOnDeviceModelAsrInterimStabilitySteps;
+
 }  // namespace on_device_model::features
 
 #endif  // SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_FEATURES_H_

@@ -537,11 +537,26 @@ std::optional<odmm::AsrError> SessionAccessor::CreateAsrStreamInternal(
       .language =
           asr_options->language ? asr_options->language->c_str() : nullptr,
       .polisher_model = postprocessor_model_,
+      .enable_token_stability = false,
+      .interim_token_holdback = -1,
+      .interim_release_silence_ms = -1,
+      .interim_stability_steps = -1,
   };
   if (base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelAsrDecoderPrefill)) {
     options.decoder_prefill_backoff =
         on_device_model::features::kOnDeviceModelAsrDecoderPrefillBackoff.Get();
+  }
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelAsrTokenStability)) {
+    options.enable_token_stability = true;
+    options.interim_token_holdback =
+        on_device_model::features::kOnDeviceModelAsrInterimTokenHoldback.Get();
+    options.interim_release_silence_ms =
+        on_device_model::features::kOnDeviceModelAsrInterimReleaseSilenceMs
+            .Get();
+    options.interim_stability_steps =
+        on_device_model::features::kOnDeviceModelAsrInterimStabilitySteps.Get();
   }
   asr_stream_ = chrome_ml_->ASRCreateStream(session_, &options);
   if (asr_stream_ == 0) {
