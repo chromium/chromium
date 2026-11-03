@@ -243,6 +243,39 @@ void MaybeActivateBrowserWindow(TabStripModelDelegate* delegate) {
   }
 }
 
+// Whether an ephemeral group exiting focus mode for `reason` may be kept
+// alive by `TabStripModel::TakeEphemeralGroupRemovalLock()`. False for exits
+// that are part of a structural mutation whose caller needs the group
+// dissolved first.
+bool CanLockEphemeralGroupOnExit(
+    std::optional<TabGroupFocusExitReason> reason) {
+  if (!reason.has_value()) {
+    return true;
+  }
+  switch (*reason) {
+    // Exits that are part of a structural mutation: the caller continues on
+    // the assumption that the ephemeral group's tabs are ungrouped (e.g.
+    // `DetachTabsAndCollectionsForInsertion()` detaches them as loose tabs).
+    case TabGroupFocusExitReason::kGroupClosed:
+    case TabGroupFocusExitReason::kGroupUngrouped:
+    case TabGroupFocusExitReason::kLastTabClosed:
+    case TabGroupFocusExitReason::kGroupHeaderDraggedIn:
+    case TabGroupFocusExitReason::kActiveTabGroupOperation:
+    case TabGroupFocusExitReason::kGroupCreated:
+      return false;
+    case TabGroupFocusExitReason::kEditorBubble:
+    case TabGroupFocusExitReason::kUnpinActiveTab:
+    case TabGroupFocusExitReason::kTabOutsideGroupClosed:
+    case TabGroupFocusExitReason::kTabContextMenu:
+    case TabGroupFocusExitReason::kBookmarksBarContextMenu:
+    case TabGroupFocusExitReason::kAppMenu:
+    case TabGroupFocusExitReason::kOrganizerPanel:
+    case TabGroupFocusExitReason::kHeaderUnfocusButton:
+    case TabGroupFocusExitReason::kTabOutsideGroupActivated:
+      return true;
+  }
+}
+
 }  // namespace
 
 TabGroupModelFactory::TabGroupModelFactory() {
@@ -505,6 +538,10 @@ TabStripModel::DetachTabsAndCollectionsForInsertion(
     const std::vector<int>& tab_indices) {
   std::vector<tab_groups::TabGroupId> groups_to_move =
       GetGroupsDestroyedFromRemovingIndices(tab_indices);
+  // A group kept alive by a removal lock may not be detached; its holder must
+  // release it first.
+  CHECK(!locked_ephemeral_group_.has_value() ||
+        !std::ranges::contains(groups_to_move, *locked_ephemeral_group_));
 
   // Ensures that ephemeral groups can't be moved to another tab strip, which
   // could cause accidental promotion to a permanent group.
@@ -1230,6 +1267,9 @@ void TabStripModel::MoveSplitTo(
 
 void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
                                     int to_index) {
+  // A group kept alive by a removal lock may not be moved; its holder must
+  // release it first.
+  CHECK(locked_ephemeral_group_ != group);
   const gfx::Range tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
   CHECK_GT(tabs_in_group.length(), 0u);
 
@@ -2092,7 +2132,12 @@ void TabStripModel::RestoreSplit(split_tabs::SplitTabId split_id,
 }
 
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
-    const std::vector<int> indices,
+    const std::vector<int> indices) {
+  return AddToNewGroupAndNotifyImpl(indices, /*is_ephemeral=*/false);
+}
+
+tab_groups::TabGroupId TabStripModel::AddToNewGroupAndNotifyImpl(
+    const std::vector<int>& indices,
     bool is_ephemeral) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   CHECK(SupportsTabGroups());
@@ -2268,6 +2313,9 @@ void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
 
   CHECK(group_model_);
   CHECK(group_model_->ContainsTabGroup(group));
+  // An ephemeral group that is being kept alive for its exit may not be
+  // re-focused; it only exists to be dissolved.
+  CHECK(locked_ephemeral_group_ != group);
 
   if (selection_model_.focused_group() == group) {
     return;
@@ -2341,6 +2389,15 @@ void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
   }
 }
 
+tab_groups::TabGroupId TabStripModel::EnterFocusMode(
+    const std::vector<int>& indices) {
+  CHECK(base::FeatureList::IsEnabled(features::kTabGroupsFocusing));
+  const tab_groups::TabGroupId group =
+      AddToNewGroupAndNotifyImpl(indices, /*is_ephemeral=*/true);
+  EnterFocusMode(group);
+  return group;
+}
+
 void TabStripModel::ExitFocusMode(
     std::optional<TabGroupFocusExitReason> reason) {
   std::optional<tab_groups::TabGroupId> old_focused_group = GetFocusedGroup();
@@ -2352,10 +2409,20 @@ void TabStripModel::ExitFocusMode(
     base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason", *reason);
   }
 
-  selection_model_.set_focused_group(std::nullopt);
-  NotifyTabGroupFocusChanged(old_focused_group);
-
   const bool is_ephemeral = IsEphemeralTabGroup(old_focused_group.value());
+  {
+    // Observers may take the ephemeral group's removal lock during this
+    // notification, except when the exit is part of a structural mutation
+    // whose caller needs the group dissolved before it continues.
+    base::AutoReset<std::optional<tab_groups::TabGroupId>> lockable(
+        &lockable_ephemeral_group_,
+        is_ephemeral && !closing_all_ && CanLockEphemeralGroupOnExit(reason)
+            ? old_focused_group
+            : std::nullopt);
+    selection_model_.set_focused_group(std::nullopt);
+    NotifyTabGroupFocusChanged(old_focused_group);
+  }
+
   if (reason == TabGroupFocusExitReason::kTabOutsideGroupActivated) {
     if (ToastController* const toast_controller =
             ToastController::From(delegate_->GetBrowserWindowInterface())) {
@@ -2369,12 +2436,34 @@ void TabStripModel::ExitFocusMode(
     }
   }
 
-  if (!closing_all_ && is_ephemeral) {
-    if (const gfx::Range tabs =
-            group_model_->GetTabGroup(old_focused_group.value())->ListTabs();
-        !tabs.is_empty()) {
-      RemoveFromGroupImpl(tabs.ToIntVector());
-    }
+  if (is_ephemeral && !closing_all_ && !locked_ephemeral_group_.has_value()) {
+    RemoveFromGroupImpl(group_model_->GetTabGroup(old_focused_group.value())
+                            ->ListTabs()
+                            .ToIntVector());
+  }
+}
+
+base::ScopedClosureRunner TabStripModel::TakeEphemeralGroupRemovalLock(
+    const tab_groups::TabGroupId& group_id) {
+  CHECK(!locked_ephemeral_group_.has_value());
+  if (lockable_ephemeral_group_ != group_id) {
+    return base::ScopedClosureRunner();
+  }
+  locked_ephemeral_group_ = group_id;
+  return base::ScopedClosureRunner(
+      base::BindOnce(&TabStripModel::ReleaseEphemeralGroupRemovalLock,
+                     weak_factory_.GetWeakPtr(), group_id));
+}
+
+void TabStripModel::ReleaseEphemeralGroupRemovalLock(
+    const tab_groups::TabGroupId& group_id) {
+  CHECK(locked_ephemeral_group_ == group_id);
+  locked_ephemeral_group_.reset();
+  // The group may have been promoted, emptied, or re-focused meanwhile.
+  if (!closing_all_ && IsEphemeralTabGroup(group_id) &&
+      GetFocusedGroup() != group_id) {
+    RemoveFromGroupImpl(
+        group_model_->GetTabGroup(group_id)->ListTabs().ToIntVector());
   }
 }
 
@@ -3202,11 +3291,9 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
         // for the selected tabs and immediately focus it. This allows it to
         // leverage the existing tab group infrastructure.
         std::vector<int> indices = GetIndicesForCommand(context_index);
-        tab_groups::TabGroupId new_group_id =
-            AddToNewGroup(indices, /*is_ephemeral=*/true);
         RecordToggleFocusGroupMetrics(/*is_unfocus=*/false,
                                       /*is_non_group=*/true, indices.size());
-        EnterFocusMode(new_group_id);
+        EnterFocusMode(indices);
         break;
       }
       if (GetFocusedGroup() == group_id) {

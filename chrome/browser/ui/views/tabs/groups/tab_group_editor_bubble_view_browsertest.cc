@@ -77,8 +77,9 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
  public:
   TabGroupEditorBubbleViewDialogBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {}, {data_sharing::features::kDataSharingFeature,
-             data_sharing::features::kDataSharingJoinOnly});
+        {features::kTabGroupsFocusing, features::kNonGroupFocus},
+        {data_sharing::features::kDataSharingFeature,
+         data_sharing::features::kDataSharingJoinOnly});
   }
 
  protected:
@@ -814,7 +815,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        EphemeralGroup_ShowsOnlyNameColorAndButtons) {
   tab_groups::TabGroupId ephemeral_group =
-      browser()->GetTabStripModel()->AddToNewGroup({0}, /*is_ephemeral=*/true);
+      browser()->GetTabStripModel()->EnterFocusMode({0});
   browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
 
   views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
@@ -863,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        EphemeralGroup_CancelDiscardsChanges) {
   tab_groups::TabGroupId ephemeral_group =
-      browser()->GetTabStripModel()->AddToNewGroup({0}, /*is_ephemeral=*/true);
+      browser()->GetTabStripModel()->EnterFocusMode({0});
   browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
 
   views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
@@ -903,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        EphemeralGroup_CreatePromotesGroupAndAppliesChanges) {
   tab_groups::TabGroupId ephemeral_group =
-      browser()->GetTabStripModel()->AddToNewGroup({0}, /*is_ephemeral=*/true);
+      browser()->GetTabStripModel()->EnterFocusMode({0});
   browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
 
   views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();

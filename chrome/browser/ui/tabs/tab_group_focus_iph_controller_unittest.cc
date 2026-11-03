@@ -226,8 +226,6 @@ TEST_F(TabGroupFocusIphControllerTest,
   const int min_tabs = features::kNonGroupFocusIphMinTabs.Get();
   ASSERT_GE(min_tabs, 2);
   AddTabs(min_tabs + 1);
-  tab_groups::TabGroupId group_id =
-      tab_strip_model()->AddToNewGroup({0}, /*is_ephemeral=*/true);
 
   EXPECT_CALL(*user_education(), MaybeShowFeaturePromo(testing::_))
       .Times(testing::AnyNumber());
@@ -246,7 +244,8 @@ TEST_F(TabGroupFocusIphControllerTest,
       })))
       .Times(0);
 
-  tab_strip_model()->EnterFocusMode(group_id);
+  const tab_groups::TabGroupId group_id =
+      tab_strip_model()->EnterFocusMode({0});
   // Grow the group to one tab below the threshold.
   for (int i = 1; i < min_tabs - 1; ++i) {
     tab_strip_model()->AddToExistingGroup({i}, group_id);

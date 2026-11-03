@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_switches.h"
@@ -133,7 +134,10 @@ void VerifyModel(const ui::MenuModel* model, base::span<const ModelData> data) {
 
 class RecentTabsSubMenuModelTest : public InProcessBrowserTest {
  public:
-  RecentTabsSubMenuModelTest() = default;
+  RecentTabsSubMenuModelTest() {
+    focus_feature_list_.InitWithFeatures(
+        {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+  }
   RecentTabsSubMenuModelTest(const RecentTabsSubMenuModelTest&) = delete;
   RecentTabsSubMenuModelTest& operator=(const RecentTabsSubMenuModelTest&) =
       delete;
@@ -209,6 +213,7 @@ class RecentTabsSubMenuModelTest : public InProcessBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList focus_feature_list_;
   std::unique_ptr<syncer::DataTypeProcessor> sync_processor_;
 };
 
@@ -1230,7 +1235,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   AddTabToBrowser(GURL("http://foo/2"));
 
   // Put tabs 1 and 2 into an ephemeral group and close tab 2.
-  browser()->tab_strip_model()->AddToNewGroup({1, 2}, /*is_ephemeral=*/true);
+  browser()->tab_strip_model()->EnterFocusMode({1, 2});
   browser()->tab_strip_model()->CloseWebContentsAt(
       2, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 

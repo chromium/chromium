@@ -598,11 +598,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   AppendTab();
   AppendTab();
 
-  // Create an ephemeral tab group and enter focus mode (simulating non-group
-  // focus mode).
-  tab_groups::TabGroupId ephemeral_group_id =
-      browser()->GetTabStripModel()->AddToNewGroup({1}, /*is_ephemeral=*/true);
-  browser()->GetTabStripModel()->EnterFocusMode(ephemeral_group_id);
+  // Enter non-group focus mode, which creates an ephemeral tab group.
+  browser()->GetTabStripModel()->EnterFocusMode({1});
   RunScheduledLayouts();
 
   TabCollectionNode* group_node =

@@ -318,6 +318,9 @@ TEST_F(TabMenuModelTest, ExtensionItems) {
 #endif
 
 TEST_F(TabMenuModelTest, EphemeralGroupOmitsRemoveFromGroup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Initialize MenuManager for the TestingProfile.
   extensions::MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -346,7 +349,7 @@ TEST_F(TabMenuModelTest, EphemeralGroupOmitsRemoveFromGroup) {
   tab_strip_model.RemoveFromGroup({0});
 
   // When tab 0 is in an ephemeral group, CommandRemoveFromGroup is omitted.
-  tab_strip_model.AddToNewGroup({0}, /*is_ephemeral=*/true);
+  tab_strip_model.EnterFocusMode({0});
   TabMenuModel ephemeral_group_menu(&delegate_, &menu_model_delegate(),
                                     &tab_strip_model, 0);
   EXPECT_FALSE(ephemeral_group_menu

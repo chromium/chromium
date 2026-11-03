@@ -558,12 +558,8 @@ IN_PROC_BROWSER_TEST_F(
                   ui::test::InteractionTestUtil::InputType::kDontCare),
       Do([this]() {
         EXPECT_FALSE(CheckBrowserHasColorOverride());
-        const tab_groups::TabGroupId ephemeral_group =
-            browser()->GetTabStripModel()->AddToNewGroup({0, 1},
-                                                         /*is_ephemeral=*/true);
-
-        // Focus on the ephemeral group, which should not override the color.
-        browser()->GetTabStripModel()->EnterFocusMode(ephemeral_group);
+        // Focus on an ephemeral group, which should not override the color.
+        browser()->GetTabStripModel()->EnterFocusMode({0, 1});
         EXPECT_FALSE(CheckBrowserHasColorOverride());
 
         // Unset focused group, which should remain without color override.
@@ -676,8 +672,7 @@ IN_PROC_BROWSER_TEST_F(
                     ASSERT_EQ(model->count(), 2);
                     model->AddToNewGroup({0});
                     tab_groups::TabGroupId ephemeral_group =
-                        model->AddToNewGroup({1}, /*is_ephemeral=*/true);
-                    model->EnterFocusMode(ephemeral_group);
+                        model->EnterFocusMode({1});
                     EXPECT_EQ(model->GetFocusedGroup(), ephemeral_group);
 
                     chrome::FocusNextTabGroup(browser());

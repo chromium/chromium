@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
@@ -202,7 +203,8 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest,
     feature_list_.InitWithFeatureState(tabs::kTabSearchPerformanceImprovements,
                                        GetParam());
     webui_omnibox_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/
+        {features::kTabGroupsFocusing, features::kNonGroupFocus},
         /*disabled_features=*/
         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
         // is enabled and then remove these two Features.
@@ -1727,7 +1729,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, EphemeralTabGroupFilteredOut) {
   AddTabWithTitle(browser1(), tab_url2_, kTabName2);
 
   TabStripModel* tab_strip_model = browser1()->tab_strip_model();
-  tab_strip_model->AddToNewGroup({0, 1}, /*is_ephemeral=*/true);
+  tab_strip_model->EnterFocusMode({0, 1});
 
   tab_search::mojom::PageHandler::GetProfileDataCallback callback =
       base::BindLambdaForTesting(

@@ -4034,9 +4034,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
 
-  const tab_groups::TabGroupId group =
-      tab_strip_model->AddToNewGroup({0, 1}, /*is_ephemeral=*/true);
-  tab_strip_model->EnterFocusMode(group);
+  const tab_groups::TabGroupId group = tab_strip_model->EnterFocusMode({0, 1});
   EXPECT_EQ(group, tab_strip_model->GetFocusedGroup());
   EXPECT_TRUE(tab_strip_model->IsEphemeralTabGroup(group));
 
@@ -4074,8 +4072,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
   ASSERT_EQ(3, tab_strip_model->count());
 
   const tab_groups::TabGroupId group =
-      tab_strip_model->AddToNewGroup({0, 1, 2}, /*is_ephemeral=*/true);
-  tab_strip_model->EnterFocusMode(group);
+      tab_strip_model->EnterFocusMode({0, 1, 2});
   ASSERT_TRUE(tab_strip_model->IsEphemeralTabGroup(group));
 
   // Close one tab in the ephemeral group.

@@ -357,11 +357,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
   // Create a tab and an ephemeral group.
   controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
   EXPECT_EQ(tab_strip_model()->count(), 2);
-  const tab_groups::TabGroupId ephemeral_group =
-      tab_strip_model()->AddToNewGroup({0, 1}, /*is_ephemeral=*/true);
-
-  // Focus on the ephemeral group. The browser itself should not theme.
-  controller()->EnterFocusMode(ephemeral_group);
+  // Focus on an ephemeral group. The browser itself should not theme.
+  tab_strip_model()->EnterFocusMode({0, 1});
   EXPECT_EQ(widget->user_color_override(), std::nullopt);
 
   // Unset focused group.

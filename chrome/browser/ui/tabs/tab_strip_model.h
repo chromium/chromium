@@ -18,6 +18,7 @@
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -680,8 +681,7 @@ class TabStripModel {
   // so they are contiguous and do not split an existing group in half. Returns
   // the new group. This may unsplit split tabs if they are only partially
   // contained in `indices`. `indices` must be sorted in ascending order.
-  tab_groups::TabGroupId AddToNewGroup(const std::vector<int> indices,
-                                       bool is_ephemeral = false);
+  tab_groups::TabGroupId AddToNewGroup(const std::vector<int> indices);
 
   // Add the set of tabs pointed to by `indices` to the given tab group `group`.
   // The tabs take on the pinnedness of the tabs already in the group. Tabs
@@ -728,12 +728,30 @@ class TabStripModel {
   // Enters focus mode for `group`.
   void EnterFocusMode(const tab_groups::TabGroupId& group);
 
+  // Non-group focus: creates an ephemeral group from the tabs at `indices` and
+  // enters focus mode for it. Ephemeral groups only exist to back focus mode
+  // and cannot be created any other way. `indices` must be sorted in ascending
+  // order. Returns the new group.
+  tab_groups::TabGroupId EnterFocusMode(const std::vector<int>& indices);
+
   // Exits focus mode, recording `reason` (if provided) in
   // TabGroups.Focus.ExitReason. If an ephemeral (non-group focus) group was
-  // focused, it is removed, since such a group only exists to back focus mode
-  // and must never outlive it.
+  // focused, it is dissolved before this returns unless an observer takes its
+  // removal lock during `OnTabGroupFocusChanged()` (see
+  // `TakeEphemeralGroupRemovalLock()`).
   void ExitFocusMode(
       std::optional<TabGroupFocusExitReason> reason = std::nullopt);
+
+  // Keeps the ephemeral `group_id` in the model after it exits focus mode,
+  // e.g. while the UI animates the exit, instead of dissolving it synchronously
+  // in `ExitFocusMode()`. The group is dissolved when the returned runner runs
+  // or is destroyed. The lock is only available from within the
+  // `OnTabGroupFocusChanged()` notification of a user-initiated exit; a null
+  // runner is returned when the exit is part of a structural mutation that
+  // needs the group dissolved before it continues. At most one lock may be
+  // held at a time, and detaching or moving the locked group CHECKs.
+  [[nodiscard]] base::ScopedClosureRunner TakeEphemeralGroupRemovalLock(
+      const tab_groups::TabGroupId& group_id);
 
   // Rotates the focused tab group among open tab groups in the strip while in
   // focus mode. Requires `features::kTabGroupsFocusing` to be enabled (CHECKs).
@@ -1243,6 +1261,18 @@ class TabStripModel {
                          const tab_groups::TabGroupId& new_group,
                          bool is_ephemeral = false);
 
+  // Validates `indices`, creates a new group for them via `AddToNewGroupImpl()`
+  // and notifies the delegate and observers. Shared by `AddToNewGroup()` and
+  // the ephemeral group path of `EnterFocusMode(indices)`.
+  tab_groups::TabGroupId AddToNewGroupAndNotifyImpl(
+      const std::vector<int>& indices,
+      bool is_ephemeral);
+
+  // Runs when the runner returned by `TakeEphemeralGroupRemovalLock()` runs or
+  // is destroyed: releases the lock and dissolves `group_id` if it is still an
+  // unfocused ephemeral group.
+  void ReleaseEphemeralGroupRemovalLock(const tab_groups::TabGroupId& group_id);
+
   void MoveGroupToImpl(const tab_groups::TabGroupId& group, int to_index);
 
   // Adds tabs to existing group `group`. This group must have been initialized
@@ -1518,6 +1548,15 @@ class TabStripModel {
   // Tracks whether any pinned tabs were present during the current focus mode
   // session.
   bool had_pinned_tabs_in_focus_session_ = false;
+
+  // The ephemeral group whose removal lock may be taken during the current
+  // `OnTabGroupFocusChanged()` notification. Set by `ExitFocusMode()` for the
+  // duration of that notification only.
+  std::optional<tab_groups::TabGroupId> lockable_ephemeral_group_;
+
+  // The ephemeral group kept in the model by an outstanding removal lock (see
+  // `TakeEphemeralGroupRemovalLock()`).
+  std::optional<tab_groups::TabGroupId> locked_ephemeral_group_;
 
   base::WeakPtrFactory<TabStripModel> weak_factory_{this};
 };
