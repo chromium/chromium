@@ -7,15 +7,15 @@
 #include <memory>
 #include <string>
 
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
-
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
@@ -47,9 +47,6 @@ class AcceleratorKeycodeLookupCacheTest : public testing::Test {
   };
 
   AcceleratorKeycodeLookupCacheTest() {
-    input_method_manager_ = new TestInputMethodManager();
-    input_method::InputMethodManager::Initialize(input_method_manager_);
-
     layout_engine_ = std::make_unique<ui::StubKeyboardLayoutEngine>();
     ui::KeyboardLayoutEngineManager::ResetKeyboardLayoutEngine();
     ui::KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(
@@ -65,10 +62,11 @@ class AcceleratorKeycodeLookupCacheTest : public testing::Test {
     return lookup_cache_->key_code_to_cache_entry_;
   }
 
+  // Must outlive `lookup_cache_`.
+  input_method::ScopedInputMethodManagerForTesting<TestInputMethodManager>
+      input_method_manager_;
   std::unique_ptr<AcceleratorKeycodeLookupCache> lookup_cache_;
   std::unique_ptr<ui::StubKeyboardLayoutEngine> layout_engine_;
-  // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
-  raw_ptr<TestInputMethodManager> input_method_manager_;
 };
 
 TEST_F(AcceleratorKeycodeLookupCacheTest, ImeChanged) {

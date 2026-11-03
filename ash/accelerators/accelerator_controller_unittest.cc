@@ -97,6 +97,7 @@
 #include "ui/base/accelerators/test_accelerator_target.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -2833,12 +2834,6 @@ class AcceleratorControllerImprovedKeyboardShortcutsTest
   };
 
   void SetUp() override {
-    // Setup our own |InputMethodManager| to test that the accelerator
-    // controller respects ArePositionalShortcutsUsedByCurrentInputMethod value
-    // from the |InputMethodManager|.
-    input_method_manager_ = new TestInputMethodManager();
-    input_method::InputMethodManager::Initialize(input_method_manager_);
-
     AcceleratorControllerTest::SetUp();
     EXPECT_TRUE(
         input_method_manager_->observers_.HasObserver(controller_.get()));
@@ -2848,14 +2843,13 @@ class AcceleratorControllerImprovedKeyboardShortcutsTest
     AcceleratorControllerTest::TearDown();
     EXPECT_FALSE(
         input_method_manager_->observers_.HasObserver(controller_.get()));
-
-    input_method_manager_ = nullptr;
-    input_method::InputMethodManager::Shutdown();
   }
 
  protected:
-  raw_ptr<TestInputMethodManager> input_method_manager_ =
-      nullptr;  // Not owned.
+  // Used to test that `AcceleratorController` respects the
+  // `ArePositionalShortcutsUsedByCurrentInputMethod` value.
+  input_method::ScopedInputMethodManagerForTesting<TestInputMethodManager>
+      input_method_manager_;
 };
 
 TEST_F(AcceleratorControllerImprovedKeyboardShortcutsTest, InputMethodChanged) {

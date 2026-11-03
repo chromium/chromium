@@ -31,7 +31,6 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-test-utils.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -45,6 +44,7 @@
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -357,9 +357,6 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    input_method_manager_ = new TestInputMethodManager();
-    input_method::InputMethodManager::Initialize(input_method_manager_);
-
     AshTestBase::SetUp();
 
     provider_ = std::make_unique<AcceleratorConfigurationProvider>(
@@ -396,8 +393,6 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     // `provider_` has a dependency on `input_method_manager_`.
     provider_.reset();
     AshTestBase::TearDown();
-    input_method_manager_ = nullptr;
-    input_method::InputMethodManager::Shutdown();
     histogram_tester_.reset();
     user_action_tester_.reset();
   }
@@ -462,10 +457,11 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     return provider_->FindNonConfigurableIdFromAccelerator(accelerator);
   }
 
+  // Must outlive `provider_`.
+  input_method::ScopedInputMethodManagerForTesting<TestInputMethodManager>
+      input_method_manager_;
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
   NonConfigurableActionsMap non_configurable_actions_map_;
-  // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
-  raw_ptr<TestInputMethodManager> input_method_manager_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
   FakeAcceleratorsUpdatedObserver observer_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
