@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.StorageLoadWarningCode;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
@@ -89,6 +90,7 @@ public class TabStateStoreUnitTest {
     @Mock private PersistentStoreMigrationManager mMigrationManager;
     @Mock private CipherFactory mCipherFactory;
     @Mock private TabStateStorageService mTabStateStorageService;
+    @Mock private ScopedStorageBatch mScopedStorageBatch;
     @Mock private TabPersistentStoreObserver mObserver;
     @Mock private ModelTrackingOrchestrator mModelTrackingOrchestrator;
     @Mock private ActiveTabCache mActiveTabCache;
@@ -151,6 +153,7 @@ public class TabStateStoreUnitTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         TabStateStorageServiceFactory.setForTesting(mTabStateStorageService);
+        when(mTabStateStorageService.createBatch()).thenReturn(mScopedStorageBatch);
 
         mTabStateStore =
                 new TabStateStore(
@@ -1627,5 +1630,69 @@ public class TabStateStoreUnitTest {
 
         verify(mModelTrackingOrchestrator, never()).onCancelledForModel(anyBoolean());
         verify(mModelTrackingOrchestrator, never()).onRestoreCancelled();
+    }
+
+    @Test
+    public void testSaveState_BatchesSavesAndFlushesSnapshots() {
+        mTabStateStore.onNativeLibraryReady();
+        when(mModelTrackingOrchestrator.isSynchronizerPresent(/* incognito= */ true))
+                .thenReturn(true);
+
+        Tab activeTab = createMockTabWithParentCollection(1, mProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                activeTab, TabStateStore.class, TabCreationState.FROZEN_ON_RESTORE);
+        mRegularTabSupplier.set(activeTab);
+
+        mTabStateStore.saveState();
+
+        InOrder inOrder =
+                inOrder(mScopedStorageBatch, mModelTrackingOrchestrator, mTabStateStorageService);
+        inOrder.verify(mTabStateStorageService).createBatch();
+        inOrder.verify(mModelTrackingOrchestrator).drainDirtyTabs(/* incognito= */ false);
+        inOrder.verify(mModelTrackingOrchestrator).drainDirtyTabs(/* incognito= */ true);
+        inOrder.verify(mModelTrackingOrchestrator)
+                .flushPendingStructureSnapshot(/* incognito= */ false);
+        inOrder.verify(mModelTrackingOrchestrator)
+                .flushPendingStructureSnapshot(/* incognito= */ true);
+        inOrder.verify(mScopedStorageBatch).close();
+        inOrder.verify(mTabStateStorageService).boostPriority();
+        verify(mModelTrackingOrchestrator, never()).saveTab(activeTab);
+    }
+
+    @Test
+    public void testSaveState_SavesDirtyActiveTabAndSkipsPostDestroy() {
+        mTabStateStore.onNativeLibraryReady();
+        when(mModelTrackingOrchestrator.isSynchronizerPresent(/* incognito= */ true))
+                .thenReturn(true);
+
+        Tab regularActiveTab = createMockTabWithParentCollection(1, mProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                regularActiveTab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        regularActiveTab.setIsPinned(true);
+        regularActiveTab.setIsPinned(false);
+        mRegularTabSupplier.set(regularActiveTab);
+
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        Tab incognitoActiveTab = createMockTabWithParentCollection(2, incognitoProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                incognitoActiveTab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        incognitoActiveTab.setIsPinned(true);
+        incognitoActiveTab.setIsPinned(false);
+        mIncognitoTabSupplier.set(incognitoActiveTab);
+
+        mTabStateStore.saveState();
+
+        verify(mModelTrackingOrchestrator).saveTab(regularActiveTab);
+        verify(mModelTrackingOrchestrator).saveTab(incognitoActiveTab);
+
+        clearInvocations(mTabStateStorageService, mModelTrackingOrchestrator);
+        mTabStateStore.destroy();
+        mTabStateStore.saveState();
+
+        verify(mTabStateStorageService, never()).createBatch();
+        verify(mTabStateStorageService, never()).boostPriority();
+        verify(mModelTrackingOrchestrator, never()).drainDirtyTabs(anyBoolean());
+        verify(mModelTrackingOrchestrator, never()).flushPendingStructureSnapshot(anyBoolean());
     }
 }

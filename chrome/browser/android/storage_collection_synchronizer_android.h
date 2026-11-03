@@ -30,6 +30,7 @@ class StorageCollectionSynchronizerAndroid {
   void SaveStructureSnapshot(JNIEnv* env,
                              bool clear_unused_nodes,
                              base::OnceClosure callback);
+  void FlushPendingStructureSnapshot(JNIEnv* env);
   void CancelRestore(JNIEnv* env);
 
   void ConsumeRestoreOrchestratorFactory(

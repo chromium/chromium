@@ -427,6 +427,19 @@ public class ModelTrackingOrchestrator {
     }
 
     /**
+     * Flushes any pending structural snapshot for the specified model immediately.
+     *
+     * @param incognito Whether to flush the snapshot for the incognito model.
+     */
+    public void flushPendingStructureSnapshot(boolean incognito) {
+        StorageCollectionSynchronizer synchronizer =
+                incognito ? mIncognitoSynchronizer : mRegularSynchronizer;
+        if (synchronizer != null) {
+            synchronizer.flushPendingStructureSnapshot();
+        }
+    }
+
+    /**
      * Whether the synchronizer for the given model is present.
      *
      * @param incognito Whether the synchronizer is for an incognito model.

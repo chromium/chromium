@@ -1187,6 +1187,28 @@ public class ModelTrackingOrchestratorUnitTest {
         verify(mRegularSynchronizer, never()).cancelRestore();
     }
 
+    @Test
+    public void testFlushPendingStructureSnapshot() {
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        mOrchestrator.setLoadIncognitoTabsOnStart(true);
+
+        // No-op when synchronizers are not yet initialized.
+        mOrchestrator.flushPendingStructureSnapshot(/* incognito= */ false);
+        mOrchestrator.flushPendingStructureSnapshot(/* incognito= */ true);
+        verify(mRegularSynchronizer, never()).flushPendingStructureSnapshot();
+        verify(mIncognitoSynchronizer, never()).flushPendingStructureSnapshot();
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onDataLoaded(mStorageLoadedData, /* incognito= */ true);
+
+        mOrchestrator.flushPendingStructureSnapshot(/* incognito= */ false);
+        mOrchestrator.flushPendingStructureSnapshot(/* incognito= */ true);
+
+        verify(mRegularSynchronizer).flushPendingStructureSnapshot();
+        verify(mIncognitoSynchronizer).flushPendingStructureSnapshot();
+    }
+
     private MockTab createTab(int id, Profile profile, boolean hasParentCollection) {
         return new MockTab(id, profile) {
             @Override

@@ -86,6 +86,10 @@ StorageId TabStateStorageService::GetStorageId(const TabInterface* tab) {
 
 void TabStateStorageService::WaitForAllPendingOperations(
     base::OnceClosure on_idle) {
+  if (open_batches_) {
+    open_batches_->pending_idle_callbacks.push_back(std::move(on_idle));
+    return;
+  }
   tab_backend_.WaitForAllPendingOperations(std::move(on_idle));
 }
 
@@ -220,8 +224,13 @@ void TabStateStorageService::CommitCurrentBatch() {
     return;
   }
 
+  std::vector<base::OnceClosure> pending_idle_callbacks =
+      std::move(open_batches_->pending_idle_callbacks);
   tab_backend_.Update(open_batches_->builder.Build());
   open_batches_.reset();
+  for (base::OnceClosure& callback : pending_idle_callbacks) {
+    tab_backend_.WaitForAllPendingOperations(std::move(callback));
+  }
 }
 
 void TabStateStorageService::ApplyUpdate(UpdateOperation operation) {

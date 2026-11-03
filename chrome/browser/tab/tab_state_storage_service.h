@@ -183,6 +183,7 @@ class TabStateStorageService : public KeyedService,
 
     TabStateStorageUpdaterBuilder builder;
     int batch_cnt = 0;
+    std::vector<base::OnceClosure> pending_idle_callbacks;
   };
 
   void OnTabCreated(StorageId storage_id, const TabInterface* tab);

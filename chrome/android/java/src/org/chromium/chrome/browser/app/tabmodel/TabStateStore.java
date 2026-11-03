@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.CombinedTabRestorer.CombinedTabRestorerDelegate;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.StorageLoadedData.StorageLoadWarning;
@@ -296,14 +297,20 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void saveState() {
+        if (mIsDestroyed) return;
         assertInitialized();
 
-        mModelTrackingManager.drainDirtyTabs(/* incognito= */ false);
-        mModelTrackingManager.drainDirtyTabs(/* incognito= */ true);
+        try (ScopedStorageBatch ignored = mTabStateStorageService.createBatch()) {
+            mModelTrackingManager.drainDirtyTabs(/* incognito= */ false);
+            mModelTrackingManager.drainDirtyTabs(/* incognito= */ true);
 
-        saveTabIfNotClean(mTabModelSelector.getModel(false).getCurrentTabSupplier().get());
-        if (mModelTrackingManager.isSynchronizerPresent(/* incognito= */ true)) {
-            saveTabIfNotClean(mTabModelSelector.getModel(true).getCurrentTabSupplier().get());
+            saveTabIfNotClean(mTabModelSelector.getModel(false).getCurrentTabSupplier().get());
+            if (mModelTrackingManager.isSynchronizerPresent(/* incognito= */ true)) {
+                saveTabIfNotClean(mTabModelSelector.getModel(true).getCurrentTabSupplier().get());
+            }
+
+            mModelTrackingManager.flushPendingStructureSnapshot(/* incognito= */ false);
+            mModelTrackingManager.flushPendingStructureSnapshot(/* incognito= */ true);
         }
 
         // If Chrome fully controlled its own lifecycle on Android we would block shutdown until the
@@ -613,7 +620,7 @@ public class TabStateStore implements TabPersistentStore {
 
         TabStateAttributes attributes =
                 TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
-        assumeNonNull(attributes);
+        if (attributes == null) return;
         if (attributes.getDirtinessState() != DirtinessState.CLEAN) {
             saveTab(tab);
         }

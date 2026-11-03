@@ -61,9 +61,10 @@ class StorageCollectionSynchronizer {
   NodeHashCache& hash_cache() { return hash_cache_; }
   const NodeHashCache& hash_cache() const { return hash_cache_; }
 
- private:
+  // Flushes any queued structural snapshot synchronously if one is scheduled.
   void FlushPendingStructureSnapshot();
 
+ private:
   raw_ptr<TabStripCollection> collection_;
   raw_ptr<TabStateStorageService> service_;
   NodeHashCache hash_cache_;

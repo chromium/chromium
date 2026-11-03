@@ -33,6 +33,11 @@ void StorageCollectionSynchronizerAndroid::SaveStructureSnapshot(
   synchronizer_.SaveStructureSnapshot(clear_unused_nodes, std::move(callback));
 }
 
+void StorageCollectionSynchronizerAndroid::FlushPendingStructureSnapshot(
+    JNIEnv* env) {
+  synchronizer_.FlushPendingStructureSnapshot();
+}
+
 void StorageCollectionSynchronizerAndroid::CancelRestore(JNIEnv* env) {
   synchronizer_.CancelRestore();
 }

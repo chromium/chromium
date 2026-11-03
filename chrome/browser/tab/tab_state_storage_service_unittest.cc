@@ -388,5 +388,49 @@ TEST_F(TabStateStorageServiceTest, SaveStructureSnapshot_DeltaDiffing) {
   tab_strip.RemoveObserver(&observer);
 }
 
+TEST_F(TabStateStorageServiceTest,
+       FlushPendingStructureSnapshot_ExecutesImmediately) {
+  TabStripCollection tab_strip;
+  StorageCollectionSynchronizer synchronizer(&tab_strip, service());
+  synchronizer.SetCollectionObserver(
+      std::make_unique<CollectionStorageObserver>(&tab_strip, service()));
+
+  packager()->reset_package_tab_strip_count();
+  bool unbatched_callback_executed = false;
+  synchronizer.SaveStructureSnapshot(
+      /*clear_unused_nodes=*/true,
+      base::BindOnce([](bool* executed) { *executed = true; },
+                     &unbatched_callback_executed));
+  EXPECT_EQ(0, packager()->package_tab_strip_count());
+
+  synchronizer.FlushPendingStructureSnapshot();
+  EXPECT_EQ(1, packager()->package_tab_strip_count());
+
+  // Subsequent idle run invokes the completion callback without re-executing
+  // the already-flushed snapshot.
+  FlushOperations();
+  EXPECT_TRUE(unbatched_callback_executed);
+  EXPECT_EQ(1, packager()->package_tab_strip_count());
+
+  // When flushed inside an enclosing ScopedBatch, completion callbacks wait
+  // until the outer batch commits to the database task runner.
+  packager()->reset_package_tab_strip_count();
+  bool batched_callback_executed = false;
+  synchronizer.SaveStructureSnapshot(
+      /*clear_unused_nodes=*/true,
+      base::BindOnce([](bool* executed) { *executed = true; },
+                     &batched_callback_executed));
+  {
+    TabStateStorageService::ScopedBatch outer_batch =
+        service()->CreateScopedBatch();
+    synchronizer.FlushPendingStructureSnapshot();
+    EXPECT_FALSE(batched_callback_executed);
+  }
+  EXPECT_EQ(1, packager()->package_tab_strip_count());
+  FlushOperations();
+  EXPECT_TRUE(batched_callback_executed);
+  EXPECT_EQ(1, packager()->package_tab_strip_count());
+}
+
 }  // namespace
 }  // namespace tabs

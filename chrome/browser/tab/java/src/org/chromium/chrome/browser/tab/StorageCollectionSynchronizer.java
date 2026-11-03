@@ -65,6 +65,12 @@ public class StorageCollectionSynchronizer implements Destroyable {
                 .saveStructureSnapshot(mNativePtr, clearUnusedNodes, callback);
     }
 
+    /** Flushes any pending structural snapshot to storage immediately if one is scheduled. */
+    public void flushPendingStructureSnapshot() {
+        assert mNativePtr != 0;
+        StorageCollectionSynchronizerJni.get().flushPendingStructureSnapshot(mNativePtr);
+    }
+
     /** Cancels the restoration process. */
     public void cancelRestore() {
         assert mNativePtr != 0;
@@ -83,6 +89,8 @@ public class StorageCollectionSynchronizer implements Destroyable {
                 long nativeStorageCollectionSynchronizerAndroid,
                 boolean clearUnusedNodes,
                 @JniType("base::OnceClosure") Runnable callback);
+
+        void flushPendingStructureSnapshot(long nativeStorageCollectionSynchronizerAndroid);
 
         void cancelRestore(long nativeStorageCollectionSynchronizerAndroid);
 
