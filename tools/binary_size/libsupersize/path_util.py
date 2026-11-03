@@ -228,3 +228,9 @@ def GetDefaultJsonConfigPath():
 
 def GetR8Path():
   return FromToolsSrcRoot('third_party', 'r8', 'cipd', 'lib', 'r8.jar')
+
+
+def GetChromeR8Path():
+  return os.path.abspath(
+    FromToolsSrcRoot('third_party', 'r8', 'cipd', 'bin', 'chrome_r8')
+  )

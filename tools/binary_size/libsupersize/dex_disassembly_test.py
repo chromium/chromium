@@ -310,6 +310,47 @@ class DexDisassemblyTest(unittest.TestCase):
     actual = dex_disassembly.NormalizeLines(lines)
     self.assertEqual(expected, actual)
 
+  @mock.patch('path_util.GetChromeR8Path', return_value='/path/to/chrome_r8')
+  @mock.patch('path_util.GetJavaExec', return_value='/path/to/java')
+  @mock.patch('path_util.GetR8Path', return_value='path/to/r8.jar')
+  def testBuildDisassembleCmd(self, _mock_r8, _mock_java, _mock_chrome_r8):
+    with (
+      mock.patch.object(dex_disassembly.sys, 'platform', 'linux'),
+      mock.patch('platform.machine', return_value='x86_64'),
+      mock.patch('os.path.exists', return_value=True),
+      mock.patch('os.cpu_count', return_value=96),
+    ):
+      self.assertEqual(
+        ['/path/to/chrome_r8', '-XX:ActiveProcessorCount=32', '--disassemble'],
+        dex_disassembly.BuildDisassembleCmd(),
+      )
+
+    with (
+      mock.patch.object(dex_disassembly.sys, 'platform', 'linux'),
+      mock.patch('platform.machine', return_value='x86_64'),
+      mock.patch('os.path.exists', return_value=True),
+      mock.patch('os.cpu_count', return_value=16),
+    ):
+      self.assertEqual(
+        ['/path/to/chrome_r8', '--disassemble'],
+        dex_disassembly.BuildDisassembleCmd(),
+      )
+
+    with (
+      mock.patch.object(dex_disassembly.sys, 'platform', 'darwin'),
+      mock.patch('platform.machine', return_value='arm64'),
+      mock.patch('os.path.exists', return_value=True),
+    ):
+      self.assertEqual(
+        [
+          '/path/to/java',
+          '-cp',
+          'path/to/r8.jar',
+          'com.android.tools.r8.Disassemble',
+        ],
+        dex_disassembly.BuildDisassembleCmd(),
+      )
+
 
 if __name__ == '__main__':
   unittest.main()

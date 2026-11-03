@@ -10,6 +10,7 @@ import functools
 import io
 import logging
 import os
+import platform
 import re
 import readline  # Makes code.InteractiveConsole works better.
 import subprocess
@@ -69,8 +70,31 @@ def NormalizeLines(lines):
   return ret
 
 
+_CHROME_R8_MAX_CPUS = 32
 _DISASSEMBLED_METHOD_QUOTA = 10
 _SYMBOL_FULL_NAME_RE = re.compile(r'(.*?)#(.*?)\((.*?)\):? ?(.*)')
+
+
+def BuildDisassembleCmd():
+  """Returns the command prefix to invoke R8's Disassemble."""
+  chrome_r8_path = path_util.GetChromeR8Path()
+  if (
+    sys.platform == 'linux'
+    and platform.machine() == 'x86_64'
+    and os.path.exists(chrome_r8_path)
+  ):
+    cmd = [chrome_r8_path]
+    # Limit G1 GC threads on many-core machines (reduces sys time).
+    if (os.cpu_count() or 0) > _CHROME_R8_MAX_CPUS:
+      cmd += [f'-XX:ActiveProcessorCount={_CHROME_R8_MAX_CPUS}']
+    cmd += ['--disassemble']
+    return cmd
+  return [
+    path_util.GetJavaExec(),
+    '-cp',
+    path_util.GetR8Path(),
+    'com.android.tools.r8.Disassemble',
+  ]
 
 
 class _CachedApkDisassembler:
@@ -85,7 +109,6 @@ class _CachedApkDisassembler:
     )
 
   def _DisassembleApk(self, mapping, apk_path):
-    r8_path = path_util.GetR8Path()
     r8_output = None
     # Temporary hack until next R8 roll:
     # Prevents R8 failing due to assets/webapk7.dex.
@@ -97,15 +120,7 @@ class _CachedApkDisassembler:
               dst_zip.writestr(info, src_zip.read(info))
       tmp_file.flush()
 
-      cmd = [
-        path_util.GetJavaExec(),
-        '-cp',
-        r8_path,
-        'com.android.tools.r8.Disassemble',
-        '--pg-map',
-        mapping,
-        tmp_file.name,
-      ]
+      cmd = BuildDisassembleCmd() + ['--pg-map', mapping, tmp_file.name]
       r8_output = subprocess.check_output(cmd, encoding='utf-8')
 
     return r8_output

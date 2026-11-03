@@ -45,7 +45,8 @@ Local Modifications:
   * Used in "build/android/gyp/proguard.py", "build/android/gyp/dex.py" ("--d8"),
     "build/android/gyp/tracereferences.py" ("--tracereferences"),
     "build/android/stacktrace/java_deobfuscate.py" ("--retrace"), and
-    "third_party/r8/disassemble.py" ("--disassemble").
+    "third_party/r8/disassemble.py" /
+    "tools/binary_size/libsupersize/dex_disassembly.py" ("--disassemble").
   * Also compiled into cipd/bin/chrome_r8 by 3pp.
 
 Update Instructions:
