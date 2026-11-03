@@ -29,8 +29,9 @@ enum class GeicFreStatus : int {
 
 // Dict pref that records the GEiC FRE status per GE instance. Keyed by the
 // guest URL without the UI-locale `hl` param (e.g.
-// "https://business.gemini.google/side-panel?configId=abc"); see geic_fre.cc.
-// Each value is a dict of {"status": int GeicFreStatus}.
+// "https://business.gemini.google/side-panel?configId=abc"); see
+// `glic::GlicProviderSpec::GetGuestUrlKey()`. Each value is a dict of
+// {"status": int GeicFreStatus}.
 // Profile-scoped and not synced, like `glic::prefs::kGlicCompletedFre`. The
 // status is profile-level consent to use GEiC with a GE instance, so it is not
 // keyed by, or reset for, the GE account signed in within the side panel.

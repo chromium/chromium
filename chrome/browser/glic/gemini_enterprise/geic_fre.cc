@@ -21,8 +21,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "net/base/url_util.h"
-#include "url/gurl.h"
 
 namespace geic {
 
@@ -34,27 +32,10 @@ using prefs::GeicFreStatus;
 // change.
 constexpr char kStatusKey[] = "status";
 
-// Appended by `GetLocalizedGuestURL()` from Chrome's UI locale.
-constexpr char kLocaleParam[] = "hl";
-
-// Returns `guest_url` without `hl`, so the key survives UI language changes.
-// Other params may identify the GE instance, so they are kept. Persisted.
-std::string GuestUrlToFreKey(const GURL& guest_url) {
-  GURL key =
-      net::AppendOrReplaceQueryParameter(guest_url, kLocaleParam, std::nullopt);
-  if (key.query().empty()) {
-    // Drop the empty "?" left when `hl` was the only param.
-    GURL::Replacements replacements;
-    replacements.ClearQuery();
-    key = key.ReplaceComponents(replacements);
-  }
-  return key.spec();
-}
-
 // Returns the `kGeicCompletedFre` key for `profile`'s GE instance (see
-// `GuestUrlToFreKey()`), shared by all GE accounts in the profile.
-// Returns std::nullopt if the GEiC FRE doesn't apply to `profile`, i.e.
-// `features::kGeicFre` is disabled or `profile` isn't latched to Gemini
+// `glic::GlicProviderSpec::GetGuestUrlKey()`), shared by all GE accounts in the
+// profile. Returns std::nullopt if the GEiC FRE doesn't apply to `profile`,
+// i.e. `features::kGeicFre` is disabled or `profile` isn't latched to Gemini
 // Enterprise.
 // TODO(b/574495404): Move the GEiC FRE applicability check into GLiC's
 // per-provider enablement rules.
@@ -64,12 +45,7 @@ std::optional<std::string> GetFrePrefKey(Profile* profile) {
           glic::GlicProvider::kGeminiEnterprise) {
     return std::nullopt;
   }
-  const GURL guest_url =
-      glic::GetGlicProviderSpec(profile).GetGuestUrl(profile);
-  if (!guest_url.is_valid()) {
-    return std::nullopt;
-  }
-  return GuestUrlToFreKey(guest_url);
+  return glic::GetGlicProviderSpec(profile).GetGuestUrlKey();
 }
 
 // Returns the status persisted for `key`, ignoring `--geic-always-skip-fre`.

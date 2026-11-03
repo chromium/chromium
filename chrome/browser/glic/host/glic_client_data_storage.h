@@ -21,9 +21,15 @@ class PrefService;
 
 namespace glic {
 
-// Maximum amount of data that can be stored in GlicClientDataStorage.
-// If exceeded, GlicClientDataStorage will clear itself.
+// Maximum amount of data that can be stored in `prefs::kGlicClientDataStorage`,
+// across all guest URL keys. If exceeded, GlicClientDataStorage clears itself
+// and the whole pref, including other guest URL keys' entries.
 inline constexpr size_t kMaxTotalClientDataStorageBytes = 5 * 1000 * 1000;
+
+// Key in `prefs::kGlicClientDataStorage` that holds the layout version of the
+// pref. Hosts and URL specs, which are used as guest URL keys, can't collide
+// with it.
+inline constexpr char kClientDataStorageVersionKey[] = "chrome:CDSVERSION";
 
 // Holds the authoritative in-memory copy of client data storage for the Glic
 // web client and persists updates to `prefs::kGlicClientDataStorage`.
@@ -40,7 +46,9 @@ class GlicClientDataStorage {
     virtual void OnClientStorageCleared() = 0;
   };
 
-  explicit GlicClientDataStorage(PrefService* pref_service);
+  // Persists data in `prefs::kGlicClientDataStorage` under `guest_url_key`
+  // (`GlicProviderSpec::GetGuestUrlKey()`).
+  GlicClientDataStorage(PrefService* pref_service, std::string guest_url_key);
   ~GlicClientDataStorage();
 
   GlicClientDataStorage(const GlicClientDataStorage&) = delete;
@@ -56,7 +64,8 @@ class GlicClientDataStorage {
   // storage and persists the change to prefs.
   void SetItem(std::string_view key, const std::optional<std::string>& value);
 
-  // Clears all stored items in memory and in prefs.
+  // Clears all stored items in memory, and removes this storage's entry from
+  // prefs. Other guest URL keys' entries are not affected.
   void Clear();
 
   void AddObserver(Observer* observer);
@@ -72,6 +81,7 @@ class GlicClientDataStorage {
   void WriteToPrefs();
 
   raw_ptr<PrefService> pref_service_;
+  const std::string guest_url_key_;
   StorageMap storage_;
   base::OneShotTimer write_timer_;
   base::ObserverList<Observer> observers_;

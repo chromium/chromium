@@ -8,6 +8,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_change.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
@@ -37,9 +38,13 @@ class GlicProviderLatchFactory : public ProfileKeyedServiceFactory {
   // factory would resolve. Must be called before `context`'s keyed services are
   // created, for example from a
   // `BrowserContextDependencyManager::RegisterCreateServicesCallbackForTesting`
-  // callback.
+  // callback. Latches `geic_options` as is, without resolving the guest URL from
+  // the command line, policy or Finch like the factory does. For Gemini
+  // Enterprise, `geic_options.guest_url` must be valid, since GE profiles are
+  // always latched with a valid guest URL.
   static void SetProviderForTesting(content::BrowserContext* context,
-                                    GlicProvider provider);
+                                    GlicProvider provider,
+                                    GeicProviderInitOptions geic_options);
 
   // Returns the provider change that a relaunch would apply to `context`,
   // computed on each call from the latch and the live configuration. Returns

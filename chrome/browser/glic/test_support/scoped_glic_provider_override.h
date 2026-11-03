@@ -24,6 +24,8 @@ namespace glic {
 // are, e.g. in a test fixture's constructor or
 // `SetUpInProcessBrowserTestFixture()` to cover the initial browser test
 // profile, or in the test body right before creating an additional profile.
+// Gemini Enterprise is latched with `kTestGeicGuestUrl`, regardless of the GEiC
+// configuration.
 class ScopedGlicProviderOverride {
  public:
   // Overrides the provider of every profile created while this is alive.

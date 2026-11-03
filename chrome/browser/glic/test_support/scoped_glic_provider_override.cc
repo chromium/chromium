@@ -8,8 +8,11 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/public/glic_provider_latch_factory.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/test_support/scoped_geic_test_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "url/gurl.h"
 
 namespace glic {
 
@@ -43,7 +46,16 @@ void ScopedGlicProviderOverride::OnCreateServices(
   if (profile_path_ && context->GetPath() != *profile_path_) {
     return;
   }
-  GlicProviderLatchFactory::SetProviderForTesting(context, provider_);
+  GeicProviderInitOptions geic_options;
+  if (provider_ == GlicProvider::kGeminiEnterprise) {
+    // GE profiles are always latched with a valid guest URL, which code such
+    // as `GlicProviderSpec::GetGuestUrlKey()` relies on. Tests using this
+    // override usually don't configure GEiC, so latch a fixed test URL rather
+    // than the (possibly empty) configured one.
+    geic_options.guest_url = GURL(kTestGeicGuestUrl);
+  }
+  GlicProviderLatchFactory::SetProviderForTesting(context, provider_,
+                                                  std::move(geic_options));
 }
 
 }  // namespace glic

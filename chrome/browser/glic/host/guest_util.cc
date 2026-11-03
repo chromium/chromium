@@ -660,7 +660,7 @@ GURL MaybeApplyPresetGuestUrl(GURL guest_url) {
   }
 }
 
-// The GEiC FRE pref key strips `hl` (see geic_fre.cc).
+// The guest URL key strips `hl` (see `GlicProviderSpec::GetGuestUrlKey()`).
 GURL GetLocalizedGuestURL(const GURL& guest_url) {
   std::string unused_output;
   if (net::GetValueForKeyInQuery(guest_url, "hl", &unused_output)) {

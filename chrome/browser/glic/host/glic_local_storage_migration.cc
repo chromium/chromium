@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -215,6 +216,11 @@ void MaybeMigrateGlicLocalStorage(content::BrowserContext* browser_context,
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (!profile || profile->IsOffTheRecord() || !client_data_storage ||
       profile->GetPrefs()->GetBoolean(prefs::kGlicLocalStorageCopiedToPrefs)) {
+    return;
+  }
+  // Only providers whose web client ran in the webview have data to copy. The
+  // copied pref is left unset in case the profile later switches provider.
+  if (!GetGlicProviderSpec(profile).MigratesWebviewLocalStorage()) {
     return;
   }
 

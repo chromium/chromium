@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_PROVIDER_SPEC_H_
 
 #include <memory>
+#include <string>
 #include <string_view>
 
 #include "chrome/browser/glic/public/glic_feature.h"
@@ -20,6 +21,11 @@ namespace glic {
 inline constexpr char kGeminiSettingsSectionId[] = "gemini";
 inline constexpr char kGeminiEnterpriseSettingsSectionId[] = "geminiEnterprise";
 // LINT.ThenChange(//chrome/browser/resources/settings/route.ts:AiSettingsSection)
+
+// Guest URL key (`GlicProviderSpec::GetGuestUrlKey()`) of prod consumer Gemini:
+// its guest URL host. Gemini falls back to it if its guest URL has no host, and
+// v1 client data storage items are migrated to it. Persisted; must not change.
+inline constexpr char kGeminiGuestUrlKey[] = "gemini.google.com";
 
 struct GeicProviderInitOptions {
   GURL guest_url;
@@ -77,6 +83,15 @@ class GlicProviderSpec {
   // `GlicProviderLatch`, but `CreateGlicProviderSpec()` doesn't take the
   // profile, and unlatched profiles share a fallback spec.
   virtual const GlicFreStore& GetFreStore() const = 0;
+  // Key for prefs that are kept per guest URL, e.g. the web client's client
+  // data storage. Gemini: the guest URL host, or `kGeminiGuestUrlKey` if it has
+  // none. Gemini Enterprise: the latched guest URL without `hl`.
+  // Persisted; must not change.
+  virtual std::string GetGuestUrlKey() const = 0;
+  // Whether the web client's data in the webview partition's localStorage is
+  // copied into `GlicClientDataStorage` (see `MaybeMigrateGlicLocalStorage()`).
+  // Only true for providers whose web client was ever loaded in the webview.
+  virtual bool MigratesWebviewLocalStorage() const = 0;
   // Whether enablement applies the Gemini account eligibility checks, i.e.
   // whether the profile's consumer Google account may use Gemini in Chrome:
   // the rollout (including subscription tiers), the primary account's

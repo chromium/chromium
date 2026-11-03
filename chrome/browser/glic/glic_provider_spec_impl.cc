@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -38,6 +39,25 @@
 namespace glic {
 
 namespace {
+
+// Appended by `GetLocalizedGuestURL()` from Chrome's UI locale.
+constexpr char kLocaleParam[] = "hl";
+
+// Returns `guest_url` without `hl`, so the key survives UI language changes.
+// Other params may identify the GE instance, so they are kept. Persisted; must
+// not change.
+std::string GuestUrlToKey(const GURL& guest_url) {
+  GURL key =
+      net::AppendOrReplaceQueryParameter(guest_url, kLocaleParam, std::nullopt);
+  if (key.query().empty()) {
+    // AppendOrReplaceQueryParameter() always sets a query, so drop the empty
+    // "?" it leaves when no other params remain.
+    GURL::Replacements replacements;
+    replacements.ClearQuery();
+    key = key.ReplaceComponents(replacements);
+  }
+  return key.spec();
+}
 
 GURL MaybeAppendAuthUser(const GURL& guest_url, Profile* profile) {
   if (!profile) {
@@ -108,6 +128,16 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   }
   bool SupportsAnchoredEntryPoint() const override { return true; }
   const GlicFreStore& GetFreStore() const override { return *fre_store_; }
+  std::string GetGuestUrlKey() const override {
+    GURL guest_url = GetGuestUrl(/*profile=*/nullptr);
+    // Only an invalid guest URL flag or preset has no host. The web client
+    // can't load then, so nothing is stored under the fallback.
+    if (!guest_url.is_valid() || guest_url.host().empty()) {
+      return kGeminiGuestUrlKey;
+    }
+    return std::string(guest_url.host());
+  }
+  bool MigratesWebviewLocalStorage() const override { return true; }
   bool RequiresGeminiAccountEligibility() const override { return true; }
   bool SupportsFeature(GlicFeature feature) const override { return true; }
   bool SupportsSsr() const override {
@@ -149,6 +179,14 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   // TODO(b/576834093): Support anchoring with GEiC error states.
   bool SupportsAnchoredEntryPoint() const override { return false; }
   const GlicFreStore& GetFreStore() const override { return *fre_store_; }
+  std::string GetGuestUrlKey() const override {
+    // GE profiles are only latched with a valid guest URL (see
+    // `GlicProviderLatchFactory`).
+    CHECK(guest_url_.is_valid());
+    return GuestUrlToKey(guest_url_);
+  }
+  // GEiC only loads in NoWebview mode, so it never used the webview partition.
+  bool MigratesWebviewLocalStorage() const override { return false; }
   bool RequiresGeminiAccountEligibility() const override { return false; }
   bool SupportsFeature(GlicFeature feature) const override {
     switch (feature) {

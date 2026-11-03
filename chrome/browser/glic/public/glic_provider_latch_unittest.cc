@@ -4,8 +4,11 @@
 
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 
+#include <string>
+
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -18,6 +21,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_testing_helper.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
@@ -161,7 +165,7 @@ class GlicProviderLatchSetForTestingTest : public GlicProviderLatchTest {
             ->RegisterCreateServicesCallbackForTesting(
                 base::BindRepeating([](content::BrowserContext* context) {
                   GlicProviderLatchFactory::SetProviderForTesting(
-                      context, GlicProvider::kGemini);
+                      context, GlicProvider::kGemini, /*geic_options=*/{});
                 }));
     GlicProviderLatchTest::SetUp();
   }
@@ -250,6 +254,79 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<AssistantSelectionLatchTestCase>& info) {
       return info.param.test_name;
     });
+
+// The GE guest URL key is the latched guest URL without `hl`.
+TEST_F(GlicProviderLatchTest, GeminiEnterpriseGuestUrlKey) {
+  Profile* profile = helper_.regular_profile();
+  EXPECT_EQ(GetGlicProviderSpec(profile).GetGuestUrlKey(), kGuestUrl);
+}
+
+std::string GetGeminiEnterpriseGuestUrlKey(const char* guest_url) {
+  return CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise,
+                                {.guest_url = GURL(guest_url)})
+      ->GetGuestUrlKey();
+}
+
+TEST(GlicProviderSpecTest, GeminiEnterpriseGuestUrlKeyDropsLocale) {
+  EXPECT_EQ(GetGeminiEnterpriseGuestUrlKey(
+                "https://business.gemini.google/side-panel?configId=abc&hl=en"),
+            "https://business.gemini.google/side-panel?configId=abc");
+  EXPECT_EQ(GetGeminiEnterpriseGuestUrlKey(
+                "https://business.gemini.google/side-panel?hl=en&configId=abc"),
+            "https://business.gemini.google/side-panel?configId=abc");
+}
+
+TEST(GlicProviderSpecTest, GeminiEnterpriseGuestUrlKeyDropsEmptyQuery) {
+  EXPECT_EQ(GetGeminiEnterpriseGuestUrlKey(
+                "https://business.gemini.google/side-panel?hl=en"),
+            "https://business.gemini.google/side-panel");
+}
+
+TEST(GlicProviderSpecTest, GeminiEnterpriseGuestUrlKeyKeepsOtherParams) {
+  EXPECT_EQ(GetGeminiEnterpriseGuestUrlKey(
+                "https://business.gemini.google/side-panel?configId=abc&cid=1"),
+            "https://business.gemini.google/side-panel?configId=abc&cid=1");
+  EXPECT_EQ(GetGeminiEnterpriseGuestUrlKey(
+                "https://business.gemini.google/side-panel"),
+            "https://business.gemini.google/side-panel");
+}
+
+// GE profiles are only latched with a valid guest URL.
+TEST(GlicProviderSpecTest, GeminiEnterpriseWithoutGuestUrlCrashes) {
+  EXPECT_CHECK_DEATH(GetGeminiEnterpriseGuestUrlKey(""));
+}
+
+// The consumer guest URL key, for profiles and the fallback spec, is the guest
+// URL host.
+TEST(GlicProviderLatchDefaultTest, GeminiGuestUrlKeyIsHost) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ::switches::kGlicGuestURL,
+      "https://autopush.gemini.google.com/glic?foo=bar");
+  ProfileTestingHelper helper;
+  helper.SetUp();
+  EXPECT_EQ(GetGlicProviderSpec(helper.regular_profile()).GetGuestUrlKey(),
+            "autopush.gemini.google.com");
+  EXPECT_EQ(GetGlicProviderSpec(nullptr).GetGuestUrlKey(),
+            "autopush.gemini.google.com");
+}
+
+// A Gemini guest URL without a host falls back to the prod Gemini key.
+TEST(GlicProviderLatchDefaultTest, GeminiGuestUrlWithoutHostUsesFallbackKey) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ::switches::kGlicGuestURL, "file:///foo");
+  EXPECT_EQ(GetGlicProviderSpec(nullptr).GetGuestUrlKey(), kGeminiGuestUrlKey);
+}
+
+// Only the consumer web client ever ran in the webview.
+TEST(GlicProviderSpecTest, MigratesWebviewLocalStorage) {
+  EXPECT_TRUE(CreateGlicProviderSpec(GlicProvider::kGemini, {})
+                  ->MigratesWebviewLocalStorage());
+  EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise,
+                                      {.guest_url = GURL(kGuestUrl)})
+                   ->MigratesWebviewLocalStorage());
+}
 
 }  // namespace
 }  // namespace glic

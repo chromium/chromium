@@ -190,8 +190,9 @@ GlicKeyedService::GlicKeyedService(
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
       opt_in_controller_(
           std::make_unique<GlicExperimentalOptInController>(profile)),
-      client_data_storage_(
-          std::make_unique<GlicClientDataStorage>(profile->GetPrefs())),
+      client_data_storage_(std::make_unique<GlicClientDataStorage>(
+          profile->GetPrefs(),
+          provider_spec().GetGuestUrlKey())),
       instance_coordinator_(std::make_unique<GlicInstanceCoordinatorImpl>(
           profile,
           identity_manager,

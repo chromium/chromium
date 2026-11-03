@@ -230,6 +230,9 @@ inline constexpr char kGlicLocalStorageCopiedToPrefs[] =
     "glic.local_storage_copied_to_prefs";
 
 // Dict pref that stores key-value pairs for the Glic web client's storage.
+// Each provider's items are a nested dict at its guest URL key
+// (`GlicProviderSpec::GetGuestUrlKey()`). `glic::kClientDataStorageVersionKey`
+// holds the layout version.
 inline constexpr char kGlicClientDataStorage[] = "glic.client_data_storage";
 
 // Boolean pref that tracks if the Glic profile was previously ineligible.

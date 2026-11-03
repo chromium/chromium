@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/glic_local_storage_migration.h"
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -20,6 +21,9 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -33,6 +37,9 @@
 
 namespace glic {
 namespace {
+
+// Any key works; the migration only writes through `GlicClientDataStorage`.
+constexpr char kGuestUrlKey[] = "gemini.google.com";
 
 class GlicLocalStorageMigrationTest : public testing::Test {
  public:
@@ -94,9 +101,10 @@ class GlicLocalStorageMigrationTest : public testing::Test {
 
   std::optional<std::string> GetFromPrefs(std::string_view key) {
     client_data_storage_.Flush();
-    const std::string* val = profile_.GetPrefs()
-                                 ->GetDict(prefs::kGlicClientDataStorage)
-                                 .FindString(key);
+    const base::DictValue* entry = profile_.GetPrefs()
+                                       ->GetDict(prefs::kGlicClientDataStorage)
+                                       .FindDict(kGuestUrlKey);
+    const std::string* val = entry ? entry->FindString(key) : nullptr;
     if (!val) {
       return std::nullopt;
     }
@@ -117,7 +125,8 @@ class GlicLocalStorageMigrationTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   TestingProfile profile_;
-  GlicClientDataStorage client_data_storage_{profile_.GetPrefs()};
+  GlicClientDataStorage client_data_storage_{profile_.GetPrefs(),
+                                             std::string(kGuestUrlKey)};
   GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
 };
 
@@ -223,6 +232,47 @@ TEST_F(GlicLocalStorageMigrationTest, EmptyGlicPartitionSetsPref) {
     return profile_.GetPrefs()->GetBoolean(
         prefs::kGlicLocalStorageCopiedToPrefs);
   }));
+}
+
+// Profiles latched to Gemini Enterprise.
+class GlicLocalStorageMigrationGeicTest : public testing::Test {
+ public:
+  GlicLocalStorageMigrationGeicTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGeic,
+          {{"enabled", "true"},
+           {"geic-guest-url", "https://business.gemini.google/side-panel"}}},
+         {features::kGlicNoWebview, {}}},
+        // Avoids creating a `GlicKeyedService`.
+        {features::kGlic});
+    profile_ = std::make_unique<TestingProfile>();
+    // Created after the profile to avoid creating a `GlicKeyedService`.
+    scoped_glic_bypass_.emplace();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::optional<GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
+};
+
+// GEiC never used the webview partition, so nothing is copied.
+TEST_F(GlicLocalStorageMigrationGeicTest, Skipped) {
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile_),
+            GlicProvider::kGeminiEnterprise);
+  GlicClientDataStorage storage(
+      profile_->GetPrefs(),
+      GetGlicProviderSpec(profile_.get()).GetGuestUrlKey());
+
+  MaybeMigrateGlicLocalStorage(profile_.get(), &storage);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return task_environment_.MainThreadIsIdle(); }));
+
+  EXPECT_FALSE(
+      profile_->GetPrefs()->GetBoolean(prefs::kGlicLocalStorageCopiedToPrefs));
+  EXPECT_TRUE(storage.GetAll().empty());
 }
 
 }  // namespace
