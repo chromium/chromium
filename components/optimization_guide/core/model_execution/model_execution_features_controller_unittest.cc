@@ -57,14 +57,10 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
   void CreateController(
       ModelExecutionFeaturesController::DogfoodStatus dogfood_status =
           ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD,
-      bool is_official_build = true,
-      ModelExecutionFeaturesController::HistorySearchVisibilityCallback
-          history_search_visibility_callback =
-              ModelExecutionFeaturesController::HistorySearchNotSupported()) {
+      bool is_official_build = true) {
     controller_ = std::make_unique<ModelExecutionFeaturesController>(
         pref_service_.get(), identity_test_env_.identity_manager(),
-        management_service(), dogfood_status, is_official_build,
-        std::move(history_search_visibility_callback));
+        management_service(), dogfood_status, is_official_build);
   }
 
   void EnableSignIn() {
@@ -500,51 +496,6 @@ TEST_F(
           proto::LogAiDataRequest::FeatureCase::kCompose);
   EXPECT_TRUE(
       controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
-}
-
-TEST_F(ModelExecutionFeaturesControllerTest, HistorySearchNotVisibleByDefault) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::internal::kHistorySearchSettingsVisibility}, {});
-  CreateController();
-  EnableSignIn();
-  EXPECT_EQ(ModelExecutionFeaturesController::SettingsVisibilityResult::
-                kNotVisibleHardwareUnsupported,
-            controller()->GetSettingsVisibility(
-                UserVisibleFeatureKey::kHistorySearch));
-}
-
-TEST_F(ModelExecutionFeaturesControllerTest, HistorySearchVisible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::internal::kHistorySearchSettingsVisibility}, {});
-  CreateController(ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD,
-                   /*is_official_build=*/true, base::BindRepeating([]() {
-                     return ModelExecutionFeaturesController::
-                         SettingsVisibilityResult::kUnknown;
-                   }));
-  EnableSignIn();
-  EXPECT_EQ(ModelExecutionFeaturesController::SettingsVisibilityResult::
-                kVisibleFieldTrialEnabled,
-            controller()->GetSettingsVisibility(
-                UserVisibleFeatureKey::kHistorySearch));
-}
-
-TEST_F(ModelExecutionFeaturesControllerTest,
-       HistorySearchNotVisibleByCallback) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::internal::kHistorySearchSettingsVisibility}, {});
-  CreateController(ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD,
-                   /*is_official_build=*/true, base::BindRepeating([]() {
-                     return ModelExecutionFeaturesController::
-                         SettingsVisibilityResult::kNotVisibleEnterprisePolicy;
-                   }));
-  EnableSignIn();
-  EXPECT_EQ(ModelExecutionFeaturesController::SettingsVisibilityResult::
-                kNotVisibleEnterprisePolicy,
-            controller()->GetSettingsVisibility(
-                UserVisibleFeatureKey::kHistorySearch));
 }
 
 }  // namespace optimization_guide

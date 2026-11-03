@@ -16,8 +16,6 @@ std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature) {
       return "optimization_guide.compose_setting_state";
     case UserVisibleFeatureKey::kWallpaperSearch:
       return "optimization_guide.wallpaper_search_setting_state";
-    case UserVisibleFeatureKey::kHistorySearch:
-      return "optimization_guide.history_search_setting_state";
     case UserVisibleFeatureKey::kPasswordChangeSubmission:
       return "optimization_guide.password_change_submission_setting_state";
     case UserVisibleFeatureKey::kFinds:

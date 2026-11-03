@@ -268,9 +268,6 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kIosSmartTabGrouping:
       // TODO(crbug.com/456457419): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
-    case ModelBasedCapabilityKey::kHistorySearch:
-      // On-device only feature.
-      NOTREACHED();
     case ModelBasedCapabilityKey::kScamDetection:
       return net::DefineNetworkTrafficAnnotation(
           "scam_detection_model_execution",
@@ -621,7 +618,6 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kCompose:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTest:
-    case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kBlingPrototyping:
     case ModelBasedCapabilityKey::kEnhancedCalendar:
     case ModelBasedCapabilityKey::kZeroStateSuggestions:

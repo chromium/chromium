@@ -1146,6 +1146,8 @@ inline constexpr char kShownCountHistoryEmbeddingsScopePromo[] =
     "omnibox.shown_count_history_embeddings_scope_promo";
 inline constexpr char kShownCountHistoryEmbeddingsSettingsPromo[] =
     "omnibox.shown_count_history_embeddings_settings_promo";
+inline constexpr char kHistorySearchSettingState[] =
+    "optimization_guide.history_search_setting_state";
 
 // Deprecated 10/2026.
 constexpr char kSupervisedUserSafeSites[] = "profile.managed.safe_sites";
@@ -1704,10 +1706,12 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kDeprecatedGrayscaleThemeEnabledDoNotUse,
                                 false);
   registry->RegisterDictionaryPref(kDeprecatedNtpCustomBackgroundDictDoNotUse);
-
   // Deprecated 10/2026.
   registry->RegisterBooleanPref(kTabsFromOtherDevicesAutoPinnedMigration,
                                 false);
+
+  // Deprecated 10/2026.
+  registry->RegisterIntegerPref(kHistorySearchSettingState, 0);
 }
 
 }  // namespace
@@ -3169,6 +3173,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 10/2026.
   profile_prefs->ClearPref(kTabsFromOtherDevicesAutoPinnedMigration);
+
+  // Added 10/2026.
+  profile_prefs->ClearPref(kHistorySearchSettingState);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -19,14 +19,8 @@ namespace optimization_guide::features::internal {
 // graduated yet.
 BASE_DECLARE_FEATURE(kComposeSettingsVisibility);
 BASE_DECLARE_FEATURE(kWallpaperSearchSettingsVisibility);
-BASE_DECLARE_FEATURE(kHistorySearchSettingsVisibility);
 BASE_DECLARE_FEATURE(kFindsSettingsVisibility);
 BASE_DECLARE_FEATURE(kContextualCueingSettingsVisibility);
-
-// Comma-separated list of performance classes (e.g. "3,4,5") accepted by
-// History Search. Use "*" if there is no performance class requirement.
-extern const base::FeatureParam<std::string>
-    kPerformanceClassListForHistorySearch;
 
 // Features that determine when a feature has graduated from experimental. These
 // should not be enabled at the same time as their respective settings

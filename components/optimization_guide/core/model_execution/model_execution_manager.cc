@@ -93,7 +93,6 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kCompose:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTest:
-    case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kBlingPrototyping:
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
     case ModelBasedCapabilityKey::kEnhancedCalendar:

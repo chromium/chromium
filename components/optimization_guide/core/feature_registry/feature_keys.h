@@ -25,8 +25,6 @@ enum class ModelBasedCapabilityKey {
   kWallpaperSearch =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
   kTest = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST,
-  kHistorySearch =
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH,
   kFormsClassifications = proto::ModelExecutionFeature::
       MODEL_EXECUTION_FEATURE_FORMS_CLASSIFICATIONS,
   kBlingPrototyping =
@@ -83,8 +81,6 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "WallpaperSearch";
     case ModelBasedCapabilityKey::kTest:
       return out << "Test";
-    case ModelBasedCapabilityKey::kHistorySearch:
-      return out << "HistorySearch";
     case ModelBasedCapabilityKey::kFormsClassifications:
       return out << "FormsClassifications";
     case ModelBasedCapabilityKey::kBlingPrototyping:
@@ -143,7 +139,6 @@ enum class UserVisibleFeatureKey {
   kCompose = static_cast<int>(ModelBasedCapabilityKey::kCompose),
   kWallpaperSearch =
       static_cast<int>(ModelBasedCapabilityKey::kWallpaperSearch),
-  kHistorySearch = static_cast<int>(ModelBasedCapabilityKey::kHistorySearch),
   kPasswordChangeSubmission =
       static_cast<int>(ModelBasedCapabilityKey::kPasswordChangeSubmission),
   kFinds = static_cast<int>(ModelBasedCapabilityKey::kFinds),
@@ -155,7 +150,6 @@ inline constexpr auto kAllUserVisibleFeatureKeys =
     std::to_array<UserVisibleFeatureKey>({
         UserVisibleFeatureKey::kCompose,
         UserVisibleFeatureKey::kWallpaperSearch,
-        UserVisibleFeatureKey::kHistorySearch,
         UserVisibleFeatureKey::kPasswordChangeSubmission,
         UserVisibleFeatureKey::kFinds,
         UserVisibleFeatureKey::kContextualCueing,
@@ -168,8 +162,6 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
       return ModelBasedCapabilityKey::kCompose;
     case UserVisibleFeatureKey::kWallpaperSearch:
       return ModelBasedCapabilityKey::kWallpaperSearch;
-    case UserVisibleFeatureKey::kHistorySearch:
-      return ModelBasedCapabilityKey::kHistorySearch;
     case UserVisibleFeatureKey::kPasswordChangeSubmission:
       return ModelBasedCapabilityKey::kPasswordChangeSubmission;
     case UserVisibleFeatureKey::kFinds:
@@ -189,9 +181,6 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH;
     case ModelBasedCapabilityKey::kTest:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST;
-    case ModelBasedCapabilityKey::kHistorySearch:
-      return proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_HISTORY_SEARCH;
     case ModelBasedCapabilityKey::kFormsClassifications:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_FORMS_CLASSIFICATIONS;

@@ -170,29 +170,6 @@ class ModelExecutionDelegate : public ModelExecutionManager::Delegate {
   raw_ptr<content::BrowserContext> browser_context_;
 };
 
-ModelExecutionFeaturesController::SettingsVisibilityResult
-ShouldHideHistorySearch(PrefService* local_state) {
-  using SettingsVisibilityResult =
-      ModelExecutionFeaturesController::SettingsVisibilityResult;
-#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-  // Component updates policy check.
-  if (!local_state->GetBoolean(::prefs::kComponentUpdatesEnabled)) {
-    return SettingsVisibilityResult::kNotVisibleEnterprisePolicy;
-  }
-
-  // Performance class check.
-  if (!IsPerformanceClassCompatible(
-          optimization_guide::features::internal::
-              kPerformanceClassListForHistorySearch.Get(),
-          optimization_guide::PerformanceClassFromPref(*local_state))) {
-    return SettingsVisibilityResult::kNotVisibleHardwareUnsupported;
-  }
-  return SettingsVisibilityResult::kUnknown;
-#else
-  return SettingsVisibilityResult::kNotVisibleHardwareUnsupported;
-#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-}
-
 }  // namespace
 
 // static
@@ -374,9 +351,7 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
         std::make_unique<optimization_guide::ModelExecutionFeaturesController>(
             profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
             policy::ManagementServiceFactory::GetForProfile(profile),
-            dogfood_status, is_official_build,
-            base::BindRepeating(&ShouldHideHistorySearch,
-                                g_browser_process->local_state()));
+            dogfood_status, is_official_build);
 
     // Don't create logs uploader service when feature is disabled. All the
     // logs upload get route through this service which exists one per
@@ -390,9 +365,6 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
               ? model_execution_features_controller_->GetWeakPtr()
               : nullptr);
     }
-    RecordModelExecutionFeatureSyntheticFieldTrial(
-        optimization_guide::UserVisibleFeatureKey::kHistorySearch,
-        "HistorySearch");
   }
 
   model_execution_manager_ = std::make_unique<ModelExecutionManager>(
@@ -772,16 +744,6 @@ void OptimizationGuideKeyedService::RemoveModelExecutionSettingsEnabledObserver(
     return;
   }
   model_execution_features_controller_->RemoveObserver(observer);
-}
-
-void OptimizationGuideKeyedService::
-    RecordModelExecutionFeatureSyntheticFieldTrial(
-        optimization_guide::UserVisibleFeatureKey feature,
-        std::string_view feature_name) {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      base::StrCat({"SyntheticModelExecutionFeature", feature_name}),
-      ShouldFeatureBeCurrentlyEnabledForUser(feature) ? "Enabled" : "Disabled",
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 optimization_guide::OnDeviceModelEligibilityReason

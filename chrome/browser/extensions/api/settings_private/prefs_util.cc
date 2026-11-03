@@ -1362,9 +1362,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       optimization_guide::UserVisibleFeatureKey::kWallpaperSearch)] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
-      optimization_guide::UserVisibleFeatureKey::kHistorySearch)] =
-      settings_api::PrefType::kNumber;
-  (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
       optimization_guide::UserVisibleFeatureKey::kPasswordChangeSubmission)] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[contextual_tasks::kContextualTasksShareOpenTabsEveryThread] =

@@ -650,9 +650,7 @@ class ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin
     : public ModelExecutionEnabledBrowserTest {
  public:
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::internal::kHistorySearchSettingsVisibility},
-        {});
+    scoped_feature_list_.InitWithFeatures({}, {});
   }
 };
 
@@ -701,35 +699,6 @@ IN_PROC_BROWSER_TEST_F(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange."
       "WallpaperSearch",
       0);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin,
-    PRE_HistorySearchRecordsSyntheticFieldTrial) {
-  EnableSignin();
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-#else
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-#endif
-
-  browser()->GetProfile()->GetPrefs()->SetInteger(
-      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kHistorySearch),
-      static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      "SyntheticModelExecutionFeatureHistorySearch", "Disabled"));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin,
-    HistorySearchRecordsSyntheticFieldTrial) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(IsSignedIn());
-#endif
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kHistorySearch));
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
-      "SyntheticModelExecutionFeatureHistorySearch", "Enabled"));
 }
 
 class ModelExecutionComposeLoggingDisabledTest
@@ -789,12 +758,6 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
     if (!base::StartsWith(test_name, "PRE_")) {
       enabled_features.push_back(
           {features::internal::kComposeSettingsVisibility, {}});
-      enabled_features.push_back(
-          {features::internal::kHistorySearchSettingsVisibility,
-           {{"enable_feature_when_main_toggle_on", "false"}}});
-    } else {
-      disabled_features.push_back(
-          features::internal::kHistorySearchSettingsVisibility);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,

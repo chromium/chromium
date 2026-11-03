@@ -61,8 +61,6 @@ class ModelExecutionFeaturesController
     // enums.xml.
     kMaxValue = kNotVisibleHardwareUnsupported
   };
-  using HistorySearchVisibilityCallback =
-      base::RepeatingCallback<SettingsVisibilityResult()>;
 
   enum class DogfoodStatus {
     DOGFOOD,
@@ -75,8 +73,7 @@ class ModelExecutionFeaturesController
       signin::IdentityManager* identity_manager,
       policy::ManagementService* management_service,
       DogfoodStatus dogfood_status,
-      bool is_official_build,
-      HistorySearchVisibilityCallback history_search_visibility_callback);
+      bool is_official_build);
 
   ~ModelExecutionFeaturesController() override;
 
@@ -110,10 +107,6 @@ class ModelExecutionFeaturesController
   // model execution. This does not perform any feature related checks such as
   // allowed by enterprise policy.
   bool ShouldModelExecutionBeAllowedForUser() const;
-
-  // Defines when History search setting is visible.  Returns
-  // kNotVisibleHardwareUnsupported.
-  static HistorySearchVisibilityCallback HistorySearchNotSupported();
 
   // Adds `observer` which can observe the change in feature settings.
   void AddObserver(SettingsEnabledObserver* observer);
@@ -224,8 +217,6 @@ class ModelExecutionFeaturesController
 
   // To check if the user is enterprise or not.
   raw_ptr<policy::ManagementService> management_service_;
-
-  HistorySearchVisibilityCallback history_search_visibility_callback_;
 
   // Whether this client is a (likely) dogfood client.
   const DogfoodStatus dogfood_status_;

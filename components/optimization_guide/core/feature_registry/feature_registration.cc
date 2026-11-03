@@ -76,8 +76,6 @@ BASE_FEATURE(kComposeMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWallpaperSearchMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHistorySearchMqlsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kProductSpecificationsMqlsLogging,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -165,30 +163,8 @@ void RegisterWallpaperSearch() {
 }
 
 void RegisterHistorySearch() {
-  EnterprisePolicyPref enterprise_policy =
-      EnterprisePolicyRegistry::GetInstance().Register(
-          prefs::kHistorySearchEnterprisePolicyAllowed);
-
-  UserFeedbackCallback logging_callback_query =
-      base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
-        return request_proto.history_query().quality().user_feedback();
-      });
-  auto mqls_metadata_query = std::make_unique<MqlsFeatureMetadata>(
-      "HistoryQuery", proto::LogAiDataRequest::FeatureCase::kHistoryQuery,
-      enterprise_policy, &features::kHistorySearchMqlsLogging,
-      logging_callback_query);
-  MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata_query));
-
-  auto mqls_metadata_answer = std::make_unique<MqlsFeatureMetadata>(
-      "HistoryAnswer", proto::LogAiDataRequest::FeatureCase::kHistoryAnswer,
-      enterprise_policy, &features::kHistorySearchMqlsLogging,
-      FeedbackUnspecified());
-  MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata_answer));
-
-  auto ui_metadata = std::make_unique<SettingsUiMetadata>(
-      "HistorySearch", UserVisibleFeatureKey::kHistorySearch,
-      enterprise_policy);
-  SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
+  EnterprisePolicyRegistry::GetInstance().Register(
+      prefs::kHistorySearchEnterprisePolicyAllowed);
 }
 
 void RegisterPasswordChangeSubmission() {

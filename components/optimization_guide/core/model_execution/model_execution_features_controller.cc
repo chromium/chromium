@@ -65,15 +65,12 @@ ModelExecutionFeaturesController::ModelExecutionFeaturesController(
     signin::IdentityManager* identity_manager,
     policy::ManagementService* management_service,
     DogfoodStatus dogfood_status,
-    bool is_official_build,
-    HistorySearchVisibilityCallback history_search_visibility_callback)
+    bool is_official_build)
     : browser_context_profile_service_(browser_context_profile_service),
       identity_manager_(identity_manager),
       features_allowed_for_unsigned_user_(
           features::internal::GetAllowedFeaturesForUnsignedUser()),
       management_service_(management_service),
-      history_search_visibility_callback_(
-          std::move(history_search_visibility_callback)),
       dogfood_status_(dogfood_status),
       is_official_build_(is_official_build) {
   CHECK(browser_context_profile_service_);
@@ -118,9 +115,6 @@ bool ModelExecutionFeaturesController::
   // Check common things like enterprise policy, etc. first. The basic feature
   // with `allow_unsigned_user` true is more permissive. This check adds the
   // additional requirement that user is signed in and allowed execution.
-  // This is needed by kHistorySearch feature to gate answer generation
-  // on account details while allowing all users (including unsigned users)
-  // access to basic embeddings search functionality.
   return ShouldFeatureBeCurrentlyEnabledForUser(feature) &&
          ShouldModelExecutionBeAllowedForUser();
 }
@@ -233,15 +227,6 @@ bool ModelExecutionFeaturesController::ShouldModelExecutionBeAllowedForUser()
   return PerformSigninChecks() == UserValidityResult::kValid;
 }
 
-// static
-ModelExecutionFeaturesController::HistorySearchVisibilityCallback
-ModelExecutionFeaturesController::HistorySearchNotSupported() {
-  return base::BindRepeating([]() {
-    return ModelExecutionFeaturesController::SettingsVisibilityResult::
-        kNotVisibleHardwareUnsupported;
-  });
-}
-
 ModelExecutionFeaturesController::SettingsVisibilityResult
 ModelExecutionFeaturesController::GetSettingsVisibility(
     UserVisibleFeatureKey feature) const {
@@ -260,14 +245,6 @@ ModelExecutionFeaturesController::GetSettingsVisibility(
       return SettingsVisibilityResult::kNotVisibleModelExecutionCapability;
     case ModelExecutionFeaturesController::UserValidityResult::kValid:
       break;
-  }
-
-  // Check feature-specific requirements.
-  if (feature == UserVisibleFeatureKey::kHistorySearch) {
-    SettingsVisibilityResult result = history_search_visibility_callback_.Run();
-    if (result != SettingsVisibilityResult::kUnknown) {
-      return result;
-    }
   }
 
   // If the setting is currently enabled by user, then we should show the

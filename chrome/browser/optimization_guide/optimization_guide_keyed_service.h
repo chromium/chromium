@@ -376,12 +376,6 @@ class OptimizationGuideKeyedService
 
   bool ComponentUpdatesEnabledProvider() const;
 
-  // Records synthetic field trial for `feature` with trial name appended with
-  // `feature_name`.
-  void RecordModelExecutionFeatureSyntheticFieldTrial(
-      optimization_guide::UserVisibleFeatureKey feature,
-      std::string_view feature_name);
-
   raw_ptr<content::BrowserContext> browser_context_;
 
   // The store of hints.
