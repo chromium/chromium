@@ -15,18 +15,28 @@
   outline: none;
   pointer-events: none;
 
-  --item-container-padding-start: 14px;
   --title-domain-padding-start: 5px;
-  --favicon-size: 24px;
   --actor-icon-size: 16px;
   --actor-icon-floating-offset: 6px;
-  --website-title-margin-start: 8px;
   --critical-action-row-padding-start: 20px;
+<if expr="not is_android">
+  --item-container-padding-start: 14px;
+  --favicon-size: 24px;
+  --website-title-margin-start: 8px;
+</if>
+<if expr="is_android">
+  --card-first-last-item-padding: 12px;
+  --favicon-size: 36px;
+  --item-container-padding-start: 16px;
+  --website-title-margin-start: 16px;
+</if>
 }
 
+<if expr="not is_android">
 :host([is-critical-actions-enabled_]) {
   --website-title-margin-start: 24px;
 }
+</if>
 
 #main-container {
   position: relative;
@@ -42,6 +52,11 @@
 
 #date-accessed {
   display: none;
+<if expr="is_android">
+  font-weight: 500;
+  height: 48px;
+  padding-block: 8px 16px;
+</if>
 }
 
 :host([is-card-start]) #date-accessed {
@@ -52,9 +67,11 @@
   user-select: none;
 }
 
+<if expr="not is_android">
 :host([is-card-start][is-card-collapsed]) #date-accessed {
   padding-bottom: 23px;
 }
+</if>
 
 :host([is-card-collapsed]:not([is-card-start])),
 :host([is-domain-collapsed]) {
@@ -78,14 +95,25 @@
   min-height: var(--item-height);
   padding-inline-start: var(--item-container-padding-start);
   pointer-events: auto;
+<if expr="is_android">
+  padding-block: 12px;
+</if>
 }
 
 :host([is-card-start]) #item-container {
   padding-top: var(--card-first-last-item-padding);
+<if expr="is_android">
+  border-start-end-radius: var(--cr-card-border-radius);
+  border-start-start-radius: var(--cr-card-border-radius);
+</if>
 }
 
 :host([is-card-end]) #item-container {
   padding-bottom: var(--card-first-last-item-padding);
+<if expr="is_android">
+  border-end-end-radius: var(--cr-card-border-radius);
+  border-end-start-radius: var(--cr-card-border-radius);
+</if>
 }
 
 #checkbox-cell {
@@ -110,23 +138,42 @@
 }
 
 #title-and-domain {
-  align-items: center;
   display: flex;
   flex: 1;
-  height: var(--item-height);
   margin-inline-end: auto;
   overflow: hidden;
   /* Allows the link's focus outline to be shown completely. */
   padding-inline-start: var(--title-domain-padding-start);
+<if expr="not is_android">
+  align-items: center;
+  height: var(--item-height);
+</if>
+<if expr="is_android">
+  /* Encloses the overflowing favicon tile, title, and domain inside one focus
+   * ring without changing #item-info-row height. */
+  align-items: flex-start;
+  border-radius: 8px;
+  flex-direction: column;
+  height: auto;
+  justify-content: center;
+  padding-block: 4px;
+</if>
 }
 
 #checkbox {
   margin: 0 10px;
+<if expr="is_android">
+  margin-inline: 0 14px;
+</if>
 }
 
 .website-icon {
   height: var(--favicon-size);
   width: var(--favicon-size);
+<if expr="is_android">
+  /* Let the 36px tile span both lines without growing the 20px title line. */
+  margin-block: 0 -16px;
+</if>
 }
 
 .website-title {
@@ -146,28 +193,58 @@
 
 #timeAccessed {
   align-items: center;
+  height: var(--item-height);
+  margin-inline-start: 6px;
+<if expr="not is_android">
   color: var(--history-item-time-color);
   display: flex;
   font-size: 12px;
-  height: var(--item-height);
-  margin-inline-start: 6px;
   min-width: 96px;
-}
-
-#domain {
-  color: var(--cr-secondary-text-color);
-  font-size: 12px;
-  margin-inline-start: 8px;
+</if>
+<if expr="is_android">
+  /* Fixed width truncates long localized times without shifting tiles. */
+  color: var(--cr-primary-text-color);
+  display: block;
+  flex: none;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: var(--item-height);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  width: 75px;
+</if>
+}
+
+#domain {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+<if expr="not is_android">
+  color: var(--cr-secondary-text-color);
+  margin-inline-start: 8px;
+</if>
+<if expr="is_android">
+  align-self: stretch;
+  color: var(--color-sys-on-surface-variant, var(--cr-secondary-text-color));
+  font-weight: 400;
+  line-height: 16px;
+  margin-inline-start: calc(
+      var(--favicon-size) + var(--website-title-margin-start));
+</if>
 }
 
 #menuButton {
-  --cr-icon-button-margin-end: 20px;
   --cr-icon-button-margin-start: 0;
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
+<if expr="not is_android">
+  --cr-icon-button-margin-end: 20px;
+</if>
+<if expr="is_android">
+  --cr-icon-button-margin-end: 12px;
+</if>
 }
 
 #actor-icon {
@@ -178,6 +255,11 @@
 
 .website-link {
   position: relative;
+<if expr="is_android">
+  max-width: 100%;
+  /* Let the favicon tile overflow the title line. */
+  overflow: visible;
+</if>
 }
 
 #title-and-domain #actor-icon {
@@ -206,6 +288,9 @@
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-margin-start: 12px;
   --cr-icon-button-size: 32px;
+<if expr="is_android">
+  --cr-icon-button-margin-end: 8px;
+</if>
 }
 
 #expand-button {
@@ -326,6 +411,9 @@
   border-inline-start: 1px solid #888;
   height: 15px;
   margin-inline-start: 77px;
+<if expr="is_android">
+  display: none;
+</if>
 }
 
 @media (prefers-color-scheme: dark) {
@@ -352,6 +440,9 @@
 
 :host([is-card-start]) #background-clip {
   clip: auto;
+<if expr="is_android">
+  top: 48px;
+</if>
 }
 
 #background {
@@ -393,3 +484,31 @@ cr-checkbox::part(label-container) {
   display: block;
   position: fixed;
 }
+
+<if expr="is_android">
+/* 2px page-colored row divider; fallback preserves row height pre-load. */
+:host(:not([is-card-start])) #date-accessed + [role=row] {
+  border-top: 2px solid var(--color-sys-surface-container,
+      var(--md-background-color));
+}
+
+@media (hover: hover) {
+  #item-container:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+}
+
+/* Search results show localized dates ("Jun 16, 2026") instead of times. */
+:host([is-search]) #timeAccessed {
+  width: 96px;
+}
+
+#title-and-domain:has(.website-link:focus-visible) {
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: -2px;
+}
+
+.website-link:focus-visible {
+  outline: none;
+}
+</if>

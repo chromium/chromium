@@ -10,10 +10,7 @@
 html {
   --card-border-color: rgba(0, 0, 0, 0.14);
   --card-first-last-item-padding: 8px;
-  --card-max-width: 960px;
-  --card-min-width: 550px;
   --card-padding-between: 16px;
-  --card-padding-side: 24px;
   --first-card-padding-top: 24px;
   --history-item-time-color: #646464;
   --interactive-color: var(--google-blue-500);
@@ -22,6 +19,21 @@ html {
   --side-bar-width: 256px;
   --sidebar-footer-text-color: var(--google-grey-700);
   --toolbar-height: 56px;
+<if expr="not is_android">
+  --card-max-width: 960px;
+  --card-min-width: 550px;
+  --card-padding-side: 24px;
+</if>
+<if expr="is_android">
+  --card-max-width: 600px;
+  --card-min-width: 0;
+  /* Needs a unit because it is used in calc(). */
+  --card-padding-side: 0px;
+  --cr-card-background-color: var(--color-history-page-card-background,
+      var(--cr-fallback-color-surface));
+  --cr-card-border-radius: 0;
+  --cr-card-shadow: none;
+</if>
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,3 +53,24 @@ html[webui-refresh-2026] {
   --separator-color: var(--color-history-page-separator);
   --sidebar-footer-text-color: var(--cr-color-history-page-text);
 }
+
+<if expr="is_android">
+@media (min-width: 600px) {
+  html {
+    --card-padding-side: 16px;
+    --cr-card-border-radius: 16px;
+  }
+}
+
+@media (min-width: 1440px) {
+  html {
+    --card-max-width: 840px;
+  }
+}
+
+@media (min-width: 1920px) {
+  html {
+    --card-max-width: 960px;
+  }
+}
+</if>

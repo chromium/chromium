@@ -260,6 +260,10 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, SharedMenuClosesOnFocusout) {
   RunTestCase("SharedMenuClosesOnFocusout");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryListTest, RowsKnowWhenSearching) {
+  RunTestCase("RowsKnowWhenSearching");
+}
+
 IN_PROC_BROWSER_TEST_F(HistoryListTest, GoToGeminiChatViaMenuButton) {
   RunTestCase("GoToGeminiChatViaMenuButton");
 }

@@ -37,6 +37,7 @@ export function getHtml(this: HistoryListElement) {
           ?is-domain-collapsed="${this.isDomainCollapsed_(item, index)}"
           .domainGroupSize="${this.getDomainGroupSize_(item, index)}"
           ?has-time-gap="${this.needsTimeGap_(item, index)}"
+          ?is-search="${this.searchedTerm !== ''}"
           .searchTerm="${this.searchedTerm}"
           .numberOfItems="${this.historyData_.length}" .index="${index}"
           .focusRowIndex="${index}" .listTabIndex="${tabindex}"

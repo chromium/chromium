@@ -25,18 +25,29 @@ a {
 .card-title {
   align-items: center;
   display: flex;
-  font-size: 16px;
-  font-weight: 500;
   line-height: 24px;
   overflow: hidden;
-  padding: 23px 24px 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
+<if expr="not is_android">
+  font-size: 16px;
+  font-weight: 500;
+  padding: 23px 24px 13px;
+</if>
+<if expr="is_android">
+  box-sizing: border-box;
+  font-size: 18px;
+  font-weight: 400;
+  min-height: 48px;
+  padding: 0 16px;
+</if>
 }
 
+<if expr="not is_android">
 :host-context([webui-refresh-2026]) .card-title:not([aria-expanded='false']) {
   border-bottom: 1px solid var(--color-history-page-separator);
 }
+</if>
 
 .centered-message {
   align-items: center;
@@ -53,10 +64,19 @@ a {
   background-repeat: no-repeat;
   background-size: 16px;
   background-position: center center;
-  border-radius: 4px;
   flex: none;
+<if expr="not is_android">
+  border-radius: 4px;
   height: 24px;
   width: 24px;
+</if>
+<if expr="is_android">
+  background-color: var(--color-sys-surface-container,
+      var(--md-background-color));
+  border-radius: 8px;
+  height: 36px;
+  width: 36px;
+</if>
 }
 
 .website-link {
@@ -68,10 +88,25 @@ a {
 }
 
 .website-title {
-  font-size: 12px;
-  font-weight: 500;
   margin-inline-start: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+<if expr="not is_android">
+  font-size: 12px;
+  font-weight: 500;
+</if>
+<if expr="is_android">
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+</if>
 }
+
+<if expr="is_android">
+/* Set directly on cr-action-menu because its :host rule redefines this var. */
+cr-action-menu {
+  --cr-menu-background-color: var(--color-history-page-menu-background,
+      var(--color-menu-background, var(--cr-fallback-color-surface)));
+}
+</if>

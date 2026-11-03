@@ -1303,6 +1303,28 @@ suite('HistoryListTest', function() {
     assertFalse(menu.open);
   });
 
+  test('RowsKnowWhenSearching', async () => {
+    await finishSetup(TEST_HISTORY_RESULTS);
+    let items = element.shadowRoot.querySelectorAll('history-item');
+    assertTrue(items.length > 0);
+    for (const item of items) {
+      assertFalse(item.hasAttribute('is-search'));
+    }
+
+    testProxy.handler.resetResolver('queryHistory');
+    testProxy.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {info: createHistoryInfo('cat'), value: TEST_HISTORY_RESULTS},
+    }));
+    app.fire('change-query', {search: 'cat'});
+    await testProxy.handler.whenCalled('queryHistory');
+    await microtasksFinished();
+    items = element.shadowRoot.querySelectorAll('history-item');
+    assertTrue(items.length > 0);
+    for (const item of items) {
+      assertTrue(item.hasAttribute('is-search'));
+    }
+  });
+
   teardown(function() {
     app.fire('change-query', {search: ''});
   });

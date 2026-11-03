@@ -19,7 +19,7 @@
   display: flex;
   align-items: center;
   background: var(--cr-card-background-color);
-  border-radius: 8px;
+  border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
   box-sizing: border-box;
   margin-block-start: 16px;
