@@ -5420,6 +5420,8 @@ void RenderViewContextMenu::ExecGlicSmartSuggestion() {
     return;
   }
 
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+      GetBrowserContext(), features::kGlicSuggestionContextMenu);
   glic::GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
       *source_frame, params_);
 }
@@ -5990,6 +5992,10 @@ void RenderViewContextMenu::MaybeAppendGlicSmartSuggestionItem() {
                                          ? kTextAnalysisIcon
                                          : kTextAnalysisOldIcon,
                                      ui::kColorMenuIcon, kTabMenuIconSize));
+  menu_model_.SetIsNewFeatureAt(
+      menu_model_.GetItemCount() - 1,
+      UserEducationService::MaybeShowNewBadge(
+          GetBrowserContext(), features::kGlicSuggestionContextMenu));
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 }
 

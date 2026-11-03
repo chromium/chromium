@@ -2959,6 +2959,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Shown in the contextual menu.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kGlicSuggestionContextMenu,
+      user_education::Metadata(
+          159, "liuwilliam@google.com",
+          "Shown on the glic smart suggestion context menu item.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
       tabs::kVerticalTabsNewBadge,
       user_education::Metadata(147, "stluong@chromium.org",
                                "Show the new badge in the system context menu "
