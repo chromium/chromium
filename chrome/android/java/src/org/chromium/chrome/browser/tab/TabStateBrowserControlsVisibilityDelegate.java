@@ -14,6 +14,7 @@ import android.util.ArraySet;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
@@ -21,6 +22,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProviderSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -92,6 +97,9 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     // There shouldn't be very many outstanding navigations at once so an ArraySet should be fine.
     private final Set<Long> mOutstandingNavigations = new ArraySet<>();
 
+    // Outstanding navigations that skipped the load lock (ClankOmniboxSameOriginMinimization).
+    private final Set<Long> mKeepHiddenNavigationIds = new ArraySet<>();
+
     /**
      * Basic constructor.
      *
@@ -129,6 +137,13 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                                 "Android.BrowserControls.OutstandingChangedOnStart", changed);
 
                         mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
+
+                        if (shouldKeepControlsHiddenOnStart(navigation)) {
+                            // Keep any existing lock: another navigation may commit cross-origin.
+                            // TODO(crbug.com/579544014): Schedule the slow-load reveal.
+                            mKeepHiddenNavigationIds.add(navigation.getNavigationId());
+                            return;
+                        }
                         boolean safe = DomDistillerUrlUtils.isDistilledPage(navigation.getUrl());
                         updateWaitingForLoad(!safe);
                     }
@@ -142,6 +157,8 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                                 mOutstandingNavigations.remove(navigation.getNavigationId());
                         RecordHistogram.recordBooleanHistogram(
                                 "Android.BrowserControls.OutstandingChangedOnFinish", changed);
+
+                        onKeptHiddenNavigationFinished(navigation);
 
                         if (mOutstandingNavigations.isEmpty()) {
                             mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
@@ -160,6 +177,8 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                         // locked when the tab is shown again, otherwise hiding and showing the tab
                         // lets a page scroll the real URL away before the navigation commits. The
                         // lock is released as usual once the outstanding navigations finish.
+                        // TODO(crbug.com/579544014): Lock navigations in mKeepHiddenNavigationIds,
+                        // and clear the set in onWebContentsUpdated() to drop stale IDs.
                         if (!mOutstandingNavigations.isEmpty()) return;
                         updateWaitingForLoad(false);
                     }
@@ -268,6 +287,52 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         }
 
         return enableHidingBrowserControls;
+    }
+
+    /** Returns whether a navigation can skip the load lock (ClankOmniboxSameOriginMinimization). */
+    private boolean shouldKeepControlsHiddenOnStart(NavigationHandle navigation) {
+        // TODO(crbug.com/579544759): Filter by navigation type.
+        return ChromeFeatureList.sClankOmniboxSameOriginMinimization.isEnabled()
+                && canKeepOmniboxHiddenInTab()
+                && areBrowserControlsOffScreen()
+                && isSameOriginHttpOrHttpsNavigation(navigation);
+    }
+
+    private boolean isSameOriginHttpOrHttpsNavigation(NavigationHandle navigation) {
+        WebContents webContents = mTab.getWebContents();
+        if (webContents == null) return false;
+        GURL targetUrl = navigation.getUrl();
+        GURL currentUrl = webContents.getLastCommittedUrl();
+        // Check both schemes: the origin of a filesystem: URL is its inner origin.
+        return UrlUtilities.isHttpOrHttps(targetUrl)
+                && UrlUtilities.isHttpOrHttps(currentUrl)
+                && targetUrl.getOrigin().equals(currentUrl.getOrigin());
+    }
+
+    /** Returns whether the Omnibox can stay hidden across navigations in this tab. */
+    private boolean canKeepOmniboxHiddenInTab() {
+        // A hidden tab reads the controls offset of the foreground tab, which does not show
+        // whether the user saw the URL of this tab. Keep the load lock for hidden tabs.
+        if (!mTab.isTabInBrowser() || mTab.isHidden()) return false;
+        if (DeviceInfo.isAutomotive() || DeviceInfo.isTV() || DeviceInfo.isXr()) return false;
+        BrowserControlsStateProvider provider = getBrowserControlsStateProvider();
+        return provider != null && provider.getControlsPosition() == ControlsPosition.TOP;
+    }
+
+    private boolean areBrowserControlsOffScreen() {
+        BrowserControlsStateProvider provider = getBrowserControlsStateProvider();
+        return provider != null && BrowserControlsUtils.areBrowserControlsOffScreen(provider);
+    }
+
+    private @Nullable BrowserControlsStateProvider getBrowserControlsStateProvider() {
+        // Not cached: the provider belongs to the activity, and the tab can change windows.
+        return BrowserControlsStateProviderSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
+    }
+
+    private void onKeptHiddenNavigationFinished(NavigationHandle navigation) {
+        if (!mKeepHiddenNavigationIds.remove(navigation.getNavigationId())) return;
+        // TODO(crbug.com/579544758): Re-check the origin and error state at commit.
+        // TODO(crbug.com/579544014): Cancel the slow-load reveal.
     }
 
     /**

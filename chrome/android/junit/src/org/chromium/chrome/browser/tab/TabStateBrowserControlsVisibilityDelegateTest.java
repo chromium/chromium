@@ -701,7 +701,6 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
     @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
     public void testSameOriginMinimization_SameOriginNavigationKeepsControlsHidden() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
@@ -1003,7 +1002,6 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
     @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
     public void testSameOriginMinimization_ReadsControlsOfTabsCurrentWindow() {
         GURL page1 = JUnitTestGURLs.BLUE_1;
@@ -1069,6 +1067,21 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         verifyControlsLockedShown();
         finishNavigation(subdomainNav, httpsSubdomain, /* isSameOrigin= */ false);
         assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_FromFilesystemUrlLocksControls() {
+        // GURL#getOrigin() of a filesystem: URL is its inner https origin.
+        GURL filesystemPage = new GURL("filesystem:https://www.blue.com/temporary/page1");
+        GURL httpsPage = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(filesystemPage);
+
+        NavigationHandle navigation = startNavigation(httpsPage);
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsLockedShown();
+        finishNavigation(navigation, httpsPage, /* isSameOrigin= */ false);
     }
 
     @Test
