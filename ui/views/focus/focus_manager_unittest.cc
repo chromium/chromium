@@ -47,7 +47,12 @@
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/aura/scoped_keyboard_hook.h"
+#include "ui/aura/window.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/widget/native_widget_aura.h"
 #endif  // USE_AURA
 
@@ -1625,6 +1630,90 @@ TEST_F(RedirectToParentFocusManagerTest, NotProcessedAccelerator) {
   bubble_->set_close_on_deactivate(true);
   EXPECT_FALSE(bubble_focus_manager_->ProcessAccelerator(return_accelerator));
   EXPECT_FALSE(bubble_widget->IsClosed());
+}
+
+// View that requests raw key events and marks received key events as handled,
+// modeling a focused WebView/RenderWidgetHostView.
+class KeyEventConsumingView : public View {
+  METADATA_HEADER(KeyEventConsumingView, View)
+
+ public:
+  KeyEventConsumingView() { SetFocusBehavior(FocusBehavior::ALWAYS); }
+  KeyEventConsumingView(const KeyEventConsumingView&) = delete;
+  KeyEventConsumingView& operator=(const KeyEventConsumingView&) = delete;
+  ~KeyEventConsumingView() override = default;
+
+  int key_events_received() const { return key_events_received_; }
+
+  // View:
+  bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override {
+    return true;
+  }
+  bool OnKeyPressed(const ui::KeyEvent& event) override {
+    ++key_events_received_;
+    return true;
+  }
+
+ private:
+  int key_events_received_ = 0;
+};
+
+BEGIN_METADATA(KeyEventConsumingView)
+END_METADATA
+
+// Verifies that FocusManagerEventHandler skips high-priority accelerators when
+// the key is locked via KeyboardLock, except for ESCAPE.
+TEST_F(FocusManagerTest, FocusManagerEventHandlerSkipsLockedKeys) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kSystemKeyboardLock);
+
+  KeyEventConsumingView* view = GetContentsView()->AddChildView(
+      std::make_unique<KeyEventConsumingView>());
+  view->RequestFocus();
+  ASSERT_EQ(view, GetFocusManager()->GetFocusedView());
+
+  ui::Accelerator alt_d_accelerator(ui::VKEY_D, ui::EF_ALT_DOWN);
+  ui::Accelerator escape_accelerator(ui::VKEY_ESCAPE, ui::EF_NONE);
+  ui::TestAcceleratorTarget high_priority_target(true);
+  GetFocusManager()->RegisterAccelerator(alt_d_accelerator,
+                                         ui::AcceleratorManager::kHighPriority,
+                                         &high_priority_target);
+  GetFocusManager()->RegisterAccelerator(escape_accelerator,
+                                         ui::AcceleratorManager::kHighPriority,
+                                         &high_priority_target);
+
+  std::unique_ptr<aura::ScopedKeyboardHook> keyboard_hook =
+      GetWidget()->GetNativeWindow()->CaptureSystemKeyEvents(std::nullopt);
+  ASSERT_TRUE(keyboard_hook);
+
+  // Locked non-Escape key should not be consumed by FocusManagerEventHandler
+  // in EP_PRETARGET and should be delivered to the focused view.
+  ui::KeyEvent alt_d_event(ui::EventType::kKeyPressed, ui::VKEY_D,
+                           ui::DomCode::US_D, ui::EF_ALT_DOWN);
+  ui::EventDispatchDetails details =
+      GetEventSink()->OnEventFromSource(&alt_d_event);
+  ASSERT_FALSE(details.dispatcher_destroyed);
+  EXPECT_EQ(0, high_priority_target.accelerator_count());
+  EXPECT_EQ(1, view->key_events_received());
+
+  // Escape is never considered locked and should still be processed by
+  // FocusManagerEventHandler in EP_PRETARGET.
+  ui::KeyEvent escape_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
+                            ui::DomCode::ESCAPE, ui::EF_NONE);
+  details = GetEventSink()->OnEventFromSource(&escape_event);
+  ASSERT_FALSE(details.dispatcher_destroyed);
+  EXPECT_EQ(1, high_priority_target.accelerator_count());
+  EXPECT_EQ(1, view->key_events_received());
+
+  // After releasing KeyboardLock, the high-priority accelerator is processed in
+  // EP_PRETARGET before reaching the focused view.
+  keyboard_hook.reset();
+  ui::KeyEvent alt_d_event2(ui::EventType::kKeyPressed, ui::VKEY_D,
+                            ui::DomCode::US_D, ui::EF_ALT_DOWN);
+  details = GetEventSink()->OnEventFromSource(&alt_d_event2);
+  ASSERT_FALSE(details.dispatcher_destroyed);
+  EXPECT_EQ(2, high_priority_target.accelerator_count());
+  EXPECT_EQ(1, view->key_events_received());
 }
 
 #endif
