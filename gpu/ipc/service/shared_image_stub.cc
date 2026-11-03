@@ -49,6 +49,13 @@ bool IsSupportedFormat(viz::SharedImageFormat format) {
   }
 #endif
 
+  if (format == viz::SinglePlaneFormat::kRG_88 ||
+      format == viz::SinglePlaneFormat::kR_16 ||
+      format == viz::SinglePlaneFormat::kRG_1616) {
+    LOG(ERROR) << "SharedImageStub: Incompatible format: " << format.ToString();
+    return false;
+  }
+
   // `k16F` channel format does not support UV planes which have 2 channels.
   if (format.is_multi_plane() &&
       format.channel_format() == viz::SharedImageFormat::ChannelFormat::k16F &&
