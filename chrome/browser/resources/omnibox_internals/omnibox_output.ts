@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {getFaviconUrl} from 'chrome://resources/js/icon.js';
 
 import {OmniboxElement} from './omnibox_element.js';
 import type {DisplayInputs} from './omnibox_input.js';
@@ -590,8 +591,8 @@ class OutputUrlProperty extends FlexWrappingOutputProperty {
     super(destinationUrl);
     const iconAndUrlContainer = createEl('div', this.container, ['pair-item']);
     if (!isSearchType) {
-      createEl('img', iconAndUrlContainer).src =
-          `chrome://favicon/${destinationUrl}`;
+      createEl('img', iconAndUrlContainer).src = getFaviconUrl(
+          destinationUrl, {scaleFactor: `${window.devicePixelRatio}x`});
     }
     createEl('a', iconAndUrlContainer, [], destinationUrl).href =
         destinationUrl;
