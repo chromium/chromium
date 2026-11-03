@@ -37,9 +37,6 @@ class AuxiliarySearchTopSiteProviderBridge
   void SetObserverAndTrigger(JNIEnv* env,
                              const base::android::JavaRef<jobject>& j_ref_obj);
 
-  // Removes the observer and destroys the bridge.
-  void Destroy(JNIEnv* env);
-
   // Starts a fetch of the current most visited sites suggestions.
   void GetMostVisitedSites(JNIEnv* env) const;
 
@@ -57,6 +54,7 @@ class AuxiliarySearchTopSiteProviderBridge
   void OnIconMadeAvailable(const GURL& site_url) override;
 
   jni_zero::ScopedJavaGlobalRef<jobject> observer_;
+  bool is_observing_ = false;
 
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_;
 

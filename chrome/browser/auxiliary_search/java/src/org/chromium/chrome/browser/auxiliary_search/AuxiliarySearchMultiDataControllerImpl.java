@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -148,12 +146,11 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
         }
 
         if (mActivityLifecycleDispatcherSet.isEmpty()) {
-            if (mIsObservingTopSites) {
-                assumeNonNull(mAuxiliarySearchTopSiteProviderBridge);
+            if (mAuxiliarySearchTopSiteProviderBridge != null) {
                 mAuxiliarySearchTopSiteProviderBridge.destroy();
                 mAuxiliarySearchTopSiteProviderBridge = null;
-                mIsObservingTopSites = false;
             }
+            mIsObservingTopSites = false;
         }
     }
 

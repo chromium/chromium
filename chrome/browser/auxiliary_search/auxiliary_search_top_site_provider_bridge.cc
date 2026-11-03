@@ -22,6 +22,7 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/ntp_tiles/constants.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -69,8 +70,9 @@ AuxiliarySearchTopSiteProviderBridge::AuxiliarySearchTopSiteProviderBridge(
     : most_visited_sites_(std::move(most_visited_sites)),
       excluded_urls_(std::move(excluded_urls)) {}
 
-AuxiliarySearchTopSiteProviderBridge::~AuxiliarySearchTopSiteProviderBridge() =
-    default;
+AuxiliarySearchTopSiteProviderBridge::~AuxiliarySearchTopSiteProviderBridge() {
+  RemoveObserver();
+}
 
 void AuxiliarySearchTopSiteProviderBridge::SetObserverAndTrigger(
     JNIEnv* env,
@@ -80,11 +82,7 @@ void AuxiliarySearchTopSiteProviderBridge::SetObserverAndTrigger(
   CHECK(most_visited_sites_);
   most_visited_sites_->AddMostVisitedURLsObserver(this,
                                                   kMaxNumMostVisitedSites);
-}
-
-void AuxiliarySearchTopSiteProviderBridge::Destroy(JNIEnv* env) {
-  RemoveObserver();
-  delete this;
+  is_observing_ = true;
 }
 
 void AuxiliarySearchTopSiteProviderBridge::GetMostVisitedSites(
@@ -95,7 +93,10 @@ void AuxiliarySearchTopSiteProviderBridge::GetMostVisitedSites(
 }
 
 void AuxiliarySearchTopSiteProviderBridge::RemoveObserver() {
-  most_visited_sites_->RemoveMostVisitedURLsObserver(this);
+  if (is_observing_) {
+    most_visited_sites_->RemoveMostVisitedURLsObserver(this);
+    is_observing_ = false;
+  }
   observer_ = nullptr;
 }
 
@@ -144,13 +145,13 @@ void AuxiliarySearchTopSiteProviderBridge::OnIconMadeAvailable(
                                                                 site_url);
 }
 
-static int64_t JNI_AuxiliarySearchTopSiteProviderBridge_Init(JNIEnv* env,
-                                                             Profile* profile) {
+static jni_zero::JniUniquePtr<AuxiliarySearchTopSiteProviderBridge>
+JNI_AuxiliarySearchTopSiteProviderBridge_Init(JNIEnv* env, Profile* profile) {
   CHECK(profile, base::NotFatalUntil::M161);
 
-  return reinterpret_cast<intptr_t>(new AuxiliarySearchTopSiteProviderBridge(
+  return jni_zero::MakeUnique<AuxiliarySearchTopSiteProviderBridge>(
       ChromeMostVisitedSitesFactory::NewForProfile(profile),
-      GetPrepopulatedPageUrls(profile)));
+      GetPrepopulatedPageUrls(profile));
 }
 
 DEFINE_JNI(AuxiliarySearchTopSiteProviderBridge)

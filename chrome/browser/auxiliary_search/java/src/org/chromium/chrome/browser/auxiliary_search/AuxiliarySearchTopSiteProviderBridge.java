@@ -9,7 +9,10 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -22,6 +25,9 @@ import java.util.List;
 /** Java bridge to provide information of top sites for the auxiliary search. */
 @NullMarked
 public class AuxiliarySearchTopSiteProviderBridge {
+    @JniType("::AuxiliarySearchTopSiteProviderBridge")
+    interface NativeAuxiliarySearchTopSiteProviderBridge extends JniTypeToken {}
+
     /** An interface to handle events in {@link MostVisitedSites}. */
     interface Observer {
         /** This is called when the list of most visited URLs is initially available or updated. */
@@ -36,7 +42,7 @@ public class AuxiliarySearchTopSiteProviderBridge {
         void onIconMadeAvailable(GURL siteUrl);
     }
 
-    private long mNativeBridge;
+    private @Nullable JniUniquePtr<NativeAuxiliarySearchTopSiteProviderBridge> mNativeBridge;
     private @Nullable Observer mObserver;
 
     /**
@@ -46,7 +52,7 @@ public class AuxiliarySearchTopSiteProviderBridge {
      */
     public AuxiliarySearchTopSiteProviderBridge(Profile profile) {
         if (profile.isOffTheRecord()) {
-            mNativeBridge = 0;
+            mNativeBridge = null;
         } else {
             mNativeBridge = AuxiliarySearchTopSiteProviderBridgeJni.get().init(profile);
         }
@@ -59,7 +65,7 @@ public class AuxiliarySearchTopSiteProviderBridge {
      * @param observer The observer to receive suggestions when they are ready.
      */
     public void setObserver(Observer observer) {
-        assert mNativeBridge != 0;
+        assert mNativeBridge != null;
 
         mObserver = observer;
         AuxiliarySearchTopSiteProviderBridgeJni.get().setObserverAndTrigger(mNativeBridge, this);
@@ -67,14 +73,16 @@ public class AuxiliarySearchTopSiteProviderBridge {
 
     /** Destroys the native bridge and remove observer. */
     public void destroy() {
-        AuxiliarySearchTopSiteProviderBridgeJni.get().destroy(mNativeBridge);
+        if (mNativeBridge != null) {
+            mNativeBridge.destroy();
+            mNativeBridge = null;
+        }
         mObserver = null;
-        mNativeBridge = 0;
     }
 
     /** Starts a fetch of the current most visited sites suggestions. */
     public void getMostVisitedSites() {
-        if (mNativeBridge == 0) {
+        if (mNativeBridge == null) {
             if (mObserver != null) {
                 mObserver.onSiteSuggestionsAvailable(null);
             }
@@ -125,16 +133,14 @@ public class AuxiliarySearchTopSiteProviderBridge {
     }
 
     @NativeMethods
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public interface Natives {
-        long init(@JniType("Profile*") Profile profile);
+    interface Natives {
+        JniUniquePtr<NativeAuxiliarySearchTopSiteProviderBridge> init(
+                @JniType("Profile*") Profile profile);
 
         void setObserverAndTrigger(
-                long nativeAuxiliarySearchTopSiteProviderBridge,
-                AuxiliarySearchTopSiteProviderBridge self);
+                JniPtr<NativeAuxiliarySearchTopSiteProviderBridge> self,
+                AuxiliarySearchTopSiteProviderBridge caller);
 
-        void destroy(long nativeAuxiliarySearchTopSiteProviderBridge);
-
-        void getMostVisitedSites(long nativeAuxiliarySearchTopSiteProviderBridge);
+        void getMostVisitedSites(JniPtr<NativeAuxiliarySearchTopSiteProviderBridge> self);
     }
 }

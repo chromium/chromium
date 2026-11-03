@@ -12,6 +12,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniUniquePtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchTopSiteProviderBridge.NativeAuxiliarySearchTopSiteProviderBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -34,15 +37,14 @@ import java.util.List;
 public class AuxiliarySearchTopSiteProviderBridgeUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    // Arbitrary non-0 value.
-    private static final long NATIVE_BRIDGE = 10L;
-
     @Mock
     private AuxiliarySearchTopSiteProviderBridge.Natives
             mMockAuxiliarySearchTopSiteProviderBridgeJni;
 
     @Mock private Profile mProfile;
 
+    private static final long NATIVE_BRIDGE = 10L;
+    private JniUniquePtr<NativeAuxiliarySearchTopSiteProviderBridge> mNativeBridge;
     private AuxiliarySearchTopSiteProviderBridge mBridge;
 
     @Before
@@ -50,11 +52,17 @@ public class AuxiliarySearchTopSiteProviderBridgeUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         AuxiliarySearchTopSiteProviderBridgeJni.setInstanceForTesting(
                 mMockAuxiliarySearchTopSiteProviderBridgeJni);
+        mNativeBridge = JniUniquePtr.createForTesting(NATIVE_BRIDGE);
         when(mMockAuxiliarySearchTopSiteProviderBridgeJni.init(eq(mProfile)))
-                .thenReturn(NATIVE_BRIDGE);
+                .thenReturn(mNativeBridge);
 
         mBridge = new AuxiliarySearchTopSiteProviderBridge(mProfile);
         assertNotNull(mBridge);
+    }
+
+    @After
+    public void tearDown() {
+        mBridge.destroy();
     }
 
     @Test
@@ -65,7 +73,7 @@ public class AuxiliarySearchTopSiteProviderBridgeUnitTest {
         mBridge.setObserver(observer);
         assertEquals(observer, mBridge.getObserverForTesting());
         verify(mMockAuxiliarySearchTopSiteProviderBridgeJni)
-                .setObserverAndTrigger(eq(NATIVE_BRIDGE), eq(mBridge));
+                .setObserverAndTrigger(eq(mNativeBridge), eq(mBridge));
     }
 
     @Test
@@ -78,14 +86,13 @@ public class AuxiliarySearchTopSiteProviderBridgeUnitTest {
 
         Mockito.reset(mMockAuxiliarySearchTopSiteProviderBridgeJni);
         mBridge.destroy();
-        verify(mMockAuxiliarySearchTopSiteProviderBridgeJni).destroy(eq(NATIVE_BRIDGE));
         assertNull(mBridge.getObserverForTesting());
     }
 
     @Test
     public void testGetMostVisitedSites() {
         mBridge.getMostVisitedSites();
-        verify(mMockAuxiliarySearchTopSiteProviderBridgeJni).getMostVisitedSites(eq(NATIVE_BRIDGE));
+        verify(mMockAuxiliarySearchTopSiteProviderBridgeJni).getMostVisitedSites(eq(mNativeBridge));
     }
 
     @Test
