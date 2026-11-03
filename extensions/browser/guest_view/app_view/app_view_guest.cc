@@ -27,6 +27,7 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/strings/grit/extensions_strings.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace app_runtime = extensions::api::app_runtime;
 
@@ -171,7 +172,7 @@ content::WebContents* AppViewGuest::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespaceHandle* session_storage_namespace) {

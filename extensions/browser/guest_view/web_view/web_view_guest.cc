@@ -91,6 +91,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/url_constants.h"
@@ -162,21 +163,21 @@ uint32_t GetStoragePartitionRemovalMask(uint32_t web_view_removal_mask) {
 // May return an empty string to indicate a disposition that is not supported by
 // the API.
 std::string WindowOpenDispositionToString(
-    WindowOpenDisposition window_open_disposition) {
+    ui::mojom::WindowOpenDisposition window_open_disposition) {
   switch (window_open_disposition) {
-    case WindowOpenDisposition::kIgnoreAction:
+    case ui::mojom::WindowOpenDisposition::kIgnoreAction:
       return "ignore";
-    case WindowOpenDisposition::kSaveToDisk:
+    case ui::mojom::WindowOpenDisposition::kSaveToDisk:
       return "save_to_disk";
-    case WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
       return "current_tab";
-    case WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
       return "new_background_tab";
-    case WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
       return "new_foreground_tab";
-    case WindowOpenDisposition::kNewWindow:
+    case ui::mojom::WindowOpenDisposition::kNewWindow:
       return "new_window";
-    case WindowOpenDisposition::kNewPopup:
+    case ui::mojom::WindowOpenDisposition::kNewPopup:
       return "new_popup";
     default:
       return "";
@@ -879,7 +880,7 @@ void WebViewGuest::LoadAbort(bool is_top_level,
 }
 
 content::GuestPageHolder* WebViewGuest::GuestCreateNewWindow(
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const GURL& url,
     const std::string& main_frame_name,
     content::RenderFrameHost* opener,
@@ -1000,7 +1001,7 @@ void WebViewGuest::CreateNewGuestWebViewWindow(
 }
 
 void WebViewGuest::NewGuestWebViewCallback(
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const GURL& url,
     const std::string& frame_name,
     std::optional<content::OpenURLParams> open_url_params,
@@ -2046,7 +2047,7 @@ content::WebContents* WebViewGuest::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
@@ -2130,7 +2131,7 @@ WebContents* WebViewGuest::OpenURLFromTab(
   // LoadURLWithParams such that if the guest attempts to navigate to a URL that
   // it is not allowed to navigate to, a 'loadabort' event will fire in the
   // embedder, and the guest will be navigated to about:blank.
-  if (params.disposition == WindowOpenDisposition::kCurrentTab) {
+  if (params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     LoadURLWithParams(content::NavigationController::LoadURLParams(params),
                       std::move(navigation_handle_callback),
                       true /* force_navigation */);
@@ -2180,7 +2181,7 @@ void WebViewGuest::DidOpenRequestedURL(
     content::RenderFrameHost* source_render_frame_host,
     const GURL& url,
     const content::Referrer& referrer,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
@@ -2330,7 +2331,7 @@ void WebViewGuest::LoadURLWithParams(
 }
 
 void WebViewGuest::RequestNewWindowPermission(
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const gfx::Rect& initial_bounds,
     std::unique_ptr<WebViewGuest> new_guest) {
   if (!new_guest) {

@@ -42,6 +42,7 @@
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using content::WebContents;
 using guest_view::GuestViewBase;
@@ -401,7 +402,7 @@ content::WebContents* MimeHandlerViewGuest::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespaceHandle* session_storage_namespace) {
@@ -409,7 +410,7 @@ content::WebContents* MimeHandlerViewGuest::CreateCustomWebContents(
 
   content::OpenURLParams open_params =
       content::OpenURLParams::CreateRendererInitiated(
-          target_url, WindowOpenDisposition::kNewForegroundTab,
+          target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           opener->GetCurrentInitiatorNavigationState());
   open_params.initiator_origin = opener->GetLastCommittedOrigin();

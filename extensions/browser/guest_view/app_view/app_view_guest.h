@@ -13,6 +13,7 @@
 #include "components/guest_view/browser/guest_view.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest_delegate.h"
 #include "extensions/browser/lazy_context_task_queue.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace extensions {
 class Extension;
@@ -94,7 +95,7 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespaceHandle* session_storage_namespace) final;

@@ -30,6 +30,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/strings/grit/extensions_strings.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using content::WebContents;
 using guest_view::GuestViewBase;
@@ -171,7 +172,7 @@ WebContents* ExtensionOptionsGuest::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
@@ -203,16 +204,16 @@ WebContents* ExtensionOptionsGuest::OpenURLFromTab(
     return nullptr;
   }
 
-  // Don't allow external URLs with the CURRENT_TAB disposition be opened in
-  // this guest view, change the disposition to NEW_FOREGROUND_TAB.
+  // Don't allow external URLs with the `kCurrentTab` disposition be opened in
+  // this guest view, change the disposition to `kNewForegroundTab`.
   if ((!params.url.SchemeIs(extensions::kExtensionScheme) ||
        params.url.GetHost() != options_page_.GetHost()) &&
-      params.disposition == WindowOpenDisposition::kCurrentTab) {
+      params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     return extension_options_guest_delegate_->OpenURLInNewTab(
-        content::OpenURLParams(params.url, params.referrer,
-                               params.frame_tree_node_id,
-                               WindowOpenDisposition::kNewForegroundTab,
-                               params.transition, params.is_renderer_initiated),
+        content::OpenURLParams(
+            params.url, params.referrer, params.frame_tree_node_id,
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+            params.transition, params.is_renderer_initiated),
         std::move(navigation_handle_callback));
   }
   return extension_options_guest_delegate_->OpenURLInNewTab(
@@ -279,7 +280,7 @@ WebContents* ExtensionOptionsGuest::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespaceHandle* session_storage_namespace) {
@@ -291,7 +292,7 @@ WebContents* ExtensionOptionsGuest::CreateCustomWebContents(
   if (extension_options_guest_delegate_) {
     extension_options_guest_delegate_->OpenURLInNewTab(
         content::OpenURLParams::CreateBrowserInitiated(
-            target_url, WindowOpenDisposition::kNewForegroundTab,
+            target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             ui::PAGE_TRANSITION_LINK),
         /*navigation_handle_callback=*/{});
   }

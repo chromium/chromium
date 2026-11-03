@@ -25,6 +25,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/stack_frame.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace base {
 class ElapsedTimer;
@@ -151,7 +152,7 @@ class ExtensionHost : public DeferredStartRenderHost,
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;

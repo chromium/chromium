@@ -10,7 +10,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace content {
 enum class PictureInPictureResult;
@@ -42,7 +42,7 @@ class ExtensionHostDelegate {
   virtual void CreateTab(std::unique_ptr<content::WebContents> web_contents,
                          const GURL& target_url,
                          const ExtensionId& extension_id,
-                         WindowOpenDisposition disposition,
+                         ui::mojom::WindowOpenDisposition disposition,
                          const blink::mojom::WindowFeatures& window_features,
                          bool user_gesture) = 0;
 

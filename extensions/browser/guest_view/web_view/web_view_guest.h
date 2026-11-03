@@ -27,6 +27,7 @@
 #include "extensions/browser/script_executor.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace content {
 class NavigationThrottleRegistry;
@@ -231,7 +232,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void GuestViewDidChangeLoadProgress(double progress) final;
   void GuestViewMainFrameProcessGone(base::TerminationStatus status) final;
   content::GuestPageHolder* GuestCreateNewWindow(
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const GURL& url,
       const std::string& main_frame_name,
       content::RenderFrameHost* opener,
@@ -284,7 +285,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) final;
@@ -317,7 +318,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                            content::RenderFrameHost* source_render_frame_host,
                            const GURL& url,
                            const content::Referrer& referrer,
-                           WindowOpenDisposition disposition,
+                           ui::mojom::WindowOpenDisposition disposition,
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) final;
@@ -364,7 +365,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
           navigation_handle_callback,
       bool force_navigation);
 
-  void RequestNewWindowPermission(WindowOpenDisposition disposition,
+  void RequestNewWindowPermission(ui::mojom::WindowOpenDisposition disposition,
                                   const gfx::Rect& initial_bounds,
                                   std::unique_ptr<WebViewGuest> new_guest);
 
@@ -379,7 +380,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void CreateNewGuestWebViewWindow(const content::OpenURLParams& params);
 
   void NewGuestWebViewCallback(
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const GURL& url,
       const std::string& frame_name,
       std::optional<content::OpenURLParams> open_url_params,

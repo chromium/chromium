@@ -16,6 +16,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace extensions {
 
@@ -38,8 +39,8 @@ content::WebContents* AppWebContentsHelper::OpenURLFromTab(
   // now we can't distinguish between those and <meta> refreshes or window.href
   // navigations, which we don't want to allow.
   // TODO(mihaip): Can we check for user gestures instead?
-  WindowOpenDisposition disposition = params.disposition;
-  if (disposition == WindowOpenDisposition::kCurrentTab) {
+  ui::mojom::WindowOpenDisposition disposition = params.disposition;
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         base::StringPrintf(
@@ -49,8 +50,8 @@ content::WebContents* AppWebContentsHelper::OpenURLFromTab(
   }
 
   // These dispositions aren't really navigations.
-  if (disposition == WindowOpenDisposition::kSaveToDisk ||
-      disposition == WindowOpenDisposition::kIgnoreAction) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kSaveToDisk ||
+      disposition == ui::mojom::WindowOpenDisposition::kIgnoreAction) {
     return nullptr;
   }
 

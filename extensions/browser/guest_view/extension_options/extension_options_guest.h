@@ -11,6 +11,7 @@
 
 #include "components/guest_view/browser/guest_view.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_guest_delegate.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -56,7 +57,7 @@ class ExtensionOptionsGuest
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) final;
@@ -83,7 +84,7 @@ class ExtensionOptionsGuest
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespaceHandle* session_storage_namespace) final;
