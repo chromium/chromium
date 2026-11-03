@@ -594,9 +594,16 @@ def VerifyBundleManifest(bundle, manifest):
         sys.exit(1)
 
 
-def CopyWritable(src, dst):
-    """Copy |src| file to |dst| and ensure |dst| is user-writable."""
-    shutil.copy2(src, dst)
+def CopyWritable(src, dst, copy_function=shutil.copy2):
+    """Copy |src| file to |dst| and ensure |dst| is user-writable.
+
+    An existing |dst| file is removed first, since it may be a read-only copy
+    left by an earlier build (e.g. when |src| comes from a read-only CIPD
+    package).
+    """
+    if os.path.lexists(dst):
+        os.unlink(dst)
+    copy_function(src, dst)
     os.chmod(dst, os.stat(dst).st_mode | stat.S_IWUSR)
 
 
@@ -925,7 +932,9 @@ class CodeSignBundleAction(Action):
         # Copy main binary into bundle.
         if not os.path.isdir(bundle.executable_dir):
             os.makedirs(bundle.executable_dir)
-        shutil.copy(args.binary, bundle.binary_path)
+        # Use `shutil.copy` (not `copy2`) so the binary, which is a declared
+        # build output, gets a fresh mtime.
+        CopyWritable(args.binary, bundle.binary_path, copy_function=shutil.copy)
 
         # Record the symlinks created (they are likely not listed in the
         # manifest, but must not be deleted).
