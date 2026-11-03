@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/utils/autofill_and_passwords_item_utils.h"
 
+#import "base/feature_list.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -22,62 +22,24 @@
 namespace {
 
 // Creates and returns a configured TableViewDetailIconItem.
-TableViewDetailIconItem* DetailItemWithType(
-    NSInteger type,
-    NSString* text,
-    NSString* detail_text,
-    UIImage* symbol,
-    NSString* accessibility_identifier) {
-  TableViewDetailIconItem* detail_item =
+TableViewDetailIconItem* DetailItemWithType(NSInteger type,
+                                            NSString* text,
+                                            NSString* detailText,
+                                            NSString* trailingDetailText,
+                                            UIImage* symbol,
+                                            NSString* accessibilityIdentifier) {
+  TableViewDetailIconItem* detailItem =
       [[TableViewDetailIconItem alloc] initWithType:type];
-  detail_item.text = text;
-  detail_item.detailText = detail_text;
-  detail_item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  detail_item.accessibilityTraits |= UIAccessibilityTraitButton;
-  detail_item.accessibilityIdentifier = accessibility_identifier;
-  detail_item.iconImage = symbol;
-  if (IsYourSavedInfoSettingsPageIosEnabled()) {
-    detail_item.iconTintColor = [UIColor colorNamed:kTextPrimaryColor];
-    detail_item.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
-    detail_item.trailingDetailText = detail_text;
-    switch (type) {
-      case SettingsItemTypePasswords:
-        detail_item.detailText = l10n_util::GetNSString(
-            IDS_AUTOFILL_AND_PASSWORDS_PASSWORD_MANAGER_SUMMARY);
-        break;
-      case SettingsItemTypeAutofillCreditCard:
-        detail_item.detailText =
-            l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_PAYMENTS_SUMMARY);
-        break;
-      case SettingsItemTypeAutofillProfile:
-        detail_item.detailText = l10n_util::GetNSString(
-            IDS_AUTOFILL_AND_PASSWORDS_CONTACT_INFO_SUMMARY);
-        break;
-      case SettingsItemTypeIdentityDocs:
-        detail_item.detailText = l10n_util::GetNSString(
-            IDS_AUTOFILL_AND_PASSWORDS_IDENTITY_DOCS_SUMMARY);
-        break;
-      case SettingsItemTypeTravelInfo:
-        detail_item.detailText =
-            l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_TRAVEL_SUMMARY);
-        break;
-      case SettingsItemTypeShoppingInfo:
-        detail_item.detailText =
-            l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_SHOPPING_SUMMARY);
-        break;
-      case SettingsItemTypeSuggestionsFromGemini:
-        detail_item.detailText = l10n_util::GetNSString(
-            IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY);
-        break;
-      default:
-        detail_item.detailText = nil;
-        break;
-    }
-  } else {
-    detail_item.iconBackgroundColor = [UIColor colorNamed:kYellow500Color];
-    detail_item.iconTintColor = UIColor.whiteColor;
-  }
-  return detail_item;
+  detailItem.text = text;
+  detailItem.detailText = detailText;
+  detailItem.trailingDetailText = trailingDetailText;
+  detailItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  detailItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  detailItem.accessibilityIdentifier = accessibilityIdentifier;
+  detailItem.iconImage = symbol;
+  detailItem.iconTintColor = [UIColor colorNamed:kTextPrimaryColor];
+  detailItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+  return detailItem;
 }
 
 // Returns the branded version of the Google Services symbol.
@@ -115,44 +77,40 @@ NSString* DetailTextForEnabledState(BOOL enabled) {
 }
 
 TableViewDetailIconItem* PasswordsItem(BOOL enabled) {
-  NSString* passwordsSectionTitle =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
-
-  return DetailItemWithType(SettingsItemTypePasswords, passwordsSectionTitle,
+  NSString* title = l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
+  NSString* summary = l10n_util::GetNSString(
+      IDS_AUTOFILL_AND_PASSWORDS_PASSWORD_MANAGER_SUMMARY);
+  return DetailItemWithType(SettingsItemTypePasswords, title, summary,
                             DetailTextForEnabledState(enabled),
                             SettingsRootSymbol(SymbolPassword),
                             kSettingsPasswordsCellId);
 }
 
 TableViewDetailIconItem* AutofillCreditCardItem(BOOL enabled) {
-  NSString* title = l10n_util::GetNSString(
-      IsYourSavedInfoSettingsPageIosEnabled() ? IDS_AUTOFILL_PAYMENTS_TITLE
-                                              : IDS_AUTOFILL_PAYMENT_METHODS);
-
-  return DetailItemWithType(SettingsItemTypeAutofillCreditCard, title,
+  NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_PAYMENTS_TITLE);
+  NSString* summary =
+      l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_PAYMENTS_SUMMARY);
+  return DetailItemWithType(SettingsItemTypeAutofillCreditCard, title, summary,
                             DetailTextForEnabledState(enabled),
                             SettingsRootSymbol(SymbolCreditCard),
                             kSettingsPaymentMethodsCellId);
 }
 
 TableViewDetailIconItem* AutofillProfileItem(BOOL enabled) {
-  NSString* title =
-      l10n_util::GetNSString(IsYourSavedInfoSettingsPageIosEnabled()
-                                 ? IDS_AUTOFILL_CONTACT_INFO_TITLE
-                                 : IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
-
-  UIImage* symbol = IsYourSavedInfoSettingsPageIosEnabled()
-                        ? SettingsRootSymbol(SymbolEnvelope)
-                        : SettingsRootSymbol(SymbolLocation);
-
-  return DetailItemWithType(SettingsItemTypeAutofillProfile, title,
-                            DetailTextForEnabledState(enabled), symbol,
+  NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_CONTACT_INFO_TITLE);
+  NSString* summary =
+      l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_CONTACT_INFO_SUMMARY);
+  return DetailItemWithType(SettingsItemTypeAutofillProfile, title, summary,
+                            DetailTextForEnabledState(enabled),
+                            SettingsRootSymbol(SymbolEnvelope),
                             kSettingsAddressesAndMoreCellId);
 }
 
 TableViewDetailIconItem* IdentityDocsItem(BOOL enabled) {
   NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_IDENTITY_DOCS_TITLE);
-  return DetailItemWithType(SettingsItemTypeIdentityDocs, title,
+  NSString* summary =
+      l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_IDENTITY_DOCS_SUMMARY);
+  return DetailItemWithType(SettingsItemTypeIdentityDocs, title, summary,
                             DetailTextForEnabledState(enabled),
                             SettingsRootSymbol(SymbolPersonTextRectangle),
                             kSettingsIdentityDocsCellId);
@@ -160,34 +118,42 @@ TableViewDetailIconItem* IdentityDocsItem(BOOL enabled) {
 
 TableViewDetailIconItem* TravelInfoItem(BOOL enabled) {
   NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE);
-  return DetailItemWithType(
-      SettingsItemTypeTravelInfo, title, DetailTextForEnabledState(enabled),
-      SettingsRootSymbol(SymbolSuitcase), kSettingsTravelInfoCellId);
+  NSString* summary =
+      l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_TRAVEL_SUMMARY);
+  return DetailItemWithType(SettingsItemTypeTravelInfo, title, summary,
+                            DetailTextForEnabledState(enabled),
+                            SettingsRootSymbol(SymbolSuitcase),
+                            kSettingsTravelInfoCellId);
 }
 
 TableViewDetailIconItem* ShoppingInfoItem(BOOL enabled) {
   NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_TITLE);
-  return DetailItemWithType(
-      SettingsItemTypeShoppingInfo, title, DetailTextForEnabledState(enabled),
-      SettingsRootSymbol(SymbolCart), kSettingsShoppingInfoCellId);
+  NSString* summary =
+      l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_SHOPPING_SUMMARY);
+  return DetailItemWithType(SettingsItemTypeShoppingInfo, title, summary,
+                            DetailTextForEnabledState(enabled),
+                            SettingsRootSymbol(SymbolCart),
+                            kSettingsShoppingInfoCellId);
 }
 
 TableViewDetailIconItem* SuggestionsFromGeminiItem(BOOL enabled) {
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE);
+  NSString* summary = l10n_util::GetNSString(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY);
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* image = SettingsRootSymbol(SymbolGeminiBrandedLogo);
 #else
   UIImage* image = SettingsRootSymbol(SymbolGeminiNonBrandedLogo);
 #endif
   return DetailItemWithType(SettingsItemTypeSuggestionsFromGemini, title,
-                            DetailTextForEnabledState(enabled), image,
+                            summary, DetailTextForEnabledState(enabled), image,
                             kSettingsSuggestionsFromGeminiCellId);
 }
 
 TableViewDetailIconItem* AutofillSettingsItem() {
   NSString* title = l10n_util::GetNSString(IDS_IOS_SETTINGS_AUTOFILL_SETTINGS);
-  return DetailItemWithType(SettingsItemTypeAutofillSettings, title, nil,
+  return DetailItemWithType(SettingsItemTypeAutofillSettings, title, nil, nil,
                             SettingsRootSymbol(SymbolSettings),
                             kSettingsAutofillSettingsCellId);
 }

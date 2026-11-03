@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/utils/autofill_and_passwords_item_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -189,12 +188,8 @@ NSString* const kAutofillAndPasswordsTableViewIdentifier =
   _passwordsEnabled = enabled;
 
   if (_passwordsDetailItem) {
-    if (IsYourSavedInfoSettingsPageIosEnabled()) {
-      _passwordsDetailItem.trailingDetailText =
-          DetailTextForEnabledState(enabled);
-    } else {
-      _passwordsDetailItem.detailText = DetailTextForEnabledState(enabled);
-    }
+    _passwordsDetailItem.trailingDetailText =
+        DetailTextForEnabledState(enabled);
     [self reconfigureCellsForItems:@[ _passwordsDetailItem ]];
   }
 }
@@ -206,13 +201,8 @@ NSString* const kAutofillAndPasswordsTableViewIdentifier =
   _autofillCreditCardEnabled = enabled;
 
   if (_autofillCreditCardDetailItem) {
-    if (IsYourSavedInfoSettingsPageIosEnabled()) {
-      _autofillCreditCardDetailItem.trailingDetailText =
-          DetailTextForEnabledState(enabled);
-    } else {
-      _autofillCreditCardDetailItem.detailText =
-          DetailTextForEnabledState(enabled);
-    }
+    _autofillCreditCardDetailItem.trailingDetailText =
+        DetailTextForEnabledState(enabled);
     [self reconfigureCellsForItems:@[ _autofillCreditCardDetailItem ]];
   }
 }
@@ -224,13 +214,8 @@ NSString* const kAutofillAndPasswordsTableViewIdentifier =
   _autofillProfileEnabled = enabled;
 
   if (_autofillProfileDetailItem) {
-    if (IsYourSavedInfoSettingsPageIosEnabled()) {
-      _autofillProfileDetailItem.trailingDetailText =
-          DetailTextForEnabledState(enabled);
-    } else {
-      _autofillProfileDetailItem.detailText =
-          DetailTextForEnabledState(enabled);
-    }
+    _autofillProfileDetailItem.trailingDetailText =
+        DetailTextForEnabledState(enabled);
     [self reconfigureCellsForItems:@[ _autofillProfileDetailItem ]];
   }
 }
@@ -242,12 +227,8 @@ NSString* const kAutofillAndPasswordsTableViewIdentifier =
   _identityDocsEnabled = enabled;
 
   if (_identityDocsDetailItem) {
-    if (IsYourSavedInfoSettingsPageIosEnabled()) {
-      _identityDocsDetailItem.trailingDetailText =
-          DetailTextForEnabledState(enabled);
-    } else {
-      _identityDocsDetailItem.detailText = DetailTextForEnabledState(enabled);
-    }
+    _identityDocsDetailItem.trailingDetailText =
+        DetailTextForEnabledState(enabled);
     [self reconfigureCellsForItems:@[ _identityDocsDetailItem ]];
   }
 }
@@ -259,12 +240,8 @@ NSString* const kAutofillAndPasswordsTableViewIdentifier =
   _travelInfoEnabled = enabled;
 
   if (_travelInfoDetailItem) {
-    if (IsYourSavedInfoSettingsPageIosEnabled()) {
-      _travelInfoDetailItem.trailingDetailText =
-          DetailTextForEnabledState(enabled);
-    } else {
-      _travelInfoDetailItem.detailText = DetailTextForEnabledState(enabled);
-    }
+    _travelInfoDetailItem.trailingDetailText =
+        DetailTextForEnabledState(enabled);
     [self reconfigureCellsForItems:@[ _travelInfoDetailItem ]];
   }
 }
@@ -276,12 +253,7 @@ NSString* const kAutofillAndPasswordsTableViewIdentifier =
   _shoppingEnabled = enabled;
 
   if (_shoppingDetailItem) {
-    if (IsYourSavedInfoSettingsPageIosEnabled()) {
-      _shoppingDetailItem.trailingDetailText =
-          DetailTextForEnabledState(enabled);
-    } else {
-      _shoppingDetailItem.detailText = DetailTextForEnabledState(enabled);
-    }
+    _shoppingDetailItem.trailingDetailText = DetailTextForEnabledState(enabled);
     [self reconfigureCellsForItems:@[ _shoppingDetailItem ]];
   }
 }
@@ -293,13 +265,8 @@ NSString* const kAutofillAndPasswordsTableViewIdentifier =
   _suggestionsFromGeminiEnabled = enabled;
 
   if (_suggestionsFromGeminiDetailItem) {
-    if (IsYourSavedInfoSettingsPageIosEnabled()) {
-      _suggestionsFromGeminiDetailItem.trailingDetailText =
-          DetailTextForEnabledState(enabled);
-    } else {
-      _suggestionsFromGeminiDetailItem.detailText =
-          DetailTextForEnabledState(enabled);
-    }
+    _suggestionsFromGeminiDetailItem.trailingDetailText =
+        DetailTextForEnabledState(enabled);
     [self reconfigureCellsForItems:@[ _suggestionsFromGeminiDetailItem ]];
   }
 }
