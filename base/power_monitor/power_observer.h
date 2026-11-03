@@ -78,7 +78,7 @@ class BASE_EXPORT PowerThermalObserver {
   // CPU or switching on the fans if available. API clients may react to the new
   // state by reducing expensive computing tasks (e.g. video encoding), or
   // notifying the user. The same |new_state| might be received repeatedly.
-  // TODO(crbug.com/1071431): implemented on MacOS, extend to Linux/CrOs.
+  // Implemented only on macOS.
   virtual void OnThermalStateChange(DeviceThermalState new_state) = 0;
 
   // Notification of a change in the operating system's advertised speed limit
