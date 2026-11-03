@@ -1641,7 +1641,8 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
   // the intention of visiting it during this layout. We shouldn't be
   // scheduling it to be laid out later. Also, scheduleRelayout() must not be
   // called while iterating LocalFrameView::layout_subtree_root_list_.
-  schedule_relayout &= !GetFrameView()->IsInPerformLayout();
+  const bool is_in_perform_layout = GetFrameView()->IsInPerformLayout();
+  schedule_relayout &= !is_in_perform_layout;
 
   const bool allow_subtree_layout_root =
       schedule_relayout && !View()->NeedsLayout();
@@ -1686,6 +1687,15 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
       }
       object->SetNeedsSimplifiedLayout(true);
     } else {
+      // Orthogonal writing-mode children will have layout performed on them by
+      // their parent when calculating their min/max sizes. When crossing these
+      // orthogonal writing-mode boundaries, ensure the parent has their min/max
+      // sizes invalidated. Skip this during PerformLayout() (e.g. container
+      // query style recalc) as ancestors are already in layout.
+      if (!is_in_perform_layout && last->IsHorizontalWritingMode() !=
+                                       object->IsHorizontalWritingMode()) {
+        last->InvalidateContainerIntrinsicLogicalWidths();
+      }
       if (object->ChildNeedsFullLayout()) {
         return;
       }
@@ -1752,16 +1762,17 @@ void LayoutObject::MarkParentForSpannerOrOutOfFlowPositionedChange() {
     object->SetNeedsCollectInlines();
   }
 
+  // OOF-positioned objects and column-spanners are propagated up the fragment
+  // tree. Invalidate the entire container chain so that these fragments don't
+  // get reused.
   const LayoutBox* container = ContainingBox();
-  while (object != container) {
-    object->SetChildNeedsLayout(kMarkOnlyThis);
+  while (object) {
+    object->SetChildNeedsLayout();
+    if (object == container) {
+      break;
+    }
     object = object->Container();
   }
-  // Finally mark the parent block for layout. This will mark everything which
-  // has an OOF-positioned object or column spanner in a LayoutResult as
-  // needing layout.
-  if (object)
-    object->SetChildNeedsLayout();
 }
 
 void LayoutObject::SetIntrinsicLogicalWidthsDirty(
