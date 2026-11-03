@@ -174,11 +174,11 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
     // The |release_callback| keeps a ref on this resource to ensure the backing
     // shared image is kept alive until the lifetime of the image.
     auto release_callback = base::BindOnce(
-        [](scoped_refptr<ExternalCanvasResource> resource,
+        [](scoped_refptr<ExportedCanvasResource> resource,
            const gpu::SyncToken& sync_token, bool is_lost) {
           // Do nothing but hold onto the refptr.
         },
-        base::WrapRefCounted(external_resource));
+        base::WrapRefCounted(this));
 
     scoped_refptr<StaticBitmapImage> image =
         AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
@@ -220,18 +220,16 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
     // the ref-count on the resource as a proxy for a read lock to allow
     // recycling the resource once all refs have been released.
     auto release_callback = base::BindOnce(
-        [](scoped_refptr<CanvasResourceSharedImage>&& resource,
+        [](scoped_refptr<ExportedCanvasResource>&& exported_resource,
            const gpu::SyncToken& sync_token, bool lost_resource) {
-          CHECK(resource);
+          CHECK(exported_resource->resource_);
 
-          resource->WaitSyncToken(sync_token);
+          exported_resource->resource_->WaitSyncToken(sync_token);
           if (lost_resource) {
-            resource->NotifyResourceLost();
+            exported_resource->resource_->NotifyResourceLost();
           }
-
-          CanvasResource::DropRefOnOwningThread(std::move(resource));
         },
-        base::WrapRefCounted(resource_si));
+        base::WrapRefCounted(this));
 
     scoped_refptr<StaticBitmapImage> image;
     const auto& client_shared_image = resource_->GetSharedImage();
