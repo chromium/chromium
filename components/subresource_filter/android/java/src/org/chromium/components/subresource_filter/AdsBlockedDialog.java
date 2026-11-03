@@ -17,6 +17,10 @@ import android.text.style.ClickableSpan;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -37,7 +41,10 @@ import org.chromium.ui.text.ChromeClickableSpan;
  */
 @NullMarked
 public class AdsBlockedDialog implements ModalDialogProperties.Controller {
-    private long mNativeDialog;
+    @JniType("::AdsBlockedDialog")
+    interface NativeAdsBlockedDialog extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAdsBlockedDialog> mNativeDialog;
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private @Nullable PropertyModel mDialogModel;
@@ -46,11 +53,12 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     private boolean mDismissedByNative;
 
     @CalledByNative
-    static AdsBlockedDialog create(long nativeDialog, WindowAndroid windowAndroid) {
+    static AdsBlockedDialog create(
+            JniRawPtr<NativeAdsBlockedDialog> nativeDialog, WindowAndroid windowAndroid) {
         return new AdsBlockedDialog(nativeDialog, windowAndroid);
     }
 
-    AdsBlockedDialog(long nativeDialog, WindowAndroid windowAndroid) {
+    AdsBlockedDialog(JniRawPtr<NativeAdsBlockedDialog> nativeDialog, WindowAndroid windowAndroid) {
         mNativeDialog = nativeDialog;
         mContext = assumeNonNull(windowAndroid.getContext().get());
         mModalDialogManager = assumeNonNull(windowAndroid.getModalDialogManager());
@@ -68,7 +76,7 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
      */
     @VisibleForTesting
     AdsBlockedDialog(
-            long nativeDialog,
+            JniRawPtr<NativeAdsBlockedDialog> nativeDialog,
             Context context,
             ModalDialogManager modalDialogManager,
             Handler dialogHandler) {
@@ -92,7 +100,9 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
         mClickableSpan =
                 new ChromeClickableSpan(
                         mContext,
-                        (view) -> AdsBlockedDialogJni.get().onLearnMoreClicked(mNativeDialog));
+                        (view) ->
+                                AdsBlockedDialogJni.get()
+                                        .onLearnMoreClicked(assumeNonNull(mNativeDialog)));
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
@@ -141,9 +151,10 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
             mModalDialogManager.dismissDialog(
                     mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
         }
-        if (mNativeDialog != 0) {
+        if (mNativeDialog != null) {
             mDialogHandler.removeCallbacksAndMessages(null);
-            mNativeDialog = 0;
+            mNativeDialog.release();
+            mNativeDialog = null;
         }
     }
 
@@ -162,7 +173,7 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     // ModalDialogProperties.Controller implementation.
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
-        assert mNativeDialog != 0;
+        assert mNativeDialog != null;
         if (buttonType == ButtonType.POSITIVE) {
             AdsBlockedDialogJni.get().onAllowAdsClicked(mNativeDialog);
         }
@@ -175,19 +186,23 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
+        mDialogModel = null;
         mDialogHandler.removeCallbacksAndMessages(null);
-        if (!mDismissedByNative && mNativeDialog != 0) {
+        if (!mDismissedByNative && mNativeDialog != null) {
             AdsBlockedDialogJni.get().onDismissed(mNativeDialog);
         }
-        mNativeDialog = 0;
+        if (mNativeDialog != null) {
+            mNativeDialog.release();
+            mNativeDialog = null;
+        }
     }
 
     @NativeMethods
     interface Natives {
-        void onAllowAdsClicked(long nativeAdsBlockedDialog);
+        void onAllowAdsClicked(JniPtr<NativeAdsBlockedDialog> self);
 
-        void onLearnMoreClicked(long nativeAdsBlockedDialog);
+        void onLearnMoreClicked(JniPtr<NativeAdsBlockedDialog> self);
 
-        void onDismissed(long nativeAdsBlockedDialog);
+        void onDismissed(JniPtr<NativeAdsBlockedDialog> self);
     }
 }

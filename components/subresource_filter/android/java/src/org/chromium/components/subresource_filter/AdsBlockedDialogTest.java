@@ -4,7 +4,7 @@
 
 package org.chromium.components.subresource_filter;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 
 import android.content.res.Resources;
@@ -13,6 +13,8 @@ import android.text.style.ClickableSpan;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,6 +51,13 @@ public class AdsBlockedDialogTest {
     @Before
     public void setUp() {
         AdsBlockedDialogJni.setInstanceForTesting(mNativeMock);
+    }
+
+    @After
+    public void tearDown() {
+        if (mDialog != null) {
+            mDialog.dismiss();
+        }
     }
 
     /**
@@ -91,8 +100,8 @@ public class AdsBlockedDialogTest {
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
-        Mockito.verify(mNativeMock).onAllowAdsClicked(anyLong());
-        Mockito.verify(mNativeMock, never()).onLearnMoreClicked(anyLong());
+        Mockito.verify(mNativeMock).onAllowAdsClicked(any());
+        Mockito.verify(mNativeMock, never()).onLearnMoreClicked(any());
         Mockito.verify(mModalDialogManagerMock)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
@@ -104,8 +113,8 @@ public class AdsBlockedDialogTest {
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
-        Mockito.verify(mNativeMock, never()).onLearnMoreClicked(anyLong());
-        Mockito.verify(mNativeMock, never()).onAllowAdsClicked(anyLong());
+        Mockito.verify(mNativeMock, never()).onLearnMoreClicked(any());
+        Mockito.verify(mNativeMock, never()).onAllowAdsClicked(any());
         Mockito.verify(mModalDialogManagerMock)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
@@ -118,7 +127,7 @@ public class AdsBlockedDialogTest {
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onDismiss(mModalDialogModel, DialogDismissalCause.NAVIGATE_BACK);
         Mockito.verify(mDialogHandler).removeCallbacksAndMessages(null);
-        Mockito.verify(mNativeMock).onDismissed(anyLong());
+        Mockito.verify(mNativeMock).onDismissed(any());
     }
 
     /**
@@ -129,7 +138,7 @@ public class AdsBlockedDialogTest {
     public void testDialogMessageLinkCallback() {
         createAndShowDialog(false);
         mClickableSpan.onClick(null);
-        Mockito.verify(mNativeMock).onLearnMoreClicked(anyLong());
+        Mockito.verify(mNativeMock).onLearnMoreClicked(any());
     }
 
     /**
@@ -141,7 +150,7 @@ public class AdsBlockedDialogTest {
         createAndShowDialog(true);
         mDialog.dismiss();
         Mockito.verify(mDialogHandler).removeCallbacksAndMessages(null);
-        Mockito.verify(mNativeMock, never()).onDismissed(anyLong());
+        Mockito.verify(mNativeMock, never()).onDismissed(any());
     }
 
     /**
@@ -171,7 +180,7 @@ public class AdsBlockedDialogTest {
 
         // Verify that Java doesn't call back to native's onDismissed when handling a native
         // dismissal.
-        Mockito.verify(mNativeMock, never()).onDismissed(anyLong());
+        Mockito.verify(mNativeMock, never()).onDismissed(any());
         Mockito.verify(mDialogHandler, Mockito.times(1)).removeCallbacksAndMessages(null);
     }
 
@@ -191,10 +200,10 @@ public class AdsBlockedDialogTest {
      * for modal dialog view.
      */
     private void createAndShowDialog(boolean shouldPostDialog) {
-        // Set nativeDialog to a non-zero value to pass assertion check
+        // Set nativeDialog to a non-null value to pass assertion check
         mDialog =
                 new AdsBlockedDialog(
-                        1,
+                        JniRawPtr.createForTesting(1L),
                         RuntimeEnvironment.getApplication(),
                         mModalDialogManagerMock,
                         mDialogHandler);

@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -48,7 +49,7 @@ AdsBlockedDialog::AdsBlockedDialog(
       dialog_dismissed_callback_(std::move(dialog_dismissed_callback)) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_ads_blocked_dialog_ = Java_AdsBlockedDialog_create(
-      env, reinterpret_cast<intptr_t>(this), j_window_android);
+      env, jni_zero::MakeRaw(this), j_window_android);
 }
 
 AdsBlockedDialog::~AdsBlockedDialog() {
@@ -78,6 +79,7 @@ void AdsBlockedDialog::OnLearnMoreClicked(JNIEnv* env) {
 }
 
 void AdsBlockedDialog::OnDismissed(JNIEnv* env) {
+  Dismiss();
   java_ads_blocked_dialog_.Reset();
   std::move(dialog_dismissed_callback_).Run();
 }
