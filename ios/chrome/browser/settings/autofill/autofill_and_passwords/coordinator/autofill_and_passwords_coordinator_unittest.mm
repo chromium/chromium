@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
@@ -242,4 +243,28 @@ TEST_F(
                navigation_controller.transitionCoordinator == nil;
       }));
   EXPECT_EQ(2u, navigation_controller_.viewControllers.count);
+}
+
+// Tests that selecting Shopping records the category link click metric.
+TEST_F(AutofillAndPasswordsCoordinatorTest, ShoppingCategoryLinkClickRecorded) {
+  StartCoordinator();
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "Autofill.YourSavedInfoSettingsPage.CategoryLinkClick", 0);
+
+  AutofillAndPasswordsTableViewController* viewController =
+      static_cast<AutofillAndPasswordsTableViewController*>(
+          navigation_controller_.topViewController);
+  ASSERT_NE(nil, viewController);
+
+  id<AutofillAndPasswordsTableViewControllerDelegate> delegate =
+      static_cast<id<AutofillAndPasswordsTableViewControllerDelegate>>(
+          coordinator_);
+  [delegate
+      autofillAndPasswordsTableViewControllerDidSelectShopping:viewController];
+
+  // 5 corresponds to YourSavedInfoDataCategory::kShopping.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.YourSavedInfoSettingsPage.CategoryLinkClick", 5, 1);
 }

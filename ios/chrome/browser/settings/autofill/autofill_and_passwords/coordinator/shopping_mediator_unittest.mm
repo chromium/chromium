@@ -150,11 +150,17 @@ TEST_F(ShoppingMediatorTest, PrefChangeUpdatesConsumer) {
 // Tests that a preference change for address autofill updates the consumer
 // toggle enabled state.
 TEST_F(ShoppingMediatorTest, AutofillProfilePrefChangeUpdatesConsumer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableAutofillSettingsEnterprisePolicy);
+
   profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
                                    true);
   profile_->GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillAiShoppingEntitiesEnabled, true);
+  OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
   mediator_.consumer = consumer_;
+  [consumer_ verify];
 
   OCMExpect([consumer_ setShoppingToggleState:NO enabled:NO managed:NO]);
   profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
@@ -164,6 +170,27 @@ TEST_F(ShoppingMediatorTest, AutofillProfilePrefChangeUpdatesConsumer) {
   OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
   profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
                                    true);
+  [consumer_ verify];
+}
+
+// Tests that a preference change for address autofill does not affect the
+// consumer toggle enabled state when the enterprise policy feature is enabled.
+TEST_F(ShoppingMediatorTest,
+       AutofillProfilePrefChangeUpdatesConsumer_EnterprisePolicy) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableAutofillSettingsEnterprisePolicy);
+
+  profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
+                                   true);
+  profile_->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillAiShoppingEntitiesEnabled, true);
+  OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
+  mediator_.consumer = consumer_;
+  [consumer_ verify];
+
+  OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
+  profile_->GetPrefs()->SetBoolean(autofill::prefs::kAutofillProfileEnabled,
+                                   false);
   [consumer_ verify];
 }
 

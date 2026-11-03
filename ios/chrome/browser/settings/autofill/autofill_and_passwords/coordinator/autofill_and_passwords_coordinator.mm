@@ -335,6 +335,10 @@ enum class YourSavedInfoDataCategory {
     return;
   }
 
+  base::UmaHistogramEnumeration(
+      "Autofill.YourSavedInfoSettingsPage.CategoryLinkClick",
+      YourSavedInfoDataCategory::kShopping);
+
   _shoppingCoordinator = [[ShoppingCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser];
