@@ -32,6 +32,8 @@
 #include "content/public/browser/immersive_playback_options.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/overlay_window.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -54,6 +56,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/switches.h"
 
@@ -555,6 +558,32 @@ bool HeadlessContentBrowserClient::IsRendererProcessPriorityEnabled() {
 std::unique_ptr<content::DigitalIdentityProvider>
 HeadlessContentBrowserClient::CreateDigitalIdentityProvider() {
   return std::make_unique<HeadlessDigitalIdentityProvider>();
+}
+
+bool HeadlessContentBrowserClient::IsClipboardPasteAllowed(
+    content::RenderFrameHost* render_frame_host) {
+  CHECK(render_frame_host);
+
+  if (content::WebContents::FromRenderFrameHost(render_frame_host)
+          ->HasRecentInteraction()) {
+    return true;
+  }
+
+  if (!render_frame_host->IsFocused()) {
+    return false;
+  }
+
+  content::BrowserContext* browser_context =
+      render_frame_host->GetBrowserContext();
+  content::PermissionController* permission_controller =
+      browser_context->GetPermissionController();
+  blink::mojom::PermissionStatus status =
+      permission_controller->GetPermissionStatusForCurrentDocument(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::CLIPBOARD_READ_WRITE),
+          render_frame_host);
+  return status == blink::mojom::PermissionStatus::GRANTED;
 }
 
 }  // namespace headless

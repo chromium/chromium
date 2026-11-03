@@ -1,0 +1,5 @@
+Tests browser-side clipboard paste allowed check.
+Focused with permission: "clipboard_text"
+Unfocused with permission: ""
+Focused without permission or interaction: ""
+Focused with recent user interaction: "clipboard_text"

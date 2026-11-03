@@ -305,6 +305,9 @@ HEADLESS_PROTOCOL_TEST(DragStarted, "input/dragIntercepted.js")
 
 HEADLESS_PROTOCOL_TEST(InputClipboardOps, "shared/input-clipboard-ops.js")
 
+HEADLESS_PROTOCOL_TEST(ClipboardPasteAllowed,
+                       "shared/clipboard-paste-allowed.js")
+
 HEADLESS_PROTOCOL_TEST(ClipboardApiCopyPaste,
                        "input/clipboard-api-copy-paste.js")
 

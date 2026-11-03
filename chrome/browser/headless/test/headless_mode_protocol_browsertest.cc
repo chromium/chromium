@@ -222,6 +222,9 @@ HEADLESS_MODE_PROTOCOL_TEST(FocusBlurNotifications,
 
 HEADLESS_MODE_PROTOCOL_TEST(InputClipboardOps, "shared/input-clipboard-ops.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(ClipboardPasteAllowed,
+                            "shared/clipboard-paste-allowed.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(DocumentFocusOnLoad,
                             "input/document-focus-on-load.js")
 

@@ -121,6 +121,9 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 
   bool IsRendererProcessPriorityEnabled() override;
 
+  bool IsClipboardPasteAllowed(
+      content::RenderFrameHost* render_frame_host) override;
+
  private:
   class StubBadgeService;
 
