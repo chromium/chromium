@@ -50,11 +50,6 @@ BASE_FEATURE(kOrcaDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementGeminiAppPreinstall,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls enabling / disabling the history embedding feature from the
-// feature management module.
-BASE_FEATURE(kFeatureManagementHistoryEmbedding,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the passage embedder infrastructure from the
 // feature management module.
 BASE_FEATURE(kFeatureManagementPassageEmbedder,
@@ -150,10 +145,6 @@ bool IsRoundedWindowsEnabled() {
 bool IsSystemBlurEnabled() {
   constexpr base::ByteSize kMinimumMemoryThreshold = base::GiB(4);  // 4GB
   return base::SysInfo::AmountOfTotalPhysicalMemory() > kMinimumMemoryThreshold;
-}
-
-bool IsFeatureManagementHistoryEmbeddingEnabled() {
-  return base::FeatureList::IsEnabled(kFeatureManagementHistoryEmbedding);
 }
 
 }  // namespace chromeos::features

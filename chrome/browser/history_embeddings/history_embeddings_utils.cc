@@ -19,10 +19,6 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif
-
 namespace history_embeddings {
 
 namespace {
@@ -110,11 +106,6 @@ bool IsHistoryEmbeddingsAnswersSettingVisible(Profile* profile) {
 }
 
 bool IsHistoryEmbeddingsFeatureEnabled() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled()) {
-    return false;
-  }
-#endif
   // If the feature is overridden manually or via Finch, return its value.
   if (base::FeatureList::GetStateIfOverridden(kHistoryEmbeddings).has_value()) {
     return base::FeatureList::IsEnabled(kHistoryEmbeddings);

@@ -189,7 +189,6 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
               {"UseUrlFilter", "false"}}},
             {kHistoryEmbeddingsAnswers, {{}}},
 #if BUILDFLAG(IS_CHROMEOS)
-            {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
             {chromeos::features::kFeatureManagementPassageEmbedder, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
@@ -276,7 +275,6 @@ class HistoryEmbeddingsWithLowAggregationBrowserTest
              {{"SendQualityLog", "true"},
               {"PassageExtractionMaxWordsPerAggregatePassage", "10"}}},
 #if BUILDFLAG(IS_CHROMEOS)
-            {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
             {chromeos::features::kFeatureManagementPassageEmbedder, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
@@ -428,7 +426,6 @@ class HistoryEmbeddingsWithUrlFilterBrowserTest
             {kHistoryEmbeddings,
              {{"SendQualityLog", "true"}, {"UseUrlFilter", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
-            {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
             {chromeos::features::kFeatureManagementPassageEmbedder, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
@@ -618,7 +615,6 @@ class HistoryEmbeddingsKillSwitchBrowserTest
               {"ContentVisibilityThreshold", "0.01"},
               {"UseUrlFilter", "false"}}},
 #if BUILDFLAG(IS_CHROMEOS)
-            {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
             {chromeos::features::kFeatureManagementPassageEmbedder, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
