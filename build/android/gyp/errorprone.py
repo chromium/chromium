@@ -53,6 +53,57 @@ CHROMIUM_PLUGIN_TESTONLY_WARNINGS_TO_DISABLE = [
     'NoStreams',
 ]
 
+# Checks that apply only to test code. Disabled for non-testonly targets.
+TESTONLY_ERRORPRONE_WARNINGS = [
+    # Checks for JUnit and Truth usage (test runners and assertions).
+    'AssertEqualsArgumentOrderChecker',
+    'AssertSameIncompatible',
+    'AssertThrowsMinimizer',
+    'AssertThrowsMultipleStatements',
+    'AssertionFailureIgnored',
+    'CatchFail',
+    'ChainedAssertionLosesContext',
+    'ExtendingJUnitAssert',
+    'FloatingPointAssertionWithinEpsilon',
+    'JUnit3FloatingPointComparisonWithoutDelta',
+    'JUnit3TestNotRun',
+    'JUnit4ClassAnnotationNonStatic',
+    'JUnit4ClassUsedInJUnit3',
+    'JUnit4EmptyMethods',
+    'JUnit4SetUpNotRun',
+    'JUnit4TearDownNotRun',
+    'JUnit4TestNotRun',
+    'JUnit4TestsNotRunWithinEnclosed',
+    'JUnitAmbiguousTestClass',
+    'JUnitAssertSameCheck',
+    'JUnitIncompatibleType',
+    'JUnitMethodInvoked',
+    'JUnitParameterMethodNotFound',
+    'MissingFail',
+    'ParametersButNotParameterized',
+    'RuleNotRun',
+    'SelfAssertion',
+    'ShouldHaveEvenArgs',
+    'TheoryButNoTheories',
+    'TruthAssertExpected',
+    'TruthConstantAsserts',
+    'TruthGetOrDefault',
+    'TruthIncompatibleType',
+    'TryFailThrowable',
+    # Checks for Mockito usage.
+    'DirectInvocationOnMock',
+    'DoNotMock',
+    'MisleadingEmptyVarargs',
+    'MockIllegalThrows',
+    'MockNotUsedInProduction',
+    'MockitoUsage',
+    # Checks for other test libraries (Robolectric, Guava testlib, Error Prone
+    # test helpers).
+    'MisformattedTestData',
+    'MissingTestCall',
+    'RobolectricShadowDirectlyOn',
+]
+
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
     # High priority to enable in non-tests:
@@ -431,6 +482,10 @@ def main():
                 for x in CHROMIUM_PLUGIN_TESTONLY_WARNINGS_TO_DISABLE
             )
         errorprone_flags += ['-XepCompilingTestOnlyCode']
+    else:
+        errorprone_flags.extend(
+            '-Xep:{}:OFF'.format(x) for x in TESTONLY_ERRORPRONE_WARNINGS
+        )
 
     # To enable CheckReturnValue to be opt-out rather than opt-in:
     # packages = 'org.chromium,com.google,java.util.regex'
