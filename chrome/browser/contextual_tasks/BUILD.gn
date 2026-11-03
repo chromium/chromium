@@ -508,6 +508,7 @@ source_set("ui_impl") {
     "//components/keyed_service/core",
     "//components/lens",
     "//components/omnibox/browser:mojo_bindings",
+    "//components/omnibox/common",
     "//components/omnibox/common:features",
     "//components/permissions",
     "//components/sessions",
@@ -520,6 +521,7 @@ source_set("ui_impl") {
     "//google_apis",
     "//net",
     "//pdf:buildflags",
+    "//third_party/omnibox_proto",
     "//ui/webui:buildflags",
     "//ui/webui/tracked_element",
   ]
@@ -780,6 +782,7 @@ source_set("unit_tests") {
     "contextual_tasks_context_signal_utils_unittest.cc",
     "contextual_tasks_cookie_synchronizer_unittest.cc",
     "contextual_tasks_eligibility_manager_unittest.cc",
+    "contextual_tasks_internals_page_handler_unittest.cc",
     "contextual_tasks_navigation_throttle_unittest.cc",
     "contextual_tasks_page_handler_unittest.cc",
     "contextual_tasks_service_factory_unittest.cc",
