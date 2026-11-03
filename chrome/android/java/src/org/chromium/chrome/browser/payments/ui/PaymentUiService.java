@@ -458,19 +458,21 @@ public class PaymentUiService
 
     /**
      * Called when the merchant calls complete() to complete the payment request.
+     *
      * @param result The completion status of the payment request, defined in {@link
-     *         PaymentComplete}, provided by the merchant with
-     * PaymentResponse.complete(paymentResult).
+     *     PaymentComplete}, provided by the merchant with PaymentResponse.complete(paymentResult).
      * @param onUiCompleted The function called when the opened UI has handled the completion.
      */
     public void onPaymentRequestComplete(int result, Runnable onUiCompleted) {
-        // Update records of the used payment app for sorting payment apps next time.
-        PaymentApp paymentApp = getSelectedPaymentApp();
-        assert paymentApp != null;
-        String selectedPaymentMethod = paymentApp.getIdentifier();
-        PaymentPreferencesUtil.increasePaymentAppUseCount(selectedPaymentMethod);
-        PaymentPreferencesUtil.setPaymentAppLastUseDate(
-                selectedPaymentMethod, System.currentTimeMillis());
+        if (result != PaymentComplete.FAIL) {
+            // Update records of the used payment app for sorting payment apps next time.
+            PaymentApp paymentApp = getSelectedPaymentApp();
+            assert paymentApp != null;
+            String selectedPaymentMethod = paymentApp.getIdentifier();
+            PaymentPreferencesUtil.increasePaymentAppUseCount(selectedPaymentMethod);
+            PaymentPreferencesUtil.setPaymentAppLastUseDate(
+                    selectedPaymentMethod, System.currentTimeMillis());
+        }
 
         // TODO(crbug.com/40173498): The caller should execute the function at onUiCompleted
         // directly instead of passing the Runnable here, because there are no asynchronous
