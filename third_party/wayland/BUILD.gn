@@ -341,6 +341,14 @@ config("wayland_scanner_config") {
   cflags = [
     "-Wno-int-conversion",
     "-Wno-implicit-function-declaration",
+
+    # scanner.c uses XML_GetCurrentLineNumber() and
+    # XML_GetCurrentColumnNumber(), which are deprecated since Expat 2.9.0.
+    # Fuzzer builds use the bundled //third_party/expat instead of the system
+    # one.
+    # TODO(crbug.com/493762623): Remove once wayland includes
+    # https://gitlab.freedesktop.org/wayland/wayland/-/merge_requests/564.
+    "-Wno-deprecated-declarations",
   ]
 
   include_dirs = [ "include/" ]
