@@ -36,6 +36,7 @@ class PowerMonitorDeviceSourceLinux : public base::PowerMonitorSource {
   // base::PowerMonitorSource:
   base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus()
       const override;
+  bool IsPowerSaverModeEnabled() const override;
 
  private:
   void OnSignalConnected(const std::string& interface_name,

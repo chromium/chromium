@@ -14,7 +14,9 @@
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/run_loop.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/power_monitor_test_utils.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -41,6 +43,9 @@
 
 namespace performance_manager::user_tuning {
 namespace {
+
+using BatterySaverModeState =
+    performance_manager::user_tuning::prefs::BatterySaverModeState;
 
 class QuitRunLoopObserverBase : public performance_manager::user_tuning::
                                     BatterySaverModeManager::Observer {
@@ -156,6 +161,19 @@ class BatterySaverModeManagerTest : public ::testing::Test {
   BatterySaverModeManager* manager() {
     return BatterySaverModeManager::GetInstance();
   }
+
+  // Changes the system power saver mode and waits until PowerStateObservers on
+  // this sequence have been notified. Observers added earlier, such as the
+  // manager's, are notified first.
+  void SetPowerSaverModeAndWaitForNotification(bool enabled) {
+    base::test::PowerMonitorTestObserver observer;
+    base::PowerMonitor::GetInstance()->AddPowerStateObserver(&observer);
+    power_monitor_source_->SetPowerSaverModeEnabled(enabled);
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return observer.power_saver_mode_changes() == 1; }));
+    base::PowerMonitor::GetInstance()->RemovePowerStateObserver(&observer);
+  }
+
   bool throttling_enabled() const { return throttling_enabled_; }
   bool child_process_tuning_enabled() const {
     return child_process_tuning_enabled_;
@@ -416,6 +434,93 @@ TEST_F(BatterySaverModeManagerTest, EnabledOnBatteryPower) {
   EXPECT_TRUE(throttling_enabled());
   EXPECT_TRUE(child_process_tuning_enabled());
   EXPECT_TRUE(freezing_enabled());
+}
+
+class BatterySaverModeManagerPowerSaverTest
+    : public BatterySaverModeManagerTest,
+      public ::testing::WithParamInterface<BatterySaverModeState> {
+ protected:
+  void SetPowerSaverModeAndWaitForChange(bool enabled) {
+    base::RunLoop run_loop;
+    auto observer = std::make_unique<QuitRunLoopOnBSMChangeObserver>(
+        run_loop.QuitClosure());
+    manager()->AddObserver(observer.get());
+    power_monitor_source_->SetPowerSaverModeEnabled(enabled);
+    run_loop.Run();
+    manager()->RemoveObserver(observer.get());
+  }
+
+  void SetBatterySaverModeState(BatterySaverModeState state) {
+    local_state_.SetInteger(
+        performance_manager::user_tuning::prefs::kBatterySaverModeState,
+        static_cast<int>(state));
+  }
+};
+
+TEST_P(BatterySaverModeManagerPowerSaverTest, FollowsSystemPowerSaverMode) {
+  StartManager();
+  SetBatterySaverModeState(GetParam());
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+
+  SetPowerSaverModeAndWaitForChange(true);
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+  EXPECT_TRUE(throttling_enabled());
+  EXPECT_TRUE(child_process_tuning_enabled());
+  EXPECT_TRUE(freezing_enabled());
+  // System power saver mode is not battery power.
+  EXPECT_FALSE(manager()->IsUsingBatteryPower());
+
+  SetPowerSaverModeAndWaitForChange(false);
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
+  EXPECT_FALSE(child_process_tuning_enabled());
+  EXPECT_FALSE(freezing_enabled());
+}
+
+TEST_P(BatterySaverModeManagerPowerSaverTest, InitialSystemPowerSaverMode) {
+  // PowerMonitor updates its state synchronously, so the manager reads the
+  // new state when it starts.
+  power_monitor_source_->SetPowerSaverModeEnabled(true);
+  SetBatterySaverModeState(GetParam());
+  StartManager();
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+}
+
+TEST_P(BatterySaverModeManagerPowerSaverTest, DisabledForSession) {
+  StartManager();
+  SetBatterySaverModeState(GetParam());
+  SetPowerSaverModeAndWaitForChange(true);
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+
+  manager()->SetTemporaryBatterySaverDisabledForSession(true);
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+}
+
+TEST_P(BatterySaverModeManagerPowerSaverTest, KillSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kBatterySaverModeFollowsSystemPowerSaver);
+  StartManager();
+  SetBatterySaverModeState(GetParam());
+
+  SetPowerSaverModeAndWaitForNotification(true);
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BatterySaverModeManagerPowerSaverTest,
+    ::testing::Values(BatterySaverModeState::kEnabledOnBattery,
+                      BatterySaverModeState::kEnabledBelowThreshold));
+
+TEST_F(BatterySaverModeManagerTest, SystemPowerSaverModeRespectsDisabledPref) {
+  StartManager();
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(BatterySaverModeState::kDisabled));
+
+  SetPowerSaverModeAndWaitForNotification(true);
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
 }
 
 TEST_F(BatterySaverModeManagerTest, LowBatteryThresholdRaised) {

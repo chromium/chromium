@@ -13,14 +13,19 @@ namespace performance_manager {
 
 class FakePowerMonitorSource : public base::PowerMonitorSource {
  public:
+  // base::PowerMonitorSource:
   base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus()
       const override;
+  bool IsPowerSaverModeEnabled() const override;
+
   void SetBatteryPowerStatus(
       base::PowerStateObserver::BatteryPowerStatus battery_power_status);
+  void SetPowerSaverModeEnabled(bool enabled);
 
  private:
   base::PowerStateObserver::BatteryPowerStatus battery_power_status_ =
       base::PowerStateObserver::BatteryPowerStatus::kUnknown;
+  bool power_saver_mode_enabled_ = false;
 };
 
 }  // namespace performance_manager

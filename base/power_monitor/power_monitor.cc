@@ -48,6 +48,8 @@ void PowerMonitor::Initialize(std::unique_ptr<PowerMonitorSource> source,
   NotifyThermalStateChange(Source()->GetCurrentThermalState());
 
   NotifySpeedLimitChange(Source()->GetInitialSpeedLimit());
+
+  NotifyPowerSaverModeChange(Source()->IsPowerSaverModeEnabled());
 }
 
 bool PowerMonitor::IsInitialized() const {
@@ -119,6 +121,12 @@ PowerStateObserver::BatteryPowerStatus PowerMonitor::GetBatteryPowerStatus()
   return battery_power_status_;
 }
 
+bool PowerMonitor::IsPowerSaverModeEnabled() const {
+  DCHECK(IsInitialized());
+  AutoLock auto_lock(battery_power_status_lock_);
+  return power_saver_mode_enabled_;
+}
+
 TimeTicks PowerMonitor::GetLastSystemResumeTime() const {
   AutoLock auto_lock(is_system_suspended_lock_);
   return last_system_resume_time_;
@@ -135,6 +143,7 @@ void PowerMonitor::ShutdownForTesting() {
   {
     AutoLock auto_lock(battery_power_status_lock_);
     battery_power_status_ = PowerStateObserver::BatteryPowerStatus::kUnknown;
+    power_saver_mode_enabled_ = false;
   }
   {
     AutoLock auto_lock(power_thermal_state_lock_);
@@ -256,6 +265,18 @@ void PowerMonitor::NotifySpeedLimitChange(int speed_limit) {
     speed_limit_ = speed_limit;
     thermal_state_observers_->Notify(
         FROM_HERE, &PowerThermalObserver::OnSpeedLimitChange, speed_limit);
+  }
+}
+
+void PowerMonitor::NotifyPowerSaverModeChange(bool enabled) {
+  DCHECK(IsInitialized());
+  DVLOG(1) << "PowerSaverModeChange: " << enabled;
+
+  AutoLock auto_lock(battery_power_status_lock_);
+  if (power_saver_mode_enabled_ != enabled) {
+    power_saver_mode_enabled_ = enabled;
+    power_state_observers_->Notify(
+        FROM_HERE, &PowerStateObserver::OnPowerSaverModeChange, enabled);
   }
 }
 

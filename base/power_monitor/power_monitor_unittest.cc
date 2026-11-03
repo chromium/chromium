@@ -154,6 +154,42 @@ TEST_F(PowerMonitorTest, ThermalThrottling) {
   power_monitor->RemovePowerThermalObserver(&observer);
 }
 
+TEST_F(PowerMonitorTest, PowerSaverMode) {
+  PowerMonitorInitialize();
+
+  PowerMonitorTestObserver observer;
+  auto* power_monitor = PowerMonitor::GetInstance();
+  power_monitor->AddPowerStateObserver(&observer);
+  EXPECT_FALSE(power_monitor->IsPowerSaverModeEnabled());
+
+  source().GeneratePowerSaverModeEvent(true);
+  EXPECT_TRUE(power_monitor->IsPowerSaverModeEnabled());
+  EXPECT_EQ(observer.power_saver_mode_changes(), 1);
+  EXPECT_TRUE(observer.last_power_saver_mode());
+
+  // Power saver mode doesn't affect the battery power status.
+  EXPECT_EQ(observer.power_state_changes(), 0);
+  EXPECT_EQ(power_monitor->GetBatteryPowerStatus(),
+            PowerStateObserver::BatteryPowerStatus::kUnknown);
+
+  // Repeated notifications should be suppressed.
+  source().GeneratePowerSaverModeEvent(true);
+  EXPECT_EQ(observer.power_saver_mode_changes(), 1);
+
+  source().GeneratePowerSaverModeEvent(false);
+  EXPECT_FALSE(power_monitor->IsPowerSaverModeEnabled());
+  EXPECT_EQ(observer.power_saver_mode_changes(), 2);
+  EXPECT_FALSE(observer.last_power_saver_mode());
+
+  // Battery power changes don't affect power saver mode.
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+  EXPECT_FALSE(power_monitor->IsPowerSaverModeEnabled());
+  EXPECT_EQ(observer.power_saver_mode_changes(), 2);
+
+  power_monitor->RemovePowerStateObserver(&observer);
+}
+
 TEST_F(PowerMonitorTest, AddPowerSuspendObserverBeforeAndAfterInitialization) {
   PowerMonitorTestObserver observer1;
   PowerMonitorTestObserver observer2;

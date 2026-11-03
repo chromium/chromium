@@ -21,6 +21,7 @@ class PowerMonitorTestSource : public PowerMonitorSource {
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState()
       const override;
   PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const override;
+  bool IsPowerSaverModeEnabled() const override;
 
   // Sends asynchronous notifications to registered observers.
   void Suspend();
@@ -37,6 +38,7 @@ class PowerMonitorTestSource : public PowerMonitorSource {
   void GenerateThermalThrottlingEvent(
       PowerThermalObserver::DeviceThermalState new_thermal_state);
   void GenerateSpeedLimitEvent(int speed_limit);
+  void GeneratePowerSaverModeEvent(bool enabled);
 
  protected:
   PowerStateObserver::BatteryPowerStatus test_power_status_ =
@@ -44,6 +46,7 @@ class PowerMonitorTestSource : public PowerMonitorSource {
   PowerThermalObserver::DeviceThermalState current_thermal_state_ =
       PowerThermalObserver::DeviceThermalState::kUnknown;
   int current_speed_limit_ = PowerThermalObserver::kSpeedLimitMax;
+  bool power_saver_mode_enabled_ = false;
 };
 
 PowerThermalObserver::DeviceThermalState
@@ -96,6 +99,16 @@ void PowerMonitorTestSource::GenerateThermalThrottlingEvent(
 void PowerMonitorTestSource::GenerateSpeedLimitEvent(int speed_limit) {
   ProcessSpeedLimitEvent(speed_limit);
   current_speed_limit_ = speed_limit;
+  RunLoop().RunUntilIdle();
+}
+
+bool PowerMonitorTestSource::IsPowerSaverModeEnabled() const {
+  return power_saver_mode_enabled_;
+}
+
+void PowerMonitorTestSource::GeneratePowerSaverModeEvent(bool enabled) {
+  power_saver_mode_enabled_ = enabled;
+  ProcessPowerSaverModeEvent(enabled);
   RunLoop().RunUntilIdle();
 }
 
@@ -155,6 +168,10 @@ void ScopedPowerMonitorTestSource::GenerateSpeedLimitEvent(int speed_limit) {
   power_monitor_test_source_->GenerateSpeedLimitEvent(speed_limit);
 }
 
+void ScopedPowerMonitorTestSource::GeneratePowerSaverModeEvent(bool enabled) {
+  power_monitor_test_source_->GeneratePowerSaverModeEvent(enabled);
+}
+
 PowerMonitorTestObserver::PowerMonitorTestObserver() = default;
 PowerMonitorTestObserver::~PowerMonitorTestObserver() = default;
 
@@ -162,6 +179,11 @@ void PowerMonitorTestObserver::OnBatteryPowerStatusChange(
     PowerStateObserver::BatteryPowerStatus battery_power_status) {
   last_power_status_ = battery_power_status;
   power_state_changes_++;
+}
+
+void PowerMonitorTestObserver::OnPowerSaverModeChange(bool enabled) {
+  last_power_saver_mode_ = enabled;
+  power_saver_mode_changes_++;
 }
 
 void PowerMonitorTestObserver::OnSuspend() {

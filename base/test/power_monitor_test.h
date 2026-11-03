@@ -53,6 +53,7 @@ class ScopedPowerMonitorTestSource {
   void GenerateThermalThrottlingEvent(
       PowerThermalObserver::DeviceThermalState new_thermal_state);
   void GenerateSpeedLimitEvent(int speed_limit);
+  void GeneratePowerSaverModeEvent(bool enabled);
 
  private:
   // Owned by PowerMonitor.
@@ -70,6 +71,7 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
   // PowerStateObserver overrides.
   void OnBatteryPowerStatusChange(
       PowerStateObserver::BatteryPowerStatus battery_power_status) override;
+  void OnPowerSaverModeChange(bool enabled) override;
   // PowerSuspendObserver overrides.
   void OnSuspend() override;
   void OnResume() override;
@@ -80,6 +82,7 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
 
   // Test status counts.
   int power_state_changes() const { return power_state_changes_; }
+  int power_saver_mode_changes() const { return power_saver_mode_changes_; }
   int suspends() const { return suspends_; }
   int resumes() const { return resumes_; }
   int thermal_state_changes() const { return thermal_state_changes_; }
@@ -88,6 +91,7 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
   PowerStateObserver::BatteryPowerStatus last_power_status() const {
     return last_power_status_;
   }
+  bool last_power_saver_mode() const { return last_power_saver_mode_; }
   PowerThermalObserver::DeviceThermalState last_thermal_state() const {
     return last_thermal_state_;
   }
@@ -96,6 +100,8 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
  private:
   // Count of OnPowerStateChange notifications.
   int power_state_changes_ = 0;
+  // Count of OnPowerSaverModeChange notifications.
+  int power_saver_mode_changes_ = 0;
   // Count of OnSuspend notifications.
   int suspends_ = 0;
   // Count of OnResume notifications.
@@ -108,6 +114,8 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
   // Last power state we were notified of.
   PowerStateObserver::BatteryPowerStatus last_power_status_ =
       PowerStateObserver::BatteryPowerStatus::kUnknown;
+  // Last power saver mode we were notified of.
+  bool last_power_saver_mode_ = false;
   // Last power thermal we were notified of.
   PowerThermalObserver::DeviceThermalState last_thermal_state_ =
       PowerThermalObserver::DeviceThermalState::kUnknown;

@@ -26,6 +26,10 @@ int PowerMonitorSource::GetInitialSpeedLimit() const {
 void PowerMonitorSource::SetCurrentThermalState(
     PowerThermalObserver::DeviceThermalState state) {}
 
+bool PowerMonitorSource::IsPowerSaverModeEnabled() const {
+  return false;
+}
+
 // static
 void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
   auto* power_monitor = base::PowerMonitor::GetInstance();
@@ -61,6 +65,14 @@ void PowerMonitorSource::ProcessSpeedLimitEvent(int speed_limit) {
   if (auto* power_monitor = base::PowerMonitor::GetInstance();
       power_monitor->IsInitialized()) {
     power_monitor->NotifySpeedLimitChange(speed_limit);
+  }
+}
+
+// static
+void PowerMonitorSource::ProcessPowerSaverModeEvent(bool enabled) {
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->NotifyPowerSaverModeChange(enabled);
   }
 }
 

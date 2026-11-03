@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -19,6 +20,12 @@ class PrefService;
 class BatteryDischargeReporterTest;
 
 namespace performance_manager::user_tuning {
+
+// When enabled, Battery Saver Mode is activated while the system is in power
+// saver mode (see base::PowerMonitor::IsPowerSaverModeEnabled()), unless the
+// user disabled Battery Saver Mode. Kill switch.
+// TODO(crbug.com/537480522): Remove once this behavior has shipped safely.
+BASE_DECLARE_FEATURE(kBatterySaverModeFollowsSystemPowerSaver);
 
 // This singleton is responsible for managing the state of battery saver mode,
 // as well as the different signals surrounding its toggling.

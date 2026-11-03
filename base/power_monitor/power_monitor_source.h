@@ -49,6 +49,12 @@ class BASE_EXPORT PowerMonitorSource {
   virtual PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus()
       const = 0;
 
+  // Returns whether the system is in power saver mode, if available on the
+  // platform. Otherwise returns false. Only called in
+  // PowerMonitor::Initialize(); later changes are reported via
+  // ProcessPowerSaverModeEvent().
+  virtual bool IsPowerSaverModeEnabled() const;
+
   static const char* DeviceThermalStateToString(
       PowerThermalObserver::DeviceThermalState state);
 
@@ -66,6 +72,7 @@ class BASE_EXPORT PowerMonitorSource {
   static void ProcessThermalEvent(
       PowerThermalObserver::DeviceThermalState new_thermal_state);
   static void ProcessSpeedLimitEvent(int speed_limit);
+  static void ProcessPowerSaverModeEvent(bool enabled);
 };
 
 }  // namespace base

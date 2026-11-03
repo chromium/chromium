@@ -37,6 +37,12 @@ class BASE_EXPORT PowerStateObserver {
   virtual void OnBatteryPowerStatusChange(
       BatteryPowerStatus battery_power_status) = 0;
 
+  // Notification of a change in the system's power saver mode, e.g. the
+  // "power-saver" power profile on Linux. This is independent of the battery
+  // power status: the system may be in power saver mode while on external
+  // power, or on battery power without being in power saver mode.
+  virtual void OnPowerSaverModeChange(bool enabled) {}
+
  protected:
   virtual ~PowerStateObserver() = default;
 };

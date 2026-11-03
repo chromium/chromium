@@ -87,6 +87,11 @@ class BASE_EXPORT PowerMonitor : public perfetto::TrackEventSessionObserver {
   // been initialized.
   PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus() const;
 
+  // Returns whether the system is in power saver mode. Observers are notified
+  // of changes via PowerStateObserver::OnPowerSaverModeChange(). May only be
+  // called if the PowerMonitor has been initialized.
+  bool IsPowerSaverModeEnabled() const;
+
   // Returns the time of the last system resume. If no system suspend/resume was
   // observed, returns an empty time. If the system is currently suspended,
   // returns TimeTicks::Max().
@@ -125,6 +130,7 @@ class BASE_EXPORT PowerMonitor : public perfetto::TrackEventSessionObserver {
   void NotifyThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state);
   void NotifySpeedLimitChange(int speed_limit);
+  void NotifyPowerSaverModeChange(bool enabled);
 
   bool is_system_suspended_ GUARDED_BY(is_system_suspended_lock_) = false;
   mutable Lock is_system_suspended_lock_;
@@ -133,6 +139,7 @@ class BASE_EXPORT PowerMonitor : public perfetto::TrackEventSessionObserver {
   PowerStateObserver::BatteryPowerStatus battery_power_status_
       GUARDED_BY(battery_power_status_lock_) =
           PowerStateObserver::BatteryPowerStatus::kUnknown;
+  bool power_saver_mode_enabled_ GUARDED_BY(battery_power_status_lock_) = false;
 
   mutable Lock battery_power_status_lock_;
 

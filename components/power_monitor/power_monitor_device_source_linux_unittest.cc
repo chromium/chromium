@@ -11,6 +11,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/dbus/utils/variant.h"
@@ -175,13 +176,16 @@ class PowerMonitorDeviceSourceLinuxTest : public testing::Test {
 TEST_F(PowerMonitorDeviceSourceLinuxTest, InitialFetchTrue) {
   PowerMonitorDeviceSourceLinux source(mock_system_bus_, mock_session_bus_);
   SimulateGetPropertyResponse(true, true);
+  EXPECT_TRUE(source.IsPowerSaverModeEnabled());
+  // Power saver mode must not be reported as battery power.
   EXPECT_EQ(source.GetBatteryPowerStatus(),
-            base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+            base::PowerStateObserver::BatteryPowerStatus::kUnknown);
 }
 
 TEST_F(PowerMonitorDeviceSourceLinuxTest, InitialFetchFalse) {
   PowerMonitorDeviceSourceLinux source(mock_system_bus_, mock_session_bus_);
   SimulateGetPropertyResponse(true, false);
+  EXPECT_FALSE(source.IsPowerSaverModeEnabled());
   EXPECT_EQ(source.GetBatteryPowerStatus(),
             base::PowerStateObserver::BatteryPowerStatus::kUnknown);
 }
@@ -189,6 +193,7 @@ TEST_F(PowerMonitorDeviceSourceLinuxTest, InitialFetchFalse) {
 TEST_F(PowerMonitorDeviceSourceLinuxTest, GetPropertyErrorHandling) {
   PowerMonitorDeviceSourceLinux source(mock_system_bus_, mock_session_bus_);
   SimulateGetPropertyResponse(false, false);
+  EXPECT_FALSE(source.IsPowerSaverModeEnabled());
   EXPECT_EQ(source.GetBatteryPowerStatus(),
             base::PowerStateObserver::BatteryPowerStatus::kUnknown);
 }
@@ -196,28 +201,56 @@ TEST_F(PowerMonitorDeviceSourceLinuxTest, GetPropertyErrorHandling) {
 TEST_F(PowerMonitorDeviceSourceLinuxTest, SignalUpdates) {
   PowerMonitorDeviceSourceLinux source(mock_system_bus_, mock_session_bus_);
   SimulateGetPropertyResponse(true, false);
-  EXPECT_EQ(source.GetBatteryPowerStatus(),
-            base::PowerStateObserver::BatteryPowerStatus::kUnknown);
+  EXPECT_FALSE(source.IsPowerSaverModeEnabled());
 
   SimulatePropertiesChangedSignal(kPortalPowerProfileMonitorInterface, true);
-  EXPECT_EQ(source.GetBatteryPowerStatus(),
-            base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
-
-  SimulatePropertiesChangedSignal(kPortalPowerProfileMonitorInterface, false);
+  EXPECT_TRUE(source.IsPowerSaverModeEnabled());
   EXPECT_EQ(source.GetBatteryPowerStatus(),
             base::PowerStateObserver::BatteryPowerStatus::kUnknown);
+
+  SimulatePropertiesChangedSignal(kPortalPowerProfileMonitorInterface, false);
+  EXPECT_FALSE(source.IsPowerSaverModeEnabled());
 }
 
 TEST_F(PowerMonitorDeviceSourceLinuxTest, SignalOtherInterfaceIgnored) {
   PowerMonitorDeviceSourceLinux source(mock_system_bus_, mock_session_bus_);
   SimulateGetPropertyResponse(true, false);
-  EXPECT_EQ(source.GetBatteryPowerStatus(),
-            base::PowerStateObserver::BatteryPowerStatus::kUnknown);
+  EXPECT_FALSE(source.IsPowerSaverModeEnabled());
 
   SimulatePropertiesChangedSignal("org.freedesktop.portal.OtherInterface",
                                   true);
-  EXPECT_EQ(source.GetBatteryPowerStatus(),
-            base::PowerStateObserver::BatteryPowerStatus::kUnknown);
+  EXPECT_FALSE(source.IsPowerSaverModeEnabled());
+}
+
+TEST_F(PowerMonitorDeviceSourceLinuxTest, PowerSaverModeNotifiesObservers) {
+  if (base::PowerMonitor::GetInstance()->IsInitialized()) {
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
+  }
+  base::PowerMonitor::GetInstance()->Initialize(
+      std::make_unique<PowerMonitorDeviceSourceLinux>(mock_system_bus_,
+                                                      mock_session_bus_));
+
+  base::test::PowerMonitorTestObserver observer;
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  power_monitor->AddPowerStateObserver(&observer);
+
+  SimulateGetPropertyResponse(true, true);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return observer.power_saver_mode_changes() == 1; }));
+  EXPECT_TRUE(observer.last_power_saver_mode());
+  EXPECT_TRUE(power_monitor->IsPowerSaverModeEnabled());
+
+  SimulatePropertiesChangedSignal(kPortalPowerProfileMonitorInterface, false);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return observer.power_saver_mode_changes() == 2; }));
+  EXPECT_FALSE(observer.last_power_saver_mode());
+  EXPECT_FALSE(power_monitor->IsPowerSaverModeEnabled());
+
+  // Power saver mode changes must not be reported as battery power changes.
+  EXPECT_EQ(observer.power_state_changes(), 0);
+  EXPECT_FALSE(power_monitor->IsOnBatteryPower());
+
+  power_monitor->RemovePowerStateObserver(&observer);
 }
 
 TEST_F(PowerMonitorDeviceSourceLinuxTest, SystemdPrepareForSleep) {
