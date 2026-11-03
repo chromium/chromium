@@ -11,9 +11,9 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -712,7 +712,7 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
     switch (element.type()) {
       case network::DataElement::Tag::kBytes: {
         const auto& bytes = element.As<network::DataElementBytes>().bytes();
-        data_element = mojom::Element::NewBytes(base::ToVector(bytes));
+        data_element = mojom::Element::NewBytes(bytes);
         break;
       }
       case network::DataElement::Tag::kFile: {
@@ -794,10 +794,7 @@ void WriteMojoFrameState(const ExplodedFrameState& state,
   frame->initiator_base_url_string = state.initiator_base_url_string;
   frame->target = state.target;
   frame->state_object = state.state_object;
-
-  for (const auto& s : state.document_state) {
-    frame->document_state.push_back(s);
-  }
+  frame->document_state = state.document_state;
 
   frame->scroll_restoration_type =
       static_cast<mojom::ScrollRestorationType>(state.scroll_restoration_type);
@@ -904,8 +901,7 @@ void ReadMojoPageState(DeserializeObject* obj, ExplodedPageState* state) {
   }
 
   mojom::PageStatePtr page;
-  obj->parse_error =
-      !(mojom::PageState::Deserialize(data->data(), data->size(), &page));
+  obj->parse_error = !mojom::PageState::Deserialize(*data, &page);
   if (obj->parse_error) {
     return;
   }
@@ -925,9 +921,15 @@ void WriteMojoPageState(const ExplodedPageState& state, SerializeObject* obj) {
   WriteInteger(obj->version, obj);
 
   mojom::PageStatePtr page = mojom::PageState::New();
-  for (const auto& referenced_file : state.referenced_files) {
-    page->referenced_files.push_back(referenced_file.value());
-  }
+  // Although `ExplodedPageState::referenced_files` and
+  // `mojom::PageState::referenced_files` use `std::optional<std::u16string>`,
+  // callers populating `referenced_files` (such as
+  // `HistoryItem::GetReferencedFilePathsForSerialization`) only insert non-null
+  // file paths, and this code has historically unwrapped each element with
+  // `.value()`.
+  CHECK(std::ranges::all_of(state.referenced_files,
+                            &std::optional<std::u16string>::has_value));
+  page->referenced_files = state.referenced_files;
 
   page->top = mojom::FrameState::New();
   WriteMojoFrameState(state.top, page->top.get());
