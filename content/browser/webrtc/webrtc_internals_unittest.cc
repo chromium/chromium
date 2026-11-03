@@ -12,15 +12,21 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/power_monitor_test.h"
 #include "base/values.h"
+#include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 #include "content/browser/webrtc/webrtc_internals_connections_observer.h"
 #include "content/browser/webrtc/webrtc_internals_ui_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/test/test_render_frame_host.h"
+#include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom.h"
 
 namespace content {
 
@@ -974,6 +980,103 @@ TEST_F(WebRtcInternalsTest, TestWebRtcConnectionsObserver) {
   EXPECT_EQ(0u, observer.latest_connections_count());
 
   base::RunLoop().RunUntilIdle();
+}
+
+namespace {
+
+class FakePeerConnectionManager : public blink::mojom::PeerConnectionManager {
+ public:
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.Bind(mojo::PendingReceiver<blink::mojom::PeerConnectionManager>(
+        std::move(handle)));
+  }
+
+  void set_on_get_standard_stats(base::OnceClosure closure) {
+    on_get_standard_stats_ = std::move(closure);
+  }
+  int get_current_state_calls() const { return get_current_state_calls_; }
+
+ private:
+  void OnSuspend() override {}
+  void OnThermalStateChange(blink::mojom::DeviceThermalState) override {}
+  void StartEventLog(int32_t, int32_t) override {}
+  void StopEventLog(int32_t) override {}
+  void StartDataChannelLog(int32_t) override {}
+  void StopDataChannelLog(int32_t) override {}
+  void GetStandardStats() override {
+    if (on_get_standard_stats_) {
+      std::move(on_get_standard_stats_).Run();
+    }
+  }
+  void GetCurrentState() override { ++get_current_state_calls_; }
+
+  mojo::Receiver<blink::mojom::PeerConnectionManager> receiver_{this};
+  base::OnceClosure on_get_standard_stats_;
+  int get_current_state_calls_ = 0;
+};
+
+}  // namespace
+
+class WebRtcInternalsCurrentStateTest : public RenderViewHostImplTestHarness {
+ protected:
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    if (!base::PowerMonitor::GetInstance()->IsInitialized()) {
+      power_monitor_source_ =
+          std::make_unique<base::test::ScopedPowerMonitorTestSource>();
+    }
+    NavigateAndCommit(GURL("about:blank"));
+    TestRenderFrameHost* rfh = main_test_rfh();
+    rfh->InitializeRenderFrameIfNeeded();
+    service_manager::InterfaceProvider::TestApi(rfh->GetRemoteInterfaces())
+        .SetBinderForName(blink::mojom::PeerConnectionManager::Name_,
+                          base::BindRepeating(&FakePeerConnectionManager::Bind,
+                                              base::Unretained(&manager_)));
+    host_ = PeerConnectionTrackerHost::GetOrCreateForCurrentDocument(rfh);
+  }
+
+  // Messages on the pipe are ordered, so this flushes earlier requests.
+  int GetCurrentStateCalls() {
+    base::RunLoop loop;
+    manager_.set_on_get_standard_stats(loop.QuitClosure());
+    host_->GetStandardStats();
+    loop.Run();
+    return manager_.get_current_state_calls();
+  }
+
+  void TearDown() override {
+    host_ = nullptr;
+    DeleteContents();
+    power_monitor_source_.reset();
+    RenderViewHostImplTestHarness::TearDown();
+  }
+
+  std::unique_ptr<base::test::ScopedPowerMonitorTestSource>
+      power_monitor_source_;
+  FakePeerConnectionManager manager_;
+  raw_ptr<PeerConnectionTrackerHost> host_ = nullptr;
+};
+
+TEST_F(WebRtcInternalsCurrentStateTest, RequestedOncePerObserverSession) {
+  WebRTCInternalsForTest webrtc_internals;
+  MockWebRtcInternalsProxy observer1;
+  MockWebRtcInternalsProxy observer2;
+
+  webrtc_internals.AddObserver(&observer1);
+  webrtc_internals.MaybeRequestCurrentState();
+  EXPECT_EQ(1, GetCurrentStateCalls());
+
+  webrtc_internals.AddObserver(&observer2);
+  webrtc_internals.MaybeRequestCurrentState();
+  EXPECT_EQ(1, GetCurrentStateCalls());
+
+  webrtc_internals.RemoveObserver(&observer1);
+  webrtc_internals.RemoveObserver(&observer2);
+  webrtc_internals.AddObserver(&observer1);
+  webrtc_internals.MaybeRequestCurrentState();
+  EXPECT_EQ(2, GetCurrentStateCalls());
+
+  webrtc_internals.RemoveObserver(&observer1);
 }
 
 // TODO(eladalon): Add tests that WebRtcEventLogger::Enable/Disable is

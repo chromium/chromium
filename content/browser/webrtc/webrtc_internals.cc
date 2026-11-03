@@ -549,6 +549,7 @@ void WebRTCInternals::RemoveObserver(WebRTCInternalsUIObserver* observer) {
   // TODO(tommi): Consider removing all the peer_connection_data().
   for (auto& dictionary : peer_connection_data())
     FreeLogList(&dictionary);
+  current_state_requested_ = false;
 }
 
 void WebRTCInternals::AddConnectionsObserver(
@@ -579,6 +580,17 @@ void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
   }
   UpdateWakeLock();
   UpdateStatsTimer();
+}
+
+void WebRTCInternals::MaybeRequestCurrentState() {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  if (current_state_requested_) {
+    return;
+  }
+  current_state_requested_ = true;
+  for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
+    host->GetCurrentState();
+  }
 }
 
 void WebRTCInternals::EnableAudioDebugRecordings(

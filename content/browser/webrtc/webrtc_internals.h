@@ -125,6 +125,9 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // Sends all update data to |observer|.
   void UpdateObserver(WebRTCInternalsUIObserver* observer);
 
+  // Re-emitted state is broadcast and logged, so only request it once.
+  void MaybeRequestCurrentState();
+
   // Enables or disables diagnostic audio recordings for debugging purposes.
   void EnableAudioDebugRecordings(content::WebContents* web_contents);
   void DisableAudioDebugRecordings();
@@ -295,6 +298,8 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // |command_line_derived_logging_path_| is empty.
   bool event_log_recordings_;
   base::FilePath event_log_recordings_file_path_;
+
+  bool current_state_requested_ = false;
 
   bool data_channel_recording_active_ = false;
   // If `data_channel_recording_active_` is `true`, the following path indicates

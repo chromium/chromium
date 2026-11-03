@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 #include "content/browser/webrtc/webrtc_internals.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -152,9 +151,7 @@ void WebRTCInternalsMessageHandler::OnDOMLoadDone(
   params.Set("dataChannelRecordingsEnabled",
              webrtc_internals_->IsDataChannelRecordingsEnabled());
 
-  for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
-    host->GetCurrentState();
-  }
+  webrtc_internals_->MaybeRequestCurrentState();
   ResolveJavascriptCallback(base::Value(callback_id), params);
 }
 
