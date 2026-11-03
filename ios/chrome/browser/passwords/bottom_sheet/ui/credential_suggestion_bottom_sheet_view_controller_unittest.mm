@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/webauthn/ios/features.h"
@@ -139,4 +140,75 @@ TEST_F(CredentialSuggestionBottomSheetViewControllerTest,
           : IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE,
       kExpectedLtrWrappedPunycodeHost);
   EXPECT_NSEQ(expectedSubtitle, view_controller_.subtitleString);
+}
+
+// Tests that setting `selectedRow` selects that row and displays the checkmark
+// accessory on it.
+TEST_F(CredentialSuggestionBottomSheetViewControllerTest,
+       InitialRowSelectedWithCheckmark) {
+  CreateViewController(GURL(kCredentialUrl));
+
+  FormSuggestion* suggestion1 = [FormSuggestion
+              suggestionWithValue:@"user1"
+                       minorValue:nil
+               displayDescription:nil
+                             icon:nil
+                             type:autofill::SuggestionType::kPasswordEntry
+                          payload:autofill::Suggestion::Guid("fake_guid1")
+      fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
+                   requiresReauth:NO
+       acceptanceA11yAnnouncement:nil];
+  FormSuggestion* suggestion2 = [FormSuggestion
+              suggestionWithValue:@"user2"
+                       minorValue:nil
+               displayDescription:nil
+                             icon:nil
+                             type:autofill::SuggestionType::kPasswordEntry
+                          payload:autofill::Suggestion::Guid("fake_guid2")
+      fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
+                   requiresReauth:NO
+       acceptanceA11yAnnouncement:nil];
+
+  [view_controller_ setSuggestions:@[ suggestion1, suggestion2 ]
+                         andDomain:kCredentialDomain];
+  view_controller_.selectedRow = 1;
+  [view_controller_ loadViewIfNeeded];
+
+  EXPECT_EQ(view_controller_.selectedRow, 1);
+
+  UITableView* table_view =
+      base::apple::ObjCCastStrict<UITableView>(view_controller_.underTitleView);
+  [TableViewCellContentConfiguration registerCellForTableView:table_view];
+
+  id<UITableViewDataSource> data_source =
+      (id<UITableViewDataSource>)view_controller_;
+  UITableViewCell* cell_0 =
+      [data_source tableView:table_view
+          cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+  UITableViewCell* cell_1 =
+      [data_source tableView:table_view
+          cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+
+  EXPECT_EQ(cell_0.accessoryType, UITableViewCellAccessoryNone);
+  EXPECT_EQ(cell_1.accessoryType, UITableViewCellAccessoryCheckmark);
+
+  OCMExpect([handler_ primaryButtonTappedForSuggestion:suggestion2 atIndex:1]);
+  [view_controller_.primaryActionButton
+      sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_OCMOCK_VERIFY(handler_);
+
+  view_controller_.selectedRow = 0;
+  EXPECT_EQ(view_controller_.selectedRow, 0);
+
+  cell_0 = [data_source tableView:table_view
+            cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+  cell_1 = [data_source tableView:table_view
+            cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+  EXPECT_EQ(cell_0.accessoryType, UITableViewCellAccessoryCheckmark);
+  EXPECT_EQ(cell_1.accessoryType, UITableViewCellAccessoryNone);
+
+  OCMExpect([handler_ primaryButtonTappedForSuggestion:suggestion1 atIndex:0]);
+  [view_controller_.primaryActionButton
+      sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_OCMOCK_VERIFY(handler_);
 }

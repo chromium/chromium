@@ -11,6 +11,8 @@ source_set("coordinator") {
     "credential_suggestion_bottom_sheet_mediator_base+Subclassing.h",
     "credential_suggestion_bottom_sheet_mediator_base.h",
     "credential_suggestion_bottom_sheet_mediator_base.mm",
+    "form_suggestions_credential_suggestion_bottom_sheet_mediator.h",
+    "form_suggestions_credential_suggestion_bottom_sheet_mediator.mm",
     "passkey_creation_bottom_sheet_coordinator.h",
     "passkey_creation_bottom_sheet_coordinator.mm",
     "passkey_creation_bottom_sheet_mediator.h",
@@ -38,6 +40,7 @@ source_set("coordinator") {
     "//components/prefs",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/signin/public/identity_manager",
+    "//components/strings",
     "//components/sync/service",
     "//components/ukm/ios:ukm_url_recorder",
     "//components/webauthn/ios",
@@ -72,6 +75,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/tips_manager/model:tips_manager",
     "//ios/chrome/browser/webauthn/public",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/web/public",
@@ -86,6 +90,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "credential_suggestion_bottom_sheet_mediator_unittest.mm",
+    "form_suggestions_credential_suggestion_bottom_sheet_mediator_unittest.mm",
     "passkey_creation_bottom_sheet_mediator_unittest.mm",
     "passkey_suggestion_bottom_sheet_mediator_unittest.mm",
     "remote_actor_credential_bottom_sheet_mediator_unittest.mm",

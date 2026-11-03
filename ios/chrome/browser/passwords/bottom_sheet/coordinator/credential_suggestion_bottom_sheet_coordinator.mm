@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/form_suggestions_credential_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_view_controller.h"
@@ -67,6 +68,29 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
   // Information of the passkey request.
   std::optional<webauthn::IOSPasskeyClient::RequestInfo> _requestInfo;
+
+  // Preset suggestions to be displayed in the bottom sheet.
+  NSArray<FormSuggestion*>* _suggestions;
+
+  // The index of the suggestion that should be initially selected.
+  NSInteger _activeIndex;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                               suggestions:
+                                   (NSArray<FormSuggestion*>*)suggestions
+                               activeIndex:(NSInteger)activeIndex {
+  CHECK_GE(activeIndex, 0);
+  CHECK_GT(suggestions.count, static_cast<NSUInteger>(activeIndex),
+           base::NotFatalUntil::M166);
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _dismissing = NO;
+    _suggestions = [suggestions copy];
+    _activeIndex = activeIndex;
+  }
+  return self;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -97,7 +121,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (!_params.has_value() && !_requestInfo.has_value()) {
+  if (!_params.has_value() && !_requestInfo.has_value() && !_suggestions) {
     // Cleanup the coordinator if it couldn't be started.
     [self dismissCredentialSuggestions];
     // Do not add any logic past this point in this specific context since the
@@ -105,30 +129,36 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     return;
   }
 
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
+  Browser* browser = self.browser;
+  WebStateList* webStateList = browser ? browser->GetWebStateList() : nullptr;
+  web::WebState* activeWebState =
+      webStateList ? webStateList->GetActiveWebState() : nullptr;
+  const GURL& URL =
+      activeWebState ? activeWebState->GetLastCommittedURL() : GURL();
 
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
-
-  auto profilePasswordStore =
-      IOSChromeProfilePasswordStoreFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
-  auto accountPasswordStore =
-      IOSChromeAccountPasswordStoreFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
-
-  id<ReauthenticationProtocol> reauthModule =
-      ReauthenticationServiceFactory::GetForProfile(profile)->GetReauthModule();
-
+  ProfileIOS* profile =
+      browser ? browser->GetProfile()->GetOriginalProfile() : nullptr;
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
-  PrefService* prefService = profile->GetPrefs();
-  scoped_refptr<network::SharedURLLoaderFactory> sharedURLLoaderFactory =
-      profile->GetSharedURLLoaderFactory();
-  feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForProfile(profile);
+      profile ? IOSChromeFaviconLoaderFactory::GetForProfile(profile) : nullptr;
 
   if (_params.has_value()) {
+    auto profilePasswordStore =
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
+    auto accountPasswordStore =
+        IOSChromeAccountPasswordStoreFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
+
+    id<ReauthenticationProtocol> reauthModule =
+        ReauthenticationServiceFactory::GetForProfile(profile)
+            ->GetReauthModule();
+
+    PrefService* prefService = profile->GetPrefs();
+    scoped_refptr<network::SharedURLLoaderFactory> sharedURLLoaderFactory =
+        profile->GetSharedURLLoaderFactory();
+    feature_engagement::Tracker* engagementTracker =
+        feature_engagement::TrackerFactory::GetForProfile(profile);
+
     _mediator = [[CredentialSuggestionBottomSheetMediator alloc]
           initWithWebStateList:webStateList
                  faviconLoader:faviconLoader
@@ -139,8 +169,10 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
           accountPasswordStore:accountPasswordStore
         sharedURLLoaderFactory:sharedURLLoaderFactory
              engagementTracker:engagementTracker];
-  } else {
-    CHECK(_requestInfo.has_value());
+  } else if (_requestInfo.has_value()) {
+    id<ReauthenticationProtocol> reauthModule =
+        ReauthenticationServiceFactory::GetForProfile(profile)
+            ->GetReauthModule();
 
     _mediator = [[PasskeySuggestionBottomSheetMediator alloc]
         initWithWebStateList:webStateList
@@ -148,12 +180,20 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                 reauthModule:reauthModule];
 
     _requestInfo.reset();
+  } else {
+    CHECK(_suggestions);
+    _mediator = [[FormSuggestionsCredentialSuggestionBottomSheetMediator alloc]
+        initWithWebStateList:webStateList
+               faviconLoader:faviconLoader
+                 suggestions:_suggestions];
+    _suggestions = nil;
   }
   _mediator.presenter = self;
 
   _viewController = [[CredentialSuggestionBottomSheetViewController alloc]
       initWithHandler:self
                   URL:URL];
+  _viewController.selectedRow = _activeIndex;
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -208,6 +248,8 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   _mediator = nil;
   _viewController.delegate = nil;
   _viewController = nil;
+  _suggestions = nil;
+  _activeIndex = 0;
   [super stop];
 }
 
@@ -394,6 +436,11 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
                     atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion {
+  if (self.delegate) {
+    [self.delegate credentialSuggestionBottomSheetCoordinator:self
+                                          didSelectSuggestion:formSuggestion
+                                                      atIndex:index];
+  }
   [_mediator didSelectSuggestion:formSuggestion
                          atIndex:index
                       completion:completion];
@@ -430,6 +477,10 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 // Dismisses the credential suggestions bottom sheet.
 - (void)dismissCredentialSuggestions {
+  if (self.delegate) {
+    [self.delegate credentialSuggestionBottomSheetCoordinatorDidDismiss:self];
+    return;
+  }
   id<IOSPasskeyClientCommands> passkeyClientHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), IOSPasskeyClientCommands);
   [passkeyClientHandler dismissPasskeySuggestions];
