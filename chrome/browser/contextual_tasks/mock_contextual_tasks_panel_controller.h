@@ -84,6 +84,7 @@ class MockContextualTasksPanelController
               (content::WebContents*, base::Uuid),
               (override));
   MOCK_METHOD(void, OnAiInteraction, (), (override));
+  MOCK_METHOD(void, OnLinkClicked, (), (override));
   MOCK_METHOD(void,
               SetPendingTaskForTab,
               (tabs::TabInterface*, const base::Uuid&),
