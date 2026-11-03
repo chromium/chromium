@@ -66,6 +66,9 @@ struct ContextMenuData {
   // Whether the image in context is a null.
   bool has_image_contents;
 
+  // Bounds of the image in context in viewport coordinates.
+  gfx::Rect image_bounds;
+
   // The frame token of the replacement subframe if the image in context has an
   // active user agent replacement.
   std::optional<blink::FrameToken> image_replacement_frame_token;

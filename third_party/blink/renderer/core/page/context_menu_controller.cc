@@ -445,6 +445,24 @@ static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
   return combined_rect;
 }
 
+static gfx::Rect ComputeImageBounds(Element* element,
+                                    LocalFrame* selected_frame) {
+  element->GetDocument().UpdateStyleAndLayoutForNode(
+      element, DocumentUpdateReason::kContextMenu);
+  gfx::Rect bounds = element->VisibleBoundsRespectingClipsInLocalRoot();
+  if (selected_frame->LocalFrameRoot().IsOutermostMainFrame()) {
+    VisualViewport& visual_viewport =
+        selected_frame->GetPage()->GetVisualViewport();
+
+    gfx::Rect rect_in_visual_viewport =
+        visual_viewport.RootFrameToViewport(bounds);
+    rect_in_visual_viewport.Intersect(gfx::Rect(visual_viewport.Size()));
+    return rect_in_visual_viewport;
+  }
+
+  return bounds;
+}
+
 bool ContextMenuController::ShouldShowContextMenuFromTouch(
     const ContextMenuData& data) {
   return page_->GetSettings().GetAlwaysShowContextMenuOnTouch() ||
@@ -737,6 +755,9 @@ bool ContextMenuController::ShowContextMenu(
       data.media_type = mojom::blink::ContextMenuDataMediaType::kImage;
       data.media_flags |= ContextMenuData::kMediaCanPrint;
       data.has_image_contents = HitTestResult::GetImage(potential_image_node);
+      if (auto* element = DynamicTo<Element>(potential_image_node)) {
+        data.image_bounds = ComputeImageBounds(element, selected_frame);
+      }
       if (auto* image_element =
               DynamicTo<HTMLImageElement>(potential_image_node)) {
         data.image_replacement_frame_token =

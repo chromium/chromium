@@ -3157,6 +3157,8 @@ void WebLocalFrameImpl::ShowContextMenu(
 
   params.selection_rect =
       LocalRootFrameWidget()->BlinkSpaceToEnclosedDIPs(data.selection_rect);
+  params.image_bounds =
+      LocalRootFrameWidget()->BlinkSpaceToEnclosedDIPs(data.image_bounds);
 
   if (!GetFrame())
     return;

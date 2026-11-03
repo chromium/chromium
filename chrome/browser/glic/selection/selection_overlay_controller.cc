@@ -133,14 +133,16 @@ constexpr int kSelectionPaddingDip = 5;
 constexpr int kMaxSurroundingTextLength = 2000;
 constexpr base::TimeDelta kSurroundingTextTimeout = base::Seconds(1);
 
-selection::SelectedRegionPtr CreateRegionFromBounds(
-    gfx::Rect selection_bounds,
-    const gfx::Rect& tab_bounds) {
+selection::SelectedRegionPtr CreateRegionFromBounds(gfx::Rect selection_bounds,
+                                                    const gfx::Rect& tab_bounds,
+                                                    bool apply_padding) {
   if (selection_bounds.IsEmpty() || tab_bounds.IsEmpty()) {
     return nullptr;
   }
 
-  selection_bounds.Outset(kSelectionPaddingDip);
+  if (apply_padding) {
+    selection_bounds.Outset(kSelectionPaddingDip);
+  }
 
   float left = static_cast<float>(selection_bounds.x() - tab_bounds.x()) /
                tab_bounds.width();
@@ -666,13 +668,17 @@ void SelectionOverlayController::SetRegionFromBounds(
   session_->active_region_id.reset();
   session_->surrounding_text_timer.Stop();
   if (tab_ && tab_->GetContents()) {
+    const bool is_text_selection =
+        session_->entry_point != ::selection::EntryPoint::kContextMenuImage;
     if (auto region = CreateRegionFromBounds(
-            selection_bounds, tab_->GetContents()->GetViewBounds())) {
+            selection_bounds, tab_->GetContents()->GetViewBounds(),
+            /*apply_padding=*/is_text_selection)) {
       base::UnguessableToken id = region->id;
       session_->active_region_id = id;
       auto [it, _] = session_->selected_regions.emplace(
           id, SelectedRegionData(std::move(region)));
-      if (selected_frame && selected_frame->IsRenderFrameLive()) {
+      if (is_text_selection && selected_frame &&
+          selected_frame->IsRenderFrameLive()) {
         it->second.waiting_for_surrounding_text = true;
         selected_frame->RequestTextSurroundingSelection(
             base::BindOnce(&SelectionOverlayController::

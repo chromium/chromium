@@ -27,6 +27,7 @@
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #endif
 
@@ -161,7 +162,6 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
 
   // A text selection takes precedence over an image.
   // Selections in editable fields are ignored.
-  // TODO(b/559202240): Pre-select the image when `params` targets an image.
   gfx::Rect selection_bounds;
   auto interaction_options = selection::InteractionOptions::New();
   ::selection::EntryPoint entry_point =
@@ -180,6 +180,18 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
                  blink::mojom::ContextMenuDataMediaType::kImage &&
              params.has_image_contents) {
     entry_point = ::selection::EntryPoint::kContextMenuImage;
+    if (content::RenderWidgetHostView* view = frame.GetView()) {
+      gfx::Rect view_bounds = view->GetViewBounds();
+      selection_bounds = params.image_bounds;
+      selection_bounds.Intersect(gfx::Rect(view_bounds.size()));
+      selection_bounds.Offset(view_bounds.OffsetFromOrigin());
+      selection_bounds.Intersect(web_contents->GetViewBounds());
+    }
+    if (!selection_bounds.IsEmpty()) {
+      interaction_options->hide_handles = false;
+      interaction_options->disable_multi_select = true;
+      interaction_options->skip_intro_animation = true;
+    }
   }
   controller->ShowWithSelection(&frame, selection_bounds,
                                 std::move(interaction_options), entry_point);

@@ -1182,6 +1182,60 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
             u"Before text Selected target After text");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SelectionOverlayPromptBrowserTest,
+    ShowWithSelectionForImageSkipsPaddingAndSurroundingText) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+
+  auto* suggestion_service = ::selection::SuggestionService::From(tab);
+  ASSERT_TRUE(suggestion_service);
+  CountingSelectionSuggestionTool counting_tool(tab);
+  ScopedToolRegistration registration(suggestion_service, &counting_tool);
+
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    document.body.innerText = 'Before text Selected target After text';
+    const textNode = document.body.firstChild;
+    const range = document.createRange();
+    range.setStart(textNode, 12);
+    range.setEnd(textNode, 27);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  )"));
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuImage);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  TestSuggestedActionsListener listener;
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
+  listener.WaitForBatches(1);
+
+  EXPECT_EQ(counting_tool.request_count(), 1);
+  EXPECT_FALSE(counting_tool.last_selected_text().has_value());
+  EXPECT_FALSE(counting_tool.last_text_surrounding_selection().has_value());
+  float scale = web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor();
+  gfx::Rect expected_rect =
+      gfx::ScaleToEnclosedRect(gfx::Rect(10, 10, 100, 50), scale);
+  EXPECT_NEAR(counting_tool.last_rect().x(), expected_rect.x(), 1);
+  EXPECT_NEAR(counting_tool.last_rect().y(), expected_rect.y(), 1);
+  EXPECT_NEAR(counting_tool.last_rect().width(), expected_rect.width(), 1);
+  EXPECT_NEAR(counting_tool.last_rect().height(), expected_rect.height(), 1);
+}
+
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                        SuggestionsCachedPerRegionAndRefetchedOnAdjust) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
