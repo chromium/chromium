@@ -209,13 +209,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
 //  (1) User navigates to a website.
 //  (2) User opens lens overlay.
 //  (3) User presses the escape key to close lens overlay.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
-// Flaky on ASAN on Linux.
-#define MAYBE_EscapeKeyClose DISABLED_EscapeKeyClose
-#else
-#define MAYBE_EscapeKeyClose EscapeKeyClose
-#endif
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_EscapeKeyClose) {
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, EscapeKeyClose) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
 
@@ -241,9 +235,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_EscapeKeyClose) {
               kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)),
           WaitForWebContentsPainted(kOverlayId)),
       // Wait for the webview to finish loading to prevent re-entrancy.
-      InSameContext(FocusWebContents(kOverlayId),
-                    SendAccelerator(kOverlayId, escape_key),
-                    WaitForHide(kOverlayId)));
+      InSameContext(WaitForShow(LensOverlayController::kOverlayId),
+                    WaitForScreenshotRendered(kOverlayId)),
+      FocusWebContents(kOverlayId), SendAccelerator(kOverlayId, escape_key),
+      InAnyContext(WaitForHide(kOverlayId)));
 }
 
 // This tests the following CUJ:
