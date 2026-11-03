@@ -281,6 +281,21 @@ suite('PrivacyGuidePage', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCompletion');
   });
 
+  test('stepIndicatorRendersDots', async function() {
+    await navigateToStep(PrivacyGuideStep.MSBB);
+    await microtasksFinished();
+
+    const stepIndicator = page.shadowRoot.querySelector('step-indicator');
+    assertTrue(!!stepIndicator);
+    const model = page.computeStepIndicatorModel();
+    assertTrue(model.total > 1);
+    const dots = stepIndicator.shadowRoot.querySelectorAll('span');
+    assertEquals(model.total, dots.length);
+    assertEquals(
+        1, stepIndicator.shadowRoot.querySelectorAll('span.active').length);
+    assertTrue(dots[model.active]!.classList.contains('active'));
+  });
+
   test('privacyGuideVisibilitySupervisedAccount', async function() {
     // Set the user to have a non-supervised account.
     const syncStatus: SyncStatus = {

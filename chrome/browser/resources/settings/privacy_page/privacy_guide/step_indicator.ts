@@ -43,8 +43,8 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
       model: {type: Object},
 
       /**
-       * An array with length equal to the number of dots, for use by
-       * dom-repeat. The contents of the array are unused.
+       * An array with length equal to the number of dots, used to render
+       * them. The contents of the array are unused.
        */
       dots_: {type: Array},
     };
@@ -72,7 +72,9 @@ export class StepIndicatorElement extends StepIndicatorElementBase {
 
   private computeDots_(): void[] {
     // If total is 1, show nothing.
-    return new Array(this.model && this.model.total > 1 ? this.model.total : 0);
+    // Use a dense array, since map() in the template skips holes.
+    const count = this.model && this.model.total > 1 ? this.model.total : 0;
+    return new Array(count).fill(undefined);
   }
 
   /**
