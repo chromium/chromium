@@ -17,7 +17,8 @@ inline constexpr char kDisableCheckingUserPermissionsForTestingSwitch[] =
 inline constexpr char kGoogleApiKeyConfigurationCheckOverrideSwitch[] =
     "optimization-guide-google-api-key-configuration-check-override";
 
-// Returns true if Google API key configuration check should be skipped.
+// Returns true if the check for whether the Google Chrome API key is used
+// should be skipped.
 bool ShouldSkipGoogleApiKeyConfigurationCheck();
 
 // Returns true if the user, as represented by |profile| is permitted to make

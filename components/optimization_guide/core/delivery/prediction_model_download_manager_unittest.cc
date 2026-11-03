@@ -15,19 +15,30 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/download/public/background_service/test/mock_download_service.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/delivery/prediction_model_download_observer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
+#include "google_apis/api_key_cache.h"
+#include "google_apis/default_api_keys.h"
+#include "google_apis/google_api_keys.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip.h"
+
+namespace {
+#include "google_apis/default_api_keys-inc.cc"
+}  // namespace
 
 namespace optimization_guide {
 
@@ -93,6 +104,8 @@ class PredictionModelDownloadManagerTest : public testing::Test {
     ASSERT_TRUE(temp_download_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(temp_models_dir_.CreateUniqueTempDir());
     local_state_prefs_ = std::make_unique<TestingPrefServiceSimple>();
+    component_updater::RegisterComponentUpdateServicePrefs(
+        local_state_prefs_->registry());
     mock_download_service_ =
         std::make_unique<download::test::MockDownloadService>();
     profile_download_service_tracker_ =
@@ -441,6 +454,47 @@ TEST_F(PredictionModelDownloadManagerTest, IsAvailableForDownloads) {
   SetDownloadServiceUnavailable();
 
   EXPECT_FALSE(download_manager()->IsAvailableForDownloads());
+}
+
+TEST_F(PredictionModelDownloadManagerTest,
+       ShouldFetchModelsRequiresGoogleChromeApiKey) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
+      kGoogleApiKeyConfigurationCheckOverrideSwitch);
+
+  {
+    google_apis::DefaultApiKeys default_keys =
+        GetDefaultApiKeysFromDefinedValues();
+    default_keys.allow_unset_values = true;
+    default_keys.google_api_key = "non_official_api_key";
+    default_keys.is_using_google_chrome_keys = false;
+    google_apis::ApiKeyCache api_key_cache(default_keys);
+    auto scoped_override =
+        google_apis::SetScopedApiKeyCacheForTesting(&api_key_cache);
+
+    EXPECT_TRUE(google_apis::HasAPIKeyConfigured());
+    EXPECT_FALSE(google_apis::IsGoogleChromeAPIKeyUsed());
+    EXPECT_FALSE(download_manager()->ShouldFetchModels());
+
+    base::test::ScopedCommandLine override_command_line;
+    override_command_line.GetProcessCommandLine()->AppendSwitch(
+        kGoogleApiKeyConfigurationCheckOverrideSwitch);
+    EXPECT_TRUE(download_manager()->ShouldFetchModels());
+  }
+
+  {
+    google_apis::DefaultApiKeys default_keys =
+        GetDefaultApiKeysFromDefinedValues();
+    default_keys.allow_unset_values = true;
+    default_keys.google_api_key = "official_api_key";
+    default_keys.is_using_google_chrome_keys = true;
+    google_apis::ApiKeyCache api_key_cache(default_keys);
+    auto scoped_override =
+        google_apis::SetScopedApiKeyCacheForTesting(&api_key_cache);
+
+    EXPECT_TRUE(google_apis::IsGoogleChromeAPIKeyUsed());
+    EXPECT_TRUE(download_manager()->ShouldFetchModels());
+  }
 }
 
 TEST_F(PredictionModelDownloadManagerTest,

@@ -47,7 +47,7 @@ bool IsUserPermittedToFetchFromRemoteOptimizationGuide(
   }
 
   if (!ShouldSkipGoogleApiKeyConfigurationCheck() &&
-      !google_apis::HasAPIKeyConfigured()) {
+      !google_apis::IsGoogleChromeAPIKeyUsed()) {
     return false;
   }
 

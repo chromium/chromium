@@ -212,7 +212,7 @@ bool PredictionModelDownloadManager::ShouldFetchModels() const {
     return false;
   }
   return (ShouldSkipGoogleApiKeyConfigurationCheck() ||
-          google_apis::HasAPIKeyConfigured()) &&
+          google_apis::IsGoogleChromeAPIKeyUsed()) &&
          local_state_->GetBoolean(::prefs::kComponentUpdatesEnabled);
 }
 
