@@ -141,6 +141,8 @@ export {SettingsResetProfileBannerElement} from './reset_page/reset_profile_bann
 export {AiSettingsSection, buildRouter, getTopLevelRoute, resetRouterForTesting, routes} from './route.js';
 export {Route, Router} from './router.js';
 export type {SettingsRoutes} from './router.js';
+export {MAX_SEARCH_RESULTS, setSettingsSearchManagerForTesting, SettingsSearchManagerImpl} from './search/settings_search_manager.js';
+export type {SettingsSearchManager, SettingsSearchRequest} from './search/settings_search_manager.js';
 export {MAX_DWELL_TIME_MS, QUERY_SUBMITTED_DELAY_MS, SearchMetricsRecorder} from './search_metrics_recorder.js';
 export {ExtensionControlledMessageElement} from './search_page/extension_controlled_message.js';
 export {FeatureShortcutsPageElement} from './search_page/feature_shortcuts_page.js';
@@ -157,6 +159,7 @@ export {SettingsSearchPageIndexElement} from './search_page/search_page_index.js
 export {SiteShortcutsPageElement} from './search_page/site_shortcuts_page.js';
 export {getSearchManager, SearchRequest, setSearchManagerForTesting, showBubble} from './search_settings.js';
 export type {SearchManager} from './search_settings.js';
+export {SettingId} from './setting_id.mojom-webui.js';
 export {SettingsMainElement} from './settings_main/settings_main.js';
 export {SettingsMenuElement} from './settings_menu/settings_menu.js';
 export {SearchableViewContainerMixin} from './settings_page/searchable_view_container_mixin.js';
@@ -164,6 +167,8 @@ export {SearchableViewContainerMixinLit} from './settings_page/searchable_view_c
 export {SettingsSectionElement} from './settings_page/settings_section.js';
 export {SettingsViewMixin} from './settings_page/settings_view_mixin.js';
 export {SettingsViewMixinLit} from './settings_page/settings_view_mixin_lit.js';
+export {browserProxyFactory as settingsSearchBrowserProxyFactory} from './settings_search.mojom-webui.js';
+export type {SearchResult, SettingsSearchHandlerInterface} from './settings_search.mojom-webui.js';
 export {MAX_QUERY_LENGTH, SettingsUiElement} from './settings_ui/settings_ui.js';
 export {SiteFaviconElement} from './site_favicon.js';
 export {convertDateToWindowsEpoch} from './time.js';

@@ -699,6 +699,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddString(
       "settingsRefresh2026",
       features::IsSettingsRefresh2026Enabled() ? "settings-refresh-2026" : "");
+  html_source->AddBoolean("enableSettingsSearch2026",
+                          features::IsSettingsSearch2026Enabled());
 
   personal_context::PersonalContextEligibilityService* eligibility_service =
       PersonalContextEligibilityServiceFactory::GetForProfile(profile);

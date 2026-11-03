@@ -35,6 +35,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixinLit, Router} from '../router.js';
+import {getSettingsSearchManager} from '../search/settings_search_manager.js';
 import {SearchMetricsRecorder} from '../search_metrics_recorder.js';
 import type {SearchFinishedDetail, SettingsMainElement} from '../settings_main/settings_main.js';
 import type {SettingsMenuElement} from '../settings_menu/settings_menu.js';
@@ -87,6 +88,9 @@ export class SettingsUiElement extends SettingsUiElementBase {
   private accessor lastSearchQuery_: string = '';
   private accessor isSettingsRefresh2026_: boolean =
       loadTimeData.getString('settingsRefresh2026') !== '';
+
+  private isSettingsSearch2026Enabled_: boolean =
+      loadTimeData.getBoolean('enableSettingsSearch2026');
 
   private activeTimer_: ActiveTimer|null = null;
 
@@ -229,6 +233,11 @@ export class SettingsUiElement extends SettingsUiElementBase {
    * Handles the 'search-changed' event fired from the toolbar.
    */
   protected onSearchChanged_(e: CustomEvent<string>) {
+    if (this.isSettingsSearch2026Enabled_) {
+      getSettingsSearchManager().search(e.detail);
+      return;
+    }
+
     let query = e.detail;
     if (query.length > MAX_QUERY_LENGTH) {
       query = query.substring(0, MAX_QUERY_LENGTH);

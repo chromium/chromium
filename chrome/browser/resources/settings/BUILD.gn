@@ -425,6 +425,7 @@ build_webui("build") {
     "safety_hub/safety_hub_page.ts",
     "safety_hub/unused_site_permissions_module.html.ts",
     "safety_hub/unused_site_permissions_module.ts",
+    "search/settings_search_manager.ts",
     "search_metrics_recorder.ts",
     "search_page/extension_controlled_message.html.ts",
     "search_page/extension_controlled_message.ts",
@@ -770,8 +771,15 @@ build_webui("build") {
     "system_page/system_page.css",
   ]
 
-  mojo_files_deps = [ "//components/autofill/core/browser/data_model/autofill_ai:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/components/autofill/core/browser/data_model/autofill_ai/autofill_ai_enums.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/settings/search/mojom:mojom_ts__generator",
+    "//components/autofill/core/browser/data_model/autofill_ai:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/settings/search/mojom/setting_id.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/settings/search/mojom/settings_search.mojom-webui.ts",
+    "$root_gen_dir/components/autofill/core/browser/data_model/autofill_ai/autofill_ai_enums.mojom-webui.ts",
+  ]
   if (!is_chromeos) {
     mojo_files_deps +=
         [ "//chrome/browser/accessibility:mojo_bindings_ts__generator" ]

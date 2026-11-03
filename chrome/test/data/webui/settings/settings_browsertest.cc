@@ -558,6 +558,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsRefresh2026) {
           "runMochaSuite('SettingsRefresh2026')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsSearch2026) {
+  RunTest("settings/settings_ui_test.js",
+          "runMochaSuite('SettingsSearch2026')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ActiveTimer) {
   RunTest("settings/active_timer_test.js", "mocha.run()");
 }
@@ -1252,6 +1257,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsMenu) {
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsRadioGroup) {
   RunTest("settings/settings_radio_group_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsSearchManager) {
+  RunTest("settings/settings_search_manager_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SimpleConfirmationDialog) {
