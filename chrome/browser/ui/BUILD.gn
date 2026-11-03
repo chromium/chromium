@@ -2111,20 +2111,28 @@ source_set("unit_tests") {
       "browser_manager_service_factory_unittest.cc",
       "browser_unittest.cc",
       "browser_window_state_unittest.cc",
+      "browser_window_theme_observer_unittest.cc",
       "intent_picker_tab_helper_unittest.cc",
       "managed_ui_for_supervised_user_unittest.cc",
     ]
     deps += [
       ":browser_manager_service",
+      ":browser_window_header",
       ":browser_window_state",
+      ":browser_window_theme_observer",
       ":intent_picker_tab_helper",
       ":managed_ui",
       "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/supervised_user",
+      "//chrome/browser/themes",
       "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window/test:test_support",
       "//components/apps/link_capturing",
+      "//components/keyed_service/core",
       "//components/supervised_user/core/browser:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
     ]
     if (is_chromeos) {
       deps += [ "//ui/chromeos" ]
