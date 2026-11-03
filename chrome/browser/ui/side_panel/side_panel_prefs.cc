@@ -31,6 +31,8 @@
 namespace side_panel_prefs {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterDictionaryPref(prefs::kSidePanelIdToWidth);
+
 // TODO(crbug.com/489780965): Move policies over as features are implemented.
 #if !BUILDFLAG(IS_ANDROID)
   // When in RTL mode, the side panel should default to the left of the screen.
@@ -40,7 +42,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kSidePanelHorizontalAlignment,
                                 !base::i18n::IsRTL());
   registry->RegisterBooleanPref(prefs::kGoogleSearchSidePanelEnabled, true);
-  registry->RegisterDictionaryPref(prefs::kSidePanelIdToWidth);
 
   base::DictValue alignment_overrides;
   alignment_overrides.Set(SidePanelEntryIdToString(SidePanelEntryId::kGlic),

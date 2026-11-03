@@ -38,6 +38,8 @@ source_set("android") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/common:constants",
+    "//components/prefs",
     "//components/tabs:public",
     "//third_party/jni_zero",
     "//ui/base/unowned_user_data",
@@ -112,6 +114,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
@@ -136,6 +139,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelCoordinatorAndroidBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelResizeManager.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridge.java",
   ]
   deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
@@ -237,22 +241,27 @@ robolectric_library("junit") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.ui.side_panel"
   sources = [
     "java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelContainerCoordinatorIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/ui/side_panel/dev/SidePanelDevFeatureIntegrationTest.java",
   ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base/test:public_transit_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/side_panel/android:dev_java",
     "//chrome/browser/ui/side_panel/android:java",
     "//chrome/browser/ui/side_panel/test/android:integration_test_support_java",
+    "//chrome/browser/ui/side_ui/internal:java_resources",
     "//chrome/browser/ui/side_ui/public:java",
     "//chrome/browser/url_constants/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
@@ -265,9 +274,11 @@ android_library("javatests") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_espresso_espresso_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/androidx:androidx_window_window_java",
+    "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",

@@ -1177,6 +1177,9 @@ inline constexpr char kSuppressDifferentOriginSubframeJSDialogs[] =
 // or disabled.
 inline constexpr char kUserAgentReduction[] = "user_agent_reduction";
 
+// Stores the mapping of side panel IDs to their widths.
+inline constexpr char kSidePanelIdToWidth[] = "side_panel.id_to_width";
+
 #if !BUILDFLAG(IS_ANDROID)
 // Boolean determining whether the organizer panel entrypoint is displayed in
 // the tab strip.
@@ -1205,8 +1208,6 @@ inline constexpr char kSidePanelAlignmentOverrides[] =
 // a button in the toolbar.
 inline constexpr char kSidePanelCompanionEntryPinnedToToolbar[] =
     "side_panel.companion_pinned_to_toolbar";
-// Stores the mapping of side panel IDs to their widths.
-inline constexpr char kSidePanelIdToWidth[] = "side_panel.id_to_width";
 // Corresponds to the enterprise policy.
 inline constexpr char kGoogleSearchSidePanelEnabled[] =
     "side_panel.google_search_side_panel_enabled";

@@ -94,6 +94,19 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
     }
 
     /**
+     * Saves the width the user picked for the current side panel entry by resizing the side panel.
+     *
+     * @param widthDp The side panel container width in dp.
+     */
+    void onPanelResized(int widthDp) {
+        log(TAG, "onPanelResized", widthDp);
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidBridgeJni.get()
+                    .onPanelResized(mNativeSidePanelCoordinatorAndroid, widthDp);
+        }
+    }
+
+    /**
      * Called when the active status of this bridge is changed.
      *
      * <p>The active status of the bridge and its underlying native object is in sync with the
@@ -185,12 +198,14 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
             View sidePanelNativeView,
             @JniType("std::u16string_view") String title,
             boolean shouldShowHeader,
+            @JniType("std::optional<int32_t>") @Nullable Integer persistedPanelWidthDp,
             boolean suppressAnimations) {
-        log(TAG, "startOpeningPanel", profile, sidePanelNativeView, title);
+        log(TAG, "startOpeningPanel", profile, sidePanelNativeView, title, persistedPanelWidthDp);
         mNativeBridgeSelector.startOpeningPanel(
                 profile,
                 new SidePanelContent(
                         sidePanelNativeView, shouldShowHeader, /* icon= */ null, title),
+                persistedPanelWidthDp,
                 suppressAnimations || mDisableAnimationsForTesting);
     }
 
@@ -207,12 +222,20 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
             @JniType("Profile*") Profile profile,
             View sidePanelNativeView,
             @JniType("std::u16string_view") @Nullable String title,
-            boolean shouldShowHeader) {
-        log(TAG, "startReplacingPanelContent", profile, sidePanelNativeView, title);
+            boolean shouldShowHeader,
+            @JniType("std::optional<int32_t>") @Nullable Integer persistedPanelWidthDp) {
+        log(
+                TAG,
+                "startReplacingPanelContent",
+                profile,
+                sidePanelNativeView,
+                title,
+                persistedPanelWidthDp);
         mNativeBridgeSelector.startReplacingPanelContent(
                 profile,
                 new SidePanelContent(
-                        sidePanelNativeView, shouldShowHeader, /* icon= */ null, title));
+                        sidePanelNativeView, shouldShowHeader, /* icon= */ null, title),
+                persistedPanelWidthDp);
     }
 
     @CalledByNative
@@ -309,6 +332,9 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
 
         /** See {@link SidePanelCoordinatorAndroidBridge#onPanelContentReplaced}. */
         void onPanelContentReplaced(long nativeSidePanelCoordinatorAndroid);
+
+        /** See {@link SidePanelCoordinatorAndroidBridge#onPanelResized}. */
+        void onPanelResized(long nativeSidePanelCoordinatorAndroid, int widthDp);
 
         /** See {@link SidePanelCoordinatorAndroidBridge#onActiveChanged}. */
         void onActiveChanged(long nativeSidePanelCoordinatorAndroid, boolean active);

@@ -71,6 +71,7 @@ android_library("integration_test_support_java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/side_panel/test/SidePanelContainerCoordinatorIntegrationTestSupport.java" ]
   deps = [
     "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/side_panel/android:java",
     "//third_party/jni_zero:jni_zero_java",
@@ -90,6 +91,11 @@ source_set("integration_test_support") {
     ":integration_test_support_jni_headers",
     "//base",
     "//chrome/browser/android:tabs_public",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/side_panel/android",
+    "//chrome/common:constants",
+    "//components/prefs",
   ]
 }

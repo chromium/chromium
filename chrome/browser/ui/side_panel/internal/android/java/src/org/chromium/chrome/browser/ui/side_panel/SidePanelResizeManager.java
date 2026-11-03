@@ -14,12 +14,16 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.ui.base.ViewUtils;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -36,20 +40,21 @@ import java.util.function.Supplier;
     private final Supplier<@Nullable View> mContentViewToPinSupplier;
 
     /**
-     * The width (in dp) that the user last committed by resizing the side panel in this window, or
-     * null if the side panel should use its automatic width.
+     * The width (in dp) that the user committed for the current content's side panel entry by
+     * resizing the side panel, or null if the side panel should use its automatic width.
+     *
+     * <p>{@link #restoreFromPersistedWidth} sets it to the entry's persisted width when the side
+     * panel opens or its content is replaced, and {@link #commitFinalResizeState} sets it when the
+     * user finishes resizing the side panel. It isn't read from the persisted width again while the
+     * entry is shown, so if another window persists a new width for the same entry, this window
+     * keeps its committed width until the entry is shown again.
      *
      * <p>This isn't always the rendered width. The side panel container clamps it to the available
      * width, so the side panel can be narrower while space is limited, e.g. in a narrow window. The
      * width is kept as is, so that the side panel returns to it once there's space.
      *
-     * <p>An in-progress drag overrides it, and only a commit updates it, so a drag that ends
-     * without a commit (e.g. the side panel hides mid-drag) leaves it unchanged.
-     *
-     * <p>The width applies to all side panel entries, and isn't persisted, so a new window or
-     * session starts with the automatic width.
-     *
-     * <p>TODO(crbug.com/570096420): Persist the width per side panel entry.
+     * <p>An in-progress drag overrides it, and only updates it when the drag is committed, so a
+     * drag that ends without a commit (e.g. the side panel hides mid-drag) leaves it unchanged.
      */
     private @Nullable Integer mUserCommittedWidthDp;
 
@@ -77,6 +82,16 @@ import java.util.function.Supplier;
             Context context, Supplier<@Nullable View> contentViewToPinSupplier) {
         mContext = context;
         mContentViewToPinSupplier = contentViewToPinSupplier;
+    }
+
+    /**
+     * Returns whether the side panel can be manually resized by dragging its inner edge.
+     *
+     * <p>Native reads this too, so that Java and native use the same cached flag value.
+     */
+    @CalledByNative
+    /* package */ static boolean isManualResizeEnabled() {
+        return ChromeFeatureList.sEnableAndroidSidePanelManualResizing.isEnabled();
     }
 
     /**
@@ -122,9 +137,10 @@ import java.util.function.Supplier;
      *
      * @param finalWidthPx The raw container width that the drag ended at.
      * @param minWidthDp The minimum side panel container width.
+     * @return The committed width (in dp), or null if no drag was in progress.
      */
-    /* package */ void commitFinalResizeState(@Px int finalWidthPx, int minWidthDp) {
-        if (mLiveResizeWidthPx == null) return;
+    /* package */ @Nullable Integer commitFinalResizeState(@Px int finalWidthPx, int minWidthDp) {
+        if (mLiveResizeWidthPx == null) return null;
 
         // This resizes pinned ThinWebView content's WebContents once, for the committed width.
         clearLiveResizeState();
@@ -133,6 +149,22 @@ import java.util.function.Supplier;
                         ViewUtils.pxToDp(mContext, finalWidthPx),
                         minWidthDp,
                         MAX_USER_RESIZED_SIDE_PANEL_WIDTH_DP);
+        return mUserCommittedWidthDp;
+    }
+
+    /**
+     * Restores the width persisted for the current content's side panel entry as the committed
+     * width. Call this when the side panel opens or its content is replaced.
+     *
+     * @param persistedPanelWidthDp The width (in dp) persisted from the last time the user resized
+     *     the side panel for the entry, or null if the user has never resized it, in which case the
+     *     side panel uses its automatic width.
+     * @return Whether the committed width changed.
+     */
+    /* package */ boolean restoreFromPersistedWidth(@Nullable Integer persistedPanelWidthDp) {
+        if (Objects.equals(mUserCommittedWidthDp, persistedPanelWidthDp)) return false;
+        mUserCommittedWidthDp = persistedPanelWidthDp;
+        return true;
     }
 
     /**

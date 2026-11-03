@@ -56,6 +56,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   bool HasContentToShow(TabAndroid* tab);
   void OnPanelContainerUpdated(int old_width, int new_width);
   void OnPanelContentReplaced();
+  void OnPanelResized(int width_dp);
   void OnActiveChanged(bool active);
   void OnWillAutoClose(bool is_showable);
   void OnWillAutoRestore();
@@ -168,6 +169,12 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
   UniqueKey GetCurrentKeyNonNull() const;
   SidePanelEntry* GetEntryForCurrentKeyNonNull() const;
+
+  // Returns the side panel container width (in dp) persisted for `entry`, i.e.
+  // the width the user last picked for it by resizing the side panel, or
+  // nullopt if there's none.
+  std::optional<int32_t> GetPersistedPanelWidthDp(
+      const SidePanelEntry& entry) const;
 
   // The key for a `SidePanelEntry` that can be shown.
   struct ShowableKey {

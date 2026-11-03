@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.ui.side_panel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator.MAX_USER_RESIZED_SIDE_PANEL_WIDTH_DP;
 
@@ -92,6 +94,33 @@ public class SidePanelResizeManagerUnitTest {
         commit(/* widthPx= */ 600);
         mResizeManager.commitFinalResizeState(/* finalWidthPx= */ 800, MIN_WIDTH_DP);
         assertEquals(600, (int) mResizeManager.getUserResizedWidthPx());
+    }
+
+    @Test
+    public void commitFinalResizeState_returnsCommittedWidth() {
+        // E.g. a tap without a move.
+        assertNull(mResizeManager.commitFinalResizeState(/* finalWidthPx= */ 600, MIN_WIDTH_DP));
+
+        mResizeManager.updateLiveResizeState(/* proposedWidthPx= */ 5000, AnchorSide.RIGHT);
+        assertEquals(
+                MAX_USER_RESIZED_SIDE_PANEL_WIDTH_DP,
+                (int)
+                        mResizeManager.commitFinalResizeState(
+                                /* finalWidthPx= */ 5000, MIN_WIDTH_DP));
+    }
+
+    @Test
+    public void restoreFromPersistedWidth_restoresWidthAndReturnsWhetherChanged() {
+        // No persisted width.
+        assertFalse(mResizeManager.restoreFromPersistedWidth(null));
+        assertNull(mResizeManager.getUserResizedWidthPx());
+
+        assertTrue(mResizeManager.restoreFromPersistedWidth(300));
+        assertEquals(600, (int) mResizeManager.getUserResizedWidthPx());
+        assertFalse(mResizeManager.restoreFromPersistedWidth(300));
+
+        assertTrue(mResizeManager.restoreFromPersistedWidth(null));
+        assertNull(mResizeManager.getUserResizedWidthPx());
     }
 
     @Test

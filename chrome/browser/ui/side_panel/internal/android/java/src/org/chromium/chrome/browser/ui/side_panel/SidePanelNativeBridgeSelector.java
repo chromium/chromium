@@ -243,9 +243,14 @@ final class SidePanelNativeBridgeSelector {
      *
      * <p>The given {@link Profile} must be the current {@link Profile}.
      */
-    void startOpeningPanel(Profile profile, SidePanelContent content, boolean suppressAnimations) {
+    void startOpeningPanel(
+            Profile profile,
+            SidePanelContent content,
+            @Nullable Integer persistedPanelWidthDp,
+            boolean suppressAnimations) {
         assertCurrentProfile(profile);
-        mSidePanelContainerCoordinator.startOpeningPanel(content, suppressAnimations);
+        mSidePanelContainerCoordinator.startOpeningPanel(
+                content, persistedPanelWidthDp, suppressAnimations);
     }
 
     /**
@@ -263,9 +268,10 @@ final class SidePanelNativeBridgeSelector {
      *
      * <p>The given {@link Profile} must be the current {@link Profile}.
      */
-    void startReplacingPanelContent(Profile profile, SidePanelContent content) {
+    void startReplacingPanelContent(
+            Profile profile, SidePanelContent content, @Nullable Integer persistedPanelWidthDp) {
         assertCurrentProfile(profile);
-        mSidePanelContainerCoordinator.startReplacingPanelContent(content);
+        mSidePanelContainerCoordinator.startReplacingPanelContent(content, persistedPanelWidthDp);
     }
 
     /**

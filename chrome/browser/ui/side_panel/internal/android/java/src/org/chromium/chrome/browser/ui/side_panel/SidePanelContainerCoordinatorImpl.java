@@ -163,16 +163,22 @@ final class SidePanelContainerCoordinatorImpl
      * panel isn't shown.
      *
      * @param content Wrapper object for the content to show in the side panel.
+     * @param persistedPanelWidthDp The width (in dp) persisted for the content's side panel entry,
+     *     or null if there's none and the side panel should use its automatic width.
      * @param suppressAnimations Whether or not to suppress animations for this populate request.
      */
-    void startOpeningPanel(SidePanelContent content, boolean suppressAnimations) {
-        log(TAG, "startOpeningPanel", content, suppressAnimations);
+    void startOpeningPanel(
+            SidePanelContent content,
+            @Nullable Integer persistedPanelWidthDp,
+            boolean suppressAnimations) {
+        log(TAG, "startOpeningPanel", content, persistedPanelWidthDp, suppressAnimations);
         ThreadUtils.assertOnUiThread();
 
         // TODO(crbug.com/513302000): assert the side panel is currently closed.
 
         mResizeManager.clearLiveResizeState();
         mCurrentContent = content;
+        mResizeManager.restoreFromPersistedWidth(persistedPanelWidthDp);
         ViewGroup contentContainer = getContentContainer();
         contentContainer.removeAllViews();
         configureHeader(content);
@@ -214,9 +220,12 @@ final class SidePanelContainerCoordinatorImpl
      * wait for the first frame of its web contents before removing the old content.
      *
      * @param newContent Wrapper object for the new content to show in the side panel.
+     * @param persistedPanelWidthDp The width (in dp) persisted for the new content's side panel
+     *     entry, or null if there's none and the side panel should use its automatic width.
      */
-    void startReplacingPanelContent(SidePanelContent newContent) {
-        log(TAG, "startReplacingPanelContent", newContent);
+    void startReplacingPanelContent(
+            SidePanelContent newContent, @Nullable Integer persistedPanelWidthDp) {
+        log(TAG, "startReplacingPanelContent", newContent, persistedPanelWidthDp);
         ThreadUtils.assertOnUiThread();
 
         // TODO(crbug.com/513302000): assert the side panel is currently open.
@@ -230,6 +239,9 @@ final class SidePanelContainerCoordinatorImpl
         configureHeader(newContent);
         ViewGroup contentContainer = getContentContainer();
         contentContainer.addView(newContent.mView, /* index= */ 0);
+
+        // Side panel entries can have different widths.
+        boolean isWidthChanging = mResizeManager.restoreFromPersistedWidth(persistedPanelWidthDp);
 
         // We use a custom Runnable class with a `mRan` flag because ThinWebView's runOnNextFrame()
         // does not support cancellation.
@@ -271,6 +283,15 @@ final class SidePanelContainerCoordinatorImpl
                     }
                 };
         mPendingReplaceRunnable = removeOldViewRunnable;
+
+        // If the width is changing, immediately complete the content replacement, then resize the
+        // container.
+        if (isWidthChanging) {
+            completePendingContentReplacementInternal();
+            mSideUiCoordinator.updateUi(
+                    new UiUpdateRequest(SideUiId.SIDE_PANEL, /* suppressAnimations= */ true));
+            return;
+        }
 
         if (mIsContentReplacementPausedForTesting) {
             return;
@@ -599,7 +620,7 @@ final class SidePanelContainerCoordinatorImpl
     @Override
     public boolean supportsManualResize() {
         ThreadUtils.assertOnUiThread();
-        return SidePanelUtils.isManualResizeEnabled();
+        return SidePanelResizeManager.isManualResizeEnabled();
     }
 
     @Override
@@ -628,7 +649,12 @@ final class SidePanelContainerCoordinatorImpl
     public void onResizeCommitted(@Px int finalWidthPx) {
         log(TAG, "onResizeCommitted", finalWidthPx);
         ThreadUtils.assertOnUiThread();
-        mResizeManager.commitFinalResizeState(finalWidthPx, getMinSidePanelContainerWidthDp());
+        Integer committedWidthDp =
+                mResizeManager.commitFinalResizeState(
+                        finalWidthPx, getMinSidePanelContainerWidthDp());
+        if (committedWidthDp == null) return;
+        assertNonNull(mNativeBridgeSelector.getCurrentCoordinatorBridge())
+                .onPanelResized(committedWidthDp);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
