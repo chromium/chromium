@@ -73,8 +73,8 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
@@ -521,10 +521,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
 
     {
       auto auth_needed_waiter = CreateAuthNeededObserver();
-      browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                             test_page, WindowOpenDisposition::kCurrentTab,
-                             ui::PAGE_TRANSITION_TYPED),
-                         /*navigation_handle_callback=*/{});
+      browser()->OpenURL(
+          OpenURLParams::CreateBrowserInitiated(
+              test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+              ui::PAGE_TRANSITION_TYPED),
+          /*navigation_handle_callback=*/{});
       auth_needed_waiter.Wait();
     }
 
@@ -572,10 +573,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   // Navigate to the page and wait for the auth prompt.
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
   content::RenderFrameHostWrapper rfh(contents->GetPrimaryMainFrame());
@@ -627,10 +629,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   // Navigate to the page and wait for the auth prompt.
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
   content::RenderFrameHostWrapper rfh(contents->GetPrimaryMainFrame());
@@ -678,10 +681,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestDigestAuth) {
 
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
@@ -724,7 +728,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestTwoAuths) {
 
   // Open a new tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   content::WebContents* contents2 =
@@ -733,21 +738,21 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestTwoAuths) {
 
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    contents1->OpenURL(
-        OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL(kAuthBasicPage),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    contents1->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                           embedded_test_server()->GetURL(kAuthBasicPage),
+                           ui::mojom::WindowOpenDisposition::kCurrentTab,
+                           ui::PAGE_TRANSITION_TYPED),
+                       /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    contents2->OpenURL(
-        OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL(kAuthDigestPage),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    contents2->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                           embedded_test_server()->GetURL(kAuthDigestPage),
+                           ui::mojom::WindowOpenDisposition::kCurrentTab,
+                           ui::PAGE_TRANSITION_TYPED),
+                       /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
@@ -779,10 +784,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestCancelAuth_Manual) {
   const GURL kAuthURL = embedded_test_server()->GetURL(kAuthBasicPage);
 
   auto auth_needed_waiter = CreateAuthNeededObserver();
-  browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                         kAuthURL, WindowOpenDisposition::kCurrentTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      OpenURLParams::CreateBrowserInitiated(
+          kAuthURL, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   auth_needed_waiter.Wait();
   auto auth_cancelled_waiter = CreateAuthCancelledObserver();
   LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
@@ -803,10 +809,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestCancelAuth_OnNavigation) {
 
   // One LOAD_STOP event for kAuthURL and second for kNoAuthURL.
   auto auth_needed_waiter = CreateAuthNeededObserver();
-  browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                         kAuthURL, WindowOpenDisposition::kCurrentTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      OpenURLParams::CreateBrowserInitiated(
+          kAuthURL, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   auth_needed_waiter.Wait();
   auto auth_cancelled_waiter = CreateAuthCancelledObserver();
   // Navigating while auth is requested is the same as cancelling.
@@ -1024,10 +1031,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     test_page = test_page.ReplaceComponents(replacements);
 
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
     ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
 
@@ -1074,10 +1082,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     test_page = test_page.ReplaceComponents(replacements);
 
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
     ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
 
@@ -1142,10 +1151,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
     test_page = test_page.ReplaceComponents(replacements);
 
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
     ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
 
@@ -1180,7 +1190,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, SupplyRedundantAuths) {
 
   // Open a new tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // Get NavigationController for tab 2.
@@ -1191,21 +1202,21 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, SupplyRedundantAuths) {
   // Open different auth urls in each tab.
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    contents_1->OpenURL(
-        OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL("/auth-basic/1"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    contents_1->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                            embedded_test_server()->GetURL("/auth-basic/1"),
+                            ui::mojom::WindowOpenDisposition::kCurrentTab,
+                            ui::PAGE_TRANSITION_TYPED),
+                        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    contents_2->OpenURL(
-        OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL("/auth-basic/2"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    contents_2->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                            embedded_test_server()->GetURL("/auth-basic/2"),
+                            ui::mojom::WindowOpenDisposition::kCurrentTab,
+                            ui::PAGE_TRANSITION_TYPED),
+                        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
@@ -1229,7 +1240,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, CancelRedundantAuths) {
 
   // Open a new tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // Get NavigationController for tab 2.
@@ -1240,21 +1252,21 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, CancelRedundantAuths) {
   // Open different auth urls in each tab.
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    contents_1->OpenURL(
-        OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL("/auth-basic/1"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    contents_1->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                            embedded_test_server()->GetURL("/auth-basic/1"),
+                            ui::mojom::WindowOpenDisposition::kCurrentTab,
+                            ui::PAGE_TRANSITION_TYPED),
+                        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    contents_2->OpenURL(
-        OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL("/auth-basic/2"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    contents_2->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                            embedded_test_server()->GetURL("/auth-basic/2"),
+                            ui::mojom::WindowOpenDisposition::kCurrentTab,
+                            ui::PAGE_TRANSITION_TYPED),
+                        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
@@ -1279,7 +1291,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, CancelAuthWithoutNotify) {
 
   // Open a new tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // Get NavigationController for tab 2.
@@ -1290,21 +1303,21 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, CancelAuthWithoutNotify) {
   // Open different auth urls in each tab.
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    contents_1->OpenURL(
-        OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL("/auth-basic/1"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    contents_1->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                            embedded_test_server()->GetURL("/auth-basic/1"),
+                            ui::mojom::WindowOpenDisposition::kCurrentTab,
+                            ui::PAGE_TRANSITION_TYPED),
+                        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    contents_2->OpenURL(
-        OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL("/auth-basic/2"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    contents_2->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                            embedded_test_server()->GetURL("/auth-basic/2"),
+                            ui::mojom::WindowOpenDisposition::kCurrentTab,
+                            ui::PAGE_TRANSITION_TYPED),
+                        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
@@ -1339,11 +1352,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   // Open an auth url in each window.
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    contents->OpenURL(
-        OpenURLParams::CreateBrowserInitiated(
-            embedded_test_server()->GetURL("/auth-basic/1"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-        /*navigation_handle_callback=*/{});
+    contents->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                          embedded_test_server()->GetURL("/auth-basic/1"),
+                          ui::mojom::WindowOpenDisposition::kCurrentTab,
+                          ui::PAGE_TRANSITION_TYPED),
+                      /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
   {
@@ -1351,7 +1364,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     contents_incognito->OpenURL(
         OpenURLParams::CreateBrowserInitiated(
             embedded_test_server()->GetURL("/auth-basic/2"),
-            WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
+            ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
         /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
@@ -1434,10 +1448,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   {
     GURL test_page = embedded_test_server()->GetURL(kXHRTestPage);
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
@@ -1494,10 +1509,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   {
     GURL test_page = embedded_test_server()->GetURL(kXHRTestPage);
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
@@ -1545,10 +1561,11 @@ IN_PROC_BROWSER_TEST_P(
   {
     GURL test_page = embedded_https_test_server().GetURL(kXHRTestPage);
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
@@ -1582,10 +1599,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
 
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
   }
 
@@ -1620,7 +1638,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
     auto auth_needed_waiter = CreateAuthNeededObserver();
     browser()->OpenURL(
         OpenURLParams::CreateBrowserInitiated(
-            cross_origin_page, WindowOpenDisposition::kCurrentTab,
+            cross_origin_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui::PAGE_TRANSITION_TYPED),
         /*navigation_handle_callback=*/{});
     auth_needed_waiter.Wait();
@@ -1663,10 +1681,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
       browser()->GetTabStripModel()->GetActiveWebContents();
 
   auto auth_needed_waiter = CreateAuthNeededObserver();
-  browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                         test_page, WindowOpenDisposition::kCurrentTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      OpenURLParams::CreateBrowserInitiated(
+          test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   auth_needed_waiter.Wait();
 
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
@@ -1910,10 +1929,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
   GURL broken_ssl_page = https_server.GetURL("/");
   ASSERT_EQ("127.0.0.1", test_page.GetHost());
   auto auth_needed_waiter = CreateAuthNeededObserver();
-  browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                         test_page, WindowOpenDisposition::kCurrentTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      OpenURLParams::CreateBrowserInitiated(
+          test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   auth_needed_waiter.Wait();
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
   security_interstitials::SecurityInterstitialPage* interstitial =
@@ -1961,10 +1981,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuthDisabled) {
           ->FlushNetworkInterfaceForTesting();
     }
 
-    browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        OpenURLParams::CreateBrowserInitiated(
+            test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+            ui::PAGE_TRANSITION_TYPED),
+        /*navigation_handle_callback=*/{});
     EXPECT_EQ(0, browser_client_->auth_supplied_count);
 
     const std::u16string kExpectedTitle =
@@ -2250,10 +2271,11 @@ class LoginProxyBrowserTest : public InProcessBrowserTest,
     // Reload; this time, supply credentials and check that the page loads.
     {
       auto auth_needed_waiter = CreateAuthNeededObserver();
-      browser->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                           test_page, WindowOpenDisposition::kCurrentTab,
-                           ui::PAGE_TRANSITION_TYPED),
-                       /*navigation_handle_callback=*/{});
+      browser->OpenURL(
+          OpenURLParams::CreateBrowserInitiated(
+              test_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+              ui::PAGE_TRANSITION_TYPED),
+          /*navigation_handle_callback=*/{});
       auth_needed_waiter.Wait();
       EXPECT_TRUE(
           LocationBarModel::From(browser)->GetFormattedFullURL().empty());
@@ -2518,7 +2540,8 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 
   // Open a new tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   // There are two tabs.
   EXPECT_EQ(2, browser()->GetTabStripModel()->count());
@@ -2741,7 +2764,7 @@ class LoginPromptBackForwardCacheNoStoreBrowserTest
   void CreateNewTab() {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL("about:blank"),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   }
 
@@ -2786,9 +2809,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBackForwardCacheNoStoreBrowserTest,
   // Navigate a tab to a non-CCNS page.
   content::WebContents* contents_without_ccns = GetWebContents();
   contents_without_ccns->OpenURL(
-      OpenURLParams::CreateBrowserInitiated(title_page,
-                                            WindowOpenDisposition::kCurrentTab,
-                                            ui::PAGE_TRANSITION_TYPED),
+      OpenURLParams::CreateBrowserInitiated(
+          title_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   content::WaitForLoadStop(contents_without_ccns);
   content::RenderFrameHostWrapper rfh_without_ccns(
@@ -2811,10 +2834,11 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBackForwardCacheNoStoreBrowserTest,
 
   // Navigate to a page that require HTTP authentication.
   auto auth_needed_waiter = CreateAuthNeededObserver();
-  contents_auth->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                             auth_page, WindowOpenDisposition::kCurrentTab,
-                             ui::PAGE_TRANSITION_TYPED),
-                         /*navigation_handle_callback=*/{});
+  contents_auth->OpenURL(
+      OpenURLParams::CreateBrowserInitiated(
+          auth_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   auth_needed_waiter.Wait();
   // Complete the HTTP authentication.
   SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
@@ -2845,10 +2869,11 @@ IN_PROC_BROWSER_TEST_P(
 
   // Navigate to a CCNS page.
   content::WebContents* contents_with_ccns = GetWebContents();
-  contents_with_ccns->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                                  ccns_page, WindowOpenDisposition::kCurrentTab,
-                                  ui::PAGE_TRANSITION_TYPED),
-                              /*navigation_handle_callback=*/{});
+  contents_with_ccns->OpenURL(
+      OpenURLParams::CreateBrowserInitiated(
+          ccns_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   content::WaitForLoadStop(contents_with_ccns);
   content::RenderFrameHostWrapper rfh_with_ccns(
       contents_with_ccns->GetPrimaryMainFrame());
@@ -2869,10 +2894,11 @@ IN_PROC_BROWSER_TEST_P(
 
   // Navigate to a page that require HTTP authentication.
   auto auth_needed_waiter = CreateAuthNeededObserver();
-  contents_auth->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                             auth_page, WindowOpenDisposition::kCurrentTab,
-                             ui::PAGE_TRANSITION_TYPED),
-                         /*navigation_handle_callback=*/{});
+  contents_auth->OpenURL(
+      OpenURLParams::CreateBrowserInitiated(
+          auth_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   auth_needed_waiter.Wait();
   // Complete the HTTP authentication.
   SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
@@ -2903,9 +2929,10 @@ IN_PROC_BROWSER_TEST_P(
   // Navigate to a CCNS page with a different origin.
   content::WebContents* contents_different_site_with_ccns = GetWebContents();
   contents_different_site_with_ccns->OpenURL(
-      OpenURLParams::CreateBrowserInitiated(ccns_page_different_site,
-                                            WindowOpenDisposition::kCurrentTab,
-                                            ui::PAGE_TRANSITION_TYPED),
+      OpenURLParams::CreateBrowserInitiated(
+          ccns_page_different_site,
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
       /*navigation_handle_callback=*/{});
   content::WaitForLoadStop(contents_different_site_with_ccns);
   content::RenderFrameHostWrapper rfh_different_site_with_ccns(
@@ -2928,10 +2955,11 @@ IN_PROC_BROWSER_TEST_P(
 
   // Navigate to a page that require HTTP authentication.
   auto auth_needed_waiter = CreateAuthNeededObserver();
-  contents_auth->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                             auth_page, WindowOpenDisposition::kCurrentTab,
-                             ui::PAGE_TRANSITION_TYPED),
-                         /*navigation_handle_callback=*/{});
+  contents_auth->OpenURL(
+      OpenURLParams::CreateBrowserInitiated(
+          auth_page, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
   auth_needed_waiter.Wait();
   // Complete the HTTP authentication.
   SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());

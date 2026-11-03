@@ -61,9 +61,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
@@ -258,7 +258,8 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
         content::OpenURLParams params =
             content::OpenURLParams::FromNavigationHandle(navigation_handle);
         params.frame_tree_node_id = content::FrameTreeNodeId();
-        params.disposition = WindowOpenDisposition::kNewForegroundTab;
+        params.disposition =
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab;
         lens_search_controller_->GetTabInterface()
             ->GetBrowserWindowInterface()
             ->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -281,7 +282,7 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
     content::OpenURLParams params =
         content::OpenURLParams::FromNavigationHandle(navigation_handle);
     params.frame_tree_node_id = content::FrameTreeNodeId();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
 
     text_finder_manager->CreateTextFinders(
         text_fragments,
@@ -565,7 +566,7 @@ void LensOverlaySidePanelCoordinator::OnScrollToMessage(
   lens_search_controller_->GetTabInterface()
       ->GetBrowserWindowInterface()
       ->OpenGURL(latest_page_url_with_viewport_params,
-                 WindowOpenDisposition::kNewForegroundTab);
+                 ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 void LensOverlaySidePanelCoordinator::ExecuteCommand(int command_id,
@@ -841,7 +842,7 @@ void LensOverlaySidePanelCoordinator::DidOpenRequestedURL(
     content::RenderFrameHost* source_render_frame_host,
     const GURL& url,
     const content::Referrer& referrer,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
@@ -937,7 +938,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
     content::OpenURLParams params =
         content::OpenURLParams::FromNavigationHandle(navigation_handle);
     params.frame_tree_node_id = content::FrameTreeNodeId();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     lens_search_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
         ->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -955,7 +956,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
         content::OpenURLParams::FromNavigationHandle(navigation_handle);
     params.url = lens::MaybeStripParamsForShopping(params.url);
     params.frame_tree_node_id = content::FrameTreeNodeId();
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     lens_search_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
         ->OpenURL(params, /*navigation_handle_callback=*/{});

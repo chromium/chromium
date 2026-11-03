@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace chrome {
 
-DEFINE_UI_CLASS_PROPERTY_KEY(WindowOpenDisposition,
+DEFINE_UI_CLASS_PROPERTY_KEY(ui::mojom::WindowOpenDisposition,
                              kDispositionKey,
-                             WindowOpenDisposition::kUnknown)
+                             ui::mojom::WindowOpenDisposition::kUnknown)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(ActionInvocationSource,
                              kActionInvocationSourceKey,
@@ -18,5 +18,5 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ActionInvocationSource,
 
 }  // namespace chrome
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(WindowOpenDisposition)
+DEFINE_UI_CLASS_PROPERTY_TYPE(ui::mojom::WindowOpenDisposition)
 DEFINE_UI_CLASS_PROPERTY_TYPE(chrome::ActionInvocationSource)

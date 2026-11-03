@@ -9,8 +9,8 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/initiator_navigation_state.h"
 #include "content/public/browser/page_navigator.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 FramebustBlockTabHelper::~FramebustBlockTabHelper() = default;
 
@@ -46,8 +46,9 @@ void FramebustBlockTabHelper::OnBlockedUrlClicked(size_t index) {
   }
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
-          content::Referrer(), initiator_navigation_states_[index]);
+          url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_LINK, content::Referrer(),
+          initiator_navigation_states_[index]);
   params.initiator_origin = initiator_origins_[index];
   web_contents()->OpenURL(params, /*navigation_handle_callback=*/{});
 }

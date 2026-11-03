@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_WAIT_FOR_PAINT_UTILS_H_
 
 #include "chrome/test/base/ui_test_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
@@ -18,7 +18,8 @@ namespace lens {
 void WaitForPaint(
     BrowserWindowInterface* browser,
     const GURL& url,
-    WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab,
+    ui::mojom::WindowOpenDisposition disposition =
+        ui::mojom::WindowOpenDisposition::kCurrentTab,
     int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
 }  // namespace lens

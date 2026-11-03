@@ -116,9 +116,9 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -1611,7 +1611,7 @@ void LensOverlayController::ActivityRequestedByOverlay(
           click_modifiers->middle_button, click_modifiers->alt_key,
           click_modifiers->ctrl_key, click_modifiers->meta_key,
           click_modifiers->shift_key,
-          WindowOpenDisposition::kNewForegroundTab));
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab));
 }
 
 void LensOverlayController::AddBackgroundBlur() {
@@ -1665,7 +1665,7 @@ void LensOverlayController::InfoRequestedByOverlay(
           click_modifiers->middle_button, click_modifiers->alt_key,
           click_modifiers->ctrl_key, click_modifiers->meta_key,
           click_modifiers->shift_key,
-          WindowOpenDisposition::kNewForegroundTab));
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab));
 }
 
 void LensOverlayController::IssueLensRegionRequest(

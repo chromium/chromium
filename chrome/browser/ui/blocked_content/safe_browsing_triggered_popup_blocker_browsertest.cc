@@ -52,7 +52,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 using content_settings::PageSpecificContentSettings;
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
       browser()->GetTabStripModel()->GetActiveWebContents());
   popup_blocker->ShowBlockedPopup(
       popup_blocker->GetBlockedPopupRequests().begin()->first,
-      WindowOpenDisposition::kNewBackgroundTab);
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
 
   const char kPopupActions[] = "ContentSettings.Popups.BlockerActions";
   tester.ExpectBucketCount(

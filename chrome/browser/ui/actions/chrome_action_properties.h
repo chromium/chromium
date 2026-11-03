@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_ACTIONS_CHROME_ACTION_PROPERTIES_H_
 
 #include "ui/base/class_property.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace chrome {
 
@@ -20,7 +20,8 @@ enum class ActionInvocationSource {
 };
 
 // The disposition (e.g., current tab, new tab, new window) to use.
-extern const ui::ClassProperty<WindowOpenDisposition>* const kDispositionKey;
+extern const ui::ClassProperty<ui::mojom::WindowOpenDisposition>* const
+    kDispositionKey;
 
 // The invocation source (e.g., keyboard shortcut, view button).
 extern const ui::ClassProperty<ActionInvocationSource>* const
@@ -28,7 +29,7 @@ extern const ui::ClassProperty<ActionInvocationSource>* const
 
 }  // namespace chrome
 
-DECLARE_UI_CLASS_PROPERTY_TYPE(WindowOpenDisposition)
+DECLARE_UI_CLASS_PROPERTY_TYPE(ui::mojom::WindowOpenDisposition)
 DECLARE_UI_CLASS_PROPERTY_TYPE(chrome::ActionInvocationSource)
 
 #endif  // CHROME_BROWSER_UI_ACTIONS_CHROME_ACTION_PROPERTIES_H_

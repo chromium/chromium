@@ -35,8 +35,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -129,7 +129,7 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
 
     blocked_content::PopupTracker::CreateForWebContents(
         raw_popup, web_contents() /* opener */,
-        WindowOpenDisposition::kNewPopup);
+        ui::mojom::WindowOpenDisposition::kNewPopup);
     web_contents()->WasHidden();
     raw_popup->WasShown();
     return raw_popup;

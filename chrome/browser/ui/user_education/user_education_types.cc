@@ -4,18 +4,18 @@
 
 #include "chrome/browser/ui/user_education/user_education_types.h"
 
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace user_education {
-WindowOpenDisposition GetWindowOpenDisposition(
+ui::mojom::WindowOpenDisposition GetWindowOpenDisposition(
     PageOpenMode page_open_mode) {
   switch (page_open_mode) {
     case PageOpenMode::kOverwriteActiveTab:
-      return WindowOpenDisposition::kCurrentTab;
+      return ui::mojom::WindowOpenDisposition::kCurrentTab;
     case PageOpenMode::kNewForegroundTab:
-      return WindowOpenDisposition::kNewForegroundTab;
+      return ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     case PageOpenMode::kSingletonTab:
-      return WindowOpenDisposition::kSingletonTab;
+      return ui::mojom::WindowOpenDisposition::kSingletonTab;
   }
 }
 }  // namespace user_education

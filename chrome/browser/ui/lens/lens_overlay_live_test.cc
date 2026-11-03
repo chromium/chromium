@@ -50,8 +50,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/webview/webview.h"
@@ -216,7 +216,8 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
   // the current tab.
   void WaitForPaint(
       std::string_view url,
-      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab,
+      ui::mojom::WindowOpenDisposition disposition =
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
       int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url), disposition, browser_test_flags));

@@ -11,7 +11,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/referrer.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -32,7 +32,7 @@ class BlockedWindowParams {
       content::SiteInstance* source_site_instance,
       const content::Referrer& referrer,
       const std::string& frame_name_,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& features,
       bool user_gesture,
       bool opener_suppressed);
@@ -52,7 +52,7 @@ class BlockedWindowParams {
   scoped_refptr<content::SiteInstance> source_site_instance_;
   content::Referrer referrer_;
   std::string frame_name_;
-  WindowOpenDisposition disposition_;
+  ui::mojom::WindowOpenDisposition disposition_;
   blink::mojom::WindowFeatures features_;
   bool user_gesture_;
   bool opener_suppressed_;

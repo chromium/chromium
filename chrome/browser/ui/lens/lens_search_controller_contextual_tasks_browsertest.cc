@@ -83,8 +83,8 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 
@@ -689,7 +689,8 @@ class ContextualTasksLensInteractionBrowserTestBase
   // the current tab.
   void WaitForPaint(
       std::string_view relative_url = kDocumentWithNamedElement,
-      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab,
+      ui::mojom::WindowOpenDisposition disposition =
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
       int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
     const GURL url = embedded_test_server()->GetURL(relative_url);
     lens::WaitForPaint(browser(), url, disposition, browser_test_flags);

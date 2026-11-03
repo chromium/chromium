@@ -21,7 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using SidePanelWebUIViewT_LensSidePanelUntrustedUI =
     SidePanelWebUIViewT<lens::LensSidePanelUntrustedUI>;
@@ -157,13 +157,14 @@ content::WebContents* LensOverlaySidePanelWebView::OpenURLFromTab(
     // `default` is used deliberately so that any disposition added in the
     // future is demoted rather than silently forwarded.
     switch (modified_params.disposition) {
-      case WindowOpenDisposition::kNewForegroundTab:
-      case WindowOpenDisposition::kNewBackgroundTab:
-      case WindowOpenDisposition::kNewPopup:
-      case WindowOpenDisposition::kNewWindow:
+      case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
+      case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+      case ui::mojom::WindowOpenDisposition::kNewPopup:
+      case ui::mojom::WindowOpenDisposition::kNewWindow:
         break;
       default:
-        modified_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+        modified_params.disposition =
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab;
         break;
     }
   }

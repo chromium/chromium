@@ -10,7 +10,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace lens {
 
@@ -25,7 +25,7 @@ constexpr char kPaintWorkaroundFunction[] =
 
 void WaitForPaint(BrowserWindowInterface* browser,
                   const GURL& url,
-                  WindowOpenDisposition disposition,
+                  ui::mojom::WindowOpenDisposition disposition,
                   int browser_test_flags) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser, url, disposition, browser_test_flags));

@@ -28,8 +28,8 @@
 #include "content/public/test/browser_test.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kTestPropertyKey, -1)
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
                      .Build();
 
   EXPECT_TRUE(chrome::ExecuteCommandWithDispositionAndContext(
-      browser(), IDC_BACK, WindowOpenDisposition::kNewForegroundTab,
+      browser(), IDC_BACK, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       std::move(context)));
   EXPECT_TRUE(action_invoked_);
   EXPECT_EQ(last_context_.GetProperty(kTestPropertyKey), 99);

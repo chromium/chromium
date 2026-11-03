@@ -35,10 +35,10 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -217,8 +217,8 @@ void LensPermissionBubbleController::OnHelpCenterLinkClicked(
                              invocation_source_);
   tab_interface_->GetBrowserWindowInterface()->OpenGURL(
       GURL(lens::features::GetLensOverlayHelpCenterURL()),
-      ui::DispositionFromEventFlags(event.flags(),
-                                    WindowOpenDisposition::kNewForegroundTab));
+      ui::DispositionFromEventFlags(
+          event.flags(), ui::mojom::WindowOpenDisposition::kNewForegroundTab));
 }
 
 void LensPermissionBubbleController::OnPermissionDialogAccept(

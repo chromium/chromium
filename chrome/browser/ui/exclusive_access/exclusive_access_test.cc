@@ -42,8 +42,8 @@
 #include "exclusive_access_test.h"
 #include "extensions/common/extension.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -222,14 +222,14 @@ bool ExclusiveAccessTest::IsWindowFullscreenForTabOrPending() {
 void ExclusiveAccessTest::GoBack() {
   content::TestNavigationObserver observer(
       browser()->GetTabStripModel()->GetActiveWebContents(), 1);
-  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   observer.Wait();
 }
 
 void ExclusiveAccessTest::Reload() {
   content::TestNavigationObserver observer(
       browser()->GetTabStripModel()->GetActiveWebContents(), 1);
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   observer.Wait();
 }
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_USER_EDUCATION_TYPES_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_USER_EDUCATION_TYPES_H_
 
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace user_education {
 
@@ -16,10 +16,10 @@ enum class PageOpenMode {
   kSingletonTab
 };
 
-// Returns the WindowOpenDisposition corresponding to the given PageOpenMode.
-// This should be used to determine how a page should be opened.
-WindowOpenDisposition GetWindowOpenDisposition(
-      user_education::PageOpenMode page_open_mode);
+// Returns the `ui::mojom::WindowOpenDisposition` corresponding to the given
+// PageOpenMode. This should be used to determine how a page should be opened.
+ui::mojom::WindowOpenDisposition GetWindowOpenDisposition(
+    user_education::PageOpenMode page_open_mode);
 
 }  // namespace user_education
 

@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/actions/command_id_to_action_id.h"
 #include "ui/actions/actions.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace chrome {
 
@@ -38,7 +38,7 @@ bool CommandActionUpdater::IsCommandEnabled(int id) const {
 
 bool CommandActionUpdater::ExecuteCommandWithDispositionAndContext(
     int id,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     std::optional<actions::ActionInvocationContext> context,
     base::TimeTicks time_stamp) {
   if (SupportsCommand(id) && IsCommandEnabled(id)) {
@@ -117,7 +117,7 @@ actions::ActionItem* CommandActionUpdater::FindAction(
 
 void CommandActionUpdater::ExecuteAction(
     actions::ActionId action_id,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     std::optional<actions::ActionInvocationContext> context) {
   if (auto* const action = FindAction(action_id)) {
     actions::ActionInvocationContext invocation_context =

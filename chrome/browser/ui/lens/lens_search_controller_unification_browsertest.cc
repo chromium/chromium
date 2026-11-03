@@ -32,7 +32,7 @@
 #include "content/public/test/pwn_open_url_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -437,9 +437,9 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationBrowserTest,
   GURL popup_target = embedded_test_server()->GetURL("/title2.html");
   constexpr int kSpam = 3;
   for (int i = 0; i < kSpam; ++i) {
-    WindowOpenDisposition d = (i < kSpam - 1)
-                                  ? WindowOpenDisposition::kNewBackgroundTab
-                                  : WindowOpenDisposition::kNewForegroundTab;
+    ui::mojom::WindowOpenDisposition d =
+        (i < kSpam - 1) ? ui::mojom::WindowOpenDisposition::kNewBackgroundTab
+                        : ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     content::PwnOpenURLWithDisposition(panel_rfh, popup_target, d,
                                        /*user_gesture=*/true);
   }
@@ -490,9 +490,9 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationBrowserTest,
 
   const int tabs_before = browser()->GetTabStripModel()->count();
   GURL target_url = embedded_test_server()->GetURL("/title2.html");
-  content::PwnOpenURLWithDisposition(panel_rfh, target_url,
-                                     WindowOpenDisposition::kCurrentTab,
-                                     /*user_gesture=*/true);
+  content::PwnOpenURLWithDisposition(
+      panel_rfh, target_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+      /*user_gesture=*/true);
 
   EXPECT_EQ(tabs_before, browser()->GetTabStripModel()->count());
   EXPECT_FALSE(active_tab->GetController().GetPendingEntry());
