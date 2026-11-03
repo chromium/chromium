@@ -6,8 +6,12 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/stack_allocated.h"
@@ -48,7 +52,7 @@ void AppendDataToRequestBody(
 
 void AppendFileRangeToRequestBody(
     const scoped_refptr<network::ResourceRequestBody>& request_body,
-    const std::optional<std::u16string>& file_path,
+    std::optional<std::u16string_view> file_path,
     uint64_t file_start,
     uint64_t file_length,
     base::Time file_modification_time) {
@@ -253,7 +257,8 @@ void WriteData(base::span<const uint8_t> data, SerializeObject* obj) {
   obj->pickle.WriteData(data);
 }
 
-std::optional<base::span<const uint8_t>> ReadData(DeserializeObject* obj) {
+std::optional<base::span<const uint8_t>> ReadData(
+    DeserializeObject* obj LIFETIME_BOUND) {
   std::optional<base::span<const uint8_t>> result = obj->iter.ReadData();
   if (!result) {
     obj->parse_error = true;
@@ -315,74 +320,67 @@ bool ReadBoolean(DeserializeObject* obj) {
 }
 
 GURL ReadGURL(DeserializeObject* obj) {
-  std::string spec;
-  if (obj->iter.ReadString(&spec))
+  std::string_view spec;
+  if (obj->iter.ReadStringPiece(&spec)) {
     return GURL(spec);
+  }
   obj->parse_error = true;
   return GURL();
 }
 
-std::string ReadStdString(DeserializeObject* obj) {
-  std::string s;
-  if (obj->iter.ReadString(&s))
+std::string_view ReadStringView(DeserializeObject* obj LIFETIME_BOUND) {
+  std::string_view s;
+  if (obj->iter.ReadStringPiece(&s)) {
     return s;
+  }
   obj->parse_error = true;
-  return std::string();
+  return std::string_view();
 }
 
-// Pickles a std::u16string as <int length>:<char*16 data> tuple>.
-void WriteU16String(const std::u16string& str, SerializeObject* obj) {
+// Pickles a std::u16string as <int length>:<char*16 data> tuple, or a length
+// of -1 if str is std::nullopt.
+void WriteU16String(std::optional<std::u16string_view> str,
+                    SerializeObject* obj) {
+  if (!str) {
+    obj->pickle.WriteInt(-1);
+    return;
+  }
   // IMPLEMENTATION WARNING: This is different from Pickle::WriteString16, as
   // that writes the size in 16-bit characters, while this writes the string as
   // data, which writes the size in bytes. This is due to an unfortunate
   // bifurcation where the Pickle version originally wrote a Windows
   // std::wstring, which then turned into std::u16string, while this code
   // originally dealt with WebString(), which then turned into std::u16string.
-  obj->pickle.WriteData(base::as_byte_span(str));
-}
-
-// If str is a null optional, this simply pickles a length of -1. Otherwise,
-// delegates to the std::u16string overload.
-void WriteU16String(const std::optional<std::u16string>& str,
-                    SerializeObject* obj) {
-  if (!str) {
-    obj->pickle.WriteInt(-1);
-  } else {
-    WriteU16String(*str, obj);
-  }
+  obj->pickle.WriteData(base::as_byte_span(*str));
 }
 
 // This reads a serialized std::optional<std::u16string> from obj. If a string
-// can't be read, nullptr is returned.
-const char16_t* ReadU16StringNoCopy(DeserializeObject* obj, int* num_chars) {
+// can't be read, std::nullopt is returned.
+std::optional<std::u16string_view> ReadU16StringView(
+    DeserializeObject* obj LIFETIME_BOUND) {
   int length_in_bytes;
   if (!obj->iter.ReadInt(&length_in_bytes)) {
     obj->parse_error = true;
-    return nullptr;
+    return std::nullopt;
   }
 
   if (length_in_bytes < 0) {  // Not an error!  See WriteU16String(nullopt).
-    return nullptr;
+    return std::nullopt;
   }
 
   const char* data;
   if (!obj->iter.ReadBytes(&data, static_cast<size_t>(length_in_bytes))) {
     obj->parse_error = true;
-    return nullptr;
+    return std::nullopt;
   }
 
-  if (num_chars)
-    *num_chars = length_in_bytes / sizeof(char16_t);
-  return reinterpret_cast<const char16_t*>(data);
+  return std::u16string_view(reinterpret_cast<const char16_t*>(data),
+                             length_in_bytes / sizeof(char16_t));
 }
 
-std::optional<std::u16string> ReadU16String(DeserializeObject* obj) {
-  int num_chars;
-  const char16_t* chars = ReadU16StringNoCopy(obj, &num_chars);
-  std::optional<std::u16string> result;
-  if (chars)
-    result.emplace(chars, num_chars);
-  return result;
+[[nodiscard]] std::optional<std::u16string> ReadU16String(
+    DeserializeObject* obj) {
+  return std::optional<std::u16string>(ReadU16StringView(obj));
 }
 
 template <typename T>
@@ -471,7 +469,7 @@ void ReadResourceRequestBody(
         AppendDataToRequestBody(request_body, *data);
       }
     } else if (type == HTTPBodyElementType::kTypeFile) {
-      std::optional<std::u16string> file_path = ReadU16String(obj);
+      std::optional<std::u16string_view> file_path = ReadU16StringView(obj);
       int64_t file_start = ReadInteger64(obj);
       int64_t file_length = ReadInteger64(obj);
       double file_modification_time = ReadReal(obj);
@@ -482,7 +480,7 @@ void ReadResourceRequestBody(
     } else if (type == HTTPBodyElementType::kTypeBlob) {
       // Skip obsolete blob values.
       if (obj->version >= 16) {
-        ReadStdString(obj);
+        ReadStringView(obj);
       } else {
         ReadGURL(obj);
       }
@@ -525,7 +523,7 @@ void ReadLegacyFrameState(
   state->url_string = ReadU16String(obj);
 
   if (obj->version < 19)
-    ReadU16String(obj);  // Skip obsolete original url string field.
+    ReadU16StringView(obj);  // Skip obsolete original url string field.
 
   state->target = ReadU16String(obj);
   if (obj->version < 25 && state->target) {
@@ -533,10 +531,10 @@ void ReadLegacyFrameState(
         base::UTF16ToUTF8(*state->target), unique_name_replacements));
   }
   if (obj->version < 15) {
-    ReadU16String(obj);  // Skip obsolete parent field.
-    ReadU16String(obj);  // Skip obsolete title field.
-    ReadU16String(obj);  // Skip obsolete alternate title field.
-    ReadReal(obj);       // Skip obsolete visited time field.
+    ReadU16StringView(obj);  // Skip obsolete parent field.
+    ReadU16StringView(obj);  // Skip obsolete title field.
+    ReadU16StringView(obj);  // Skip obsolete alternate title field.
+    ReadReal(obj);           // Skip obsolete visited time field.
   }
 
   if (obj->version >= 24) {
@@ -602,7 +600,7 @@ void ReadLegacyFrameState(
   state->http_body.http_content_type = ReadU16String(obj);
 
   if (obj->version < 14)
-    ReadU16String(obj);  // Skip unused referrer string.
+    ReadU16StringView(obj);  // Skip unused referrer string.
 
 #if BUILDFLAG(IS_ANDROID)
   if (obj->version == 11) {
