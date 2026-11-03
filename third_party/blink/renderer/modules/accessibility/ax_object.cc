@@ -8954,6 +8954,12 @@ bool AXObject::SupportsNameFromContents(bool recursive,
       // contribute to an ancestor's name.
       return recursive;
 
+    // Lists are name-from-author. Their contents may contribute when computing
+    // an ancestor's name, but focusing a list must not promote all descendant
+    // text to the list's own name.
+    case ax::mojom::blink::Role::kList:
+      return recursive;
+
     // ----- Conditional: contribute to ancestor only, unless focusable -------
     // Some objects can contribute their contents to ancestor names, but
     // only have their own name if they are focusable
@@ -8997,7 +9003,6 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kLayoutTable:
     case ax::mojom::blink::Role::kLayoutTableRow:
     case ax::mojom::blink::Role::kLegend:
-    case ax::mojom::blink::Role::kList:
     case ax::mojom::blink::Role::kListItem:
     case ax::mojom::blink::Role::kMark:
     case ax::mojom::blink::Role::kNone:

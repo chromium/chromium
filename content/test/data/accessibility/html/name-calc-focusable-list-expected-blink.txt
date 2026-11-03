@@ -1,0 +1,75 @@
+rootWebArea focusable name='list-not-focused'
+++genericContainer ignored
+++++genericContainer ignored
+++++++list focusable
+++++++++listItem hierarchicalLevel=1
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored
+++++++++++staticText name='Cats'
+++++++++++++inlineTextBox name='Cats'
+++++++++listItem hierarchicalLevel=1
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored
+++++++++++staticText name='Dogs'
+++++++++++++inlineTextBox name='Dogs'
+++++++list focusable name='Pets'
+++++++++listItem hierarchicalLevel=1
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored
+++++++++++staticText name='Cats'
+++++++++++++inlineTextBox name='Cats'
+++++++++listItem hierarchicalLevel=1
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored
+++++++++++staticText name='Dogs'
+++++++++++++inlineTextBox name='Dogs'
+++++++button name='Cats Dogs'
+++++++++list
+++++++++++listItem hierarchicalLevel=1
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored
+++++++++++++staticText name='Cats'
+++++++++++++++inlineTextBox name='Cats'
+++++++++++listItem hierarchicalLevel=1
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored
+++++++++++++staticText name='Dogs'
+++++++++++++++inlineTextBox name='Dogs'
+=== Start Continuation ===
+rootWebArea focusable name='list-focused'
+++genericContainer ignored
+++++genericContainer ignored
+++++++list focusable
+++++++++listItem hierarchicalLevel=1
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored
+++++++++++staticText name='Cats'
+++++++++++++inlineTextBox name='Cats'
+++++++++listItem hierarchicalLevel=1
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored
+++++++++++staticText name='Dogs'
+++++++++++++inlineTextBox name='Dogs'
+++++++list focusable name='Pets'
+++++++++listItem hierarchicalLevel=1
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored
+++++++++++staticText name='Cats'
+++++++++++++inlineTextBox name='Cats'
+++++++++listItem hierarchicalLevel=1
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored
+++++++++++staticText name='Dogs'
+++++++++++++inlineTextBox name='Dogs'
+++++++button name='Cats Dogs'
+++++++++list
+++++++++++listItem hierarchicalLevel=1
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored
+++++++++++++staticText name='Cats'
+++++++++++++++inlineTextBox name='Cats'
+++++++++++listItem hierarchicalLevel=1
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored
+++++++++++++staticText name='Dogs'
+++++++++++++++inlineTextBox name='Dogs'

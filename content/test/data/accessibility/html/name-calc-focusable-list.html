@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+@BLINK-ALLOW:focus*
+@BLINK-ALLOW:hierarchicalLevel*
+@EXECUTE-AND-WAIT-FOR:focusList()
+-->
+<ul id="list" tabindex="0">
+  <li>Cats</li>
+  <li>Dogs</li>
+</ul>
+<ul tabindex="0" aria-label="Pets">
+  <li>Cats</li>
+  <li>Dogs</li>
+</ul>
+<div role="button">
+  <ul>
+    <li>Cats</li>
+    <li>Dogs</li>
+  </ul>
+</div>
+
+<script>
+const list = document.getElementById('list');
+document.title = 'list-not-focused';
+
+function focusList() {
+  list.focus();
+  document.title = 'list-focused';
+  return 'list-focused';
+}
+</script>
