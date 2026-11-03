@@ -1569,7 +1569,8 @@ class UkmPolicyBrowserTest : public UkmBrowserTest {
  protected:
   // Sets the mandatory cloud policy `name` to `value`, or clears all policies
   // if `value` is std::nullopt.
-  void SetBooleanPolicy(const char* name, std::optional<bool> value,
+  void SetBooleanPolicy(const char* name,
+                        std::optional<bool> value,
                         policy::PolicyScope scope = policy::POLICY_SCOPE_USER) {
     policy::PolicyMap policies;
     if (value.has_value()) {
@@ -1577,6 +1578,21 @@ class UkmPolicyBrowserTest : public UkmBrowserTest {
                    policy::POLICY_SOURCE_CLOUD, base::Value(*value),
                    /*external_data_fetcher=*/nullptr);
     }
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+  // Sets two mandatory user cloud boolean policies simultaneously.
+  void SetTwoBooleanPolicies(const char* name1,
+                             bool value1,
+                             const char* name2,
+                             bool value2) {
+    policy::PolicyMap policies;
+    policies.Set(name1, policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(value1), /*external_data_fetcher=*/nullptr);
+    policies.Set(name2, policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(value2), /*external_data_fetcher=*/nullptr);
     policy_provider_.UpdateChromePolicy(policies);
   }
 
@@ -1693,14 +1709,42 @@ IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest, UrlKeyedMetricsAllowedPolicy) {
   consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(false);
   EXPECT_FALSE(GetUkmService()->recording_enabled(ukm::MSBB));
 
+  // When both policies are set, UrlKeyedMetricsAllowed takes precedence over
+  // the deprecated UrlKeyedAnonymizedDataCollectionEnabled policy.
+  SetTwoBooleanPolicies(policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
+                        true, policy::key::kUrlKeyedMetricsAllowed, false);
+  EXPECT_TRUE(profile_prefs->IsManagedPreference(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  EXPECT_FALSE(profile_prefs->GetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  EXPECT_FALSE(GetUkmService()->recording_enabled(ukm::MSBB));
+  // On ChromeOS, App-sync consent keeps UKM (AppKM) recording enabled even when
+  // MSBB consent is disabled. See AllowedStateChanged.
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  // Allowing UrlKeyedMetricsAllowed overrides a disallowing legacy policy and
+  // leaves UKM unmanaged under user control.
+  SetTwoBooleanPolicies(policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
+                        false, policy::key::kUrlKeyedMetricsAllowed, true);
+  EXPECT_FALSE(profile_prefs->IsManagedPreference(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+  EXPECT_TRUE(GetUkmService()->recording_enabled(ukm::MSBB));
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+  consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(false);
+  EXPECT_FALSE(GetUkmService()->recording_enabled(ukm::MSBB));
+
   ClosePlatformBrowser(browser);
 }
 
 // The MetricsReportingEnabled policy is not supported on ChromeOS, which uses
 // DeviceMetricsReportingEnabled instead.
 #if !BUILDFLAG(IS_CHROMEOS)
-// Verifies that disabling metrics reporting via the MetricsReportingEnabled
-// policy disables UKM.
+// Verifies how the MetricsReportingEnabled policy controls UKM: false forces
+// metrics reporting and UKM off, while mandatory true is downgraded to a
+// recommended policy that enables UKM by default without preventing opt-out.
 IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest, MetricsReportingPolicy) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   // Note: MetricsConsentOverride is not used, since this test verifies that
@@ -1732,6 +1776,30 @@ IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest, MetricsReportingPolicy) {
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
   EXPECT_TRUE(IsMetricsAndCrashReportingEnabled());
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+
+  // Clear the user pref so no explicit user choice is recorded.
+  local_state->ClearPref(prefs::kMetricsReportingEnabled);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
+  EXPECT_FALSE(IsMetricsAndCrashReportingEnabled());
+  EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
+
+  // Setting MetricsReportingEnabled to true is downgraded to a recommended
+  // policy, enabling UKM when the user has not made a choice.
+  SetBooleanPolicy(policy::key::kMetricsReportingEnabled, true,
+                   policy::POLICY_SCOPE_MACHINE);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
+  EXPECT_FALSE(
+      local_state->IsManagedPreference(prefs::kMetricsReportingEnabled));
+  EXPECT_TRUE(local_state->FindPreference(prefs::kMetricsReportingEnabled)
+                  ->IsRecommended());
+  EXPECT_TRUE(IsMetricsAndCrashReportingEnabled());
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+
+  // The user can still opt out over the recommended true policy.
+  local_state->SetBoolean(prefs::kMetricsReportingEnabled, false);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
+  EXPECT_FALSE(IsMetricsAndCrashReportingEnabled());
+  EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
 
   ClosePlatformBrowser(browser);
 }
