@@ -30,7 +30,7 @@ class DeviceAuthenticatorProxyFactory final
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 // Creates an `IOSDeviceAuthAvailabilityChecker`. `reauth_module` is the

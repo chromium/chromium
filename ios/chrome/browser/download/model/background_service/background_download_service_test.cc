@@ -151,7 +151,7 @@ class BackgroundDownloadServiceTest
     auto clients = std::make_unique<download::DownloadClientMap>();
     clients->emplace(download::DownloadClient::TEST, std::move(fake_client));
     return BackgroundDownloadServiceFactory::GetInstance()
-        ->BuildServiceWithClients(profile, std::move(clients));
+        ->BuildServiceWithClients(*profile, std::move(clients));
   }
 
  private:

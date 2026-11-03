@@ -29,7 +29,7 @@ DriveServiceFactory::DriveServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   std::unique_ptr<DriveService> overridden_drive_service =
       tests_hook::GetOverriddenDriveService();
   if (overridden_drive_service) {
@@ -38,7 +38,7 @@ std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
 
   drive::DriveServiceConfiguration configuration{};
   configuration.sso_service = GetApplicationContext()->GetSingleSignOnService();
-  configuration.pref_service = profile->GetPrefs();
+  configuration.pref_service = profile.GetPrefs();
   configuration.identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   configuration.account_manager_service =

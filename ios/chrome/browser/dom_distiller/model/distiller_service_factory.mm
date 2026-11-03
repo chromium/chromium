@@ -19,10 +19,10 @@ DistillerServiceFactory::DistillerServiceFactory(PassKey key)
           ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService> DistillerServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   dom_distiller::DistillerOptions options;
   options.allowed_video_regex = kAllowedVideoRegex;
   return std::make_unique<DistillerService>(
       std::make_unique<dom_distiller::DistillerFactoryImpl>(std::move(options)),
-      profile->GetPrefs());
+      profile.GetPrefs());
 }

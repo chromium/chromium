@@ -20,9 +20,9 @@ DownloadRecordServiceFactory::DownloadRecordServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 DownloadRecordServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!IsDownloadListEnabled()) {
     return nullptr;
   }
-  return std::make_unique<DownloadRecordServiceImpl>(profile->GetStatePath());
+  return std::make_unique<DownloadRecordServiceImpl>(profile.GetStatePath());
 }

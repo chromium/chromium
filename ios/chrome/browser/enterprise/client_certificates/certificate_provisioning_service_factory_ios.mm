@@ -45,10 +45,9 @@ CertificateProvisioningServiceFactoryIOS::
 
 std::unique_ptr<KeyedService>
 CertificateProvisioningServiceFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-
+    ProfileIOS& profile) const {
   auto* certificate_store = CertificateStoreFactory::GetForProfile(profile);
-  auto url_loader_factory = profile->GetSharedURLLoaderFactory();
+  auto url_loader_factory = profile.GetSharedURLLoaderFactory();
   auto* device_management_service = GetDeviceManagementService();
   auto* profile_id_service =
       enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile);
@@ -58,13 +57,13 @@ CertificateProvisioningServiceFactoryIOS::BuildServiceInstanceFor(
   }
 
   auto core_service = CertificateProvisioningService::Create(
-      profile->GetPrefs(), certificate_store,
+      profile.GetPrefs(), certificate_store,
       std::make_unique<ProfileContextDelegateIOS>(profile_id_service),
       KeyUploadClient::Create(
           std::make_unique<
               enterprise_attestation::ProfileCloudManagementDelegate>(
               std::make_unique<enterprise_core::DependencyFactoryImplIOS>(
-                  profile),
+                  &profile),
               profile_id_service,
               enterprise_attestation::DMServerClient::Create(
                   device_management_service, std::move(url_loader_factory)))));

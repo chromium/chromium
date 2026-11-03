@@ -17,7 +17,7 @@ class DownloadFileServiceFactory final
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_FILE_SERVICE_FACTORY_H_

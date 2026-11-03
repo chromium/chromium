@@ -20,14 +20,14 @@ CertificateStoreFactory::CertificateStoreFactory(PassKey key)
           ProfileSelection::kNoInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService> CertificateStoreFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  if (!profile->GetProtoDatabaseProvider()) {
+    ProfileIOS& profile) const {
+  if (!profile.GetProtoDatabaseProvider()) {
     return nullptr;
   }
 
   return LevelDbCertificateStore::Create(
-      profile->GetStatePath(), profile->GetProtoDatabaseProvider(),
-      CreatePrivateKeyFactory(profile->GetProfileName()));
+      profile.GetStatePath(), profile.GetProtoDatabaseProvider(),
+      CreatePrivateKeyFactory(profile.GetProfileName()));
 }
 
 }  // namespace client_certificates

@@ -18,7 +18,7 @@ DeviceAuthenticatorProxyFactory::DeviceAuthenticatorProxyFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 DeviceAuthenticatorProxyFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<DeviceAuthenticatorProxy>();
 }
 

@@ -25,10 +25,10 @@ class BackgroundDownloadServiceFactory final
 
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 
   std::unique_ptr<KeyedService> BuildServiceWithClients(
-      ProfileIOS* profile,
+      ProfileIOS& profile,
       std::unique_ptr<download::DownloadClientMap> clients) const;
 };
 

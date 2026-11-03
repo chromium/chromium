@@ -20,7 +20,7 @@ ReauthenticationServiceFactory::ReauthenticationServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 ReauthenticationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<ReauthenticationService>(
       tests_hook::GetFakeReauthenticationModule()
           ?: [[ReauthenticationModule alloc] init]);

@@ -19,7 +19,7 @@ DownloadFileServiceFactory::DownloadFileServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-DownloadFileServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+DownloadFileServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   // DownloadRecordService may be nullptr if IsDownloadListEnabled() is false.
   return std::make_unique<DownloadFileService>(
       DownloadRecordServiceFactory::GetForProfile(profile));

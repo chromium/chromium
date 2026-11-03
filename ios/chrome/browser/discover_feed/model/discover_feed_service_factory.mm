@@ -28,10 +28,10 @@ DiscoverFeedServiceFactory::DiscoverFeedServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-DiscoverFeedServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+DiscoverFeedServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   DiscoverFeedConfiguration* configuration =
       [[DiscoverFeedConfiguration alloc] init];
-  configuration.profilePrefService = profile->GetPrefs();
+  configuration.profilePrefService = profile.GetPrefs();
   configuration.localStatePrefService =
       GetApplicationContext()->GetLocalState();
   configuration.authService =
@@ -39,7 +39,7 @@ DiscoverFeedServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   configuration.identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   configuration.metricsRecorder = [[FeedMetricsRecorder alloc]
-           initWithPrefService:profile->GetPrefs()
+           initWithPrefService:profile.GetPrefs()
       featureEngagementTracker:feature_engagement::TrackerFactory::
                                    GetForProfile(profile)];
   configuration.singleSignOnService =
