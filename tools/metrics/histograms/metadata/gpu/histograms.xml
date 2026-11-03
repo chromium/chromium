@@ -473,13 +473,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.BlocklistFeatureTestResults.{GPUBlocklistPerFeature}"
-    enum="GPUBlocklistFeatureTestResults" expires_after="2026-09-27">
+    enum="GPUBlocklistFeatureTestResults" expires_after="2028-04-27">
   <owner>vmiura@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
+  <owner>arthursonzogni@chromium.org</owner>
+  <owner>cwallez@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
-    Counts number of browser invocations for which a GPU feature is
-    allowed/blocklisted/disabled.
+    Status of {GPUBlocklistPerFeature}. Recorded once per feature after each GPU
+    process launch (including relaunches) or fallback to software compositing.
+    See gpu::ComputeGpuFeatureInfo() and UpdateFeatureStats() in
+    content/browser/gpu/gpu_data_manager_impl_private.cc for bucket precedence.
   </summary>
   <token key="GPUBlocklistPerFeature">
     <variant name="Accelerated2dCanvas" summary="Accelerated2dCanvas"/>

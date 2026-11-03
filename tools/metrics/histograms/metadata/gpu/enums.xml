@@ -530,14 +530,30 @@ chromium-metrics-reviews@google.com.
   <int value="75" label="Win/AMD_switchable/Texture_sharing"/>
 </enum>
 
+<!-- LINT.IfChange(GPUBlocklistFeatureTestResults) -->
+
 <enum name="GPUBlocklistFeatureTestResults">
   <summary>
     Results of testing against a GPU feature being allowed/blocklisted/disabled.
+    Values of gpu::GpuFeatureStatus.
   </summary>
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Blocklisted"/>
-  <int value="2" label="User-disabled"/>
+  <int value="0" label="Allowed">The feature is enabled.</int>
+  <int value="1" label="Blocklisted">
+    The feature is disabled by the GPU blocklist.
+  </int>
+  <int value="2" label="Disabled">
+    The feature is disabled, e.g. via a command line flag or a disabled
+    base::Feature.
+  </int>
+  <int value="3" label="Software">
+    The feature is only available with software rendering.
+  </int>
+  <int value="4" label="Undefined">
+    The feature status is not determined yet.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//gpu/config/gpu_feature_info.h:GpuFeatureStatus) -->
 
 <enum name="GpuDriverBugWorkaroundEntry">
 <!-- Generated from gpu/config/gpu_driver_bug_list.json.

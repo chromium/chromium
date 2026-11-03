@@ -306,7 +306,9 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
       command_line.HasSwitch(switches::kDisableWebGL),
       (command_line.HasSwitch(switches::kDisableWebGL) ||
        command_line.HasSwitch(switches::kDisableWebGL2)),
-      !command_line.HasSwitch(switches::kEnableUnsafeWebGPU),
+      // WebGPU is turned off via the WebGPUService feature rather than a
+      // switch. In that case, its status is already kGpuFeatureStatusDisabled.
+      false,
   });
   for (size_t i = 0; i < kGpuFeatures.size(); ++i) {
     // We can't use UMA_HISTOGRAM_ENUMERATION here because the same name is
