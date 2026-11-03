@@ -580,6 +580,9 @@ inline constexpr int kErrorPathReferencesParent = kUpdaterErrorBase + 84;
 // The net-worker subprocess failed to drop root privileges.
 inline constexpr int kErrorFailedToDropPrivileges = kUpdaterErrorBase + 85;
 
+// Failed to create local prefs.
+inline constexpr int kErrorFailedToCreateLocalPrefs = kUpdaterErrorBase + 86;
+
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
 inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;

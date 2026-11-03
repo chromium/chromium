@@ -30,6 +30,7 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/json_pref_store.h"
+#include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
@@ -82,8 +83,8 @@ std::unique_ptr<PrefService> CreatePrefService(
       prefs_dir.Append(FILE_PATH_LITERAL("prefs.json"));
   do {
     PrefServiceFactory pref_service_factory;
-    pref_service_factory.set_user_prefs(
-        base::MakeRefCounted<JsonPrefStore>(prefs_file_path));
+    auto pref_store = base::MakeRefCounted<JsonPrefStore>(prefs_file_path);
+    pref_service_factory.set_user_prefs(pref_store);
 
     std::unique_ptr<PrefService> pref_service(
         pref_service_factory.Create(pref_registry));
@@ -100,7 +101,21 @@ std::unique_ptr<PrefService> CreatePrefService(
     }
 
     VLOG(1) << "pref service init failed: "
-            << pref_service->GetInitializationStatus();
+            << pref_service->GetInitializationStatus() << ": "
+            << pref_store->GetReadError();
+
+    switch (pref_store->GetReadError()) {
+      case PersistentPrefStore::PREF_READ_ERROR_JSON_PARSE:
+      case PersistentPrefStore::PREF_READ_ERROR_JSON_TYPE:
+      case PersistentPrefStore::PREF_READ_ERROR_JSON_REPEAT:
+        VLOG(1) << "Deleting corrupted prefs file: " << prefs_file_path;
+        if (!base::DeleteFile(prefs_file_path)) {
+          VPLOG(1) << "Failed to delete " << prefs_file_path;
+        }
+        break;
+      default:
+        break;
+    }
 
     base::PlatformThread::Sleep(base::Milliseconds(10));
   } while (base::TimeTicks::Now() < deadline);
