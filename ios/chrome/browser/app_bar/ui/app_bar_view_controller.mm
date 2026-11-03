@@ -1622,6 +1622,9 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Called when the Tab Grid button has a touch down.
 - (void)tabGridButtonTouchDown {
+  if (_isTabGridVisible) {
+    return;
+  }
   [IntentDonationHelper donateIntent:IntentType::kOpenTabGrid];
   [self.sceneHandler prepareTabSwitcher];
 }

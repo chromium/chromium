@@ -6,16 +6,20 @@
 
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface AppBarViewController (Testing) <UIContextMenuInteractionDelegate>
@@ -48,6 +52,7 @@ class AppBarViewControllerTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+  base::test::TaskEnvironment task_environment_;
   AppBarViewController* view_controller_;
   SceneLayoutState* layout_state_;
 
@@ -875,6 +880,28 @@ TEST_F(AppBarViewControllerTestManual, TestDisableLongPressFlag) {
     EXPECT_TRUE(openNewTabButton.showsMenuAsPrimaryAction);
     EXPECT_NSEQ(openNewTabButton.menu, dummyMenu);
   }
+}
+
+// Tests that touching down on the Tab Grid button prepares the tab switcher
+// only when the Tab Grid is not already visible.
+TEST_F(AppBarViewControllerTest, TestTabGridButtonTouchDown) {
+  id scene_handler = OCMStrictProtocolMock(@protocol(SceneCommands));
+  view_controller_.sceneHandler = scene_handler;
+
+  UIButton* button = tabGridButton();
+  ASSERT_NE(button, nil);
+
+  // When the Tab Grid is not visible, touch down prepares the tab switcher.
+  [view_controller_ setTabGridVisible:NO];
+  OCMExpect([scene_handler prepareTabSwitcher]);
+  [button sendActionsForControlEvents:UIControlEventTouchDown];
+  EXPECT_OCMOCK_VERIFY(scene_handler);
+
+  // When the Tab Grid is already visible, touch down does not prepare the tab
+  // switcher.
+  [view_controller_ setTabGridVisible:YES];
+  [button sendActionsForControlEvents:UIControlEventTouchDown];
+  EXPECT_OCMOCK_VERIFY(scene_handler);
 }
 
 }  // namespace
