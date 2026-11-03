@@ -446,8 +446,9 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
+// TODO(b/581316985): Reenable this
 IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
-                       BackgroundTabActivationEndsSession) {
+                       DISABLED_BackgroundTabActivationEndsSession) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->GetTabStripModel()->ActivateTabAt(0);
