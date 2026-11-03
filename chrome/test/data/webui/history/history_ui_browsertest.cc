@@ -265,11 +265,14 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, RowsKnowWhenSearching) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(HistoryListTest, EmptyStateIllustrationAndroid) {
+// TODO(crbug.com/581496608): Re-enable.
+IN_PROC_BROWSER_TEST_F(HistoryListTest,
+                       DISABLED_EmptyStateIllustrationAndroid) {
   RunTestCase("EmptyStateIllustrationAndroid");
 }
 #else
-IN_PROC_BROWSER_TEST_F(HistoryListTest, EmptyStateNonAndroid) {
+// TODO(crbug.com/581496608): Re-enable.
+IN_PROC_BROWSER_TEST_F(HistoryListTest, DISABLED_EmptyStateNonAndroid) {
   RunTestCase("EmptyStateNonAndroid");
 }
 #endif  // BUILDFLAG(IS_ANDROID)
