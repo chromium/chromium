@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
+#include "base/check.h"
+#include "base/not_fatal_until.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/password_manager/android/jni_headers/PasswordManagerLifecycleHelper_jni.h"
@@ -35,7 +37,8 @@ void PasswordManagerLifecycleHelperImpl::UnregisterObserver() {
 }
 
 PasswordManagerLifecycleHelperImpl::~PasswordManagerLifecycleHelperImpl() {
-  DCHECK(!foregrounding_callback_) << "Did not call UnregisterObserver!";
+  CHECK(!foregrounding_callback_, base::NotFatalUntil::M161)
+      << "Did not call UnregisterObserver!";
 }
 
 void PasswordManagerLifecycleHelperImpl::OnForegroundSessionStart(JNIEnv* env) {
