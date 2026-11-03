@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.features;
 
+import org.jni_zero.JniPtr;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,6 +17,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder.NativeTabInteractionRecorderAndroid;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,6 +46,9 @@ public class TabInteractionRecorderUnitTest {
 
     @After
     public void tearDown() {
+        if (mTestRecorder != null) {
+            mTestRecorder.onNativeDestroyed();
+        }
         mPref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION);
         mPref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP);
     }
@@ -120,27 +125,29 @@ public class TabInteractionRecorderUnitTest {
         }
 
         @Override
-        public boolean didGetUserInteraction(long nativeTabInteractionRecorderAndroid) {
+        public boolean didGetUserInteraction(JniPtr<NativeTabInteractionRecorderAndroid> self) {
             return paramDidGetUserInteraction;
         }
 
         @Override
-        public boolean hadFormInteractionInSession(long nativeTabInteractionRecorderAndroid) {
+        public boolean hadFormInteractionInSession(
+                JniPtr<NativeTabInteractionRecorderAndroid> self) {
             return paramHadFormInteractionInSession;
         }
 
         @Override
-        public boolean hadFormInteractionInActivePage(long nativeTabInteractionRecorderAndroid) {
+        public boolean hadFormInteractionInActivePage(
+                JniPtr<NativeTabInteractionRecorderAndroid> self) {
             return paramHadFormInteractionInActivePage;
         }
 
         @Override
-        public boolean hadNavigationInteraction(long nativeTabInteractionRecorderAndroid) {
+        public boolean hadNavigationInteraction(JniPtr<NativeTabInteractionRecorderAndroid> self) {
             return paramHadNavigationInteraction;
         }
 
         @Override
-        public void reset(long nativeTabInteractionRecorderAndroid) {
+        public void reset(JniPtr<NativeTabInteractionRecorderAndroid> self) {
             paramHadFormInteractionInSession = false;
             paramHadFormInteractionInActivePage = false;
             paramHadNavigationInteraction = false;

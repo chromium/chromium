@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_CUSTOMTABS_TAB_INTERACTION_RECORDER_ANDROID_H_
 
 #include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -120,6 +121,7 @@ class TabInteractionRecorderAndroid
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
   // JNI methods
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
   bool DidGetUserInteraction(JNIEnv* env) const;
   bool HadFormInteractionInSession(JNIEnv* env) const;
   bool HadFormInteractionInActivePage(JNIEnv* env) const;
@@ -149,6 +151,8 @@ class TabInteractionRecorderAndroid
                      content::GlobalRenderFrameHostIdHasher>
       rfh_observer_map_;
   raw_ptr<autofill::AutofillManager> test_autofill_manager_ = nullptr;
+
+  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
   // content::WebContentsUserData<TabInteractionRecorderAndroid>
   friend class content::WebContentsUserData<TabInteractionRecorderAndroid>;

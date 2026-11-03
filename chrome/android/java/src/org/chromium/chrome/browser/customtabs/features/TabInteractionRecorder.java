@@ -10,7 +10,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -37,24 +40,34 @@ import java.util.Locale;
 @JNINamespace("customtabs")
 @NullMarked
 public class TabInteractionRecorder {
+    @JniType("customtabs::TabInteractionRecorderAndroid")
+    interface NativeTabInteractionRecorderAndroid extends JniTypeToken {}
+
     private static final String TAG = "CctInteraction";
     private static @Nullable TabInteractionRecorder sInstanceForTesting;
-    private final long mNativeTabInteractionRecorder;
+    private @Nullable JniRawPtr<NativeTabInteractionRecorderAndroid> mNativeTabInteractionRecorder;
 
     // Do not instantiate in Java.
-    private TabInteractionRecorder(long nativePtr) {
+    private TabInteractionRecorder(JniRawPtr<NativeTabInteractionRecorderAndroid> nativePtr) {
         mNativeTabInteractionRecorder = nativePtr;
     }
 
     @VisibleForTesting
     TabInteractionRecorder() {
-        this(1L);
+        this(JniRawPtr.createForTesting(1L)); // IN-TEST
     }
 
     @CalledByNative
-    private static @Nullable TabInteractionRecorder create(long nativePtr) {
-        if (nativePtr == 0) return null;
+    static TabInteractionRecorder create(JniRawPtr<NativeTabInteractionRecorderAndroid> nativePtr) {
         return new TabInteractionRecorder(nativePtr);
+    }
+
+    @CalledByNative
+    void onNativeDestroyed() {
+        if (mNativeTabInteractionRecorder != null) {
+            mNativeTabInteractionRecorder.release();
+            mNativeTabInteractionRecorder = null;
+        }
     }
 
     /**
@@ -125,22 +138,26 @@ public class TabInteractionRecorder {
     }
 
     private boolean hadFormInteractionInActivePage() {
+        if (mNativeTabInteractionRecorder == null) return false;
         return TabInteractionRecorderJni.get()
                 .hadFormInteractionInActivePage(mNativeTabInteractionRecorder);
     }
 
     private boolean hadFormInteractionInSession() {
+        if (mNativeTabInteractionRecorder == null) return false;
         return TabInteractionRecorderJni.get()
                 .hadFormInteractionInSession(mNativeTabInteractionRecorder);
     }
 
     private boolean hadNavigationInteraction() {
+        if (mNativeTabInteractionRecorder == null) return false;
         return TabInteractionRecorderJni.get()
                 .hadNavigationInteraction(mNativeTabInteractionRecorder);
     }
 
     /** Reset the interaction recorded. */
     public void reset() {
+        if (mNativeTabInteractionRecorder == null) return;
         TabInteractionRecorderJni.get().reset(mNativeTabInteractionRecorder);
     }
 
@@ -152,6 +169,7 @@ public class TabInteractionRecorder {
      */
     public boolean didGetUserInteraction() {
         // TODO(crbug.com/40237418): Expose WebContentsObserver#didGetUserInteraction
+        if (mNativeTabInteractionRecorder == null) return false;
         return TabInteractionRecorderJni.get().didGetUserInteraction(mNativeTabInteractionRecorder);
     }
 
@@ -169,18 +187,18 @@ public class TabInteractionRecorder {
 
     @NativeMethods
     interface Natives {
-        TabInteractionRecorder getFromTab(@JniType("TabAndroid*") Tab tab);
+        @Nullable TabInteractionRecorder getFromTab(@JniType("TabAndroid*") Tab tab);
 
-        TabInteractionRecorder createForTab(@JniType("TabAndroid*") Tab tab);
+        @Nullable TabInteractionRecorder createForTab(@JniType("TabAndroid*") Tab tab);
 
-        boolean didGetUserInteraction(long nativeTabInteractionRecorderAndroid);
+        boolean didGetUserInteraction(JniPtr<NativeTabInteractionRecorderAndroid> self);
 
-        boolean hadFormInteractionInActivePage(long nativeTabInteractionRecorderAndroid);
+        boolean hadFormInteractionInActivePage(JniPtr<NativeTabInteractionRecorderAndroid> self);
 
-        boolean hadFormInteractionInSession(long nativeTabInteractionRecorderAndroid);
+        boolean hadFormInteractionInSession(JniPtr<NativeTabInteractionRecorderAndroid> self);
 
-        boolean hadNavigationInteraction(long nativeTabInteractionRecorderAndroid);
+        boolean hadNavigationInteraction(JniPtr<NativeTabInteractionRecorderAndroid> self);
 
-        void reset(long nativeTabInteractionRecorderAndroid);
+        void reset(JniPtr<NativeTabInteractionRecorderAndroid> self);
     }
 }
