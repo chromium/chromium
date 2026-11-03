@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -50,26 +51,26 @@ std::string GetPrintableContent(const HttpRequest& request) {
   if (!request.has_content) {
     return "<no content>";
   }
+  return GetPrintableContent(request.decoded_content);
+}
 
-  const size_t dump_limit =
-      std::min(request.decoded_content.size(), size_t{2048});
+std::string GetPrintableContent(std::string_view content) {
+  const size_t dump_limit = std::min(content.size(), size_t{2048});
   std::string printable_content;
   printable_content.reserve(dump_limit);
   std::ranges::transform(
-      request.decoded_content.begin(),
-      request.decoded_content.begin() + dump_limit,
-      std::back_inserter(printable_content), [](unsigned char c) {
+      content.substr(0, dump_limit), std::back_inserter(printable_content),
+      [](unsigned char c) {
         return absl::ascii_isprint(c) || absl::ascii_isspace(c) ? c : '.';
       });
 
-  if (request.decoded_content.size() <= dump_limit) {
+  if (content.size() <= dump_limit) {
     return printable_content;
   }
 
   return absl::StrFormat("%s\n<Total size: %zu, skipped printing %zu bytes>",
-                         printable_content.c_str(),
-                         request.decoded_content.size(),
-                         request.decoded_content.size() - dump_limit);
+                         printable_content.c_str(), content.size(),
+                         content.size() - dump_limit);
 }
 
 }  // namespace updater::test
