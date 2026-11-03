@@ -14,7 +14,6 @@ import android.os.Build;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.JniRawPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -282,8 +281,7 @@ public class MediaDrmBridge {
             int securityLevel,
             boolean requiresMediaCrypto,
             long nativeMediaDrmBridge,
-            @Nullable JniRawPtr<MediaDrmStorageBridge.NativeMediaDrmStorageBridge>
-                    nativeMediaDrmStorageBridge)
+            long nativeMediaDrmStorageBridge)
             throws android.media.UnsupportedSchemeException {
         mKeySystemUuid = keySystemUuid;
         mSecurityLevel = securityLevel;
@@ -484,8 +482,7 @@ public class MediaDrmBridge {
             String message,
             boolean requiresMediaCrypto,
             long nativeMediaDrmBridge,
-            @Nullable JniRawPtr<MediaDrmStorageBridge.NativeMediaDrmStorageBridge>
-                    nativeMediaDrmStorageBridge) {
+            long nativeMediaDrmStorageBridge) {
         Log.i(
                 TAG,
                 "Create MediaDrmBridge with level %d and origin %s for %s",
@@ -747,7 +744,6 @@ public class MediaDrmBridge {
                 Log.e(TAG, "Failed to destroy MediaDrmBridge properly", e);
             }
         }
-        mStorage.release();
     }
 
     /** Release all allocated resources and finish all pending operations. */

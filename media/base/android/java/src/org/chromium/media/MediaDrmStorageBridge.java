@@ -6,10 +6,6 @@ package org.chromium.media;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.JniPtr;
-import org.jni_zero.JniRawPtr;
-import org.jni_zero.JniType;
-import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -23,10 +19,9 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("media")
 @NullMarked
 class MediaDrmStorageBridge {
-    @JniType("::media::MediaDrmStorageBridge")
-    interface NativeMediaDrmStorageBridge extends JniTypeToken {}
+    private static final long INVALID_NATIVE_MEDIA_DRM_STORAGE_BRIDGE = -1;
 
-    private @Nullable JniRawPtr<NativeMediaDrmStorageBridge> mNativeMediaDrmStorageBridge;
+    private final long mNativeMediaDrmStorageBridge;
 
     /** Information that need to be persistent on the device. Exposed to JNI. */
     static class PersistentInfo {
@@ -76,21 +71,14 @@ class MediaDrmStorageBridge {
         }
     }
 
-    MediaDrmStorageBridge(
-            @Nullable JniRawPtr<NativeMediaDrmStorageBridge> nativeMediaDrmStorageBridge) {
+    MediaDrmStorageBridge(long nativeMediaDrmStorageBridge) {
         mNativeMediaDrmStorageBridge = nativeMediaDrmStorageBridge;
-    }
-
-    void release() {
-        if (mNativeMediaDrmStorageBridge != null) {
-            mNativeMediaDrmStorageBridge.release();
-            mNativeMediaDrmStorageBridge = null;
-        }
+        assert isNativeMediaDrmStorageValid();
     }
 
     /** Called when device provisioning is finished. */
     void onProvisioned(Callback<Boolean> cb) {
-        if (mNativeMediaDrmStorageBridge != null) {
+        if (isNativeMediaDrmStorageValid()) {
             MediaDrmStorageBridgeJni.get().onProvisioned(mNativeMediaDrmStorageBridge, cb);
         } else {
             cb.onResult(true);
@@ -99,7 +87,7 @@ class MediaDrmStorageBridge {
 
     /** Load |emeId|'s storage into memory. */
     void loadInfo(byte[] emeId, Callback<@Nullable PersistentInfo> cb) {
-        if (mNativeMediaDrmStorageBridge != null) {
+        if (isNativeMediaDrmStorageValid()) {
             MediaDrmStorageBridgeJni.get()
                     .onLoadInfo(mNativeMediaDrmStorageBridge, emeId, (Callback<PersistentInfo>) cb);
         } else {
@@ -109,7 +97,7 @@ class MediaDrmStorageBridge {
 
     /** Save persistent information. Override the existing value. */
     void saveInfo(PersistentInfo info, Callback<Boolean> cb) {
-        if (mNativeMediaDrmStorageBridge != null) {
+        if (isNativeMediaDrmStorageValid()) {
             MediaDrmStorageBridgeJni.get().onSaveInfo(mNativeMediaDrmStorageBridge, info, cb);
         } else {
             cb.onResult(false);
@@ -118,28 +106,27 @@ class MediaDrmStorageBridge {
 
     /** Remove persistent information related |emeId|. */
     void clearInfo(byte[] emeId, Callback<Boolean> cb) {
-        if (mNativeMediaDrmStorageBridge != null) {
+        if (isNativeMediaDrmStorageValid()) {
             MediaDrmStorageBridgeJni.get().onClearInfo(mNativeMediaDrmStorageBridge, emeId, cb);
         } else {
             cb.onResult(true);
         }
     }
 
+    private boolean isNativeMediaDrmStorageValid() {
+        return mNativeMediaDrmStorageBridge != INVALID_NATIVE_MEDIA_DRM_STORAGE_BRIDGE;
+    }
+
     @NativeMethods
     interface Natives {
-        void onProvisioned(JniPtr<NativeMediaDrmStorageBridge> self, Callback<Boolean> cb);
+        void onProvisioned(long nativeMediaDrmStorageBridge, Callback<Boolean> cb);
 
         void onLoadInfo(
-                JniPtr<NativeMediaDrmStorageBridge> self,
-                byte[] sessionId,
-                Callback<PersistentInfo> cb);
+                long nativeMediaDrmStorageBridge, byte[] sessionId, Callback<PersistentInfo> cb);
 
         void onSaveInfo(
-                JniPtr<NativeMediaDrmStorageBridge> self,
-                PersistentInfo info,
-                Callback<Boolean> cb);
+                long nativeMediaDrmStorageBridge, PersistentInfo info, Callback<Boolean> cb);
 
-        void onClearInfo(
-                JniPtr<NativeMediaDrmStorageBridge> self, byte[] sessionId, Callback<Boolean> cb);
+        void onClearInfo(long nativeMediaDrmStorageBridge, byte[] sessionId, Callback<Boolean> cb);
     }
 }
