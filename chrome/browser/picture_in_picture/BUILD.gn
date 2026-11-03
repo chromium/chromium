@@ -372,6 +372,17 @@ if (!is_android) {
       "//third_party/blink/public/common:headers",
       "//ui/views:test_support",
     ]
+
+    if (is_win || is_linux) {
+      sources += [ "document_pip_dialog_interactive_uitest.cc" ]
+      deps += [
+        "//chrome/browser/preloading:test_support",
+        "//chrome/browser/ui:ui_features",
+        "//components/javascript_dialogs",
+        "//ui/base:test_support",
+        "//ui/display",
+      ]
+    }
   }
 
   source_set("test_support_ui") {

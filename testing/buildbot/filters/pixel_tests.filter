@@ -58,6 +58,7 @@ DesktopPaymentsWindowManagerInteractiveUiTest*
 *DeviceSignalsDisclaimerModalPixelTest.*
 *DeviceSignalsDisclaimerProfilePickerPixelTest.*
 *DocumentPictureInPicturePixelTest.*
+*DocumentPipDialogPixelTest.*
 EditAddressProfileDialogControllerImplTest.InvokeUi_*
 *EmbeddedPermissionPromptUiTest.InvokeUi_*
 MahiMenuPixelBrowserTest.*

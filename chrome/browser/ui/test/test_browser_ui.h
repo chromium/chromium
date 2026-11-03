@@ -43,6 +43,12 @@ struct ScreenshotOptions {
   // kClearFocus which will clear focus before taking the screenshot to reduce
   // flakiness. See VerifyPixelUi() implementation for more details.
   ScreenshotFocusMode focus = ScreenshotFocusMode::kClearFocus;
+  // Snapshots from the root window of the view's widget instead of the
+  // widget's own native window, with the region converted to root coordinates.
+  // This also captures other widgets that are siblings of the view's widget
+  // in the same root, such as child-modal dialogs on Desktop Aura. Only
+  // supported on Aura.
+  bool capture_root_window = false;
 };
 
 // TestBrowserUi provides a way to register an InProcessBrowserTest testing
