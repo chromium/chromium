@@ -498,7 +498,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         mSelectedTabIndex = toViewHolder.getBindingAdapterPosition();
 
         // Perform basic list reordering by updating the TabModel immediately.
-        NestedTabReorderUtils.moveTabOrGroup(tabModel, currentTabId, destinationIndex, isGroup);
+        NestedTabReorderUtils.moveTabOrGroup(
+                tabModel, currentTabId, currentGroupId, destinationIndex, isGroup);
         return true;
     }
 
@@ -831,7 +832,11 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 // TODO(crbug.com/553670813): Handle reverting group membership if the tab was
                 // dragged into or out of a tab group during the drag.
                 NestedTabReorderUtils.moveTabOrGroup(
-                        tabModel, mDragStartTabId, mDragStartTabModelIndex, mIsDragStartGroup);
+                        tabModel,
+                        mDragStartTabId,
+                        mDragStartGroupId,
+                        mDragStartTabModelIndex,
+                        mIsDragStartGroup);
             }
             mIsDragAbortedByEsc = false;
         }

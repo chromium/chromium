@@ -41,8 +41,7 @@ public class NestedTabReorderUtils {
             @Nullable Token destGroupId,
             boolean isDestGroupHeader,
             int distance) {
-        if (!Objects.equals(currentGroupId, destGroupId)
-                || (isDestGroupHeader && Objects.equals(currentGroupId, destGroupId))) {
+        if (!Objects.equals(currentGroupId, destGroupId) || isDestGroupHeader) {
             boolean trailing = distance > 0;
             Tab currentTab = tabModel.getTabById(currentTabId);
             if (currentTab != null) {
@@ -78,32 +77,31 @@ public class NestedTabReorderUtils {
             boolean isDestGroupCollapsed =
                     isDestGroupHeader
                             && destinationModel != null
-                            && Boolean.TRUE.equals(
-                                    destinationModel.get(TabProperties.IS_COLLAPSED));
+                            && destinationModel.get(TabProperties.IS_COLLAPSED);
 
             if (!isDestGroupCollapsed) {
                 boolean isDraggingDown = distance > 0;
 
                 Tab currentTab = tabModel.getTabById(currentTabId);
-                Tab destinationTab = tabModel.getTabById(destinationTabId);
+                List<Tab> destTabs = tabModel.getTabsInGroup(destGroupId);
+                Tab destinationTab =
+                        (isDestGroupHeader && !destTabs.isEmpty())
+                                ? destTabs.get(0)
+                                : tabModel.getTabById(destinationTabId);
 
                 if (currentTab != null && destinationTab != null) {
                     // Handle grouping when a standalone tab intersects any part of a group.
                     Integer indexInGroup = 0;
-                    if (!isDestGroupHeader) {
-                        List<Tab> destRelatedTabs = tabModel.getRelatedTabList(destinationTabId);
-                        if (destRelatedTabs != null) {
-                            boolean isDraggingUp = distance < 0;
-                            boolean isTargetLowestTab =
-                                    destRelatedTabs.get(destRelatedTabs.size() - 1).getId()
-                                            == destinationTabId;
-                            if (isDraggingUp && isTargetLowestTab) {
-                                indexInGroup = null;
-                            } else {
-                                indexInGroup = destRelatedTabs.indexOf(destinationTab);
-                                if (isDraggingDown) {
-                                    indexInGroup++;
-                                }
+                    if (!isDestGroupHeader && !destTabs.isEmpty()) {
+                        boolean isDraggingUp = distance < 0;
+                        boolean isTargetLowestTab =
+                                destTabs.get(destTabs.size() - 1).getId() == destinationTabId;
+                        if (isDraggingUp && isTargetLowestTab) {
+                            indexInGroup = null;
+                        } else {
+                            indexInGroup = destTabs.indexOf(destinationTab);
+                            if (isDraggingDown) {
+                                indexInGroup++;
                             }
                         }
                     }
@@ -139,26 +137,23 @@ public class NestedTabReorderUtils {
             boolean isStandaloneTab,
             @Nullable Token destGroupId,
             int distance) {
-        boolean isTraversingGroup = isGroup || (isStandaloneTab && destGroupId != null);
-        int destinationIndex;
-        if (isTraversingGroup) {
+        Tab destinationTab = tabModel.getTabById(destinationTabId);
+        int destinationIndex =
+                destinationTab != null
+                        ? tabModel.indexOf(destinationTab)
+                        : TabModel.INVALID_TAB_INDEX;
+        if ((isGroup || isStandaloneTab) && destGroupId != null) {
             // Tab groups should maintain the boundaries of target tab groups
             // so they do not split other groups during drags.
-            List<Tab> destinationTabGroup = tabModel.getRelatedTabList(destinationTabId);
-            destinationIndex =
-                    distance >= 0
-                            ? TabGroupUtils.getLastTabModelIndexForList(
-                                    tabModel, destinationTabGroup)
-                            : TabGroupUtils.getFirstTabModelIndexForList(
-                                    tabModel, destinationTabGroup);
-        } else {
-            //  - Child tabs should reorder inside tab groups.
-            //  - Standalone tabs use this logic too, but only when not intersecting with a group.
-            Tab destinationTab = tabModel.getTabById(destinationTabId);
-            destinationIndex =
-                    destinationTab != null
-                            ? tabModel.indexOf(destinationTab)
-                            : TabModel.INVALID_TAB_INDEX;
+            List<Tab> destinationTabGroup = tabModel.getTabsInGroup(destGroupId);
+            if (!destinationTabGroup.isEmpty()) {
+                destinationIndex =
+                        distance >= 0
+                                ? TabGroupUtils.getLastTabModelIndexForList(
+                                        tabModel, destinationTabGroup)
+                                : TabGroupUtils.getFirstTabModelIndexForList(
+                                        tabModel, destinationTabGroup);
+            }
         }
 
         if (destinationIndex == TabModel.INVALID_TAB_INDEX) return TabModel.INVALID_TAB_INDEX;
@@ -179,16 +174,19 @@ public class NestedTabReorderUtils {
      *
      * @param tabModel The active {@link TabModel}.
      * @param currentTabId The ID of the tab being moved.
+     * @param currentGroupId The group ID of the group being moved, if any.
      * @param destinationIndex The target index in the tab model.
      * @param isGroup Whether the item being moved is a group header or solitary child.
      */
     public static void moveTabOrGroup(
-            TabModel tabModel, int currentTabId, int destinationIndex, boolean isGroup) {
+            TabModel tabModel,
+            int currentTabId,
+            @Nullable Token currentGroupId,
+            int destinationIndex,
+            boolean isGroup) {
         if (isGroup) {
-            Tab currentTab = tabModel.getTabById(currentTabId);
-            Token tabGroupId = currentTab != null ? currentTab.getTabGroupId() : null;
-            if (tabGroupId != null) {
-                tabModel.moveGroupToIndex(tabGroupId, destinationIndex);
+            if (currentGroupId != null) {
+                tabModel.moveGroupToIndex(currentGroupId, destinationIndex);
             }
         } else {
             tabModel.moveTab(currentTabId, destinationIndex);
@@ -217,12 +215,6 @@ public class NestedTabReorderUtils {
         PropertyModel fromModel = fromItem.model;
         PropertyModel toModel = toItem.model;
 
-        int currentTabId = getRepresentativeTabId(tabModel, fromItem);
-        int destinationTabId = getRepresentativeTabId(tabModel, toItem);
-        if (currentTabId == Tab.INVALID_TAB_ID || destinationTabId == Tab.INVALID_TAB_ID) {
-            return false;
-        }
-
         boolean isGroupHeader = isTabGroupHeader(fromItem);
         Token currentGroupId = getTabGroupId(fromModel);
         boolean isStandaloneTab = !isGroupHeader && currentGroupId == null;
@@ -231,6 +223,12 @@ public class NestedTabReorderUtils {
 
         Token destGroupId = getTabGroupId(toModel);
         boolean isDestGroupHeader = isTabGroupHeader(toItem);
+
+        int currentTabId = resolveTabId(tabModel, fromModel, isGroupHeader, currentGroupId);
+        if (currentTabId == Tab.INVALID_TAB_ID) return false;
+
+        int destinationTabId = resolveTabId(tabModel, toModel, isDestGroupHeader, destGroupId);
+        if (destinationTabId == Tab.INVALID_TAB_ID) return false;
 
         int distance = toIndex - fromIndex;
 
@@ -273,7 +271,7 @@ public class NestedTabReorderUtils {
 
         if (destinationIndex == TabModel.INVALID_TAB_INDEX) return false;
 
-        moveTabOrGroup(tabModel, currentTabId, destinationIndex, isGroup);
+        moveTabOrGroup(tabModel, currentTabId, currentGroupId, destinationIndex, isGroup);
         return true;
     }
 
@@ -361,7 +359,7 @@ public class NestedTabReorderUtils {
 
     /** Ungroups the given tab in the tab model. */
     public static void ungroupTab(TabModel tabModel, Tab tab, boolean trailing) {
-        tabModel.getTabUngrouper().ungroupTabs(List.of(tab), trailing, false);
+        tabModel.getTabUngrouper().ungroupTabs(List.of(tab), trailing, /* allowDialog= */ false);
     }
 
     /**
@@ -374,14 +372,7 @@ public class NestedTabReorderUtils {
             return false;
         }
         Token groupId = getTabGroupId(model);
-        if (groupId != null) {
-            int tabId = getTabId(model);
-            if (tabId != Tab.INVALID_TAB_ID) {
-                List<Tab> relatedTabs = tabModel.getRelatedTabList(tabId);
-                return relatedTabs != null && relatedTabs.size() == 1;
-            }
-        }
-        return false;
+        return groupId != null && tabModel.getTabCountForGroup(groupId) == 1;
     }
 
     // =============================================================================================
@@ -416,38 +407,34 @@ public class NestedTabReorderUtils {
     }
 
     /**
-     * Returns a representative tab ID for the given {@link ListItem}, resolving from group ID if
-     * necessary for group headers.
+     * Resolves the tab ID for the given model, falling back to the first tab in the group only for
+     * group headers whose tab ID is not set.
      */
-    private static int getRepresentativeTabId(TabModel tabModel, ListItem item) {
-        if (item.model == null) return Tab.INVALID_TAB_ID;
-        int tabId = getTabId(item.model);
-        if (tabId != Tab.INVALID_TAB_ID) return tabId;
-
-        Token groupId = getTabGroupId(item.model);
-        if (groupId != null) {
-            List<Tab> tabs = tabModel.getTabsInGroup(groupId);
-            if (tabs != null && !tabs.isEmpty()) {
-                return tabs.get(0).getId();
+    private static int resolveTabId(
+            TabModel tabModel,
+            PropertyModel model,
+            boolean isGroupHeader,
+            @Nullable Token groupId) {
+        int tabId = getTabId(model);
+        if (isGroupHeader) {
+            if (groupId == null) return Tab.INVALID_TAB_ID;
+            if (tabId == Tab.INVALID_TAB_ID) {
+                List<Tab> tabs = tabModel.getTabsInGroup(groupId);
+                return tabs.isEmpty() ? Tab.INVALID_TAB_ID : tabs.get(0).getId();
             }
         }
-        return Tab.INVALID_TAB_ID;
+        return tabId;
     }
 
     /** Adjusts the destination index to respect pinned tab boundaries. */
     private static int adjustIndexBasedOnPinning(TabModel tabModel, int fromTabId, int newIndex) {
         Tab fromTab = tabModel.getTabById(fromTabId);
         if (fromTab != null) {
-            int lastPinnedIndex = tabModel.findFirstNonPinnedTabIndex() - 1;
+            int firstNonPinnedIndex = tabModel.findFirstNonPinnedTabIndex();
             if (fromTab.getIsPinned()) {
-                if (newIndex > lastPinnedIndex) {
-                    newIndex = lastPinnedIndex;
-                }
+                newIndex = Math.min(newIndex, firstNonPinnedIndex - 1);
             } else {
-                int firstNonPinnedIndex = tabModel.findFirstNonPinnedTabIndex();
-                if (newIndex < firstNonPinnedIndex) {
-                    newIndex = firstNonPinnedIndex;
-                }
+                newIndex = Math.max(newIndex, firstNonPinnedIndex);
             }
         }
         return newIndex;

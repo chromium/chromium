@@ -456,8 +456,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getIsPinned()).thenReturn(false);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab2));
 
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
@@ -480,6 +478,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
+        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(List.of(mTab2));
 
         // distance > 0 -> dragging downward.
         setBindingAdapterPosition(mViewHolder, 0);
@@ -508,7 +507,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         // Mock target as lowest tab.
-        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab3, mTab2));
+        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(List.of(mTab3, mTab2));
 
         // distance < 0 -> dragging upward.
         setBindingAdapterPosition(mViewHolder, 2);
@@ -538,8 +537,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
-        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab1, mTab2));
 
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
@@ -564,8 +561,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab2));
+        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(1);
 
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
@@ -596,11 +592,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-
-        // Both tabs share the same related tabs (they are in the same group).
-        List<Tab> relatedTabs = List.of(mTab1, mTab2, mTab3);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(relatedTabs);
-        when(mTabModel.getRelatedTabList(2)).thenReturn(relatedTabs);
 
         // Set up the indices: tab1 at 4, tab2 at 5, tab3 at 6.
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
@@ -833,8 +824,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         setBindingAdapterPosition(mTargetViewHolder, 1);
         when(mTab2.getIsPinned()).thenReturn(false);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab2));
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
 
@@ -1082,8 +1071,11 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         Token groupId = new Token(1L, 2L);
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         mPropertyModel.set(TabProperties.TAB_ID, 1);
+        mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
         setItemViewType(mViewHolder, TabProperties.UiType.TAB_GROUP);
         mTargetPropertyModel.set(TabProperties.TAB_ID, 2);
+        Token destGroupId = new Token(3L, 4L);
+        mTargetPropertyModel.set(TabProperties.TAB_GROUP_ID, destGroupId);
 
         setBindingAdapterPosition(mViewHolder, 0);
         setBindingAdapterPosition(mTargetViewHolder, 5);
@@ -1096,7 +1088,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         List<Tab> destinationGroup = List.of(mTab2, mTab3);
-        when(mTabModel.getRelatedTabList(2)).thenReturn(destinationGroup);
+        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(destinationGroup);
 
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
         when(mTabModel.indexOf(mTab3)).thenReturn(6);
@@ -1113,8 +1105,11 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         Token groupId = new Token(1L, 2L);
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         mPropertyModel.set(TabProperties.TAB_ID, 1);
+        mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
         setItemViewType(mViewHolder, TabProperties.UiType.TAB_GROUP);
         mTargetPropertyModel.set(TabProperties.TAB_ID, 2);
+        Token destGroupId = new Token(3L, 4L);
+        mTargetPropertyModel.set(TabProperties.TAB_GROUP_ID, destGroupId);
 
         setBindingAdapterPosition(mViewHolder, 5);
         setBindingAdapterPosition(mTargetViewHolder, 0);
@@ -1127,7 +1122,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         List<Tab> destinationGroup = List.of(mTab2, mTab3);
-        when(mTabModel.getRelatedTabList(2)).thenReturn(destinationGroup);
+        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(destinationGroup);
 
         when(mTabModel.indexOf(mTab2)).thenReturn(0);
         when(mTabModel.indexOf(mTab3)).thenReturn(1);
@@ -1817,8 +1812,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getIsPinned()).thenReturn(false);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab2));
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
@@ -1844,8 +1837,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getIsPinned()).thenReturn(false);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab2));
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
@@ -1905,7 +1896,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
@@ -1948,7 +1938,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getId()).thenReturn(2);
         when(mTab2.getTabGroupId()).thenReturn(destGroupId);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(List.of(mTab1, mTab2));
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
@@ -1977,7 +1966,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
@@ -2025,7 +2013,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getId()).thenReturn(2);
         when(mTab2.getTabGroupId()).thenReturn(destGroupId);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(List.of(mTab1, mTab2));
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
@@ -2088,8 +2075,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getIsPinned()).thenReturn(false);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
-        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
         when(mTabModel.indexOf(mTab2)).thenReturn(2);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
@@ -2123,7 +2108,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab3));
         setBindingAdapterPosition(mViewHolder, 1);
         setBindingAdapterPosition(mTargetViewHolder, 5);
 
