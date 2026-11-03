@@ -73,8 +73,8 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   void ExtendSelectionPrevious(
       const tabs::TabInterface* tab_interface,
       const TabStripUserGestureDetails& gesture_detail);
-  void ShiftGroupUp(const tab_groups::TabGroupId& group);
-  void ShiftGroupDown(const tab_groups::TabGroupId& group);
+  void ShiftGroupPrevious(const tab_groups::TabGroupId& group);
+  void ShiftGroupNext(const tab_groups::TabGroupId& group);
   void MoveTabFirst(const tabs::TabInterface* tab_interface);
   void MoveTabLast(const tabs::TabInterface* tab_interface);
   void SelectTab(const tabs::TabInterface* tab_interface,

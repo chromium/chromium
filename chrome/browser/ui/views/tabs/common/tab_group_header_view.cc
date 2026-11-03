@@ -292,7 +292,7 @@ gfx::Rect TabGroupHeaderView::GetAnchorBoundsInScreen() const {
 bool TabGroupHeaderView::OnKeyPressed(const ui::KeyEvent& event) {
   if ((event.key_code() == ui::VKEY_SPACE ||
        event.key_code() == ui::VKEY_RETURN) &&
-      !delegate_->IsGroupFocused()) {
+      !delegate_->IsGroupFocused() && !editor_bubble_tracker_.is_open()) {
     delegate_->ToggleCollapsedState(
         ToggleTabGroupCollapsedStateOrigin::kKeyboard);
     views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
@@ -300,20 +300,23 @@ bool TabGroupHeaderView::OnKeyPressed(const ui::KeyEvent& event) {
     return true;
   }
 
+  const views::LayoutOrientation layout_orientation =
+      orientation_ == TabStripOrientation::kVertical
+          ? views::LayoutOrientation::kVertical
+          : views::LayoutOrientation::kHorizontal;
   std::optional<event_utils::ReorderDirection> reorder_direction =
-      event_utils::GetReorderCommandForKeyboardEvent(
-          event, views::LayoutOrientation::kVertical);
+      event_utils::GetReorderCommandForKeyboardEvent(event, layout_orientation);
   if (!reorder_direction) {
     return false;
   }
 
   switch (*reorder_direction) {
     case event_utils::ReorderDirection::kPrevious: {
-      delegate_->ShiftGroupUp();
+      delegate_->ShiftGroupPrevious();
       return true;
     }
     case event_utils::ReorderDirection::kNext: {
-      delegate_->ShiftGroupDown();
+      delegate_->ShiftGroupNext();
       return true;
     }
   }
@@ -493,6 +496,10 @@ void TabGroupHeaderView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
+  if (editor_bubble_tracker_.is_open()) {
+    return;
+  }
+
   // When the context menu is triggered via keyboard, the keyboard event
   // propagates to the textfield inside the Editor Bubble. In those cases, we
   // want to tell the Editor Bubble to stop the event by setting

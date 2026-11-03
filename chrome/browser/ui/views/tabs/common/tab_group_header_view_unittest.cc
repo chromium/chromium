@@ -82,8 +82,8 @@ class MockDelegate : public TabGroupHeaderView::Delegate,
               AcquireHoverCardHideLock,
               (),
               (override));
-  MOCK_METHOD(void, ShiftGroupUp, (), (override));
-  MOCK_METHOD(void, ShiftGroupDown, (), (override));
+  MOCK_METHOD(void, ShiftGroupPrevious, (), (override));
+  MOCK_METHOD(void, ShiftGroupNext, (), (override));
   MOCK_METHOD(bool, IsGroupFocused, (), (const, override));
   MOCK_METHOD(bool, IsUnfocusButtonFocused, (), (const, override));
   MOCK_METHOD(bool, CanShowEditorBubbleButton, (), (const, override));
@@ -317,23 +317,61 @@ TEST_F(TabGroupHeaderViewTest, LeftClickInFocusModeDoesNotToggleCollapse) {
   generator.ClickLeftButton();
 }
 
-TEST_F(TabGroupHeaderViewTest, OnKeyPress_ShiftUp) {
+TEST_F(TabGroupHeaderViewTest, OnKeyPress_ToggleCollapse_SpaceAndReturn) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
 
   auto header = std::make_unique<TabGroupHeaderView>(
-      delegate, TabStripOrientation::kVertical, nullptr, &visual_data);
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data);
 
-  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_UP,
-                     GetPlatformDependentAccelerator());
+  EXPECT_CALL(delegate, IsGroupFocused())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(delegate, ToggleCollapsedState(
+                            ToggleTabGroupCollapsedStateOrigin::kKeyboard))
+      .Times(2);
 
-  EXPECT_CALL(delegate, ShiftGroupUp()).Times(1);
+  ui::KeyEvent space_event(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
+  EXPECT_TRUE(header->OnKeyPressed(space_event));
 
-  EXPECT_TRUE(header->OnKeyPressed(event));
+  ui::KeyEvent return_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                            ui::EF_NONE);
+  EXPECT_TRUE(header->OnKeyPressed(return_event));
 }
 
-TEST_F(TabGroupHeaderViewTest, OnKeyPress_ShiftDown) {
+TEST_F(TabGroupHeaderViewTest,
+       OnKeyPress_EditorBubbleOpen_DoesNotToggleCollapse) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header = widget->SetContentsView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data));
+  widget->Show();
+
+  EXPECT_CALL(delegate, IsGroupFocused())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(delegate, ToggleCollapsedState(
+                            ToggleTabGroupCollapsedStateOrigin::kKeyboard))
+      .Times(0);
+
+  std::unique_ptr<views::Widget> bubble_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  header->editor_bubble_tracker_for_testing()->Opened(std::move(bubble_widget));
+
+  ui::KeyEvent space_event(ui::EventType::kKeyPressed, ui::VKEY_SPACE,
+                           ui::EF_NONE);
+  EXPECT_FALSE(header->OnKeyPressed(space_event));
+
+  ui::KeyEvent return_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                            ui::EF_NONE);
+  EXPECT_FALSE(header->OnKeyPressed(return_event));
+}
+
+TEST_F(TabGroupHeaderViewTest, OnKeyPress_Vertical_ShiftPreviousAndNext) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -341,12 +379,56 @@ TEST_F(TabGroupHeaderViewTest, OnKeyPress_ShiftDown) {
   auto header = std::make_unique<TabGroupHeaderView>(
       delegate, TabStripOrientation::kVertical, nullptr, &visual_data);
 
-  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
-                     GetPlatformDependentAccelerator());
+  ui::KeyEvent up_event(ui::EventType::kKeyPressed, ui::VKEY_UP,
+                        GetPlatformDependentAccelerator());
+  EXPECT_CALL(delegate, ShiftGroupPrevious()).Times(1);
+  EXPECT_TRUE(header->OnKeyPressed(up_event));
 
-  EXPECT_CALL(delegate, ShiftGroupDown()).Times(1);
+  ui::KeyEvent down_event(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                          GetPlatformDependentAccelerator());
+  EXPECT_CALL(delegate, ShiftGroupNext()).Times(1);
+  EXPECT_TRUE(header->OnKeyPressed(down_event));
+}
 
-  EXPECT_TRUE(header->OnKeyPressed(event));
+TEST_F(TabGroupHeaderViewTest, OnKeyPress_Horizontal_ShiftPreviousAndNext) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  auto header = std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data);
+
+  ui::KeyEvent left_event(ui::EventType::kKeyPressed, ui::VKEY_LEFT,
+                          GetPlatformDependentAccelerator());
+  EXPECT_CALL(delegate, ShiftGroupPrevious()).Times(1);
+  EXPECT_TRUE(header->OnKeyPressed(left_event));
+
+  ui::KeyEvent right_event(ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                           GetPlatformDependentAccelerator());
+  EXPECT_CALL(delegate, ShiftGroupNext()).Times(1);
+  EXPECT_TRUE(header->OnKeyPressed(right_event));
+}
+
+TEST_F(TabGroupHeaderViewTest,
+       ShowContextMenuWhenBubbleAlreadyOpenReturnsEarly) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header = widget->SetContentsView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kVertical, nullptr, &visual_data));
+  widget->Show();
+
+  std::unique_ptr<views::Widget> bubble_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  header->editor_bubble_tracker_for_testing()->Opened(std::move(bubble_widget));
+
+  EXPECT_CALL(delegate, ShowGroupEditorBubble(testing::_)).Times(0);
+
+  header->ShowContextMenuForViewImpl(header, gfx::Point(),
+                                     ui::mojom::MenuSourceType::kNone);
 }
 
 TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_OneTab) {

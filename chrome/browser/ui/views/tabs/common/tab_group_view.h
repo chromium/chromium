@@ -80,8 +80,8 @@ class TabGroupView : public TabCollectionZOrderManager,
   std::unique_ptr<ExpandOnHoverLock> AcquireExpandOnHoverLock() override;
   std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock>
   AcquireHoverCardHideLock() override;
-  void ShiftGroupUp() override;
-  void ShiftGroupDown() override;
+  void ShiftGroupPrevious() override;
+  void ShiftGroupNext() override;
   bool IsGroupFocused() const override;
   bool IsUnfocusButtonFocused() const override;
   bool CanShowEditorBubbleButton() const override;

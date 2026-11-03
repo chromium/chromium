@@ -192,12 +192,12 @@ void TabStripCollectionController::ExtendSelectionPrevious(
   ExtendSelectionRelative(tab_interface, /*leading=*/true, gesture_detail);
 }
 
-void TabStripCollectionController::ShiftGroupUp(
+void TabStripCollectionController::ShiftGroupPrevious(
     const tab_groups::TabGroupId& group) {
   ShiftGroupRelative(group, -1);
 }
 
-void TabStripCollectionController::ShiftGroupDown(
+void TabStripCollectionController::ShiftGroupNext(
     const tab_groups::TabGroupId& group) {
   ShiftGroupRelative(group, 1);
 }

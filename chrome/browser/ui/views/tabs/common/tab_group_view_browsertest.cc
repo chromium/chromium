@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, AttentionIndicator) {
   }));
 }
 
-IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupUp_PastSingleTab) {
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupPrevious_PastSingleTab) {
   TabStripModel* model = browser()->GetTabStripModel();
 
   AppendTab();
@@ -381,8 +381,8 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupUp_PastSingleTab) {
   EXPECT_EQ(group, model->GetTabGroupForTab(1));
   EXPECT_EQ(group, model->GetTabGroupForTab(2));
 
-  // Shift the group up past the first un-grouped tab.
-  vertical_tab_strip_controller()->ShiftGroupUp(group);
+  // Shift the group previous past the first un-grouped tab.
+  vertical_tab_strip_controller()->ShiftGroupPrevious(group);
 
   // Verify the group is now at the beginning.
   EXPECT_EQ(group, model->GetTabGroupForTab(0));
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupUp_PastSingleTab) {
   EXPECT_FALSE(model->GetTabGroupForTab(2).has_value());
 }
 
-IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupDown_PastTabGroup) {
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupNext_PastTabGroup) {
   TabStripModel* model = browser()->GetTabStripModel();
 
   AppendTab();
@@ -408,8 +408,8 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupDown_PastTabGroup) {
   EXPECT_EQ(group_b, model->GetTabGroupForTab(2));
   EXPECT_EQ(group_b, model->GetTabGroupForTab(3));
 
-  // Shift Group A down, skipping group_b.
-  vertical_tab_strip_controller()->ShiftGroupDown(group_a);
+  // Shift Group A next, skipping group_b.
+  vertical_tab_strip_controller()->ShiftGroupNext(group_a);
 
   // Verify the groups swapped positions: [Group B (0, 1)], [Group A (2, 3)]
   EXPECT_EQ(group_b, model->GetTabGroupForTab(0));
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupDown_PastTabGroup) {
   EXPECT_EQ(group_a, model->GetTabGroupForTab(3));
 }
 
-IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupUp_AlreadyAtTop) {
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupPrevious_AlreadyAtFirst) {
   TabStripModel* model = browser()->GetTabStripModel();
 
   AppendTab();
@@ -433,8 +433,8 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupUp_AlreadyAtTop) {
   EXPECT_EQ(group, model->GetTabGroupForTab(1));
   EXPECT_FALSE(model->GetTabGroupForTab(2).has_value());
 
-  // Attempt to shift the group up when it is already at the top.
-  vertical_tab_strip_controller()->ShiftGroupUp(group);
+  // Attempt to shift the group previous when it is already at the first index.
+  vertical_tab_strip_controller()->ShiftGroupPrevious(group);
 
   // Verify the group has not moved ([Grouped Tab 0, Grouped Tab 1], [Ungrouped
   // Tab 2]).
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupUp_AlreadyAtTop) {
   EXPECT_FALSE(model->GetTabGroupForTab(2).has_value());
 }
 
-IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupDown_AlreadyAtBottom) {
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupNext_AlreadyAtLast) {
   TabStripModel* model = browser()->GetTabStripModel();
 
   AppendTab();
@@ -458,8 +458,8 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest, ShiftGroupDown_AlreadyAtBottom) {
   EXPECT_EQ(group, model->GetTabGroupForTab(1));
   EXPECT_EQ(group, model->GetTabGroupForTab(2));
 
-  // Attempt to shift the group down when it is already at the bottom.
-  vertical_tab_strip_controller()->ShiftGroupDown(group);
+  // Attempt to shift the group next when it is already at the last index.
+  vertical_tab_strip_controller()->ShiftGroupNext(group);
 
   // Verify the group has not moved ([Ungrouped Tab 0], [Grouped Tab 1, Grouped
   // Tab 2]).

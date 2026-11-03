@@ -67,8 +67,8 @@ class TabGroupHeaderView : public views::FlexLayoutView,
     virtual std::unique_ptr<TabHoverCardController::ScopedHideHoverCardLock>
     AcquireHoverCardHideLock() = 0;
 
-    virtual void ShiftGroupUp() = 0;
-    virtual void ShiftGroupDown() = 0;
+    virtual void ShiftGroupPrevious() = 0;
+    virtual void ShiftGroupNext() = 0;
 
     virtual bool IsGroupFocused() const = 0;
     virtual bool IsUnfocusButtonFocused() const = 0;
@@ -137,6 +137,9 @@ class TabGroupHeaderView : public views::FlexLayoutView,
     return attention_indicator_;
   }
   views::Label* title_label_for_testing() { return group_header_label_; }
+  TabGroupEditorBubbleTracker* editor_bubble_tracker_for_testing() {
+    return &editor_bubble_tracker_;
+  }
 
  private:
   void UpdateEditorBubbleButtonVisibility(
