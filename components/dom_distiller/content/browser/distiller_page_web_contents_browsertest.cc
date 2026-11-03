@@ -147,7 +147,7 @@ class TestDistillerPageWebContents : public DistillerPageWebContents {
         new_web_contents_created_(false) {}
 
   void CreateNewWebContents(const GURL& url) override {
-    ASSERT_EQ(true, expect_new_web_contents_);
+    EXPECT_TRUE(expect_new_web_contents_);
     new_web_contents_created_ = true;
     DistillerPageWebContents::CreateNewWebContents(url);
     EXPECT_TRUE(GetUserDataForTesting());
@@ -381,10 +381,11 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
 IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
                        MAYBE_UsingCurrentWebContentsWrongUrl) {
   std::string url("/bogus");
-  bool expect_new_web_contents = true;
+  bool expect_new_web_contents = false;
   bool wait_for_document_loaded = true;
   RunUseCurrentWebContentsTest(url, expect_new_web_contents,
                                wait_for_document_loaded);
+  EXPECT_EQ("", distiller_result_->title());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -401,6 +402,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   bool wait_for_document_loaded = false;
   RunUseCurrentWebContentsTest(url, expect_new_web_contents,
                                wait_for_document_loaded);
+  EXPECT_EQ("Test Page Title", distiller_result_->title());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -417,6 +419,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   bool wait_for_document_loaded = true;
   RunUseCurrentWebContentsTest(url, expect_new_web_contents,
                                wait_for_document_loaded);
+  EXPECT_EQ("Test Page Title", distiller_result_->title());
 }
 
 void DistillerPageWebContentsTest::RunUseCurrentWebContentsTest(
@@ -448,7 +451,6 @@ void DistillerPageWebContentsTest::RunUseCurrentWebContentsTest(
 
   // Sanity check of distillation process.
   EXPECT_EQ(expect_new_web_contents, distiller_page.new_web_contents_created());
-  EXPECT_EQ("Test Page Title", distiller_result_->title());
 }
 
 #if BUILDFLAG(IS_WIN)

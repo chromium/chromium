@@ -133,18 +133,28 @@ void DistillerPageWebContents::DistillPageImpl(const GURL& url,
   state_ = LOADING_PAGE;
   script_ = script;
 
-  if (source_page_handle_ && source_page_handle_->web_contents() &&
-      TargetRenderFrameHost().GetLastCommittedURL() == url) {
-    if (TargetRenderFrameHost().IsDOMContentLoaded()) {
-      // Main frame has already loaded for the current WebContents, so execute
-      // JavaScript immediately.
-      ExecuteJavaScript();
+  // Caller-supplied handles are unowned and must match `url` or fail
+  // immediately without spawning a hidden WebContents. Owned handles come from
+  // a prior `CreateNewWebContents` call when reusing a handle-less
+  // `DistillerPageWebContents` instance and fall through to create a new
+  // WebContents for the next URL.
+  if (source_page_handle_ && !source_page_handle_->owned()) {
+    if (source_page_handle_->web_contents() &&
+        TargetRenderFrameHost().GetLastCommittedURL() == url) {
+      if (TargetRenderFrameHost().IsDOMContentLoaded()) {
+        // Main frame has already loaded for the current WebContents, so execute
+        // JavaScript immediately.
+        ExecuteJavaScript();
+      } else {
+        // Main frame document has not loaded yet, so wait until it has before
+        // executing JavaScript. It will trigger after DOMContentLoaded is
+        // called for the main frame.
+        content::WebContentsObserver::Observe(
+            source_page_handle_->web_contents());
+      }
     } else {
-      // Main frame document has not loaded yet, so wait until it has before
-      // executing JavaScript. It will trigger after DOMContentLoaded is
-      // called for the main frame.
-      content::WebContentsObserver::Observe(
-          source_page_handle_->web_contents());
+      state_ = PAGELOAD_FAILED;
+      OnWebContentsDistillationDone(GURL(), base::TimeTicks(), base::Value());
     }
   } else {
     CreateNewWebContents(url);
