@@ -464,10 +464,10 @@ class TestClientBase : public MAYBE_InvitationTest {
   }                                             \
   void name##Impl::Run()
 
-const std::string kTestMessage1 = "i am the pusher robot";
-const std::string kTestMessage2 = "i push the messages down the pipe";
-const std::string kTestMessage3 = "i am the shover robot";
-const std::string kTestMessage4 = "i shove the messages down the pipe";
+constexpr char kTestMessage1[] = "i am the pusher robot";
+constexpr char kTestMessage2[] = "i push the messages down the pipe";
+constexpr char kTestMessage3[] = "i am the shover robot";
+constexpr char kTestMessage4[] = "i shove the messages down the pipe";
 
 TEST_F(MAYBE_InvitationTest, SendInvitation) {
   MojoHandle primordial_pipe;

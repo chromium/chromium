@@ -4,7 +4,11 @@
 
 #include "mojo/public/cpp/bindings/binder_map.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -25,14 +29,36 @@ namespace binder_map_unittest {
 
 class BinderMapTest : public testing::Test {
  public:
-  BinderMapTest() = default;
+  BinderMapTest() {
+    CHECK(!instance_);
+    instance_ = this;
+  }
 
   BinderMapTest(const BinderMapTest&) = delete;
   BinderMapTest& operator=(const BinderMapTest&) = delete;
 
+  ~BinderMapTest() override { instance_ = nullptr; }
+
+  // Used by binder functors to take a callback run on binder destruction.
+  // Tests adding a function pointer rather than a RepeatingCallback.
+  static base::OnceClosure TakeDestructionClosure() {
+    CHECK(instance_);
+    return std::move(instance_->destruction_closure_);
+  }
+
+ protected:
+  void SetDestructionClosure(base::OnceClosure closure) {
+    destruction_closure_ = std::move(closure);
+  }
+
  private:
+  static BinderMapTest* instance_;
+
   base::test::TaskEnvironment task_environment_;
+  base::OnceClosure destruction_closure_;
 };
+
+BinderMapTest* BinderMapTest::instance_ = nullptr;
 
 class TestInterface1Impl : public mojom::TestInterface1 {
  public:
@@ -102,17 +128,9 @@ class SequenceCheckingContext {
   scoped_refptr<base::SequencedTaskRunner> creation_sequence_;
 };
 
-namespace {
-// Used by binder functors to set a callback which is run on binder destruction.
-// This is to allow tests to wait for a binder to be destroyed. We can't use
-// base::BindRepeating, as we are explicitly testing adding a function pointer,
-// as opposed to a RepeatingCallback.
-base::OnceClosure g_destruction_closure_for_testing;
-}  // namespace
-
 void Interface1Functor(mojo::PendingReceiver<mojom::TestInterface1> receiver) {
   MakeSelfOwnedReceiver(std::make_unique<TestInterface1Impl>(
-                            std::move(g_destruction_closure_for_testing)),
+                            BinderMapTest::TakeDestructionClosure()),
                         std::move(receiver));
 }
 
@@ -121,7 +139,7 @@ void Interface1Functor42(
     mojo::PendingReceiver<mojom::TestInterface1> receiver) {
   EXPECT_EQ(context, 42);
   MakeSelfOwnedReceiver(std::make_unique<TestInterface1Impl>(
-                            std::move(g_destruction_closure_for_testing)),
+                            BinderMapTest::TakeDestructionClosure()),
                         std::move(receiver));
 }
 
@@ -152,7 +170,7 @@ TEST_F(BinderMapTest, BasicMatchWithFunctor) {
   GenericPendingReceiver receiver(remote.BindNewPipeAndPassReceiver());
 
   auto loop = base::RunLoop();
-  g_destruction_closure_for_testing = loop.QuitClosure();
+  SetDestructionClosure(loop.QuitClosure());
   BinderMap map;
   map.Add<mojom::TestInterface1>(
       &Interface1Functor, base::SequencedTaskRunner::GetCurrentDefault());
@@ -214,7 +232,7 @@ TEST_F(BinderMapTest, FunctorWithContext) {
   GenericPendingReceiver receiver(remote.BindNewPipeAndPassReceiver());
 
   auto loop = base::RunLoop();
-  g_destruction_closure_for_testing = loop.QuitClosure();
+  SetDestructionClosure(loop.QuitClosure());
   BinderMapWithContext<int> map;
   map.Add<mojom::TestInterface1>(&Interface1Functor42);
   EXPECT_TRUE(map.TryBind(42, &receiver));
@@ -231,7 +249,7 @@ TEST_F(BinderMapTest, ContextDroppedOnCallingSequence) {
   GenericPendingReceiver receiver(remote.BindNewPipeAndPassReceiver());
 
   auto loop = base::RunLoop();
-  g_destruction_closure_for_testing = loop.QuitClosure();
+  SetDestructionClosure(loop.QuitClosure());
   BinderMapWithContext<SequenceCheckingContext> map;
   map.Add<mojom::TestInterface1>(
       &Interface1Functor, base::ThreadPool::CreateSequencedTaskRunner({}));

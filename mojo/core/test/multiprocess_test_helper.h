@@ -94,8 +94,8 @@ class MultiprocessTestHelper {
                            bool pass_pipe_ownership_to_main = false);
   static int RunClientTestMain(base::OnceCallback<void(MojoHandle)> main);
 
-  // For use (and only valid) in the child process:
-  static mojo::ScopedMessagePipeHandle primordial_pipe;
+  // Takes ownership of the primordial pipe in the child process.
+  static mojo::ScopedMessagePipeHandle TakePrimordialPipe();
 
  private:
   // Valid after |StartChild()| and before |WaitForChildShutdown()|.

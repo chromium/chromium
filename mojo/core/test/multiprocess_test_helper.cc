@@ -28,6 +28,7 @@
 #include "base/task/task_runner.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
+#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
@@ -53,6 +54,8 @@ const char kRunAsBrokerClient[] = "run-as-broker-client";
 const char kAcceptInvitationAsync[] = "accept-invitation-async";
 const char kTestChildMessagePipeName[] = "test_pipe";
 
+MojoHandle g_primordial_pipe = MOJO_HANDLE_INVALID;
+
 // For use (and only valid) in a test child process:
 IsolatedConnection& GetChildIsolatedConnection() {
   static base::NoDestructor<IsolatedConnection> connection;
@@ -61,9 +64,8 @@ IsolatedConnection& GetChildIsolatedConnection() {
 
 int RunClientFunction(base::OnceCallback<int(MojoHandle)> handler,
                       bool pass_pipe_ownership_to_main) {
-  CHECK(MultiprocessTestHelper::primordial_pipe.is_valid());
-  ScopedMessagePipeHandle pipe =
-      std::move(MultiprocessTestHelper::primordial_pipe);
+  ScopedMessagePipeHandle pipe = MultiprocessTestHelper::TakePrimordialPipe();
+  CHECK(pipe.is_valid());
   MessagePipeHandle pipe_handle =
       pass_pipe_ownership_to_main ? pipe.release() : pipe.get();
   return std::move(handler).Run(pipe_handle.value());
@@ -303,6 +305,7 @@ void MultiprocessTestHelper::ChildSetup() {
         PlatformChannel::RecoverPassedEndpointFromCommandLine(command_line);
   }
 
+  ScopedMessagePipeHandle pipe;
   if (run_as_broker_client) {
     IncomingInvitation invitation;
     if (async) {
@@ -310,10 +313,11 @@ void MultiprocessTestHelper::ChildSetup() {
     } else {
       invitation = IncomingInvitation::Accept(std::move(endpoint));
     }
-    primordial_pipe = invitation.ExtractMessagePipe(kTestChildMessagePipeName);
+    pipe = invitation.ExtractMessagePipe(kTestChildMessagePipeName);
   } else {
-    primordial_pipe = GetChildIsolatedConnection().Connect(std::move(endpoint));
+    pipe = GetChildIsolatedConnection().Connect(std::move(endpoint));
   }
+  g_primordial_pipe = pipe.release().value();
 }
 
 // static
@@ -339,7 +343,11 @@ int MultiprocessTestHelper::RunClientTestMain(
       true /* pass_pipe_ownership_to_main */);
 }
 
-ScopedMessagePipeHandle MultiprocessTestHelper::primordial_pipe;
+// static
+ScopedMessagePipeHandle MultiprocessTestHelper::TakePrimordialPipe() {
+  return ScopedMessagePipeHandle(
+      MessagePipeHandle(std::exchange(g_primordial_pipe, MOJO_HANDLE_INVALID)));
+}
 
 }  // namespace test
 }  // namespace core

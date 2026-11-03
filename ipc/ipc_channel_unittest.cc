@@ -162,8 +162,7 @@ class IpcChannelTestClient {
       client_name##TestChildMain,                                              \
       ::mojo::core::test::MultiprocessTestHelper::ChildSetup) {                \
     client_name##_MainFixture test;                                            \
-    test.Init(                                                                 \
-        std::move(mojo::core::test::MultiprocessTestHelper::primordial_pipe)); \
+    test.Init(mojo::core::test::MultiprocessTestHelper::TakePrimordialPipe()); \
     test.Main();                                                               \
     return (::testing::Test::HasFatalFailure() ||                              \
             ::testing::Test::HasNonfatalFailure())                             \

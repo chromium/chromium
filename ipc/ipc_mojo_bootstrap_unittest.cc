@@ -133,7 +133,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   base::test::SingleThreadTaskEnvironment task_environment;
   Connection connection(
       IPC::MojoBootstrap::Create(
-          std::move(mojo::core::test::MultiprocessTestHelper::primordial_pipe),
+          mojo::core::test::MultiprocessTestHelper::TakePrimordialPipe(),
           IPC::Channel::MODE_CLIENT,
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::SingleThreadTaskRunner::GetCurrentDefault()),
