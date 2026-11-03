@@ -71,6 +71,11 @@ final class GlobalBrowserCollectionPlatformDelegate
                 GlobalBrowserCollectionPlatformDelegateJni.get()
                         .onBrowserCreated(mNativePointer, androidBrowserWindowPtr);
             }
+            long activePtr = task.getActiveNativeBrowserWindowPtr();
+            if (activePtr != 0) {
+                GlobalBrowserCollectionPlatformDelegateJni.get()
+                        .onBrowserActivated(mNativePointer, activePtr);
+            }
         }
         task.addAndroidBrowserWindowObserver(this);
     }

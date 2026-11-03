@@ -1357,6 +1357,13 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
+    public long getActiveNativeBrowserWindowPtr() {
+        ThreadUtils.assertOnUiThread();
+        var activeWindow = getActiveBrowserWindow();
+        return activeWindow != null ? activeWindow.getOrCreateLegacyNativePtr() : 0;
+    }
+
+    @Override
     public void addAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer) {
         mAndroidBrowserWindowObserverNotifier.addObserver(observer);
     }
