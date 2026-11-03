@@ -6,7 +6,9 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video_capture_types.h"
@@ -36,8 +38,7 @@ libyuv::RotationModeEnum TranslateIntegerRotationToLibyuvRotation(
   return libyuv::kRotate0;
 }
 
-mojom::BlobPtr ProduceJpegBlobFromMjpegFrame(const uint8_t* buffer,
-                                             const uint32_t bytesused,
+mojom::BlobPtr ProduceJpegBlobFromMjpegFrame(base::span<const uint8_t> buffer,
                                              const gfx::Size size,
                                              const int rotation) {
   // TODO(shenghao): The rotation handling logic here can be deleted once we
@@ -53,16 +54,16 @@ mojom::BlobPtr ProduceJpegBlobFromMjpegFrame(const uint8_t* buffer,
     const int bytes_per_pixel = 4;
     std::vector<uint8_t> bgra_buffer(output_width * output_height *
                                      bytes_per_pixel);
-    libyuv::ConvertToARGB(
-        buffer, static_cast<size_t>(bytesused), bgra_buffer.data(),
-        output_width * bytes_per_pixel, /*crop_x=*/0,
-        /*crop_y=*/0, size.width(), size.height(), size.width(), size.height(),
-        TranslateIntegerRotationToLibyuvRotation(rotation),
-        libyuv::FOURCC_MJPG);
+    libyuv::ConvertToARGB(buffer.data(), buffer.size(), bgra_buffer.data(),
+                          output_width * bytes_per_pixel, /*crop_x=*/0,
+                          /*crop_y=*/0, size.width(), size.height(),
+                          size.width(), size.height(),
+                          TranslateIntegerRotationToLibyuvRotation(rotation),
+                          libyuv::FOURCC_MJPG);
     SkImageInfo info =
         SkImageInfo::Make(output_width, output_height, kBGRA_8888_SkColorType,
                           kOpaque_SkAlphaType);
-    SkPixmap src(info, &bgra_buffer[0], output_width * bytes_per_pixel);
+    SkPixmap src(info, bgra_buffer.data(), output_width * bytes_per_pixel);
 
     std::optional<std::vector<uint8_t>> rotated_jpeg_data =
         gfx::JPEGCodec::Encode(src, kJpegQualityDefault);
@@ -79,25 +80,23 @@ mojom::BlobPtr ProduceJpegBlobFromMjpegFrame(const uint8_t* buffer,
   }
 
   mojom::BlobPtr blob = mojom::Blob::New();
-  blob->data.assign(buffer, UNSAFE_TODO(buffer + bytesused));
+  blob->data = base::ToVector(buffer);
   blob->mime_type = "image/jpeg";
   return blob;
 }
 
 }  // namespace
 
-mojom::BlobPtr RotateAndBlobify(const uint8_t* buffer,
-                                const uint32_t bytesused,
+mojom::BlobPtr RotateAndBlobify(base::span<const uint8_t> buffer,
                                 const VideoCaptureFormat& capture_format,
                                 const int rotation) {
-  DCHECK(buffer);
-  DCHECK(bytesused);
+  DCHECK(!buffer.empty());
   DCHECK(capture_format.IsValid());
 
   const VideoPixelFormat pixel_format = capture_format.pixel_format;
   if (pixel_format == VideoPixelFormat::PIXEL_FORMAT_MJPEG) {
-    return ProduceJpegBlobFromMjpegFrame(buffer, bytesused,
-                                         capture_format.frame_size, rotation);
+    return ProduceJpegBlobFromMjpegFrame(buffer, capture_format.frame_size,
+                                         rotation);
   }
 
   uint32_t src_format;
@@ -126,13 +125,13 @@ mojom::BlobPtr RotateAndBlobify(const uint8_t* buffer,
 
   const gfx::Size frame_size = capture_format.frame_size;
   // PNGCodec does not support YUV formats, convert to a temporary ARGB buffer.
-  auto tmp_argb = std::make_unique<uint8_t[]>(
+  auto tmp_argb = base::HeapArray<uint8_t>::WithSize(
       VideoFrame::AllocationSize(PIXEL_FORMAT_ARGB, frame_size));
-  if (ConvertToARGB(buffer, bytesused, tmp_argb.get(), frame_size.width() * 4,
-                    0 /* crop_x_pos */, 0 /* crop_y_pos */, frame_size.width(),
-                    frame_size.height(), frame_size.width(),
-                    frame_size.height(), libyuv::RotationMode::kRotate0,
-                    src_format) != 0) {
+  if (ConvertToARGB(buffer.data(), buffer.size(), tmp_argb.data(),
+                    frame_size.width() * 4, 0 /* crop_x_pos */,
+                    0 /* crop_y_pos */, frame_size.width(), frame_size.height(),
+                    frame_size.width(), frame_size.height(),
+                    libyuv::RotationMode::kRotate0, src_format) != 0) {
     return nullptr;
   }
 
@@ -144,7 +143,7 @@ mojom::BlobPtr RotateAndBlobify(const uint8_t* buffer,
       gfx::PNGCodec::FORMAT_BGRA;
 #endif
   std::optional<std::vector<uint8_t>> data = gfx::PNGCodec::Encode(
-      tmp_argb.get(), codec_color_format, frame_size, frame_size.width() * 4,
+      tmp_argb.data(), codec_color_format, frame_size, frame_size.width() * 4,
       /*discard_transparency=*/true, std::vector<gfx::PNGCodec::Comment>());
 
   blob->data = std::move(data.value());

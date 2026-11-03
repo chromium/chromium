@@ -181,7 +181,6 @@ class V4L2CaptureDelegate::BufferTracker
   // Abstract method to mmap() given |fd| according to |buffer|.
   bool Init(int fd, const v4l2_buffer& buffer);
 
-  const uint8_t* start() const { return start_; }
   size_t payload_size() const { return payload_size_; }
   base::span<const uint8_t> as_span() const {
     // SAFETY: start_ points to mapped memory of payload_size_ bytes.
@@ -1176,7 +1175,7 @@ void V4L2CaptureDelegate::DoCapture() {
       take_photo_callbacks_.pop();
 
       mojom::BlobPtr blob =
-          RotateAndBlobify(buffer_tracker->start(), buffer.bytesused,
+          RotateAndBlobify(buffer_tracker->as_span().first(buffer.bytesused),
                            capture_format_, rotation_);
       if (blob)
         std::move(cb).Run(std::move(blob));

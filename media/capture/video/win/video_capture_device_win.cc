@@ -920,8 +920,7 @@ void VideoCaptureDeviceWin::FrameReceived(base::span<const uint8_t> buffer,
     TakePhotoCallback cb = std::move(take_photo_callbacks_.front());
     take_photo_callbacks_.pop();
 
-    mojom::BlobPtr blob =
-        RotateAndBlobify(buffer.data(), buffer.size(), format, 0);
+    mojom::BlobPtr blob = RotateAndBlobify(buffer, format, 0);
     if (blob) {
       std::move(cb).Run(std::move(blob));
     }

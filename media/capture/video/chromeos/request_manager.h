@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -78,8 +79,7 @@ class CAPTURE_EXPORT RequestManager final
       public CaptureMetadataDispatcher {
  public:
   using BlobifyCallback = base::RepeatingCallback<mojom::BlobPtr(
-      const uint8_t* buffer,
-      const uint32_t bytesused,
+      base::span<const uint8_t> buffer,
       const VideoCaptureFormat& capture_format,
       int screen_rotation)>;
 

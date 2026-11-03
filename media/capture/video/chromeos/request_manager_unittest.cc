@@ -137,7 +137,7 @@ class RequestManagerTest : public ::testing::TestWithParam<bool> {
           VideoCaptureBufferType::kSharedMemory,
           std::make_unique<FakeCameraBufferFactory>(),
           base::BindRepeating(
-              [](const uint8_t* buffer, const uint32_t bytesused,
+              [](base::span<const uint8_t> buffer,
                  const VideoCaptureFormat& capture_format,
                  const int rotation) { return mojom::Blob::New(); }),
           base::SingleThreadTaskRunner::GetCurrentDefault(),

@@ -191,7 +191,9 @@ class MFPhotoCallback final
       DWORD max_length = 0;
       DWORD length = 0;
       buffer->Lock(&data, &max_length, &length);
-      mojom::BlobPtr blob = RotateAndBlobify(data, length, format_, 0);
+      // SAFETY: IMFMediaBuffer::Lock() returns `length` valid bytes at `data`.
+      mojom::BlobPtr blob = RotateAndBlobify(
+          UNSAFE_BUFFERS(base::span(data, length)), format_, 0);
       buffer->Unlock();
       if (blob) {
         std::move(callback_).Run(std::move(blob));
@@ -276,7 +278,6 @@ class ScopedBufferLock {
   ScopedBufferLock& operator=(const ScopedBufferLock&) = delete;
 
   BYTE* data() const { return data_; }
-  DWORD length() const { return length_; }
 
   base::span<const uint8_t> as_span() const {
     if (!data_) {
@@ -2519,7 +2520,7 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal() {
     video_stream_take_photo_callbacks_.pop();
 
     mojom::BlobPtr blob =
-        RotateAndBlobify(locked_buffer.data(), locked_buffer.length(),
+        RotateAndBlobify(locked_buffer.as_span(),
                          selected_video_capability_->supported_format, 0);
     if (!blob) {
       continue;

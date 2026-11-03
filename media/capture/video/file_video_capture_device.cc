@@ -736,8 +736,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     auto cb = std::move(take_photo_callbacks_.front());
     take_photo_callbacks_.pop();
 
-    mojom::BlobPtr blob =
-        RotateAndBlobify(ptz_frame.data(), ptz_frame.size(), ptz_format, 0);
+    mojom::BlobPtr blob = RotateAndBlobify(ptz_frame, ptz_format, 0);
     if (!blob) {
       continue;
     }
