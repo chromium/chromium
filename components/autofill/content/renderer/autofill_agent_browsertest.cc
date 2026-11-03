@@ -29,6 +29,7 @@
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
+#include "components/autofill/content/renderer/custom_form_control_script_executor.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache_test_api.h"
 #include "components/autofill/content/renderer/test_util.h"
@@ -41,6 +42,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
@@ -277,6 +279,24 @@ TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse) {
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
   EXPECT_CALL(mock_callback, Run(true));
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
+}
+
+// Tests that the agent only has a custom form control script executor once
+// custom form control scripts are enabled, and that the executor runs scripts
+// in the agent's frame.
+TEST_F(AutofillAgentTest, EnableCustomFormControlScripts) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillCustomFormControlScripts};
+  EXPECT_FALSE(
+      test_api(autofill_agent()).custom_form_control_script_executor());
+  autofill_agent().EnableCustomFormControlScripts(
+      /*world_id=*/content::ISOLATED_WORLD_ID_CONTENT_END + 1);
+  CustomFormControlScriptExecutor* executor =
+      test_api(autofill_agent()).custom_form_control_script_executor();
+  ASSERT_TRUE(executor);
+  EXPECT_TRUE(executor->LoadScript(
+      "function createCustomFormControlManager() { return {}; }"));
+  EXPECT_TRUE(executor->has_manager());
 }
 
 TEST_F(AutofillAgentTest, ClearFormCache) {

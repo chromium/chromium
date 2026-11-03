@@ -14,6 +14,8 @@
 
 namespace autofill {
 
+class CustomFormControlScriptExecutor;
+
 class AutofillAgentTestApi {
  public:
   explicit AutofillAgentTestApi(AutofillAgent* agent) : agent_(*agent) {}
@@ -93,6 +95,10 @@ class AutofillAgentTestApi {
   }
 
   const FormCache& form_cache() { return agent_->form_cache_; }
+
+  CustomFormControlScriptExecutor* custom_form_control_script_executor() {
+    return agent_->custom_form_control_script_executor_.get();
+  }
 
   PasswordAutofillAgent* password_autofill_agent() {
     return agent_->password_autofill_agent_.get();
