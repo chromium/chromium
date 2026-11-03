@@ -117,6 +117,12 @@ bool UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   // resource, so when we merge the metadata, we can use the most
   // optimistic values.
   CHECK(security_origin_->IsSameOriginWith(other->security_origin_.get()));
+  // Do not merge when the other UrlData has an incompatible origin, or if the
+  // other UrlData is missing an origin while this UrlData has one already
+  // configured.
+  if (data_origin_.has_value() && !other->data_origin_.has_value()) {
+    return false;
+  }
   const KURL other_origin = other->data_origin_.value_or(KURL());
   if (!CanAcceptDataFrom(other_origin, other->is_cors_cross_origin_)) {
     return false;
@@ -128,7 +134,11 @@ bool UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
       !other->HasCompatibleLength(length_)) {
     return false;
   }
-  SetDataOrigin(other_origin, other->is_cors_cross_origin_);
+  if (other->data_origin_.has_value()) {
+    SetDataOrigin(*other->data_origin_, other->is_cors_cross_origin_);
+  } else {
+    set_is_cors_cross_origin(other->is_cors_cross_origin_);
+  }
 
   valid_until_ = std::max(valid_until_, other->valid_until_);
   // set_length() will not override the length if already known.
@@ -221,25 +231,32 @@ void UrlData::Use() {
 
 bool UrlData::CanAcceptDataFrom(const KURL& origin,
                                 bool is_cors_cross_origin) const {
+  // Mixing non-opaque and opaque responses on a resource that has already
+  // received a response or failed a cross-origin check is not allowed, as
+  // consumers may have already checked origin tainting based on the earlier
+  // state.
+  if (base::FeatureList::IsEnabled(media::kDisallowMixedOpaqueMediaResponses)) {
+    if (is_cors_cross_origin_ && !is_cors_cross_origin) {
+      return false;
+    }
+    if (data_origin_.has_value() && !is_cors_cross_origin_ &&
+        is_cors_cross_origin) {
+      return false;
+    }
+  }
+
   if (!data_origin_) {
     return true;
   }
 
-  // Mixing non-opaque and opaque responses on a resource that has already
-  // received a response is not allowed, as consumers may have already checked
-  // origin tainting based on the earlier response.
-  if (is_cors_cross_origin_ != is_cors_cross_origin &&
-      base::FeatureList::IsEnabled(media::kDisallowMixedOpaqueMediaResponses)) {
-    return false;
-  }
-
-  if (cors_mode_ == UrlData::CORS_UNSPECIFIED) {
-    // If both origins are null return true, otherwise
-    // SecurityOrigin::AreSameOrigin will create a unique nonce for each.
-    if (!data_origin_->IsNull() || !origin.IsNull()) {
-      if (!SecurityOrigin::AreSameOrigin(data_origin_.value(), origin)) {
-        return false;
-      }
+  if (cors_mode_ == UrlData::CORS_UNSPECIFIED && *data_origin_ != origin) {
+    // Compare URLs directly first so identical URLs whose origins serialize as
+    // unique opaque nonces (e.g. `KURL()`, `data:` URLs, or `blob:null/...`
+    // URLs after `URL.revokeObjectURL()`) always match themselves instead of
+    // minting distinct nonces in `SecurityOrigin::AreSameOrigin`.
+    if (data_origin_->IsNull() || origin.IsNull() ||
+        !SecurityOrigin::AreSameOrigin(*data_origin_, origin)) {
+      return false;
     }
   }
 

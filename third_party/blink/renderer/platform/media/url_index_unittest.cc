@@ -247,6 +247,57 @@ TEST_F(UrlIndexTest, CanAcceptDataFrom) {
   EXPECT_TRUE(a->CanAcceptDataFrom(data_url, /*is_cors_cross_origin=*/false));
   EXPECT_FALSE(a->CanAcceptDataFrom(url, /*is_cors_cross_origin=*/false));
   EXPECT_FALSE(a->CanAcceptDataFrom(data_url, /*is_cors_cross_origin=*/true));
+
+  // A pre-response CrossOriginFail() latches `is_cors_cross_origin()` while
+  // `data_origin_` is still unset; `CanAcceptDataFrom()` must reject a
+  // subsequent non-opaque response before `SetDataOrigin()` is called.
+  scoped_refptr<UrlData> cross_origin_failed =
+      GetByUrl(url, UrlData::CORS_UNSPECIFIED);
+  cross_origin_failed->CrossOriginFail();
+  EXPECT_TRUE(cross_origin_failed->is_cors_cross_origin());
+  EXPECT_FALSE(cross_origin_failed->CanAcceptDataFrom(
+      url, /*is_cors_cross_origin=*/false));
+  EXPECT_TRUE(cross_origin_failed->CanAcceptDataFrom(
+      url, /*is_cors_cross_origin=*/true));
+
+  // Identical URLs with opaque origins (such as `blob:null/...` after
+  // `URL.revokeObjectURL()` or `data:` URLs) must remain compatible with
+  // themselves even when `kDisallowMixedOpaqueMediaResponses` is disabled.
+  {
+    base::test::ScopedFeatureList disable_mixed_opaque;
+    disable_mixed_opaque.InitAndDisableFeature(
+        media::kDisallowMixedOpaqueMediaResponses);
+    const KURL revoked_null_blob_url(
+        "blob:null/12345678-1234-1234-1234-123456789abc");
+    const KURL other_null_blob_url(
+        "blob:null/87654321-4321-4321-4321-cba987654321");
+    scoped_refptr<UrlData> blob_data =
+        GetByUrl(revoked_null_blob_url, UrlData::CORS_UNSPECIFIED);
+    blob_data->SetDataOrigin(revoked_null_blob_url,
+                             /*is_cors_cross_origin=*/false);
+    EXPECT_TRUE(blob_data->CanAcceptDataFrom(revoked_null_blob_url,
+                                             /*is_cors_cross_origin=*/false));
+    EXPECT_FALSE(blob_data->CanAcceptDataFrom(other_null_blob_url,
+                                              /*is_cors_cross_origin=*/false));
+    EXPECT_FALSE(blob_data->CanAcceptDataFrom(KURL(),
+                                              /*is_cors_cross_origin=*/false));
+  }
+
+  // Merging two entries via `TryInsert()` before either has a `data_origin_`
+  // must not falsely pin `data_origin_` to `KURL()`.
+  const KURL unpinned_url("http://unpinned.example/v.mp4");
+  scoped_refptr<UrlData> unpinned1 =
+      GetByUrl(unpinned_url, UrlData::CORS_UNSPECIFIED);
+  scoped_refptr<UrlData> unpinned2 =
+      GetByUrl(unpinned_url, UrlData::CORS_UNSPECIFIED);
+  unpinned1->Use();
+  unpinned1->set_range_supported();
+  EXPECT_EQ(unpinned1, url_index_->TryInsert(unpinned1));
+  unpinned2->Use();
+  unpinned2->set_range_supported();
+  EXPECT_EQ(unpinned1, url_index_->TryInsert(unpinned2));
+  EXPECT_TRUE(unpinned1->CanAcceptDataFrom(unpinned_url,
+                                           /*is_cors_cross_origin=*/false));
 }
 
 TEST_F(UrlIndexTest, DestructionWithOrphanedUrlData) {

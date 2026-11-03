@@ -1015,4 +1015,98 @@ TEST_F(ResourceMultiBufferDataProviderTest,
   EXPECT_EQ(url_data_->length(), 1000000);
 }
 
+// Regression test for crbug.com/579225207: if an earlier request on `UrlData`
+// fails pre-response via `CrossOriginFail()` (`is_cors_cross_origin() == true`
+// while `data_origin_` is unset), a subsequent non-opaque response must be
+// rejected cleanly in `DidReceiveResponse()` rather than tripping the
+// post-`TryInsert()` / post-`RedirectTo()` `CHECK`.
+TEST_F(ResourceMultiBufferDataProviderTest,
+       NonOpaqueResponseAfterCrossOriginFailFailsCleanly) {
+  base::test::ScopedFeatureList feature_list(
+      media::kDisallowMixedOpaqueMediaResponses);
+
+  Initialize(kHttpUrl, 0);
+  Start();
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  loader_->DidFail(WebURLError(net::ERR_BLOCKED_BY_ORB, url_));
+  EXPECT_TRUE(url_data_->is_cors_cross_origin());
+
+  // Start a second provider on the same `url_data_` (which still has no
+  // `data_origin_` set) and deliver a non-opaque response.
+  url_data_->OnRedirect(
+      blink::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
+                      Unretained(this)));
+  auto second_loader = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/0, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_second_loader = second_loader.get();
+  loader_ = nullptr;
+  url_data_->multibuffer()->AddProvider(std::move(second_loader));
+  loader_ = raw_second_loader;
+  Start();
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse response(url_);
+  response.SetHttpStatusCode(kHttpPartialContent);
+  response.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                              WebString::FromUtf8("bytes 0-1023/1024"));
+  response.SetExpectedContentLength(1024);
+  response.SetType(network::mojom::FetchResponseType::kBasic);
+  loader_->DidReceiveResponse(response);
+
+  // Also verify the redirect path when `old_url_data` had `CrossOriginFail()`
+  // and an in-flight request redirects to a fresh destination `UrlData`.
+  url_data_->OnRedirect(
+      blink::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
+                      Unretained(this)));
+  auto redir_loader = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/0, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_redir_loader = redir_loader.get();
+  loader_ = nullptr;
+  url_data_->multibuffer()->AddProvider(std::move(redir_loader));
+  loader_ = raw_redir_loader;
+  Start();
+
+  WebURL redir_target{KURL(kHttpRedirect)};
+  WebURLResponse redir_response(url_);
+  redir_response.SetHttpStatusCode(302);
+  ASSERT_TRUE(loader_->WillFollowRedirect(redir_target, redir_response));
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse target_response(redir_target);
+  target_response.SetHttpStatusCode(kHttpPartialContent);
+  target_response.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                                     WebString::FromUtf8("bytes 0-1023/1024"));
+  target_response.SetExpectedContentLength(1024);
+  target_response.SetType(network::mojom::FetchResponseType::kBasic);
+  loader_->DidReceiveResponse(target_response);
+}
+
+// Regression test for crbug.com/579225207: an opaque-origin `response_url`
+// (such as a `blob:null/...` URL inside a sandboxed iframe after
+// `URL.revokeObjectURL()` removes its `BlobURLNullOriginMap` entry while
+// `BackgroundURLLoader` is in flight) must not fail `CanAcceptDataFrom()`
+// against itself on the post-`TryInsert()` `CHECK`.
+TEST_F(ResourceMultiBufferDataProviderTest,
+       RevokedNullOriginBlobResponseDoesNotCrash) {
+  base::test::ScopedFeatureList disable_mixed_opaque;
+  disable_mixed_opaque.InitAndDisableFeature(
+      media::kDisallowMixedOpaqueMediaResponses);
+
+  constexpr char kRevokedNullBlobUrl[] =
+      "blob:null/12345678-1234-1234-1234-123456789abc";
+  Initialize(kRevokedNullBlobUrl, 0);
+  Start();
+
+  WebURLResponse response{WebURL(KURL(kRevokedNullBlobUrl))};
+  response.SetHttpStatusCode(kHttpOK);
+  response.SetExpectedContentLength(kDataSize);
+  response.SetType(network::mojom::FetchResponseType::kBasic);
+  loader_->DidReceiveResponse(response);
+  EXPECT_EQ(url_data_->length(), kDataSize);
+  StopWhenLoad();
+}
+
 }  // namespace blink
