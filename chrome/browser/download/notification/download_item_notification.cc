@@ -508,8 +508,8 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
   if (item_->IsDangerous()) {
     notification_->set_type(message_center::NOTIFICATION_TYPE_SIMPLE);
     MaybeRecordDangerousDownloadWarningShown(*item_);
-    if (!item_->MightBeMalicious() &&
-        item_->GetDangerType() !=
+    if (!item_->MightBeMalicious() ||
+        item_->GetDangerType() ==
             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
       notification_->set_priority(message_center::HIGH_PRIORITY);
     } else {

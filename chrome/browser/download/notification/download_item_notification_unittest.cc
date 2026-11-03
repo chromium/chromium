@@ -469,4 +469,16 @@ TEST_F(DownloadItemNotificationTest, NotificationActionsForAudio) {
 #endif
 }
 
+TEST_F(DownloadItemNotificationTest, SensitiveContentWarningPriority) {
+  EXPECT_CALL(*download_item_, GetDangerType())
+      .WillRepeatedly(
+          Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING));
+  EXPECT_CALL(*download_item_, IsDangerous()).WillRepeatedly(Return(true));
+
+  CreateDownloadItemNotification();
+  EXPECT_TRUE(download_item_notification_->GetDownload()->MightBeMalicious());
+  ASSERT_TRUE(LookUpNotification());
+  EXPECT_EQ(message_center::HIGH_PRIORITY, LookUpNotification()->priority());
+}
+
 }  // namespace test
