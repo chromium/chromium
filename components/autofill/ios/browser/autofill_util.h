@@ -65,24 +65,6 @@ enum class ExtractFormDataFailure {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:InvalidSubmittedFormReasonIOS)
 
-// LINT.IfChange(SubmissionBlockedReasonIOS)
-enum class SubmissionBlockedReason {
-  // The submission was blocked because it lacked a user gesture.
-  kNoUserGesture = 0,
-  // The submission was blocked because Autofill is disabled.
-  kAutofillDisabled = 1,
-  // The submission was blocked because the frame was missing or destroyed.
-  kNoFrame = 2,
-  // The submission was blocked because the driver was missing.
-  kNoDriver = 3,
-  // The submission was blocked because the frame is cross-origin.
-  kCrossOriginFrame = 4,
-  // The submission was blocked because the delegate is missing.
-  kNoDelegate = 5,
-  kMaxValue = kNoDelegate,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:SubmissionBlockedReasonIOS)
-
 // Checks if current context is secure from an autofill standpoint.
 bool IsContextSecureForWebState(web::WebState* web_state);
 

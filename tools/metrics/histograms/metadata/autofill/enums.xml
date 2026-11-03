@@ -6209,23 +6209,6 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h:SmsOtpRetrievalApiErrorCode) -->
 
-<!-- LINT.IfChange(SubmissionBlockedReasonIOS) -->
-
-<enum name="SubmissionBlockedReasonIOS">
-  <summary>
-    Represents the various reasons why a form submission might be blocked or
-    ignored by Autofill on iOS.
-  </summary>
-  <int value="0" label="No user gesture"/>
-  <int value="1" label="Autofill disabled"/>
-  <int value="2" label="No frame"/>
-  <int value="3" label="No driver"/>
-  <int value="4" label="Cross-origin frame"/>
-  <int value="5" label="No delegate"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/autofill/ios/browser/autofill_util.h:SubmissionBlockedReasonIOS) -->
-
 <!-- LINT.IfChange(SuggestionsFromGeminiAction) -->
 
 <enum name="SuggestionsFromGeminiAction">

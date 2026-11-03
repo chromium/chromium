@@ -6223,17 +6223,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.iOS.FormSubmission.BlockedReason"
-    enum="SubmissionBlockedReasonIOS" expires_after="2026-11-29">
-  <owner>sugoi@chromium.org</owner>
-  <owner>bling-transactions@google.com</owner>
-  <summary>
-    Records the reason why a form submission was blocked or ignored by Autofill
-    on iOS. Recorded when the browser process decides to ignore a form
-    submission.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.iOS.FormSubmission.IsProgrammatic" enum="Boolean"
     expires_after="2027-04-11">
   <owner>eic@google.com</owner>

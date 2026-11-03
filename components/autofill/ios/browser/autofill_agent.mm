@@ -776,31 +776,18 @@ bool HasGuid(const Suggestion::Payload& payload) {
                    hasUserGesture:(BOOL)hasUserGesture
                           inFrame:(web::WebFrame*)frame
                    perfectFilling:(BOOL)perfectFilling {
-  if (![self isAutofillEnabled]) {
-    base::UmaHistogramEnumeration(
-        "Autofill.iOS.FormSubmission.BlockedReason",
-        autofill::SubmissionBlockedReason::kAutofillDisabled);
-    return;
-  }
-  if (!frame) {
-    base::UmaHistogramEnumeration("Autofill.iOS.FormSubmission.BlockedReason",
-                                  autofill::SubmissionBlockedReason::kNoFrame);
+  if (![self isAutofillEnabled] || !frame) {
     return;
   }
   if (!hasUserGesture &&
       base::FeatureList::IsEnabled(
           kAutofillRejectFormSubmissionsWithoutUserGesture)) {
-    base::UmaHistogramEnumeration(
-        "Autofill.iOS.FormSubmission.BlockedReason",
-        autofill::SubmissionBlockedReason::kNoUserGesture);
     return;
   }
 
   auto* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
   if (!driver) {
-    base::UmaHistogramEnumeration("Autofill.iOS.FormSubmission.BlockedReason",
-                                  autofill::SubmissionBlockedReason::kNoDriver);
     return;
   }
 

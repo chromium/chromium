@@ -136,9 +136,6 @@ const char kHostFrameKey[] = "host_frame";
   if (!hasUserGesture &&
       base::FeatureList::IsEnabled(
           kAutofillRejectFormSubmissionsWithoutUserGesture)) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.iOS.FormSubmission.BlockedReason",
-        autofill::SubmissionBlockedReason::kNoUserGesture);
     return;
   }
 
@@ -146,15 +143,9 @@ const char kHostFrameKey[] = "host_frame";
   if (!frame->GetSecurityOrigin().IsSameOriginWith(pageURL)) {
     // Passwords is only supported on main frame and iframes with the same
     // origin.
-    base::UmaHistogramEnumeration(
-        "PasswordManager.iOS.FormSubmission.BlockedReason",
-        autofill::SubmissionBlockedReason::kCrossOriginFrame);
     return;
   }
   if (!self.delegate) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.iOS.FormSubmission.BlockedReason",
-        autofill::SubmissionBlockedReason::kNoDelegate);
     return;
   }
 

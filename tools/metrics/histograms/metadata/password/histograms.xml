@@ -1934,17 +1934,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.iOS.FormSubmission.BlockedReason"
-    enum="SubmissionBlockedReasonIOS" expires_after="2026-11-29">
-  <owner>sugoi@chromium.org</owner>
-  <owner>bling-transactions@google.com</owner>
-  <summary>
-    Records the reason why a form submission was blocked or ignored by Password
-    Manager on iOS. Recorded when the browser process decides to ignore a form
-    submission.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.iOS.HandleFormSubmitEvent"
     enum="HandleSubmittedFormStatus" expires_after="2026-09-06">
   <owner>vincb@google.com</owner>
