@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -138,11 +138,10 @@ class CORE_EXPORT SoftNavigationContext
     return largest_icp_entry_.Get();
   }
 
-  // Reports a new contentful paint area to this context, and the Node painted.
-  bool AddPaintedArea(PaintTimingRecord*);
-  // Returns true if we update the total attributed area this animation frame.
-  // Used to check if it is worthwhile to call `SatisfiesSoftNavPaintCriteria`.
-  bool OnPaintFinished();
+  // Called by `SoftNavigationHeuristics` when paint finishes for the current
+  // frame, with the image and text records that were painted for this context.
+  void OnPaintFinished(const HeapVector<Member<ImageRecord>>& image_records,
+                       const HeapVector<Member<TextRecord>>& text_records);
   void OnInputOrScroll();
 
   bool SatisfiesSoftNavNonPaintCriteria() const;
@@ -156,16 +155,6 @@ class CORE_EXPORT SoftNavigationContext
 
   bool IsRecordingLargestContentfulPaint() const {
     return first_input_or_scroll_time_.is_null();
-  }
-
-  template <IsDerivedFromPaintTimingRecord T>
-  bool ShouldTrackForPaintTiming(const T& record) const {
-    if (!IsRecordingLargestContentfulPaint()) {
-      return false;
-    }
-    // We want to know about all painted text and images if they're valid LCP
-    // candidates.
-    return lcp_calculator_->IsEligibleForLcp(record);
   }
 
   SoftNavigationHeuristics* GetSoftNavigationHeuristics() const;
@@ -195,6 +184,16 @@ class CORE_EXPORT SoftNavigationContext
   void Dispose();
 
  private:
+  // Increases `painted_area_` by the `PaintTimingRecord`'s root visual rect's
+  // area (the area of the content's containing rect intersected with the
+  // viewport). Called during paint. `painted_area_last_animation_frame` is the
+  // value of `painted_area_` prior the current animation frame (used for
+  // tracing).
+  void AddPaintedArea(PaintTimingRecord*,
+                      uint64_t painted_area_last_animation_frame);
+
+  void TraceOnPaintFinished(uint64_t new_painted_area);
+
   static uint64_t last_context_id_;
 
   // largest value and can be used to identify the most recent context.
@@ -220,9 +219,9 @@ class CORE_EXPORT SoftNavigationContext
 
   size_t num_modified_dom_nodes_ = 0;
   uint64_t painted_area_ = 0;
-
-  size_t num_modified_dom_nodes_last_animation_frame_ = 0;
-  uint64_t painted_area_last_animation_frame_ = 0;
+  // The number of modified DOM nodes at the end of the last paint that
+  // increased the `painted_area_`. Used for tracing.
+  size_t previous_paint_modified_dom_nodes_ = 0;
   const perfetto::NamedTrack track_;
 };
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <iterator>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
-#include "cc/layers/heads_up_display_layer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
-#include "third_party/blink/renderer/core/paint/timing/web_vitals_hud_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
@@ -185,6 +184,16 @@ void GroupLcpCandidatesByContext(const HeapVector<Member<T>>& records,
     candidates->MaybeUpdateCandidate(record);
   }
 }
+
+struct ContextRecords : public GarbageCollected<ContextRecords> {
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(image_records);
+    visitor->Trace(text_records);
+  }
+
+  HeapVector<Member<ImageRecord>> image_records;
+  HeapVector<Member<TextRecord>> text_records;
+};
 
 }  // namespace
 
@@ -475,55 +484,51 @@ PaintTimingClient::Type SoftNavigationHeuristics::GetType() const {
 OptionalPaintTimingCallback SoftNavigationHeuristics::OnPaintFinished(
     const HeapVector<Member<ImageRecord>>& image_records,
     const HeapVector<Member<TextRecord>>& text_records) {
-  LocalFrame* frame = window_->GetFrame();
-  CHECK(frame);
-  WebVitalsHudHelper hud_helper(
-      cc::WebVitalMetricType::kInteractionContentfulPaint, frame->View());
+  if (interaction_id_to_context_.empty() ||
+      (image_records.empty() && text_records.empty())) {
+    return std::nullopt;
+  }
 
-  // First, process all painted elements for this frame, assigning the relevant
-  // context and updating context bookkeeping.
+  HeapHashMap<Member<SoftNavigationContext>, Member<ContextRecords>>
+      records_per_context;
+  auto get_records_for_record =
+      [&](const PaintTimingRecord& record) -> ContextRecords* {
+    Node* node = record.GetNode();
+    // TODO(crbug.com/454082773): `node` can be null if it's removed from the
+    // DOM and GCed between queuing `record` for processing and the end of the
+    // subsequent paint. This can happen for <video> since first video frame is
+    // queued for processing out side of paint. We should either support these
+    // records or filter them at the PaintTiming layer.
+    if (!node) {
+      return nullptr;
+    }
+    SoftNavigationContext* context =
+        paint_attribution_tracker_->GetSoftNavigationContextForNode(node);
+    if (!context || !context->IsRecordingLargestContentfulPaint()) {
+      return nullptr;
+    }
+    auto add_result = records_per_context.insert(context, nullptr);
+    if (add_result.is_new_entry) {
+      add_result.stored_value->value = MakeGarbageCollected<ContextRecords>();
+    }
+    return add_result.stored_value->value.Get();
+  };
+
   for (const auto& record : image_records) {
-    OnContentfulPaintImpl(record.Get());
-    if (record->GetSoftNavigationContext()) {
-      hud_helper.AddWebVitalsDebugRect(*record);
+    if (ContextRecords* records = get_records_for_record(*record)) {
+      records->image_records.push_back(record);
     }
   }
   for (const auto& record : text_records) {
-    OnContentfulPaintImpl(record.Get());
-    if (record->GetSoftNavigationContext()) {
-      hud_helper.AddWebVitalsDebugRect(*record);
+    if (ContextRecords* records = get_records_for_record(*record)) {
+      records->text_records.push_back(record);
     }
   }
 
-  // Next, see if any contexts are now eligible for soft navigation commit due
-  // to FCP.
-  for (const auto& context : interaction_id_to_context_.Values()) {
-    if (context->OnPaintFinished()) {
-      MaybeCommitNavigationOrEmitSoftNavigation(context);
-    }
+  for (auto& [context, records] : records_per_context) {
+    context->OnPaintFinished(records->image_records, records->text_records);
   }
   return std::nullopt;
-}
-
-template <IsDerivedFromPaintTimingRecord T>
-void SoftNavigationHeuristics::OnContentfulPaintImpl(T* record) const {
-  Node* node = record->GetNode();
-  // TODO(crbug.com/454082773): `node` can be null if it's removed from the DOM
-  // and GCed between queuing `record` for processing and the end of the
-  // subsequent paint. This can happen for <video> since first video frame is
-  // queued for processing out side of paint. We should either support these
-  // records or filter them at the PaintTiming layer.
-  if (!node) {
-    return;
-  }
-
-  SoftNavigationContext* context =
-      paint_attribution_tracker_->GetSoftNavigationContextForNode(node);
-  if (!context || !context->ShouldTrackForPaintTiming(*record)) {
-    return;
-  }
-  record->SetSoftNavigationContext(context);
-  context->AddPaintedArea(record);
 }
 
 void SoftNavigationHeuristics::OnInputOrScroll() {

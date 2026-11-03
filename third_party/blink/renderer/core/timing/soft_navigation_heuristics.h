@@ -124,6 +124,12 @@ class CORE_EXPORT SoftNavigationHeuristics
   void ForEachInteractionEffectsMonitor(
       base::FunctionRef<void(InteractionEffectsMonitor&)>);
 
+  // Called by the `SoftNavigationContext` when its total painted area has
+  // changed (increased).
+  void OnPaintedAreaChanged(SoftNavigationContext* context) {
+    MaybeCommitNavigationOrEmitSoftNavigation(context);
+  }
+
   void OnContextDisposed(SoftNavigationContext*);
   void UpdateSoftFcpMetricsForContext(SoftNavigationContext*) const;
   void UpdateSoftLcpMetricsForContext(SoftNavigationContext*);
@@ -161,9 +167,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   // an associated committed navigation and first contentful paint timestamp
   // when this is called, and it must not have already been emitted.
   void EmitSoftNavigation(SoftNavigationContext*);
-
-  template <IsDerivedFromPaintTimingRecord T>
-  void OnContentfulPaintImpl(T*) const;
 
   uint64_t CalculateRequiredPaintArea() const;
   uint64_t CalculateViewportArea() const;
