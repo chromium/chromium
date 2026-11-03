@@ -12,18 +12,30 @@
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "cc/paint/paint_image_generator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/private/SkGainmapInfo.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
@@ -1433,6 +1445,463 @@ TEST_F(JXLImageDecoderTest, AnimationDurationPrecisionNoDrift) {
   EXPECT_EQ(kExpectedTotalUs, expected_timestamp_us)
       << "Total animation duration should be exactly 2500000 us. "
       << "Got " << expected_timestamp_us << " us.";
+}
+
+// =============================================================================
+// Gain Map Tests
+// =============================================================================
+
+namespace {
+
+std::unique_ptr<JXLImageDecoder> CreateJXLDecoderForAuxImage(
+    cc::AuxImage aux_image) {
+  return std::make_unique<JXLImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
+      aux_image == cc::AuxImage::kGainmap ? ColorBehavior::kIgnore
+                                          : ColorBehavior::kTag,
+      aux_image, ImageDecoder::kNoDecodedImageByteLimit,
+      ImageDecoder::AnimationOption::kUnspecified);
+}
+
+// Offset of the 8-byte `jhgm` box header, which the gain-map fixtures carry
+// exactly once, as their last box.
+size_t FindGainmapBoxOffset(const Vector<char>& bytes) {
+  static constexpr auto kBoxType = std::to_array({'j', 'h', 'g', 'm'});
+  auto box_type =
+      std::search(bytes.begin(), bytes.end(), kBoxType.begin(), kBoxType.end());
+  CHECK(box_type != bytes.end());
+  const size_t type_offset = static_cast<size_t>(box_type - bytes.begin());
+  CHECK_GE(type_offset, 4u);
+  return type_offset - 4;
+}
+
+// Offset of the nested gain-map codestream, which is the last JPEG XL
+// signature in a gain-map fixture.
+size_t FindNestedCodestreamOffset(const Vector<char>& bytes) {
+  static constexpr auto kSignature =
+      std::to_array({static_cast<char>(0xff), static_cast<char>(0x0a)});
+  auto signature = std::find_end(bytes.begin(), bytes.end(), kSignature.begin(),
+                                 kSignature.end());
+  CHECK(signature != bytes.end());
+  return static_cast<size_t>(signature - bytes.begin());
+}
+
+}  // namespace
+
+TEST_F(JXLImageDecoderTest, GainmapInfoAndAuxiliaryDecode) {
+  auto decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kDefault);
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kImagesDir, "gainmap-orientation1-base-math.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  ASSERT_TRUE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+  // The auxiliary decoder receives the nested codestream, not the container.
+  ASSERT_TRUE(gainmap_data);
+  EXPECT_LT(gainmap_data->size(), data->size());
+  EXPECT_EQ(SkGainmapInfo::BaseImageType::kSDR, gainmap_info.fBaseImageType);
+  EXPECT_NEAR(1.f, gainmap_info.fDisplayRatioSdr, 1e-6f);
+  EXPECT_NEAR(4.f, gainmap_info.fDisplayRatioHdr, 1e-6f);
+  EXPECT_NEAR(1.f, gainmap_info.fGainmapRatioMin.fR, 1e-6f);
+  EXPECT_NEAR(4.f, gainmap_info.fGainmapRatioMax.fR, 1e-6f);
+  EXPECT_FALSE(gainmap_info.fGainmapMathColorSpace);
+
+  ImageFrame* base_frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(base_frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, base_frame->GetStatus());
+  EXPECT_EQ(SkColorSetRGB(24, 48, 72), base_frame->Bitmap().getColor(0, 0));
+
+  auto gainmap_decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kGainmap);
+  gainmap_decoder->SetData(gainmap_data, true);
+  ASSERT_TRUE(gainmap_decoder->IsSizeAvailable());
+  EXPECT_EQ(3, gainmap_decoder->Size().width());
+  EXPECT_EQ(2, gainmap_decoder->Size().height());
+
+  ImageFrame* frame = gainmap_decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(gainmap_decoder->Failed());
+
+  constexpr std::array<SkColor, 6> kExpectedGainmap = {
+      SkColorSetRGB(0, 32, 64),     SkColorSetRGB(96, 128, 160),
+      SkColorSetRGB(192, 224, 255), SkColorSetRGB(255, 224, 192),
+      SkColorSetRGB(160, 128, 96),  SkColorSetRGB(64, 32, 0),
+  };
+  for (size_t i = 0; i < kExpectedGainmap.size(); ++i) {
+    const int x = static_cast<int>(i % 3);
+    const int y = static_cast<int>(i / 3);
+    EXPECT_EQ(kExpectedGainmap[i], frame->Bitmap().getColor(x, y))
+        << "pixel (" << x << ", " << y << ")";
+  }
+}
+
+TEST_F(JXLImageDecoderTest, GainmapAuxiliaryDecodeKeepsOrientationAligned) {
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kImagesDir, "gainmap-orientation6.jxl");
+  ASSERT_TRUE(data);
+
+  auto base_decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kDefault);
+  base_decoder->SetData(data.get(), true);
+  ASSERT_TRUE(base_decoder->IsSizeAvailable());
+  EXPECT_EQ(2, base_decoder->Size().width());
+  EXPECT_EQ(3, base_decoder->Size().height());
+
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  ASSERT_TRUE(base_decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+
+  auto decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kGainmap);
+  decoder->SetData(gainmap_data, true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(2, decoder->Size().width());
+  EXPECT_EQ(3, decoder->Size().height());
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+
+  constexpr std::array<SkColor, 6> kExpectedGainmap = {
+      SkColorSetRGB(255, 224, 192), SkColorSetRGB(0, 32, 64),
+      SkColorSetRGB(160, 128, 96),  SkColorSetRGB(96, 128, 160),
+      SkColorSetRGB(64, 32, 0),     SkColorSetRGB(192, 224, 255),
+  };
+  for (size_t i = 0; i < kExpectedGainmap.size(); ++i) {
+    const int x = static_cast<int>(i % 2);
+    const int y = static_cast<int>(i / 2);
+    EXPECT_EQ(kExpectedGainmap[i], frame->Bitmap().getColor(x, y))
+        << "pixel (" << x << ", " << y << ")";
+  }
+}
+
+TEST_F(JXLImageDecoderTest, GainmapWaitsForCompleteContainer) {
+  auto decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kDefault);
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kImagesDir, "gainmap-orientation1-base-math.jxl");
+  ASSERT_TRUE(data);
+  const Vector<char> bytes = data->CopyAs<Vector<char>>();
+  ASSERT_GT(bytes.size(), 32u);
+  scoped_refptr<SharedBuffer> prefix =
+      SharedBuffer::Create(base::span(bytes).first(32u));
+
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  decoder->SetData(prefix.get(), false);
+  EXPECT_FALSE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+
+  // All container bytes have arrived, but the caller still reports the stream
+  // as incomplete, so the box that may follow the last frame is not parsed
+  // yet.
+  decoder->SetData(data.get(), false);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+  EXPECT_FALSE(decoder->Failed());
+
+  decoder->SetData(data.get(), true);
+  ASSERT_TRUE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+  ASSERT_TRUE(gainmap_data);
+
+  auto gainmap_decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kGainmap);
+  gainmap_decoder->SetData(gainmap_data, true);
+  ASSERT_TRUE(gainmap_decoder->IsSizeAvailable());
+  EXPECT_EQ(3, gainmap_decoder->Size().width());
+  EXPECT_EQ(2, gainmap_decoder->Size().height());
+  ImageFrame* gainmap_frame = gainmap_decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(gainmap_frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, gainmap_frame->GetStatus());
+  EXPECT_EQ(SkColorSetRGB(0, 32, 64), gainmap_frame->Bitmap().getColor(0, 0));
+  EXPECT_FALSE(gainmap_decoder->Failed());
+}
+
+TEST_F(JXLImageDecoderTest, AlternateMathUsesStructuredColorEncoding) {
+  auto decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kDefault);
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kImagesDir, "gainmap-orientation1-alt-p3.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  ASSERT_TRUE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+  ASSERT_TRUE(gainmap_info.fGainmapMathColorSpace);
+  EXPECT_TRUE(gainmap_info.fGainmapMathColorSpace->gammaIsLinear());
+
+  sk_sp<SkColorSpace> expected_color_space = SkColorSpace::MakeRGB(
+      SkNamedTransferFn::kLinear, SkNamedGamut::kDisplayP3);
+  ASSERT_TRUE(expected_color_space);
+  skcms_Matrix3x3 expected_to_xyz_d50;
+  skcms_Matrix3x3 actual_to_xyz_d50;
+  ASSERT_TRUE(expected_color_space->toXYZD50(&expected_to_xyz_d50));
+  ASSERT_TRUE(
+      gainmap_info.fGainmapMathColorSpace->toXYZD50(&actual_to_xyz_d50));
+  // The color encoding of the gain-map box is converted to ICC s15Fixed16
+  // colorant tags, so one fixed-point unit of difference is expected.
+  constexpr float kIccMatrixTolerance = 1.f / 65536.f;
+  const auto expected_rows = base::span(expected_to_xyz_d50.vals);
+  const auto actual_rows = base::span(actual_to_xyz_d50.vals);
+  for (size_t row = 0; row < expected_rows.size(); ++row) {
+    const auto expected_columns = base::span(expected_rows[row]);
+    const auto actual_columns = base::span(actual_rows[row]);
+    for (size_t column = 0; column < expected_columns.size(); ++column) {
+      EXPECT_NEAR(expected_columns[column], actual_columns[column],
+                  kIccMatrixTolerance)
+          << "matrix row " << row << ", column " << column;
+    }
+  }
+}
+
+TEST_F(JXLImageDecoderTest, InvalidOptionalGainmapDoesNotFailBaseImage) {
+  scoped_refptr<SharedBuffer> valid_data =
+      ReadFileToSharedBuffer(kImagesDir, "gainmap-orientation1-base-math.jxl");
+  ASSERT_TRUE(valid_data);
+
+  // Change the bundle version inside the gain-map box, leaving the container
+  // and its base image intact.
+  Vector<char> invalid_bytes = valid_data->CopyAs<Vector<char>>();
+  const size_t version_offset = FindGainmapBoxOffset(invalid_bytes) + 8;
+  ASSERT_EQ(0, invalid_bytes[version_offset]);
+  invalid_bytes[version_offset] = 1;
+
+  scoped_refptr<SharedBuffer> data =
+      SharedBuffer::Create(base::span(invalid_bytes));
+  auto decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kDefault);
+  decoder->SetData(data.get(), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  EXPECT_FALSE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+}
+
+TEST_F(JXLImageDecoderTest, TruncatedOptionalGainmapDoesNotChangeBaseImage) {
+  scoped_refptr<SharedBuffer> valid_data =
+      ReadFileToSharedBuffer(kImagesDir, "gainmap-orientation1-base-math.jxl");
+  ASSERT_TRUE(valid_data);
+
+  // Shrink the gain-map box to its header plus the bundle version byte, so
+  // that only the bundle is truncated and the container stays valid.
+  Vector<char> truncated_bytes = valid_data->CopyAs<Vector<char>>();
+  const size_t box_offset = FindGainmapBoxOffset(truncated_bytes);
+  constexpr char kTruncatedBoxSize = 9;
+  truncated_bytes.resize(box_offset + kTruncatedBoxSize);
+  truncated_bytes[box_offset] = 0;
+  truncated_bytes[box_offset + 1] = 0;
+  truncated_bytes[box_offset + 2] = 0;
+  truncated_bytes[box_offset + 3] = kTruncatedBoxSize;
+
+  scoped_refptr<SharedBuffer> data =
+      SharedBuffer::Create(base::span(truncated_bytes));
+  auto decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kDefault);
+  decoder->SetData(data.get(), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  EXPECT_FALSE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  constexpr std::array<SkColor, 6> kExpectedBase = {
+      SkColorSetRGB(24, 48, 72),    SkColorSetRGB(64, 88, 112),
+      SkColorSetRGB(120, 144, 168), SkColorSetRGB(40, 80, 120),
+      SkColorSetRGB(96, 136, 176),  SkColorSetRGB(184, 208, 232),
+  };
+  for (size_t i = 0; i < kExpectedBase.size(); ++i) {
+    const int x = static_cast<int>(i % 3);
+    const int y = static_cast<int>(i / 3);
+    EXPECT_EQ(kExpectedBase[i], frame->Bitmap().getColor(x, y))
+        << "pixel (" << x << ", " << y << ")";
+  }
+  EXPECT_FALSE(decoder->Failed());
+}
+
+TEST_F(JXLImageDecoderTest, ImageWithoutGainmapKeepsBaseDecode) {
+  auto decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kDefault);
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kJxlTestDir, "3x3_srgb_lossless.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  EXPECT_FALSE(decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data));
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+}
+
+TEST_F(JXLImageDecoderTest, DeferredDecoderCreatesGainmapGenerator) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list(features::kJXLImageFormat);
+
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kImagesDir, "gainmap-orientation1-base-math.jxl");
+  ASSERT_TRUE(data);
+
+  std::unique_ptr<DeferredImageDecoder> deferred_decoder =
+      DeferredImageDecoder::Create(data, true,
+                                   ImageDecoder::kAlphaNotPremultiplied,
+                                   ColorBehavior::kTag);
+  ASSERT_TRUE(deferred_decoder);
+  ASSERT_TRUE(deferred_decoder->CreateGenerator());
+
+  sk_sp<PaintImageGenerator> gainmap_generator;
+  SkGainmapInfo gainmap_info;
+  ASSERT_TRUE(deferred_decoder->CreateGainmapGenerator(gainmap_generator,
+                                                       gainmap_info));
+  ASSERT_TRUE(gainmap_generator);
+  EXPECT_EQ(3, gainmap_generator->GetSkImageInfo().width());
+  EXPECT_EQ(2, gainmap_generator->GetSkImageInfo().height());
+  EXPECT_EQ(1.f, gainmap_info.fDisplayRatioSdr);
+  EXPECT_EQ(4.f, gainmap_info.fDisplayRatioHdr);
+
+  SkBitmap bitmap;
+  ASSERT_TRUE(bitmap.tryAllocPixels(gainmap_generator->GetSkImageInfo()));
+  SkPixmap pixmap;
+  ASSERT_TRUE(bitmap.peekPixels(&pixmap));
+  EXPECT_TRUE(gainmap_generator->GetPixels(
+      pixmap, 0, PaintImage::kDefaultGeneratorClientId, 0));
+  EXPECT_EQ(SkColorSetRGB(0, 32, 64), bitmap.getColor(0, 0));
+}
+
+TEST_F(JXLImageDecoderTest, DeferredDecoderRejectsInvalidNestedGainmap) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list(features::kJXLImageFormat);
+
+  scoped_refptr<SharedBuffer> source_data =
+      ReadFileToSharedBuffer(kImagesDir, "gainmap-orientation1-base-math.jxl");
+  ASSERT_TRUE(source_data);
+
+  // Keep the gain-map box and its metadata intact, but invalidate the
+  // signature of the nested codestream.
+  Vector<char> corrupted_bytes = source_data->CopyAs<Vector<char>>();
+  corrupted_bytes[FindNestedCodestreamOffset(corrupted_bytes)] = 0;
+  scoped_refptr<SharedBuffer> corrupted_data =
+      SharedBuffer::Create(base::span(corrupted_bytes));
+
+  auto source_decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kDefault);
+  source_decoder->SetData(corrupted_data.get(), true);
+  ASSERT_TRUE(source_decoder->IsSizeAvailable());
+  SkGainmapInfo source_gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  ASSERT_TRUE(
+      source_decoder->GetGainmapInfoAndData(source_gainmap_info, gainmap_data));
+
+  // A failed auxiliary codestream has no frame, even though the still-image
+  // fallback would report one frame without basic info.
+  auto gainmap_decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kGainmap);
+  gainmap_decoder->SetData(gainmap_data, true);
+  EXPECT_TRUE(gainmap_decoder->Failed());
+  EXPECT_EQ(0u, gainmap_decoder->FrameCount());
+
+  std::unique_ptr<DeferredImageDecoder> deferred_decoder =
+      DeferredImageDecoder::Create(corrupted_data, true,
+                                   ImageDecoder::kAlphaNotPremultiplied,
+                                   ColorBehavior::kTag);
+  ASSERT_TRUE(deferred_decoder);
+  sk_sp<PaintImageGenerator> gainmap_generator;
+  SkGainmapInfo gainmap_info;
+  EXPECT_FALSE(deferred_decoder->CreateGainmapGenerator(gainmap_generator,
+                                                        gainmap_info));
+  EXPECT_FALSE(gainmap_generator);
+
+  // The base image stays usable.
+  sk_sp<PaintImageGenerator> base_generator =
+      deferred_decoder->CreateGenerator();
+  ASSERT_TRUE(base_generator);
+  SkBitmap base_bitmap;
+  ASSERT_TRUE(base_bitmap.tryAllocPixels(base_generator->GetSkImageInfo()));
+  SkPixmap base_pixmap;
+  ASSERT_TRUE(base_bitmap.peekPixels(&base_pixmap));
+  ASSERT_TRUE(base_generator->GetPixels(
+      base_pixmap, 0, PaintImage::kDefaultGeneratorClientId, 0));
+  EXPECT_EQ(SkColorSetRGB(24, 48, 72), base_bitmap.getColor(0, 0));
+}
+
+TEST_F(JXLImageDecoderTest, DeferredGainmapPixelFailureLeavesBaseUsable) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list(features::kJXLImageFormat);
+
+  scoped_refptr<SharedBuffer> source_data =
+      ReadFileToSharedBuffer(kImagesDir, "gainmap-orientation1-base-math.jxl");
+  ASSERT_TRUE(source_data);
+
+  // Leave the nested codestream's header intact, but corrupt a late byte of
+  // its pixel payload.
+  Vector<char> corrupted_bytes = source_data->CopyAs<Vector<char>>();
+  const size_t mutation_offset = corrupted_bytes.size() - 3;
+  ASSERT_GT(mutation_offset, FindNestedCodestreamOffset(corrupted_bytes));
+  corrupted_bytes[mutation_offset] ^= static_cast<char>(0x80);
+  scoped_refptr<SharedBuffer> corrupted_data =
+      SharedBuffer::Create(base::span(corrupted_bytes));
+
+  auto source_decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kDefault);
+  source_decoder->SetData(corrupted_data.get(), true);
+  ASSERT_TRUE(source_decoder->IsSizeAvailable());
+  SkGainmapInfo source_gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  ASSERT_TRUE(
+      source_decoder->GetGainmapInfoAndData(source_gainmap_info, gainmap_data));
+
+  // The gain map's size is known, but decoding its pixels fails.
+  auto gainmap_decoder = CreateJXLDecoderForAuxImage(cc::AuxImage::kGainmap);
+  gainmap_decoder->SetData(gainmap_data, true);
+  ASSERT_TRUE(gainmap_decoder->IsSizeAvailable());
+  EXPECT_FALSE(gainmap_decoder->Failed());
+  EXPECT_EQ(1u, gainmap_decoder->FrameCount());
+  EXPECT_EQ(gfx::Size(3, 2), gainmap_decoder->DecodedSize());
+
+  ImageFrame* gainmap_frame = gainmap_decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(gainmap_frame);
+  EXPECT_TRUE(gainmap_decoder->Failed());
+  EXPECT_EQ(ImageFrame::kFrameEmpty, gainmap_frame->GetStatus());
+  EXPECT_EQ(nullptr, gainmap_frame->Bitmap().getPixels());
+
+  std::unique_ptr<DeferredImageDecoder> deferred_decoder =
+      DeferredImageDecoder::Create(corrupted_data, true,
+                                   ImageDecoder::kAlphaNotPremultiplied,
+                                   ColorBehavior::kTag);
+  ASSERT_TRUE(deferred_decoder);
+  sk_sp<PaintImageGenerator> base_generator =
+      deferred_decoder->CreateGenerator();
+  ASSERT_TRUE(base_generator);
+  sk_sp<PaintImageGenerator> gainmap_generator;
+  SkGainmapInfo gainmap_info;
+  ASSERT_TRUE(deferred_decoder->CreateGainmapGenerator(gainmap_generator,
+                                                       gainmap_info));
+  ASSERT_TRUE(gainmap_generator);
+
+  SkBitmap gainmap_bitmap;
+  ASSERT_TRUE(
+      gainmap_bitmap.tryAllocPixels(gainmap_generator->GetSkImageInfo()));
+  SkPixmap gainmap_pixmap;
+  ASSERT_TRUE(gainmap_bitmap.peekPixels(&gainmap_pixmap));
+  EXPECT_FALSE(gainmap_generator->GetPixels(
+      gainmap_pixmap, 0, PaintImage::kDefaultGeneratorClientId, 0));
+
+  SkBitmap base_bitmap;
+  ASSERT_TRUE(base_bitmap.tryAllocPixels(base_generator->GetSkImageInfo()));
+  SkPixmap base_pixmap;
+  ASSERT_TRUE(base_bitmap.peekPixels(&base_pixmap));
+  ASSERT_TRUE(base_generator->GetPixels(
+      base_pixmap, 0, PaintImage::kDefaultGeneratorClientId, 0));
+  EXPECT_EQ(SkColorSetRGB(24, 48, 72), base_bitmap.getColor(0, 0));
 }
 
 // =============================================================================

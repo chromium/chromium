@@ -10,6 +10,7 @@
 #include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/encode/SkPngRustEncoder.h"
+#include "third_party/skia/include/private/SkGainmapInfo.h"
 
 namespace skia {
 
@@ -25,6 +26,10 @@ sk_sp<SkData> EncodePngAsSkData(
 }
 
 }  // namespace
+
+bool ParseGainmapInfo(const SkData* data, SkGainmapInfo& info) {
+  return SkGainmapInfo::Parse(data, info);
+}
 
 sk_sp<SkData> EncodePngAsSkData(const SkPixmap& src) {
   const SkPngRustEncoder::Options kDefaultOptions = {};

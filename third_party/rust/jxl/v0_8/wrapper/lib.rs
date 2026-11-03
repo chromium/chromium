@@ -4,11 +4,13 @@
 
 //! Minimal C++ wrapper for jxl-rs decoder.
 
+mod gain_map;
+
 use jxl::api::ExtraChannel;
 use jxl::api::{
-    check_signature, AlphaMode, Endianness, Event, JxlBasicInfo, JxlColorEncoding, JxlColorProfile,
-    JxlColorType, JxlDataFormat, JxlDecoder, JxlDecoderOptions, JxlOutputBuffer, JxlParallelRunner,
-    JxlParallelRunnerFun, JxlPixelFormat, JxlSignature, VisibleFrameInfo,
+    check_signature, AlphaMode, Endianness, Event, JxlAuxBoxType, JxlBasicInfo, JxlColorEncoding,
+    JxlColorProfile, JxlColorType, JxlDataFormat, JxlDecoder, JxlDecoderOptions, JxlOutputBuffer,
+    JxlParallelRunner, JxlParallelRunnerFun, JxlPixelFormat, JxlSignature, VisibleFrameInfo,
 };
 use std::sync::Mutex;
 
@@ -65,6 +67,18 @@ mod ffi {
         is_keyframe: bool,
         /// Whether this is the last frame in the codestream.
         is_last: bool,
+    }
+
+    /// The contents of a `jhgm` HDR gain map box.
+    #[derive(Debug, Clone, Default)]
+    struct JxlRsGainMap {
+        /// ISO 21496-1 gain map metadata.
+        metadata: Vec<u8>,
+        /// The gain map image, itself a JPEG XL codestream.
+        gain_map: Vec<u8>,
+        /// ICC profile of the alternate image, empty when the gain map math
+        /// uses the base image's color profile.
+        alternate_icc: Vec<u8>,
     }
 
     extern "Rust" {
@@ -144,6 +158,12 @@ mod ffi {
 
         /// Get info for a specific frame index.
         fn get_frame_info(self: &JxlRsDecoder, index: usize) -> JxlRsVisibleFrameInfo;
+
+        /// The gain map of the `jhgm` box of the container the scanning
+        /// decoder has been parsing, with an empty `gain_map` if it holds
+        /// none. `remaining_input` is the rest of the container, which ends
+        /// the input of this decoder.
+        fn gain_map(self: &mut JxlRsDecoder, remaining_input: &[u8]) -> JxlRsGainMap;
 
     }
 
@@ -245,6 +265,7 @@ impl JxlParallelRunner for ChromiumParallelRunner {
 fn jxl_rs_scan_decoder_create(sample_limit: u64) -> Box<JxlRsDecoder> {
     let mut opts = JxlDecoderOptions::default();
     opts.scan_frames_only = true;
+    opts.request_aux_boxes = vec![JxlAuxBoxType::HDR_GAIN_MAP];
     if sample_limit > 0 {
         opts.sample_limit = Some(sample_limit as usize);
     }
@@ -460,6 +481,10 @@ impl JxlRsDecoder {
     fn get_frame_info(&self, index: usize) -> JxlRsVisibleFrameInfo {
         let frames = self.decoder.scanned_frames();
         frames.get(index).map(JxlRsVisibleFrameInfo::from).unwrap_or_default()
+    }
+
+    fn gain_map(&mut self, remaining_input: &[u8]) -> JxlRsGainMap {
+        gain_map::collect(&mut self.decoder, remaining_input).unwrap_or_default()
     }
 }
 

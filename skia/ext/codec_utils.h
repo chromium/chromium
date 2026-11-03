@@ -13,6 +13,7 @@ class GrDirectContext;
 class SkData;
 class SkImage;
 class SkPixmap;
+struct SkGainmapInfo;
 
 namespace skia {
 
@@ -22,6 +23,9 @@ SK_API sk_sp<SkData> EncodePngAsSkData(GrDirectContext* context,
 SK_API sk_sp<SkData> FastEncodePngAsSkData(GrDirectContext* context,
                                            const SkImage* src);
 SK_API std::string EncodePngAsDataUri(const SkPixmap& src);
+
+// Parse ISO gain-map metadata using Skia's gain-map implementation.
+SK_API bool ParseGainmapInfo(const SkData* data, SkGainmapInfo& info);
 
 // This is not thread safe and should only be called via startup
 SK_API void EnsurePNGDecoderRegistered();

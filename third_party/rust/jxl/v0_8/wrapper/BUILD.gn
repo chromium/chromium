@@ -10,13 +10,17 @@ rust_static_library("jxl_rs") {
   edition = "2021"
   allow_unsafe = true
 
-  sources = [ "lib.rs" ]
+  sources = [
+    "gain_map.rs",
+    "lib.rs",
+  ]
   cxx_bindings = [ "lib.rs" ]
 
   public_deps = [ ":parallel_runner" ]
   deps = [
     "..:lib",
     "//build/rust:cxx_cppdeps",
+    "//third_party/rust/jxl_gainmap/v0_8:lib",
   ]
 }
 

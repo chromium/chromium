@@ -45,6 +45,9 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   base::TimeDelta FrameDurationAtIndex(wtf_size_t) const override;
   wtf_size_t ClearCacheExceptFrame(wtf_size_t) override;
   void OnSetData(scoped_refptr<SegmentReader>) override;
+  bool GetGainmapInfoAndData(
+      SkGainmapInfo& out_gainmap_info,
+      scoped_refptr<SegmentReader>& out_gainmap_data) const override;
 
   // Returns true if the data in fast_reader begins with a valid JXL signature.
   static bool MatchesJXLSignature(const FastSharedBufferReader& fast_reader);
@@ -96,6 +99,10 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   // Must be called when decoder_state_ >= kHaveBasicInfo and scanner_ is valid.
   void SeekToFrame(wtf_size_t index);
 
+  // Fills gain_map_ once the scanner has run out of frames and the whole file
+  // has arrived; the gain map box may follow the last frame.
+  void CollectGainMapIfComplete();
+
   // Whether the frame at `index`, which is ahead of the decoder, can be
   // reached by decoding forward from the decoder's current position with less
   // work than a seek would do. True only when the decoder is positioned
@@ -119,6 +126,7 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
 
   // Cached metadata.
   std::optional<jxl_rs::JxlRsBasicInfo> basic_info_;
+  std::optional<jxl_rs::JxlRsGainMap> gain_map_;
   sk_sp<skia::ColorProfile> cmyk_color_profile_;
 
   // Per-frame info populated by the scanner. frame_infos_ stores the Rust

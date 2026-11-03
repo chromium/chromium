@@ -9,17 +9,22 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/span_rust.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/rust/jxl/v0_8/wrapper/lib.rs.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkTypes.h"
+#include "third_party/skia/include/private/SkGainmapInfo.h"
 
 namespace blink {
 
@@ -30,6 +35,7 @@ using jxl_rs::jxl_rs_seek_decoder_to_frame;
 using jxl_rs::jxl_rs_signature_check;
 using jxl_rs::JxlRsBasicInfo;
 using jxl_rs::JxlRsDecoder;
+using jxl_rs::JxlRsGainMap;
 using jxl_rs::JxlRsPixelFormat;
 using jxl_rs::JxlRsProcessResult;
 using jxl_rs::JxlRsStatus;
@@ -207,7 +213,11 @@ bool JXLImageDecoder::SetBasicInfo() {
 // ---------------------------------------------------------------------------
 
 void JXLImageDecoder::ScanFrames() {
-  if (scanner_done_ || Failed()) {
+  if (Failed()) {
+    return;
+  }
+  if (scanner_done_) {
+    CollectGainMapIfComplete();
     return;
   }
 
@@ -314,6 +324,40 @@ void JXLImageDecoder::ScanFrames() {
     cumulative_time = next_cumulative_time;
     frame_timings_.push_back(timing);
   }
+
+  if (scanner_done_) {
+    CollectGainMapIfComplete();
+  }
+}
+
+void JXLImageDecoder::CollectGainMapIfComplete() {
+  if (gain_map_.has_value() || !IsAllDataReceived()) {
+    return;
+  }
+
+  size_t offset = scanner_input_offset_;
+  FastSharedBufferReader reader(data_.get());
+  const size_t data_size = reader.size();
+  while (offset < data_size) {
+    base::span<const uint8_t> data_span = reader.GetSomeData(offset);
+    const JxlRsProcessResult result = (*scanner_)->process(
+        rust::Slice<const uint8_t>(data_span.data(), data_span.size()),
+        rust::Slice<uint8_t>(), 0, 0, 0);
+    if (result.status == JxlRsStatus::Error || result.bytes_consumed == 0) {
+      break;
+    }
+    offset += result.bytes_consumed;
+  }
+
+  // A box whose size extends to the end of the file is never consumed, so the
+  // parser needs its tail to complete the box.
+  Vector<uint8_t> buffer;
+  base::span<const uint8_t> trailing_input;
+  if (offset < data_size) {
+    buffer.resize(base::checked_cast<wtf_size_t>(data_size - offset));
+    trailing_input = reader.GetConsecutiveData(offset, buffer.size(), buffer);
+  }
+  gain_map_ = (*scanner_)->gain_map(base::SpanToRustSlice(trailing_input));
 }
 
 void JXLImageDecoder::DecodeSize() {
@@ -324,6 +368,13 @@ void JXLImageDecoder::DecodeSize() {
 
 wtf_size_t JXLImageDecoder::DecodeFrameCount() {
   ScanFrames();
+
+  // A failed optional gain map has no image to expose. Reporting the
+  // still-image fallback of one frame would let Blink build a zero-size
+  // auxiliary decoder and hit a DCHECK while preparing lazy decoding.
+  if (aux_image_ == cc::AuxImage::kGainmap && Failed()) {
+    return 0;
+  }
 
   if (!basic_info_.has_value() || !basic_info_->have_animation) {
     return 1;
@@ -363,6 +414,17 @@ void JXLImageDecoder::InitializeNewFrame(wtf_size_t index) {
 
 void JXLImageDecoder::Decode(wtf_size_t index) {
   Decode(index, false);
+
+  // A gain map is only usable once fully decoded, whereas the base image may
+  // expose the partial frame of a truncated input.
+  if (aux_image_ == cc::AuxImage::kGainmap &&
+      index < frame_buffer_cache_.size()) {
+    ImageFrame& frame = frame_buffer_cache_[index];
+    if (Failed() || frame.GetStatus() != ImageFrame::kFrameComplete) {
+      frame.ClearPixelData();
+      SetFailed();
+    }
+  }
 }
 
 void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
@@ -735,6 +797,40 @@ void JXLImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
     // Ensure frame metadata is fully up to date.
     ScanFrames();
   }
+}
+
+bool JXLImageDecoder::GetGainmapInfoAndData(
+    SkGainmapInfo& out_gainmap_info,
+    scoped_refptr<SegmentReader>& out_gainmap_data) const {
+  if (!IsDecodedSizeAvailable() || !gain_map_.has_value() ||
+      gain_map_->gain_map.empty()) {
+    return false;
+  }
+
+  const JxlRsGainMap& gain_map = *gain_map_;
+  sk_sp<SkData> metadata =
+      SkData::MakeWithCopy(gain_map.metadata.data(), gain_map.metadata.size());
+  SkGainmapInfo gainmap_info;
+  if (!skia::ParseGainmapInfo(metadata.get(), gainmap_info)) {
+    return false;
+  }
+
+  if (gainmap_info.fGainmapMathColorSpace) {
+    // Skia leaves a placeholder profile behind when the metadata selects the
+    // alternate image's color space, which only the container provides.
+    sk_sp<skia::ColorProfile> alternate_profile =
+        skia::ColorProfile::Make(base::span(gain_map.alternate_icc));
+    if (!alternate_profile || !alternate_profile->IsSkColorSpaceExact() ||
+        !alternate_profile->GetSkColorSpace()) {
+      return false;
+    }
+    gainmap_info.fGainmapMathColorSpace = alternate_profile->GetSkColorSpace();
+  }
+
+  out_gainmap_info = gainmap_info;
+  out_gainmap_data = SegmentReader::CreateFromSkData(
+      SkData::MakeWithCopy(gain_map.gain_map.data(), gain_map.gain_map.size()));
+  return true;
 }
 
 }  // namespace blink
