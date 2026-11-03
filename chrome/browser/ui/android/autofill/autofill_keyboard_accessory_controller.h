@@ -1,0 +1,71 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_H_
+
+#include <string>
+#include <vector>
+
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
+
+namespace autofill {
+
+// The interface implemented by Android implementations of the
+// `AutofillSuggestionController` - that is, the methods found below are
+// specific to Android and used to control the keyboard accessory.
+class AutofillKeyboardAccessoryController
+    : public AutofillSuggestionController {
+ public:
+  struct RemovalConfirmationText {
+    RemovalConfirmationText();
+    RemovalConfirmationText(const RemovalConfirmationText&);
+    RemovalConfirmationText& operator=(const RemovalConfirmationText&);
+    RemovalConfirmationText(RemovalConfirmationText&&);
+    RemovalConfirmationText& operator=(RemovalConfirmationText&&);
+    ~RemovalConfirmationText();
+
+    std::u16string title;
+    std::u16string body;
+    std::u16string body_link;
+    // The text on the button that confirms removal (e.g. "Delete" or "Remove").
+    std::u16string confirm_button_text;
+  };
+
+  // Returns all the labels of the suggestion at the given `row` index. The
+  // labels are presented as a N*M matrix, and the position of the text in the
+  // matrix decides where the text will be shown on the UI. (e.g. The text
+  // labels[1][2] will be shown on the second line, third column in the grid
+  // view of label).
+  virtual std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const = 0;
+
+  // Checks if the item at `index` can be removed.
+  //
+  // If removable, this populates the non-null output parameter with
+  // user-facing text for a confirmation dialog (e.g., for a "Remove" or
+  // "Delete" action).
+  //
+  // Returns `true` if the item can be removed and the text was populated, or
+  // `false` otherwise.
+  virtual bool GetRemovalConfirmationText(
+      int index,
+      RemovalConfirmationText* removal_text) = 0;
+
+  // Shows suggestion details (e.g. attribution and suppression dialog) for an
+  // Autofill AI suggestion at `index`.
+  //
+  // Returns `true` if details could be shown, `false` otherwise.
+  virtual bool ShowAutofillAiSuggestionDetails(size_t index) = 0;
+
+  // Opens settings for the given entity type.
+  virtual void OpenSettingsForEntityType(int32_t entity_type) = 0;
+
+  // Unselects the suggestion at `index` if it is currently selected.
+  virtual void UnselectSuggestionIfSelected(int index) = 0;
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_H_

@@ -61,7 +61,7 @@
 #include "ui/gfx/text_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h"
+#include "chrome/browser/ui/android/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h"
 #else
 #include "chrome/browser/ui/autofill/test_autofill_popup_controller_autofill_client.h"
 #endif

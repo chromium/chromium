@@ -82,7 +82,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
-#include "chrome/browser/ui/autofill/autofill_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_otp_phish_guard_delegate.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
@@ -217,10 +216,12 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
+#include "chrome/browser/ui/android/autofill/autofill_dialog_controller_impl.h"
+#include "chrome/browser/ui/android/autofill/autofill_message_controller_impl.h"
+#include "chrome/browser/ui/android/autofill/autofill_snackbar_controller_impl.h"
+#include "chrome/browser/ui/android/autofill/autofill_snackbar_type.h"
+#include "chrome/browser/ui/android/autofill/autofill_tapjacking_protector_impl.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
-#include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
-#include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
-#include "chrome/browser/ui/autofill/autofill_tapjacking_protector_impl.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_controller_android.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
@@ -1201,6 +1202,13 @@ ChromeAutofillClient::GetAutofillSnackbarController() {
   }
 
   return autofill_snackbar_controller_impl_.get();
+}
+
+void ChromeAutofillClient::SetAutofillSnackbarControllerImplForTesting(
+    std::unique_ptr<AutofillSnackbarControllerImpl>
+        autofill_snackbar_controller_impl) {
+  autofill_snackbar_controller_impl_ =
+      std::move(autofill_snackbar_controller_impl);
 }
 
 void ChromeAutofillClient::ShowAutofillAiLoadingDialog() {

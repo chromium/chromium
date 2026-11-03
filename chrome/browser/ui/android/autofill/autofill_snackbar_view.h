@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_SNACKBAR_VIEW_H_
+#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_SNACKBAR_VIEW_H_
+
+namespace autofill {
+
+class AutofillSnackbarController;
+
+// The UI interface which shows a snackbar after a form is autofilled on
+// Android.
+class AutofillSnackbarView {
+ public:
+  virtual void Show() = 0;
+  // Dismisses the snackbar and destroys `this`. The caller must not dereference
+  // the view pointer after calling `Dismiss()`.
+  virtual void Dismiss() = 0;
+
+  // Factory function for creating the view.
+  static AutofillSnackbarView* Create(AutofillSnackbarController* controller);
+
+ protected:
+  virtual ~AutofillSnackbarView() = default;
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_SNACKBAR_VIEW_H_

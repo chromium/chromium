@@ -81,30 +81,7 @@ source_set("autofill") {
     "//ui/gfx/geometry",
   ]
 
-  if (is_android) {
-    sources += [
-      "at_memory_suggestion_controller.h",
-      "autofill_dialog_controller.h",
-      "autofill_dialog_controller_impl.h",
-      "autofill_keyboard_accessory_controller.h",
-      "autofill_keyboard_accessory_controller_impl.h",
-      "autofill_keyboard_accessory_view.h",
-      "autofill_message_controller.h",
-      "autofill_message_controller_impl.h",
-      "autofill_message_model.h",
-      "autofill_snackbar_controller.h",
-      "autofill_snackbar_controller_impl.h",
-      "autofill_snackbar_type.h",
-      "autofill_snackbar_view.h",
-      "autofill_tapjacking_protector_impl.h",
-    ]
-    public_deps += [
-      "//components/autofill/android:autofill_core_browser_java_enums",
-      "//components/password_manager/core/browser:metrics_util",
-      "//components/password_manager/core/browser:password_manager_java_enums_srcjar",
-      "//content/public/android:content_public_android_java_enums_srcjar",
-    ]
-  } else {
+  if (!is_android) {
     sources += [
       "address_bubble_controller_delegate.h",
       "address_bubbles_controller.h",
@@ -244,20 +221,10 @@ source_set("impl") {
   }
 
   if (is_android) {
-    sources += [
-      "at_memory_suggestion_controller.cc",
-      "autofill_dialog_controller_impl.cc",
-      "autofill_keyboard_accessory_controller.cc",
-      "autofill_keyboard_accessory_controller_impl.cc",
-      "autofill_message_controller_impl.cc",
-      "autofill_message_model.cc",
-      "autofill_snackbar_controller_impl.cc",
-      "autofill_tapjacking_protector_impl.cc",
-    ]
     deps += [
+      "//chrome/browser/android:settings_navigation_helper",
       "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/keyboard_accessory/android",
-      "//chrome/browser/keyboard_accessory/android:impl",
       "//chrome/browser/touch_to_fill/autofill/android",
       "//chrome/browser/touch_to_fill/autofill/android:public",
       "//chrome/browser/ui/android/autofill",
@@ -408,21 +375,11 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [
-      "at_memory_suggestion_controller_unittest.cc",
-      "autofill_dialog_controller_impl_unittest.cc",
-      "autofill_keyboard_accessory_controller_impl_unittest.cc",
-      "autofill_message_controller_impl_unittest.cc",
-      "autofill_message_model_unittest.cc",
-      "autofill_snackbar_controller_impl_unittest.cc",
-      "autofill_tapjacking_protector_impl_unittest.cc",
-    ]
     deps += [
       "//chrome/browser/autofill/android:jni_test_headers",
-      "//chrome/browser/keyboard_accessory/android:impl",
       "//chrome/browser/preferences:android",
       "//chrome/browser/ui/android/autofill",
-      "//components/messages/android:test_support",
+      "//chrome/browser/ui/android/autofill:test_support_unit",
     ]
   } else {
     sources += [
@@ -467,20 +424,7 @@ source_set("test_support") {
     "//testing/gmock",
   ]
 
-  if (is_android) {
-    sources += [
-      "autofill_keyboard_accessory_controller_impl_test_api.h",
-      "autofill_message_controller_test_api.h",
-      "autofill_message_model_test_api.h",
-      "mock_autofill_dialog_controller.cc",
-      "mock_autofill_dialog_controller.h",
-      "mock_autofill_dialog_view.cc",
-      "mock_autofill_dialog_view.h",
-      "mock_autofill_message_controller.cc",
-      "mock_autofill_message_controller.h",
-    ]
-    public_deps += [ "//chrome/browser/ui/android/autofill" ]
-  } else {
+  if (!is_android) {
     sources += [
       "autofill_ai/mock_autofill_ai_import_data_controller.cc",
       "autofill_ai/mock_autofill_ai_import_data_controller.h",
@@ -605,13 +549,14 @@ source_set("test_support_unit") {
   ]
 
   if (is_android) {
-    sources += [
-      "mock_autofill_keyboard_accessory_view.cc",
-      "mock_autofill_keyboard_accessory_view.h",
-      "test_autofill_keyboard_accessory_controller_autofill_client.h",
-    ]
+    # `AutofillSuggestionControllerForTest` in
+    # `autofill_suggestion_controller_test_base.h` subclasses
+    # `AutofillKeyboardAccessoryControllerImpl`.
     deps = [ "//chrome/browser/keyboard_accessory/android:impl" ]
-    public_deps += [ "//chrome/browser/keyboard_accessory/test_utils/android" ]
+    public_deps += [
+      "//chrome/browser/keyboard_accessory/test_utils/android",
+      "//chrome/browser/ui/android/autofill",
+    ]
   } else {
     sources += [ "test_autofill_popup_controller_autofill_client.h" ]
   }

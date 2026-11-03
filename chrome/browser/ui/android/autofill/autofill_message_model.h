@@ -1,0 +1,121 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_MESSAGE_MODEL_H_
+#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_MESSAGE_MODEL_H_
+
+#include <memory>
+#include <string>
+
+#include "base/functional/callback.h"
+#include "base/types/pass_key.h"
+#include "components/messages/android/message_wrapper.h"
+
+class GURL;
+
+namespace autofill {
+
+class AutofillMessageControllerImpl;
+
+// AutofillMessageModel is used to create autofill Android Messages to be used
+// with the AutofillMessageController.
+class AutofillMessageModel {
+ public:
+  // The type of autofill message model.
+  enum class Type {
+    // Unspecified message model type.
+    kUnspecified = 0,
+    // Used when a card has failed to have been saved to the server.
+    kSaveCardFailure = 1,
+    // Used when a virtual card has failed to have been enrolled.
+    kVirtualCardEnrollFailure = 2,
+    // Used when the user is prompted to save a new or update an existing
+    // `EntityInstance`.
+    kEntitySaveUpdateFlow = 3,
+    // Used to ask the user to save or update an address profile.
+    kAddressSaveUpdateFlow = 4,
+    // Used to notify the user that fetching data for personal context
+    // suggestions has failed.
+    kPersonalContextFetchingFailure = 5,
+    // Used to notify the user that page content will now be processed privately
+    // by default.
+    kPrivateInferenceNotice = 6,
+    // Used when an email has been automatically confirmed on supported sites.
+    kEmailVerified = 7,
+    // Used when a user who previously disabled payment autofill
+    // (`prefs::kAutofillCreditCardEnabled` == false, i.e. a "churned" user)
+    // interacts with a credit card form. Prompts them to re-enable payment
+    // autofill ("resurrecting" them) when they accept the message.
+    kResurrectChurnedUsers = 8,
+    // Used when Email Verification Protocol (EVP) verification fails.
+    kEmailVerificationError = 9,
+    // Used while verifying an email on subsequent Email Verification Protocol
+    // (EVP) runs.
+    kEmailVerificationLoading = 10,
+  };
+
+  AutofillMessageModel(std::unique_ptr<messages::MessageWrapper> message,
+                       Type type);
+  AutofillMessageModel(
+      std::unique_ptr<messages::MessageWrapper> message,
+      Type type,
+      base::OnceClosure action_callback,
+      messages::MessageWrapper::DismissCallback dismiss_callback);
+  ~AutofillMessageModel();
+
+  AutofillMessageModel(const AutofillMessageModel&) = delete;
+  AutofillMessageModel& operator=(const AutofillMessageModel&) = delete;
+
+  AutofillMessageModel(AutofillMessageModel&&);
+  AutofillMessageModel& operator=(AutofillMessageModel&&);
+
+  static std::unique_ptr<AutofillMessageModel> CreateForSaveCardFailure();
+  static std::unique_ptr<AutofillMessageModel>
+  CreateForVirtualCardEnrollFailure(std::u16string card_label);
+  static std::unique_ptr<AutofillMessageModel>
+  CreateForPersonalContextFetchingFailure();
+  static std::unique_ptr<AutofillMessageModel> CreateForPrivateInferenceNotice(
+      base::OnceClosure action_callback,
+      messages::MessageWrapper::DismissCallback dismiss_callback,
+      base::RepeatingClosure secondary_action_callback);
+  static std::unique_ptr<AutofillMessageModel>
+  CreateForEmailVerificationLoading(
+      messages::MessageWrapper::DismissCallback dismiss_callback);
+  static std::unique_ptr<AutofillMessageModel> CreateForEmailVerified(
+      const GURL& issuer,
+      base::OnceClosure action_callback);
+  static std::unique_ptr<AutofillMessageModel>
+  CreateForEmailVerificationError();
+  static std::unique_ptr<AutofillMessageModel> CreateForResurrectChurnedUsers(
+      base::OnceClosure action_callback,
+      messages::MessageWrapper::DismissCallback dismiss_callback);
+
+  // Converts a message model type to a string for debugging and metrics.
+  static std::string_view TypeToString(Type message_type);
+
+  messages::MessageWrapper& GetMessage(
+      base::PassKey<AutofillMessageControllerImpl> pass_key);
+  const Type& GetType() const;
+  std::string_view GetTypeAsString() const;
+
+  void OnActionClicked();
+  void OnDismissed(messages::DismissReason reason);
+
+ private:
+  friend class AutofillMessageModelTestApi;
+
+  // The message contains the Android message (populated with the appropriate
+  // text and icons) which can be used with the MessageDispatcherBridge.
+  std::unique_ptr<messages::MessageWrapper> message_;
+  // The type represents the type of Autofill message this is.
+  Type type_;
+  // Action and dismiss callbacks are stored in the `AutofillMessageModel` so
+  // that `AutofillMessageController` can run its own callbacks on top of them.
+  base::OnceClosure action_callback_;
+  messages::MessageWrapper::DismissCallback dismiss_callback_;
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_MESSAGE_MODEL_H_

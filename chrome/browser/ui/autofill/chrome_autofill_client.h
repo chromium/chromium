@@ -50,7 +50,6 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "components/autofill/core/browser/ui/autofill_tapjacking_protector.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
@@ -76,6 +75,7 @@ namespace autofill {
 // TODO(crbug.com/364089352): When //c/b/ui/android/autofill gets modularized,
 // //c/b/ui/autofill/ can depend directly on it.
 class AutofillAiSaveUpdateEntityFlowManager;
+class AutofillSnackbarControllerImpl;
 class SaveUpdateAddressProfileFlowManager;
 class AutofillMessageController;
 class AutofillDialogController;
@@ -371,12 +371,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
-  void SetAutofillSnackbarControllerImplForTesting(
-      std::unique_ptr<AutofillSnackbarControllerImpl>
-          autofill_snackbar_controller_impl) {
-    autofill_snackbar_controller_impl_ =
-        std::move(autofill_snackbar_controller_impl);
-  }
   void SetAutofillTapjackingProtectorImplForTesting(
       std::unique_ptr<AutofillTapjackingProtector>
           autofill_tapjacking_protector_impl) {
@@ -385,6 +379,12 @@ class ChromeAutofillClient : public ContentAutofillClient {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // defined(UNIT_TEST)
+
+#if BUILDFLAG(IS_ANDROID)
+  void SetAutofillSnackbarControllerImplForTesting(
+      std::unique_ptr<AutofillSnackbarControllerImpl>
+          autofill_snackbar_controller_impl);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // ContentAutofillClient:
   std::unique_ptr<AutofillManager> CreateManager(

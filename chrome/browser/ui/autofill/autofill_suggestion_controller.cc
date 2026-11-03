@@ -12,8 +12,8 @@
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/autofill/at_memory_suggestion_controller.h"
-#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl.h"
+#include "chrome/browser/ui/android/autofill/at_memory_suggestion_controller.h"
+#include "chrome/browser/ui/android/autofill/autofill_keyboard_accessory_controller_impl.h"
 #include "components/autofill/core/common/autofill_util.h"
 #elif BUILDFLAG(IS_MAC)
 // We cannot include the Objective-C++ header of AutofillPopupControllerImplMac

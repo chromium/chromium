@@ -278,7 +278,7 @@ chromium-metrics-reviews@google.com.
                re-enable payment autofill"/>
 </variants>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/autofill/autofill_message_controller_impl.cc:ShouldLogMessageMetrics) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/android/autofill/autofill_message_controller_impl.cc:ShouldLogMessageMetrics) -->
 
 <variants name="Autofill.NonInteractivePaymentMethodType">
   <variant name="LocalCard" summary="local card"/>

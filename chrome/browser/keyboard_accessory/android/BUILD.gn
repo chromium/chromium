@@ -47,6 +47,7 @@ source_set("impl") {
   deps = [
     "//base",
     "//chrome/browser/android:resource_mapper",
+    "//chrome/browser/android:settings_navigation_helper",
     "//chrome/browser/autofill",
     "//chrome/browser/password_manager",
     "//chrome/browser/password_manager/android/grouped_affiliations:public",

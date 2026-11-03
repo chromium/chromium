@@ -10,8 +10,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ui/autofill/autofill_dialog_controller.h"
-#include "chrome/browser/ui/autofill/autofill_dialog_view.h"
+#include "chrome/browser/ui/android/autofill/autofill_dialog_controller.h"
+#include "chrome/browser/ui/android/autofill/autofill_dialog_view.h"
 
 namespace autofill {
 

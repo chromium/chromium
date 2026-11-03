@@ -11,9 +11,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/autofill_dialog_controller.h"
-#include "chrome/browser/ui/autofill/autofill_message_controller.h"
-#include "chrome/browser/ui/autofill/autofill_message_model.h"
+#include "chrome/browser/ui/android/autofill/autofill_dialog_controller.h"
+#include "chrome/browser/ui/android/autofill/autofill_message_controller.h"
+#include "chrome/browser/ui/android/autofill/autofill_message_model.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"

@@ -1,0 +1,54 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_SNACKBAR_TYPE_H_
+#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_SNACKBAR_TYPE_H_
+
+namespace autofill {
+
+// The type of Autofill snackbar to show.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.autofill
+enum class AutofillSnackbarType {
+  // Unspecified snackbar type.
+  kUnspecified = 0,
+
+  // Used when virtual card is retrieved.
+  kVirtualCard = 1,
+
+  // Used when mandatory reauth opt-in is confirmed.
+  kMandatoryReauth = 2,
+
+  // Used when a card has been successfully saved to the server.
+  kSaveCardSuccess = 3,
+
+  // Used when a virtual card has been successfully enrolled.
+  kVirtualCardEnrollSuccess = 4,
+
+  // Used when an IBAN has been successfully saved to the server.
+  kSaveServerIbanSuccess = 5,
+
+  // Used when masked server card enrolled in card info retrieval is retrieved.
+  kCardInfoRetrieval = 6,
+
+  // Used when a BNPL virtual card is retrieved.
+  kBnpl = 7,
+
+  // Used when an entity migration to Google Wallet fails.
+  kAutofillAiSaveToWalletFailure = 8,
+
+  // Used when the server request to fetch entity data failed.
+  kAutofillAiFetchEntityFailure = 9,
+
+  // Used when an Autofill AI suggestion was removed, offering an undo action.
+  kAutofillAiSuppressionUndo = 10,
+
+  // Used when a churned payments user (a user who previously disabled Autofill
+  // payment methods) accepts the prompt on a credit card form to turn payment
+  // autofill back on.
+  kResurrectChurnedUsers = 11,
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_SNACKBAR_TYPE_H_

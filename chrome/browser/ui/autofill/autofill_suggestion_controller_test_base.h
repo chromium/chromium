@@ -40,7 +40,7 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_at_memory_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
-#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl.h"
+#include "chrome/browser/ui/android/autofill/autofill_keyboard_accessory_controller_impl.h"
 #else
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)

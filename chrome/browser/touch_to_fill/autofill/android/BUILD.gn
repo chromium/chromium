@@ -60,6 +60,7 @@ source_set("impl") {
     "//base",
     "//chrome/android:chrome_jni_headers",
     "//chrome/browser/android:resource_mapper",
+    "//chrome/browser/android:settings_navigation_helper",
     "//chrome/browser/ui/android/tab_model",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/autofill/payments",

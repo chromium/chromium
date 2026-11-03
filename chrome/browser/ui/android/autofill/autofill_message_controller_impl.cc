@@ -1,0 +1,117 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/android/autofill/autofill_message_controller_impl.h"
+
+#include <memory>
+
+#include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "chrome/browser/ui/android/autofill/autofill_message_model.h"
+#include "components/messages/android/message_dispatcher_bridge.h"
+
+namespace autofill {
+
+namespace {
+
+// LINT.IfChange(ShouldLogMessageMetrics)
+bool ShouldLogMessageMetrics(AutofillMessageModel::Type type) {
+  switch (type) {
+    case AutofillMessageModel::Type::kEntitySaveUpdateFlow:
+    case AutofillMessageModel::Type::kResurrectChurnedUsers:
+      return true;
+    case AutofillMessageModel::Type::kUnspecified:
+    case AutofillMessageModel::Type::kSaveCardFailure:
+    case AutofillMessageModel::Type::kVirtualCardEnrollFailure:
+    case AutofillMessageModel::Type::kAddressSaveUpdateFlow:
+    case AutofillMessageModel::Type::kPersonalContextFetchingFailure:
+    case AutofillMessageModel::Type::kPrivateInferenceNotice:
+    case AutofillMessageModel::Type::kEmailVerified:
+    case AutofillMessageModel::Type::kEmailVerificationError:
+    case AutofillMessageModel::Type::kEmailVerificationLoading:
+      return false;
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.Message.Type)
+
+}  // namespace
+
+AutofillMessageControllerImpl::AutofillMessageControllerImpl(
+    content::WebContents* web_contents)
+    : web_contents_(*web_contents) {}
+
+AutofillMessageControllerImpl::~AutofillMessageControllerImpl() {
+  Dismiss(messages::DismissReason::UNKNOWN);
+}
+
+void AutofillMessageControllerImpl::Show(
+    std::unique_ptr<AutofillMessageModel> message_model) {
+  AutofillMessageModel* message_model_ptr = message_model.get();
+  message_models_.insert(std::move(message_model));
+
+  message_model_ptr->GetMessage(/*pass_key=*/{})
+      .SetActionClick(
+          base::BindOnce(&AutofillMessageControllerImpl::OnActionClicked,
+                         weak_ptr_factory_.GetWeakPtr(), message_model_ptr));
+  message_model_ptr->GetMessage(/*pass_key=*/{})
+      .SetDismissCallback(
+          base::BindOnce(&AutofillMessageControllerImpl::OnDismissed,
+                         weak_ptr_factory_.GetWeakPtr(), message_model_ptr));
+
+  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+      &message_model_ptr->GetMessage(/*pass_key=*/{}), &web_contents_.get(),
+      messages::MessageScopeType::WEB_CONTENTS,
+      messages::MessagePriority::kNormal);
+
+  if (ShouldLogMessageMetrics(message_model_ptr->GetType())) {
+    base::UmaHistogramBoolean(
+        base::StrCat({"Autofill.Message.", message_model_ptr->GetTypeAsString(),
+                      ".Shown"}),
+        true);
+  }
+}
+
+void AutofillMessageControllerImpl::OnActionClicked(
+    AutofillMessageModel* message_model_ptr) {
+  auto message_model_it = message_models_.find(message_model_ptr);
+  CHECK(message_model_it != message_models_.end());
+  (*message_model_it)->OnActionClicked();
+
+  if (ShouldLogMessageMetrics(message_model_ptr->GetType())) {
+    base::UmaHistogramBoolean(
+        base::StrCat({"Autofill.Message.",
+                      (*message_model_it)->GetTypeAsString(),
+                      ".ActionClicked"}),
+        true);
+  }
+}
+
+void AutofillMessageControllerImpl::OnDismissed(
+    AutofillMessageModel* message_model_ptr,
+    messages::DismissReason reason) {
+  auto message_model_it = message_models_.find(message_model_ptr);
+  CHECK(message_model_it != message_models_.end());
+  (*message_model_it)->OnDismissed(reason);
+
+  if (ShouldLogMessageMetrics(message_model_ptr->GetType())) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Autofill.Message.",
+                      (*message_model_it)->GetTypeAsString(), ".Dismissed"}),
+        reason);
+  }
+
+  message_models_.erase(message_model_it);
+}
+
+void AutofillMessageControllerImpl::Dismiss(messages::DismissReason reason) {
+  for (auto it = message_models_.begin(); it != message_models_.end();) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        &(*it++)->GetMessage(/*pass_key=*/{}), reason);
+  }
+}
+
+}  // namespace autofill

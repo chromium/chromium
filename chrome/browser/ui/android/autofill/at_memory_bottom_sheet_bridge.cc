@@ -16,7 +16,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/autofill/at_memory_suggestion_controller.h"
+#include "chrome/browser/ui/android/autofill/at_memory_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "components/autofill/core/browser/ui/autofill_resource_util.h"
 #include "content/public/browser/web_contents.h"

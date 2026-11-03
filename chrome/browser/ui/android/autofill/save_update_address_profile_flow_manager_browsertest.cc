@@ -6,8 +6,8 @@
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
+#include "chrome/browser/ui/android/autofill/autofill_message_controller_impl.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager_test_api.h"
-#include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"

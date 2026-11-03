@@ -114,8 +114,8 @@ source_set("unit_tests") {
     deps += [
       "//chrome/app:generated_resources",
       "//chrome/browser/ui/android/autofill",
+      "//chrome/browser/ui/android/autofill:test_support",
       "//chrome/browser/ui/autofill",
-      "//chrome/browser/ui/autofill:test_support",
       "//components/messages/android",
       "//components/messages/android:test_support",
       "//ui/base",

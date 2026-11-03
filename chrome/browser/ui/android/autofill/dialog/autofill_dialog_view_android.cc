@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check_deref.h"
-#include "chrome/browser/ui/autofill/autofill_dialog_view.h"
+#include "chrome/browser/ui/android/autofill/autofill_dialog_view.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 

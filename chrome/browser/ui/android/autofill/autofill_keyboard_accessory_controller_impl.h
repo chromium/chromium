@@ -1,0 +1,248 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_IMPL_H_
+
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/android/autofill/autofill_keyboard_accessory_controller.h"
+#include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
+#include "chrome/browser/ui/autofill/key_press_handler_registration.h"
+#include "chrome/browser/ui/autofill/next_idle_barrier.h"
+#include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
+
+class ManualFillingController;
+class Profile;
+
+namespace autofill {
+
+class AutofillSuggestionDelegate;
+class AutofillKeyboardAccessoryView;
+enum class NavigationAction;
+struct Suggestion;
+
+// Helper to record interaction milestones (shown, selected, accepted)
+// at most once per session when a mouse or precision pointer is present.
+class AutofillKeyboardAccessoryWithMouseMetricsRecorder {
+ public:
+  void RecordShown(FillingProduct filling_product);
+  void RecordSelected(FillingProduct filling_product);
+  void RecordAccepted(FillingProduct filling_product);
+
+ private:
+  bool has_logged_shown_ = false;
+  bool has_logged_selected_ = false;
+  bool has_logged_accepted_ = false;
+};
+
+class AutofillKeyboardAccessoryControllerImpl
+    : public AutofillKeyboardAccessoryController {
+ public:
+  AutofillKeyboardAccessoryControllerImpl(
+      base::WeakPtr<AutofillSuggestionDelegate> delegate,
+      content::WebContents* web_contents,
+      PopupControllerCommon controller_common);
+
+  AutofillKeyboardAccessoryControllerImpl(
+      const AutofillKeyboardAccessoryControllerImpl&) = delete;
+  AutofillKeyboardAccessoryControllerImpl& operator=(
+      const AutofillKeyboardAccessoryControllerImpl&) = delete;
+
+  ~AutofillKeyboardAccessoryControllerImpl() override;
+
+  // AutofillPopupViewDelegate:
+  void Hide(SuggestionHidingReason reason) override;
+  void ViewDestroyed() override;
+  gfx::NativeView container_view() const override;
+  content::WebContents* GetWebContents() const override;
+  const gfx::RectF& element_bounds() const override;
+  // TODO(crbug.com/b/342383222) Re-evaluate whether this method makes sense
+  // here. Today it is only needed on desktop.
+  PopupAnchorType anchor_type() const override;
+
+  base::i18n::TextDirection GetElementTextDirection() const override;
+
+  // AutofillSuggestionController:
+  void OnSuggestionsChanged() override;
+  void AcceptSuggestion(int index,
+                        AutofillMetrics::SuggestionAcceptedMethod accept_method,
+                        bool was_obscured) override;
+  bool RemoveSuggestion(int index) override;
+  int GetLineCount() const override;
+  const std::vector<Suggestion>& GetSuggestions() const override;
+  const Suggestion& GetSuggestionAt(int row) const override;
+  FillingProduct GetMainFillingProduct() const override;
+  AutofillSuggestionTriggerSource GetSuggestionTriggerSource() const;
+  void Show(UiSessionId ui_session_id,
+            std::vector<Suggestion> suggestions,
+            AutofillSuggestionTriggerSource trigger_source,
+            AutoselectFirstSuggestion autoselect_first_suggestion,
+            AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss,
+            std::u16string search_bar_initial_value) override;
+  std::optional<UiSessionId> GetUiSessionId() const override;
+  void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
+  void UpdateDataListValues(base::span<const SelectOption> options) override;
+  const LocalFrameToken& GetAnchorFrameToken() const override;
+  bool MayRecycle(
+      base::WeakPtr<AutofillSuggestionDelegate> delegate,
+      content::WebContents* web_contents,
+      const LocalFrameToken& anchor_frame_token,
+      AutofillSuggestionTriggerSource trigger_source) const override;
+  void Recycle(PopupControllerCommon controller_common,
+               int32_t form_control_ax_id) override;
+
+  // AutofillKeyboardAccessoryController:
+  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const override;
+  bool GetRemovalConfirmationText(
+      int index,
+      RemovalConfirmationText* removal_text) override;
+  bool ShowAutofillAiSuggestionDetails(size_t index) override;
+  void OpenSettingsForEntityType(int32_t entity_type) override;
+  void SelectSuggestion(int index) override;
+  void UnselectSuggestion() override;
+  void UnselectSuggestionIfSelected(int index) override;
+
+  base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  friend class AutofillKeyboardAccessoryControllerImplTestApi;
+  friend class AutofillSuggestionController;
+
+  // Returns true if the popup has entries that are not "Manage ...".
+  bool HasSuggestions() const;
+
+  // Moves "clear form" suggestions to the front and creates labels for elements
+  // of `suggestions_`.
+  void OrderSuggestionsAndCreateLabels();
+
+  // Reacts to the result of a deletion dialog by attempting to delete
+  // `suggestion` if the dialog `confirmed` deletion and by emitting metrics.
+  void OnDeletionDialogClosed(const Suggestion& suggestion, bool confirmed);
+
+  // Reacts to the result of an Autofill AI suppression dialog by suppressing
+  // `suggestion` if the dialog `confirmed` suppression.
+  void OnAutofillAiSuppressionDialogClosed(const Suggestion& suggestion,
+                                           bool confirmed);
+
+  // Hides the view and asynchronously deletes itself.
+  void HideViewAndDie();
+
+  // Updates `selected_suggestion_index_` and mirrors the new selection state to
+  // `ManualFillingController`.
+  void SetSelectedSuggestionIndex(std::optional<int> index);
+
+  // Returns the `ManualFillingController` for `web_contents_`, creating it on
+  // first use. Returns null if the WebContents is gone.
+  base::WeakPtr<ManualFillingController> GetManualFillingController();
+
+  // Asks the keyboard accessory bar to perform the navigation `action`, e.g.
+  // to move the selection one suggestion forward, cycling at the ends of the
+  // list. Returns whether the action was handled. This is false if the bar
+  // cannot navigate at all, i.e. if the accessory UI is unavailable or if the
+  // bar currently shows no enabled Autofill suggestions. Callers use this to
+  // decide whether to consume the key event or let it fall through to the
+  // renderer.
+  bool TryNavigate(NavigationAction action);
+
+  // Handles a key press `event` of the frame the suggestions belong to. It is
+  // called for as long as `key_press_registration_` is registered. Returns true
+  // if the event was consumed by the keyboard accessory and should not be
+  // forwarded to the renderer.
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
+
+  // Keeps `HandleKeyPressEvent()` registered with the frame the suggestions
+  // belong to.
+  KeyPressHandlerRegistration key_press_registration_;
+
+  // Tracks the currently selected suggestion in the accessory view. Used to
+  // deduplicate redundant or stale select/unselect events from the Java
+  // bridge and mirror the selection state to the `ManualFillingController.
+  std::optional<int> selected_suggestion_index_;
+
+  // Whether the user is in the "suggestion navigation mode", i.e. whether
+  // arrow Left/Right keys move the selection between the keyboard accessory
+  // suggestions instead of moving the text caret inside the focused field.
+  // The mode is toggled by pressing arrow Up/Down or by selecting a
+  // suggestion (e.g. by hovering it with the mouse) and reset whenever the
+  // selection is cleared or the shown suggestions change.
+  bool is_suggestion_navigation_active_ = false;
+
+  // Uniquely identifies the UI the controller is showing.
+  UiSessionId ui_session_id_;
+
+  base::WeakPtr<AutofillSuggestionDelegate> delegate_;
+  base::WeakPtr<content::WebContents> web_contents_;
+  PopupControllerCommon controller_common_;
+
+  // The C++ wrapper around the Java bridge to the actual native view.
+  std::unique_ptr<AutofillKeyboardAccessoryView> view_;
+
+  // A helper that detects events that should hide the popup.
+  std::optional<AutofillPopupHideHelper> popup_hide_helper_;
+
+  // The suggestions to be shown in the Keyboard Accessory. Note that they do
+  // not necessarily have the same order as the `suggestions` parameter passed
+  // to `Show`: The keyboard accessory moves a "Clear form" entry to the front,
+  // if it exists.
+  std::vector<Suggestion> suggestions_;
+
+  // The labels to be used for the Keyboard Accessory chips.
+  std::vector<Suggestion::Text> labels_;
+
+  // The trigger source of the `suggestions_`.
+  AutofillSuggestionTriggerSource trigger_source_ =
+      AutofillSuggestionTriggerSource::kUnspecified;
+
+  // Whether a sufficient amount of time has passed since showing or updating
+  // suggestions. It is used to safeguard against accepting suggestions too
+  // quickly after a the popup view was shown (see the `show_threshold`
+  // parameter of `AcceptSuggestion`).
+  std::optional<NextIdleBarrier> barrier_for_accepting_;
+
+  // An override to suppress minimum show thresholds. It should only be set
+  // during tests that cannot mock time (e.g. the autofill interactive
+  // browsertests).
+  bool disable_threshold_for_testing_ = false;
+
+  // If set to true, the popup will stay open regardless of external changes on
+  // the machine that would normally cause the popup to be hidden.
+  bool keep_popup_open_for_testing_ = false;
+
+  // The `FillingProduct` that matches the suggestions shown in the popup.
+  FillingProduct suggestions_filling_product_ = FillingProduct::kNone;
+
+  std::optional<AutofillKeyboardAccessoryWithMouseMetricsRecorder>
+      mouse_metrics_recorder_;
+
+  base::WeakPtrFactory<AutofillKeyboardAccessoryControllerImpl>
+      self_deletion_weak_ptr_factory_{this};
+
+  base::WeakPtrFactory<AutofillKeyboardAccessoryControllerImpl>
+      weak_ptr_factory_{this};
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_IMPL_H_

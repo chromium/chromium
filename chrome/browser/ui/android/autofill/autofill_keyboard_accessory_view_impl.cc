@@ -20,7 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/android/autofill_ai_source_attribution_info.h"
-#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
+#include "chrome/browser/ui/android/autofill/autofill_keyboard_accessory_controller.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"

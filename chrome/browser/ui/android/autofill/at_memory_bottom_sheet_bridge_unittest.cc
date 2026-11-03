@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/autofill/at_memory_suggestion_controller.h"
+#include "chrome/browser/ui/android/autofill/at_memory_suggestion_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "content/public/test/browser_task_environment.h"

@@ -381,6 +381,16 @@ if (is_android) {
     ]
   }
 
+  source_set("settings_navigation_helper") {
+    sources = [ "preferences/autofill/settings_navigation_helper.cc" ]
+    public = [ "preferences/autofill/settings_navigation_helper.h" ]
+    public_deps = [ "//content/public/browser" ]
+    deps = [
+      "//base",
+      "//chrome/android:chrome_jni_headers",
+    ]
+  }
+
   source_set("android") {
     sources = [
       "background_sync_launcher_android.cc",
@@ -578,8 +588,6 @@ if (is_android) {
       "preferences/about_settings_bridge.cc",
       "preferences/autofill/autofill_payment_methods_delegate.cc",
       "preferences/autofill/autofill_payment_methods_delegate.h",
-      "preferences/autofill/settings_navigation_helper.cc",
-      "preferences/autofill/settings_navigation_helper.h",
       "preferences/browser_prefs_android.cc",
       "preferences/browser_prefs_android.h",
       "preferences/clipboard_android.cc",
@@ -685,6 +693,7 @@ if (is_android) {
       ":profile_key_startup_accessor",
       ":profile_token",
       ":sensitivity_data_proto",
+      ":settings_navigation_helper",
       ":shortcut_helper",
       ":tabs_impl",
       ":tabs_public",
