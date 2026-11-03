@@ -194,10 +194,13 @@ static_library("utils") {
 
 source_set("host_types") {
   sources = [
+    "host_type_environment.cc",
+    "host_type_environment.h",
     "host_types.cc",
     "host_types.h",
   ]
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
+  deps = [ ":session_routing_config" ]
 }
 
 source_set("secure_file_reader") {
@@ -515,6 +518,7 @@ source_set("unit_tests") {
     "gnome_lock_state_tracker_unittest.cc",
     "gvariant_ref_unittest.cc",
     "gvariant_type_unittest.cc",
+    "host_types_unittest.cc",
     "peer_connection_bpf_policy_linux_unittest.cc",
     "peer_connection_landlock_policy_linux_unittest.cc",
     "pipewire_audio_capturer_unittest.cc",
@@ -549,6 +553,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/linux/dbus" ]
 
   deps = [
+    ":host_types",
     ":platform_impls",
     ":secure_file_reader",
     ":session_routing_config",
