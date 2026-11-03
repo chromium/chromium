@@ -91,6 +91,10 @@ const CompositorRenderPass& ResolvedPassData::render_pass() const {
   return *fixed_.render_pass;
 }
 
+bool ResolvedPassData::HasCopyOutputRequests() const {
+  return !fixed_.original_render_pass->copy_requests.empty();
+}
+
 void ResolvedPassData::CopyAndResetPersistentPassData() {
   previous_persistent_data_ = current_persistent_data_;
   current_persistent_data_ = PersistentPassData();
@@ -100,10 +104,12 @@ void ResolvedPassData::SetCompositorRenderPass(CompositorRenderPass* pass) {
   CHECK(pass);
   CHECK_EQ(pass->id, fixed_.render_pass_id);
   fixed_.render_pass = pass;
+  fixed_.original_render_pass = pass;
 }
 
 void ResolvedPassData::ResetCompositorRenderPass() {
   fixed_.render_pass = nullptr;
+  fixed_.original_render_pass = nullptr;
 }
 
 ResolvedFrameData::ResolvedFrameData(DisplayResourceProvider* resource_provider,
@@ -211,6 +217,7 @@ void ResolvedFrameData::UpdateActiveFrame(
     FixedPassData fixed;
 
     fixed.render_pass = render_pass.get();
+    fixed.original_render_pass = render_pass.get();
 
     AggregatedRenderPassId& remapped_id = aggregated_id_map_[render_pass->id];
     if (remapped_id.is_null()) {
@@ -345,8 +352,8 @@ void ResolvedFrameData::UpdateOffsetTags(OffsetTagLookupFn lookup_value_fn) {
     // cleared elsewhere they can be reused.
     CHECK_EQ(offset_tag_render_passes_.size(), resolved_passes_.size());
     for (size_t i = 0; i < offset_tag_render_passes_.size(); ++i) {
-      resolved_passes_[i].SetCompositorRenderPass(
-          offset_tag_render_passes_[i].get());
+      resolved_passes_[i].fixed_.render_pass =
+          offset_tag_render_passes_[i].get();
     }
     // Skip running RecomputeOffsetTagDamage() since nothing changed since
     // last frame and there is no added damage.

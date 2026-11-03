@@ -298,6 +298,7 @@ class CompositorFrameBuilder {
       const gfx::DelegatedInkMetadata& metadata);
   CompositorFrameBuilder& AddOffsetTagDefinition(
       const OffsetTagDefinition& definition);
+  CompositorFrameBuilder& AddOffsetTagValue(const OffsetTagValue& value);
   CompositorFrameBuilder& AddContentFrameIntervalInfo(
       const ContentFrameIntervalInfo& content_frame_interval_info);
 

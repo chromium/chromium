@@ -55,6 +55,10 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   // destroyed during aggregation so the pointer will remain valid for the
   // duration of aggregation (until it's set to null).
   raw_ptr<CompositorRenderPass> render_pass = nullptr;
+  // Points to the original CompositorRenderPass held by the surface, which may
+  // differ from `render_pass` when `RebuildRenderPassesForOffsetTags()` makes a
+  // modified copy.
+  raw_ptr<const CompositorRenderPass> original_render_pass = nullptr;
 
   // How many times this render pass is embedded by another render pass in the
   // same frame.
@@ -174,6 +178,11 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
   bool IsUnembedded() const {
     return !fixed_.is_root && fixed_.embed_count == 0;
   }
+
+  // Returns true if the original CompositorRenderPass in `Surface` has any
+  // CopyOutputRequests. Note that `render_pass().copy_requests` may be empty if
+  // `render_pass()` points to an OffsetTag-modified copy.
+  bool HasCopyOutputRequests() const;
 
   AggregationPassData& aggregation() { return aggregation_; }
   const AggregationPassData& aggregation() const { return aggregation_; }
