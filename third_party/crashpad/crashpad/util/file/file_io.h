@@ -494,10 +494,12 @@ FileHandle LoggingOpenFileForReadAndWrite(const base::FilePath& path,
 //! \param[in] blocking Controls whether a locked file will result in blocking
 //!     or an immediate return.
 //!
-//! \return kSuccess if a lock is acquired. If a lock could not be acquired
-//!     because \a blocking is FileLockingBlocking::kNonBlocking and acquiring
-//!     the lock would block, returns kWouldBlock. If a lock fails for any other
-//!     reason, returns kFailure and a message will be logged.
+//! \return kSuccess if a lock is acquired. On Android, also returns kSuccess
+//!     without holding a lock (logging a warning once) if the underlying
+//!     filesystem does not support `flock()` (`ENOSYS`). If a lock could not be
+//!     acquired because \a blocking is FileLockingBlocking::kNonBlocking and
+//!     acquiring the lock would block, returns kWouldBlock. If a lock fails for
+//!     any other reason, returns kFailure and a message will be logged.
 FileLockingResult LoggingLockFile(FileHandle file,
                                   FileLocking locking,
                                   FileLockingBlocking blocking);
@@ -510,7 +512,8 @@ FileLockingResult LoggingLockFile(FileHandle file,
 //!
 //! \param[in] file The open locked file handle to be unlocked.
 //!
-//! \return `true` on success, or `false` and a message will be logged.
+//! \return `true` on success (including on Android when `flock()` fails with
+//!     `ENOSYS`), or `false` and a message will be logged.
 bool LoggingUnlockFile(FileHandle file);
 
 #endif  // CRASHPAD_FLOCK_ALWAYS_SUPPORTED
