@@ -1489,13 +1489,13 @@
   },
   {
     "name": "bind-cookies-to-port",
-    "owners": [ "amarjotgill@chromium.org"],
-    "expiry_milestone": 152
+    "owners": [ "chlily@chromium.org"],
+    "expiry_milestone": 175
   },
   {
     "name": "bind-cookies-to-scheme",
-    "owners": [ "amarjotgill@chromium.org"],
-    "expiry_milestone": 152
+    "owners": [ "chlily@chromium.org"],
+    "expiry_milestone": 175
   },
   {
     "name": "biometric-reauth-password-filling",
