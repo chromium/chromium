@@ -360,6 +360,10 @@ public final class ProductionSupportedFlagList {
                         + "MergeMode::kMergeChildrenAndReformatIfNeeded will be also added to all"
                         + "the nodes where required."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_STRICTER_PHONE_EXTENSION_REGEX,
+                "When enabled, applies a stricter phone extension regex to avoid false"
+                        + " positives."),
+        Flag.baseFeature(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
                         + "accessory."),
