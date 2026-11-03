@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit;
 
-import android.app.Activity;
 import android.content.Intent;
 
 import com.google.errorprone.annotations.CheckReturnValue;
@@ -23,8 +22,6 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-
-import java.util.List;
 
 /**
  * Rule for integration tests that start a new {@link ChromeTabbedActivity} in each test case.
@@ -56,20 +53,30 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule {
                     @Override
                     public void evaluate() throws Throwable {
                         mSkipInstanceAndTabStateCleanup = false;
+                        Throwable failure = null;
                         try {
                             statement.evaluate();
-                        } finally {
-                            try {
-                                // crbug.com/460433346: Skip this clean up to avoid issues in some
-                                // tests, mostly post tasks running after instance and tab state
-                                // clean up on destroyed Activities.
-                                if (!mSkipInstanceAndTabStateCleanup) {
-                                    closeAllWindowsAndDeleteInstanceAndTabState();
-                                }
-                            } finally {
-                                TrafficControl.hopOffPublicTransit();
-                            }
+                        } catch (Throwable t) {
+                            failure = t;
                         }
+                        try {
+                            // crbug.com/460433346: Skip this clean up to avoid issues in some
+                            // tests, mostly post tasks running after instance and tab state
+                            // clean up on destroyed Activities.
+                            if (!mSkipInstanceAndTabStateCleanup) {
+                                closeAllWindowsAndDeleteInstanceAndTabState();
+                            }
+                        } catch (Throwable t) {
+                            // Keep the test's own failure as the primary one.
+                            if (failure == null) {
+                                failure = t;
+                            } else {
+                                failure.addSuppressed(t);
+                            }
+                        } finally {
+                            TrafficControl.hopOffPublicTransit();
+                        }
+                        if (failure != null) throw failure;
                     }
                 };
 
@@ -78,10 +85,7 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule {
 
     /** Close all Activities, cleaning up instance and tab state of ChromeTabbedActivities. */
     public void closeAllWindowsAndDeleteInstanceAndTabState() {
-        List<Activity> allActivities = ApplicationStatus.getRunningActivities();
-        for (Activity activity : allActivities) {
-            finishActivityWithCleanup(activity);
-        }
+        finishActivitiesWithCleanup(ApplicationStatus.getRunningActivities());
     }
 
     @Override

@@ -7,6 +7,8 @@ package org.chromium.chrome.test.transit;
 import android.app.Activity;
 import android.os.Build;
 
+import androidx.test.runner.lifecycle.Stage;
+
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.junit.rules.TestRule;
@@ -14,6 +16,7 @@ import org.junit.rules.TestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -36,6 +39,7 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.url.GURL;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 
@@ -257,50 +261,72 @@ public abstract class BaseCtaTransitTestRule implements TestRule {
     }
 
     protected static void finishActivityWithCleanup(Activity activity) {
-        if (activity instanceof ChromeTabbedActivity cta) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        MultiInstanceManager mim = cta.getMultiInstanceMangerForTesting();
-                        if (mim != null
-                                && mim.getCurrentInstanceId()
-                                        != MultiInstanceManager.INVALID_WINDOW_ID) {
-                            // On Android 12+ (API 31+), MultiInstanceManagerApi31 closes all tabs,
-                            // deletes instance/tab state files, and calls finishAndRemoveTask().
-                            mim.closeWindows(
-                                    Collections.singletonList(cta.getWindowId()),
-                                    MultiInstanceManager.CloseWindowAppSource.OTHER);
-                        } else {
-                            // On Android <= 11 (API <= 30), MultiInstanceManagerImpl#closeWindows
-                            // is a no-op, so close all tabs and overwrite persisted tab state with
-                            // the empty model before finishing the Activity (crbug.com/580067196).
-                            TabModelOrchestrator orchestrator =
-                                    cta.getTabModelOrchestratorSupplier().get();
-                            if (orchestrator != null && orchestrator.areStoresInitialized()) {
-                                TabModelSelector selector = orchestrator.getTabModelSelector();
-                                if (selector != null) {
-                                    selector.commitAllTabClosures();
-                                    TabClosureParams params =
-                                            TabClosureParams.closeAllTabs()
-                                                    .uponExit(true)
-                                                    .hideTabGroups(true)
-                                                    .saveToTabRestoreService(false)
-                                                    .build();
-                                    selector.getModel(true)
-                                            .getTabRemover()
-                                            .closeTabs(params, /* allowDialog= */ false);
-                                    selector.getModel(false)
-                                            .getTabRemover()
-                                            .closeTabs(params, /* allowDialog= */ false);
+        finishActivitiesWithCleanup(Collections.singletonList(activity));
+    }
+
+    protected static void finishActivitiesWithCleanup(Collection<Activity> activities) {
+        if (activities.isEmpty()) return;
+
+        // Initiate finishAndRemoveTask() on all activities in a single UI-thread pass
+        // (ChromeTabbedActivities first, then non-ChromeTabbedActivities) before waiting for
+        // Stage.DESTROYED so that when closing all windows, closing a top activity does not resume
+        // an underlying ChromeTabbedActivity during teardown.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (Activity activity : activities) {
+                        if (activity instanceof ChromeTabbedActivity cta) {
+                            MultiInstanceManager mim = cta.getMultiInstanceMangerForTesting();
+                            if (mim != null
+                                    && mim.getCurrentInstanceId()
+                                            != MultiInstanceManager.INVALID_WINDOW_ID) {
+                                // On Android 12+ (API 31+), MultiInstanceManagerApi31 closes all
+                                // tabs, deletes instance/tab state files, and calls
+                                // finishAndRemoveTask().
+                                mim.closeWindows(
+                                        Collections.singletonList(cta.getWindowId()),
+                                        MultiInstanceManager.CloseWindowAppSource.OTHER);
+                            } else {
+                                // On Android <= 11 (API <= 30) or if the Activity never reached
+                                // onPreCreate(), MultiInstanceManagerImpl#closeWindows is a no-op,
+                                // so close all tabs and overwrite persisted tab state with the
+                                // empty model before finishing the Activity (crbug.com/580067196).
+                                TabModelOrchestrator orchestrator =
+                                        cta.getTabModelOrchestratorSupplier().get();
+                                if (orchestrator != null && orchestrator.areStoresInitialized()) {
+                                    TabModelSelector selector = orchestrator.getTabModelSelector();
+                                    if (selector != null) {
+                                        selector.commitAllTabClosures();
+                                        TabClosureParams params =
+                                                TabClosureParams.closeAllTabs()
+                                                        .uponExit(true)
+                                                        .hideTabGroups(true)
+                                                        .saveToTabRestoreService(false)
+                                                        .build();
+                                        selector.getModel(true)
+                                                .getTabRemover()
+                                                .closeTabs(params, /* allowDialog= */ false);
+                                        selector.getModel(false)
+                                                .getTabRemover()
+                                                .closeTabs(params, /* allowDialog= */ false);
+                                    }
+                                    orchestrator.saveState();
                                 }
-                                orchestrator.saveState();
+                            }
+                            if (!cta.isFinishing()) {
+                                cta.finishAndRemoveTask();
                             }
                         }
-                        if (!cta.isFinishing()) {
-                            cta.finishAndRemoveTask();
+                    }
+                    for (Activity activity : activities) {
+                        if (!(activity instanceof ChromeTabbedActivity)
+                                && !activity.isFinishing()) {
+                            activity.finishAndRemoveTask();
                         }
-                    });
-        } else {
-            activity.finishAndRemoveTask();
+                    }
+                });
+
+        for (Activity activity : activities) {
+            ApplicationTestUtils.waitForActivityState(activity, Stage.DESTROYED);
         }
     }
 }
