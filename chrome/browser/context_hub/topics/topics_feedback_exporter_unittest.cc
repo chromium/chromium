@@ -136,7 +136,13 @@ TEST_F(TopicsFeedbackExporterTest, Preview_GroupsMinimizedVisitsByDomain) {
   EXPECT_EQ(3u, preview->stats->unresolvable_topics);
 
   ASSERT_EQ(2u, preview->domains.size());
-  const mojom::TopicsFeedbackExportDomain& example = *preview->domains[0];
+  // Default-excluded domains come first, even if visited less.
+  const mojom::TopicsFeedbackExportDomain& docs = *preview->domains[0];
+  EXPECT_EQ("docs.google.com", docs.domain);
+  EXPECT_EQ(1u, docs.visit_count);
+  EXPECT_TRUE(docs.default_excluded);
+
+  const mojom::TopicsFeedbackExportDomain& example = *preview->domains[1];
   EXPECT_EQ("example.com", example.domain);
   EXPECT_EQ(3u, example.visit_count);
   EXPECT_FALSE(example.default_excluded);
@@ -146,11 +152,6 @@ TEST_F(TopicsFeedbackExporterTest, Preview_GroupsMinimizedVisitsByDomain) {
   EXPECT_EQ(2u, example.urls[0]->visit_count);
   EXPECT_EQ(GURL("https://example.com/b"), example.urls[1]->url);
   EXPECT_EQ(1u, example.urls[1]->visit_count);
-
-  const mojom::TopicsFeedbackExportDomain& docs = *preview->domains[1];
-  EXPECT_EQ("docs.google.com", docs.domain);
-  EXPECT_EQ(1u, docs.visit_count);
-  EXPECT_TRUE(docs.default_excluded);
 }
 
 TEST_F(TopicsFeedbackExporterTest, Preview_Empty) {

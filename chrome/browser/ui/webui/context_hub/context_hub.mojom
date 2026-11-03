@@ -455,7 +455,8 @@ struct TopicsFeedbackExportDomain {
 // before generating the bundle.
 struct TopicsFeedbackExportPreview {
   TopicsFeedbackExportStats stats;
-  // Hosts visited in the window, most visited first.
+  // Hosts visited in the window, `default_excluded` ones first, then most
+  // visited first.
   array<TopicsFeedbackExportDomain> domains;
 };
 

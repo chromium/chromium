@@ -373,9 +373,12 @@ mojom::TopicsFeedbackExportPreviewPtr BuildTopicsFeedbackExportPreview(
                              &mojom::TopicsFeedbackExportUrl::visit_count);
     domains.push_back(std::move(domain));
   }
-  // Most visited first. Ties stay ordered by host.
-  std::ranges::stable_sort(domains, std::ranges::greater(),
-                           &mojom::TopicsFeedbackExportDomain::visit_count);
+  // Default-excluded first, then most visited first. Ties stay ordered by host.
+  std::ranges::stable_sort(
+      domains, std::ranges::greater(),
+      [](const mojom::TopicsFeedbackExportDomainPtr& domain) {
+        return std::make_pair(domain->default_excluded, domain->visit_count);
+      });
 
   return mojom::TopicsFeedbackExportPreview::New(ComputeStats(data, visits),
                                                  std::move(domains));
