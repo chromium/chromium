@@ -84,6 +84,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "pdf_accessibility_table_detector_unittest.cc",
+    "pdf_accessibility_text_utils_unittest.cc",
     "pdf_accessibility_tree_builder_structure_unittest.cc",
     "pdf_accessibility_tree_unittest.cc",
   ]
