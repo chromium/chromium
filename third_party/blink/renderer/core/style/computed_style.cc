@@ -3198,7 +3198,7 @@ void ComputedStyleBuilder::CopyAnimatedSourceFrom(
   }
   if (AnimatedSource source = parent_style->GetAnimatedSource(property);
       source.IsValid()) {
-    source.has_untracked_dependencies = has_untracked_dependencies;
+    source.has_untracked_dependencies |= has_untracked_dependencies;
     UpdateAnimatedSource(*tracked, CSSProperty::Get(property), source);
   } else {
     ClearAnimatedSource(property);

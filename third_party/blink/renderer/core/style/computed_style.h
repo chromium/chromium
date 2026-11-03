@@ -3426,7 +3426,8 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
                                      Element& animating_element);
 
   // Copies the animated source for the given property from a parent style
-  // (e.g. when inheriting from a parent style).
+  // (e.g. when inheriting from a parent style), preserving any untracked
+  // dependencies already on the parent's source.
   CORE_EXPORT void CopyAnimatedSourceFrom(CSSPropertyID property,
                                           const ComputedStyle* parent_style,
                                           bool has_untracked_dependencies);

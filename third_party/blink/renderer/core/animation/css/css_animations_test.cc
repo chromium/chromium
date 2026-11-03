@@ -4130,7 +4130,10 @@ TEST_F(AnimatedSourceTest, ColorMixHasUntrackedDependencies) {
   SetBodyInnerHTML(R"HTML(
     <div id=animator>
       <div id=child
-           style="color: color-mix(in srgb, currentColor, black)"></div>
+           style="color: color-mix(in srgb, currentColor, black)">
+        <div id=inherited></div>
+        <div id=explicit style="color: inherit"></div>
+      </div>
     </div>
   )HTML");
   Element* animator = GetElementById("animator");
@@ -4140,6 +4143,12 @@ TEST_F(AnimatedSourceTest, ColorMixHasUntrackedDependencies) {
       SourceFor(GetElementById("child"), CSSPropertyID::kColor);
   EXPECT_TRUE(source.animated_source.IsOwnedBy(*animator));
   EXPECT_TRUE(source.has_untracked_dependencies);
+
+  // Descendants inheriting the derived color keep its untracked dependencies.
+  EXPECT_EQ(source,
+            SourceFor(GetElementById("inherited"), CSSPropertyID::kColor));
+  EXPECT_EQ(source,
+            SourceFor(GetElementById("explicit"), CSSPropertyID::kColor));
 }
 
 // preserve-parent-color inherits the parent's used (forced) color rather than
