@@ -32,6 +32,7 @@ if (is_win || is_mac) {
       "//chrome/test/views",
       "//components/bookmarks/browser",
       "//components/bookmarks/test",
+      "//components/keyed_service/content",
       "//components/omnibox/browser",
       "//components/prefs",
       "//components/search",

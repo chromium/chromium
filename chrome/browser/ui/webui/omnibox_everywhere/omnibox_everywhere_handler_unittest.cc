@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -35,6 +36,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/input_state.h"
@@ -183,6 +185,13 @@ class OmniboxEverywhereHandlerTest
     factories.push_back(TestingProfile::TestingFactory{
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory()});
+    // Prevent the profile from creating its own OmniboxEverywhereService (and
+    // therefore a second OmniboxEverywhereFreController observing the same
+    // prefs). Tests use the standalone `mock_service_` instead, or install a
+    // service explicitly via `SetTestingFactoryAndUse()`.
+    factories.push_back(TestingProfile::TestingFactory{
+        OmniboxEverywhereServiceFactory::GetInstance(),
+        BrowserContextKeyedServiceFactory::TestingFactory()});
     return factories;
   }
 
@@ -211,7 +220,9 @@ class OmniboxEverywhereHandlerTest
         profile()->GetPrefs());
 
     web_ui_.set_web_contents(web_contents());
-    mock_service_ = std::make_unique<MockOmniboxEverywhereService>(profile());
+    mock_service_ =
+        std::make_unique<testing::NiceMock<MockOmniboxEverywhereService>>(
+            profile());
 
     handler_ = std::make_unique<OmniboxEverywhereHandlerPublic>(
         handler_remote_.BindNewPipeAndPassReceiver(), page_.BindAndGetRemote(),
@@ -235,11 +246,25 @@ class OmniboxEverywhereHandlerTest
   }
 
  protected:
+  std::unique_ptr<OmniboxEverywhereHandler> CreateHandlerWithPage(
+      MockSearchboxPage& mock_page,
+      mojo::Remote<searchbox::mojom::PageHandler>& handler_remote) {
+    return std::make_unique<OmniboxEverywhereHandler>(
+        handler_remote.BindNewPipeAndPassReceiver(),
+        mock_page.BindAndGetRemote(), /*metrics_reporter=*/nullptr, &web_ui_,
+        mock_service_.get(),
+        base::BindRepeating(
+            []() -> contextual_search::ContextualSearchSessionHandle* {
+              return nullptr;
+            }));
+  }
+
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList feature_list_;
   content::TestWebUI web_ui_;
-  std::unique_ptr<MockOmniboxEverywhereService> mock_service_;
+  std::unique_ptr<testing::NiceMock<MockOmniboxEverywhereService>>
+      mock_service_;
   testing::NiceMock<MockSearchboxPage> page_;
   mojo::Remote<searchbox::mojom::PageHandler> handler_remote_;
   raw_ptr<MockQueryController> query_controller_ = nullptr;
@@ -514,14 +539,7 @@ TEST_F(OmniboxEverywhereHandlerTest, FrePromoStateGatedByImpressionCount) {
       });
 
   mojo::Remote<searchbox::mojom::PageHandler> test_handler_remote;
-  auto handler = std::make_unique<OmniboxEverywhereHandler>(
-      test_handler_remote.BindNewPipeAndPassReceiver(),
-      mock_page.BindAndGetRemote(), /*metrics_reporter=*/nullptr, &web_ui_,
-      mock_service_.get(),
-      base::BindRepeating(
-          []() -> contextual_search::ContextualSearchSessionHandle* {
-            return nullptr;
-          }));
+  auto handler = CreateHandlerWithPage(mock_page, test_handler_remote);
   mock_page.FlushForTesting();
 
   EXPECT_CALL(mock_page, SetFreState(testing::_))
@@ -545,14 +563,7 @@ TEST_F(OmniboxEverywhereHandlerTest, FreDisabledFeatureFlagEmitsNoneStage) {
       });
 
   mojo::Remote<searchbox::mojom::PageHandler> test_handler_remote;
-  auto handler = std::make_unique<OmniboxEverywhereHandler>(
-      test_handler_remote.BindNewPipeAndPassReceiver(),
-      mock_page.BindAndGetRemote(), /*metrics_reporter=*/nullptr, &web_ui_,
-      mock_service_.get(),
-      base::BindRepeating(
-          []() -> contextual_search::ContextualSearchSessionHandle* {
-            return nullptr;
-          }));
+  auto handler = CreateHandlerWithPage(mock_page, test_handler_remote);
   mock_page.FlushForTesting();
 }
 
@@ -628,14 +639,7 @@ TEST_F(OmniboxEverywhereHandlerTest,
   EXPECT_CALL(mock_page, SetFreState(testing::_)).Times(testing::AtLeast(1));
 
   mojo::Remote<searchbox::mojom::PageHandler> test_handler_remote;
-  auto handler = std::make_unique<OmniboxEverywhereHandler>(
-      test_handler_remote.BindNewPipeAndPassReceiver(),
-      mock_page.BindAndGetRemote(), /*metrics_reporter=*/nullptr, &web_ui_,
-      mock_service_.get(),
-      base::BindRepeating(
-          []() -> contextual_search::ContextualSearchSessionHandle* {
-            return nullptr;
-          }));
+  auto handler = CreateHandlerWithPage(mock_page, test_handler_remote);
 
   local_state->SetBoolean(omnibox_everywhere::prefs::kHotkeyEnabled, false);
   handler->SetHotkey("Space+Alt+Shift");
@@ -655,15 +659,7 @@ TEST_F(OmniboxEverywhereHandlerTest,
 
   testing::NiceMock<MockSearchboxPage> mock_page;
   mojo::Remote<searchbox::mojom::PageHandler> test_handler_remote;
-
-  auto handler = std::make_unique<OmniboxEverywhereHandler>(
-      test_handler_remote.BindNewPipeAndPassReceiver(),
-      mock_page.BindAndGetRemote(), /*metrics_reporter=*/nullptr, &web_ui_,
-      mock_service_.get(),
-      base::BindRepeating(
-          []() -> contextual_search::ContextualSearchSessionHandle* {
-            return nullptr;
-          }));
+  auto handler = CreateHandlerWithPage(mock_page, test_handler_remote);
 
   // Disabling pref should push UpdateAimPopupEligibility(false).
   EXPECT_CALL(mock_page, UpdateAimPopupEligibility(false)).Times(1);
@@ -684,15 +680,7 @@ TEST_F(OmniboxEverywhereHandlerTest,
 
   testing::NiceMock<MockSearchboxPage> mock_page;
   mojo::Remote<searchbox::mojom::PageHandler> test_handler_remote;
-
-  auto handler = std::make_unique<OmniboxEverywhereHandler>(
-      test_handler_remote.BindNewPipeAndPassReceiver(),
-      mock_page.BindAndGetRemote(), /*metrics_reporter=*/nullptr, &web_ui_,
-      mock_service_.get(),
-      base::BindRepeating(
-          []() -> contextual_search::ContextualSearchSessionHandle* {
-            return nullptr;
-          }));
+  auto handler = CreateHandlerWithPage(mock_page, test_handler_remote);
 
   // Becoming ineligible via AimEligibilityService callback should push
   // UpdateAimPopupEligibility(false).
