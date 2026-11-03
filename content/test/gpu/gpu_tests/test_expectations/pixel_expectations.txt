@@ -440,7 +440,6 @@ crbug.com/286989320 [ chromeos ] Pixel_MeetEffects* [ Failure ]
 crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/40935289 [ fuchsia no-asan web-engine-shell ] Pixel_Video_AV1 [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia fuchsia-board-astro web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
-crbug.com/40935289 [ angle-vulkan arm fuchsia fuchsia-board-astro web-engine-shell ] Pixel_Video_Context_Loss_MP4 [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia fuchsia-board-astro no-clang-coverage web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_HEVC [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4 [ Failure ]
@@ -448,7 +447,6 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
-crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia fuchsia-board-astro no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 crbug.com/519220175 [ angle-swiftshader fuchsia web-engine-shell ] Pixel_ReflectedDiv [ Failure ]
 
@@ -490,7 +488,7 @@ crbug.com/370694819 [ win ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ F
 crbug.com/425739516 [ mac arch-arm64 angle-metal graphite-enabled ] Pixel_ReflectedDiv [ Slow ]
 
 # Tests either fail consistently or flakily on Android in TreesInViz mode.
-crbug.com/415830130 [ fuchsia ] Pixel_Video_MP4_TreesInViz [ Failure ]
+crbug.com/415830130 [ angle-vulkan arm fuchsia ] Pixel_Video_MP4_TreesInViz [ Failure ]
 crbug.com/415830130 [ android android-chromium ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 # TODO(crbug.com/575495101): External memory is not supported on Lavapipe in gfxstream.
