@@ -153,9 +153,16 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
   ASSERT_TRUE(toolbar);
 
   // A point in the toolbar's empty area (beyond all children on the right)
-  // should be treated as caption.
+  // should be treated as caption. When the WebUI app menu button is enabled,
+  // `ToolbarView` zeroes its trailing layout margin (applying only visual
+  // spacing in CSS), so `WebUIToolbarWebView` spans to the trailing edge and
+  // `IsPositionInWindowCaption` treats `empty_area` as inside a child view.
   gfx::Point empty_area(toolbar->width() - 1, toolbar->height() / 2);
-  EXPECT_TRUE(toolbar->IsPositionInWindowCaption(empty_area));
+  if (!features::IsWebUIAppMenuButtonEnabled()) {
+    EXPECT_TRUE(toolbar->IsPositionInWindowCaption(empty_area));
+  } else {
+    EXPECT_FALSE(toolbar->IsPositionInWindowCaption(empty_area));
+  }
 
   // A point in the upper portion of empty area should also be caption.
   gfx::Point upper_empty(toolbar->width() - 1, 1);
@@ -244,6 +251,10 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest, PinnedToolbarActionsInPopup) {
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
                        OmniboxTwoStageFlexResizingAndButtonLifecycle) {
+  if (features::IsWebUIToolbarFullyEnabled()) {
+    GTEST_SKIP() << "C++ ToolbarController and FlexLayout overflow are "
+                    "disabled when WebUIToolbar is fully enabled.";
+  }
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
                                                   true);
@@ -454,7 +465,9 @@ class ToolbarViewContextualTasksInteriorMarginBrowserTest
                                    kContextualTasksEphemeralBrandedEntryPoint,
                                {{contextual_tasks::kShowEntryPoint.name,
                                  "toolbar-ephemeral-branded"}}}},
-        /*disabled_features=*/{features::kWebUIBackForwardButton});
+        /*disabled_features=*/{features::kWebUIToolbar,
+                               features::kWebUIBackForwardButton,
+                               features::kWebUIAppMenuButton});
   }
 
   void SetUpOnMainThread() override {
@@ -607,7 +620,8 @@ class ToolbarViewDefaultInteriorMarginBrowserTest
             contextual_tasks::kContextualTasksSidePanel,
             contextual_tasks::kContextualTasksRearchitecture,
             contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
-            features::kWebUIBackForwardButton});
+            features::kWebUIToolbar, features::kWebUIBackForwardButton,
+            features::kWebUIAppMenuButton});
   }
 
  private:
@@ -641,7 +655,9 @@ class ToolbarViewCircularContextualTasksBrowserTest
            {contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
                 .name,
             "true"}}}},
-        /*disabled_features=*/{features::kWebUIBackForwardButton});
+        /*disabled_features=*/{features::kWebUIToolbar,
+                               features::kWebUIBackForwardButton,
+                               features::kWebUIAppMenuButton});
   }
 
   void SetUpOnMainThread() override {
