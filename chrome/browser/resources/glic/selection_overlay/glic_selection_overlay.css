@@ -288,7 +288,7 @@
   align-items: center;
   background-color: #FFF;
   border-radius: 28px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--cr-elevation-2);
   box-sizing: border-box;
   cursor: text;
   display: flex;
@@ -296,13 +296,9 @@
   max-width: 100%;
   padding: 0;
   padding-inline-end: 6px;
-  padding-inline-start: 10px;
+  padding-inline-start: 12px;
   transition: box-shadow 200ms ease;
   width: 320px;
-}
-
-.searchbox-pill:focus-within {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
 }
 
 .sparkle-icon {
@@ -311,7 +307,7 @@
   flex-shrink: 0;
   height: 20px;
   justify-content: center;
-  margin-right: 6px;
+  margin-right: 8px;
   width: 20px;
 }
 
@@ -379,7 +375,7 @@
   --cr-button-border: none;
   --cr-button-height: 30px;
   --cr-button-text-color: var(--cr-primary-text-color);
-  box-shadow: var(--cr-elevation-1);
+  box-shadow: var(--cr-elevation-2);
   gap: 4px;
   max-width: calc(100vw - 48px);
   min-width: 0;
