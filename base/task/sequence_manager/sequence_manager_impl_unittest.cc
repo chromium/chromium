@@ -5228,7 +5228,7 @@ class SequenceManagerRunOrPostTaskTest : public testing::Test {
     thread_.Start();
   }
 
-  SequenceManagerImpl* sequence_manager() { return sequence_manager_.get(); }
+  SequenceManagerForTest* sequence_manager() { return sequence_manager_.get(); }
   TaskQueue* queue() { return queue_.get(); }
   TaskQueue* other_queue() { return other_queue_.get(); }
   SingleThreadTaskRunner* task_runner() { return queue_->task_runner().get(); }
@@ -5735,6 +5735,123 @@ TEST_F(SequenceManagerRunOrPostTaskTest, CurrentDefaultTaskRunner) {
       })));
 
   FlushOtherThread();
+}
+
+// Regression test for a race between `TaskQueueImpl::PostImmediateTaskImpl()`
+// and `SequenceManagerImpl::ReloadEmptyWorkQueues()` where a task posted to an
+// empty queue while the bound thread was transitioning to idle could fail to
+// prevent a subsequent `RunOrPostTask()` call from running synchronously ahead
+// of the first task.
+TEST_F(SequenceManagerRunOrPostTaskTest,
+       OrderPreservedWhenPostingConcurrentlyWithGoingIdle) {
+  SimulateInsideRunLoop();
+
+  constexpr int kNumIterations = 2000;
+  std::atomic<int> ready_iteration{-1};
+  std::atomic<int> task_1_posting_iteration{-1};
+  std::atomic<int> main_thread_ack_iteration{-1};
+  std::atomic<int> main_thread_checked_wake_up_iteration{-1};
+  std::atomic<int> posted_iteration{-1};
+  std::atomic<int> expected_task_id{0};
+
+  // Invoked on the other thread from `PostTask()`, after the task is added to
+  // `immediate_incoming_queue` but before the reload flags are set. Blocks
+  // until the main thread is about to reload empty work queues, so that
+  // setting the reload flags races with the reload.
+  int current_iteration_on_poster = 0;
+  std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle> on_task_posted_handle =
+      queue()->AddOnTaskPostedHandler(BindLambdaForTesting([&](const Task&) {
+        if (task_1_posting_iteration.load(std::memory_order_relaxed) ==
+            current_iteration_on_poster) {
+          return;
+        }
+        task_1_posting_iteration.store(current_iteration_on_poster,
+                                       std::memory_order_release);
+        while (main_thread_ack_iteration.load(std::memory_order_acquire) !=
+               current_iteration_on_poster) {
+        }
+      }));
+
+  other_thread_task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        for (int i = 0; i < kNumIterations; ++i) {
+          current_iteration_on_poster = i;
+          const int task_1 = i * 2;
+          const int task_2 = i * 2 + 1;
+
+          // Wait until the main thread is doing work, then post task 1 (blocks
+          // in the handler above until the main thread acks).
+          while (ready_iteration.load(std::memory_order_acquire) != i) {
+          }
+
+          task_runner()->PostTask(
+              FROM_HERE, BindLambdaForTesting([&, task_1] {
+                EXPECT_EQ(task_1, expected_task_id.fetch_add(
+                                      1, std::memory_order_relaxed));
+              }));
+
+          // Wait until the main thread has finished `GetPendingWakeUp()` (and
+          // `OnIdle()` if the queue was still empty) before calling
+          // `RunOrPostTask()`.
+          while (main_thread_checked_wake_up_iteration.load(
+                     std::memory_order_acquire) != i) {
+          }
+
+          // Task 2 must not run before task 1, even if it runs synchronously.
+          task_runner()->RunOrPostTask(
+              subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+              BindLambdaForTesting([&, task_2] {
+                EXPECT_EQ(task_2, expected_task_id.fetch_add(
+                                      1, std::memory_order_relaxed));
+              }));
+
+          posted_iteration.store(i, std::memory_order_release);
+        }
+      }));
+
+  for (int i = 0; i < kNumIterations; ++i) {
+    const int task_2 = i * 2 + 1;
+    // Simulate doing work, then wait until the other thread is posting task 1.
+    sequence_manager()->OnBeginWork();
+    ready_iteration.store(i, std::memory_order_release);
+
+    while (task_1_posting_iteration.load(std::memory_order_acquire) != i) {
+    }
+    // Unblock the other thread and vary the timing so that it sets the reload
+    // flags concurrently with the reload below.
+    main_thread_ack_iteration.store(i, std::memory_order_release);
+    volatile int local_spin = 0;
+    for (int spin = 0; spin < (i % 256); ++spin) {
+      local_spin = local_spin + 1;
+    }
+
+    // Like `ThreadControllerWithMessagePumpImpl`: reload empty work queues and
+    // go idle if there is no work.
+    LazyNow lazy_now_wake_up(DefaultTickClock::GetInstance());
+    if (!sequence_manager()->GetPendingWakeUp(&lazy_now_wake_up)) {
+      sequence_manager()->OnIdle();
+    }
+    main_thread_checked_wake_up_iteration.store(i, std::memory_order_release);
+
+    while (posted_iteration.load(std::memory_order_acquire) != i) {
+    }
+
+    // Run tasks 1 and 2 (unless task 2 already ran synchronously).
+    while (expected_task_id.load(std::memory_order_relaxed) <= task_2) {
+      sequence_manager()->OnBeginWork();
+      LazyNow lazy_now(DefaultTickClock::GetInstance());
+      if (auto task = sequence_manager()->SelectNextTask(lazy_now)) {
+        std::move(task->task.task).Run();
+        sequence_manager()->DidRunTask(lazy_now);
+      } else {
+        sequence_manager()->OnIdle();
+      }
+    }
+  }
+
+  FlushOtherThread();
+  EXPECT_EQ(expected_task_id.load(std::memory_order_relaxed),
+            kNumIterations * 2);
 }
 
 TEST(

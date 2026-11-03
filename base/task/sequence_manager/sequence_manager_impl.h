@@ -374,8 +374,8 @@ class BASE_EXPORT SequenceManagerImpl
   // class was created on.
   void SetNextWakeUp(LazyNow* lazy_now, std::optional<WakeUp> wake_up);
 
-  // Called before TaskQueue requests to reload its empty immediate work queue.
-  void WillRequestReloadImmediateWorkQueue();
+  // Called after TaskQueue requests to reload its empty immediate work queue.
+  void DidRequestReloadImmediateWorkQueue();
 
   // Returns a valid `SyncWorkAuthorization` if a call to `RunOrPostTask` on a
   // `SequencedTaskRunner` bound to this `SequenceManager` may run its task

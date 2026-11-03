@@ -458,8 +458,8 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     // addition it may need to schedule a DoWork if this queue isn't blocked.
     if (was_immediate_incoming_queue_empty &&
         any_thread_.immediate_work_queue_empty) {
-      sequence_manager_->WillRequestReloadImmediateWorkQueue();
       empty_queues_to_reload_handle_.SetActive(true);
+      sequence_manager_->DidRequestReloadImmediateWorkQueue();
       should_schedule_work =
           any_thread_.post_immediate_task_should_schedule_work;
     }

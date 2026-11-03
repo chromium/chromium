@@ -24,7 +24,7 @@ TEST(SequenceManagerWorkTrackerTest, SetRunTaskSynchronouslyAllowed) {
   tracker.OnIdle();
   EXPECT_FALSE(tracker.TryAcquireSyncWorkAuthorization().IsValid());
 
-  tracker.WillRequestReloadImmediateWorkQueue();
+  tracker.DidRequestReloadImmediateWorkQueue();
   tracker.WillReloadImmediateWorkQueues();
   tracker.OnIdle();
   EXPECT_FALSE(tracker.TryAcquireSyncWorkAuthorization().IsValid());
@@ -66,22 +66,22 @@ TEST(SequenceManagerWorkTrackerTest, SetRunTaskSynchronouslyAllowedBlocks) {
   other_thread.FlushForTesting();
 }
 
-// Verify that after `WillRequestReloadImmediateWorkQueue()`,
+// Verify that after `DidRequestReloadImmediateWorkQueue()`,
 // `WillReloadImmediateWorkQueues()` and `OnIdle()` must be called in sequence
 // for a sync work authorization to be granted.
-TEST(SequenceManagerWorkTrackerTest, WillRequestReloadImmediateWorkQueue) {
+TEST(SequenceManagerWorkTrackerTest, DidRequestReloadImmediateWorkQueue) {
   WorkTracker tracker;
   tracker.SetRunTaskSynchronouslyAllowed(true);
   EXPECT_TRUE(tracker.TryAcquireSyncWorkAuthorization().IsValid());
 
-  tracker.WillRequestReloadImmediateWorkQueue();
+  tracker.DidRequestReloadImmediateWorkQueue();
   EXPECT_FALSE(tracker.TryAcquireSyncWorkAuthorization().IsValid());
   tracker.WillReloadImmediateWorkQueues();
   EXPECT_FALSE(tracker.TryAcquireSyncWorkAuthorization().IsValid());
   tracker.OnIdle();
   EXPECT_TRUE(tracker.TryAcquireSyncWorkAuthorization().IsValid());
 
-  tracker.WillRequestReloadImmediateWorkQueue();
+  tracker.DidRequestReloadImmediateWorkQueue();
   EXPECT_FALSE(tracker.TryAcquireSyncWorkAuthorization().IsValid());
   // `OnIdle()` without `WillReloadImmediateWorkQueues()` is not sufficient for
   // a sync work authorization to be granted.

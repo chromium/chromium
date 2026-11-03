@@ -686,8 +686,8 @@ bool SequenceManagerImpl::OnIdle() {
   return have_work_to_do;
 }
 
-void SequenceManagerImpl::WillRequestReloadImmediateWorkQueue() {
-  work_tracker_.WillRequestReloadImmediateWorkQueue();
+void SequenceManagerImpl::DidRequestReloadImmediateWorkQueue() {
+  work_tracker_.DidRequestReloadImmediateWorkQueue();
 }
 
 SyncWorkAuthorization SequenceManagerImpl::TryAcquireSyncWorkAuthorization() {

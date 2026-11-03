@@ -81,13 +81,13 @@ void WorkTracker::WaitNoSyncWork() {
   }
 }
 
-void WorkTracker::WillRequestReloadImmediateWorkQueue() {
+void WorkTracker::DidRequestReloadImmediateWorkQueue() {
   // May be called from any thread.
 
   // Sync work is disallowed until `WillReloadImmediateWorkQueues()` and
   // `OnIdle()` are called.
   state_.fetch_or(kImmediateWorkQueueNeedsReload,
-                  kMemoryRelaxedNotAllowOrBeforeWork);
+                  kMemoryReleaseAfterReloadRequest);
 }
 
 void WorkTracker::WillReloadImmediateWorkQueues() {
@@ -96,7 +96,7 @@ void WorkTracker::WillReloadImmediateWorkQueues() {
   // Sync work is disallowed until `OnIdle()` is called.
   state_.fetch_and(
       ~(kImmediateWorkQueueNeedsReload | kWorkQueuesEmptyAndNoWorkRunning),
-      kMemoryRelaxedNotAllowOrBeforeWork);
+      kMemoryAcquireBeforeReload);
 }
 
 void WorkTracker::OnBeginWork() {
@@ -113,20 +113,16 @@ void WorkTracker::OnBeginWork() {
 void WorkTracker::OnIdle() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // This may allow sync work. "release" so that sync work that runs after this
-  // sees all writes issued by previous sequenced work.
-  state_.fetch_or(kWorkQueuesEmptyAndNoWorkRunning, std::memory_order_release);
+  state_.fetch_or(kWorkQueuesEmptyAndNoWorkRunning, kMemoryReleaseAllowWork);
 }
 
 SyncWorkAuthorization WorkTracker::TryAcquireSyncWorkAuthorization() {
   // May be called from any thread.
 
   uint32_t state = state_.load(std::memory_order_relaxed);
-  // "acquire" so that sync work sees writes issued by sequenced work that
-  // precedes it.
   if (state == (kSyncWorkSupported | kWorkQueuesEmptyAndNoWorkRunning) &&
       state_.compare_exchange_strong(state, state | kActiveSyncWork,
-                                     std::memory_order_acquire,
+                                     kMemoryAcquireBeforeWork,
                                      std::memory_order_relaxed)) {
     return SyncWorkAuthorization(this);
   }

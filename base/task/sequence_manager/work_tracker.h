@@ -49,11 +49,11 @@ class BASE_EXPORT WorkTracker {
   // with `RunOrPostTask()` may run without being tracked by methods below.
   void SetRunTaskSynchronouslyAllowed(bool can_run_tasks_synchronously);
 
-  // Invoked before requesting to reload an empty immediate work queue. After
+  // Invoked after requesting to reload an empty immediate work queue. After
   // this, `RunOrPostTask()` can't run tasks synchronously until
   // `WillReloadImmediateWorkQueues()` and `OnIdle()` have been called in
   // sequence.
-  void WillRequestReloadImmediateWorkQueue();
+  void DidRequestReloadImmediateWorkQueue();
 
   // Invoked before reloading empty immediate work queues.
   void WillReloadImmediateWorkQueues();
@@ -71,7 +71,7 @@ class BASE_EXPORT WorkTracker {
   // Returns a valid `SyncWorkAuthorization` iff all these conditions are true:
   // - Explicitly allowed by `SetRunTaskSynchronouslyAllowed()`
   // - `WillReloadImmediateWorkQueues()` and `OnIdle()` were called in
-  //   sequence after the last call to `WillRequestReloadImmediateWorkQueue()`
+  //   sequence after the last call to `DidRequestReloadImmediateWorkQueue()`
   // - `OnIdle()` was called after the last call to `OnBeginWork()`
   SyncWorkAuthorization TryAcquireSyncWorkAuthorization();
 
@@ -102,7 +102,7 @@ class BASE_EXPORT WorkTracker {
   // Sync work must see all memory written before it was allowed. Similarly,
   // non-sync work must see all memory written by sync work. As a result:
   //
-  // Operations that may allow sync work are std::memory_order_release:
+  // Operations that may allow sync work are `std::memory_order_release`:
   //    - Set `kWorkQueuesEmptyAndNoWorkRunning`
   //    - Set `kSyncWorkSupported`
   //
@@ -118,8 +118,19 @@ class BASE_EXPORT WorkTracker {
       std::memory_order_release;
   static constexpr std::memory_order kMemoryAcquireBeforeWork =
       std::memory_order_acquire;
-  static constexpr std::memory_order kMemoryRelaxedNotAllowOrBeforeWork =
-      std::memory_order_relaxed;
+
+  // Immediate work queue reload must see all reload requests made before
+  // `kImmediateWorkQueueNeedsReload` was cleared. As a result:
+  //
+  // Operations that follow a reload request are `std::memory_order_release`:
+  //    - Set `kImmediateWorkQueueNeedsReload`
+  //
+  // Operations that precede a reload are `std::memory_order_acquire`:
+  //    - Clear `kImmediateWorkQueueNeedsReload`
+  static constexpr std::memory_order kMemoryReleaseAfterReloadRequest =
+      std::memory_order_release;
+  static constexpr std::memory_order kMemoryAcquireBeforeReload =
+      std::memory_order_acquire;
 
   // Allows `OnBeginWork()` to wait until there is no more valid
   // `SyncWorkAuthorization`.
