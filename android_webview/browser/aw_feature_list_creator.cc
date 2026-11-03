@@ -5,6 +5,7 @@
 #include "android_webview/browser/aw_feature_list_creator.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -432,10 +433,12 @@ void AwFeatureListCreator::SetUpFieldTrials() {
           /*enable_limited_entropy_mode=*/false);
 
   std::unique_ptr<const variations::EntropyProviders> entropy_providers;
+  std::optional<int> low_entropy_source_value;
 
   if (nonembedded_low_entropy_source >= 0) {
     local_state_->SetInteger(prefs::kWebViewLowEntropySource,
                              nonembedded_low_entropy_source);
+    low_entropy_source_value = nonembedded_low_entropy_source;
 
     // If we have a nonembedded low entropy source, wrap the standard providers.
     entropy_providers = std::make_unique<AwEntropyProviders>(
@@ -445,6 +448,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
             std::from_range, kNonembeddedLowEntropySourceDenylist),
         limited_entropy_randomization_source);
   } else {
+    low_entropy_source_value =
+        metrics_client->metrics_state_manager()->GetLowEntropySource();
     entropy_providers = std::move(standard_providers);
   }
 
@@ -457,7 +462,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       variation_ids, GetSwitchDependentFeatureOverrides(*command_line),
       std::move(feature_list), metrics_client->metrics_state_manager(),
       aw_field_trials_.get(), &ignored_safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true, *entropy_providers);
+      low_entropy_source_value, *entropy_providers);
 }
 
 }  // namespace android_webview

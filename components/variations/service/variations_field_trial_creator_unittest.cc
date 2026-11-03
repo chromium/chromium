@@ -460,7 +460,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
         &platform_field_trials, safe_seed_manager_,
-        /*add_entropy_source_to_variations_ids=*/true,
+        metrics_state_manager_->GetLowEntropySource(),
         *metrics_state_manager_->CreateEntropyProviders(
             /*enable_limited_entropy_mode=*/false));
   }
@@ -1027,7 +1027,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true,
+      metrics_state_manager->GetLowEntropySource(),
       *metrics_state_manager->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false)));
 
@@ -1219,7 +1219,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true,
+      metrics_state_manager->GetLowEntropySource(),
       *metrics_state_manager->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false)));
 
@@ -1958,7 +1958,7 @@ TEST_P(LimitedLayerFieldTrialCreatorTest, SetUpFieldTrials) {
           std::vector<base::FeatureList::FeatureOverrideInfo>(),
           std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
           &platform_field_trials, &safe_seed_manager,
-          /*add_entropy_source_to_variations_ids=*/true,
+          metrics_state_manager->GetLowEntropySource(),
           *metrics_state_manager->CreateEntropyProviders(
               /*enable_limited_entropy_mode=*/true)),
       params.apply_seed);
@@ -2048,7 +2048,7 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true,
+      metrics_state_manager->GetLowEntropySource(),
       *metrics_state_manager->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false)));
 
