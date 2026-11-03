@@ -5,8 +5,8 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -50,10 +50,9 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
 
     // Setup discount response in tab helper
     MockCommerceUiTabHelper* mock_tab_helper =
-        static_cast<MockCommerceUiTabHelper*>(browser()
-                                                  ->GetActiveTabInterface()
-                                                  ->GetTabFeatures()
-                                                  ->commerce_ui_tab_helper());
+        static_cast<MockCommerceUiTabHelper*>(
+            commerce::CommerceUiTabHelper::From(
+                browser()->GetActiveTabInterface()));
     ON_CALL(*mock_tab_helper, ShouldShowDiscountsIconView)
         .WillByDefault(testing::Return(true));
     ON_CALL(*mock_tab_helper, GetDiscounts)
@@ -75,10 +74,7 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTestURL)));
 
     // Manually trigger the discounts page action.
-    browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->commerce_ui_tab_helper()
+    commerce::CommerceUiTabHelper::From(browser()->GetActiveTabInterface())
         ->UpdateDiscountsIconView();
   }
 

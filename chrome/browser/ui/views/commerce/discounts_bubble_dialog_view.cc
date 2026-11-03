@@ -10,7 +10,6 @@
 
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/discounts_coupon_code_label_view.h"
 #include "chrome/browser/ui/views/controls/page_switcher_view.h"
@@ -225,11 +224,11 @@ void DiscountsBubbleDialogView::CopyButtonClicked() {
       RecordDiscountsBubbleCopyButtonClicked(ukm_source_id_);
 
   auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (!tab || !tab->GetTabFeatures()) {
+  if (!tab) {
     return;
   }
 
-  auto* tab_helper = tab->GetTabFeatures()->commerce_ui_tab_helper();
+  auto* tab_helper = commerce::CommerceUiTabHelper::From(tab);
   if (!tab_helper) {
     return;
   }
@@ -239,11 +238,11 @@ void DiscountsBubbleDialogView::CopyButtonClicked() {
 
 void DiscountsBubbleDialogView::OnDialogClosing() {
   auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (!tab || !tab->GetTabFeatures()) {
+  if (!tab) {
     return;
   }
 
-  auto* tab_helper = tab->GetTabFeatures()->commerce_ui_tab_helper();
+  auto* tab_helper = commerce::CommerceUiTabHelper::From(tab);
   if (!tab_helper) {
     return;
   }

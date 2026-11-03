@@ -25,9 +25,9 @@ source_set("commerce") {
     "//components/image_fetcher/core",
     "//components/prefs",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
     "//ui/gfx",
   ]
-  deps = [ "//ui/base/unowned_user_data" ]
 }
 
 source_set("impl") {
@@ -46,7 +46,6 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
-    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/toolbar",
@@ -65,6 +64,7 @@ source_set("impl") {
     "//components/commerce/core:utils",
     "//components/commerce/core/mojom:mojo_bindings",
     "//components/strings",
+    "//components/tabs:public",
     "//components/vector_icons",
     "//services/metrics/public/cpp:gen_ukm_builders",
     "//services/metrics/public/cpp:metrics_cpp",
@@ -83,13 +83,16 @@ source_set("test_support") {
     "mock_commerce_ui_tab_helper.h",
   ]
 
-  deps = [
+  public_deps = [
     ":commerce",
+    "//components/tabs:public",
+    "//testing/gmock",
+  ]
+  deps = [
     "//base",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/tabs:tabs_public",
     "//skia:skia_core_public_headers",
-    "//testing/gmock",
     "//ui/views",
   ]
 }

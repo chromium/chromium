@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -426,11 +427,8 @@ IN_PROC_BROWSER_TEST_P(PriceTrackingViewFeatureFlagBrowserTest,
   const bool is_feature_enabled = GetParam();
   mock_shopping_service->SetIsShoppingListEligible(is_feature_enabled);
 
-  auto* mock_tab_helper =
-      static_cast<MockCommerceUiTabHelper*>(browser()
-                                                ->GetActiveTabInterface()
-                                                ->GetTabFeatures()
-                                                ->commerce_ui_tab_helper());
+  auto* mock_tab_helper = static_cast<MockCommerceUiTabHelper*>(
+      commerce::CommerceUiTabHelper::From(browser()->GetActiveTabInterface()));
   ON_CALL(*mock_tab_helper, GetProductImage)
       .WillByDefault(
           testing::ReturnRef(mock_tab_helper->GetValidProductImage()));

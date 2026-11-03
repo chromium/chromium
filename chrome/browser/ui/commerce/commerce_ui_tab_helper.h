@@ -43,7 +43,6 @@ class NavigationHandle;
 
 namespace tabs {
 class TabInterface;
-class TabModel;
 }
 
 namespace image_fetcher {
@@ -73,7 +72,7 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
   CommerceUiTabHelper& operator=(const CommerceUiTabHelper& other) = delete;
 
   DECLARE_USER_DATA(CommerceUiTabHelper);
-  static CommerceUiTabHelper* From(tabs::TabModel* tab);
+  static CommerceUiTabHelper* From(tabs::TabInterface* tab);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

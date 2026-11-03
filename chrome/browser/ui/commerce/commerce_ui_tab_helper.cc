@@ -25,8 +25,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/discounts_bubble_dialog_view.h"
@@ -50,6 +48,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
@@ -76,8 +75,8 @@ namespace commerce {
 DEFINE_USER_DATA(CommerceUiTabHelper);
 
 // static
-CommerceUiTabHelper* CommerceUiTabHelper::From(tabs::TabModel* tab) {
-  return Get(tab->GetUnownedUserDataHost());
+CommerceUiTabHelper* CommerceUiTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
 
 CommerceUiTabHelper::CommerceUiTabHelper(

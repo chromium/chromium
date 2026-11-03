@@ -443,10 +443,6 @@ class TabFeatures {
       std::unique_ptr<customize_chrome::SidePanelController>
           customize_chrome_side_panel_controller);
 
-  commerce::CommerceUiTabHelper* commerce_ui_tab_helper() {
-    return commerce_ui_tab_helper_.get();
-  }
-
   tab_groups::SavedTabGroupWebContentsListener*
   saved_tab_group_web_contents_listener() const {
     return saved_tab_group_web_contents_listener_.get();

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
+
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -9,11 +11,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
-#include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -113,10 +114,9 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
         commerce::ShoppingServiceFactory::GetForBrowserContext(
             browser()->GetProfile()));
     MockCommerceUiTabHelper* mock_tab_helper =
-        static_cast<MockCommerceUiTabHelper*>(browser()
-                                                  ->GetActiveTabInterface()
-                                                  ->GetTabFeatures()
-                                                  ->commerce_ui_tab_helper());
+        static_cast<MockCommerceUiTabHelper*>(
+            commerce::CommerceUiTabHelper::From(
+                browser()->GetActiveTabInterface()));
     ON_CALL(*mock_tab_helper, GetProductImage)
         .WillByDefault(
             testing::ReturnRef(mock_tab_helper->GetValidProductImage()));

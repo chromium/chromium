@@ -134,13 +134,13 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/commerce:test_support",
-      "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/test:test_support",
       "//chrome/test/user_education:impl",
       "//components/commerce/core:account_checker_test_support",
       "//components/commerce/core:feature_list",
       "//components/commerce/core:shopping_service_test_support",
       "//components/feature_engagement/test:test_support",
+      "//components/tabs:public",
       "//ui/base/clipboard:clipboard_test_support",
     ]
   }

@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -47,6 +47,7 @@
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -994,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   tabs::TabInterface* incognito_tab =
       incognito_browser->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(incognito_tab, nullptr);
-  EXPECT_EQ(incognito_tab->GetTabFeatures()->commerce_ui_tab_helper(), nullptr);
+  EXPECT_EQ(commerce::CommerceUiTabHelper::From(incognito_tab), nullptr);
 }
 
 class NonGroupFocusMoveToWindowTest : public BrowserCommandsTest {
@@ -1084,7 +1085,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsIsolatedModeTest,
   tabs::TabInterface* regular_tab =
       browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(regular_tab, nullptr);
-  EXPECT_NE(regular_tab->GetTabFeatures()->commerce_ui_tab_helper(), nullptr);
+  EXPECT_NE(commerce::CommerceUiTabHelper::From(regular_tab), nullptr);
 
   BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(
@@ -1093,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsIsolatedModeTest,
   tabs::TabInterface* isolated_tab =
       isolated_browser->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(isolated_tab, nullptr);
-  EXPECT_EQ(isolated_tab->GetTabFeatures()->commerce_ui_tab_helper(), nullptr);
+  EXPECT_EQ(commerce::CommerceUiTabHelper::From(isolated_tab), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsIsolatedModeTest,

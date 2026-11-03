@@ -154,7 +154,6 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
@@ -1094,9 +1093,8 @@ void BrowserActions::InitializePageActionIconActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                auto* tab_helper = bwi->GetActiveTabInterface()
-                                       ->GetTabFeatures()
-                                       ->commerce_ui_tab_helper();
+                auto* tab_helper = commerce::CommerceUiTabHelper::From(
+                    bwi->GetActiveTabInterface());
                 CHECK(tab_helper);
 
                 tab_helper->OnPriceInsightsIconClicked();
@@ -1121,17 +1119,16 @@ void BrowserActions::InitializePageActionIconActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                auto* tab_features =
-                    bwi->GetActiveTabInterface()->GetTabFeatures();
-                CHECK(tab_features);
+                auto* tab_interface = bwi->GetActiveTabInterface();
+                CHECK(tab_interface);
                 auto* page_action_controller =
                     commerce::DiscountsPageActionViewController::From(
-                        *bwi->GetActiveTabInterface());
+                        *tab_interface);
                 CHECK(page_action_controller);
                 page_action_controller->MaybeShowBubble(/*from_user=*/true);
 
                 auto* commerce_ui_tab_helper =
-                    tab_features->commerce_ui_tab_helper();
+                    commerce::CommerceUiTabHelper::From(tab_interface);
                 CHECK(commerce_ui_tab_helper);
 
                 commerce::metrics::DiscountsMetricCollector::
