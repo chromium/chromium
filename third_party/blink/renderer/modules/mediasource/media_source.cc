@@ -1354,11 +1354,11 @@ MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
 
   DCHECK(IsMainThread());
 
-  if (media_source_attachment_ || attachment_tracer_) {
+  if (media_source_attachment_ || attachment_tracer_ ||
+      context_already_destroyed_) {
     return nullptr;
   }
 
-  DCHECK(!context_already_destroyed_);
   DCHECK(IsClosed());
 
   TRACE_EVENT_BEGIN(
@@ -1451,14 +1451,21 @@ void MediaSource::ContextDestroyed() {
         media_source_attachment_->OnMediaSourceContextDestroyed();
       }
 
-      // For consistency, though redundant for same-thread operation, prevent
-      // subsequent attachment start from succeeding. This flag is meaningful in
-      // cross-thread attachment usage.
+      // Prevent subsequent attachment start from succeeding (for instance, if a
+      // cross-document caller still holds an unrevoked object URL after this
+      // MediaSource's context is destroyed).
       context_already_destroyed_ = true;
     }
 
     if (!IsClosed()) {
       SetReadyState(ReadyState::kClosed);
+    } else {
+      // If attachment started, but did not yet complete before our context was
+      // destroyed, we are still in kClosed so OnReadyStateChange() will not
+      // run; drop the attachment and tracer references explicitly.
+      base::AutoLock lock(attachment_link_lock_);
+      media_source_attachment_.reset();
+      attachment_tracer_ = nullptr;
     }
     web_media_source_.reset();
     return;

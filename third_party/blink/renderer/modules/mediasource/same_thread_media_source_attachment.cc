@@ -300,6 +300,10 @@ WebTimeRanges SameThreadMediaSourceAttachment::BufferedInternal(
 
 WebTimeRanges SameThreadMediaSourceAttachment::SeekableInternal(
     MediaSourceTracer* tracer) const {
+  if (media_source_context_destroyed_) {
+    return {};
+  }
+
   VerifyCalledWhileContextsAliveForDebugging();
 
   // Since the attached MediaSource, HTMLMediaElement and the element's player's
@@ -312,6 +316,10 @@ WebTimeRanges SameThreadMediaSourceAttachment::SeekableInternal(
 
 void SameThreadMediaSourceAttachment::OnTrackChanged(MediaSourceTracer* tracer,
                                                      TrackBase* track) {
+  if (media_source_context_destroyed_) {
+    return;
+  }
+
   // In this same thread implementation, the MSE side of the attachment can loop
   // back into this from SourceBuffer's initialization segment received
   // algorithm notifying the element, which then calls this. Regardless, we are
@@ -336,6 +344,10 @@ void SameThreadMediaSourceAttachment::OnElementTimeUpdate(double time) {
 
 void SameThreadMediaSourceAttachment::OnElementError() {
   DVLOG(3) << __func__ << " this=" << this;
+
+  if (media_source_context_destroyed_) {
+    return;
+  }
 
   VerifyCalledWhileContextsAliveForDebugging();
 

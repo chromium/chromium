@@ -35,6 +35,8 @@ async_test(t => {
                   'readyState after attachment completes');
     assert_true(isNaN(mediaSource.duration),
                 'duration after attachment completes');
+    assert_equals(video.buffered.length, 0, 'buffered.length');
+    assert_equals(video.seekable.length, 0, 'seekable.length');
 
     // Detach the media element, which destroys its player and demuxer.
     video.removeAttribute('src');
@@ -47,5 +49,34 @@ async_test(t => {
 
   video.src = URL.createObjectURL(mediaSource);
 }, 'MediaSource stays closed if its context is destroyed during attachment');
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  const mediaSource = new iframe.contentWindow.MediaSource();
+
+  // Register the object URL in the main document so it is not auto-revoked
+  // when the iframe's context is destroyed, then destroy the iframe before
+  // starting attachment.
+  const url = URL.createObjectURL(mediaSource);
+  t.add_cleanup(() => URL.revokeObjectURL(url));
+  iframe.remove();
+
+  const video = document.createElement('video');
+  document.body.appendChild(video);
+  t.add_cleanup(() => {
+    video.removeAttribute('src');
+    video.load();
+    video.remove();
+  });
+
+  const errorPromise = new Promise(resolve => {
+    video.addEventListener('error', resolve, {once: true});
+  });
+  video.src = url;
+  await errorPromise;
+  assert_equals(video.error.code, MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED);
+  assert_equals(mediaSource.readyState, 'closed');
+}, 'Attaching to a MediaSource whose context is already destroyed fails cleanly');
 </script>
 </body>
