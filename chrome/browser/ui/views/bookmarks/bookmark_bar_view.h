@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -15,6 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
@@ -89,6 +92,9 @@ class BookmarkBarView
 
  public:
   class ButtonSeparatorView;
+
+  static constexpr base::TimeDelta kFaviconUpdateDelay =
+      base::Milliseconds(500);
 
   // `controller` carries out the bar's browser actions. It must not be null;
   // the view owns it. |browser_view| can be NULL during tests.
@@ -347,6 +353,9 @@ class BookmarkBarView
   // appropriately.
   void BookmarkNodeChangedImpl(const bookmarks::BookmarkNode* node);
 
+  void OnBookmarkButtonVisibilityChanged(views::LabelButton* button);
+  void OnFaviconUpdateTimerFired(const bookmarks::BookmarkNode* node);
+
   // Shows the menu used during drag and drop for the specified folder.
   void ShowDropFolderForNode(const BookmarkParentFolder& folder);
 
@@ -483,6 +492,9 @@ class BookmarkBarView
 
   std::map<raw_ptr<const views::LabelButton>, base::CallbackListSubscription>
       button_visibility_changed_callbacks_;
+
+  std::map<raw_ptr<const bookmarks::BookmarkNode>, base::OneShotTimer>
+      favicon_update_timers_;
 
   // The index of the bookmark bar's first hidden node.
   // This is used to populate the overflow bookmarks button.

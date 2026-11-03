@@ -20,6 +20,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder.h"
@@ -134,16 +135,16 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
                          size_t index) override {}
   void BookmarkNodesRemoved(
       const BookmarkParentFolder& parent,
-      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override {}
+      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override;
   void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
                          size_t old_index,
                          const BookmarkParentFolder& new_parent,
                          size_t new_index) override;
-  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override {}
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkParentFolderChildrenReordered(
       const BookmarkParentFolder& folder) override {}
-  void BookmarkAllUserNodesRemoved() override {}
+  void BookmarkAllUserNodesRemoved() override;
 
   // BookmarkContextMenuObserver methods.
   void WillRemoveBookmarks(
@@ -317,6 +318,9 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   // Returns the updated menu if there were changes; otherwise, returns null.
   views::MenuItemView* UpdateOtherNodeSeparator();
   void BuildOtherNodeMenuHeader(views::MenuItemView* menu);
+  void OnFaviconUpdateTimerFired(const bookmarks::BookmarkNode* node);
+  void UpdateMenuItemFavicon(const bookmarks::BookmarkNode* node,
+                             views::MenuItemView* menu);
 
   bool IsDropValid(const BookmarkFolderOrURL* target,
                    const views::MenuDelegate::DropPosition* position);
@@ -379,6 +383,9 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   base::ScopedObservation<BookmarkMergedSurfaceService,
                           BookmarkMergedSurfaceServiceObserver>
       bookmark_merged_service_observation_{this};
+
+  std::map<raw_ptr<const bookmarks::BookmarkNode>, base::OneShotTimer>
+      favicon_update_timers_;
 
   base::WeakPtrFactory<BookmarkMenuDelegate> weak_ptr_factory_{this};
 };

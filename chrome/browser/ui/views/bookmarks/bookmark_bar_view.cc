@@ -1280,6 +1280,7 @@ void BookmarkBarView::BookmarkAllUserNodesRemoved() {
 }
 
 void BookmarkBarView::BookmarkNodeChanged(const BookmarkNode* node) {
+  favicon_update_timers_.erase(node);
   BookmarkNodeChangedImpl(node);
 
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -1310,7 +1311,34 @@ void BookmarkBarView::BookmarkParentFolderChildrenReordered(
 }
 
 void BookmarkBarView::BookmarkNodeFaviconChanged(const BookmarkNode* node) {
-  BookmarkNodeChangedImpl(node);
+  auto it = std::ranges::find(bookmark_buttons_, node,
+                              &BookmarkButtonAndNode::second);
+  if (it == bookmark_buttons_.end() || !it->first->GetVisible()) {
+    return;
+  }
+
+  if (!node->is_favicon_loaded()) {
+    // Delay reloading invalidated favicons so pages that rapidly change their
+    // favicon do not cause bookmark bar icons to blink.
+    favicon_update_timers_[node].Start(
+        FROM_HERE, kFaviconUpdateDelay,
+        base::BindOnce(&BookmarkBarView::OnFaviconUpdateTimerFired,
+                       base::Unretained(this), node));
+    return;
+  }
+
+  if (!favicon_update_timers_.contains(node)) {
+    BookmarkNodeChangedImpl(node);
+  }
+}
+
+void BookmarkBarView::OnFaviconUpdateTimerFired(const BookmarkNode* node) {
+  favicon_update_timers_.erase(node);
+  if (node->is_favicon_loaded()) {
+    BookmarkNodeChangedImpl(node);
+    return;
+  }
+  bookmark_service_->bookmark_model()->GetFavicon(node);
 }
 
 void BookmarkBarView::ExtensiveBookmarkChangesBeginning() {
@@ -1638,9 +1666,9 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
   bookmark_buttons_.insert(bookmark_buttons_.cbegin() + index,
                            {button.get(), node});
   button_visibility_changed_callbacks_[button.get()] =
-      button->AddVisibleChangedCallback(
-          base::BindRepeating(&BookmarkBarView::UpdateFirstHiddenNodeIndex,
-                              base::Unretained(this)));
+      button->AddVisibleChangedCallback(base::BindRepeating(
+          &BookmarkBarView::OnBookmarkButtonVisibilityChanged,
+          base::Unretained(this), button.get()));
   UpdateFirstHiddenNodeIndex();
   return button;
 }
@@ -1661,6 +1689,7 @@ std::unique_ptr<views::MenuButton> BookmarkBarView::CreateMenuButtonForFolder(
 void BookmarkBarView::RemoveBookmarkButton(size_t index) {
   CHECK_LT(index, bookmark_buttons_.size());
   views::LabelButton* button = bookmark_buttons_[index].first;
+  favicon_update_timers_.erase(bookmark_buttons_[index].second);
   bookmark_buttons_.erase(bookmark_buttons_.cbegin() + index);
   button->SetVisible(false);
   button_visibility_changed_callbacks_.erase(button);
@@ -1680,6 +1709,30 @@ void BookmarkBarView::UpdateFirstHiddenNodeIndex() {
     bookmark_menu_->BookmarkStartIndexChanged(
         BookmarkParentFolder::BookmarkBarFolder(), first_hidden_node_idx_);
   }
+}
+
+void BookmarkBarView::OnBookmarkButtonVisibilityChanged(
+    views::LabelButton* button) {
+  UpdateFirstHiddenNodeIndex();
+  auto it = std::ranges::find(bookmark_buttons_, button,
+                              &BookmarkButtonAndNode::first);
+  if (it == bookmark_buttons_.end()) {
+    return;
+  }
+  const BookmarkNode* node = it->second;
+  if (!button->GetVisible()) {
+    favicon_update_timers_.erase(node);
+    return;
+  }
+  if (!node->is_url()) {
+    return;
+  }
+  if (!node->is_favicon_loaded()) {
+    // Keep the old icon until the reload finishes so revealing doesn't blink.
+    bookmark_service_->bookmark_model()->GetFavicon(node);
+    return;
+  }
+  ConfigureButton(node, button);
 }
 
 std::unique_ptr<views::LabelButton>

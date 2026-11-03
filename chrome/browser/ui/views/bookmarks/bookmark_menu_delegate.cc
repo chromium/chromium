@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_delegate.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -604,6 +605,16 @@ void BookmarkMenuDelegate::WillShowMenu(MenuItemView* menu) {
   }
 }
 
+void BookmarkMenuDelegate::BookmarkNodesRemoved(
+    const BookmarkParentFolder& parent,
+    const base::flat_set<const bookmarks::BookmarkNode*>& nodes) {
+  std::erase_if(favicon_update_timers_, [&nodes](const auto& entry) {
+    return std::ranges::any_of(nodes, [&entry](const BookmarkNode* removed) {
+      return entry.first->HasAncestor(removed);
+    });
+  });
+}
+
 void BookmarkMenuDelegate::BookmarkNodeMoved(
     const BookmarkParentFolder& old_parent,
     size_t old_index,
@@ -664,6 +675,17 @@ void BookmarkMenuDelegate::BookmarkNodeMoved(
   }
 }
 
+void BookmarkMenuDelegate::BookmarkNodeChanged(const BookmarkNode* node) {
+  favicon_update_timers_.erase(node);
+  if (!node->is_url()) {
+    return;
+  }
+  auto menu_pair = node_to_menu_map_.find(BookmarkFolderOrURL(node));
+  if (menu_pair != node_to_menu_map_.end()) {
+    UpdateMenuItemFavicon(node, menu_pair->second);
+  }
+}
+
 void BookmarkMenuDelegate::BookmarkNodeFaviconChanged(
     const BookmarkNode* node) {
   auto menu_pair = node_to_menu_map_.find(BookmarkFolderOrURL(node));
@@ -671,7 +693,39 @@ void BookmarkMenuDelegate::BookmarkNodeFaviconChanged(
     return;  // We're not showing a menu item for the node.
   }
 
-  menu_pair->second->SetIcon(GetFaviconForNode(
+  if (!node->is_favicon_loaded()) {
+    favicon_update_timers_[node].Start(
+        FROM_HERE, BookmarkBarView::kFaviconUpdateDelay,
+        base::BindOnce(&BookmarkMenuDelegate::OnFaviconUpdateTimerFired,
+                       base::Unretained(this), node));
+    return;
+  }
+
+  if (!favicon_update_timers_.contains(node)) {
+    UpdateMenuItemFavicon(node, menu_pair->second);
+  }
+}
+
+void BookmarkMenuDelegate::BookmarkAllUserNodesRemoved() {
+  favicon_update_timers_.clear();
+}
+
+void BookmarkMenuDelegate::OnFaviconUpdateTimerFired(const BookmarkNode* node) {
+  favicon_update_timers_.erase(node);
+  auto menu_pair = node_to_menu_map_.find(BookmarkFolderOrURL(node));
+  if (menu_pair == node_to_menu_map_.end()) {
+    return;
+  }
+  if (node->is_favicon_loaded()) {
+    UpdateMenuItemFavicon(node, menu_pair->second);
+    return;
+  }
+  GetBookmarkMergedSurfaceService()->bookmark_model()->GetFavicon(node);
+}
+
+void BookmarkMenuDelegate::UpdateMenuItemFavicon(const BookmarkNode* node,
+                                                 MenuItemView* menu) {
+  menu->SetIcon(GetFaviconForNode(
       GetBookmarkMergedSurfaceService()->bookmark_model(), node));
 }
 
@@ -734,6 +788,7 @@ void BookmarkMenuDelegate::RemoveBookmarkNode(const BookmarkNode* node,
       ++i;
       continue;
     }
+    favicon_update_timers_.erase(underlying_nodes[0].get());
     if (i->first.GetIfBookmarkFolder()) {
       built_nodes_.erase(*i->first.GetIfBookmarkFolder());
     }

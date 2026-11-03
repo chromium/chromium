@@ -191,12 +191,18 @@ source_set("unit_tests") {
     ":test_support",
     "//chrome/browser/bookmarks",
     "//chrome/browser/bookmarks:test_support",
+    "//chrome/browser/favicon",
+    "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui/bookmarks/controllers",
     "//chrome/browser/ui/page_action:test_support",
     "//chrome/test:test_support",
     "//components/bookmarks/managed",
+    "//components/favicon/core/test:test_support",
+    "//components/favicon_base",
+    "//components/saved_tab_groups/test_support",
     "//components/tabs:test_support",
     "//ui/base/clipboard:clipboard_test_support",
+    "//ui/gfx:test_support",
   ]
 }
 
