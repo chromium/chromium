@@ -505,7 +505,7 @@ class COMPONENT_EXPORT(URL) GURL {
 COMPONENT_EXPORT(URL)
 std::ostream& operator<<(std::ostream& out, const GURL& url);
 
-COMPONENT_EXPORT(URL) bool operator==(const GURL& x, const GURL& y);
+COMPONENT_EXPORT(URL) bool operator==(const GURL& lhs, const GURL& rhs);
 
 // Equality operator for comparing raw spec_. This should be used in place of
 // url == GURL(spec) where |spec| is known (i.e. constants). This is to prevent

@@ -234,6 +234,30 @@ See `build/rust/tests/test_rust_api_from_cpp/std/std_types.h` and
 `std::string_view` is represented as `cpp_std::string_view<'a>` (see the
 "References and lifetimes" section above).
 
+## Types that Rust can't move
+
+Rust moves values with `memcpy` - it cannot move C++ objects that are not Rust
+movable.  For more details please see the following sections of the Crubit book:
+
+* ["Rust-movable classes"](https://crubit.rs/cpp/classes_and_structs.html#rust_movable)
+  (generic introduction)
+* ["Making types Rust-movable"](https://crubit.rs/cpp/cookbook#rust_movable)
+  (tips for making a C++ object Rust-movable).  Some extra notes about
+  `TRIVIAL_ABI`:
+    - Note that in Chromium `TRIVIAL_ABI` from `base/compiler_specific.h`
+      should be used instead of the equivalent Abseil macro.
+    - Note that Crubit docs and
+      [Clang docs](https://clang.llvm.org/docs/AttributeReference.html#trivial-abi:~:text=objects%20that%20contain%20pointers%20to%20themselves%20or%20otherwise%20depend%20on%20their%20address%20(or%20the%20address%20or%20their%20subobjects)
+      point out that misusing `TRIVIAL_ABI` can lead to
+      Undefined Behavior (UB) - e.g. when the attribute is applied to
+      objects that are not
+      [bitwise-relocatable (as defined by Crubit)](https://github.com/google/crubit/blob/4fd627869b9e9becbf4c041f7a511102c2db4ce1/docs/design/bitwise_relocatable.md?plain=1#L35-L52).
+* `ctor` crate documentation (support for in-place construction and mutation of
+  Rust types like ones that were originally defined in C++):
+    - ["Quick guide"](https://crubit.rs/types/non_rust_movable/intro_short.html)
+    - ["Advanced guide"](https://crubit.rs/types/non_rust_movable/intro_advanced.html)
+    - ["Cheat sheet"](https://crubit.rs/types/non_rust_movable/cheat_sheet.html)
+
 ## Adding hand-written Rust code to the bindings
 
 The `extra_rust_sources` attribute of `rust_api_from_cpp` merges hand-written

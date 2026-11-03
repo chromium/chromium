@@ -33,6 +33,11 @@ _globally_enabled_crubit_features = [
   # specializations (e.g. `base::IdType64<FooTag>`) used by the C++ headers.
   "template_instantiation",
 
+  # `strong_ordering_traits` makes Crubit implement `Eq` and `Ord` (in addition
+  # to `PartialEq` and `PartialOrd`) for C++ types whose `operator<=>` returns
+  # `std::strong_ordering` (e.g. `GURL` and `url::Origin`).
+  "strong_ordering_traits",
+
   # Other features to consider enabling by default:
   # TODO(crbug.com/40226863): Consider enabling `forward_declare`.
   # TODO(crbug.com/40226863): Consider enabling `layout_compat_string`.
@@ -399,6 +404,7 @@ template("rust_api_from_cpp") {
 
     configs -= crubit_gn_configs_to_remove
     configs += crubit_gn_support_configs_to_add
+    configs += [ "//build/rust/crubit:rust_api_from_cpp_thunks_config" ]
   }
 
   # Exposing the generated Rust bindings.

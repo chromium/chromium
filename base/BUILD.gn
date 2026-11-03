@@ -2672,7 +2672,8 @@ if (enable_rust_api_from_cpp) {
     # the "Caveats" section in `//docs/rust/crubit/README.md`.
     #
     # TODO(https://crbug.com/576651451): Make publicly visible after Cronet
-    # supports both Crubit directions.
+    # supports both Crubit directions.  Expand visibility as needed for
+    # Crubit adopters outside of Cronet (e.g. `//content`).
     visibility = [ "//build/rust/tests/test_rust_api_from_cpp:*" ]
   }
 }

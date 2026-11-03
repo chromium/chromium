@@ -541,8 +541,8 @@ std::ostream& operator<<(std::ostream& out, const GURL& url) {
   return out << url.possibly_invalid_spec();
 }
 
-bool operator==(const GURL& x, const GURL& y) {
-  return x.possibly_invalid_spec() == y.possibly_invalid_spec();
+bool operator==(const GURL& lhs, const GURL& rhs) {
+  return lhs.possibly_invalid_spec() == rhs.possibly_invalid_spec();
 }
 
 bool operator==(const GURL& x, std::string_view spec) {
