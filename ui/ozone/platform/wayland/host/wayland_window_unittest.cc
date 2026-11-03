@@ -640,6 +640,27 @@ TEST_P(WaylandWindowTest, HandleTiledEdges) {
   }
 }
 
+// Checks that a configure only changing the tiled edges is not merged into an
+// in-flight request for the same bounds. Otherwise the tiling change is lost,
+// and the delegate is not notified when it is reverted.
+TEST_P(WaylandWindowTest, HandleTiledEdgesOnlyConfigure) {
+  constexpr gfx::Size kSize{700, 500};
+
+  // Resizing produces a new frame, so this request stays in flight.
+  SendConfigureEvent(surface_id_, kSize, InitializeWlArrayWithActivatedState());
+  ASSERT_NE(window_->applied_state(), window_->latched_state());
+
+  EXPECT_CALL(delegate_,
+              OnWindowTiledStateChanged(WindowTiledEdges{.left = true}));
+  SendConfigureEvent(surface_id_, kSize,
+                     MakeStateArray({XDG_TOPLEVEL_STATE_ACTIVATED,
+                                     XDG_TOPLEVEL_STATE_TILED_LEFT}));
+
+  EXPECT_CALL(delegate_, OnWindowTiledStateChanged(WindowTiledEdges{}));
+  SendConfigureEvent(surface_id_, kSize, InitializeWlArrayWithActivatedState());
+  VerifyAndClearExpectations();
+}
+
 TEST_P(WaylandWindowTest, DisregardUnpassedWindowConfigure) {
   constexpr gfx::Rect kNormalBounds1{500, 300};
   constexpr gfx::Rect kNormalBounds2{800, 600};

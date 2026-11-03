@@ -40,6 +40,9 @@ std::string PlatformWindowDelegate::State::ToString() const {
   std::stringstream result;
   result << "State {";
   result << "window_state = " << static_cast<int>(window_state);
+  result << ", tiled_edges = {left = " << tiled_edges.left
+         << ", right = " << tiled_edges.right << ", top = " << tiled_edges.top
+         << ", bottom = " << tiled_edges.bottom << "}";
   result << ", bounds_dip = " << bounds_dip.ToString();
   result << ", size_px = " << size_px.ToString();
   result << ", window_scale = " << window_scale;

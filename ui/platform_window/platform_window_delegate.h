@@ -79,13 +79,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // is identified by the sequence id.
   // This is used by OnStateChanged and currently only by ozone/wayland.
   struct COMPONENT_EXPORT(PLATFORM_WINDOW) State {
-    bool operator==(const State& rhs) const {
-      return std::tie(window_state, tiled_edges, bounds_dip, size_px,
-                      window_scale, ui_scale, occlusion_state) ==
-             std::tie(rhs.window_state, tiled_edges, rhs.bounds_dip,
-                      rhs.size_px, rhs.window_scale, rhs.ui_scale,
-                      rhs.occlusion_state);
-    }
+    friend bool operator==(const State&, const State&) = default;
 
     // Current platform window state.
     PlatformWindowState window_state = PlatformWindowState::kUnknown;
