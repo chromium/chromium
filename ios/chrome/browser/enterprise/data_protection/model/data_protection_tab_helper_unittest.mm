@@ -338,7 +338,7 @@ TEST_F(DataProtectionTabHelperTest, RealTimeLookupBlock) {
   EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
 
   histogram_tester.ExpectUniqueSample(
-      DataProtectionTabHelper::kScreenshotBlockLookupSuccessHistogram, true, 1);
+      DataProtectionTabHelper::kRealTimeURLLookupSuccessHistogram, true, 1);
   histogram_tester.ExpectUniqueSample(
       DataProtectionTabHelper::kScreenshotBlockSourceHistogram,
       ScreenshotBlockSource::kRealtimeLookup, 1);
@@ -544,8 +544,7 @@ TEST_F(DataProtectionTabHelperTest, RealTimeLookupFailed) {
   EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
 
   histogram_tester.ExpectUniqueSample(
-      DataProtectionTabHelper::kScreenshotBlockLookupSuccessHistogram, false,
-      1);
+      DataProtectionTabHelper::kRealTimeURLLookupSuccessHistogram, false, 1);
   histogram_tester.ExpectTotalCount(
       DataProtectionTabHelper::kScreenshotBlockSourceHistogram, 0);
 }

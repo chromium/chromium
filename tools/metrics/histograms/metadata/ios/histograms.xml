@@ -2383,15 +2383,15 @@ chromium-metrics-reviews@google.com.
   <summary>Status of the enhanced calendar response.</summary>
 </histogram>
 
-<histogram name="IOS.Enterprise.DataProtection.ScreenshotBlock.Lookup.Success"
-    enum="Boolean" expires_after="2027-03-07">
+<histogram name="IOS.Enterprise.DataProtection.RealTimeURL.Lookup.Success"
+    enum="Boolean" expires_after="2027-07-07">
   <owner>dmytriievd@google.com</owner>
   <owner>eic@google.com</owner>
+  <owner>mxlg@google.com</owner>
   <owner>bling-enterprise@google.com</owner>
   <summary>
-    Logs whether a real-time lookup for screenshot protection on iOS succeeded
-    or failed. Recorded from the DataProtectionTabHelper when a lookup result is
-    received.
+    Logs whether a real-time lookup for a url on iOS succeeded or failed.
+    Recorded from the DataProtectionTabHelper when a lookup result is received.
   </summary>
 </histogram>
 

@@ -276,7 +276,7 @@ void DataProtectionTabHelper::OnRealTimeLookupResult(
   bool protection_enabled = true;
   std::string watermark_text;
   std::string identifier;
-  base::UmaHistogramBoolean(kScreenshotBlockLookupSuccessHistogram,
+  base::UmaHistogramBoolean(kRealTimeURLLookupSuccessHistogram,
                             response != nullptr);
 
   enterprise_connectors::ConnectorsService* connectors_service =
