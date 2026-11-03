@@ -2642,6 +2642,27 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfHeuristics.{Depth}{ListType}ListItemCount"
+    units="items" expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of items in a heuristically detected {Depth} {ListType}
+    list in an untagged PDF document. Recorded once per list when it ends. A
+    nested list's items don't count toward its parent's count. Note that page
+    breaks split lists right now.
+  </summary>
+  <token key="Depth">
+    <variant name="Nested" summary="nested"/>
+    <variant name="TopLevel" summary="top-level"/>
+  </token>
+  <token key="ListType">
+    <variant name="Ordered" summary="ordered"/>
+    <variant name="Unordered" summary="unordered"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.PdfHeuristics.{Role}Repetition"
     enum="PdfAccessibilityHeaderFooterRepetition" expires_after="2027-08-01">
   <owner>kristislee@google.com</owner>

@@ -5456,6 +5456,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedList) {
       ListStartReason::kUnorderedMarker, 1);
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.ListMaxNestingDepth", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TopLevelUnorderedListItemCount", 5, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByLargeGap) {
@@ -6349,6 +6351,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedList) {
       ListStartReason::kDecimalStartsAtOne, 1);
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TopLevelOrderedListItemCount", 3, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedRuns) {
@@ -6767,6 +6771,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListNestedInOrdered) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicListTypeChangeStartsNewSublist) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -6818,6 +6823,14 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicListTypeChangeStartsNewSublist) {
   CheckUnorderedList(item->GetChildAtIndex(2u), {"Bullet A", "Bullet B"});
   CheckOrderedList(item->GetChildAtIndex(3u), {"Subitem 1", "Subitem 2"},
                    {"1. ", "2. "});
+
+  // The replaced bulleted sublist still records its metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.NestedUnorderedListItemCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.NestedOrderedListItemCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TopLevelOrderedListItemCount", 3, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListRequiresSequence) {
@@ -7158,6 +7171,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicHeadingEndsOrderedList) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListOutOfSequenceEndsItem) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -7181,6 +7195,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListOutOfSequenceEndsItem) {
 
   CheckOrderedList(page->GetChildAtIndex(0u), {"A", "B"}, {"1. ", "2. "});
   CheckParagraph(page->GetChildAtIndex(1u), "4.C");
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.TopLevelOrderedListItemCount", 2, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListFirstLineIndent) {

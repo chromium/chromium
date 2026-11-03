@@ -2255,6 +2255,13 @@ void RecordListStartReason(const ListMarkerKind& kind) {
 
 // Records end metrics for `level`.
 void RecordListEndMetrics(const ListLevel& level, bool is_top_level) {
+  base::UmaHistogramCounts100(
+      base::StrCat({"Accessibility.PdfHeuristics.",
+                    is_top_level ? "TopLevel" : "Nested",
+                    level.last_ordered_value ? "Ordered" : "Unordered",
+                    "ListItemCount"}),
+      level.list->child_ids.size());
+
   if (is_top_level) {
     base::UmaHistogramExactLinear(
         "Accessibility.PdfHeuristics.ListMaxNestingDepth",
@@ -2266,8 +2273,8 @@ void RecordListEndMetrics(const ListLevel& level, bool is_top_level) {
 // go through here so that end metrics are recorded.
 void PopListLevels(std::vector<ListLevel>& levels, size_t levels_to_keep) {
   CHECK_LE(levels_to_keep, levels.size());
-  if (levels_to_keep == 0 && !levels.empty()) {
-    RecordListEndMetrics(levels[0], /*is_top_level=*/true);
+  for (size_t i = levels_to_keep; i < levels.size(); ++i) {
+    RecordListEndMetrics(levels[i], /*is_top_level=*/i == 0);
   }
   levels.resize(levels_to_keep);
 }
