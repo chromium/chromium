@@ -82,8 +82,15 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
+#include "chrome/browser/ui/signin/account_preview_utils.h"
 #include "chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble_ui.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/core/browser/test_account_preview_data_service.h"
+#include "components/sync/base/features.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -129,6 +136,13 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kChecked);
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+std::unique_ptr<KeyedService> CreateTestAccountPreviewDataService(
+    content::BrowserContext*) {
+  return std::make_unique<signin::TestAccountPreviewDataService>();
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void VerifySignoutPromptHistogram(
     const base::HistogramTester& histogram_tester,
@@ -281,12 +295,23 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
         SyncServiceFactory::GetForProfile(GetProfile()));
   }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  signin::TestAccountPreviewDataService* GetTestAccountPreviewDataService() {
+    return static_cast<signin::TestAccountPreviewDataService*>(
+        AccountPreviewDataServiceFactory::GetForProfile(GetProfile()));
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
  private:
   void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) override {
     SigninBrowserTestBaseT::OnWillCreateBrowserContextServices(context);
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    AccountPreviewDataServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateTestAccountPreviewDataService));
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 };
 
@@ -1493,6 +1518,77 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   handle3.reset();
   destroyed_waiter3.Wait();
   EXPECT_EQ(future3.Get(), SigninInterceptionResult::kIgnored);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowChromeSigninBubble_WithAccountPreviewPreference) {
+  AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+  signin::AccountPreviewDataService::AccountPreviewPreference pref{
+      .gaia_id = account.GetGaiaId(),
+      .preferred_data_types =
+          {
+              {syncer::PASSWORDS, signin::SyncDataQuartile::kAboveQ3},
+          },
+      .other_device_info =
+          signin::PreferredDeviceInfo{
+              .form_factor = sync_pb::
+                  SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+              .enabled_data_types = {syncer::PASSWORDS},
+          },
+  };
+  GetTestAccountPreviewDataService()->SetPreferredAccountForSignin(pref);
+
+  views::NamedWidgetShownWaiter widget_waiter1(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  SigninViewController::From(browser())->ShowChromeSigninBubble(
+      account, signin_metrics::AccessPoint::kMenu);
+
+  views::Widget* widget1 = widget_waiter1.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget1);
+  EXPECT_TRUE(widget1->IsVisible());
+
+  auto* web_view1 = views::AsViewClass<views::WebView>(
+      widget1->widget_delegate()->GetInitiallyFocusedView());
+  ASSERT_TRUE(web_view1);
+  std::optional<std::string> expected_subtitle =
+      signin::GetAccountPreviewPromoSubtitle(pref);
+  ASSERT_TRUE(expected_subtitle.has_value());
+  EXPECT_EQ(
+      content::EvalJs(web_view1->GetWebContents(),
+                      "document.querySelector('chrome-signin-app').shadowRoot."
+                      "querySelector('#subtitle').textContent.trim();"),
+      *expected_subtitle);
+
+  // If the preferred account does not match `account`, the default subtitle is
+  // used.
+  pref.gaia_id = GaiaId("other_gaia_id");
+  GetTestAccountPreviewDataService()->SetPreferredAccountForSignin(pref);
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter1(widget1);
+  views::NamedWidgetShownWaiter widget_waiter2(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  SigninViewController::From(browser())->ShowChromeSigninBubble(
+      account, signin_metrics::AccessPoint::kMenu);
+
+  destroyed_waiter1.Wait();
+  views::Widget* widget2 = widget_waiter2.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget2);
+  EXPECT_TRUE(widget2->IsVisible());
+
+  auto* web_view2 = views::AsViewClass<views::WebView>(
+      widget2->widget_delegate()->GetInitiallyFocusedView());
+  ASSERT_TRUE(web_view2);
+  std::string expected_default_subtitle = l10n_util::GetStringUTF8(
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_WITH_BOOKMARKS
+          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
+  EXPECT_EQ(
+      content::EvalJs(web_view2->GetWebContents(),
+                      "document.querySelector('chrome-signin-app').shadowRoot."
+                      "querySelector('#subtitle').textContent.trim();"),
+      expected_default_subtitle);
 }
 
 // Opening the bubble from the profile menu while it is open in another window

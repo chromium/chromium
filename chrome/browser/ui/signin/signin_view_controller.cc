@@ -82,6 +82,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -544,10 +545,27 @@ void SigninViewController::ShowChromeSigninBubble(
       base::BindOnce(&SigninViewController::OnChromeSigninBubbleResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      account.GetCoreAccountInfo(), access_point));
+
+  std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
+      account_preview_preference;
+  if (signin::AccountPreviewDataService* account_preview_data_service =
+          AccountPreviewDataServiceFactory::GetForProfile(GetProfile())) {
+    if (std::optional<
+            signin::AccountPreviewDataService::AccountPreviewPreference>
+            preferred_account =
+                account_preview_data_service->GetPreferredAccountForSignin();
+        preferred_account.has_value() &&
+        preferred_account->gaia_id == account.GetGaiaId()) {
+      account_preview_preference = std::move(preferred_account);
+    }
+  }
+
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
       WebSigninInterceptor::SigninInterceptionType::kChromeSigninNonIntercept,
       /*intercepted_account=*/account,
       /*primary_account=*/AccountInfo());
+  bubble_parameters.account_preview_preference =
+      std::move(account_preview_preference);
   CreateInterceptionBubble(bubble_parameters,
                            chrome_signin_bubble_callback_.callback());
 }
