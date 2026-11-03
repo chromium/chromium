@@ -5,6 +5,10 @@
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
@@ -20,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/base_window.h"
 #include "ui/base/ozone_buildflags.h"
 
@@ -233,6 +238,39 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
   EXPECT_EQ(actor_task().GetTabs().size(), 1ul);
   EXPECT_EQ(*actor_task().GetTabs().begin(), first_new_window_tab->GetHandle());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Ensure a created window's tab is not added to the acting set if the task is
+// already acting on a headless surface.
+// TODO(crbug.com/420669167): This can be updated to add the tab once acting on
+// multiple surfaces is supported.
+IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
+                       CreateWindowDoesNotAddTabWhenHeadlessSurfaceActing) {
+  ActorSurface* headless_surface =
+      actor_keyed_service().GetSurfaceRegistry().CreateHeadlessWebContents();
+  ASSERT_TRUE(headless_surface);
+  const ActorSurfaceHandle headless_handle = headless_surface->GetHandle();
+
+  {
+    TestFuture<mojom::ActionResultPtr> add_result;
+    actor_task().AddActorSurface(headless_handle,
+                                 /*stop_task_on_detach=*/false,
+                                 add_result.GetCallback());
+    ExpectOkResult(add_result);
+  }
+  ASSERT_THAT(actor_task().GetActorSurfaces(),
+              testing::ElementsAre(headless_handle));
+
+  std::unique_ptr<ToolRequest> action = MakeCreateWindowRequest();
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_THAT(actor_task().GetActorSurfaces(),
+              testing::ElementsAre(headless_handle));
+  EXPECT_TRUE(actor_task().GetTabs().empty());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Ensure CloseWindow closes the window with the given ID.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {

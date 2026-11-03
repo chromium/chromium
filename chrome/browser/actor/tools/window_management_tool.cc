@@ -280,11 +280,10 @@ void WindowManagementTool::UpdateTaskBeforeInvoke(ActorTask& task,
 void WindowManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
                                                  mojom::ActionResultPtr result,
                                                  ToolCallback callback) const {
-  // TODO(crbug.com/420669167): Avoid adding the tab if a tab is already acting.
-  // This limitation can be removed once multi-tab is supported. In particular,
-  // this is needed because GetTabForObservation assumes only a single tab is
-  // acting.
-  if (action_ == Action::kCreate && task.GetTabs().empty()) {
+  // TODO(crbug.com/420669167): Avoid adding the new window's tab if the task
+  // already has an actor surface (tab or headless). This limitation can be
+  // removed once acting on multiple surfaces is supported.
+  if (action_ == Action::kCreate && task.GetActorSurfaces().empty()) {
     CHECK(!created_actor_surface_handle_.is_null());
     task.AddActorSurface(created_actor_surface_handle_,
                          /*stop_task_on_detach=*/true, std::move(callback));

@@ -447,8 +447,6 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
     }
 
     per_tab_state.actor_surface_handle = ActorSurfaceHandle::From(web_contents);
-    const tabs::TabHandle tab_handle =
-        tabs::TabInterface::GetFromContents(web_contents)->GetHandle();
 
     journal().Log(url, task_id(), "LoadAndExtractContentTool::TabCreated",
                   JournalDetailsBuilder().Add("url_index", i).Build());
@@ -457,7 +455,8 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
     TabObservation tab_observation;
     // TODO(b/565820285): Observations identify pages by tab id. A headless page
     // needs an id the model accepts, e.g. its surface id.
-    tab_observation.set_id(tab_handle.raw_value());
+    tab_observation.set_id(
+        per_tab_state.actor_surface_handle.GetTabHandle().raw_value());
 
     // This tool doesn't support screenshots, so set it to error.
     // TODO(b/478282022): Consider adding a new enum value for this case.
