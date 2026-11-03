@@ -5,6 +5,7 @@
 #include "base/containers/fixed_flat_set.h"
 
 #include <algorithm>
+#include <concepts>
 #include <string_view>
 
 #include "base/test/gtest_util.h"
@@ -19,6 +20,15 @@ TEST(FixedFlatSetTest, MakeFixedFlatSet_SortedInput) {
   static_assert(std::ranges::adjacent_find(kSet) == kSet.end(),
                 "Error: Set contains repeated elements.");
   EXPECT_THAT(kSet, ::testing::ElementsAre(1, 2, 3, 4));
+}
+
+// The container deduction guides for `flat_set` must not break CTAD for
+// `fixed_flat_set`, whose `std::array` container has a non-type parameter.
+TEST(FixedFlatSetTest, CopyDeduction) {
+  constexpr auto kSet = MakeFixedFlatSet<int>({1, 2, 3});
+  fixed_flat_set copy(kSet);
+  static_assert(std::same_as<decltype(copy), fixed_flat_set<int, 3>>);
+  EXPECT_EQ(copy, kSet);
 }
 
 TEST(FixedFlatSetTest, MakeFixedFlatSet_UnsortedInput) {

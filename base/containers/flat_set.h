@@ -6,7 +6,12 @@
 #define BASE_CONTAINERS_FLAT_SET_H_
 
 #include <algorithm>
+#include <concepts>
 #include <functional>
+#include <initializer_list>
+#include <iterator>
+#include <ranges>
+#include <type_traits>
 #include <vector>
 
 #include "base/containers/flat_tree.h"
@@ -161,6 +166,97 @@ template <class Key,
           class Container = std::vector<Key>>
 using flat_set = typename ::base::internal::
     flat_tree<Key, std::identity, Compare, Container>;
+
+namespace internal {
+
+// Deduction guides for `flat_set`. They are modeled after the guides for
+// `std::flat_set`, but default to `std::less<>` like `flat_set` itself. Since
+// `flat_set` is an alias template, they have to be declared for `flat_tree`
+// (see https://wg21.link/P1814). They always deduce `std::identity` as the key
+// projection, which is what makes them apply to `flat_set` and nothing else.
+//
+// Example usage:
+//   std::vector<int> v = {3, 1, 2};
+//   base::flat_set s1(v);                              // flat_set<int>
+//   base::flat_set s2(v.begin(), v.end());             // flat_set<int>
+//   base::flat_set s3(std::from_range, v);             // flat_set<int>
+//   base::flat_set s4 = {1, 2, 3};                     // flat_set<int>
+//   base::flat_set s5(base::sorted_unique, {1, 2, 3}); // flat_set<int>
+//
+// Note: As for `std::flat_set`, `base::flat_set{v}` deduces a set of vectors.
+//
+// Unlike `std::flat_set`, the container guides return the container as
+// `std::type_identity_t<Container>`, a non-deduced context. With a plain
+// `Container`, alias CTAD matches it against `flat_set`'s `Container =
+// std::vector<Key>` parameter, pulls in `Key` through that default
+// ([over.match.class.deduct]/3.2), and then can't deduce `Key`. The guides
+// also reject views such as `base::span` or `std::string_view`, so that CTAD
+// never silently deduces a `flat_set` that doesn't own its elements.
+template <class Container, class Compare = std::less<>>
+  requires(std::ranges::input_range<Container> &&
+           !std::ranges::view<Container> &&
+           std::invocable<const Compare&,
+                          const typename Container::value_type&,
+                          const typename Container::value_type&>)
+flat_tree(Container, Compare = Compare())
+    -> flat_tree<typename Container::value_type,
+                 std::identity,
+                 Compare,
+                 std::type_identity_t<Container>>;
+
+template <class Container, class Compare = std::less<>>
+  requires(std::ranges::input_range<Container> &&
+           !std::ranges::view<Container> &&
+           std::invocable<const Compare&,
+                          const typename Container::value_type&,
+                          const typename Container::value_type&>)
+flat_tree(sorted_unique_t, Container, Compare = Compare())
+    -> flat_tree<typename Container::value_type,
+                 std::identity,
+                 Compare,
+                 std::type_identity_t<Container>>;
+
+template <class InputIterator, class Compare = std::less<>>
+  requires(std::input_iterator<InputIterator>)
+flat_tree(InputIterator, InputIterator, Compare = Compare())
+    -> flat_tree<std::iter_value_t<InputIterator>,
+                 std::identity,
+                 Compare,
+                 std::vector<std::iter_value_t<InputIterator>>>;
+
+template <class InputIterator, class Compare = std::less<>>
+  requires(std::input_iterator<InputIterator>)
+flat_tree(sorted_unique_t, InputIterator, InputIterator, Compare = Compare())
+    -> flat_tree<std::iter_value_t<InputIterator>,
+                 std::identity,
+                 Compare,
+                 std::vector<std::iter_value_t<InputIterator>>>;
+
+template <class Range, class Compare = std::less<>>
+  requires(std::ranges::input_range<Range>)
+flat_tree(std::from_range_t, Range&&, Compare = Compare())
+    -> flat_tree<std::ranges::range_value_t<Range>,
+                 std::identity,
+                 Compare,
+                 std::vector<std::ranges::range_value_t<Range>>>;
+
+template <class Range, class Compare = std::less<>>
+  requires(std::ranges::input_range<Range>)
+flat_tree(std::from_range_t, sorted_unique_t, Range&&, Compare = Compare())
+    -> flat_tree<std::ranges::range_value_t<Range>,
+                 std::identity,
+                 Compare,
+                 std::vector<std::ranges::range_value_t<Range>>>;
+
+template <class Key, class Compare = std::less<>>
+flat_tree(std::initializer_list<Key>, Compare = Compare())
+    -> flat_tree<Key, std::identity, Compare, std::vector<Key>>;
+
+template <class Key, class Compare = std::less<>>
+flat_tree(sorted_unique_t, std::initializer_list<Key>, Compare = Compare())
+    -> flat_tree<Key, std::identity, Compare, std::vector<Key>>;
+
+}  // namespace internal
 
 // Utility function to simplify constructing a flat_set from a fixed list
 // of keys. The keys are obtained by applying the projection |proj| to the

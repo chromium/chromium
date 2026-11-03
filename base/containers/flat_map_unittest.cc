@@ -5,12 +5,19 @@
 #include "base/containers/flat_map.h"
 
 #include <algorithm>
+#include <concepts>
+#include <deque>
+#include <functional>
+#include <map>
+#include <ranges>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,6 +83,21 @@ struct ResetOnMove {
 
   T val = {};
 };
+
+// Whether `flat_map(c)` and `flat_map(sorted_unique, c)` deduce a `flat_map`
+// for a `Container`.
+template <typename Container>
+concept CanDeduceFlatMap = requires(Container c) { flat_map(c); };
+template <typename Container>
+concept CanDeduceSortedFlatMap =
+    requires(Container c) { flat_map(sorted_unique, c); };
+
+// An alias template whose container defaults to one built from the key and
+// mapped types.
+template <typename Key,
+          typename Mapped,
+          typename Container = std::vector<std::pair<Key, Mapped>>>
+using DescendingFlatMap = flat_map<Key, Mapped, std::greater<>, Container>;
 
 }  // namespace
 
@@ -532,13 +554,126 @@ TEST(FlatMap, DeductionGuides) {
   {
     std::vector<std::pair<int, float>> v = {{1, 4.0}, {2, 3.0}};
     flat_map map{v};
-    static_assert(std::is_same_v<decltype(map), flat_map<int, float>>);
+    static_assert(std::same_as<decltype(map), flat_map<int, float>>);
   }
 
   {
     std::vector<std::pair<int, float>> v = {{1, 4.0}, {2, 3.0}};
     flat_map map(std::move(v));
-    static_assert(std::is_same_v<decltype(map), flat_map<int, float>>);
+    static_assert(std::same_as<decltype(map), flat_map<int, float>>);
+  }
+
+  using IntCharMap = flat_map<int, char>;
+  std::vector<std::pair<int, char>> v = {{2, 'b'}, {1, 'a'}, {2, 'c'}};
+  std::map<int, char> std_map(std::from_range, v);
+
+  // Container.
+  {
+    flat_map map(v, std::greater<>());
+    static_assert(
+        std::same_as<decltype(map), flat_map<int, char, std::greater<>>>);
+    EXPECT_THAT(map, ElementsAre(std::pair(2, 'b'), std::pair(1, 'a')));
+  }
+  {
+    flat_map map(sorted_unique, std::vector<std::pair<int, char>>{{1, 'a'}});
+    static_assert(std::same_as<decltype(map), IntCharMap>);
+  }
+  {
+    std::deque<std::pair<int, char>> d = {{2, 'b'}, {1, 'a'}};
+    flat_map map(sorted_unique, d, std::greater<>());
+    static_assert(std::same_as<decltype(map),
+                               flat_map<int, char, std::greater<>,
+                                        std::deque<std::pair<int, char>>>>);
+    EXPECT_THAT(map, ElementsAre(std::pair(2, 'b'), std::pair(1, 'a')));
+  }
+  // Container deduction also works through alias templates.
+  {
+    DescendingFlatMap map(v);
+    static_assert(
+        std::same_as<decltype(map), flat_map<int, char, std::greater<>>>);
+    EXPECT_THAT(map, ElementsAre(std::pair(2, 'b'), std::pair(1, 'a')));
+  }
+  {
+    std::deque<std::pair<int, char>> d = {{2, 'b'}, {1, 'a'}};
+    DescendingFlatMap map(sorted_unique, d);
+    static_assert(std::same_as<decltype(map),
+                               flat_map<int, char, std::greater<>,
+                                        std::deque<std::pair<int, char>>>>);
+  }
+
+  // Views are rejected, since the deduced map wouldn't own its elements.
+  static_assert(CanDeduceFlatMap<std::vector<std::pair<int, char>>>);
+  static_assert(!CanDeduceFlatMap<span<const std::pair<int, char>>>);
+  static_assert(CanDeduceSortedFlatMap<std::vector<std::pair<int, char>>>);
+  static_assert(!CanDeduceSortedFlatMap<span<const std::pair<int, char>>>);
+  // So are non-ranges, even if they have a pair `value_type`.
+  using PairIterator = std::vector<std::pair<int, char>>::iterator;
+  static_assert(!CanDeduceFlatMap<PairIterator>);
+  static_assert(!CanDeduceSortedFlatMap<PairIterator>);
+
+  // Iterator pair. The const key of `std::map`'s value type is dropped.
+  {
+    flat_map map(v.begin(), v.end());
+    static_assert(std::same_as<decltype(map), IntCharMap>);
+    EXPECT_THAT(map, ElementsAre(std::pair(1, 'a'), std::pair(2, 'b')));
+  }
+  {
+    flat_map map(std_map.begin(), std_map.end(), std::greater<>());
+    static_assert(
+        std::same_as<decltype(map), flat_map<int, char, std::greater<>>>);
+  }
+  {
+    flat_map map(sorted_unique, std_map.begin(), std_map.end());
+    static_assert(std::same_as<decltype(map), IntCharMap>);
+  }
+  // As for `std::flat_map`, any tuple-like value type works for iterators.
+  {
+    std::vector<std::tuple<int, char>> tuples = {{2, 'b'}, {1, 'a'}};
+    flat_map map(tuples.begin(), tuples.end());
+    static_assert(std::same_as<decltype(map), IntCharMap>);
+    EXPECT_THAT(map, ElementsAre(std::pair(1, 'a'), std::pair(2, 'b')));
+  }
+
+  // Range.
+  {
+    flat_map map(std::from_range, std_map);
+    static_assert(std::same_as<decltype(map), IntCharMap>);
+    EXPECT_THAT(map, ElementsAre(std::pair(1, 'a'), std::pair(2, 'b')));
+  }
+  {
+    flat_map map(std::from_range, std_map, std::greater<>());
+    static_assert(
+        std::same_as<decltype(map), flat_map<int, char, std::greater<>>>);
+    EXPECT_THAT(map, ElementsAre(std::pair(2, 'b'), std::pair(1, 'a')));
+  }
+  {
+    flat_map map(std::from_range, sorted_unique, std_map);
+    static_assert(std::same_as<decltype(map), IntCharMap>);
+  }
+
+  // Initializer list.
+  {
+    flat_map map = {std::pair(2, 'b'), std::pair(1, 'a')};
+    static_assert(std::same_as<decltype(map), IntCharMap>);
+    EXPECT_THAT(map, ElementsAre(std::pair(1, 'a'), std::pair(2, 'b')));
+  }
+  {
+    flat_map map({std::pair(1, 'a')}, std::greater<>());
+    static_assert(
+        std::same_as<decltype(map), flat_map<int, char, std::greater<>>>);
+  }
+  {
+    flat_map map(sorted_unique, {std::pair(1, 'a'), std::pair(2, 'b')});
+    static_assert(std::same_as<decltype(map), IntCharMap>);
+  }
+
+  // Copying a `flat_map` deduces the same type, with or without braces.
+  {
+    flat_map<int, char, std::greater<>> source = {{1, 'a'}};
+    flat_map map1(source);
+    flat_map map2{source};
+    static_assert(std::same_as<decltype(map1), decltype(source)>);
+    static_assert(std::same_as<decltype(map2), decltype(source)>);
   }
 }
 
