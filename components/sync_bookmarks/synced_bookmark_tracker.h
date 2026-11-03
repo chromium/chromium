@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -18,6 +17,7 @@
 #include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/data_type_state.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace sync_pb {
 class BookmarkModelMetadata;
@@ -254,29 +254,27 @@ class SyncedBookmarkTracker {
   SyncedBookmarkTrackerEntity* AsMutableEntity(
       const SyncedBookmarkTrackerEntity* entity);
 
-  // Reorders `entities` that represents local non-deletions such that parent
-  // creation/update is before child creation/update. Returns the ordered list.
+  // Returns all non-deletion local changes ordered such that parent
+  // creation/update comes before child creation/update.
   std::vector<const SyncedBookmarkTrackerEntity*>
-  ReorderUnsyncedEntitiesExceptDeletions(
-      const std::vector<const SyncedBookmarkTrackerEntity*>& entities) const;
+  GetOrderedUnsyncedEntitiesExceptDeletions() const;
 
-  // Recursive method that starting from `node` appends all corresponding
+  // Recursive method that starting from `entity` appends all corresponding
   // entities with updates in top-down order to `ordered_entities`.
   void TraverseAndAppend(
-      const bookmarks::BookmarkNode* node,
+      const SyncedBookmarkTrackerEntity* entity,
       std::vector<const SyncedBookmarkTrackerEntity*>* ordered_entities) const;
 
   // Map of client tag hashes to sync entities. This owns all entity instances.
-  std::unordered_map<syncer::ClientTagHash,
-                     std::unique_ptr<SyncedBookmarkTrackerEntity>,
-                     syncer::ClientTagHash::Hash>
+  absl::flat_hash_map<syncer::ClientTagHash,
+                      std::unique_ptr<SyncedBookmarkTrackerEntity>>
       client_tag_hash_to_entities_map_;
 
   // A map of bookmark nodes to sync entities. It's keyed by the bookmark node
   // pointers which get assigned when loading the bookmark model. This map is
   // first initialized in the constructor.
-  std::unordered_map<const bookmarks::BookmarkNode*,
-                     raw_ptr<SyncedBookmarkTrackerEntity, CtnExperimental>>
+  absl::flat_hash_map<const bookmarks::BookmarkNode*,
+                      raw_ptr<SyncedBookmarkTrackerEntity, CtnExperimental>>
       bookmark_node_to_entities_map_;
 
   // A list of pending local bookmark deletions. They should be sent to the
