@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -32,6 +33,7 @@ namespace autofill {
 
 class AutofillField;
 class BrowserAutofillManager;
+class FormData;
 class FormFieldData;
 class FormStructure;
 
@@ -67,6 +69,11 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
                                 FormGlobalId form,
                                 FieldGlobalId field) override;
   void OnBeforeFocusOnNonFormField(AutofillManager& manager) override;
+  void OnAfterFormsSeen(AutofillManager& manager,
+                        base::span<const FormGlobalId> updated_forms,
+                        base::span<const FormGlobalId> removed_forms) override;
+  void OnAfterFormSubmitted(AutofillManager& manager,
+                            const FormData& form) override;
 
  private:
   friend class OtpManagerImplTestApi;
@@ -93,6 +100,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // Starts `gmail_otp_retriever_` if no Gmail OTP is currently cached and the
   // user has opted into Gmail OTP filling.
   void MaybeRetrieveGmailOtp();
+
+  // Stops any in-flight `gmail_otp_retriever_` and clears cached Gmail OTP and
+  // proactive trigger deduplication state.
+  void ClearGmailOtpState();
 
   // Called when `prefs::kAutofillGmailOtpFillingEnabled` changes.
   void OnGmailOtpFillingEnabledPrefChanged();

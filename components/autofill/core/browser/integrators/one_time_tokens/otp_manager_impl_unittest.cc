@@ -196,7 +196,10 @@ class OtpManagerImplTest
 
   void TearDown() override {
     task_environment_.RunUntilIdle();
+    detector_observation_.reset();
     autofill_client().set_affiliation_service(nullptr);
+    DestroyAutofillClient();
+    task_environment_.RunUntilIdle();
   }
 
   one_time_tokens::GmailOtpRetriever::Result CreateSampleGmailOtpResult(
@@ -3786,6 +3789,170 @@ TEST_F(
   EXPECT_THAT(
       future.Get(),
       ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "654321")));
+}
+
+// Tests that submitting an OTP form stops any in-flight `GmailOtpRetriever`,
+// clears the cached Gmail OTP, and resets proactive trigger deduplication state
+// so stale tokens are not served in SPA flows.
+TEST_F(OtpManagerImplTest,
+       OnAfterFormSubmitted_OtpForm_ClearsCachedGmailOtpAndStopsRetriever) {
+  SetUpGmailOtpRetrieval();
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(/*is_phishing=*/false));
+
+  const FormStructure* otp_form = AddFormWithOtpField();
+  ASSERT_TRUE(otp_form);
+  ASSERT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+
+  test_api(otp_manager)
+      .set_last_retrieved_gmail_otp(CreateSampleGmailOtpResult("111222").token);
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  otp_manager.GetOtpSuggestions(*otp_form, *otp_form->field(0),
+                                future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  ASSERT_TRUE(test_api(otp_manager).SelectMostRecentToken().has_value());
+  ASSERT_EQ(test_api(otp_manager).last_triggered_otp_value(), "111222");
+
+  autofill_manager().OnFormSubmitted(otp_form->ToFormData(),
+                                     mojom::SubmissionSource::XHR_SUCCEEDED,
+                                     AutofillManagerTestApi::pass_key());
+
+  EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
+  EXPECT_TRUE(test_api(otp_manager).last_triggered_otp_value().empty());
+}
+
+// Tests that submitting an unrelated non-OTP form (whether cached or uncached)
+// while an OTP form is present in the frame does not clear the cached Gmail OTP
+// or stop an in-flight `GmailOtpRetriever`.
+TEST_F(OtpManagerImplTest,
+       OnAfterFormSubmitted_NonOtpForm_PreservesCachedGmailOtpAndRetriever) {
+  SetUpGmailOtpRetrieval();
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+
+  const FormStructure* otp_form = AddFormWithOtpField();
+  const FormStructure* non_otp_form = AddFormWithFirstNameField();
+  ASSERT_TRUE(otp_form);
+  ASSERT_TRUE(non_otp_form);
+  ASSERT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+
+  test_api(otp_manager)
+      .set_last_retrieved_gmail_otp(CreateSampleGmailOtpResult("111222").token);
+  ASSERT_TRUE(test_api(otp_manager).SelectMostRecentToken().has_value());
+
+  // Submitting a cached non-OTP form must preserve the OTP form's state.
+  autofill_manager().OnFormSubmitted(non_otp_form->ToFormData(),
+                                     mojom::SubmissionSource::XHR_SUCCEEDED,
+                                     AutofillManagerTestApi::pass_key());
+  EXPECT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  EXPECT_THAT(
+      test_api(otp_manager).SelectMostRecentToken(),
+      Optional(Property(&one_time_tokens::OneTimeToken::value, "111222")));
+
+  // Submitting an uncached non-OTP form (e.g. a small search form) must also
+  // preserve the OTP form's state.
+  FormData uncached_form =
+      test::GetFormData({.fields = {{.label = u"Search", .name = u"q"}}});
+  ASSERT_EQ(autofill_manager().FindCachedFormById(uncached_form.global_id()),
+            nullptr);
+  autofill_manager().OnFormSubmitted(uncached_form,
+                                     mojom::SubmissionSource::XHR_SUCCEEDED,
+                                     AutofillManagerTestApi::pass_key());
+  EXPECT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  EXPECT_THAT(
+      test_api(otp_manager).SelectMostRecentToken(),
+      Optional(Property(&one_time_tokens::OneTimeToken::value, "111222")));
+}
+
+// Tests that `OnAfterFormsSeen` keeps the cached Gmail OTP when an unrelated
+// non-OTP form is removed while an OTP form remains, and clears the cached
+// Gmail OTP once no OTP form remains in the frame.
+TEST_F(OtpManagerImplTest,
+       OnAfterFormsSeen_RemovedForms_ClearsOnlyWhenNoOtpFormRemains) {
+  SetUpGmailOtpRetrieval();
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+
+  const FormStructure* otp_form = AddFormWithOtpField();
+  const FormStructure* non_otp_form = AddFormWithFirstNameField();
+  ASSERT_TRUE(otp_form);
+  ASSERT_TRUE(non_otp_form);
+  FormGlobalId otp_form_id = otp_form->global_id();
+  FormGlobalId non_otp_form_id = non_otp_form->global_id();
+  ASSERT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+
+  test_api(otp_manager)
+      .set_last_retrieved_gmail_otp(CreateSampleGmailOtpResult("333444").token);
+  ASSERT_TRUE(test_api(otp_manager).SelectMostRecentToken().has_value());
+
+  // Removing the non-OTP form leaves `otp_form` in the frame; state is kept.
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                 /*removed_forms=*/{non_otp_form_id},
+                                 AutofillManagerTestApi::pass_key());
+  EXPECT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  EXPECT_THAT(
+      test_api(otp_manager).SelectMostRecentToken(),
+      Optional(Property(&one_time_tokens::OneTimeToken::value, "333444")));
+
+  // Removing the last OTP form clears the cached Gmail OTP and stops retriever.
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                 /*removed_forms=*/{otp_form_id},
+                                 AutofillManagerTestApi::pass_key());
+  EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
+}
+
+// Tests that `OnAfterFormsSeen` clears the cached Gmail OTP and stops any
+// in-flight `GmailOtpRetriever` when a cached OTP form mutates in-place into a
+// non-OTP form (`updated_forms` non-empty, `removed_forms` empty) and no other
+// OTP forms remain in the frame.
+TEST_F(OtpManagerImplTest,
+       OnAfterFormsSeen_MutatedOtpForm_ClearsWhenNoOtpFormRemains) {
+  SetUpGmailOtpRetrieval();
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+
+  const FormStructure* otp_form_1 = AddFormWithOtpField();
+  const FormStructure* otp_form_2 = AddFormWithOtpField();
+  ASSERT_TRUE(otp_form_1);
+  ASSERT_TRUE(otp_form_2);
+  ASSERT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+
+  test_api(otp_manager)
+      .set_last_retrieved_gmail_otp(CreateSampleGmailOtpResult("555666").token);
+  ASSERT_TRUE(test_api(otp_manager).SelectMostRecentToken().has_value());
+
+  auto make_non_otp_mutation = [&](const FormStructure& form) {
+    FormData mutated = form.ToFormData();
+    FormData non_otp_fields = test::GetFormData({
+        .fields =
+            {
+                {.label = u"First name", .name = u"firstname"},
+                {.label = u"Last name", .name = u"lastname"},
+                {.label = u"Email", .name = u"email"},
+            },
+        .host_frame = autofill_driver().GetFrameToken(),
+    });
+    mutated.set_fields(non_otp_fields.fields());
+    return mutated;
+  };
+
+  // Mutating `otp_form_1` into a non-OTP form while `otp_form_2` remains keeps
+  // the cached Gmail OTP and in-flight retriever.
+  autofill_manager().OnFormsSeen(
+      /*updated_forms=*/{make_non_otp_mutation(*otp_form_1)},
+      /*removed_forms=*/{}, AutofillManagerTestApi::pass_key());
+  EXPECT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  EXPECT_THAT(
+      test_api(otp_manager).SelectMostRecentToken(),
+      Optional(Property(&one_time_tokens::OneTimeToken::value, "555666")));
+
+  // Mutating `otp_form_2` into a non-OTP form leaves no OTP forms in the frame
+  // (`removed_forms` is empty), clearing the cached Gmail OTP and retriever.
+  autofill_manager().OnFormsSeen(
+      /*updated_forms=*/{make_non_otp_mutation(*otp_form_2)},
+      /*removed_forms=*/{}, AutofillManagerTestApi::pass_key());
+  EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
 }
 
 }  // namespace autofill

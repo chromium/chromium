@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -35,6 +36,7 @@
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
@@ -226,11 +228,15 @@ void OtpManagerImpl::MaybeRetrieveGmailOtp() {
   }
 }
 
+void OtpManagerImpl::ClearGmailOtpState() {
+  gmail_otp_retriever_.reset();
+  last_retrieved_gmail_otp_.reset();
+  last_triggered_otp_value_.clear();
+}
+
 void OtpManagerImpl::OnGmailOtpFillingEnabledPrefChanged() {
   if (!UserOptedIntoGmailOtpFilling()) {
-    gmail_otp_retriever_.reset();
-    last_retrieved_gmail_otp_.reset();
-    last_triggered_otp_value_.clear();
+    ClearGmailOtpState();
     return;
   }
   if (!sms_otp_service_ || owner_->driver().IsEmbedded() ||
@@ -326,6 +332,27 @@ void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
         FROM_HERE,
         base::BindOnce(std::move(last_pending_get_suggestions_callback_),
                        std::vector<OneTimeToken>{}));
+  }
+}
+
+void OtpManagerImpl::OnAfterFormsSeen(
+    AutofillManager& manager,
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
+  if (removed_forms.empty() && updated_forms.empty()) {
+    return;
+  }
+  if (!HasOtpForm(manager)) {
+    ClearGmailOtpState();
+  }
+}
+
+void OtpManagerImpl::OnAfterFormSubmitted(AutofillManager& manager,
+                                          const FormData& form) {
+  const FormStructure* form_structure =
+      manager.FindCachedFormById(form.global_id());
+  if (form_structure && OtpFieldDetector::IsOtpForm(*form_structure)) {
+    ClearGmailOtpState();
   }
 }
 
