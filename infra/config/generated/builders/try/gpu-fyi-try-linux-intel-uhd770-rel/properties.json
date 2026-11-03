@@ -9,7 +9,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "GPU FYI Linux Builder",
+              "builder": "GPU FYI Linux Wayland Builder",
               "project": "chromium"
             },
             "builder_spec": {
@@ -52,7 +52,7 @@
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "GPU FYI Linux Builder",
+                "builder": "GPU FYI Linux Wayland Builder",
                 "project": "chromium"
               },
               "run_tests_serially": true,
@@ -64,7 +64,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "GPU FYI Linux Builder",
+          "builder": "GPU FYI Linux Wayland Builder",
           "project": "chromium"
         }
       ],

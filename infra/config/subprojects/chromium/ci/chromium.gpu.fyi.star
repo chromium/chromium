@@ -2005,8 +2005,8 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Linux FYI Release (Intel UHD 770)",
-    description_html = "Runs release GPU tests on stable Linux/Intel UHD 630 configs",
-    parent = "GPU FYI Linux Builder",
+    description_html = "Runs release GPU tests with Wayland enabled on stable Linux/Intel UHD 770 configs",
+    parent = "GPU FYI Linux Wayland Builder",
     builder_spec = gpu_fyi_thin_tester_builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2024,10 +2024,10 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_all_linux_release_gtests",
-            "gpu_all_linux_release_telemetry_tests",
+            "gpu_all_linux_wayland_release_telemetry_tests",
         ],
         mixins = [
-            "linux_intel_uhd_770_stable",
+            "linux_intel_uhd_770_wayland_stable",
         ],
         per_test_modifications = {
             "gl_tests_passthrough": targets.mixin(
@@ -2045,7 +2045,7 @@ ci.thin_tester(
         os_type = targets.os_type.LINUX,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Linux|Intel",
+        category = "Linux|Wayland|Intel",
         short_name = "770",
     ),
 )

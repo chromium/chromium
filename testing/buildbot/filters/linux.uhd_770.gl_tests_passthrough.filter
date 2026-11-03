@@ -7,3 +7,13 @@
 -TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindSimpleVarAsArrayNoBind/1
 -TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var/0
 -TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var/1
+
+# crbug.com/577119296
+-GLEXTSRGBTest.TexImageSRGBALPHAFormat
+-GLReadbackTest.ReadPixelsFloat
+-Service/EGLImageBackingFactoryThreadSafeTest.BasicInitialData/RGBA_8888
+-Service/EGLImageBackingFactoryThreadSafeTest.BasicThreadSafe/RGBA_8888
+-Service/EGLImageBackingFactoryThreadSafeTest.Dawn_SampledTexture/RGBA_8888
+-Service/EGLImageBackingFactoryThreadSafeTest.Dawn_SkiaGL/RGBA_8888
+-Service/EGLImageBackingFactoryThreadSafeTest.OneWriterOneReader/RGBA_8888
+-Service/EGLImageBackingFactoryThreadSafeTest.UploadReadbackCrossThreadWithTLS/RGBA_8888

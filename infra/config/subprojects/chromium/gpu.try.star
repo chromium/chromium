@@ -234,10 +234,10 @@ gpu_linux_builder(
 gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-uhd770-rel",
     mirrors = [
-        "ci/GPU FYI Linux Builder",
+        "ci/GPU FYI Linux Wayland Builder",
         "ci/Linux FYI Release (Intel UHD 770)",
     ],
-    gn_args = "ci/GPU FYI Linux Builder",
+    gn_args = "ci/GPU FYI Linux Wayland Builder",
 )
 
 gpu_linux_builder(

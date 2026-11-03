@@ -665,6 +665,8 @@ crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/renderin
 
 
 crbug.com/541251909 [ linux amd display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+crbug.com/577119296 [ linux intel-0x4680 display-server-wayland angle-opengles ] WebglExtension_EXT_shader_texture_lod [ Failure ]
+crbug.com/577119296 [ linux intel-0x4680 display-server-wayland ] conformance/extensions/ext-sRGB.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] WebglExtension_WEBGL_draw_buffers [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]

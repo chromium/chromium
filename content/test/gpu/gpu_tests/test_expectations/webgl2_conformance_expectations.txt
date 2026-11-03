@@ -745,6 +745,17 @@ crbug.com/541251909 [ linux amd display-server-wayland ] conformance2/reading/re
 
 crbug.com/329698340 [ linux intel angle-opengl passthrough mesa_ge_23.2 ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 
+## Linux Intel UHD 770 Wayland ##
+
+crbug.com/577119296 [ linux intel-0x4680 display-server-wayland ] WebglExtension_OVR_multiview2 [ Failure ]
+crbug.com/577119296 [ linux intel-0x4680 display-server-wayland passthrough ] WebglExtension_WEBGL_polygon_mode [ Failure ]
+crbug.com/577119296 [ linux intel-0x4680 display-server-wayland passthrough ] WebglExtension_WEBGL_provoking_vertex [ Failure ]
+crbug.com/577119296 [ linux intel-0x4680 display-server-wayland passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Failure ]
+crbug.com/577119296 [ linux intel-0x4680 display-server-wayland ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/577119296 [ linux intel-0x4680 display-server-wayland ] conformance2/extensions/ext-render-snorm.html [ Failure ]
+crbug.com/577119296 [ linux intel-0x4680 display-server-wayland ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
+crbug.com/577119296 [ linux intel-0x4680 display-server-wayland angle-opengles passthrough ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
+
 ## Linux NVIDIA RTX 5080 ##
 
 
