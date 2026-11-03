@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <optional>
+#include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/process/process.h"
@@ -203,11 +204,12 @@ TEST_F(SettingsWindowFinderWinTest, FoundPathAcceptsCreateShowAndUncloak) {
 TEST_F(SettingsWindowFinderWinTest, FoundPathHandsOutTheWindowsProcess) {
   EventTestSettingsWindowFinderWin finder(kSettingsHwnd);
   base::Process found_process;
-  finder.Start(base::Seconds(5),
-               base::BindLambdaForTesting([&](HWND, base::Process process) {
-                 found_process = std::move(process);
-               }),
-               base::DoNothing());
+  finder.Start(
+      base::Seconds(5),
+      base::BindLambdaForTesting([&found_process](HWND, base::Process process) {
+        found_process = std::move(process);
+      }),
+      base::DoNothing());
 
   finder.HandleWinEvent(EVENT_OBJECT_SHOW, kSettingsHwnd, OBJID_WINDOW);
 

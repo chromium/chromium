@@ -12,6 +12,8 @@ source_set("lib") {
     "processor_metrics.h",
     "tpm_metrics.cc",
     "tpm_metrics.h",
+    "uia_window_identity.cc",
+    "uia_window_identity.h",
     "util_read_icon.cc",
     "util_read_icon.h",
     "util_win_impl.cc",
@@ -39,6 +41,7 @@ source_set("unit_tests") {
     "av_products_unittest.cc",
     "processor_metrics_unittest.cc",
     "tpm_metrics_unittest.cc",
+    "uia_window_identity_unittest.cc",
   ]
 
   deps = [
