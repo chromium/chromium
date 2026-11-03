@@ -194,16 +194,24 @@ bool CanReauthProceedToChallenge(
   };
 
   // Without fresh cookie info, it is unknown whether Gaia still has a valid
-  // session for `email`. If Gaia does have a valid session, `/AccountChooser`
-  // completes immediately without a new sign-in, so Chrome never receives a
-  // new refresh token and stays in the auth error state. In both cases, fall
-  // back to `/AddSession`, which always requires the challenge.
-  if (!accounts_in_cookie_jar.AreAccountsFresh() ||
-      std::ranges::any_of(accounts_in_cookie_jar.GetValidSignedInAccounts(),
+  // session for `email`. Fall back to `/AddSession`, which always requires the
+  // challenge.
+  if (!accounts_in_cookie_jar.AreAccountsFresh()) {
+    base::UmaHistogramEnumeration(
+        kReauthProceedToChallengeResultHistogram,
+        ReauthProceedToChallengeResult::kAddSessionFallbackStaleCookies);
+    return false;
+  }
+
+  // If Gaia still has a valid session for `email`, `/AccountChooser` completes
+  // immediately without a new sign-in, so Chrome never receives a new refresh
+  // token and stays in the auth error state. Fall back to `/AddSession`, which
+  // always requires the challenge.
+  if (std::ranges::any_of(accounts_in_cookie_jar.GetValidSignedInAccounts(),
                           has_matching_email)) {
     base::UmaHistogramEnumeration(
         kReauthProceedToChallengeResultHistogram,
-        ReauthProceedToChallengeResult::kAddSessionFallback);
+        ReauthProceedToChallengeResult::kAddSessionFallbackValidSession);
     return false;
   }
 

@@ -1194,7 +1194,10 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Proceed to challenge (account in cookies)"/>
   <int value="1"
       label="Proceed to challenge without cookies (shows identifier page)"/>
-  <int value="2" label="Fallback to AddSession"/>
+  <int value="2"
+      label="(Obsolete) Fallback to AddSession. Split into 3 and 4 in 2026/11"/>
+  <int value="3" label="Fallback to AddSession (stale cookies)"/>
+  <int value="4" label="Fallback to AddSession (valid Gaia session)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/signin_promo.h:ReauthProceedToChallengeResult) -->

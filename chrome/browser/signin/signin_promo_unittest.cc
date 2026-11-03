@@ -206,7 +206,7 @@ TEST(SigninPromoTest, TestCanReauthProceedToChallengeValidSession) {
                              /*signed_out=*/false)})));
   histogram_tester.ExpectUniqueSample(
       kReauthProceedToChallengeResultHistogram,
-      ReauthProceedToChallengeResult::kAddSessionFallback, 2);
+      ReauthProceedToChallengeResult::kAddSessionFallbackValidSession, 2);
 }
 
 // Test that reauth cannot proceed to challenge when the cookie jar info is
@@ -218,7 +218,7 @@ TEST(SigninPromoTest, TestCanReauthProceedToChallengeStaleCookies) {
       AccountsInCookieJarInfo(/*accounts_are_fresh=*/false, {})));
   histogram_tester.ExpectUniqueSample(
       kReauthProceedToChallengeResultHistogram,
-      ReauthProceedToChallengeResult::kAddSessionFallback, 1);
+      ReauthProceedToChallengeResult::kAddSessionFallbackStaleCookies, 1);
 }
 
 // Test that reauth cannot proceed to challenge without an email.

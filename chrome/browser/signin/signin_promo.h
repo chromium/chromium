@@ -156,10 +156,13 @@ enum class ReauthProceedToChallengeResult {
   // cookie jar (e.g. cookies were cleared), so Gaia still shows the prefilled
   // identifier page.
   kAccountNotInCookies = 1,
-  // Falls back to `/AddSession` because cookie jar info is stale or the account
-  // still has a valid Gaia session.
-  kAddSessionFallback = 2,
-  kMaxValue = kAddSessionFallback,
+  // kAddSessionFallback = 2,  // deprecated, split into subcategories
+  // Falls back to `/AddSession` because cookie jar info is stale.
+  kAddSessionFallbackStaleCookies = 3,
+  // Falls back to `/AddSession` because the account still has a valid signed-in
+  // Gaia session.
+  kAddSessionFallbackValidSession = 4,
+  kMaxValue = kAddSessionFallbackValidSession,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ReauthProceedToChallengeResult)
 
