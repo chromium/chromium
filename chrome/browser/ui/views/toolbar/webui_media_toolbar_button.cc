@@ -29,7 +29,11 @@ WebUIMediaToolbarButton::WebUIMediaToolbarButton(
     WebUIToolbarControlDelegate* delegate)
     : delegate_(delegate) {}
 
-WebUIMediaToolbarButton::~WebUIMediaToolbarButton() = default;
+WebUIMediaToolbarButton::~WebUIMediaToolbarButton() {
+  // When `controller_` is destroyed, it may call `Hide()`, so ensure it is
+  // destroyed before other members.
+  controller_.reset();
+}
 
 void WebUIMediaToolbarButton::Init() {
   service_ = MediaNotificationServiceFactory::GetForProfile(
@@ -77,33 +81,35 @@ void WebUIMediaToolbarButton::HandleContextMenu(
 }
 
 void WebUIMediaToolbarButton::Show() {
-  if (should_be_shown_) {
-    return;
+  if (!should_be_shown_) {
+    should_be_shown_ = true;
+    UpdateState();
+    delegate_->OnPreferredSizeChanged();
   }
-  should_be_shown_ = true;
-  UpdateState();
-  delegate_->OnPreferredSizeChanged();
+  NotifyMediaButtonShown();
 }
 
 void WebUIMediaToolbarButton::Hide() {
   CancelPendingShowBubble();
-  if (!should_be_shown_) {
-    return;
+  if (should_be_shown_) {
+    should_be_shown_ = false;
+    UpdateState();
+    delegate_->OnPreferredSizeChanged();
   }
-  should_be_shown_ = false;
-  UpdateState();
-  delegate_->OnPreferredSizeChanged();
+  NotifyMediaButtonHidden();
 }
 
 void WebUIMediaToolbarButton::Enable() {
   enabled_ = true;
   UpdateState();
+  NotifyMediaButtonEnabled();
 }
 
 void WebUIMediaToolbarButton::Disable() {
   enabled_ = false;
   ClosePromoBubble(/*engaged=*/false);
   UpdateState();
+  NotifyMediaButtonDisabled();
 }
 
 void WebUIMediaToolbarButton::MaybeShowLocalMediaCastingPromo() {
@@ -120,6 +126,10 @@ void WebUIMediaToolbarButton::MaybeShowStopCastingPromo() {
         ->MaybeShowFeaturePromo(
             feature_engagement::kIPHGMCCastStartStopFeature);
   }
+}
+
+bool WebUIMediaToolbarButton::IsVisible() const {
+  return should_be_shown_;
 }
 
 views::BubbleAnchor WebUIMediaToolbarButton::GetBubbleAnchor() {
@@ -193,6 +203,7 @@ void WebUIMediaToolbarButton::ShowBubble() {
   // Since `dialog_widget_observation_` has changed, need to call UpdateState()
   // to pass the updated value of `prevent_overflow` to the renderer.
   UpdateState();
+  NotifyMediaDialogOpened();
 }
 
 void WebUIMediaToolbarButton::OnButtonShownWithPendingShowBubble(

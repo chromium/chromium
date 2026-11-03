@@ -14,7 +14,7 @@ class MediaItemManager;
 }  // namespace global_media_controls
 
 class BrowserWindowInterface;
-class MediaToolbarButtonView;
+class MediaToolbarButton;
 
 // A helper object for interacting with the Global Media Control dialog inside
 // unit tests.
@@ -32,7 +32,7 @@ class MediaDialogUiForTest {
 
   // Gets the GMC toolbar icon, with the side-effect of laying out the browser
   // window if necessary.
-  MediaToolbarButtonView* GetToolbarIcon();
+  MediaToolbarButton* GetToolbarIcon();
 
   // Lays out the browser window if it hasn't already been laid out.
   void LayoutBrowserIfNecessary();

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller_delegate.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -16,7 +15,6 @@ class BrowserWindowInterface;
 class BrowserView;
 class MediaNotificationService;
 class MediaToolbarButtonController;
-class MediaToolbarButtonObserver;
 class MediaToolbarButtonContextualMenu;
 
 // Media icon shown in the trusted area of toolbar. Its lifetime is tied to that
@@ -35,9 +33,6 @@ class MediaToolbarButtonView : public ToolbarButton,
   MediaToolbarButtonView& operator=(const MediaToolbarButtonView&) = delete;
   ~MediaToolbarButtonView() override;
 
-  void AddObserver(MediaToolbarButtonObserver* observer);
-  void RemoveObserver(MediaToolbarButtonObserver* observer);
-
   // MediaToolbarButtonControllerDelegate implementation.
   void Show() override;
   void Hide() override;
@@ -47,6 +42,7 @@ class MediaToolbarButtonView : public ToolbarButton,
   void MaybeShowStopCastingPromo() override;
 
   // MediaToolbarButton implementation.
+  bool IsVisible() const override;
   views::BubbleAnchor GetBubbleAnchor() override;
   MediaToolbarButtonController* GetController() override;
 
@@ -59,8 +55,6 @@ class MediaToolbarButtonView : public ToolbarButton,
   const raw_ptr<MediaNotificationService> service_;
 
   std::unique_ptr<MediaToolbarButtonController> controller_;
-
-  base::ObserverList<MediaToolbarButtonObserver> observers_;
 
   std::unique_ptr<MediaToolbarButtonContextualMenu> context_menu_;
 };

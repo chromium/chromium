@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 
-#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -12,7 +11,6 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
-#include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
@@ -70,33 +68,24 @@ MediaToolbarButtonView::~MediaToolbarButtonView() {
   controller_.reset();
 }
 
-void MediaToolbarButtonView::AddObserver(MediaToolbarButtonObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void MediaToolbarButtonView::RemoveObserver(
-    MediaToolbarButtonObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void MediaToolbarButtonView::Show() {
   SetVisible(true);
   PreferredSizeChanged();
 
-  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonShown);
+  NotifyMediaButtonShown();
 }
 
 void MediaToolbarButtonView::Hide() {
   SetVisible(false);
   PreferredSizeChanged();
 
-  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonHidden);
+  NotifyMediaButtonHidden();
 }
 
 void MediaToolbarButtonView::Enable() {
   SetEnabled(true);
 
-  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonEnabled);
+  NotifyMediaButtonEnabled();
 }
 
 void MediaToolbarButtonView::Disable() {
@@ -104,7 +93,7 @@ void MediaToolbarButtonView::Disable() {
 
   ClosePromoBubble(/*engaged=*/false);
 
-  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonDisabled);
+  NotifyMediaButtonDisabled();
 }
 
 void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
@@ -128,7 +117,7 @@ void MediaToolbarButtonView::ButtonPressed() {
     MediaDialogView::ShowDialogFromToolbar(GetBubbleAnchor(), service_,
                                            browser_->GetProfile());
     ClosePromoBubble(/*engaged=*/true);
-    observers_.Notify(&MediaToolbarButtonObserver::OnMediaDialogOpened);
+    NotifyMediaDialogOpened();
   }
 }
 
@@ -144,6 +133,10 @@ void MediaToolbarButtonView::ClosePromoBubble(bool engaged) {
           feature_engagement::kIPHGMCCastStartStopFeature);
     }
   }
+}
+
+bool MediaToolbarButtonView::IsVisible() const {
+  return GetVisible();
 }
 
 views::BubbleAnchor MediaToolbarButtonView::GetBubbleAnchor() {

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
+#include "chrome/browser/ui/views/toolbar/test_support/media_toolbar_button_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_test_base.h"
@@ -121,4 +122,24 @@ IN_PROC_BROWSER_TEST_F(WebUIMediaToolbarButtonInteractiveTest,
                            "    .hasAttribute('is-menu-open')")
                .ExtractBool();
   }));
+
+  // 8. Verify toggling the dialog open, closed, and immediately back open via
+  // MediaToolbarButtonTestAccessor::Click().
+  // Because there are no active media sessions in this test, closing the dialog
+  // in step 4 hid the media button via
+  // MediaToolbarButtonController::OnMediaDialogClosed.
+  MediaToolbarButtonTestAccessor accessor(browser());
+  EXPECT_FALSE(accessor.IsVisible());
+  media_button->GetController()->ShowToolbarButton();
+  EXPECT_TRUE(accessor.IsVisible());
+  accessor.Click();
+  EXPECT_TRUE(MediaDialogView::IsShowing());
+  accessor.Click();
+  EXPECT_FALSE(MediaDialogView::IsShowing());
+  EXPECT_FALSE(accessor.IsVisible());
+  media_button->GetController()->ShowToolbarButton();
+  EXPECT_TRUE(accessor.IsVisible());
+  accessor.Click();
+  EXPECT_TRUE(MediaDialogView::IsShowing());
+  MediaDialogView::HideDialog();
 }

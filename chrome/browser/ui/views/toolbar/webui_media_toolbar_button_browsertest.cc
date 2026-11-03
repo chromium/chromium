@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_media_toolbar_button.h"
 
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
+#include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/global_media_controls/media_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/test_support/media_toolbar_button_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_test_base.h"
@@ -15,6 +19,32 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/controls/webview/webview.h"
+
+namespace {
+
+class TestMediaToolbarButtonObserver : public MediaToolbarButtonObserver {
+ public:
+  void OnMediaDialogOpened() override { ++dialog_opened_count_; }
+  void OnMediaButtonShown() override { ++shown_count_; }
+  void OnMediaButtonHidden() override { ++hidden_count_; }
+  void OnMediaButtonEnabled() override { ++enabled_count_; }
+  void OnMediaButtonDisabled() override { ++disabled_count_; }
+
+  int dialog_opened_count() const { return dialog_opened_count_; }
+  int shown_count() const { return shown_count_; }
+  int hidden_count() const { return hidden_count_; }
+  int enabled_count() const { return enabled_count_; }
+  int disabled_count() const { return disabled_count_; }
+
+ private:
+  int dialog_opened_count_ = 0;
+  int shown_count_ = 0;
+  int hidden_count_ = 0;
+  int enabled_count_ = 0;
+  int disabled_count_ = 0;
+};
+
+}  // namespace
 
 class WebUIMediaButtonBrowserTest : public WebUIToolbarWebViewTestBase {
  public:
@@ -43,8 +73,16 @@ IN_PROC_BROWSER_TEST_F(WebUIMediaButtonBrowserTest, MediaButtonShowHide) {
   ASSERT_TRUE(webui_web_contents);
   const std::string media_selector = "#media";
 
+  MediaToolbarButtonTestAccessor accessor(browser());
+  ASSERT_EQ(media_button, accessor.GetMediaButton());
+  TestMediaToolbarButtonObserver observer;
+  base::ScopedObservation<MediaToolbarButton, MediaToolbarButtonObserver>
+      observation(&observer);
+  observation.Observe(media_button);
+
   // Verify the button is initially hidden.
   EXPECT_FALSE(state->should_be_shown);
+  EXPECT_FALSE(accessor.IsVisible());
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(
                webui_web_contents,
@@ -57,6 +95,9 @@ IN_PROC_BROWSER_TEST_F(WebUIMediaButtonBrowserTest, MediaButtonShowHide) {
   // Show the button via MediaToolbarButtonController and verify the state and
   // WebUI DOM update.
   media_button->GetController()->ShowToolbarButton();
+  EXPECT_TRUE(accessor.IsVisible());
+  EXPECT_EQ(1, observer.shown_count());
+  EXPECT_EQ(1, observer.enabled_count());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return delegate->GetState().media_control_state->should_be_shown;
   }));
@@ -64,6 +105,8 @@ IN_PROC_BROWSER_TEST_F(WebUIMediaButtonBrowserTest, MediaButtonShowHide) {
 
   // Hide the button and verify the state and WebUI DOM update.
   media_button->Hide();
+  EXPECT_FALSE(accessor.IsVisible());
+  EXPECT_EQ(1, observer.hidden_count());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !delegate->GetState().media_control_state->should_be_shown;
   }));
@@ -94,9 +137,16 @@ IN_PROC_BROWSER_TEST_F(WebUIMediaButtonBrowserTest, MediaButtonEnableDisable) {
   ASSERT_TRUE(webui_web_contents);
   const std::string media_selector = "#media";
 
+  TestMediaToolbarButtonObserver observer;
+  base::ScopedObservation<MediaToolbarButton, MediaToolbarButtonObserver>
+      observation(&observer);
+  observation.Observe(media_button);
+
   // Show the button via MediaToolbarButtonController first so it is rendered in
   // WebUI.
   media_button->GetController()->ShowToolbarButton();
+  EXPECT_EQ(1, observer.shown_count());
+  EXPECT_EQ(1, observer.enabled_count());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return delegate->GetState().media_control_state->should_be_shown;
   }));
@@ -116,6 +166,7 @@ IN_PROC_BROWSER_TEST_F(WebUIMediaButtonBrowserTest, MediaButtonEnableDisable) {
 
   // Disable the button and verify the state and WebUI DOM update.
   media_button->Disable();
+  EXPECT_EQ(1, observer.disabled_count());
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !delegate->GetState().media_control_state->enabled; }));
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -129,7 +180,10 @@ IN_PROC_BROWSER_TEST_F(WebUIMediaButtonBrowserTest, MediaButtonEnableDisable) {
   }));
 
   // Enable the button and verify the state and WebUI DOM update.
+  media_button->Show();
   media_button->Enable();
+  EXPECT_EQ(2, observer.shown_count());
+  EXPECT_EQ(2, observer.enabled_count());
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return delegate->GetState().media_control_state->enabled; }));
   EXPECT_TRUE(base::test::RunUntil([&]() {

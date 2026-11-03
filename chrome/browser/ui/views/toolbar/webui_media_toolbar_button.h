@@ -64,13 +64,12 @@ class WebUIMediaToolbarButton : public MediaToolbarButtonControllerDelegate,
   void MaybeShowStopCastingPromo() override;
 
   // MediaToolbarButton implementation.
+  bool IsVisible() const override;
   views::BubbleAnchor GetBubbleAnchor() override;
   MediaToolbarButtonController* GetController() override;
 
   // views::WidgetObserver implementation.
   void OnWidgetDestroying(views::Widget* widget) override;
-
-  bool IsButtonShowing() const { return should_be_shown_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIMediaToolbarButtonInteractiveTest,

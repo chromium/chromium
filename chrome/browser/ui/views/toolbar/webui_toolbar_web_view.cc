@@ -1981,7 +1981,7 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
       features::IsWebUIGlicButtonEnabled() && glic_control_.IsVisible();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   button_count +=
-      features::IsWebUIMediaButtonEnabled() && media_control_.IsButtonShowing();
+      features::IsWebUIMediaButtonEnabled() && media_control_.IsVisible();
 #endif
 
   const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
