@@ -16,6 +16,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_split_metrics.h"
@@ -996,6 +997,45 @@ TEST_F(
   template_url_service().SetUserSelectedDefaultSearchProviderByPrepopulateId(
       naver.id, ChoiceMadeLocation::kSearchSettings);
   EXPECT_EQ(template_url_service().GetDefaultSearchProvider(), *it);
+}
+
+TEST_F(SearchEngineSettingsDataProviderNonSplitRegionTest,
+       GetAllPrepopulatedSearchEngines_ExcludesEnginesNotInRegionalLists) {
+  // Look for a prepopulated engine whose ID no regional list references.
+  const auto engines_in_regional_lists =
+      regional_capabilities::GetPrepopulatedEnginesInRegionalLists();
+  const auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
+  auto unreferenced_it = std::ranges::find_if(
+      all_engines,
+      [&](const TemplateURLPrepopulateData::PrepopulatedEngine* engine) {
+        return !std::ranges::contains(
+            engines_in_regional_lists, engine->id,
+            &TemplateURLPrepopulateData::PrepopulatedEngine::id);
+      });
+  if (unreferenced_it == all_engines.end()) {
+    GTEST_SKIP() << "All prepopulated engines are in regional lists.";
+  }
+  const int unreferenced_id = (*unreferenced_it)->id;
+
+  template_url_service().Load();
+  // Such an engine can still be the default search engine, e.g. if it was
+  // selected before being removed from all the regional lists.
+  template_url_service().SetUserSelectedDefaultSearchProviderByPrepopulateId(
+      unreferenced_id, ChoiceMadeLocation::kSearchSettings);
+  const TemplateURL* dse = template_url_service().GetDefaultSearchProvider();
+  ASSERT_EQ(dse->prepopulate_id(), unreferenced_id);
+
+  auto provider = CreateProvider();
+
+  // The default search engine is always shown in the picker...
+  EXPECT_THAT(provider->GetDefaultSearchEnginePickerData().primary,
+              testing::Contains(dse));
+
+  // ... but no engine with its ID is offered among the more search engines.
+  AllPrepopulatedSearchEnginesData data =
+      provider->GetAllPrepopulatedSearchEngines();
+  EXPECT_FALSE(std::ranges::contains(data.engines, unreferenced_id,
+                                     &TemplateURL::prepopulate_id));
 }
 
 #if BUILDFLAG(IS_ANDROID)

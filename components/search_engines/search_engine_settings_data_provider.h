@@ -118,8 +118,9 @@ struct AllPrepopulatedSearchEnginesData {
       AllPrepopulatedSearchEnginesData&&);
   ~AllPrepopulatedSearchEnginesData();
 
-  // Every prepopulated engine. An entry points to the `TemplateURLService`
-  // engine for that `prepopulate_id` if there is one, and into `owned_engines`
+  // The prepopulated engines from the profile country's list and from all the
+  // other regional lists. An entry points to the `TemplateURLService` engine
+  // for that `prepopulate_id` if there is one, and into `owned_engines`
   // otherwise. Valid only while this object is alive and the
   // `TemplateURLService` is unchanged.
   TemplateURL::TemplateURLVector engines;
@@ -202,8 +203,9 @@ class SearchEngineSettingsDataProvider {
   // dialog in settings.
   DefaultSearchEnginePickerData GetDefaultSearchEnginePickerData() const;
 
-  // Returns all prepopulated engines, sorted alphabetically. Neither regional
-  // nor policy engines are prioritized.
+  // Returns the prepopulated engines from the profile country's list and from
+  // all the other regional lists, sorted alphabetically. Neither regional nor
+  // policy engines are prioritized.
   AllPrepopulatedSearchEnginesData GetAllPrepopulatedSearchEngines() const;
 
   // Returns template URLs filtered by `category` and sorted appropriately

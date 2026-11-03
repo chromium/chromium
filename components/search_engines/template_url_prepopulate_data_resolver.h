@@ -71,8 +71,9 @@ class Resolver : public KeyedService {
   std::unique_ptr<TemplateURLData> GetEngineFromFullList(
       std::u16string_view keyword) const;
 
-  // Returns every known prepopulated engine, deduplicated by ID. When several
-  // definitions share an ID, the profile country's one is used, matching
+  // Returns the prepopulated engines from the profile country's list and from
+  // all the other regional lists, deduplicated by ID. When several definitions
+  // share an ID, the profile country's one is used, matching
   // `GetEngineFromFullList(id)`.
   std::vector<raw_ptr<const PrepopulatedEngine>> GetAllPrepopulatedEngines()
       const;

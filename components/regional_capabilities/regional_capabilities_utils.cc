@@ -11,11 +11,15 @@
 #include <string>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/eea_countries_ids.h"
 #include "components/regional_capabilities/program_settings.h"
@@ -65,6 +69,31 @@ void ShufflePrepopulatedEngines(
   generator.seed(prefs::GetShuffleSeed(prefs));
 
   std::shuffle(engines.begin(), engines.end(), generator);
+}
+
+// Returns the entries of `TemplateURLPrepopulateData::kAllEngines` that at
+// least one regional list references, preserving their order.
+std::vector<raw_ptr<const PrepopulatedEngine>>
+ComputePrepopulatedEnginesInRegionalLists() {
+  base::flat_set<const PrepopulatedEngine*> referenced_engines;
+  for (const auto& [country_id, regional_settings] :
+       TemplateURLPrepopulateData::kRegionalSettings) {
+    referenced_engines.insert(regional_settings->search_engines.begin(),
+                              regional_settings->search_engines.end());
+  }
+
+  // Iterate over `kAllEngines` rather than `referenced_engines`, which is
+  // ordered by address: when several definitions share an ID, callers keep
+  // the first one, which has to match the one that lookups by ID resolve.
+  std::vector<raw_ptr<const PrepopulatedEngine>> engines;
+  for (const PrepopulatedEngine* engine :
+       TemplateURLPrepopulateData::kAllEngines) {
+    if (referenced_engines.contains(engine)) {
+      engines.push_back(engine);
+    }
+  }
+
+  return engines;
 }
 
 }  // namespace
@@ -233,6 +262,23 @@ GetAllPrepopulatedEngines() {
   }
 
   return base::span(TemplateURLPrepopulateData::kAllEngines);
+}
+
+const base::span<
+    const raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+GetPrepopulatedEnginesInRegionalLists() {
+  if (const auto& overrides = GetPrepopulatedEnginesTestOverrideInternal();
+      overrides.has_value()) {
+    CHECK_IS_TEST();
+    // The overrides don't model the lists of other regions, so all the known
+    // engines are considered as referenced.
+    return base::span(overrides->all_engines);
+  }
+
+  static base::NoDestructor<std::vector<raw_ptr<const PrepopulatedEngine>>>
+      engines_in_regional_lists(ComputePrepopulatedEnginesInRegionalLists());
+
+  return base::span(*engines_in_regional_lists);
 }
 
 // -- Test-only utils ---------------------------------------------------------

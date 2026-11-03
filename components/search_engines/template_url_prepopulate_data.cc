@@ -324,20 +324,16 @@ std::vector<raw_ptr<const PrepopulatedEngine>> GetAllPrepopulatedEngines(
     }
   }
 
+  // Engines that no regional list references are not offered.
   // TODO(crbug.com/446637115): With migration enabled, migration targets are
   // not listed outside regions whose list includes them, and a pre-migration ID
-  // falls back to its first global definition.
+  // falls back to its first definition referenced by a regional list.
   // TODO(crbug.com/446637115): `GetPrepopulatedEngineFromFullList()` also
   // consults regional variants, and this function does not. With shadow
   // variants enabled, an engine could be listed with one definition and added
   // with another. Resolve this as part of that feature.
-  const auto& migrating_engines =
-      regional_capabilities::GetMigratingPrepopulatedEngines();
   for (const PrepopulatedEngine* engine :
-       regional_capabilities::GetAllPrepopulatedEngines()) {
-    if (migrating_engines.contains(engine->id)) {
-      continue;
-    }
+       regional_capabilities::GetPrepopulatedEnginesInRegionalLists()) {
     if (seen_ids.insert(engine->id).second) {
       engines.push_back(engine);
     }

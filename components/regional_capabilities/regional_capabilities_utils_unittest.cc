@@ -4,6 +4,8 @@
 
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 
+#include <algorithm>
+
 #include "base/test/gtest_util.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/access/country_access_reason.h"
@@ -59,6 +61,55 @@ TEST(RegionalCapabilitiesUtilsTest, GetAllPrepopulatedEngines_Overridden) {
         regional_capabilities::GetAllPrepopulatedEngines()[aggregated_index],
         sample_regional_engines[i]);
   }
+}
+
+TEST(RegionalCapabilitiesUtilsTest, GetPrepopulatedEnginesInRegionalLists) {
+  regional_capabilities::ClearPrepopulatedEnginesOverrideForTesting();
+  const auto engines =
+      regional_capabilities::GetPrepopulatedEnginesInRegionalLists();
+
+  // Every engine that a regional list references is included.
+  for (const auto& [country_id, regional_settings] :
+       TemplateURLPrepopulateData::kRegionalSettings) {
+    for (const PrepopulatedEngine* engine : regional_settings->search_engines) {
+      EXPECT_TRUE(std::ranges::contains(engines, engine))
+          << "Missing engine " << engine->id << " referenced by "
+          << country_id.CountryCode();
+    }
+  }
+
+  // Every included engine is referenced by a regional list.
+  for (const PrepopulatedEngine* engine : engines) {
+    EXPECT_TRUE(std::ranges::any_of(
+        TemplateURLPrepopulateData::kRegionalSettings,
+        [engine](const auto& entry) {
+          return std::ranges::contains(entry.second->search_engines, engine);
+        }))
+        << "Engine " << engine->id << " is not referenced by a regional list";
+  }
+
+  // The engines keep their order from `kAllEngines`, without duplicates.
+  const auto& all_engines = TemplateURLPrepopulateData::kAllEngines;
+  auto all_engines_it = all_engines.begin();
+  for (const PrepopulatedEngine* engine : engines) {
+    all_engines_it = std::find(all_engines_it, all_engines.end(), engine);
+    ASSERT_NE(all_engines_it, all_engines.end())
+        << "Engine " << engine->id << " is unknown, duplicated or misordered";
+    ++all_engines_it;
+  }
+}
+
+TEST(RegionalCapabilitiesUtilsTest,
+     GetPrepopulatedEnginesInRegionalLists_Overridden) {
+  auto scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          sample_regional_engines, other_known_engines);
+
+  // The overrides don't model the lists of other regions, so all the known
+  // engines are considered as referenced.
+  EXPECT_TRUE(std::ranges::equal(
+      regional_capabilities::GetPrepopulatedEnginesInRegionalLists(),
+      regional_capabilities::GetAllPrepopulatedEngines()));
 }
 
 TEST(RegionalCapabilitiesUtilsTest, GetPrepopulatedEngines) {

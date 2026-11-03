@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 
@@ -72,9 +73,21 @@ GetPrepopulatedEngines(country_codes::CountryId country_id,
                        PrefService& prefs,
                        SearchEngineListType search_engine_list_type);
 
+// TODO(crbug.com/581331545): Review which callers should use
+// `GetPrepopulatedEnginesInRegionalLists()` instead.
 const base::span<
     const raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
 GetAllPrepopulatedEngines();
+
+// Returns the entries of `GetAllPrepopulatedEngines()` that at least one
+// regional list references, in the same order. Entries are matched exactly:
+// e.g. `yahoo_ar` is excluded if no regional list references it, even if
+// other Yahoo entries sharing its `id` are referenced.
+// When the prepopulated engines are overridden for testing, returns all of
+// them, as the overrides don't model the lists of other regions.
+const base::span<
+    const raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+GetPrepopulatedEnginesInRegionalLists();
 
 // Maps from the `id` of a new entry to the deprecated `PrepopulatedEngine` that
 // points to it.

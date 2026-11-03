@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -18,6 +19,7 @@
 #include "base/containers/to_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -850,15 +852,29 @@ TEST_F(TemplateURLPrepopulateDataTest, GetAllPrepopulatedEngines_UniqueIds) {
         << "Duplicate prepopulate_id: " << engine->id;
   }
 
-  const auto& migrating_engines =
-      regional_capabilities::GetMigratingPrepopulatedEngines();
   for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine :
-       regional_capabilities::GetAllPrepopulatedEngines()) {
-    if (migrating_engines.contains(engine->id)) {
-      EXPECT_FALSE(seen_ids.contains(engine->id));
-    } else {
-      EXPECT_TRUE(seen_ids.contains(engine->id));
-    }
+       regional_capabilities::GetPrepopulatedEnginesInRegionalLists()) {
+    EXPECT_TRUE(seen_ids.contains(engine->id))
+        << "Missing prepopulate_id: " << engine->id;
+  }
+}
+
+TEST_F(TemplateURLPrepopulateDataTest,
+       GetAllPrepopulatedEngines_ExcludesEnginesNotInRegionalLists) {
+  OverrideCountryId(CountryId("US"));
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      engines = prepopulate_data_resolver().GetAllPrepopulatedEngines();
+  ASSERT_FALSE(engines.empty());
+
+  // The US engines are referenced by the US list, so every returned engine is
+  // expected to be referenced by a regional list. Matching definitions rather
+  // than IDs also checks that unreferenced variants (e.g. `yahoo_ar`) are not
+  // returned.
+  const auto engines_in_regional_lists =
+      regional_capabilities::GetPrepopulatedEnginesInRegionalLists();
+  for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine : engines) {
+    EXPECT_TRUE(std::ranges::contains(engines_in_regional_lists, engine))
+        << "Engine " << engine->id << " is not referenced by a regional list";
   }
 }
 
