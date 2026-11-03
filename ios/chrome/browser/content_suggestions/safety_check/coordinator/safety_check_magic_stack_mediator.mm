@@ -40,7 +40,7 @@
 @end
 
 @implementation SafetyCheckMagicStackMediator {
-  raw_ptr<IOSChromeSafetyCheckManager, DanglingUntriaged> _safetyCheckManager;
+  raw_ptr<IOSChromeSafetyCheckManager> _safetyCheckManager;
   // Observer for Safety Check changes.
   std::unique_ptr<SafetyCheckObserverBridge> _safetyCheckManagerObserver;
   // Bridge to listen to pref changes.
@@ -50,9 +50,9 @@
   // Registrar for user pref changes notifications.
   PrefChangeRegistrar _userPrefChangeRegistrar;
   // Local State prefs.
-  raw_ptr<PrefService, DanglingUntriaged> _localState;
+  raw_ptr<PrefService> _localState;
   // User prefs.
-  raw_ptr<PrefService, DanglingUntriaged> _userState;
+  raw_ptr<PrefService> _userState;
   ProfileState* _profileState;
   // Used by the Safety Check (Magic Stack) module for the current Safety Check
   // state.
@@ -126,12 +126,15 @@
   _safetyCheckConfig.audience = nil;
 
   _safetyCheckManagerObserver.reset();
+  _safetyCheckManager = nullptr;
 
   if (_prefObserverBridge) {
     _prefChangeRegistrar.RemoveAll();
     _userPrefChangeRegistrar.RemoveAll();
     _prefObserverBridge.reset();
   }
+  _localState = nullptr;
+  _userState = nullptr;
 
   [_profileState removeObserver:self];
   _profileState = nil;
@@ -206,6 +209,7 @@
 
 - (void)safetyCheckManagerWillShutdown {
   _safetyCheckManagerObserver.reset();
+  _safetyCheckManager = nullptr;
 }
 
 #pragma mark - ProfileStateObserver
