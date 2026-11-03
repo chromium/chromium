@@ -788,6 +788,7 @@ AIManager::AIManager(content::BrowserContext* browser_context,
       Profile::FromBrowserContext(browser_context_));
   if (service) {
     model_broker_client_ = service->CreateModelBrokerClient();
+    profile_has_optimization_guide_keyed_service_ = true;
   }
 }
 
@@ -1919,6 +1920,12 @@ void AIManager::CanCreateSemanticEmbedder(
     return;
   }
 
+  if (!profile_has_optimization_guide_keyed_service_) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableServiceNotRunning);
+    return;
+  }
+
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
 
   if (!service_launcher->controller()->IsModelAvailable()) {
@@ -1952,7 +1959,8 @@ void AIManager::CreateSemanticEmbedder(
     return;
   }
 
-  if (!AISemanticEmbedderServiceLauncher::Get()->AllowedToLaunch()) {
+  if (!profile_has_optimization_guide_keyed_service_ ||
+      !AISemanticEmbedderServiceLauncher::Get()->AllowedToLaunch()) {
     mojo::Remote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
         client_remote(std::move(client));
     client_remote->OnError(

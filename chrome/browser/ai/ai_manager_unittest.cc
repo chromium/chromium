@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/current_thread.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ai/ai_language_model.h"
@@ -34,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "services/on_device_model/public/cpp/features.h"
@@ -407,6 +409,43 @@ TEST_F(AIManagerTest, CanCreateSemanticEmbedderCrashLimit) {
   // Cleanup
   service_launcher->RecordSuccessfulUse();
   service_launcher->controller()->MaybeUpdateModelInfo(std::nullopt);
+}
+
+// Sign-in, lock-screen and System profiles have no
+// OptimizationGuideKeyedService.
+TEST_F(AIManagerTest, CanCreateSemanticEmbedderWithoutOptimizationGuide) {
+  SetupNullOptimizationGuideKeyedService();
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  ai_manager_->CanCreateSemanticEmbedder(future.GetCallback());
+  EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                              kUnavailableServiceNotRunning);
+}
+
+TEST_F(AIManagerTest, CreateSemanticEmbedderWithoutOptimizationGuide) {
+  SetupNullOptimizationGuideKeyedService();
+  // The model is browser-global and installed, so only the missing service can
+  // make create() fail.
+  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+  ASSERT_TRUE(service_launcher->controller()->MaybeUpdateModelInfo(
+      optimization_guide::ModelInfo{
+          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
+          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
+          .version = 1,
+          .model_metadata = optimization_guide::AnyWrapProto(
+              optimization_guide::proto::PassageEmbeddingsModelMetadata()),
+      }));
+
+  TestCreateSemanticEmbedderClient client;
+  ai_manager_->CreateSemanticEmbedder(client.BindNewPipeAndPassRemote(),
+                                      /*monitor=*/mojo::NullRemote());
+
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return client.future().IsReady() || client.error_future().IsReady();
+  }));
+  ASSERT_TRUE(client.error_future().IsReady());
+  EXPECT_EQ(client.error_future().Get(),
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 
 TEST_F(AIManagerTest, CanCreateFeatureDisabled) {

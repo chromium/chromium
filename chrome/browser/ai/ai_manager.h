@@ -335,6 +335,13 @@ class AIManager : public base::SupportsUserData::Data,
   bool did_log_speed_preference_markdown_warning_ = false;
   bool did_log_on_device_ai_settings_disabled_warning_ = false;
 
+  // Gates the Semantic Embedder API. Its model and process are browser-wide,
+  // so without this per-profile check, a page in a profile that has no
+  // OptimizationGuideKeyedService (the System profile, and ChromeOS's sign-in
+  // and lock-screen profiles) could use the API to download the model and
+  // start the embeddings process.
+  bool profile_has_optimization_guide_keyed_service_ = false;
+
   // Features that have attempted initialization in this session.
   base::flat_set<optimization_guide::mojom::OnDeviceFeature> tried_init_;
 
