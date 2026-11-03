@@ -279,3 +279,5 @@ crbug.com/579456339 [ Simulator ] BrowserEditMenuHandlerTestCase/testEmailMenu [
 crbug.com/581352992 [ Device ] KeyboardCommandsTestCase/testKeyboardCommandsRegistered_MultiWindow [ Pass Failure ]
 crbug.com/581352992 [ Device ] KeyboardCommandsTestCase/testWebViewIsFirstResponderUponKeyPress [ Pass Failure ]
 crbug.com/581349540 [ Device ] PageInfoTestCase/testShowTwoAccessiblePermissionsInPageInfo [ Pass Failure ]
+crbug.com/573762988 [ Simulator ] PolicyUIMojoDisabledTestCase/testPolicyPageManagedWithCBCM [ Pass Failure ]
+crbug.com/581389688 [ Device ] DriveFilePickerTestCase/testToolbarAboveKeyboardDuringSearch [ Pass Failure ]
