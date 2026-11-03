@@ -17,6 +17,7 @@ class PageContentCacheServiceFactory final
 
   // Returns the storage path for the PageContentCacheService for `profile`.
   static base::FilePath GetStoragePathForProfile(ProfileIOS* profile);
+  static base::FilePath GetStoragePathForProfile(ProfileIOS& profile);
 
  private:
   // ProfileKeyedServiceFactoryIOS:

@@ -6,6 +6,7 @@
 
 #import <utility>
 
+#import "base/check_deref.h"
 #import "base/files/file_path.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -21,8 +22,14 @@ constexpr char kPersistedTabContextsDatabase[] = "persisted_tab_contexts_db";
 // static
 base::FilePath PageContentCacheServiceFactory::GetStoragePathForProfile(
     ProfileIOS* profile) {
+  return GetStoragePathForProfile(CHECK_DEREF(profile));
+}
+
+// static
+base::FilePath PageContentCacheServiceFactory::GetStoragePathForProfile(
+    ProfileIOS& profile) {
   base::FilePath cache_directory_path;
-  ios::GetUserCacheDirectory(profile->GetStatePath(), &cache_directory_path);
+  ios::GetUserCacheDirectory(profile.GetStatePath(), &cache_directory_path);
   return cache_directory_path.Append(kPersistedTabContextsDatabase);
 }
 
