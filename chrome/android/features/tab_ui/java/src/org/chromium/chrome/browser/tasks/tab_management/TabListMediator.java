@@ -911,15 +911,16 @@ public class TabListMediator implements TabListNotificationHandler {
                         ? sTabGroupCreationDialogManagerForTesting
                         : new TabGroupCreationDialogManager(
                                 activity, assumeNonNull(modalDialogManager), onTabGroupCreation);
+        String componentName = TabUiMetricsHelper.getComponentNameForMetrics(componentId);
         mTabGridItemTouchHelperCallback =
                 new TabGridItemTouchHelperCallback(
                         activity,
                         tabGroupCreationDialogManager,
                         mModelList,
                         () -> assertNonNull(mCurrentTabModelSupplier.get()),
-                        swipeSafeTabActionListener,
+                        new TabSwipeHandler(mModelList, swipeSafeTabActionListener, componentName),
                         mUngroupBarStatusHandler,
-                        TabUiMetricsHelper.getComponentNameForMetrics(componentId),
+                        componentName,
                         mLayoutType,
                         onDragStateChangedListener);
 

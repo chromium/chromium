@@ -266,7 +266,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         mTabGroupCreationDialogManager,
                         mModel,
                         mTabModelSupplier,
-                        mTabClosedListener,
+                        new TabSwipeHandler(mModel, mTabClosedListener, ""),
                         isDialog ? mUngroupBarStatusHandler : null,
                         "",
                         isDialog ? TabListLayoutType.FLAT : TabListLayoutType.GROUPED,
@@ -1764,5 +1764,20 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
 
         assertFalse(listener.onInterceptTouchEvent(mRecyclerView, downEvent));
+    }
+
+    @Test
+    public void getSwipeThreshold_delegatesToSwipeHandlerUsingParentWidth() {
+        setupItemTouchHelperCallback(/* isDialog= */ false);
+
+        assertEquals(
+                THRESHOLD / mRecyclerView.getWidth(),
+                mItemTouchHelperCallback.getSwipeThreshold(mViewHolder1),
+                0.001f);
+
+        RecyclerView.ViewHolder unattachedViewHolder =
+                new RecyclerView.ViewHolder(new View(ContextUtils.getApplicationContext())) {};
+        assertEquals(
+                0.5f, mItemTouchHelperCallback.getSwipeThreshold(unattachedViewHolder), 0.001f);
     }
 }
