@@ -4,7 +4,7 @@
 
 import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import type {Doodle, LogoElement, Theme} from 'chrome://new-tab-page/new_tab_page.js';
-import {$$, DoodleImageType, DoodleShareChannel, NewTabPageProxy, PageCallbackRouter, PageHandlerRemote, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, DoodleImageType, DoodleShareChannel, newTabPageProxyFactory, PageHandlerRemote, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -95,7 +95,8 @@ suite('NewTabPageLogoTest', () => {
     windowProxy.setResultFor('createIframeSrc', '');
     handler = installMock(
         PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+        mock => newTabPageProxyFactory.setInstance(
+            newTabPageProxyFactory.createForTest(mock).instance));
     handler.setPromiseResolveFor('onDoodleImageRendered', {
       imageClickParams: '',
       interactionLogUrl: null,

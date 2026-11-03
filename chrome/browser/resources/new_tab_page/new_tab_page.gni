@@ -10,7 +10,6 @@ import("./ntp_promo/ntp_promo.gni")
 # List of files that don't need to be passed to html_to_wrapper().
 all_ts_files = [
                  "background_manager.ts",
-                 "customize_buttons_proxy.ts",
                  "customize_dialog_types.ts",
                  "doodle_icons.html.ts",
                  "i18n_setup.ts",
@@ -21,7 +20,6 @@ all_ts_files = [
                  "lens_upload_dialog_icons.html.ts",
                  "metrics_utils.ts",
                  "new_tab_page_eager.ts",
-                 "new_tab_page_proxy.ts",
                  "new_tab_page.ts",
                  "ntp_composebox.html.ts",
                  "ntp_composebox_context_menu.html.ts",

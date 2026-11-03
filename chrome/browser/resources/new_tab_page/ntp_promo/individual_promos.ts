@@ -16,10 +16,10 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {NtpPromoClientCallbackRouter, NtpPromoHandlerInterface, Promo} from '../ntp_promo.mojom-webui.js';
+import {browserProxyFactory} from '../ntp_promo.mojom-webui.js';
 
 import {getCss} from './individual_promos.css.js';
 import {getHtml} from './individual_promos.html.js';
-import {NtpPromoProxyImpl} from './ntp_promo_proxy.js';
 
 export interface IndividualPromosElement {
   $: {
@@ -56,8 +56,8 @@ export class IndividualPromosElement extends CrLitElement {
 
   constructor() {
     super();
-    this.handler_ = NtpPromoProxyImpl.getInstance().getHandler();
-    this.callbackRouter_ = NtpPromoProxyImpl.getInstance().getCallbackRouter();
+    this.handler_ = browserProxyFactory.getInstance().handler;
+    this.callbackRouter_ = browserProxyFactory.getInstance().callbackRouter;
   }
 
   override connectedCallback() {

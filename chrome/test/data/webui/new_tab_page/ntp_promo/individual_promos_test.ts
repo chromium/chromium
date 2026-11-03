@@ -6,16 +6,16 @@ import 'chrome://new-tab-page/lazy_load.js';
 import './ntp_promo_test_common.js';
 
 import type {IndividualPromosElement} from 'chrome://new-tab-page/lazy_load.js';
-import {getTrustedHTML} from 'chrome://new-tab-page/new_tab_page.js';
+import {getTrustedHTML, ntpPromoProxyFactory} from 'chrome://new-tab-page/new_tab_page.js';
 import type {NtpPromo as Promo} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestNtpPromoProxy} from './ntp_promo_test_common.js';
+import {TestNtpPromoHandler} from './ntp_promo_test_common.js';
 
 suite('IndividualPromosTest', () => {
-  let testProxy: TestNtpPromoProxy;
+  let testHandler: TestNtpPromoHandler;
   let individualPromos: IndividualPromosElement;
 
   const promo: Promo = {
@@ -51,7 +51,9 @@ suite('IndividualPromosTest', () => {
   }
 
   setup(() => {
-    testProxy = TestNtpPromoProxy.install();
+    testHandler = new TestNtpPromoHandler();
+    const {instance} = ntpPromoProxyFactory.createForTest(testHandler);
+    ntpPromoProxyFactory.setInstance(instance);
 
     document.body.innerHTML = getTrustedHTML`
     <div id='container'>
@@ -84,9 +86,8 @@ suite('IndividualPromosTest', () => {
     await waitForVisibilityEvents();
     assertTrue(
         isVisible(individualPromos), 'promo frame should become visible');
-    assertEquals(1, testProxy.getHandler().getCallCount('onPromoShown'));
-    assertDeepEquals(
-        [promo.id], testProxy.getHandler().getArgs('onPromoShown'));
+    assertEquals(1, testHandler.getCallCount('onPromoShown'));
+    assertDeepEquals([promo.id], testHandler.getArgs('onPromoShown'));
     assertEquals(1, getPromoCount());
   });
 
@@ -104,9 +105,8 @@ suite('IndividualPromosTest', () => {
     individualPromos.onSetPromo(promo);
     await waitForVisibilityEvents();
     getPromoAt(0).click();
-    assertEquals(1, testProxy.getHandler().getCallCount('onPromoClicked'));
-    assertDeepEquals(
-        [promo.id], testProxy.getHandler().getArgs('onPromoClicked'));
+    assertEquals(1, testHandler.getCallCount('onPromoClicked'));
+    assertDeepEquals([promo.id], testHandler.getArgs('onPromoClicked'));
   });
 
   test('dismiss promo', async () => {
@@ -128,9 +128,8 @@ suite('IndividualPromosTest', () => {
     assertTrue(!!dismissOption);
     dismissOption.click();
 
-    assertEquals(1, testProxy.getHandler().getCallCount('onPromoDismissed'));
-    assertDeepEquals(
-        [promo.id], testProxy.getHandler().getArgs('onPromoDismissed'));
+    assertEquals(1, testHandler.getCallCount('onPromoDismissed'));
+    assertDeepEquals([promo.id], testHandler.getArgs('onPromoDismissed'));
     assertFalse(actionMenu.open);
   });
 });

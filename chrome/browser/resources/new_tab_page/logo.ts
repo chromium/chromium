@@ -17,9 +17,8 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './logo.css.js';
 import {getHtml} from './logo.html.js';
-import type {Doodle, DoodleShareChannel, ImageDoodle, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
-import {DoodleImageType} from './new_tab_page.mojom-webui.js';
-import {NewTabPageProxy} from './new_tab_page_proxy.js';
+import type {Doodle, DoodleShareChannel, ImageDoodle, PageHandlerInterface, Theme} from './new_tab_page.mojom-webui.js';
+import {browserProxyFactory, DoodleImageType} from './new_tab_page.mojom-webui.js';
 import {$$} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -100,7 +99,7 @@ export class LogoElement extends CrLitElement {
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
-  private pageHandler_: PageHandlerRemote;
+  private pageHandler_: PageHandlerInterface;
   private imageClickParams_: string|null = null;
   private interactionLogUrl_: Url|null = null;
   private shareId_: string|null = null;
@@ -109,7 +108,7 @@ export class LogoElement extends CrLitElement {
     performance.mark('logo-creation-start');
     super();
 
-    this.pageHandler_ = NewTabPageProxy.getInstance().handler;
+    this.pageHandler_ = browserProxyFactory.getInstance().handler;
     this.pageHandler_.getDoodle().then(({doodle}) => {
       this.doodle_ = doodle;
       this.loaded_ = true;

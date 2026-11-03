@@ -24,7 +24,6 @@ logo.html.js
 logo.js
 metrics_utils.js
 new_tab_page.mojom-webui.js
-new_tab_page_proxy.js
 ntp_composebox.css.js
 ntp_composebox.html.js
 ntp_composebox.js

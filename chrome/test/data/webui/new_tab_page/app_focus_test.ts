@@ -6,11 +6,11 @@ import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ComposeboxProxyImpl, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
-import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
+import {CustomizeButtonsHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, NtpSearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {$$, BackgroundManager, CustomizeButtonsProxy, NewTabPageProxy, SearchboxBrowserProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, customizeButtonsProxyFactory, newTabPageProxyFactory, SearchboxBrowserProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
+import {PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -59,9 +59,11 @@ suite('NewTabPageAppFocusTest', () => {
     backgroundManager = installMock(BackgroundManager);
     backgroundManager.setPromiseResolveFor(
         'getBackgroundImageLoadTime', backgroundImageLoadTime);
-    handler = installMock(
-        PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+    handler = installMock(PageHandlerRemote, mock => {
+      const {instance, remote} = newTabPageProxyFactory.createForTest(mock);
+      newTabPageProxyFactory.setInstance(instance);
+      callbackRouterRemote = remote;
+    });
     handler.setPromiseResolveFor('getMostVisitedSettings', {
       customLinksEnabled: false,
       shortcutsVisible: false,
@@ -74,12 +76,8 @@ suite('NewTabPageAppFocusTest', () => {
         'canShowRealboxContextMenuAnimation', {canShow: false});
     installMock(
         CustomizeButtonsHandlerRemote,
-        mock => CustomizeButtonsProxy.setInstance(
-            mock, new CustomizeButtonsDocumentCallbackRouter()));
-    CustomizeButtonsProxy.getInstance()
-        .callbackRouter.$.bindNewPipeAndPassRemote();
-    callbackRouterRemote = NewTabPageProxy.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
+        mock => customizeButtonsProxyFactory.setInstance(
+            customizeButtonsProxyFactory.createForTest(mock).instance));
     moduleRegistry = installMock(ModuleRegistry);
     moduleResolver = new PromiseResolver();
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
