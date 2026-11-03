@@ -451,17 +451,6 @@ class ReadAnythingAppControllerTest : public testing::Test {
         features::kReadAnythingSendFeedback);
   }
 
-  void EnableLineFocus() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingLineFocus);
-  }
-
-  void DisableLineFocus() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kReadAnythingLineFocus);
-  }
-
   void StartLineFocusSession() { controller_->StartLineFocusSession(); }
 
   void LogLineFocusSession() { controller_->LogLineFocusSession(); }
@@ -558,24 +547,12 @@ TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_ResetsWordsHeard) {
 
 TEST_F(ReadAnythingAppControllerTest,
        OnDeviceLocked_LogsLineFocusSessionWithFlag) {
-  EnableLineFocus();
   base::HistogramTester histogram_tester;
   StartLineFocusSession();
   controller().OnDeviceLocked();
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.LineFocusSessionLength", 1);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       OnDeviceLocked_DoesNotLogLineFocusSessionWithoutFlag) {
-  DisableLineFocus();
-  base::HistogramTester histogram_tester;
-  StartLineFocusSession();
-  controller().OnDeviceLocked();
-
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
 }
 #endif
 
@@ -698,25 +675,12 @@ TEST_F(ReadAnythingAppControllerTest, OnDistilled_Screen2x_LogsMetric) {
 
 TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeHidden_LogsLineFocusSessionWithFlag) {
-  EnableLineFocus();
   base::HistogramTester histogram_tester;
   StartLineFocusSession();
   controller().OnReadingModeHidden(true);
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.LineFocusSessionLength", 1);
-  EXPECT_CALL(page_handler_, AckReadingModeHidden());
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       OnReadingModeHidden_DoesNotLogLineFocusSessionWithoutFlag) {
-  DisableLineFocus();
-  base::HistogramTester histogram_tester;
-  StartLineFocusSession();
-  controller().OnReadingModeHidden(true);
-
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
@@ -773,24 +737,12 @@ TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_ResetsWordsHeard) {
 
 TEST_F(ReadAnythingAppControllerTest,
        OnTabWillDetach_LogsLineFocusSessionWithFlag) {
-  EnableLineFocus();
   base::HistogramTester histogram_tester;
   StartLineFocusSession();
   controller().OnTabWillDetach();
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.LineFocusSessionLength", 1);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       OnTabWillDetach_DoesNotLogLineFocusSessionWithoutFlag) {
-  DisableLineFocus();
-  base::HistogramTester histogram_tester;
-  StartLineFocusSession();
-  controller().OnTabWillDetach();
-
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsReload) {
@@ -1099,7 +1051,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnSettingsRestoredFromPrefs_WithLineFocusFlag) {
-  EnableLineFocus();
   auto line_spacing = read_anything::mojom::LineSpacing::kVeryLoose;
   auto letter_spacing = read_anything::mojom::LetterSpacing::kVeryWide;
   std::string font_name = "Roboto";
@@ -1131,31 +1082,14 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       StartLineFocusSession_DoesNothingWithoutFlag) {
-  DisableLineFocus();
-  StartLineFocusSession();
-  ASSERT_FALSE(model().line_focus_session_start_time().has_value());
-}
-
-TEST_F(ReadAnythingAppControllerTest,
        StartLineFocusSession_StartsSessionWithFlag) {
-  EnableLineFocus();
   StartLineFocusSession();
   ASSERT_TRUE(model().line_focus_session_start_time().has_value());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       AddLineFocusScrollDistance_DoesNothingWithoutFlag) {
-  DisableLineFocus();
-  const int distance = 100;
-  AddLineFocusScrollDistance(distance);
-  ASSERT_EQ(model().line_focus_scroll_distance(), 0);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
        AddLineFocusScrollDistance_AddsDistanceWithFlag) {
   const int distance = 100;
-  EnableLineFocus();
 
   AddLineFocusScrollDistance(distance);
   ASSERT_EQ(model().line_focus_scroll_distance(), distance);
@@ -1165,17 +1099,8 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       AddLineFocusMouseDistance_DoesNothingWithoutFlag) {
-  DisableLineFocus();
-  const int distance = 100;
-  AddLineFocusMouseDistance(distance);
-  ASSERT_EQ(model().line_focus_scroll_distance(), 0);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
        AddLineFocusMouseDistance_AddsDistanceWithFlag) {
   const int distance = 100;
-  EnableLineFocus();
 
   AddLineFocusMouseDistance(distance);
   ASSERT_EQ(model().line_focus_mouse_distance(), distance);
@@ -1185,15 +1110,7 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       IncrementLineFocusKeyboardLines_DoesNothingWithoutFlag) {
-  DisableLineFocus();
-  IncrementLineFocusKeyboardLines();
-  ASSERT_EQ(model().line_focus_keyboard_lines(), 0);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
        IncrementLineFocusKeyboardLines_IncrementsWithFlag) {
-  EnableLineFocus();
 
   IncrementLineFocusKeyboardLines();
   ASSERT_EQ(model().line_focus_keyboard_lines(), 1);
@@ -1203,15 +1120,7 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       IncrementLineFocusSpeechLines_DoesNothingWithoutFlag) {
-  DisableLineFocus();
-  IncrementLineFocusSpeechLines();
-  ASSERT_EQ(model().line_focus_speech_lines(), 0);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
        IncrementLineFocusSpeechLines_IncrementsWithFlag) {
-  EnableLineFocus();
 
   IncrementLineFocusSpeechLines();
   ASSERT_EQ(model().line_focus_speech_lines(), 1);
@@ -1221,32 +1130,7 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       LogLineFocusSession_DoesNothingWithoutFlag) {
-  DisableLineFocus();
-  base::HistogramTester histogram_tester;
-  StartLineFocusSession();
-  model().set_line_focus_mouse_distance(1000);
-  model().set_line_focus_scroll_distance(348);
-  model().set_line_focus_keyboard_lines(25);
-  model().set_line_focus_speech_lines(102);
-
-  LogLineFocusSession();
-
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.LineFocusSessionMouseDistance", 0);
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.LineFocusSessionScrollDistance", 0);
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.LineFocusSessionKeyboardLines", 0);
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.LineFocusSessionSpeechLines", 0);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
        LogLineFocusSession_DoesNothingIfNeverStarted) {
-  EnableLineFocus();
   base::HistogramTester histogram_tester;
   model().set_line_focus_mouse_distance(1000);
   model().set_line_focus_scroll_distance(348);
@@ -1268,7 +1152,6 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest, LogLineFocusSession_IncrementsWithFlag) {
-  EnableLineFocus();
   base::HistogramTester histogram_tester;
   StartLineFocusSession();
   const int mouse_distance = 2001;
@@ -1299,7 +1182,6 @@ TEST_F(ReadAnythingAppControllerTest, LogLineFocusSession_IncrementsWithFlag) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, LogLineFocusSession_ResetsSession) {
-  EnableLineFocus();
   StartLineFocusSession();
   const int mouse_distance = 2001;
   const int scroll_distance = 202;
@@ -1321,7 +1203,6 @@ TEST_F(ReadAnythingAppControllerTest, LogLineFocusSession_ResetsSession) {
 
 TEST_F(ReadAnythingAppControllerTest,
        TurningLineFocusOffThenClosingReadingModeLogsOneSession) {
-  EnableLineFocus();
   base::HistogramTester histogram_tester;
 
   auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
@@ -1343,54 +1224,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.LineFocusSessionLength", 1);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       OnSettingsRestoredFromPrefs_WithLineFocusFlagDisabled) {
-  DisableLineFocus();
-  auto line_spacing = read_anything::mojom::LineSpacing::kVeryLoose;
-  auto letter_spacing = read_anything::mojom::LetterSpacing::kVeryWide;
-  std::string font_name = "Roboto";
-  double font_size = 3.0;
-  bool links_enabled = false;
-  bool images_enabled = true;
-  auto color = read_anything::mojom::Colors::kDefaultValue;
-  int color_value = 0;
-  double speech_rate = 1.5;
-  std::string voice_value = "Italian voice 3";
-  std::string language_value = "it";
-  base::DictValue voices = base::DictValue();
-  voices.Set(language_value, voice_value);
-  base::ListValue languages_enabled_in_pref = base::ListValue();
-  languages_enabled_in_pref.Append(language_value);
-  auto highlight_granularity =
-      read_anything::mojom::HighlightGranularity::kDefaultValue;
-  int highlight_granularity_value = 0;
-  auto line_focus_enabled_mode = read_anything::mojom::LineFocus::kLineCursor;
-
-  controller().SetLanguageForTesting(language_value);
-
-  controller().OnSettingsRestoredFromPrefs(
-      line_spacing, letter_spacing, font_name, font_size, links_enabled,
-      images_enabled, color, speech_rate, std::move(voices),
-      std::move(languages_enabled_in_pref), highlight_granularity,
-      line_focus_enabled_mode, true);
-
-  EXPECT_EQ(std::to_underlying(line_spacing), controller().LineSpacing());
-  EXPECT_EQ(std::to_underlying(letter_spacing), controller().LetterSpacing());
-  EXPECT_EQ(font_name, controller().FontName());
-  EXPECT_EQ(font_size, controller().FontSize());
-  EXPECT_EQ(links_enabled, controller().LinksEnabled());
-  EXPECT_EQ(color_value, controller().ColorTheme());
-  EXPECT_EQ(speech_rate, read_aloud_model().speech_rate());
-  EXPECT_EQ(voice_value, controller().GetStoredVoice());
-  EXPECT_EQ(1u, controller().GetLanguagesEnabledInPref().size());
-  EXPECT_EQ(language_value, controller().GetLanguagesEnabledInPref()[0]);
-  EXPECT_EQ(highlight_granularity_value,
-            read_aloud_model().highlight_granularity());
-  EXPECT_EQ(static_cast<int>(read_anything::mojom::LineFocus::kDefaultValue),
-            controller().LastNonDisabledLineFocus());
-  EXPECT_FALSE(controller().IsLineFocusOn());
 }
 
 TEST_F(ReadAnythingAppControllerTest, RootIdIsSnapshotRootId) {
@@ -3174,7 +3007,6 @@ TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOff_SavesHighlightState) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLineFocusChanged_SetsLineFocus) {
-  EnableLineFocus();
   auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
   EXPECT_CALL(page_handler_, OnLineFocusChanged(line_focus, line_focus))
       .Times(1);
@@ -3188,7 +3020,6 @@ TEST_F(ReadAnythingAppControllerTest, OnLineFocusChanged_SetsLineFocus) {
 
 TEST_F(ReadAnythingAppControllerTest,
        OnLineFocusChanged_ToOff_SetsLineFocusOff) {
-  EnableLineFocus();
   auto line_focus_off = read_anything::mojom::LineFocus::kOff;
   auto line_focus = read_anything::mojom::LineFocus::kLineStatic;
   EXPECT_CALL(page_handler_, OnLineFocusChanged).Times(1);
@@ -3418,7 +3249,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_StartsNewLineFocusSessionIfLineFocusOn) {
-  EnableLineFocus();
   base::HistogramTester histogram_tester;
   model().set_line_focus_enabled(true);
   StartLineFocusSession();
@@ -3465,7 +3295,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionIfLineFocusOff) {
-  EnableLineFocus();
   model().set_line_focus_enabled(false);
 
   auto const new_id = ui::AXTreeID::CreateNewAXTreeID();
@@ -3475,20 +3304,7 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionWithoutFlag) {
-  DisableLineFocus();
-  model().set_line_focus_enabled(true);
-  StartLineFocusSession();
-
-  auto const new_id = ui::AXTreeID::CreateNewAXTreeID();
-  controller().OnActiveAXTreeIDChanged(new_id, ukm::kInvalidSourceId, false);
-
-  EXPECT_FALSE(model().line_focus_session_start_time().has_value());
-}
-
-TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionIfHidden) {
-  EnableLineFocus();
   model().set_line_focus_enabled(true);
   model().set_active_presentation_state(
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
@@ -3501,7 +3317,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionIfWillHide) {
-  EnableLineFocus();
   model().set_line_focus_enabled(true);
   model().set_will_hide(true);
 
@@ -3513,7 +3328,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_NoPreviousTree_DoesNotStartLineFocusSession) {
-  EnableLineFocus();
   model().set_line_focus_enabled(true);
   model().SetRootTreeId(ui::AXTreeIDUnknown());
 
@@ -6173,7 +5987,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeShown_StartsNewLineFocusSessionIfLineFocusOn) {
-  EnableLineFocus();
   base::HistogramTester histogram_tester;
   model().set_line_focus_enabled(true);
   StartLineFocusSession();
@@ -6196,7 +6009,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeShown_DoesNotStartLineFocusSessionIfLineFocusOff) {
-  EnableLineFocus();
   model().set_line_focus_enabled(false);
 
   controller().OnReadingModeShown(
@@ -6207,7 +6019,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeShown_PreservesExistingLineFocusSessionIfAlreadyActive) {
-  EnableLineFocus();
   model().set_line_focus_enabled(true);
   StartLineFocusSession();
 
@@ -6221,17 +6032,6 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_TRUE(model().line_focus_session_start_time().has_value());
   EXPECT_EQ(model().line_focus_session_start_time().value(),
             initial_start_time);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       OnReadingModeShown_DoesNotStartLineFocusSessionWithoutFlag) {
-  DisableLineFocus();
-  model().set_line_focus_enabled(true);
-
-  controller().OnReadingModeShown(
-      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
-
-  EXPECT_FALSE(model().line_focus_session_start_time().has_value());
 }
 
 TEST_F(ReadAnythingAppControllerTest,

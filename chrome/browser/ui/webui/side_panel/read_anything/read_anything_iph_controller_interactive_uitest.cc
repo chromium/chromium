@@ -147,8 +147,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPresentationModeCUJTest, ShowAndHideIph) {
 class ReadAnythingLineFocusCUJTest : public ReadAnythingIphCujTestBase {
  protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    return {features::kReadAnythingLineFocus,
-            feature_engagement::kIPHReadingModeLineFocusFeature};
+    return {feature_engagement::kIPHReadingModeLineFocusFeature};
   }
 };
 

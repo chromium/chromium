@@ -375,17 +375,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
         features::kReadAnythingTranslateEntryPoint);
   }
 
-  void EnableLineFocus() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingLineFocus);
-  }
-
-  void DisableLineFocus() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kReadAnythingLineFocus);
-  }
-
   void StartLineFocusSession() { controller_->StartLineFocusSession(); }
 
   void LogLineFocusSession() { controller_->LogLineFocusSession(); }
