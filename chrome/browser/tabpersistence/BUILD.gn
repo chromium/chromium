@@ -50,6 +50,7 @@ robolectric_library("junit") {
     "//base:tristate_java",
     "//base/test:test_support_java",
     "//chrome/browser/android/crypto:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabpersistence:flatbuffer_java",
     "//chrome/browser/url_constants/android:java",

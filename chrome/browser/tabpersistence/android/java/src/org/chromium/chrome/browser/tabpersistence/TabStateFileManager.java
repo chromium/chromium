@@ -18,6 +18,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
+import org.chromium.base.TriState;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -25,6 +26,7 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -152,54 +154,88 @@ public class TabStateFileManager {
     }
 
     /**
-     * @param stateFolder folder {@link TabState} files are stored in
-     * @param id {@link Tab} identifier
+     * Restores a TabState file for a particular Tab. Checks if the Tab exists as a regular tab
+     * before searching for an encrypted version, unless {@code isIncognito} is specified and {@link
+     * ChromeFeatureList#sClankStartupTabOptimizations} is enabled.
+     *
+     * <p>When {@code isIncognito} is known and {@link
+     * ChromeFeatureList#sClankStartupTabOptimizations} is enabled, {@code
+     * Tabs.TabState.MigrationStatus} is not recorded and {@link TabState#legacyFileToDelete} is
+     * left {@code null} to avoid probing legacy files on the startup critical path.
+     *
+     * <p>This method may be called on either the UI or background thread; {@link
+     * ChromeFeatureList#sClankStartupTabOptimizations} is a thread-safe {@code CachedFlag} safe to
+     * read off the UI thread.
+     *
+     * @param stateFolder Folder containing the TabState files.
+     * @param id ID of the Tab to restore.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
-     * @return {@link TabState} corresponding to Tab with id
+     * @param isIncognito Whether the Tab is incognito ({@link TriState#TRUE}), regular ({@link
+     *     TriState#FALSE}), or unknown ({@link TriState#NOT_SET}).
+     * @return TabState that has been restored, or null if it failed.
      */
     public static @Nullable TabState restoreTabState(
-            File stateFolder, int id, CipherFactory cipherFactory) {
-        File flatBufferRegular = getTabStateFile(stateFolder, id, false, true);
-        File flatBufferEncrypted = getTabStateFile(stateFolder, id, true, true);
-        File legacyRegular = getTabStateFile(stateFolder, id, false, false);
-        File legacyEncrypted = getTabStateFile(stateFolder, id, true, false);
+            File stateFolder, int id, CipherFactory cipherFactory, @TriState int isIncognito) {
+        boolean useFastPath =
+                isIncognito != TriState.NOT_SET
+                        && ChromeFeatureList.sClankStartupTabOptimizations.isEnabled();
+        if (useFastPath) {
+            boolean isEncrypted = isIncognito == TriState.TRUE;
+            File file = getTabStateFile(stateFolder, id, isEncrypted, /* isFlatbuffer= */ true);
+            if (file.exists()) {
+                TabState tabState =
+                        tryRestoreFlatBufferTabState(
+                                file, isEncrypted, cipherFactory, /* legacyFileToDelete= */ null);
+                if (tabState != null) {
+                    return tabState;
+                }
+            }
+        }
+        return restoreTabStateFromFourFiles(
+                stateFolder, id, cipherFactory, useFastPath ? isIncognito : TriState.NOT_SET);
+    }
 
-        boolean flatBufferRegularExists = flatBufferRegular.exists();
-        boolean flatBufferEncryptedExists = flatBufferEncrypted.exists();
+    private static @Nullable TabState restoreTabStateFromFourFiles(
+            File stateFolder,
+            int id,
+            CipherFactory cipherFactory,
+            @TriState int skippedFastPathIncognito) {
+        File flatBufferRegular =
+                getTabStateFile(stateFolder, id, /* encrypted= */ false, /* isFlatbuffer= */ true);
+        File flatBufferEncrypted =
+                getTabStateFile(stateFolder, id, /* encrypted= */ true, /* isFlatbuffer= */ true);
+        File legacyRegular =
+                getTabStateFile(stateFolder, id, /* encrypted= */ false, /* isFlatbuffer= */ false);
+        File legacyEncrypted =
+                getTabStateFile(stateFolder, id, /* encrypted= */ true, /* isFlatbuffer= */ false);
+
+        boolean flatBufferRegularExists =
+                skippedFastPathIncognito != TriState.FALSE && flatBufferRegular.exists();
+        boolean flatBufferEncryptedExists =
+                skippedFastPathIncognito != TriState.TRUE && flatBufferEncrypted.exists();
         boolean legacyRegularExists = legacyRegular.exists();
         boolean legacyEncryptedExists = legacyEncrypted.exists();
 
-        recordTabStateMigrationStatus(
-                flatBufferRegularExists,
-                flatBufferEncryptedExists,
-                legacyRegularExists,
-                legacyEncryptedExists);
+        if (skippedFastPathIncognito == TriState.NOT_SET) {
+            recordTabStateMigrationStatus(
+                    flatBufferRegularExists,
+                    flatBufferEncryptedExists,
+                    legacyRegularExists,
+                    legacyEncryptedExists);
+        }
 
         TabState tabState = null;
         if (flatBufferRegularExists || flatBufferEncryptedExists) {
-            try {
-                boolean isEncrypted = flatBufferEncryptedExists;
-                File targetFile = isEncrypted ? flatBufferEncrypted : flatBufferRegular;
-                File legacyFileToDelete =
-                        legacyRegularExists
-                                ? legacyRegular
-                                : (legacyEncryptedExists ? legacyEncrypted : null);
-
-                long startTime = SystemClock.elapsedRealtime();
-                tabState = restoreTabStateInternal(targetFile, isEncrypted, cipherFactory);
-                if (tabState != null) {
-                    RecordHistogram.recordTimesHistogram(
-                            "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
-                    tabState.legacyFileToDelete = legacyFileToDelete;
-                }
-            } catch (Exception e) {
-                Log.d(TAG, "Error restoring TabState using FlatBuffer", e);
-            }
+            boolean isEncrypted = flatBufferEncryptedExists;
+            File targetFile = isEncrypted ? flatBufferEncrypted : flatBufferRegular;
+            File legacyFileToDelete =
+                    legacyRegularExists
+                            ? legacyRegular
+                            : (legacyEncryptedExists ? legacyEncrypted : null);
+            tabState =
+                    tryRestoreFlatBufferTabState(
+                            targetFile, isEncrypted, cipherFactory, legacyFileToDelete);
             if (tabState != null) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Tabs.TabState.RestoreMethod",
-                        TabStateRestoreMethod.FLATBUFFER,
-                        TabStateRestoreMethod.NUM_ENTRIES);
                 return tabState;
             }
         }
@@ -225,6 +261,32 @@ public class TabStateFileManager {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabState.RestoreMethod",
                     TabStateRestoreMethod.LEGACY_HAND_WRITTEN,
+                    TabStateRestoreMethod.NUM_ENTRIES);
+        }
+        return tabState;
+    }
+
+    private static @Nullable TabState tryRestoreFlatBufferTabState(
+            File targetFile,
+            boolean isEncrypted,
+            CipherFactory cipherFactory,
+            @Nullable File legacyFileToDelete) {
+        TabState tabState = null;
+        try {
+            long startTime = SystemClock.elapsedRealtime();
+            tabState = restoreTabStateInternal(targetFile, isEncrypted, cipherFactory);
+            if (tabState != null) {
+                RecordHistogram.recordTimesHistogram(
+                        "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
+                tabState.legacyFileToDelete = legacyFileToDelete;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error restoring TabState using FlatBuffer", e);
+        }
+        if (tabState != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.RestoreMethod",
+                    TabStateRestoreMethod.FLATBUFFER,
                     TabStateRestoreMethod.NUM_ENTRIES);
         }
         return tabState;

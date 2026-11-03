@@ -81,6 +81,8 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.TabRestoreMet
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager.TabStateRestoreMethod;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -1633,6 +1635,7 @@ public class TabPersistentStoreUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
     public void testSeenTabUrlMap_lifecycleAndMetrics() {
         mPersistentStore =
                 new TabPersistentStoreImpl(
@@ -1690,6 +1693,104 @@ public class TabPersistentStoreUnitTest {
 
         assertNull(mPersistentStore.getSeenTabUrlMapForTesting());
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testRestoreTab_usesFastPathWithKnownIsIncognito_syncAndBatch() {
+        TabState regularState = new TabState();
+        regularState.contentsState =
+                new WebContentsState(
+                        ByteBuffer.allocateDirect(4),
+                        WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        regularState.url = new GURL(REGULAR_TAB_STRING_1);
+        TabStateFileManager.saveStateInternal(
+                TabStateFileManager.getTabStateFile(
+                        mTemporaryFolder.getRoot(),
+                        /* tabId= */ 1,
+                        /* encrypted= */ false,
+                        /* isFlatbuffer= */ true),
+                regularState,
+                /* encrypted= */ false,
+                mCipherFactory);
+
+        TabState incognitoState = new TabState();
+        incognitoState.contentsState =
+                new WebContentsState(
+                        ByteBuffer.allocateDirect(4),
+                        WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        incognitoState.isIncognito = true;
+        incognitoState.url = new GURL(INCOGNITO_TAB_STRING_1);
+        TabStateFileManager.saveStateInternal(
+                TabStateFileManager.getTabStateFile(
+                        mTemporaryFolder.getRoot(),
+                        /* tabId= */ 2,
+                        /* encrypted= */ true,
+                        /* isFlatbuffer= */ true),
+                incognitoState,
+                /* encrypted= */ true,
+                mCipherFactory);
+
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        mPersistentStore.initializeRestoreVars(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(1);
+        when(tab1.getUrl()).thenReturn(new GURL(REGULAR_TAB_STRING_1));
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(2);
+        when(tab2.getUrl()).thenReturn(new GURL(INCOGNITO_TAB_STRING_1));
+        when(mNormalTabCreator.createFrozenTab(any(TabState.class), eq(1), anyInt()))
+                .thenReturn(tab1);
+        when(mIncognitoTabCreator.createFrozenTab(any(TabState.class), eq(2), anyInt()))
+                .thenReturn(tab2);
+
+        TabRestoreDetails details1 =
+                new TabRestoreDetails(
+                        /* id= */ 1,
+                        /* originalIndex= */ 0,
+                        /* isIncognito= */ TriState.FALSE,
+                        REGULAR_TAB_STRING_1,
+                        /* fromMerge= */ false);
+        TabRestoreDetails details2 =
+                new TabRestoreDetails(
+                        /* id= */ 2,
+                        /* originalIndex= */ 0,
+                        /* isIncognito= */ TriState.TRUE,
+                        INCOGNITO_TAB_STRING_1,
+                        /* fromMerge= */ false);
+        mPersistentStore.addTabToRestoreForTesting(details1);
+        mPersistentStore.addTabToRestoreForTesting(details2);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Tabs.TabState.RestoreMethod",
+                                TabStateRestoreMethod.FLATBUFFER,
+                                TabStateRestoreMethod.FLATBUFFER)
+                        .expectNoRecords("Tabs.TabState.MigrationStatus")
+                        .build();
+
+        // Synchronous UI-thread path via maybeRestoreTabState.
+        mPersistentStore.restoreTabStateForId(1);
+        verify(mNormalTabCreator).createFrozenTab(any(TabState.class), eq(1), anyInt());
+
+        // Asynchronous batch path via LoadTabsTask.restoreTabState.
+        mPersistentStore.restoreTabs(/* setActiveTab= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mIncognitoTabCreator).createFrozenTab(any(TabState.class), eq(2), anyInt());
+
+        watcher.assertExpected();
     }
 
     @Test

@@ -11,6 +11,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TriState;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -422,7 +423,7 @@ public class CustomTabResumeManager {
         try {
             TabState state =
                     TabStateFileManager.restoreTabState(
-                            getStorageDirectory(), tabId, cipherFactory);
+                            getStorageDirectory(), tabId, cipherFactory, TriState.NOT_SET);
             Log.i(
                     TAG,
                     "restoreTabState: restoreTabState returned %s TabState",

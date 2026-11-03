@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.tabpersistence;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
@@ -21,9 +24,13 @@ import org.mockito.Mockito;
 
 import org.chromium.base.StreamUtil;
 import org.chromium.base.Token;
+import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
@@ -31,6 +38,9 @@ import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.flatbuffer.TabLaunchTypeAtCreation;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
 import org.chromium.chrome.browser.tabpersistence.FlatBufferTabStateSerializer.TabStateFlatBufferDeserializeResult;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager.RestoreTabStateException;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager.TabStateMigrationStatus;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager.TabStateRestoreMethod;
 import org.chromium.chrome.test.util.ByteBufferTestUtils;
 import org.chromium.url.GURL;
 
@@ -743,13 +753,65 @@ public class TabStateFileManagerUnitTest {
 
     @Test
     public void testFlatBufferFormatIncognito_RestoreTabState() {
-        Token tabGroupId = new Token(TAB_GROUP_ID_TOKEN_HIGH, TAB_GROUP_ID_TOKEN_LOW);
-        ByteBuffer directBuffer = ByteBuffer.allocateDirect(CONTENTS_STATE_BYTES.length);
-        directBuffer.put(CONTENTS_STATE_BYTES);
-        directBuffer.rewind();
-        WebContentsState contentsState =
-                new WebContentsState(directBuffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
-        TabState state = createTabState(contentsState, tabGroupId);
+        saveFlatBufferTabState(/* tabId= */ 4, /* isIncognito= */ true);
+        TabState restored =
+                TabStateFileManager.restoreTabState(
+                        temporaryFolder.getRoot(), 4, mCipherFactory, TriState.NOT_SET);
+        assertNotNull(restored);
+        assertTrue(restored.isIncognito);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testRestoreTabState_FastPathRegularFlatBuffer() {
+        verifyFastPathFlatBufferRestore(/* isIncognito= */ false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testRestoreTabState_FastPathIncognitoFlatBuffer() {
+        verifyFastPathFlatBufferRestore(/* isIncognito= */ true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testRestoreTabState_FastPathMissFallbackToLegacy() throws IOException {
+        File file = createTestTabStateFile();
+        TabState state = createTabStateWithMappedByteBuffer(file, TAB_GROUP_ID);
+
+        TabStateFileManager.saveStateInternal(
+                TabStateFileManager.getTabStateFile(
+                        temporaryFolder.getRoot(),
+                        /* tabId= */ 4,
+                        /* encrypted= */ false,
+                        /* isFlatbuffer= */ false),
+                state,
+                /* encrypted= */ false,
+                mCipherFactory);
+
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Tabs.TabState.RestoreMethod",
+                                TabStateRestoreMethod.LEGACY_HAND_WRITTEN)
+                        .expectNoRecords("Tabs.TabState.MigrationStatus")
+                        .build();
+
+        TabState restored =
+                TabStateFileManager.restoreTabState(
+                        temporaryFolder.getRoot(), 4, mCipherFactory, TriState.FALSE);
+        assertNotNull(restored);
+        assertFalse(restored.isIncognito);
+        assertTrue(restored.shouldMigrate);
+        validateTestTabState(restored, TAB_GROUP_ID);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testRestoreTabState_FastPathEmptyFlatBufferFallbackToLegacy() throws IOException {
+        File file = createTestTabStateFile();
+        TabState state = createTabStateWithMappedByteBuffer(file, TAB_GROUP_ID);
         state.isIncognito = true;
 
         TabStateFileManager.saveStateInternal(
@@ -757,13 +819,134 @@ public class TabStateFileManagerUnitTest {
                         temporaryFolder.getRoot(),
                         /* tabId= */ 4,
                         /* encrypted= */ true,
-                        /* isFlatbuffer= */ true),
+                        /* isFlatbuffer= */ false),
                 state,
                 /* encrypted= */ true,
                 mCipherFactory);
+        File emptyFlatBufferFile =
+                TabStateFileManager.getTabStateFile(
+                        temporaryFolder.getRoot(),
+                        /* tabId= */ 4,
+                        /* encrypted= */ true,
+                        /* isFlatbuffer= */ true);
+        assertTrue(emptyFlatBufferFile.createNewFile());
+
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Tabs.RestoreTabStateException",
+                                RestoreTabStateException.IO_EXCEPTION)
+                        .expectIntRecord(
+                                "Tabs.TabState.RestoreMethod",
+                                TabStateRestoreMethod.LEGACY_HAND_WRITTEN)
+                        .expectNoRecords("Tabs.TabState.MigrationStatus")
+                        .build();
+
         TabState restored =
-                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 4, mCipherFactory);
-        Assert.assertNotNull("restored TabState should not be null", restored);
-        Assert.assertTrue(restored.isIncognito);
+                TabStateFileManager.restoreTabState(
+                        temporaryFolder.getRoot(), 4, mCipherFactory, TriState.TRUE);
+        assertNotNull(restored);
+        assertTrue(restored.isIncognito);
+        assertTrue(restored.shouldMigrate);
+        validateTestTabState(restored, TAB_GROUP_ID);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testRestoreTabState_FastPathMissOnIncognitoMismatchFallback() {
+        WebContentsState contentsState =
+                saveFlatBufferTabState(/* tabId= */ 4, /* isIncognito= */ true);
+
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Tabs.TabState.RestoreMethod", TabStateRestoreMethod.FLATBUFFER)
+                        .expectNoRecords("Tabs.TabState.MigrationStatus")
+                        .build();
+
+        TabState restored =
+                TabStateFileManager.restoreTabState(
+                        temporaryFolder.getRoot(), 4, mCipherFactory, TriState.FALSE);
+        assertNotNull(restored);
+        assertTrue(restored.isIncognito);
+        validateTestTabState(restored, TAB_GROUP_ID, contentsState);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testRestoreTabState_TriStateNotSetUsesFourFileCheck() {
+        verifyFourFileFlatBufferRestore(TriState.NOT_SET);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testRestoreTabState_FeatureDisabledUsesFourFileCheck() {
+        verifyFourFileFlatBufferRestore(TriState.FALSE);
+    }
+
+    private WebContentsState saveFlatBufferTabState(int tabId, boolean isIncognito) {
+        ByteBuffer directBuffer = ByteBuffer.allocateDirect(CONTENTS_STATE_BYTES.length);
+        directBuffer.put(CONTENTS_STATE_BYTES);
+        directBuffer.rewind();
+        WebContentsState contentsState =
+                new WebContentsState(directBuffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        TabState state = createTabState(contentsState, TAB_GROUP_ID);
+        state.isIncognito = isIncognito;
+
+        TabStateFileManager.saveStateInternal(
+                TabStateFileManager.getTabStateFile(
+                        temporaryFolder.getRoot(),
+                        tabId,
+                        /* encrypted= */ isIncognito,
+                        /* isFlatbuffer= */ true),
+                state,
+                /* encrypted= */ isIncognito,
+                mCipherFactory);
+        return contentsState;
+    }
+
+    private void verifyFastPathFlatBufferRestore(boolean isIncognito) {
+        WebContentsState contentsState = saveFlatBufferTabState(/* tabId= */ 4, isIncognito);
+
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Tabs.TabState.RestoreMethod", TabStateRestoreMethod.FLATBUFFER)
+                        .expectAnyRecord("Tabs.TabState.LoadTime")
+                        .expectNoRecords("Tabs.TabState.MigrationStatus")
+                        .build();
+
+        @TriState int isIncognitoArg = isIncognito ? TriState.TRUE : TriState.FALSE;
+        TabState restored =
+                TabStateFileManager.restoreTabState(
+                        temporaryFolder.getRoot(), 4, mCipherFactory, isIncognitoArg);
+        assertNotNull(restored);
+        assertEquals(isIncognito, restored.isIncognito);
+        assertNull(restored.legacyFileToDelete);
+        validateTestTabState(restored, TAB_GROUP_ID, contentsState);
+        histograms.assertExpected();
+    }
+
+    private void verifyFourFileFlatBufferRestore(@TriState int isIncognitoArg) {
+        WebContentsState contentsState =
+                saveFlatBufferTabState(/* tabId= */ 4, /* isIncognito= */ false);
+
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Tabs.TabState.RestoreMethod", TabStateRestoreMethod.FLATBUFFER)
+                        .expectIntRecord(
+                                "Tabs.TabState.MigrationStatus", TabStateMigrationStatus.FLATBUFFER)
+                        .build();
+
+        TabState restored =
+                TabStateFileManager.restoreTabState(
+                        temporaryFolder.getRoot(), 4, mCipherFactory, isIncognitoArg);
+        assertNotNull(restored);
+        assertFalse(restored.isIncognito);
+        validateTestTabState(restored, TAB_GROUP_ID, contentsState);
+        histograms.assertExpected();
     }
 }

@@ -651,7 +651,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     public void restoreTabs(boolean setActiveTab) {
         if (mDestroyed) return;
         if (mSeenTabUrlMap == null && !mTabsToRestore.isEmpty()) {
-            mSeenTabUrlMap = new HashMap<>();
+            mSeenTabUrlMap =
+                    ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()
+                            ? new HashMap<>((int) (mTabsToRestore.size() / 0.75f) + 1)
+                            : new HashMap<>();
         }
         if (!mBackgroundTabsInitialized) {
             mBackgroundTabIds =
@@ -758,7 +761,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         }
         // Necessary to do on the UI thread as a last resort.
         return TabStateFileManager.restoreTabState(
-                getStateDirectory(), tabToRestore.id, mCipherFactory);
+                getStateDirectory(), tabToRestore.id, mCipherFactory, tabToRestore.isIncognito);
     }
 
     private boolean isTabReparenting(@TabId int id, boolean isIncognito) {
@@ -1915,7 +1918,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         private @Nullable TabState restoreTabState(TabRestoreDetails details) {
             try {
                 return TabStateFileManager.restoreTabState(
-                        getStateDirectory(), details.id, mCipherFactory);
+                        getStateDirectory(), details.id, mCipherFactory, details.isIncognito);
             } catch (Exception e) {
                 Log.w(TAG, "Unable to read state: %s", e);
                 return null;
@@ -2025,7 +2028,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     @Override
                     protected @Nullable TabState doInBackground() {
                         return TabStateFileManager.restoreTabState(
-                                getStateDirectory(), activeTabId, mCipherFactory);
+                                getStateDirectory(), activeTabId, mCipherFactory, TriState.NOT_SET);
                     }
                 }.executeOnTaskRunner(taskRunner);
     }

@@ -16,6 +16,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Token;
+import org.chromium.base.TriState;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -94,7 +95,8 @@ public class TabStateFlatBufferTest {
                         "Tabs.TabState.RestoreMethod",
                         TabStateFileManager.TabStateRestoreMethod.FLATBUFFER);
         TabState restoredTabState =
-                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1, sCipherFactory);
+                TabStateFileManager.restoreTabState(
+                        temporaryFolder.getRoot(), 1, sCipherFactory, TriState.NOT_SET);
         Assert.assertNotNull(restoredTabState);
         histograms.assertExpected();
     }
@@ -110,7 +112,8 @@ public class TabStateFlatBufferTest {
                         "Tabs.TabState.RestoreMethod",
                         TabStateFileManager.TabStateRestoreMethod.LEGACY_HAND_WRITTEN);
         TabState restoredTabState =
-                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1, sCipherFactory);
+                TabStateFileManager.restoreTabState(
+                        temporaryFolder.getRoot(), 1, sCipherFactory, TriState.NOT_SET);
         Assert.assertNotNull(restoredTabState);
         histograms.assertExpected();
     }
@@ -131,7 +134,8 @@ public class TabStateFlatBufferTest {
                         "Tabs.TabState.RestoreMethod",
                         TabStateFileManager.TabStateRestoreMethod.FAILED);
         TabState restoredTabState =
-                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1, sCipherFactory);
+                TabStateFileManager.restoreTabState(
+                        temporaryFolder.getRoot(), 1, sCipherFactory, TriState.NOT_SET);
         Assert.assertNull(restoredTabState);
         histograms.assertExpected();
     }
@@ -150,7 +154,8 @@ public class TabStateFlatBufferTest {
                 /* encrypted= */ true,
                 sCipherFactory);
         TabState restored =
-                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 4, sCipherFactory);
+                TabStateFileManager.restoreTabState(
+                        temporaryFolder.getRoot(), 4, sCipherFactory, TriState.NOT_SET);
         Assert.assertTrue(restored.isIncognito);
     }
 
@@ -216,7 +221,7 @@ public class TabStateFlatBufferTest {
         Assert.assertTrue(flatBufferTabStateFile.exists());
         TabState restored =
                 TabStateFileManager.restoreTabState(
-                        temporaryFolder.getRoot(), /* id= */ 4, sCipherFactory);
+                        temporaryFolder.getRoot(), /* id= */ 4, sCipherFactory, TriState.NOT_SET);
         Assert.assertEquals(restored.legacyFileToDelete, legacyTabStateFile);
     }
 
@@ -235,7 +240,7 @@ public class TabStateFlatBufferTest {
                 legacyTabStateFile, state, /* encrypted= */ false, sCipherFactory);
         TabState restored =
                 TabStateFileManager.restoreTabState(
-                        temporaryFolder.getRoot(), /* id= */ 4, sCipherFactory);
+                        temporaryFolder.getRoot(), /* id= */ 4, sCipherFactory, TriState.NOT_SET);
         Assert.assertNull(restored.legacyFileToDelete);
     }
 
