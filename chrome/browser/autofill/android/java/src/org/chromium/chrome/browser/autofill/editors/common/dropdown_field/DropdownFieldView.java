@@ -195,8 +195,8 @@ public class DropdownFieldView implements FieldView {
         View view = mDropdown.getSelectedView();
         if (TextUtils.isEmpty(errorMessage)) {
             // {@link Spinner#getSelectedView()} is null in JUnit tests.
-            if (view != null && view instanceof TextView) {
-                ((TextView) view).setError(null);
+            if (view != null && view instanceof TextView textView) {
+                textView.setError(null);
             }
             mUnderline.setBackgroundColor(mContext.getColor(R.color.baseline_neutral_40));
             mErrorLabel.setText(null);
@@ -209,8 +209,8 @@ public class DropdownFieldView implements FieldView {
                         mContext.getResources(), R.drawable.ic_error_24dp, mContext.getTheme());
         assumeNonNull(drawable);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        if (view != null && view instanceof TextView) {
-            ((TextView) view).setError(errorMessage, drawable);
+        if (view != null && view instanceof TextView textView) {
+            textView.setError(errorMessage, drawable);
         }
         mUnderline.setBackgroundColor(mContext.getColor(R.color.default_text_color_error));
         mErrorLabel.setText(errorMessage);

@@ -282,16 +282,15 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
 
     private void setDoneRunnableToFields() {
         for (FieldView view : mFieldViews) {
-            if (view instanceof TextFieldView) {
-                ((TextFieldView) view).setDoneRunnable(assumeNonNull(mDoneRunnable));
+            if (view instanceof TextFieldView textFieldView) {
+                textFieldView.setDoneRunnable(assumeNonNull(mDoneRunnable));
             }
         }
     }
 
     private void removeTextChangedListeners() {
         for (FieldView view : mFieldViews) {
-            if (view instanceof TextFieldView) {
-                TextFieldView textView = (TextFieldView) view;
+            if (view instanceof TextFieldView textView) {
                 textView.removeTextChangedListeners();
             }
         }
@@ -655,10 +654,9 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         assert mActivity instanceof ModalDialogManagerHolder
                 : "Activity hosting EditorViewBase must implement ModalDialogManagerHolder to show"
                         + " confirmation dialogs.";
-        if (!(mActivity instanceof ModalDialogManagerHolder)) return;
+        if (!(mActivity instanceof ModalDialogManagerHolder holder)) return;
 
-        ModalDialogManager modalDialogManager =
-                ((ModalDialogManagerHolder) mActivity).getModalDialogManager();
+        ModalDialogManager modalDialogManager = holder.getModalDialogManager();
         var confirmationDialog = new ActionConfirmationDialog(mContext, modalDialogManager);
         ConfirmationDialogHandler confirmationDialogHandler =
                 (dismissHandler, buttonClickResult, stopShowing) -> {
@@ -724,8 +722,7 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                                 KeyboardVisibilityDelegate.getInstance()
                                         .showKeyboard(getCurrentFocus());
                                 // Put the cursor to the end of the text.
-                                if (getCurrentFocus() instanceof EditText) {
-                                    EditText focusedEditText = (EditText) getCurrentFocus();
+                                if (getCurrentFocus() instanceof EditText focusedEditText) {
                                     focusedEditText.setSelection(
                                             focusedEditText.getText().length());
                                 }
