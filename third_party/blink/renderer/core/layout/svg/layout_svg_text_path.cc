@@ -124,23 +124,28 @@ std::unique_ptr<PathPositionMapper> LayoutSVGTextPath::LayoutPath() const {
     return nullptr;
   }
 
-  // Determine the length to resolve any percentage 'startOffset'
-  // against - either 'pathLength' (author path length) or the
-  // computed length of the path.
-  float computed_path_length = path.length();
-  float offset_scale = 1;
-  if (!std::isnan(author_path_length)) {
-    offset_scale = SVGGeometryElement::PathLengthScaleFactor(
-        computed_path_length, author_path_length);
-  } else {
-    author_path_length = computed_path_length;
-  }
-
+  const float computed_path_length = path.length();
   const SVGLengthConversionData conversion_data(*this);
+  const SVGLength& start_offset =
+      *text_path_element.startOffset()->CurrentValue();
+
+  // A percentage 'startOffset' is a fraction of the computed length of the
+  // path, and is not affected by 'pathLength':
+  //
+  //   "'pathLength' has no effect on percentage distance-along-a-path
+  //    calculations."
+  //   https://svgwg.org/svg2-draft/paths.html#PathLengthAttribute
+  //
+  // A non-percentage 'startOffset' is measured in author path length units
+  // and is scaled by the pathLength scale factor. (PathLengthScaleFactor()
+  // handles pathLength="0" so that an offset of 0 stays 0 while a positive
+  // offset is pushed past the end of the path.)
   float path_start_offset =
-      text_path_element.startOffset()->CurrentValue()->Value(
-          conversion_data, author_path_length);
-  path_start_offset *= offset_scale;
+      start_offset.Value(conversion_data, computed_path_length);
+  if (!start_offset.IsPercentage() && !std::isnan(author_path_length)) {
+    path_start_offset *= SVGGeometryElement::PathLengthScaleFactor(
+        computed_path_length, author_path_length);
+  }
 
   const bool reverse_direction =
       RuntimeEnabledFeatures::SVGTextPathSideAttributeEnabled() &&
