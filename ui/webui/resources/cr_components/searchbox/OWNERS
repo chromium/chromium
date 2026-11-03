@@ -6,24 +6,14 @@ hannahrogers@google.com
 mahmadi@chromium.org
 mfacey@chromium.org
 pauladedeji@google.com
-romanarora@chromium.org
 rtatum@google.com
 samiraarabgol@google.com
+shomizoe@google.com
 tiborg@chromium.org
+yvonneshi@google.com
 
 # For merges only
 jdonnelly@chromium.org
-
-# TODO(crbug.com/493909140): Remove these per-file entries and the
-# EXTENDED_OWNERS file.
-per-file *.css=file:EXTENDED_OWNERS
-per-file icons/*=file:EXTENDED_OWNERS
-per-file searchbox_action*=file:EXTENDED_OWNERS
-per-file searchbox_compose*=file:EXTENDED_OWNERS
-per-file searchbox_dropdown*=file:EXTENDED_OWNERS
-per-file searchbox_icon*=file:EXTENDED_OWNERS
-per-file searchbox_match*=file:EXTENDED_OWNERS
-per-file searchbox_thumbnail*=file:EXTENDED_OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
