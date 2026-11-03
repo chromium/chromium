@@ -95,6 +95,12 @@ struct EpWorkarounds {
   // respect this limit.
   bool resample2d_limit_to_nchw = false;
 
+  // By default ONNX GatherND/ScatterND ops support negative indices (indexing
+  // from the end of an axis), but some EPs do not support them. When set, the
+  // graph builder shifts negative indices to their equivalent non-negative
+  // value: where(indices < 0, indices + input_shape[axis], indices).
+  bool gather_scatter_nd_indices_require_nonnegative = false;
+
   // Whether the EP may report the NPU driver version in legacy concatenated
   // format (e.g., "1004404") instead of 4-part dot-separated format. This is
   // a per-EP reporting format statement queried directly by
@@ -104,6 +110,8 @@ struct EpWorkarounds {
 
   EpWorkarounds& operator|=(const EpWorkarounds& other) {
     resample2d_limit_to_nchw |= other.resample2d_limit_to_nchw;
+    gather_scatter_nd_indices_require_nonnegative |=
+        other.gather_scatter_nd_indices_require_nonnegative;
     return *this;
   }
 };
@@ -211,6 +219,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
             .workarounds =
                 {
                     .resample2d_limit_to_nchw = true,
+                    .gather_scatter_nd_indices_require_nonnegative = true,
                     // The OpenVINO EP currently reports NPU driver versions in
                     // legacy concatenated format (e.g., "1004404").
                     .npu_concatenated_driver_version = true,

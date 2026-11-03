@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/graph_builder_context.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/mojom/webnn_compiler_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
@@ -81,6 +82,7 @@ class CompilerContextImplOrt final : public GraphBuilderContext,
       scoped_refptr<SessionOptions> session_options,
       scoped_refptr<Environment> env,
       ContextProperties context_properties,
+      EpWorkarounds ep_workarounds,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands);
 
@@ -95,7 +97,9 @@ class CompilerContextImplOrt final : public GraphBuilderContext,
   // The `WebNNCompilerServiceImpl` which owns and will outlive this object.
   const raw_ref<WebNNCompilerServiceImpl> service_;
 
-  ContextProperties properties_;
+  const ContextProperties properties_;
+  const EpWorkarounds ep_workarounds_;
+
   mojom::CreateContextOptionsPtr options_;
 
   // Reverse channel to GPU process for sending compiled graphs.

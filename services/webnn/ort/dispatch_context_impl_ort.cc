@@ -40,7 +40,7 @@ DispatchContextImplOrt::Create(
       ort::SessionOptions::CreateForDispatch(target_device, env);
 
   OrtHardwareDeviceType device_type = WebnnToOrtDeviceType(options->device);
-  const EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);
+  EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);
 
   auto* dispatch_context = new DispatchContextImplOrt(
       std::move(receiver), std::move(model_loader_receiver),
@@ -60,7 +60,7 @@ DispatchContextImplOrt::DispatchContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
     mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
-    const EpWorkarounds& ep_workarounds,
+    EpWorkarounds ep_workarounds,
     mojom::CreateContextOptionsPtr options,
     scoped_refptr<SessionOptions> session_options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -74,7 +74,7 @@ DispatchContextImplOrt::DispatchContextImplOrt(
     EpDeviceInfo target_device)
     : ContextImplOrt(std::move(receiver),
                      std::move(context_provider),
-                     ep_workarounds,
+                     std::move(ep_workarounds),
                      std::move(options),
                      std::move(session_options),
                      std::move(write_tensor_consumer),

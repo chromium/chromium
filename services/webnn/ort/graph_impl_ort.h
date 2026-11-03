@@ -14,6 +14,7 @@
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/ort/graph_builder_ort.h"
+#include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -85,6 +86,7 @@ class GraphImplOrt final : public WebNNGraphImpl {
       scoped_refptr<SessionOptions> session_options,
       scoped_refptr<Environment> env,
       ContextProperties context_properties,
+      EpWorkarounds ep_workarounds,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       ScopedTrace scoped_trace);

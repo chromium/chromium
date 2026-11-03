@@ -44,7 +44,7 @@ class ContextImplOrt : public WebNNContextImpl {
 
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  base::WeakPtr<WebNNContextProviderImpl> context_provider,
-                 const EpWorkarounds& ep_workarounds,
+                 EpWorkarounds ep_workarounds,
                  mojom::CreateContextOptionsPtr options,
                  scoped_refptr<SessionOptions> session_options,
                  mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -71,6 +71,8 @@ class ContextImplOrt : public WebNNContextImpl {
   scoped_refptr<SessionOptions> session_options() const {
     return session_options_;
   }
+
+  const EpWorkarounds& ep_workarounds() const { return ep_workarounds_; }
 
   base::CancelableTaskTracker& cancelable_task_tracker() {
     return cancelable_task_tracker_;
@@ -104,6 +106,10 @@ class ContextImplOrt : public WebNNContextImpl {
 
   std::vector<mojom::WebNNExecutionProviderDetailsPtr>
   GetExecutionProvidersInfo() const override;
+
+  // The workarounds needed for the selected execution provider(s)'s
+  // limitations.
+  const EpWorkarounds ep_workarounds_;
 
   scoped_refptr<Environment> env_;
 

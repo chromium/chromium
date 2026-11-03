@@ -289,7 +289,8 @@ void GraphImplOrt::CreateAndBuild(
       base::BindOnce(&GraphImplOrt::CreateAndBuildOnBackgroundThread,
                      std::move(graph_info), context.session_options(),
                      context.env(), context.properties(),
-                     std::move(constant_operands), std::move(scoped_trace)),
+                     context.ep_workarounds(), std::move(constant_operands),
+                     std::move(scoped_trace)),
       base::BindOnce(&GraphImplOrt::DidCreateAndBuild, std::ref(context),
                      std::move(compute_resource_info), std::move(callback)));
 }
@@ -301,6 +302,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     scoped_refptr<SessionOptions> session_options,
     scoped_refptr<Environment> env,
     ContextProperties context_properties,
+    EpWorkarounds ep_workarounds,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     ScopedTrace scoped_trace) {
@@ -308,9 +310,9 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
   scoped_trace.AddStep("Create model info");
   std::unique_ptr<ModelEditor::ModelInfo> model_info =
-      GraphBuilderOrt::CreateAndBuild(*graph_info,
-                                      std::move(context_properties),
-                                      std::move(constant_operands));
+      GraphBuilderOrt::CreateAndBuild(
+          *graph_info, std::move(context_properties), std::move(ep_workarounds),
+          std::move(constant_operands));
 
   scoped_trace.AddStep("Create session from model");
   ScopedOrtSession session;

@@ -403,9 +403,11 @@ const base::cstring_view GetRecurrentNetworkDirection(
 std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
+    EpWorkarounds ep_workarounds,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands) {
   GraphBuilderOrt graph_builder(graph_info, std::move(context_properties),
+                                std::move(ep_workarounds),
                                 std::move(constant_operands));
   return graph_builder.BuildModel();
 }
@@ -413,12 +415,14 @@ std::unique_ptr<ModelEditor::ModelInfo> GraphBuilderOrt::CreateAndBuild(
 GraphBuilderOrt::GraphBuilderOrt(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
+    EpWorkarounds ep_workarounds,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands)
     : next_operand_id_(graph_info.operands.size()),
       graph_info_(graph_info),
       constant_operands_(std::move(constant_operands)),
-      context_properties_(std::move(context_properties)) {}
+      context_properties_(std::move(context_properties)),
+      ep_workarounds_(std::move(ep_workarounds)) {}
 
 GraphBuilderOrt::~GraphBuilderOrt() = default;
 
@@ -893,16 +897,17 @@ std::string GraphBuilderOrt::ClampIndices(base::cstring_view indices,
   return output;
 }
 
-std::string GraphBuilderOrt::ClampGatherNDIndices(
+std::string GraphBuilderOrt::NormalizeGatherScatterNDIndices(
     base::cstring_view indices,
     base::span<const uint32_t> input_shape,
     base::span<const uint32_t> indices_shape) {
-  CHECK_GT(input_shape.size(), 0u);
   CHECK_GT(indices_shape.size(), 0u);
 
   uint32_t indices_last_dim_size = indices_shape[indices_shape.size() - 1];
-  std::array<int64_t, 1> min_max_shape = {
+  std::array<int64_t, 1> per_axis_shape = {
       static_cast<int64_t>(indices_last_dim_size)};
+
+  CHECK_GE(input_shape.size(), indices_last_dim_size);
 
   base::FixedArray<int64_t> min_value(indices_last_dim_size);
   base::FixedArray<int64_t> max_value(indices_last_dim_size);
@@ -912,8 +917,10 @@ std::string GraphBuilderOrt::ClampGatherNDIndices(
   }
 
   // ONNX Clip can only have `min` and `max` as scalars, so here use Min and Max
-  // to emulate a clamp operation.
-  std::string min = CreateInitializer<int64_t>(min_max_shape, min_value);
+  // to emulate a clamp operation. This ensures that all values in `indices`
+  // are within bounds [-s, s) along axis of size s, i.e. -input_shape[i] <=
+  // indices[..., i] <= input_shape[i] - 1.
+  std::string min = CreateInitializer<int64_t>(per_axis_shape, min_value);
   const std::string max_node_name =
       GenerateNodeName(base::JoinString({kInserted, kOpTypeMax}, kUnderscore));
   const std::string max_output = GenerateOperandName();
@@ -921,13 +928,53 @@ std::string GraphBuilderOrt::ClampGatherNDIndices(
   std::array<const char*, 1> max_outputs = {max_output.c_str()};
   model_editor_.AddNode(kOpTypeMax, max_node_name, max_inputs, max_outputs);
 
-  std::string max = CreateInitializer<int64_t>(min_max_shape, max_value);
+  std::string max = CreateInitializer<int64_t>(per_axis_shape, max_value);
   const std::string min_node_name =
       GenerateNodeName(base::JoinString({kInserted, kOpTypeMin}, kUnderscore));
-  const std::string output = GenerateOperandName();
+  const std::string clamped_indices = GenerateOperandName();
   std::array<const char*, 2> min_inputs = {max_output.c_str(), max.c_str()};
-  std::array<const char*, 1> min_outputs = {output.c_str()};
+  std::array<const char*, 1> min_outputs = {clamped_indices.c_str()};
   model_editor_.AddNode(kOpTypeMin, min_node_name, min_inputs, min_outputs);
+
+  if (!ep_workarounds_.gather_scatter_nd_indices_require_nonnegative) {
+    return clamped_indices;
+  }
+
+  // Shift any negative index to its equivalent non-negative value:
+  // where(indices < 0, indices + input_shape[axis], indices).
+  base::FixedArray<int64_t> boundary_value(indices_last_dim_size);
+  for (uint32_t axis = 0; axis < indices_last_dim_size; ++axis) {
+    boundary_value[axis] = static_cast<int64_t>(input_shape[axis]);
+  }
+
+  const std::string zero = CreateScalarInitializer<int64_t>(0);
+  const std::string less_node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeLesser}, kUnderscore));
+  const std::string less_output = GenerateOperandName();
+  std::array<const char*, 2> less_inputs = {clamped_indices.c_str(),
+                                            zero.c_str()};
+  std::array<const char*, 1> less_outputs = {less_output.c_str()};
+  model_editor_.AddNode(kOpTypeLesser, less_node_name, less_inputs,
+                        less_outputs);
+
+  std::string boundary =
+      CreateInitializer<int64_t>(per_axis_shape, boundary_value);
+  const std::string add_node_name =
+      GenerateNodeName(base::JoinString({kInserted, kOpTypeAdd}, kUnderscore));
+  const std::string add_output = GenerateOperandName();
+  std::array<const char*, 2> add_inputs = {clamped_indices.c_str(),
+                                           boundary.c_str()};
+  std::array<const char*, 1> add_outputs = {add_output.c_str()};
+  model_editor_.AddNode(kOpTypeAdd, add_node_name, add_inputs, add_outputs);
+
+  const std::string where_node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeWhere}, kUnderscore));
+  const std::string output = GenerateOperandName();
+  std::array<const char*, 3> where_inputs = {
+      less_output.c_str(), add_output.c_str(), clamped_indices.c_str()};
+  std::array<const char*, 1> where_outputs = {output.c_str()};
+  model_editor_.AddNode(kOpTypeWhere, where_node_name, where_inputs,
+                        where_outputs);
 
   return output;
 }
@@ -1722,12 +1769,11 @@ void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
           ? indices
           : CreateCastNode(indices, ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
 
-  // Clamp the indices operand to prevent out-of-bounds reading which will cause
-  // ORT CPU EP to throw a runtime error.
-  std::string clamped_indices = ClampGatherNDIndices(
+  std::string normalized_indices = NormalizeGatherScatterNDIndices(
       int64_indices, input_descriptor.shape(), indices_descriptor.shape());
 
-  std::array<const char*, 2> inputs = {input.c_str(), clamped_indices.c_str()};
+  std::array<const char*, 2> inputs = {input.c_str(),
+                                       normalized_indices.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
   model_editor_.AddNode(kOpTypeGatherND, node_name, inputs, outputs);
@@ -2942,13 +2988,11 @@ void GraphBuilderOrt::AddScatterNDOperation(
           ? indices
           : CreateCastNode(indices, ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
 
-  // Clamp the indices operand to prevent out-of-bounds writing which will cause
-  // ORT CPU EP to throw a runtime error.
-  std::string clamped_indices = ClampGatherNDIndices(
+  std::string normalized_indices = NormalizeGatherScatterNDIndices(
       int64_indices, input_descriptor.shape(), indices_descriptor.shape());
 
-  std::array<const char*, 3> inputs = {input.c_str(), clamped_indices.c_str(),
-                                       updates.c_str()};
+  std::array<const char*, 3> inputs = {
+      input.c_str(), normalized_indices.c_str(), updates.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
   model_editor_.AddNode(kOpTypeScatterND, node_name, inputs, outputs);

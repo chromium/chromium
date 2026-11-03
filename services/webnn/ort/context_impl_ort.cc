@@ -232,7 +232,7 @@ std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
   // TODO(crbug.com/469455162): Use power preference and accelerated
   // attributes from WebNN context options to determine ORT device type.
   OrtHardwareDeviceType device_type = WebnnToOrtDeviceType(options->device);
-  const EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);
+  EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);
 
   std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
       new ContextImplOrt(
@@ -250,7 +250,7 @@ std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
 ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
-    const EpWorkarounds& ep_workarounds,
+    EpWorkarounds ep_workarounds,
     mojom::CreateContextOptionsPtr options,
     scoped_refptr<SessionOptions> session_options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -274,6 +274,7 @@ ContextImplOrt::ContextImplOrt(
           std::move(owning_task_runner),
           shared_image_manager,
           std::move(main_task_runner)),
+      ep_workarounds_(std::move(ep_workarounds)),
       env_(std::move(env)),
       session_options_(std::move(session_options)) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
