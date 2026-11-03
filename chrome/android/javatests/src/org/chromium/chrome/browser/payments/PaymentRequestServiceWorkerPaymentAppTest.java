@@ -12,8 +12,10 @@ import android.graphics.drawable.BitmapDrawable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
@@ -22,6 +24,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
@@ -42,10 +46,21 @@ import java.util.concurrent.TimeoutException;
 })
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestServiceWorkerPaymentAppTest {
-    @Rule
-    public PaymentRequestTestRule mPaymentRequestTestRule =
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule(
-                    "payment_request_bobpay_with_modifier_optional_data_test.html");
+                    mCtaTestRule, "payment_request_bobpay_with_modifier_optional_data_test.html");
+
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mCtaTestRule).around(mPaymentRequestTestRule);
+
+    @Before
+    public void setUpPaymentRequestTestRule() throws Exception {
+        mPaymentRequestTestRule.startOnTestPage();
+    }
 
     private int mFactoryCount;
 

@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -26,6 +27,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -38,12 +41,19 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestJourneyLoggerTest {
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final PaymentRequestTestRule mPaymentRequestTestRule =
+            new PaymentRequestTestRule(mCtaTestRule, "payment_request_metrics_test.html");
+
     @Rule
-    public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_metrics_test.html");
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mCtaTestRule).around(mPaymentRequestTestRule);
 
     @Before
     public void setUp() throws Exception {
+        mPaymentRequestTestRule.startOnTestPage();
         AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
         // The user has a shipping address.
         autofillTestHelper.setProfile(

@@ -16,6 +16,7 @@ import androidx.annotation.IntDef;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.rules.ExternalResource;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
@@ -35,7 +36,6 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSecti
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.OptionRow;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUi;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUi.PaymentRequestObserverForTest;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
@@ -75,7 +75,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>Declare it together with a {@link BaseCtaTransitTestRule} in a RuleChain, and call {@link
  * #startOnTestPage()} to start the test.
  */
-/*package*/ class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
+/*package*/ class PaymentRequestTestRule extends ExternalResource
         implements PaymentRequestObserverForTest,
                 PaymentRequestServiceObserverForTest,
                 ChromePaymentRequestDelegateImplObserverForTest,
@@ -179,21 +179,10 @@ import java.util.concurrent.atomic.AtomicReference;
     private final AtomicReference<WebContents> mWebContentsRef;
 
     private final String mTestFileName;
-    private final String mTestFilePath;
 
     private CardUnmaskPrompt mCardUnmaskPrompt;
 
     private int mFactoryCount;
-
-    /**
-     * Creates an instance of PaymentRequestTestRule.
-     *
-     * @param testFileName The file name of a test page in //components/test/data/payments, or a
-     *     data url which starts with 'data:'.
-     */
-    /* package */ PaymentRequestTestRule(String testFileName) {
-        this(null, testFileName);
-    }
 
     /**
      * Creates an instance of PaymentRequestTestRule.
@@ -204,7 +193,6 @@ import java.util.concurrent.atomic.AtomicReference;
      *     data url which starts with 'data:'.
      */
     /* package */ PaymentRequestTestRule(BaseCtaTransitTestRule ctaTestRule, String testFileName) {
-        super();
         mCtaTestRule = ctaTestRule;
         mTestFileName = testFileName;
         mShowCalled = new PaymentsCallbackHelper<>();
@@ -231,18 +219,8 @@ import java.util.concurrent.atomic.AtomicReference;
         mCompleteHandled = new CallbackHelper();
         mRendererClosedMojoConnection = new CallbackHelper();
         mWebContentsRef = new AtomicReference<>();
-        if (ctaTestRule != null) {
-            if (!testFileName.startsWith("data:")) {
-                ctaTestRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
-            }
-            mTestFilePath = null;
-        } else {
-            getEmbeddedTestServerRule().setServerPort(TEST_PORT);
-            if (testFileName.equals("about:blank") || testFileName.startsWith("data:")) {
-                mTestFilePath = testFileName;
-            } else {
-                mTestFilePath = getTestServer().getURL(TEST_PAGE_PATH_PREFIX + testFileName);
-            }
+        if (!testFileName.startsWith("data:")) {
+            ctaTestRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
         }
         mAutoAdvanceInputProtectorClock = true;
         mClock = new FakeClock();
@@ -1378,7 +1356,6 @@ import java.util.concurrent.atomic.AtomicReference;
      * @return the entry {@link WebPageStation} showing the test page.
      */
     /* package */ WebPageStation startOnTestPage() throws InterruptedException {
-        assert mCtaTestRule != null : "Pass BaseCtaTransitTestRule to PaymentRequestTestRule";
         assert mWebContentsRef.get() == null : "Test already started";
 
         WebPageStation page;
@@ -1399,10 +1376,6 @@ import java.util.concurrent.atomic.AtomicReference;
     protected void before() throws Throwable {
         super.before();
         PaymentAppService.getInstance().resetForTest();
-        if (mCtaTestRule == null) {
-            startMainActivityWithURL(mTestFilePath);
-            setObserversAndWaitForInitialPageLoad(getActivity());
-        }
     }
 
     @Override

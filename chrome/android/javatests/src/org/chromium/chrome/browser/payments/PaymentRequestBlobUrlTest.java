@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.payments;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
@@ -15,6 +17,8 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -22,9 +26,20 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestBlobUrlTest {
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final PaymentRequestTestRule mPaymentRequestTestRule =
+            new PaymentRequestTestRule(mCtaTestRule, "payment_request_blob_url_test.html");
+
     @Rule
-    public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_blob_url_test.html");
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mCtaTestRule).around(mPaymentRequestTestRule);
+
+    @Before
+    public void setUpPaymentRequestTestRule() throws Exception {
+        mPaymentRequestTestRule.startOnTestPage();
+    }
 
     @Test
     @MediumTest
@@ -33,7 +48,7 @@ public class PaymentRequestBlobUrlTest {
     public void test() throws TimeoutException {
         // Trigger the Blob URL load, and wait for it to finish.
         mPaymentRequestTestRule.clickNode("buy");
-        mPaymentRequestTestRule.assertWaitForPageScaleFactorMatch(2);
+        mCtaTestRule.assertWaitForPageScaleFactorMatch(2);
 
         // Trigger the PaymentRequest, which should be rejected.
         mPaymentRequestTestRule.executeJavaScriptAndWaitForResult("triggerPaymentRequest();");

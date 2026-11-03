@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -23,6 +25,8 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppStability;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.payments.Event2;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -41,9 +45,20 @@ import java.util.concurrent.TimeoutException;
 })
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestPaymentAppUiSkipTest {
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final PaymentRequestTestRule mPaymentRequestTestRule =
+            new PaymentRequestTestRule(mCtaTestRule, "payment_request_bobpay_ui_skip_test.html");
+
     @Rule
-    public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_bobpay_ui_skip_test.html");
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mCtaTestRule).around(mPaymentRequestTestRule);
+
+    @Before
+    public void setUpPaymentRequestTestRule() throws Exception {
+        mPaymentRequestTestRule.startOnTestPage();
+    }
 
     /** If the transaction fails, the browser shows an error message. */
     @Test

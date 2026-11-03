@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
@@ -24,6 +26,8 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.payments.Event2;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -37,9 +41,21 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestCanMakePaymentMetricsTest {
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final PaymentRequestTestRule mPaymentRequestTestRule =
+            new PaymentRequestTestRule(
+                    mCtaTestRule, "payment_request_can_make_payment_metrics_test.html");
+
     @Rule
-    public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_can_make_payment_metrics_test.html");
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mCtaTestRule).around(mPaymentRequestTestRule);
+
+    @Before
+    public void setUpPaymentRequestTestRule() throws Exception {
+        mPaymentRequestTestRule.startOnTestPage();
+    }
 
     /**
      * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant calling
@@ -232,9 +248,7 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                     PrefService prefs =
                             UserPrefs.get(
                                     Profile.fromWebContents(
-                                            mPaymentRequestTestRule
-                                                    .getActivity()
-                                                    .getCurrentWebContents()));
+                                            mCtaTestRule.getActivity().getCurrentWebContents()));
                     prefs.setBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED, false);
                 });
 

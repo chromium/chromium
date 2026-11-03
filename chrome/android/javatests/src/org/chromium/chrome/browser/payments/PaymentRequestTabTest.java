@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
@@ -28,6 +29,8 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -42,12 +45,19 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestTabTest {
+    public final FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    public final PaymentRequestTestRule mPaymentRequestTestRule =
+            new PaymentRequestTestRule(mCtaTestRule, "payment_request_metrics_test.html");
+
     @Rule
-    public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_metrics_test.html");
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mCtaTestRule).around(mPaymentRequestTestRule);
 
     @Before
-    public void setUp() throws TimeoutException {
+    public void setUp() throws TimeoutException, InterruptedException {
+        mPaymentRequestTestRule.startOnTestPage();
         AutofillTestHelper helper = new AutofillTestHelper();
         String billingAddressId =
                 helper.setProfile(
@@ -96,7 +106,7 @@ public class PaymentRequestTabTest {
         ThreadUtils.runOnUiThreadBlocking(
                 (Runnable)
                         () ->
-                                mPaymentRequestTestRule
+                                mCtaTestRule
                                         .getActivity()
                                         .getTabCreator(false)
                                         .createNewTab(
@@ -122,8 +132,7 @@ public class PaymentRequestTabTest {
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModel currentModel =
-                            mPaymentRequestTestRule.getActivity().getCurrentTabModel();
+                    TabModel currentModel = mCtaTestRule.getActivity().getCurrentTabModel();
                     Tab tab = TabModelUtils.getCurrentTab(currentModel);
                     Assert.assertNotNull(tab);
                     currentModel
@@ -151,8 +160,7 @@ public class PaymentRequestTabTest {
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModel currentModel =
-                            mPaymentRequestTestRule.getActivity().getCurrentTabModel();
+                    TabModel currentModel = mCtaTestRule.getActivity().getCurrentTabModel();
                     TabModelUtils.getCurrentTab(currentModel)
                             .loadUrl(new LoadUrlParams("about:blank"));
                 });
