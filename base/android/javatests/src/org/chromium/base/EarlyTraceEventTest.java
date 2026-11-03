@@ -5,7 +5,6 @@
 package org.chromium.base;
 
 import android.os.Process;
-import android.os.SystemClock;
 
 import androidx.test.filters.SmallTest;
 
@@ -47,12 +46,10 @@ public class EarlyTraceEventTest {
         EarlyTraceEvent.enable();
         long myThreadId = Process.myTid();
         long beforeNanos = System.nanoTime();
-        long beforeThreadMillis = SystemClock.currentThreadTimeMillis();
         EarlyTraceEvent.begin(EVENT_NAME, /* isToplevel= */ false);
         EarlyTraceEvent.end(EVENT_NAME, /* isToplevel= */ false);
         Assert.assertTrue(EarlyTraceEvent.enabled());
         long afterNanos = System.nanoTime();
-        long afterThreadMillis = SystemClock.currentThreadTimeMillis();
 
         List<Event> matchingEvents =
                 EarlyTraceEvent.getMatchingCompletedEventsForTesting(EVENT_NAME);
@@ -67,8 +64,6 @@ public class EarlyTraceEventTest {
         Assert.assertFalse(endEvent.mIsToplevel);
         Assert.assertTrue(beforeNanos <= beginEvent.mTimeNanos);
         Assert.assertTrue(endEvent.mTimeNanos <= afterNanos);
-        Assert.assertTrue(beforeThreadMillis <= beginEvent.mThreadTimeMillis);
-        Assert.assertTrue(endEvent.mThreadTimeMillis <= afterThreadMillis);
     }
 
     @Test

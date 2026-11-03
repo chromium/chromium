@@ -52,7 +52,6 @@ public class EarlyTraceEvent {
         final String mName;
         final int mThreadId;
         final long mTimeNanos;
-        final long mThreadTimeMillis;
 
         Event(String name, boolean isStart, boolean isToplevel) {
             mIsStart = isStart;
@@ -60,7 +59,6 @@ public class EarlyTraceEvent {
             mName = name;
             mThreadId = Process.myTid();
             mTimeNanos = System.nanoTime(); // Same timebase as TimeTicks::Now().
-            mThreadTimeMillis = SystemClock.currentThreadTimeMillis();
         }
     }
 
@@ -391,17 +389,13 @@ public class EarlyTraceEvent {
                             .recordEarlyToplevelBeginEvent(e.mName, e.mTimeNanos, e.mThreadId);
                 } else {
                     EarlyTraceEventJni.get()
-                            .recordEarlyBeginEvent(
-                                    e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
+                            .recordEarlyBeginEvent(e.mName, e.mTimeNanos, e.mThreadId);
                 }
             } else {
                 if (e.mIsToplevel) {
-                    EarlyTraceEventJni.get()
-                            .recordEarlyToplevelEndEvent(e.mName, e.mTimeNanos, e.mThreadId);
+                    EarlyTraceEventJni.get().recordEarlyToplevelEndEvent(e.mTimeNanos, e.mThreadId);
                 } else {
-                    EarlyTraceEventJni.get()
-                            .recordEarlyEndEvent(
-                                    e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
+                    EarlyTraceEventJni.get().recordEarlyEndEvent(e.mTimeNanos, e.mThreadId);
                 }
             }
         }
@@ -438,22 +432,14 @@ public class EarlyTraceEvent {
     @NativeMethods
     interface Natives {
         void recordEarlyBeginEvent(
-                @JniType("std::string") String name,
-                long timeNanos,
-                int threadId,
-                long threadMillis);
+                @JniType("std::string") String name, long timeNanos, int threadId);
 
-        void recordEarlyEndEvent(
-                @JniType("std::string") String name,
-                long timeNanos,
-                int threadId,
-                long threadMillis);
+        void recordEarlyEndEvent(long timeNanos, int threadId);
 
         void recordEarlyToplevelBeginEvent(
                 @JniType("std::string") String name, long timeNanos, int threadId);
 
-        void recordEarlyToplevelEndEvent(
-                @JniType("std::string") String name, long timeNanos, int threadId);
+        void recordEarlyToplevelEndEvent(long timeNanos, int threadId);
 
         void recordEarlyAsyncBeginEvent(
                 @JniType("std::string") String name, long id, long timeNanos);

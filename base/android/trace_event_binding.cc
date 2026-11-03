@@ -197,8 +197,7 @@ static void JNI_TraceEvent_InstantAndroidIPC(
       });
 }
 
-static void JNI_TraceEvent_InstantAndroidToolbar(JNIEnv* env,
-                                                 int32_t block_reason,
+static void JNI_TraceEvent_InstantAndroidToolbar(int32_t block_reason,
                                                  int32_t allow_reason,
                                                  int32_t snapshot_diff) {
   using AndroidToolbar = perfetto::protos::pbzero::AndroidToolbar;
@@ -222,8 +221,7 @@ static void JNI_TraceEvent_InstantAndroidToolbar(JNIEnv* env,
       });
 }
 
-static void JNI_TraceEvent_WebViewStartupTotalFactoryInit(JNIEnv* env,
-                                                          int64_t start_time_ms,
+static void JNI_TraceEvent_WebViewStartupTotalFactoryInit(int64_t start_time_ms,
                                                           int64_t duration_ms) {
   auto t = perfetto::ThreadTrack::Current();
   TRACE_EVENT_BEGIN("android_webview.timeline",
@@ -233,8 +231,7 @@ static void JNI_TraceEvent_WebViewStartupTotalFactoryInit(JNIEnv* env,
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));
 }
 
-static void JNI_TraceEvent_WebViewStartupStage1(JNIEnv* env,
-                                                int64_t start_time_ms,
+static void JNI_TraceEvent_WebViewStartupStage1(int64_t start_time_ms,
                                                 int64_t duration_ms) {
   auto t = perfetto::ThreadTrack::Current();
   TRACE_EVENT_BEGIN("android_webview.timeline",
@@ -245,7 +242,6 @@ static void JNI_TraceEvent_WebViewStartupStage1(JNIEnv* env,
 }
 
 static void JNI_TraceEvent_WebViewStartupFirstInstance(
-    JNIEnv* env,
     int64_t start_time_ms,
     int64_t duration_ms,
     bool included_global_startup) {
@@ -266,8 +262,7 @@ static void JNI_TraceEvent_WebViewStartupFirstInstance(
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));
 }
 
-static void JNI_TraceEvent_WebViewStartupNotFirstInstance(JNIEnv* env,
-                                                          int64_t start_time_ms,
+static void JNI_TraceEvent_WebViewStartupNotFirstInstance(int64_t start_time_ms,
                                                           int64_t duration_ms) {
   auto t = perfetto::ThreadTrack::Current();
   TRACE_EVENT_BEGIN("android_webview.timeline",
@@ -278,7 +273,6 @@ static void JNI_TraceEvent_WebViewStartupNotFirstInstance(JNIEnv* env,
 }
 
 static void JNI_TraceEvent_WebViewStartupStartChromiumLocked(
-    JNIEnv* env,
     int64_t start_time_ms,
     int64_t duration_ms,
     int32_t start_call_site,
@@ -307,8 +301,7 @@ static void JNI_TraceEvent_WebViewStartupStartChromiumLocked(
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));
 }
 
-static void JNI_TraceEvent_StartupActivityStart(JNIEnv* env,
-                                                int64_t activity_id,
+static void JNI_TraceEvent_StartupActivityStart(int64_t activity_id,
                                                 int64_t start_time_ms) {
   TRACE_EVENT_INSTANT(
       "interactions", "Startup.ActivityStart",
@@ -320,8 +313,7 @@ static void JNI_TraceEvent_StartupActivityStart(JNIEnv* env,
       });
 }
 
-static void JNI_TraceEvent_StartupLaunchCause(JNIEnv* env,
-                                              int64_t activity_id,
+static void JNI_TraceEvent_StartupLaunchCause(int64_t activity_id,
                                               int64_t start_time_ms,
                                               int32_t cause) {
   using Startup = perfetto::protos::pbzero::StartUp;
@@ -396,8 +388,7 @@ static void JNI_TraceEvent_StartupLaunchCause(JNIEnv* env,
       });
 }
 
-static void JNI_TraceEvent_StartupTimeToFirstFrame2(JNIEnv* env,
-                                                    int64_t start_time_ms,
+static void JNI_TraceEvent_StartupTimeToFirstFrame2(int64_t start_time_ms,
                                                     int64_t duration_ms) {
   [[maybe_unused]] const perfetto::Track track(
       base::trace_event::GetNextGlobalTraceId(),
@@ -471,7 +462,7 @@ static void JNI_TraceEvent_BeginToplevel(
       });
 }
 
-static void JNI_TraceEvent_EndToplevel(JNIEnv* env) {
+static void JNI_TraceEvent_EndToplevel() {
   TRACE_EVENT_END(internal::kToplevelTraceCategory);
 }
 
@@ -487,7 +478,7 @@ static void JNI_TraceEvent_StartAsync(
       });
 }
 
-static void JNI_TraceEvent_FinishAsync(JNIEnv* env, int64_t jid) {
+static void JNI_TraceEvent_FinishAsync(int64_t jid) {
   TRACE_EVENT_END(internal::kJavaTraceCategory,
                   perfetto::Track(static_cast<uint64_t>(jid)));
 }
