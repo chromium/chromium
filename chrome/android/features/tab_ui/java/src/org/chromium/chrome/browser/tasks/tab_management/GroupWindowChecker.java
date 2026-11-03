@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
@@ -57,6 +58,7 @@ public class GroupWindowChecker {
     private final Map<Token, List<Tab>> mTabsByGroupId = new HashMap<>();
     private final Map<Token, List<Tab>> mClosingTabsByGroupId = new HashMap<>();
     private final Set<Token> mActiveGroupIds = new HashSet<>();
+    private final Map<String, SavedTabGroup> mSavedGroupsById = new HashMap<>();
 
     /**
      * @param context The {@link Context} for resources.
@@ -77,6 +79,7 @@ public class GroupWindowChecker {
         mTabsByGroupId.clear();
         mClosingTabsByGroupId.clear();
         mActiveGroupIds.clear();
+        mSavedGroupsById.clear();
 
         for (TabModel model : getAllTabModels()) {
             indexTabModel(model);
@@ -120,7 +123,7 @@ public class GroupWindowChecker {
             Set<Token> seenGroups) {
         assert mSyncService != null;
         for (String syncGroupId : mSyncService.getAllGroupIds()) {
-            SavedTabGroup savedTabGroup = mSyncService.getGroup(syncGroupId);
+            SavedTabGroup savedTabGroup = getSavedTabGroup(syncGroupId);
             assert savedTabGroup != null && !savedTabGroup.savedTabs.isEmpty();
 
             if (savedTabGroup.localId != null) {
@@ -184,18 +187,91 @@ public class GroupWindowChecker {
     }
 
     /**
-     * Returns whether there is any tab group other than the given group ID.
+     * Returns whether there is any tab group other than the given group ID that is a valid
+     * destination for tab movement.
      *
      * @param currentGroupId The tab group ID to exclude, or null if checking for any tab group.
-     * @return True if another tab group exists, false otherwise.
+     * @return True if another valid destination tab group exists, false otherwise.
      */
     public boolean hasOtherGroups(@Nullable Token currentGroupId) {
-        for (GroupWindowInfo group : getDefaultSortedGroupList()) {
-            if (isOtherGroup(group, currentGroupId)) {
+        Set<Token> seenGroups = new HashSet<>();
+        if (hasOtherSyncedGroup(currentGroupId, seenGroups)) {
+            return true;
+        }
+        return hasOtherLocalGroup(currentGroupId, seenGroups);
+    }
+
+    private boolean hasOtherSyncedGroup(@Nullable Token currentGroupId, Set<Token> seenGroups) {
+        if (mSyncService == null || mCurrentTabModel.isIncognito()) {
+            return false;
+        }
+
+        for (String syncGroupId : mSyncService.getAllGroupIds()) {
+            if (isValidSyncedDestination(
+                    getSavedTabGroup(syncGroupId), currentGroupId, seenGroups)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private @Nullable SavedTabGroup getSavedTabGroup(String syncGroupId) {
+        if (mSyncService == null) {
+            return null;
+        }
+        return mSavedGroupsById.computeIfAbsent(syncGroupId, mSyncService::getGroup);
+    }
+
+    private boolean isValidSyncedDestination(
+            @Nullable SavedTabGroup savedTabGroup,
+            @Nullable Token currentGroupId,
+            Set<Token> seenGroups) {
+        if (savedTabGroup == null) {
+            return false;
+        }
+        Token localGroupId =
+                savedTabGroup.localId != null ? savedTabGroup.localId.tabGroupId : null;
+        if (localGroupId != null) {
+            seenGroups.add(localGroupId);
+            if (localGroupId.equals(currentGroupId)) {
+                return false;
+            }
+        }
+        if (savedTabGroup.savedTabs == null || savedTabGroup.savedTabs.isEmpty()) {
+            return false;
+        }
+        @GroupWindowState int state = getState(savedTabGroup);
+        return isValidGroupDestination(state, savedTabGroup.syncId);
+    }
+
+    private boolean hasOtherLocalGroup(@Nullable Token currentGroupId, Set<Token> seenGroups) {
+        for (Token groupId : mModelByGroupId.keySet()) {
+            if (isValidLocalDestination(groupId, currentGroupId, seenGroups)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isValidLocalDestination(
+            Token groupId, @Nullable Token currentGroupId, Set<Token> seenGroups) {
+        if (!seenGroups.add(groupId) || groupId.equals(currentGroupId)) {
+            return false;
+        }
+
+        @GroupWindowState int state = getState(groupId);
+        return isValidGroupDestination(state, /* syncId= */ null);
+    }
+
+    private static boolean isValidGroupDestination(
+            @GroupWindowState int state, @Nullable String syncId) {
+        if (!shouldShowGroupByState(state)) {
+            return false;
+        }
+        if (state == GroupWindowState.HIDDEN || state == GroupWindowState.IN_CURRENT_CLOSING) {
+            return !TextUtils.isEmpty(syncId);
+        }
+        return true;
     }
 
     /**
@@ -243,16 +319,6 @@ public class GroupWindowChecker {
         return isGroupFullyClosing(groupId)
                 ? GroupWindowState.IN_CURRENT_CLOSING
                 : GroupWindowState.IN_CURRENT;
-    }
-
-    private static boolean isOtherGroup(GroupWindowInfo group, @Nullable Token currentGroupId) {
-        if (currentGroupId != null && currentGroupId.equals(group.localId)) {
-            return false;
-        }
-        if (group.localId == null || group.groupWindowState == GroupWindowState.HIDDEN) {
-            return TabGroupUiUtils.isRemoteGroupOperationsEnabled();
-        }
-        return true;
     }
 
     private void indexTabModel(TabModel model) {

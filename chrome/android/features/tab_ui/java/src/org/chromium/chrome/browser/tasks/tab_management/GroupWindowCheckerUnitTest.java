@@ -553,6 +553,30 @@ public class GroupWindowCheckerUnitTest {
     }
 
     @Test
+    public void testHasOtherGroups_regularModel_unsyncedLocalGroups() {
+        Token token1 = Token.createRandom();
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mTabModel.getTabGroupTitle(token1)).thenReturn("title1");
+        when(mTabModel.containsTabGroup(token1)).thenReturn(true);
+        Tab tab1 = mock(Tab.class);
+        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of(tab1));
+        mSyncUtils.invalidate();
+
+        assertFalse(mSyncUtils.hasOtherGroups(token1));
+        assertTrue(mSyncUtils.hasOtherGroups(null));
+
+        Token token2 = Token.createRandom();
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
+        when(mTabModel.getTabGroupTitle(token2)).thenReturn("title2");
+        when(mTabModel.containsTabGroup(token2)).thenReturn(true);
+        Tab tab2 = mock(Tab.class);
+        when(mTabModel.getTabsInGroup(token2)).thenReturn(List.of(tab2));
+        mSyncUtils.invalidate();
+
+        assertTrue(mSyncUtils.hasOtherGroups(token1));
+    }
+
+    @Test
     @EnableFeatures(
             ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
     public void testHasOtherGroups_remoteGroup_flagEnabled() {
