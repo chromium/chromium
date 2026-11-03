@@ -27,6 +27,18 @@ std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
 security_state::SecurityLevel GetSecurityLevel(
     content::WebContents* web_contents);
 
+// Returns the security state of `web_contents`' last committed navigation
+// entry, enriched with Chrome embedder information. Prefer this over
+// GetVisibleSecurityState() for security decisions about the active document,
+// since GetVisibleSecurityState() reflects pending browser-initiated
+// navigations that have not yet committed.
+std::unique_ptr<security_state::VisibleSecurityState> GetCommittedSecurityState(
+    content::WebContents* web_contents);
+
+// Returns the security level computed from GetCommittedSecurityState().
+security_state::SecurityLevel GetCommittedSecurityLevel(
+    content::WebContents* web_contents);
+
 // Returns the Safe Browsing malicious content status for `web_contents`'
 // visible navigation entry, or MALICIOUS_CONTENT_STATUS_NONE when Safe
 // Browsing is unavailable.

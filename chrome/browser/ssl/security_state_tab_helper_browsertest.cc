@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 
 #include "base/base64.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
+#include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -88,6 +90,7 @@
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/test/cert_test_util.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -1090,6 +1093,109 @@ IN_PROC_BROWSER_TEST_F(SecurityStateLoadingTest, NavigationStateChanges) {
                      /*navigation_handle_callback=*/{});
   CheckSecurityInfoForNonCommitted(
       browser()->GetTabStripModel()->GetActiveWebContents());
+}
+
+// Tests that GetCommittedSecurityState() and GetCommittedSecurityLevel()
+// continue to reflect the committed document's security state while a
+// browser-initiated navigation is pending (whereas GetVisibleSecurityState()
+// and GetSecurityLevel() become neutral).
+IN_PROC_BROWSER_TEST_F(SecurityStateLoadingTest,
+                       CommittedSecurityStatePreservedDuringPendingNavigation) {
+  net::test_server::ControllableHttpResponse hung_https_response(&https_server_,
+                                                                 "/hung");
+  ASSERT_TRUE(https_server_.Start());
+  SetUpMockCertVerifierForHttpsServer(0, net::OK);
+
+  content::WebContents* const contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(contents);
+
+  const GURL secure_https_url = https_server_.GetURL("/ssl/google.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), secure_https_url));
+  EXPECT_EQ(security_state::SECURE,
+            chrome_security_state::GetCommittedSecurityLevel(contents));
+
+  // Start a pending browser-initiated HTTP navigation.
+  browser()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/title1.html"),
+          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
+  CheckSecurityInfoForNonCommitted(contents);
+  EXPECT_EQ(security_state::SECURE,
+            chrome_security_state::GetCommittedSecurityLevel(contents));
+  const std::unique_ptr<security_state::VisibleSecurityState>
+      secure_committed_state =
+          chrome_security_state::GetCommittedSecurityState(contents);
+  EXPECT_EQ(secure_https_url, secure_committed_state->url);
+  EXPECT_TRUE(secure_committed_state->connection_info_initialized);
+
+  // Now commit a broken HTTPS page on a separate server (so an existing
+  // keep-alive TLS connection to `https_server_` is not reused) after clicking
+  // through the interstitial, and verify that a stalled pending HTTPS
+  // navigation does not mask its DANGEROUS committed security level.
+  net::EmbeddedTestServer https_server_expired(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+  https_server_expired.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server_expired.Start());
+  const scoped_refptr<net::X509Certificate> expired_cert =
+      https_server_expired.GetCertificate();
+  net::CertVerifyResult expired_verify_result;
+  expired_verify_result.is_issued_by_known_root = false;
+  expired_verify_result.verified_cert = expired_cert;
+  expired_verify_result.cert_status = net::CERT_STATUS_DATE_INVALID;
+  mock_cert_verifier()->AddResultForCert(expired_cert, expired_verify_result,
+                                         net::ERR_CERT_DATE_INVALID);
+
+  const GURL broken_https_url = https_server_expired.GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), broken_https_url));
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetCommittedSecurityLevel(contents));
+
+  // Verify that an HTTPS-Upgrades pending navigation does not leak
+  // `is_https_only_mode_upgraded` onto the committed certificate-error
+  // interstitial (which would downgrade DANGEROUS to WARNING).
+  browser()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          embedded_test_server()->GetURL("/title2.html"),
+          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
+  ASSERT_NE(nullptr, contents->GetController().GetPendingEntry());
+  HttpsOnlyModeTabHelper* const https_only_helper =
+      HttpsOnlyModeTabHelper::FromWebContents(contents);
+  ASSERT_NE(nullptr, https_only_helper);
+  https_only_helper->set_is_navigation_upgraded(true);
+  EXPECT_FALSE(chrome_security_state::GetCommittedSecurityState(contents)
+                   ->is_https_only_mode_upgraded);
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetCommittedSecurityLevel(contents));
+
+  // Re-open the interstitial, click through it, and verify that a stalled
+  // pending HTTPS navigation does not mask the committed DANGEROUS level.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), broken_https_url));
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  ProceedThroughInterstitial(contents);
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetCommittedSecurityLevel(contents));
+
+  browser()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          https_server_.GetURL("/hung"), WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
+  hung_https_response.WaitForRequest();
+
+  EXPECT_EQ(security_state::NONE,
+            chrome_security_state::GetSecurityLevel(contents));
+  EXPECT_EQ(security_state::DANGEROUS,
+            chrome_security_state::GetCommittedSecurityLevel(contents));
+  const std::unique_ptr<security_state::VisibleSecurityState>
+      broken_committed_state =
+          chrome_security_state::GetCommittedSecurityState(contents);
+  EXPECT_EQ(broken_https_url, broken_committed_state->url);
+  EXPECT_TRUE(net::IsCertStatusError(broken_committed_state->cert_status));
 }
 
 // Tests the default security level on blob URLs.

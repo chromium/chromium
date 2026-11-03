@@ -12,18 +12,20 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/page_type.h"
 #include "content/public/common/url_constants.h"
 
 namespace security_state {
 
-std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
-    content::WebContents* web_contents) {
-  auto state = std::make_unique<security_state::VisibleSecurityState>();
+namespace {
 
-  content::NavigationEntry* entry =
-      web_contents->GetController().GetVisibleEntry();
-  if (entry->IsInitialEntry())
+std::unique_ptr<security_state::VisibleSecurityState>
+GetSecurityStateForNavigationEntry(content::NavigationEntry* entry) {
+  auto state = std::make_unique<security_state::VisibleSecurityState>();
+  if (!entry || entry->IsInitialEntry()) {
     return state;
+  }
+
   // Set fields that are not dependent on the connection info.
   state->is_error_page = entry->GetPageType() == content::PAGE_TYPE_ERROR;
   state->is_view_source =
@@ -34,8 +36,9 @@ std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
       entry->GetURL().SchemeIs(dom_distiller::kDomDistillerScheme);
   state->url = entry->GetURL();
 
-  if (!entry->GetSSL().initialized)
+  if (!entry->GetSSL().initialized) {
     return state;
+  }
   state->connection_info_initialized = true;
   const content::SSLStatus& ssl = entry->GetSSL();
   state->certificate = ssl.certificate;
@@ -58,6 +61,20 @@ std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
          content::SSLStatus::DISPLAYED_FORM_WITH_INSECURE_ACTION);
 
   return state;
+}
+
+}  // namespace
+
+std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
+    content::WebContents* web_contents) {
+  return GetSecurityStateForNavigationEntry(
+      web_contents->GetController().GetVisibleEntry());
+}
+
+std::unique_ptr<security_state::VisibleSecurityState> GetCommittedSecurityState(
+    content::WebContents* web_contents) {
+  return GetSecurityStateForNavigationEntry(
+      web_contents->GetController().GetLastCommittedEntry());
 }
 
 }  // namespace security_state

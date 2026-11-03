@@ -15,8 +15,16 @@ class WebContents;
 
 namespace security_state {
 
-// Retrieves the visible security state from the current page in |web_contents|.
+// Retrieves the visible security state from the current visible navigation
+// entry in |web_contents|.
 std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
+    content::WebContents* web_contents);
+
+// Retrieves the security state from the last committed navigation entry in
+// `web_contents`. Prefer this over GetVisibleSecurityState() for security
+// decisions about the active document, since GetVisibleSecurityState()
+// reflects pending browser-initiated navigations that have not yet committed.
+std::unique_ptr<security_state::VisibleSecurityState> GetCommittedSecurityState(
     content::WebContents* web_contents);
 
 }  // namespace security_state
