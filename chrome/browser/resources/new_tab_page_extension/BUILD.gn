@@ -28,7 +28,6 @@ _ts_files = [
 # ntp_modules.txt.
 _ntp_entry_points = [
   "action_chips/action_chips.js",
-  "action_chips/action_chips_proxy.js",
   "doodle_share_dialog.js",
   "lens_upload_dialog.js",
   "logo.js",
@@ -36,6 +35,7 @@ _ntp_entry_points = [
   "new_tab_page.mojom-webui.js",
   "ntp_composebox.js",
   "ntp_searchbox.js",
+  "utils.js",
   "window_proxy.js",
 ]
 

@@ -26,10 +26,10 @@ import type {LensSearchboxElement} from '/lens/shared/searchbox/lens_searchbox.j
 import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loader.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
 import type {CursorTooltipData, CursorTooltipElement} from './cursor_tooltip.js';
 import {CursorTooltipType} from './cursor_tooltip.js';
 import type {InitialGradientElement} from './initial_gradient.js';
+import type {BrowserProxy} from './lens.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';

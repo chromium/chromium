@@ -12,7 +12,6 @@
 
 // LINT.IfChange(LazyLoadedModules)
 import './action_chips/action_chips.js';
-import './action_chips/action_chips_proxy.js';
 import './doodle_share_dialog.js';
 import './iframe.js';
 import './lens_upload_dialog.js';
@@ -50,7 +49,6 @@ export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 export {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 export type {ActionChipClickDetail} from './action_chips/action_chips.js';
 export {ActionChipsElement} from './action_chips/action_chips.js';
-export {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from './action_chips/action_chips_proxy.js';
 export {DoodleShareDialogElement} from './doodle_share_dialog.js';
 export {IframeElement} from './iframe.js';
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
@@ -89,4 +87,5 @@ export {COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX, COLOR_NEW_TAB_PAGE_MODU
 export {TabGroupsProxyImpl} from './modules/tab_groups/tab_groups_proxy.js';
 export {NtpComposeboxElement} from './ntp_composebox.js';
 export {IndividualPromosElement} from './ntp_promo/individual_promos.js';
+export {ActionChipsRetrievalState} from './utils.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

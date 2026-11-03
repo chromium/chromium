@@ -20,10 +20,10 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
 import {CursorTooltipType} from './cursor_tooltip.js';
 import type {CursorTooltipData} from './cursor_tooltip.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
+import type {BrowserProxy} from './lens.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {ContextMenuOption, recordContextMenuOptionShown, recordLensOverlayInteraction, recordLensOverlaySelectionCloseButtonShown, recordLensOverlaySelectionCloseButtonUsed} from './metrics_utils.js';

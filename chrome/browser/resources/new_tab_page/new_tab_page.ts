@@ -41,7 +41,7 @@ export {WindowProxy} from './window_proxy.js';
 export * from './new_tab_page.mojom-webui.js';
 export {browserProxyFactory as newTabPageProxyFactory} from './new_tab_page.mojom-webui.js';
 export type {ActionChip, PageRemote as ActionChipsPageRemote, TabInfo} from './action_chips.mojom-webui.js';
-export {ActionChipsHandlerRemote, PageCallbackRouter as ActionChipsPageCallbackRouter} from './action_chips.mojom-webui.js';
+export {ActionChipsHandlerRemote, browserProxyFactory as actionChipsProxyFactory} from './action_chips.mojom-webui.js';
 export type {CalendarEvent, Attachment} from './calendar_data.mojom-webui.js';
 export type {Promo as NtpPromo, NtpPromoHandlerInterface} from './ntp_promo.mojom-webui.js';
 export {browserProxyFactory as ntpPromoProxyFactory} from './ntp_promo.mojom-webui.js';

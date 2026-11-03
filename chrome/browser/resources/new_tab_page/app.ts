@@ -31,7 +31,6 @@ import {ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/co
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import type {ActionChipClickDetail} from './action_chips/action_chips.js';
-import {ActionChipsRetrievalState} from './action_chips/action_chips_proxy.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BackgroundManager} from './background_manager.js';
@@ -48,7 +47,7 @@ import {browserProxyFactory as newTabPageProxyFactory, NtpBackgroundImageSource}
 import type {NtpComposeboxElement} from './ntp_composebox.js';
 import {ShowNtpPromosResult} from './ntp_promo.mojom-webui.js';
 import type {NtpSearchboxElement} from './ntp_searchbox.js';
-import {$$} from './utils.js';
+import {$$, ActionChipsRetrievalState} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 enum ModuleLoadStatus {

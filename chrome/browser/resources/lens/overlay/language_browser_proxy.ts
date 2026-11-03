@@ -4,7 +4,7 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import type {BrowserProxy} from './browser_proxy.js';
+import type {BrowserProxy} from './lens.mojom-webui.js';
 import type {Language} from './translate.mojom-webui.js';
 
 /**

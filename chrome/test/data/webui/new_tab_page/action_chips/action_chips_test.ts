@@ -4,9 +4,9 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
+import {ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipClickDetail, ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
-import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter as PageCallbackRouter, IconType, InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://new-tab-page/new_tab_page.js';
+import {ActionChipsHandlerRemote, actionChipsProxyFactory, IconType, InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChip, ActionChipsPageRemote as PageRemote, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
@@ -159,15 +159,12 @@ suite('NewTabPageActionChipsTest', () => {
   }
 
   setup(() => {
-    const callbackRouter = new PageCallbackRouter();
     handler = installMock(ActionChipsHandlerRemote, (mock) => {
-      ActionChipsApiProxyImpl.setInstance({
-        getHandler: () => mock,
-        getCallbackRouter: () => callbackRouter,
-      });
+      const {instance, remote} = actionChipsProxyFactory.createForTest(mock);
+      actionChipsProxyFactory.setInstance(instance);
+      pageRemote = remote;
     });
     windowProxy = installMock(WindowProxy);
-    pageRemote = callbackRouter.$.bindNewPipeAndPassRemote();
   });
 
   test('should render base chips', async () => {

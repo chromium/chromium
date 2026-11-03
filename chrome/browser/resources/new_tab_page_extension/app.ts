@@ -17,12 +17,12 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {ActionChipClickDetail} from '/ntp/action_chips/action_chips.js';
-import {ActionChipsRetrievalState} from '/ntp/action_chips/action_chips_proxy.js';
 import {recordBoolean} from '/ntp/metrics_utils.js';
 import type {PageCallbackRouter, PageHandlerInterface, Theme} from '/ntp/new_tab_page.mojom-webui.js';
 import {browserProxyFactory} from '/ntp/new_tab_page.mojom-webui.js';
 import type {NtpComposeboxElement} from '/ntp/ntp_composebox.js';
 import type {NtpSearchboxElement} from '/ntp/ntp_searchbox.js';
+import {ActionChipsRetrievalState} from '/ntp/utils.js';
 import {WindowProxy} from '/ntp/window_proxy.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';

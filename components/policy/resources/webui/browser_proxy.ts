@@ -6,8 +6,8 @@ import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
-import {PolicyLevel, PolicyPageClientCallbackRouter, PolicyPageHandlerFactory, PolicyPageHandlerRemote, PolicyScope} from './policy.mojom-webui.js';
-import type {GetPoliciesReason, PolicyGroupNames, PolicyGroupsResponse, Status} from './policy.mojom-webui.js';
+import {browserProxyFactory, PolicyLevel, PolicyScope} from './policy.mojom-webui.js';
+import type {BrowserProxy as PolicyBrowserProxy, GetPoliciesReason, PolicyGroupNames, PolicyGroupsResponse, Status} from './policy.mojom-webui.js';
 
 const policyPageMojoMigrationEnabled =
     loadTimeData.getBoolean('policyPageMojoMigrationEnabled');
@@ -91,20 +91,8 @@ export interface CustomCommandLineArguments {
 }
 
 export class BrowserProxy {
-  handler: PolicyPageHandlerRemote;
-  callbackRouter: PolicyPageClientCallbackRouter;
-
-  constructor() {
-    this.handler = new PolicyPageHandlerRemote();
-    this.callbackRouter = new PolicyPageClientCallbackRouter();
-
-    PolicyPageHandlerFactory.getRemote().createHandler(
-        this.handler.$.bindNewPipeAndPassReceiver(),
-        this.callbackRouter.$.bindNewPipeAndPassRemote());
-  }
-
-  static getInstance(): BrowserProxy {
-    return proxyInstance || (proxyInstance = new BrowserProxy());
+  static getInstance(): PolicyBrowserProxy {
+    return browserProxyFactory.getInstance();
   }
 
   static getDebugString(): Promise<string> {
@@ -199,4 +187,3 @@ export class BrowserProxy {
     }
   }
 }
-let proxyInstance: BrowserProxy|null = null;

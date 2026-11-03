@@ -7,19 +7,14 @@ import type {PointF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometr
 
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
-import type {LensPageHandlerInterface} from './lens.mojom-webui.js';
-import {LensPageCallbackRouter, LensPageHandlerFactory, LensPageHandlerRemote, UserAction} from './lens.mojom-webui.js';
+import type {BrowserProxy} from './lens.mojom-webui.js';
+import {browserProxyFactory, UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
 import type {SelectedRegion} from './selection_overlay_base_handler.js';
 import {RegionSource, SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
 
-let instance: BrowserProxy|null = null;
-
-export interface BrowserProxy {
-  callbackRouter: LensPageCallbackRouter;
-  handler: LensPageHandlerInterface;
-}
+let initialized = false;
 
 class SelectionOverlayBaseHandlerImpl extends SelectionOverlayBaseHandler {
   addNotifyOverlayClosingListener(callback: () => void): number {
@@ -137,25 +132,19 @@ class SelectionOverlayBaseHandlerImpl extends SelectionOverlayBaseHandler {
   }
 }
 
-export class BrowserProxyImpl implements BrowserProxy {
-  callbackRouter: LensPageCallbackRouter = new LensPageCallbackRouter();
-  handler: LensPageHandlerRemote = new LensPageHandlerRemote();
-
-  constructor() {
-    const factory = LensPageHandlerFactory.getRemote();
-    factory.createPageHandler(
-        this.handler.$.bindNewPipeAndPassReceiver(),
-        this.callbackRouter.$.bindNewPipeAndPassRemote());
-    SelectionOverlayBaseHandler.setInstance(
-        new SelectionOverlayBaseHandlerImpl());
-  }
-
+export class BrowserProxyImpl {
   static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxyImpl());
+    if (!initialized) {
+      initialized = true;
+      SelectionOverlayBaseHandler.setInstance(
+          new SelectionOverlayBaseHandlerImpl());
+    }
+    return browserProxyFactory.getInstance();
   }
 
   static setInstance(obj: BrowserProxy) {
-    instance = obj;
+    initialized = true;
+    browserProxyFactory.setInstance(obj);
     SelectionOverlayBaseHandler.setInstance(
         new SelectionOverlayBaseHandlerImpl());
   }

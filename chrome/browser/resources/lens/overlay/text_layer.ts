@@ -13,13 +13,13 @@ import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
 import {CursorTooltipType} from './cursor_tooltip.js';
 import type {CursorTooltipData} from './cursor_tooltip.js';
 import {findWordsInRegion} from './find_words_in_region.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
+import type {BrowserProxy} from './lens.mojom-webui.js';
 import {SemanticEvent, UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction, recordLensOverlaySemanticEvent} from './metrics_utils.js';

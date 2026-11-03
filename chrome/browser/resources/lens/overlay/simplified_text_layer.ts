@@ -10,9 +10,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
 import {findWordsInRegion} from './find_words_in_region.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
+import type {BrowserProxy} from './lens.mojom-webui.js';
 import {SemanticEvent} from './lens.mojom-webui.js';
 import {recordLensOverlaySemanticEvent} from './metrics_utils.js';
 import type {GestureEvent} from './selection_utils.js';

@@ -5,7 +5,6 @@ action_chips.mojom-webui.js
 action_chips/action_chips.css.js
 action_chips/action_chips.html.js
 action_chips/action_chips.js
-action_chips/action_chips_proxy.js
 action_chips/icons.html.js
 doodle_icons.html.js
 doodle_share_dialog.css.js
