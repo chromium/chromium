@@ -1,0 +1,47 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android && !is_ios)
+
+build_webui("build") {
+  grd_prefix = "omnibox_popup_shared"
+  grd_resource_path_prefix = "shared"
+  generate_grdp = true
+
+  ts_files = [
+    "omnibox_popup_contextual_entrypoint.html.ts",
+    "omnibox_popup_contextual_entrypoint.ts",
+    "omnibox_popup_contextual_entrypoint_button.html.ts",
+    "omnibox_popup_contextual_entrypoint_button.ts",
+    "profile_load_time_data.ts",
+  ]
+  css_files = [
+    "omnibox_popup_contextual_entrypoint.css",
+    "omnibox_popup_shared_style.css",
+  ]
+  ts_composite = true
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/composebox:build_ts",
+    "//ui/webui/resources/cr_components/help_bubble:build_ts",
+    "//ui/webui/resources/cr_components/searchbox:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
+
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/omnibox_popup/mojom:mojom_ts__generator" ]
+
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom-webui.ts" ]
+
+  webui_context_type = "trusted"
+}

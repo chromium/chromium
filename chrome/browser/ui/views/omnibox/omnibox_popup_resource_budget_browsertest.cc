@@ -20,6 +20,7 @@
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -191,6 +192,24 @@ void WaitForPopupsToLoad(Profile* profile) {
   }
 }
 
+void ExpectPopupLoadsOnlyApp(
+    content::WebContents* contents,
+    std::string_view expected_app,
+    base::span<const std::string_view> forbidden_apps) {
+  ASSERT_TRUE(content::WaitForLoadStop(contents));
+  EXPECT_EQ(true, content::EvalJs(
+                      contents, content::JsReplace(
+                                    "customElements.whenDefined($1).then(() => "
+                                    "!!document.querySelector($1).shadowRoot)",
+                                    expected_app)));
+  for (std::string_view forbidden_app : forbidden_apps) {
+    EXPECT_EQ(false, content::EvalJs(contents, content::JsReplace(
+                                                   "!!customElements.get($1)",
+                                                   forbidden_app)))
+        << forbidden_app << " should not be registered in " << expected_app;
+  }
+}
+
 }  // namespace
 
 // Parameterized on whether the full WebUI omnibox popup replaces the classic
@@ -336,14 +355,40 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetBrowserTest,
                                        ->presenter()
                                        ->GetWebUIContent()
                                        ->GetWrappedWebContents();
-  ASSERT_TRUE(content::WaitForLoadStop(contents));
+  ExpectPopupLoadsOnlyApp(contents, "omnibox-popup-app",
+                          {"omnibox-aim-app", "omnibox-full-app"});
+}
 
-  EXPECT_EQ(true, content::EvalJs(contents, R"(
-      customElements.whenDefined('omnibox-popup-app').then(
-          () => !!document.querySelector('omnibox-popup-app').shadowRoot))"));
-  EXPECT_EQ(false, content::EvalJs(contents,
-                                   "!!customElements.get('omnibox-aim-app') || "
-                                   "!!customElements.get('omnibox-full-app')"));
+// The full popup is preloaded for every browser window, so its entry point
+// must register its app without pulling in the classic and AI Mode popup apps,
+// which it never renders.
+IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetBrowserTest,
+                       FullPopupLoadsOnlyFullApp) {
+  if (!IsFullWebUI()) {
+    GTEST_SKIP() << "Only the full popup loads omnibox_popup_full.html.";
+  }
+  LocationBarView* location_bar = GetLocationBarView(browser());
+  ASSERT_TRUE(location_bar);
+  content::WebContents* contents = location_bar->GetOmniboxPopupView()
+                                       ->presenter()
+                                       ->GetWebUIContent()
+                                       ->GetWrappedWebContents();
+  ExpectPopupLoadsOnlyApp(contents, "omnibox-full-app",
+                          {"omnibox-popup-app", "omnibox-aim-app"});
+}
+
+// The AIM popup is preloaded for every browser window, so its entry point
+// must register its app without pulling in the classic and full popup apps,
+// which it never renders.
+IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetBrowserTest,
+                       AimPopupLoadsOnlyAimApp) {
+  LocationBarView* location_bar = GetLocationBarView(browser());
+  ASSERT_TRUE(location_bar);
+  content::WebContents* contents = location_bar->GetOmniboxPopupAimPresenter()
+                                       ->GetWebUIContent()
+                                       ->GetWrappedWebContents();
+  ExpectPopupLoadsOnlyApp(contents, "omnibox-aim-app",
+                          {"omnibox-popup-app", "omnibox-full-app"});
 }
 
 // Each popup must load its WebUI once; a WebContents that is created and then

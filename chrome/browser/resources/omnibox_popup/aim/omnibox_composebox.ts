@@ -557,8 +557,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
-    const pendingStatus =
-        this.attachedContext.get(fileAttachment.uuid)?.status;
+    const pendingStatus = this.attachedContext.get(fileAttachment.uuid)?.status;
     const composeboxFile = ComposeboxFile.createFromFile(
         fileAttachment.uuid,
         {name: fileAttachment.name, type: fileAttachment.mimeType},

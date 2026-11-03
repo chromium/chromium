@@ -35,10 +35,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupTest, App) {
   RunTest("omnibox_popup/app_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxPopupTest, TextfieldModel) {
-  RunTest("omnibox_popup/textfield_model_test.js", "mocha.run();");
-}
-
 class OmniboxPopupFullTest : public WebUIMochaBrowserTest {
  protected:
   OmniboxPopupFullTest() {
@@ -70,6 +66,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, App) {
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, Searchbox) {
   RunTest("omnibox_popup/omnibox_popup_searchbox_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, TextfieldModel) {
+  RunTest("omnibox_popup/textfield_model_test.js", "mocha.run();");
 }
 
 class OmniboxPopupAimTest : public WebUIMochaBrowserTest {

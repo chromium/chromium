@@ -2,26 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './profile_load_time_data.js';
-import './aim_app.js';
+import '/strings.m.js';
+import 'chrome://omnibox-popup.top-chrome/shared/profile_load_time_data.js';
 import './app.js';
-import './full_app.js';
-import './omnibox_popup_contextual_entrypoint.js';
-import './omnibox_popup_contextual_entrypoint_button.js';
 
-export {AimButtonMode} from '//resources/cr_components/composebox/composebox_aim_button.js';
-export {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
-export {sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
-export {UrlDeemphasisMode, type UrlEmphasis} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-export {OmniboxAimAppElement} from './aim_app.js';
+export {browserProxyFactory as omniboxPopupBrowserProxyFactory, PageHandlerRemote as OmniboxPopupPageHandlerRemote, PageRemote as OmniboxPopupPageRemote} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup.mojom-webui.js';
+export {OmniboxPopupContextualEntrypointElement} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint.js';
+export {OmniboxPopupContextualEntrypointButtonElement} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint_button.js';
 export {OmniboxPopupAppElement} from './app.js';
-export {OmniboxFullAppElement} from './full_app.js';
-export {OmniboxComposeboxElement} from './omnibox_composebox.js';
-export {browserProxyFactory as omniboxPopupBrowserProxyFactory, MatchesUpdate, OmniboxEscapeAction, type OmniboxInputState, PageCallbackRouter as OmniboxPopupPageCallbackRouter, PageHandlerRemote as OmniboxPopupPageHandlerRemote, PageRemote as OmniboxPopupPageRemote} from './omnibox_popup.mojom-webui.js';
-export {browserProxyFactory as aimBrowserProxyFactory, PageCallbackRouter as OmniboxPopupAimPageCallbackRouter, PageHandlerRemote as OmniboxPopupAimPageHandlerRemote, PageRemote as OmniboxPopupAimPageRemote} from './omnibox_popup_aim.mojom-webui.js';
-export {OmniboxPopupContextualEntrypointElement} from './omnibox_popup_contextual_entrypoint.js';
-export {OmniboxPopupContextualEntrypointButtonElement} from './omnibox_popup_contextual_entrypoint_button.js';
-export {OmniboxPopupSearchboxElement} from './omnibox_popup_searchbox.js';
-export {DeleteEdit, InsertEdit, MergeType, ReplaceEdit, TextfieldModel} from './textfield_model.js';
-export type {Edit, SelectionRange} from './textfield_model.js';
