@@ -565,6 +565,60 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyUnmanagedDeviceBrowserTest,
       chrome_test_utils::GetActiveWebContents(this), destination_url));
   EXPECT_TRUE(was_proxy_accessed());
 }
+
+class EnterpriseProxyPlatformManagedDeviceBrowserTest
+    : public EnterpriseProxyBrowserTestBase {
+ public:
+  EnterpriseProxyPlatformManagedDeviceBrowserTest()
+      : EnterpriseProxyBrowserTestBase(ManagementContext{
+            .is_cloud_user_managed = true,
+            .is_cloud_machine_managed = false,
+            .is_platform_managed = true,
+            .affiliated = false,
+        }) {}
+};
+
+// Verifies that user-scoped ProxyProvisioningDomains on a platform/EMM-managed
+// device without CBCM are ignored by default and applied when
+// EnableProxyOverrideRulesForAllUsers is enabled.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyPlatformManagedDeviceBrowserTest,
+                       PlatformManagedDeviceWithoutCbcm) {
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  ProfileNetworkContextServiceFactory::GetForContext(
+      chrome_test_utils::GetProfile(this))
+      ->FlushProxyConfigMonitorForTesting();
+
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_TRUE(profile);
+  EXPECT_TRUE(profile->GetPrefs()
+                  ->GetList(enterprise_net::kProxyProvisioningDomains)
+                  .empty());
+
+  auto* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(service->GetProvisioningDomainConfigs().empty());
+  EXPECT_TRUE(service->GetDynamicRoutingConfig().routing_rules.empty());
+
+  GURL destination_url = https_server_.GetURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+  EXPECT_FALSE(was_proxy_accessed());
+
+  SetEnableForAllUsers(true);
+  WaitForDynamicRoutesReady();
+
+  EXPECT_FALSE(profile->GetPrefs()
+                   ->GetList(enterprise_net::kProxyProvisioningDomains)
+                   .empty());
+  EXPECT_EQ(1u, service->GetProvisioningDomainConfigs().size());
+
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+  EXPECT_TRUE(was_proxy_accessed());
+}
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)
 }  // namespace enterprise::test

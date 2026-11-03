@@ -14,6 +14,9 @@
 #include "build/build_config.h"
 #include "components/enterprise/net/core/prefs.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
@@ -108,7 +111,15 @@ policy::Schema GetTestSchema() {
   return validation_schema;
 }
 
-TEST(ProxyProvisioningDomainsPolicyHandlerTest, PolicyNotSet) {
+class ProxyProvisioningDomainsPolicyHandlerTest : public testing::Test {
+ protected:
+  policy::ScopedManagementServiceOverrideForTesting
+      scoped_management_service_override_{
+          policy::PlatformManagementService::GetInstance(),
+          policy::EnterpriseManagementAuthority::NONE};
+};
+
+TEST_F(ProxyProvisioningDomainsPolicyHandlerTest, PolicyNotSet) {
   ProxyProvisioningDomainsPolicyHandler handler(GetTestSchema());
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
@@ -122,7 +133,7 @@ TEST(ProxyProvisioningDomainsPolicyHandlerTest, PolicyNotSet) {
   EXPECT_FALSE(prefs.GetValue(kProxyProvisioningDomains, &value));
 }
 
-TEST(ProxyProvisioningDomainsPolicyHandlerTest, ValidPolicy) {
+TEST_F(ProxyProvisioningDomainsPolicyHandlerTest, ValidPolicy) {
   ProxyProvisioningDomainsPolicyHandler handler(GetTestSchema());
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kProxyProvisioningDomains,
@@ -144,7 +155,7 @@ TEST(ProxyProvisioningDomainsPolicyHandlerTest, ValidPolicy) {
   EXPECT_EQ(1u, value->GetList().size());
 }
 
-TEST(ProxyProvisioningDomainsPolicyHandlerTest, InvalidSchemaRejected) {
+TEST_F(ProxyProvisioningDomainsPolicyHandlerTest, InvalidSchemaRejected) {
   ProxyProvisioningDomainsPolicyHandler handler(GetTestSchema());
   // Missing required "pvd_id" field.
   constexpr char kInvalidPolicyValue[] = R"([
@@ -190,6 +201,12 @@ class ProxyProvisioningDomainsPolicyHandlerAffiliationTest
     return !browser_managed() || !user_scope() || affiliated() ||
            enable_for_all_users();
   }
+
+ protected:
+  policy::ScopedManagementServiceOverrideForTesting
+      scoped_management_service_override_{
+          policy::PlatformManagementService::GetInstance(),
+          policy::EnterpriseManagementAuthority::NONE};
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -251,7 +268,13 @@ struct EnableForAllUsersTestCase {
 };
 
 class ProxyProvisioningDomainsPolicyHandlerEnableForAllUsersTest
-    : public testing::TestWithParam<EnableForAllUsersTestCase> {};
+    : public testing::TestWithParam<EnableForAllUsersTestCase> {
+ protected:
+  policy::ScopedManagementServiceOverrideForTesting
+      scoped_management_service_override_{
+          policy::PlatformManagementService::GetInstance(),
+          policy::EnterpriseManagementAuthority::NONE};
+};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -305,8 +328,8 @@ TEST_P(ProxyProvisioningDomainsPolicyHandlerEnableForAllUsersTest,
             errors.HasError(policy::key::kProxyProvisioningDomains));
 }
 
-TEST(ProxyProvisioningDomainsPolicyHandlerTest,
-     EnableForAllUsersUserScopeIgnored) {
+TEST_F(ProxyProvisioningDomainsPolicyHandlerTest,
+       EnableForAllUsersUserScopeIgnored) {
   ProxyProvisioningDomainsPolicyHandler handler(GetTestSchema());
   policy::PolicyMap policy_map;
   policy_map.SetDeviceAffiliationIds({"device_id"});
@@ -331,6 +354,86 @@ TEST(ProxyProvisioningDomainsPolicyHandlerTest,
 
   // Also verify that passing nullptr for errors works safely.
   EXPECT_FALSE(handler.CheckPolicySettings(policy_map, nullptr));
+}
+
+TEST_F(ProxyProvisioningDomainsPolicyHandlerTest,
+       PlatformManagedDeviceWithoutCbcm) {
+  policy::ScopedManagementServiceOverrideForTesting platform_managed(
+      policy::PlatformManagementService::GetInstance(),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  ProxyProvisioningDomainsPolicyHandler handler(GetTestSchema());
+
+  // Device has no CBCM affiliation IDs, but is EMM/platform-managed.
+  policy::PolicyMap policy_map;
+  policy_map.SetUserAffiliationIds({"user_id"});
+  policy_map.Set(policy::key::kProxyProvisioningDomains,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::JSONReader::Read(kValidPolicyValue,
+                                        base::JSON_ALLOW_TRAILING_COMMAS),
+                 nullptr);
+
+  policy::PolicyErrorMap errors;
+  EXPECT_FALSE(handler.CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.HasError(policy::key::kProxyProvisioningDomains));
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kProxyProvisioningDomains),
+            l10n_util::GetStringUTF16(IDS_POLICY_UNAFFILIATED_USER_ERROR));
+
+  // Allowed when `EnableProxyOverrideRulesForAllUsers` is set to 1 at machine
+  // scope.
+  errors.Clear();
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::PolicySource::POLICY_SOURCE_PLATFORM, base::Value(1),
+                 nullptr);
+  EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.empty());
+
+  PrefValueMap prefs;
+  handler.ApplyPolicySettings(policy_map, &prefs);
+  const base::Value* value = nullptr;
+  EXPECT_TRUE(prefs.GetValue(kProxyProvisioningDomains, &value));
+
+  // Machine-scoped policy on the same device is allowed even when
+  // `EnableProxyOverrideRulesForAllUsers` is 0.
+  errors.Clear();
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::PolicySource::POLICY_SOURCE_PLATFORM, base::Value(0),
+                 nullptr);
+  policy_map.Set(policy::key::kProxyProvisioningDomains,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::JSONReader::Read(kValidPolicyValue,
+                                        base::JSON_ALLOW_TRAILING_COMMAS),
+                 nullptr);
+  EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.empty());
+}
+
+TEST_F(ProxyProvisioningDomainsPolicyHandlerTest,
+       LowTrustPlatformManagementAllowsUserScopeWhenNoAffiliationIds) {
+  policy::ScopedManagementServiceOverrideForTesting computer_local(
+      policy::PlatformManagementService::GetInstance(),
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+
+  ProxyProvisioningDomainsPolicyHandler handler(GetTestSchema());
+
+  // Device has no CBCM affiliation IDs and only `COMPUTER_LOCAL` (`LOW`
+  // trustworthiness) management, so user-scoped policy should be allowed.
+  policy::PolicyMap policy_map;
+  policy_map.SetUserAffiliationIds({"user_id"});
+  policy_map.Set(policy::key::kProxyProvisioningDomains,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::JSONReader::Read(kValidPolicyValue,
+                                        base::JSON_ALLOW_TRAILING_COMMAS),
+                 nullptr);
+
+  policy::PolicyErrorMap errors;
+  EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.empty());
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)

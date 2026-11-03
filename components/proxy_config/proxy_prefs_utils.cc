@@ -5,6 +5,7 @@
 #include "components/proxy_config/proxy_prefs_utils.h"
 
 #include "build/build_config.h"
+#include "components/enterprise/net/core/proxy_policy_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -75,8 +76,8 @@ bool AreUserProxyOverrideRulesAllowed(const PrefService* pref_service,
   if (policy_service) {
     const policy::PolicyMap& policies = policy_service->GetPolicies(
         policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-    if (policies.GetDeviceAffiliationIds().empty() ||
-        policies.IsUserAffiliated()) {
+    if (policies.IsUserAffiliated() ||
+        !enterprise_net::IsDeviceManaged(policies)) {
       return true;
     }
   }

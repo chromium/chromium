@@ -54,9 +54,7 @@ static_library("core") {
       "types.cc",
       "utils.cc",
     ]
-    public_deps += [
-      "//components/policy/core/browser",
-    ]
+    public_deps += [ "//components/policy/core/browser" ]
     deps = [
       "//components/enterprise/browser/identifiers",
       "//components/error_page/common",
@@ -102,6 +100,7 @@ source_set("unit_tests") {
       "//components/policy:generated",
       "//components/policy/core/browser",
       "//components/policy/core/common",
+      "//components/policy/core/common:test_support",
       "//components/prefs:test_support",
       "//components/signin/public/identity_manager:test_support",
       "//components/strings:components_strings",

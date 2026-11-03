@@ -8,6 +8,9 @@
 #include "base/logging.h"
 #include "base/types/expected_macros.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -17,6 +20,13 @@ namespace proxy_config {
 namespace {
 
 constexpr char kPolicyName[] = "ProxyOverrideRules";
+
+constexpr char kValidPolicyValue[] = R"([
+  {
+    "DestinationMatchers": ["https://*"],
+    "ProxyList": ["DIRECT"]
+  }
+])";
 
 // Schema copied from out/Default/gen/chrome/app/policy/policy_templates.json
 constexpr char kSchema[] = R"(
@@ -270,6 +280,12 @@ class ProxyOverrideRulesPolicyHandlerTest
 
     return policy_map;
   }
+
+ protected:
+  policy::ScopedManagementServiceOverrideForTesting
+      scoped_management_service_override_{
+          policy::PlatformManagementService::GetInstance(),
+          policy::EnterpriseManagementAuthority::NONE};
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -301,20 +317,13 @@ TEST_P(ProxyOverrideRulesPolicyHandlerTest, Test) {
 TEST_F(ProxyOverrideRulesPolicyHandlerTest, UnaffiliatedUserPolicyRejected) {
   auto handler = std::make_unique<ProxyOverrideRulesPolicyHandler>(schema());
 
-  const char kPolicyValue[] = R"([
-    {
-      "DestinationMatchers": ["https://*"],
-      "ProxyList": ["DIRECT"]
-    }
-  ])";
-
   policy::PolicyMap policy_map;
-  policy_map.Set(
-      kPolicyName, policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
-      policy::PolicyScope::POLICY_SCOPE_USER,
-      policy::PolicySource::POLICY_SOURCE_CLOUD,
-      base::JSONReader::Read(kPolicyValue, base::JSON_ALLOW_TRAILING_COMMAS),
-      nullptr);
+  policy_map.Set(kPolicyName, policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
+                 policy::PolicyScope::POLICY_SCOPE_USER,
+                 policy::PolicySource::POLICY_SOURCE_CLOUD,
+                 base::JSONReader::Read(kValidPolicyValue,
+                                        base::JSON_ALLOW_TRAILING_COMMAS),
+                 nullptr);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
@@ -360,6 +369,89 @@ TEST_F(ProxyOverrideRulesPolicyHandlerTest, UnaffiliatedUserPolicyRejected) {
   EXPECT_TRUE(errors.HasError(kPolicyName));
 #endif
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+TEST_F(ProxyOverrideRulesPolicyHandlerTest, PlatformManagedDeviceWithoutCbcm) {
+  policy::ScopedManagementServiceOverrideForTesting platform_managed(
+      policy::PlatformManagementService::GetInstance(),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  auto handler = std::make_unique<ProxyOverrideRulesPolicyHandler>(schema());
+
+  // Device has no CBCM affiliation IDs, but is EMM/platform-managed.
+  policy::PolicyMap policy_map;
+  policy_map.SetUserAffiliationIds({"user_id"});
+  policy_map.Set(kPolicyName, policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
+                 policy::PolicyScope::POLICY_SCOPE_USER,
+                 policy::PolicySource::POLICY_SOURCE_CLOUD,
+                 base::JSONReader::Read(kValidPolicyValue,
+                                        base::JSON_ALLOW_TRAILING_COMMAS),
+                 nullptr);
+
+  policy::PolicyErrorMap errors;
+  EXPECT_FALSE(handler->CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.HasError(kPolicyName));
+
+  // Allowed when `EnableProxyOverrideRulesForAllUsers` is set to 1 at machine
+  // scope.
+  errors.Clear();
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
+                 policy::PolicyScope::POLICY_SCOPE_MACHINE,
+                 policy::PolicySource::POLICY_SOURCE_PLATFORM, base::Value(1),
+                 nullptr);
+  EXPECT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.empty());
+
+  PrefValueMap prefs;
+  handler->ApplyPolicySettings(policy_map, &prefs);
+  const base::Value* val = nullptr;
+  EXPECT_TRUE(prefs.GetValue(prefs::kProxyOverrideRules, &val));
+
+  // Machine-scoped policy on the same device is allowed even when
+  // `EnableProxyOverrideRulesForAllUsers` is 0.
+  errors.Clear();
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
+                 policy::PolicyScope::POLICY_SCOPE_MACHINE,
+                 policy::PolicySource::POLICY_SOURCE_PLATFORM, base::Value(0),
+                 nullptr);
+  policy_map.Set(kPolicyName, policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
+                 policy::PolicyScope::POLICY_SCOPE_MACHINE,
+                 policy::PolicySource::POLICY_SOURCE_CLOUD,
+                 base::JSONReader::Read(kValidPolicyValue,
+                                        base::JSON_ALLOW_TRAILING_COMMAS),
+                 nullptr);
+  EXPECT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.empty());
+}
+
+TEST_F(ProxyOverrideRulesPolicyHandlerTest,
+       LowTrustPlatformManagementAllowsUserScopeWhenNoAffiliationIds) {
+  policy::ScopedManagementServiceOverrideForTesting computer_local(
+      policy::PlatformManagementService::GetInstance(),
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+
+  auto handler = std::make_unique<ProxyOverrideRulesPolicyHandler>(schema());
+
+  // Device has no CBCM affiliation IDs and only `COMPUTER_LOCAL` (`LOW`
+  // trustworthiness) management, so user-scoped policy should be allowed.
+  policy::PolicyMap policy_map;
+  policy_map.SetUserAffiliationIds({"user_id"});
+  policy_map.Set(kPolicyName, policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
+                 policy::PolicyScope::POLICY_SCOPE_USER,
+                 policy::PolicySource::POLICY_SOURCE_CLOUD,
+                 base::JSONReader::Read(kValidPolicyValue,
+                                        base::JSON_ALLOW_TRAILING_COMMAS),
+                 nullptr);
+
+  policy::PolicyErrorMap errors;
+  EXPECT_TRUE(handler->CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.empty());
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace proxy_config

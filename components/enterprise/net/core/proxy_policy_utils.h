@@ -18,6 +18,10 @@ namespace enterprise_net {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
+// Returns true if the browser/device is managed (either via CBCM device
+// affiliation IDs or trusted OS/platform management such as EMM/MDM/AD).
+bool IsDeviceManaged(const policy::PolicyMap& policies);
+
 // Returns true if the machine-scoped EnableProxyOverrideRulesForAllUsers policy
 // is enabled (set to 1).
 bool IsUnaffiliatedUserProxyPolicyAllowed(const policy::PolicyMap& policies);

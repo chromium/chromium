@@ -487,6 +487,40 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesUnmanagedDeviceBrowserTest,
   EXPECT_TRUE(chrome_test_utils::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this), destination_url));
 }
+
+class ProxyOverrideRulesPlatformManagedDeviceBrowserTest
+    : public ProxyOverrideRulesTestBase {
+ public:
+  ProxyOverrideRulesPlatformManagedDeviceBrowserTest()
+      : ProxyOverrideRulesTestBase(ManagementContext{
+            .is_cloud_user_managed = true,
+            .is_cloud_machine_managed = false,
+            .is_platform_managed = true,
+            .affiliated = false,
+        }) {}
+};
+
+// Verifies that user-scoped ProxyOverrideRules on a platform/EMM-managed
+// device without CBCM are ignored by default and applied when
+// EnableProxyOverrideRulesForAllUsers is enabled.
+IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPlatformManagedDeviceBrowserTest,
+                       PlatformManagedDeviceWithoutCbcm) {
+  base::ListValue rules;
+  rules.Append(CreateProxyRule(
+      kDestinationHost,
+      "PROXY " + embedded_test_server()->host_port_pair().ToString()));
+
+  SetUserProxyOverrideRules(std::move(rules));
+
+  GURL destination_url = GURL(base::StringPrintf(
+      "http://%s:%d/simple.html", kDestinationHost, kUnreachablePort));
+  EXPECT_FALSE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+
+  SetEnableForAllUsers(true);
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_ANDROID)
 
