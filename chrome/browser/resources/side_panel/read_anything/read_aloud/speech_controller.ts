@@ -196,27 +196,39 @@ export class SpeechController {
   }
 
   onLineFocusChange(position: CaretPosition|null) {
-    let contentPosition: ContentPosition|null = null;
-    if (position) {
-      let node: Node = position.offsetNode;
-      let offset: number = position.offset;
-      if (node && this.nodeStore_.getAncestor(node)) {
-        const ancestor = this.nodeStore_.getAncestor(node)!;
-        node = ancestor.node;
-        offset += ancestor.offset;
-      }
-      contentPosition = {
-        node,
-        offset,
-        source: ContentPositionSource.LINE_FOCUS,
-      };
+    if (!position) {
+      this.clearCurrentContentPosition_(ContentPositionSource.LINE_FOCUS);
+      return;
     }
-    this.model_.setCurrentContentPosition(contentPosition);
+    let node: Node = position.offsetNode;
+    let offset: number = position.offset;
+    if (node && this.nodeStore_.getAncestor(node)) {
+      const ancestor = this.nodeStore_.getAncestor(node)!;
+      node = ancestor.node;
+      offset += ancestor.offset;
+    }
+    this.model_.setCurrentContentPosition({
+      node,
+      offset,
+      source: ContentPositionSource.LINE_FOCUS,
+    });
   }
 
   onSelectionChange(position: ContentPosition|null) {
-    this.model_.setCurrentContentPosition(position);
+    if (position) {
+      this.model_.setCurrentContentPosition(position);
+    } else {
+      this.clearCurrentContentPosition_(ContentPositionSource.SELECTION);
+    }
     this.highlighter_.clearHighlightFormatting();
+  }
+
+  // Clears the current content position only if `source` set it, so losing a
+  // selection doesn't drop a line focus position and vice versa.
+  private clearCurrentContentPosition_(source: ContentPositionSource) {
+    if (this.model_.getCurrentContentPosition()?.source === source) {
+      this.model_.setCurrentContentPosition(null);
+    }
   }
 
   // If the screen is locked during speech, we should stop speaking.
