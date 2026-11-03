@@ -9,6 +9,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_init_state.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -171,6 +173,50 @@ TEST_F(TabGroupFocusIphControllerTest,
       .Times(1);
 
   tab_strip_model()->ExitFocusMode();
+}
+
+TEST_F(TabGroupFocusIphControllerTest,
+       DoesNotShowUnfocusPromoWhenRestoringFocusedGroup) {
+  BrowserWindowCreateParams create_params(
+      BrowserWindowInterface::Type::TYPE_NORMAL, *profile(),
+      /*from_user_gesture=*/false);
+  create_params.focused_tab_group_id = tab_groups::TabGroupId::GenerateNew();
+  BrowserInitState init_state(
+      std::move(create_params),
+      browser_window_interface()->GetUnownedUserDataHost());
+
+  TabGroupFocusIphController controller(browser_window_interface());
+
+  AddTabs(features::kTabGroupsFocusingIphMinTabs.Get() + 1);
+  tab_groups::TabGroupId group_id = tab_strip_model()->AddToNewGroup({0});
+
+  EXPECT_CALL(*user_education(),
+              MaybeShowFeaturePromo(testing::Truly([](const auto& params) {
+                return &params.feature.get() ==
+                       &feature_engagement::kIPHTabGroupsUnfocusingFeature;
+              })))
+      .Times(0);
+  ExpectFocusPromoShown(0);
+
+  // Restoring the focused group should not trigger the Unfocus IPH and should
+  // cancel any scheduled Focus discovery promo.
+  tab_strip_model()->EnterFocusMode(group_id);
+  task_environment()->FastForwardBy(
+      features::kTabGroupsFocusingIphPromoDelay.Get());
+  testing::Mock::VerifyAndClearExpectations(user_education());
+
+  tab_strip_model()->ExitFocusMode();
+  testing::Mock::VerifyAndClearExpectations(user_education());
+
+  // Subsequent user-initiated focus changes in the same window should show the
+  // Unfocus IPH normally.
+  EXPECT_CALL(*user_education(),
+              MaybeShowFeaturePromo(testing::Truly([](const auto& params) {
+                return &params.feature.get() ==
+                       &feature_engagement::kIPHTabGroupsUnfocusingFeature;
+              })))
+      .Times(1);
+  tab_strip_model()->EnterFocusMode(group_id);
 }
 
 TEST_F(TabGroupFocusIphControllerTest,

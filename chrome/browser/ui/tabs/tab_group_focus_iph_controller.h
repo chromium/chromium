@@ -53,6 +53,7 @@ class TabGroupFocusIphController : public TabStripModelObserver {
   void ShowGroupFocusPromo();
   void MaybeShowNonGroupPromo();
 
+  bool is_restoring_focused_group_ = false;
   base::OneShotTimer promo_timer_;
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   ui::ScopedUnownedUserData<TabGroupFocusIphController> scoped_data_;

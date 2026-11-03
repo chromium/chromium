@@ -5973,6 +5973,54 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, PinnedAndSplitTabsRestored) {
             new_browser->GetTabStripModel()->GetSplitForTab(1));
 }
 
+class RestoredBrowserFocusObserver : public BrowserCollectionObserver,
+                                     public TabStripModelObserver {
+ public:
+  RestoredBrowserFocusObserver() {
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
+  }
+
+  RestoredBrowserFocusObserver(const RestoredBrowserFocusObserver&) = delete;
+  RestoredBrowserFocusObserver& operator=(const RestoredBrowserFocusObserver&) =
+      delete;
+
+  ~RestoredBrowserFocusObserver() override {
+    if (browser_) {
+      browser_->GetTabStripModel()->RemoveObserver(this);
+    }
+  }
+
+  int focus_changed_count() const { return focus_changed_count_; }
+
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    ASSERT_EQ(browser_, nullptr);
+    browser_ = browser;
+    browser_->GetTabStripModel()->AddObserver(this);
+  }
+
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    if (browser_ == browser) {
+      browser_->GetTabStripModel()->RemoveObserver(this);
+      browser_ = nullptr;
+    }
+  }
+
+  // TabStripModelObserver:
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id) override {
+    ++focus_changed_count_;
+  }
+
+ private:
+  int focus_changed_count_ = 0;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
+};
+
 class SessionRestoreFocusModeTest : public SessionRestoreTest {
  public:
   SessionRestoreFocusModeTest() {
@@ -6011,10 +6059,13 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreFocusModeTest, RestoreFocusedTabGroup) {
   EXPECT_EQ(group, browser()->tab_strip_model()->GetFocusedGroup());
 
   // Quit and restore the session.
+  RestoredBrowserFocusObserver focus_observer;
   BrowserWindowInterface* new_browser = QuitBrowserAndRestore(browser());
   TabStripModel* new_tab_strip_model = new_browser->GetTabStripModel();
 
-  // Verify that Focus Mode is restored for the group in the new browser.
+  // Verify that Focus Mode is restored for the group in the new browser and
+  // that OnTabGroupFocusChanged was called exactly once during startup.
+  EXPECT_EQ(1, focus_observer.focus_changed_count());
   EXPECT_TRUE(new_tab_strip_model->GetFocusedGroup().has_value());
   EXPECT_EQ(new_tab_strip_model->GetTabGroupForTab(0),
             new_tab_strip_model->GetFocusedGroup());

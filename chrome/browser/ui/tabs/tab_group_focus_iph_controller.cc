@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/tabs/tab_group_focus_iph_controller.h"
 
+#include <utility>
+
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -18,6 +21,10 @@ TabGroupFocusIphController::TabGroupFocusIphController(
     BrowserWindowInterface* interface)
     : browser_window_interface_(interface),
       scoped_data_(interface->GetUnownedUserDataHost(), *this) {
+  if (const auto* const init_state = BrowserInitState::From(interface)) {
+    is_restoring_focused_group_ =
+        init_state->initial_focused_tab_group_id().has_value();
+  }
   auto* const tab_strip_model = browser_window_interface_->GetTabStripModel();
   CHECK(tab_strip_model);
   CHECK(tab_strip_model->SupportsTabGroups());
@@ -75,6 +82,9 @@ void TabGroupFocusIphController::OnTabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> old_focused_group_id) {
   if (new_focused_group_id.has_value()) {
     promo_timer_.Stop();
+    if (std::exchange(is_restoring_focused_group_, false)) {
+      return;
+    }
   }
 
   // May be null in tests.
@@ -112,7 +122,8 @@ void TabGroupFocusIphController::MaybeScheduleGroupFocusPromo() {
   TabGroupModel* const group_model = tab_strip_model->group_model();
   CHECK(group_model);
 
-  if (tab_strip_model->GetFocusedGroup().has_value() ||
+  if (is_restoring_focused_group_ ||
+      tab_strip_model->GetFocusedGroup().has_value() ||
       group_model->ListTabGroups().empty() ||
       tab_strip_model->count() <=
           features::kTabGroupsFocusingIphMinTabs.Get()) {
