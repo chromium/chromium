@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -916,6 +917,103 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   GREYAssertEqual(screenBottom, expectedScreenBottom,
                   @"Fixed element bottom should be on top of the bottom "
                   @"toolbar or safe area.");
+}
+
+// Tests that focusing an input does not cause a fixed bottom bar to obscure the
+// input or cause the layout viewport (window.innerHeight) to shrink by the
+// keyboard height (regression test for crbug.com/573722083).
+- (void)testFixedBottomElementWithFocusedInput {
+  // TODO(crbug.com/514648248): Re-enable this test on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Disabled for iPad (crbug.com/514648248).");
+  }
+
+  _responses["/focus-repro"] =
+      "<!DOCTYPE html>"
+      "<html>"
+      "<head>"
+      "  <meta name='viewport' content='width=device-width, "
+      "initial-scale=1.0'>"
+      "  <style>"
+      "    body { margin: 0; padding: 16px; box-sizing: border-box; }"
+      "    .filler { height: 210px; background: #eee; margin-bottom: 12px; }"
+      "    .bottom-filler { height: 600px; background: #eee; }"
+      "    input { width: 100%; height: 44px; font-size: 16px; "
+      "box-sizing: border-box; }"
+      "    #bar { position: fixed; bottom: 0; left: 0; right: 0; "
+      "height: 56px; background: red; z-index: 10; }"
+      "  </style>"
+      "</head>"
+      "<body>"
+      "  <div class='filler'>Filler 1</div>"
+      "  <div class='filler'>Filler 2</div>"
+      "  <input id='target' type='text' placeholder='Focus target'>"
+      "  <div class='bottom-filler'>Filler 3</div>"
+      "  <div id='bar'>Fixed Bar</div>"
+      "</body>"
+      "</html>";
+
+  GURL URL = self.testServer->GetURL("/focus-repro");
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Fixed Bar"];
+  // Wait for WebKit to commit `<meta name="viewport" initial-scale=1.0>` to the
+  // UI-process `UIScrollView.zoomScale` before `TapWebElementWithId` computes
+  // its tap coordinates; otherwise `zoomScale` can still reflect the initial
+  // 980px default viewport and transition to 1.0 mid-tap, cancelling the click.
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  int initialInnerHeight =
+      GetWidth([ChromeEarlGrey evaluateJavaScript:@"window.innerHeight"]);
+
+  // Focus the input element.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("target")];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  // The WebKit layout viewport (window.innerHeight) should not shrink by the
+  // keyboard height when the keyboard appears.
+  int innerHeightWithKeyboard =
+      GetWidth([ChromeEarlGrey evaluateJavaScript:@"window.innerHeight"]);
+  GREYAssertEqual(
+      initialInnerHeight, innerHeightWithKeyboard,
+      @"Layout viewport window.innerHeight should not shrink by the "
+      @"keyboard height.");
+
+  // Check that the target input element is not covered by the fixed bottom bar.
+  // Wait for WebKit's scroll-to-focus animation to settle and verify the bottom
+  // of the input rect is above or at the top of the bar rect.
+  ConditionBlock inputNotObscured = ^{
+    int inputBottom = GetWidth(
+        [ChromeEarlGrey evaluateJavaScript:@"document.getElementById('target')."
+                                           @"getBoundingClientRect().bottom"]);
+    int barTop = GetWidth([ChromeEarlGrey
+        evaluateJavaScript:
+            @"document.getElementById('bar').getBoundingClientRect().top"]);
+    return inputBottom <= barTop;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout,
+                                         inputNotObscured),
+             @"Input element should not be obscured by fixed bottom bar.");
+
+  // Blur the input to hide the keyboard.
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.getElementById('target').blur()"];
+  [ChromeEarlGrey waitForKeyboardToDisappear];
+
+  // Repeat focus to verify consistency across repeat focuses.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("target")];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  GREYAssert(
+      WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout,
+                                  inputNotObscured),
+      @"Input element should not be obscured by fixed bottom bar on repeat "
+      @"focus.");
+
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.getElementById('target').blur()"];
+  [ChromeEarlGrey waitForKeyboardToDisappear];
 }
 
 // Verifies that after `history.pushState()` with a hash and reloading by

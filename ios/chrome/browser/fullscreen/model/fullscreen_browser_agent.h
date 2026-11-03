@@ -69,6 +69,10 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   UIEdgeInsets max_insets() const { return max_insets_; }
   CGFloat keyboard_obscured_inset() const { return keyboard_obscured_inset_; }
 
+  // Returns the content insets for the scroll view, which includes the
+  // overlapping keyboard height at the bottom.
+  UIEdgeInsets content_insets() const;
+
   // Accessors for the progress in entering or exiting fullscreen.
   // 1.0 indicates browser UI is fully visible, 0.0 indicates browser UI is
   // fully hidden (in fullscreen mode).
@@ -303,6 +307,9 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
 
   // The obscured inset for the keyboard when visible.
   CGFloat keyboard_obscured_inset_ = 0.0;
+
+  // The most recently broadcast content insets.
+  UIEdgeInsets last_broadcast_content_insets_ = UIEdgeInsetsZero;
 
   base::WeakPtrFactory<FullscreenBrowserAgent> weak_ptr_factory_{this};
 };

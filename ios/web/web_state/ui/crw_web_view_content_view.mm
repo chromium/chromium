@@ -289,10 +289,20 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 
   BOOL appliedInsetsEqual = YES;
   switch (self.webViewResizingType) {
-    case WebViewResizingType::kContentInset:
+    case WebViewResizingType::kContentInset: {
+      // Preserve any larger bottom content inset set by external callers (such
+      // as for the virtual keyboard) so toolbar inset updates do not clobber
+      // it. Note that this must check against `_obscuredInsets.bottom` (the
+      // previous toolbar inset) rather than `obscuredInsets.bottom`, otherwise
+      // the inset would never shrink when collapsing toolbars on scroll.
+      if (_scrollView.contentInset.bottom > _obscuredInsets.bottom) {
+        contentInsets.bottom =
+            std::max(contentInsets.bottom, _scrollView.contentInset.bottom);
+      }
       appliedInsetsEqual = UIEdgeInsetsEqualToEdgeInsets(
           _scrollView.contentInset, contentInsets);
       break;
+    }
     case WebViewResizingType::kFrame:
       if (!_usesObscuredInsets) {
         break;
@@ -483,6 +493,14 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
       AdjustInsetsForSafeArea(obscuredInsets, self.safeAreaInsets);
 
   UIEdgeInsets oldInsets = _scrollView.contentInset;
+  // Preserve any larger bottom content inset set by external callers (such as
+  // for the virtual keyboard) so toolbar inset updates do not clobber it. Note
+  // that this must check against `_obscuredInsets.bottom` (the previous toolbar
+  // inset) rather than `obscuredInsets.bottom`, otherwise the inset would never
+  // shrink when collapsing toolbars on scroll.
+  if (oldInsets.bottom > _obscuredInsets.bottom) {
+    contentInsets.bottom = std::max(contentInsets.bottom, oldInsets.bottom);
+  }
   _scrollView.contentInset = contentInsets;
   CGFloat topDelta = contentInsets.top - oldInsets.top;
   if (!web::IsContentTypePdf(_mimeTypeString) && topDelta != 0 &&

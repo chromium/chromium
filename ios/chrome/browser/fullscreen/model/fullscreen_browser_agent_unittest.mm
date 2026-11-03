@@ -248,15 +248,21 @@ TEST_F(FullscreenBrowserAgentTest, DeferReentrantUpdateFromDidUpdateState) {
   agent->RemoveObserver(&reentrant_observer);
 }
 
-// Tests that SetKeyboardObscuredInset correctly overrides bottom insets.
+// Tests that SetKeyboardObscuredInset updates content_insets() while leaving
+// toolbar insets (min_insets, max_insets, insets) unaffected.
 TEST_F(FullscreenBrowserAgentTest, SetKeyboardObscuredInset) {
+  constexpr CGFloat kMinBottomToolbarInset = 20.0;
+  constexpr CGFloat kMaxBottomToolbarInset = 80.0;
+  constexpr CGFloat kLargeKeyboardInset = 100.0;
+  constexpr CGFloat kMediumKeyboardInset = 50.0;
+
   FullscreenBrowserAgent::CreateForBrowser(browser_.get());
   FullscreenBrowserAgent* agent =
       FullscreenBrowserAgent::FromBrowser(browser_.get());
 
   TestFullscreenBrowserAgentObserver base_observer;
-  RangeTestFullscreenBrowserAgentObserver observer1(UIRectEdgeBottom, 20.0,
-                                                    80.0);
+  RangeTestFullscreenBrowserAgentObserver observer1(
+      UIRectEdgeBottom, kMinBottomToolbarInset, kMaxBottomToolbarInset);
 
   agent->AddObserver(&base_observer);
   agent->AddObserver(&observer1);
@@ -264,30 +270,56 @@ TEST_F(FullscreenBrowserAgentTest, SetKeyboardObscuredInset) {
   // Initialize ranges.
   agent->InvalidateInsetRange();
 
-  EXPECT_EQ(20.0, agent->min_insets().bottom);
-  EXPECT_EQ(80.0, agent->max_insets().bottom);
-  EXPECT_EQ(80.0, agent->insets().bottom);
+  EXPECT_EQ(kMinBottomToolbarInset, agent->min_insets().bottom);
+  EXPECT_EQ(kMaxBottomToolbarInset, agent->max_insets().bottom);
+  EXPECT_EQ(kMaxBottomToolbarInset, agent->insets().bottom);
+  EXPECT_EQ(kMaxBottomToolbarInset, agent->content_insets().bottom);
 
-  // Set keyboard inset larger than max.
-  agent->SetKeyboardObscuredInset(100.0);
+  base_observer.will_update_obscured_inset_range_called_ = false;
+  base_observer.did_update_obscured_inset_range_called_ = false;
+  base_observer.did_update_called_ = false;
 
-  EXPECT_EQ(100.0, agent->min_insets().bottom);
-  EXPECT_EQ(100.0, agent->max_insets().bottom);
-  EXPECT_EQ(100.0, agent->insets().bottom);
+  // Set keyboard inset larger than max toolbar inset.
+  agent->SetKeyboardObscuredInset(kLargeKeyboardInset);
 
-  // Set keyboard inset between min and max.
-  agent->SetKeyboardObscuredInset(50.0);
+  // Inset ranges and toolbar insets must remain unaffected by the keyboard.
+  EXPECT_FALSE(base_observer.will_update_obscured_inset_range_called_);
+  EXPECT_FALSE(base_observer.did_update_obscured_inset_range_called_);
+  EXPECT_TRUE(base_observer.did_update_called_);
+  EXPECT_EQ(kMinBottomToolbarInset, agent->min_insets().bottom);
+  EXPECT_EQ(kMaxBottomToolbarInset, agent->max_insets().bottom);
+  EXPECT_EQ(kMaxBottomToolbarInset, agent->insets().bottom);
+  EXPECT_EQ(kLargeKeyboardInset, agent->content_insets().bottom);
 
-  EXPECT_EQ(50.0, agent->min_insets().bottom);
-  EXPECT_EQ(80.0, agent->max_insets().bottom);
-  EXPECT_EQ(80.0, agent->insets().bottom);
+  // Set keyboard inset between min and max toolbar insets.
+  base_observer.did_update_called_ = false;
+  agent->SetKeyboardObscuredInset(kMediumKeyboardInset);
 
-  // Set keyboard inset to 0.
+  EXPECT_TRUE(base_observer.did_update_called_);
+  EXPECT_EQ(kMinBottomToolbarInset, agent->min_insets().bottom);
+  EXPECT_EQ(kMaxBottomToolbarInset, agent->max_insets().bottom);
+  EXPECT_EQ(kMaxBottomToolbarInset, agent->insets().bottom);
+  // While expanded, content_insets().bottom reflects
+  // std::max(kMaxBottomToolbarInset, kMediumKeyboardInset).
+  EXPECT_EQ(kMaxBottomToolbarInset, agent->content_insets().bottom);
+
+  // When collapsed, content_insets().bottom reflects
+  // std::max(kMinBottomToolbarInset, kMediumKeyboardInset).
+  agent->EnterFullscreen(PassKey(),
+                         FullscreenModeTransitionTrigger::kForcedByCode,
+                         /*animated=*/false);
+  EXPECT_EQ(kMinBottomToolbarInset, agent->insets().bottom);
+  EXPECT_EQ(kMediumKeyboardInset, agent->content_insets().bottom);
+
+  // Set keyboard inset to 0 while collapsed.
+  base_observer.did_update_called_ = false;
   agent->SetKeyboardObscuredInset(0.0);
 
-  EXPECT_EQ(20.0, agent->min_insets().bottom);
-  EXPECT_EQ(80.0, agent->max_insets().bottom);
-  EXPECT_EQ(80.0, agent->insets().bottom);
+  EXPECT_TRUE(base_observer.did_update_called_);
+  EXPECT_EQ(kMinBottomToolbarInset, agent->min_insets().bottom);
+  EXPECT_EQ(kMaxBottomToolbarInset, agent->max_insets().bottom);
+  EXPECT_EQ(kMinBottomToolbarInset, agent->insets().bottom);
+  EXPECT_EQ(kMinBottomToolbarInset, agent->content_insets().bottom);
 
   agent->RemoveObserver(&base_observer);
   agent->RemoveObserver(&observer1);

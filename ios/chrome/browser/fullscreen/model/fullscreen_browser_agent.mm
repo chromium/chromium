@@ -380,6 +380,15 @@ void FullscreenBrowserAgent::FlushPendingNotifications() {
   pending_notifications_ = {};
 }
 
+UIEdgeInsets FullscreenBrowserAgent::content_insets() const {
+  UIEdgeInsets content_insets = insets_;
+  if (keyboard_obscured_inset_ > 0) {
+    content_insets.bottom =
+        std::max(content_insets.bottom, keyboard_obscured_inset_);
+  }
+  return content_insets;
+}
+
 void FullscreenBrowserAgent::BroadcastUpdatedState(base::TimeDelta duration) {
   animation_duration_ = duration;
   updating_insets_ = true;
@@ -388,15 +397,13 @@ void FullscreenBrowserAgent::BroadcastUpdatedState(base::TimeDelta duration) {
   for (auto& observer : observers_) {
     observer.WillUpdateState(this);
   }
-
-  // Apply keyboard height as overlapping.
-  if (keyboard_obscured_inset_ > 0) {
-    insets_.bottom = std::max(insets_.bottom, keyboard_obscured_inset_);
-  }
-
   updating_insets_ = false;
 
-  if (!UIEdgeInsetsEqualToEdgeInsets(old_insets, insets_)) {
+  UIEdgeInsets new_content_insets = content_insets();
+  if (!UIEdgeInsetsEqualToEdgeInsets(old_insets, insets_) ||
+      !UIEdgeInsetsEqualToEdgeInsets(last_broadcast_content_insets_,
+                                     new_content_insets)) {
+    last_broadcast_content_insets_ = new_content_insets;
     for (auto& observer : observers_) {
       observer.DidUpdateState(this);
     }
@@ -550,13 +557,6 @@ void FullscreenBrowserAgent::InvalidateInsetRange() {
   for (auto& observer : observers_) {
     observer.WillUpdateObscuredInsetRange(this);
   }
-
-  // Apply keyboard height as overlapping.
-  if (keyboard_obscured_inset_ > 0) {
-    min_insets_.bottom = std::max(min_insets_.bottom, keyboard_obscured_inset_);
-    max_insets_.bottom = std::max(max_insets_.bottom, keyboard_obscured_inset_);
-  }
-
   updating_obscured_insets_ = false;
 
   if (!UIEdgeInsetsEqualToEdgeInsets(old_min_insets, min_insets_) ||
@@ -608,5 +608,5 @@ void FullscreenBrowserAgent::SetKeyboardObscuredInset(CGFloat inset) {
     return;
   }
   keyboard_obscured_inset_ = inset;
-  InvalidateInsetRange();
+  NotifyObserversOfUpdatedState();
 }

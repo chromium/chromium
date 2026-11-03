@@ -227,6 +227,63 @@ TEST_F(CRWWebViewContentViewTest, ContentInsetAdjustedForSafeArea) {
                                             scrollView.contentInset));
 }
 
+// Tests that setting obscuredInsets in kContentInset mode preserves any larger
+// bottom contentInset (such as from the keyboard) without clobbering it.
+TEST_F(CRWWebViewContentViewTest,
+       ObscuredInsetsPreservesLargerBottomContentInset) {
+  if (!@available(iOS 26, *)) {
+    GTEST_SKIP() << "kContentInset mode is only supported on iOS 26+";
+  }
+  constexpr CGFloat kInitialTopToolbarHeight = 50.0;
+  constexpr CGFloat kBottomToolbarHeight = 30.0;
+  constexpr CGFloat kKeyboardHeight = 300.0;
+  constexpr CGFloat kCollapsedTopToolbarHeight = 20.0;
+
+  CRWWebView* webView = [[CRWWebView alloc] init];
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  contentView.webViewResizingType = WebViewResizingType::kContentInset;
+
+  // Set initial toolbar obscuredInsets.
+  const UIEdgeInsets initialObscuredInsets =
+      UIEdgeInsetsMake(kInitialTopToolbarHeight, 0, kBottomToolbarHeight, 0);
+  [contentView setObscuredInsets:initialObscuredInsets];
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(initialObscuredInsets,
+                                            scrollView.contentInset));
+
+  // External caller (such as FullscreenMediator) sets bottom contentInset for
+  // the keyboard.
+  UIEdgeInsets keyboardContentInset = scrollView.contentInset;
+  keyboardContentInset.bottom = kKeyboardHeight;
+  scrollView.contentInset = keyboardContentInset;
+
+  // Updating obscuredInsets (such as collapsing top toolbar).
+  const UIEdgeInsets newObscuredInsets =
+      UIEdgeInsetsMake(kCollapsedTopToolbarHeight, 0, kBottomToolbarHeight, 0);
+  [contentView setObscuredInsets:newObscuredInsets];
+
+  const UIEdgeInsets expectedContentInset =
+      UIEdgeInsetsMake(kCollapsedTopToolbarHeight, 0, kKeyboardHeight, 0);
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(expectedContentInset,
+                                            scrollView.contentInset));
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(newObscuredInsets,
+                                            contentView.obscuredInsets));
+
+  // When keyboard dismisses and resets bottom contentInset, updating
+  // obscuredInsets reflects the toolbar inset again.
+  UIEdgeInsets dismissedContentInset = scrollView.contentInset;
+  dismissedContentInset.bottom = kBottomToolbarHeight;
+  scrollView.contentInset = dismissedContentInset;
+
+  [contentView setObscuredInsets:initialObscuredInsets];
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(initialObscuredInsets,
+                                            scrollView.contentInset));
+}
+
 // Tests that min/max viewport insets passed to WKWebView are adjusted for safe
 // area insets.
 TEST_F(CRWWebViewContentViewTest, ViewportInsetsAdjustedForSafeArea) {

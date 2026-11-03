@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper_observer_bridge.h"
+#import "ios/web/public/content_type_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -250,7 +251,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   } else {
     [self setViewportInsetRange];
   }
-  [self updateViewportInsets:_browserAgent->insets()];
+  [self updateViewportInsets];
 }
 
 - (void)webState:(web::WebState*)webState
@@ -260,7 +261,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
     _browserAgent->ExitFullscreen(
         PassKey(), FullscreenModeTransitionTrigger::kForcedByCode,
         /*animated=*/true);
-    [self updateViewportInsets:_browserAgent->insets()];
+    [self updateViewportInsets];
   }
 }
 
@@ -545,8 +546,8 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 #pragma mark - FullscreenBrowserAgentObserving
 
 - (void)fullscreenDidUpdateState:(FullscreenBrowserAgent*)agent {
-  [self updateViewportInsets:agent->insets()
-             initialVelocity:agent->animation_initial_velocity()];
+  [self updateViewportInsetsWithInitialVelocity:
+            agent->animation_initial_velocity()];
 }
 
 - (void)fullscreenDidUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
@@ -574,31 +575,49 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 
 // Updates the WebView's obscuredContentInset and the scroll view's
 // contentInset to adjust for the current position and size of
-// the toolbars.
-- (void)updateViewportInsets:(UIEdgeInsets)insets {
-  [self updateViewportInsets:insets initialVelocity:0.0];
+// the toolbars and keyboard.
+- (void)updateViewportInsets {
+  [self updateViewportInsetsWithInitialVelocity:0.0];
 }
 
-- (void)updateViewportInsets:(UIEdgeInsets)insets
-             initialVelocity:(CGFloat)initialVelocity {
-  if (!self.webState) {
+- (void)updateViewportInsetsWithInitialVelocity:(CGFloat)initialVelocity {
+  if (!self.webState || !_browserAgent) {
     return;
+  }
+
+  UIEdgeInsets obscuredInsets = _browserAgent->insets();
+  UIEdgeInsets contentInsets = _browserAgent->content_insets();
+  CGFloat bottomContentInset = contentInsets.bottom;
+  if (!@available(iOS 26, *)) {
+    if (!web::IsContentTypePdf(self.webState->GetContentsMimeType())) {
+      // Below iOS 26, CRWWebViewContentView insets the WebView's frame by
+      // `obscuredInsets` (except for PDFs), so the scroll view only needs to be
+      // inset by the portion of the keyboard extending above the bottom
+      // toolbar.
+      bottomContentInset -= obscuredInsets.bottom;
+    }
   }
 
   id<CRWWebViewProxy> webView =
       WebViewProxyTabHelper::FromWebState(self.webState)->GetWebViewProxy();
+  CRWWebViewScrollViewProxy* scrollView = webView.scrollViewProxy;
 
   _updatingInsets = YES;
   if (_browserAgent->invalidating_inset_range()) {
     // Do not allow the perceived scroll position to change when the obscured
     // inset is updated due to a device rotation or omnibox position change.
-    CGPoint offset = _scrollViewProxy.contentOffset;
-    offset.y += _scrollViewProxy.contentInset.top;
-    [webView setObscuredInsets:insets initialVelocity:initialVelocity];
-    offset.y -= _scrollViewProxy.contentInset.top;
-    _scrollViewProxy.contentOffset = offset;
+    CGPoint offset = scrollView.contentOffset;
+    offset.y += scrollView.contentInset.top;
+    [webView setObscuredInsets:obscuredInsets initialVelocity:initialVelocity];
+    offset.y -= scrollView.contentInset.top;
+    scrollView.contentOffset = offset;
   } else {
-    [webView setObscuredInsets:insets initialVelocity:initialVelocity];
+    [webView setObscuredInsets:obscuredInsets initialVelocity:initialVelocity];
+  }
+  if (scrollView.contentInset.bottom != bottomContentInset) {
+    UIEdgeInsets updatedContentInset = scrollView.contentInset;
+    updatedContentInset.bottom = bottomContentInset;
+    scrollView.contentInset = updatedContentInset;
   }
   _updatingInsets = NO;
 }
