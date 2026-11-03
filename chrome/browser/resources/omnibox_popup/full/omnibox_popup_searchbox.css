@@ -207,6 +207,23 @@ cr-searchbox-input::part(mirror) {
   clip-path: inset(0 0 0 18px);
 }
 
+/* Align text to the UI's leading edge, like the Views omnibox does
+ * (gfx::RenderText defaults to ALIGN_RIGHT in RTL UIs, whatever the text's
+ * own direction). 'text-align: start' would instead follow the input's and
+ * #mirror's own direction, which updateMirror_() sets to dir="ltr" for URLs
+ * and dir="auto" for queries, e.g. putting a URL on the far side of an RTL UI.
+ * Both layers must align alike, or the #mirror's text won't line up with the
+ * input's caret and selection. */
+:host(:dir(ltr)) cr-searchbox-input::part(searchbox-input),
+:host(:dir(ltr)) cr-searchbox-input::part(mirror) {
+  text-align: left;
+}
+
+:host(:dir(rtl)) cr-searchbox-input::part(searchbox-input),
+:host(:dir(rtl)) cr-searchbox-input::part(mirror) {
+  text-align: right;
+}
+
 /* When the window is inactive (top container has focus), the selection should
    still be the same color. */
 cr-searchbox-input::part(searchbox-input)::selection,
