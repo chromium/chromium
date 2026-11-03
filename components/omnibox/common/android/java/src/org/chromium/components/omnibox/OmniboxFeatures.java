@@ -150,7 +150,7 @@ public class OmniboxFeatures {
      * navigating away from the current page.
      */
     private static final CachedFlag sOmniboxAimOpenInNewTab =
-            newFlag(OmniboxFeatureList.OMNIBOX_AIM_OPEN_IN_NEW_TAB, FeatureState.DISABLED_IN_PROD);
+            newFlag(OmniboxFeatureList.OMNIBOX_AIM_OPEN_IN_NEW_TAB, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sOmniboxSessionlessVoiceSearch =
             newFlag(
