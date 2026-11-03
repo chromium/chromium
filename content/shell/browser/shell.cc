@@ -54,6 +54,7 @@
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace content {
 
@@ -346,14 +347,14 @@ WebContents* Shell::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
 #if !BUILDFLAG(IS_ANDROID)
   // If the shell is opening a document picture-in-picture window, it needs to
   // inform the DocumentPictureInPictureWindowController.
-  if (disposition == WindowOpenDisposition::kNewPictureInPicture) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewPictureInPicture) {
     DocumentPictureInPictureWindowController* controller =
         PictureInPictureWindowController::
             GetOrCreateDocumentPictureInPictureController(source);
@@ -466,22 +467,22 @@ WebContents* Shell::OpenURLFromTab(
         navigation_handle_callback) {
   WebContents* target = nullptr;
   switch (params.disposition) {
-    case WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
       target = source;
       break;
 
-    // Normally, the difference between NEW_POPUP and NEW_WINDOW is that a popup
-    // should have no toolbar, no status bar, no menu bar, no scrollbars and be
-    // not resizable.  For simplicity and to enable new testing scenarios in
-    // content shell and web tests, popups don't get special treatment below
+    // Normally, the difference between `kNewPopup` and `kNewWindow` is that a
+    // popup should have no toolbar, no status bar, no menu bar, no scrollbars
+    // and be not resizable.  For simplicity and to enable new testing scenarios
+    // in content shell and web tests, popups don't get special treatment below
     // (i.e. they will have a toolbar and other things described here).
-    case WindowOpenDisposition::kNewPopup:
-    case WindowOpenDisposition::kNewWindow:
+    case ui::mojom::WindowOpenDisposition::kNewPopup:
+    case ui::mojom::WindowOpenDisposition::kNewWindow:
     // content_shell doesn't really support tabs, but some web tests use
     // middle click (which translates into kNavigationPolicyNewBackgroundTab),
-    // so we treat the cases below just like a NEW_WINDOW disposition.
-    case WindowOpenDisposition::kNewBackgroundTab:
-    case WindowOpenDisposition::kNewForegroundTab: {
+    // so we treat the cases below just like a `kNewWindow` disposition.
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab: {
       Shell* new_window =
           Shell::CreateNewWindow(source->GetBrowserContext(),
                                  GURL(),  // Don't load anything just yet.
@@ -492,16 +493,16 @@ WebContents* Shell::OpenURLFromTab(
     }
 
     // No tabs in content_shell:
-    case WindowOpenDisposition::kSingletonTab:
+    case ui::mojom::WindowOpenDisposition::kSingletonTab:
     // No incognito mode in content_shell:
-    case WindowOpenDisposition::kOffTheRecord:
+    case ui::mojom::WindowOpenDisposition::kOffTheRecord:
     // TODO(lukasza): Investigate if some web tests might need support for
-    // SAVE_TO_DISK disposition.  This would probably require that
+    // `kSaveToDisk` disposition.  This would probably require that
     // WebTestControlHost always sets up and cleans up a temporary directory
     // as the default downloads destinations for the duration of a test.
-    case WindowOpenDisposition::kSaveToDisk:
-    // Ignoring requests with disposition == IGNORE_ACTION...
-    case WindowOpenDisposition::kIgnoreAction:
+    case ui::mojom::WindowOpenDisposition::kSaveToDisk:
+    // Ignoring requests with disposition == `kIgnoreAction`...
+    case ui::mojom::WindowOpenDisposition::kIgnoreAction:
     default:
       return nullptr;
   }

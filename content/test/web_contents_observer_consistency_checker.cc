@@ -29,6 +29,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace content {
 
@@ -335,7 +336,7 @@ void WebContentsObserverConsistencyChecker::DidOpenRequestedURL(
     RenderFrameHost* source_render_frame_host,
     const GURL& url,
     const Referrer& referrer,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {

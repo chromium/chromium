@@ -38,8 +38,8 @@
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace content {
 
@@ -390,7 +390,7 @@ void TestWebContents::SetOriginalOpener(WebContents* opener) {
 }
 
 void TestWebContents::SetOriginalWindowOpenDisposition(
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   original_window_open_disposition_ = disposition;
 }
 
@@ -433,7 +433,7 @@ RenderWidgetHostImpl* TestWebContents::CreateNewPopupWidget(
 WebContents* TestWebContents::ShowCreatedWindow(
     RenderFrameHostImpl* opener,
     int route_id,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {
   return nullptr;

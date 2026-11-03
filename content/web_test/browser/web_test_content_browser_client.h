@@ -27,6 +27,7 @@
 #include "third_party/blink/public/test/mojom/sensor/web_sensor_provider_automation.test-mojom-forward.h"
 #include "third_party/blink/public/test/mojom/storage_access/storage_access_automation.test-mojom-forward.h"
 #include "third_party/blink/public/test/mojom/webid/federated_auth_request_automation.test-mojom-forward.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace blink {
 namespace web_pref {
@@ -100,7 +101,7 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
                        const GURL& target_url,
                        const content::Referrer& referrer,
                        const std::string& frame_name,
-                       WindowOpenDisposition disposition,
+                       ui::mojom::WindowOpenDisposition disposition,
                        const blink::mojom::WindowFeatures& features,
                        bool user_gesture,
                        bool opener_suppressed,

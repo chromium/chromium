@@ -248,7 +248,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -1282,25 +1282,25 @@ content::mojom::WindowContainerType WindowFeaturesToContainerType(
   }
 }
 
-WindowOpenDisposition NavigationPolicyToDisposition(
+ui::mojom::WindowOpenDisposition NavigationPolicyToDisposition(
     WebNavigationPolicy policy) {
   switch (policy) {
     case blink::kWebNavigationPolicyDownload:
-      return WindowOpenDisposition::kSaveToDisk;
+      return ui::mojom::WindowOpenDisposition::kSaveToDisk;
     case blink::kWebNavigationPolicyCurrentTab:
-      return WindowOpenDisposition::kCurrentTab;
+      return ui::mojom::WindowOpenDisposition::kCurrentTab;
     case blink::kWebNavigationPolicyNewBackgroundTab:
-      return WindowOpenDisposition::kNewBackgroundTab;
+      return ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
     case blink::kWebNavigationPolicyNewForegroundTab:
-      return WindowOpenDisposition::kNewForegroundTab;
+      return ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     case blink::kWebNavigationPolicyNewWindow:
-      return WindowOpenDisposition::kNewWindow;
+      return ui::mojom::WindowOpenDisposition::kNewWindow;
     case blink::kWebNavigationPolicyNewPopup:
-      return WindowOpenDisposition::kNewPopup;
+      return ui::mojom::WindowOpenDisposition::kNewPopup;
     case blink::kWebNavigationPolicyPictureInPicture:
-      return WindowOpenDisposition::kNewPictureInPicture;
+      return ui::mojom::WindowOpenDisposition::kNewPictureInPicture;
     case blink::kWebNavigationPolicySplitView:
-      return WindowOpenDisposition::kNewSplitView;
+      return ui::mojom::WindowOpenDisposition::kNewSplitView;
   }
   NOTREACHED() << "Unexpected WebNavigationPolicy";
 }
@@ -7163,8 +7163,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
 
   // We preserve this information before sending the message since |params| is
   // moved on send.
-  bool is_background_tab =
-      params->disposition == WindowOpenDisposition::kNewBackgroundTab;
+  bool is_background_tab = params->disposition ==
+                           ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
 
   mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver;
   params->frame_remote =

@@ -15,6 +15,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace content {
 
@@ -69,7 +70,7 @@ class WebContentsObserverConsistencyChecker
                            RenderFrameHost* source_render_frame_host,
                            const GURL& url,
                            const Referrer& referrer,
-                           WindowOpenDisposition disposition,
+                           ui::mojom::WindowOpenDisposition disposition,
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
