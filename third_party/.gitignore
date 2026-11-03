@@ -170,3 +170,11 @@
 /win_toolchain/.timestamps
 /win_toolchain/files
 /xulrunner-sdk
+
+# TODO: webrtc:42222036 - remove when the libsrtp move lands.
+/libsrtp/BUILD.gn
+/libsrtp/DIR_METADATA
+/libsrtp/OWNERS
+/libsrtp/README.chromium
+/libsrtp/include/srtp.h
+/libsrtp/options.gni
