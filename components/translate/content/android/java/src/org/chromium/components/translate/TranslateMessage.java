@@ -17,6 +17,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -45,6 +49,9 @@ import java.lang.ref.WeakReference;
 @JNINamespace("translate")
 @NullMarked
 class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
+    @JniType("::translate::TranslateMessage")
+    interface NativeTranslateMessage extends JniTypeToken {}
+
     public static class MenuItem {
         // If |title| is an empty string, then a divider will be shown.
         public final String title;
@@ -71,7 +78,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     private final Context mContext;
     private final MessageDispatcher mMessageDispatcher;
     private final WebContents mWebContents;
-    private long mNativeTranslateMessage;
+    private @Nullable JniRawPtr<NativeTranslateMessage> mNativeTranslateMessage;
     private final int mDismissalDurationSeconds;
 
     // Will be null before the message is shown.
@@ -87,19 +94,28 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     }
 
     /**
-     * Create a new TranslateMessage, or return null if creation failed.
+     * Create a new TranslateMessage, or release {@code nativeTranslateMessage} and return null if
+     * creation failed.
      *
-     * Creation could fail in cases where the MessageDispatcher cannot be retrieved, such as when
+     * <p>Creation could fail in cases where the MessageDispatcher cannot be retrieved, such as when
      * the activity is being recreated or destroyed.
      */
     @CalledByNative
     public static @Nullable TranslateMessage create(
-            WebContents webContents, long nativeTranslateMessage, int dismissalDurationSeconds) {
+            WebContents webContents,
+            JniRawPtr<NativeTranslateMessage> nativeTranslateMessage,
+            int dismissalDurationSeconds) {
         Context context = getContextFromWebContents(webContents);
-        if (context == null) return null;
+        if (context == null) {
+            nativeTranslateMessage.release();
+            return null;
+        }
         MessageDispatcher messageDispatcher =
                 MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
-        if (messageDispatcher == null) return null;
+        if (messageDispatcher == null) {
+            nativeTranslateMessage.release();
+            return null;
+        }
 
         return new TranslateMessage(
                 context,
@@ -114,7 +130,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
             Context context,
             MessageDispatcher messageDispatcher,
             WebContents webContents,
-            long nativeTranslateMessage,
+            JniRawPtr<NativeTranslateMessage> nativeTranslateMessage,
             int dismissalDurationSeconds) {
         mContext = context;
         mMessageDispatcher = messageDispatcher;
@@ -125,7 +141,10 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
 
     @CalledByNative
     public void clearNativePointer() {
-        mNativeTranslateMessage = 0;
+        if (mNativeTranslateMessage != null) {
+            mNativeTranslateMessage.release();
+            mNativeTranslateMessage = null;
+        }
     }
 
     @CalledByNative
@@ -190,7 +209,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     }
 
     private @PrimaryActionClickBehavior int handlePrimaryAction() {
-        if (mNativeTranslateMessage != 0) {
+        if (mNativeTranslateMessage != null) {
             TranslateMessageJni.get().handlePrimaryAction(mNativeTranslateMessage);
         }
         return PrimaryActionClickBehavior.DO_NOT_DISMISS;
@@ -198,7 +217,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
 
     private void handleDismiss(int dismissReason) {
         mMessageProperties = null;
-        if (mNativeTranslateMessage == 0) return;
+        if (mNativeTranslateMessage == null) return;
         TranslateMessageJni.get().handleDismiss(mNativeTranslateMessage, dismissReason);
     }
 
@@ -243,7 +262,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     // TranslateMessageSecondaryMenu.Handler implementation:
     @Override
     public MenuItem @Nullable [] handleSecondaryMenuItemClicked(MenuItem menuItem) {
-        if (mNativeTranslateMessage == 0) return null;
+        if (mNativeTranslateMessage == null) return null;
         return TranslateMessageJni.get()
                 .handleSecondaryMenuItemClicked(
                         mNativeTranslateMessage,
@@ -276,7 +295,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
                     mContext,
                     /* handler= */ TranslateMessage.this,
                     /* dataSetObserver= */ this,
-                    mNativeTranslateMessage == 0
+                    mNativeTranslateMessage == null
                             ? null
                             : TranslateMessageJni.get().buildOverflowMenu(mNativeTranslateMessage));
         }
@@ -296,14 +315,14 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
 
     @NativeMethods
     interface Natives {
-        void handlePrimaryAction(long nativeTranslateMessage);
+        void handlePrimaryAction(JniPtr<NativeTranslateMessage> self);
 
-        void handleDismiss(long nativeTranslateMessage, int dismissReason);
+        void handleDismiss(JniPtr<NativeTranslateMessage> self, int dismissReason);
 
-        MenuItem[] buildOverflowMenu(long nativeTranslateMessage);
+        MenuItem[] buildOverflowMenu(JniPtr<NativeTranslateMessage> self);
 
         MenuItem[] handleSecondaryMenuItemClicked(
-                long nativeTranslateMessage,
+                JniPtr<NativeTranslateMessage> self,
                 int overflowMenuItemId,
                 String languageCode,
                 boolean hadCheckmark);

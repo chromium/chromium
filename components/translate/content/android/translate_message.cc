@@ -30,6 +30,7 @@
 #include "components/translate/core/browser/translate_ui_languages_manager.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -54,7 +55,7 @@ class BridgeImpl : public TranslateMessage::Bridge {
     DCHECK(!java_translate_message_);
     java_translate_message_ = Java_TranslateMessage_create(
         env, web_contents->GetJavaWebContents(),
-        reinterpret_cast<intptr_t>(native_translate_message),
+        jni_zero::MakeRaw(native_translate_message),
         dismissal_duration_seconds);
     return !(!java_translate_message_);
   }
@@ -103,7 +104,11 @@ class BridgeImpl : public TranslateMessage::Bridge {
   base::android::ScopedJavaGlobalRef<jobject> java_translate_message_;
 };
 
-BridgeImpl::~BridgeImpl() = default;
+BridgeImpl::~BridgeImpl() {
+  if (java_translate_message_) {
+    ClearNativePointer(base::android::AttachCurrentThread());
+  }
+}
 
 base::android::ScopedJavaLocalRef<jstring> GetDefaultMessageDescription(
     JNIEnv* env,

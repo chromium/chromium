@@ -31,6 +31,8 @@ import android.widget.FrameLayout;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.filters.MediumTest;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -109,6 +111,9 @@ public final class TranslateMessageSecondaryMenuTest {
 
     @Captor ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
+    private JniRawPtr<TranslateMessage.NativeTranslateMessage> mNativePtr;
+    private TranslateMessage mTranslateMessage;
+
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
@@ -130,6 +135,14 @@ public final class TranslateMessageSecondaryMenuTest {
                 });
     }
 
+    @After
+    public void tearDown() {
+        if (mTranslateMessage != null) {
+            ThreadUtils.runOnUiThreadBlocking(() -> mTranslateMessage.clearNativePointer());
+            mTranslateMessage = null;
+        }
+    }
+
     @Test
     @MediumTest
     public void testShowMultipleMenuItems() {
@@ -146,7 +159,7 @@ public final class TranslateMessageSecondaryMenuTest {
                             MENU_ITEM_WITH_CHECKMARK
                         })
                 .when(mMockJni)
-                .buildOverflowMenu(NATIVE_TRANSLATE_MESSAGE);
+                .buildOverflowMenu(mNativePtr);
         onView(withId(LIST_MENU_BUTTON_ID)).perform(click());
 
         DataInteraction interaction = onData(instanceOf(MenuItem.class));
@@ -238,7 +251,7 @@ public final class TranslateMessageSecondaryMenuTest {
         // since it should have a different view layout.
         menuItems[numBasicMenuItems] = MENU_ITEM_WITH_SUBTITLE;
 
-        doReturn(menuItems).when(mMockJni).buildOverflowMenu(NATIVE_TRANSLATE_MESSAGE);
+        doReturn(menuItems).when(mMockJni).buildOverflowMenu(mNativePtr);
         onView(withId(LIST_MENU_BUTTON_ID)).perform(click());
 
         // The topmost menu item should be visible, but the bottommost two menu items should not be
@@ -296,22 +309,20 @@ public final class TranslateMessageSecondaryMenuTest {
                     prepareListMenuButtonForTranslateMessageOnUiThread();
                 });
 
-        doReturn(new MenuItem[] {MENU_ITEM})
-                .when(mMockJni)
-                .buildOverflowMenu(NATIVE_TRANSLATE_MESSAGE);
+        doReturn(new MenuItem[] {MENU_ITEM}).when(mMockJni).buildOverflowMenu(mNativePtr);
         onView(withId(LIST_MENU_BUTTON_ID)).perform(click());
 
         doReturn(null)
                 .when(mMockJni)
                 .handleSecondaryMenuItemClicked(
-                        NATIVE_TRANSLATE_MESSAGE,
+                        mNativePtr,
                         MENU_ITEM.overflowMenuItemId,
                         MENU_ITEM.languageCode,
                         MENU_ITEM.hasCheckmark);
         onView(withText(MENU_ITEM.title)).perform(click());
         verify(mMockJni)
                 .handleSecondaryMenuItemClicked(
-                        NATIVE_TRANSLATE_MESSAGE,
+                        mNativePtr,
                         MENU_ITEM.overflowMenuItemId,
                         MENU_ITEM.languageCode,
                         MENU_ITEM.hasCheckmark);
@@ -327,22 +338,20 @@ public final class TranslateMessageSecondaryMenuTest {
                     prepareListMenuButtonForTranslateMessageOnUiThread();
                 });
 
-        doReturn(new MenuItem[] {MENU_ITEM})
-                .when(mMockJni)
-                .buildOverflowMenu(NATIVE_TRANSLATE_MESSAGE);
+        doReturn(new MenuItem[] {MENU_ITEM}).when(mMockJni).buildOverflowMenu(mNativePtr);
         onView(withId(LIST_MENU_BUTTON_ID)).perform(click());
 
         doReturn(new MenuItem[] {MENU_ITEM_WITH_SUBTITLE})
                 .when(mMockJni)
                 .handleSecondaryMenuItemClicked(
-                        NATIVE_TRANSLATE_MESSAGE,
+                        mNativePtr,
                         MENU_ITEM.overflowMenuItemId,
                         MENU_ITEM.languageCode,
                         MENU_ITEM.hasCheckmark);
         onView(withText(MENU_ITEM.title)).perform(click());
         verify(mMockJni)
                 .handleSecondaryMenuItemClicked(
-                        NATIVE_TRANSLATE_MESSAGE,
+                        mNativePtr,
                         MENU_ITEM.overflowMenuItemId,
                         MENU_ITEM.languageCode,
                         MENU_ITEM.hasCheckmark);
@@ -352,14 +361,14 @@ public final class TranslateMessageSecondaryMenuTest {
         doReturn(null)
                 .when(mMockJni)
                 .handleSecondaryMenuItemClicked(
-                        NATIVE_TRANSLATE_MESSAGE,
+                        mNativePtr,
                         MENU_ITEM_WITH_SUBTITLE.overflowMenuItemId,
                         MENU_ITEM_WITH_SUBTITLE.languageCode,
                         MENU_ITEM_WITH_SUBTITLE.hasCheckmark);
         onView(withText(MENU_ITEM_WITH_SUBTITLE.title)).perform(click());
         verify(mMockJni)
                 .handleSecondaryMenuItemClicked(
-                        NATIVE_TRANSLATE_MESSAGE,
+                        mNativePtr,
                         MENU_ITEM_WITH_SUBTITLE.overflowMenuItemId,
                         MENU_ITEM_WITH_SUBTITLE.languageCode,
                         MENU_ITEM_WITH_SUBTITLE.hasCheckmark);
@@ -390,13 +399,15 @@ public final class TranslateMessageSecondaryMenuTest {
      * @return The newly created TranslateMessage.
      */
     private TranslateMessage prepareListMenuButtonForTranslateMessageOnUiThread() {
-        TranslateMessage translateMessage =
+        mNativePtr = JniRawPtr.createForTesting(NATIVE_TRANSLATE_MESSAGE);
+        mTranslateMessage =
                 new TranslateMessage(
                         sActivity,
                         mMessageDispatcher,
                         mWebContents,
-                        NATIVE_TRANSLATE_MESSAGE,
+                        mNativePtr,
                         DISMISSAL_DURATION_SECONDS);
+        TranslateMessage translateMessage = mTranslateMessage;
 
         translateMessage.showMessage(
                 "Translate Page?", "French to English", "Translate", /* hasOverflowMenu= */ true);
