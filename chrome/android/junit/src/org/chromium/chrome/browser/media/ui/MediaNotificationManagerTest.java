@@ -19,6 +19,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Notification;
 import android.content.Context;
 import android.util.SparseArray;
 
@@ -32,9 +33,11 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
@@ -780,6 +783,70 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         assertNotNull(MediaNotificationManager.getControllerByNotificationId(uniqueId1));
         assertTrue(controller1.isForeground());
         assertTrue(MediaNotificationManager.isNotificationActive(uniqueId1));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testFirstShowClearsStaleMediaNotifications() {
+        startAndRegisterService();
+
+        android.app.NotificationManager nm =
+                (android.app.NotificationManager)
+                        RuntimeEnvironment.getApplication()
+                                .getSystemService(Context.NOTIFICATION_SERVICE);
+        ShadowNotificationManager shadowNM = Shadows.shadowOf(nm);
+
+        // Simulate a leaked media notification from a previous killed browser process, an
+        // already-posted notification owned by a live controller, and an unrelated browser
+        // notification.
+        MediaNotificationManager.setMultipleMediaNotificationsEnabled(true);
+        MediaNotificationInfo liveInfo =
+                mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(false).build();
+        MediaNotificationManager.show(liveInfo, ChromeMediaNotificationControllerDelegate::new);
+        int liveMediaNotificationId = MediaNotificationManager.getUniqueId(2, getNotificationId());
+        int staleMediaNotificationId = 9991;
+        int browserNotificationId = 9992;
+        nm.notify(
+                staleMediaNotificationId,
+                new Notification.Builder(
+                                RuntimeEnvironment.getApplication(),
+                                ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK)
+                        .build());
+        nm.notify(
+                liveMediaNotificationId,
+                new Notification.Builder(
+                                RuntimeEnvironment.getApplication(),
+                                ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK)
+                        .build());
+        nm.notify(
+                browserNotificationId,
+                new Notification.Builder(
+                                RuntimeEnvironment.getApplication(),
+                                ChromeChannelDefinitions.ChannelId.BROWSER)
+                        .build());
+        assertNotNull(shadowNM.getNotification(staleMediaNotificationId));
+        assertNotNull(shadowNM.getNotification(liveMediaNotificationId));
+        assertNotNull(shadowNM.getNotification(browserNotificationId));
+
+        // Show the first media notification in the new process.
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+        int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
+        assertNotNull(controller1);
+        controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // The stale media notification should be canceled, while the live controller's
+        // notification, the unrelated browser notification, and the new media notification remain
+        // posted.
+        assertNull(shadowNM.getNotification(staleMediaNotificationId));
+        assertNotNull(shadowNM.getNotification(liveMediaNotificationId));
+        assertNotNull(shadowNM.getNotification(browserNotificationId));
+        assertNotNull(shadowNM.getNotification(uniqueId1));
     }
 
     private void startAndRegisterService() {
